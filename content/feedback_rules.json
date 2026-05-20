@@ -17,7 +17,7 @@
       "match_keywords": ["必须马上", "立刻去做", "不能再", "一定要", "你给我"],
       "explanation": "记录中出现了较强的命令式或高要求表达。它可能短期推动行动，但也容易让亲子互动进入对抗。",
       "supportive_feedback": "你希望孩子行动起来，这个愿望很真实。下一步可以把高压命令缩小成一个具体、可完成的小请求。",
-      "alternative_response": "把“你必须马上写”换成“我们先从 10 分钟开始，你想先做哪一项？”",
+      "alternative_response": "把“你必须马上写”换成“我们先从 10 分钟开始，你想先做哪一项？”。",
       "recommended_card_ids": ["three_second_pause", "alternative_behavior"],
       "risk_level": "low"
     },

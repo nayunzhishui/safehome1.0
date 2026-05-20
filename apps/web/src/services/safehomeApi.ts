@@ -1,0 +1,166 @@
+import { API_ENDPOINTS, DEFAULT_USER_ID } from "../../../../shared/constants/api";
+import type {
+  ApiResponse,
+  CardRecommendResponse,
+  Checkin,
+  CheckinInput,
+  EmotionDiary,
+  EmotionDiaryInput,
+  FeedbackGenerateInput,
+  FeedbackResult,
+  Goal,
+  GoalInput,
+  ListResponse,
+  SupervisionInput,
+  SupervisionRequest,
+  TrainingCard,
+  WeeklyReport,
+} from "../../../../shared/types/api";
+
+export interface SafeHomeApiClientOptions {
+  baseUrl?: string;
+  defaultUserId?: string;
+}
+
+export class SafeHomeApiError extends Error {
+  code: string;
+  status: number;
+
+  constructor(message: string, code: string, status: number) {
+    super(message);
+    this.name = "SafeHomeApiError";
+    this.code = code;
+    this.status = status;
+  }
+}
+
+export class SafeHomeApiClient {
+  private readonly baseUrl: string;
+  private readonly defaultUserId: string;
+
+  constructor(options: SafeHomeApiClientOptions = {}) {
+    this.baseUrl = options.baseUrl ?? "http://127.0.0.1:5000";
+    this.defaultUserId = options.defaultUserId ?? DEFAULT_USER_ID;
+  }
+
+  async healthz(): Promise<{ ok: true; service: string }> {
+    return this.requestRaw(API_ENDPOINTS.healthz);
+  }
+
+  createGoal(input: GoalInput): Promise<Goal> {
+    return this.requestData<Goal>(API_ENDPOINTS.goals, {
+      method: "POST",
+      body: this.withDefaultUser(input),
+    });
+  }
+
+  listGoals(params: { user_id?: string; status?: string } = {}): Promise<ListResponse<Goal>> {
+    return this.requestData<ListResponse<Goal>>(this.withQuery(API_ENDPOINTS.goals, params));
+  }
+
+  createDiary(input: EmotionDiaryInput): Promise<EmotionDiary> {
+    return this.requestData<EmotionDiary>(API_ENDPOINTS.diaries, {
+      method: "POST",
+      body: this.withDefaultUser(input),
+    });
+  }
+
+  listDiaries(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<EmotionDiary>> {
+    return this.requestData<ListResponse<EmotionDiary>>(this.withQuery(API_ENDPOINTS.diaries, params));
+  }
+
+  generateFeedback(input: FeedbackGenerateInput): Promise<FeedbackResult> {
+    return this.requestData<FeedbackResult>(API_ENDPOINTS.feedbackGenerate, {
+      method: "POST",
+      body: this.withDefaultUser(input),
+    });
+  }
+
+  listCards(): Promise<ListResponse<TrainingCard>> {
+    return this.requestData<ListResponse<TrainingCard>>(API_ENDPOINTS.cards);
+  }
+
+  recommendCards(params: { tags?: string[]; limit?: number } = {}): Promise<CardRecommendResponse> {
+    return this.requestData<CardRecommendResponse>(
+      this.withQuery(API_ENDPOINTS.cardsRecommend, {
+        tags: params.tags?.join(","),
+        limit: params.limit,
+      }),
+    );
+  }
+
+  createCheckin(input: CheckinInput): Promise<Checkin> {
+    return this.requestData<Checkin>(API_ENDPOINTS.checkins, {
+      method: "POST",
+      body: this.withDefaultUser(input),
+    });
+  }
+
+  listCheckins(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<Checkin>> {
+    return this.requestData<ListResponse<Checkin>>(this.withQuery(API_ENDPOINTS.checkins, params));
+  }
+
+  getWeeklyReport(params: { user_id?: string; week_start?: string } = {}): Promise<WeeklyReport> {
+    return this.requestData<WeeklyReport>(this.withQuery(API_ENDPOINTS.weeklyReport, params));
+  }
+
+  createSupervision(input: SupervisionInput): Promise<SupervisionRequest> {
+    return this.requestData<SupervisionRequest>(API_ENDPOINTS.supervision, {
+      method: "POST",
+      body: this.withDefaultUser(input),
+    });
+  }
+
+  buildAdminExportUrl(params: { type?: string; user_id?: string } = {}): string {
+    return this.absoluteUrl(this.withQuery(API_ENDPOINTS.adminExport, params));
+  }
+
+  private withDefaultUser<T extends { user_id?: string }>(input: T): T {
+    return { ...input, user_id: input.user_id ?? this.defaultUserId };
+  }
+
+  private withQuery(path: string, params: Record<string, string | number | undefined>): string {
+    const search = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") {
+        search.set(key, String(value));
+      }
+    });
+    const query = search.toString();
+    return query ? `${path}?${query}` : path;
+  }
+
+  private absoluteUrl(path: string): string {
+    return `${this.baseUrl}${path}`;
+  }
+
+  private async requestData<T>(
+    path: string,
+    options: { method?: "GET" | "POST"; body?: unknown } = {},
+  ): Promise<T> {
+    const payload = await this.requestRaw<ApiResponse<T>>(path, options);
+    if (!payload.ok) {
+      throw new SafeHomeApiError(payload.error.message, payload.error.code, 200);
+    }
+    return payload.data;
+  }
+
+  private async requestRaw<T>(
+    path: string,
+    options: { method?: "GET" | "POST"; body?: unknown } = {},
+  ): Promise<T> {
+    const response = await fetch(this.absoluteUrl(path), {
+      method: options.method ?? "GET",
+      headers: { "Content-Type": "application/json" },
+      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    });
+
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new SafeHomeApiError(payload?.error?.message ?? "请求失败", payload?.error?.code ?? "http_error", response.status);
+    }
+    return payload as T;
+  }
+}
+
+export const safeHomeApi = new SafeHomeApiClient();

@@ -1,5 +1,6 @@
-"""Configuration placeholders for the SafeHome MVP backend."""
+"""Configuration for the SafeHome MVP backend."""
 
+import os
 from pathlib import Path
 
 
@@ -9,6 +10,7 @@ PROJECT_ROOT = BASE_DIR.parent
 
 class Config:
     APP_NAME = "safehome"
-    DATABASE_PATH = BASE_DIR / "safehome.sqlite3"
+    DATABASE_PATH = Path(os.environ.get("DATABASE_PATH", BASE_DIR / "safehome.sqlite3"))
     CONTENT_DIR = PROJECT_ROOT / "content"
     JSON_AS_ASCII = False
+    DEFAULT_PAGE_SIZE = 50
