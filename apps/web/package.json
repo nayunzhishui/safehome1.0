@@ -1,0 +1,13 @@
+{
+  "name": "safehome-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SafeHome MVP web shell placeholder. React/Vite implementation will be added later.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

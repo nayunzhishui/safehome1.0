@@ -1,0 +1,59 @@
+{
+  "version": "2026.05-mvp-feedback-rules-v1",
+  "rules": [
+    {
+      "id": "judgmental_language",
+      "label": "评判性语言",
+      "match_keywords": ["你怎么又这样", "你总是", "你就是", "真不懂事", "太懒了"],
+      "explanation": "记录中出现了较多对孩子整体评价的表达。这类表达通常能快速释放家长压力，但可能让孩子更防御或退缩。",
+      "supportive_feedback": "你不是不关心孩子，而是当压力升高时，大脑会自动寻找一个明确原因。现在可以先把评价换成对事实和感受的描述。",
+      "alternative_response": "把“你怎么又这样”换成“我看到这件事又卡住了，我们先看看发生了什么”。",
+      "recommended_card_ids": ["nonjudgmental_response", "emotion_naming"],
+      "risk_level": "low"
+    },
+    {
+      "id": "high_demand_language",
+      "label": "高要求表达",
+      "match_keywords": ["必须马上", "立刻去做", "不能再", "一定要", "你给我"],
+      "explanation": "记录中出现了较强的命令式或高要求表达。它可能短期推动行动，但也容易让亲子互动进入对抗。",
+      "supportive_feedback": "你希望孩子行动起来，这个愿望很真实。下一步可以把高压命令缩小成一个具体、可完成的小请求。",
+      "alternative_response": "把“你必须马上写”换成“我们先从 10 分钟开始，你想先做哪一项？”",
+      "recommended_card_ids": ["three_second_pause", "alternative_behavior"],
+      "risk_level": "low"
+    },
+    {
+      "id": "negative_attribution",
+      "label": "负性归因",
+      "match_keywords": ["故意拖", "就是懒", "不想学", "没救了", "不上心"],
+      "explanation": "记录中出现了把孩子行为归因为稳定缺点的倾向。单一归因会让家长更难看见其他可能原因。",
+      "supportive_feedback": "当同一类问题反复出现时，家长很容易得出一个固定解释。现在可以先增加一个备选解释，为新的回应方式留出空间。",
+      "alternative_response": "把“他就是故意拖”换成“他可能不知道从哪里开始，我们先找一个最小入口”。",
+      "recommended_card_ids": ["cognitive_flexibility", "nonjudgmental_response"],
+      "risk_level": "low"
+    },
+    {
+      "id": "repeated_urging",
+      "label": "情绪性行为：反复催促",
+      "match_keywords": ["说多少遍", "催了很多次", "一直催", "反复提醒", "忍不住催"],
+      "explanation": "记录中出现了反复催促。催促通常说明家长很想让事情变好，但当催促次数增加，孩子可能更容易麻木或反抗。",
+      "supportive_feedback": "你已经做了很多努力，只是当前方式可能进入了短期有效、长期成本较高的循环。可以尝试把催促改成一次明确请求。",
+      "alternative_response": "把“我说多少遍了”换成“现在只做第一步：把作业本打开”。",
+      "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
+      "risk_level": "low"
+    },
+    {
+      "id": "catastrophic_prediction",
+      "label": "灾难化预测",
+      "match_keywords": ["以后肯定完了", "考不上怎么办", "将来怎么办", "全都毁了", "没有希望"],
+      "explanation": "记录中出现了把当前事件推向严重未来后果的表达。这常见于高压力场景，不代表事实一定会如此。",
+      "supportive_feedback": "你担心的是孩子的未来，这份担心背后有爱和责任。现在可以先把注意力拉回当前可处理的一小步。",
+      "alternative_response": "把“以后肯定完了”换成“这次结果让我们担心，我们先看今天能补上的一个点”。",
+      "recommended_card_ids": ["cognitive_flexibility", "emotion_naming"],
+      "risk_level": "medium"
+    }
+  ],
+  "safety_notes": [
+    "若记录中出现自伤、自杀、暴力、严重失眠或家庭暴力线索，不由规则反馈自动处理，应提示人工复核或专业转介。",
+    "反馈只用于自我理解和亲子沟通练习，不构成临床诊断。"
+  ]
+}

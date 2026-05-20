@@ -1,0 +1,85 @@
+{
+  "version": "2026.05-mvp-training-cards-v1",
+  "cards": [
+    {
+      "id": "emotion_naming",
+      "type": "emotion_awareness",
+      "title": "情绪识别卡：先命名情绪",
+      "purpose": "帮助家长在回应孩子前先识别自己和孩子的情绪。",
+      "tags": ["emotion_awareness", "high_emotion_intensity"],
+      "steps": [
+        "暂停 3 秒，先不要急着讲道理。",
+        "在心里说出自己的情绪：我现在是着急、失望，还是害怕？",
+        "再尝试命名孩子的情绪：孩子可能是委屈、害怕，还是挫败？",
+        "用一句非评判的话开头：我看到你现在很难受。"
+      ],
+      "example": "我看到你这次数学没考好后很沮丧，我也有点着急。我们先把发生了什么说清楚。",
+      "duration_minutes": 3,
+      "enabled": true
+    },
+    {
+      "id": "three_second_pause",
+      "type": "behavior_substitution",
+      "title": "3 秒暂停卡：开口前先停一下",
+      "purpose": "降低自动催促、吼叫或指责的概率。",
+      "tags": ["high_demand_language", "emotional_behavior"],
+      "steps": [
+        "发现自己想立刻批评时，先闭嘴 3 秒。",
+        "做一次慢呼吸，让语速降下来。",
+        "把第一句指责换成一个观察句。",
+        "只提出一个具体请求，不同时翻旧账。"
+      ],
+      "example": "我看到作业还没开始。我们先一起看今天最先做哪一项。",
+      "duration_minutes": 1,
+      "enabled": true
+    },
+    {
+      "id": "cognitive_flexibility",
+      "type": "cognitive_flexibility",
+      "title": "认知灵活化卡：换一种解释",
+      "purpose": "帮助家长从单一负性归因转向更灵活的理解。",
+      "tags": ["negative_attribution", "catastrophic_prediction"],
+      "steps": [
+        "写下脑中第一个解释，例如：他就是故意拖。",
+        "问自己：还有没有第二种可能？",
+        "至少列出一个非品格化解释，例如：他可能不知道从哪里开始。",
+        "基于新的解释提出一个小帮助。"
+      ],
+      "example": "也许不是故意拖，而是题目太多不知道先做什么。我们先选最容易开始的一题。",
+      "duration_minutes": 5,
+      "enabled": true
+    },
+    {
+      "id": "nonjudgmental_response",
+      "type": "nonjudgmental_response",
+      "title": "非评判回应卡：把批评改成确认",
+      "purpose": "训练家长把评判性语言转换成支持性表达。",
+      "tags": ["judgmental_language", "parent_child_conflict"],
+      "steps": [
+        "找到自己想说的批评句。",
+        "删掉“又、总是、必须、怎么这么”等高压词。",
+        "先确认情绪，再讨论问题。",
+        "用一个开放问题邀请孩子表达。"
+      ],
+      "example": "把“你怎么又这样”改成“我看到这件事又让你很烦，我们一起看看卡在哪里”。",
+      "duration_minutes": 4,
+      "enabled": true
+    },
+    {
+      "id": "alternative_behavior",
+      "type": "behavior_substitution",
+      "title": "替代行为卡：用具体请求替代威胁",
+      "purpose": "把短期有效但长期成本高的威胁、催促，换成可执行请求。",
+      "tags": ["threat_language", "repeated_urging", "emotional_behavior"],
+      "steps": [
+        "识别原本想做的情绪性行为，例如威胁、催促、冷处理。",
+        "把要求缩小成一个 10 分钟内能完成的小动作。",
+        "说出具体请求和可选择项。",
+        "完成后只反馈这个小动作，不扩大评价。"
+      ],
+      "example": "现在先做 10 分钟语文，或者先整理错题本。你选一个开始。",
+      "duration_minutes": 5,
+      "enabled": true
+    }
+  ]
+}
