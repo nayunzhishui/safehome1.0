@@ -37,32 +37,44 @@ MVP 1.0 必须围绕以下闭环推进：
 
 ## 4. 当前技术阶段
 
-当前阶段：MVP 1.0 已完成以下基础能力：
+当前阶段：MVP 1.0 已完成，MVP 1.1 已开始第一阶段实现。
+
+MVP 1.0 已完成以下基础能力：
 
 - `backend` Flask + SQLite 后端 MVP 已完成；
 - API 文档已与真实后端 API 对齐；
 - `shared` 共用字段、常量和 mock 数据已建立；
-- 网页端最小 API client 已建立；
+- 网页端 API client 已建立；
 - 小程序端 `wx.request` 请求封装已建立；
-- 网页端和小程序端最小联调入口已建立；
-- 小程序端最小联调已通过，已完成三步数据流：创建情绪事件记录、生成即时反馈、获取训练卡推荐。
+- 小程序最小正式流程已完成：首页、情绪事件记录、即时反馈、UP训练卡推荐、练习打卡；
+- 小程序 `pages/integration-test/index` 长期联调测试页仍保留；
+- 网页管理后台已能查看情绪记录列表和详情；
+- 网页管理后台记录详情已能生成即时反馈和推荐训练卡；
+- CSV 导出接口已增加 `X-Admin-Token` 令牌校验；
+- MVP 1.0 封版验收清单已建立：`docs/MVP1.0验收清单.md`。
+- MVP 1.1 功能迭代方案已建立：`docs/MVP1.1功能迭代方案.md`；
+- MVP 1.1 第一小步已开始：小程序 `pages/goal-setting/index` 目标设定页已新增，并复用 `POST /api/goals`。
+
+MVP 1.1 规划目标：
+
+```text
+目标 -> 记录 -> 识别 -> 反馈 -> 练习 -> 追踪 -> 支持
+```
 
 下一阶段优先级：
 
-1. 不再继续扩展测试页，而是开始开发 MVP 1.0 正式小程序家长端流程。
-2. 第一批正式页面优先开发：
-   - `pages/home/index`：首页；
-   - `pages/diary-form/index`：情绪事件记录页；
-   - `pages/feedback-result/index`：即时反馈页；
-   - `pages/training-card/index`：UP训练卡推荐页。
-3. 保留 `pages/integration-test/index` 作为长期联调测试页，不要删除。
-4. 小程序正式核心流程跑通后，再开发网页端最小管理后台：
-   - 情绪记录列表；
-   - 情绪记录详情；
-   - 数据导出入口。
-5. 暂缓登录注册、复杂AI、周报正式页、人工督导正式页、社群、多媒体上传和正式部署。
-
-除非用户明确要求，不要继续扩展联调测试页，也不要在正式小程序核心流程跑通前投入大量复杂网页后台开发。
+1. 先阅读并遵守 `docs/MVP1.1功能迭代方案.md`。
+2. MVP 1.1 已完成第一小步：
+   - `pages/goal-setting/index`：目标设定页。
+3. 下一批 MVP 1.1 功能优先开发：
+   - 升级 `pages/diary-form/index`：按事件、情绪、强度、想法、身体感觉、行为、孩子反应、短期结果、长期影响组织；
+   - 升级 `pages/feedback-result/index`：增加情绪与互动模式识别卡；
+   - 升级 `pages/training-card/index` 和 `pages/checkin/index`：训练卡详情与轻打卡；
+   - 新增 `pages/weekly-report/index`：简版周度报告；
+   - 增加人工督导补充入口。
+4. 优先复用现有 API 和数据库表：`goals`、`diaries`、`feedback`、`cards`、`checkins`、`weekly-report`、`supervision`。
+5. 暂缓 AI 自由问答、机器学习、深度学习、语音/视频上传、社群、积分勋章、正式登录注册、正式部署和复杂课程体系。
+6. 继续保留 `pages/integration-test/index`，不要删除。
 
 ## 5. 开发原则
 
@@ -214,6 +226,30 @@ MVP 1.0 必须围绕以下闭环推进：
 3. 网页端如果涉及相关页面，也要能正常打开；
 4. 不出现诊断化、标签化、责备性反馈文案；
 5. `git status` 中没有误提交 `node_modules`、`dist`、`db`、`venv`、`pycache` 等本地运行产物。
+
+### 6.9 MVP 1.1 迭代规则
+
+MVP 1.1 的功能必须服务以下闭环：
+
+```text
+目标 -> 记录 -> 识别 -> 反馈 -> 练习 -> 追踪 -> 支持
+```
+
+开发 MVP 1.1 时必须遵守：
+
+- 每轮只做一个最小功能，不要同时开发多个页面和接口；
+- 优先复用现有 API、数据库表、shared 类型和 content 文件；
+- 只有在现有字段无法承载真实需求时，才规划数据库变更；
+- 目标设定优先复用 `POST /api/goals` 和 `GET /api/goals`；
+- 记录升级优先复用 `POST /api/diaries` 和现有 `emotion_diaries` 字段；
+- 模式识别优先复用 `content/feedback_rules.json` 和 `POST /api/feedback/generate`；
+- 训练卡详情与轻打卡优先复用 `content/training_cards.json`、`GET /api/cards/recommend` 和 `POST /api/checkins`；
+- 简版周报优先复用 `GET /api/weekly-report`；
+- 人工督导入口优先复用 `POST /api/supervision`，如需网页后台列表，再最小新增 `GET /api/supervision`；
+- 所有面向家长的文案必须使用“可能”“看起来”“这次记录中可以看到”等保守措辞；
+- 不允许写诊断化、标签化、责备性表达；
+- 暂不做内感性暴露和情绪暴露正式训练；
+- 每次 MVP 1.1 功能完成后，必须回测 MVP 1.0 核心链路没有被破坏。
 
 ## 7. 心理学与伦理边界
 

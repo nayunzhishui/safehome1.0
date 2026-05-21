@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
-import type { EmotionDiary } from "../../../../shared/types/api";
+import type { EmotionDiary, FeedbackResult, TrainingCard } from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
+type InsightStatus = "idle" | "loading" | "success" | "error";
+type ExportStatus = "idle" | "loading" | "success" | "error";
 
 interface AdminDashboardState {
   status: LoadStatus;
@@ -12,7 +14,13 @@ interface AdminDashboardState {
   selectedId?: string;
 }
 
+interface DiaryInsight {
+  feedback: FeedbackResult;
+  cards: TrainingCard[];
+}
+
 const api = new SafeHomeApiClient();
+const LOCAL_ADMIN_EXPORT_TOKEN = "safehome-local-admin-token";
 
 function formatTime(value?: string | null) {
   if (!value) {
@@ -45,10 +53,17 @@ export function AdminDashboard() {
     message: "点击刷新，可以查看当前测试用户的情绪事件记录。",
     diaries: [],
   });
+  const [insights, setInsights] = useState<Record<string, DiaryInsight>>({});
+  const [insightStatus, setInsightStatus] = useState<InsightStatus>("idle");
+  const [insightMessage, setInsightMessage] = useState("选择一条记录后，可以生成对应的即时反馈和训练卡推荐。");
+  const [adminToken, setAdminToken] = useState(LOCAL_ADMIN_EXPORT_TOKEN);
+  const [exportStatus, setExportStatus] = useState<ExportStatus>("idle");
+  const [exportMessage, setExportMessage] = useState("导出需要后台令牌。本地默认令牌已填入。");
 
   const selectedDiary = useMemo(() => {
     return state.diaries.find((diary) => diary.id === state.selectedId) ?? state.diaries[0];
   }, [state.diaries, state.selectedId]);
+  const selectedInsight = selectedDiary ? insights[selectedDiary.id] : undefined;
 
   async function loadDiaries() {
     setState((current) => ({
@@ -78,6 +93,65 @@ export function AdminDashboard() {
     void loadDiaries();
   }, []);
 
+  async function loadInsight() {
+    if (!selectedDiary) {
+      return;
+    }
+
+    if (insights[selectedDiary.id]) {
+      setInsightStatus("success");
+      setInsightMessage("已显示这条记录的即时反馈和训练卡推荐。");
+      return;
+    }
+
+    setInsightStatus("loading");
+    setInsightMessage("正在生成即时反馈和推荐训练卡...");
+
+    try {
+      const feedback = await api.generateFeedback({ diary_id: selectedDiary.id });
+      const cards = await api.recommendCards({ tags: feedback.tags, limit: 3 });
+      setInsights((current) => ({
+        ...current,
+        [selectedDiary.id]: {
+          feedback,
+          cards: cards.items,
+        },
+      }));
+      setInsightStatus("success");
+      setInsightMessage("已生成即时反馈和训练卡推荐。");
+    } catch (error) {
+      setInsightStatus("error");
+      setInsightMessage(error instanceof Error ? error.message : "生成失败，请确认 backend 是否已启动。");
+    }
+  }
+
+  async function downloadCsv() {
+    const token = adminToken.trim();
+    if (!token) {
+      setExportStatus("error");
+      setExportMessage("请先填写后台导出令牌。");
+      return;
+    }
+
+    setExportStatus("loading");
+    setExportMessage("正在导出情绪记录 CSV...");
+
+    try {
+      const blob = await api.downloadAdminExport({ type: "diaries", adminToken: token });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "safehome_diaries.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+      setExportStatus("success");
+      setExportMessage("导出已开始。如果浏览器拦截下载，请检查下载栏。");
+    } catch (error) {
+      setExportStatus("error");
+      setExportMessage(error instanceof Error ? error.message : "导出失败，请确认令牌是否正确。");
+    }
+  }
+
   return (
     <section className="dashboardShell" aria-label="网页端最小管理后台">
       <div className="dashboardHeader">
@@ -90,9 +164,6 @@ export function AdminDashboard() {
           <button className="primaryButton" type="button" onClick={loadDiaries} disabled={state.status === "loading"}>
             {state.status === "loading" ? "刷新中..." : "刷新记录"}
           </button>
-          <a className="secondaryButton" href={api.buildAdminExportUrl({ type: "diaries" })}>
-            导出 CSV
-          </a>
         </div>
       </div>
 
@@ -114,7 +185,13 @@ export function AdminDashboard() {
                   className={`recordItem ${selectedDiary?.id === diary.id ? "active" : ""}`}
                   key={diary.id}
                   type="button"
-                  onClick={() => setState((current) => ({ ...current, selectedId: diary.id }))}
+                  onClick={() => {
+                    setState((current) => ({ ...current, selectedId: diary.id }));
+                    setInsightStatus(insights[diary.id] ? "success" : "idle");
+                    setInsightMessage(
+                      insights[diary.id] ? "已显示这条记录的即时反馈和训练卡推荐。" : "选择一条记录后，可以生成对应的即时反馈和训练卡推荐。",
+                    );
+                  }}
                 >
                   <span className="recordScene">{diary.scene}</span>
                   <span className="recordDescription">{diary.event_description}</span>
@@ -146,12 +223,68 @@ export function AdminDashboard() {
               <DetailRow label="说了什么/做了什么" value={selectedDiary.behavior} />
               <DetailRow label="身体感觉" value={selectedDiary.body_sensation} />
               <DetailRow label="创建时间" value={formatTime(selectedDiary.created_at)} />
+
+              <div className="insightPanel">
+                <div className="sectionTitleRow">
+                  <h3>即时反馈与训练卡</h3>
+                  <button className="secondaryButton" type="button" onClick={loadInsight} disabled={insightStatus === "loading"}>
+                    {insightStatus === "loading" ? "生成中..." : selectedInsight ? "刷新显示" : "生成反馈和推荐"}
+                  </button>
+                </div>
+                <div className={`status compact ${insightStatus}`}>{insightMessage}</div>
+
+                {selectedInsight && (
+                  <div className="insightContent">
+                    <section className="feedbackBox">
+                      <h4>即时反馈</h4>
+                      <p>{selectedInsight.feedback.supportive_feedback}</p>
+                      <p className="muted">识别标签：{selectedInsight.feedback.labels.join("、") || "无"}</p>
+                      <p className="muted">替代回应：{selectedInsight.feedback.alternative_response}</p>
+                    </section>
+
+                    <section className="cardsBox">
+                      <h4>推荐训练卡</h4>
+                      {selectedInsight.cards.length > 0 ? (
+                        <div className="cardList">
+                          {selectedInsight.cards.map((card) => (
+                            <article className="trainingCard" key={card.id}>
+                              <span className="recordMeta">{card.type}</span>
+                              <strong>{card.title}</strong>
+                              <p>{card.purpose}</p>
+                              <p className="muted">替代话术：{card.example}</p>
+                            </article>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="muted">当前没有匹配到训练卡。</p>
+                      )}
+                    </section>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="emptyState">选择左侧记录后，这里会显示详情。</div>
           )}
         </section>
       </div>
+
+      <section className="exportPanel" aria-label="数据导出">
+        <div className="sectionTitleRow">
+          <div>
+            <h2>数据导出</h2>
+            <p className="summary">导出接口已增加后台令牌校验，本地默认令牌为 `safehome-local-admin-token`。</p>
+          </div>
+          <button className="primaryButton" type="button" onClick={downloadCsv} disabled={exportStatus === "loading"}>
+            {exportStatus === "loading" ? "导出中..." : "导出情绪记录 CSV"}
+          </button>
+        </div>
+        <label className="tokenField">
+          <span>后台导出令牌</span>
+          <input value={adminToken} onChange={(event) => setAdminToken(event.target.value)} placeholder="请输入后台导出令牌" />
+        </label>
+        <div className={`status compact ${exportStatus}`}>{exportMessage}</div>
+      </section>
     </section>
   );
 }

@@ -3,7 +3,7 @@
 import csv
 from io import StringIO
 
-from flask import Blueprint, Response, request
+from flask import Blueprint, Response, current_app, request
 
 from database import get_connection
 from routes.utils import fail
@@ -23,6 +23,11 @@ EXPORT_TABLES = {
 
 @bp.get("/export")
 def export_csv():
+    admin_token = current_app.config.get("ADMIN_EXPORT_TOKEN")
+    request_token = request.headers.get("X-Admin-Token", "")
+    if not admin_token or request_token != admin_token:
+        return fail("unauthorized", "导出数据需要后台导出令牌", status=401)
+
     export_type = request.args.get("type", "diaries")
     table = EXPORT_TABLES.get(export_type)
     if table is None:

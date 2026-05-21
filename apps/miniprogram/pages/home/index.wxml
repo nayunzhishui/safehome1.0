@@ -6,7 +6,13 @@
   </view>
 
   <view class="panel">
-    <text class="section-title">今天可以从一次具体事件开始</text>
+    <text class="section-title">先定一个本周小目标</text>
+    <text class="body-text">选择一个常见亲子场景，写下这周想少一点的旧反应，以及想多练习的新反应。</text>
+    <button class="primary-button" bindtap="startGoalSetting">设定本周小目标</button>
+  </view>
+
+  <view class="panel secondary-panel">
+    <text class="section-title">也可以从一次具体事件开始</text>
     <text class="body-text">先写下发生了什么，再看看系统给出的支持性提示。这里不会给孩子或家长贴标签。</text>
     <button class="primary-button" bindtap="startDiary">开始记录</button>
     <button class="secondary-button" bindtap="openIntegrationTest">进入联调测试页</button>

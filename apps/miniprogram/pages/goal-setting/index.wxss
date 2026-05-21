@@ -1,0 +1,144 @@
+.page {
+  min-height: 100vh;
+  padding: 32rpx;
+  background: #f6f8f4;
+}
+
+.hero {
+  padding: 20rpx 4rpx 28rpx;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 10rpx;
+  color: #3c7a49;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.title {
+  display: block;
+  margin-bottom: 14rpx;
+  color: #1d2b22;
+  font-size: 40rpx;
+  font-weight: 700;
+}
+
+.summary,
+.hint {
+  display: block;
+  color: #5b6b60;
+  font-size: 28rpx;
+  line-height: 1.7;
+}
+
+.panel {
+  padding: 28rpx;
+  border: 1rpx solid #dce6db;
+  border-radius: 8rpx;
+  background: #ffffff;
+}
+
+.step-card {
+  margin-bottom: 28rpx;
+  padding-bottom: 28rpx;
+  border-bottom: 1rpx solid #e6eee5;
+}
+
+.step-card:last-of-type {
+  border-bottom: 0;
+}
+
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 12rpx;
+}
+
+.step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 8rpx;
+  background: #edf5ee;
+  color: #2f7d45;
+  font-size: 22rpx;
+  font-weight: 700;
+  text-align: center;
+  line-height: 48rpx;
+}
+
+.step-title {
+  color: #1d2b22;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.tag {
+  margin: 0;
+  padding: 0 22rpx;
+  min-height: 64rpx;
+  border: 1rpx solid #c9d9c8;
+  border-radius: 8rpx;
+  background: #f9fbf8;
+  color: #2f4a38;
+  font-size: 26rpx;
+  line-height: 64rpx;
+}
+
+.tag.active {
+  border-color: #2f7d45;
+  background: #edf8ee;
+  color: #2f7d45;
+  font-weight: 700;
+}
+
+.input,
+.textarea {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 18rpx;
+  padding: 20rpx;
+  border: 1rpx solid #dce6db;
+  border-radius: 8rpx;
+  background: #f9fbf8;
+  color: #1d2b22;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.input {
+  min-height: 80rpx;
+}
+
+.textarea {
+  min-height: 170rpx;
+}
+
+.error-box {
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  border: 1rpx solid #efb4b4;
+  border-radius: 8rpx;
+  background: #fff1f1;
+  color: #8a2f2f;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.primary-button {
+  margin-top: 8rpx;
+  background: #2f7d45;
+  color: #ffffff;
+  border-radius: 8rpx;
+}

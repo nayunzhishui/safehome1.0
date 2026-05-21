@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/home/index",
+    "pages/goal-setting/index",
     "pages/diary-form/index",
     "pages/feedback-result/index",
     "pages/training-card/index",

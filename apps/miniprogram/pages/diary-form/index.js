@@ -4,6 +4,7 @@ const api = createSafeHomeApi();
 
 Page({
   data: {
+    goalId: "",
     submitting: false,
     eventDescription: "",
     parentEmotionIntensity: 5,
@@ -12,6 +13,12 @@ Page({
     behavior: "",
     childReaction: "",
     errorMessage: "",
+  },
+
+  onLoad(options) {
+    if (options && options.goal_id) {
+      this.setData({ goalId: decodeURIComponent(options.goal_id) });
+    }
   },
 
   onTextInput(event) {
@@ -38,6 +45,7 @@ Page({
 
     try {
       const diary = await api.createDiary({
+        goal_id: this.data.goalId || undefined,
         scene: "亲子互动记录",
         event_description: eventDescription,
         parent_emotion: "当时情绪",

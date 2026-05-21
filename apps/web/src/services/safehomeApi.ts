@@ -115,6 +115,35 @@ export class SafeHomeApiClient {
     return this.absoluteUrl(this.withQuery(API_ENDPOINTS.adminExport, params));
   }
 
+  async downloadAdminExport(params: { type?: string; user_id?: string; adminToken: string }): Promise<Blob> {
+    const response = await fetch(
+      this.absoluteUrl(
+        this.withQuery(API_ENDPOINTS.adminExport, {
+          type: params.type,
+          user_id: params.user_id,
+        }),
+      ),
+      {
+        headers: { "X-Admin-Token": params.adminToken },
+      },
+    );
+
+    if (!response.ok) {
+      let message = "导出失败";
+      try {
+        const payload = (await response.json()) as ApiResponse<unknown>;
+        if (!payload.ok) {
+          message = payload.error.message;
+        }
+      } catch {
+        message = `导出失败：HTTP ${response.status}`;
+      }
+      throw new SafeHomeApiError(message, "export_error", response.status);
+    }
+
+    return response.blob();
+  }
+
   private withDefaultUser<T extends { user_id?: string }>(input: T): T {
     return { ...input, user_id: input.user_id ?? this.defaultUserId };
   }

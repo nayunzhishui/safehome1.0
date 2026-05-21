@@ -1,0 +1,90 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">MVP 1.1 第一步</text>
+    <text class="title">设定本周小目标</text>
+    <text class="summary">先选一个最常出现的亲子场景，再写下这周想练习的一个小动作。</text>
+  </view>
+
+  <view class="panel">
+    <view class="step-card">
+      <view class="step-head">
+        <text class="step-icon">01</text>
+        <text class="step-title">高频亲子冲突场景</text>
+      </view>
+      <text class="hint">选择最常出现的一个场景，也可以自己填写。</text>
+      <view class="tag-grid">
+        <button
+          wx:for="{{sceneOptions}}"
+          wx:key="*this"
+          class="tag {{selectedScene === item ? 'active' : ''}}"
+          data-value="{{item}}"
+          bindtap="selectScene"
+        >
+          {{item}}
+        </button>
+      </view>
+      <input class="input" value="{{customScene}}" placeholder="其他场景，可不填" bindinput="onTextInput" data-key="customScene" />
+    </view>
+
+    <view class="step-card">
+      <view class="step-head">
+        <text class="step-icon">02</text>
+        <text class="step-title">希望减少的旧反应</text>
+      </view>
+      <text class="hint">这里不是评价对错，只是找到一个可以先少一点的反应。</text>
+      <view class="tag-grid">
+        <button
+          wx:for="{{oldReactionOptions}}"
+          wx:key="*this"
+          class="tag {{oldReaction === item ? 'active' : ''}}"
+          data-value="{{item}}"
+          bindtap="selectOldReaction"
+        >
+          {{item}}
+        </button>
+      </view>
+    </view>
+
+    <view class="step-card">
+      <view class="step-head">
+        <text class="step-icon">03</text>
+        <text class="step-title">希望练习的新反应</text>
+      </view>
+      <text class="hint">先选一个很小、能试一次的动作。</text>
+      <view class="tag-grid">
+        <button
+          wx:for="{{newReactionOptions}}"
+          wx:key="*this"
+          class="tag {{newReaction === item ? 'active' : ''}}"
+          data-value="{{item}}"
+          bindtap="selectNewReaction"
+        >
+          {{item}}
+        </button>
+      </view>
+    </view>
+
+    <view class="step-card">
+      <view class="step-head">
+        <text class="step-icon">04</text>
+        <text class="step-title">本周 SMART 小目标</text>
+      </view>
+      <text class="hint">写成一周内可以观察到的小目标，不需要很完美。</text>
+      <textarea
+        class="textarea"
+        value="{{smartGoal}}"
+        placeholder="例如：这周遇到作业拖延时，我先停三秒，再用一句话说明期待，至少练习 3 次。"
+        bindinput="onTextInput"
+        data-key="smartGoal"
+      />
+    </view>
+
+    <view wx:if="{{errorMessage}}" class="error-box">
+      <text>{{errorMessage}}</text>
+    </view>
+
+    <button class="primary-button" bindtap="submitGoal" disabled="{{submitting}}">
+      {{submitting ? '保存中...' : '保存目标并开始记录'}}
+    </button>
+  </view>
+</view>

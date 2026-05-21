@@ -39,6 +39,10 @@
   background: #ffffff;
 }
 
+.secondary-panel {
+  margin-top: 24rpx;
+}
+
 .section-title {
   display: block;
   margin-bottom: 14rpx;

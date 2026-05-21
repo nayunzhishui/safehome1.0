@@ -14,6 +14,10 @@ button {
   font: inherit;
 }
 
+input {
+  font: inherit;
+}
+
 .page {
   min-height: 100vh;
   display: flex;
@@ -71,6 +75,8 @@ button {
 
 h1,
 h2,
+h3,
+h4,
 p {
   margin-top: 0;
 }
@@ -83,6 +89,16 @@ h1 {
 h2 {
   margin-bottom: 8px;
   font-size: 18px;
+}
+
+h3 {
+  margin-bottom: 0;
+  font-size: 17px;
+}
+
+h4 {
+  margin-bottom: 8px;
+  font-size: 15px;
 }
 
 .summary,
@@ -139,6 +155,12 @@ h2 {
 .status.error {
   background: #fff1f1;
   border-color: #efb4b4;
+}
+
+.status.compact {
+  margin-bottom: 12px;
+  padding: 10px;
+  font-size: 14px;
 }
 
 .resultBlock {
@@ -259,6 +281,65 @@ h2 {
   border-radius: 6px;
   background: #ffffff;
   color: #607066;
+}
+
+.insightPanel,
+.exportPanel {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #e1ebe0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.exportPanel {
+  background: #fbfdfb;
+}
+
+.insightContent {
+  display: grid;
+  gap: 14px;
+}
+
+.feedbackBox,
+.cardsBox {
+  padding-top: 12px;
+  border-top: 1px solid #e6eee5;
+}
+
+.cardList {
+  display: grid;
+  gap: 10px;
+}
+
+.trainingCard {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid #e1ebe0;
+  border-radius: 6px;
+  background: #fbfdfb;
+}
+
+.trainingCard p {
+  margin-bottom: 0;
+}
+
+.tokenField {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #607066;
+  font-weight: 700;
+}
+
+.tokenField input {
+  min-height: 42px;
+  border: 1px solid #c9dac8;
+  border-radius: 6px;
+  padding: 0 12px;
+  color: #1d2b22;
+  background: #ffffff;
 }
 
 ul {

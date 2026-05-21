@@ -370,6 +370,12 @@
 
 用途：导出后台数据，当前版本返回 CSV 文件流。
 
+请求头：
+
+| 请求头 | 必填 | 说明 |
+|---|---|---|
+| `X-Admin-Token` | 是 | 后台导出令牌。默认本地开发令牌为 `safehome-local-admin-token`，可通过后端环境变量 `ADMIN_EXPORT_TOKEN` 修改。 |
+
 查询参数：
 
 | 参数 | 类型 | 必填 | 说明 |
@@ -381,13 +387,23 @@
 
 - 成功时返回 `text/csv; charset=utf-8`。
 - 响应头包含 `Content-Disposition: attachment; filename=safehome_{type}.csv`。
+- 未提供或提供错误 `X-Admin-Token` 时返回 `401 unauthorized`。
 - 当前不支持 `type=all`。
 - 当前不支持 `format` 参数。
 
+本地开发调用示例：
+
+```powershell
+Invoke-WebRequest `
+  -Uri "http://127.0.0.1:5000/api/admin/export?type=diaries" `
+  -Headers @{ "X-Admin-Token" = "safehome-local-admin-token" } `
+  -OutFile safehome_diaries.csv
+```
+
 ## 9. 当前已知接口边界
 
-- 当前没有认证和权限控制。
+- 当前没有完整登录认证和角色权限控制。
+- 当前后台导出接口已增加 `X-Admin-Token` 令牌校验；正式部署前必须通过 `ADMIN_EXPORT_TOKEN` 环境变量改掉默认本地令牌。
 - 当前没有分页总数 `total`。
 - 当前列表接口只提供简单 `limit`。
 - 当前即时反馈由规则匹配生成，不代表诊断、评估或治疗建议。
-- 当前 CSV 导出没有权限保护，正式试点前必须增加鉴权。
