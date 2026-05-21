@@ -1,0 +1,33 @@
+<view class="page">
+  <view class="panel">
+    <text class="eyebrow">SafeHome MVP</text>
+    <text class="title">最小联调测试</text>
+    <text class="summary">只验证三步数据流：创建情绪事件记录、生成即时反馈、获取训练卡推荐。</text>
+
+    <button class="primary-button" bindtap="runSmokeTest" disabled="{{status === 'running'}}">
+      {{status === 'running' ? '联调中...' : '运行联调测试'}}
+    </button>
+
+    <view class="status {{status}}">
+      <text>{{message}}</text>
+    </view>
+
+    <view wx:if="{{diary}}" class="result-block">
+      <text class="block-title">情绪事件记录</text>
+      <text>{{diary.event_description}}</text>
+    </view>
+
+    <view wx:if="{{feedback}}" class="result-block">
+      <text class="block-title">即时反馈</text>
+      <text>{{feedback.supportive_feedback}}</text>
+      <text class="muted">标签：{{feedback.labels}}</text>
+    </view>
+
+    <view wx:if="{{cards.length}}" class="result-block">
+      <text class="block-title">推荐训练卡</text>
+      <block wx:for="{{cards}}" wx:key="id">
+        <text class="list-item">{{item.title}}</text>
+      </block>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "pages/integration-test/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "安心陪伴联调",
+    "navigationBarBackgroundColor": "#2f7d45",
+    "navigationBarTextStyle": "white"
+  }
+}
