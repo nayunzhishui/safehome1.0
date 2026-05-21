@@ -1,9 +1,14 @@
 {
   "pages": [
+    "pages/home/index",
+    "pages/diary-form/index",
+    "pages/feedback-result/index",
+    "pages/training-card/index",
+    "pages/checkin/index",
     "pages/integration-test/index"
   ],
   "window": {
-    "navigationBarTitleText": "安心陪伴联调",
+    "navigationBarTitleText": "安心陪伴",
     "navigationBarBackgroundColor": "#2f7d45",
     "navigationBarTextStyle": "white"
   }

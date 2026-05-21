@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">SafeHome MVP</text>
+    <text class="title">安心陪伴</text>
+    <text class="summary">记录一次亲子情绪事件，获得一条非评判反馈和一张陪伴练习卡。</text>
+  </view>
+
+  <view class="panel">
+    <text class="section-title">今天可以从一次具体事件开始</text>
+    <text class="body-text">先写下发生了什么，再看看系统给出的支持性提示。这里不会给孩子或家长贴标签。</text>
+    <button class="primary-button" bindtap="startDiary">开始记录</button>
+    <button class="secondary-button" bindtap="openIntegrationTest">进入联调测试页</button>
+  </view>
+</view>

@@ -58,44 +58,42 @@ export function IntegrationSmokeTest() {
   }
 
   return (
-    <main className="page">
-      <section className="panel">
-        <p className="eyebrow">SafeHome MVP</p>
-        <h1>最小联调测试</h1>
-        <p className="summary">只验证三步数据流：创建情绪事件记录、生成即时反馈、获取训练卡推荐。</p>
+    <section className="panel smokePanel">
+      <p className="eyebrow">SafeHome MVP</p>
+      <h1>最小联调测试</h1>
+      <p className="summary">只验证三步数据流：创建情绪事件记录、生成即时反馈、获取训练卡推荐。</p>
 
-        <button className="primaryButton" type="button" onClick={runSmokeTest} disabled={state.status === "running"}>
-          {state.status === "running" ? "联调中..." : "运行联调测试"}
-        </button>
+      <button className="primaryButton" type="button" onClick={runSmokeTest} disabled={state.status === "running"}>
+        {state.status === "running" ? "联调中..." : "运行联调测试"}
+      </button>
 
-        <div className={`status ${state.status}`}>{state.message}</div>
+      <div className={`status ${state.status}`}>{state.message}</div>
 
-        {state.diary && (
-          <section className="resultBlock">
-            <h2>情绪事件记录</h2>
-            <p>{state.diary.event_description}</p>
-          </section>
-        )}
+      {state.diary && (
+        <section className="resultBlock">
+          <h2>情绪事件记录</h2>
+          <p>{state.diary.event_description}</p>
+        </section>
+      )}
 
-        {state.feedback && (
-          <section className="resultBlock">
-            <h2>即时反馈</h2>
-            <p>{state.feedback.supportive_feedback}</p>
-            <p className="muted">标签：{state.feedback.labels.join("、")}</p>
-          </section>
-        )}
+      {state.feedback && (
+        <section className="resultBlock">
+          <h2>即时反馈</h2>
+          <p>{state.feedback.supportive_feedback}</p>
+          <p className="muted">标签：{state.feedback.labels.join("、")}</p>
+        </section>
+      )}
 
-        {state.cards && (
-          <section className="resultBlock">
-            <h2>推荐训练卡</h2>
-            <ul>
-              {state.cards.map((card) => (
-                <li key={card.id}>{card.title}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-      </section>
-    </main>
+      {state.cards && (
+        <section className="resultBlock">
+          <h2>推荐训练卡</h2>
+          <ul>
+            {state.cards.map((card) => (
+              <li key={card.id}>{card.title}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </section>
   );
 }

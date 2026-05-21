@@ -1,0 +1,43 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">第四步</text>
+    <text class="title">练习打卡</text>
+    <text class="summary">记录一次练习体验，帮助你观察练习前后的变化。</text>
+  </view>
+
+  <view class="panel">
+    <view class="selected-card">
+      <text class="label">当前训练卡</text>
+      <text class="card-title">{{cardTitle}}</text>
+    </view>
+
+    <view class="field">
+      <text class="label">练习前情绪强度：{{emotionBefore}} / 10</text>
+      <slider min="0" max="10" step="1" value="{{emotionBefore}}" activeColor="#2f7d45" bindchange="onEmotionBeforeChange" />
+    </view>
+
+    <view class="field">
+      <text class="label">练习后情绪强度：{{emotionAfter}} / 10</text>
+      <slider min="0" max="10" step="1" value="{{emotionAfter}}" activeColor="#2f7d45" bindchange="onEmotionAfterChange" />
+    </view>
+
+    <view class="field">
+      <text class="label">一句练习感受</text>
+      <textarea class="textarea" value="{{reflection}}" placeholder="例如：先停一下后，我说话慢了一点。" bindinput="onReflectionInput" />
+    </view>
+
+    <view wx:if="{{successMessage}}" class="status success">
+      <text>{{successMessage}}</text>
+    </view>
+
+    <view wx:if="{{errorMessage}}" class="status error">
+      <text>{{errorMessage}}</text>
+    </view>
+
+    <button class="primary-button" bindtap="submitCheckin" disabled="{{submitting}}">
+      {{submitting ? '保存中...' : '完成打卡'}}
+    </button>
+
+    <button class="secondary-button" bindtap="goHome">回到首页</button>
+  </view>
+</view>

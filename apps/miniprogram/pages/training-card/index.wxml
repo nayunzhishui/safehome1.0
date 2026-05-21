@@ -1,0 +1,41 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">第三步</text>
+    <text class="title">UP 训练卡推荐</text>
+    <text class="summary">选择一张卡，先做一次小练习。本轮暂不保存打卡。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="panel">
+    <text class="body-text">正在获取训练卡...</text>
+  </view>
+
+  <view wx:elif="{{errorMessage}}" class="status error">
+    <text>{{errorMessage}}</text>
+  </view>
+
+  <view wx:else>
+    <view wx:for="{{cards}}" wx:key="id" class="card">
+      <text class="card-type">{{item.type}}</text>
+      <text class="card-title">{{item.title}}</text>
+      <text class="body-text">{{item.purpose}}</text>
+
+      <view class="result-block">
+        <text class="block-title">练习步骤</text>
+        <block wx:for="{{item.steps}}" wx:for-item="step" wx:key="*this">
+          <text class="list-item">{{index + 1}}. {{step}}</text>
+        </block>
+      </view>
+
+      <view class="result-block">
+        <text class="block-title">替代话术</text>
+        <text class="body-text">{{item.example}}</text>
+      </view>
+
+      <button class="primary-button" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">我想练习这张卡</button>
+    </view>
+
+    <view wx:if="{{cards.length === 0}}" class="panel">
+      <text class="body-text">暂时没有匹配到训练卡，可以先回到记录页重新补充事件细节。</text>
+    </view>
+  </view>
+</view>

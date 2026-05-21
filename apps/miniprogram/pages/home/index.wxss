@@ -1,0 +1,63 @@
+.page {
+  min-height: 100vh;
+  padding: 32rpx;
+  background: #f6f8f4;
+}
+
+.hero {
+  padding: 36rpx 4rpx 28rpx;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 12rpx;
+  color: #3c7a49;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.title {
+  display: block;
+  margin-bottom: 18rpx;
+  color: #1d2b22;
+  font-size: 48rpx;
+  font-weight: 700;
+}
+
+.summary,
+.body-text {
+  display: block;
+  color: #5b6b60;
+  font-size: 28rpx;
+  line-height: 1.7;
+}
+
+.panel {
+  padding: 32rpx;
+  border: 1rpx solid #dce6db;
+  border-radius: 8rpx;
+  background: #ffffff;
+}
+
+.section-title {
+  display: block;
+  margin-bottom: 14rpx;
+  color: #1d2b22;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.primary-button {
+  margin-top: 32rpx;
+  background: #2f7d45;
+  color: #ffffff;
+  border-radius: 8rpx;
+}
+
+.secondary-button {
+  margin-top: 20rpx;
+  border: 1rpx solid #c9d9c8;
+  background: #eef3ed;
+  color: #2f7d45;
+  border-radius: 8rpx;
+}

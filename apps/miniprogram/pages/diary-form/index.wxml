@@ -1,0 +1,47 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">第一步</text>
+    <text class="title">记录一次情绪事件</text>
+    <text class="summary">尽量写具体发生了什么，不需要判断谁对谁错。</text>
+  </view>
+
+  <view class="panel">
+    <view class="field">
+      <text class="label">发生了什么</text>
+      <textarea class="textarea" value="{{eventDescription}}" placeholder="例如：孩子一直没有开始写作业，我提醒了很多次。" bindinput="onTextInput" data-key="eventDescription" />
+    </view>
+
+    <view class="field">
+      <text class="label">家长情绪强度：{{parentEmotionIntensity}} / 10</text>
+      <slider min="0" max="10" step="1" value="{{parentEmotionIntensity}}" activeColor="#2f7d45" bindchange="onParentIntensityChange" />
+    </view>
+
+    <view class="field">
+      <text class="label">孩子情绪强度：{{childEmotionIntensity}} / 10</text>
+      <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#2f7d45" bindchange="onChildIntensityChange" />
+    </view>
+
+    <view class="field">
+      <text class="label">我当时的想法</text>
+      <textarea class="textarea" value="{{automaticThought}}" placeholder="例如：他是不是故意拖延？" bindinput="onTextInput" data-key="automaticThought" />
+    </view>
+
+    <view class="field">
+      <text class="label">我说了什么 / 做了什么</text>
+      <textarea class="textarea" value="{{behavior}}" placeholder="例如：我反复催促，声音变大了。" bindinput="onTextInput" data-key="behavior" />
+    </view>
+
+    <view class="field">
+      <text class="label">孩子后来有什么反应</text>
+      <textarea class="textarea" value="{{childReaction}}" placeholder="例如：孩子沉默、顶嘴、哭了，或暂时离开。" bindinput="onTextInput" data-key="childReaction" />
+    </view>
+
+    <view wx:if="{{errorMessage}}" class="error-box">
+      <text>{{errorMessage}}</text>
+    </view>
+
+    <button class="primary-button" bindtap="submitDiary" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '提交并查看反馈'}}
+    </button>
+  </view>
+</view>
