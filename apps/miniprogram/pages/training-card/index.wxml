@@ -2,7 +2,7 @@
   <view class="hero">
     <text class="eyebrow">第三步</text>
     <text class="title">UP 训练卡推荐</text>
-    <text class="summary">选择一张卡，先做一次小练习。本轮暂不保存打卡。</text>
+    <text class="summary">选择一张卡，先做一次小练习。完成后可以进入轻打卡，记录练习前后的感受。</text>
   </view>
 
   <view wx:if="{{loading}}" class="panel">
@@ -19,6 +19,16 @@
       <text class="card-title">{{item.title}}</text>
       <text class="body-text">{{item.purpose}}</text>
 
+      <view class="meta-row">
+        <text class="meta-pill">建议 {{item.durationText}}</text>
+        <text wx:if="{{item.tagsText}}" class="meta-pill">匹配：{{item.tagsText}}</text>
+      </view>
+
+      <view class="tip-box">
+        <text class="tip-title">练习前先提醒自己</text>
+        <text class="tip-text">这张卡只是帮助你练一个更小的回应动作，不需要一次做得很完整。</text>
+      </view>
+
       <view class="result-block">
         <text class="block-title">练习步骤</text>
         <block wx:for="{{item.steps}}" wx:for-item="step" wx:key="*this">
@@ -29,6 +39,11 @@
       <view class="result-block">
         <text class="block-title">替代话术</text>
         <text class="body-text">{{item.example}}</text>
+      </view>
+
+      <view class="result-block">
+        <text class="block-title">练习后可以记一句</text>
+        <text class="body-text">{{item.reflectionPrompt}}</text>
       </view>
 
       <button class="primary-button" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">我想练习这张卡</button>

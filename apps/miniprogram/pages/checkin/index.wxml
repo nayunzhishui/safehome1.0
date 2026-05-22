@@ -6,9 +6,18 @@
   </view>
 
   <view class="panel">
+    <view class="tip-box">
+      <text class="tip-title">这是一次轻打卡</text>
+      <text class="tip-text">只记录你有没有试着练一次，以及练习前后感受有没有一点变化，不需要评价自己做得好不好。</text>
+    </view>
+
     <view class="selected-card">
       <text class="label">当前训练卡</text>
       <text class="card-title">{{cardTitle}}</text>
+      <view class="meta-row">
+        <text wx:if="{{cardId}}" class="meta-pill">训练卡：{{cardId}}</text>
+        <text wx:if="{{diaryId}}" class="meta-pill">关联记录：{{diaryId}}</text>
+      </view>
     </view>
 
     <view class="field">
@@ -23,7 +32,7 @@
 
     <view class="field">
       <text class="label">一句练习感受</text>
-      <textarea class="textarea" value="{{reflection}}" placeholder="例如：先停一下后，我说话慢了一点。" bindinput="onReflectionInput" />
+      <textarea class="textarea" value="{{reflection}}" placeholder="例如：先停一下后，我说话慢了一点。孩子有没有立刻变化都没关系，我先记录这次练习。" bindinput="onReflectionInput" />
     </view>
 
     <view wx:if="{{successMessage}}" class="status success">

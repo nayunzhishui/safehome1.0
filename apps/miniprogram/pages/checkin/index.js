@@ -5,6 +5,7 @@ const api = createSafeHomeApi();
 Page({
   data: {
     cardId: "",
+    diaryId: "",
     cardTitle: "这张训练卡",
     emotionBefore: 5,
     emotionAfter: 5,
@@ -17,6 +18,7 @@ Page({
   onLoad(options) {
     this.setData({
       cardId: decodeURIComponent(options.card_id || ""),
+      diaryId: decodeURIComponent(options.diary_id || ""),
       cardTitle: decodeURIComponent(options.card_title || "这张训练卡"),
     });
   },
@@ -44,6 +46,7 @@ Page({
     try {
       await api.createCheckin({
         card_id: this.data.cardId,
+        diary_id: this.data.diaryId || undefined,
         completed: true,
         emotion_before: this.data.emotionBefore,
         emotion_after: this.data.emotionAfter,

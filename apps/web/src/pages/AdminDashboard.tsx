@@ -21,6 +21,11 @@ interface DiaryInsight {
 
 const api = new SafeHomeApiClient();
 const LOCAL_ADMIN_EXPORT_TOKEN = "safehome-local-admin-token";
+const RAW_TEXT_PREFIXES = [
+  { key: "childReaction", label: "孩子反应", prefix: "孩子反应：" },
+  { key: "shortTermResult", label: "短期结果", prefix: "短期结果：" },
+  { key: "longTermImpact", label: "长期影响", prefix: "长期影响：" },
+] as const;
 
 function formatTime(value?: string | null) {
   if (!value) {
@@ -47,6 +52,34 @@ function displayText(value?: string | number | null) {
   return String(value);
 }
 
+function parseRawText(value?: string | null) {
+  const result: Record<(typeof RAW_TEXT_PREFIXES)[number]["key"], string> = {
+    childReaction: "",
+    shortTermResult: "",
+    longTermImpact: "",
+  };
+  const extraLines: string[] = [];
+
+  if (!value) {
+    return { ...result, extra: "" };
+  }
+
+  value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .forEach((line) => {
+      const match = RAW_TEXT_PREFIXES.find((item) => line.startsWith(item.prefix));
+      if (match) {
+        result[match.key] = line.slice(match.prefix.length).trim();
+      } else {
+        extraLines.push(line);
+      }
+    });
+
+  return { ...result, extra: extraLines.join("\n") };
+}
+
 export function AdminDashboard() {
   const [state, setState] = useState<AdminDashboardState>({
     status: "idle",
@@ -64,6 +97,7 @@ export function AdminDashboard() {
     return state.diaries.find((diary) => diary.id === state.selectedId) ?? state.diaries[0];
   }, [state.diaries, state.selectedId]);
   const selectedInsight = selectedDiary ? insights[selectedDiary.id] : undefined;
+  const selectedRawText = useMemo(() => parseRawText(selectedDiary?.raw_text), [selectedDiary?.raw_text]);
 
   async function loadDiaries() {
     setState((current) => ({
@@ -197,6 +231,7 @@ export function AdminDashboard() {
                   <span className="recordDescription">{diary.event_description}</span>
                   <span className="recordMeta">
                     {formatTime(diary.created_at)} · 家长情绪强度 {displayText(diary.parent_emotion_intensity)}
+                    {diary.goal_id ? " · 已关联目标" : ""}
                   </span>
                 </button>
               ))}
@@ -212,7 +247,9 @@ export function AdminDashboard() {
 
           {selectedDiary ? (
             <div className="detailContent">
+              <DetailRow label="关联目标" value={selectedDiary.goal_id ? selectedDiary.goal_id : "未关联"} />
               <DetailRow label="发生场景" value={selectedDiary.scene} />
+              <DetailRow label="事件时间" value={formatTime(selectedDiary.event_time)} />
               <DetailRow label="发生了什么" value={selectedDiary.event_description} />
               <DetailRow label="家长情绪" value={`${selectedDiary.parent_emotion} / 强度 ${selectedDiary.parent_emotion_intensity}`} />
               <DetailRow
@@ -222,7 +259,16 @@ export function AdminDashboard() {
               <DetailRow label="当时的想法" value={selectedDiary.automatic_thought} />
               <DetailRow label="说了什么/做了什么" value={selectedDiary.behavior} />
               <DetailRow label="身体感觉" value={selectedDiary.body_sensation} />
+              <DetailRow label="孩子反应" value={selectedRawText.childReaction} />
+              <DetailRow label="短期结果" value={selectedRawText.shortTermResult} />
+              <DetailRow label="长期影响" value={selectedRawText.longTermImpact} />
+              <DetailRow label="补充原文" value={selectedRawText.extra} />
               <DetailRow label="创建时间" value={formatTime(selectedDiary.created_at)} />
+
+              <section className="guidanceBox" aria-label="记录详情用途提示">
+                <h3>查看边界</h3>
+                <p>这里用于检查小程序记录是否完整，不展示诊断性标签，也不对家长或孩子做评判。</p>
+              </section>
 
               <div className="insightPanel">
                 <div className="sectionTitleRow">

@@ -14,21 +14,35 @@
   </view>
 
   <view wx:else class="panel">
+    <view class="notice-box">
+      <text class="notice-title">这不是评价谁对谁错</text>
+      <text class="notice-text">下面只是把这次记录拆成几个可观察的位置，帮助你找到下一次可以练习的小动作。</text>
+    </view>
+
+    <view class="result-block">
+      <text class="block-title">情绪与互动模式识别卡</text>
+      <view class="pattern-card" wx:for="{{patternCards}}" wx:key="title">
+        <text class="pattern-title">{{item.title}}</text>
+        <text class="body-text">{{item.text}}</text>
+      </view>
+    </view>
+
     <view class="result-block">
       <text class="block-title">支持性反馈</text>
       <text class="body-text">{{feedback.supportive_feedback}}</text>
     </view>
 
     <view class="result-block">
-      <text class="block-title">识别到的互动线索</text>
+      <text class="block-title">识别到的关键词</text>
       <text class="muted">{{labelsText || '暂无明确标签，建议先从一次暂停和观察开始。'}}</text>
     </view>
 
     <view class="result-block">
-      <text class="block-title">可以尝试的回应</text>
+      <text class="block-title">下一次可以尝试的回应</text>
       <text class="body-text">{{feedback.alternative_response}}</text>
     </view>
 
     <button class="primary-button" bindtap="openTrainingCard">查看推荐训练卡</button>
+    <button class="secondary-button" bindtap="openSupervision">我想让老师进一步看看这条记录</button>
   </view>
 </view>

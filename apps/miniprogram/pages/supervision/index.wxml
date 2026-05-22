@@ -1,0 +1,66 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">人工补充</text>
+    <text class="title">请老师进一步看看</text>
+    <text class="summary">如果这条记录让你觉得还想再确认一下，可以提交给老师做补充理解和练习建议。</text>
+  </view>
+
+  <view class="notice-box">
+    <text class="notice-title">服务边界</text>
+    <text class="notice-text">人工反馈只用于补充理解和练习建议，不替代心理咨询、医学诊断、危机干预或法律判断。如出现自伤、自杀、暴力或其他紧急安全风险，请优先联系线下专业人员或紧急支持。</text>
+  </view>
+
+  <view class="panel">
+    <view class="field">
+      <text class="label">关联记录</text>
+      <text class="meta-text">{{diaryId || '未关联具体记录'}}</text>
+    </view>
+
+    <view class="field">
+      <text class="label">想请老师看的内容</text>
+      <textarea
+        class="textarea"
+        value="{{message}}"
+        placeholder="例如：我想知道这次可以从哪个小动作开始练，或者这条反馈我该怎么理解。"
+        bindinput="onTextInput"
+        data-key="message"
+      />
+    </view>
+
+    <view class="field">
+      <text class="label">可选联系方式</text>
+      <input
+        class="input"
+        value="{{contact}}"
+        placeholder="可不填。请只填写你愿意用于后续沟通的信息。"
+        bindinput="onTextInput"
+        data-key="contact"
+      />
+    </view>
+
+    <view class="field">
+      <text class="label">可选风险提示</text>
+      <textarea
+        class="textarea"
+        value="{{riskHint}}"
+        placeholder="可不填。如果你觉得这条记录里有需要老师特别留意的安全或压力信息，可以简单写一句。"
+        bindinput="onTextInput"
+        data-key="riskHint"
+      />
+    </view>
+
+    <view wx:if="{{successMessage}}" class="status success">
+      <text>{{successMessage}}</text>
+    </view>
+
+    <view wx:if="{{errorMessage}}" class="status error">
+      <text>{{errorMessage}}</text>
+    </view>
+
+    <button class="primary-button" bindtap="submitSupervision" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '提交给老师补充看看'}}
+    </button>
+
+    <button class="secondary-button" bindtap="goHome">回到首页</button>
+  </view>
+</view>

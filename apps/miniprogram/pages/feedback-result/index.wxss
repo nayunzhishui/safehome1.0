@@ -47,6 +47,29 @@
   color: #8a2f2f;
 }
 
+.notice-box {
+  margin-bottom: 28rpx;
+  padding: 22rpx;
+  border: 1rpx solid #cfe1cf;
+  border-radius: 8rpx;
+  background: #edf8ee;
+}
+
+.notice-title {
+  display: block;
+  margin-bottom: 8rpx;
+  color: #245b34;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.notice-text {
+  display: block;
+  color: #466650;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
 .result-block {
   margin-bottom: 28rpx;
   padding-bottom: 28rpx;
@@ -61,9 +84,33 @@
   font-weight: 700;
 }
 
+.pattern-card {
+  margin-top: 18rpx;
+  padding: 22rpx;
+  border: 1rpx solid #dce6db;
+  border-radius: 8rpx;
+  background: #f9fbf8;
+}
+
+.pattern-title {
+  display: block;
+  margin-bottom: 8rpx;
+  color: #2f7d45;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
 .primary-button {
   margin-top: 8rpx;
   background: #2f7d45;
   color: #ffffff;
+  border-radius: 8rpx;
+}
+
+.secondary-button {
+  margin-top: 20rpx;
+  border: 1rpx solid #c9d9c8;
+  background: #eef3ed;
+  color: #2f7d45;
   border-radius: 8rpx;
 }

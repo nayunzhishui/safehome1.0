@@ -6,6 +6,8 @@
     "pages/feedback-result/index",
     "pages/training-card/index",
     "pages/checkin/index",
+    "pages/weekly-report/index",
+    "pages/supervision/index",
     "pages/integration-test/index"
   ],
   "window": {

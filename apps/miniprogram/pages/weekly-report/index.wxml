@@ -1,0 +1,73 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">第五步</text>
+    <text class="title">本周复盘</text>
+    <text class="summary">这是一份只读的练习复盘，帮助你看看这一周记录和打卡中出现了哪些重复线索。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="panel">
+    <text class="body-text">正在生成本周复盘...</text>
+  </view>
+
+  <view wx:elif="{{errorMessage}}" class="status error">
+    <text>{{errorMessage}}</text>
+  </view>
+
+  <view wx:else>
+    <view class="notice-box">
+      <text class="notice-title">这不是评分或判断</text>
+      <text class="notice-text">这里不评价家长或孩子，只把本周记录中的场景、情绪和练习情况整理出来，方便你选择下一步小练习。</text>
+    </view>
+
+    <view class="panel">
+      <text class="section-title">复盘时间</text>
+      <text class="body-text">{{report.week_start}} 至 {{report.week_end}}</text>
+    </view>
+
+    <view class="panel">
+      <text class="section-title">本周高频场景</text>
+      <block wx:if="{{frequentScenes.length}}">
+        <view wx:for="{{frequentScenes}}" wx:key="name" class="list-row">
+          <text class="row-name">{{item.name}}</text>
+          <text class="row-count">{{item.count}} 次</text>
+        </view>
+      </block>
+      <text wx:else class="muted">本周记录较少，可以先从记录一次具体亲子互动开始。</text>
+    </view>
+
+    <view class="panel">
+      <text class="section-title">本周常见情绪</text>
+      <block wx:if="{{frequentEmotions.length}}">
+        <view wx:for="{{frequentEmotions}}" wx:key="name" class="list-row">
+          <text class="row-name">{{item.name}}</text>
+          <text class="row-count">{{item.count}} 次</text>
+        </view>
+      </block>
+      <text wx:else class="muted">暂时还没有足够记录形成情绪复盘。</text>
+    </view>
+
+    <view class="panel">
+      <text class="section-title">本周互动线索</text>
+      <block wx:if="{{commonPatterns.length}}">
+        <view wx:for="{{commonPatterns}}" wx:key="name" class="list-row">
+          <text class="row-name">{{item.name}}</text>
+          <text class="row-count">{{item.count}} 次</text>
+        </view>
+      </block>
+      <text wx:else class="muted">暂时还没有明显重复线索，可以继续积累记录。</text>
+    </view>
+
+    <view class="panel">
+      <text class="section-title">已完成练习卡</text>
+      <text class="body-text">{{completedCardsText || '本周还没有打卡记录。可以先选择一张容易练的训练卡。'}}</text>
+    </view>
+
+    <view class="panel">
+      <text class="section-title">下周小建议</text>
+      <text class="body-text">{{report.next_week_suggestion}}</text>
+    </view>
+
+    <button class="primary-button" bindtap="refreshReport">刷新复盘</button>
+    <button class="secondary-button" bindtap="goHome">回到首页</button>
+  </view>
+</view>

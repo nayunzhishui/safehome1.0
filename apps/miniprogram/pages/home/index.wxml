@@ -17,4 +17,10 @@
     <button class="primary-button" bindtap="startDiary">开始记录</button>
     <button class="secondary-button" bindtap="openIntegrationTest">进入联调测试页</button>
   </view>
+
+  <view class="panel secondary-panel">
+    <text class="section-title">看看本周复盘</text>
+    <text class="body-text">查看本周记录、情绪线索和已完成练习，只用于帮助你选择下一步小练习。</text>
+    <button class="secondary-button" bindtap="openWeeklyReport">查看本周复盘</button>
+  </view>
 </view>

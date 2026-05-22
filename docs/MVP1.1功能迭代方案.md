@@ -6,7 +6,114 @@
 
 项目路径：`D:\codex\workspace\safehome1.0`
 
-本方案只做 MVP 1.1 规划，不包含业务代码实现。
+本方案最初用于 MVP 1.1 规划。当前已补充截至 2026-05-22 的实际完成情况，用于区分“已完成第一版”和“后置能力”。
+
+## 0. 截至 2026-05-22 已完成情况
+
+当前 MVP 1.1 第一版已经完成小程序端主闭环增强和网站后台主要查看页补齐。
+
+### 0.1 小程序端已完成
+
+已完成第一版：
+
+1. 目标设定入口和目标保存；
+2. 情绪记录页字段升级；
+3. 反馈页“情绪与互动模式识别卡”；
+4. 训练卡详情增强；
+5. 轻打卡页关联记录和训练卡；
+6. 简版周度复盘页；
+7. 人工督导补充入口；
+8. `pages/integration-test/index` 保留。
+
+小程序端当前主链路：
+
+```text
+首页 -> 目标设定 -> 情绪记录 -> 反馈结果 -> 推荐训练卡 -> 打卡 -> 周报 -> 督导入口
+```
+
+当前仍不做：
+
+1. 正式登录注册；
+2. 正式部署；
+3. AI 自由问答；
+4. 机器学习或深度学习；
+5. 语音、视频、社群；
+6. 复杂课程体系。
+
+### 0.2 网站后台已完成
+
+已完成第一版：
+
+| 页面 | 当前状态 | 主要数据来源 |
+|---|---|---|
+| `/dashboard` | 已完成 | `GET /api/goals`、`GET /api/diaries`、`GET /api/checkins`、`GET /api/cards` |
+| `/goals` | 已完成 | `GET /api/goals` |
+| `/diaries` | 已完成 | `GET /api/diaries`、`POST /api/feedback/generate`、`GET /api/cards/recommend` |
+| `/feedback` | 已完成 | `GET /api/admin/export?type=feedback` |
+| `/checkins` | 已完成 | `GET /api/checkins`、`GET /api/cards` |
+| `/reports` | 已完成 | `GET /api/admin/export?type=reports` |
+| `/supervision` | 已完成 | `GET /api/admin/export?type=supervision` |
+| `/content/cards` | 已完成 | `GET /api/cards` |
+| `/content/rules` | 已完成 | `content/feedback_rules.json` |
+| `/export` | 已完成 | `GET /api/admin/export` |
+| `/integration-test` | 保留 | 现有联调页 |
+
+网站后台当前特点：
+
+1. 以只读查看为主；
+2. 优先复用现有 API 和 CSV 导出；
+3. 未新增后端列表 API；
+4. 未修改数据库；
+5. 未新增正式权限系统；
+6. 数据导出仍使用 `X-Admin-Token`。
+
+### 0.3 实际实现与原规划的主要差异
+
+原规划中建议后续新增的部分 API，当前第一版没有新增，而是先用现有导出能力完成后台查看。
+
+| 原规划建议 | 当前第一版实际实现 |
+|---|---|
+| `GET /api/feedback` | 暂不新增，`/feedback` 复用 `GET /api/admin/export?type=feedback` |
+| `GET /api/reports` | 暂不新增，`/reports` 复用 `GET /api/admin/export?type=reports` |
+| `GET /api/supervision` | 暂不新增，`/supervision` 复用 `GET /api/admin/export?type=supervision` |
+| `GET /api/content/rules` | 暂不新增，`/content/rules` 直接只读导入 `content/feedback_rules.json` |
+| `GET /api/admin/summary` | 暂不新增，`/dashboard` 复用已有列表接口 |
+
+这样做的原因：
+
+1. 降低本轮改动风险；
+2. 不影响小程序核心链路；
+3. 不改变现有数据库结构；
+4. 先满足试点查看和验收需要；
+5. 将正式后台 API 和权限系统后置。
+
+### 0.4 当前后置能力
+
+以下能力仍为后置：
+
+1. 正式登录注册；
+2. 正式权限系统；
+3. 正式部署；
+4. 训练卡在线编辑；
+5. 反馈规则在线编辑；
+6. 督导回复和状态流转；
+7. 导出脱敏参数；
+8. 日期范围筛选；
+9. 独立 `GET /api/feedback`；
+10. 独立 `GET /api/reports`；
+11. 独立 `GET /api/supervision`；
+12. AI 自由问答、机器学习、深度学习、语音、视频、社群能力。
+
+### 0.5 当前验收和提交文档
+
+当前新增了两份收尾文档：
+
+```text
+docs/网站后台最终验收清单.md
+docs/提交前检查清单.md
+```
+
+建议提交前按这两份文档完成手动验收和分批暂存。
 
 ## 1. MVP 1.1 的定位
 

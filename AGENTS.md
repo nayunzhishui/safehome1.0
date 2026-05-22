@@ -53,7 +53,10 @@ MVP 1.0 已完成以下基础能力：
 - CSV 导出接口已增加 `X-Admin-Token` 令牌校验；
 - MVP 1.0 封版验收清单已建立：`docs/MVP1.0验收清单.md`。
 - MVP 1.1 功能迭代方案已建立：`docs/MVP1.1功能迭代方案.md`；
-- MVP 1.1 第一小步已开始：小程序 `pages/goal-setting/index` 目标设定页已新增，并复用 `POST /api/goals`。
+- MVP 1.1 第一批已完成：小程序 `pages/goal-setting/index` 目标设定页已新增，并复用 `POST /api/goals`；
+- 网站后台 `/goals` 目标管理页已完成，并复用 `GET /api/goals`；
+- 小程序 `pages/diary-form/index` 已完成 MVP 1.1 字段升级，继续复用 `POST /api/diaries`，不改数据库；
+- 网站后台记录详情已补齐 `goal_id`、`event_time` 和 `raw_text` 展示。
 
 MVP 1.1 规划目标：
 
@@ -64,10 +67,12 @@ MVP 1.1 规划目标：
 下一阶段优先级：
 
 1. 先阅读并遵守 `docs/MVP1.1功能迭代方案.md`。
-2. MVP 1.1 已完成第一小步：
+2. MVP 1.1 已完成第一批与第二批部分最小任务：
    - `pages/goal-setting/index`：目标设定页。
+   - 网站后台 `/goals`：目标管理页。
+   - `pages/diary-form/index`：升级后的情绪事件记录页。
+   - 网站后台记录详情：显示关联目标、事件时间和补充复盘。
 3. 下一批 MVP 1.1 功能优先开发：
-   - 升级 `pages/diary-form/index`：按事件、情绪、强度、想法、身体感觉、行为、孩子反应、短期结果、长期影响组织；
    - 升级 `pages/feedback-result/index`：增加情绪与互动模式识别卡；
    - 升级 `pages/training-card/index` 和 `pages/checkin/index`：训练卡详情与轻打卡；
    - 新增 `pages/weekly-report/index`：简版周度报告；
@@ -250,6 +255,50 @@ MVP 1.1 的功能必须服务以下闭环：
 - 不允许写诊断化、标签化、责备性表达；
 - 暂不做内感性暴露和情绪暴露正式训练；
 - 每次 MVP 1.1 功能完成后，必须回测 MVP 1.0 核心链路没有被破坏。
+
+### 6.10 网站端并行开发规则
+
+MVP 1.1 开始进入小程序端和网站端并行迭代。网站端规划以 `docs/网站端设计与并行开发方案.md` 为准。
+
+网站端必须分清前台和后台：
+
+- 网站前台用于项目展示、试点招募、使用说明和伦理边界说明。
+- 网站后台用于数据管理、情绪记录查看、训练卡管理、反馈规则查看、周报、督导请求和数据导出。
+- 网站端不得复制小程序端日常使用流程，小程序端仍是家长主要使用入口。
+
+后台页面规划包括：
+
+- `/dashboard`：总览页；
+- `/goals`：目标管理页；
+- `/diaries`：情绪记录列表页；
+- `/diaries/:id`：情绪记录详情页；
+- `/feedback`：反馈结果查看页；
+- `/checkins`：练习打卡记录页；
+- `/reports`：周度报告页；
+- `/supervision`：人工督导请求页；
+- `/content/cards`：训练卡管理页；
+- `/content/rules`：反馈规则查看页；
+- `/export`：数据导出页。
+
+并行开发批次必须按以下顺序推进：
+
+1. 第 0 批：统一 API、`shared`、mock、文档；
+2. 第 1 批：目标设定，小程序 `goal-setting` 与网站 `/goals` 并行；
+3. 第 2 批：情绪记录升级，小程序 `diary-form` 与网站 `/diaries`、`/diaries/:id` 并行；
+4. 第 3 批：模式识别与训练卡，小程序 `feedback/training-card` 与网站 `/feedback`、`/content/cards`、`/content/rules` 并行；
+5. 第 4 批：打卡和周报，小程序 `checkin/report` 与网站 `/checkins`、`/reports` 并行；
+6. 第 5 批：人工督导和导出，小程序 `supervision` 与网站 `/supervision`、`/export` 并行。
+
+网站端开发必须遵守：
+
+- 优先复用现有 API、数据库表、`shared` 类型和 `content` 文件；
+- 不为了后台页面单独发明一套字段；
+- 不把反馈规则和训练卡硬编码在网页页面里；
+- 后台也不得展示诊断性标签；
+- 高风险内容只做风险提示和督导入口；
+- 导出数据必须考虑脱敏；
+- 网站端出错时，优先隐藏网站页面入口或回退网站改动，不得破坏小程序核心链路；
+- 必须保留 `POST /api/diaries`、`POST /api/feedback/generate`、`GET /api/cards/recommend` 和 `pages/integration-test/index`。
 
 ## 7. 心理学与伦理边界
 

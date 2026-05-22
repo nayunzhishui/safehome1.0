@@ -63,6 +63,47 @@
   font-weight: 700;
 }
 
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 20rpx;
+}
+
+.meta-pill {
+  display: inline-block;
+  padding: 8rpx 16rpx;
+  border: 1rpx solid #cfe1cf;
+  border-radius: 8rpx;
+  background: #edf8ee;
+  color: #2f7d45;
+  font-size: 24rpx;
+  line-height: 1.4;
+}
+
+.tip-box {
+  margin-top: 24rpx;
+  padding: 22rpx;
+  border: 1rpx solid #dce6db;
+  border-radius: 8rpx;
+  background: #f9fbf8;
+}
+
+.tip-title {
+  display: block;
+  margin-bottom: 8rpx;
+  color: #245b34;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.tip-text {
+  display: block;
+  color: #5b6b60;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
 .result-block {
   margin-top: 24rpx;
   padding-top: 24rpx;

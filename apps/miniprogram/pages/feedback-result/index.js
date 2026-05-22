@@ -9,6 +9,7 @@ Page({
     errorMessage: "",
     feedback: null,
     labelsText: "",
+    patternCards: [],
   },
 
   onLoad(options) {
@@ -30,6 +31,7 @@ Page({
       this.setData({
         feedback,
         labelsText: (feedback.labels || feedback.tags || []).join("、"),
+        patternCards: this.buildPatternCards(feedback),
         loading: false,
       });
     } catch (error) {
@@ -40,10 +42,35 @@ Page({
     }
   },
 
+  buildPatternCards(feedback) {
+    const labelsText = (feedback.labels || feedback.tags || []).join("、");
+
+    return [
+      {
+        title: "这次的触发点",
+        text: feedback.trigger_summary || "这次记录中可以先从具体场景开始观察。",
+      },
+      {
+        title: "可能出现的互动线索",
+        text: feedback.pattern_summary || labelsText || "暂时没有明显线索，可以先观察情绪强度和当时回应。",
+      },
+      {
+        title: "可以练习的位置",
+        text: feedback.alternative_response || "下次可以先停一下，再用一句更短的话表达期待。",
+      },
+    ];
+  },
+
   openTrainingCard() {
     const tags = this.data.feedback && this.data.feedback.tags ? this.data.feedback.tags : [];
     wx.navigateTo({
-      url: `/pages/training-card/index?tags=${encodeURIComponent(tags.join(","))}`,
+      url: `/pages/training-card/index?tags=${encodeURIComponent(tags.join(","))}&diary_id=${encodeURIComponent(this.data.diaryId)}`,
+    });
+  },
+
+  openSupervision() {
+    wx.navigateTo({
+      url: `/pages/supervision/index?diary_id=${encodeURIComponent(this.data.diaryId)}`,
     });
   },
 });
