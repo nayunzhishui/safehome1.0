@@ -1,0 +1,11 @@
+<view class="bottom-tip-card">
+  <view class="tip-copy">
+    <text class="tip-text">{{text}}</text>
+    <text wx:if="{{subtext}}" class="tip-subtext">{{subtext}}</text>
+  </view>
+  <view class="tip-plant">
+    <view></view>
+    <view></view>
+    <view></view>
+  </view>
+</view>

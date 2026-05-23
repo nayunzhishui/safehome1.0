@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "课程",
+  "usingComponents": {
+    "section-title": "/components/section-title/index",
+    "course-card": "/components/course-card/index",
+    "bottom-tip-card": "/components/bottom-tip-card/index"
+  }
+}

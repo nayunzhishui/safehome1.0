@@ -1,67 +1,193 @@
-.page {
-  min-height: 100vh;
-  padding: 32rpx;
-  background: #f6f8f4;
+.home-page {
+  padding-bottom: 48rpx;
 }
 
-.hero {
-  padding: 36rpx 4rpx 28rpx;
-}
-
-.eyebrow {
-  display: block;
-  margin-bottom: 12rpx;
-  color: #3c7a49;
-  font-size: 24rpx;
-  font-weight: 700;
-}
-
-.title {
-  display: block;
-  margin-bottom: 18rpx;
-  color: #1d2b22;
-  font-size: 48rpx;
-  font-weight: 700;
-}
-
-.summary,
-.body-text {
-  display: block;
-  color: #5b6b60;
-  font-size: 28rpx;
-  line-height: 1.7;
-}
-
-.panel {
-  padding: 32rpx;
-  border: 1rpx solid #dce6db;
-  border-radius: 8rpx;
-  background: #ffffff;
-}
-
-.secondary-panel {
-  margin-top: 24rpx;
-}
-
-.section-title {
-  display: block;
-  margin-bottom: 14rpx;
-  color: #1d2b22;
-  font-size: 32rpx;
-  font-weight: 700;
-}
-
-.primary-button {
-  margin-top: 32rpx;
-  background: #2f7d45;
-  color: #ffffff;
-  border-radius: 8rpx;
-}
-
-.secondary-button {
+.hot-scroll {
+  width: 100%;
   margin-top: 20rpx;
-  border: 1rpx solid #c9d9c8;
-  background: #eef3ed;
-  color: #2f7d45;
-  border-radius: 8rpx;
+  white-space: nowrap;
+}
+
+.hot-list {
+  display: inline-flex;
+  gap: 18rpx;
+  padding-right: 24rpx;
+}
+
+.hot-card {
+  width: 410rpx;
+  min-height: 154rpx;
+  display: flex;
+  gap: 18rpx;
+  padding: 18rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 22rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+  text-align: left;
+  white-space: normal;
+}
+
+.hot-card:active,
+.legacy-row:active {
+  transform: scale(0.99);
+}
+
+.hot-thumb {
+  position: relative;
+  width: 96rpx;
+  height: 96rpx;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 18rpx;
+  background: linear-gradient(135deg, #fff2df, #f0fae9);
+}
+
+.hot-family {
+  position: absolute;
+  right: 18rpx;
+  bottom: 14rpx;
+  width: 44rpx;
+  height: 48rpx;
+  border-radius: 30rpx 30rpx 12rpx 12rpx;
+  background: #ffb26b;
+  box-shadow: -24rpx 12rpx 0 -7rpx #6fbc6b;
+}
+
+.hot-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.hot-title {
+  display: block;
+  color: #333333;
+  font-size: 26rpx;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.hot-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+  margin-top: 14rpx;
+  color: #999999;
+  font-size: 22rpx;
+}
+
+.hot-meta text:first-child {
+  max-width: 142rpx;
+  min-height: 38rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12rpx;
+  border-radius: 19rpx;
+  background: #fff2df;
+  color: #f28b38;
+  font-size: 20rpx;
+}
+
+.entry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.recommend-card {
+  margin-top: 20rpx;
+}
+
+.recommend-button {
+  margin-top: 20rpx;
+}
+
+.growth-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.growth-card {
+  min-height: 126rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx solid #efe7dc;
+  border-radius: 22rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 24rpx rgba(80, 64, 45, 0.06);
+}
+
+.growth-value,
+.growth-label {
+  display: block;
+}
+
+.growth-value {
+  color: #333333;
+  font-size: 36rpx;
+  font-weight: 800;
+}
+
+.growth-label {
+  margin-top: 8rpx;
+  color: #777777;
+  font-size: 22rpx;
+}
+
+.legacy-panel {
+  display: grid;
+  gap: 14rpx;
+  margin-top: 20rpx;
+  padding: 14rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+}
+
+.legacy-row {
+  min-height: 116rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  padding: 20rpx 18rpx;
+  border-radius: 18rpx;
+  background: #fffaf3;
+  text-align: left;
+}
+
+.muted-row {
+  background: #f7faf4;
+}
+
+.legacy-title,
+.legacy-text {
+  display: block;
+}
+
+.legacy-title {
+  color: #333333;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.legacy-text {
+  margin-top: 8rpx;
+  color: #777777;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.legacy-arrow {
+  flex: 0 0 auto;
+  color: #4caf7d;
+  font-size: 42rpx;
 }

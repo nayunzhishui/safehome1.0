@@ -1,48 +1,90 @@
-<view class="page">
-  <view class="hero">
-    <text class="eyebrow">第二步</text>
-    <text class="title">即时反馈</text>
-    <text class="summary">下面是基于这次记录生成的支持性提示，只用于帮助你观察互动模式。</text>
+<view class="safe-page feedback-page">
+  <view class="page-head">
+    <text class="page-title">本次反馈</text>
+    <text class="page-subtitle">以下内容用于自我观察和练习参考</text>
   </view>
 
-  <view wx:if="{{loading}}" class="panel">
-    <text class="body-text">正在生成反馈...</text>
+  <view wx:if="{{loading}}" class="loading-card">
+    <text>正在生成反馈...</text>
   </view>
 
-  <view wx:elif="{{errorMessage}}" class="status error">
-    <text>{{errorMessage}}</text>
-  </view>
+  <alert-card wx:elif="{{errorMessage}}" type="warning" title="反馈生成遇到问题" content="{{errorMessage}}" />
 
-  <view wx:else class="panel">
-    <view class="notice-box">
-      <text class="notice-title">这不是评价谁对谁错</text>
-      <text class="notice-text">下面只是把这次记录拆成几个可观察的位置，帮助你找到下一次可以练习的小动作。</text>
+  <view wx:else>
+    <view class="safe-section">
+      <alert-card
+        type="info"
+        title="温和说明"
+        content="这不是评价谁对谁错，只是把这次记录拆成几个可观察的位置，帮助你找到下一次可以练习的小动作。"
+      />
     </view>
 
-    <view class="result-block">
-      <text class="block-title">情绪与互动模式识别卡</text>
-      <view class="pattern-card" wx:for="{{patternCards}}" wx:key="title">
-        <text class="pattern-title">{{item.title}}</text>
-        <text class="body-text">{{item.text}}</text>
+    <view class="safe-section">
+      <section-title title="情绪概览" subtitle="先看见这次互动里的主要线索" />
+      <view class="overview-card">
+        <view class="overview-row">
+          <text class="overview-label">主要情绪</text>
+          <text class="overview-value">{{emotionOverview.mainEmotion}}</text>
+        </view>
+        <view class="overview-row">
+          <text class="overview-label">情绪强度</text>
+          <text class="overview-value">{{emotionOverview.intensity}}</text>
+        </view>
+        <view class="overview-row">
+          <text class="overview-label">可能触发点</text>
+          <text class="overview-value">{{emotionOverview.trigger}}</text>
+        </view>
       </view>
     </view>
 
-    <view class="result-block">
-      <text class="block-title">支持性反馈</text>
-      <text class="body-text">{{feedback.supportive_feedback}}</text>
+    <view class="safe-section">
+      <section-title title="互动模式提示" subtitle="这些只是本次记录中可以观察的位置" />
+      <view class="pattern-list">
+        <view class="pattern-card" wx:for="{{patternCards}}" wx:key="title">
+          <text class="pattern-title">{{item.title}}</text>
+          <text class="body-text">{{item.text}}</text>
+        </view>
+      </view>
     </view>
 
-    <view class="result-block">
-      <text class="block-title">识别到的关键词</text>
-      <text class="muted">{{labelsText || '暂无明确标签，建议先从一次暂停和观察开始。'}}</text>
+    <view class="safe-section">
+      <section-title title="支持性反馈" subtitle="把注意力放回下一次可以练习的小动作" />
+      <view class="feedback-card">
+        <text>{{feedback.supportive_feedback}}</text>
+      </view>
     </view>
 
-    <view class="result-block">
-      <text class="block-title">下一次可以尝试的回应</text>
-      <text class="body-text">{{feedback.alternative_response}}</text>
+    <view class="safe-section">
+      <section-title title="推荐训练" subtitle="可以从其中一个小练习开始" />
+      <view class="training-list">
+        <training-task-card
+          wx:for="{{recommendedTrainings}}"
+          wx:key="title"
+          title="{{item.title}}"
+          subtitle="{{item.subtitle}}"
+          stage="{{item.stage}}"
+          duration="{{item.duration}}"
+          scenario="{{item.scenario}}"
+          tag="{{item.tag}}"
+          bind:tapcard="openTrainingCard"
+        />
+      </view>
     </view>
 
-    <button class="primary-button" bindtap="openTrainingCard">查看推荐训练卡</button>
-    <button class="secondary-button" bindtap="openSupervision">我想让老师进一步看看这条记录</button>
+    <view class="safe-section">
+      <view class="reminder-card">
+        <text>先稳定自己的身体反应，再和孩子讨论问题，通常会更容易沟通。</text>
+      </view>
+    </view>
+
+    <view class="action-grid">
+      <button class="safe-primary-button action-button" bindtap="openTrainingCard">开始推荐训练</button>
+      <button class="safe-outline-button action-button" bindtap="saveFeedback">保存本次反馈</button>
+      <button class="safe-secondary-button action-button" bindtap="openSupervision">需要人工督导</button>
+    </view>
+
+    <view class="safe-section">
+      <bottom-tip-card text="先观察，再练习；一次小调整也有意义。" />
+    </view>
   </view>
 </view>

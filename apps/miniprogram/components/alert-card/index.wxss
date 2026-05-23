@@ -1,0 +1,80 @@
+.alert-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  padding: 24rpx;
+  border: 1rpx solid #d9ebff;
+  border-radius: 20rpx;
+  background: #eef6ff;
+}
+
+.alert-icon {
+  width: 42rpx;
+  height: 42rpx;
+  flex: 0 0 auto;
+  border: 5rpx solid #1890ff;
+  border-radius: 50%;
+}
+
+.alert-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.alert-title,
+.alert-content {
+  display: block;
+}
+
+.alert-title {
+  color: #2b5f9f;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.alert-content {
+  margin-top: 6rpx;
+  color: #555555;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.alert-success {
+  border-color: #dcefcf;
+  background: #f0fae9;
+}
+
+.alert-success .alert-icon {
+  border-color: #52c41a;
+}
+
+.alert-success .alert-title {
+  color: #3b8f28;
+}
+
+.alert-warning {
+  border-color: #ffe4bd;
+  background: #fff6e8;
+}
+
+.alert-warning .alert-icon {
+  border-color: #faad14;
+}
+
+.alert-warning .alert-title {
+  color: #c97816;
+}
+
+.alert-danger {
+  border-color: #ffd5cd;
+  background: #fff0ed;
+}
+
+.alert-danger .alert-icon {
+  border-color: #ff6b6b;
+}
+
+.alert-danger .alert-title {
+  color: #cf4a3c;
+}

@@ -1,3 +1,9 @@
 {
-  "navigationBarTitleText": "即时反馈"
+  "navigationBarTitleText": "本次反馈",
+  "usingComponents": {
+    "section-title": "/components/section-title/index",
+    "training-task-card": "/components/training-task-card/index",
+    "alert-card": "/components/alert-card/index",
+    "bottom-tip-card": "/components/bottom-tip-card/index"
+  }
 }

@@ -1,0 +1,29 @@
+<button class="training-card" bindtap="handleTap">
+  <view class="training-head">
+    <view class="training-mark">
+      <view class="mark-face"></view>
+    </view>
+    <view class="training-title-wrap">
+      <view class="title-line">
+        <text class="training-title">{{title}}</text>
+        <text wx:if="{{tag}}" class="training-tag">{{tag}}</text>
+      </view>
+      <text class="training-subtitle">{{subtitle}}</text>
+    </view>
+    <text class="training-arrow">›</text>
+  </view>
+  <view class="training-meta">
+    <view wx:if="{{stage}}" class="meta-row">
+      <view class="meta-dot"></view>
+      <text>{{stage}}</text>
+    </view>
+    <view wx:if="{{scenario}}" class="meta-row">
+      <view class="meta-dot"></view>
+      <text>适用情境：{{scenario}}</text>
+    </view>
+    <view wx:if="{{duration}}" class="meta-row">
+      <view class="meta-dot clock-dot"></view>
+      <text>预计用时：{{duration}}</text>
+    </view>
+  </view>
+</button>

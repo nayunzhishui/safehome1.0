@@ -1,0 +1,158 @@
+.profile-page {
+  padding-bottom: 48rpx;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 28rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 28rpx;
+  background: #ffffff;
+  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
+}
+
+.avatar {
+  width: 92rpx;
+  height: 92rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #fff2df;
+  color: #f28b38;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.user-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.user-name,
+.user-state,
+.streak-text,
+.growth-level {
+  display: block;
+}
+
+.user-name {
+  color: #333333;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.user-state {
+  margin-top: 8rpx;
+  color: #777777;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.streak-text {
+  margin-top: 10rpx;
+  color: #4caf7d;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.growth-level {
+  max-width: 132rpx;
+  color: #4caf7d;
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.support-list {
+  display: grid;
+  gap: 14rpx;
+  margin-top: 20rpx;
+  padding: 14rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+}
+
+.safety-list {
+  border-color: #ffd5cd;
+  background: #fffaf8;
+}
+
+.support-row {
+  min-height: 112rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: #fffaf3;
+  text-align: left;
+}
+
+.support-row:active {
+  transform: scale(0.99);
+}
+
+.row-icon {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 18rpx;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.row-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.row-title,
+.row-subtitle {
+  display: block;
+}
+
+.row-title {
+  color: #333333;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.row-subtitle {
+  margin-top: 8rpx;
+  color: #777777;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.row-arrow {
+  color: #4caf7d;
+  font-size: 40rpx;
+}
+
+.crisis-card {
+  margin-top: 16rpx;
+  padding: 22rpx;
+  border: 1rpx solid #ffd5cd;
+  border-radius: 20rpx;
+  background: #fff0ed;
+  color: #b94a3c;
+  font-size: 24rpx;
+  line-height: 1.65;
+}

@@ -1,0 +1,23 @@
+<view class="welcome-card">
+  <view class="welcome-copy">
+    <text class="welcome-title">{{title}}</text>
+    <text class="welcome-subtitle">{{subtitle}}</text>
+    <text class="welcome-detail">{{detail}}</text>
+    <view wx:if="{{streakText}}" class="welcome-streak">
+      <view class="streak-icon"></view>
+      <text>{{streakText}}</text>
+    </view>
+  </view>
+  <view class="welcome-art" aria-hidden="true">
+    <view class="sun"></view>
+    <view class="cloud cloud-left"></view>
+    <view class="cloud cloud-right"></view>
+    <view class="family">
+      <view class="adult adult-left"></view>
+      <view class="adult adult-right"></view>
+      <view class="child"></view>
+    </view>
+    <view class="plant plant-left"></view>
+    <view class="plant plant-right"></view>
+  </view>
+</view>

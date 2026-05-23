@@ -1,0 +1,7 @@
+<button class="entry-card" bindtap="handleTap">
+  <view class="entry-icon" style="background: {{accentBg}}; color: {{accentColor}};">
+    <text>{{iconText}}</text>
+  </view>
+  <text class="entry-title">{{title}}</text>
+  <text class="entry-subtitle">{{subtitle}}</text>
+</button>

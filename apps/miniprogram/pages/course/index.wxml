@@ -1,0 +1,54 @@
+<view class="safe-page course-page">
+  <view class="page-head">
+    <text class="page-title">家长心理健康教育课程</text>
+    <text class="page-subtitle">系统学习情绪管理与亲子沟通方法</text>
+  </view>
+
+  <view class="safe-section">
+    <view class="progress-card">
+      <view>
+        <text class="progress-number">本周已学习 {{weeklyProgress.learnedLessons}} 节课</text>
+        <text class="progress-text">{{weeklyProgress.suggestion}}</text>
+      </view>
+      <view class="progress-plant"></view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="课程分类" subtitle="按当前最需要的主题选择学习内容" />
+    <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="category-list">
+        <button
+          wx:for="{{categories}}"
+          wx:key="*this"
+          class="category-chip {{activeCategory === item ? 'active' : ''}}"
+          data-category="{{item}}"
+          bindtap="selectCategory"
+        >
+          {{item}}
+        </button>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="推荐课程" subtitle="适合家长长期学习的系统课程" />
+    <view class="course-list">
+      <course-card
+        wx:for="{{visibleCourses}}"
+        wx:key="title"
+        title="{{item.title}}"
+        description="{{item.description}}"
+        category="{{item.category}}"
+        lesson-count="{{item.lessonCount}}"
+        progress="{{item.progress}}"
+        button-text="查看课程"
+        bind:tapcard="openCourse"
+      />
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <bottom-tip-card text="每一次小小的学习，都是在为更好的亲子关系积蓄力量。" />
+  </view>
+</view>

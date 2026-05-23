@@ -1,0 +1,59 @@
+<view class="safe-page assessment-page">
+  <view class="page-head">
+    <text class="page-title">家庭关系测一测</text>
+    <text class="page-subtitle">了解家庭互动状态，获得个性化反馈</text>
+  </view>
+
+  <view class="family-art-card">
+    <view class="art-copy">
+      <text class="art-title">从一次温和观察开始</text>
+      <text class="art-text">这里帮助你整理家庭沟通、亲子情绪互动和家长压力线索。</text>
+    </view>
+    <view class="family-art">
+      <view class="sun"></view>
+      <view class="adult-left"></view>
+      <view class="child"></view>
+      <view class="adult-right"></view>
+      <view class="grass"></view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="测评说明" subtitle="用于自我观察和后续训练建议" />
+    <view class="info-card">
+      <view wx:for="{{infoItems}}" wx:key="label" class="info-row">
+        <text class="info-label">{{item.label}}</text>
+        <text class="info-value">{{item.value}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="选择一个了解入口" subtitle="后续会接入正式题目和反馈流程" />
+    <view class="entry-grid">
+      <view wx:for="{{assessmentEntries}}" wx:key="key" data-title="{{item.title}}" bindtap="openAssessmentEntry">
+        <function-entry-card
+          title="{{item.title}}"
+          subtitle="{{item.subtitle}}"
+          icon-text="{{item.iconText}}"
+          accent-color="{{item.accentColor}}"
+          accent-bg="{{item.accentBg}}"
+        />
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <alert-card
+      type="info"
+      title="温和说明"
+      content="本页内容仅用于状态了解、自我观察和训练建议，不用于给家长或孩子贴标签。"
+    />
+  </view>
+
+  <button class="safe-primary-button start-button" bindtap="startAssessment">开始测评</button>
+
+  <view class="safe-section">
+    <bottom-tip-card text="了解互动状态，是为了找到下一步更容易开始的小练习。" />
+  </view>
+</view>

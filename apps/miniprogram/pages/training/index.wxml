@@ -1,0 +1,37 @@
+<view class="safe-page training-page">
+  <view class="page-head">
+    <text class="page-title">家长练习UP模块</text>
+    <text class="page-subtitle">每天10分钟，练习更稳定的情绪回应</text>
+  </view>
+
+  <view class="starter-card">
+    <view class="starter-icon">1</view>
+    <view>
+      <text class="starter-title">新手推荐路径</text>
+      <text class="starter-text">建议从情绪觉察和暂停训练开始，先稳定自己，再回应孩子。</text>
+    </view>
+  </view>
+
+  <view wx:for="{{trainingStages}}" wx:key="title" class="safe-section stage-section">
+    <section-title title="{{item.title}}" subtitle="{{item.subtitle}}" />
+    <view class="task-list">
+      <view wx:for="{{item.tasks}}" wx:for-item="task" wx:key="id">
+        <training-task-card
+          data-id="{{task.id}}"
+          data-tags="{{task.tagsText}}"
+          title="{{task.title}}"
+          subtitle="{{task.subtitle}}"
+          stage="{{task.stage}}"
+          duration="{{task.duration}}"
+          scenario="{{task.scenario}}"
+          tag="{{task.tag}}"
+          bind:tapcard="openTrainingCard"
+        />
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <bottom-tip-card text="先稳定自己，再清晰地陪伴孩子。" subtext="每张训练卡都是一个可以当天完成的小练习。" />
+  </view>
+</view>

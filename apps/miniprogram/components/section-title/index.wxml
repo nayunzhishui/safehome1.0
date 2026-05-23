@@ -1,0 +1,10 @@
+<view class="section-title-wrap">
+  <view class="section-title-main">
+    <view class="section-accent"></view>
+    <view>
+      <text class="section-title-text">{{title}}</text>
+      <text wx:if="{{subtitle}}" class="section-subtitle-text">{{subtitle}}</text>
+    </view>
+  </view>
+  <button wx:if="{{moreText}}" class="section-more" bindtap="handleMore">{{moreText}} ›</button>
+</view>

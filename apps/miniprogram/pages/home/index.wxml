@@ -1,26 +1,112 @@
-<view class="page">
-  <view class="hero">
-    <text class="eyebrow">SafeHome MVP</text>
-    <text class="title">安心陪伴</text>
-    <text class="summary">记录一次亲子情绪事件，获得一条非评判反馈和一张陪伴练习卡。</text>
+<view class="safe-page home-page">
+  <welcome-card
+    title="你好，欢迎来到安心陪伴"
+    subtitle="今天也可以从一个小练习开始"
+    detail="先稳定自己，再更清晰地陪伴孩子"
+    streak-text="今日建议完成 1 个小练习"
+  />
+
+  <view class="safe-section">
+    <section-title
+      title="教育热榜"
+      subtitle="看看其他家庭如何处理类似问题"
+      more-text="更多"
+      bind:more="openHotTopics"
+    />
+    <scroll-view class="hot-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="hot-list">
+        <button
+          wx:for="{{hotTopics}}"
+          wx:key="title"
+          class="hot-card"
+          bindtap="openHotTopic"
+        >
+          <view class="hot-thumb">
+            <view class="hot-family"></view>
+          </view>
+          <view class="hot-copy">
+            <text class="hot-title">{{item.title}}</text>
+            <view class="hot-meta">
+              <text>{{item.tag}}</text>
+              <text>{{item.readTime}}</text>
+            </view>
+          </view>
+        </button>
+      </view>
+    </scroll-view>
   </view>
 
-  <view class="panel">
-    <text class="section-title">先定一个本周小目标</text>
-    <text class="body-text">选择一个常见亲子场景，写下这周想少一点的旧反应，以及想多练习的新反应。</text>
-    <button class="primary-button" bindtap="startGoalSetting">设定本周小目标</button>
+  <view class="safe-section">
+    <section-title title="今日核心入口" subtitle="先选择一个今天最容易开始的小动作" />
+    <view class="entry-grid">
+      <function-entry-card
+        wx:for="{{coreEntries}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        title="{{item.title}}"
+        subtitle="{{item.subtitle}}"
+        icon-text="{{item.iconText}}"
+        accent-color="{{item.accentColor}}"
+        accent-bg="{{item.accentBg}}"
+        bind:tapcard="openCoreEntry"
+      />
+    </view>
   </view>
 
-  <view class="panel secondary-panel">
-    <text class="section-title">也可以从一次具体事件开始</text>
-    <text class="body-text">先写下发生了什么，再看看系统给出的支持性提示。这里不会给孩子或家长贴标签。</text>
-    <button class="primary-button" bindtap="startDiary">开始记录</button>
-    <button class="secondary-button" bindtap="openIntegrationTest">进入联调测试页</button>
+  <view class="safe-section">
+    <section-title title="今日推荐" subtitle="先用一张轻量练习卡开始" />
+    <view class="recommend-card">
+      <training-task-card
+        title="{{recommendedTask.title}}"
+        subtitle="{{recommendedTask.subtitle}}"
+        stage="{{recommendedTask.stage}}"
+        duration="{{recommendedTask.duration}}"
+        scenario="{{recommendedTask.scenario}}"
+        tag="{{recommendedTask.tag}}"
+        bind:tapcard="openRecommendedTraining"
+      />
+      <button class="safe-primary-button recommend-button" bindtap="openRecommendedTraining">开始练习</button>
+    </view>
   </view>
 
-  <view class="panel secondary-panel">
-    <text class="section-title">看看本周复盘</text>
-    <text class="body-text">查看本周记录、情绪线索和已完成练习，只用于帮助你选择下一步小练习。</text>
-    <button class="secondary-button" bindtap="openWeeklyReport">查看本周复盘</button>
+  <view class="safe-section">
+    <section-title title="本周成长提醒" subtitle="用小变化看见持续练习的力量" />
+    <view class="growth-grid">
+      <view wx:for="{{growthStats}}" wx:key="label" class="growth-card">
+        <text class="growth-value">{{item.value}}</text>
+        <text class="growth-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="继续原有流程" subtitle="保留当前项目已有的核心入口" />
+    <view class="legacy-panel">
+      <button class="legacy-row" bindtap="startGoalSetting">
+        <view>
+          <text class="legacy-title">设定本周小目标</text>
+          <text class="legacy-text">选择一个亲子场景，写下想练习的新回应。</text>
+        </view>
+        <text class="legacy-arrow">›</text>
+      </button>
+      <button class="legacy-row" bindtap="openWeeklyReport">
+        <view>
+          <text class="legacy-title">查看本周复盘</text>
+          <text class="legacy-text">回顾本周记录、情绪线索和已完成练习。</text>
+        </view>
+        <text class="legacy-arrow">›</text>
+      </button>
+      <button class="legacy-row muted-row" bindtap="openIntegrationTest">
+        <view>
+          <text class="legacy-title">进入联调测试页</text>
+          <text class="legacy-text">开发阶段保留，用于检查前后端连接。</text>
+        </view>
+        <text class="legacy-arrow">›</text>
+      </button>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <bottom-tip-card text="安心陪伴，和孩子一起慢慢变好。" subtext="每一次小小的练习，都是在为更好的亲子关系积蓄力量。" />
   </view>
 </view>

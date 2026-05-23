@@ -1,0 +1,179 @@
+.welcome-card {
+  position: relative;
+  min-height: 256rpx;
+  display: flex;
+  overflow: hidden;
+  padding: 34rpx 32rpx;
+  border: 1rpx solid #e8efd9;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #f2fbe9 0%, #fff6df 100%);
+  box-shadow: 0 16rpx 38rpx rgba(95, 120, 68, 0.12);
+}
+
+.welcome-copy {
+  position: relative;
+  z-index: 1;
+  width: 56%;
+}
+
+.welcome-title,
+.welcome-subtitle,
+.welcome-detail {
+  display: block;
+}
+
+.welcome-title {
+  color: #2c3050;
+  font-size: 40rpx;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.welcome-subtitle {
+  margin-top: 14rpx;
+  color: #333333;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.welcome-detail {
+  margin-top: 8rpx;
+  color: #555555;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.welcome-streak {
+  min-height: 56rpx;
+  display: inline-flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 22rpx;
+  padding: 0 20rpx;
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.88);
+  color: #4caf7d;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.streak-icon {
+  width: 24rpx;
+  height: 24rpx;
+  border: 4rpx solid #4caf7d;
+  border-radius: 8rpx;
+}
+
+.welcome-art {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 48%;
+  height: 100%;
+}
+
+.sun {
+  position: absolute;
+  top: 24rpx;
+  right: 34rpx;
+  width: 62rpx;
+  height: 62rpx;
+  border-radius: 50%;
+  background: #ffd36f;
+}
+
+.cloud {
+  position: absolute;
+  height: 24rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.cloud-left {
+  top: 62rpx;
+  left: 22rpx;
+  width: 76rpx;
+}
+
+.cloud-right {
+  top: 92rpx;
+  right: 92rpx;
+  width: 52rpx;
+}
+
+.family {
+  position: absolute;
+  right: 44rpx;
+  bottom: 44rpx;
+  width: 178rpx;
+  height: 142rpx;
+}
+
+.adult,
+.child {
+  position: absolute;
+  bottom: 0;
+  border-radius: 999rpx 999rpx 30rpx 30rpx;
+}
+
+.adult::before,
+.child::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #f4bf87;
+}
+
+.adult-left {
+  left: 8rpx;
+  width: 64rpx;
+  height: 92rpx;
+  background: #ff9f4d;
+}
+
+.adult-right {
+  right: 8rpx;
+  width: 70rpx;
+  height: 112rpx;
+  background: #62b77a;
+}
+
+.child {
+  left: 74rpx;
+  width: 52rpx;
+  height: 72rpx;
+  background: #ffd36f;
+}
+
+.adult::before {
+  top: -34rpx;
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.child::before {
+  top: -28rpx;
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.plant {
+  position: absolute;
+  bottom: 0;
+  width: 40rpx;
+  height: 90rpx;
+  border-radius: 40rpx 40rpx 0 0;
+  background: #8bcf86;
+}
+
+.plant-left {
+  left: 10rpx;
+}
+
+.plant-right {
+  right: 8rpx;
+  height: 116rpx;
+  background: #75bd73;
+}

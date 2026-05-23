@@ -1,0 +1,65 @@
+.bottom-tip-card {
+  position: relative;
+  overflow: hidden;
+  padding: 30rpx 34rpx;
+  border: 1rpx solid #e7eddc;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #f5fbe9, #fff7e7);
+}
+
+.tip-copy {
+  position: relative;
+  z-index: 1;
+  padding-right: 130rpx;
+}
+
+.tip-text,
+.tip-subtext {
+  display: block;
+}
+
+.tip-text {
+  color: #333333;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.tip-subtext {
+  margin-top: 8rpx;
+  color: #666666;
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.tip-plant {
+  position: absolute;
+  right: 24rpx;
+  bottom: 0;
+  width: 106rpx;
+  height: 104rpx;
+}
+
+.tip-plant view {
+  position: absolute;
+  bottom: 0;
+  width: 30rpx;
+  border-radius: 30rpx 30rpx 0 0;
+  background: #8bcf86;
+}
+
+.tip-plant view:nth-child(1) {
+  left: 4rpx;
+  height: 68rpx;
+}
+
+.tip-plant view:nth-child(2) {
+  left: 38rpx;
+  height: 100rpx;
+  background: #75bd73;
+}
+
+.tip-plant view:nth-child(3) {
+  right: 4rpx;
+  height: 82rpx;
+}

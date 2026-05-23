@@ -1,0 +1,69 @@
+<view class="safe-page task-detail-page" wx:if="{{task}}">
+  <view class="detail-nav">
+    <button class="back-button" bindtap="goBack">‹</button>
+    <text class="nav-title">{{task.title}}任务卡</text>
+  </view>
+
+  <view class="overview-card">
+    <text class="task-tag">UP任务卡</text>
+    <text class="task-title">{{task.title}}</text>
+    <text class="task-subtitle">{{task.subtitle}}</text>
+    <view class="overview-grid">
+      <view>
+        <text class="overview-label">适用情境</text>
+        <text class="overview-value">{{task.scenario}}</text>
+      </view>
+      <view>
+        <text class="overview-label">预计用时</text>
+        <text class="overview-value">{{task.duration}}</text>
+      </view>
+      <view>
+        <text class="overview-label">今日目标</text>
+        <text class="overview-value">{{task.goal}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="练习步骤" subtitle="按顺序完成三个小动作" />
+    <view class="step-list">
+      <view wx:for="{{task.steps}}" wx:key="*this" class="step-card">
+        <view class="step-index">{{index + 1}}</view>
+        <text class="step-text">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="示例话术" subtitle="可以照着说，也可以换成自己的表达" />
+    <view class="script-list">
+      <view wx:for="{{task.scripts}}" wx:key="*this" class="script-card">
+        <text>“{{item}}”</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="练习后记录" subtitle="简单记录今天的感受即可" />
+    <view class="record-card">
+      <text class="field-label">今日感受</text>
+      <textarea class="reflection-input" value="{{reflection}}" placeholder="例如：我先停了一下，说话比刚才慢了一点。" bindinput="onReflectionInput" />
+      <text class="field-label">当前情绪强度：{{emotionLevel}} / 10</text>
+      <slider min="0" max="10" step="1" value="{{emotionLevel}}" activeColor="#4CAF7D" bindchange="onEmotionLevelChange" />
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <alert-card type="info" title="练习说明" content="这里提供的是陪伴练习和自我观察建议，不替代专业咨询或紧急帮助。" />
+  </view>
+
+  <view class="action-bar">
+    <button class="safe-outline-button action-button" bindtap="startPractice">开始练习</button>
+    <button class="safe-primary-button action-button" bindtap="finishPractice">我已完成</button>
+    <button class="safe-secondary-button action-button" bindtap="recordFeeling">记录感受</button>
+  </view>
+
+  <view class="safe-section">
+    <bottom-tip-card text="一次小练习，也是在给关系留一点空间。" />
+  </view>
+</view>

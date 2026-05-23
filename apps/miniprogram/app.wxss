@@ -1,5 +1,131 @@
 page {
-  background: #f6f8f4;
-  color: #1d2b22;
-  font-family: -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
+  --safe-primary: #6fbc6b;
+  --safe-primary-deep: #4caf7d;
+  --safe-orange: #ffb26b;
+  --safe-blue: #7db7f0;
+  --safe-bg: #fff7ec;
+  --safe-bg-soft: #f7faf4;
+  --safe-card: #ffffff;
+  --safe-title: #333333;
+  --safe-text: #555555;
+  --safe-muted: #888888;
+  --safe-border: #efe7dc;
+  --safe-success: #52c41a;
+  --safe-warning: #faad14;
+  --safe-danger: #ff6b6b;
+  --safe-info: #1890ff;
+  min-height: 100vh;
+  background: #fff7ec;
+  color: #333333;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+}
+
+button {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: normal;
+}
+
+button::after {
+  border: 0;
+}
+
+input,
+textarea {
+  color: #333333;
+  font: inherit;
+}
+
+.safe-page {
+  min-height: 100vh;
+  padding: 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  background: #fff7ec;
+}
+
+.safe-section {
+  margin-top: 32rpx;
+}
+
+.safe-card {
+  border: 1rpx solid #efe7dc;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
+}
+
+.safe-title {
+  color: #333333;
+  font-size: 36rpx;
+  font-weight: 700;
+  line-height: 1.32;
+}
+
+.safe-subtitle {
+  color: #555555;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.safe-muted {
+  color: #888888;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.safe-primary-button,
+.safe-secondary-button,
+.safe-outline-button {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32rpx;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.safe-primary-button {
+  background: linear-gradient(135deg, #7ccb8a, #4caf7d);
+  color: #ffffff;
+  box-shadow: 0 12rpx 26rpx rgba(76, 175, 125, 0.22);
+}
+
+.safe-secondary-button {
+  background: #eef6ff;
+  color: #1890ff;
+}
+
+.safe-outline-button {
+  border: 1rpx solid #ffb26b;
+  background: #ffffff;
+  color: #f28b38;
+}
+
+.safe-tag {
+  min-height: 44rpx;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 18rpx;
+  border-radius: 22rpx;
+  background: #eef8e9;
+  color: #4caf7d;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.safe-tag-orange {
+  background: #fff2df;
+  color: #f28b38;
+}
+
+.safe-tag-blue {
+  background: #eef6ff;
+  color: #2f86df;
 }

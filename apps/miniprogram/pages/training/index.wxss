@@ -1,0 +1,79 @@
+.training-page {
+  padding-bottom: 48rpx;
+}
+
+.page-head {
+  padding: 16rpx 4rpx 8rpx;
+}
+
+.page-title,
+.page-subtitle {
+  display: block;
+}
+
+.page-title {
+  color: #333333;
+  font-size: 42rpx;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.page-subtitle {
+  margin-top: 12rpx;
+  color: #666666;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.starter-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  margin-top: 28rpx;
+  padding: 26rpx 28rpx;
+  border: 1rpx solid #e1efd8;
+  border-radius: 24rpx;
+  background: #f2faec;
+}
+
+.starter-icon {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #6fbc6b;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.starter-title,
+.starter-text {
+  display: block;
+}
+
+.starter-title {
+  color: #333333;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.starter-text {
+  margin-top: 8rpx;
+  color: #4d6b48;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.stage-section {
+  scroll-margin-top: 24rpx;
+}
+
+.task-list {
+  display: grid;
+  gap: 18rpx;
+  margin-top: 20rpx;
+}

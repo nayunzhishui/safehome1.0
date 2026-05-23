@@ -1,0 +1,111 @@
+.training-card {
+  width: 100%;
+  display: block;
+  padding: 28rpx;
+  border: 1rpx solid #e7eddc;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #ffffff 0%, #f5fbe9 100%);
+  box-shadow: 0 12rpx 30rpx rgba(82, 112, 64, 0.1);
+}
+
+.training-card:active {
+  transform: scale(0.99);
+}
+
+.training-head {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.training-mark {
+  width: 76rpx;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #6fbc6b;
+}
+
+.mark-face {
+  width: 34rpx;
+  height: 34rpx;
+  border: 4rpx solid #ffffff;
+  border-radius: 50%;
+}
+
+.training-title-wrap {
+  min-width: 0;
+  flex: 1;
+  text-align: left;
+}
+
+.title-line {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.training-title {
+  color: #333333;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.training-tag {
+  min-height: 38rpx;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14rpx;
+  border-radius: 19rpx;
+  background: #fff2df;
+  color: #ff8a2a;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.training-subtitle {
+  display: block;
+  margin-top: 8rpx;
+  color: #555555;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.training-arrow {
+  color: #4caf7d;
+  font-size: 42rpx;
+  line-height: 1;
+}
+
+.training-meta {
+  display: grid;
+  gap: 14rpx;
+  margin-top: 24rpx;
+  padding-top: 22rpx;
+  border-top: 1rpx solid rgba(239, 231, 220, 0.8);
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  color: #555555;
+  font-size: 24rpx;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.meta-dot {
+  width: 20rpx;
+  height: 20rpx;
+  flex: 0 0 auto;
+  border: 4rpx solid #4caf7d;
+  border-radius: 50%;
+}
+
+.clock-dot {
+  border-color: #ffb26b;
+}

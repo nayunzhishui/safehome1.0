@@ -1,0 +1,7 @@
+<view class="alert-card alert-{{type}}">
+  <view class="alert-icon"></view>
+  <view class="alert-copy">
+    <text class="alert-title">{{title}}</text>
+    <text wx:if="{{content}}" class="alert-content">{{content}}</text>
+  </view>
+</view>

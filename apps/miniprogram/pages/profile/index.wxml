@@ -1,0 +1,61 @@
+<view class="safe-page profile-page">
+  <view class="user-card">
+    <view class="avatar">家</view>
+    <view class="user-copy">
+      <text class="user-name">{{user.nickname}}</text>
+      <text class="user-state">{{user.loginState}}</text>
+      <text class="streak-text">{{user.streakText}}</text>
+    </view>
+    <text class="growth-level">{{user.growthLevel}}</text>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="我的记录" subtitle="回顾周报、反馈、训练和测评记录" />
+    <view class="entry-grid">
+      <view wx:for="{{recordEntries}}" wx:key="title" data-group="recordEntries" data-index="{{index}}" bindtap="openEntry">
+        <function-entry-card
+          title="{{item.title}}"
+          subtitle="{{item.subtitle}}"
+          icon-text="{{item.iconText}}"
+          accent-color="{{item.accentColor}}"
+          accent-bg="{{item.accentBg}}"
+        />
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="专业支持" subtitle="需要时获得更进一步的补充反馈" />
+    <view class="support-list">
+      <button wx:for="{{supportEntries}}" wx:key="title" class="support-row" data-group="supportEntries" data-index="{{index}}" bindtap="openEntry">
+        <view class="row-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">{{item.iconText}}</view>
+        <view class="row-copy">
+          <text class="row-title">{{item.title}}</text>
+          <text class="row-subtitle">{{item.subtitle}}</text>
+        </view>
+        <text class="row-arrow">›</text>
+      </button>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="安全支持" subtitle="入口明显，但只提供紧急帮助指引" />
+    <view class="support-list safety-list">
+      <button wx:for="{{safetyEntries}}" wx:key="title" class="support-row" data-group="safetyEntries" data-index="{{index}}" bindtap="openEntry">
+        <view class="row-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">{{item.iconText}}</view>
+        <view class="row-copy">
+          <text class="row-title">{{item.title}}</text>
+          <text class="row-subtitle">{{item.subtitle}}</text>
+        </view>
+        <text class="row-arrow">›</text>
+      </button>
+    </view>
+    <view class="crisis-card">
+      <text>如果你或孩子正在经历强烈痛苦、自伤想法或安全风险，请立即联系身边可信赖的人，并寻求当地紧急医疗或心理危机支持。</text>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <bottom-tip-card text="安心陪伴，和孩子一起慢慢变好。" />
+  </view>
+</view>

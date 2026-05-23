@@ -1,17 +1,23 @@
 .page {
   min-height: 100vh;
   padding: 32rpx;
-  background: #f6f8f4;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  background: #fff7ec;
 }
 
 .hero {
-  padding: 20rpx 4rpx 28rpx;
+  margin-bottom: 28rpx;
+  padding: 32rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #ffffff 0%, #f7faf4 100%);
+  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
 }
 
 .eyebrow {
   display: block;
   margin-bottom: 10rpx;
-  color: #3c7a49;
+  color: #4caf7d;
   font-size: 24rpx;
   font-weight: 700;
 }
@@ -19,52 +25,54 @@
 .title {
   display: block;
   margin-bottom: 14rpx;
-  color: #1d2b22;
+  color: #333333;
   font-size: 40rpx;
   font-weight: 700;
+  line-height: 1.32;
 }
 
 .summary {
   display: block;
-  color: #5b6b60;
+  color: #555555;
   font-size: 28rpx;
   line-height: 1.7;
 }
 
 .panel {
   padding: 32rpx;
-  border: 1rpx solid #dce6db;
-  border-radius: 8rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 24rpx;
   background: #ffffff;
+  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
 }
 
 .selected-card {
   margin-bottom: 30rpx;
   padding: 24rpx;
-  border: 1rpx solid #dce6db;
-  border-radius: 8rpx;
-  background: #f9fbf8;
+  border: 1rpx solid #efe7dc;
+  border-radius: 20rpx;
+  background: #fffdf9;
 }
 
 .tip-box {
   margin-bottom: 28rpx;
   padding: 22rpx;
-  border: 1rpx solid #cfe1cf;
-  border-radius: 8rpx;
-  background: #edf8ee;
+  border: 1rpx solid #dbeed6;
+  border-radius: 20rpx;
+  background: #eef8e9;
 }
 
 .tip-title {
   display: block;
   margin-bottom: 8rpx;
-  color: #245b34;
+  color: #4caf7d;
   font-size: 28rpx;
   font-weight: 700;
 }
 
 .tip-text {
   display: block;
-  color: #466650;
+  color: #555555;
   font-size: 26rpx;
   line-height: 1.7;
 }
@@ -79,10 +87,10 @@
 .meta-pill {
   display: inline-block;
   padding: 8rpx 16rpx;
-  border: 1rpx solid #cfe1cf;
-  border-radius: 8rpx;
+  border: 1rpx solid #dbeed6;
+  border-radius: 999rpx;
   background: #ffffff;
-  color: #2f7d45;
+  color: #4caf7d;
   font-size: 24rpx;
   line-height: 1.4;
 }
@@ -94,14 +102,14 @@
 .label {
   display: block;
   margin-bottom: 12rpx;
-  color: #1d2b22;
+  color: #333333;
   font-size: 28rpx;
   font-weight: 700;
 }
 
 .card-title {
   display: block;
-  color: #2f7d45;
+  color: #4caf7d;
   font-size: 30rpx;
   font-weight: 700;
   line-height: 1.5;
@@ -112,10 +120,10 @@
   width: 100%;
   min-height: 150rpx;
   padding: 20rpx;
-  border: 1rpx solid #dce6db;
-  border-radius: 8rpx;
-  background: #f9fbf8;
-  color: #1d2b22;
+  border: 1rpx solid #e9e3d8;
+  border-radius: 18rpx;
+  background: #fffdf9;
+  color: #333333;
   font-size: 28rpx;
   line-height: 1.6;
 }
@@ -123,7 +131,7 @@
 .status {
   margin-bottom: 24rpx;
   padding: 20rpx;
-  border-radius: 8rpx;
+  border-radius: 18rpx;
   font-size: 26rpx;
   line-height: 1.6;
 }
@@ -141,16 +149,23 @@
 }
 
 .primary-button {
+  min-height: 88rpx;
   margin-top: 8rpx;
-  background: #2f7d45;
+  border-radius: 44rpx;
+  background: linear-gradient(135deg, #7ccb8a, #4caf7d);
   color: #ffffff;
-  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  box-shadow: 0 12rpx 26rpx rgba(76, 175, 125, 0.22);
 }
 
 .secondary-button {
+  min-height: 88rpx;
   margin-top: 20rpx;
-  border: 1rpx solid #c9d9c8;
-  background: #eef3ed;
-  color: #2f7d45;
-  border-radius: 8rpx;
+  border: 1rpx solid #ffb26b;
+  border-radius: 44rpx;
+  background: #ffffff;
+  color: #f28b38;
+  font-size: 28rpx;
+  font-weight: 700;
 }

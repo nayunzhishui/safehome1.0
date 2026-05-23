@@ -1,0 +1,22 @@
+<button class="course-card" bindtap="handleTap">
+  <view class="course-cover">
+    <view class="cover-sun"></view>
+    <view class="cover-tree"></view>
+    <view class="cover-family"></view>
+  </view>
+  <view class="course-content">
+    <view class="course-title-row">
+      <text class="course-title">{{title}}</text>
+      <text wx:if="{{category}}" class="course-category">{{category}}</text>
+    </view>
+    <text class="course-description">{{description}}</text>
+    <view class="course-meta">
+      <text>{{lessonCount}} 课时</text>
+      <text>学习进度 {{progress}}%</text>
+    </view>
+    <view class="progress-track">
+      <view class="progress-fill" style="width: {{progress}}%;"></view>
+    </view>
+    <text class="course-action">{{buttonText}}</text>
+  </view>
+</button>
