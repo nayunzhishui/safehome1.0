@@ -1,10 +1,13 @@
 """Flask application entrypoint for the SafeHome MVP backend."""
 
+import os
+
 from flask import Flask, jsonify
 
 from config import Config
 from database import init_db
 from routes.admin import bp as admin_bp
+from routes.assessments import bp as assessments_bp
 from routes.cards import bp as cards_bp
 from routes.checkins import bp as checkins_bp
 from routes.diaries import bp as diaries_bp
@@ -22,6 +25,7 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     app.register_blueprint(goals_bp)
     app.register_blueprint(diaries_bp)
     app.register_blueprint(feedback_bp)
+    app.register_blueprint(assessments_bp)
     app.register_blueprint(cards_bp)
     app.register_blueprint(checkins_bp)
     app.register_blueprint(reports_bp)
@@ -46,4 +50,5 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    port = int(os.environ.get("PORT", "5000"))
+    app.run(host="0.0.0.0", port=port, debug=os.environ.get("FLASK_DEBUG") == "1")

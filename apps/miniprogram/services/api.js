@@ -1,4 +1,4 @@
-const DEFAULT_BASE_URL = "http://127.0.0.1:5000";
+const DEFAULT_BASE_URL = "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com";
 const DEFAULT_USER_ID = "demo-parent";
 
 const API_ENDPOINTS = {
@@ -8,6 +8,8 @@ const API_ENDPOINTS = {
   feedbackGenerate: "/api/feedback/generate",
   cards: "/api/cards",
   cardsRecommend: "/api/cards/recommend",
+  assessments: "/api/assessments",
+  assessmentResults: "/api/assessment-results",
   checkins: "/api/checkins",
   weeklyReport: "/api/weekly-report",
   supervision: "/api/supervision",
@@ -123,6 +125,25 @@ function createSafeHomeApi(options = {}) {
           tags: Array.isArray(params.tags) ? params.tags.join(",") : params.tags,
         })}`,
       );
+    },
+
+    listAssessments(params = {}) {
+      return request(`${API_ENDPOINTS.assessments}${queryString(params)}`);
+    },
+
+    getAssessment(id) {
+      return request(`${API_ENDPOINTS.assessments}/${encodeURIComponent(id)}`);
+    },
+
+    createAssessmentResult(data) {
+      return request(API_ENDPOINTS.assessmentResults, {
+        method: "POST",
+        data: withDefaultUser(data),
+      });
+    },
+
+    listAssessmentResults(params = {}) {
+      return request(`${API_ENDPOINTS.assessmentResults}${queryString(params)}`);
     },
 
     createCheckin(data) {

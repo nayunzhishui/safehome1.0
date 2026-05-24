@@ -1,0 +1,730 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/janqgw",
+    "id": "janqgw",
+    "slide": 39,
+    "layoutId": "4e2b3f2b-261d-4455-b4e4-913724c50bca",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "7b0b8440-9a43-40ee-986d-e65946b01be4",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#F4F7FB",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Microsoft YaHei"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "4e2b3f2b-261d-4455-b4e4-913724c50bca",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "7b0b8440-9a43-40ee-986d-e65946b01be4",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "7b0b8440-9a43-40ee-986d-e65946b01be4",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/sneloj2t",
+      "id": "1",
+      "bbox": [
+        72,
+        34,
+        420,
+        30
+      ],
+      "geometry": "rect",
+      "text": "38 | 周度报告",
+      "textPreview": "38 | 周度报告",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "fontSize": 15,
+        "typeface": "Microsoft YaHei",
+        "color": "#168A86",
+        "bold": true,
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "38 | 周度报告"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "38 | 周度报告",
+          "lineSpacingPercent": 122000,
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Microsoft YaHei",
+            "color": "#168A86",
+            "bold": true,
+            "alignment": "left",
+            "lineSpacing": 1.22
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "38 | 周度报告",
+              "fontSize": 15,
+              "typeface": "Microsoft YaHei",
+              "color": "#168A86",
+              "bold": true,
+              "alignment": "left",
+              "lineSpacing": 1.22
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/32lszqtc",
+      "id": "2",
+      "bbox": [
+        72,
+        66,
+        1010,
+        48
+      ],
+      "geometry": "rect",
+      "text": "周度报告：阶段性总结高频场景和下周建议",
+      "textPreview": "周度报告：阶段性总结高频场景和下周建议",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Microsoft YaHei",
+        "color": "#102033",
+        "bold": true,
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "周度报告：阶段性总结高频场景和下周建议"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "周度报告：阶段性总结高频场景和下周建议",
+          "lineSpacingPercent": 105000,
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Microsoft YaHei",
+            "color": "#102033",
+            "bold": true,
+            "alignment": "left",
+            "lineSpacing": 1.05
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "周度报告：阶段性总结高频场景和下周建议",
+              "fontSize": 32,
+              "typeface": "Microsoft YaHei",
+              "color": "#102033",
+              "bold": true,
+              "alignment": "left",
+              "lineSpacing": 1.05
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ahoza1gv",
+      "id": "3",
+      "bbox": [
+        74,
+        130,
+        1030,
+        34
+      ],
+      "geometry": "rect",
+      "text": "从单次反馈走向周期性陪伴。",
+      "textPreview": "从单次反馈走向周期性陪伴。",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "Microsoft YaHei",
+        "color": "#5B677A",
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "从单次反馈走向周期性陪伴。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "从单次反馈走向周期性陪伴。",
+          "lineSpacingPercent": 122000,
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Microsoft YaHei",
+            "color": "#5B677A",
+            "alignment": "left",
+            "lineSpacing": 1.22
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "从单次反馈走向周期性陪伴。",
+              "fontSize": 17,
+              "typeface": "Microsoft YaHei",
+              "color": "#5B677A",
+              "alignment": "left",
+              "lineSpacing": 1.22
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/lkjm1cfa",
+      "id": "4",
+      "bbox": [
+        72,
+        180,
+        1136,
+        2
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#D8E5F4",
+      "lineColor": "#D8E5F4",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/szqtcj6t",
+      "id": "5",
+      "bbox": [
+        1145,
+        36,
+        70,
+        24
+      ],
+      "geometry": "rect",
+      "text": "39",
+      "textPreview": "39",
+      "resolvedFontSize": 13,
+      "resolvedTextStyle": {
+        "fontSize": 13,
+        "typeface": "Microsoft YaHei",
+        "color": "#5B677A",
+        "alignment": "right",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "39"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "39",
+          "lineSpacingPercent": 122000,
+          "resolvedTextStyle": {
+            "fontSize": 13,
+            "typeface": "Microsoft YaHei",
+            "color": "#5B677A",
+            "alignment": "right",
+            "lineSpacing": 1.22
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "39",
+              "fontSize": 13,
+              "typeface": "Microsoft YaHei",
+              "color": "#5B677A",
+              "alignment": "right",
+              "lineSpacing": 1.22
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3ex0nuxc",
+      "id": "6",
+      "bbox": [
+        72,
+        210,
+        360,
+        430
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#D9E2EF",
+      "lineWidth": 1
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/at47y1kr",
+      "id": "7",
+      "bbox": [
+        100,
+        240,
+        305,
+        210
+      ],
+      "geometry": "rect",
+      "text": "• 汇总高频场景和情绪\n• 整理常见互动模式\n• 汇总已完成训练卡\n• 给出下周建议",
+      "textPreview": "• 汇总高频场景和情绪 | • 整理常见互动模式 | • 汇总已完成训练卡 | • 给出下周建议",
+      "resolvedFontSize": 19,
+      "resolvedTextStyle": {
+        "fontSize": 19,
+        "typeface": "Microsoft YaHei",
+        "color": "#102033",
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 4,
+        "lines": [
+          {
+            "index": 1,
+            "text": "• 汇总高频场景和情绪"
+          },
+          {
+            "index": 2,
+            "text": "• 整理常见互动模式"
+          },
+          {
+            "index": 3,
+            "text": "• 汇总已完成训练卡"
+          },
+          {
+            "index": 4,
+            "text": "• 给出下周建议"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "• 汇总高频场景和情绪",
+          "lineSpacingPercent": 134000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Microsoft YaHei",
+            "color": "#102033",
+            "alignment": "left",
+            "lineSpacing": 1.34
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• 汇总高频场景和情绪",
+              "fontSize": 19,
+              "typeface": "Microsoft YaHei",
+              "color": "#102033",
+              "alignment": "left",
+              "lineSpacing": 1.34
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "• 整理常见互动模式",
+          "lineSpacingPercent": 134000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Microsoft YaHei",
+            "color": "#102033",
+            "alignment": "left",
+            "lineSpacing": 1.34
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• 整理常见互动模式",
+              "fontSize": 19,
+              "typeface": "Microsoft YaHei",
+              "color": "#102033",
+              "alignment": "left",
+              "lineSpacing": 1.34
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "• 汇总已完成训练卡",
+          "lineSpacingPercent": 134000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Microsoft YaHei",
+            "color": "#102033",
+            "alignment": "left",
+            "lineSpacing": 1.34
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• 汇总已完成训练卡",
+              "fontSize": 19,
+              "typeface": "Microsoft YaHei",
+              "color": "#102033",
+              "alignment": "left",
+              "lineSpacing": 1.34
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 4,
+          "text": "• 给出下周建议",
+          "lineSpacingPercent": 134000,
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "typeface": "Microsoft YaHei",
+            "color": "#102033",
+            "alignment": "left",
+            "lineSpacing": 1.34
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "• 给出下周建议",
+              "fontSize": 19,
+              "typeface": "Microsoft YaHei",
+              "color": "#102033",
+              "alignment": "left",
+              "lineSpacing": 1.34
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/loj2t83i",
+      "id": "8",
+      "bbox": [
+        92,
+        466,
+        320,
+        136
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#D9E2EF",
+      "lineWidth": 1
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/w3m94fu1",
+      "id": "9",
+      "bbox": [
+        92,
+        466,
+        8,
+        136
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#168A86",
+      "lineColor": "#168A86",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/udg7adsj",
+      "id": "10",
+      "bbox": [
+        118,
+        488,
+        278,
+        92
+      ],
+      "geometry": "rect",
+      "text": "周报是安心家的阶段性反馈形式。",
+      "textPreview": "周报是安心家的阶段性反馈形式。",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "fontSize": 20,
+        "typeface": "Microsoft YaHei",
+        "color": "#102033",
+        "bold": true,
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "周报是安心家的阶段性反馈形"
+          },
+          {
+            "index": 2,
+            "text": "式。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "周报是安心家的阶段性反馈形式。",
+          "lineSpacingPercent": 122000,
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft YaHei",
+            "color": "#102033",
+            "bold": true,
+            "alignment": "left",
+            "lineSpacing": 1.22
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "周报是安心家的阶段性反馈形式。",
+              "fontSize": 20,
+              "typeface": "Microsoft YaHei",
+              "color": "#102033",
+              "bold": true,
+              "alignment": "left",
+              "lineSpacing": 1.22
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/nyd0z610",
+      "id": "11",
+      "bbox": [
+        480,
+        210,
+        672,
+        384
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#D9E2EF",
+      "lineWidth": 1
+    },
+    {
+      "order": 12,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/vmtwra5g",
+      "id": "12",
+      "bbox": [
+        486,
+        216,
+        660,
+        372
+      ],
+      "alt": "周度报告：阶段性总结高频场景和下周建议",
+      "contentType": "image/png",
+      "imageFit": "contain",
+      "asset": {
+        "assetId": "4f0f05d5-f206-46f5-b7aa-3251bcb0a252",
+        "contentType": "image/png",
+        "byteLength": 62889
+      }
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/54zidony",
+      "id": "13",
+      "bbox": [
+        72,
+        684,
+        820,
+        22
+      ],
+      "geometry": "rect",
+      "text": "安心家 x 0版网页 | 导师阶段汇报 | 2026-05-23",
+      "textPreview": "安心家 x 0版网页 | 导师阶段汇报 | 2026-05-23",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "fontSize": 12,
+        "typeface": "Microsoft YaHei",
+        "color": "#7C8797",
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "安心家 x 0版网页 | 导师阶段汇报 | 2026-05-23"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "安心家 x 0版网页 | 导师阶段汇报 | 2026-05-23",
+          "lineSpacingPercent": 122000,
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Microsoft YaHei",
+            "color": "#7C8797",
+            "alignment": "left",
+            "lineSpacing": 1.22
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "安心家 x 0版网页 | 导师阶段汇报 | 2026-05-23",
+              "fontSize": 12,
+              "typeface": "Microsoft YaHei",
+              "color": "#7C8797",
+              "alignment": "left",
+              "lineSpacing": 1.22
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    }
+  ],
+  "composeRuns": []
+}

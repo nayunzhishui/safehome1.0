@@ -7,6 +7,7 @@ MVP_TABLES = [
     "feedback_results",
     "training_cards",
     "checkins",
+    "assessment_results",
     "weekly_reports",
     "supervision_requests",
 ]
@@ -97,6 +98,20 @@ SCHEMA_SQL = [
         emotion_before INTEGER,
         emotion_after INTEGER,
         reflection TEXT,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS assessment_results (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        worksheet_id TEXT NOT NULL,
+        worksheet_title TEXT NOT NULL,
+        category TEXT,
+        answers_json TEXT NOT NULL,
+        scores_json TEXT NOT NULL,
+        total_score INTEGER,
+        result_summary TEXT,
         created_at TEXT NOT NULL
     )
     """,

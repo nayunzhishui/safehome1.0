@@ -1,0 +1,238 @@
+.hot-topics-page {
+  padding-bottom: 48rpx;
+}
+
+.topic-hero {
+  padding: 34rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #ffffff 0%, #f7faf4 62%, #fff2df 100%);
+  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
+}
+
+.hero-kicker,
+.hero-title,
+.hero-text {
+  display: block;
+}
+
+.hero-kicker {
+  margin-bottom: 12rpx;
+  color: #4caf7d;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.hero-title {
+  color: #333333;
+  font-size: 40rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.hero-text {
+  margin-top: 14rpx;
+  color: #555555;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.hero-image {
+  width: 100%;
+  height: 300rpx;
+  display: block;
+  margin-top: 24rpx;
+  overflow: hidden;
+  border-radius: 22rpx;
+  background: #fffaf3;
+}
+
+.tag-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.tag-list {
+  display: inline-flex;
+  gap: 14rpx;
+  padding-right: 24rpx;
+}
+
+.topic-tag {
+  min-height: 64rpx;
+  margin: 0;
+  padding: 0 24rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 32rpx;
+  background: #ffffff;
+  color: #666666;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 64rpx;
+}
+
+.topic-tag.active {
+  border-color: #7ccb8a;
+  background: #eef8e9;
+  color: #4caf7d;
+}
+
+.topic-list {
+  display: grid;
+  gap: 18rpx;
+  margin-top: 20rpx;
+}
+
+.topic-card {
+  display: flex;
+  gap: 18rpx;
+  min-height: 184rpx;
+  margin: 0;
+  padding: 20rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.06);
+  text-align: left;
+}
+
+.topic-card.active {
+  border-color: #7ccb8a;
+  background: #fbfef9;
+}
+
+.topic-card:active,
+.practice-button:active,
+.home-button:active {
+  transform: scale(0.99);
+}
+
+.topic-thumb {
+  position: relative;
+  width: 112rpx;
+  height: 112rpx;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 22rpx;
+  background: linear-gradient(135deg, #fff2df, #eef8e9);
+}
+
+.topic-people {
+  position: absolute;
+  left: 30rpx;
+  bottom: 18rpx;
+  width: 44rpx;
+  height: 52rpx;
+  border-radius: 28rpx 28rpx 12rpx 12rpx;
+  background: #ffb26b;
+  box-shadow: 30rpx 10rpx 0 -8rpx #6fbc6b;
+}
+
+.topic-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.topic-title,
+.topic-summary {
+  display: block;
+}
+
+.topic-title {
+  color: #333333;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.topic-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 12rpx;
+  color: #999999;
+  font-size: 22rpx;
+}
+
+.topic-meta text:first-child {
+  min-height: 38rpx;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14rpx;
+  border-radius: 19rpx;
+  background: #fff2df;
+  color: #f28b38;
+}
+
+.topic-summary {
+  margin-top: 12rpx;
+  color: #666666;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.detail-card,
+.practice-card,
+.boundary-card {
+  margin-top: 20rpx;
+  border: 1rpx solid #efe7dc;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
+}
+
+.detail-card {
+  padding: 28rpx;
+}
+
+.detail-title {
+  display: block;
+  margin-bottom: 20rpx;
+  color: #333333;
+  font-size: 32rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.detail-block {
+  padding: 20rpx 0;
+  border-top: 1rpx solid #efe7dc;
+}
+
+.detail-label,
+.detail-text {
+  display: block;
+}
+
+.detail-label {
+  color: #4caf7d;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.detail-text {
+  margin-top: 8rpx;
+  color: #555555;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.practice-card {
+  padding: 20rpx;
+}
+
+.practice-button {
+  margin-top: 20rpx;
+}
+
+.boundary-card {
+  padding: 24rpx;
+  background: #fff9e8;
+  color: #735b21;
+  font-size: 25rpx;
+  line-height: 1.7;
+}
+
+.home-button {
+  width: 100%;
+}

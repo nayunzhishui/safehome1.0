@@ -15,6 +15,7 @@ EXPORT_TABLES = {
     "diaries": "emotion_diaries",
     "feedback": "feedback_results",
     "checkins": "checkins",
+    "assessments": "assessment_results",
     "reports": "weekly_reports",
     "supervision": "supervision_requests",
     "cards": "training_cards",
@@ -31,7 +32,7 @@ def export_csv():
     export_type = request.args.get("type", "diaries")
     table = EXPORT_TABLES.get(export_type)
     if table is None:
-        return fail("invalid_export_type", "支持的 type：goals, diaries, feedback, checkins, reports, supervision, cards")
+        return fail("invalid_export_type", "支持的 type：goals, diaries, feedback, checkins, assessments, reports, supervision, cards")
 
     user_id = request.args.get("user_id")
     with get_connection() as conn:

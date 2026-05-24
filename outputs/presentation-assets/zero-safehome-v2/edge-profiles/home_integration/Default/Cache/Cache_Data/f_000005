@@ -1,0 +1,375 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/CardsManagement.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=99d65b07"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=99d65b07"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useMemo = __vite__cjsImport1_react["useMemo"]; const useState = __vite__cjsImport1_react["useState"];
+import { SafeHomeApiClient } from "/src/services/safehomeApi.ts";
+const api = new SafeHomeApiClient();
+function displayText(value) {
+  if (value === void 0 || value === null || value === "") {
+    return "未填写";
+  }
+  if (typeof value === "boolean") {
+    return value ? "启用" : "停用";
+  }
+  return String(value);
+}
+export function CardsManagement() {
+  _s();
+  const [state, setState] = useState({
+    status: "idle",
+    message: "正在准备训练卡内容。",
+    cards: []
+  });
+  const selectedCard = useMemo(() => {
+    return state.cards.find((card) => card.id === state.selectedId) ?? state.cards[0];
+  }, [state.cards, state.selectedId]);
+  const enabledCards = state.cards.filter((card) => card.enabled);
+  const disabledCards = state.cards.filter((card) => !card.enabled);
+  const cardTypes = new Set(state.cards.map((card) => card.type));
+  const tags = new Set(state.cards.flatMap((card) => card.tags));
+  async function loadCards() {
+    setState((current) => ({
+      ...current,
+      status: "loading",
+      message: "正在读取训练卡内容..."
+    }));
+    try {
+      const result = await api.listCards();
+      setState({
+        status: "success",
+        message: result.items.length > 0 ? "已读取训练卡内容。" : "当前还没有训练卡内容。",
+        cards: result.items,
+        selectedId: result.items[0]?.id
+      });
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        status: "error",
+        message: error instanceof Error ? error.message : "读取失败，请确认 backend 是否已启动。"
+      }));
+    }
+  }
+  useEffect(() => {
+    void loadCards();
+  }, []);
+  return /* @__PURE__ */ jsxDEV("section", { className: "dashboardShell", "aria-label": "训练卡管理后台", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "dashboardHeader", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("p", { className: "eyebrow", children: "Content Management" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 75,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("h1", { children: "训练卡管理" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 76,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "summary", children: "只读查看当前内容库中的训练卡，用于确认卡片标题、标签、步骤和示例是否适合试点使用。" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 77,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+        lineNumber: 74,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "dashboardActions", children: [
+        /* @__PURE__ */ jsxDEV("a", { className: "secondaryButton", href: "/dashboard", children: "返回总览" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 80,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("button", { className: "primaryButton", type: "button", onClick: loadCards, disabled: state.status === "loading", children: state.status === "loading" ? "刷新中..." : "刷新训练卡" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 83,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+        lineNumber: 79,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+      lineNumber: 73,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: `status ${state.status}`, children: state.message }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+      lineNumber: 89,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "metricGrid", "aria-label": "训练卡概况", children: [
+      /* @__PURE__ */ jsxDEV(MetricCard, { label: "训练卡总数", value: state.cards.length }, void 0, false, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+        lineNumber: 92,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV(MetricCard, { label: "启用卡片", value: enabledCards.length }, void 0, false, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+        lineNumber: 93,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV(MetricCard, { label: "停用卡片", value: disabledCards.length }, void 0, false, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+        lineNumber: 94,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV(MetricCard, { label: "标签数量", value: tags.size }, void 0, false, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+        lineNumber: 95,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+      lineNumber: 91,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "dashboardGrid goalsGrid", children: [
+      /* @__PURE__ */ jsxDEV("section", { className: "listPanel", "aria-label": "训练卡列表", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "sectionTitleRow", children: [
+          /* @__PURE__ */ jsxDEV("h2", { children: "训练卡列表" }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 101,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { className: "countBadge", children: [
+            cardTypes.size,
+            " 类"
+          ] }, void 0, true, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 102,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 100,
+          columnNumber: 11
+        }, this),
+        state.cards.length === 0 ? /* @__PURE__ */ jsxDEV("div", { className: "emptyState", children: "还没有训练卡。请检查后端内容库是否已初始化。" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 106,
+          columnNumber: 11
+        }, this) : /* @__PURE__ */ jsxDEV("div", { className: "recordList", children: state.cards.map(
+          (card) => /* @__PURE__ */ jsxDEV(
+            "button",
+            {
+              className: `recordItem ${selectedCard?.id === card.id ? "active" : ""}`,
+              type: "button",
+              onClick: () => setState((current) => ({ ...current, selectedId: card.id })),
+              children: [
+                /* @__PURE__ */ jsxDEV("span", { className: "recordScene", children: card.title }, void 0, false, {
+                  fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+                  lineNumber: 116,
+                  columnNumber: 19
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { className: "recordDescription", children: card.purpose }, void 0, false, {
+                  fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+                  lineNumber: 117,
+                  columnNumber: 19
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { className: "recordMeta", children: [
+                  card.enabled ? "启用" : "停用",
+                  " · ",
+                  card.type,
+                  " · ",
+                  card.duration_minutes,
+                  " 分钟"
+                ] }, void 0, true, {
+                  fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+                  lineNumber: 118,
+                  columnNumber: 19
+                }, this)
+              ]
+            },
+            card.id,
+            true,
+            {
+              fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+              lineNumber: 110,
+              columnNumber: 13
+            },
+            this
+          )
+        ) }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 108,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+        lineNumber: 99,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("section", { className: "detailPanel", "aria-label": "训练卡详情", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "sectionTitleRow", children: [
+          /* @__PURE__ */ jsxDEV("h2", { children: "训练卡详情" }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 129,
+            columnNumber: 13
+          }, this),
+          selectedCard && /* @__PURE__ */ jsxDEV("span", { className: "countBadge", children: [
+            "ID ",
+            selectedCard.id
+          ] }, void 0, true, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 130,
+            columnNumber: 30
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 128,
+          columnNumber: 11
+        }, this),
+        selectedCard ? /* @__PURE__ */ jsxDEV("div", { className: "detailContent", children: [
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "卡片标题", value: selectedCard.title }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 135,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "卡片类型", value: selectedCard.type }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 136,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "启用状态", value: selectedCard.enabled }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 137,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "预计时长", value: `${selectedCard.duration_minutes} 分钟` }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 138,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "练习目的", value: selectedCard.purpose }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 139,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "标签", value: selectedCard.tags.join("、") }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 140,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "练习步骤", value: selectedCard.steps.map((step, index) => `${index + 1}. ${step}`).join("\n") }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 141,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "示例", value: selectedCard.example }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 142,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("section", { className: "guidanceBox", "aria-label": "内容边界提示", children: [
+            /* @__PURE__ */ jsxDEV("h3", { children: "内容边界" }, void 0, false, {
+              fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+              lineNumber: 145,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { children: "训练卡用于支持家长进行情绪觉察、亲子沟通和自我复盘练习。页面只展示内容库，不做诊断判断，也不替代心理咨询、医学诊断或危机干预。" }, void 0, false, {
+              fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+              lineNumber: 146,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+            lineNumber: 144,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 134,
+          columnNumber: 11
+        }, this) : /* @__PURE__ */ jsxDEV("div", { className: "emptyState", children: "选择左侧训练卡后，这里会显示详情。" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+          lineNumber: 152,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+        lineNumber: 127,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+      lineNumber: 98,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+    lineNumber: 72,
+    columnNumber: 5
+  }, this);
+}
+_s(CardsManagement, "MWRGXG7jtKV+HjPi03y+o4S4tOI=");
+_c = CardsManagement;
+function MetricCard({ label, value }) {
+  return /* @__PURE__ */ jsxDEV("article", { className: "metricCard", children: [
+    /* @__PURE__ */ jsxDEV("span", { children: label }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+      lineNumber: 163,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("strong", { children: value }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+      lineNumber: 164,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+    lineNumber: 162,
+    columnNumber: 5
+  }, this);
+}
+_c2 = MetricCard;
+function DetailRow({ label, value }) {
+  return /* @__PURE__ */ jsxDEV("div", { className: "detailRow", children: [
+    /* @__PURE__ */ jsxDEV("span", { className: "detailLabel", children: label }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+      lineNumber: 172,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("span", { className: "detailValue", children: displayText(value) }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+      lineNumber: 173,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx",
+    lineNumber: 171,
+    columnNumber: 5
+  }, this);
+}
+_c3 = DetailRow;
+var _c, _c2, _c3;
+$RefreshReg$(_c, "CardsManagement");
+$RefreshReg$(_c2, "MetricCard");
+$RefreshReg$(_c3, "DetailRow");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "D:/codex/workspace/safehome1.0/apps/web/src/pages/CardsManagement.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUFBO0FBQUEsV0FBa0Q7QUFBQSxPQUZwRDtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBR0E7QUFFSjtBQUFDOEMsTUFQUUQ7QUFBUyxJQUFBRSxJQUFBSCxLQUFBRTtBQUFBLGFBQUFDLElBQUE7QUFBQSxhQUFBSCxLQUFBO0FBQUEsYUFBQUUsS0FBQSIsIm5hbWVzIjpbInVzZUVmZmVjdCIsInVzZU1lbW8iLCJ1c2VTdGF0ZSIsIlNhZmVIb21lQXBpQ2xpZW50IiwiYXBpIiwiZGlzcGxheVRleHQiLCJ2YWx1ZSIsInVuZGVmaW5lZCIsIlN0cmluZyIsIkNhcmRzTWFuYWdlbWVudCIsIl9zIiwic3RhdGUiLCJzZXRTdGF0ZSIsInN0YXR1cyIsIm1lc3NhZ2UiLCJjYXJkcyIsInNlbGVjdGVkQ2FyZCIsImZpbmQiLCJjYXJkIiwiaWQiLCJzZWxlY3RlZElkIiwiZW5hYmxlZENhcmRzIiwiZmlsdGVyIiwiZW5hYmxlZCIsImRpc2FibGVkQ2FyZHMiLCJjYXJkVHlwZXMiLCJTZXQiLCJtYXAiLCJ0eXBlIiwidGFncyIsImZsYXRNYXAiLCJsb2FkQ2FyZHMiLCJjdXJyZW50IiwicmVzdWx0IiwibGlzdENhcmRzIiwiaXRlbXMiLCJsZW5ndGgiLCJlcnJvciIsIkVycm9yIiwic2l6ZSIsInRpdGxlIiwicHVycG9zZSIsImR1cmF0aW9uX21pbnV0ZXMiLCJqb2luIiwic3RlcHMiLCJzdGVwIiwiaW5kZXgiLCJleGFtcGxlIiwiTWV0cmljQ2FyZCIsImxhYmVsIiwiX2MyIiwiRGV0YWlsUm93IiwiX2MzIiwiX2MiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiQ2FyZHNNYW5hZ2VtZW50LnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyB1c2VFZmZlY3QsIHVzZU1lbW8sIHVzZVN0YXRlIH0gZnJvbSBcInJlYWN0XCI7XG5cbmltcG9ydCB7IFNhZmVIb21lQXBpQ2xpZW50IH0gZnJvbSBcIi4uL3NlcnZpY2VzL3NhZmVob21lQXBpXCI7XG5pbXBvcnQgdHlwZSB7IFRyYWluaW5nQ2FyZCB9IGZyb20gXCIuLi8uLi8uLi8uLi9zaGFyZWQvdHlwZXMvYXBpXCI7XG5cbnR5cGUgTG9hZFN0YXR1cyA9IFwiaWRsZVwiIHwgXCJsb2FkaW5nXCIgfCBcInN1Y2Nlc3NcIiB8IFwiZXJyb3JcIjtcblxuaW50ZXJmYWNlIENhcmRzU3RhdGUge1xuICBzdGF0dXM6IExvYWRTdGF0dXM7XG4gIG1lc3NhZ2U6IHN0cmluZztcbiAgY2FyZHM6IFRyYWluaW5nQ2FyZFtdO1xuICBzZWxlY3RlZElkPzogc3RyaW5nO1xufVxuXG5jb25zdCBhcGkgPSBuZXcgU2FmZUhvbWVBcGlDbGllbnQoKTtcblxuZnVuY3Rpb24gZGlzcGxheVRleHQodmFsdWU/OiBzdHJpbmcgfCBudW1iZXIgfCBib29sZWFuIHwgbnVsbCkge1xuICBpZiAodmFsdWUgPT09IHVuZGVmaW5lZCB8fCB2YWx1ZSA9PT0gbnVsbCB8fCB2YWx1ZSA9PT0gXCJcIikge1xuICAgIHJldHVybiBcIuacquWhq+WGmVwiO1xuICB9XG4gIGlmICh0eXBlb2YgdmFsdWUgPT09IFwiYm9vbGVhblwiKSB7XG4gICAgcmV0dXJuIHZhbHVlID8gXCLlkK/nlKhcIiA6IFwi5YGc55SoXCI7XG4gIH1cbiAgcmV0dXJuIFN0cmluZyh2YWx1ZSk7XG59XG5cbmV4cG9ydCBmdW5jdGlvbiBDYXJkc01hbmFnZW1lbnQoKSB7XG4gIGNvbnN0IFtzdGF0ZSwgc2V0U3RhdGVdID0gdXNlU3RhdGU8Q2FyZHNTdGF0ZT4oe1xuICAgIHN0YXR1czogXCJpZGxlXCIsXG4gICAgbWVzc2FnZTogXCLmraPlnKjlh4blpIforq3nu4PljaHlhoXlrrnjgIJcIixcbiAgICBjYXJkczogW10sXG4gIH0pO1xuXG4gIGNvbnN0IHNlbGVjdGVkQ2FyZCA9IHVzZU1lbW8oKCkgPT4ge1xuICAgIHJldHVybiBzdGF0ZS5jYXJkcy5maW5kKChjYXJkKSA9PiBjYXJkLmlkID09PSBzdGF0ZS5zZWxlY3RlZElkKSA/PyBzdGF0ZS5jYXJkc1swXTtcbiAgfSwgW3N0YXRlLmNhcmRzLCBzdGF0ZS5zZWxlY3RlZElkXSk7XG5cbiAgY29uc3QgZW5hYmxlZENhcmRzID0gc3RhdGUuY2FyZHMuZmlsdGVyKChjYXJkKSA9PiBjYXJkLmVuYWJsZWQpO1xuICBjb25zdCBkaXNhYmxlZENhcmRzID0gc3RhdGUuY2FyZHMuZmlsdGVyKChjYXJkKSA9PiAhY2FyZC5lbmFibGVkKTtcbiAgY29uc3QgY2FyZFR5cGVzID0gbmV3IFNldChzdGF0ZS5jYXJkcy5tYXAoKGNhcmQpID0+IGNhcmQudHlwZSkpO1xuICBjb25zdCB0YWdzID0gbmV3IFNldChzdGF0ZS5jYXJkcy5mbGF0TWFwKChjYXJkKSA9PiBjYXJkLnRhZ3MpKTtcblxuICBhc3luYyBmdW5jdGlvbiBsb2FkQ2FyZHMoKSB7XG4gICAgc2V0U3RhdGUoKGN1cnJlbnQpID0+ICh7XG4gICAgICAuLi5jdXJyZW50LFxuICAgICAgc3RhdHVzOiBcImxvYWRpbmdcIixcbiAgICAgIG1lc3NhZ2U6IFwi5q2j5Zyo6K+75Y+W6K6t57uD5Y2h5YaF5a65Li4uXCIsXG4gICAgfSkpO1xuXG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IGFwaS5saXN0Q2FyZHMoKTtcbiAgICAgIHNldFN0YXRlKHtcbiAgICAgICAgc3RhdHVzOiBcInN1Y2Nlc3NcIixcbiAgICAgICAgbWVzc2FnZTogcmVzdWx0Lml0ZW1zLmxlbmd0aCA+IDAgPyBcIuW3suivu+WPluiuree7g+WNoeWGheWuueOAglwiIDogXCLlvZPliY3ov5jmsqHmnInorq3nu4PljaHlhoXlrrnjgIJcIixcbiAgICAgICAgY2FyZHM6IHJlc3VsdC5pdGVtcyxcbiAgICAgICAgc2VsZWN0ZWRJZDogcmVzdWx0Lml0ZW1zWzBdPy5pZCxcbiAgICAgIH0pO1xuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICBzZXRTdGF0ZSgoY3VycmVudCkgPT4gKHtcbiAgICAgICAgLi4uY3VycmVudCxcbiAgICAgICAgc3RhdHVzOiBcImVycm9yXCIsXG4gICAgICAgIG1lc3NhZ2U6IGVycm9yIGluc3RhbmNlb2YgRXJyb3IgPyBlcnJvci5tZXNzYWdlIDogXCLor7vlj5blpLHotKXvvIzor7fnoa7orqQgYmFja2VuZCDmmK/lkKblt7LlkK/liqjjgIJcIixcbiAgICAgIH0pKTtcbiAgICB9XG4gIH1cblxuICB1c2VFZmZlY3QoKCkgPT4ge1xuICAgIHZvaWQgbG9hZENhcmRzKCk7XG4gIH0sIFtdKTtcblxuICByZXR1cm4gKFxuICAgIDxzZWN0aW9uIGNsYXNzTmFtZT1cImRhc2hib2FyZFNoZWxsXCIgYXJpYS1sYWJlbD1cIuiuree7g+WNoeeuoeeQhuWQjuWPsFwiPlxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJkYXNoYm9hcmRIZWFkZXJcIj5cbiAgICAgICAgPGRpdj5cbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJleWVicm93XCI+Q29udGVudCBNYW5hZ2VtZW50PC9wPlxuICAgICAgICAgIDxoMT7orq3nu4PljaHnrqHnkIY8L2gxPlxuICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInN1bW1hcnlcIj7lj6ror7vmn6XnnIvlvZPliY3lhoXlrrnlupPkuK3nmoTorq3nu4PljaHvvIznlKjkuo7noa7orqTljaHniYfmoIfpopjjgIHmoIfnrb7jgIHmraXpqqTlkoznpLrkvovmmK/lkKbpgILlkIjor5Xngrnkvb/nlKjjgII8L3A+XG4gICAgICAgIDwvZGl2PlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImRhc2hib2FyZEFjdGlvbnNcIj5cbiAgICAgICAgICA8YSBjbGFzc05hbWU9XCJzZWNvbmRhcnlCdXR0b25cIiBocmVmPVwiL2Rhc2hib2FyZFwiPlxuICAgICAgICAgICAg6L+U5Zue5oC76KeIXG4gICAgICAgICAgPC9hPlxuICAgICAgICAgIDxidXR0b24gY2xhc3NOYW1lPVwicHJpbWFyeUJ1dHRvblwiIHR5cGU9XCJidXR0b25cIiBvbkNsaWNrPXtsb2FkQ2FyZHN9IGRpc2FibGVkPXtzdGF0ZS5zdGF0dXMgPT09IFwibG9hZGluZ1wifT5cbiAgICAgICAgICAgIHtzdGF0ZS5zdGF0dXMgPT09IFwibG9hZGluZ1wiID8gXCLliLfmlrDkuK0uLi5cIiA6IFwi5Yi35paw6K6t57uD5Y2hXCJ9XG4gICAgICAgICAgPC9idXR0b24+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPXtgc3RhdHVzICR7c3RhdGUuc3RhdHVzfWB9PntzdGF0ZS5tZXNzYWdlfTwvZGl2PlxuXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cIm1ldHJpY0dyaWRcIiBhcmlhLWxhYmVsPVwi6K6t57uD5Y2h5qaC5Ya1XCI+XG4gICAgICAgIDxNZXRyaWNDYXJkIGxhYmVsPVwi6K6t57uD5Y2h5oC75pWwXCIgdmFsdWU9e3N0YXRlLmNhcmRzLmxlbmd0aH0gLz5cbiAgICAgICAgPE1ldHJpY0NhcmQgbGFiZWw9XCLlkK/nlKjljaHniYdcIiB2YWx1ZT17ZW5hYmxlZENhcmRzLmxlbmd0aH0gLz5cbiAgICAgICAgPE1ldHJpY0NhcmQgbGFiZWw9XCLlgZznlKjljaHniYdcIiB2YWx1ZT17ZGlzYWJsZWRDYXJkcy5sZW5ndGh9IC8+XG4gICAgICAgIDxNZXRyaWNDYXJkIGxhYmVsPVwi5qCH562+5pWw6YePXCIgdmFsdWU9e3RhZ3Muc2l6ZX0gLz5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cImRhc2hib2FyZEdyaWQgZ29hbHNHcmlkXCI+XG4gICAgICAgIDxzZWN0aW9uIGNsYXNzTmFtZT1cImxpc3RQYW5lbFwiIGFyaWEtbGFiZWw9XCLorq3nu4PljaHliJfooahcIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNlY3Rpb25UaXRsZVJvd1wiPlxuICAgICAgICAgICAgPGgyPuiuree7g+WNoeWIl+ihqDwvaDI+XG4gICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJjb3VudEJhZGdlXCI+e2NhcmRUeXBlcy5zaXplfSDnsbs8L3NwYW4+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7c3RhdGUuY2FyZHMubGVuZ3RoID09PSAwID8gKFxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJlbXB0eVN0YXRlXCI+6L+Y5rKh5pyJ6K6t57uD5Y2h44CC6K+35qOA5p+l5ZCO56uv5YaF5a655bqT5piv5ZCm5bey5Yid5aeL5YyW44CCPC9kaXY+XG4gICAgICAgICAgKSA6IChcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicmVjb3JkTGlzdFwiPlxuICAgICAgICAgICAgICB7c3RhdGUuY2FyZHMubWFwKChjYXJkKSA9PiAoXG4gICAgICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgcmVjb3JkSXRlbSAke3NlbGVjdGVkQ2FyZD8uaWQgPT09IGNhcmQuaWQgPyBcImFjdGl2ZVwiIDogXCJcIn1gfVxuICAgICAgICAgICAgICAgICAga2V5PXtjYXJkLmlkfVxuICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXRTdGF0ZSgoY3VycmVudCkgPT4gKHsgLi4uY3VycmVudCwgc2VsZWN0ZWRJZDogY2FyZC5pZCB9KSl9XG4gICAgICAgICAgICAgICAgPlxuICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicmVjb3JkU2NlbmVcIj57Y2FyZC50aXRsZX08L3NwYW4+XG4gICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJyZWNvcmREZXNjcmlwdGlvblwiPntjYXJkLnB1cnBvc2V9PC9zcGFuPlxuICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicmVjb3JkTWV0YVwiPlxuICAgICAgICAgICAgICAgICAgICB7Y2FyZC5lbmFibGVkID8gXCLlkK/nlKhcIiA6IFwi5YGc55SoXCJ9IMK3IHtjYXJkLnR5cGV9IMK3IHtjYXJkLmR1cmF0aW9uX21pbnV0ZXN9IOWIhumSn1xuICAgICAgICAgICAgICAgICAgPC9zcGFuPlxuICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICAgICAgICApKX1cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICl9XG4gICAgICAgIDwvc2VjdGlvbj5cblxuICAgICAgICA8c2VjdGlvbiBjbGFzc05hbWU9XCJkZXRhaWxQYW5lbFwiIGFyaWEtbGFiZWw9XCLorq3nu4PljaHor6bmg4VcIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNlY3Rpb25UaXRsZVJvd1wiPlxuICAgICAgICAgICAgPGgyPuiuree7g+WNoeivpuaDhTwvaDI+XG4gICAgICAgICAgICB7c2VsZWN0ZWRDYXJkICYmIDxzcGFuIGNsYXNzTmFtZT1cImNvdW50QmFkZ2VcIj5JRCB7c2VsZWN0ZWRDYXJkLmlkfTwvc3Bhbj59XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7c2VsZWN0ZWRDYXJkID8gKFxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJkZXRhaWxDb250ZW50XCI+XG4gICAgICAgICAgICAgIDxEZXRhaWxSb3cgbGFiZWw9XCLljaHniYfmoIfpophcIiB2YWx1ZT17c2VsZWN0ZWRDYXJkLnRpdGxlfSAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi5Y2h54mH57G75Z6LXCIgdmFsdWU9e3NlbGVjdGVkQ2FyZC50eXBlfSAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi5ZCv55So54q25oCBXCIgdmFsdWU9e3NlbGVjdGVkQ2FyZC5lbmFibGVkfSAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi6aKE6K6h5pe26ZW/XCIgdmFsdWU9e2Ake3NlbGVjdGVkQ2FyZC5kdXJhdGlvbl9taW51dGVzfSDliIbpkp9gfSAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi57uD5Lmg55uu55qEXCIgdmFsdWU9e3NlbGVjdGVkQ2FyZC5wdXJwb3NlfSAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi5qCH562+XCIgdmFsdWU9e3NlbGVjdGVkQ2FyZC50YWdzLmpvaW4oXCLjgIFcIil9IC8+XG4gICAgICAgICAgICAgIDxEZXRhaWxSb3cgbGFiZWw9XCLnu4PkuaDmraXpqqRcIiB2YWx1ZT17c2VsZWN0ZWRDYXJkLnN0ZXBzLm1hcCgoc3RlcCwgaW5kZXgpID0+IGAke2luZGV4ICsgMX0uICR7c3RlcH1gKS5qb2luKFwiXFxuXCIpfSAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi56S65L6LXCIgdmFsdWU9e3NlbGVjdGVkQ2FyZC5leGFtcGxlfSAvPlxuXG4gICAgICAgICAgICAgIDxzZWN0aW9uIGNsYXNzTmFtZT1cImd1aWRhbmNlQm94XCIgYXJpYS1sYWJlbD1cIuWGheWuuei+ueeVjOaPkOekulwiPlxuICAgICAgICAgICAgICAgIDxoMz7lhoXlrrnovrnnlYw8L2gzPlxuICAgICAgICAgICAgICAgIDxwPlxuICAgICAgICAgICAgICAgICAg6K6t57uD5Y2h55So5LqO5pSv5oyB5a626ZW/6L+b6KGM5oOF57uq6KeJ5a+f44CB5Lqy5a2Q5rKf6YCa5ZKM6Ieq5oiR5aSN55uY57uD5Lmg44CC6aG16Z2i5Y+q5bGV56S65YaF5a655bqT77yM5LiN5YGa6K+K5pat5Yik5pat77yM5Lmf5LiN5pu/5Luj5b+D55CG5ZKo6K+i44CB5Yy75a2m6K+K5pat5oiW5Y2x5py65bmy6aKE44CCXG4gICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICA8L3NlY3Rpb24+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICApIDogKFxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJlbXB0eVN0YXRlXCI+6YCJ5oup5bem5L6n6K6t57uD5Y2h5ZCO77yM6L+Z6YeM5Lya5pi+56S66K+m5oOF44CCPC9kaXY+XG4gICAgICAgICAgKX1cbiAgICAgICAgPC9zZWN0aW9uPlxuICAgICAgPC9kaXY+XG4gICAgPC9zZWN0aW9uPlxuICApO1xufVxuXG5mdW5jdGlvbiBNZXRyaWNDYXJkKHsgbGFiZWwsIHZhbHVlIH06IHsgbGFiZWw6IHN0cmluZzsgdmFsdWU6IG51bWJlciB9KSB7XG4gIHJldHVybiAoXG4gICAgPGFydGljbGUgY2xhc3NOYW1lPVwibWV0cmljQ2FyZFwiPlxuICAgICAgPHNwYW4+e2xhYmVsfTwvc3Bhbj5cbiAgICAgIDxzdHJvbmc+e3ZhbHVlfTwvc3Ryb25nPlxuICAgIDwvYXJ0aWNsZT5cbiAgKTtcbn1cblxuZnVuY3Rpb24gRGV0YWlsUm93KHsgbGFiZWwsIHZhbHVlIH06IHsgbGFiZWw6IHN0cmluZzsgdmFsdWU/OiBzdHJpbmcgfCBudW1iZXIgfCBib29sZWFuIHwgbnVsbCB9KSB7XG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9XCJkZXRhaWxSb3dcIj5cbiAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImRldGFpbExhYmVsXCI+e2xhYmVsfTwvc3Bhbj5cbiAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImRldGFpbFZhbHVlXCI+e2Rpc3BsYXlUZXh0KHZhbHVlKX08L3NwYW4+XG4gICAgPC9kaXY+XG4gICk7XG59XG4iXSwiZmlsZSI6IkQ6L2NvZGV4L3dvcmtzcGFjZS9zYWZlaG9tZTEuMC9hcHBzL3dlYi9zcmMvcGFnZXMvQ2FyZHNNYW5hZ2VtZW50LnRzeCJ9

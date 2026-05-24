@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "教育热榜",
+  "usingComponents": {
+    "section-title": "/components/section-title/index",
+    "bottom-tip-card": "/components/bottom-tip-card/index",
+    "training-task-card": "/components/training-task-card/index"
+  }
+}

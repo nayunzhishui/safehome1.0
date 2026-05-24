@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+    body{margin:0;background:#f4f7fb;font-family:"Microsoft YaHei",Arial;color:#102033}
+    .wrap{padding:54px 72px}
+    h1{font-size:42px;margin:0 0 10px}
+    p{color:#5b677a;font-size:20px;margin:0 0 30px}
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
+    .card{background:white;border:1px solid #d9e2ef;border-radius:16px;padding:24px;min-height:170px}
+    b{display:block;color:#168a86;font-size:22px;margin-bottom:14px}
+    code{display:block;background:#f7fafc;border:1px solid #e1e8f0;border-radius:10px;padding:10px;margin:8px 0;font-size:15px}
+  </style></head><body><div class="wrap">
+    <h1>0版网页数据与模型文件</h1>
+    <p>当前原型把机器学习模型、画像解释、沙盘任务和统一数据库保存在项目内，便于复现与继续开发。</p>
+    <div class="grid">
+      <div class="card"><b>机器学习模型</b><code>content/ml_model.json</code><code>ml_outputs/student_profile_assignments.csv</code><code>ml_outputs/student_profile_dashboard.html</code></div>
+      <div class="card"><b>画像与干预规则</b><code>content/profile_rules.json</code><code>content/sandplay_tasks.json</code><code>docs/profile_convergence_plan.md</code></div>
+      <div class="card"><b>统一数据与代码</b><code>unified_assessment.sqlite3</code><code>app.py</code><code>templates/student_report.html</code><code>static/profile_visuals.js</code></div>
+    </div>
+  </div></body></html>

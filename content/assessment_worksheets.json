@@ -1,0 +1,780 @@
+{
+  "version": "2026.05-assessment-worksheets-v1",
+  "boundary_notice": "本内容用于自我观察和练习记录，不用于诊断，不替代心理咨询、医学诊断、危机干预或法律判断。如你或家人正在经历明显痛苦或现实风险，请及时寻求现实支持和专业帮助。",
+  "worksheets": [
+    {
+      "id": "worksheet_3_1_anxiety",
+      "source_file": "工作表3.1 总体焦虑水平及干扰程度量表.pdf",
+      "source_title": "工作表3.1：总体焦虑水平及干扰程度量表",
+      "display_title": "工作表3.1：总体焦虑水平及干扰程度量表",
+      "category": "量表类",
+      "pages": 2,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "总体焦虑水平及干扰程度量表",
+          "content": "用于记录近期焦虑水平及对生活的干扰程度。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "overall_anxiety_level",
+          "prompt": "请填写原表中总体焦虑水平相关作答。",
+          "type": "scale",
+          "required": true,
+          "options": [
+            { "label": "0", "value": "0", "score": 0 },
+            { "label": "1", "value": "1", "score": 1 },
+            { "label": "2", "value": "2", "score": 2 },
+            { "label": "3", "value": "3", "score": 3 },
+            { "label": "4", "value": "4", "score": 4 }
+          ]
+        },
+        {
+          "id": "interference_note",
+          "prompt": "请填写原表中干扰程度或补充说明。",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
+      "recommended_card_ids": ["emotion_naming", "three_second_pause"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_3_2_other_emotions",
+      "source_file": "工作表3.2 其他情绪量表.pdf",
+      "source_title": "工作表3.2：其他情绪量表",
+      "display_title": "工作表3.2：其他情绪量表",
+      "category": "量表类",
+      "pages": 2,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "其他情绪量表",
+          "content": "用于记录近期其他情绪体验。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "emotion_score",
+          "prompt": "请填写原表中对应情绪评分。",
+          "type": "scale",
+          "required": true,
+          "options": [
+            { "label": "0", "value": "0", "score": 0 },
+            { "label": "1", "value": "1", "score": 1 },
+            { "label": "2", "value": "2", "score": 2 },
+            { "label": "3", "value": "3", "score": 3 },
+            { "label": "4", "value": "4", "score": 4 }
+          ]
+        },
+        {
+          "id": "emotion_note",
+          "prompt": "请填写原表中的补充记录。",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
+      "recommended_card_ids": ["emotion_naming"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_3_2_depression",
+      "source_file": "工作表3.2 总体抑郁水平及干扰程度量表.pdf",
+      "source_title": "工作表3.2：总体抑郁水平及干扰程度量表",
+      "display_title": "工作表3.2：总体抑郁水平及干扰程度量表",
+      "category": "量表类",
+      "pages": 2,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "总体抑郁水平及干扰程度量表",
+          "content": "用于记录近期低落状态及对生活的干扰程度。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "overall_depression_level",
+          "prompt": "请填写原表中总体抑郁水平相关作答。",
+          "type": "scale",
+          "required": true,
+          "options": [
+            { "label": "0", "value": "0", "score": 0 },
+            { "label": "1", "value": "1", "score": 1 },
+            { "label": "2", "value": "2", "score": 2 },
+            { "label": "3", "value": "3", "score": 3 },
+            { "label": "4", "value": "4", "score": 4 }
+          ]
+        },
+        {
+          "id": "interference_note",
+          "prompt": "请填写原表中干扰程度或补充说明。",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
+      "recommended_card_ids": ["emotion_naming", "nonjudgmental_response"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_3_4_positive_emotion",
+      "source_file": "工作表3.4 积极情绪量表.pdf",
+      "source_title": "工作表3.4：积极情绪量表",
+      "display_title": "工作表3.4：积极情绪量表",
+      "category": "量表类",
+      "pages": 2,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "积极情绪量表",
+          "content": "用于记录积极情绪体验。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "positive_emotion_score",
+          "prompt": "请填写原表中积极情绪相关评分。",
+          "type": "scale",
+          "required": true,
+          "options": [
+            { "label": "0", "value": "0", "score": 0 },
+            { "label": "1", "value": "1", "score": 1 },
+            { "label": "2", "value": "2", "score": 2 },
+            { "label": "3", "value": "3", "score": 3 },
+            { "label": "4", "value": "4", "score": 4 }
+          ]
+        },
+        {
+          "id": "positive_emotion_note",
+          "prompt": "请填写原表中的补充记录。",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
+      "recommended_card_ids": ["emotion_naming"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_3_5_progress",
+      "source_file": "工作表3.5 进展记录.pdf",
+      "source_title": "工作表3.5：进展记录",
+      "display_title": "工作表3.5：进展记录",
+      "category": "目标与进展类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "进展记录",
+          "content": "用于记录阶段性练习和变化。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "progress_note",
+          "prompt": "请填写原表中的进展记录。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["alternative_behavior"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_4_1_goals",
+      "source_file": "工作表4.1 治疗目标.pdf",
+      "source_title": "工作表4.1：治疗目标",
+      "display_title": "工作表4.1：治疗目标",
+      "category": "目标与进展类",
+      "pages": 1,
+      "instructions": "明确主要问题、设定目标，并把目标拆解成多个更小的步骤。",
+      "sections": [
+        {
+          "title": "明确主要问题",
+          "content": "你的情绪（如悲伤、焦虑、内疚）如何导致了生活中的问题？"
+        },
+        {
+          "title": "设定目标",
+          "content": "应对你的主要问题的具体目标有哪些？你会做 / 不做什么以达成这些目标？"
+        },
+        {
+          "title": "完成必要的步骤",
+          "content": "把你的目标拆解成多个更小的步骤，以帮助你明确怎样向目标迈进。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "main_problem",
+          "prompt": "待解决的主要问题",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "goal_1",
+          "prompt": "具体目标 1",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "steps_1",
+          "prompt": "第一步、第二步、第三步、第四步",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "goal_2",
+          "prompt": "具体目标 2",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "steps_2",
+          "prompt": "第一步、第二步、第三步、第四步",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_4_2_decision_balance",
+      "source_file": "工作表4.2 决策权衡.pdf",
+      "source_title": "工作表4.2：决策权衡",
+      "display_title": "工作表4.2：决策权衡",
+      "category": "目标与进展类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "决策权衡",
+          "content": "用于记录改变与不改变的可能影响。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "benefits_and_costs",
+          "prompt": "请填写原表中的决策权衡内容。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["cognitive_flexibility"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_5_1_three_components",
+      "source_file": "工作表5.1 情绪的三成分模型.pdf",
+      "source_title": "工作表5.1：情绪的三成分模型",
+      "display_title": "工作表5.1：情绪的三成分模型",
+      "category": "情绪觉察与认知类",
+      "pages": 1,
+      "instructions": "请在你感受到强烈情绪的任何时候使用本工作表，帮助你把情绪体验拆分成三个成分。你也可以在情绪体验过后，使用本工作表来回顾你的情绪是如何演变的。",
+      "sections": [
+        {
+          "title": "情境",
+          "content": "情境：__________"
+        },
+        {
+          "title": "情绪",
+          "content": "情绪：__________"
+        },
+        {
+          "title": "身体感觉",
+          "content": "身体感觉（你的身体感受到了什么？）"
+        },
+        {
+          "title": "想法",
+          "content": "想法（你想了什么？）"
+        },
+        {
+          "title": "行为",
+          "content": "行为（你做了什么？你想要做什么？）"
+        }
+      ],
+      "questions": [
+        {
+          "id": "situation",
+          "prompt": "情境",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "emotion",
+          "prompt": "情绪",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "body_sensation",
+          "prompt": "身体感觉（你的身体感受到了什么？）",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "thought",
+          "prompt": "想法（你想了什么？）",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "behavior",
+          "prompt": "行为（你做了什么？你想要做什么？）",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["emotion_naming", "cognitive_flexibility"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_6_1_emotion_arc",
+      "source_file": "工作表6.1 情绪反射弧.pdf",
+      "source_title": "工作表6.1：情绪反射弧",
+      "display_title": "工作表6.1：情绪反射弧",
+      "category": "情绪觉察与认知类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "情绪反射弧",
+          "content": "用于记录情绪、想法、身体感觉和行为之间的变化。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "emotion_arc_note",
+          "prompt": "请填写原表中的情绪反射弧记录。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["emotion_naming", "three_second_pause"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_7_1_mindful_emotion",
+      "source_file": "工作表7.1 正念情绪觉察.pdf",
+      "source_title": "工作表7.1：正念情绪觉察",
+      "display_title": "工作表7.1：正念情绪觉察",
+      "category": "情绪觉察与认知类",
+      "pages": 1,
+      "instructions": "请使用本工作表记录情绪，练习下列技术：正念情绪觉察冥想、正念情绪诱发和锚定当下。",
+      "sections": [
+        {
+          "title": "练习技术",
+          "content": "正念情绪觉察冥想；正念情绪诱发；锚定当下。"
+        },
+        {
+          "title": "你觉察到了什么？",
+          "content": "想法、身体感觉、行为。"
+        },
+        {
+          "title": "有效程度",
+          "content": "对情绪不加评判的方法，有效程度是多少？锚定当下的方法，有效程度是多少？"
+        }
+      ],
+      "questions": [
+        {
+          "id": "practice_type",
+          "prompt": "练习冥想、情绪诱发或锚定当下？",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "noticed_thought",
+          "prompt": "想法",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "noticed_body",
+          "prompt": "身体感觉",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "noticed_behavior",
+          "prompt": "行为",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "effectiveness",
+          "prompt": "有效程度 0-10",
+          "type": "scale",
+          "required": false,
+          "options": [
+            { "label": "0", "value": "0", "score": 0 },
+            { "label": "2", "value": "2", "score": 2 },
+            { "label": "4", "value": "4", "score": 4 },
+            { "label": "6", "value": "6", "score": 6 },
+            { "label": "8", "value": "8", "score": 8 },
+            { "label": "10", "value": "10", "score": 10 }
+          ]
+        }
+      ],
+      "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
+      "recommended_card_ids": ["emotion_naming", "three_second_pause"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_8_1_cognitive_flexibility",
+      "source_file": "工作表8.1 认知灵活化.pdf",
+      "source_title": "工作表8.1：认知灵活化",
+      "display_title": "工作表8.1：认知灵活化",
+      "category": "情绪觉察与认知类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "认知灵活化",
+          "content": "用于记录自动想法和其他可能解释。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "automatic_thought",
+          "prompt": "请填写原表中的自动想法。",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "alternative_thought",
+          "prompt": "请填写原表中的其他想法或替代解释。",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["cognitive_flexibility"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_8_2_downward_arrow",
+      "source_file": "工作表8.2 箭头向下-识别核心自动思维.pdf",
+      "source_title": "工作表8.2：箭头向下-识别核心自动思维",
+      "display_title": "工作表8.2：箭头向下-识别核心自动思维",
+      "category": "情绪觉察与认知类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "箭头向下",
+          "content": "用于记录自动想法及进一步追问。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "thought_chain",
+          "prompt": "请填写原表中的想法追问链条。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["cognitive_flexibility"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_9_1_emotional_behavior_list",
+      "source_file": "工作表9.1 情绪性行为清单.pdf",
+      "source_title": "工作表9.1：情绪性行为清单",
+      "display_title": "工作表9.1：情绪性行为清单",
+      "category": "行为与练习类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "情绪性行为清单",
+          "content": "用于记录情绪出现时的行为反应。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "emotional_behavior",
+          "prompt": "请填写原表中的情绪性行为。",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "short_and_long_effect",
+          "prompt": "请填写原表中的短期和长期影响。",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_9_2_coping_behavior",
+      "source_file": "工作表9.2 应对情绪性行为.pdf",
+      "source_title": "工作表9.2：应对情绪性行为",
+      "display_title": "工作表9.2：应对情绪性行为",
+      "category": "行为与练习类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "应对情绪性行为",
+          "content": "用于记录应对情绪性行为的替代方式。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "coping_plan",
+          "prompt": "请填写原表中的应对计划。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["alternative_behavior"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_10_1_body_induction",
+      "source_file": "工作表10.1 身体感觉诱发练习.pdf",
+      "source_title": "工作表10.1：身体感觉诱发练习",
+      "display_title": "工作表10.1：身体感觉诱发练习",
+      "category": "行为与练习类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "身体感觉诱发练习",
+          "content": "用于记录身体感觉诱发练习。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "body_practice_note",
+          "prompt": "请填写原表中的身体感觉诱发练习记录。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["emotion_naming"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_10_2_body_training",
+      "source_file": "工作表10.2 身体感觉训练.pdf",
+      "source_title": "工作表10.2：身体感觉训练",
+      "display_title": "工作表10.2：身体感觉训练",
+      "category": "行为与练习类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "身体感觉训练",
+          "content": "用于记录身体感觉训练。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "body_training_note",
+          "prompt": "请填写原表中的身体感觉训练记录。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["emotion_naming"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_11_1_emotion_exposure_hierarchy",
+      "source_file": "工作表11.1 情绪暴露等级.pdf",
+      "source_title": "工作表11.1：情绪暴露等级",
+      "display_title": "工作表11.1：情绪暴露等级",
+      "category": "行为与练习类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "情绪暴露等级",
+          "content": "用于记录情绪暴露等级。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "exposure_hierarchy",
+          "prompt": "请填写原表中的情绪暴露等级。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["three_second_pause"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_11_2_emotion_exposure_record",
+      "source_file": "工作表11.2 情绪暴露练习记录.pdf",
+      "source_title": "工作表11.2：情绪暴露练习记录",
+      "display_title": "工作表11.2：情绪暴露练习记录",
+      "category": "行为与练习类",
+      "pages": 2,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "情绪暴露练习记录",
+          "content": "用于记录情绪暴露练习。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "exposure_record",
+          "prompt": "请填写原表中的情绪暴露练习记录。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["three_second_pause"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_13_1_progress_evaluation",
+      "source_file": "工作表13.1 进展评估.pdf",
+      "source_title": "工作表13.1：进展评估",
+      "display_title": "工作表13.1：进展评估",
+      "category": "目标与进展类",
+      "pages": 2,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "进展评估",
+          "content": "用于记录阶段性进展评估。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "progress_evaluation",
+          "prompt": "请填写原表中的进展评估。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["alternative_behavior"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "worksheet_13_2_practice_plan",
+      "source_file": "工作表13.2 练习计划.pdf",
+      "source_title": "工作表13.2：练习计划",
+      "display_title": "工作表13.2：练习计划",
+      "category": "目标与进展类",
+      "pages": 1,
+      "instructions": "请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。",
+      "sections": [
+        {
+          "title": "练习计划",
+          "content": "用于记录练习计划。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "practice_plan",
+          "prompt": "请填写原表中的练习计划。",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "scoring": "记录型工作表不自动计分。",
+      "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "appendix_b_examples_3_5_9_2",
+      "source_file": "附录B 工作表示例 3.5-9.2.pdf",
+      "source_title": "附录B：工作表示例 3.5-9.2",
+      "display_title": "附录B：工作表示例 3.5-9.2",
+      "category": "示例参考",
+      "pages": 15,
+      "instructions": "附录示例仅作为参考展示，不作为默认必填量表。",
+      "sections": [
+        {
+          "title": "工作表示例 3.5-9.2",
+          "content": "用于查看原工作表示例。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "example_note",
+          "prompt": "查看示例后的补充记录",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "示例参考不自动计分。",
+      "recommended_card_ids": [],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "appendix_b_examples_7_1_13_2",
+      "source_file": "附录B 工作表示例 7.1-13.2.pdf",
+      "source_title": "附录B：工作表示例 7.1-13.2",
+      "display_title": "附录B：工作表示例 7.1-13.2",
+      "category": "示例参考",
+      "pages": 25,
+      "instructions": "附录示例仅作为参考展示，不作为默认必填量表。",
+      "sections": [
+        {
+          "title": "工作表示例 7.1-13.2",
+          "content": "用于查看原工作表示例。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "example_note",
+          "prompt": "查看示例后的补充记录",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "示例参考不自动计分。",
+      "recommended_card_ids": [],
+      "source_version": "2026.05-pdf-original"
+    },
+    {
+      "id": "appendix_b_examples_10_2",
+      "source_file": "附录B 工作表示例10.2.pdf",
+      "source_title": "附录B：工作表示例10.2",
+      "display_title": "附录B：工作表示例10.2",
+      "category": "示例参考",
+      "pages": 10,
+      "instructions": "附录示例仅作为参考展示，不作为默认必填量表。",
+      "sections": [
+        {
+          "title": "工作表示例10.2",
+          "content": "用于查看原工作表示例。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "example_note",
+          "prompt": "查看示例后的补充记录",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "scoring": "示例参考不自动计分。",
+      "recommended_card_ids": [],
+      "source_version": "2026.05-pdf-original"
+    }
+  ]
+}

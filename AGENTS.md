@@ -380,4 +380,5 @@ git add backend content docs AGENTS.md
 git commit -m "实现 backend MVP 并更新交接文档"
 git push
 ```
-如果本轮任务涉及用户研究、UI/UX、美术设计、可用性测试或视觉审查，请先阅读 docs/Codex用户研究与美术设计完整指令.md。
+如果本轮任务涉及用户研究、UI/UX、美术设计、可用性测试或视觉审查，请先阅读Codex用户研究与美术设计完整指令.md。
+切换账号或模型后，首先阅读文件夹内的docs内的所有内容以及所有markdown格式的文档

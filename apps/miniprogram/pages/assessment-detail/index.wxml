@@ -1,0 +1,78 @@
+<view class="safe-page assessment-detail-page">
+  <view wx:if="{{loading}}" class="state-box">
+    <text>正在读取工作表...</text>
+  </view>
+
+  <view wx:elif="{{worksheet}}">
+    <view class="page-head">
+      <text class="page-title">{{worksheet.display_title}}</text>
+      <text class="page-subtitle">{{worksheet.source_file}} · {{worksheet.pages}} 页 · {{worksheet.category}}</text>
+    </view>
+
+    <view class="safe-section">
+      <alert-card type="info" title="边界提示" content="{{worksheet.boundary_notice}}" />
+    </view>
+
+    <view class="safe-section">
+      <section-title title="原文说明" subtitle="以下内容按当前内容库展示" />
+      <view class="instruction-card">
+        <text>{{worksheet.instructions}}</text>
+      </view>
+    </view>
+
+    <view class="safe-section">
+      <section-title title="原工作表内容" subtitle="保留原工作表标题、说明和填写项" />
+      <view class="section-card" wx:for="{{worksheet.sections}}" wx:key="title">
+        <text class="section-card-title">{{item.title}}</text>
+        <text class="section-card-content">{{item.content}}</text>
+      </view>
+    </view>
+
+    <view class="safe-section">
+      <section-title title="填写记录" subtitle="提交后保存到测一测历史" />
+      <view class="question-card" wx:for="{{worksheet.questions}}" wx:key="id" wx:for-index="questionIndex">
+        <text class="question-title">{{item.prompt}}<text wx:if="{{item.required}}" class="required"> *</text></text>
+
+        <view wx:if="{{item.type === 'scale'}}" class="option-row">
+          <button
+            wx:for="{{item.options}}"
+            wx:for-item="option"
+            wx:key="value"
+            class="option-button {{item.answerValue === option.value ? 'active' : ''}}"
+            data-index="{{questionIndex}}"
+            data-value="{{option.value}}"
+            data-score="{{option.score}}"
+            bindtap="selectOption"
+          >
+            {{option.label}}
+          </button>
+        </view>
+
+        <textarea
+          wx:else
+          class="answer-textarea"
+          value="{{item.answerValue}}"
+          placeholder="请按照原工作表填写"
+          data-index="{{questionIndex}}"
+          bindinput="onTextInput"
+        />
+      </view>
+    </view>
+
+    <view wx:if="{{errorMessage}}" class="error-box">
+      <text>{{errorMessage}}</text>
+    </view>
+
+    <button class="safe-primary-button submit-button" bindtap="submitWorksheet" disabled="{{submitting}}">
+      {{submitting ? '保存中...' : '保存本次填写'}}
+    </button>
+
+    <view class="safe-section">
+      <bottom-tip-card text="保存后可以在测一测首页看到最近记录，也可以进入推荐训练卡继续练习。" />
+    </view>
+  </view>
+
+  <view wx:else class="state-box error">
+    <text>{{errorMessage || '没有找到工作表内容。'}}</text>
+  </view>
+</view>

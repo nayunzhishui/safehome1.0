@@ -2,18 +2,21 @@ Page({
   data: {
     hotTopics: [
       {
-        title: "作业拖延时，先回应情绪还是先谈任务？",
-        tag: "作业拖延",
-        readTime: "3分钟阅读",
-      },
-      {
-        title: "手机冲突后，怎样把对话重新拉回合作？",
-        tag: "手机冲突",
+        id: "exam-setback",
+        title: "孩子考试失利后，家长第一句话怎么说？",
+        tag: "考试压力",
         readTime: "4分钟阅读",
       },
       {
-        title: "亲子沟通卡住时，可以先换一种说法",
-        tag: "亲子沟通",
+        id: "emotion-outburst",
+        title: "孩子发脾气时，为什么讲道理没用？",
+        tag: "情绪爆发",
+        readTime: "4分钟阅读",
+      },
+      {
+        id: "repair-after-conflict",
+        title: "亲子冲突后，如何重新连接？",
+        tag: "关系修复",
         readTime: "5分钟阅读",
       },
     ],
@@ -105,11 +108,14 @@ Page({
   },
 
   openHotTopics() {
-    this.showComingSoon("教育热榜页面将在后续接入");
+    wx.navigateTo({ url: "/pages/hot-topics/index" });
   },
 
-  openHotTopic() {
-    this.showComingSoon("案例详情将在后续接入");
+  openHotTopic(event) {
+    const id = event.currentTarget.dataset.id || "";
+    wx.navigateTo({
+      url: `/pages/hot-topics/index?id=${encodeURIComponent(id)}`,
+    });
   },
 
   showComingSoon(title) {

@@ -16,5 +16,9 @@ Component({
       type: String,
       value: "",
     },
+    imageSrc: {
+      type: String,
+      value: "",
+    },
   },
 });

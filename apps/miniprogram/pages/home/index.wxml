@@ -4,6 +4,7 @@
     subtitle="今天也可以从一个小练习开始"
     detail="先稳定自己，再更清晰地陪伴孩子"
     streak-text="今日建议完成 1 个小练习"
+    image-src="/assets/illustrations/home-family-care.png"
   />
 
   <view class="safe-section">
@@ -19,6 +20,7 @@
           wx:for="{{hotTopics}}"
           wx:key="title"
           class="hot-card"
+          data-id="{{item.id}}"
           bindtap="openHotTopic"
         >
           <view class="hot-thumb">

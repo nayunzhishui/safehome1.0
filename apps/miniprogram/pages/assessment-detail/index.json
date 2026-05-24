@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "填写工作表",
+  "usingComponents": {
+    "section-title": "/components/section-title/index",
+    "alert-card": "/components/alert-card/index",
+    "bottom-tip-card": "/components/bottom-tip-card/index"
+  }
+}

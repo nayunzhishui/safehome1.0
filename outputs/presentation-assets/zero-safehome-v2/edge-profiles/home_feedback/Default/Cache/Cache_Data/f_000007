@@ -1,0 +1,418 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/CheckinsManagement.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=99d65b07"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=99d65b07"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useMemo = __vite__cjsImport1_react["useMemo"]; const useState = __vite__cjsImport1_react["useState"];
+import { SafeHomeApiClient } from "/src/services/safehomeApi.ts";
+const api = new SafeHomeApiClient();
+function formatDateTime(value) {
+  if (!value) {
+    return "未记录";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+function displayText(value) {
+  if (value === void 0 || value === null || value === "") {
+    return "未填写";
+  }
+  return String(value);
+}
+function getEmotionDelta(checkin) {
+  if (typeof checkin.emotion_before !== "number" || typeof checkin.emotion_after !== "number") {
+    return null;
+  }
+  return checkin.emotion_after - checkin.emotion_before;
+}
+export function CheckinsManagement() {
+  _s();
+  const [state, setState] = useState({
+    status: "idle",
+    message: "正在准备练习打卡记录。",
+    checkins: [],
+    cards: []
+  });
+  const cardTitleById = useMemo(() => {
+    return new Map(state.cards.map((card) => [card.id, card.title]));
+  }, [state.cards]);
+  const selectedCheckin = useMemo(() => {
+    return state.checkins.find((checkin) => checkin.id === state.selectedId) ?? state.checkins[0];
+  }, [state.checkins, state.selectedId]);
+  const completedCount = state.checkins.filter((checkin) => checkin.completed === 1).length;
+  const linkedDiaryCount = state.checkins.filter((checkin) => checkin.diary_id).length;
+  const withReflectionCount = state.checkins.filter((checkin) => checkin.reflection).length;
+  async function loadCheckins() {
+    setState((current) => ({
+      ...current,
+      status: "loading",
+      message: "正在读取练习打卡记录..."
+    }));
+    try {
+      const [checkins, cards] = await Promise.all([api.listCheckins({ limit: 50 }), api.listCards()]);
+      setState({
+        status: "success",
+        message: checkins.items.length > 0 ? "已读取小程序端保存的练习打卡记录。" : "当前还没有练习打卡记录。",
+        checkins: checkins.items,
+        cards: cards.items,
+        selectedId: checkins.items[0]?.id
+      });
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        status: "error",
+        message: error instanceof Error ? error.message : "读取失败，请确认 backend 是否已启动。"
+      }));
+    }
+  }
+  useEffect(() => {
+    void loadCheckins();
+  }, []);
+  return /* @__PURE__ */ jsxDEV("section", { className: "dashboardShell", "aria-label": "练习打卡记录后台", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "dashboardHeader", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("p", { className: "eyebrow", children: "Research Platform" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 104,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("h1", { children: "练习打卡记录" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 105,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "summary", children: "查看小程序端保存的训练卡练习和打卡情况，用于观察练习完成度和复盘文本是否完整。" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 106,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+        lineNumber: 103,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "dashboardActions", children: [
+        /* @__PURE__ */ jsxDEV("a", { className: "secondaryButton", href: "/dashboard", children: "返回总览" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 109,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("button", { className: "primaryButton", type: "button", onClick: loadCheckins, disabled: state.status === "loading", children: state.status === "loading" ? "刷新中..." : "刷新打卡" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 112,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+        lineNumber: 108,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+      lineNumber: 102,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: `status ${state.status}`, children: state.message }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+      lineNumber: 118,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "metricGrid", "aria-label": "打卡概况", children: [
+      /* @__PURE__ */ jsxDEV(MetricCard, { label: "打卡记录", value: state.checkins.length }, void 0, false, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+        lineNumber: 121,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV(MetricCard, { label: "已完成", value: completedCount }, void 0, false, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+        lineNumber: 122,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV(MetricCard, { label: "关联记录", value: linkedDiaryCount }, void 0, false, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+        lineNumber: 123,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV(MetricCard, { label: "含复盘", value: withReflectionCount }, void 0, false, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+        lineNumber: 124,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+      lineNumber: 120,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "dashboardGrid goalsGrid", children: [
+      /* @__PURE__ */ jsxDEV("section", { className: "listPanel", "aria-label": "打卡列表", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "sectionTitleRow", children: [
+          /* @__PURE__ */ jsxDEV("h2", { children: "打卡列表" }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 130,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { className: "countBadge", children: [
+            state.checkins.length,
+            " 条"
+          ] }, void 0, true, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 131,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 129,
+          columnNumber: 11
+        }, this),
+        state.checkins.length === 0 ? /* @__PURE__ */ jsxDEV("div", { className: "emptyState", children: "还没有打卡记录。请先在小程序完成一张训练卡练习。" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 135,
+          columnNumber: 11
+        }, this) : /* @__PURE__ */ jsxDEV("div", { className: "recordList", children: state.checkins.map((checkin) => {
+          const cardTitle = cardTitleById.get(checkin.card_id) ?? checkin.card_id;
+          const delta = getEmotionDelta(checkin);
+          return /* @__PURE__ */ jsxDEV(
+            "button",
+            {
+              className: `recordItem ${selectedCheckin?.id === checkin.id ? "active" : ""}`,
+              type: "button",
+              onClick: () => setState((current) => ({ ...current, selectedId: checkin.id })),
+              children: [
+                /* @__PURE__ */ jsxDEV("span", { className: "recordScene", children: cardTitle }, void 0, false, {
+                  fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+                  lineNumber: 149,
+                  columnNumber: 21
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { className: "recordDescription", children: checkin.reflection || "未填写复盘" }, void 0, false, {
+                  fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+                  lineNumber: 150,
+                  columnNumber: 21
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { className: "recordMeta", children: [
+                  checkin.completed === 1 ? "已完成" : "未完成",
+                  " · ",
+                  formatDateTime(checkin.created_at),
+                  delta !== null ? ` · 情绪变化 ${delta > 0 ? "+" : ""}${delta}` : ""
+                ] }, void 0, true, {
+                  fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+                  lineNumber: 151,
+                  columnNumber: 21
+                }, this)
+              ]
+            },
+            checkin.id,
+            true,
+            {
+              fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+              lineNumber: 143,
+              columnNumber: 17
+            },
+            this
+          );
+        }) }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 137,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+        lineNumber: 128,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("section", { className: "detailPanel", "aria-label": "打卡详情", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "sectionTitleRow", children: [
+          /* @__PURE__ */ jsxDEV("h2", { children: "打卡详情" }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 164,
+            columnNumber: 13
+          }, this),
+          selectedCheckin && /* @__PURE__ */ jsxDEV("span", { className: "countBadge", children: [
+            "ID ",
+            selectedCheckin.id.slice(0, 8)
+          ] }, void 0, true, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 165,
+            columnNumber: 33
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 163,
+          columnNumber: 11
+        }, this),
+        selectedCheckin ? /* @__PURE__ */ jsxDEV("div", { className: "detailContent", children: [
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "家长用户", value: selectedCheckin.user_id }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 170,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "训练卡", value: cardTitleById.get(selectedCheckin.card_id) ?? selectedCheckin.card_id }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 171,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "训练卡 ID", value: selectedCheckin.card_id }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 172,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "关联记录 ID", value: selectedCheckin.diary_id }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 173,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "完成状态", value: selectedCheckin.completed === 1 ? "已完成" : "未完成" }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 174,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "练习前评分", value: selectedCheckin.emotion_before }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 175,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "练习后评分", value: selectedCheckin.emotion_after }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 176,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            DetailRow,
+            {
+              label: "评分变化",
+              value: getEmotionDelta(selectedCheckin) === null ? null : `${getEmotionDelta(selectedCheckin) > 0 ? "+" : ""}${getEmotionDelta(selectedCheckin)}`
+            },
+            void 0,
+            false,
+            {
+              fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+              lineNumber: 177,
+              columnNumber: 15
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "家长复盘", value: selectedCheckin.reflection }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 181,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(DetailRow, { label: "创建时间", value: formatDateTime(selectedCheckin.created_at) }, void 0, false, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 182,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("section", { className: "guidanceBox", "aria-label": "试点评估用途", children: [
+            /* @__PURE__ */ jsxDEV("h3", { children: "试点评估用途" }, void 0, false, {
+              fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+              lineNumber: 185,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { children: "打卡页用于观察家长是否完成训练卡练习、是否留下复盘，以及练习前后情绪评分是否便于后续复盘。这里不展示诊断性标签，也不判断家长或孩子是否存在心理问题。" }, void 0, false, {
+              fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+              lineNumber: 186,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+            lineNumber: 184,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 169,
+          columnNumber: 11
+        }, this) : /* @__PURE__ */ jsxDEV("div", { className: "emptyState", children: "选择左侧打卡记录后，这里会显示详情。" }, void 0, false, {
+          fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+          lineNumber: 192,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+        lineNumber: 162,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+      lineNumber: 127,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+    lineNumber: 101,
+    columnNumber: 5
+  }, this);
+}
+_s(CheckinsManagement, "Z508axNsyzXVYxd8r7tPrVyjnCI=");
+_c = CheckinsManagement;
+function MetricCard({ label, value }) {
+  return /* @__PURE__ */ jsxDEV("article", { className: "metricCard", children: [
+    /* @__PURE__ */ jsxDEV("span", { children: label }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+      lineNumber: 203,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("strong", { children: value }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+      lineNumber: 204,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+    lineNumber: 202,
+    columnNumber: 5
+  }, this);
+}
+_c2 = MetricCard;
+function DetailRow({ label, value }) {
+  return /* @__PURE__ */ jsxDEV("div", { className: "detailRow", children: [
+    /* @__PURE__ */ jsxDEV("span", { className: "detailLabel", children: label }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+      lineNumber: 212,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("span", { className: "detailValue", children: displayText(value) }, void 0, false, {
+      fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+      lineNumber: 213,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx",
+    lineNumber: 211,
+    columnNumber: 5
+  }, this);
+}
+_c3 = DetailRow;
+var _c, _c2, _c3;
+$RefreshReg$(_c, "CheckinsManagement");
+$RefreshReg$(_c2, "MetricCard");
+$RefreshReg$(_c3, "DetailRow");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "D:/codex/workspace/safehome1.0/apps/web/src/pages/CheckinsManagement.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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RixTQUNFLHVCQUFDLFNBQUksV0FBVSxhQUNiO0FBQUEsMkJBQUMsVUFBSyxXQUFVLGVBQWU4RCxtQkFBL0I7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQUFxQztBQUFBLElBQ3JDLHVCQUFDLFVBQUssV0FBVSxlQUFlbEQsc0JBQVlaLEtBQUssS0FBaEQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQUFrRDtBQUFBLE9BRnBEO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0FHQTtBQUVKO0FBQUNpRSxNQVBRRDtBQUFTLElBQUFFLElBQUFILEtBQUFFO0FBQUEsYUFBQUMsSUFBQTtBQUFBLGFBQUFILEtBQUE7QUFBQSxhQUFBRSxLQUFBIiwibmFtZXMiOlsidXNlRWZmZWN0IiwidXNlTWVtbyIsInVzZVN0YXRlIiwiU2FmZUhvbWVBcGlDbGllbnQiLCJhcGkiLCJmb3JtYXREYXRlVGltZSIsInZhbHVlIiwiZGF0ZSIsIkRhdGUiLCJOdW1iZXIiLCJpc05hTiIsImdldFRpbWUiLCJ0b0xvY2FsZVN0cmluZyIsInllYXIiLCJtb250aCIsImRheSIsImhvdXIiLCJtaW51dGUiLCJkaXNwbGF5VGV4dCIsInVuZGVmaW5lZCIsIlN0cmluZyIsImdldEVtb3Rpb25EZWx0YSIsImNoZWNraW4iLCJlbW90aW9uX2JlZm9yZSIsImVtb3Rpb25fYWZ0ZXIiLCJDaGVja2luc01hbmFnZW1lbnQiLCJfcyIsInN0YXRlIiwic2V0U3RhdGUiLCJzdGF0dXMiLCJtZXNzYWdlIiwiY2hlY2tpbnMiLCJjYXJkcyIsImNhcmRUaXRsZUJ5SWQiLCJNYXAiLCJtYXAiLCJjYXJkIiwiaWQiLCJ0aXRsZSIsInNlbGVjdGVkQ2hlY2tpbiIsImZpbmQiLCJzZWxlY3RlZElkIiwiY29tcGxldGVkQ291bnQiLCJmaWx0ZXIiLCJjb21wbGV0ZWQiLCJsZW5ndGgiLCJsaW5rZWREaWFyeUNvdW50IiwiZGlhcnlfaWQiLCJ3aXRoUmVmbGVjdGlvbkNvdW50IiwicmVmbGVjdGlvbiIsImxvYWRDaGVja2lucyIsImN1cnJlbnQiLCJQcm9taXNlIiwiYWxsIiwibGlzdENoZWNraW5zIiwibGltaXQiLCJsaXN0Q2FyZHMiLCJpdGVtcyIsImVycm9yIiwiRXJyb3IiLCJjYXJkVGl0bGUiLCJnZXQiLCJjYXJkX2lkIiwiZGVsdGEiLCJjcmVhdGVkX2F0Iiwic2xpY2UiLCJ1c2VyX2lkIiwiTWV0cmljQ2FyZCIsImxhYmVsIiwiX2MyIiwiRGV0YWlsUm93IiwiX2MzIiwiX2MiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiQ2hlY2tpbnNNYW5hZ2VtZW50LnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyB1c2VFZmZlY3QsIHVzZU1lbW8sIHVzZVN0YXRlIH0gZnJvbSBcInJlYWN0XCI7XG5cbmltcG9ydCB7IFNhZmVIb21lQXBpQ2xpZW50IH0gZnJvbSBcIi4uL3NlcnZpY2VzL3NhZmVob21lQXBpXCI7XG5pbXBvcnQgdHlwZSB7IENoZWNraW4sIFRyYWluaW5nQ2FyZCB9IGZyb20gXCIuLi8uLi8uLi8uLi9zaGFyZWQvdHlwZXMvYXBpXCI7XG5cbnR5cGUgTG9hZFN0YXR1cyA9IFwiaWRsZVwiIHwgXCJsb2FkaW5nXCIgfCBcInN1Y2Nlc3NcIiB8IFwiZXJyb3JcIjtcblxuaW50ZXJmYWNlIENoZWNraW5zU3RhdGUge1xuICBzdGF0dXM6IExvYWRTdGF0dXM7XG4gIG1lc3NhZ2U6IHN0cmluZztcbiAgY2hlY2tpbnM6IENoZWNraW5bXTtcbiAgY2FyZHM6IFRyYWluaW5nQ2FyZFtdO1xuICBzZWxlY3RlZElkPzogc3RyaW5nO1xufVxuXG5jb25zdCBhcGkgPSBuZXcgU2FmZUhvbWVBcGlDbGllbnQoKTtcblxuZnVuY3Rpb24gZm9ybWF0RGF0ZVRpbWUodmFsdWU/OiBzdHJpbmcgfCBudWxsKSB7XG4gIGlmICghdmFsdWUpIHtcbiAgICByZXR1cm4gXCLmnKrorrDlvZVcIjtcbiAgfVxuXG4gIGNvbnN0IGRhdGUgPSBuZXcgRGF0ZSh2YWx1ZSk7XG4gIGlmIChOdW1iZXIuaXNOYU4oZGF0ZS5nZXRUaW1lKCkpKSB7XG4gICAgcmV0dXJuIHZhbHVlO1xuICB9XG5cbiAgcmV0dXJuIGRhdGUudG9Mb2NhbGVTdHJpbmcoXCJ6aC1DTlwiLCB7XG4gICAgeWVhcjogXCJudW1lcmljXCIsXG4gICAgbW9udGg6IFwiMi1kaWdpdFwiLFxuICAgIGRheTogXCIyLWRpZ2l0XCIsXG4gICAgaG91cjogXCIyLWRpZ2l0XCIsXG4gICAgbWludXRlOiBcIjItZGlnaXRcIixcbiAgfSk7XG59XG5cbmZ1bmN0aW9uIGRpc3BsYXlUZXh0KHZhbHVlPzogc3RyaW5nIHwgbnVtYmVyIHwgbnVsbCkge1xuICBpZiAodmFsdWUgPT09IHVuZGVmaW5lZCB8fCB2YWx1ZSA9PT0gbnVsbCB8fCB2YWx1ZSA9PT0gXCJcIikge1xuICAgIHJldHVybiBcIuacquWhq+WGmVwiO1xuICB9XG4gIHJldHVybiBTdHJpbmcodmFsdWUpO1xufVxuXG5mdW5jdGlvbiBnZXRFbW90aW9uRGVsdGEoY2hlY2tpbjogQ2hlY2tpbikge1xuICBpZiAodHlwZW9mIGNoZWNraW4uZW1vdGlvbl9iZWZvcmUgIT09IFwibnVtYmVyXCIgfHwgdHlwZW9mIGNoZWNraW4uZW1vdGlvbl9hZnRlciAhPT0gXCJudW1iZXJcIikge1xuICAgIHJldHVybiBudWxsO1xuICB9XG4gIHJldHVybiBjaGVja2luLmVtb3Rpb25fYWZ0ZXIgLSBjaGVja2luLmVtb3Rpb25fYmVmb3JlO1xufVxuXG5leHBvcnQgZnVuY3Rpb24gQ2hlY2tpbnNNYW5hZ2VtZW50KCkge1xuICBjb25zdCBbc3RhdGUsIHNldFN0YXRlXSA9IHVzZVN0YXRlPENoZWNraW5zU3RhdGU+KHtcbiAgICBzdGF0dXM6IFwiaWRsZVwiLFxuICAgIG1lc3NhZ2U6IFwi5q2j5Zyo5YeG5aSH57uD5Lmg5omT5Y2h6K6w5b2V44CCXCIsXG4gICAgY2hlY2tpbnM6IFtdLFxuICAgIGNhcmRzOiBbXSxcbiAgfSk7XG5cbiAgY29uc3QgY2FyZFRpdGxlQnlJZCA9IHVzZU1lbW8oKCkgPT4ge1xuICAgIHJldHVybiBuZXcgTWFwKHN0YXRlLmNhcmRzLm1hcCgoY2FyZCkgPT4gW2NhcmQuaWQsIGNhcmQudGl0bGVdKSk7XG4gIH0sIFtzdGF0ZS5jYXJkc10pO1xuXG4gIGNvbnN0IHNlbGVjdGVkQ2hlY2tpbiA9IHVzZU1lbW8oKCkgPT4ge1xuICAgIHJldHVybiBzdGF0ZS5jaGVja2lucy5maW5kKChjaGVja2luKSA9PiBjaGVja2luLmlkID09PSBzdGF0ZS5zZWxlY3RlZElkKSA/PyBzdGF0ZS5jaGVja2luc1swXTtcbiAgfSwgW3N0YXRlLmNoZWNraW5zLCBzdGF0ZS5zZWxlY3RlZElkXSk7XG5cbiAgY29uc3QgY29tcGxldGVkQ291bnQgPSBzdGF0ZS5jaGVja2lucy5maWx0ZXIoKGNoZWNraW4pID0+IGNoZWNraW4uY29tcGxldGVkID09PSAxKS5sZW5ndGg7XG4gIGNvbnN0IGxpbmtlZERpYXJ5Q291bnQgPSBzdGF0ZS5jaGVja2lucy5maWx0ZXIoKGNoZWNraW4pID0+IGNoZWNraW4uZGlhcnlfaWQpLmxlbmd0aDtcbiAgY29uc3Qgd2l0aFJlZmxlY3Rpb25Db3VudCA9IHN0YXRlLmNoZWNraW5zLmZpbHRlcigoY2hlY2tpbikgPT4gY2hlY2tpbi5yZWZsZWN0aW9uKS5sZW5ndGg7XG5cbiAgYXN5bmMgZnVuY3Rpb24gbG9hZENoZWNraW5zKCkge1xuICAgIHNldFN0YXRlKChjdXJyZW50KSA9PiAoe1xuICAgICAgLi4uY3VycmVudCxcbiAgICAgIHN0YXR1czogXCJsb2FkaW5nXCIsXG4gICAgICBtZXNzYWdlOiBcIuato+WcqOivu+WPlue7g+S5oOaJk+WNoeiusOW9lS4uLlwiLFxuICAgIH0pKTtcblxuICAgIHRyeSB7XG4gICAgICBjb25zdCBbY2hlY2tpbnMsIGNhcmRzXSA9IGF3YWl0IFByb21pc2UuYWxsKFthcGkubGlzdENoZWNraW5zKHsgbGltaXQ6IDUwIH0pLCBhcGkubGlzdENhcmRzKCldKTtcbiAgICAgIHNldFN0YXRlKHtcbiAgICAgICAgc3RhdHVzOiBcInN1Y2Nlc3NcIixcbiAgICAgICAgbWVzc2FnZTogY2hlY2tpbnMuaXRlbXMubGVuZ3RoID4gMCA/IFwi5bey6K+75Y+W5bCP56iL5bqP56uv5L+d5a2Y55qE57uD5Lmg5omT5Y2h6K6w5b2V44CCXCIgOiBcIuW9k+WJjei/mOayoeaciee7g+S5oOaJk+WNoeiusOW9leOAglwiLFxuICAgICAgICBjaGVja2luczogY2hlY2tpbnMuaXRlbXMsXG4gICAgICAgIGNhcmRzOiBjYXJkcy5pdGVtcyxcbiAgICAgICAgc2VsZWN0ZWRJZDogY2hlY2tpbnMuaXRlbXNbMF0/LmlkLFxuICAgICAgfSk7XG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIHNldFN0YXRlKChjdXJyZW50KSA9PiAoe1xuICAgICAgICAuLi5jdXJyZW50LFxuICAgICAgICBzdGF0dXM6IFwiZXJyb3JcIixcbiAgICAgICAgbWVzc2FnZTogZXJyb3IgaW5zdGFuY2VvZiBFcnJvciA/IGVycm9yLm1lc3NhZ2UgOiBcIuivu+WPluWksei0pe+8jOivt+ehruiupCBiYWNrZW5kIOaYr+WQpuW3suWQr+WKqOOAglwiLFxuICAgICAgfSkpO1xuICAgIH1cbiAgfVxuXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgdm9pZCBsb2FkQ2hlY2tpbnMoKTtcbiAgfSwgW10pO1xuXG4gIHJldHVybiAoXG4gICAgPHNlY3Rpb24gY2xhc3NOYW1lPVwiZGFzaGJvYXJkU2hlbGxcIiBhcmlhLWxhYmVsPVwi57uD5Lmg5omT5Y2h6K6w5b2V5ZCO5Y+wXCI+XG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cImRhc2hib2FyZEhlYWRlclwiPlxuICAgICAgICA8ZGl2PlxuICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImV5ZWJyb3dcIj5SZXNlYXJjaCBQbGF0Zm9ybTwvcD5cbiAgICAgICAgICA8aDE+57uD5Lmg5omT5Y2h6K6w5b2VPC9oMT5cbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJzdW1tYXJ5XCI+5p+l55yL5bCP56iL5bqP56uv5L+d5a2Y55qE6K6t57uD5Y2h57uD5Lmg5ZKM5omT5Y2h5oOF5Ya177yM55So5LqO6KeC5a+f57uD5Lmg5a6M5oiQ5bqm5ZKM5aSN55uY5paH5pys5piv5ZCm5a6M5pW044CCPC9wPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJkYXNoYm9hcmRBY3Rpb25zXCI+XG4gICAgICAgICAgPGEgY2xhc3NOYW1lPVwic2Vjb25kYXJ5QnV0dG9uXCIgaHJlZj1cIi9kYXNoYm9hcmRcIj5cbiAgICAgICAgICAgIOi/lOWbnuaAu+iniFxuICAgICAgICAgIDwvYT5cbiAgICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cInByaW1hcnlCdXR0b25cIiB0eXBlPVwiYnV0dG9uXCIgb25DbGljaz17bG9hZENoZWNraW5zfSBkaXNhYmxlZD17c3RhdGUuc3RhdHVzID09PSBcImxvYWRpbmdcIn0+XG4gICAgICAgICAgICB7c3RhdGUuc3RhdHVzID09PSBcImxvYWRpbmdcIiA/IFwi5Yi35paw5LitLi4uXCIgOiBcIuWIt+aWsOaJk+WNoVwifVxuICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8ZGl2IGNsYXNzTmFtZT17YHN0YXR1cyAke3N0YXRlLnN0YXR1c31gfT57c3RhdGUubWVzc2FnZX08L2Rpdj5cblxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJtZXRyaWNHcmlkXCIgYXJpYS1sYWJlbD1cIuaJk+WNoeamguWGtVwiPlxuICAgICAgICA8TWV0cmljQ2FyZCBsYWJlbD1cIuaJk+WNoeiusOW9lVwiIHZhbHVlPXtzdGF0ZS5jaGVja2lucy5sZW5ndGh9IC8+XG4gICAgICAgIDxNZXRyaWNDYXJkIGxhYmVsPVwi5bey5a6M5oiQXCIgdmFsdWU9e2NvbXBsZXRlZENvdW50fSAvPlxuICAgICAgICA8TWV0cmljQ2FyZCBsYWJlbD1cIuWFs+iBlOiusOW9lVwiIHZhbHVlPXtsaW5rZWREaWFyeUNvdW50fSAvPlxuICAgICAgICA8TWV0cmljQ2FyZCBsYWJlbD1cIuWQq+WkjeebmFwiIHZhbHVlPXt3aXRoUmVmbGVjdGlvbkNvdW50fSAvPlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZGFzaGJvYXJkR3JpZCBnb2Fsc0dyaWRcIj5cbiAgICAgICAgPHNlY3Rpb24gY2xhc3NOYW1lPVwibGlzdFBhbmVsXCIgYXJpYS1sYWJlbD1cIuaJk+WNoeWIl+ihqFwiPlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic2VjdGlvblRpdGxlUm93XCI+XG4gICAgICAgICAgICA8aDI+5omT5Y2h5YiX6KGoPC9oMj5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImNvdW50QmFkZ2VcIj57c3RhdGUuY2hlY2tpbnMubGVuZ3RofSDmnaE8L3NwYW4+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7c3RhdGUuY2hlY2tpbnMubGVuZ3RoID09PSAwID8gKFxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJlbXB0eVN0YXRlXCI+6L+Y5rKh5pyJ5omT5Y2h6K6w5b2V44CC6K+35YWI5Zyo5bCP56iL5bqP5a6M5oiQ5LiA5byg6K6t57uD5Y2h57uD5Lmg44CCPC9kaXY+XG4gICAgICAgICAgKSA6IChcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicmVjb3JkTGlzdFwiPlxuICAgICAgICAgICAgICB7c3RhdGUuY2hlY2tpbnMubWFwKChjaGVja2luKSA9PiB7XG4gICAgICAgICAgICAgICAgY29uc3QgY2FyZFRpdGxlID0gY2FyZFRpdGxlQnlJZC5nZXQoY2hlY2tpbi5jYXJkX2lkKSA/PyBjaGVja2luLmNhcmRfaWQ7XG4gICAgICAgICAgICAgICAgY29uc3QgZGVsdGEgPSBnZXRFbW90aW9uRGVsdGEoY2hlY2tpbik7XG5cbiAgICAgICAgICAgICAgICByZXR1cm4gKFxuICAgICAgICAgICAgICAgICAgPGJ1dHRvblxuICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2ByZWNvcmRJdGVtICR7c2VsZWN0ZWRDaGVja2luPy5pZCA9PT0gY2hlY2tpbi5pZCA/IFwiYWN0aXZlXCIgOiBcIlwifWB9XG4gICAgICAgICAgICAgICAgICAgIGtleT17Y2hlY2tpbi5pZH1cbiAgICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldFN0YXRlKChjdXJyZW50KSA9PiAoeyAuLi5jdXJyZW50LCBzZWxlY3RlZElkOiBjaGVja2luLmlkIH0pKX1cbiAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicmVjb3JkU2NlbmVcIj57Y2FyZFRpdGxlfTwvc3Bhbj5cbiAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicmVjb3JkRGVzY3JpcHRpb25cIj57Y2hlY2tpbi5yZWZsZWN0aW9uIHx8IFwi5pyq5aGr5YaZ5aSN55uYXCJ9PC9zcGFuPlxuICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJyZWNvcmRNZXRhXCI+XG4gICAgICAgICAgICAgICAgICAgICAge2NoZWNraW4uY29tcGxldGVkID09PSAxID8gXCLlt7LlrozmiJBcIiA6IFwi5pyq5a6M5oiQXCJ9IMK3IHtmb3JtYXREYXRlVGltZShjaGVja2luLmNyZWF0ZWRfYXQpfVxuICAgICAgICAgICAgICAgICAgICAgIHtkZWx0YSAhPT0gbnVsbCA/IGAgwrcg5oOF57uq5Y+Y5YyWICR7ZGVsdGEgPiAwID8gXCIrXCIgOiBcIlwifSR7ZGVsdGF9YCA6IFwiXCJ9XG4gICAgICAgICAgICAgICAgICAgIDwvc3Bhbj5cbiAgICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICAgICAgICAgICk7XG4gICAgICAgICAgICAgIH0pfVxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgKX1cbiAgICAgICAgPC9zZWN0aW9uPlxuXG4gICAgICAgIDxzZWN0aW9uIGNsYXNzTmFtZT1cImRldGFpbFBhbmVsXCIgYXJpYS1sYWJlbD1cIuaJk+WNoeivpuaDhVwiPlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic2VjdGlvblRpdGxlUm93XCI+XG4gICAgICAgICAgICA8aDI+5omT5Y2h6K+m5oOFPC9oMj5cbiAgICAgICAgICAgIHtzZWxlY3RlZENoZWNraW4gJiYgPHNwYW4gY2xhc3NOYW1lPVwiY291bnRCYWRnZVwiPklEIHtzZWxlY3RlZENoZWNraW4uaWQuc2xpY2UoMCwgOCl9PC9zcGFuPn1cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIHtzZWxlY3RlZENoZWNraW4gPyAoXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImRldGFpbENvbnRlbnRcIj5cbiAgICAgICAgICAgICAgPERldGFpbFJvdyBsYWJlbD1cIuWutumVv+eUqOaIt1wiIHZhbHVlPXtzZWxlY3RlZENoZWNraW4udXNlcl9pZH0gLz5cbiAgICAgICAgICAgICAgPERldGFpbFJvdyBsYWJlbD1cIuiuree7g+WNoVwiIHZhbHVlPXtjYXJkVGl0bGVCeUlkLmdldChzZWxlY3RlZENoZWNraW4uY2FyZF9pZCkgPz8gc2VsZWN0ZWRDaGVja2luLmNhcmRfaWR9IC8+XG4gICAgICAgICAgICAgIDxEZXRhaWxSb3cgbGFiZWw9XCLorq3nu4PljaEgSURcIiB2YWx1ZT17c2VsZWN0ZWRDaGVja2luLmNhcmRfaWR9IC8+XG4gICAgICAgICAgICAgIDxEZXRhaWxSb3cgbGFiZWw9XCLlhbPogZTorrDlvZUgSURcIiB2YWx1ZT17c2VsZWN0ZWRDaGVja2luLmRpYXJ5X2lkfSAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi5a6M5oiQ54q25oCBXCIgdmFsdWU9e3NlbGVjdGVkQ2hlY2tpbi5jb21wbGV0ZWQgPT09IDEgPyBcIuW3suWujOaIkFwiIDogXCLmnKrlrozmiJBcIn0gLz5cbiAgICAgICAgICAgICAgPERldGFpbFJvdyBsYWJlbD1cIue7g+S5oOWJjeivhOWIhlwiIHZhbHVlPXtzZWxlY3RlZENoZWNraW4uZW1vdGlvbl9iZWZvcmV9IC8+XG4gICAgICAgICAgICAgIDxEZXRhaWxSb3cgbGFiZWw9XCLnu4PkuaDlkI7or4TliIZcIiB2YWx1ZT17c2VsZWN0ZWRDaGVja2luLmVtb3Rpb25fYWZ0ZXJ9IC8+XG4gICAgICAgICAgICAgIDxEZXRhaWxSb3dcbiAgICAgICAgICAgICAgICBsYWJlbD1cIuivhOWIhuWPmOWMllwiXG4gICAgICAgICAgICAgICAgdmFsdWU9e2dldEVtb3Rpb25EZWx0YShzZWxlY3RlZENoZWNraW4pID09PSBudWxsID8gbnVsbCA6IGAke2dldEVtb3Rpb25EZWx0YShzZWxlY3RlZENoZWNraW4pISA+IDAgPyBcIitcIiA6IFwiXCJ9JHtnZXRFbW90aW9uRGVsdGEoc2VsZWN0ZWRDaGVja2luKX1gfVxuICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi5a626ZW/5aSN55uYXCIgdmFsdWU9e3NlbGVjdGVkQ2hlY2tpbi5yZWZsZWN0aW9ufSAvPlxuICAgICAgICAgICAgICA8RGV0YWlsUm93IGxhYmVsPVwi5Yib5bu65pe26Ze0XCIgdmFsdWU9e2Zvcm1hdERhdGVUaW1lKHNlbGVjdGVkQ2hlY2tpbi5jcmVhdGVkX2F0KX0gLz5cblxuICAgICAgICAgICAgICA8c2VjdGlvbiBjbGFzc05hbWU9XCJndWlkYW5jZUJveFwiIGFyaWEtbGFiZWw9XCLor5Xngrnor4TkvLDnlKjpgJRcIj5cbiAgICAgICAgICAgICAgICA8aDM+6K+V54K56K+E5Lyw55So6YCUPC9oMz5cbiAgICAgICAgICAgICAgICA8cD5cbiAgICAgICAgICAgICAgICAgIOaJk+WNoemhteeUqOS6juinguWvn+WutumVv+aYr+WQpuWujOaIkOiuree7g+WNoee7g+S5oOOAgeaYr+WQpueVmeS4i+WkjeebmO+8jOS7peWPiue7g+S5oOWJjeWQjuaDhee7quivhOWIhuaYr+WQpuS+v+S6juWQjue7reWkjeebmOOAgui/memHjOS4jeWxleekuuiviuaWreaAp+agh+etvu+8jOS5n+S4jeWIpOaWreWutumVv+aIluWtqeWtkOaYr+WQpuWtmOWcqOW/g+eQhumXrumimOOAglxuICAgICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICAgPC9zZWN0aW9uPlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgKSA6IChcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZW1wdHlTdGF0ZVwiPumAieaLqeW3puS+p+aJk+WNoeiusOW9leWQju+8jOi/memHjOS8muaYvuekuuivpuaDheOAgjwvZGl2PlxuICAgICAgICAgICl9XG4gICAgICAgIDwvc2VjdGlvbj5cbiAgICAgIDwvZGl2PlxuICAgIDwvc2VjdGlvbj5cbiAgKTtcbn1cblxuZnVuY3Rpb24gTWV0cmljQ2FyZCh7IGxhYmVsLCB2YWx1ZSB9OiB7IGxhYmVsOiBzdHJpbmc7IHZhbHVlOiBudW1iZXIgfSkge1xuICByZXR1cm4gKFxuICAgIDxhcnRpY2xlIGNsYXNzTmFtZT1cIm1ldHJpY0NhcmRcIj5cbiAgICAgIDxzcGFuPntsYWJlbH08L3NwYW4+XG4gICAgICA8c3Ryb25nPnt2YWx1ZX08L3N0cm9uZz5cbiAgICA8L2FydGljbGU+XG4gICk7XG59XG5cbmZ1bmN0aW9uIERldGFpbFJvdyh7IGxhYmVsLCB2YWx1ZSB9OiB7IGxhYmVsOiBzdHJpbmc7IHZhbHVlPzogc3RyaW5nIHwgbnVtYmVyIHwgbnVsbCB9KSB7XG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9XCJkZXRhaWxSb3dcIj5cbiAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImRldGFpbExhYmVsXCI+e2xhYmVsfTwvc3Bhbj5cbiAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImRldGFpbFZhbHVlXCI+e2Rpc3BsYXlUZXh0KHZhbHVlKX08L3NwYW4+XG4gICAgPC9kaXY+XG4gICk7XG59XG4iXSwiZmlsZSI6IkQ6L2NvZGV4L3dvcmtzcGFjZS9zYWZlaG9tZTEuMC9hcHBzL3dlYi9zcmMvcGFnZXMvQ2hlY2tpbnNNYW5hZ2VtZW50LnRzeCJ9

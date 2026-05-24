@@ -1,0 +1,103 @@
+<view class="safe-page hot-topics-page">
+  <view class="topic-hero">
+    <text class="hero-kicker">教育热榜</text>
+    <text class="hero-title">看看其他家庭如何处理类似问题</text>
+    <text class="hero-text">这里不是评价谁做得对错，而是把常见亲子互动片段整理成更容易练习的小步骤。</text>
+    <image
+      class="hero-image"
+      src="/assets/illustrations/hot-topics-family-talk.png"
+      mode="aspectFill"
+      aria-hidden="true"
+    />
+  </view>
+
+  <view class="safe-section">
+    <scroll-view class="tag-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="tag-list">
+        <button
+          wx:for="{{tags}}"
+          wx:key="*this"
+          class="topic-tag {{activeTag === item ? 'active' : ''}}"
+          data-tag="{{item}}"
+          bindtap="selectTag"
+        >
+          {{item}}
+        </button>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="案例列表" subtitle="选择一个和今天最接近的场景" />
+    <view class="topic-list">
+      <button
+        wx:for="{{visibleTopics}}"
+        wx:key="id"
+        class="topic-card {{selectedTopic.id === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="selectTopic"
+      >
+        <view class="topic-thumb">
+          <view class="topic-people"></view>
+        </view>
+        <view class="topic-copy">
+          <text class="topic-title">{{item.title}}</text>
+          <view class="topic-meta">
+            <text>{{item.tag}}</text>
+            <text>{{item.readTime}}</text>
+          </view>
+          <text class="topic-summary">{{item.summary}}</text>
+        </view>
+      </button>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="案例拆解" subtitle="从情境中找到可以练习的位置" />
+    <view class="detail-card">
+      <text class="detail-title">{{selectedTopic.title}}</text>
+      <view class="detail-block">
+        <text class="detail-label">问题情境</text>
+        <text class="detail-text">{{selectedTopic.situation}}</text>
+      </view>
+      <view class="detail-block">
+        <text class="detail-label">常见回应</text>
+        <text class="detail-text">{{selectedTopic.usualResponse}}</text>
+      </view>
+      <view class="detail-block">
+        <text class="detail-label">可以换一种说法</text>
+        <text class="detail-text">{{selectedTopic.supportiveResponse}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="关联练习" subtitle="看完案例后，可以选一张训练卡试试" />
+    <view class="practice-card">
+      <training-task-card
+        title="{{selectedTopic.practiceCard.title}}"
+        subtitle="{{selectedTopic.practiceCard.subtitle}}"
+        stage="案例关联"
+        duration="{{selectedTopic.practiceCard.duration}}"
+        scenario="{{selectedTopic.practiceCard.scenario}}"
+        tag="{{selectedTopic.practiceCard.tag}}"
+        bind:tapcard="openPractice"
+      />
+      <button class="safe-primary-button practice-button" bindtap="openPractice">查看关联训练卡</button>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <view class="boundary-card">
+      <text>这些案例只用于自我观察和陪伴练习，不用于判断孩子、家长或家庭关系。如果出现紧急安全风险，请优先寻求现实支持和专业帮助。</text>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <button class="safe-outline-button home-button" bindtap="goHome">回到首页</button>
+  </view>
+
+  <view class="safe-section">
+    <bottom-tip-card text="先看见一个小片段，再选择一个小练习。" />
+  </view>
+</view>

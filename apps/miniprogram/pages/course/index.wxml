@@ -2,6 +2,12 @@
   <view class="page-head">
     <text class="page-title">家长心理健康教育课程</text>
     <text class="page-subtitle">系统学习情绪管理与亲子沟通方法</text>
+    <image
+      class="head-image"
+      src="/assets/illustrations/course-cover-emotion.png"
+      mode="aspectFill"
+      aria-hidden="true"
+    />
   </view>
 
   <view class="safe-section">

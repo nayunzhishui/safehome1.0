@@ -6,8 +6,10 @@ Page({
   data: {
     loading: true,
     errorMessage: "",
+    errorDetail: "",
     diaryId: "",
     tags: [],
+    tagsText: "",
     cards: [],
     practiceMessage: "",
   },
@@ -17,31 +19,55 @@ Page({
     const tags = tagsText ? tagsText.split(",").filter(Boolean) : [];
     this.setData({
       tags,
+      tagsText: tags.join("、"),
       diaryId: decodeURIComponent(options.diary_id || ""),
     });
     this.loadCards(tags);
   },
 
   async loadCards(tags) {
-    this.setData({ loading: true, errorMessage: "", practiceMessage: "" });
+    this.setData({ loading: true, errorMessage: "", errorDetail: "", practiceMessage: "" });
 
     try {
       const result = await api.recommendCards({ tags, limit: 3 });
       this.setData({
-        cards: (result.items || []).map((card) => ({
-          ...card,
-          tagsText: (card.tags || []).join("、"),
-          durationText: card.duration_minutes ? `${card.duration_minutes} 分钟` : "1 次小练习",
-          reflectionPrompt: "练习后可以简单记一句：这次我先做了什么，情绪有没有一点变化？",
-        })),
+        cards: (result.items || []).map((card, index) => this.formatCard(card, index)),
         loading: false,
       });
     } catch (error) {
       this.setData({
         loading: false,
-        errorMessage: error.message || "训练卡获取失败，请确认 backend 是否已启动。",
+        errorMessage: "训练卡暂时没有加载成功",
+        errorDetail: error.message || "请确认 backend 是否已启动。",
       });
     }
+  },
+
+  formatCard(card, index) {
+    return {
+      ...card,
+      orderText: `0${index + 1}`,
+      typeLabel: this.getTypeLabel(card.type),
+      tagsText: (card.tags || []).join("、"),
+      durationText: card.duration_minutes ? `${card.duration_minutes} 分钟` : "1 次小练习",
+      scenarioText: "适合这次记录中的互动线索",
+      todayGoal: "今天先完成一个能做到的小回应动作。",
+      stepsList: (card.steps || []).map((step, stepIndex) => ({
+        text: step,
+        numberText: `${stepIndex + 1}`,
+      })),
+      reflectionPrompt: "练习后可以简单记一句：这次我先做了什么，情绪有没有一点变化？",
+    };
+  },
+
+  getTypeLabel(type) {
+    const labels = {
+      emotion_awareness: "情绪觉察",
+      behavior_substitution: "行为替代",
+      cognitive_flexibility: "想法调整",
+      nonjudgmental_response: "非评判回应",
+    };
+    return labels[type] || "陪伴练习";
   },
 
   choosePractice(event) {
@@ -50,5 +76,9 @@ Page({
     wx.navigateTo({
       url: `/pages/checkin/index?card_id=${encodeURIComponent(cardId)}&card_title=${encodeURIComponent(title)}&diary_id=${encodeURIComponent(this.data.diaryId)}`,
     });
+  },
+
+  retryLoadCards() {
+    this.loadCards(this.data.tags);
   },
 });

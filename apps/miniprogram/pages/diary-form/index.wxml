@@ -4,6 +4,12 @@
     <text class="title">记录一次情绪事件</text>
     <text class="summary">围绕一个具体片段，轻轻记录事件、情绪、想法、身体感觉和后续反应。</text>
     <text wx:if="{{goalId}}" class="goal-hint">已关联本周小目标</text>
+    <image
+      class="hero-image"
+      src="/assets/illustrations/diary-reflection.png"
+      mode="aspectFill"
+      aria-hidden="true"
+    />
   </view>
 
   <view class="panel">

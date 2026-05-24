@@ -1,63 +1,87 @@
+const { createSafeHomeApi } = require("../../services/api");
+
+const api = createSafeHomeApi();
+
+function groupByCategory(items) {
+  const groups = [];
+  (items || []).forEach((item) => {
+    const category = item.category || "其他";
+    let group = groups.find((entry) => entry.category === category);
+    if (!group) {
+      group = { category, items: [] };
+      groups.push(group);
+    }
+    group.items.push(item);
+  });
+  return groups;
+}
+
 Page({
   data: {
+    loading: true,
+    errorMessage: "",
+    boundaryNotice: "",
+    categories: [],
+    recentResults: [],
     infoItems: [
       {
-        label: "测评时长",
-        value: "约3-5分钟",
+        label: "内容来源",
+        value: "已授权工作表原文",
       },
       {
         label: "结果用途",
-        value: "仅用于自我了解",
+        value: "用于自我观察和练习记录",
       },
       {
-        label: "系统反馈",
-        value: "生成家庭互动反馈和训练建议",
+        label: "数据保存",
+        value: "提交后保存到本地后端",
       },
       {
-        label: "隐私提示",
-        value: "记录仅用于生成个人反馈",
-      },
-    ],
-    assessmentEntries: [
-      {
-        key: "communication",
-        title: "家庭沟通状态",
-        subtitle: "了解沟通节奏",
-        iconText: "沟",
-        accentColor: "#4CAF7D",
-        accentBg: "#EEF8E9",
-      },
-      {
-        key: "emotion",
-        title: "亲子情绪互动",
-        subtitle: "观察情绪回应",
-        iconText: "情",
-        accentColor: "#F28B38",
-        accentBg: "#FFF2DF",
-      },
-      {
-        key: "pressure",
-        title: "家长压力与调节方式",
-        subtitle: "看见压力线索",
-        iconText: "压",
-        accentColor: "#2F86DF",
-        accentBg: "#EEF6FF",
+        label: "边界提示",
+        value: "不用于诊断或替代专业帮助",
       },
     ],
   },
 
-  startAssessment() {
-    wx.showToast({
-      title: "测评题目后续接入",
-      icon: "none",
-    });
+  onLoad() {
+    this.loadAssessments();
+  },
+
+  onShow() {
+    this.loadRecentResults();
+  },
+
+  async loadAssessments() {
+    this.setData({ loading: true, errorMessage: "" });
+    try {
+      const result = await api.listAssessments();
+      this.setData({
+        loading: false,
+        boundaryNotice: result.boundary_notice || "",
+        categories: groupByCategory(result.items || []),
+      });
+    } catch (error) {
+      this.setData({
+        loading: false,
+        errorMessage: error.message || "测一测内容获取失败，请确认 backend 是否已启动。",
+      });
+    }
+  },
+
+  async loadRecentResults() {
+    try {
+      const result = await api.listAssessmentResults({ limit: 3 });
+      this.setData({ recentResults: result.items || [] });
+    } catch (error) {
+      this.setData({ recentResults: [] });
+    }
   },
 
   openAssessmentEntry(event) {
-    const title = event.currentTarget.dataset.title || "测评";
-    wx.showToast({
-      title: `${title}后续接入`,
-      icon: "none",
+    const id = event.currentTarget.dataset.id;
+    if (!id) return;
+    wx.navigateTo({
+      url: `/pages/assessment-detail/index?id=${encodeURIComponent(id)}`,
     });
   },
 });

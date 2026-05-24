@@ -1,0 +1,148 @@
+.assessment-detail-page {
+  padding-bottom: 48rpx;
+}
+
+.page-head {
+  padding: 16rpx 4rpx 8rpx;
+}
+
+.page-title,
+.page-subtitle,
+.instruction-card,
+.section-card-title,
+.section-card-content,
+.question-title,
+.state-box,
+.error-box {
+  display: block;
+}
+
+.page-title {
+  color: #333333;
+  font-size: 38rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.page-subtitle {
+  margin-top: 12rpx;
+  color: #666666;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.instruction-card,
+.section-card,
+.question-card,
+.state-box,
+.error-box {
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+}
+
+.instruction-card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  color: #596a5b;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.section-card {
+  margin-top: 18rpx;
+  padding: 22rpx;
+  border: 1rpx solid #e8efdf;
+}
+
+.section-card-title {
+  color: #25372c;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.section-card-content {
+  margin-top: 10rpx;
+  color: #596a5b;
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.question-card {
+  margin-top: 18rpx;
+  padding: 24rpx;
+  border: 1rpx solid #efe7dc;
+}
+
+.question-title {
+  color: #25372c;
+  font-size: 27rpx;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.required {
+  color: #d36c32;
+}
+
+.option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.option-button {
+  margin: 0;
+  min-width: 74rpx;
+  height: 64rpx;
+  padding: 0 18rpx;
+  border: 1rpx solid #d8e6d4;
+  border-radius: 999rpx;
+  background: #f9fbf8;
+  color: #47614d;
+  font-size: 24rpx;
+  line-height: 64rpx;
+}
+
+.option-button.active {
+  border-color: #4caf7d;
+  background: #eef8e9;
+  color: #2f7d45;
+  font-weight: 800;
+}
+
+.answer-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 180rpx;
+  margin-top: 18rpx;
+  padding: 20rpx;
+  border: 1rpx solid #dce6db;
+  border-radius: 20rpx;
+  background: #f9fbf8;
+  color: #25372c;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.state-box,
+.error-box {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  color: #596a5b;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.state-box.error,
+.error-box {
+  border: 1rpx solid #efb4b4;
+  background: #fff1f1;
+  color: #8a2f2f;
+}
+
+.submit-button {
+  margin-top: 32rpx;
+}

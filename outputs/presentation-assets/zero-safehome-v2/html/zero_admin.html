@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>研究者后台 - 安心家</title>
+    <link rel="stylesheet" href="http://127.0.0.1:5056/static/parent_styles.css?v=20260511-slow-motion">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="返回首页">
+        <span class="brand-mark" aria-hidden="true">心</span>
+        <span>
+          <strong>安心家</strong>
+          <small>双量表研究测评</small>
+        </span>
+      </a>
+      <nav class="nav">
+        <a href="/about-study">研究说明</a>
+        <a href="http://127.0.0.1:5056/assessment">双量表测评</a>
+        <a href="http://127.0.0.1:5056/student">学生画像测评</a>
+        
+        <a href="http://127.0.0.1:5056/admin">管理后台</a>
+        <a href="http://127.0.0.1:5056/admin/logout">退出</a>
+        
+      </nav>
+    </header>
+    <main>
+      
+<section class="page-heading">
+  <p class="eyebrow">统一研究后台</p>
+  <h1>双量表研究与学生画像研究</h1>
+  <p>两个模块的数据保存在同一个 SQLite 中，但使用不同表前缀，避免互相覆盖。</p>
+</section>
+
+<section class="admin-grid">
+  <article class="stat-card">
+    <span>双量表提交</span>
+    <strong>11</strong>
+    <small>研究授权 5 份</small>
+  </article>
+  <article class="stat-card">
+    <span>学生画像提交</span>
+    <strong>7</strong>
+    <small>模型版本 2026.05-student-profile-kmeans-v1</small>
+  </article>
+  <article class="stat-card">
+    <span>双量表质量复核</span>
+    <strong>3</strong>
+    <small>平均完成 27103 秒</small>
+  </article>
+</section>
+
+<section class="admin-panel">
+  <div class="section-head">
+    <div>
+      <h2>双量表研究</h2>
+      <p>旧版安心家：自我关怀量表与不确定性不耐受量表。</p>
+    </div>
+    <div class="hero-actions">
+      <a class="button secondary" href="http://127.0.0.1:5056/admin/export/raw-wide.csv?profile=&amp;date_from=&amp;date_to=&amp;keyword=&amp;batch=&amp;source=">原始宽表</a>
+      <a class="button secondary" href="http://127.0.0.1:5056/admin/export/long.csv?profile=&amp;date_from=&amp;date_to=&amp;keyword=&amp;batch=&amp;source=">长表</a>
+      <a class="button secondary" href="http://127.0.0.1:5056/admin/export/scores.csv?profile=&amp;date_from=&amp;date_to=&amp;keyword=&amp;batch=&amp;source=">计分表</a>
+      <a class="button secondary" href="http://127.0.0.1:5056/admin/export/codebook.csv">数据字典</a>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>时间</th><th>编号</th><th>批次</th><th>来源</th><th>授权</th><th>质量标记</th><th>报告</th></tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>P-11</td>
+        <td>2026-05-23T22:06:18</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>是</td>
+        <td>missing_participant_code</td>
+        <td><a href="http://127.0.0.1:5056/report/11">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-10</td>
+        <td>2026-05-11T19:32:45</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>是</td>
+        <td>missing_participant_code</td>
+        <td><a href="http://127.0.0.1:5056/report/10">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-9</td>
+        <td>2026-05-11T13:08:40</td>
+        <td>QA-FRONT-001</td>
+        <td>front-ui-qa</td>
+        <td>local-test</td>
+        <td>是</td>
+        <td>无</td>
+        <td><a href="http://127.0.0.1:5056/report/9">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-8</td>
+        <td>2026-05-11T12:48:19</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>是</td>
+        <td>missing_participant_code</td>
+        <td><a href="http://127.0.0.1:5056/report/8">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-7</td>
+        <td>2026-05-10T23:31:03</td>
+        <td>HTTP-CHECK</td>
+        <td>local-check</td>
+        <td>codex</td>
+        <td>是</td>
+        <td>无</td>
+        <td><a href="http://127.0.0.1:5056/report/7">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-6</td>
+        <td>2026-05-10T23:10:13</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>否</td>
+        <td>无</td>
+        <td><a href="http://127.0.0.1:5056/report/6">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-5</td>
+        <td>2026-05-10T22:39:28</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>否</td>
+        <td>无</td>
+        <td><a href="http://127.0.0.1:5056/report/5">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-4</td>
+        <td>2026-05-10T22:38:28</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>否</td>
+        <td>无</td>
+        <td><a href="http://127.0.0.1:5056/report/4">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-3</td>
+        <td>2026-05-10T22:36:36</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>否</td>
+        <td>无</td>
+        <td><a href="http://127.0.0.1:5056/report/3">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-2</td>
+        <td>2026-05-10T22:34:17</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>否</td>
+        <td>无</td>
+        <td><a href="http://127.0.0.1:5056/report/2">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>P-1</td>
+        <td>2026-05-10T17:39:30</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>否</td>
+        <td>无</td>
+        <td><a href="http://127.0.0.1:5056/report/1">查看</a></td>
+      </tr>
+      
+    </tbody>
+  </table>
+</section>
+
+<section class="admin-panel">
+  <div class="section-head">
+    <div>
+      <h2>学生考试焦虑画像</h2>
+      <p>新版 ReadFeedback：机器学习画像、可视化、轮次追踪和沙盘式表达任务。</p>
+    </div>
+    <div class="hero-actions">
+      <a class="button secondary" href="http://127.0.0.1:5056/admin/student/export/scores.csv">画像计分表</a>
+      <a class="button secondary" href="http://127.0.0.1:5056/admin/student/export/followups.csv">轮次追踪</a>
+      <a class="button secondary" href="http://127.0.0.1:5056/admin/student/export/sandplay.csv">沙盘记录</a>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>时间</th><th>编号</th><th>画像</th><th>置信度</th><th>授权</th><th>报告</th></tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>S-7</td>
+        <td>2026-05-23T22:07:14</td>
+        <td>0001测</td>
+        <td>高焦虑-高不确定性不耐受-低自我关怀型</td>
+        <td>0.448</td>
+        <td>是</td>
+        <td><a href="http://127.0.0.1:5056/student/report/7">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>S-6</td>
+        <td>2026-05-23T22:01:03</td>
+        <td>DEMO-SANDPLAY</td>
+        <td>高焦虑-高不确定性不耐受-低自我关怀型</td>
+        <td>0.383</td>
+        <td>否</td>
+        <td><a href="http://127.0.0.1:5056/student/report/6">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>S-5</td>
+        <td>2026-05-11T19:34:52</td>
+        <td></td>
+        <td>高焦虑-高不确定性不耐受-低自我关怀型</td>
+        <td>0.369</td>
+        <td>是</td>
+        <td><a href="http://127.0.0.1:5056/student/report/5">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>S-4</td>
+        <td>2026-05-11T18:00:11</td>
+        <td></td>
+        <td>高焦虑-高不确定性不耐受-低自我关怀型</td>
+        <td>0.193</td>
+        <td>是</td>
+        <td><a href="http://127.0.0.1:5056/student/report/4">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>S-3</td>
+        <td>2026-05-11T17:59:26</td>
+        <td></td>
+        <td>高焦虑-高不确定性不耐受-低自我关怀型</td>
+        <td>0.193</td>
+        <td>是</td>
+        <td><a href="http://127.0.0.1:5056/student/report/3">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>S-2</td>
+        <td>2026-05-11T17:53:36</td>
+        <td></td>
+        <td>高焦虑-高不确定性不耐受-低自我关怀型</td>
+        <td>0.56</td>
+        <td>是</td>
+        <td><a href="http://127.0.0.1:5056/student/report/2">查看</a></td>
+      </tr>
+      
+      <tr>
+        <td>S-1</td>
+        <td>2026-05-11T17:46:22</td>
+        <td>HTTP001</td>
+        <td>高焦虑-高不确定性不耐受-低自我关怀型</td>
+        <td>0.383</td>
+        <td>是</td>
+        <td><a href="http://127.0.0.1:5056/student/report/1">查看</a></td>
+      </tr>
+      
+    </tbody>
+  </table>
+</section>
+
+    </main>
+    <footer class="site-footer">
+      <span>安心家统一研究测评</span>
+      <a href="http://127.0.0.1:5056/admin">项目管理</a>
+    </footer>
+  </body>
+</html>

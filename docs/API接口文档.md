@@ -251,6 +251,117 @@
 
 ## 5. 练习打卡
 
+## 5A. 测一测量表与工作表
+
+### `GET /api/assessments`
+
+用途：返回小程序“测一测”中的量表和工作表列表。
+
+查询参数：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `category` | string | 否 | 按分类筛选，例如 `量表类` |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `version` | string | 内容库版本 |
+| `boundary_notice` | string | 统一边界提示 |
+| `items` | array | 测一测条目列表 |
+
+条目字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 工作表 ID |
+| `source_file` | string | 来源 PDF 文件名 |
+| `source_title` | string | 原工作表标题 |
+| `display_title` | string | 小程序展示标题 |
+| `category` | string | 分类 |
+| `pages` | integer | PDF 页数 |
+| `instructions` | string | 填写说明 |
+| `question_count` | integer | 当前电子化填写项数量 |
+| `is_reference` | boolean | 是否为附录示例参考 |
+
+### `GET /api/assessments/<worksheet_id>`
+
+用途：返回单个量表或工作表详情。
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 工作表 ID |
+| `source_file` | string | 来源 PDF 文件名 |
+| `source_title` | string | 原工作表标题 |
+| `display_title` | string | 小程序展示标题 |
+| `category` | string | 分类 |
+| `pages` | integer | PDF 页数 |
+| `instructions` | string | 原文或补录说明 |
+| `sections` | array | 原工作表分区 |
+| `questions` | array | 电子化填写项 |
+| `scoring` | string | 计分说明 |
+| `recommended_card_ids` | array | 建议关联训练卡 |
+| `boundary_notice` | string | 统一边界提示 |
+
+### `POST /api/assessment-results`
+
+用途：保存用户一次测一测填写结果。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `user_id` | string | 否 | 用户 ID，缺省为 `demo-parent` |
+| `nickname` | string | 否 | 昵称或测试编号 |
+| `worksheet_id` | string | 是 | 工作表 ID |
+| `answers` | array | 是 | 用户答案 |
+| `result_summary` | string | 否 | 自定义结果摘要 |
+
+`answers` 项字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `question_id` | string | 题目或填写项 ID |
+| `prompt` | string | 题目或填写项原文/提示 |
+| `value` | string | 用户填写内容 |
+| `score` | number | 可选分值 |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 结果 ID |
+| `user_id` | string | 用户 ID |
+| `worksheet_id` | string | 工作表 ID |
+| `worksheet_title` | string | 工作表标题 |
+| `category` | string | 分类 |
+| `answers_json` | string | 答案 JSON |
+| `scores_json` | string | 分数 JSON |
+| `total_score` | integer/null | 数值题合计；记录型工作表为空 |
+| `result_summary` | string | 支持性结果摘要 |
+| `created_at` | string | 创建时间 |
+| `recommended_card_ids` | array | 建议关联训练卡 |
+
+### `GET /api/assessment-results`
+
+用途：查询测一测历史结果。
+
+查询参数：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `user_id` | string | 否 | 用户 ID，缺省为 `demo-parent` |
+| `limit` | integer | 否 | 默认 50 |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `items` | array | 测一测结果列表 |
+
 ### `POST /api/checkins`
 
 用途：提交训练卡练习打卡。
@@ -380,7 +491,7 @@
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`reports`、`supervision`、`cards` |
+| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`reports`、`supervision`、`cards` |
 | `user_id` | string | 否 | 除 `cards` 外，可按用户筛选 |
 
 响应：

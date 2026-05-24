@@ -1,0 +1,1623 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学生测评 - ReadFeedback</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/student">ReadFeedback</a>
+    <nav>
+      <a href="/">安心家首页</a>
+      <a href="/student/assessment">学生测评</a>
+      <a href="/admin">后台</a>
+    </nav>
+  </header>
+  <main>
+<section class="page-heading">
+  <p class="eyebrow">第 0 轮：初始画像</p>
+  <h1>学生考试焦虑画像测评</h1>
+  <p>请根据近两周的真实体验作答。系统会在提交后生成可视化分类报告。</p>
+</section>
+
+<form id="assessmentForm" class="form-card">
+  <label class="field">
+    <span>匿名编号（可选，用于后续追踪）</span>
+    <input name="participant_code" maxlength="80" placeholder="例如 S001">
+  </label>
+  <label class="check-row">
+    <input type="checkbox" name="consent_accepted" required>
+    <span>我了解本测评用于自我理解和研究反馈，不构成临床诊断。</span>
+  </label>
+  <label class="check-row">
+    <input type="checkbox" name="research_consent" checked>
+    <span>我同意匿名结果用于研究分析。</span>
+  </label>
+
+  
+  <section class="scale-block">
+    <h2>自我关怀量表（简版）</h2>
+    <p>反向计分后，得分越高表示自我关怀水平越高。</p>
+    
+    <fieldset class="question">
+      <legend>1. 重要事情失败后，我会不断想着自己的不足。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS01" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS01" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS01" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS01" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS01" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>2. 我会尽量理解和包容自己不喜欢的部分。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS02" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS02" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS02" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS02" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS02" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>3. 痛苦事情发生时，我会尽量用平和的心态面对。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS03" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS03" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS03" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS03" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS03" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>4. 情绪低落时，我觉得多数人都比我快乐。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS04" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS04" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS04" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS04" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS04" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>5. 我会把失败看成人生经历的一部分。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS05" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS05" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS05" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS05" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS05" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>6. 经历困难时，我会给予自己需要的关怀和温暖。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS06" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS06" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS06" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS06" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS06" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>7. 遇到烦心事时，我会尽量让情绪保持平衡。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS07" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS07" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS07" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS07" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS07" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>8. 重要事情失败时，我容易觉得只有自己在承受失败。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS08" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS08" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS08" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS08" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS08" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>9. 情绪低落时，我容易纠结于一切不顺心的事情。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS09" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS09" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS09" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS09" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS09" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>10. 当我觉得自己不够好时，会提醒自己不完美是共同的人类经验。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS10" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS10" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS10" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS10" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS10" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>11. 我会对自己的缺点和不足持批判态度。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS11" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS11" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS11" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS11" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS11" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>12. 对于自己不喜欢的性格部分，我常感到不能容忍。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="SCS12" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS12" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS12" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS12" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="SCS12" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+  </section>
+  
+  <section class="scale-block">
+    <h2>不确定性不耐受量表（简版）</h2>
+    <p>得分越高表示越难忍受不确定性。</p>
+    
+    <fieldset class="question">
+      <legend>1. 不可预见的事情会让我心烦意乱。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS01" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS01" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS01" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS01" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS01" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>2. 没有掌握全部信息会让我很沮丧。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS02" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS02" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS02" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS02" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS02" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>3. 我总想提前考虑一切，以避免意外。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS03" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS03" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS03" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS03" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS03" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>4. 一个小意外也可能破坏我的全部计划。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS04" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS04" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS04" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS04" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS04" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>5. 我总是想知道未来会发生什么。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS05" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS05" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS05" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS05" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS05" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>6. 我无法忍受突发状况。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS06" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS06" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS06" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS06" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS06" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>7. 做事前，我应该能够规划好一切。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS07" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS07" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS07" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS07" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS07" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>8. 不确定性让我很难过得安稳。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS08" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS08" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS08" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS08" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS08" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>9. 需要行动时，不确定性会让我停滞不前。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS09" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS09" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS09" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS09" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS09" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>10. 感到不确定时，我就难以正常发挥。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS10" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS10" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS10" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS10" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS10" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>11. 一点疑虑都会阻止我行动。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS11" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS11" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS11" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS11" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS11" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>12. 我必须摆脱所有不确定的情形。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="IUS12" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS12" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS12" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS12" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="IUS12" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+  </section>
+  
+  <section class="scale-block">
+    <h2>情绪调节灵活性量表（项目版）</h2>
+    <p>得分越高表示越能根据情境调整策略。</p>
+    
+    <fieldset class="question">
+      <legend>1. 我能灵活转换看问题的角度来增强或减弱情绪。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF01" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF01" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF01" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF01" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF01" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>2. 需要控制负向情绪时，我能改变思考角度。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF02" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF02" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF02" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF02" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF02" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>3. 需要控制正向情绪时，我也能改变思考角度。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF03" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF03" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF03" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF03" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF03" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>4. 我能从他人角度理解其痛苦、悲伤或愤怒。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF04" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF04" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF04" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF04" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF04" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>5. 如果想让自己高兴，我能积极改变想法。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF05" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF05" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF05" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF05" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF05" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>6. 我能根据情境需要表达或控制自己的情绪。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF06" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF06" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF06" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF06" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF06" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>7. 正式场合中，我能适当抑制或掩饰情绪。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF07" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF07" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF07" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF07" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF07" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>8. 情境需要时，我能充分表达自己的负向情绪。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF08" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF08" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF08" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF08" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF08" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>9. 如果一种方法无效，我会换另一种策略调节情绪。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF09" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF09" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF09" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF09" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF09" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>10. 我常常只用同一种策略调节情绪。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF10" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF10" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF10" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF10" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF10" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>11. 我很少选择不同策略调节自己的情绪。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF11" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF11" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF11" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF11" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF11" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>12. 如果想减少负面情绪，我知道多种可用方法。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="ERF12" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF12" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF12" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF12" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="ERF12" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+  </section>
+  
+  <section class="scale-block">
+    <h2>考试焦虑量表（项目版）</h2>
+    <p>得分越高表示考试焦虑体验越强。</p>
+    
+    <fieldset class="question">
+      <legend>1. 考试时，我感到心烦意乱。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA01" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA01" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA01" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA01" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA01" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>2. 考试时，我总想着分数，影响答题。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA02" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA02" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA02" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA02" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA02" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>3. 考试时，我会反复担心能否通过。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA03" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA03" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA03" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA03" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA03" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>4. 重要考试前，我很担心失败的结果。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA04" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA04" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA04" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA04" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA04" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>5. 考试中，我发觉自己总想着失败的后果。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA05" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA05" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA05" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA05" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA05" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>6. 考试后我试图不再担忧，但做不到。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA06" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA06" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA06" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA06" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA06" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>7. 重要考试时，我感到异常心神不定。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA07" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA07" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA07" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA07" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA07" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>8. 即使准备充分，我还是非常紧张。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA08" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA08" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA08" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA08" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA08" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>9. 提交试卷前，我会感到极为不安。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA09" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA09" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA09" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA09" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA09" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>10. 重要考试中，我会感到心跳特别快。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA10" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA10" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA10" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA10" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA10" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>11. 考试中，我紧张到会忘记本来知道的内容。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA11" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA11" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA11" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA11" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA11" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+    <fieldset class="question">
+      <legend>12. 考试时，我有信心并且感到轻松。</legend>
+      <div class="likert">
+        
+        <label>
+          <input type="radio" name="TA12" value="1" required>
+          <span>完全不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA12" value="2" required>
+          <span>有点不符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA12" value="3" required>
+          <span>基本符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA12" value="4" required>
+          <span>比较符合</span>
+        </label>
+        
+        <label>
+          <input type="radio" name="TA12" value="5" required>
+          <span>完全符合</span>
+        </label>
+        
+      </div>
+    </fieldset>
+    
+  </section>
+  
+
+  <section class="scale-block">
+    <h2>结构化文本</h2>
+    
+    <label class="field">
+      <span>请写下最近一次让你明显感到考试压力的场景。</span>
+      <textarea name="TEXT01" maxlength="600" rows="4"></textarea>
+    </label>
+    
+    <label class="field">
+      <span>这一轮练习后，你注意到自己有哪些变化？</span>
+      <textarea name="TEXT02" maxlength="600" rows="4"></textarea>
+    </label>
+    
+  </section>
+
+  <button class="button primary" type="submit">生成画像报告</button>
+  <p id="formStatus" class="status" role="status"></p>
+</form>
+
+<script src="/static/assessment.js"></script>
+</main>
+</body>
+</html>

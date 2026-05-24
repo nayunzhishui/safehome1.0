@@ -123,6 +123,85 @@ export interface TrainingCard {
   enabled: boolean;
 }
 
+export interface AssessmentOption {
+  label: string;
+  value: string;
+  score?: number;
+}
+
+export interface AssessmentQuestion {
+  id: ID;
+  prompt: string;
+  type: "text" | "scale";
+  required?: boolean;
+  options?: AssessmentOption[];
+}
+
+export interface AssessmentSection {
+  title: string;
+  content: string;
+}
+
+export interface AssessmentWorksheet {
+  id: ID;
+  source_file: string;
+  source_title: string;
+  display_title: string;
+  category: string;
+  pages: number;
+  instructions: string;
+  sections: AssessmentSection[];
+  questions: AssessmentQuestion[];
+  scoring: string;
+  recommended_card_ids: ID[];
+  source_version: string;
+  boundary_notice?: string;
+}
+
+export interface AssessmentListItem {
+  id: ID;
+  source_file: string;
+  source_title: string;
+  display_title: string;
+  category: string;
+  pages: number;
+  instructions: string;
+  source_version: string;
+  question_count: number;
+  is_reference: boolean;
+}
+
+export interface AssessmentAnswer {
+  question_id: ID;
+  prompt: string;
+  value: string;
+  score?: number;
+}
+
+export interface AssessmentResult {
+  id: ID;
+  user_id: ID;
+  worksheet_id: ID;
+  worksheet_title: string;
+  category?: string | null;
+  answers_json: string;
+  scores_json: string;
+  total_score?: number | null;
+  result_summary?: string | null;
+  created_at: ISODateTime;
+  answers?: AssessmentAnswer[];
+  scores?: Record<string, number | null>;
+  recommended_card_ids?: ID[];
+}
+
+export interface AssessmentResultInput {
+  user_id?: ID;
+  nickname?: string;
+  worksheet_id: ID;
+  answers: AssessmentAnswer[];
+  result_summary?: string;
+}
+
 export interface Checkin {
   id: ID;
   user_id: ID;
@@ -189,4 +268,10 @@ export interface ListResponse<T> {
 export interface CardRecommendResponse {
   items: TrainingCard[];
   matched_tags: string[];
+}
+
+export interface AssessmentListResponse {
+  version: string;
+  boundary_notice: string;
+  items: AssessmentListItem[];
 }

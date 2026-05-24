@@ -3,6 +3,12 @@
     <text class="eyebrow">第五步</text>
     <text class="title">本周复盘</text>
     <text class="summary">这是一份只读的练习复盘，帮助你看看这一周记录和打卡中出现了哪些重复线索。</text>
+    <image
+      class="hero-image"
+      src="/assets/illustrations/weekly-growth.png"
+      mode="aspectFill"
+      aria-hidden="true"
+    />
   </view>
 
   <view wx:if="{{loading}}" class="panel">

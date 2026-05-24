@@ -1,0 +1,50 @@
+<view class="safe-page assessment-result-page">
+  <view wx:if="{{loading}}" class="state-box">
+    <text>正在读取结果...</text>
+  </view>
+
+  <view wx:elif="{{result}}">
+    <view class="result-hero">
+      <text class="result-kicker">已保存</text>
+      <text class="result-title">{{result.worksheet_title}}</text>
+      <text class="result-summary">{{result.result_summary}}</text>
+    </view>
+
+    <view class="safe-section">
+      <alert-card
+        type="info"
+        title="结果边界"
+        content="这里显示的是本次填写记录和维度数据，不构成诊断，也不替代心理咨询、医学诊断、危机干预或法律判断。"
+      />
+    </view>
+
+    <view class="safe-section">
+      <section-title title="本次记录" subtitle="用于自我观察和后续练习" />
+      <view class="result-grid">
+        <view class="result-cell">
+          <text class="cell-label">分类</text>
+          <text class="cell-value">{{result.category || '未分类'}}</text>
+        </view>
+        <view class="result-cell">
+          <text class="cell-label">总分</text>
+          <text class="cell-value">{{totalScoreText}}</text>
+        </view>
+        <view class="result-cell wide">
+          <text class="cell-label">推荐训练卡</text>
+          <text class="cell-value">{{recommendedCardsText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <button class="safe-primary-button action-button" bindtap="openRecommendedCards">查看相关训练卡</button>
+    <button class="safe-secondary-button action-button" bindtap="backToAssessment">返回测一测</button>
+
+    <view class="safe-section">
+      <bottom-tip-card text="保存一次记录，就是给后续练习多留下一点线索。" />
+    </view>
+  </view>
+
+  <view wx:else class="state-box error">
+    <text>{{errorMessage || '没有找到结果。'}}</text>
+  </view>
+</view>

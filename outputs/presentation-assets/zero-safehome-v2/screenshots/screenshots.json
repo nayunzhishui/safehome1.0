@@ -1,0 +1,200 @@
+[
+  {
+    "name": "zero_home",
+    "title": "0版网页首页与导航",
+    "note": "一个站点内保留安心家入口、双量表测评、学生画像测评、研究说明和研究者入口。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_home.png"
+  },
+  {
+    "name": "zero_parent_assessment",
+    "title": "双量表测评页",
+    "note": "自我关怀量表与不确定性不耐受量表用于基础研究测评。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_parent_assessment.png"
+  },
+  {
+    "name": "zero_parent_report",
+    "title": "双量表反馈报告",
+    "note": "展示非诊断性反馈、维度分数和研究反馈说明。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_parent_report.png"
+  },
+  {
+    "name": "zero_student_entry",
+    "title": "学生画像入口",
+    "note": "学生端从考试焦虑画像测评进入，强调非诊断和支持性反馈。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_student_entry.png"
+  },
+  {
+    "name": "zero_student_assessment",
+    "title": "学生画像测评页",
+    "note": "整合考试焦虑、IU、ERF、自我关怀和结构化文本问题。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_student_assessment.png"
+  },
+  {
+    "name": "zero_student_report_top",
+    "title": "学生报告总览",
+    "note": "报告顶部呈现画像名称、置信度、关键分数和首轮建议。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_student_report_top.png"
+  },
+  {
+    "name": "zero_student_report_visuals",
+    "title": "雷达图与PCA分类图",
+    "note": "用维度雷达图和二维分类图解释学生落在哪一类画像。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_student_report_visuals.png"
+  },
+  {
+    "name": "zero_student_report_followup",
+    "title": "轮次变化与文本关键词",
+    "note": "后续复测后显示量表分数趋势、访谈文本关键词和改善线索。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_student_report_followup.png"
+  },
+  {
+    "name": "zero_student_report_sandplay",
+    "title": "沙盘式表达任务",
+    "note": "学生用象征物、空间位置和一句说明表达考试压力场景。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_student_report_sandplay.png"
+  },
+  {
+    "name": "zero_admin",
+    "title": "研究者后台",
+    "note": "后台合并双量表研究和学生画像研究，支持概览和分模块导出。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_admin.png"
+  },
+  {
+    "name": "zero_files_model",
+    "title": "0版网页数据与模型文件",
+    "note": "说明模型、规则、沙盘任务和统一数据库的保存位置。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\zero_files_model.png"
+  },
+  {
+    "name": "home_landing",
+    "title": "安心家网页首页",
+    "note": "展示安心家作为家长情绪管理支持系统的入口、理念和主要路径。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_landing.png"
+  },
+  {
+    "name": "home_dashboard",
+    "title": "研究看板",
+    "note": "研究者从网页后台查看目标、记录、反馈、训练、周报和督导概览。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_dashboard.png"
+  },
+  {
+    "name": "home_goals",
+    "title": "目标管理",
+    "note": "家长先设定亲子互动中的具体小目标，形成练习方向。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_goals.png"
+  },
+  {
+    "name": "home_diaries",
+    "title": "情绪事件记录",
+    "note": "记录场景、情绪、自动想法、身体感受和行为反应。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_diaries.png"
+  },
+  {
+    "name": "home_feedback",
+    "title": "非诊断反馈结果",
+    "note": "基于规则识别互动模式，给出支持性反馈和替代回应。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_feedback.png"
+  },
+  {
+    "name": "home_checkins",
+    "title": "训练打卡",
+    "note": "记录训练卡完成情况、情绪前后变化和练习反思。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_checkins.png"
+  },
+  {
+    "name": "home_reports",
+    "title": "周度报告",
+    "note": "汇总一周场景、情绪、模式、训练卡和下周建议。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_reports.png"
+  },
+  {
+    "name": "home_supervision",
+    "title": "人工督导请求",
+    "note": "在需要时提交人工督导或进一步支持请求。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_supervision.png"
+  },
+  {
+    "name": "home_cards",
+    "title": "训练卡内容库",
+    "note": "UP训练卡作为干预内容，可承接0版网页的任务脚本。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_cards.png"
+  },
+  {
+    "name": "home_rules",
+    "title": "反馈规则库",
+    "note": "非诊断反馈规则支持模式识别和解释生成。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_rules.png"
+  },
+  {
+    "name": "home_export",
+    "title": "研究数据导出",
+    "note": "后台导出支持论文和用户研究的数据整理。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_export.png"
+  },
+  {
+    "name": "home_integration",
+    "title": "联调测试入口",
+    "note": "验证创建记录、生成反馈、推荐训练卡三步闭环。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\home_integration.png"
+  },
+  {
+    "name": "mini_home",
+    "title": "小程序首页",
+    "note": "小程序首页承接家长端低负担入口。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_home.png"
+  },
+  {
+    "name": "mini_training",
+    "title": "训练页",
+    "note": "训练页对应安心家的内容干预模块。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_training.png"
+  },
+  {
+    "name": "mini_assessment",
+    "title": "测一测",
+    "note": "测评页是0版网页评估能力未来进入安心家的接口。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_assessment.png"
+  },
+  {
+    "name": "mini_assessment_detail",
+    "title": "测评详情",
+    "note": "测评详情页体现轻量、非诊断的测评交互。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_assessment_detail.png"
+  },
+  {
+    "name": "mini_diary",
+    "title": "情绪记录",
+    "note": "情绪记录页是安心家数据闭环的起点。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_diary.png"
+  },
+  {
+    "name": "mini_feedback",
+    "title": "反馈结果",
+    "note": "反馈结果页体现安心家的支持性表达风格。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_feedback.png"
+  },
+  {
+    "name": "mini_checkin",
+    "title": "练习打卡",
+    "note": "打卡页把内容干预转化为可追踪数据。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_checkin.png"
+  },
+  {
+    "name": "mini_weekly_report",
+    "title": "周度报告",
+    "note": "周报页对应安心家的阶段性反馈能力。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_weekly_report.png"
+  },
+  {
+    "name": "mini_supervision",
+    "title": "人工督导",
+    "note": "督导页提供从自动反馈到人工支持的通道。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_supervision.png"
+  },
+  {
+    "name": "mini_profile",
+    "title": "我的",
+    "note": "个人中心承接隐私、记录和持续使用。",
+    "file": "D:\\codex\\workspace\\safehome1.0\\outputs\\presentation-assets\\zero-safehome-v2\\screenshots\\mini_profile.png"
+  }
+]
