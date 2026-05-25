@@ -18,7 +18,7 @@
   flex: 0 0 auto;
   margin-top: 4rpx;
   border-radius: 999rpx;
-  background: #4caf7d;
+  background: var(--safe-primary);
 }
 
 .section-title-text,
@@ -28,7 +28,7 @@
 }
 
 .section-title-text {
-  color: #333333;
+  color: var(--safe-title);
   font-size: 32rpx;
   font-weight: 800;
   line-height: 1.35;
@@ -36,7 +36,7 @@
 
 .section-subtitle-text {
   margin-top: 8rpx;
-  color: #888888;
+  color: var(--safe-muted);
   font-size: 24rpx;
   line-height: 1.45;
 }
@@ -47,7 +47,7 @@
   display: flex;
   align-items: center;
   padding: 0 4rpx 0 18rpx;
-  color: #4caf7d;
+  color: var(--safe-primary-deep);
   font-size: 24rpx;
   font-weight: 600;
 }

@@ -3,16 +3,16 @@
   align-items: flex-start;
   gap: 18rpx;
   padding: 24rpx;
-  border: 1rpx solid #d9ebff;
-  border-radius: 20rpx;
-  background: #eef6ff;
+  border: 1rpx solid #d8e2ef;
+  border-radius: 16rpx;
+  background: #eef4fb;
 }
 
 .alert-icon {
   width: 42rpx;
   height: 42rpx;
   flex: 0 0 auto;
-  border: 5rpx solid #1890ff;
+  border: 5rpx solid var(--safe-info);
   border-radius: 50%;
 }
 
@@ -27,7 +27,7 @@
 }
 
 .alert-title {
-  color: #2b5f9f;
+  color: #58749a;
   font-size: 28rpx;
   font-weight: 800;
   line-height: 1.4;
@@ -35,44 +35,44 @@
 
 .alert-content {
   margin-top: 6rpx;
-  color: #555555;
+  color: var(--safe-text);
   font-size: 24rpx;
   line-height: 1.5;
 }
 
 .alert-success {
-  border-color: #dcefcf;
-  background: #f0fae9;
+  border-color: #cddfc5;
+  background: #edf6e8;
 }
 
 .alert-success .alert-icon {
-  border-color: #52c41a;
+  border-color: var(--safe-success);
 }
 
 .alert-success .alert-title {
-  color: #3b8f28;
+  color: var(--safe-primary-deep);
 }
 
 .alert-warning {
-  border-color: #ffe4bd;
-  background: #fff6e8;
+  border-color: #f5d8aa;
+  background: #fff4e8;
 }
 
 .alert-warning .alert-icon {
-  border-color: #faad14;
+  border-color: var(--safe-warning);
 }
 
 .alert-warning .alert-title {
-  color: #c97816;
+  color: #a76418;
 }
 
 .alert-danger {
-  border-color: #ffd5cd;
-  background: #fff0ed;
+  border-color: #efd0cc;
+  background: #fbe8e2;
 }
 
 .alert-danger .alert-icon {
-  border-color: #ff6b6b;
+  border-color: var(--safe-danger);
 }
 
 .alert-danger .alert-title {

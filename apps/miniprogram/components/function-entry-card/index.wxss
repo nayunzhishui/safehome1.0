@@ -5,10 +5,10 @@
   align-items: center;
   justify-content: center;
   padding: 24rpx 16rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: 24rpx;
-  background: #ffffff;
-  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+  border: 1rpx solid var(--safe-border);
+  border-radius: 16rpx;
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: 0 12rpx 30rpx rgba(52, 66, 58, 0.08);
 }
 
 .entry-card:active {
@@ -22,7 +22,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 18rpx;
-  border-radius: 22rpx;
+  border-radius: 16rpx;
   font-size: 34rpx;
   font-weight: 800;
 }
@@ -34,13 +34,13 @@
 }
 
 .entry-title {
-  color: #333333;
+  color: var(--safe-title);
   font-size: 28rpx;
   font-weight: 700;
 }
 
 .entry-subtitle {
   margin-top: 8rpx;
-  color: #777777;
+  color: var(--safe-muted);
   font-size: 22rpx;
 }

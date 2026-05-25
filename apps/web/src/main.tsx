@@ -16,6 +16,20 @@ import { RulesManagement } from "./pages/RulesManagement";
 import { SupervisionManagement } from "./pages/SupervisionManagement";
 import "./styles.css";
 
+const adminLinks = [
+  { href: "/dashboard", label: "总览仪表盘", match: (path: string) => path === "/dashboard" },
+  { href: "/diaries", label: "用户与记录", match: (path: string) => path === "/diaries" || path.startsWith("/diaries/") },
+  { href: "/feedback", label: "AI反馈审核", match: (path: string) => path === "/feedback" || path.startsWith("/feedback/") },
+  { href: "/content/cards", label: "训练卡管理", match: (path: string) => path === "/content/cards" },
+  { href: "/supervision", label: "督导工作台", match: (path: string) => path === "/supervision" || path.startsWith("/supervision/") },
+  { href: "/checkins", label: "练习打卡", match: (path: string) => path === "/checkins" },
+  { href: "/reports", label: "周度报告", match: (path: string) => path === "/reports" },
+  { href: "/goals", label: "目标管理", match: (path: string) => path === "/goals" },
+  { href: "/content/rules", label: "反馈规则", match: (path: string) => path === "/content/rules" },
+  { href: "/export", label: "数据导出", match: (path: string) => path === "/export" },
+  { href: "/integration-test", label: "联调测试", match: (path: string) => path === "/integration-test" },
+];
+
 function App() {
   const path = window.location.pathname;
   const isLandingPath = path === "/";
@@ -55,49 +69,8 @@ function App() {
     !isExportPath &&
     path !== "/integration-test";
 
-  return (
-    <main className="page">
-      {isKnownAdminPath ? (
-        <nav className="adminNav" aria-label="后台导航">
-          <a className={isDashboardPath ? "active" : ""} href="/dashboard">
-            总览
-          </a>
-          <a className={path === "/goals" ? "active" : ""} href="/goals">
-            目标管理
-          </a>
-          <a className={isDiariesPath ? "active" : ""} href="/diaries">
-            情绪记录
-          </a>
-          <a className={isFeedbackPath ? "active" : ""} href="/feedback">
-            反馈结果
-          </a>
-          <a className={isCheckinsPath ? "active" : ""} href="/checkins">
-            打卡记录
-          </a>
-          <a className={isReportsPath ? "active" : ""} href="/reports">
-            周报记录
-          </a>
-          <a className={isSupervisionPath ? "active" : ""} href="/supervision">
-            督导请求
-          </a>
-          <a className={isCardsPath ? "active" : ""} href="/content/cards">
-            训练卡
-          </a>
-          <a className={isRulesPath ? "active" : ""} href="/content/rules">
-            反馈规则
-          </a>
-          <a className={isExportPath ? "active" : ""} href="/export">
-            数据导出
-          </a>
-          <a className={path === "/integration-test" ? "active" : ""} href="/integration-test">
-            联调测试
-          </a>
-          <a href="/">
-            网站首页
-          </a>
-        </nav>
-      ) : null}
-
+  const pageContent = (
+    <>
       {isLandingPath ? <LandingPage /> : null}
       {isDashboardPath ? <ResearchDashboard /> : null}
       {path === "/goals" ? <GoalsManagement /> : null}
@@ -111,6 +84,52 @@ function App() {
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}
+    </>
+  );
+
+  if (!isKnownAdminPath) {
+    return <main className="page landingMode">{pageContent}</main>;
+  }
+
+  return (
+    <main className="adminWorkspace">
+      <aside className="adminSidebar" aria-label="后台导航">
+        <a className="adminBrand" href="/dashboard" aria-label="安心陪伴管理后台">
+          <span className="adminBrandMark" aria-hidden="true" />
+          <span>
+            <strong>安心陪伴</strong>
+            <small>ReadFeedback Admin</small>
+          </span>
+        </a>
+        <nav className="adminNav" aria-label="后台功能导航">
+          {adminLinks.map((link) => (
+            <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
+              <span className="navDot" aria-hidden="true" />
+              {link.label}
+            </a>
+          ))}
+          <a href="/">
+            <span className="navDot" aria-hidden="true" />
+            网站首页
+          </a>
+        </nav>
+        <section className="adminPrinciple" aria-label="平台原则">
+          <strong>非诊断支持原则</strong>
+          <span>所有反馈都保持非评判、支持性表达</span>
+        </section>
+      </aside>
+      <section className="adminMain">
+        <header className="adminTopbar">
+          <div className="adminChromeDots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+          <span className="adminPath">safehome1.0 {path}</span>
+          <strong>管理员后台</strong>
+        </header>
+        {pageContent}
+      </section>
     </main>
   );
 }

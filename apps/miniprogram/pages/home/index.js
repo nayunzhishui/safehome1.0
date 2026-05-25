@@ -23,29 +23,51 @@ Page({
     coreEntries: [
       {
         key: "diary",
-        title: "写一篇情绪日记",
-        subtitle: "记录情绪",
-        iconText: "记",
-        accentColor: "#4CAF7D",
-        accentBg: "#EEF8E9",
+        title: "情绪日记",
+        subtitle: "记录此刻",
+        iconText: "✎",
+        accentColor: "#4E7C6B",
+        accentBg: "#E7F0E2",
+      },
+      {
+        key: "feedback",
+        title: "AI分析",
+        subtitle: "智能反馈",
+        iconText: "AI",
+        accentColor: "#8069A8",
+        accentBg: "#F1ECF8",
       },
       {
         key: "training",
-        title: "完成今日UP训练",
-        subtitle: "稳定回应",
-        iconText: "练",
-        accentColor: "#F28B38",
-        accentBg: "#FFF2DF",
+        title: "训练中心",
+        subtitle: "提升自己",
+        iconText: "⌁",
+        accentColor: "#4E7C6B",
+        accentBg: "#EEF4E8",
+      },
+      {
+        key: "supervision",
+        title: "专家支持",
+        subtitle: "人工督导",
+        iconText: "●",
+        accentColor: "#6A86B4",
+        accentBg: "#E9F0FA",
       },
       {
         key: "assessment",
-        title: "测一测家庭关系",
-        subtitle: "互动反馈",
+        title: "测一测",
+        subtitle: "家庭关系",
         iconText: "测",
-        accentColor: "#2F86DF",
-        accentBg: "#EEF6FF",
+        accentColor: "#6A86B4",
+        accentBg: "#E9F0FA",
       },
     ],
+    latestRecord: {
+      mood: "有点烦",
+      time: "昨天 21:30",
+      trigger: "孩子写作业磨蹭",
+      status: "AI 分析已完成",
+    },
     growthStats: [
       {
         label: "连续打卡",
@@ -94,6 +116,14 @@ Page({
     }
     if (key === "training") {
       wx.switchTab({ url: "/pages/training/index" });
+      return;
+    }
+    if (key === "feedback") {
+      wx.navigateTo({ url: "/pages/feedback-result/index" });
+      return;
+    }
+    if (key === "supervision") {
+      wx.navigateTo({ url: "/pages/supervision/index" });
       return;
     }
     if (key === "assessment") {

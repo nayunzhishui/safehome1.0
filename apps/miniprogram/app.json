@@ -20,13 +20,14 @@
   ],
   "window": {
     "navigationBarTitleText": "安心陪伴",
-    "navigationBarBackgroundColor": "#2f7d45",
-    "navigationBarTextStyle": "white"
+    "navigationBarBackgroundColor": "#FFF7F0",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF7F0"
   },
   "tabBar": {
-    "color": "#A6ADB4",
-    "selectedColor": "#4CAF7D",
-    "backgroundColor": "#FFFFFF",
+    "color": "#8A8D89",
+    "selectedColor": "#4E7C6B",
+    "backgroundColor": "#FFFDF8",
     "borderStyle": "white",
     "list": [
       {

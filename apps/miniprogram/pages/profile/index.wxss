@@ -7,10 +7,10 @@
   align-items: center;
   gap: 20rpx;
   padding: 28rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: 28rpx;
-  background: #ffffff;
-  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
+  border: 1rpx solid var(--safe-border);
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, rgba(255, 253, 248, 0.96), rgba(237, 246, 232, 0.9));
+  box-shadow: 0 16rpx 38rpx rgba(52, 66, 58, 0.08);
 }
 
 .avatar {
@@ -21,8 +21,8 @@
   justify-content: center;
   flex: 0 0 auto;
   border-radius: 50%;
-  background: #fff2df;
-  color: #f28b38;
+  background: #ffe8ca;
+  color: #9e6626;
   font-size: 34rpx;
   font-weight: 800;
 }
@@ -40,28 +40,28 @@
 }
 
 .user-name {
-  color: #333333;
+  color: var(--safe-title);
   font-size: 32rpx;
   font-weight: 800;
 }
 
 .user-state {
   margin-top: 8rpx;
-  color: #777777;
+  color: var(--safe-muted);
   font-size: 24rpx;
   line-height: 1.45;
 }
 
 .streak-text {
   margin-top: 10rpx;
-  color: #4caf7d;
+  color: var(--safe-primary-deep);
   font-size: 23rpx;
   font-weight: 700;
 }
 
 .growth-level {
   max-width: 132rpx;
-  color: #4caf7d;
+  color: var(--safe-primary-deep);
   font-size: 22rpx;
   font-weight: 700;
   line-height: 1.35;
@@ -80,15 +80,15 @@
   gap: 14rpx;
   margin-top: 20rpx;
   padding: 14rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: 24rpx;
-  background: #ffffff;
-  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+  border: 1rpx solid var(--safe-border);
+  border-radius: 16rpx;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 12rpx 30rpx rgba(52, 66, 58, 0.08);
 }
 
 .safety-list {
-  border-color: #ffd5cd;
-  background: #fffaf8;
+  border-color: #efd0cc;
+  background: #fff7f3;
 }
 
 .support-row {
@@ -97,8 +97,8 @@
   align-items: center;
   gap: 18rpx;
   padding: 18rpx;
-  border-radius: 18rpx;
-  background: #fffaf3;
+  border-radius: 16rpx;
+  background: #fff7f0;
   text-align: left;
 }
 
@@ -113,7 +113,7 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  border-radius: 18rpx;
+  border-radius: 16rpx;
   font-size: 26rpx;
   font-weight: 800;
 }
@@ -129,29 +129,29 @@
 }
 
 .row-title {
-  color: #333333;
+  color: var(--safe-title);
   font-size: 28rpx;
   font-weight: 800;
 }
 
 .row-subtitle {
   margin-top: 8rpx;
-  color: #777777;
+  color: var(--safe-muted);
   font-size: 23rpx;
   line-height: 1.45;
 }
 
 .row-arrow {
-  color: #4caf7d;
+  color: var(--safe-primary);
   font-size: 40rpx;
 }
 
 .crisis-card {
   margin-top: 16rpx;
   padding: 22rpx;
-  border: 1rpx solid #ffd5cd;
-  border-radius: 20rpx;
-  background: #fff0ed;
+  border: 1rpx solid #efd0cc;
+  border-radius: 16rpx;
+  background: #fbe8e2;
   color: #b94a3c;
   font-size: 24rpx;
   line-height: 1.65;

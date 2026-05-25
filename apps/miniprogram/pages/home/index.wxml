@@ -1,114 +1,95 @@
 <view class="safe-page home-page">
-  <welcome-card
-    title="你好，欢迎来到安心陪伴"
-    subtitle="今天也可以从一个小练习开始"
-    detail="先稳定自己，再更清晰地陪伴孩子"
-    streak-text="今日建议完成 1 个小练习"
-    image-src="/assets/illustrations/home-family-care.png"
-  />
+  <view class="home-hero">
+    <view class="home-topline">
+      <view>
+        <text class="home-greeting">早上好，妈妈</text>
+        <text class="home-subtitle">新的 一天，记得先照顾自己哦</text>
+      </view>
+      <button class="notice-button" aria-label="查看提醒">
+        <view class="notice-dot"></view>
+      </button>
+    </view>
+
+    <view class="mood-panel">
+      <view class="mood-copy">
+        <text class="mood-label">今日情绪状态</text>
+        <view class="mood-main">
+          <text class="mood-face">☺</text>
+          <view>
+            <text class="mood-title">还可以</text>
+            <text class="mood-text">轻度压力</text>
+          </view>
+        </view>
+        <button class="mood-action" bindtap="startDiary">记录我的情绪</button>
+      </view>
+      <image class="mood-image" src="/assets/illustrations/home-family-care.png" mode="aspectFill" />
+    </view>
+  </view>
 
   <view class="safe-section">
     <section-title
-      title="教育热榜"
-      subtitle="看看其他家庭如何处理类似问题"
+      title="快速入口"
+      subtitle="核心功能快捷进入，降低操作成本"
       more-text="更多"
       bind:more="openHotTopics"
     />
-    <scroll-view class="hot-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="hot-list">
-        <button
-          wx:for="{{hotTopics}}"
-          wx:key="title"
-          class="hot-card"
-          data-id="{{item.id}}"
-          bindtap="openHotTopic"
-        >
-          <view class="hot-thumb">
-            <view class="hot-family"></view>
-          </view>
-          <view class="hot-copy">
-            <text class="hot-title">{{item.title}}</text>
-            <view class="hot-meta">
-              <text>{{item.tag}}</text>
-              <text>{{item.readTime}}</text>
-            </view>
-          </view>
-        </button>
-      </view>
-    </scroll-view>
-  </view>
-
-  <view class="safe-section">
-    <section-title title="今日核心入口" subtitle="先选择一个今天最容易开始的小动作" />
-    <view class="entry-grid">
-      <function-entry-card
+    <view class="quick-entry-grid">
+      <button
         wx:for="{{coreEntries}}"
         wx:key="key"
+        class="quick-entry"
         data-key="{{item.key}}"
-        title="{{item.title}}"
-        subtitle="{{item.subtitle}}"
-        icon-text="{{item.iconText}}"
-        accent-color="{{item.accentColor}}"
-        accent-bg="{{item.accentBg}}"
-        bind:tapcard="openCoreEntry"
-      />
+        bindtap="openCoreEntry"
+      >
+        <view class="quick-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">
+          {{item.iconText}}
+        </view>
+        <text class="quick-title">{{item.title}}</text>
+        <text class="quick-subtitle">{{item.subtitle}}</text>
+      </button>
     </view>
   </view>
 
   <view class="safe-section">
-    <section-title title="今日推荐" subtitle="先用一张轻量练习卡开始" />
-    <view class="recommend-card">
-      <training-task-card
-        title="{{recommendedTask.title}}"
-        subtitle="{{recommendedTask.subtitle}}"
-        stage="{{recommendedTask.stage}}"
-        duration="{{recommendedTask.duration}}"
-        scenario="{{recommendedTask.scenario}}"
-        tag="{{recommendedTask.tag}}"
-        bind:tapcard="openRecommendedTraining"
-      />
-      <button class="safe-primary-button recommend-button" bindtap="openRecommendedTraining">开始练习</button>
-    </view>
-  </view>
-
-  <view class="safe-section">
-    <section-title title="本周成长提醒" subtitle="用小变化看见持续练习的力量" />
-    <view class="growth-grid">
-      <view wx:for="{{growthStats}}" wx:key="label" class="growth-card">
-        <text class="growth-value">{{item.value}}</text>
-        <text class="growth-label">{{item.label}}</text>
+    <section-title title="今日推荐训练" subtitle="根据情绪状态推荐一个可以开始的小练习" more-text="查看全部" bind:more="openRecommendedTraining" />
+    <button class="daily-training-card" bindtap="openRecommendedTraining">
+      <image class="daily-training-image" src="/assets/illustrations/course-cover-emotion.png" mode="aspectFill" />
+      <view class="daily-training-copy">
+        <text class="daily-training-title">5分钟呼吸放松练习</text>
+        <text class="daily-training-text">缓解紧张情绪，找回平静</text>
+        <view class="training-tags">
+          <text>5分钟</text>
+          <text>初级</text>
+        </view>
       </view>
-    </view>
+      <view class="play-button"></view>
+    </button>
   </view>
 
   <view class="safe-section">
-    <section-title title="继续原有流程" subtitle="保留当前项目已有的核心入口" />
-    <view class="legacy-panel">
-      <button class="legacy-row" bindtap="startGoalSetting">
-        <view>
-          <text class="legacy-title">设定本周小目标</text>
-          <text class="legacy-text">选择一个亲子场景，写下想练习的新回应。</text>
-        </view>
-        <text class="legacy-arrow">›</text>
-      </button>
-      <button class="legacy-row" bindtap="openWeeklyReport">
-        <view>
-          <text class="legacy-title">查看本周复盘</text>
-          <text class="legacy-text">回顾本周记录、情绪线索和已完成练习。</text>
-        </view>
-        <text class="legacy-arrow">›</text>
-      </button>
-      <button class="legacy-row muted-row" bindtap="openIntegrationTest">
-        <view>
-          <text class="legacy-title">进入联调测试页</text>
-          <text class="legacy-text">开发阶段保留，用于检查前后端连接。</text>
-        </view>
-        <text class="legacy-arrow">›</text>
-      </button>
-    </view>
+    <section-title title="最近记录" subtitle="方便继续查看与跟进" more-text="查看全部" bind:more="openWeeklyReport" />
+    <button class="recent-record-card" bindtap="openWeeklyReport">
+      <text class="recent-face">☹</text>
+      <view class="recent-copy">
+        <text class="recent-time">{{latestRecord.time}}</text>
+        <text class="recent-title">{{latestRecord.mood}}，{{latestRecord.trigger}}</text>
+        <text class="recent-meta">触发事件：{{latestRecord.trigger}}</text>
+      </view>
+      <text class="recent-status">{{latestRecord.status}} ›</text>
+    </button>
   </view>
 
   <view class="safe-section">
-    <bottom-tip-card text="安心陪伴，和孩子一起慢慢变好。" subtext="每一次小小的练习，都是在为更好的亲子关系积蓄力量。" />
+    <view class="home-tip-card">
+      <view>
+        <text class="tip-title">安心小贴士</text>
+        <text class="tip-text">允许自己有情绪，照顾好自己，才能更好地陪伴孩子。</text>
+      </view>
+      <image class="tip-image" src="/assets/illustrations/weekly-growth.png" mode="aspectFill" />
+    </view>
+  </view>
+
+  <view class="safe-section dev-entry-section">
+    <button class="dev-entry" bindtap="openIntegrationTest">进入联调测试页</button>
   </view>
 </view>

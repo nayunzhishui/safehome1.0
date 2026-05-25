@@ -43,12 +43,23 @@ const ethics = [
   "试点或研究数据应进行匿名化和脱敏处理。",
 ];
 
+const quickEntries = [
+  { title: "情绪日记", text: "记录此刻", tone: "green" },
+  { title: "AI分析", text: "智能反馈", tone: "blue" },
+  { title: "训练中心", text: "提升自己", tone: "leaf" },
+  { title: "专家支持", text: "人工督导", tone: "soft" },
+];
+
 export function LandingPage() {
   return (
     <div className="landingPage">
       <header className="landingNav">
-        <a className="brandMark" href="/" aria-label="安心陪伴首页">
-          安心陪伴
+        <a className="brandMark landingBrand" href="/" aria-label="安心陪伴首页">
+          <span className="landingBrandIcon" aria-hidden="true" />
+          <span>
+            <strong>安心陪伴</strong>
+            <small>家长情绪管理支持系统</small>
+          </span>
         </a>
         <nav className="landingLinks" aria-label="首页导航">
           <a href="#home">首页</a>
@@ -66,25 +77,74 @@ export function LandingPage() {
           <p className="eyebrow">ReadFeedback 家长支持系统</p>
           <h1>安心陪伴</h1>
           <p className="heroSubtitle">面向家长的情绪管理与亲子陪伴支持系统</p>
-          <p className="heroCopy">记录一次亲子情绪事件，获得一条非评判反馈，完成一张陪伴练习卡。</p>
+          <p className="heroCopy">
+            记录一次亲子情绪事件，获得一条非评判反馈，再进入一张可执行的陪伴练习卡。系统帮助家长先照顾好自己，再更稳定地陪伴孩子。
+          </p>
           <div className="heroActions">
             <a className="primaryButton landingPrimary" href="#flow">
-              了解核心流程
+              了解安心流程
             </a>
             <a className="secondaryButton landingSecondary" href="/dashboard">
               研究者平台
             </a>
           </div>
+          <div className="landingMoodTags" aria-label="情感关键词">
+            <span>温暖</span>
+            <span>陪伴</span>
+            <span>专业</span>
+            <span>安全感</span>
+          </div>
         </div>
-        <div className="heroPanel" aria-label="核心闭环摘要">
-          <span>目标</span>
-          <span>记录</span>
-          <span>识别</span>
-          <span>反馈</span>
-          <span>练习</span>
-          <span>打卡</span>
-          <span>周报</span>
-          <span>督导</span>
+
+        <div className="heroPhone" aria-label="小程序首页预览">
+          <div className="phoneChrome">
+            <span>9:41</span>
+            <span>安心陪伴</span>
+          </div>
+          <div className="phoneGreeting">
+            <div>
+              <strong>早上好，妈妈</strong>
+              <span>新的 一天，记得先照顾自己</span>
+            </div>
+            <span className="bellDot" aria-hidden="true" />
+          </div>
+          <section className="moodCard" aria-label="今日情绪状态">
+            <div>
+              <span className="miniLabel">今日情绪状态</span>
+              <strong>还可以</strong>
+              <span>轻度压力</span>
+            </div>
+            <button type="button">记录我的情绪</button>
+          </section>
+          <section className="quickGrid" aria-label="核心功能入口">
+            {quickEntries.map((entry) => (
+              <article className={`quickCard ${entry.tone}`} key={entry.title}>
+                <span aria-hidden="true" />
+                <strong>{entry.title}</strong>
+                <small>{entry.text}</small>
+              </article>
+            ))}
+          </section>
+          <section className="recommendMini" aria-label="今日推荐训练">
+            <div className="recommendImage" aria-hidden="true" />
+            <div>
+              <span className="miniLabel">今日推荐训练</span>
+              <strong>5分钟呼吸放松练习</strong>
+              <small>缓解紧张情绪，找回平静</small>
+            </div>
+            <button type="button" aria-label="开始练习" />
+          </section>
+          <section className="recentMini" aria-label="最近记录">
+            <span className="miniFace" aria-hidden="true">?</span>
+            <div>
+              <strong>有点烦，孩子写作业磨蹭</strong>
+              <small>AI 分析已完成</small>
+            </div>
+          </section>
+          <section className="tipMini" aria-label="安心小贴士">
+            <strong>安心小贴士</strong>
+            <span>允许自己有情绪，照顾好自己，才能更好地陪伴孩子。</span>
+          </section>
         </div>
       </section>
 

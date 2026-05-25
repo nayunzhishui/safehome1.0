@@ -3,10 +3,10 @@
   display: flex;
   gap: 22rpx;
   padding: 22rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: 24rpx;
-  background: #ffffff;
-  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+  border: 1rpx solid var(--safe-border);
+  border-radius: 16rpx;
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: 0 12rpx 30rpx rgba(52, 66, 58, 0.08);
   text-align: left;
 }
 
@@ -20,8 +20,8 @@
   height: 142rpx;
   flex: 0 0 auto;
   overflow: hidden;
-  border-radius: 18rpx;
-  background: linear-gradient(135deg, #f5fbe9, #fff0d5);
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #edf5e8, #fff4e8);
 }
 
 .cover-sun {
@@ -31,7 +31,7 @@
   width: 34rpx;
   height: 34rpx;
   border-radius: 50%;
-  background: #ffd36f;
+  background: var(--safe-orange);
 }
 
 .cover-tree {
@@ -41,7 +41,7 @@
   width: 42rpx;
   height: 88rpx;
   border-radius: 42rpx 42rpx 0 0;
-  background: #8bcf86;
+  background: #9fbc94;
 }
 
 .cover-family {
@@ -51,8 +51,8 @@
   width: 70rpx;
   height: 74rpx;
   border-radius: 44rpx 44rpx 18rpx 18rpx;
-  background: #ffb26b;
-  box-shadow: -34rpx 18rpx 0 -8rpx #62b77a;
+  background: var(--safe-orange);
+  box-shadow: -34rpx 18rpx 0 -8rpx var(--safe-primary);
 }
 
 .course-content {
@@ -67,7 +67,7 @@
 }
 
 .course-title {
-  color: #333333;
+  color: var(--safe-title);
   font-size: 30rpx;
   font-weight: 800;
 }
@@ -78,15 +78,15 @@
   align-items: center;
   padding: 0 12rpx;
   border-radius: 19rpx;
-  background: #eef8e9;
-  color: #4caf7d;
+  background: #dce9d6;
+  color: var(--safe-primary-deep);
   font-size: 20rpx;
 }
 
 .course-description {
   display: block;
   margin-top: 10rpx;
-  color: #555555;
+  color: var(--safe-text);
   font-size: 24rpx;
   line-height: 1.45;
 }
@@ -96,7 +96,7 @@
   justify-content: space-between;
   gap: 12rpx;
   margin-top: 16rpx;
-  color: #777777;
+  color: var(--safe-muted);
   font-size: 22rpx;
 }
 
@@ -105,19 +105,19 @@
   margin-top: 12rpx;
   overflow: hidden;
   border-radius: 999rpx;
-  background: #edf3e8;
+  background: #e8e3db;
 }
 
 .progress-fill {
   height: 100%;
   border-radius: 999rpx;
-  background: #6fbc6b;
+  background: var(--safe-primary);
 }
 
 .course-action {
   display: inline-flex;
   margin-top: 14rpx;
-  color: #4caf7d;
+  color: var(--safe-primary-deep);
   font-size: 24rpx;
   font-weight: 700;
 }
