@@ -57,7 +57,7 @@ button {
 
 .landingMode {
   display: block;
-  padding: 40px 20px 56px;
+  padding: 26px 20px 52px;
 }
 
 .adminWorkspace {
@@ -696,6 +696,7 @@ th,
 .landingPage {
   width: min(1420px, 100%);
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .landingNav {
@@ -705,9 +706,9 @@ th,
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 22px;
-  margin-bottom: 28px;
-  padding: 14px;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
   border: 1px solid var(--safe-line);
   border-radius: 8px;
   background: rgba(255, 253, 250, 0.94);
@@ -770,10 +771,10 @@ th,
 }
 
 .landingLinks a {
-  min-height: 38px;
+  min-height: 36px;
   display: inline-flex;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 11px;
   border-radius: 8px;
   color: #5d665f;
   text-decoration: none;
@@ -787,11 +788,11 @@ th,
 .landingHero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(420px, 0.72fr);
+  grid-template-columns: minmax(0, 0.98fr) minmax(340px, 0.64fr);
   align-items: center;
-  gap: clamp(36px, 7vw, 96px);
-  min-height: min(760px, calc(100vh - 130px));
-  padding: clamp(46px, 6vw, 84px);
+  gap: clamp(30px, 5.4vw, 78px);
+  min-height: clamp(620px, calc(100vh - 118px), 720px);
+  padding: clamp(38px, 5vw, 68px);
   overflow: hidden;
   background:
     linear-gradient(120deg, rgba(255, 253, 248, 0.98), rgba(255, 247, 240, 0.86) 54%, rgba(237, 246, 232, 0.88)),
@@ -812,31 +813,37 @@ th,
 }
 
 .heroText h1 {
-  margin-bottom: 16px;
-  font-size: clamp(72px, 9vw, 128px);
+  margin-bottom: 14px;
+  font-size: clamp(64px, 7.4vw, 110px);
   letter-spacing: 0;
 }
 
+.heroText {
+  min-width: 0;
+}
+
 .heroSubtitle {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   color: var(--safe-green-deep);
-  font-size: clamp(24px, 2vw, 34px);
+  font-size: clamp(23px, 1.85vw, 30px);
   font-weight: 850;
+  overflow-wrap: anywhere;
 }
 
 .heroCopy {
-  max-width: 720px;
-  margin-bottom: 30px;
+  max-width: 680px;
+  margin-bottom: 24px;
   color: var(--safe-muted);
-  font-size: 20px;
-  line-height: 1.85;
+  font-size: 19px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
 }
 
 .landingMoodTags {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 22px;
 }
 
 .landingMoodTags span {
@@ -857,19 +864,19 @@ th,
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--safe-primary);
+  background: var(--safe-green);
 }
 
 .heroPhone {
   position: relative;
   z-index: 1;
-  width: min(100%, 430px);
+  width: min(100%, 372px);
   justify-self: center;
   display: grid;
-  gap: 18px;
-  padding: 26px;
-  border: 8px solid rgba(36, 43, 39, 0.82);
-  border-radius: 48px;
+  gap: 13px;
+  padding: 20px;
+  border: 7px solid rgba(36, 43, 39, 0.82);
+  border-radius: 42px;
   background: linear-gradient(180deg, #fffdf8 0%, #fff8ef 100%);
   box-shadow: 0 30px 70px rgba(52, 66, 58, 0.18);
 }
@@ -896,7 +903,7 @@ th,
 
 .phoneChrome {
   color: #242b27;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 850;
 }
 
@@ -914,7 +921,7 @@ th,
 }
 
 .phoneGreeting strong {
-  font-size: 23px;
+  font-size: 19px;
 }
 
 .phoneGreeting span,
@@ -925,8 +932,8 @@ th,
 }
 
 .bellDot {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border: 2px solid #6d746f;
   border-radius: 50% 50% 44% 44%;
 }
@@ -943,8 +950,8 @@ th,
 }
 
 .moodCard {
-  min-height: 142px;
-  padding: 24px;
+  min-height: 118px;
+  padding: 20px;
   border-radius: 18px;
   background:
     linear-gradient(90deg, rgba(220, 233, 214, 0.92), rgba(255, 244, 232, 0.8)),
@@ -958,14 +965,14 @@ th,
 }
 
 .moodCard strong {
-  margin-top: 8px;
+  margin-top: 7px;
   color: var(--safe-ink);
-  font-size: 30px;
+  font-size: 26px;
 }
 
 .moodCard button {
-  min-height: 44px;
-  padding: 0 18px;
+  min-height: 40px;
+  padding: 0 15px;
   border-radius: 999px;
   background: var(--safe-green);
   color: #fff;
@@ -976,7 +983,7 @@ th,
 .quickGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .quickCard {
@@ -988,9 +995,9 @@ th,
 }
 
 .quickCard span {
-  width: 62px;
-  height: 62px;
-  border-radius: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   background: #edf5e8;
 }
 
@@ -1008,7 +1015,7 @@ th,
 
 .quickCard strong {
   color: var(--safe-ink);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .quickCard small {
@@ -1019,7 +1026,7 @@ th,
 .recommendMini,
 .recentMini,
 .tipMini {
-  padding: 16px;
+  padding: 14px;
   border: 1px solid var(--safe-line);
   border-radius: 18px;
   background: rgba(255, 253, 248, 0.9);
@@ -1030,8 +1037,8 @@ th,
 }
 
 .recommendImage {
-  width: 74px;
-  height: 62px;
+  width: 64px;
+  height: 54px;
   flex: 0 0 auto;
   border-radius: 14px;
   background:
@@ -1040,8 +1047,8 @@ th,
 }
 
 .recommendMini button {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   flex: 0 0 auto;
   border-radius: 50%;
   background: var(--safe-green);
@@ -1053,22 +1060,22 @@ th,
   display: block;
   width: 0;
   height: 0;
-  margin: 13px 0 0 17px;
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
-  border-left: 13px solid #fff;
+  margin: 11px 0 0 15px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 12px solid #fff;
 }
 
 .miniFace {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
   border-radius: 50%;
   background: #f2c96f;
   color: #6d5420;
-  font-size: 26px;
+  font-size: 23px;
   font-weight: 900;
 }
 
@@ -1180,7 +1187,6 @@ ul {
   }
 
   .adminTopbar,
-  .landingNav,
   .landingHero,
   .dashboardHeader,
   .dashboardGrid,
@@ -1190,6 +1196,29 @@ ul {
   .usageGrid,
   .filter-form {
     grid-template-columns: 1fr;
+  }
+
+  .landingNav {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .landingNav .researchButton {
+    width: 100%;
+  }
+
+  .landingLinks {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    flex-wrap: nowrap;
+  }
+
+  .landingLinks a {
+    flex: 0 0 auto;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 14px;
   }
 
   .dashboardHeader {
@@ -1210,15 +1239,18 @@ ul {
   }
 
   .heroText h1 {
-    font-size: 58px;
+    font-size: 56px;
   }
 
   .heroCopy {
+    max-width: none;
     font-size: 17px;
+    line-height: 1.72;
   }
 
   .heroPhone {
-    width: min(100%, 390px);
+    width: 100%;
+    max-width: 366px;
     padding: 20px;
     border-width: 6px;
     border-radius: 36px;
@@ -1234,6 +1266,14 @@ ul {
 }
 
 @media (max-width: 520px) {
+  .landingMode {
+    padding: 12px;
+  }
+
+  .landingNav .researchButton {
+    width: calc(100% - 2px);
+  }
+
   .metricGrid,
   .flowGrid,
   .heroPanel {
@@ -1241,7 +1281,41 @@ ul {
   }
 
   .heroText h1 {
-    font-size: 48px;
+    font-size: 46px;
+    overflow-wrap: anywhere;
+  }
+
+  .heroText {
+    width: 100%;
+    max-width: 318px;
+  }
+
+  .heroSubtitle {
+    max-width: 318px;
+    font-size: 21px;
+    line-height: 1.25;
+    word-break: break-all;
+  }
+
+  .heroCopy {
+    max-width: 318px;
+    word-break: break-all;
+  }
+
+  .heroPhone {
+    max-width: 300px;
+    padding: 18px;
+    border-radius: 32px;
+  }
+
+  .landingMoodTags {
+    gap: 8px;
+  }
+
+  .landingMoodTags span {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
   }
 
   .moodCard,

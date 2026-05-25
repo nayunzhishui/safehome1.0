@@ -104,7 +104,7 @@ export function LandingPage() {
           <div className="phoneGreeting">
             <div>
               <strong>早上好，妈妈</strong>
-              <span>新的 一天，记得先照顾自己</span>
+              <span>新的一天，记得先照顾自己</span>
             </div>
             <span className="bellDot" aria-hidden="true" />
           </div>
