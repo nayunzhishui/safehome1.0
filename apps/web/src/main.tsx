@@ -10,6 +10,7 @@ import { FeedbackManagement } from "./pages/FeedbackManagement";
 import { GoalsManagement } from "./pages/GoalsManagement";
 import { IntegrationSmokeTest } from "./pages/IntegrationSmokeTest";
 import { LandingPage } from "./pages/LandingPage";
+import { ProfilesManagement } from "./pages/ProfilesManagement";
 import { ResearchDashboard } from "./pages/ResearchDashboard";
 import { ReportsManagement } from "./pages/ReportsManagement";
 import { RulesManagement } from "./pages/RulesManagement";
@@ -24,6 +25,7 @@ const adminLinks = [
   { href: "/supervision", label: "督导工作台", match: (path: string) => path === "/supervision" || path.startsWith("/supervision/") },
   { href: "/checkins", label: "练习打卡", match: (path: string) => path === "/checkins" },
   { href: "/reports", label: "周度报告", match: (path: string) => path === "/reports" },
+  { href: "/profiles", label: "学生画像", match: (path: string) => path === "/profiles" },
   { href: "/goals", label: "目标管理", match: (path: string) => path === "/goals" },
   { href: "/content/rules", label: "反馈规则", match: (path: string) => path === "/content/rules" },
   { href: "/export", label: "数据导出", match: (path: string) => path === "/export" },
@@ -41,6 +43,7 @@ function App() {
   const isRulesPath = path === "/content/rules";
   const isExportPath = path === "/export";
   const isReportsPath = path === "/reports";
+  const isProfilesPath = path === "/profiles";
   const isFeedbackPath = path === "/feedback";
   const isKnownAdminPath = [
     "/dashboard",
@@ -49,6 +52,7 @@ function App() {
     "/feedback",
     "/checkins",
     "/reports",
+    "/profiles",
     "/supervision",
     "/content/cards",
     "/content/rules",
@@ -63,6 +67,7 @@ function App() {
     !isFeedbackPath &&
     !isCheckinsPath &&
     !isReportsPath &&
+    !isProfilesPath &&
     !isSupervisionPath &&
     !isCardsPath &&
     !isRulesPath &&
@@ -81,6 +86,7 @@ function App() {
       {isRulesPath ? <RulesManagement /> : null}
       {isExportPath ? <ExportManagement /> : null}
       {isReportsPath ? <ReportsManagement /> : null}
+      {isProfilesPath ? <ProfilesManagement /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}

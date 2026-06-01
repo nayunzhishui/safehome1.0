@@ -1,7 +1,101 @@
 {
-  "version": "2026.05-assessment-worksheets-v1",
+  "version": "2026.06-assessment-worksheets-v2",
   "boundary_notice": "本内容用于自我观察和练习记录，不用于诊断，不替代心理咨询、医学诊断、危机干预或法律判断。如你或家人正在经历明显痛苦或现实风险，请及时寻求现实支持和专业帮助。",
   "worksheets": [
+    {
+      "id": "student_profile_v1",
+      "source_file": "夏老师项目计划书、心理测评数据分析图、学生心理反馈规则图",
+      "source_title": "学生支持性画像测评",
+      "display_title": "学生支持性画像测评",
+      "category": "学生画像",
+      "pages": 1,
+      "instructions": "本测评用于了解近期压力反应、学习压力和支持资源，只用于自我理解、练习推荐和后续复测参考，不用于诊断或贴标签。",
+      "sections": [
+        {
+          "title": "近期压力反应",
+          "content": "请根据最近两周的真实感受填写。结果只作为阶段性支持画像和练习建议的参考。"
+        },
+        {
+          "title": "补充说明",
+          "content": "自由文本只作为辅助线索。高风险内容需要进入人工关注流程，不用于生成普通自动训练建议。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "test_anxiety",
+          "prompt": "最近面对考试、作业或学习评价时，我会明显紧张或担心结果。",
+          "type": "scale",
+          "required": true,
+          "dimension": "test_anxiety",
+          "options": [
+            { "label": "1 很少", "value": "1", "score": 1 },
+            { "label": "2 偶尔", "value": "2", "score": 2 },
+            { "label": "3 有时", "value": "3", "score": 3 },
+            { "label": "4 经常", "value": "4", "score": 4 },
+            { "label": "5 几乎总是", "value": "5", "score": 5 }
+          ]
+        },
+        {
+          "id": "iu_score",
+          "prompt": "当事情不确定、没有明确答案或结果还没出来时，我会很难放松。",
+          "type": "scale",
+          "required": true,
+          "dimension": "uncertainty_intolerance",
+          "options": [
+            { "label": "1 很少", "value": "1", "score": 1 },
+            { "label": "2 偶尔", "value": "2", "score": 2 },
+            { "label": "3 有时", "value": "3", "score": 3 },
+            { "label": "4 经常", "value": "4", "score": 4 },
+            { "label": "5 几乎总是", "value": "5", "score": 5 }
+          ]
+        },
+        {
+          "id": "fear_score",
+          "prompt": "遇到压力信号时，我会很快想到可能出错、被否定或让别人失望。",
+          "type": "scale",
+          "required": true,
+          "dimension": "pressure_alert",
+          "options": [
+            { "label": "1 很少", "value": "1", "score": 1 },
+            { "label": "2 偶尔", "value": "2", "score": 2 },
+            { "label": "3 有时", "value": "3", "score": 3 },
+            { "label": "4 经常", "value": "4", "score": 4 },
+            { "label": "5 几乎总是", "value": "5", "score": 5 }
+          ]
+        },
+        {
+          "id": "self_compassion",
+          "prompt": "当我表现不理想时，我能用相对温和的方式支持自己，而不是一直责备自己。",
+          "type": "scale",
+          "required": true,
+          "dimension": "self_support",
+          "options": [
+            { "label": "1 很少", "value": "1", "score": 1 },
+            { "label": "2 偶尔", "value": "2", "score": 2 },
+            { "label": "3 有时", "value": "3", "score": 3 },
+            { "label": "4 经常", "value": "4", "score": 4 },
+            { "label": "5 几乎总是", "value": "5", "score": 5 }
+          ]
+        },
+        {
+          "id": "support_resource",
+          "prompt": "最近我可以向谁或什么资源寻求支持？",
+          "type": "text",
+          "required": false,
+          "dimension": "support_resource"
+        },
+        {
+          "id": "free_text",
+          "prompt": "如果愿意，可以写下最近最让你有压力的一件事。请不要填写他人的隐私信息。",
+          "type": "text",
+          "required": false,
+          "dimension": "free_text"
+        }
+      ],
+      "scoring": "第一版仅保存量表分数和自由文本，不直接生成诊断结论。后续可由规则版画像服务读取 test_anxiety、iu_score、fear_score、self_compassion 和 free_text，生成阶段性支持画像、置信度、维度解释和推荐任务。",
+      "recommended_card_ids": ["student_emotion_naming", "cbt_auto_thought_student", "self_support_statement", "sandplay_expression_01"],
+      "source_version": "2026.06-student-profile-v1-draft"
+    },
     {
       "id": "worksheet_3_1_anxiety",
       "source_file": "工作表3.1 总体焦虑水平及干扰程度量表.pdf",

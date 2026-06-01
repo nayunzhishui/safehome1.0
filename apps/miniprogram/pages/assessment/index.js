@@ -5,13 +5,18 @@ const api = createSafeHomeApi();
 function groupByCategory(items) {
   const groups = [];
   (items || []).forEach((item) => {
+    const normalizedItem = {
+      ...item,
+      is_student_profile: item.id === "student_profile_v1" || item.category === "学生画像",
+      action_text: item.id === "student_profile_v1" || item.category === "学生画像" ? "开始支持性测评" : item.is_reference ? "查看示例" : "开始填写",
+    };
     const category = item.category || "其他";
     let group = groups.find((entry) => entry.category === category);
     if (!group) {
       group = { category, items: [] };
       groups.push(group);
     }
-    group.items.push(item);
+    group.items.push(normalizedItem);
   });
   return groups;
 }
@@ -30,7 +35,7 @@ Page({
       },
       {
         label: "结果用途",
-        value: "用于自我观察和练习记录",
+        value: "用于自我观察、阶段性画像和练习记录",
       },
       {
         label: "数据保存",

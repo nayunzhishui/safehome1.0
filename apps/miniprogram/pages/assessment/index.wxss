@@ -215,9 +215,38 @@
   background: #f7fbff;
 }
 
+.worksheet-card.student-profile {
+  border-color: #bfe3c4;
+  background: linear-gradient(135deg, #f3fbef 0%, #ffffff 72%);
+}
+
 .worksheet-main {
   flex: 1;
   min-width: 0;
+}
+
+.profile-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.profile-badge {
+  display: inline-flex;
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background: #4caf7d;
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.profile-badge.ghost {
+  border: 1rpx solid #bfe3c4;
+  background: #f5fbef;
+  color: #3e7f5d;
 }
 
 .worksheet-title,

@@ -2,7 +2,7 @@
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
-进度口径：真实可调用接口以前文已实现章节为准；第 10 节“0版网页评估画像整合”仍为后续规划。当前总进度见 `docs/项目进度统一口径.md`。
+进度口径：真实可调用接口以前文已实现章节为准；第 10 节“0版网页评估画像整合”已有基础画像、风险检查和模型信息接口，画像结果保存与后台导出仍在后续步骤。当前总进度见 `docs/项目进度统一口径.md`。
 
 ## 通用约定
 
@@ -493,7 +493,7 @@
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`reports`、`supervision`、`cards` |
+| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`profile`、`reports`、`supervision`、`cards` |
 | `user_id` | string | 否 | 除 `cards` 外，可按用户筛选 |
 
 响应：
@@ -503,6 +503,7 @@
 - 未提供或提供错误 `X-Admin-Token` 时返回 `401 unauthorized`。
 - 当前不支持 `type=all`。
 - 当前不支持 `format` 参数。
+- `type=profile` 会从 `assessment_results` 中筛选学生画像结果，默认使用匿名 ID，不导出自由文本原文和联系方式。
 
 本地开发调用示例：
 
@@ -521,33 +522,34 @@ Invoke-WebRequest `
 - 当前列表接口只提供简单 `limit`。
 - 当前即时反馈由规则匹配生成，不代表诊断、评估或治疗建议。
 
-## 10. 后续规划接口：0版网页评估画像整合（未实现）
+## 10. 学生画像接口：0版网页评估画像整合（部分已实现）
 
-本节根据夏老师“0版网页与安心家整合”资料、8 张思维导图和 GitHub 参考项目整理，仅作为后续开发规划。当前后端尚未实现以下接口，联调时不要按已上线接口调用。
+本节根据夏老师“0版网页与安心家整合”资料、8 张思维导图和 GitHub 参考项目整理。当前已实现 `POST /api/profile`、`POST /api/risk/check`、`GET /api/model/info`，用于学生画像规则生成、风险关键词初筛和模型/规则版本说明。
 
-规划目标：
+当前目标：
 
 - 将 0版网页沉淀为安心家的“评估画像与反馈引擎”；
 - 支持学生画像、置信度、维度解释、推荐任务和人工复核；
 - 保持非诊断、非标签化、支持性表达；
 - 为研究导出保留模型版本、规则版本和授权字段。
 
-### `POST /api/profile`（规划）
+### `POST /api/profile`
 
 用途：根据量表分数和自由文本生成学生支持性画像。该接口不输出临床诊断。
 
-请求字段建议：
+请求字段：
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `user_id` | string | 否 | 学生或测试用户弱身份 ID，缺省可沿用测试用户 |
-| `assessment_result_id` | string | 否 | 关联已有测一测结果 |
+| `assessment_result_id` | string | 否 | 关联已有测一测结果；当前生成后会另存一条画像测评结果 |
 | `round` | integer | 否 | 第几轮测评，默认 1 |
 | `scores.test_anxiety` | number | 是 | 考试焦虑相关分数 |
 | `scores.iu_score` | number | 是 | 不确定性不耐受相关分数 |
-| `scores.f_score` | number | 否 | 情绪调节灵活性或恐惧倾向相关分数 |
+| `scores.f_score` / `scores.fear_score` | number | 否 | 情绪调节灵活性或恐惧倾向相关分数 |
 | `scores.self_compassion` | number | 是 | 自我同情/自我支持相关分数 |
-| `free_text` | string | 否 | 学生日记、访谈或补充说明文本，仅作辅助线索 |
+| `support_resource` | string | 否 | 当前可用支持资源 |
+| `free_text` | string | 否 | 学生日记、访谈或补充说明文本，仅作辅助线索和风险初筛 |
 
 请求示例：
 
@@ -565,23 +567,131 @@ Invoke-WebRequest `
 }
 ```
 
-响应字段建议：
+响应字段：
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `id` | string | 画像结果 ID |
+| `assessment_result_id` | string | 保存到 `assessment_results` 后生成的记录 ID |
+| `saved_to_assessment_results` | boolean | 是否已保存到现有测一测结果表 |
 | `profile_name` | string | 画像名称，例如 `压力警觉型画像`，前端不使用“人格”字样 |
 | `profile_code` | string | 画像编码，例如 `pressure_alert` |
 | `confidence` | number | 画像置信度，0-1 |
-| `dimensions` | object | 关键维度结果 |
-| `keywords` | array | 从自由文本中提取的辅助关键词 |
+| `dimensions` | array | 关键维度解释列表 |
 | `supportive_explanation` | string | 支持性解释 |
-| `suggested_task` | string | 推荐任务 ID，例如沙盘表达或情绪命名任务 |
+| `strength_note` | string | 优势视角提示 |
+| `small_step` | string | 当前最小行动建议 |
 | `recommended_card_ids` | array | 推荐训练卡 ID |
 | `risk_level` | string | `low`、`medium`、`high` |
 | `requires_review` | boolean | 是否需要人工复核 |
+| `allow_auto_feedback` | boolean | 是否允许继续生成普通自动反馈 |
 | `model_version` | string | 模型或规则版本 |
 | `rules_version` | string | 画像反馈规则版本 |
+| `boundary_notice` | string | 非诊断边界说明 |
+| `created_at` | string | 生成时间 |
+
+响应示例：
+
+```json
+{
+  "ok": true,
+  "data": {
+    "assessment_result_id": "assessment_001",
+    "saved_to_assessment_results": true,
+    "profile_name": "压力警觉型画像",
+    "profile_code": "pressure_alert",
+    "confidence": 0.8,
+    "dimensions": [
+      {
+        "key": "anxiety_sensitivity",
+        "label": "压力信号敏感度",
+        "level": "high",
+        "summary": "你可能更容易提前捕捉到考试、评价或不确定事件带来的压力信号。"
+      }
+    ],
+    "supportive_explanation": "你当前可能更容易捕捉到压力信号，这不代表你有问题。",
+    "strength_note": "敏锐可以帮助你提前准备，只是需要配合更温和的自我支持方式。",
+    "small_step": "先完成一次 3 分钟情绪命名练习。",
+    "recommended_card_ids": ["student_emotion_naming", "cbt_auto_thought_student"],
+    "risk_level": "low",
+    "requires_review": false,
+    "allow_auto_feedback": true,
+    "model_version": "profile-rules-v1",
+    "rules_version": "2026.06-student-profile-rules-v1",
+    "boundary_notice": "本结果不是临床诊断，仅用于自我理解和练习参考。",
+    "created_at": "2026-06-01T10:00:00"
+  }
+}
+```
+
+高风险说明：
+
+- 当 `free_text` 命中高风险关键词时，接口返回 `profile_code=requires_review`；
+- 此时 `allow_auto_feedback=false`，`recommended_card_ids=[]`；
+- 前端应优先显示人工支持和现实求助提示，不进入普通训练推荐页。
+
+### `POST /api/risk/check`
+
+用途：检查文本中是否包含自伤、自杀、暴力、家暴、严重失眠等风险关键词。该接口只做初筛和人工复核分流，不构成危机评估结论。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `text` / `free_text` / `raw_text` | string | 否 | 待检查文本 |
+| `source` | string | 否 | 来源模块，默认 `student_profile` |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `source` | string | 来源模块 |
+| `risk_level` | string | `low`、`medium`、`high` |
+| `matched_categories` | array | 命中的风险类别和关键词 |
+| `requires_review` | boolean | 是否需要人工复核 |
+| `allow_auto_feedback` | boolean | 是否允许普通自动反馈 |
+| `allow_recommended_training_cards` | boolean | 是否允许普通训练卡推荐 |
+| `export_raw_text_by_default` | boolean | 导出时是否默认允许原文 |
+| `safe_response` | string | 支持性安全提示 |
+| `boundary_notice` | string | 风险初筛边界说明 |
+
+响应示例：
+
+```json
+{
+  "ok": true,
+  "data": {
+    "source": "student_profile",
+    "risk_level": "high",
+    "matched_categories": [
+      {
+        "id": "self_harm",
+        "label": "自伤/自杀风险表达",
+        "risk_level": "high",
+        "matched_keywords": ["不想活"],
+        "safe_response": "你现在的安全比继续使用系统更重要。请尽快联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。"
+      }
+    ],
+    "requires_review": true,
+    "allow_auto_feedback": false,
+    "allow_recommended_training_cards": false,
+    "export_raw_text_by_default": false,
+    "safe_response": "你现在的安全比继续使用系统更重要。请尽快联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。",
+    "boundary_notice": "风险关键词只用于初步提示和人工复核分流，不构成诊断或危机评估结论。"
+  }
+}
+```
+
+### `GET /api/model/info`
+
+用途：返回当前画像模型或规则引擎信息，降低“黑箱感”，方便研究追溯。
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `model_version` | string | 模型版本 |
+| `rules_version` | string | 规则版本 |
+| `available_profiles` | array | 当前可输出的画像类型 |
 | `boundary_notice` | string | 非诊断边界说明 |
 
 响应示例：
@@ -590,68 +700,41 @@ Invoke-WebRequest `
 {
   "ok": true,
   "data": {
-    "id": "profile_001",
-    "profile_name": "压力警觉型画像",
-    "profile_code": "pressure_alert",
-    "confidence": 0.76,
-    "dimensions": {
-      "anxiety_sensitivity": "high",
-      "emotion_regulation": "medium_low",
-      "self_support": "developing"
-    },
-    "keywords": ["担心", "考不好", "失望"],
-    "supportive_explanation": "你当前可能更容易捕捉到压力信号，这不代表你有问题。",
-    "suggested_task": "sandplay_pressure_awareness",
-    "recommended_card_ids": ["emotion_naming", "three_second_pause"],
-    "risk_level": "low",
-    "requires_review": false,
     "model_version": "profile-rules-v1",
     "rules_version": "2026.06-student-profile-rules-v1",
-    "boundary_notice": "本结果不是临床诊断，仅用于自我理解和练习参考。"
+    "available_profiles": [
+      {
+        "profile_code": "pressure_alert",
+        "profile_name": "压力警觉型画像",
+        "enabled": true,
+        "risk_level": "low"
+      }
+    ],
+    "boundary_notice": "学生画像只用于支持性理解和练习推荐，不构成临床诊断。"
   }
 }
 ```
 
-### `GET /api/profile-results`（规划）
+### 画像历史接口（后续规划）
 
-用途：查询用户的学生画像历史结果，用于复测和轮次追踪。
+后续建议补充：
 
-查询参数建议：
+- 第一版已把画像结果以 `worksheet_id=student_profile_v1`、`category=学生画像` 写入 `assessment_results`，可先通过 `GET /api/assessment-results` 查询；
+- `GET /api/profile-results`：后续可封装专用查询接口，用于复测和轮次追踪；
+- `GET /api/profile-results/<profile_id>`：查看单条画像结果详情，用于小程序结果页和网页后台详情页。
 
-| 参数 | 类型 | 必填 | 说明 |
-|---|---|---|---|
-| `user_id` | string | 否 | 用户 ID |
-| `limit` | integer | 否 | 默认 50 |
+### 后台导出扩展
 
-### `GET /api/profile-results/<profile_id>`（规划）
-
-用途：查看单条画像结果详情，用于小程序结果页和网页后台详情页。
-
-### `GET /api/model/info`（规划）
-
-用途：返回当前画像模型或规则引擎信息，降低“黑箱感”，方便研究追溯。
-
-响应字段建议：
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `model_version` | string | 模型版本 |
-| `rules_version` | string | 规则版本 |
-| `available_profiles` | array | 当前可输出的画像类型 |
-| `last_updated` | string | 更新时间 |
-| `boundary_notice` | string | 非诊断边界说明 |
-
-### `POST /api/risk/check`（规划）
-
-用途：检查文本中是否包含自伤、自杀、暴力、家暴、严重失眠等高风险线索。命中高风险时，不应继续生成普通自动反馈。
-
-### 后台导出扩展（规划）
-
-`GET /api/admin/export` 后续建议支持：
+`GET /api/admin/export` 当前已支持：
 
 | 参数 | 类型 | 说明 |
 |---|---|---|
-| `type=profile` | string | 导出学生画像结果 |
+| `type=profile` | string | 导出学生画像结果摘要 |
+
+后续建议继续支持：
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
 | `deidentify=true` | boolean | 默认脱敏导出 |
 | `format=csv/json` | string | 第一版可只做 CSV，JSON 后置 |
 

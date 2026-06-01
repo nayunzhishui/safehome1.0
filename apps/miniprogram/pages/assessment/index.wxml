@@ -6,8 +6,8 @@
 
   <view class="family-art-card">
     <view class="art-copy">
-      <text class="art-title">从一次温和观察开始</text>
-      <text class="art-text">这里收纳量表、目标、情绪觉察、行为练习和进展记录。</text>
+          <text class="art-title">从一次温和观察开始</text>
+          <text class="art-text">这里收纳量表、阶段性画像、情绪觉察、行为练习和进展记录。</text>
     </view>
     <view class="family-art">
       <view class="sun"></view>
@@ -51,16 +51,20 @@
         wx:for="{{item.items}}"
         wx:for-item="worksheet"
         wx:key="id"
-        class="worksheet-card {{worksheet.is_reference ? 'reference' : ''}}"
+        class="worksheet-card {{worksheet.is_reference ? 'reference' : ''}} {{worksheet.is_student_profile ? 'student-profile' : ''}}"
         data-id="{{worksheet.id}}"
         bindtap="openAssessmentEntry"
       >
         <view class="worksheet-main">
+          <view wx:if="{{worksheet.is_student_profile}}" class="profile-badge-row">
+            <text class="profile-badge">学生支持性画像</text>
+            <text class="profile-badge ghost">非诊断</text>
+          </view>
           <text class="worksheet-title">{{worksheet.display_title}}</text>
           <text class="worksheet-meta">{{worksheet.source_file}} · {{worksheet.pages}} 页 · {{worksheet.question_count}} 个填写项</text>
           <text class="worksheet-desc">{{worksheet.instructions}}</text>
         </view>
-        <text class="worksheet-action">{{worksheet.is_reference ? '查看示例' : '开始填写'}}</text>
+        <text class="worksheet-action">{{worksheet.action_text}}</text>
       </view>
     </view>
   </view>

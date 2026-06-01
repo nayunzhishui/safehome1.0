@@ -1,6 +1,7 @@
 import { API_ENDPOINTS, DEFAULT_USER_ID } from "../../../../shared/constants/api";
 import type {
   ApiResponse,
+  AssessmentResult,
   CardRecommendResponse,
   Checkin,
   CheckinInput,
@@ -11,6 +12,10 @@ import type {
   Goal,
   GoalInput,
   ListResponse,
+  ModelInfo,
+  RiskCheckResult,
+  StudentProfileInput,
+  StudentProfileResult,
   SupervisionInput,
   SupervisionRequest,
   TrainingCard,
@@ -76,6 +81,24 @@ export class SafeHomeApiClient {
     });
   }
 
+  createProfile(input: StudentProfileInput): Promise<StudentProfileResult> {
+    return this.requestData<StudentProfileResult>(API_ENDPOINTS.profile, {
+      method: "POST",
+      body: this.withDefaultUser(input),
+    });
+  }
+
+  checkRisk(input: { text?: string; free_text?: string; raw_text?: string; source?: string }): Promise<RiskCheckResult> {
+    return this.requestData<RiskCheckResult>(API_ENDPOINTS.riskCheck, {
+      method: "POST",
+      body: input,
+    });
+  }
+
+  getModelInfo(): Promise<ModelInfo> {
+    return this.requestData<ModelInfo>(API_ENDPOINTS.modelInfo);
+  }
+
   listCards(): Promise<ListResponse<TrainingCard>> {
     return this.requestData<ListResponse<TrainingCard>>(API_ENDPOINTS.cards);
   }
@@ -87,6 +110,10 @@ export class SafeHomeApiClient {
         limit: params.limit,
       }),
     );
+  }
+
+  listAssessmentResults(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<AssessmentResult>> {
+    return this.requestData<ListResponse<AssessmentResult>>(this.withQuery(API_ENDPOINTS.assessmentResults, params));
   }
 
   createCheckin(input: CheckinInput): Promise<Checkin> {

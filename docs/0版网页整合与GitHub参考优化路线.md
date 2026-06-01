@@ -30,7 +30,7 @@
 - 已新增 `content/risk_keywords.json`。
 - 已在 `content/training_cards.json` 中新增学生端 CBT、情绪命名、自我支持、沙盘表达训练卡。
 - 已同步 UI/伦理、量表接入、API、数据库和上线规划文档。
-- 尚未在 `content/assessment_worksheets.json` 中新增 `student_profile_v1`。
+- 已在 `content/assessment_worksheets.json` 中新增 `student_profile_v1`。
 - 尚未实现画像 API、风险检查服务、画像结果页、画像后台和画像导出。
 
 ## 0. 执行级结论
@@ -42,7 +42,6 @@
 - P0 内容库与文档准备；
 - 学生画像命名规范；
 - 非诊断文案模板；
-- `content/assessment_worksheets.json` 中的 `student_profile_v1` 测评条目；
 - 训练卡分类补充；
 - UI 与伦理边界清单补充。
 
@@ -1320,7 +1319,7 @@ content/feedback_rules.json
 - 已完成：新增 `content/risk_keywords.json` 初稿；
 - 已完成：补充学生画像命名与非诊断边界；
 - 已完成：在 UI 与伦理边界清单中补充画像检查项；
-- 下一步：在 `content/assessment_worksheets.json` 新增 `student_profile_v1`。
+- 已完成：在 `content/assessment_worksheets.json` 新增 `student_profile_v1`。
 
 验收：
 
@@ -1328,7 +1327,7 @@ content/feedback_rules.json
 - [x] 至少有 1 组高风险关键词；
 - [x] 文案不使用“人格”；
 - [x] 规则有 `version` 和 `review_status`。
-- [ ] `content/assessment_worksheets.json` 中存在 `student_profile_v1`。
+- [x] `content/assessment_worksheets.json` 中存在 `student_profile_v1`。
 
 ### 9.2 P1：画像 API 最小闭环
 
@@ -1477,12 +1476,12 @@ content/feedback_rules.json
 
 ## 13. 后续最建议执行的第一步
 
-如果下一轮开始落地，建议继续执行 P0-4，不直接写后端：
+如果下一轮继续落地，建议进入 P1-0，不直接写后端：
 
 ```text
-在 content/assessment_worksheets.json 中新增 student_profile_v1
-校验 recommended_card_ids 均存在
-确认 display_title 和 instructions 不含诊断化、人格化表述
+阅读 backend 路由注册方式
+阅读 database 工具和 assessment_results 保存逻辑
+阅读 shared 类型和前端 API 封装
 ```
 
 第一条画像规则建议用“压力警觉型画像”，但前端和报告中必须明确：
@@ -2770,9 +2769,8 @@ P4 不应提前实现的原因：
 如果下一步让我直接执行，推荐第一条任务是：
 
 ```text
-继续执行 P0-4：
-在 content/assessment_worksheets.json 中新增 student_profile_v1
-校验 recommended_card_ids 均存在
+继续执行 P1-0：
+阅读 backend 路由注册、数据库工具、assessment_results 保存逻辑、导出接口、shared 类型和前端 API 封装
 同步开发日志、交接、开发说明和项目进度统一口径
 ```
 

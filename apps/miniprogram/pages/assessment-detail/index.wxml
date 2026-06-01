@@ -13,6 +13,14 @@
       <alert-card type="info" title="边界提示" content="{{worksheet.boundary_notice}}" />
     </view>
 
+    <view wx:if="{{worksheet.isStudentProfile}}" class="safe-section">
+      <view class="profile-notice-card">
+        <text class="profile-notice-title">阶段性支持画像</text>
+        <text class="profile-notice-text">本测评会整理近期压力反应、支持资源和练习建议。结果不是诊断，也不代表固定标签。</text>
+        <text class="profile-notice-text strong">如果填写内容涉及明显安全风险，系统会优先进入人工关注提示，不生成普通训练建议。</text>
+      </view>
+    </view>
+
     <view class="safe-section">
       <section-title title="原文说明" subtitle="以下内容按当前内容库展示" />
       <view class="instruction-card">
@@ -64,7 +72,7 @@
     </view>
 
     <button class="safe-primary-button submit-button" bindtap="submitWorksheet" disabled="{{submitting}}">
-      {{submitting ? '保存中...' : '保存本次填写'}}
+      {{submitting ? '保存中...' : (worksheet.isStudentProfile ? '生成阶段性画像' : '保存本次填写')}}
     </button>
 
     <view class="safe-section">

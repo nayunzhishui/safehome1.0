@@ -5,6 +5,7 @@ const api = createSafeHomeApi();
 function withAnswerState(worksheet) {
   return {
     ...worksheet,
+    isStudentProfile: worksheet.id === "student_profile_v1" || worksheet.category === "学生画像",
     questions: (worksheet.questions || []).map((question) => ({
       ...question,
       answerValue: "",
@@ -91,6 +92,32 @@ Page({
     return missing;
   },
 
+  getAnswerValue(answers, questionId) {
+    const answer = answers.find((item) => item.question_id === questionId);
+    return answer ? answer.value : "";
+  },
+
+  getAnswerScore(answers, questionId) {
+    const answer = answers.find((item) => item.question_id === questionId);
+    if (!answer) return undefined;
+    if (answer.score !== undefined) return Number(answer.score);
+    const parsed = Number(answer.value);
+    return Number.isNaN(parsed) ? undefined : parsed;
+  },
+
+  buildProfilePayload(answers) {
+    return {
+      scores: {
+        test_anxiety: this.getAnswerScore(answers, "test_anxiety"),
+        iu_score: this.getAnswerScore(answers, "iu_score"),
+        fear_score: this.getAnswerScore(answers, "fear_score"),
+        self_compassion: this.getAnswerScore(answers, "self_compassion"),
+      },
+      support_resource: this.getAnswerValue(answers, "support_resource"),
+      free_text: this.getAnswerValue(answers, "free_text"),
+    };
+  },
+
   async submitWorksheet() {
     const worksheet = this.data.worksheet;
     if (!worksheet || this.data.submitting) return;
@@ -104,13 +131,19 @@ Page({
 
     this.setData({ submitting: true, errorMessage: "" });
     try {
-      const result = await api.createAssessmentResult({
-        worksheet_id: worksheet.id,
-        answers,
-      });
+      const result = worksheet.isStudentProfile
+        ? await api.createProfile(this.buildProfilePayload(answers))
+        : await api.createAssessmentResult({
+            worksheet_id: worksheet.id,
+            answers,
+          });
+      const resultId = worksheet.isStudentProfile ? result.assessment_result_id : result.id;
+      if (!resultId) {
+        throw new Error("后端未返回结果 ID，请稍后重试。");
+      }
       wx.showToast({ title: "已保存", icon: "success" });
       wx.navigateTo({
-        url: `/pages/assessment-result/index?id=${encodeURIComponent(result.id)}&worksheet_id=${encodeURIComponent(worksheet.id)}`,
+        url: `/pages/assessment-result/index?id=${encodeURIComponent(resultId)}&worksheet_id=${encodeURIComponent(worksheet.id)}`,
       });
     } catch (error) {
       this.setData({

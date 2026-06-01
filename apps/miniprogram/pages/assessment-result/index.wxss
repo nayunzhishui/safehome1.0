@@ -13,6 +13,17 @@
 .result-kicker,
 .result-title,
 .result-summary,
+.profile-name,
+.profile-code,
+.review-tip,
+.profile-copy-text,
+.dimension-title,
+.dimension-level,
+.dimension-summary,
+.next-step-label,
+.next-step-text,
+.support-title,
+.support-text,
 .cell-label,
 .cell-value,
 .state-box {
@@ -45,6 +56,147 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18rpx;
   margin-top: 20rpx;
+}
+
+.profile-result-card {
+  margin-top: 20rpx;
+  padding: 26rpx;
+  border: 1rpx solid #bfe3c4;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+}
+
+.profile-result-card.high-risk {
+  border-color: #efc09d;
+  background: #fff7ef;
+}
+
+.profile-name {
+  color: #25372c;
+  font-size: 32rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.profile-code {
+  margin-top: 8rpx;
+  color: #7a8777;
+  font-size: 22rpx;
+  line-height: 1.45;
+}
+
+.profile-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.profile-metric {
+  padding: 20rpx;
+  border-radius: 20rpx;
+  background: #f8fbf5;
+}
+
+.review-tip {
+  margin-top: 18rpx;
+  color: #8a5a2f;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.profile-copy-card,
+.next-step-card,
+.support-card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+}
+
+.profile-copy-card {
+  border: 1rpx solid #e8efdf;
+}
+
+.profile-copy-text,
+.next-step-text,
+.support-text {
+  color: #596a5b;
+  font-size: 25rpx;
+  line-height: 1.7;
+}
+
+.dimension-list {
+  display: grid;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.dimension-card {
+  padding: 22rpx;
+  border: 1rpx solid #e8efdf;
+  border-radius: 22rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+}
+
+.dimension-title {
+  color: #25372c;
+  font-size: 27rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.dimension-level {
+  margin-top: 6rpx;
+  color: #4caf7d;
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.dimension-summary {
+  margin-top: 10rpx;
+  color: #596a5b;
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.next-step-card {
+  border: 1rpx solid #dcebd8;
+  background: #f9fcf6;
+}
+
+.next-step-label {
+  margin-top: 12rpx;
+  color: #4caf7d;
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.next-step-label:first-child {
+  margin-top: 0;
+}
+
+.support-card {
+  border: 1rpx solid #efc09d;
+  background: #fff7ef;
+}
+
+.support-title {
+  color: #8a5a2f;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.support-text {
+  margin-top: 10rpx;
+  color: #7a4d25;
 }
 
 .result-cell {

@@ -202,6 +202,85 @@ export interface AssessmentResultInput {
   result_summary?: string;
 }
 
+export interface ProfileDimension {
+  key: string;
+  label: string;
+  level: string;
+  summary: string;
+}
+
+export interface RiskMatchedCategory {
+  id: string;
+  label: string;
+  risk_level: RiskLevel;
+  matched_keywords: string[];
+  safe_response?: string;
+}
+
+export interface RiskCheckResult {
+  source: string;
+  risk_level: RiskLevel;
+  matched_categories: RiskMatchedCategory[];
+  requires_review: boolean;
+  allow_auto_feedback: boolean;
+  allow_recommended_training_cards: boolean;
+  export_raw_text_by_default: boolean;
+  safe_response: string;
+  boundary_notice: string;
+}
+
+export interface StudentProfileScores {
+  test_anxiety: number;
+  iu_score: number;
+  self_compassion: number;
+  fear_score?: number;
+  f_score?: number;
+}
+
+export interface StudentProfileInput {
+  user_id?: ID;
+  nickname?: string;
+  assessment_result_id?: ID;
+  round?: number;
+  scores: StudentProfileScores;
+  support_resource?: string;
+  free_text?: string;
+}
+
+export interface StudentProfileResult {
+  assessment_result_id?: ID;
+  saved_to_assessment_results?: boolean;
+  profile_code: string;
+  profile_name: string;
+  confidence: number;
+  dimensions: ProfileDimension[];
+  supportive_explanation: string;
+  strength_note: string;
+  small_step: string;
+  recommended_card_ids: ID[];
+  risk_level: RiskLevel;
+  requires_review: boolean;
+  allow_auto_feedback: boolean;
+  model_version: string;
+  rules_version: string;
+  boundary_notice: string;
+  created_at: ISODateTime;
+}
+
+export interface ModelInfoProfile {
+  profile_code: string;
+  profile_name: string;
+  enabled: boolean;
+  risk_level: RiskLevel;
+}
+
+export interface ModelInfo {
+  model_version: string;
+  rules_version: string;
+  available_profiles: ModelInfoProfile[];
+  boundary_notice: string;
+}
+
 export interface Checkin {
   id: ID;
   user_id: ID;

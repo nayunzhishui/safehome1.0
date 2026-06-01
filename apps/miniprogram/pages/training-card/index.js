@@ -10,6 +10,7 @@ Page({
     diaryId: "",
     tags: [],
     tagsText: "",
+    cardIds: [],
     cards: [],
     practiceMessage: "",
   },
@@ -17,21 +18,26 @@ Page({
   onLoad(options) {
     const tagsText = decodeURIComponent(options.tags || "");
     const tags = tagsText ? tagsText.split(",").filter(Boolean) : [];
+    const cardIdsText = decodeURIComponent(options.card_ids || "");
+    const cardIds = cardIdsText ? cardIdsText.split(",").filter(Boolean) : [];
     this.setData({
       tags,
       tagsText: tags.join("、"),
+      cardIds,
       diaryId: decodeURIComponent(options.diary_id || ""),
     });
-    this.loadCards(tags);
+    this.loadCards(tags, cardIds);
   },
 
-  async loadCards(tags) {
+  async loadCards(tags, cardIds = []) {
     this.setData({ loading: true, errorMessage: "", errorDetail: "", practiceMessage: "" });
 
     try {
-      const result = await api.recommendCards({ tags, limit: 3 });
+      const result = cardIds.length ? await api.listCards() : await api.recommendCards({ tags, limit: 3 });
+      const allCards = result.items || [];
+      const selectedCards = cardIds.length ? allCards.filter((card) => cardIds.includes(card.id)) : allCards.slice(0, 3);
       this.setData({
-        cards: (result.items || []).map((card, index) => this.formatCard(card, index)),
+        cards: selectedCards.map((card, index) => this.formatCard(card, index)),
         loading: false,
       });
     } catch (error) {
@@ -79,6 +85,6 @@ Page({
   },
 
   retryLoadCards() {
-    this.loadCards(this.data.tags);
+    this.loadCards(this.data.tags, this.data.cardIds);
   },
 });

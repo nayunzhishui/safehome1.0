@@ -1,5 +1,8 @@
 const DEFAULT_CONTAINER_SERVICE = "flask-gh3l";
 const DEFAULT_CLOUD_ENV_ID = "prod-d3gl35otiaa7c8d24";
+// 仅用于 wx.downloadFile / 分享链接 / 二维码等需要完整 HTTPS URL 的场景；
+// 常规 API 调用仍通过 wx.cloud.callContainer，不走此域名。
+const DEFAULT_HTTP_BASE_URL = "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com";
 const DEFAULT_USER_ID = "demo-parent";
 
 const API_ENDPOINTS = {
@@ -11,6 +14,9 @@ const API_ENDPOINTS = {
   cardsRecommend: "/api/cards/recommend",
   assessments: "/api/assessments",
   assessmentResults: "/api/assessment-results",
+  profile: "/api/profile",
+  riskCheck: "/api/risk/check",
+  modelInfo: "/api/model/info",
   checkins: "/api/checkins",
   weeklyReport: "/api/weekly-report",
   supervision: "/api/supervision",
@@ -20,6 +26,7 @@ const API_ENDPOINTS = {
 function createSafeHomeApi(options = {}) {
   const containerService = options.containerService || DEFAULT_CONTAINER_SERVICE;
   const cloudEnvId = options.cloudEnvId || DEFAULT_CLOUD_ENV_ID;
+  const httpBaseUrl = options.httpBaseUrl || DEFAULT_HTTP_BASE_URL;
   const defaultUserId = options.defaultUserId || DEFAULT_USER_ID;
 
   function withDefaultUser(data = {}) {
@@ -76,11 +83,11 @@ function createSafeHomeApi(options = {}) {
 
           resolve(payload && payload.data !== undefined ? payload.data : payload);
         },
-        fail(error) {
+        fail(err) {
           reject({
-            code: "network_error",
-            message: error.errMsg || "网络请求失败",
-            detail: error,
+            code: err.errCode || "network_error",
+            message: err.errMsg || "云托管调用失败",
+            detail: err,
           });
         },
       });
@@ -142,6 +149,24 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    createProfile(data) {
+      return request(API_ENDPOINTS.profile, {
+        method: "POST",
+        data: withDefaultUser(data),
+      });
+    },
+
+    checkRisk(data) {
+      return request(API_ENDPOINTS.riskCheck, {
+        method: "POST",
+        data,
+      });
+    },
+
+    getModelInfo() {
+      return request(API_ENDPOINTS.modelInfo);
+    },
+
     listCards() {
       return request(API_ENDPOINTS.cards);
     },
@@ -197,7 +222,7 @@ function createSafeHomeApi(options = {}) {
     },
 
     buildAdminExportUrl(params = {}) {
-      return `${API_ENDPOINTS.adminExport}${queryString(params)}`;
+      return `${httpBaseUrl}${API_ENDPOINTS.adminExport}${queryString(params)}`;
     },
   };
 }
@@ -206,6 +231,7 @@ module.exports = {
   API_ENDPOINTS,
   DEFAULT_CLOUD_ENV_ID,
   DEFAULT_CONTAINER_SERVICE,
+  DEFAULT_HTTP_BASE_URL,
   DEFAULT_USER_ID,
   createSafeHomeApi,
 };

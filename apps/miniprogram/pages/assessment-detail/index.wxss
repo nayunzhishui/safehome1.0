@@ -11,6 +11,8 @@
 .instruction-card,
 .section-card-title,
 .section-card-content,
+.profile-notice-title,
+.profile-notice-text,
 .question-title,
 .state-box,
 .error-box {
@@ -47,6 +49,33 @@
   color: #596a5b;
   font-size: 26rpx;
   line-height: 1.7;
+}
+
+.profile-notice-card {
+  padding: 24rpx;
+  border: 1rpx solid #bfe3c4;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #f3fbef 0%, #ffffff 78%);
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+}
+
+.profile-notice-title {
+  color: #25372c;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.profile-notice-text {
+  margin-top: 10rpx;
+  color: #596a5b;
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.profile-notice-text.strong {
+  color: #8a5a2f;
+  font-weight: 700;
 }
 
 .section-card {

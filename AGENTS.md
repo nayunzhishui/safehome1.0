@@ -66,7 +66,7 @@ MVP 1.1 规划目标：
 
 ## 4A. 0版网页整合规划状态
 
-2026-06-01 已根据夏老师资料和 GitHub 参考项目完成第一轮规划与 P0 部分内容准备。当前统一进度以以下文档为准：
+2026-06-01 已根据夏老师资料和 GitHub 参考项目完成第一轮规划与 P0 内容准备。当前统一进度以以下文档为准：
 
 ```text
 docs/项目进度统一口径.md
@@ -76,6 +76,7 @@ docs/0版网页整合逐步开发任务清单.md
 
 当前已完成：
 
+- `content/assessment_worksheets.json` 中的 `student_profile_v1`
 - `content/student_profile_rules.json`
 - `content/risk_keywords.json`
 - `content/training_cards.json` 中 4 张学生端训练卡：
@@ -94,7 +95,6 @@ docs/0版网页整合逐步开发任务清单.md
 - `profile_results` 表
 - `records` 表
 - `audit_logs` 表
-- `content/assessment_worksheets.json` 中的 `student_profile_v1`
 - 小程序学生画像结果页
 - Web 后台画像列表、详情和 `type=profile` 导出
 
@@ -116,9 +116,10 @@ docs/0版网页整合逐步开发任务清单.md
    - 网站后台 `/goals`：目标管理页。
    - `pages/diary-form/index`：升级后的情绪事件记录页。
    - 网站后台记录详情：显示关联目标、事件时间和补充复盘。
-3. MVP 1.1 家长端第一版和网站后台第一版已基本完成，下一批若不继续 UI 验收，应优先进入学生画像 P0-4：
-   - 在 `content/assessment_worksheets.json` 中新增 `student_profile_v1`；
-   - 完成后再进入 `POST /api/profile` 最小规则版 API。
+3. MVP 1.1 家长端第一版和网站后台第一版已基本完成，下一批若不继续 UI 验收，应优先进入学生画像 P1：
+   - P1-0 代码阅读、P1-1 内容加载器和 P1-2 风险检查服务已完成；
+   - 下一步执行 P1-3 画像规则服务；
+   - 再进入 `POST /api/profile` 最小规则版 API。
 4. 优先复用现有 API 和数据库表：`goals`、`diaries`、`feedback`、`cards`、`checkins`、`weekly-report`、`supervision`。
 5. 暂缓 AI 自由问答、机器学习、深度学习、语音/视频上传、社群、积分勋章、正式登录注册、正式部署和复杂课程体系。
 6. 继续保留 `pages/integration-test/index`，不要删除。
