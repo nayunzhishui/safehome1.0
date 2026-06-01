@@ -45,7 +45,7 @@ MVP 1.0 已完成以下基础能力：
 - API 文档已与真实后端 API 对齐；
 - `shared` 共用字段、常量和 mock 数据已建立；
 - 网页端 API client 已建立；
-- 小程序端 `wx.request` 请求封装已建立；
+- 小程序端 `wx.cloud.callContainer`（CloudBase 云托管直连）请求封装已建立；
 - 小程序最小正式流程已完成：首页、情绪事件记录、即时反馈、UP训练卡推荐、练习打卡；
 - 小程序 `pages/integration-test/index` 长期联调测试页仍保留；
 - 网页管理后台已能查看情绪记录列表和详情；
@@ -64,17 +64,20 @@ MVP 1.1 规划目标：
 目标 -> 记录 -> 识别 -> 反馈 -> 练习 -> 追踪 -> 支持
 ```
 
-## 4A. 0版网页整合规划状态
+## 4A. 0版网页整合与学生画像状态
 
-2026-06-01 已根据夏老师资料和 GitHub 参考项目完成第一轮规划与 P0 内容准备。当前统一进度以以下文档为准：
+2026-06-01 已根据夏老师资料和 GitHub 参考项目完成规划、P0 内容准备、P1 画像 API 最小闭环、P2 小程序画像测评链路、P3 后台复核与周报趋势、P4 研究平台化表第一版。当前统一进度以以下文档为准：
 
 ```text
 docs/项目进度统一口径.md
 docs/0版网页整合与GitHub参考优化路线.md
 docs/0版网页整合逐步开发任务清单.md
+docs/代码审查.md
 ```
 
-当前已完成：
+### 4A.1 已完成
+
+P0 内容库：
 
 - `content/assessment_worksheets.json` 中的 `student_profile_v1`
 - `content/student_profile_rules.json`
@@ -84,25 +87,55 @@ docs/0版网页整合逐步开发任务清单.md
   - `student_emotion_naming`
   - `self_support_statement`
   - `sandplay_expression_01`
-- 画像 API、数据库、UI、伦理和上线规划文档同步。
 
-当前尚未实现：
+P1 画像 API 最小闭环：
 
-- `POST /api/profile`
-- `GET /api/profile-results`
-- `GET /api/model/info`
-- `POST /api/risk/check`
-- `profile_results` 表
-- `records` 表
-- `audit_logs` 表
-- 小程序学生画像结果页
-- Web 后台画像列表、详情和 `type=profile` 导出
+- `backend/services/content_loader.py`：读取画像规则、风险关键词、训练卡
+- `backend/services/risk_service.py`：风险关键词检查（low/medium/high）
+- `backend/services/profile_service.py`：规则版学生支持性画像生成
+- `backend/routes/profile.py`：`POST /api/profile`、`POST /api/risk/check`、`GET /api/model/info`
+- `POST /api/profile` 复用 `assessment_results` 保存画像结果
+- `shared/types/api.ts`、Web API client、小程序 API client 已同步画像接口
 
-后续如果实现“0版网页”能力，应遵守以下原则：
+P2/P3/P4 学生画像链路：
 
-1. 安心家仍是主平台，0版网页只沉淀为“评估画像与反馈引擎”；
-2. 用户端统一称为“支持性测评”或“学生画像”，不要暴露“0版网页”内部名称；
-3. 前端文案使用“阶段性画像”或“压力反应画像”，不要使用“人格”定性；
+- “测一测”已高亮 `student_profile_v1` 学生支持性画像入口
+- 测评提交调用 `POST /api/profile`
+- 结果页展示画像名称、置信度、风险状态、推荐训练卡摘要、维度解释、支持性解释和边界说明
+- 画像结果页可按推荐训练卡 ID 进入训练卡页
+- Web 后台已有 `/profiles` 画像列表和 `/profiles/<id>` 画像详情
+- Web 后台已有 `/reviews` 人工复核只读列表
+- Web 后台周报页已补充画像复测、复核、高风险和打卡趋势
+- `GET /api/admin/export?type=profile` 已支持从 `student_profiles` 脱敏导出
+- `POST /api/profile` 同步写入 `assessment_results`、`student_profiles` 和 `records`
+- `GET /api/profile-results`、`GET /api/profile-results/<id>` 已实现
+- `audit_logs` 已记录画像详情查看和后台导出
+
+CloudBase 架构：
+
+- 小程序端已从 `wx.request` 迁移到 `wx.cloud.callContainer`
+- 环境 ID：`prod-d3gl35otiaa7c8d24`，服务名：`flask-gh3l`
+- 联调页新增 `/healthz` 前置诊断
+- 排查记录：`历次问题整理.md`
+
+代码审查：
+
+- `docs/代码审查.md` 记录了 API 层 2 个 bug 修复、任务清单 15 项审查发现
+
+### 4A.2 当前尚未实现
+
+- 人工复核备注、复核结论和处置状态
+- 规则编辑后台和规则修改审计
+- 试点前人工验收
+- 正式上线（域名、HTTPS、备案、小程序发布）
+
+### 4A.3 实施原则
+
+后续实现”0版网页”能力时应遵守：
+
+1. 安心家仍是主平台，0版网页只沉淀为”评估画像与反馈引擎”；
+2. 用户端统一称为”支持性测评”或”学生画像”，不要暴露”0版网页”内部名称；
+3. 前端文案使用”阶段性画像”或”压力反应画像”，不要使用”人格”定性；
 4. 学生画像必须包含置信度、优势提示、推荐任务和非诊断边界；
 5. 高风险文本只进入人工复核，不生成普通自动训练建议；
 6. 沙盘表达只作为表达媒介和访谈线索，不自动解释潜意识；
@@ -111,16 +144,9 @@ docs/0版网页整合逐步开发任务清单.md
 下一阶段优先级：
 
 1. 先阅读并遵守 `docs/MVP1.1功能迭代方案.md`。
-2. MVP 1.1 已完成第一批与第二批部分最小任务：
-   - `pages/goal-setting/index`：目标设定页。
-   - 网站后台 `/goals`：目标管理页。
-   - `pages/diary-form/index`：升级后的情绪事件记录页。
-   - 网站后台记录详情：显示关联目标、事件时间和补充复盘。
-3. MVP 1.1 家长端第一版和网站后台第一版已基本完成，下一批若不继续 UI 验收，应优先进入学生画像 P1：
-   - P1-0 代码阅读、P1-1 内容加载器和 P1-2 风险检查服务已完成；
-   - 下一步执行 P1-3 画像规则服务；
-   - 再进入 `POST /api/profile` 最小规则版 API。
-4. 优先复用现有 API 和数据库表：`goals`、`diaries`、`feedback`、`cards`、`checkins`、`weekly-report`、`supervision`。
+2. 学生画像下一步优先做试点前人工验收。
+3. 如果继续写代码，优先补人工复核备注、复核结论和处置状态。
+4. 优先复用现有 API、`student_profiles`、`records`、`audit_logs` 和内容库。
 5. 暂缓 AI 自由问答、机器学习、深度学习、语音/视频上传、社群、积分勋章、正式登录注册、正式部署和复杂课程体系。
 6. 继续保留 `pages/integration-test/index`，不要删除。
 

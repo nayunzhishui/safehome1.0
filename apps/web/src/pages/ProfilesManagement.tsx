@@ -10,6 +10,10 @@ interface ProfileScores {
   risk_level?: RiskLevel;
   requires_review?: boolean;
   allow_auto_feedback?: boolean;
+  supportive_explanation?: string;
+  strength_note?: string;
+  small_step?: string;
+  boundary_notice?: string;
   recommended_card_ids?: string[];
   dimensions?: Array<{ key?: string; label?: string; level?: string; summary?: string }>;
 }
@@ -40,6 +44,10 @@ export function ProfilesManagement() {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [message, setMessage] = useState("正在读取学生画像结果...");
 
+  const pathProfileId = useMemo(() => {
+    const match = window.location.pathname.match(/^\/profiles\/([^/]+)$/);
+    return match ? decodeURIComponent(match[1]) : "";
+  }, []);
   const selected = useMemo(() => items.find((item) => item.id === selectedId) ?? items[0] ?? null, [items, selectedId]);
   const selectedScores = useMemo(() => parseScores(selected), [selected]);
   const reviewCount = items.filter((item) => parseScores(item).requires_review).length;
@@ -53,7 +61,8 @@ export function ProfilesManagement() {
         const result = await api.listAssessmentResults({ limit: 100 });
         const profiles = (result.items || []).filter((item) => item.worksheet_id === "student_profile_v1" || item.category === "学生画像");
         setItems(profiles);
-        setSelectedId(profiles[0]?.id ?? "");
+        const selectedProfile = profiles.find((item) => item.id === pathProfileId) ?? profiles[0];
+        setSelectedId(selectedProfile?.id ?? "");
         setStatus("ready");
         setMessage(profiles.length ? "已读取学生画像结果。" : "暂无学生画像结果。");
       } catch (error) {
@@ -63,15 +72,20 @@ export function ProfilesManagement() {
     }
 
     loadProfiles();
-  }, []);
+  }, [pathProfileId]);
+
+  function selectProfile(id: string) {
+    setSelectedId(id);
+    window.history.pushState(null, "", `/profiles/${encodeURIComponent(id)}`);
+  }
 
   return (
     <div className="adminPage">
       <section className="dashboardHero">
         <div>
           <span className="eyebrow">Student Profile</span>
-          <h1>学生画像列表</h1>
-          <p>从现有测一测结果中筛选 `student_profile_v1`，用于查看画像名称、置信度、风险状态和推荐训练卡。</p>
+          <h1>{pathProfileId ? "学生画像详情" : "学生画像列表"}</h1>
+          <p>从现有测一测结果中筛选 `student_profile_v1`，用于查看画像名称、置信度、风险状态、推荐训练卡和维度观察。</p>
         </div>
         <div className={`status compact ${status}`}>{message}</div>
       </section>
@@ -112,7 +126,7 @@ export function ProfilesManagement() {
                     className={`recordItem ${selected?.id === item.id ? "active" : ""}`}
                     key={item.id}
                     type="button"
-                    onClick={() => setSelectedId(item.id)}
+                    onClick={() => selectProfile(item.id)}
                   >
                     <strong>{scores.profile_name || item.worksheet_title}</strong>
                     <span>{item.user_id} · {formatConfidence(scores.confidence)} · {riskText(scores.risk_level)}</span>
@@ -142,6 +156,12 @@ export function ProfilesManagement() {
               <div className="detailRow"><span>推荐训练卡</span><strong>{selectedScores.recommended_card_ids?.join("、") || "暂无"}</strong></div>
               <div className="detailRow"><span>记录 ID</span><strong>{selected.id}</strong></div>
               <div className="detailRow"><span>保存时间</span><strong>{selected.created_at}</strong></div>
+              <div className="detailRow"><span>详情链接</span><strong>{`/profiles/${selected.id}`}</strong></div>
+
+              <div className="detailBlock">
+                <h3>支持性解释</h3>
+                <p>{selectedScores.supportive_explanation || selected.result_summary || "暂无支持性解释。"}</p>
+              </div>
 
               <div className="detailBlock">
                 <h3>维度观察</h3>
@@ -154,6 +174,13 @@ export function ProfilesManagement() {
                 ) : (
                   <p>暂无维度摘要。</p>
                 )}
+              </div>
+
+              <div className="detailBlock">
+                <h3>下一步建议</h3>
+                <p><strong>优势提示：</strong>{selectedScores.strength_note || "暂无优势提示。"}</p>
+                <p><strong>一小步行动：</strong>{selectedScores.small_step || "暂无小步行动。"}</p>
+                <p><strong>边界说明：</strong>{selectedScores.boundary_notice || "本结果只用于支持性理解和练习推荐，不构成诊断。"}</p>
               </div>
             </div>
           ) : (

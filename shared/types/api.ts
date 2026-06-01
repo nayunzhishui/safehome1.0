@@ -249,7 +249,9 @@ export interface StudentProfileInput {
 
 export interface StudentProfileResult {
   assessment_result_id?: ID;
+  student_profile_id?: ID;
   saved_to_assessment_results?: boolean;
+  saved_to_student_profiles?: boolean;
   profile_code: string;
   profile_name: string;
   confidence: number;
@@ -265,6 +267,30 @@ export interface StudentProfileResult {
   rules_version: string;
   boundary_notice: string;
   created_at: ISODateTime;
+}
+
+export interface StudentProfileRecord {
+  id: ID;
+  user_id: ID;
+  anonymous_id: string;
+  assessment_result_id?: ID | null;
+  round: number;
+  source?: string | null;
+  scores_json: string;
+  text_features_json: string;
+  profile_code: string;
+  profile_name: string;
+  confidence?: number | null;
+  dimensions_json: string;
+  recommended_task_ids_json: string;
+  risk_level: RiskLevel;
+  requires_review: 0 | 1;
+  boundary_notice?: string | null;
+  rules_version?: string | null;
+  export_allowed: 0 | 1;
+  data_quality?: string | null;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
 }
 
 export interface ModelInfoProfile {

@@ -503,7 +503,7 @@
 - 未提供或提供错误 `X-Admin-Token` 时返回 `401 unauthorized`。
 - 当前不支持 `type=all`。
 - 当前不支持 `format` 参数。
-- `type=profile` 会从 `assessment_results` 中筛选学生画像结果，默认使用匿名 ID，不导出自由文本原文和联系方式。
+- `type=profile` 会从 `student_profiles` 中导出学生画像摘要，默认使用匿名 ID，不导出真实 `user_id`、自由文本原文和联系方式。
 
 本地开发调用示例：
 
@@ -572,7 +572,9 @@ Invoke-WebRequest `
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `assessment_result_id` | string | 保存到 `assessment_results` 后生成的记录 ID |
+| `student_profile_id` | string | 保存到 `student_profiles` 后生成的画像结果 ID |
 | `saved_to_assessment_results` | boolean | 是否已保存到现有测一测结果表 |
+| `saved_to_student_profiles` | boolean | 是否已保存到画像专用表 |
 | `profile_name` | string | 画像名称，例如 `压力警觉型画像`，前端不使用“人格”字样 |
 | `profile_code` | string | 画像编码，例如 `pressure_alert` |
 | `confidence` | number | 画像置信度，0-1 |
@@ -596,7 +598,9 @@ Invoke-WebRequest `
   "ok": true,
   "data": {
     "assessment_result_id": "assessment_001",
+    "student_profile_id": "profile_001",
     "saved_to_assessment_results": true,
+    "saved_to_student_profiles": true,
     "profile_name": "压力警觉型画像",
     "profile_code": "pressure_alert",
     "confidence": 0.8,
@@ -715,13 +719,33 @@ Invoke-WebRequest `
 }
 ```
 
-### 画像历史接口（后续规划）
+### `GET /api/profile-results`
 
-后续建议补充：
+用途：查询 `student_profiles` 中的学生画像历史结果，用于复测和轮次追踪。
 
-- 第一版已把画像结果以 `worksheet_id=student_profile_v1`、`category=学生画像` 写入 `assessment_results`，可先通过 `GET /api/assessment-results` 查询；
-- `GET /api/profile-results`：后续可封装专用查询接口，用于复测和轮次追踪；
-- `GET /api/profile-results/<profile_id>`：查看单条画像结果详情，用于小程序结果页和网页后台详情页。
+查询参数：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `user_id` | string | 否 | 按用户筛选 |
+| `round` | integer | 否 | 按测评轮次筛选 |
+| `limit` | integer | 否 | 默认 50 |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `items` | array | 学生画像结果列表 |
+
+### `GET /api/profile-results/<profile_id>`
+
+用途：查看单条学生画像结果详情，用于后台画像详情和后续人工复核。
+
+说明：
+
+- 读取详情时会写入 `audit_logs`，记录 `view_profile` 操作；
+- 当前不返回自由文本原文；
+- `dimensions_json`、`recommended_task_ids_json` 为 JSON 字符串。
 
 ### 后台导出扩展
 
@@ -743,4 +767,5 @@ Invoke-WebRequest `
 - 默认使用匿名 ID；
 - 默认不导出联系方式、自由文本原文和高风险文本原文；
 - 未授权或 `export_allowed=false` 的记录不得导出；
-- 后续应增加导出数据字典和审计日志。
+- 当前后台导出会写入 `audit_logs`，记录导出类型、筛选用户和导出行数；
+- 后续应继续补充导出数据字典和人工复核处置日志。

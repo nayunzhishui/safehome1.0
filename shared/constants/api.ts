@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   assessments: "/api/assessments",
   assessmentResults: "/api/assessment-results",
   profile: "/api/profile",
+  profileResults: "/api/profile-results",
   riskCheck: "/api/risk/check",
   modelInfo: "/api/model/info",
   checkins: "/api/checkins",

@@ -7,7 +7,7 @@ from io import StringIO
 
 from flask import Blueprint, Response, current_app, request
 
-from database import get_connection
+from database import get_connection, json_dumps, new_id, now_iso
 from routes.utils import fail
 
 bp = Blueprint("admin", __name__, url_prefix="/api/admin")
@@ -34,10 +34,13 @@ def _profile_export_rows(rows) -> list[dict]:
     for row in rows:
         item = dict(row)
         try:
-            scores = json.loads(item.get("scores_json") or "{}")
+            dimensions = json.loads(item.get("dimensions_json") or "[]")
         except json.JSONDecodeError:
-            scores = {}
-        dimensions = scores.get("dimensions") or []
+            dimensions = []
+        try:
+            recommended_card_ids = json.loads(item.get("recommended_task_ids_json") or "[]")
+        except json.JSONDecodeError:
+            recommended_card_ids = []
         dimension_summary = "；".join(
             f"{dimension.get('label')}: {dimension.get('level')}"
             for dimension in dimensions
@@ -46,18 +49,18 @@ def _profile_export_rows(rows) -> list[dict]:
         export_rows.append(
             {
                 "id": item.get("id"),
-                "anonymous_id": _anonymous_id(item.get("user_id") or ""),
-                "worksheet_id": item.get("worksheet_id"),
-                "profile_code": scores.get("profile_code"),
-                "profile_name": scores.get("profile_name"),
-                "confidence": scores.get("confidence"),
-                "risk_level": scores.get("risk_level"),
-                "requires_review": scores.get("requires_review"),
-                "allow_auto_feedback": scores.get("allow_auto_feedback"),
+                "anonymous_id": item.get("anonymous_id") or _anonymous_id(item.get("user_id") or ""),
+                "assessment_result_id": item.get("assessment_result_id"),
+                "profile_code": item.get("profile_code"),
+                "profile_name": item.get("profile_name"),
+                "confidence": item.get("confidence"),
+                "risk_level": item.get("risk_level"),
+                "requires_review": item.get("requires_review"),
                 "dimension_summary": dimension_summary,
-                "recommended_card_ids": ",".join(scores.get("recommended_card_ids") or []),
-                "model_version": scores.get("model_version"),
-                "rules_version": scores.get("rules_version"),
+                "recommended_card_ids": ",".join(recommended_card_ids),
+                "rules_version": item.get("rules_version"),
+                "export_allowed": item.get("export_allowed"),
+                "data_quality": item.get("data_quality"),
                 "created_at": item.get("created_at"),
             }
         )
@@ -72,7 +75,7 @@ def export_csv():
         return fail("unauthorized", "导出数据需要后台导出令牌", status=401)
 
     export_type = request.args.get("type", "diaries")
-    table = "assessment_results" if export_type == "profile" else EXPORT_TABLES.get(export_type)
+    table = "student_profiles" if export_type == "profile" else EXPORT_TABLES.get(export_type)
     if table is None:
         return fail("invalid_export_type", "支持的 type：goals, diaries, feedback, checkins, assessments, profile, reports, supervision, cards")
 
@@ -82,8 +85,8 @@ def export_csv():
             if user_id:
                 rows = conn.execute(
                     """
-                    SELECT * FROM assessment_results
-                    WHERE user_id = ? AND (worksheet_id = 'student_profile_v1' OR category = '学生画像')
+                    SELECT * FROM student_profiles
+                    WHERE user_id = ? AND export_allowed = 1
                     ORDER BY created_at DESC
                     """,
                     (user_id,),
@@ -91,8 +94,8 @@ def export_csv():
             else:
                 rows = conn.execute(
                     """
-                    SELECT * FROM assessment_results
-                    WHERE worksheet_id = 'student_profile_v1' OR category = '学生画像'
+                    SELECT * FROM student_profiles
+                    WHERE export_allowed = 1
                     ORDER BY created_at DESC
                     """
                 ).fetchall()
@@ -103,6 +106,22 @@ def export_csv():
             ).fetchall()
         else:
             rows = conn.execute(f"SELECT * FROM {table} ORDER BY created_at DESC").fetchall()
+        conn.execute(
+            """
+            INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, metadata_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                new_id("audit"),
+                "admin-token",
+                f"export_{export_type}",
+                "export",
+                export_type,
+                json_dumps({"type": export_type, "user_id_filter": user_id, "row_count": len(rows)}),
+                now_iso(),
+            ),
+        )
+        conn.commit()
 
     output = StringIO()
     if export_type == "profile":

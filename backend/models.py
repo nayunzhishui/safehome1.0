@@ -8,6 +8,9 @@ MVP_TABLES = [
     "training_cards",
     "checkins",
     "assessment_results",
+    "student_profiles",
+    "records",
+    "audit_logs",
     "weekly_reports",
     "supervision_requests",
 ]
@@ -112,6 +115,54 @@ SCHEMA_SQL = [
         scores_json TEXT NOT NULL,
         total_score INTEGER,
         result_summary TEXT,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS student_profiles (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        anonymous_id TEXT NOT NULL,
+        assessment_result_id TEXT,
+        round INTEGER NOT NULL DEFAULT 1,
+        source TEXT,
+        scores_json TEXT NOT NULL,
+        text_features_json TEXT NOT NULL,
+        profile_code TEXT NOT NULL,
+        profile_name TEXT NOT NULL,
+        confidence REAL,
+        dimensions_json TEXT NOT NULL,
+        recommended_task_ids_json TEXT NOT NULL,
+        risk_level TEXT NOT NULL DEFAULT 'low',
+        requires_review INTEGER NOT NULL DEFAULT 0,
+        boundary_notice TEXT,
+        rules_version TEXT,
+        export_allowed INTEGER NOT NULL DEFAULT 1,
+        data_quality TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS records (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        module_type TEXT NOT NULL,
+        source_id TEXT,
+        data_json TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        export_allowed INTEGER NOT NULL DEFAULT 1
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS audit_logs (
+        id TEXT PRIMARY KEY,
+        actor_id TEXT,
+        action TEXT NOT NULL,
+        target_type TEXT,
+        target_id TEXT,
+        metadata_json TEXT NOT NULL,
         created_at TEXT NOT NULL
     )
     """,

@@ -13,6 +13,7 @@ import { LandingPage } from "./pages/LandingPage";
 import { ProfilesManagement } from "./pages/ProfilesManagement";
 import { ResearchDashboard } from "./pages/ResearchDashboard";
 import { ReportsManagement } from "./pages/ReportsManagement";
+import { ReviewManagement } from "./pages/ReviewManagement";
 import { RulesManagement } from "./pages/RulesManagement";
 import { SupervisionManagement } from "./pages/SupervisionManagement";
 import "./styles.css";
@@ -25,7 +26,8 @@ const adminLinks = [
   { href: "/supervision", label: "督导工作台", match: (path: string) => path === "/supervision" || path.startsWith("/supervision/") },
   { href: "/checkins", label: "练习打卡", match: (path: string) => path === "/checkins" },
   { href: "/reports", label: "周度报告", match: (path: string) => path === "/reports" },
-  { href: "/profiles", label: "学生画像", match: (path: string) => path === "/profiles" },
+  { href: "/profiles", label: "学生画像", match: (path: string) => path === "/profiles" || path.startsWith("/profiles/") },
+  { href: "/reviews", label: "人工复核", match: (path: string) => path === "/reviews" },
   { href: "/goals", label: "目标管理", match: (path: string) => path === "/goals" },
   { href: "/content/rules", label: "反馈规则", match: (path: string) => path === "/content/rules" },
   { href: "/export", label: "数据导出", match: (path: string) => path === "/export" },
@@ -43,7 +45,8 @@ function App() {
   const isRulesPath = path === "/content/rules";
   const isExportPath = path === "/export";
   const isReportsPath = path === "/reports";
-  const isProfilesPath = path === "/profiles";
+  const isProfilesPath = path === "/profiles" || path.startsWith("/profiles/");
+  const isReviewsPath = path === "/reviews";
   const isFeedbackPath = path === "/feedback";
   const isKnownAdminPath = [
     "/dashboard",
@@ -53,6 +56,7 @@ function App() {
     "/checkins",
     "/reports",
     "/profiles",
+    "/reviews",
     "/supervision",
     "/content/cards",
     "/content/rules",
@@ -68,6 +72,7 @@ function App() {
     !isCheckinsPath &&
     !isReportsPath &&
     !isProfilesPath &&
+    !isReviewsPath &&
     !isSupervisionPath &&
     !isCardsPath &&
     !isRulesPath &&
@@ -87,6 +92,7 @@ function App() {
       {isExportPath ? <ExportManagement /> : null}
       {isReportsPath ? <ReportsManagement /> : null}
       {isProfilesPath ? <ProfilesManagement /> : null}
+      {isReviewsPath ? <ReviewManagement /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}

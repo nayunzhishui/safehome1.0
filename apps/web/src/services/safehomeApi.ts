@@ -15,6 +15,7 @@ import type {
   ModelInfo,
   RiskCheckResult,
   StudentProfileInput,
+  StudentProfileRecord,
   StudentProfileResult,
   SupervisionInput,
   SupervisionRequest,
@@ -86,6 +87,14 @@ export class SafeHomeApiClient {
       method: "POST",
       body: this.withDefaultUser(input),
     });
+  }
+
+  listProfileResults(params: { user_id?: string; round?: number; limit?: number } = {}): Promise<ListResponse<StudentProfileRecord>> {
+    return this.requestData<ListResponse<StudentProfileRecord>>(this.withQuery(API_ENDPOINTS.profileResults, params));
+  }
+
+  getProfileResult(id: string): Promise<StudentProfileRecord> {
+    return this.requestData<StudentProfileRecord>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}`);
   }
 
   checkRisk(input: { text?: string; free_text?: string; raw_text?: string; source?: string }): Promise<RiskCheckResult> {

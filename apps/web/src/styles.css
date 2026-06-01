@@ -522,12 +522,38 @@ h4 {
 }
 
 .recordList,
+.tableList,
 .detailContent,
 .cardList,
 .insightContent,
 .ethicsList {
   display: grid;
   gap: 12px;
+}
+
+.tableList {
+  margin-top: 16px;
+}
+
+.tableCard {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(78, 124, 107, 0.16);
+  border-radius: 8px;
+  background: #fffefa;
+}
+
+.tableCard p {
+  margin: 6px 0 0;
+  color: var(--safe-muted);
+  line-height: 1.6;
+}
+
+.tagCluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .recordItem {

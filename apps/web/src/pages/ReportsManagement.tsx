@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
+import type { AssessmentResult, Checkin, RiskLevel } from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
 
@@ -21,7 +22,16 @@ interface ReportsState {
   status: LoadStatus;
   message: string;
   reports: WeeklyReportExportRow[];
+  profileResults: AssessmentResult[];
+  checkins: Checkin[];
   selectedId?: string;
+}
+
+interface ProfileScores {
+  profile_name?: string;
+  confidence?: number;
+  risk_level?: RiskLevel;
+  requires_review?: boolean;
 }
 
 const api = new SafeHomeApiClient();
@@ -146,11 +156,42 @@ function summarizeJsonList(value: string) {
   return value;
 }
 
+function parseProfileScores(result: AssessmentResult): ProfileScores {
+  try {
+    return JSON.parse(result.scores_json || "{}") as ProfileScores;
+  } catch {
+    return {};
+  }
+}
+
+function isStudentProfile(result: AssessmentResult): boolean {
+  return result.worksheet_id === "student_profile_v1" || result.category === "学生画像";
+}
+
+function buildTrendSuggestion(profileResults: AssessmentResult[], checkins: Checkin[]) {
+  const reviewCount = profileResults.filter((item) => parseProfileScores(item).requires_review).length;
+  const highRiskCount = profileResults.filter((item) => parseProfileScores(item).risk_level === "high").length;
+  const completedCount = checkins.filter((item) => item.completed).length;
+
+  if (highRiskCount > 0 || reviewCount > 0) {
+    return "下周优先安排人工关注和现实支持确认，暂不把高风险个案推入普通自动训练。";
+  }
+  if (completedCount > 0) {
+    return "下周继续保留一张最容易完成的训练卡，观察练习前后感受是否有轻微变化。";
+  }
+  if (profileResults.length > 0) {
+    return "下周可以从画像推荐的一张训练卡开始，先完成一次 3-5 分钟小练习。";
+  }
+  return "下周先完成一次具体记录或一次支持性测评，再生成更稳定的趋势线索。";
+}
+
 export function ReportsManagement() {
   const [state, setState] = useState<ReportsState>({
     status: "idle",
     message: "点击读取，可以通过当前 CSV 导出接口查看已生成的周报记录。",
     reports: [],
+    profileResults: [],
+    checkins: [],
   });
   const [adminToken, setAdminToken] = useState(LOCAL_ADMIN_EXPORT_TOKEN);
 
@@ -160,6 +201,11 @@ export function ReportsManagement() {
 
   const uniqueUsers = new Set(state.reports.map((item) => item.user_id).filter(Boolean));
   const withSuggestions = state.reports.filter((item) => item.next_week_suggestion).length;
+  const studentProfiles = state.profileResults.filter(isStudentProfile);
+  const reviewProfiles = studentProfiles.filter((item) => parseProfileScores(item).requires_review);
+  const highRiskProfiles = studentProfiles.filter((item) => parseProfileScores(item).risk_level === "high");
+  const completedCheckins = state.checkins.filter((item) => item.completed).length;
+  const trendSuggestion = buildTrendSuggestion(studentProfiles, state.checkins);
 
   async function loadReports() {
     const token = adminToken.trim();
@@ -179,13 +225,19 @@ export function ReportsManagement() {
     }));
 
     try {
-      const blob = await api.downloadAdminExport({ type: "reports", adminToken: token });
+      const [blob, profileResults, checkins] = await Promise.all([
+        api.downloadAdminExport({ type: "reports", adminToken: token }),
+        api.listAssessmentResults({ limit: 100 }),
+        api.listCheckins({ limit: 100 }),
+      ]);
       const text = await blob.text();
       const reports = parseCsv(text);
       setState({
         status: "success",
         message: reports.length > 0 ? "已读取周报记录。" : "当前还没有已生成的周报记录。",
         reports,
+        profileResults: profileResults.items || [],
+        checkins: checkins.items || [],
         selectedId: reports[0]?.id,
       });
     } catch (error) {
@@ -226,8 +278,33 @@ export function ReportsManagement() {
         <MetricCard label="周报记录" value={state.reports.length} />
         <MetricCard label="关联用户" value={uniqueUsers.size} />
         <MetricCard label="含下周建议" value={withSuggestions} />
-        <MetricCard label="读取方式" value="CSV" />
+        <MetricCard label="画像复测" value={studentProfiles.length} />
+        <MetricCard label="需复核画像" value={reviewProfiles.length} />
+        <MetricCard label="高风险画像" value={highRiskProfiles.length} />
+        <MetricCard label="练习打卡" value={completedCheckins} />
+        <MetricCard label="读取方式" value="CSV + API" />
       </div>
+
+      <section className="panel" aria-label="趋势增强">
+        <div className="sectionTitleRow">
+          <h2>趋势增强</h2>
+          <span className="countBadge">P3-1</span>
+        </div>
+        <div className="overviewGrid">
+          <article className="guidanceBox">
+            <h3>画像趋势</h3>
+            <p>已读取 {studentProfiles.length} 条学生画像结果，其中 {reviewProfiles.length} 条需要人工关注，{highRiskProfiles.length} 条为高风险。</p>
+          </article>
+          <article className="guidanceBox">
+            <h3>练习积累</h3>
+            <p>已读取 {state.checkins.length} 条打卡记录，其中 {completedCheckins} 条为已完成练习。</p>
+          </article>
+        </div>
+        <section className="guidanceBox" aria-label="下周一个小任务">
+          <h3>下周一个小任务</h3>
+          <p>{trendSuggestion}</p>
+        </section>
+      </section>
 
       <div className="dashboardGrid goalsGrid">
         <section className="listPanel" aria-label="周报列表">
