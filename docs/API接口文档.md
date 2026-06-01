@@ -2,6 +2,8 @@
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
+进度口径：真实可调用接口以前文已实现章节为准；第 10 节“0版网页评估画像整合”仍为后续规划。当前总进度见 `docs/项目进度统一口径.md`。
+
 ## 通用约定
 
 - 后端地址：本地开发默认 `http://127.0.0.1:5000`
@@ -518,3 +520,144 @@ Invoke-WebRequest `
 - 当前没有分页总数 `total`。
 - 当前列表接口只提供简单 `limit`。
 - 当前即时反馈由规则匹配生成，不代表诊断、评估或治疗建议。
+
+## 10. 后续规划接口：0版网页评估画像整合（未实现）
+
+本节根据夏老师“0版网页与安心家整合”资料、8 张思维导图和 GitHub 参考项目整理，仅作为后续开发规划。当前后端尚未实现以下接口，联调时不要按已上线接口调用。
+
+规划目标：
+
+- 将 0版网页沉淀为安心家的“评估画像与反馈引擎”；
+- 支持学生画像、置信度、维度解释、推荐任务和人工复核；
+- 保持非诊断、非标签化、支持性表达；
+- 为研究导出保留模型版本、规则版本和授权字段。
+
+### `POST /api/profile`（规划）
+
+用途：根据量表分数和自由文本生成学生支持性画像。该接口不输出临床诊断。
+
+请求字段建议：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `user_id` | string | 否 | 学生或测试用户弱身份 ID，缺省可沿用测试用户 |
+| `assessment_result_id` | string | 否 | 关联已有测一测结果 |
+| `round` | integer | 否 | 第几轮测评，默认 1 |
+| `scores.test_anxiety` | number | 是 | 考试焦虑相关分数 |
+| `scores.iu_score` | number | 是 | 不确定性不耐受相关分数 |
+| `scores.f_score` | number | 否 | 情绪调节灵活性或恐惧倾向相关分数 |
+| `scores.self_compassion` | number | 是 | 自我同情/自我支持相关分数 |
+| `free_text` | string | 否 | 学生日记、访谈或补充说明文本，仅作辅助线索 |
+
+请求示例：
+
+```json
+{
+  "user_id": "demo-student",
+  "round": 1,
+  "scores": {
+    "test_anxiety": 3.8,
+    "iu_score": 4.2,
+    "f_score": 2.9,
+    "self_compassion": 3.1
+  },
+  "free_text": "最近总担心考不好，爸妈会失望..."
+}
+```
+
+响应字段建议：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 画像结果 ID |
+| `profile_name` | string | 画像名称，例如 `压力警觉型画像`，前端不使用“人格”字样 |
+| `profile_code` | string | 画像编码，例如 `pressure_alert` |
+| `confidence` | number | 画像置信度，0-1 |
+| `dimensions` | object | 关键维度结果 |
+| `keywords` | array | 从自由文本中提取的辅助关键词 |
+| `supportive_explanation` | string | 支持性解释 |
+| `suggested_task` | string | 推荐任务 ID，例如沙盘表达或情绪命名任务 |
+| `recommended_card_ids` | array | 推荐训练卡 ID |
+| `risk_level` | string | `low`、`medium`、`high` |
+| `requires_review` | boolean | 是否需要人工复核 |
+| `model_version` | string | 模型或规则版本 |
+| `rules_version` | string | 画像反馈规则版本 |
+| `boundary_notice` | string | 非诊断边界说明 |
+
+响应示例：
+
+```json
+{
+  "ok": true,
+  "data": {
+    "id": "profile_001",
+    "profile_name": "压力警觉型画像",
+    "profile_code": "pressure_alert",
+    "confidence": 0.76,
+    "dimensions": {
+      "anxiety_sensitivity": "high",
+      "emotion_regulation": "medium_low",
+      "self_support": "developing"
+    },
+    "keywords": ["担心", "考不好", "失望"],
+    "supportive_explanation": "你当前可能更容易捕捉到压力信号，这不代表你有问题。",
+    "suggested_task": "sandplay_pressure_awareness",
+    "recommended_card_ids": ["emotion_naming", "three_second_pause"],
+    "risk_level": "low",
+    "requires_review": false,
+    "model_version": "profile-rules-v1",
+    "rules_version": "2026.06-student-profile-rules-v1",
+    "boundary_notice": "本结果不是临床诊断，仅用于自我理解和练习参考。"
+  }
+}
+```
+
+### `GET /api/profile-results`（规划）
+
+用途：查询用户的学生画像历史结果，用于复测和轮次追踪。
+
+查询参数建议：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `user_id` | string | 否 | 用户 ID |
+| `limit` | integer | 否 | 默认 50 |
+
+### `GET /api/profile-results/<profile_id>`（规划）
+
+用途：查看单条画像结果详情，用于小程序结果页和网页后台详情页。
+
+### `GET /api/model/info`（规划）
+
+用途：返回当前画像模型或规则引擎信息，降低“黑箱感”，方便研究追溯。
+
+响应字段建议：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `model_version` | string | 模型版本 |
+| `rules_version` | string | 规则版本 |
+| `available_profiles` | array | 当前可输出的画像类型 |
+| `last_updated` | string | 更新时间 |
+| `boundary_notice` | string | 非诊断边界说明 |
+
+### `POST /api/risk/check`（规划）
+
+用途：检查文本中是否包含自伤、自杀、暴力、家暴、严重失眠等高风险线索。命中高风险时，不应继续生成普通自动反馈。
+
+### 后台导出扩展（规划）
+
+`GET /api/admin/export` 后续建议支持：
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `type=profile` | string | 导出学生画像结果 |
+| `deidentify=true` | boolean | 默认脱敏导出 |
+| `format=csv/json` | string | 第一版可只做 CSV，JSON 后置 |
+
+导出边界：
+
+- 默认使用匿名 ID；
+- 默认不导出联系方式、自由文本原文和高风险文本原文；
+- 未授权或 `export_allowed=false` 的记录不得导出；
+- 后续应增加导出数据字典和审计日志。

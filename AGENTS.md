@@ -64,6 +64,50 @@ MVP 1.1 规划目标：
 目标 -> 记录 -> 识别 -> 反馈 -> 练习 -> 追踪 -> 支持
 ```
 
+## 4A. 0版网页整合规划状态
+
+2026-06-01 已根据夏老师资料和 GitHub 参考项目完成第一轮规划与 P0 部分内容准备。当前统一进度以以下文档为准：
+
+```text
+docs/项目进度统一口径.md
+docs/0版网页整合与GitHub参考优化路线.md
+docs/0版网页整合逐步开发任务清单.md
+```
+
+当前已完成：
+
+- `content/student_profile_rules.json`
+- `content/risk_keywords.json`
+- `content/training_cards.json` 中 4 张学生端训练卡：
+  - `cbt_auto_thought_student`
+  - `student_emotion_naming`
+  - `self_support_statement`
+  - `sandplay_expression_01`
+- 画像 API、数据库、UI、伦理和上线规划文档同步。
+
+当前尚未实现：
+
+- `POST /api/profile`
+- `GET /api/profile-results`
+- `GET /api/model/info`
+- `POST /api/risk/check`
+- `profile_results` 表
+- `records` 表
+- `audit_logs` 表
+- `content/assessment_worksheets.json` 中的 `student_profile_v1`
+- 小程序学生画像结果页
+- Web 后台画像列表、详情和 `type=profile` 导出
+
+后续如果实现“0版网页”能力，应遵守以下原则：
+
+1. 安心家仍是主平台，0版网页只沉淀为“评估画像与反馈引擎”；
+2. 用户端统一称为“支持性测评”或“学生画像”，不要暴露“0版网页”内部名称；
+3. 前端文案使用“阶段性画像”或“压力反应画像”，不要使用“人格”定性；
+4. 学生画像必须包含置信度、优势提示、推荐任务和非诊断边界；
+5. 高风险文本只进入人工复核，不生成普通自动训练建议；
+6. 沙盘表达只作为表达媒介和访谈线索，不自动解释潜意识；
+7. 研究导出默认匿名化、脱敏，并受授权字段控制。
+
 下一阶段优先级：
 
 1. 先阅读并遵守 `docs/MVP1.1功能迭代方案.md`。
@@ -72,11 +116,9 @@ MVP 1.1 规划目标：
    - 网站后台 `/goals`：目标管理页。
    - `pages/diary-form/index`：升级后的情绪事件记录页。
    - 网站后台记录详情：显示关联目标、事件时间和补充复盘。
-3. 下一批 MVP 1.1 功能优先开发：
-   - 升级 `pages/feedback-result/index`：增加情绪与互动模式识别卡；
-   - 升级 `pages/training-card/index` 和 `pages/checkin/index`：训练卡详情与轻打卡；
-   - 新增 `pages/weekly-report/index`：简版周度报告；
-   - 增加人工督导补充入口。
+3. MVP 1.1 家长端第一版和网站后台第一版已基本完成，下一批若不继续 UI 验收，应优先进入学生画像 P0-4：
+   - 在 `content/assessment_worksheets.json` 中新增 `student_profile_v1`；
+   - 完成后再进入 `POST /api/profile` 最小规则版 API。
 4. 优先复用现有 API 和数据库表：`goals`、`diaries`、`feedback`、`cards`、`checkins`、`weekly-report`、`supervision`。
 5. 暂缓 AI 自由问答、机器学习、深度学习、语音/视频上传、社群、积分勋章、正式登录注册、正式部署和复杂课程体系。
 6. 继续保留 `pages/integration-test/index`，不要删除。
@@ -208,6 +250,7 @@ MVP 1.1 规划目标：
 - `backend` routes/services/models
 - mock 数据和测试数据
 - `docs/当前进度交接.md`、`docs/开发日志.md`、`docs/开发说明.md`
+- `docs/项目进度统一口径.md`
 
 ### 6.7 保留测试页和联调入口
 

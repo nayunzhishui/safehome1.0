@@ -4,6 +4,12 @@
     <text class="title">最小联调测试</text>
     <text class="summary">只验证三步数据流：创建情绪事件记录、生成即时反馈、获取训练卡推荐。</text>
 
+    <view class="diagnostics">
+      <text class="diagnostic-line">env：{{diagnostics.env}}</text>
+      <text class="diagnostic-line">service：{{diagnostics.service}}</text>
+      <text class="diagnostic-line">healthz：{{diagnostics.path}}</text>
+    </view>
+
     <button class="primary-button" bindtap="runSmokeTest" disabled="{{status === 'running'}}">
       {{status === 'running' ? '联调中...' : '运行联调测试'}}
     </button>

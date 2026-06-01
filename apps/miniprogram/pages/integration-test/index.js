@@ -1,4 +1,9 @@
-const { createSafeHomeApi } = require("../../services/api");
+const {
+  API_ENDPOINTS,
+  DEFAULT_CLOUD_ENV_ID,
+  DEFAULT_CONTAINER_SERVICE,
+  createSafeHomeApi,
+} = require("../../services/api");
 
 const api = createSafeHomeApi();
 
@@ -6,6 +11,11 @@ Page({
   data: {
     status: "idle",
     message: "请先启动 backend，再点击按钮进行最小联调。",
+    diagnostics: {
+      env: DEFAULT_CLOUD_ENV_ID,
+      service: DEFAULT_CONTAINER_SERVICE,
+      path: API_ENDPOINTS.healthz,
+    },
     diary: null,
     feedback: null,
     cards: [],
@@ -14,13 +24,19 @@ Page({
   async runSmokeTest() {
     this.setData({
       status: "running",
-      message: "正在创建情绪事件记录...",
+      message: "正在检查云托管入口...",
       diary: null,
       feedback: null,
       cards: [],
     });
 
     try {
+      await api.healthz();
+
+      this.setData({
+        message: "云托管入口可用，正在创建情绪事件记录...",
+      });
+
       const diary = await api.createDiary({
         scene: "作业拖延",
         event_description: "孩子一直不开始写作业，我忍不住催了很多次。",
@@ -50,9 +66,11 @@ Page({
         cards: cardsResult.items || [],
       });
     } catch (error) {
+      const diagnosticText = `入口检查：env=${DEFAULT_CLOUD_ENV_ID}，service=${DEFAULT_CONTAINER_SERVICE}，path=${API_ENDPOINTS.healthz}`;
+
       this.setData({
         status: "error",
-        message: error.message || "联调失败，请确认 backend 是否已启动。",
+        message: `${error.message || "联调失败，请确认 backend 是否已启动。"}\n${diagnosticText}`,
       });
     }
   },

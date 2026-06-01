@@ -1,0 +1,57 @@
+{
+  "version": "2026.06-student-profile-rules-v1-draft",
+  "module": "student_profile",
+  "review_status": "draft",
+  "rules": [
+    {
+      "id": "pressure_alert_profile",
+      "profile_code": "pressure_alert",
+      "profile_name": "压力警觉型画像",
+      "trigger": {
+        "score_conditions": {
+          "test_anxiety": ">=3.5",
+          "iu_score": ">=3.5"
+        },
+        "optional_text_keywords": ["担心", "害怕", "考不好", "失望", "紧张", "不确定"],
+        "confidence_min": 0.7,
+        "excluded_risk_levels": ["high"]
+      },
+      "dimensions": [
+        {
+          "key": "anxiety_sensitivity",
+          "label": "压力信号敏感度",
+          "level": "high",
+          "summary": "你近期可能更容易注意到考试、评价或结果相关的压力信号。"
+        },
+        {
+          "key": "emotion_regulation",
+          "label": "情绪调节资源",
+          "level": "developing",
+          "summary": "当压力升高时，你可能还需要更多可马上使用的调节方法。"
+        },
+        {
+          "key": "self_support",
+          "label": "自我支持",
+          "level": "developing",
+          "summary": "你可以继续练习用更温和、具体的话支持自己。"
+        }
+      ],
+      "content": {
+        "title": "近期压力警觉画像",
+        "explanation": "本次填写显示，你近期可能更容易注意到压力信号，尤其是和考试、评价、结果不确定有关的线索。",
+        "strength_note": "这种敏感也可能帮助你提前发现问题，说明你正在认真对待重要事情。",
+        "small_step": "今天可以先做一个 3 分钟情绪命名练习，把最明显的感受说清楚，再决定下一步。",
+        "boundary_notice": "这不是诊断，也不代表固定特征；它只是基于本次填写形成的阶段性支持建议。"
+      },
+      "recommended_card_ids": ["student_emotion_naming", "cbt_auto_thought_student", "self_support_statement", "sandplay_expression_01"],
+      "risk_level": "low",
+      "requires_review": false,
+      "enabled": true
+    }
+  ],
+  "safety_notes": [
+    "学生画像只用于支持性理解和练习推荐，不构成临床诊断。",
+    "前端不得使用“人格”字样，应使用“画像”“阶段性画像”或“近期状态画像”。",
+    "若自由文本出现自伤、自杀、暴力、被侵害或其他高风险线索，不应生成普通画像反馈，应进入人工复核。"
+  ]
+}

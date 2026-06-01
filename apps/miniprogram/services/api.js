@@ -1,4 +1,5 @@
-const DEFAULT_BASE_URL = "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com";
+const DEFAULT_CONTAINER_SERVICE = "flask-gh3l";
+const DEFAULT_CLOUD_ENV_ID = "prod-d3gl35otiaa7c8d24";
 const DEFAULT_USER_ID = "demo-parent";
 
 const API_ENDPOINTS = {
@@ -17,7 +18,8 @@ const API_ENDPOINTS = {
 };
 
 function createSafeHomeApi(options = {}) {
-  const baseUrl = options.baseUrl || DEFAULT_BASE_URL;
+  const containerService = options.containerService || DEFAULT_CONTAINER_SERVICE;
+  const cloudEnvId = options.cloudEnvId || DEFAULT_CLOUD_ENV_ID;
   const defaultUserId = options.defaultUserId || DEFAULT_USER_ID;
 
   function withDefaultUser(data = {}) {
@@ -29,13 +31,25 @@ function createSafeHomeApi(options = {}) {
 
   function request(path, options = {}) {
     return new Promise((resolve, reject) => {
-      wx.request({
-        url: `${baseUrl}${path}`,
+      if (!wx.cloud || !wx.cloud.callContainer) {
+        reject({
+          code: "cloud_container_unavailable",
+          message: "云托管调用不可用，请确认微信开发者工具已启用云开发环境。",
+        });
+        return;
+      }
+
+      wx.cloud.callContainer({
+        config: {
+          env: cloudEnvId,
+        },
+        path,
         method: options.method || "GET",
         data: options.data || {},
         header: {
           "content-type": "application/json",
           ...(options.header || {}),
+          "X-WX-SERVICE": containerService,
         },
         success(res) {
           const statusCode = res.statusCode || 0;
@@ -44,8 +58,9 @@ function createSafeHomeApi(options = {}) {
           if (statusCode < 200 || statusCode >= 300) {
             reject({
               code: payload && payload.error ? payload.error.code : "http_error",
-              message: payload && payload.error ? payload.error.message : "请求失败",
+              message: buildErrorMessage("请求失败", statusCode, payload),
               statusCode,
+              payload,
             });
             return;
           }
@@ -70,6 +85,19 @@ function createSafeHomeApi(options = {}) {
         },
       });
     });
+  }
+
+  function buildErrorMessage(prefix, statusCode, payload) {
+    if (payload && payload.error && payload.error.message) {
+      return `${prefix}（${statusCode}）：${payload.error.message}`;
+    }
+    if (payload && payload.message) {
+      return `${prefix}（${statusCode}）：${payload.message}`;
+    }
+    if (typeof payload === "string" && payload) {
+      return `${prefix}（${statusCode}）：${payload.slice(0, 80)}`;
+    }
+    return `${prefix}（${statusCode || "未知状态"}）`;
   }
 
   function queryString(params = {}) {
@@ -169,14 +197,15 @@ function createSafeHomeApi(options = {}) {
     },
 
     buildAdminExportUrl(params = {}) {
-      return `${baseUrl}${API_ENDPOINTS.adminExport}${queryString(params)}`;
+      return `${API_ENDPOINTS.adminExport}${queryString(params)}`;
     },
   };
 }
 
 module.exports = {
   API_ENDPOINTS,
-  DEFAULT_BASE_URL,
+  DEFAULT_CLOUD_ENV_ID,
+  DEFAULT_CONTAINER_SERVICE,
   DEFAULT_USER_ID,
   createSafeHomeApi,
 };

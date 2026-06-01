@@ -1,0 +1,67 @@
+{
+  "version": "2026.06-risk-keywords-v1-draft",
+  "module": "risk_check",
+  "review_status": "draft",
+  "categories": [
+    {
+      "id": "self_harm",
+      "label": "自伤或自杀风险",
+      "risk_level": "high",
+      "keywords": ["不想活", "自杀", "自残", "伤害自己", "想消失", "活不下去"],
+      "action": "requires_human_review",
+      "safe_response": "如果你正在经历强烈危险，请立即联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。"
+    },
+    {
+      "id": "harm_to_others",
+      "label": "伤害他人风险",
+      "risk_level": "high",
+      "keywords": ["伤害别人", "报复", "打死", "弄死", "控制不住想伤人"],
+      "action": "requires_human_review",
+      "safe_response": "如果你担心自己或他人的安全，请立刻离开危险场景，并联系现实中的可信成年人、学校老师或当地紧急服务。"
+    },
+    {
+      "id": "abuse_or_safety_threat",
+      "label": "被侵害或现实安全威胁",
+      "risk_level": "high",
+      "keywords": ["被打", "被威胁", "家暴", "被侵犯", "不敢回家", "有人伤害我"],
+      "action": "requires_human_review",
+      "safe_response": "如果你正在遭遇现实安全威胁，请优先联系可信成年人、学校老师、专业机构或当地紧急服务。"
+    },
+    {
+      "id": "extreme_distress",
+      "label": "极端痛苦或明显功能受损",
+      "risk_level": "medium",
+      "keywords": ["撑不住", "崩溃", "完全睡不着", "连续失眠", "什么都做不了", "无法上学"],
+      "action": "suggest_human_support",
+      "safe_response": "这些表达提示你可能正在承受较大压力。建议尽快联系现实中的可信成年人、学校老师或专业支持资源。"
+    }
+  ],
+  "handling_rules": [
+    {
+      "risk_level": "high",
+      "requires_review": true,
+      "allow_auto_feedback": false,
+      "allow_recommended_training_cards": false,
+      "export_raw_text_by_default": false
+    },
+    {
+      "risk_level": "medium",
+      "requires_review": true,
+      "allow_auto_feedback": true,
+      "allow_recommended_training_cards": true,
+      "export_raw_text_by_default": false
+    },
+    {
+      "risk_level": "low",
+      "requires_review": false,
+      "allow_auto_feedback": true,
+      "allow_recommended_training_cards": true,
+      "export_raw_text_by_default": false
+    }
+  ],
+  "safety_notes": [
+    "风险关键词只用于初筛和人工复核提示，不构成诊断或危机评估结论。",
+    "命中 high 风险时，不应生成普通学生画像反馈或普通训练卡建议。",
+    "自由文本原文默认不进入研究导出；如确需查看，应由管理员确认并记录审计。"
+  ]
+}

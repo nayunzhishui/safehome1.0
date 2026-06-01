@@ -80,6 +80,70 @@
       "example": "现在先做 10 分钟语文，或者先整理错题本。你选一个开始。",
       "duration_minutes": 5,
       "enabled": true
+    },
+    {
+      "id": "cbt_auto_thought_student",
+      "type": "cbt",
+      "title": "自动想法卡：把担心写成一句话",
+      "purpose": "帮助学生把压力场景中的自动想法写清楚，再尝试寻找更平衡的解释。",
+      "tags": ["student_profile", "pressure_alert", "test_anxiety", "cbt"],
+      "steps": [
+        "写下刚才最让你担心的一件事。",
+        "把脑中最强烈的一句话写下来，例如：如果考不好，大家会失望。",
+        "问自己：有没有一个证据支持它？有没有一个证据不完全支持它？",
+        "把这句话改写得更平衡一点，例如：我担心结果，但我可以先处理今天能做的一步。"
+      ],
+      "example": "把“我肯定会考砸”改成“我现在很担心考试，但我可以先复习最容易开始的一小块”。",
+      "duration_minutes": 5,
+      "enabled": true
+    },
+    {
+      "id": "student_emotion_naming",
+      "type": "emotion_regulation",
+      "title": "情绪命名卡：说出现在最明显的感受",
+      "purpose": "帮助学生在压力升高时先识别情绪，降低被情绪推着走的感觉。",
+      "tags": ["student_profile", "pressure_alert", "emotion_regulation"],
+      "steps": [
+        "停下来，感受身体最明显的位置。",
+        "从紧张、担心、委屈、生气、害怕、难过中选一个最接近的词。",
+        "对自己说：我现在注意到这个情绪了。",
+        "做一次慢呼吸，再决定下一步要做的小动作。"
+      ],
+      "example": "我现在注意到自己很紧张，胸口有点紧。我先做一次慢呼吸，再看下一道题。",
+      "duration_minutes": 3,
+      "enabled": true
+    },
+    {
+      "id": "self_support_statement",
+      "type": "self_support",
+      "title": "自我支持卡：把责备换成支持句",
+      "purpose": "帮助学生把强烈自责改写成更具体、更能支持行动的话。",
+      "tags": ["student_profile", "self_compassion", "test_anxiety"],
+      "steps": [
+        "写下一句正在责备自己的话。",
+        "想象朋友遇到同样情况，你会怎么对他说？",
+        "把这句话改写给自己听。",
+        "最后补上一件今天能做的小事。"
+      ],
+      "example": "把“我太差了”改成“我现在很失望，但这不代表我没有办法。我先整理一道错题”。",
+      "duration_minutes": 5,
+      "enabled": true
+    },
+    {
+      "id": "sandplay_expression_01",
+      "type": "expressive_task",
+      "title": "沙盘表达卡：给压力选一个象征物",
+      "purpose": "帮助学生用表达任务呈现压力感受，作为后续交流和自我理解的线索。",
+      "tags": ["student_profile", "pressure_alert", "sandplay", "expressive_task"],
+      "steps": [
+        "从身边物品或想象图像中，选一个最像当前压力的象征物。",
+        "描述它的位置、大小、颜色或状态。",
+        "说出它最想表达的一句话。",
+        "再选一个能提供支持的象征物，放在它旁边。"
+      ],
+      "example": "这个石头像考试压力，放在中间很重。旁边的小灯像提醒我可以先照亮一小块地方。",
+      "duration_minutes": 8,
+      "enabled": true
     }
   ]
 }

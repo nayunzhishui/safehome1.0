@@ -41,6 +41,22 @@
   border-radius: 8rpx;
 }
 
+.diagnostics {
+  margin-top: 24rpx;
+  padding: 18rpx;
+  border: 1rpx solid #e1eadf;
+  border-radius: 8rpx;
+  background: #f7faf6;
+}
+
+.diagnostic-line {
+  display: block;
+  color: #5b6b60;
+  font-size: 24rpx;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
 .status {
   margin-bottom: 24rpx;
   padding: 20rpx;
