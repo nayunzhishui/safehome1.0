@@ -4,11 +4,20 @@ import hashlib
 
 from flask import Blueprint, request
 
-from database import ensure_user, get_connection, json_dumps, new_id, now_iso, row_to_dict, rows_to_dicts
-from services.content_loader import ContentLoadError, load_student_profile_rules
-from services.profile_service import PROFILE_MODEL_VERSION, ProfileInputError, generate_student_profile
+from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts
+from services.content_loader import ContentLoadError
 from services.risk_service import check_text_risk
-from routes.utils import fail, ok, parse_int
+from services.sandplay_service import SandplayInputError, summarize_sandplay_scene, validate_sandplay_scene
+from services.student_profile_model_service import (
+    PROFILE_MODEL_TYPE,
+    ProfileInputError,
+    build_student_visuals,
+    extract_keywords,
+    generate_student_profile,
+    get_model_info_payload,
+    get_student_assessment_payload,
+)
+from routes.utils import fail, ok, parse_bool, parse_int
 
 bp = Blueprint("profile", __name__, url_prefix="/api")
 
@@ -22,52 +31,79 @@ def _anonymous_id(user_id: str) -> str:
     return f"anon_{digest}"
 
 
+def _actor_id(payload: dict | None = None) -> str:
+    if request.headers.get("X-Admin-Token"):
+        return "admin-token"
+    if payload and payload.get("reviewer_id"):
+        return str(payload.get("reviewer_id"))
+    return "web-admin"
+
+
 def _input_scores(payload: dict) -> dict:
     raw_scores = payload.get("scores") if isinstance(payload.get("scores"), dict) else payload
-    fields = ["test_anxiety", "iu_score", "fear_score", "f_score", "self_compassion"]
+    fields = [
+        "test_anxiety",
+        "test_anxiety_worry",
+        "test_anxiety_emotionality",
+        "iu_score",
+        "iu_total",
+        "erf_evaluation",
+        "erf_expression",
+        "erf_strategy_flex",
+        "self_compassion",
+        "self_criticism_raw",
+        "fear_score",
+        "f_score",
+    ]
     return {field: raw_scores.get(field) for field in fields if raw_scores.get(field) is not None}
 
 
-def _profile_answers(payload: dict, result: dict) -> list[dict]:
-    score_labels = {
-        "test_anxiety": "考试、作业或学习评价相关紧张程度",
-        "iu_score": "不确定情境下的放松困难程度",
-        "fear_score": "压力信号下的担心/失望预期",
-        "f_score": "情绪调节灵活性或恐惧倾向相关分数",
-        "self_compassion": "自我支持程度",
+def _latest_reviews_by_profile(conn, profile_ids: list[str]) -> dict[str, dict]:
+    if not profile_ids:
+        return {}
+    placeholders = ",".join("?" for _ in profile_ids)
+    rows = conn.execute(
+        f"""
+        SELECT * FROM profile_reviews
+        WHERE profile_id IN ({placeholders})
+        ORDER BY created_at DESC
+        """,
+        profile_ids,
+    ).fetchall()
+    latest: dict[str, dict] = {}
+    for row in rows:
+        item = row_to_dict(row)
+        profile_id = item.get("profile_id")
+        if profile_id and profile_id not in latest:
+            latest[profile_id] = item
+    return latest
+
+
+def _expand_profile_row(item: dict | None) -> dict | None:
+    if item is None:
+        return None
+    item["scores"] = json_loads(item.get("scores_json"), {})
+    item["text_features"] = json_loads(item.get("text_features_json"), {})
+    item["dimensions"] = json_loads(item.get("dimensions_json"), [])
+    item["recommended_task_ids"] = json_loads(item.get("recommended_task_ids_json"), [])
+    item["report"] = json_loads(item.get("report_json"), {})
+    item["visuals"] = json_loads(item.get("visuals_json"), {})
+    return item
+
+
+def _assessment_answers(payload: dict, result: dict) -> dict:
+    text_answers = result.get("text_answers", {})
+    free_text_length = sum(len(str(value or "")) for value in text_answers.values())
+    return {
+        "answers": payload.get("answers"),
+        "aggregate_scores": _input_scores(payload),
+        "text_answers_summary": {
+            "present": bool(free_text_length),
+            "total_length": free_text_length,
+            "risk_level": result.get("risk_level", "low"),
+            "note": "默认不在导出中展示自由文本原文。",
+        },
     }
-    answers = [
-        {
-            "question_id": field,
-            "prompt": label,
-            "value": str(value),
-            "score": value,
-        }
-        for field, label in score_labels.items()
-        for value in [_input_scores(payload).get(field)]
-        if value is not None
-    ]
-
-    if payload.get("support_resource"):
-        answers.append(
-            {
-                "question_id": "support_resource",
-                "prompt": "最近可用支持资源",
-                "value": str(payload.get("support_resource")),
-            }
-        )
-
-    free_text = str(payload.get("free_text") or "")
-    if free_text:
-        answers.append(
-            {
-                "question_id": "free_text_summary",
-                "prompt": "自由文本摘要",
-                "value": f"已脱敏保存：原文长度 {len(free_text)} 字；风险等级 {result.get('risk_level', 'low')}；不默认保存自由文本原文。",
-            }
-        )
-
-    return answers
 
 
 def _save_profile_result(payload: dict, result: dict) -> dict:
@@ -75,13 +111,21 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
     result_id = new_id("assessment")
     profile_id = new_id("profile")
     timestamp = now_iso()
-    answers = _profile_answers(payload, result)
-    input_scores = _input_scores(payload)
+    answers = _assessment_answers(payload, result)
+    model_scores = result.get("scores", {})
+    model_features = model_scores.get("features", {})
+    text_features = result.get("text_features", {})
+    recommended_card_ids = result.get("recommended_card_ids", [])
     scores = {
-        "input_scores": input_scores,
+        "model_scores": model_scores,
+        "model_features": model_features,
         "profile_code": result.get("profile_code"),
         "profile_name": result.get("profile_name"),
+        "original_profile_name": result.get("original_profile_name"),
         "confidence": result.get("confidence"),
+        "cluster_id": result.get("cluster_id"),
+        "pc1": result.get("pc1"),
+        "pc2": result.get("pc2"),
         "risk_level": result.get("risk_level"),
         "requires_review": result.get("requires_review"),
         "allow_auto_feedback": result.get("allow_auto_feedback"),
@@ -91,15 +135,11 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
         "small_step": result.get("small_step"),
         "boundary_notice": result.get("boundary_notice"),
         "model_version": result.get("model_version"),
+        "model_type": result.get("model_type"),
         "rules_version": result.get("rules_version"),
-        "recommended_card_ids": result.get("recommended_card_ids", []),
+        "recommended_card_ids": recommended_card_ids,
     }
     result_summary = f"{result.get('profile_name')}：{result.get('supportive_explanation')}"
-    text_features = {
-        "free_text_present": bool(payload.get("free_text")),
-        "free_text_length": len(str(payload.get("free_text") or "")),
-        "support_resource_present": bool(payload.get("support_resource")),
-    }
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
@@ -131,9 +171,11 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
                 scores_json, text_features_json, profile_code, profile_name,
                 confidence, dimensions_json, recommended_task_ids_json,
                 risk_level, requires_review, boundary_notice, rules_version,
+                model_version, model_type, cluster_id, pc1, pc2, nearest_distance,
+                second_distance, report_json, visuals_json,
                 export_allowed, data_quality, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 profile_id,
@@ -142,19 +184,28 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
                 result_id,
                 int(payload.get("round") or 1),
                 PROFILE_WORKSHEET_ID,
-                json_dumps(input_scores),
+                json_dumps(model_scores),
                 json_dumps(text_features),
                 result.get("profile_code"),
                 result.get("profile_name"),
                 result.get("confidence"),
                 json_dumps(result.get("dimensions", [])),
-                json_dumps(result.get("recommended_card_ids", [])),
+                json_dumps(recommended_card_ids),
                 result.get("risk_level", "low"),
                 1 if result.get("requires_review") else 0,
                 result.get("boundary_notice"),
                 result.get("rules_version"),
+                result.get("model_version"),
+                result.get("model_type", PROFILE_MODEL_TYPE),
+                result.get("cluster_id"),
+                result.get("pc1"),
+                result.get("pc2"),
+                result.get("nearest_distance"),
+                result.get("second_distance"),
+                json_dumps(result.get("report", {})),
+                json_dumps(result.get("visuals", {})),
                 1,
-                "valid",
+                result.get("data_quality", "valid"),
                 timestamp,
                 timestamp,
             ),
@@ -179,9 +230,14 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
                         "profile_code": result.get("profile_code"),
                         "profile_name": result.get("profile_name"),
                         "confidence": result.get("confidence"),
+                        "model_version": result.get("model_version"),
+                        "model_type": result.get("model_type", PROFILE_MODEL_TYPE),
+                        "cluster_id": result.get("cluster_id"),
+                        "pc1": result.get("pc1"),
+                        "pc2": result.get("pc2"),
                         "risk_level": result.get("risk_level", "low"),
                         "requires_review": bool(result.get("requires_review")),
-                        "recommended_card_ids": result.get("recommended_card_ids", []),
+                        "recommended_card_ids": recommended_card_ids,
                         "rules_version": result.get("rules_version"),
                     }
                 ),
@@ -215,6 +271,14 @@ def create_profile():
     result["saved_to_assessment_results"] = True
     result["saved_to_student_profiles"] = True
     return ok(result, status=201)
+
+
+@bp.get("/student-assessment")
+def get_student_assessment():
+    try:
+        return ok(get_student_assessment_payload())
+    except ContentLoadError as exc:
+        return fail("content_load_error", str(exc), status=500)
 
 
 @bp.post("/risk/check")
@@ -256,14 +320,28 @@ def list_profile_results():
             """,
             params,
         ).fetchall()
+        items = rows_to_dicts(rows)
+        latest_reviews = _latest_reviews_by_profile(conn, [item["id"] for item in items])
 
-    return ok({"items": rows_to_dicts(rows)})
+    for item in items:
+        item["latest_review"] = latest_reviews.get(item["id"])
+        _expand_profile_row(item)
+    return ok({"items": items})
 
 
 @bp.get("/profile-results/<profile_id>")
 def get_profile_result(profile_id: str):
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        latest_review = conn.execute(
+            """
+            SELECT * FROM profile_reviews
+            WHERE profile_id = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+            """,
+            (profile_id,),
+        ).fetchone()
         if row is not None:
             conn.execute(
                 """
@@ -272,7 +350,7 @@ def get_profile_result(profile_id: str):
                 """,
                 (
                     new_id("audit"),
-                    "admin-token" if request.headers.get("X-Admin-Token") else "web-admin",
+                    _actor_id(),
                     "view_profile",
                     "student_profile",
                     profile_id,
@@ -283,31 +361,302 @@ def get_profile_result(profile_id: str):
             conn.commit()
     if row is None:
         return fail("not_found", "没有找到对应的学生画像结果", status=404)
-    return ok(row_to_dict(row))
+    data = row_to_dict(row)
+    _expand_profile_row(data)
+    data["latest_review"] = row_to_dict(latest_review)
+    return ok(data)
+
+
+@bp.get("/profile-results/<profile_id>/visuals")
+def get_profile_visuals(profile_id: str):
+    with get_connection() as conn:
+        row = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        if row is None:
+            return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        followup_rows = conn.execute(
+            """
+            SELECT * FROM student_profile_followups
+            WHERE profile_id = ?
+            ORDER BY round_no ASC, created_at ASC
+            """,
+            (profile_id,),
+        ).fetchall()
+    item = row_to_dict(row)
+    scores = json_loads(item.get("scores_json"), {})
+    report = json_loads(item.get("report_json"), {})
+    profile_result = {
+        "profile_code": item.get("profile_code"),
+        "cluster_id": item.get("cluster_id"),
+        "confidence": item.get("confidence"),
+        "pc1": item.get("pc1"),
+        "pc2": item.get("pc2"),
+    }
+    visuals = build_student_visuals(scores, profile_result, rows_to_dicts(followup_rows))
+    visuals["keywords"] = report.get("keywords", [])
+    return ok(visuals)
+
+
+@bp.get("/profile-results/<profile_id>/followups")
+def list_profile_followups(profile_id: str):
+    with get_connection() as conn:
+        profile = conn.execute("SELECT id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        if profile is None:
+            return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        rows = conn.execute(
+            """
+            SELECT * FROM student_profile_followups
+            WHERE profile_id = ?
+            ORDER BY round_no ASC, created_at ASC
+            """,
+            (profile_id,),
+        ).fetchall()
+    return ok({"items": rows_to_dicts(rows)})
+
+
+@bp.post("/profile-results/<profile_id>/followups")
+def create_profile_followup(profile_id: str):
+    payload = request.get_json(silent=True) or {}
+    round_no = parse_int(payload.get("round_no"), 1) or 1
+    state_score = parse_int(payload.get("state_score"))
+    text = str(payload.get("text") or "").strip()[:800]
+    timestamp = now_iso()
+    followup_id = new_id("followup")
+
+    with get_connection() as conn:
+        profile = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        if profile is None:
+            return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        profile_item = row_to_dict(profile)
+        keywords = extract_keywords(text)
+        conn.execute(
+            """
+            INSERT INTO student_profile_followups (
+                id, profile_id, user_id, round_no, fit, task_done,
+                state_score, text, keywords_json, created_at, export_allowed
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                followup_id,
+                profile_id,
+                profile_item.get("user_id"),
+                round_no,
+                str(payload.get("fit") or "").strip()[:80],
+                str(payload.get("task_done") or "").strip()[:80],
+                state_score,
+                text,
+                json_dumps(keywords),
+                timestamp,
+                1,
+            ),
+        )
+        conn.execute(
+            """
+            INSERT INTO records (
+                id, user_id, module_type, source_id, data_json,
+                created_at, updated_at, export_allowed
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                new_id("record"),
+                profile_item.get("user_id"),
+                "profile_followup",
+                followup_id,
+                json_dumps({"profile_id": profile_id, "round_no": round_no, "state_score": state_score, "keywords": keywords}),
+                timestamp,
+                timestamp,
+                1,
+            ),
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM student_profile_followups WHERE id = ?", (followup_id,)).fetchone()
+    return ok(row_to_dict(row), status=201)
+
+
+@bp.get("/profile-results/<profile_id>/sandplay")
+def list_profile_sandplay(profile_id: str):
+    with get_connection() as conn:
+        profile = conn.execute("SELECT id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        if profile is None:
+            return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        rows = conn.execute(
+            """
+            SELECT * FROM student_sandplay_entries
+            WHERE profile_id = ?
+            ORDER BY created_at DESC
+            """,
+            (profile_id,),
+        ).fetchall()
+    items = rows_to_dicts(rows)
+    for item in items:
+        item["scene"] = json_loads(item.get("scene_json"), {})
+        item["summary"] = json_loads(item.get("summary_json"), {})
+    return ok({"items": items})
+
+
+@bp.post("/profile-results/<profile_id>/sandplay")
+def create_profile_sandplay(profile_id: str):
+    payload = request.get_json(silent=True) or {}
+    scene = payload.get("scene")
+    if not isinstance(scene, dict):
+        return fail("invalid_sandplay_scene", "沙盘场景格式无效", status=400)
+    try:
+        validate_sandplay_scene(scene)
+    except SandplayInputError as exc:
+        return fail("invalid_sandplay_scene", str(exc), status=400)
+
+    timestamp = now_iso()
+    entry_id = new_id("sandplay")
+    summary = summarize_sandplay_scene(scene)
+
+    with get_connection() as conn:
+        profile = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        if profile is None:
+            return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        profile_item = row_to_dict(profile)
+        report = json_loads(profile_item.get("report_json"), {})
+        task_title = str(payload.get("task_title") or report.get("sandplay_task", {}).get("title") or "沙盘式表达任务")
+        conn.execute(
+            """
+            INSERT INTO student_sandplay_entries (
+                id, profile_id, user_id, task_title, scene_json,
+                reflection_text, summary_json, created_at, export_allowed
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                entry_id,
+                profile_id,
+                profile_item.get("user_id"),
+                task_title[:120],
+                json_dumps(scene),
+                str(payload.get("reflection_text") or "").strip()[:800],
+                json_dumps(summary),
+                timestamp,
+                1,
+            ),
+        )
+        conn.execute(
+            """
+            INSERT INTO records (
+                id, user_id, module_type, source_id, data_json,
+                created_at, updated_at, export_allowed
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                new_id("record"),
+                profile_item.get("user_id"),
+                "sandplay_task",
+                entry_id,
+                json_dumps({"profile_id": profile_id, "task_title": task_title, "summary": summary}),
+                timestamp,
+                timestamp,
+                1,
+            ),
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM student_sandplay_entries WHERE id = ?", (entry_id,)).fetchone()
+    item = row_to_dict(row)
+    item["scene"] = json_loads(item.get("scene_json"), {})
+    item["summary"] = json_loads(item.get("summary_json"), {})
+    return ok(item, status=201)
+
+
+@bp.get("/profile-results/<profile_id>/reviews")
+def list_profile_reviews(profile_id: str):
+    with get_connection() as conn:
+        profile = conn.execute("SELECT id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        if profile is None:
+            return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        rows = conn.execute(
+            """
+            SELECT * FROM profile_reviews
+            WHERE profile_id = ?
+            ORDER BY created_at DESC
+            """,
+            (profile_id,),
+        ).fetchall()
+    return ok({"items": rows_to_dicts(rows)})
+
+
+@bp.post("/profile-results/<profile_id>/review")
+def create_profile_review(profile_id: str):
+    payload = request.get_json(silent=True) or {}
+    review_status = str(payload.get("review_status") or "reviewed").strip()
+    review_decision = str(payload.get("review_decision") or "").strip()
+    note = str(payload.get("note") or "").strip()
+    action_summary = str(payload.get("action_summary") or "").strip()
+
+    allowed_statuses = {"pending", "in_progress", "reviewed", "escalated", "closed"}
+    if review_status not in allowed_statuses:
+        return fail("invalid_review_status", "复核状态无效", status=400)
+    if not any([review_decision, note, action_summary]):
+        return fail("missing_review_content", "请至少填写复核结论、备注或处置摘要", status=400)
+
+    timestamp = now_iso()
+    review_id = new_id("review")
+    actor_id = _actor_id(payload)
+    visible_to_student = 1 if parse_bool(payload.get("visible_to_student"), False) else 0
+
+    with get_connection() as conn:
+        profile = conn.execute("SELECT id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        if profile is None:
+            return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        conn.execute(
+            """
+            INSERT INTO profile_reviews (
+                id, profile_id, reviewer_id, review_status, review_decision,
+                note, action_summary, visible_to_student, created_at, updated_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                review_id,
+                profile_id,
+                actor_id,
+                review_status,
+                review_decision or None,
+                note or None,
+                action_summary or None,
+                visible_to_student,
+                timestamp,
+                timestamp,
+            ),
+        )
+        conn.execute(
+            """
+            INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, metadata_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                new_id("audit"),
+                actor_id,
+                "review_profile",
+                "student_profile",
+                profile_id,
+                json_dumps(
+                    {
+                        "review_id": review_id,
+                        "review_status": review_status,
+                        "review_decision": review_decision,
+                        "visible_to_student": bool(visible_to_student),
+                    }
+                ),
+                timestamp,
+            ),
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM profile_reviews WHERE id = ?", (review_id,)).fetchone()
+
+    return ok(row_to_dict(row), status=201)
 
 
 @bp.get("/model/info")
 def model_info():
     try:
-        rules_payload = load_student_profile_rules()
+        payload = get_model_info_payload()
     except ContentLoadError as exc:
         return fail("content_load_error", str(exc), status=500)
-
-    available_profiles = [
-        {
-            "profile_code": rule.get("profile_code"),
-            "profile_name": rule.get("profile_name"),
-            "enabled": rule.get("enabled", True),
-            "risk_level": rule.get("risk_level", "low"),
-        }
-        for rule in rules_payload.get("rules", [])
-    ]
-
-    return ok(
-        {
-            "model_version": PROFILE_MODEL_VERSION,
-            "rules_version": rules_payload.get("version"),
-            "available_profiles": available_profiles,
-            "boundary_notice": "学生画像只用于支持性理解和练习推荐，不构成临床诊断。",
-        }
-    )
+    return ok(payload)

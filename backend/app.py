@@ -13,6 +13,7 @@ from routes.checkins import bp as checkins_bp
 from routes.diaries import bp as diaries_bp
 from routes.feedback import bp as feedback_bp
 from routes.goals import bp as goals_bp
+from routes.parent_assessments import bp as parent_assessments_bp
 from routes.profile import bp as profile_bp
 from routes.reports import bp as reports_bp
 from routes.supervision import bp as supervision_bp
@@ -27,6 +28,7 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     app.register_blueprint(diaries_bp)
     app.register_blueprint(feedback_bp)
     app.register_blueprint(profile_bp)
+    app.register_blueprint(parent_assessments_bp)
     app.register_blueprint(assessments_bp)
     app.register_blueprint(cards_bp)
     app.register_blueprint(checkins_bp)
@@ -52,5 +54,5 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "5000"))
+    port = int(os.environ.get("PORT", "5050"))
     app.run(host="0.0.0.0", port=port, debug=os.environ.get("FLASK_DEBUG") == "1")

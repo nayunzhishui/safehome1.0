@@ -1,30 +1,26 @@
 .profile-page {
-  padding-bottom: 48rpx;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
 .user-card {
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 28rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: 16rpx;
-  background: linear-gradient(135deg, rgba(255, 253, 248, 0.96), rgba(237, 246, 232, 0.9));
-  box-shadow: 0 16rpx 38rpx rgba(52, 66, 58, 0.08);
+  overflow: hidden;
 }
 
 .avatar {
-  width: 92rpx;
-  height: 92rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
+  width: 92rpx;
+  height: 92rpx;
+  flex: 0 0 92rpx;
   border-radius: 50%;
-  background: #ffe8ca;
-  color: #9e6626;
+  background: var(--safe-orange-soft);
+  color: #9E6626;
   font-size: 34rpx;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .user-copy {
@@ -35,14 +31,20 @@
 .user-name,
 .user-state,
 .streak-text,
-.growth-level {
+.growth-level,
+.profile-note,
+.row-title,
+.row-subtitle,
+.safety-title,
+.safety-text {
   display: block;
 }
 
 .user-name {
   color: var(--safe-title);
-  font-size: 32rpx;
-  font-weight: 800;
+  font-size: 34rpx;
+  font-weight: 850;
+  line-height: 1.35;
 }
 
 .user-state {
@@ -55,17 +57,31 @@
 .streak-text {
   margin-top: 10rpx;
   color: var(--safe-primary-deep);
-  font-size: 23rpx;
-  font-weight: 700;
+  font-size: 24rpx;
+  font-weight: 800;
 }
 
 .growth-level {
-  max-width: 132rpx;
+  max-width: 140rpx;
+  padding: 8rpx 14rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
   font-size: 22rpx;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.35;
-  text-align: right;
+  text-align: center;
+}
+
+.profile-note {
+  margin-top: 24rpx;
+  padding: 20rpx 24rpx;
+  border: 1rpx solid rgba(87, 139, 95, 0.18);
+  border-radius: var(--safe-radius-md);
+  background: rgba(233, 242, 223, 0.64);
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.65;
 }
 
 .entry-grid {
@@ -76,30 +92,35 @@
 }
 
 .support-list {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 14rpx;
   margin-top: 20rpx;
   padding: 14rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 16rpx;
+  border-radius: var(--safe-radius-md);
   background: rgba(255, 253, 248, 0.94);
-  box-shadow: 0 12rpx 30rpx rgba(52, 66, 58, 0.08);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .safety-list {
-  border-color: #efd0cc;
-  background: #fff7f3;
+  border-color: rgba(215, 111, 103, 0.2);
+  background: rgba(255, 248, 244, 0.9);
 }
 
 .support-row {
-  min-height: 112rpx;
   display: flex;
   align-items: center;
   gap: 18rpx;
+  min-height: 112rpx;
   padding: 18rpx;
-  border-radius: 16rpx;
-  background: #fff7f0;
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-card);
   text-align: left;
+}
+
+.support-row::after {
+  border: 0;
 }
 
 .support-row:active {
@@ -107,15 +128,15 @@
 }
 
 .row-icon {
-  width: 64rpx;
-  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
-  border-radius: 16rpx;
+  width: 64rpx;
+  height: 64rpx;
+  flex: 0 0 64rpx;
+  border-radius: 18rpx;
   font-size: 26rpx;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .row-copy {
@@ -123,15 +144,11 @@
   flex: 1;
 }
 
-.row-title,
-.row-subtitle {
-  display: block;
-}
-
 .row-title {
   color: var(--safe-title);
   font-size: 28rpx;
-  font-weight: 800;
+  font-weight: 850;
+  line-height: 1.4;
 }
 
 .row-subtitle {
@@ -146,13 +163,24 @@
   font-size: 40rpx;
 }
 
-.crisis-card {
-  margin-top: 16rpx;
-  padding: 22rpx;
-  border: 1rpx solid #efd0cc;
-  border-radius: 16rpx;
-  background: #fbe8e2;
-  color: #b94a3c;
+.safety-card {
+  margin-top: 20rpx;
+  padding: 24rpx 28rpx;
+  border: 1rpx solid rgba(215, 111, 103, 0.24);
+  border-radius: var(--safe-radius-md);
+  background: rgba(255, 244, 240, 0.9);
+}
+
+.safety-title {
+  color: #9F3E38;
+  font-size: 26rpx;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.safety-text {
+  margin-top: 8rpx;
+  color: var(--safe-text);
   font-size: 24rpx;
-  line-height: 1.65;
+  line-height: 1.7;
 }

@@ -22,6 +22,14 @@ const EXPORT_TYPE_LABELS: Record<ExportType, string> = {
   checkins: "打卡记录",
   assessments: "测一测结果",
   profile: "学生画像",
+  student_profiles: "学生画像 KMeans",
+  records: "研究摘要",
+  student_followups: "学生追踪记录",
+  sandplay: "沙盘表达记录",
+  parent_assessments: "家长双量表",
+  raw_wide: "家长原始宽表",
+  long: "家长长表",
+  codebook: "量表 Codebook",
   reports: "周报记录",
   supervision: "督导请求",
   cards: "训练卡内容",
@@ -34,6 +42,14 @@ const EXPORT_TYPE_NOTES: Record<ExportType, string> = {
   checkins: "用于查看训练卡练习后的打卡情况。",
   assessments: "用于查看测一测填写结果。",
   profile: "用于导出学生画像摘要，默认匿名化且不含自由文本原文。",
+  student_profiles: "用于导出学生 KMeans/PCA 画像摘要，默认匿名化且不含自由文本原文。",
+  records: "用于导出统一研究摘要，可按 module_type 筛选。",
+  student_followups: "用于导出学生画像后的追踪反馈、任务完成和状态评分。",
+  sandplay: "用于导出学生沙盘式表达任务摘要，不默认导出完整自由文本原文。",
+  parent_assessments: "用于导出家长双量表报告摘要、量表均分和质量标记。",
+  raw_wide: "用于研究清洗的家长双量表原始宽表，仅导出同意研究使用的数据。",
+  long: "用于统计分析的家长双量表长表，仅导出同意研究使用的数据。",
+  codebook: "用于说明学生画像量表和家长双量表的题目、维度和反向计分。",
   reports: "用于查看已经生成的周度复盘记录。",
   supervision: "用于查看家长提交的人工补充支持请求。",
   cards: "用于查看后端训练卡表中的内容快照。",
@@ -42,6 +58,8 @@ const EXPORT_TYPE_NOTES: Record<ExportType, string> = {
 export function ExportManagement() {
   const [exportType, setExportType] = useState<ExportType>("diaries");
   const [userId, setUserId] = useState("");
+  const [moduleType, setModuleType] = useState("");
+  const [highRiskConfirmed, setHighRiskConfirmed] = useState(false);
   const [adminToken, setAdminToken] = useState(LOCAL_ADMIN_EXPORT_TOKEN);
   const [state, setState] = useState<ExportState>({
     status: "idle",
@@ -53,16 +71,22 @@ export function ExportManagement() {
     return api.buildAdminExportUrl({
       type: exportType,
       user_id: userId.trim() || undefined,
+      module_type: exportType === "records" ? moduleType.trim() || undefined : undefined,
+      confirm_high_risk: highRiskConfirmed || undefined,
     });
-  }, [exportType, userId]);
+  }, [exportType, highRiskConfirmed, moduleType, userId]);
 
-  const canFilterByUser = exportType !== "cards";
+  const canFilterByUser = !["cards", "codebook", "raw_wide", "long"].includes(exportType);
+  const canFilterByModule = exportType === "records";
+  const needsHighRiskConfirmation = ["profile", "student_profiles", "records"].includes(exportType);
   const selectedNote = EXPORT_TYPE_NOTES[exportType];
 
   async function readCsvBlob() {
     return api.downloadAdminExport({
       type: exportType,
       user_id: canFilterByUser ? userId.trim() || undefined : undefined,
+      module_type: canFilterByModule ? moduleType.trim() || undefined : undefined,
+      confirm_high_risk: highRiskConfirmed,
       adminToken: adminToken.trim(),
     });
   }
@@ -153,7 +177,7 @@ export function ExportManagement() {
         <MetricCard label="导出类型" value={ADMIN_EXPORT_TYPES.length} />
         <MetricCard label="当前类型" value={EXPORT_TYPE_LABELS[exportType]} />
         <MetricCard label="用户筛选" value={canFilterByUser ? "可用" : "不适用"} />
-        <MetricCard label="接口格式" value="CSV" />
+        <MetricCard label="高风险确认" value={needsHighRiskConfirmation ? "需要关注" : "不适用"} />
       </div>
 
       <div className="dashboardGrid goalsGrid">
@@ -186,6 +210,17 @@ export function ExportManagement() {
           </label>
 
           <label className="tokenField">
+            模块类型（records 可选）
+            <input
+              type="text"
+              value={canFilterByModule ? moduleType : ""}
+              disabled={!canFilterByModule}
+              onChange={(event) => setModuleType(event.target.value)}
+              placeholder={canFilterByModule ? "例如 student_profile" : "仅 records 导出可用"}
+            />
+          </label>
+
+          <label className="tokenField">
             后台导出令牌
             <input
               type="password"
@@ -194,6 +229,13 @@ export function ExportManagement() {
               placeholder="请输入 X-Admin-Token"
             />
           </label>
+
+          {needsHighRiskConfirmation ? (
+            <label className="tokenField inlineCheck">
+              <input type="checkbox" checked={highRiskConfirmed} onChange={(event) => setHighRiskConfirmed(event.target.checked)} />
+              我确认本次导出可能包含高风险或需复核记录，且不会导出自由文本原文。
+            </label>
+          ) : null}
 
           <div className="dashboardActions exportActions">
             <button className="secondaryButton" type="button" onClick={previewExport} disabled={state.status === "loading"}>
@@ -224,6 +266,13 @@ export function ExportManagement() {
                 导出文件可能包含试点记录、联系方式或复盘文本。对外讨论、汇报或归档前，请先确认是否需要去除可识别个人身份的信息。
               </p>
             </section>
+
+            {needsHighRiskConfirmation ? (
+              <section className="guidanceBox" aria-label="高风险导出确认">
+                <h3>高风险确认</h3>
+                <p>如果导出结果中包含高风险或需复核记录，后端会要求勾选确认后才能继续。导出仍默认不包含自由文本原文。</p>
+              </section>
+            ) : null}
 
             <section className="guidanceBox" aria-label="CSV 预览">
               <h3>CSV 预览</h3>

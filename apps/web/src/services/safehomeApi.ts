@@ -13,8 +13,15 @@ import type {
   GoalInput,
   ListResponse,
   ModelInfo,
+  ParentAssessmentInput,
+  ParentAssessmentPayload,
+  ParentAssessmentResult,
+  ProfileVisuals,
+  ProfileReview,
+  ProfileReviewInput,
   RiskCheckResult,
   StudentProfileInput,
+  StudentAssessmentPayload,
   StudentProfileRecord,
   StudentProfileResult,
   SupervisionInput,
@@ -45,7 +52,7 @@ export class SafeHomeApiClient {
   private readonly defaultUserId: string;
 
   constructor(options: SafeHomeApiClientOptions = {}) {
-    this.baseUrl = options.baseUrl ?? "http://127.0.0.1:5000";
+    this.baseUrl = options.baseUrl ?? import.meta.env.VITE_SAFEHOME_API_BASE_URL ?? "http://127.0.0.1:5050";
     this.defaultUserId = options.defaultUserId ?? DEFAULT_USER_ID;
   }
 
@@ -97,6 +104,17 @@ export class SafeHomeApiClient {
     return this.requestData<StudentProfileRecord>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}`);
   }
 
+  listProfileReviews(id: string): Promise<ListResponse<ProfileReview>> {
+    return this.requestData<ListResponse<ProfileReview>>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/reviews`);
+  }
+
+  createProfileReview(id: string, input: ProfileReviewInput): Promise<ProfileReview> {
+    return this.requestData<ProfileReview>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/review`, {
+      method: "POST",
+      body: input,
+    });
+  }
+
   checkRisk(input: { text?: string; free_text?: string; raw_text?: string; source?: string }): Promise<RiskCheckResult> {
     return this.requestData<RiskCheckResult>(API_ENDPOINTS.riskCheck, {
       method: "POST",
@@ -106,6 +124,56 @@ export class SafeHomeApiClient {
 
   getModelInfo(): Promise<ModelInfo> {
     return this.requestData<ModelInfo>(API_ENDPOINTS.modelInfo);
+  }
+
+  getStudentAssessment(): Promise<StudentAssessmentPayload> {
+    return this.requestData<StudentAssessmentPayload>(API_ENDPOINTS.studentAssessment);
+  }
+
+  getProfileVisuals(id: string): Promise<ProfileVisuals> {
+    return this.requestData<ProfileVisuals>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/visuals`);
+  }
+
+  createProfileFollowup(
+    id: string,
+    input: { round_no?: number; fit?: string; task_done?: string; state_score?: number; text?: string },
+  ): Promise<Record<string, unknown>> {
+    return this.requestData<Record<string, unknown>>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/followups`, {
+      method: "POST",
+      body: input,
+    });
+  }
+
+  createProfileSandplay(
+    id: string,
+    input: { task_title?: string; scene: Record<string, unknown>; reflection_text?: string },
+  ): Promise<Record<string, unknown>> {
+    return this.requestData<Record<string, unknown>>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/sandplay`, {
+      method: "POST",
+      body: input,
+    });
+  }
+
+  getParentAssessment(): Promise<ParentAssessmentPayload> {
+    return this.requestData<ParentAssessmentPayload>(API_ENDPOINTS.parentAssessment);
+  }
+
+  createParentAssessment(input: ParentAssessmentInput): Promise<ParentAssessmentResult> {
+    return this.requestData<ParentAssessmentResult>(API_ENDPOINTS.parentAssessments, {
+      method: "POST",
+      body: this.withDefaultUser(input),
+    });
+  }
+
+  getParentAssessmentResult(id: string): Promise<ParentAssessmentResult> {
+    return this.requestData<ParentAssessmentResult>(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}`);
+  }
+
+  createParentReportAction(id: string, actionKey: string): Promise<Record<string, unknown>> {
+    return this.requestData<Record<string, unknown>>(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}/actions`, {
+      method: "POST",
+      body: { action_key: actionKey },
+    });
   }
 
   listCards(): Promise<ListResponse<TrainingCard>> {
@@ -147,16 +215,24 @@ export class SafeHomeApiClient {
     });
   }
 
-  buildAdminExportUrl(params: { type?: string; user_id?: string } = {}): string {
+  buildAdminExportUrl(params: { type?: string; user_id?: string; module_type?: string; confirm_high_risk?: boolean } = {}): string {
     return this.absoluteUrl(this.withQuery(API_ENDPOINTS.adminExport, params));
   }
 
-  async downloadAdminExport(params: { type?: string; user_id?: string; adminToken: string }): Promise<Blob> {
+  async downloadAdminExport(params: {
+    type?: string;
+    user_id?: string;
+    module_type?: string;
+    confirm_high_risk?: boolean;
+    adminToken: string;
+  }): Promise<Blob> {
     const response = await fetch(
       this.absoluteUrl(
         this.withQuery(API_ENDPOINTS.adminExport, {
           type: params.type,
           user_id: params.user_id,
+          module_type: params.module_type,
+          confirm_high_risk: params.confirm_high_risk ? "true" : undefined,
         }),
       ),
       {
@@ -184,7 +260,7 @@ export class SafeHomeApiClient {
     return { ...input, user_id: input.user_id ?? this.defaultUserId };
   }
 
-  private withQuery(path: string, params: Record<string, string | number | undefined>): string {
+  private withQuery(path: string, params: Record<string, string | number | boolean | undefined>): string {
     const search = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== "") {

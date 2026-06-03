@@ -23,8 +23,35 @@ def init_db() -> None:
     with get_connection() as conn:
         for statement in SCHEMA_SQL:
             conn.execute(statement)
+        ensure_schema_columns(conn)
         sync_training_cards(conn)
         conn.commit()
+
+
+def ensure_column(conn: sqlite3.Connection, table: str, column: str, definition: str) -> None:
+    columns = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+    if column not in columns:
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
+
+
+def ensure_schema_columns(conn: sqlite3.Connection) -> None:
+    """Add columns needed by the ReadFeedback merge without replacing local data."""
+
+    student_profile_columns = {
+        "model_version": "TEXT",
+        "model_type": "TEXT",
+        "cluster_id": "INTEGER",
+        "pc1": "REAL",
+        "pc2": "REAL",
+        "nearest_distance": "REAL",
+        "second_distance": "REAL",
+        "report_json": "TEXT NOT NULL DEFAULT '{}'",
+        "visuals_json": "TEXT NOT NULL DEFAULT '{}'",
+        "legacy_source_id": "TEXT",
+        "legacy_source_table": "TEXT",
+    }
+    for column, definition in student_profile_columns.items():
+        ensure_column(conn, "student_profiles", column, definition)
 
 
 def now_iso() -> str:

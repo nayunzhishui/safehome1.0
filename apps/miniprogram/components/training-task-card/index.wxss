@@ -3,9 +3,9 @@
   display: block;
   padding: 28rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 16rpx;
+  border-radius: var(--safe-radius-md);
   background: linear-gradient(135deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 242, 226, 0.88) 100%);
-  box-shadow: 0 14rpx 34rpx rgba(52, 66, 58, 0.09);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .training-card:active {
@@ -59,8 +59,8 @@
   display: inline-flex;
   align-items: center;
   padding: 0 14rpx;
-  border-radius: 19rpx;
-  background: #ffe8ca;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-orange-soft);
   color: #b36b1d;
   font-size: 20rpx;
   font-weight: 700;

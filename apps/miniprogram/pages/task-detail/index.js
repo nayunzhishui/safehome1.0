@@ -121,17 +121,58 @@ const TASKS = {
   },
 };
 
+const CARD_ID_TO_TASK_ID = {
+  emotion_naming: "emotion_awareness",
+  three_second_pause: "pause_training",
+  cognitive_flexibility: "cognitive_adjustment",
+  nonjudgmental_response: "nonjudgmental_company",
+  alternative_behavior: "communication_expression",
+};
+
 Page({
   data: {
     task: null,
+    diaryId: "",
     reflection: "",
     emotionLevel: 5,
   },
 
   onLoad(options) {
-    const id = decodeURIComponent(options.id || "nonjudgmental_company");
-    const task = TASKS[id] || TASKS.nonjudgmental_company;
-    this.setData({ task });
+    const id = decodeURIComponent(options.id || "");
+    const cardId = decodeURIComponent(options.card_id || "");
+    const cardTitle = decodeURIComponent(options.card_title || "");
+    const storedTask = this.buildTaskFromStoredCard(cardId, cardTitle);
+    const fallbackTaskId = CARD_ID_TO_TASK_ID[cardId] || this.findTaskIdByCardId(cardId) || "nonjudgmental_company";
+    const task = TASKS[id] || storedTask || TASKS[fallbackTaskId] || TASKS.nonjudgmental_company;
+    this.setData({
+      task: cardTitle && !storedTask ? { ...task, title: cardTitle } : task,
+      diaryId: decodeURIComponent(options.diary_id || ""),
+    });
+  },
+
+  buildTaskFromStoredCard(cardId, cardTitle) {
+    if (!cardId) return null;
+    const card = wx.getStorageSync("safehome:selectedTrainingCard");
+    if (!card || card.id !== cardId) return null;
+    const steps = (card.stepsList || []).map((step) => step.text).filter(Boolean);
+    return {
+      id: card.id,
+      cardId: card.id,
+      title: cardTitle || card.title || "推荐训练卡",
+      subtitle: card.purpose || card.subtitle || "完成一个可以当天尝试的小练习。",
+      scenario: card.scenarioText || "适合这次记录中的互动线索",
+      duration: card.durationText || "1 次小练习",
+      goal: card.todayGoal || "今天先完成一个能做到的小回应动作。",
+      steps: steps.length ? steps : ["先停一下，照顾自己的身体反应。", "说出此刻观察到的事实。", "选择一句更温和的回应。"],
+      scripts: card.example ? [card.example] : ["我先慢一点说。", "我们先看现在能做的第一步。"],
+      tagsText: card.tagsText || "",
+    };
+  },
+
+  findTaskIdByCardId(cardId) {
+    if (!cardId) return "";
+    const matched = Object.keys(TASKS).find((taskId) => TASKS[taskId].cardId === cardId);
+    return matched || "";
   },
 
   goBack() {
@@ -156,8 +197,9 @@ Page({
   finishPractice() {
     const task = this.data.task;
     if (!task) return;
+    const diaryQuery = this.data.diaryId ? `&diary_id=${encodeURIComponent(this.data.diaryId)}` : "";
     wx.navigateTo({
-      url: `/pages/checkin/index?card_id=${encodeURIComponent(task.cardId)}&card_title=${encodeURIComponent(task.title)}`,
+      url: `/pages/checkin/index?card_id=${encodeURIComponent(task.cardId)}&card_title=${encodeURIComponent(task.title)}${diaryQuery}`,
     });
   },
 

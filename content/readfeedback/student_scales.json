@@ -1,0 +1,96 @@
+{
+  "version": "2026.05-student-profile-v1",
+  "likert": [
+    {"value": 1, "label": "完全不符合"},
+    {"value": 2, "label": "有点不符合"},
+    {"value": 3, "label": "基本符合"},
+    {"value": 4, "label": "比较符合"},
+    {"value": 5, "label": "完全符合"}
+  ],
+  "scales": [
+    {
+      "scale_code": "SCS",
+      "name": "自我关怀量表（简版）",
+      "short_name": "自我关怀",
+      "score_direction": "反向计分后，得分越高表示自我关怀水平越高。",
+      "items": [
+        {"item_code": "SCS01", "display_order": 1, "text": "重要事情失败后，我会不断想着自己的不足。", "dimension": "self_criticism", "feature": "self_criticism_raw", "reverse_scored": true},
+        {"item_code": "SCS02", "display_order": 2, "text": "我会尽量理解和包容自己不喜欢的部分。", "dimension": "self_kindness", "feature": "self_compassion", "reverse_scored": false},
+        {"item_code": "SCS03", "display_order": 3, "text": "痛苦事情发生时，我会尽量用平和的心态面对。", "dimension": "mindfulness", "feature": "self_compassion", "reverse_scored": false},
+        {"item_code": "SCS04", "display_order": 4, "text": "情绪低落时，我觉得多数人都比我快乐。", "dimension": "self_criticism", "feature": "self_criticism_raw", "reverse_scored": true},
+        {"item_code": "SCS05", "display_order": 5, "text": "我会把失败看成人生经历的一部分。", "dimension": "common_humanity", "feature": "self_compassion", "reverse_scored": false},
+        {"item_code": "SCS06", "display_order": 6, "text": "经历困难时，我会给予自己需要的关怀和温暖。", "dimension": "self_kindness", "feature": "self_compassion", "reverse_scored": false},
+        {"item_code": "SCS07", "display_order": 7, "text": "遇到烦心事时，我会尽量让情绪保持平衡。", "dimension": "mindfulness", "feature": "self_compassion", "reverse_scored": false},
+        {"item_code": "SCS08", "display_order": 8, "text": "重要事情失败时，我容易觉得只有自己在承受失败。", "dimension": "self_criticism", "feature": "self_criticism_raw", "reverse_scored": true},
+        {"item_code": "SCS09", "display_order": 9, "text": "情绪低落时，我容易纠结于一切不顺心的事情。", "dimension": "self_criticism", "feature": "self_criticism_raw", "reverse_scored": true},
+        {"item_code": "SCS10", "display_order": 10, "text": "当我觉得自己不够好时，会提醒自己不完美是共同的人类经验。", "dimension": "common_humanity", "feature": "self_compassion", "reverse_scored": false},
+        {"item_code": "SCS11", "display_order": 11, "text": "我会对自己的缺点和不足持批判态度。", "dimension": "self_criticism", "feature": "self_criticism_raw", "reverse_scored": true},
+        {"item_code": "SCS12", "display_order": 12, "text": "对于自己不喜欢的性格部分，我常感到不能容忍。", "dimension": "self_criticism", "feature": "self_criticism_raw", "reverse_scored": true}
+      ]
+    },
+    {
+      "scale_code": "IUS",
+      "name": "不确定性不耐受量表（简版）",
+      "short_name": "不确定性不耐受",
+      "score_direction": "得分越高表示越难忍受不确定性。",
+      "items": [
+        {"item_code": "IUS01", "display_order": 1, "text": "不可预见的事情会让我心烦意乱。", "dimension": "anticipatory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS02", "display_order": 2, "text": "没有掌握全部信息会让我很沮丧。", "dimension": "anticipatory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS03", "display_order": 3, "text": "我总想提前考虑一切，以避免意外。", "dimension": "anticipatory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS04", "display_order": 4, "text": "一个小意外也可能破坏我的全部计划。", "dimension": "anticipatory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS05", "display_order": 5, "text": "我总是想知道未来会发生什么。", "dimension": "anticipatory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS06", "display_order": 6, "text": "我无法忍受突发状况。", "dimension": "anticipatory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS07", "display_order": 7, "text": "做事前，我应该能够规划好一切。", "dimension": "anticipatory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS08", "display_order": 8, "text": "不确定性让我很难过得安稳。", "dimension": "inhibitory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS09", "display_order": 9, "text": "需要行动时，不确定性会让我停滞不前。", "dimension": "inhibitory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS10", "display_order": 10, "text": "感到不确定时，我就难以正常发挥。", "dimension": "inhibitory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS11", "display_order": 11, "text": "一点疑虑都会阻止我行动。", "dimension": "inhibitory", "feature": "iu_total", "reverse_scored": false},
+        {"item_code": "IUS12", "display_order": 12, "text": "我必须摆脱所有不确定的情形。", "dimension": "inhibitory", "feature": "iu_total", "reverse_scored": false}
+      ]
+    },
+    {
+      "scale_code": "ERF",
+      "name": "情绪调节灵活性量表（项目版）",
+      "short_name": "情绪调节灵活性",
+      "score_direction": "得分越高表示越能根据情境调整策略。",
+      "items": [
+        {"item_code": "ERF01", "display_order": 1, "text": "我能灵活转换看问题的角度来增强或减弱情绪。", "dimension": "evaluation", "feature": "erf_evaluation", "reverse_scored": false},
+        {"item_code": "ERF02", "display_order": 2, "text": "需要控制负向情绪时，我能改变思考角度。", "dimension": "evaluation", "feature": "erf_evaluation", "reverse_scored": false},
+        {"item_code": "ERF03", "display_order": 3, "text": "需要控制正向情绪时，我也能改变思考角度。", "dimension": "evaluation", "feature": "erf_evaluation", "reverse_scored": false},
+        {"item_code": "ERF04", "display_order": 4, "text": "我能从他人角度理解其痛苦、悲伤或愤怒。", "dimension": "evaluation", "feature": "erf_evaluation", "reverse_scored": false},
+        {"item_code": "ERF05", "display_order": 5, "text": "如果想让自己高兴，我能积极改变想法。", "dimension": "evaluation", "feature": "erf_evaluation", "reverse_scored": false},
+        {"item_code": "ERF06", "display_order": 6, "text": "我能根据情境需要表达或控制自己的情绪。", "dimension": "expression", "feature": "erf_expression", "reverse_scored": false},
+        {"item_code": "ERF07", "display_order": 7, "text": "正式场合中，我能适当抑制或掩饰情绪。", "dimension": "expression", "feature": "erf_expression", "reverse_scored": false},
+        {"item_code": "ERF08", "display_order": 8, "text": "情境需要时，我能充分表达自己的负向情绪。", "dimension": "expression", "feature": "erf_expression", "reverse_scored": false},
+        {"item_code": "ERF09", "display_order": 9, "text": "如果一种方法无效，我会换另一种策略调节情绪。", "dimension": "strategy", "feature": "erf_strategy_flex", "reverse_scored": false},
+        {"item_code": "ERF10", "display_order": 10, "text": "我常常只用同一种策略调节情绪。", "dimension": "strategy", "feature": "erf_strategy_flex", "reverse_scored": true},
+        {"item_code": "ERF11", "display_order": 11, "text": "我很少选择不同策略调节自己的情绪。", "dimension": "strategy", "feature": "erf_strategy_flex", "reverse_scored": true},
+        {"item_code": "ERF12", "display_order": 12, "text": "如果想减少负面情绪，我知道多种可用方法。", "dimension": "strategy", "feature": "erf_strategy_flex", "reverse_scored": false}
+      ]
+    },
+    {
+      "scale_code": "TA",
+      "name": "考试焦虑量表（项目版）",
+      "short_name": "考试焦虑",
+      "score_direction": "得分越高表示考试焦虑体验越强。",
+      "items": [
+        {"item_code": "TA01", "display_order": 1, "text": "考试时，我感到心烦意乱。", "dimension": "worry", "feature": "test_anxiety_worry", "reverse_scored": false},
+        {"item_code": "TA02", "display_order": 2, "text": "考试时，我总想着分数，影响答题。", "dimension": "worry", "feature": "test_anxiety_worry", "reverse_scored": false},
+        {"item_code": "TA03", "display_order": 3, "text": "考试时，我会反复担心能否通过。", "dimension": "worry", "feature": "test_anxiety_worry", "reverse_scored": false},
+        {"item_code": "TA04", "display_order": 4, "text": "重要考试前，我很担心失败的结果。", "dimension": "worry", "feature": "test_anxiety_worry", "reverse_scored": false},
+        {"item_code": "TA05", "display_order": 5, "text": "考试中，我发觉自己总想着失败的后果。", "dimension": "worry", "feature": "test_anxiety_worry", "reverse_scored": false},
+        {"item_code": "TA06", "display_order": 6, "text": "考试后我试图不再担忧，但做不到。", "dimension": "worry", "feature": "test_anxiety_worry", "reverse_scored": false},
+        {"item_code": "TA07", "display_order": 7, "text": "重要考试时，我感到异常心神不定。", "dimension": "emotionality", "feature": "test_anxiety_emotionality", "reverse_scored": false},
+        {"item_code": "TA08", "display_order": 8, "text": "即使准备充分，我还是非常紧张。", "dimension": "emotionality", "feature": "test_anxiety_emotionality", "reverse_scored": false},
+        {"item_code": "TA09", "display_order": 9, "text": "提交试卷前，我会感到极为不安。", "dimension": "emotionality", "feature": "test_anxiety_emotionality", "reverse_scored": false},
+        {"item_code": "TA10", "display_order": 10, "text": "重要考试中，我会感到心跳特别快。", "dimension": "emotionality", "feature": "test_anxiety_emotionality", "reverse_scored": false},
+        {"item_code": "TA11", "display_order": 11, "text": "考试中，我紧张到会忘记本来知道的内容。", "dimension": "emotionality", "feature": "test_anxiety_emotionality", "reverse_scored": false},
+        {"item_code": "TA12", "display_order": 12, "text": "考试时，我有信心并且感到轻松。", "dimension": "emotionality", "feature": "test_anxiety_emotionality", "reverse_scored": true}
+      ]
+    }
+  ],
+  "open_questions": [
+    {"item_code": "TEXT01", "label": "请写下最近一次让你明显感到考试压力的场景。", "max_length": 600},
+    {"item_code": "TEXT02", "label": "这一轮练习后，你注意到自己有哪些变化？", "max_length": 600}
+  ]
+}

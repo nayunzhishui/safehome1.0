@@ -44,7 +44,7 @@ Page({
       });
 
       this.setData({
-        successMessage: "已提交给人工督导入口。老师后续可以基于这条记录补充练习建议。",
+        successMessage: "已提交。老师后续可以基于这条记录补充理解和练习建议，请不要把这里当作紧急求助入口。",
       });
     } catch (error) {
       this.setData({

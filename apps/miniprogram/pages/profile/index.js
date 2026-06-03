@@ -2,9 +2,9 @@ Page({
   data: {
     user: {
       nickname: "温暖的家长",
-      loginState: "登录后查看个人周报和训练记录",
+      loginState: "当前为试点体验模式",
       streakText: "连续打卡 7 天",
-      growthLevel: "家庭成长值 680",
+      growthLevel: "本周有记录",
     },
     recordEntries: [
       {
@@ -17,7 +17,7 @@ Page({
       },
       {
         title: "历次反馈",
-        subtitle: "回顾训练建议",
+        subtitle: "后续接入反馈记录",
         iconText: "反",
         accentColor: "#2F86DF",
         accentBg: "#EEF6FF",
@@ -25,7 +25,7 @@ Page({
       },
       {
         title: "训练记录",
-        subtitle: "查看练习轨迹",
+        subtitle: "后续接入练习轨迹",
         iconText: "练",
         accentColor: "#4CAF7D",
         accentBg: "#EEF8E9",
@@ -33,7 +33,7 @@ Page({
       },
       {
         title: "测评记录",
-        subtitle: "回顾互动反馈",
+        subtitle: "回顾支持性测评",
         iconText: "测",
         accentColor: "#7A5BEF",
         accentBg: "#F2EDFF",
@@ -50,8 +50,8 @@ Page({
         url: "/pages/supervision/index",
       },
       {
-        title: "心理咨询",
-        subtitle: "预约进一步支持",
+        title: "专业资源说明",
+        subtitle: "了解线下支持边界",
         iconText: "询",
         accentColor: "#2F86DF",
         accentBg: "#EEF6FF",
@@ -60,8 +60,8 @@ Page({
     ],
     safetyEntries: [
       {
-        title: "危机干预",
-        subtitle: "紧急情况下获得帮助指引",
+        title: "紧急安全指引",
+        subtitle: "出现安全风险时先找现实帮助",
         iconText: "急",
         accentColor: "#FF6B6B",
         accentBg: "#FFF0ED",
@@ -69,10 +69,28 @@ Page({
       },
       {
         title: "紧急帮助说明",
-        subtitle: "了解可用安全资源",
+        subtitle: "了解可用现实资源",
         iconText: "助",
         accentColor: "#F28B38",
         accentBg: "#FFF2DF",
+        url: "",
+      },
+    ],
+    settingsEntries: [
+      {
+        title: "知情与边界",
+        subtitle: "了解本工具能做什么",
+        iconText: "知",
+        accentColor: "#4CAF7D",
+        accentBg: "#EEF8E9",
+        url: "",
+      },
+      {
+        title: "隐私说明",
+        subtitle: "后续接入隐私文本",
+        iconText: "隐",
+        accentColor: "#2F86DF",
+        accentBg: "#EEF6FF",
         url: "",
       },
     ],

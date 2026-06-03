@@ -4,8 +4,8 @@
   gap: 18rpx;
   padding: 24rpx;
   border: 1rpx solid #d8e2ef;
-  border-radius: 16rpx;
-  background: #eef4fb;
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-blue-soft);
 }
 
 .alert-icon {
@@ -42,7 +42,7 @@
 
 .alert-success {
   border-color: #cddfc5;
-  background: #edf6e8;
+  background: var(--safe-primary-pale);
 }
 
 .alert-success .alert-icon {
@@ -55,7 +55,7 @@
 
 .alert-warning {
   border-color: #f5d8aa;
-  background: #fff4e8;
+  background: var(--safe-orange-soft);
 }
 
 .alert-warning .alert-icon {

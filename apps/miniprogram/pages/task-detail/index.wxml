@@ -1,34 +1,39 @@
 <view class="safe-page task-detail-page" wx:if="{{task}}">
   <view class="detail-nav">
     <button class="back-button" bindtap="goBack">‹</button>
-    <text class="nav-title">{{task.title}}任务卡</text>
+    <text class="nav-title">训练卡详情</text>
   </view>
 
-  <view class="overview-card">
-    <text class="task-tag">UP任务卡</text>
+  <view class="overview-card safe-card safe-card--hero">
+    <text class="task-tag">UP 任务卡</text>
     <text class="task-title">{{task.title}}</text>
     <text class="task-subtitle">{{task.subtitle}}</text>
     <view class="overview-grid">
-      <view>
+      <view class="overview-item">
         <text class="overview-label">适用情境</text>
         <text class="overview-value">{{task.scenario}}</text>
       </view>
-      <view>
+      <view class="overview-item">
         <text class="overview-label">预计用时</text>
         <text class="overview-value">{{task.duration}}</text>
       </view>
-      <view>
-        <text class="overview-label">今日目标</text>
+      <view class="overview-item overview-item--full">
+        <text class="overview-label">今天的小目标</text>
         <text class="overview-value">{{task.goal}}</text>
       </view>
     </view>
   </view>
 
+  <view class="today-card">
+    <text class="today-title">今天先练这一小步</text>
+    <text class="today-text">先按下面 3 个小动作走一遍。做不到完整也没关系，能停一下就算开始了。</text>
+  </view>
+
   <view class="safe-section">
-    <section-title title="练习步骤" subtitle="按顺序完成三个小动作" />
+    <section-title title="三步练习" subtitle="按顺序完成三个小动作" />
     <view class="step-list">
       <view wx:for="{{task.steps}}" wx:key="*this" class="step-card">
-        <view class="step-index">{{index + 1}}</view>
+        <text class="step-index">{{index + 1}}</text>
         <text class="step-text">{{item}}</text>
       </view>
     </view>
@@ -49,7 +54,7 @@
       <text class="field-label">今日感受</text>
       <textarea class="reflection-input" value="{{reflection}}" placeholder="例如：我先停了一下，说话比刚才慢了一点。" bindinput="onReflectionInput" />
       <text class="field-label">当前情绪强度：{{emotionLevel}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{emotionLevel}}" activeColor="#4CAF7D" bindchange="onEmotionLevelChange" />
+      <slider min="0" max="10" step="1" value="{{emotionLevel}}" activeColor="#578B5F" block-color="#578B5F" bindchange="onEmotionLevelChange" />
     </view>
   </view>
 
@@ -58,9 +63,9 @@
   </view>
 
   <view class="action-bar">
-    <button class="safe-outline-button action-button" bindtap="startPractice">开始练习</button>
-    <button class="safe-primary-button action-button" bindtap="finishPractice">我已完成</button>
-    <button class="safe-secondary-button action-button" bindtap="recordFeeling">记录感受</button>
+    <button class="safe-outline-button action-button" bindtap="startPractice">从第一步开始</button>
+    <button class="safe-primary-button action-button" bindtap="finishPractice">完成并打卡</button>
+    <button class="safe-secondary-button action-button" bindtap="recordFeeling">暂存感受</button>
   </view>
 
   <view class="safe-section">

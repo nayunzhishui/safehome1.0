@@ -79,8 +79,12 @@ Page({
   choosePractice(event) {
     const cardId = event.currentTarget.dataset.id || "";
     const title = event.currentTarget.dataset.title || "这张训练卡";
+    const selectedCard = this.data.cards.find((card) => card.id === cardId);
+    if (selectedCard) {
+      wx.setStorageSync("safehome:selectedTrainingCard", selectedCard);
+    }
     wx.navigateTo({
-      url: `/pages/checkin/index?card_id=${encodeURIComponent(cardId)}&card_title=${encodeURIComponent(title)}&diary_id=${encodeURIComponent(this.data.diaryId)}`,
+      url: `/pages/task-detail/index?card_id=${encodeURIComponent(cardId)}&card_title=${encodeURIComponent(title)}&diary_id=${encodeURIComponent(this.data.diaryId)}`,
     });
   },
 

@@ -64,6 +64,8 @@ export function LandingPage() {
         <nav className="landingLinks" aria-label="首页导航">
           <a href="#home">首页</a>
           <a href="#flow">核心流程</a>
+          <a href="/student">学生画像</a>
+          <a href="/assessment">家长测评</a>
           <a href="#usage">使用说明</a>
           <a href="#privacy">隐私边界</a>
         </nav>
@@ -83,6 +85,9 @@ export function LandingPage() {
           <div className="heroActions">
             <a className="primaryButton landingPrimary" href="#flow">
               了解安心流程
+            </a>
+            <a className="secondaryButton landingSecondary" href="/student">
+              学生画像入口
             </a>
             <a className="secondaryButton landingSecondary" href="/dashboard">
               研究者平台

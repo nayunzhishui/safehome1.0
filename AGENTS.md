@@ -66,12 +66,12 @@ MVP 1.1 规划目标：
 
 ## 4A. 0版网页整合与学生画像状态
 
-2026-06-01 已根据夏老师资料和 GitHub 参考项目完成规划、P0 内容准备、P1 画像 API 最小闭环、P2 小程序画像测评链路、P3 后台复核与周报趋势、P4 研究平台化表第一版。当前统一进度以以下文档为准：
+2026-06-02 已根据夏老师资料和 GitHub 参考项目完成规划、P0 内容准备、P1 画像 API 最小闭环、P2 小程序画像测评链路、P3 后台复核和周报画像趋势、P4 研究平台化表第一版；1.2-1 至 1.2-4 已完成，当前剩余项是试点前人工验收。当前统一进度以以下文档为准：
 
 ```text
 docs/项目进度统一口径.md
 docs/0版网页整合与GitHub参考优化路线.md
-docs/0版网页整合逐步开发任务清单.md
+docs/1.2逐步开发任务清单.md
 docs/代码审查.md
 ```
 
@@ -104,12 +104,18 @@ P2/P3/P4 学生画像链路：
 - 结果页展示画像名称、置信度、风险状态、推荐训练卡摘要、维度解释、支持性解释和边界说明
 - 画像结果页可按推荐训练卡 ID 进入训练卡页
 - Web 后台已有 `/profiles` 画像列表和 `/profiles/<id>` 画像详情
-- Web 后台已有 `/reviews` 人工复核只读列表
+- Web 后台已有 `/reviews` 人工复核列表，可保存人工备注、复核结论和处置状态
+- Web 后台 `/content/rules` 已支持反馈规则和画像规则只读查看
 - Web 后台周报页已补充画像复测、复核、高风险和打卡趋势
+- `GET /api/weekly-report` 已返回 `profile_trend` 画像趋势字段
 - `GET /api/admin/export?type=profile` 已支持从 `student_profiles` 脱敏导出
+- `GET /api/admin/export?type=records` 已支持统一研究摘要导出
+- 画像和 records 导出包含高风险或需复核记录时，需要 `confirm_high_risk=true`
 - `POST /api/profile` 同步写入 `assessment_results`、`student_profiles` 和 `records`
 - `GET /api/profile-results`、`GET /api/profile-results/<id>` 已实现
-- `audit_logs` 已记录画像详情查看和后台导出
+- `GET /api/profile-results/<id>/reviews`、`POST /api/profile-results/<id>/review` 已实现
+- `profile_reviews` 已保存人工复核记录，且不覆盖学生端报告
+- `audit_logs` 已记录画像详情查看、后台导出和人工复核保存
 
 CloudBase 架构：
 
@@ -124,7 +130,6 @@ CloudBase 架构：
 
 ### 4A.2 当前尚未实现
 
-- 人工复核备注、复核结论和处置状态
 - 规则编辑后台和规则修改审计
 - 试点前人工验收
 - 正式上线（域名、HTTPS、备案、小程序发布）
@@ -144,9 +149,9 @@ CloudBase 架构：
 下一阶段优先级：
 
 1. 先阅读并遵守 `docs/MVP1.1功能迭代方案.md`。
-2. 学生画像下一步优先做试点前人工验收。
-3. 如果继续写代码，优先补人工复核备注、复核结论和处置状态。
-4. 优先复用现有 API、`student_profiles`、`records`、`audit_logs` 和内容库。
+2. 学生画像下一步优先执行 `docs/1.2逐步开发任务清单.md` 的 1.2-5 试点前人工验收。
+3. 试点前人工验收完成后，再按验收发现的问题修复。
+4. 优先复用现有 API、`student_profiles`、`profile_reviews`、`records`、`audit_logs` 和内容库。
 5. 暂缓 AI 自由问答、机器学习、深度学习、语音/视频上传、社群、积分勋章、正式登录注册、正式部署和复杂课程体系。
 6. 继续保留 `pages/integration-test/index`，不要删除。
 

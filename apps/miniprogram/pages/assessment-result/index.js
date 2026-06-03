@@ -15,11 +15,18 @@ function parseJsonSafe(value, fallback) {
 function buildProfileSummary(result) {
   if (!result || result.category !== "学生画像") return null;
   const scores = parseJsonSafe(result.scores_json, {});
+  const riskLevel = scores.risk_level || "low";
+  const riskTextMap = {
+    low: "普通关注",
+    medium: "建议人工关注",
+    high: "优先现实支持",
+  };
   return {
     profileName: scores.profile_name || "阶段性支持画像",
     profileCode: scores.profile_code || "",
     confidenceText: scores.confidence !== undefined && scores.confidence !== null ? `${Math.round(Number(scores.confidence) * 100)}%` : "暂未计算",
-    riskLevel: scores.risk_level || "low",
+    riskLevel,
+    riskLevelText: riskTextMap[riskLevel] || riskLevel,
     requiresReview: !!scores.requires_review,
     allowAutoFeedback: scores.allow_auto_feedback !== false,
     dimensions: scores.dimensions || [],

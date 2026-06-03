@@ -1,13 +1,13 @@
 <view class="safe-page assessment-page">
-  <view class="page-head">
-    <text class="page-title">家庭关系测一测</text>
-    <text class="page-subtitle">查看已授权工作表，保存自己的观察和练习记录</text>
+  <view class="assessment-head">
+    <text class="page-title">支持性测评</text>
+    <text class="page-subtitle">按当前情况做一次自我观察，结果只用于练习参考，不给人贴标签。</text>
   </view>
 
   <view class="family-art-card">
     <view class="art-copy">
-          <text class="art-title">从一次温和观察开始</text>
-          <text class="art-text">这里收纳量表、阶段性画像、情绪觉察、行为练习和进展记录。</text>
+      <text class="art-title">先看见最近的状态</text>
+      <text class="art-text">可以从一张工作表开始，记录压力反应、支持资源和可练习的一小步。</text>
     </view>
     <view class="family-art">
       <view class="sun"></view>
@@ -19,7 +19,7 @@
   </view>
 
   <view class="safe-section">
-    <section-title title="测一测说明" subtitle="原文展示，结果用于自我观察和练习记录" />
+    <section-title title="测一测说明" subtitle="用于自我观察，不是评价或结论" />
     <view class="info-card">
       <view wx:for="{{infoItems}}" wx:key="label" class="info-row">
         <text class="info-label">{{item.label}}</text>
@@ -38,6 +38,7 @@
 
   <view wx:if="{{errorMessage}}" class="error-box">
     <text>{{errorMessage}}</text>
+    <button class="error-action" bindtap="openIntegrationTest">打开联调测试页</button>
   </view>
 
   <view wx:if="{{loading}}" class="loading-box">
@@ -45,7 +46,7 @@
   </view>
 
   <view wx:for="{{categories}}" wx:key="category" class="safe-section">
-    <section-title title="{{item.category}}" subtitle="点击进入原工作表填写" />
+    <section-title title="{{item.category}}" subtitle="点击进入填写" />
     <view class="worksheet-list">
       <view
         wx:for="{{item.items}}"
@@ -61,7 +62,7 @@
             <text class="profile-badge ghost">非诊断</text>
           </view>
           <text class="worksheet-title">{{worksheet.display_title}}</text>
-          <text class="worksheet-meta">{{worksheet.source_file}} · {{worksheet.pages}} 页 · {{worksheet.question_count}} 个填写项</text>
+          <text class="worksheet-meta">{{worksheet.source_label}} · {{worksheet.question_count}} 个填写项</text>
           <text class="worksheet-desc">{{worksheet.instructions}}</text>
         </view>
         <text class="worksheet-action">{{worksheet.action_text}}</text>
@@ -70,7 +71,7 @@
   </view>
 
   <view wx:if="{{recentResults.length}}" class="safe-section">
-    <section-title title="最近保存" subtitle="只显示最近 3 条记录" />
+    <section-title title="最近记录" subtitle="只显示最近 3 条测一测记录" />
     <view class="recent-list">
       <view wx:for="{{recentResults}}" wx:key="id" class="recent-card">
         <text class="recent-title">{{item.worksheet_title}}</text>
@@ -81,6 +82,6 @@
   </view>
 
   <view class="safe-section">
-    <bottom-tip-card text="完成测一测后，可以把观察连接到一个更小的练习动作。" />
+    <bottom-tip-card text="测一测之后，先选一个能完成的小动作，不需要一次改变很多。" />
   </view>
 </view>

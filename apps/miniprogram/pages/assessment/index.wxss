@@ -1,9 +1,9 @@
 .assessment-page {
-  padding-bottom: 48rpx;
+  padding-bottom: 72rpx;
 }
 
-.page-head {
-  padding: 16rpx 4rpx 8rpx;
+.assessment-head {
+  padding: 8rpx 0 4rpx;
 }
 
 .page-title,
@@ -12,28 +12,28 @@
 }
 
 .page-title {
-  color: #333333;
-  font-size: 42rpx;
-  font-weight: 800;
-  line-height: 1.3;
+  color: var(--safe-title);
+  font-size: 36rpx;
+  font-weight: 850;
+  line-height: 1.28;
 }
 
 .page-subtitle {
-  margin-top: 12rpx;
-  color: #666666;
-  font-size: 26rpx;
-  line-height: 1.6;
+  margin-top: 10rpx;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.55;
 }
 
 .family-art-card {
   position: relative;
-  min-height: 280rpx;
+  min-height: 236rpx;
   overflow: hidden;
-  margin-top: 28rpx;
-  padding: 30rpx;
-  border: 1rpx solid #e7eddc;
+  margin-top: 24rpx;
+  padding: 26rpx;
+  border: 1rpx solid var(--safe-border);
   border-radius: 28rpx;
-  background: linear-gradient(135deg, #f2faec 0%, #fff2df 100%);
+  background: linear-gradient(135deg, var(--safe-primary-pale) 0%, var(--safe-card) 72%);
   box-shadow: 0 14rpx 34rpx rgba(82, 112, 64, 0.12);
 }
 
@@ -49,16 +49,16 @@
 }
 
 .art-title {
-  color: #333333;
-  font-size: 32rpx;
+  color: var(--safe-title);
+  font-size: 30rpx;
   font-weight: 800;
   line-height: 1.35;
 }
 
 .art-text {
   margin-top: 12rpx;
-  color: #5f6d59;
-  font-size: 25rpx;
+  color: var(--safe-text);
+  font-size: 24rpx;
   line-height: 1.55;
 }
 
@@ -66,8 +66,8 @@
   position: absolute;
   right: 18rpx;
   bottom: 0;
-  width: 260rpx;
-  height: 220rpx;
+  width: 232rpx;
+  height: 196rpx;
 }
 
 .sun {
@@ -77,7 +77,7 @@
   width: 50rpx;
   height: 50rpx;
   border-radius: 50%;
-  background: #ffd36f;
+  background: var(--safe-yellow);
 }
 
 .adult-left,
@@ -92,21 +92,21 @@
   left: 38rpx;
   width: 58rpx;
   height: 94rpx;
-  background: #ffb26b;
+  background: var(--safe-orange);
 }
 
 .adult-right {
   right: 44rpx;
   width: 62rpx;
   height: 108rpx;
-  background: #6fbc6b;
+  background: var(--safe-primary);
 }
 
 .child {
   left: 112rpx;
   width: 50rpx;
   height: 72rpx;
-  background: #7db7f0;
+  background: var(--safe-blue);
 }
 
 .adult-left::before,
@@ -140,7 +140,7 @@
   bottom: 0;
   height: 44rpx;
   border-radius: 44rpx 44rpx 0 0;
-  background: #bfe3a8;
+  background: #cfe6bd;
 }
 
 .info-card {
@@ -148,9 +148,9 @@
   gap: 14rpx;
   margin-top: 20rpx;
   padding: 20rpx;
-  border: 1rpx solid #efe7dc;
+  border: 1rpx solid var(--safe-border);
   border-radius: 24rpx;
-  background: #ffffff;
+  background: var(--safe-card);
   box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
 }
 
@@ -166,13 +166,13 @@
 
 .info-label {
   flex: 0 0 auto;
-  color: #4caf7d;
+  color: var(--safe-primary);
   font-size: 24rpx;
   font-weight: 800;
 }
 
 .info-value {
-  color: #555555;
+  color: var(--safe-text);
   font-size: 24rpx;
   line-height: 1.5;
   text-align: right;
@@ -197,7 +197,7 @@
 .loading-box,
 .error-box {
   border-radius: 24rpx;
-  background: #ffffff;
+  background: var(--safe-card);
   box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
 }
 
@@ -217,7 +217,7 @@
 
 .worksheet-card.student-profile {
   border-color: #bfe3c4;
-  background: linear-gradient(135deg, #f3fbef 0%, #ffffff 72%);
+  background: linear-gradient(135deg, var(--safe-primary-pale) 0%, var(--safe-card) 72%);
 }
 
 .worksheet-main {
@@ -236,7 +236,7 @@
   display: inline-flex;
   padding: 6rpx 12rpx;
   border-radius: 999rpx;
-  background: #4caf7d;
+  background: var(--safe-primary);
   color: #ffffff;
   font-size: 20rpx;
   font-weight: 800;
@@ -245,7 +245,7 @@
 
 .profile-badge.ghost {
   border: 1rpx solid #bfe3c4;
-  background: #f5fbef;
+  background: var(--safe-primary-pale);
   color: #3e7f5d;
 }
 
@@ -263,7 +263,7 @@
 
 .worksheet-title,
 .recent-title {
-  color: #25372c;
+  color: var(--safe-title);
   font-size: 28rpx;
   font-weight: 800;
   line-height: 1.45;
@@ -280,7 +280,7 @@
 .worksheet-desc,
 .recent-summary {
   margin-top: 12rpx;
-  color: #596a5b;
+  color: var(--safe-text);
   font-size: 24rpx;
   line-height: 1.6;
 }
@@ -289,22 +289,22 @@
   flex: 0 0 auto;
   padding: 10rpx 16rpx;
   border-radius: 999rpx;
-  background: #eef8e9;
-  color: #4caf7d;
+  background: var(--safe-primary-soft);
+  color: var(--safe-primary);
   font-size: 22rpx;
   font-weight: 800;
 }
 
 .recent-card {
   padding: 22rpx;
-  border: 1rpx solid #efe7dc;
+  border: 1rpx solid var(--safe-border);
 }
 
 .loading-box,
 .error-box {
   margin-top: 24rpx;
   padding: 22rpx;
-  font-size: 26rpx;
+  font-size: 24rpx;
   line-height: 1.6;
 }
 
@@ -316,4 +316,19 @@
   border: 1rpx solid #efb4b4;
   background: #fff1f1;
   color: #8a2f2f;
+}
+
+.error-action {
+  min-height: 64rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16rpx;
+  padding: 0 22rpx;
+  border: 1rpx solid #efb4b4;
+  border-radius: 999rpx;
+  background: #fffdf8;
+  color: #8a2f2f;
+  font-size: 23rpx;
+  font-weight: 800;
 }

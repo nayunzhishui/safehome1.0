@@ -1,9 +1,15 @@
-<view class="page">
-  <view class="hero">
-    <text class="eyebrow">MVP 1.1 记录升级</text>
-    <text class="title">记录一次情绪事件</text>
-    <text class="summary">围绕一个具体片段，轻轻记录事件、情绪、想法、身体感觉和后续反应。</text>
-    <text wx:if="{{goalId}}" class="goal-hint">已关联本周小目标</text>
+<view class="safe-page safe-page--with-tabbar diary-page">
+  <view class="diary-hero safe-card safe-card--hero">
+    <view class="hero-copy">
+      <text class="hero-kicker">情绪事件记录</text>
+      <text class="hero-title">记录刚才发生的一小段</text>
+      <text class="hero-summary">不需要写得完整，先把此刻能想到的写下来。</text>
+      <text wx:if="{{goalId}}" class="goal-hint">已关联本周小目标</text>
+      <view class="hero-note">
+        <view class="note-dot" aria-hidden="true"></view>
+        <text>用于生成支持性反馈，不评价谁对谁错。</text>
+      </view>
+    </view>
     <image
       class="hero-image"
       src="/assets/illustrations/diary-reflection.png"
@@ -12,13 +18,15 @@
     />
   </view>
 
-  <view class="panel">
-    <view class="step-card">
-      <view class="step-head">
-        <text class="step-icon">01</text>
-        <text class="step-title">事件</text>
+  <view class="diary-form">
+    <view class="diary-section">
+      <view class="section-head">
+        <text class="section-index">01</text>
+        <view class="section-copy">
+          <text class="section-title">发生了什么</text>
+          <text class="section-hint">选择一个常见场景，再写下刚才的具体片段。</text>
+        </view>
       </view>
-      <text class="hint">先选一个场景，再写下具体发生了什么。</text>
       <view class="tag-grid">
         <button
           wx:for="{{sceneOptions}}"
@@ -30,135 +38,173 @@
           {{item}}
         </button>
       </view>
-      <input class="input" value="{{customScene}}" placeholder="其他场景，可不填" bindinput="onTextInput" data-key="customScene" />
-      <textarea
-        class="textarea"
-        value="{{eventDescription}}"
-        placeholder="例如：孩子一直没有开始写作业，我提醒了几次，声音慢慢变大。"
-        bindinput="onTextInput"
-        data-key="eventDescription"
-      />
-    </view>
-
-    <view class="step-card">
-      <view class="step-head">
-        <text class="step-icon">02</text>
-        <text class="step-title">情绪和强度</text>
+      <view class="field-group">
+        <text class="field-label">其他场景</text>
+        <input class="input" value="{{customScene}}" placeholder="如果上面没有合适场景，可以写在这里" bindinput="onTextInput" data-key="customScene" />
       </view>
-      <text class="hint">选择最接近的感受即可，不需要很准确。</text>
-      <text class="label">家长当时的主要情绪</text>
-      <view class="tag-grid">
-        <button
-          wx:for="{{parentEmotionOptions}}"
-          wx:key="*this"
-          class="tag {{parentEmotion === item ? 'active' : ''}}"
-          data-value="{{item}}"
-          bindtap="selectParentEmotion"
-        >
-          {{item}}
-        </button>
-      </view>
-      <view class="slider-row">
-        <text class="label">家长情绪强度：{{parentEmotionIntensity}} / 10</text>
-        <slider min="0" max="10" step="1" value="{{parentEmotionIntensity}}" activeColor="#2f7d45" bindchange="onParentIntensityChange" />
-      </view>
-
-      <text class="label spaced-label">孩子当时看起来的情绪</text>
-      <view class="tag-grid">
-        <button
-          wx:for="{{childEmotionOptions}}"
-          wx:key="*this"
-          class="tag {{childEmotion === item ? 'active' : ''}}"
-          data-value="{{item}}"
-          bindtap="selectChildEmotion"
-        >
-          {{item}}
-        </button>
-      </view>
-      <view class="slider-row">
-        <text class="label">孩子情绪强度：{{childEmotionIntensity}} / 10</text>
-        <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#2f7d45" bindchange="onChildIntensityChange" />
+      <view class="field-group">
+        <text class="field-label">具体经过</text>
+        <textarea
+          class="textarea textarea--large"
+          value="{{eventDescription}}"
+          placeholder="例如：孩子一直没有开始写作业，我提醒了几次，声音慢慢变大。"
+          bindinput="onTextInput"
+          data-key="eventDescription"
+        />
       </view>
     </view>
 
-    <view class="step-card">
-      <view class="step-head">
-        <text class="step-icon">03</text>
-        <text class="step-title">想法和身体感觉</text>
+    <view class="diary-section">
+      <view class="section-head">
+        <text class="section-index">02</text>
+        <view class="section-copy">
+          <text class="section-title">我和孩子当时的感受</text>
+          <text class="section-hint">先记录自己的感受，再记录你观察到的孩子感受。</text>
+        </view>
       </view>
-      <text class="hint">这里记录的是当时脑中闪过的念头和身体信号。</text>
-      <textarea
-        class="textarea"
-        value="{{automaticThought}}"
-        placeholder="例如：我当时脑中冒出一个念头：再这样下去会不会更难收拾。"
-        bindinput="onTextInput"
-        data-key="automaticThought"
-      />
-      <text class="label spaced-label">身体感觉</text>
-      <view class="tag-grid">
-        <button
-          wx:for="{{bodySensationOptions}}"
-          wx:key="*this"
-          class="tag {{bodySensation === item ? 'active' : ''}}"
-          data-value="{{item}}"
-          bindtap="selectBodySensation"
-        >
-          {{item}}
-        </button>
+      <view class="field-group">
+        <text class="field-label">家长当时的主要情绪</text>
+        <view class="tag-grid">
+          <button
+            wx:for="{{parentEmotionOptions}}"
+            wx:key="*this"
+            class="tag {{parentEmotion === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="selectParentEmotion"
+          >
+            {{item}}
+          </button>
+        </view>
+        <view class="slider-row">
+          <text class="slider-label">强度 {{parentEmotionIntensity}} / 10</text>
+          <slider min="0" max="10" step="1" value="{{parentEmotionIntensity}}" activeColor="#5F8F5B" block-color="#5F8F5B" bindchange="onParentIntensityChange" />
+        </view>
       </view>
-      <input class="input" value="{{bodySensationNote}}" placeholder="也可以补充一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
+
+      <view class="field-group">
+        <text class="field-label">孩子当时看起来的情绪</text>
+        <view class="tag-grid">
+          <button
+            wx:for="{{childEmotionOptions}}"
+            wx:key="*this"
+            class="tag {{childEmotion === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="selectChildEmotion"
+          >
+            {{item}}
+          </button>
+        </view>
+        <view class="slider-row">
+          <text class="slider-label">强度 {{childEmotionIntensity}} / 10</text>
+          <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#F47B48" block-color="#F47B48" bindchange="onChildIntensityChange" />
+        </view>
+      </view>
     </view>
 
-    <view class="step-card">
-      <view class="step-head">
-        <text class="step-icon">04</text>
-        <text class="step-title">行为和孩子反应</text>
+    <view class="diary-section">
+      <view class="section-head">
+        <text class="section-index">03</text>
+        <view class="section-copy">
+          <text class="section-title">我当时的想法和身体反应</text>
+          <text class="section-hint">不用判断是否合理，只写下当时自动冒出来的内容。</text>
+        </view>
       </view>
-      <text class="hint">只记录发生了什么，不评价谁好谁不好。</text>
-      <textarea
-        class="textarea"
-        value="{{behavior}}"
-        placeholder="例如：我连续提醒了几次，后来声音提高了一些。"
-        bindinput="onTextInput"
-        data-key="behavior"
-      />
-      <textarea
-        class="textarea"
-        value="{{childReaction}}"
-        placeholder="孩子后来有什么反应？例如：沉默、争辩、哭了，或暂时离开。"
-        bindinput="onTextInput"
-        data-key="childReaction"
-      />
+      <view class="field-group">
+        <text class="field-label">脑子里闪过的想法</text>
+        <textarea
+          class="textarea"
+          value="{{automaticThought}}"
+          placeholder="例如：我当时脑中冒出一个念头：再这样下去会不会更难收拾。"
+          bindinput="onTextInput"
+          data-key="automaticThought"
+        />
+      </view>
+      <view class="field-group">
+        <text class="field-label">身体感觉</text>
+        <view class="tag-grid">
+          <button
+            wx:for="{{bodySensationOptions}}"
+            wx:key="*this"
+            class="tag {{bodySensation === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="selectBodySensation"
+          >
+            {{item}}
+          </button>
+        </view>
+        <input class="input" value="{{bodySensationNote}}" placeholder="也可以补充一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
+      </view>
     </view>
 
-    <view class="step-card">
-      <view class="step-head">
-        <text class="step-icon">05</text>
-        <text class="step-title">当下结果和可能影响</text>
+    <view class="diary-section">
+      <view class="section-head">
+        <text class="section-index">04</text>
+        <view class="section-copy">
+          <text class="section-title">我做了什么，孩子后来怎样</text>
+          <text class="section-hint">只记录能看到的动作和反应，不需要评判对错。</text>
+        </view>
       </view>
-      <text class="hint">这两项可以不填。它们只是帮助后面复盘，不是评分。</text>
-      <textarea
-        class="textarea"
-        value="{{shortTermResult}}"
-        placeholder="短期结果：当下有没有暂时停下来，或情绪有没有更强？"
-        bindinput="onTextInput"
-        data-key="shortTermResult"
-      />
-      <textarea
-        class="textarea"
-        value="{{longTermImpact}}"
-        placeholder="如果类似方式经常出现，你担心它可能带来什么影响？"
-        bindinput="onTextInput"
-        data-key="longTermImpact"
-      />
+      <view class="field-group">
+        <text class="field-label">我当时的做法</text>
+        <textarea
+          class="textarea"
+          value="{{behavior}}"
+          placeholder="例如：我连续提醒了几次，后来声音提高了一些。"
+          bindinput="onTextInput"
+          data-key="behavior"
+        />
+      </view>
+      <view class="field-group">
+        <text class="field-label">孩子后来的反应</text>
+        <textarea
+          class="textarea"
+          value="{{childReaction}}"
+          placeholder="孩子后来有什么反应？例如：沉默、争辩、哭了，或暂时离开。"
+          bindinput="onTextInput"
+          data-key="childReaction"
+        />
+      </view>
+    </view>
+
+    <view class="diary-section">
+      <view class="section-head">
+        <text class="section-index">05</text>
+        <view class="section-copy">
+          <text class="section-title">补充一点结果（可选）</text>
+          <text class="section-hint">能写一点就可以，后续反馈会保持支持性和非诊断。</text>
+        </view>
+      </view>
+      <view class="field-group">
+        <text class="field-label">当下结果</text>
+        <textarea
+          class="textarea"
+          value="{{shortTermResult}}"
+          placeholder="短期结果：当下有没有暂时停下来，或情绪有没有更强？"
+          bindinput="onTextInput"
+          data-key="shortTermResult"
+        />
+      </view>
+      <view class="field-group">
+        <text class="field-label">我担心的长期影响</text>
+        <textarea
+          class="textarea"
+          value="{{longTermImpact}}"
+          placeholder="如果类似方式经常出现，你担心它可能带来什么影响？"
+          bindinput="onTextInput"
+          data-key="longTermImpact"
+        />
+      </view>
     </view>
 
     <view wx:if="{{errorMessage}}" class="error-box">
       <text>{{errorMessage}}</text>
     </view>
 
-    <button class="primary-button" bindtap="submitDiary" disabled="{{submitting}}">
-      {{submitting ? '提交中...' : '提交并查看反馈'}}
-    </button>
+    <view class="submit-area">
+      <text class="submit-tip">记录保存后，会进入即时反馈和训练卡推荐。</text>
+      <button class="primary-button" bindtap="submitDiary" disabled="{{submitting}}">
+        {{submitting ? '提交中...' : '保存并查看反馈'}}
+      </button>
+    </view>
   </view>
 </view>

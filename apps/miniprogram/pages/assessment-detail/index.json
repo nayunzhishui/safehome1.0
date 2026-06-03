@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "填写工作表",
+  "navigationBarTitleText": "填写测评",
   "usingComponents": {
     "section-title": "/components/section-title/index",
     "alert-card": "/components/alert-card/index",

@@ -1,17 +1,17 @@
 <view class="safe-page training-card-page">
-  <view class="detail-hero">
+  <view class="detail-hero safe-card safe-card--hero">
     <view class="hero-copy">
-      <text class="eyebrow">第三步</text>
-      <text class="title">UP 训练卡推荐</text>
-      <text class="summary">选择一张卡，先做一次小练习。完成后可以进入轻打卡，记录练习前后的感受。</text>
+      <text class="hero-kicker">推荐训练卡</text>
+      <text class="hero-title">今天先练这一小步</text>
+      <text class="hero-summary">每次选一张卡就可以。重点不是做完整，而是多一个能暂停、观察和回应的机会。</text>
     </view>
     <view class="hero-mark">
-      <view class="hero-leaf"></view>
-      <text>UP</text>
+      <text class="hero-mark-main">1</text>
+      <text class="hero-mark-sub">张即可</text>
     </view>
   </view>
 
-  <view wx:if="{{loading}}" class="state-card">
+  <view wx:if="{{loading}}" class="state-card safe-card">
     <view class="loading-dot"></view>
     <text class="state-title">正在整理适合今天的小练习</text>
     <text class="state-text">请稍等一下。</text>
@@ -23,15 +23,15 @@
     <button class="outline-button" bindtap="retryLoadCards">重新加载</button>
   </view>
 
-  <view wx:else>
+  <view wx:else class="card-content">
     <view wx:if="{{tagsText}}" class="match-card">
-      <text class="match-label">当前推荐线索</text>
+      <text class="match-label">这次推荐依据</text>
       <text class="match-text">{{tagsText}}</text>
     </view>
 
     <view wx:for="{{cards}}" wx:key="id" class="task-card">
       <view class="task-head">
-        <view class="task-number">{{item.orderText}}</view>
+        <text class="task-number">{{item.orderText}}</text>
         <view class="task-title-wrap">
           <view class="task-title-line">
             <text class="card-type">{{item.typeLabel}}</text>
@@ -48,13 +48,18 @@
           <text class="overview-value">{{item.scenarioText}}</text>
         </view>
         <view class="overview-item">
-          <text class="overview-label">今日目标</text>
-          <text class="overview-value">{{item.todayGoal}}</text>
+          <text class="overview-label">预计用时</text>
+          <text class="overview-value">{{item.durationText}}</text>
         </view>
       </view>
 
+      <view class="today-step">
+        <text class="today-label">今天的小目标</text>
+        <text class="today-text">{{item.todayGoal}}</text>
+      </view>
+
       <view wx:if="{{item.tagsText}}" class="tag-row">
-        <text class="tag-pill">匹配：{{item.tagsText}}</text>
+        <text class="tag-pill">匹配线索：{{item.tagsText}}</text>
       </view>
 
       <view class="tip-box">
@@ -63,7 +68,7 @@
       </view>
 
       <view class="detail-block">
-        <text class="block-title">练习步骤</text>
+        <text class="block-title">三步练习</text>
         <view class="step-list">
           <view wx:for="{{item.stepsList}}" wx:for-item="step" wx:key="numberText" class="step-item">
             <text class="step-number">{{step.numberText}}</text>
@@ -82,10 +87,10 @@
         <text class="body-text">{{item.reflectionPrompt}}</text>
       </view>
 
-      <button class="primary-button" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">开始这张训练卡</button>
+      <button class="primary-button" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">查看练习步骤</button>
     </view>
 
-    <view wx:if="{{cards.length === 0}}" class="state-card">
+    <view wx:if="{{cards.length === 0}}" class="state-card safe-card">
       <text class="state-title">暂时没有匹配到训练卡</text>
       <text class="state-text">可以先回到记录页，补充更具体的事件细节。</text>
     </view>

@@ -1,0 +1,80 @@
+{
+  "version": "2026.05-sandplay-style-tasks-v1",
+  "symbols": [
+    {"type": "mountain", "label": "山", "mark": "山", "category": "stress"},
+    {"type": "door", "label": "门", "mark": "门", "category": "choice"},
+    {"type": "bridge", "label": "桥", "mark": "桥", "category": "resource"},
+    {"type": "clock", "label": "时钟", "mark": "时", "category": "stress"},
+    {"type": "book", "label": "书本", "mark": "书", "category": "task"},
+    {"type": "eye", "label": "眼睛", "mark": "眼", "category": "stress"},
+    {"type": "home", "label": "家", "mark": "家", "category": "relation"},
+    {"type": "lamp", "label": "灯", "mark": "灯", "category": "resource"},
+    {"type": "stone", "label": "石头", "mark": "石", "category": "stress"},
+    {"type": "river", "label": "河流", "mark": "河", "category": "emotion"},
+    {"type": "tree", "label": "树", "mark": "树", "category": "resource"},
+    {"type": "companion", "label": "同伴", "mark": "伴", "category": "resource"}
+  ],
+  "default": {
+    "title": "沙盘式表达任务",
+    "prompt": "用 5-8 个象征物摆出你面对考试时的内在场景。先摆放，不急着解释；完成后写一句：这个场景里最需要被看见的是什么。",
+    "focus": "先观察压力、资源和行动之间的位置关系。",
+    "reflection_questions": [
+      "哪个象征物最像现在的考试压力？",
+      "哪个象征物可以代表你已有的支持或能力？",
+      "如果只移动一个象征物，让场景更容易呼吸，你会移动哪一个？"
+    ],
+    "safety_note": "这个任务只帮助表达和整理体验，不用于诊断。如果出现持续失眠、惊恐或伤害自己的想法，请及时联系可信成年人、学校心理老师或专业咨询师。"
+  },
+  "profiles": {
+    "high_iu_low_sc": {
+      "title": "不确定性与自我支持沙盘",
+      "prompt": "用 5-8 个象征物摆出“成绩还没有出来时”的内在场景。请同时放入一个代表不确定性的象征物，和一个代表可以支持自己的象征物。",
+      "focus": "观察不确定性离自己有多近，以及资源是否有位置。",
+      "reflection_questions": [
+        "不确定性在场景里占了多大空间？",
+        "支持自己的象征物离压力有多远？",
+        "如果给自己多一点善意，你会把哪个象征物移动一点？"
+      ]
+    },
+    "self_critical_perfection": {
+      "title": "自责压力与允许不完美沙盘",
+      "prompt": "用 5-8 个象征物摆出“我必须考好”的内在场景。请放入一个代表标准或期待的象征物，和一个代表允许休息/允许不完美的象征物。",
+      "focus": "观察高标准、自己和支持资源之间的距离。",
+      "reflection_questions": [
+        "哪个象征物最像责备自己的声音？",
+        "场景里有没有给自己喘息的位置？",
+        "如果标准降低 10%，哪个象征物会改变位置？"
+      ]
+    },
+    "low_erf_high_ta": {
+      "title": "情绪调节策略沙盘",
+      "prompt": "用 5-8 个象征物摆出“考试焦虑升高时”的场景。请至少放入两个不同的应对策略象征物，比如暂停、拆分任务、求助或复盘。",
+      "focus": "观察压力出现时，是否有不止一种调节路径。",
+      "reflection_questions": [
+        "你最常用的策略是哪一个象征物？",
+        "还有哪个象征物代表可以尝试的新策略？",
+        "当压力靠近时，哪条路径最容易先走一步？"
+      ]
+    },
+    "stable_resource": {
+      "title": "资源保存沙盘",
+      "prompt": "用 5-8 个象征物摆出“我已经能稳定应对的一次考试压力”。请把有效方法、支持关系和下一次可复用的经验放进场景里。",
+      "focus": "把已有资源做成可复用的经验地图。",
+      "reflection_questions": [
+        "哪个象征物代表你最稳定的资源？",
+        "压力升高时，哪个资源最容易被忽略？",
+        "你想把哪条经验保留下来，作为下一次考试前的提醒？"
+      ]
+    },
+    "middle_uncertain": {
+      "title": "待收束压力场景沙盘",
+      "prompt": "用 5-8 个象征物摆出最近一次考试压力场景。请把压力来源、身体反应、想法和一个可能的小行动都放进去。",
+      "focus": "先收集线索，帮助下一轮判断主要压力机制。",
+      "reflection_questions": [
+        "场景里最核心的压力来源是什么？",
+        "身体反应和想法分别在哪里？",
+        "哪个小行动可以帮助下一轮更清楚地判断画像？"
+      ]
+    }
+  }
+}

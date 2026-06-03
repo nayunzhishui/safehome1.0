@@ -39,3 +39,34 @@ def load_risk_keywords() -> dict:
 def load_training_cards() -> dict:
     return load_required_content("training_cards.json")
 
+
+def load_readfeedback_content(filename: str) -> dict:
+    return load_required_content(f"readfeedback/{filename}")
+
+
+def load_student_profile_model() -> dict:
+    return load_readfeedback_content("student_profile_model.json")
+
+
+def load_student_scales() -> dict:
+    return load_readfeedback_content("student_scales.json")
+
+
+def load_student_profile_rules_kmeans() -> dict:
+    return load_readfeedback_content("student_profile_rules_kmeans.json")
+
+
+def load_sandplay_tasks() -> dict:
+    return load_readfeedback_content("sandplay_tasks.json")
+
+
+def load_parent_scales() -> dict:
+    return load_readfeedback_content("parent_scales.json")
+
+
+def load_parent_report_rules() -> dict:
+    return load_readfeedback_content("parent_report_rules.json")
+
+
+def load_parent_questions() -> dict:
+    return load_readfeedback_content("parent_questions.json")

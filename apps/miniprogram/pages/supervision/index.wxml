@@ -1,8 +1,10 @@
-<view class="page">
-  <view class="hero">
-    <text class="eyebrow">人工补充</text>
-    <text class="title">请老师进一步看看</text>
-    <text class="summary">如果这条记录让你觉得还想再确认一下，可以提交给老师做补充理解和练习建议。</text>
+<view class="safe-page supervision-page">
+  <view class="supervision-hero">
+    <view class="hero-copy">
+      <text class="eyebrow">人工补充反馈</text>
+      <text class="title">请老师补充看看</text>
+      <text class="summary">如果这次记录让你有些拿不准，可以提交给老师，补充理解和练习建议。</text>
+    </view>
     <image
       class="hero-image"
       src="/assets/illustrations/supervision-guide.png"
@@ -11,23 +13,24 @@
     />
   </view>
 
-  <view class="notice-box">
-    <text class="notice-title">服务边界</text>
-    <text class="notice-text">人工反馈只用于补充理解和练习建议，不替代心理咨询、医学诊断、危机干预或法律判断。如出现自伤、自杀、暴力或其他紧急安全风险，请优先联系线下专业人员或紧急支持。</text>
+  <view class="boundary-card">
+    <text class="boundary-title">先确认边界</text>
+    <text class="boundary-text">人工反馈可能需要等待，适合补充理解一条记录，不适合处理紧急安全风险。</text>
+    <text class="boundary-text strong">如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请先联系身边可信赖的人、当地紧急服务或线下专业机构。</text>
   </view>
 
-  <view class="panel">
-    <view class="field">
+  <view class="form-card">
+    <view class="field linked-record">
       <text class="label">关联记录</text>
-      <text class="meta-text">{{diaryId || '未关联具体记录'}}</text>
+      <text class="meta-text">{{diaryId || '未关联具体记录，可单独提交'}}</text>
     </view>
 
     <view class="field">
-      <text class="label">想请老师看的内容</text>
+      <text class="label">想请老师补充看的内容</text>
       <textarea
         class="textarea"
         value="{{message}}"
-        placeholder="例如：我想知道这次可以从哪个小动作开始练，或者这条反馈我该怎么理解。"
+        placeholder="例如：这次记录里，我想知道可以先从哪个小动作开始练。"
         bindinput="onTextInput"
         data-key="message"
       />
@@ -38,7 +41,7 @@
       <input
         class="input"
         value="{{contact}}"
-        placeholder="可不填。请只填写你愿意用于后续沟通的信息。"
+        placeholder="可不填。只填写你愿意用于后续沟通的信息。"
         bindinput="onTextInput"
         data-key="contact"
       />
@@ -49,7 +52,7 @@
       <textarea
         class="textarea"
         value="{{riskHint}}"
-        placeholder="可不填。如果你觉得这条记录里有需要老师特别留意的安全或压力信息，可以简单写一句。"
+        placeholder="可不填。如果有需要老师特别留意的安全或压力信息，可以简单写一句。紧急情况请先找现实支持。"
         bindinput="onTextInput"
         data-key="riskHint"
       />
@@ -63,10 +66,10 @@
       <text>{{errorMessage}}</text>
     </view>
 
-    <button class="primary-button" bindtap="submitSupervision" disabled="{{submitting}}">
+    <button class="safe-primary-button submit-button" bindtap="submitSupervision" disabled="{{submitting}}">
       {{submitting ? '提交中...' : '提交给老师补充看看'}}
     </button>
 
-    <button class="secondary-button" bindtap="goHome">回到首页</button>
+    <button class="safe-secondary-button back-button" bindtap="goHome">回到首页</button>
   </view>
 </view>

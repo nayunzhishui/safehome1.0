@@ -1,33 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { safeHomeApi as api } from "../services/safehomeApi";
-import type { AssessmentResult, RiskLevel } from "../../../../shared/types/api";
+import type { ProfileDimension, StudentProfileRecord } from "../../../../shared/types/api";
 
-interface ProfileScores {
-  profile_code?: string;
-  profile_name?: string;
-  confidence?: number;
-  risk_level?: RiskLevel;
-  requires_review?: boolean;
-  allow_auto_feedback?: boolean;
-  supportive_explanation?: string;
-  strength_note?: string;
-  small_step?: string;
-  boundary_notice?: string;
-  recommended_card_ids?: string[];
-  dimensions?: Array<{ key?: string; label?: string; level?: string; summary?: string }>;
-}
-
-function parseScores(result: AssessmentResult | null): ProfileScores {
-  if (!result?.scores_json) return {};
+function parseJson<T>(value: string | null | undefined, fallback: T): T {
+  if (!value) return fallback;
   try {
-    return JSON.parse(result.scores_json) as ProfileScores;
+    return JSON.parse(value) as T;
   } catch {
-    return {};
+    return fallback;
   }
 }
 
-function formatConfidence(value?: number): string {
+function formatConfidence(value?: number | null): string {
   if (value === undefined || value === null || Number.isNaN(Number(value))) return "未计算";
   return `${Math.round(Number(value) * 100)}%`;
 }
@@ -38,9 +23,18 @@ function riskText(level?: string): string {
   return "低风险";
 }
 
+function reviewStatusText(status?: string | null): string {
+  if (status === "in_progress") return "复核中";
+  if (status === "reviewed") return "已复核";
+  if (status === "escalated") return "已升级";
+  if (status === "closed") return "已关闭";
+  return "未复核";
+}
+
 export function ProfilesManagement() {
-  const [items, setItems] = useState<AssessmentResult[]>([]);
+  const [items, setItems] = useState<StudentProfileRecord[]>([]);
   const [selectedId, setSelectedId] = useState("");
+  const [selectedDetail, setSelectedDetail] = useState<StudentProfileRecord | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [message, setMessage] = useState("正在读取学生画像结果...");
 
@@ -48,18 +42,17 @@ export function ProfilesManagement() {
     const match = window.location.pathname.match(/^\/profiles\/([^/]+)$/);
     return match ? decodeURIComponent(match[1]) : "";
   }, []);
-  const selected = useMemo(() => items.find((item) => item.id === selectedId) ?? items[0] ?? null, [items, selectedId]);
-  const selectedScores = useMemo(() => parseScores(selected), [selected]);
-  const reviewCount = items.filter((item) => parseScores(item).requires_review).length;
-  const highRiskCount = items.filter((item) => parseScores(item).risk_level === "high").length;
+  const selected = useMemo(() => selectedDetail ?? items.find((item) => item.id === selectedId) ?? items[0] ?? null, [items, selectedDetail, selectedId]);
+  const reviewCount = items.filter((item) => item.requires_review).length;
+  const highRiskCount = items.filter((item) => item.risk_level === "high").length;
 
   useEffect(() => {
     async function loadProfiles() {
       setStatus("loading");
       setMessage("正在读取学生画像结果...");
       try {
-        const result = await api.listAssessmentResults({ limit: 100 });
-        const profiles = (result.items || []).filter((item) => item.worksheet_id === "student_profile_v1" || item.category === "学生画像");
+        const result = await api.listProfileResults({ limit: 100 });
+        const profiles = result.items || [];
         setItems(profiles);
         const selectedProfile = profiles.find((item) => item.id === pathProfileId) ?? profiles[0];
         setSelectedId(selectedProfile?.id ?? "");
@@ -74,10 +67,31 @@ export function ProfilesManagement() {
     loadProfiles();
   }, [pathProfileId]);
 
+  useEffect(() => {
+    async function loadDetail() {
+      if (!selectedId) {
+        setSelectedDetail(null);
+        return;
+      }
+      try {
+        const detail = await api.getProfileResult(selectedId);
+        setSelectedDetail(detail);
+      } catch {
+        setSelectedDetail(null);
+      }
+    }
+
+    loadDetail();
+  }, [selectedId]);
+
   function selectProfile(id: string) {
     setSelectedId(id);
+    setSelectedDetail(null);
     window.history.pushState(null, "", `/profiles/${encodeURIComponent(id)}`);
   }
+
+  const dimensions = parseJson<ProfileDimension[]>(selected?.dimensions_json, []);
+  const recommendedCards = parseJson<string[]>(selected?.recommended_task_ids_json, []);
 
   return (
     <div className="adminPage">
@@ -85,7 +99,7 @@ export function ProfilesManagement() {
         <div>
           <span className="eyebrow">Student Profile</span>
           <h1>{pathProfileId ? "学生画像详情" : "学生画像列表"}</h1>
-          <p>从现有测一测结果中筛选 `student_profile_v1`，用于查看画像名称、置信度、风险状态、推荐训练卡和维度观察。</p>
+          <p>从 `student_profiles` 读取画像记录，用于查看置信度、风险状态、推荐训练卡、维度观察和人工复核状态。</p>
         </div>
         <div className={`status compact ${status}`}>{message}</div>
       </section>
@@ -119,21 +133,18 @@ export function ProfilesManagement() {
             <div className="emptyState">暂无画像结果。请先在小程序“学生支持性画像测评”中提交一次。</div>
           ) : (
             <div className="recordList">
-              {items.map((item) => {
-                const scores = parseScores(item);
-                return (
-                  <button
-                    className={`recordItem ${selected?.id === item.id ? "active" : ""}`}
-                    key={item.id}
-                    type="button"
-                    onClick={() => selectProfile(item.id)}
-                  >
-                    <strong>{scores.profile_name || item.worksheet_title}</strong>
-                    <span>{item.user_id} · {formatConfidence(scores.confidence)} · {riskText(scores.risk_level)}</span>
-                    <small>{item.created_at}</small>
-                  </button>
-                );
-              })}
+              {items.map((item) => (
+                <button
+                  className={`recordItem ${selected?.id === item.id ? "active" : ""}`}
+                  key={item.id}
+                  type="button"
+                  onClick={() => selectProfile(item.id)}
+                >
+                  <strong>{item.profile_name || "未命名画像"}</strong>
+                  <span>{item.anonymous_id} · {formatConfidence(item.confidence)} · {riskText(item.risk_level)}</span>
+                  <small>{item.created_at}</small>
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -148,25 +159,23 @@ export function ProfilesManagement() {
 
           {selected ? (
             <div className="detailStack">
-              <div className="detailRow"><span>画像名称</span><strong>{selectedScores.profile_name || "未命名画像"}</strong></div>
-              <div className="detailRow"><span>画像编码</span><strong>{selectedScores.profile_code || "未设置"}</strong></div>
-              <div className="detailRow"><span>置信度</span><strong>{formatConfidence(selectedScores.confidence)}</strong></div>
-              <div className="detailRow"><span>风险状态</span><strong>{riskText(selectedScores.risk_level)}</strong></div>
-              <div className="detailRow"><span>人工关注</span><strong>{selectedScores.requires_review ? "需要" : "暂不需要"}</strong></div>
-              <div className="detailRow"><span>推荐训练卡</span><strong>{selectedScores.recommended_card_ids?.join("、") || "暂无"}</strong></div>
-              <div className="detailRow"><span>记录 ID</span><strong>{selected.id}</strong></div>
+              <div className="detailRow"><span>画像名称</span><strong>{selected.profile_name || "未命名画像"}</strong></div>
+              <div className="detailRow"><span>画像编码</span><strong>{selected.profile_code || "未设置"}</strong></div>
+              <div className="detailRow"><span>匿名 ID</span><strong>{selected.anonymous_id}</strong></div>
+              <div className="detailRow"><span>置信度</span><strong>{formatConfidence(selected.confidence)}</strong></div>
+              <div className="detailRow"><span>风险状态</span><strong>{riskText(selected.risk_level)}</strong></div>
+              <div className="detailRow"><span>人工关注</span><strong>{selected.requires_review ? "需要" : "暂不需要"}</strong></div>
+              <div className="detailRow"><span>复核状态</span><strong>{reviewStatusText(selected.latest_review?.review_status)}</strong></div>
+              <div className="detailRow"><span>推荐训练卡</span><strong>{recommendedCards.join("、") || "暂无"}</strong></div>
+              <div className="detailRow"><span>画像 ID</span><strong>{selected.id}</strong></div>
+              <div className="detailRow"><span>关联测评 ID</span><strong>{selected.assessment_result_id || "暂无"}</strong></div>
               <div className="detailRow"><span>保存时间</span><strong>{selected.created_at}</strong></div>
               <div className="detailRow"><span>详情链接</span><strong>{`/profiles/${selected.id}`}</strong></div>
 
               <div className="detailBlock">
-                <h3>支持性解释</h3>
-                <p>{selectedScores.supportive_explanation || selected.result_summary || "暂无支持性解释。"}</p>
-              </div>
-
-              <div className="detailBlock">
                 <h3>维度观察</h3>
-                {selectedScores.dimensions?.length ? (
-                  selectedScores.dimensions.map((dimension) => (
+                {dimensions.length ? (
+                  dimensions.map((dimension) => (
                     <p key={dimension.key || dimension.label}>
                       <strong>{dimension.label}</strong>：{dimension.summary}（{dimension.level}）
                     </p>
@@ -177,10 +186,21 @@ export function ProfilesManagement() {
               </div>
 
               <div className="detailBlock">
-                <h3>下一步建议</h3>
-                <p><strong>优势提示：</strong>{selectedScores.strength_note || "暂无优势提示。"}</p>
-                <p><strong>一小步行动：</strong>{selectedScores.small_step || "暂无小步行动。"}</p>
-                <p><strong>边界说明：</strong>{selectedScores.boundary_notice || "本结果只用于支持性理解和练习推荐，不构成诊断。"}</p>
+                <h3>人工复核摘要</h3>
+                {selected.latest_review ? (
+                  <>
+                    <p><strong>结论：</strong>{selected.latest_review.review_decision || "暂无"}</p>
+                    <p><strong>处置：</strong>{selected.latest_review.action_summary || "暂无"}</p>
+                    <p><strong>备注：</strong>{selected.latest_review.note || "暂无"}</p>
+                  </>
+                ) : (
+                  <p>暂无人工复核记录。</p>
+                )}
+              </div>
+
+              <div className="detailBlock">
+                <h3>边界说明</h3>
+                <p>{selected.boundary_notice || "本结果只用于支持性理解和练习推荐，不构成诊断。"}</p>
               </div>
             </div>
           ) : (

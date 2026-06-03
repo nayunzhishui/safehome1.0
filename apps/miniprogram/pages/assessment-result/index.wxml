@@ -5,7 +5,7 @@
 
   <view wx:elif="{{result}}">
     <view class="result-hero">
-      <text class="result-kicker">已保存</text>
+      <text class="result-kicker">测一测已保存</text>
       <text class="result-title">{{result.worksheet_title}}</text>
       <text class="result-summary">{{result.result_summary}}</text>
     </view>
@@ -14,7 +14,7 @@
       <alert-card
         type="info"
         title="结果边界"
-        content="{{profileSummary ? '这里显示的是阶段性支持画像，不构成诊断，也不代表固定标签。如提示需要人工关注，请优先联系现实中的可信成年人、学校老师或专业支持。' : '这里显示的是本次填写记录和维度数据，不构成诊断，也不替代心理咨询、医学诊断、危机干预或法律判断。'}}"
+        content="{{profileSummary ? '这里显示的是阶段性支持画像，只用于理解本次填写中的线索，不代表固定标签。如提示需要人工关注，请优先联系现实中的可信成年人、学校老师或专业支持。' : '这里显示的是本次填写记录和维度数据，只用于自我观察和练习参考，不替代心理咨询、医学诊断、危机干预或法律判断。'}}"
       />
     </view>
 
@@ -29,11 +29,11 @@
             <text class="cell-value">{{profileSummary.confidenceText}}</text>
           </view>
           <view class="profile-metric">
-            <text class="cell-label">风险状态</text>
-            <text class="cell-value">{{profileSummary.riskLevel}}</text>
+            <text class="cell-label">关注提示</text>
+            <text class="cell-value">{{profileSummary.riskLevelText}}</text>
           </view>
         </view>
-        <text wx:if="{{profileSummary.requiresReview}}" class="review-tip">本次结果需要人工关注，不建议继续生成普通自动反馈。</text>
+        <text wx:if="{{profileSummary.requiresReview}}" class="review-tip">本次结果建议人工关注，系统暂不把它当作普通练习建议处理。</text>
       </view>
     </view>
 
@@ -73,28 +73,28 @@
     </view>
 
     <view class="safe-section">
-      <section-title title="本次记录" subtitle="用于自我观察和后续练习" />
+      <section-title title="填写摘要" subtitle="用于自我观察和后续练习" />
       <view class="result-grid">
         <view class="result-cell">
           <text class="cell-label">分类</text>
           <text class="cell-value">{{result.category || '未分类'}}</text>
         </view>
         <view class="result-cell">
-          <text class="cell-label">总分</text>
+          <text class="cell-label">分数记录</text>
           <text class="cell-value">{{totalScoreText}}</text>
         </view>
         <view class="result-cell wide">
-          <text class="cell-label">推荐训练卡</text>
+          <text class="cell-label">后续练习</text>
           <text class="cell-value">{{recommendedCardsText}}</text>
         </view>
       </view>
     </view>
 
-    <button wx:if="{{!profileSummary || profileSummary.allowAutoFeedback}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看相关训练卡</button>
+    <button wx:if="{{!profileSummary || profileSummary.allowAutoFeedback}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看可练习任务</button>
     <button class="safe-secondary-button action-button" bindtap="backToAssessment">返回测一测</button>
 
     <view class="safe-section">
-      <bottom-tip-card text="保存一次记录，就是给后续练习多留下一点线索。" />
+      <bottom-tip-card text="这份结果只是一次观察记录，可以过一段时间再看有没有变化。" />
     </view>
   </view>
 

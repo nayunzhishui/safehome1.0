@@ -2,7 +2,7 @@
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
-进度口径：真实可调用接口以前文已实现章节为准；第 10 节“0版网页评估画像整合”已有基础画像、风险检查和模型信息接口，画像结果保存与后台导出仍在后续步骤。当前总进度见 `docs/项目进度统一口径.md`。
+进度口径：真实可调用接口以前文已实现章节为准；第 10 节“0版网页评估画像整合”已有基础画像、风险检查、模型信息、画像历史、人工复核、周报画像趋势、`type=profile` 脱敏导出、`type=records` 统一研究导出和高风险导出二次确认。当前总进度见 `docs/项目进度统一口径.md`。
 
 ## 通用约定
 
@@ -418,7 +418,7 @@
 
 ### `GET /api/weekly-report`
 
-用途：根据本周情绪事件、反馈标签和练习打卡生成周度报告。当前实现会在每次请求时生成一条 `weekly_reports` 数据库记录。
+用途：根据本周情绪事件、反馈标签、练习打卡和学生画像复测生成周度报告。当前实现会在每次请求时生成一条 `weekly_reports` 数据库记录。
 
 查询参数：
 
@@ -439,6 +439,11 @@
 | `frequent_emotions` | array | 高频情绪，形如 `[["着急", 2]]` |
 | `common_patterns` | array | 常见标签，形如 `[["judgmental_language", 1]]` |
 | `completed_cards` | array | 已完成训练卡 ID |
+| `profile_trend.profile_count` | number | 本周画像记录数 |
+| `profile_trend.latest_round` | number | 本周最高画像轮次 |
+| `profile_trend.profile_names` | array | 本周画像名称频次 |
+| `profile_trend.requires_review_count` | number | 本周需复核画像数 |
+| `profile_trend.high_risk_count` | number | 本周高风险画像数 |
 | `next_week_suggestion` | string | 下周建议 |
 
 ## 7. 人工督导反馈
@@ -493,8 +498,10 @@
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`profile`、`reports`、`supervision`、`cards` |
-| `user_id` | string | 否 | 除 `cards` 外，可按用户筛选 |
+| `type` | string | 否 | 默认 `diaries`。支持：`goals`、`diaries`、`feedback`、`checkins`、`assessments`、`profile`、`student_profiles`、`records`、`student_followups`、`sandplay`、`parent_assessments`、`raw_wide`、`long`、`codebook`、`reports`、`supervision`、`cards` |
+| `user_id` | string | 否 | 除 `cards`、`codebook`、`raw_wide`、`long` 外，可按用户筛选 |
+| `module_type` | string | 否 | `type=records` 时可按模块筛选，例如 `student_profile` |
+| `confirm_high_risk` | boolean | 否 | 当 `profile`、`student_profiles` 或 `records` 导出含高风险/需复核记录时，必须为 `true` |
 
 响应：
 
@@ -504,6 +511,9 @@
 - 当前不支持 `type=all`。
 - 当前不支持 `format` 参数。
 - `type=profile` 会从 `student_profiles` 中导出学生画像摘要，默认使用匿名 ID，不导出真实 `user_id`、自由文本原文和联系方式。
+- `type=records` 会从 `records` 导出统一研究摘要，可按 `module_type` 筛选。
+- 如果画像或 records 导出包含 `risk_level=high` 或 `requires_review=true`，未带 `confirm_high_risk=true` 会返回 `409 high_risk_export_confirmation_required`。
+- 导出审计会记录 `contains_high_risk` 和 `confirmed_high_risk_export`。
 
 本地开发调用示例：
 
@@ -522,7 +532,7 @@ Invoke-WebRequest `
 - 当前列表接口只提供简单 `limit`。
 - 当前即时反馈由规则匹配生成，不代表诊断、评估或治疗建议。
 
-## 10. 学生画像接口：0版网页评估画像整合（部分已实现）
+## 10. 学生画像接口：0版网页评估画像整合
 
 本节根据夏老师“0版网页与安心家整合”资料、8 张思维导图和 GitHub 参考项目整理。当前已实现 `POST /api/profile`、`POST /api/risk/check`、`GET /api/model/info`，用于学生画像规则生成、风险关键词初筛和模型/规则版本说明。
 
@@ -746,6 +756,106 @@ Invoke-WebRequest `
 - 读取详情时会写入 `audit_logs`，记录 `view_profile` 操作；
 - 当前不返回自由文本原文；
 - `dimensions_json`、`recommended_task_ids_json` 为 JSON 字符串。
+- 返回中可包含 `latest_review`，表示最近一次人工复核记录。
+
+### `GET /api/profile-results/<profile_id>/reviews`
+
+用途：查看某条学生画像的人工复核记录列表。
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `items` | array | 复核记录列表，按创建时间倒序 |
+
+### `POST /api/profile-results/<profile_id>/review`
+
+用途：保存人工复核备注、复核结论和处置状态。该接口不会覆盖学生端画像报告。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `reviewer_id` | string | 否 | 复核人标识；如果使用 `X-Admin-Token`，审计中只记 `admin-token` |
+| `review_status` | string | 否 | `pending`、`in_progress`、`reviewed`、`escalated`、`closed`，默认 `reviewed` |
+| `review_decision` | string | 否 | 复核结论 |
+| `note` | string | 否 | 后台人工备注，不自动同步学生端 |
+| `action_summary` | string | 否 | 处置摘要 |
+| `visible_to_student` | boolean | 否 | 是否可向学生端展示，当前后台默认 `false` |
+
+约束：
+
+- `review_decision`、`note`、`action_summary` 至少填写一项；
+- 保存后写入 `profile_reviews`；
+- 保存后写入 `audit_logs`，`action=review_profile`；
+- 不修改 `student_profiles` 的原始画像结果，不覆盖学生端报告。
+
+### ReadFeedback 合并后的画像扩展接口
+
+#### `GET /api/student-assessment`
+
+用途：读取旧 ReadFeedback 学生画像量表题目、开放问题和模型版本。前端 `/student/assessment` 使用该接口渲染题目。
+
+#### `GET /api/profile-results/<profile_id>/visuals`
+
+用途：读取学生画像图表数据。
+
+返回包含：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `radar` | array | IU、ERF、自我支持、考试压力四类维度 |
+| `pca` | object | 当前学生 PCA 坐标、训练样本点和聚类中心 |
+| `trends` | array | 初测和后续追踪状态 |
+| `keywords` | array | 自由文本关键词摘要，不等于诊断 |
+
+#### `POST /api/profile-results/<profile_id>/followups`
+
+用途：保存画像后的追踪反馈。
+
+请求字段：`round_no`、`fit`、`task_done`、`state_score`、`text`。
+
+#### `GET /api/profile-results/<profile_id>/followups`
+
+用途：读取画像后的追踪反馈列表。
+
+#### `POST /api/profile-results/<profile_id>/sandplay`
+
+用途：保存学生沙盘式表达场景。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `scene.symbols` | array | 是 | 1-12 个象征物，含 `type`、`x`、`y` |
+| `reflection_text` | string | 否 | 学生表达文本 |
+| `task_title` | string | 否 | 当前沙盘任务标题 |
+
+#### `GET /api/profile-results/<profile_id>/sandplay`
+
+用途：读取某个学生画像下的沙盘表达记录。
+
+### 家长双量表接口
+
+#### `GET /api/parent-assessment`
+
+用途：读取家长双量表、补充问题和非诊断边界说明。前端 `/assessment` 使用该接口渲染题目。
+
+#### `POST /api/parent-assessments`
+
+用途：提交家长双量表并生成支持性反馈报告。
+
+请求字段：`answers`、`question_answers`、`participant_code`、`research_consent`、`started_at`、`completed_at`。
+
+#### `GET /api/parent-assessments/<submission_id>`
+
+用途：读取家长测评报告，前端 `/assessment/report/:id` 使用。
+
+#### `POST /api/parent-assessments/<submission_id>/actions`
+
+用途：保存家长查看报告后的行动反馈。
+
+请求字段：`action_key`。
 
 ### 后台导出扩展
 
@@ -754,6 +864,13 @@ Invoke-WebRequest `
 | 参数 | 类型 | 说明 |
 |---|---|---|
 | `type=profile` | string | 导出学生画像结果摘要 |
+| `type=student_profiles` | string | 导出 KMeans/PCA 学生画像摘要 |
+| `type=student_followups` | string | 导出学生画像追踪反馈 |
+| `type=sandplay` | string | 导出沙盘表达摘要 |
+| `type=parent_assessments` | string | 导出家长双量表报告摘要 |
+| `type=raw_wide` | string | 导出家长双量表原始宽表 |
+| `type=long` | string | 导出家长双量表长表 |
+| `type=codebook` | string | 导出学生画像量表和家长双量表 codebook |
 
 后续建议继续支持：
 

@@ -2,12 +2,39 @@ const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
 
+function cleanDisplayText(value) {
+  return String(value || "")
+    .replace(/请按照原工作表内容填写。当前电子版保留原文标题和来源，完整题项将按原 PDF 逐页补录。/g, "当前页面是电子版简化记录，先保留最小填写项。你可以按当前问题填写，完整内容后续再补充。")
+    .replace(/请按照原工作表内容填写。/g, "请按当前问题填写。")
+    .replace(/请填写原表中的/g, "请填写")
+    .replace(/请填写原表中/g, "请填写")
+    .replace(/原工作表/g, "测评内容")
+    .replace(/原表/g, "当前内容")
+    .replace(/\.pdf/gi, "")
+    .replace(/PDF/g, "内容");
+}
+
+function cleanDisplayTitle(value) {
+  return cleanDisplayText(value).replace(/^工作表\d+(?:\.\d+)?[：:\s]*/, "");
+}
+
 function withAnswerState(worksheet) {
+  const isStudentProfile = worksheet.id === "student_profile_v1" || worksheet.category === "学生画像";
+  const isReference = !!worksheet.is_reference || worksheet.category === "示例参考";
   return {
     ...worksheet,
-    isStudentProfile: worksheet.id === "student_profile_v1" || worksheet.category === "学生画像",
+    display_title: isStudentProfile ? worksheet.display_title : cleanDisplayTitle(worksheet.display_title || worksheet.source_title),
+    displaySourceText: isStudentProfile ? "支持性测评" : isReference ? "示例参考" : "电子版简化记录",
+    instructions: cleanDisplayText(worksheet.instructions),
+    sections: (worksheet.sections || []).map((section) => ({
+      ...section,
+      title: cleanDisplayTitle(section.title),
+      content: cleanDisplayText(section.content),
+    })),
+    isStudentProfile,
     questions: (worksheet.questions || []).map((question) => ({
       ...question,
+      prompt: cleanDisplayText(question.prompt),
       answerValue: "",
       answerScore: undefined,
     })),

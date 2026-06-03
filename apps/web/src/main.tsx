@@ -11,6 +11,14 @@ import { GoalsManagement } from "./pages/GoalsManagement";
 import { IntegrationSmokeTest } from "./pages/IntegrationSmokeTest";
 import { LandingPage } from "./pages/LandingPage";
 import { ProfilesManagement } from "./pages/ProfilesManagement";
+import {
+  AboutStudyPage,
+  ParentAssessmentPage,
+  ParentReportPage,
+  StudentAssessmentPage,
+  StudentEntryPage,
+  StudentReportPage,
+} from "./pages/ReadFeedbackIntegrationPages";
 import { ResearchDashboard } from "./pages/ResearchDashboard";
 import { ReportsManagement } from "./pages/ReportsManagement";
 import { ReviewManagement } from "./pages/ReviewManagement";
@@ -37,6 +45,12 @@ const adminLinks = [
 function App() {
   const path = window.location.pathname;
   const isLandingPath = path === "/";
+  const isAboutStudyPath = path === "/about-study";
+  const isParentAssessmentPath = path === "/assessment";
+  const isParentReportPath = path.startsWith("/assessment/report/");
+  const isStudentEntryPath = path === "/student";
+  const isStudentAssessmentPath = path === "/student/assessment";
+  const isStudentReportPath = path.startsWith("/student/report/");
   const isDashboardPath = path === "/dashboard";
   const isDiariesPath = path === "/diaries" || path.startsWith("/diaries/");
   const isCheckinsPath = path === "/checkins";
@@ -82,6 +96,12 @@ function App() {
   const pageContent = (
     <>
       {isLandingPath ? <LandingPage /> : null}
+      {isAboutStudyPath ? <AboutStudyPage /> : null}
+      {isParentAssessmentPath ? <ParentAssessmentPage /> : null}
+      {isParentReportPath ? <ParentReportPage /> : null}
+      {isStudentEntryPath ? <StudentEntryPage /> : null}
+      {isStudentAssessmentPath ? <StudentAssessmentPage /> : null}
+      {isStudentReportPath ? <StudentReportPage /> : null}
       {isDashboardPath ? <ResearchDashboard /> : null}
       {path === "/goals" ? <GoalsManagement /> : null}
       {isFeedbackPath ? <FeedbackManagement /> : null}

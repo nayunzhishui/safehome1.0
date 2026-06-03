@@ -17,7 +17,7 @@
   height: 34rpx;
   flex: 0 0 auto;
   margin-top: 4rpx;
-  border-radius: 999rpx;
+  border-radius: var(--safe-radius-pill);
   background: var(--safe-primary);
 }
 
@@ -30,7 +30,7 @@
 .section-title-text {
   color: var(--safe-title);
   font-size: 32rpx;
-  font-weight: 800;
+  font-weight: 850;
   line-height: 1.35;
 }
 
@@ -49,5 +49,5 @@
   padding: 0 4rpx 0 18rpx;
   color: var(--safe-primary-deep);
   font-size: 24rpx;
-  font-weight: 600;
+  font-weight: 750;
 }

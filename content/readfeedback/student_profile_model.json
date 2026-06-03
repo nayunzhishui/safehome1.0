@@ -1,0 +1,3086 @@
+{
+  "version": "2026.05-student-profile-kmeans-v1",
+  "source_file": "D:\\桌面\\Desktop\\2026.2论文进度\\Excel清洗后数据集\\合成总数据.xlsx",
+  "n_cases": 466,
+  "n_columns": 70,
+  "features": [
+    "iu_total",
+    "erf_evaluation",
+    "erf_expression",
+    "erf_strategy_flex",
+    "self_compassion",
+    "self_criticism_raw",
+    "test_anxiety",
+    "test_anxiety_worry",
+    "test_anxiety_emotionality"
+  ],
+  "feature_means": {
+    "iu_total": 3.15969242,
+    "erf_evaluation": 5.07682403,
+    "erf_expression": 5.05536481,
+    "erf_strategy_flex": 3.37267525,
+    "self_compassion": 3.35711731,
+    "self_criticism_raw": 3.01072961,
+    "test_anxiety": 2.13079399,
+    "test_anxiety_worry": 2.13382755,
+    "test_anxiety_emotionality": 2.05686695
+  },
+  "feature_stds": {
+    "iu_total": 0.70490879,
+    "erf_evaluation": 0.9741836,
+    "erf_expression": 0.91272782,
+    "erf_strategy_flex": 0.56045945,
+    "self_compassion": 0.60528688,
+    "self_criticism_raw": 0.89679889,
+    "test_anxiety": 0.66455414,
+    "test_anxiety_worry": 0.69826232,
+    "test_anxiety_emotionality": 0.70733326
+  },
+  "chosen_k": 4,
+  "model_selection": [
+    {
+      "k": 2,
+      "inertia": 2720.015,
+      "silhouette": 0.298,
+      "min_cluster_size": 201
+    },
+    {
+      "k": 3,
+      "inertia": 2321.161,
+      "silhouette": 0.2007,
+      "min_cluster_size": 126
+    },
+    {
+      "k": 4,
+      "inertia": 1978.627,
+      "silhouette": 0.2138,
+      "min_cluster_size": 43
+    },
+    {
+      "k": 5,
+      "inertia": 1793.938,
+      "silhouette": 0.2133,
+      "min_cluster_size": 18
+    },
+    {
+      "k": 6,
+      "inertia": 1669.456,
+      "silhouette": 0.1903,
+      "min_cluster_size": 15
+    }
+  ],
+  "pca_components": [
+    [
+      -0.2763697,
+      0.29937824,
+      0.26969411,
+      0.31629106,
+      0.37128595,
+      -0.34025672,
+      -0.37681092,
+      -0.36007778,
+      -0.36871011
+    ],
+    [
+      -0.04623084,
+      -0.46179128,
+      -0.44988996,
+      -0.34294644,
+      -0.18198002,
+      -0.01156761,
+      -0.38355664,
+      -0.39203967,
+      -0.36129897
+    ]
+  ],
+  "pca_explained_ratio": [
+    0.558291,
+    0.183765
+  ],
+  "clusters": [
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "profile_name": "高焦虑-高不确定性不耐受-低自我关怀型",
+      "n": 43,
+      "percent": 9.2,
+      "mean_scores": {
+        "iu_total": 3.725,
+        "erf_evaluation": 3.233,
+        "erf_expression": 3.702,
+        "erf_strategy_flex": 2.54,
+        "self_compassion": 2.417,
+        "self_criticism_raw": 4.132,
+        "test_anxiety": 3.026,
+        "test_anxiety_worry": 3.023,
+        "test_anxiety_emotionality": 3.0
+      },
+      "z_profile": {
+        "iu_total": 0.802,
+        "erf_evaluation": -1.893,
+        "erf_expression": -1.482,
+        "erf_strategy_flex": -1.486,
+        "self_compassion": -1.554,
+        "self_criticism_raw": 1.25,
+        "test_anxiety": 1.346,
+        "test_anxiety_worry": 1.274,
+        "test_anxiety_emotionality": 1.333
+      },
+      "center": [
+        0.801684,
+        -1.89314,
+        -1.482413,
+        -1.485609,
+        -1.553727,
+        1.250061,
+        1.346448,
+        1.273774,
+        1.333364
+      ],
+      "center_pc": [
+        -4.117866,
+        0.784315
+      ],
+      "first_task": "本周完成 3 次自我关怀书写：把你会对朋友说的话，改写成对自己的支持。"
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "profile_name": "中等波动-待收束型",
+      "n": 154,
+      "percent": 33.0,
+      "mean_scores": {
+        "iu_total": 3.196,
+        "erf_evaluation": 4.8,
+        "erf_expression": 4.735,
+        "erf_strategy_flex": 3.205,
+        "self_compassion": 3.222,
+        "self_criticism_raw": 3.075,
+        "test_anxiety": 1.856,
+        "test_anxiety_worry": 1.85,
+        "test_anxiety_emotionality": 1.762
+      },
+      "z_profile": {
+        "iu_total": 0.051,
+        "erf_evaluation": -0.284,
+        "erf_expression": -0.351,
+        "erf_strategy_flex": -0.299,
+        "self_compassion": -0.223,
+        "self_criticism_raw": 0.071,
+        "test_anxiety": -0.413,
+        "test_anxiety_worry": -0.406,
+        "test_anxiety_emotionality": -0.417
+      },
+      "center": [
+        0.051347,
+        -0.28416,
+        -0.350926,
+        -0.299342,
+        -0.223457,
+        0.071304,
+        -0.413247,
+        -0.406392,
+        -0.416623
+      ],
+      "center_pc": [
+        0.05985,
+        0.897576
+      ],
+      "first_task": "连续 3 天记录考试压力场景、身体反应、自动想法和采用的应对方式。"
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "profile_name": "低焦虑-资源稳定型",
+      "n": 138,
+      "percent": 29.6,
+      "mean_scores": {
+        "iu_total": 2.668,
+        "erf_evaluation": 5.765,
+        "erf_expression": 5.665,
+        "erf_strategy_flex": 3.853,
+        "self_compassion": 3.952,
+        "self_criticism_raw": 2.19,
+        "test_anxiety": 1.531,
+        "test_anxiety_worry": 1.528,
+        "test_anxiety_emotionality": 1.442
+      },
+      "z_profile": {
+        "iu_total": -0.697,
+        "erf_evaluation": 0.707,
+        "erf_expression": 0.668,
+        "erf_strategy_flex": 0.858,
+        "self_compassion": 0.982,
+        "self_criticism_raw": -0.916,
+        "test_anxiety": -0.902,
+        "test_anxiety_worry": -0.868,
+        "test_anxiety_emotionality": -0.869
+      },
+      "center": [
+        -0.696848,
+        0.706636,
+        0.668165,
+        0.857844,
+        0.9823,
+        -0.915608,
+        -0.902311,
+        -0.868097,
+        -0.869234
+      ],
+      "center_pc": [
+        2.505002,
+        -0.056596
+      ],
+      "first_task": "记录 1 个已有效的复习/情绪调节方法，作为后续压力期的资源卡。"
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "profile_name": "低自我关怀/高自责压力型",
+      "n": 131,
+      "percent": 28.1,
+      "mean_scores": {
+        "iu_total": 3.449,
+        "erf_evaluation": 5.282,
+        "erf_expression": 5.234,
+        "erf_strategy_flex": 3.337,
+        "self_compassion": 3.198,
+        "self_criticism_raw": 3.433,
+        "test_anxiety": 2.792,
+        "test_anxiety_worry": 2.814,
+        "test_anxiety_emotionality": 2.741
+      },
+      "z_profile": {
+        "iu_total": 0.411,
+        "erf_evaluation": 0.211,
+        "erf_expression": 0.195,
+        "erf_strategy_flex": -0.064,
+        "self_compassion": -0.262,
+        "self_criticism_raw": 0.47,
+        "test_anxiety": 0.994,
+        "test_anxiety_worry": 0.974,
+        "test_anxiety_emotionality": 0.968
+      },
+      "center": [
+        0.410574,
+        0.211068,
+        0.195264,
+        -0.064142,
+        -0.262097,
+        0.470385,
+        0.994365,
+        0.974119,
+        0.967783
+      ],
+      "center_pc": [
+        -1.357549,
+        -1.252993
+      ],
+      "first_task": "写一张“允许不完美但继续行动”的复习卡，放在书桌上。"
+    }
+  ],
+  "training_points": [
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.0613,
+      "pc2": -0.8701
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.3079,
+      "pc2": 0.6352
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.2004,
+      "pc2": 0.2979
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.5085,
+      "pc2": -1.3488
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.0166,
+      "pc2": -1.2196
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.0046,
+      "pc2": 1.9188
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.438,
+      "pc2": 3.2916
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.592,
+      "pc2": -1.0253
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.7212,
+      "pc2": -1.5281
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.7419,
+      "pc2": -0.1696
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.9939,
+      "pc2": 1.2631
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.5319,
+      "pc2": 0.9702
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.1274,
+      "pc2": -0.086
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.025,
+      "pc2": -0.0176
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.4291,
+      "pc2": -0.533
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.7537,
+      "pc2": -0.3583
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.1006,
+      "pc2": 2.175
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.2988,
+      "pc2": 0.9192
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.6188,
+      "pc2": -1.206
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.5912,
+      "pc2": 0.4511
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.3975,
+      "pc2": 2.0616
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8298,
+      "pc2": 0.7693
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -4.2497,
+      "pc2": 0.6181
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.7242,
+      "pc2": -0.862
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.656,
+      "pc2": -2.3961
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.3794,
+      "pc2": -1.9058
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.059,
+      "pc2": -0.2594
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.9641,
+      "pc2": -0.255
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.6292,
+      "pc2": 0.6476
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.0512,
+      "pc2": -0.3975
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.3055,
+      "pc2": 0.4386
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.6834,
+      "pc2": 1.3749
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.0373,
+      "pc2": -0.322
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.2651,
+      "pc2": 1.4808
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.851,
+      "pc2": 0.3744
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.5117,
+      "pc2": -2.0111
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8222,
+      "pc2": -0.0699
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.4686,
+      "pc2": 0.3376
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.6881,
+      "pc2": 1.8905
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.6454,
+      "pc2": -1.2302
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.2869,
+      "pc2": -0.0576
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.3231,
+      "pc2": -0.0836
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.5496,
+      "pc2": 0.6795
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.9568,
+      "pc2": 0.574
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.1161,
+      "pc2": -2.2481
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.3886,
+      "pc2": 1.236
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.5874,
+      "pc2": 2.1157
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.5663,
+      "pc2": -1.9507
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.6086,
+      "pc2": -1.2882
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.7189,
+      "pc2": -0.3949
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.3739,
+      "pc2": -0.0883
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8013,
+      "pc2": 1.0471
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.1749,
+      "pc2": -2.0142
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.6644,
+      "pc2": -0.2287
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.5394,
+      "pc2": -0.9735
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.4167,
+      "pc2": -1.1013
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.2983,
+      "pc2": 0.0798
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.4762,
+      "pc2": 2.0861
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.4027,
+      "pc2": 0.761
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.7007,
+      "pc2": 0.5152
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.4497,
+      "pc2": -1.183
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.9812,
+      "pc2": 0.0024
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.2143,
+      "pc2": -0.5889
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.9713,
+      "pc2": 0.5624
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.4133,
+      "pc2": 0.6998
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.8624,
+      "pc2": -1.6748
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.518,
+      "pc2": -1.4149
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.1833,
+      "pc2": 0.5442
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.3287,
+      "pc2": -2.0462
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.5656,
+      "pc2": 2.9327
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.3628,
+      "pc2": 2.6762
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7735,
+      "pc2": -0.3804
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.9653,
+      "pc2": -0.0291
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.953,
+      "pc2": -1.3723
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.1998,
+      "pc2": -1.6375
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.9235,
+      "pc2": 0.6834
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.4714,
+      "pc2": -0.4102
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.0862,
+      "pc2": -3.8583
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.7405,
+      "pc2": 0.8153
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.2396,
+      "pc2": 1.1119
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.0243,
+      "pc2": 0.8803
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.0083,
+      "pc2": 1.6928
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.2156,
+      "pc2": -1.7443
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.7107,
+      "pc2": -4.4568
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.4768,
+      "pc2": 1.4449
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -4.3161,
+      "pc2": 1.0257
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.5761,
+      "pc2": -0.8516
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.0109,
+      "pc2": -0.5032
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.2846,
+      "pc2": 0.543
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.3838,
+      "pc2": 0.2801
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.8982,
+      "pc2": -0.9645
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.4739,
+      "pc2": 1.5225
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.3939,
+      "pc2": -2.568
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.4469,
+      "pc2": 1.0828
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.4194,
+      "pc2": 0.4057
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7966,
+      "pc2": -0.9077
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.0264,
+      "pc2": 0.6047
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.5538,
+      "pc2": -3.3317
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.5311,
+      "pc2": -0.9026
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.1654,
+      "pc2": -0.7532
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.6104,
+      "pc2": -3.2807
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7413,
+      "pc2": 0.9295
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.9789,
+      "pc2": -1.5142
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.8497,
+      "pc2": -2.2832
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.5597,
+      "pc2": -1.5634
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.5999,
+      "pc2": -2.3742
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.1511,
+      "pc2": -0.4805
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.5184,
+      "pc2": -1.5294
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 5.5549,
+      "pc2": -1.3832
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.5833,
+      "pc2": -1.8472
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.861,
+      "pc2": 1.5275
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.5588,
+      "pc2": -1.7002
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.4514,
+      "pc2": -2.9793
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -9.4966,
+      "pc2": 2.5545
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.4538,
+      "pc2": 0.299
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.5224,
+      "pc2": -0.0302
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.3724,
+      "pc2": 0.4873
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.4023,
+      "pc2": 0.6134
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.5342,
+      "pc2": -0.165
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.6934,
+      "pc2": 0.5373
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.8239,
+      "pc2": 1.2554
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.1036,
+      "pc2": -0.7869
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.8395,
+      "pc2": 0.755
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.796,
+      "pc2": 0.4345
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.4312,
+      "pc2": 0.7494
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.2404,
+      "pc2": 0.246
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.1645,
+      "pc2": -2.027
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.9718,
+      "pc2": 0.8429
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.7709,
+      "pc2": -1.2425
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.9221,
+      "pc2": -0.8141
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.0594,
+      "pc2": 0.5062
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.2264,
+      "pc2": -1.846
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.0951,
+      "pc2": 0.8049
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.6585,
+      "pc2": -0.2205
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -4.39,
+      "pc2": 1.7681
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -6.1016,
+      "pc2": 1.3141
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.1762,
+      "pc2": 0.5353
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.0085,
+      "pc2": 0.6264
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.9315,
+      "pc2": -0.1324
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.0588,
+      "pc2": 1.2295
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.6128,
+      "pc2": -0.3558
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.6324,
+      "pc2": -0.8584
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.6676,
+      "pc2": -0.2008
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.358,
+      "pc2": 1.3286
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -4.1898,
+      "pc2": 0.4838
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.4681,
+      "pc2": 0.7973
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.3263,
+      "pc2": -0.4618
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.3862,
+      "pc2": -1.3743
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.5155,
+      "pc2": -0.9237
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8329,
+      "pc2": -1.1564
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.9802,
+      "pc2": 1.0529
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.3932,
+      "pc2": -0.1299
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.2166,
+      "pc2": -0.5721
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.2695,
+      "pc2": 0.9547
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.5135,
+      "pc2": 0.4356
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.3197,
+      "pc2": 0.5384
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.8339,
+      "pc2": 1.2343
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.7667,
+      "pc2": -0.3813
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.783,
+      "pc2": 0.1231
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.1993,
+      "pc2": 0.92
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.7873,
+      "pc2": -1.5457
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.3922,
+      "pc2": 0.3663
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.1574,
+      "pc2": 0.5692
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.9464,
+      "pc2": 1.0598
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.0841,
+      "pc2": 0.509
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.2416,
+      "pc2": 0.6542
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.4861,
+      "pc2": 0.092
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.1507,
+      "pc2": 0.9783
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.9968,
+      "pc2": -0.8329
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.7186,
+      "pc2": 0.6226
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.9233,
+      "pc2": 1.2384
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.2493,
+      "pc2": 3.83
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.5229,
+      "pc2": 0.2412
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.7447,
+      "pc2": -0.3738
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.5405,
+      "pc2": -1.6681
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.4214,
+      "pc2": 1.6915
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.3215,
+      "pc2": -1.8237
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.1729,
+      "pc2": 1.3551
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.6418,
+      "pc2": 1.3224
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.9826,
+      "pc2": -1.0867
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.2504,
+      "pc2": 0.1415
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -6.6427,
+      "pc2": 2.6154
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.2983,
+      "pc2": -0.9552
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.5562,
+      "pc2": -1.1878
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.4029,
+      "pc2": -1.6478
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.3367,
+      "pc2": -0.3759
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.8671,
+      "pc2": 0.0641
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.6636,
+      "pc2": 0.8667
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.2417,
+      "pc2": 0.3673
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.8993,
+      "pc2": -0.8288
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.4222,
+      "pc2": 0.0045
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.4359,
+      "pc2": 1.5303
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.7323,
+      "pc2": 0.9879
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.7427,
+      "pc2": 0.5141
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.1504,
+      "pc2": 1.2921
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.2199,
+      "pc2": 1.5137
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.2304,
+      "pc2": 0.0305
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.5417,
+      "pc2": 0.1551
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.5688,
+      "pc2": 1.551
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.4614,
+      "pc2": 1.4867
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.3139,
+      "pc2": 1.1725
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.1061,
+      "pc2": 0.0709
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.3162,
+      "pc2": -1.6655
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.1679,
+      "pc2": -0.1676
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.3973,
+      "pc2": -0.4704
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.0769,
+      "pc2": -1.467
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.1732,
+      "pc2": -0.3702
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.2653,
+      "pc2": 0.6249
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.9476,
+      "pc2": -0.5213
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.5205,
+      "pc2": -1.8703
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -5.1481,
+      "pc2": -2.0397
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.6549,
+      "pc2": 0.5791
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8913,
+      "pc2": 0.1439
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.5937,
+      "pc2": 2.0176
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.545,
+      "pc2": 1.2299
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.8804,
+      "pc2": -1.1097
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.1512,
+      "pc2": -1.1957
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.1705,
+      "pc2": 0.0186
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.2333,
+      "pc2": 0.1647
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.3585,
+      "pc2": -0.0595
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.2699,
+      "pc2": -1.7245
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7701,
+      "pc2": 1.6333
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.4324,
+      "pc2": -1.2116
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.9244,
+      "pc2": 1.5631
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.9245,
+      "pc2": -1.4821
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.5349,
+      "pc2": -1.2038
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.364,
+      "pc2": 0.1869
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.5824,
+      "pc2": -0.968
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.0483,
+      "pc2": 0.0263
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.8203,
+      "pc2": 1.1265
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.9194,
+      "pc2": 0.4344
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.1433,
+      "pc2": 0.1354
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.5214,
+      "pc2": 0.1233
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.6115,
+      "pc2": 0.1585
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.2113,
+      "pc2": -1.5752
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.4041,
+      "pc2": -1.8527
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.5435,
+      "pc2": -1.6636
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.3797,
+      "pc2": 0.2575
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.4434,
+      "pc2": -3.2952
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.8193,
+      "pc2": 1.0285
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8986,
+      "pc2": 0.9331
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.2524,
+      "pc2": 0.1523
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.6112,
+      "pc2": -1.4139
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.4477,
+      "pc2": 0.519
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.4435,
+      "pc2": 0.5135
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.1606,
+      "pc2": -2.3313
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.0783,
+      "pc2": 2.754
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.9563,
+      "pc2": 0.0284
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.5522,
+      "pc2": -0.0446
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.0382,
+      "pc2": 1.0979
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 6.1577,
+      "pc2": -1.3083
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.4282,
+      "pc2": 0.1075
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.1957,
+      "pc2": 0.5326
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.1154,
+      "pc2": -0.6932
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.001,
+      "pc2": 0.7181
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.8401,
+      "pc2": 0.5582
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.7482,
+      "pc2": -1.7932
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.2378,
+      "pc2": 0.0836
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.0961,
+      "pc2": 0.5626
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -7.0687,
+      "pc2": 1.6549
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.7833,
+      "pc2": 0.2869
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.6666,
+      "pc2": -0.4458
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.8841,
+      "pc2": 2.1029
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.5689,
+      "pc2": -0.8377
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.2479,
+      "pc2": -0.4729
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.0274,
+      "pc2": -0.497
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.7556,
+      "pc2": 0.4894
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.0613,
+      "pc2": -0.2072
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.4829,
+      "pc2": 0.3321
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.8493,
+      "pc2": -0.9174
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.1178,
+      "pc2": 2.8349
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -6.1676,
+      "pc2": 2.7484
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.4779,
+      "pc2": -0.0358
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.5527,
+      "pc2": 0.8173
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.1972,
+      "pc2": 1.0411
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.4438,
+      "pc2": -0.331
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.0476,
+      "pc2": 1.4263
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.6133,
+      "pc2": 0.4928
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.9134,
+      "pc2": 0.2557
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.9729,
+      "pc2": -1.4302
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.4916,
+      "pc2": 1.4289
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.6903,
+      "pc2": 0.7387
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.963,
+      "pc2": -0.3272
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.7497,
+      "pc2": 0.7806
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.3644,
+      "pc2": 1.6691
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.7187,
+      "pc2": -1.2861
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.3515,
+      "pc2": -0.5258
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.6232,
+      "pc2": -0.6234
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.0724,
+      "pc2": 0.922
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.2127,
+      "pc2": -0.9407
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.9862,
+      "pc2": 0.3256
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.1737,
+      "pc2": -1.3674
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -4.0716,
+      "pc2": -1.0581
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.6301,
+      "pc2": -0.2748
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.4541,
+      "pc2": 0.1403
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.8116,
+      "pc2": 0.4106
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.3217,
+      "pc2": 0.8958
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.3905,
+      "pc2": -3.3308
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.4101,
+      "pc2": -0.9917
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.6305,
+      "pc2": -0.559
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.0403,
+      "pc2": 0.1377
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.0405,
+      "pc2": -0.4852
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.9505,
+      "pc2": -0.6577
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.6841,
+      "pc2": -0.4512
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.5021,
+      "pc2": 0.7903
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.8854,
+      "pc2": -0.2241
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.5175,
+      "pc2": 2.3665
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.3562,
+      "pc2": 0.5877
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.038,
+      "pc2": -1.3463
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.4364,
+      "pc2": 0.726
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.6028,
+      "pc2": 0.7681
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.0717,
+      "pc2": -1.5104
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.9424,
+      "pc2": 0.1489
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -5.2284,
+      "pc2": 1.2352
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.4428,
+      "pc2": -1.9061
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.6719,
+      "pc2": 4.0501
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.2492,
+      "pc2": -1.0361
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.2195,
+      "pc2": -1.6723
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.7293,
+      "pc2": -1.8588
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.5516,
+      "pc2": -0.556
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.2019,
+      "pc2": -2.0684
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.2388,
+      "pc2": 1.1039
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.4117,
+      "pc2": 0.7061
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.4134,
+      "pc2": -0.1033
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.1001,
+      "pc2": 0.1496
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.592,
+      "pc2": -1.821
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.5413,
+      "pc2": -0.9115
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.8929,
+      "pc2": 1.5168
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.0424,
+      "pc2": 0.8503
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.3371,
+      "pc2": 1.129
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.2177,
+      "pc2": 0.3889
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.3733,
+      "pc2": -1.4519
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.7591,
+      "pc2": -1.4666
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.7731,
+      "pc2": 1.0369
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -4.9123,
+      "pc2": 0.8457
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.4469,
+      "pc2": -0.2916
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.4775,
+      "pc2": 0.4441
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.8084,
+      "pc2": -1.2172
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.6196,
+      "pc2": -1.7428
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.8573,
+      "pc2": -0.2204
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.1193,
+      "pc2": 0.3127
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.9027,
+      "pc2": -1.1575
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.7855,
+      "pc2": 2.797
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.9896,
+      "pc2": -0.7102
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.1979,
+      "pc2": -0.159
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7887,
+      "pc2": 1.6001
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.9465,
+      "pc2": -0.0878
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.8202,
+      "pc2": 2.3122
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -5.1439,
+      "pc2": -0.5154
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.5329,
+      "pc2": 1.5212
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.4793,
+      "pc2": -1.8746
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.06,
+      "pc2": -0.1066
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.3269,
+      "pc2": 1.7253
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.5479,
+      "pc2": 1.7616
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.2919,
+      "pc2": 1.1694
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.7079,
+      "pc2": 0.482
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.8257,
+      "pc2": 0.3794
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.1082,
+      "pc2": -0.8222
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.6158,
+      "pc2": 0.0493
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.9628,
+      "pc2": -0.6385
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.3175,
+      "pc2": 0.2686
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.3323,
+      "pc2": 0.8065
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.238,
+      "pc2": 1.8355
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7012,
+      "pc2": 1.1569
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8313,
+      "pc2": 1.0615
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.57,
+      "pc2": 1.1262
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.5686,
+      "pc2": -2.9183
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.4327,
+      "pc2": 1.9618
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.5575,
+      "pc2": -0.2533
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 4.8322,
+      "pc2": -0.651
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.9307,
+      "pc2": -2.5916
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.7898,
+      "pc2": -1.4506
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.4956,
+      "pc2": -0.0915
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.238,
+      "pc2": -0.1767
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.7637,
+      "pc2": -1.8672
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.5978,
+      "pc2": 0.0435
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.2389,
+      "pc2": -0.4438
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.5437,
+      "pc2": -0.8505
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.6441,
+      "pc2": -0.7665
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.0231,
+      "pc2": 0.188
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.016,
+      "pc2": 0.7537
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.2342,
+      "pc2": 1.4278
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.1819,
+      "pc2": 0.8188
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.5018,
+      "pc2": -0.2377
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.332,
+      "pc2": 2.1677
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7342,
+      "pc2": 0.6099
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7184,
+      "pc2": -0.1049
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.0887,
+      "pc2": 0.1815
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.0066,
+      "pc2": 0.4654
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.2426,
+      "pc2": 1.6109
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -6.7269,
+      "pc2": 2.4182
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -4.0294,
+      "pc2": -0.0175
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.1209,
+      "pc2": 0.3801
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.8094,
+      "pc2": 0.2966
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -7.5064,
+      "pc2": 3.3495
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.5794,
+      "pc2": -0.3467
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.0519,
+      "pc2": -1.6343
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.1422,
+      "pc2": 0.3766
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.4492,
+      "pc2": -0.9532
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.4618,
+      "pc2": 0.6648
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.1216,
+      "pc2": 0.2091
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8406,
+      "pc2": 0.4505
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.447,
+      "pc2": -0.1527
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.6408,
+      "pc2": -0.8565
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.0057,
+      "pc2": 0.0557
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.2642,
+      "pc2": 0.5678
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.7279,
+      "pc2": 0.6776
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.977,
+      "pc2": -2.5961
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.2844,
+      "pc2": 0.3193
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.906,
+      "pc2": -0.5742
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.2016,
+      "pc2": -0.1891
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.6799,
+      "pc2": 1.2609
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.3499,
+      "pc2": -0.6615
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.07,
+      "pc2": -1.3978
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.0234,
+      "pc2": 1.408
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.2648,
+      "pc2": -1.2458
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.2749,
+      "pc2": -1.2828
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.9002,
+      "pc2": -0.4272
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.9534,
+      "pc2": -2.9178
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.6265,
+      "pc2": 1.4519
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.7264,
+      "pc2": -0.5223
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.9104,
+      "pc2": 0.2883
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.1726,
+      "pc2": 0.2553
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -6.0359,
+      "pc2": 3.73
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.0346,
+      "pc2": -0.3053
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.0485,
+      "pc2": -1.1826
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.7618,
+      "pc2": 0.1133
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.3238,
+      "pc2": 0.6239
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.8841,
+      "pc2": 1.1
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.6692,
+      "pc2": 1.6577
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.5554,
+      "pc2": 0.5151
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.8925,
+      "pc2": -0.2034
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.6203,
+      "pc2": -0.7531
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.1954,
+      "pc2": 0.3695
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.3966,
+      "pc2": -2.5224
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.8648,
+      "pc2": -0.2978
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.8532,
+      "pc2": -0.5948
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -1.8122,
+      "pc2": -0.1308
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.7683,
+      "pc2": 2.8138
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 0.9221,
+      "pc2": -0.8422
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": 0.003,
+      "pc2": -0.7573
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.2214,
+      "pc2": 0.4856
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -0.4635,
+      "pc2": -1.4378
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.8758,
+      "pc2": -1.049
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.1831,
+      "pc2": -0.647
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 1.9885,
+      "pc2": 1.0052
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.6049,
+      "pc2": 1.4448
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.4929,
+      "pc2": -0.1752
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.1768,
+      "pc2": -2.0922
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.3387,
+      "pc2": 0.4136
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -3.2493,
+      "pc2": -2.1704
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.0938,
+      "pc2": 0.9275
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -2.809,
+      "pc2": 0.914
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 1.1275,
+      "pc2": 0.7541
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.2561,
+      "pc2": -0.4603
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": 0.2181,
+      "pc2": -0.4572
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.5865,
+      "pc2": 0.526
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.2033,
+      "pc2": 0.21
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.1058,
+      "pc2": -1.8865
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -0.0775,
+      "pc2": 3.0433
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 2.0425,
+      "pc2": 0.5522
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 3.5354,
+      "pc2": 0.6524
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "stable_resource",
+      "pc1": 0.9275,
+      "pc2": -0.3949
+    },
+    {
+      "cluster_id": 4,
+      "profile_id": "self_critical_perfection",
+      "pc1": -2.5832,
+      "pc2": -2.394
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "middle_uncertain",
+      "pc1": -1.3859,
+      "pc2": 0.4834
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "high_iu_low_sc",
+      "pc1": -3.3835,
+      "pc2": 1.5341
+    }
+  ],
+  "scoring_notes": {
+    "iu_total": "原始第3-14题均值，越高越难忍受不确定性。",
+    "erf": "评价/表达/策略灵活性，策略中僵化题反向计分。",
+    "self_compassion": "自我关怀正向题与自我批评相关反向题合成。",
+    "test_anxiety": "考试焦虑题均值，其中轻松自信题反向计分。"
+  }
+}

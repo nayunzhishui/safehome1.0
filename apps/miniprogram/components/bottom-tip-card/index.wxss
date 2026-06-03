@@ -3,8 +3,8 @@
   overflow: hidden;
   padding: 30rpx 34rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 16rpx;
-  background: linear-gradient(135deg, #edf5e8, #fff4e8);
+  border-radius: var(--safe-radius-md);
+  background: linear-gradient(135deg, var(--safe-primary-pale), var(--safe-orange-soft));
 }
 
 .tip-copy {

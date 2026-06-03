@@ -9,6 +9,11 @@ MVP_TABLES = [
     "checkins",
     "assessment_results",
     "student_profiles",
+    "profile_reviews",
+    "student_profile_followups",
+    "student_sandplay_entries",
+    "parent_assessment_submissions",
+    "parent_report_actions",
     "records",
     "audit_logs",
     "weekly_reports",
@@ -137,8 +142,95 @@ SCHEMA_SQL = [
         requires_review INTEGER NOT NULL DEFAULT 0,
         boundary_notice TEXT,
         rules_version TEXT,
+        model_version TEXT,
+        model_type TEXT,
+        cluster_id INTEGER,
+        pc1 REAL,
+        pc2 REAL,
+        nearest_distance REAL,
+        second_distance REAL,
+        report_json TEXT NOT NULL DEFAULT '{}',
+        visuals_json TEXT NOT NULL DEFAULT '{}',
+        legacy_source_id TEXT,
+        legacy_source_table TEXT,
         export_allowed INTEGER NOT NULL DEFAULT 1,
         data_quality TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS student_profile_followups (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        round_no INTEGER NOT NULL,
+        fit TEXT,
+        task_done TEXT,
+        state_score INTEGER,
+        text TEXT,
+        keywords_json TEXT NOT NULL DEFAULT '[]',
+        created_at TEXT NOT NULL,
+        export_allowed INTEGER NOT NULL DEFAULT 1
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS student_sandplay_entries (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        task_title TEXT,
+        scene_json TEXT NOT NULL,
+        reflection_text TEXT,
+        summary_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL,
+        export_allowed INTEGER NOT NULL DEFAULT 1
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS parent_assessment_submissions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        anonymous_id TEXT NOT NULL,
+        participant_code TEXT,
+        research_consent INTEGER NOT NULL DEFAULT 0,
+        study_batch TEXT,
+        source_channel TEXT,
+        questionnaire_version TEXT,
+        scoring_version TEXT,
+        answers_json TEXT NOT NULL,
+        scores_json TEXT NOT NULL,
+        profile_key TEXT,
+        report_json TEXT NOT NULL,
+        started_at TEXT,
+        completed_at TEXT,
+        duration_seconds INTEGER NOT NULL DEFAULT 0,
+        quality_flags_json TEXT NOT NULL DEFAULT '{}',
+        legacy_source_id TEXT,
+        legacy_source_table TEXT,
+        export_allowed INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS parent_report_actions (
+        id TEXT PRIMARY KEY,
+        submission_id TEXT NOT NULL,
+        action_key TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS profile_reviews (
+        id TEXT PRIMARY KEY,
+        profile_id TEXT NOT NULL,
+        reviewer_id TEXT,
+        review_status TEXT NOT NULL DEFAULT 'reviewed',
+        review_decision TEXT,
+        note TEXT,
+        action_summary TEXT,
+        visible_to_student INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )

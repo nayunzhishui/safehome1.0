@@ -6,6 +6,7 @@ export type UserRole = "parent" | "student" | "admin";
 export type GoalStatus = "active" | "done" | "paused";
 export type RiskLevel = "low" | "medium" | "high";
 export type SupervisionStatus = "pending" | "replied" | "closed";
+export type ProfileReviewStatus = "pending" | "in_progress" | "reviewed" | "escalated" | "closed";
 
 export interface ApiSuccess<T> {
   ok: true;
@@ -242,9 +243,52 @@ export interface StudentProfileInput {
   nickname?: string;
   assessment_result_id?: ID;
   round?: number;
-  scores: StudentProfileScores;
+  scores?: StudentProfileScores;
+  answers?: Record<string, string | number>;
+  text_answers?: Record<string, string>;
   support_resource?: string;
   free_text?: string;
+}
+
+export interface ProfileVisuals {
+  radar: Array<{ label: string; value: number; max: number }>;
+  pca: {
+    user: { pc1?: number | null; pc2?: number | null; cluster_id?: number | null; profile_code?: string | null };
+    points: Array<{ cluster_id: number; profile_id: string; pc1: number; pc2: number }>;
+    clusters: Array<Record<string, unknown>>;
+  };
+  trends: Array<{ round: number; label: string; state_score?: number | null; profile_confidence?: number | null }>;
+  keywords?: Array<{ word: string; count: number }>;
+}
+
+export interface StudentProfileReport {
+  role: string;
+  summary: string;
+  mechanism: string;
+  first_task: string;
+  integrative_path?: Record<string, string>;
+  next_questions?: string[];
+  escalation?: string;
+  metrics?: Array<{ label: string; value: string }>;
+  keywords?: Array<{ word: string; count: number }>;
+  sandplay_task?: SandplayTask;
+}
+
+export interface SandplaySymbol {
+  type: string;
+  label: string;
+  mark: string;
+  category: string;
+}
+
+export interface SandplayTask {
+  title: string;
+  prompt: string;
+  focus: string;
+  reflection_questions: string[];
+  safety_note?: string;
+  boundary_notice?: string;
+  symbols?: SandplaySymbol[];
 }
 
 export interface StudentProfileResult {
@@ -255,6 +299,9 @@ export interface StudentProfileResult {
   profile_code: string;
   profile_name: string;
   confidence: number;
+  cluster_id?: number | null;
+  pc1?: number | null;
+  pc2?: number | null;
   dimensions: ProfileDimension[];
   supportive_explanation: string;
   strength_note: string;
@@ -264,8 +311,12 @@ export interface StudentProfileResult {
   requires_review: boolean;
   allow_auto_feedback: boolean;
   model_version: string;
+  model_type?: string;
   rules_version: string;
   boundary_notice: string;
+  report?: StudentProfileReport;
+  visuals?: ProfileVisuals;
+  sandplay_task?: SandplayTask;
   created_at: ISODateTime;
 }
 
@@ -287,10 +338,45 @@ export interface StudentProfileRecord {
   requires_review: 0 | 1;
   boundary_notice?: string | null;
   rules_version?: string | null;
+  model_version?: string | null;
+  model_type?: string | null;
+  cluster_id?: number | null;
+  pc1?: number | null;
+  pc2?: number | null;
+  report_json?: string | null;
+  visuals_json?: string | null;
+  report?: StudentProfileReport;
+  visuals?: ProfileVisuals;
+  scores?: Record<string, unknown>;
+  dimensions?: ProfileDimension[];
+  recommended_task_ids?: string[];
   export_allowed: 0 | 1;
   data_quality?: string | null;
   created_at: ISODateTime;
   updated_at: ISODateTime;
+  latest_review?: ProfileReview | null;
+}
+
+export interface ProfileReview {
+  id: ID;
+  profile_id: ID;
+  reviewer_id?: ID | null;
+  review_status: ProfileReviewStatus;
+  review_decision?: string | null;
+  note?: string | null;
+  action_summary?: string | null;
+  visible_to_student: 0 | 1;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface ProfileReviewInput {
+  reviewer_id?: ID;
+  review_status?: ProfileReviewStatus;
+  review_decision?: string;
+  note?: string;
+  action_summary?: string;
+  visible_to_student?: boolean;
 }
 
 export interface ModelInfoProfile {
@@ -302,9 +388,100 @@ export interface ModelInfoProfile {
 
 export interface ModelInfo {
   model_version: string;
+  model_type?: string;
   rules_version: string;
+  n_cases?: number;
+  features?: string[];
   available_profiles: ModelInfoProfile[];
   boundary_notice: string;
+}
+
+export interface ScaleLikertOption {
+  value: number;
+  label: string;
+}
+
+export interface ScaleItem {
+  item_code: string;
+  display_order: number;
+  text: string;
+  dimension?: string;
+  feature?: string;
+  reverse_scored?: boolean;
+}
+
+export interface ScaleDefinition {
+  scale_code: string;
+  name: string;
+  short_name: string;
+  score_direction: string;
+  items: ScaleItem[];
+}
+
+export interface StudentAssessmentPayload {
+  version: string;
+  model_version: string;
+  likert: ScaleLikertOption[];
+  scales: ScaleDefinition[];
+  open_questions: Array<{ item_code: string; label: string; max_length: number }>;
+  boundary_notice: string;
+}
+
+export interface ParentAssessmentPayload {
+  scales: {
+    version: string;
+    likert: ScaleLikertOption[];
+    scales: ScaleDefinition[];
+  };
+  questions: {
+    version: string;
+    questions: Array<{
+      id: string;
+      text: string;
+      type: "choice" | "textarea";
+      required?: boolean;
+      max_length?: number;
+      options?: Array<{ value: string; label: string }>;
+    }>;
+  };
+  boundary_notice: string;
+}
+
+export interface ParentAssessmentInput {
+  user_id?: ID;
+  nickname?: string;
+  participant_code?: string;
+  research_consent?: boolean;
+  study_batch?: string;
+  source_channel?: string;
+  started_at?: ISODateTime;
+  completed_at?: ISODateTime;
+  answers: Record<string, string | number>;
+  question_answers?: Record<string, string>;
+}
+
+export interface ParentAssessmentResult {
+  id: ID;
+  user_id: ID;
+  anonymous_id: string;
+  participant_code?: string | null;
+  profile_key: string;
+  report_url?: string;
+  report: {
+    profile_key: string;
+    role: string;
+    summary: string;
+    empathy: string;
+    strength: string;
+    action_title: string;
+    action: string;
+    course: string;
+    metrics: Array<{ label: string; value: string }>;
+    boundary_notice: string;
+  };
+  scores: Record<string, unknown>;
+  quality_flags: Record<string, unknown>;
+  created_at: ISODateTime;
 }
 
 export interface Checkin {
@@ -339,6 +516,13 @@ export interface WeeklyReport {
   frequent_emotions: Array<[string, number]>;
   common_patterns: Array<[string, number]>;
   completed_cards: ID[];
+  profile_trend?: {
+    profile_count: number;
+    latest_round: number;
+    profile_names: Array<[string, number]>;
+    requires_review_count: number;
+    high_risk_count: number;
+  };
   next_week_suggestion: string;
 }
 

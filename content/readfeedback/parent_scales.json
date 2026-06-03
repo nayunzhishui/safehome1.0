@@ -1,0 +1,54 @@
+{
+  "version": "2026.05-dual-scale-v1",
+  "likert": [
+    {"value": 1, "label": "完全不符合"},
+    {"value": 2, "label": "有点不符合"},
+    {"value": 3, "label": "基本符合"},
+    {"value": 4, "label": "非常符合"},
+    {"value": 5, "label": "完全符合"}
+  ],
+  "scales": [
+    {
+      "scale_code": "SCS_SF_CN_12",
+      "name": "自我关怀量表",
+      "short_name": "自我关怀",
+      "source_version": "中文版 SCS-SF 12题（按 Raes et al. 2011 从中文版 SCS 抽题）",
+      "score_direction": "反向计分后，得分越高表示自我关怀水平越高。",
+      "items": [
+        {"item_code": "SCS01", "display_order": 1, "text": "当我在一些对自己来说重要的事情上失败后，我会不断地想自己的不足。", "dimension": "过度沉迷", "reverse_scored": true, "source_item": "中文版SCS第6题"},
+        {"item_code": "SCS02", "display_order": 2, "text": "我尽量去理解和包容自己性格中自己不喜欢的方面。", "dimension": "善待自己", "reverse_scored": false, "source_item": "中文版SCS第26题"},
+        {"item_code": "SCS03", "display_order": 3, "text": "当一些令人痛苦的事情发生时，我尽量用平和的心态来面对。", "dimension": "静观当下", "reverse_scored": false, "source_item": "中文版SCS第14题"},
+        {"item_code": "SCS04", "display_order": 4, "text": "当情绪低落时，我会觉得大多数人可能比我快乐。", "dimension": "自我隔离", "reverse_scored": true, "source_item": "中文版SCS第13题"},
+        {"item_code": "SCS05", "display_order": 5, "text": "我尽量把自己的失败看成人生经历的一部分。", "dimension": "共同人性", "reverse_scored": false, "source_item": "中文版SCS第15题"},
+        {"item_code": "SCS06", "display_order": 6, "text": "当我经历艰难困苦时，我会关心自己、善待自己。", "dimension": "善待自己", "reverse_scored": false, "source_item": "中文版SCS第12题"},
+        {"item_code": "SCS07", "display_order": 7, "text": "遇到烦心事时，我会尽量让自己的情绪保持稳定。", "dimension": "静观当下", "reverse_scored": false, "source_item": "中文版SCS第9题"},
+        {"item_code": "SCS08", "display_order": 8, "text": "在一些对自己重要的事情上失败时，我容易觉得是自己一个人在承受失败，感到孤独。", "dimension": "自我隔离", "reverse_scored": true, "source_item": "中文版SCS第25题"},
+        {"item_code": "SCS09", "display_order": 9, "text": "当我情绪低落时，我容易纠结于不顺心的事情。", "dimension": "过度沉迷", "reverse_scored": true, "source_item": "中文版SCS第2题"},
+        {"item_code": "SCS10", "display_order": 10, "text": "当我感到自己在某些方面不足时，我尽量提醒自己：大部分人和我一样，都不完美。", "dimension": "共同人性", "reverse_scored": false, "source_item": "中文版SCS第10题"},
+        {"item_code": "SCS11", "display_order": 11, "text": "对自己的缺点和不足，我持不满和批判的态度。", "dimension": "自我批评", "reverse_scored": true, "source_item": "中文版SCS第1题"},
+        {"item_code": "SCS12", "display_order": 12, "text": "对于我性格中那些自己不喜欢的方面，我不能容忍。", "dimension": "自我批评", "reverse_scored": true, "source_item": "中文版SCS第11题"}
+      ]
+    },
+    {
+      "scale_code": "IUS_12_CN",
+      "name": "无法忍受不确定性量表（简版）",
+      "short_name": "不确定性不耐受",
+      "source_version": "IUS-12 中文简版（张亚娟等 2017）",
+      "score_direction": "12题均正向计分，得分越高表示无法忍受不确定性越高。",
+      "items": [
+        {"item_code": "IUS01", "display_order": 1, "text": "不可预见的事件让我非常心烦。", "dimension": "预期性焦虑", "reverse_scored": false, "source_item": "IUS-27第7题"},
+        {"item_code": "IUS02", "display_order": 2, "text": "没有掌握所有我需要的信息会让我感到挫败。", "dimension": "预期性焦虑", "reverse_scored": false, "source_item": "IUS-27第8题"},
+        {"item_code": "IUS03", "display_order": 3, "text": "一个人应该总是提前考虑，以避免意外。", "dimension": "预期性焦虑", "reverse_scored": false, "source_item": "IUS-27第10题"},
+        {"item_code": "IUS04", "display_order": 4, "text": "一个小的不可预见的事件也可能毁掉一切，即使计划再周全。", "dimension": "预期性焦虑", "reverse_scored": false, "source_item": "IUS-27第11题"},
+        {"item_code": "IUS05", "display_order": 5, "text": "我总是想知道未来会发生什么。", "dimension": "预期性焦虑", "reverse_scored": false, "source_item": "IUS-27第18题"},
+        {"item_code": "IUS06", "display_order": 6, "text": "我无法忍受被意外之事突袭。", "dimension": "预期性焦虑", "reverse_scored": false, "source_item": "IUS-27第19题"},
+        {"item_code": "IUS07", "display_order": 7, "text": "我应该能够提前安排好一切。", "dimension": "预期性焦虑", "reverse_scored": false, "source_item": "IUS-27第21题"},
+        {"item_code": "IUS08", "display_order": 8, "text": "不确定性让我过得不好。", "dimension": "抑制性焦虑", "reverse_scored": false, "source_item": "IUS-27第9题"},
+        {"item_code": "IUS09", "display_order": 9, "text": "该行动时，不确定性使我裹足不前。", "dimension": "抑制性焦虑", "reverse_scored": false, "source_item": "IUS-27第12题"},
+        {"item_code": "IUS10", "display_order": 10, "text": "当我感到不确定时，我就无法很好地发挥/运作。", "dimension": "抑制性焦虑", "reverse_scored": false, "source_item": "IUS-27第15题"},
+        {"item_code": "IUS11", "display_order": 11, "text": "最微小的疑虑都能阻止我采取行动。", "dimension": "抑制性焦虑", "reverse_scored": false, "source_item": "IUS-27第20题"},
+        {"item_code": "IUS12", "display_order": 12, "text": "我必须远离所有不确定的情境。", "dimension": "抑制性焦虑", "reverse_scored": false, "source_item": "IUS-27第25题"}
+      ]
+    }
+  ]
+}

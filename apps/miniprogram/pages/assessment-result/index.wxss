@@ -1,12 +1,12 @@
 .assessment-result-page {
-  padding-bottom: 48rpx;
+  padding-bottom: 72rpx;
 }
 
 .result-hero {
   padding: 34rpx;
   border: 1rpx solid #dcebd8;
   border-radius: 28rpx;
-  background: linear-gradient(135deg, #eef8e9 0%, #fff8ed 100%);
+  background: linear-gradient(135deg, var(--safe-primary-pale) 0%, var(--safe-card) 76%);
   box-shadow: 0 14rpx 34rpx rgba(82, 112, 64, 0.12);
 }
 
@@ -31,14 +31,14 @@
 }
 
 .result-kicker {
-  color: #4caf7d;
+  color: var(--safe-primary);
   font-size: 24rpx;
   font-weight: 800;
 }
 
 .result-title {
   margin-top: 12rpx;
-  color: #25372c;
+  color: var(--safe-title);
   font-size: 36rpx;
   font-weight: 800;
   line-height: 1.35;
@@ -46,7 +46,7 @@
 
 .result-summary {
   margin-top: 16rpx;
-  color: #596a5b;
+  color: var(--safe-text);
   font-size: 26rpx;
   line-height: 1.7;
 }
@@ -63,17 +63,17 @@
   padding: 26rpx;
   border: 1rpx solid #bfe3c4;
   border-radius: 24rpx;
-  background: #ffffff;
+  background: var(--safe-card);
   box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
 }
 
 .profile-result-card.high-risk {
   border-color: #efc09d;
-  background: #fff7ef;
+  background: var(--safe-orange-soft);
 }
 
 .profile-name {
-  color: #25372c;
+  color: var(--safe-title);
   font-size: 32rpx;
   font-weight: 800;
   line-height: 1.4;
@@ -113,7 +113,7 @@
   margin-top: 20rpx;
   padding: 24rpx;
   border-radius: 24rpx;
-  background: #ffffff;
+  background: var(--safe-card);
   box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
 }
 
@@ -172,7 +172,7 @@
 
 .next-step-label {
   margin-top: 12rpx;
-  color: #4caf7d;
+  color: var(--safe-primary);
   font-size: 22rpx;
   font-weight: 800;
   line-height: 1.4;
@@ -184,7 +184,7 @@
 
 .support-card {
   border: 1rpx solid #efc09d;
-  background: #fff7ef;
+  background: var(--safe-orange-soft);
 }
 
 .support-title {
@@ -203,7 +203,7 @@
   padding: 24rpx;
   border: 1rpx solid #e8efdf;
   border-radius: 24rpx;
-  background: #ffffff;
+  background: var(--safe-card);
   box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
 }
 
@@ -219,7 +219,7 @@
 
 .cell-value {
   margin-top: 10rpx;
-  color: #25372c;
+  color: var(--safe-title);
   font-size: 28rpx;
   font-weight: 800;
   line-height: 1.45;

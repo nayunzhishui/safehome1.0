@@ -4,9 +4,9 @@
   gap: 22rpx;
   padding: 22rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 16rpx;
+  border-radius: var(--safe-radius-md);
   background: rgba(255, 253, 248, 0.96);
-  box-shadow: 0 12rpx 30rpx rgba(52, 66, 58, 0.08);
+  box-shadow: var(--safe-shadow-card);
   text-align: left;
 }
 
@@ -20,8 +20,8 @@
   height: 142rpx;
   flex: 0 0 auto;
   overflow: hidden;
-  border-radius: 16rpx;
-  background: linear-gradient(135deg, #edf5e8, #fff4e8);
+  border-radius: var(--safe-radius-sm);
+  background: linear-gradient(135deg, var(--safe-primary-pale), var(--safe-orange-soft));
 }
 
 .cover-sun {
@@ -77,8 +77,8 @@
   display: inline-flex;
   align-items: center;
   padding: 0 12rpx;
-  border-radius: 19rpx;
-  background: #dce9d6;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
   font-size: 20rpx;
 }

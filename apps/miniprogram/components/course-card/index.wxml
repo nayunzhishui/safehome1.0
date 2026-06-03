@@ -11,8 +11,8 @@
     </view>
     <text class="course-description">{{description}}</text>
     <view class="course-meta">
-      <text>{{lessonCount}} 课时</text>
-      <text>学习进度 {{progress}}%</text>
+      <text>{{lessonCount}} 小节</text>
+      <text>已查看 {{progress}}%</text>
     </view>
     <view class="progress-track">
       <view class="progress-fill" style="width: {{progress}}%;"></view>

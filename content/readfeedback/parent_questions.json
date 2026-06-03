@@ -1,0 +1,96 @@
+{
+  "version": "2026.05-pilot-v1",
+  "questions": [
+    {
+      "id": "q1",
+      "text": "当孩子说“我这次数学又没考好”时，你最接近的第一反应是？",
+      "type": "choice",
+      "required": true,
+      "options": [
+        {"value": "comfort", "label": "先看见孩子的感受，问问发生了什么", "scores": {"support": 2, "awareness": 1}},
+        {"value": "blame", "label": "忍不住指出问题，比如粗心、拖拉、不够努力", "scores": {"pressure": 2, "self_demand": 1}},
+        {"value": "compare", "label": "想到其他同学或亲戚孩子的表现", "scores": {"pressure": 2, "support": -1}},
+        {"value": "freeze", "label": "心里很急，但一时不知道怎么回应", "scores": {"pressure": 1, "awareness": 1}}
+      ]
+    },
+    {
+      "id": "q2",
+      "text": "最近一周，育儿相关事情让你“电量耗尽”的频率更接近？",
+      "type": "choice",
+      "required": true,
+      "options": [
+        {"value": "rare", "label": "很少，基本能恢复", "scores": {"pressure": 0, "support": 1}},
+        {"value": "sometimes", "label": "偶尔，通常睡一觉会好些", "scores": {"pressure": 1}},
+        {"value": "often", "label": "经常，一想到学习就紧绷", "scores": {"pressure": 2}},
+        {"value": "daily", "label": "几乎每天，已经影响休息或关系", "scores": {"pressure": 3}}
+      ]
+    },
+    {
+      "id": "q3",
+      "text": "当你快要发火时，你通常能多快注意到身体信号？",
+      "type": "choice",
+      "required": true,
+      "options": [
+        {"value": "early", "label": "比较早，能感到心跳、肩膀或语气变化", "scores": {"awareness": 2}},
+        {"value": "middle", "label": "说出口之后才意识到自己急了", "scores": {"awareness": 1, "pressure": 1}},
+        {"value": "late", "label": "通常事后才后悔", "scores": {"awareness": 0, "pressure": 2}},
+        {"value": "unclear", "label": "我不太确定自己的身体信号", "scores": {"awareness": 0}}
+      ]
+    },
+    {
+      "id": "q4",
+      "text": "你对“做一个好父母”的内在要求更像哪一句？",
+      "type": "choice",
+      "required": true,
+      "options": [
+        {"value": "balanced", "label": "我会努力，也允许自己有做不到的时候", "scores": {"self_compassion": 2, "support": 1}},
+        {"value": "responsible", "label": "孩子的问题我有责任一起面对", "scores": {"self_demand": 1, "support": 1}},
+        {"value": "perfect", "label": "我必须处理好，否则就是我没做好", "scores": {"self_demand": 3, "self_compassion": -1}},
+        {"value": "guilty", "label": "我常觉得自己不够好，亏欠孩子", "scores": {"self_demand": 2, "self_compassion": -2, "pressure": 1}}
+      ]
+    },
+    {
+      "id": "q5",
+      "text": "面对孩子拖延、顶嘴或成绩波动时，你身边的支持感如何？",
+      "type": "choice",
+      "required": true,
+      "options": [
+        {"value": "steady", "label": "有人能听我说，也能一起想办法", "scores": {"support": 2}},
+        {"value": "some", "label": "偶尔有人支持，但不稳定", "scores": {"support": 1}},
+        {"value": "alone", "label": "大多数时候只能自己扛", "scores": {"support": -1, "pressure": 1}},
+        {"value": "conflict", "label": "家人之间常因此互相指责", "scores": {"support": -2, "pressure": 2}}
+      ]
+    },
+    {
+      "id": "q6",
+      "text": "请写下一个最近让你最容易烦躁或担心的育儿场景。",
+      "type": "textarea",
+      "required": false,
+      "max_length": 600
+    },
+    {
+      "id": "q7",
+      "text": "你是否记得一次自己虽然很烦，但最后比较平静地处理了冲突？",
+      "type": "choice",
+      "required": true,
+      "options": [
+        {"value": "clear", "label": "记得，而且大概知道自己怎么做到的", "scores": {"success": 2, "awareness": 1}},
+        {"value": "vague", "label": "好像有，但说不清具体做法", "scores": {"success": 1}},
+        {"value": "rare", "label": "很少出现这样的时刻", "scores": {"success": 0, "pressure": 1}},
+        {"value": "none", "label": "暂时想不起来", "scores": {"success": 0}}
+      ]
+    },
+    {
+      "id": "q8",
+      "text": "如果今天只尝试一个小动作，你更愿意从哪里开始？",
+      "type": "choice",
+      "required": true,
+      "options": [
+        {"value": "pause", "label": "先暂停 5 分钟，让自己降温", "scores": {"willingness": 2, "awareness": 1}},
+        {"value": "self_kindness", "label": "对自己说一句更温柔的话", "scores": {"willingness": 2, "self_compassion": 1}},
+        {"value": "listen", "label": "先听孩子说完，再回应", "scores": {"willingness": 2, "support": 1}},
+        {"value": "not_ready", "label": "我还没准备好行动，只想先看看结果", "scores": {"willingness": 0}}
+      ]
+    }
+  ]
+}

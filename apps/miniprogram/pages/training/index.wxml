@@ -1,14 +1,54 @@
-<view class="safe-page training-page">
-  <view class="page-head">
-    <text class="page-title">家长练习UP模块</text>
-    <text class="page-subtitle">每天10分钟，练习更稳定的情绪回应</text>
+<view class="safe-page safe-page--with-tabbar training-page">
+  <view class="training-hero safe-card safe-card--hero">
+    <view class="hero-copy">
+      <text class="hero-kicker">陪伴训练</text>
+      <text class="hero-title">从先稳定自己开始</text>
+      <text class="hero-summary">每天选一个小练习，不需要一次做很多。先让身体慢下来，再进入沟通。</text>
+    </view>
+    <view class="hero-badge">
+      <text class="hero-badge-number">10</text>
+      <text class="hero-badge-text">分钟以内</text>
+    </view>
   </view>
 
-  <view class="starter-card">
-    <view class="starter-icon">1</view>
-    <view>
-      <text class="starter-title">新手推荐路径</text>
-      <text class="starter-text">建议从情绪觉察和暂停训练开始，先稳定自己，再回应孩子。</text>
+  <view class="starter-card safe-card">
+    <view class="starter-head">
+      <text class="starter-icon">1</text>
+      <view class="starter-copy">
+        <text class="starter-title">新手推荐路径</text>
+        <text class="starter-text">如果不知道从哪张卡开始，先按这三个小练习走一遍。</text>
+      </view>
+    </view>
+    <view class="starter-steps">
+      <view class="starter-step">
+        <text class="step-name">情绪觉察</text>
+        <text class="step-desc">先看见自己</text>
+      </view>
+      <view class="starter-step">
+        <text class="step-name">身体调节</text>
+        <text class="step-desc">让反应慢下来</text>
+      </view>
+      <view class="starter-step">
+        <text class="step-name">暂停训练</text>
+        <text class="step-desc">再回应孩子</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="path-card">
+    <view class="path-item">
+      <text class="path-index">01</text>
+      <text class="path-text">认识和稳定情绪</text>
+    </view>
+    <view class="path-line"></view>
+    <view class="path-item">
+      <text class="path-index">02</text>
+      <text class="path-text">改变想法和行为</text>
+    </view>
+    <view class="path-line"></view>
+    <view class="path-item">
+      <text class="path-index">03</text>
+      <text class="path-text">改善亲子关系</text>
     </view>
   </view>
 

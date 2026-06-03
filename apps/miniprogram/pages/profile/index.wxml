@@ -1,5 +1,5 @@
-<view class="safe-page profile-page">
-  <view class="user-card">
+<view class="safe-page safe-page--with-tabbar profile-page">
+  <view class="user-card safe-card safe-card--hero">
     <view class="avatar">家</view>
     <view class="user-copy">
       <text class="user-name">{{user.nickname}}</text>
@@ -9,8 +9,12 @@
     <text class="growth-level">{{user.growthLevel}}</text>
   </view>
 
+  <view class="profile-note">
+    <text>这里用于查看记录、复盘和支持入口。当前不做诊断，也不替代专业咨询或紧急帮助。</text>
+  </view>
+
   <view class="safe-section">
-    <section-title title="我的记录" subtitle="回顾周报、反馈、训练和测评记录" />
+    <section-title title="我的记录" subtitle="查看复盘、反馈、训练和测评记录" />
     <view class="entry-grid">
       <view wx:for="{{recordEntries}}" wx:key="title" data-group="recordEntries" data-index="{{index}}" bindtap="openEntry">
         <function-entry-card
@@ -25,7 +29,7 @@
   </view>
 
   <view class="safe-section">
-    <section-title title="专业支持" subtitle="需要时获得更进一步的补充反馈" />
+    <section-title title="专业支持" subtitle="需要时获得进一步补充反馈" />
     <view class="support-list">
       <button wx:for="{{supportEntries}}" wx:key="title" class="support-row" data-group="supportEntries" data-index="{{index}}" bindtap="openEntry">
         <view class="row-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">{{item.iconText}}</view>
@@ -39,7 +43,11 @@
   </view>
 
   <view class="safe-section">
-    <section-title title="安全支持" subtitle="入口明显，但只提供紧急帮助指引" />
+    <section-title title="安全支持" subtitle="入口明显，但只提供现实帮助指引" />
+    <view class="safety-card">
+      <text class="safety-title">如果出现紧急安全风险</text>
+      <text class="safety-text">请先联系身边可信赖的人、学校老师、当地紧急医疗或心理危机支持。本小程序不能提供实时危机干预。</text>
+    </view>
     <view class="support-list safety-list">
       <button wx:for="{{safetyEntries}}" wx:key="title" class="support-row" data-group="safetyEntries" data-index="{{index}}" bindtap="openEntry">
         <view class="row-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">{{item.iconText}}</view>
@@ -50,12 +58,23 @@
         <text class="row-arrow">›</text>
       </button>
     </view>
-    <view class="crisis-card">
-      <text>如果你或孩子正在经历强烈痛苦、自伤想法或安全风险，请立即联系身边可信赖的人，并寻求当地紧急医疗或心理危机支持。</text>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="设置与说明" subtitle="了解工具边界和后续说明" />
+    <view class="support-list">
+      <button wx:for="{{settingsEntries}}" wx:key="title" class="support-row" data-group="settingsEntries" data-index="{{index}}" bindtap="openEntry">
+        <view class="row-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">{{item.iconText}}</view>
+        <view class="row-copy">
+          <text class="row-title">{{item.title}}</text>
+          <text class="row-subtitle">{{item.subtitle}}</text>
+        </view>
+        <text class="row-arrow">›</text>
+      </button>
     </view>
   </view>
 
   <view class="safe-section">
-    <bottom-tip-card text="安心陪伴，和孩子一起慢慢变好。" />
+    <bottom-tip-card text="安心陪伴，先照顾好自己，再慢慢陪孩子往前走。" />
   </view>
 </view>
