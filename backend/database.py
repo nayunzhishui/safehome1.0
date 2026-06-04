@@ -7,7 +7,22 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from config import Config
-from models import SCHEMA_SQL
+from models import INDEX_SQL, SCHEMA_SQL
+
+
+REQUIRED_HEALTH_TABLES = [
+    "users",
+    "schema_migrations",
+    "emotion_diaries",
+    "feedback_results",
+    "student_profiles",
+    "risk_review_records",
+    "audit_logs",
+    "consent_records",
+    "records",
+]
+CURRENT_SCHEMA_VERSION = "2026_06_04_001"
+CURRENT_SCHEMA_NAME = "baseline_safehome_schema"
 
 
 def get_connection(database_path: str | Path | None = None) -> sqlite3.Connection:
@@ -23,15 +38,62 @@ def init_db() -> None:
     with get_connection() as conn:
         for statement in SCHEMA_SQL:
             conn.execute(statement)
+        for statement in INDEX_SQL:
+            conn.execute(statement)
         ensure_schema_columns(conn)
         sync_training_cards(conn)
+        record_schema_migration(conn)
         conn.commit()
+
+
+def check_database_health() -> dict:
+    """Run a read-only database health check for cloud and deploy diagnostics."""
+    path = Path(Config.DATABASE_PATH)
+    result = {
+        "ok": False,
+        "path": str(path),
+        "required_tables_ok": False,
+        "missing_tables": [],
+    }
+    try:
+        with get_connection(path) as conn:
+            rows = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
+            ).fetchall()
+        existing_tables = {row["name"] for row in rows}
+        missing_tables = [table for table in REQUIRED_HEALTH_TABLES if table not in existing_tables]
+        result["missing_tables"] = missing_tables
+        result["required_tables_ok"] = not missing_tables
+        result["ok"] = not missing_tables
+    except sqlite3.Error as exc:
+        result["error"] = str(exc)
+    return result
 
 
 def ensure_column(conn: sqlite3.Connection, table: str, column: str, definition: str) -> None:
     columns = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()}
     if column not in columns:
         conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
+
+
+def record_schema_migration(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS schema_migrations (
+            version TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            applied_at TEXT NOT NULL
+        )
+        """
+    )
+    conn.execute(
+        """
+        INSERT INTO schema_migrations (version, name, applied_at)
+        VALUES (?, ?, ?)
+        ON CONFLICT(version) DO NOTHING
+        """,
+        (CURRENT_SCHEMA_VERSION, CURRENT_SCHEMA_NAME, now_iso()),
+    )
 
 
 def ensure_schema_columns(conn: sqlite3.Connection) -> None:
@@ -52,6 +114,13 @@ def ensure_schema_columns(conn: sqlite3.Connection) -> None:
     }
     for column, definition in student_profile_columns.items():
         ensure_column(conn, "student_profiles", column, definition)
+
+    risk_review_columns = {
+        "action_taken": "TEXT",
+        "closed_reason": "TEXT",
+    }
+    for column, definition in risk_review_columns.items():
+        ensure_column(conn, "risk_review_records", column, definition)
 
 
 def now_iso() -> str:

@@ -25,6 +25,29 @@ EXPORT_TABLES = {
 }
 
 PROFILE_EXPORT_TYPES = {"profile", "student_profiles"}
+DEFAULT_EXPORT_LIMIT = 1000
+MAX_EXPORT_LIMIT = 5000
+
+
+def _parse_export_limit(value: str | None) -> tuple[int | None, tuple | None]:
+    if value in (None, ""):
+        return DEFAULT_EXPORT_LIMIT, None
+    try:
+        limit = int(value)
+    except (TypeError, ValueError):
+        return None, fail("invalid_export_limit", "limit 必须是整数", status=400)
+    if limit <= 0:
+        return None, fail("invalid_export_limit", "limit 必须大于 0", status=400)
+    if limit > MAX_EXPORT_LIMIT:
+        return None, fail("invalid_export_limit", "limit 不能超过 5000", status=400)
+    return limit, None
+
+
+def _fetch_limited_rows(conn, base_sql: str, params: list | tuple | None, limit: int):
+    params = list(params or [])
+    count_row = conn.execute(f"SELECT COUNT(*) AS count FROM ({base_sql}) AS export_source", params).fetchone()
+    rows = conn.execute(f"{base_sql} LIMIT ?", [*params, limit]).fetchall()
+    return rows, count_row["count"]
 
 
 def _anonymous_id(user_id: str) -> str:
@@ -44,6 +67,9 @@ def _profile_export_rows(rows) -> list[dict]:
             recommended_card_ids = json.loads(item.get("recommended_task_ids_json") or "[]")
         except json.JSONDecodeError:
             recommended_card_ids = []
+        report = _loads(item.get("report_json"), {})
+        consent_summary = report.get("consent_summary", {}) if isinstance(report, dict) else {}
+        research_consent = consent_summary.get("research_authorization", {}) if isinstance(consent_summary, dict) else {}
         dimension_summary = "；".join(
             f"{dimension.get('label')}: {dimension.get('level')}"
             for dimension in dimensions
@@ -59,6 +85,8 @@ def _profile_export_rows(rows) -> list[dict]:
                 "confidence": item.get("confidence"),
                 "risk_level": item.get("risk_level"),
                 "requires_review": item.get("requires_review"),
+                "research_authorization_status": research_consent.get("status"),
+                "consent_summary_json": json.dumps(consent_summary, ensure_ascii=False),
                 "dimension_summary": dimension_summary,
                 "recommended_card_ids": ",".join(recommended_card_ids),
                 "rules_version": item.get("rules_version"),
@@ -167,6 +195,7 @@ def _parent_export_rows(rows) -> list[dict]:
                 "anonymous_id": row["anonymous_id"],
                 "participant_code": row["participant_code"],
                 "research_consent": row["research_consent"],
+                "research_consent_status": "agreed" if row["research_consent"] else "declined",
                 "study_batch": row["study_batch"],
                 "source_channel": row["source_channel"],
                 "profile_key": row["profile_key"],
@@ -262,31 +291,40 @@ def export_csv():
         return fail("unauthorized", "导出数据需要后台导出令牌", status=401)
 
     export_type = request.args.get("type", "diaries")
+    limit, limit_error = _parse_export_limit(request.args.get("limit"))
+    if limit_error:
+        return limit_error
 
     user_id = request.args.get("user_id")
     module_type = request.args.get("module_type")
     confirmed_high_risk_export = parse_bool(request.args.get("confirm_high_risk"), False)
     contains_high_risk = False
+    row_count_before_limit = 0
     try:
         with get_connection() as conn:
             if export_type in PROFILE_EXPORT_TYPES:
                 if user_id:
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         """
                         SELECT * FROM student_profiles
                         WHERE user_id = ? AND export_allowed = 1
                         ORDER BY created_at DESC
                         """,
                         (user_id,),
-                    ).fetchall()
+                        limit,
+                    )
                 else:
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         """
                         SELECT * FROM student_profiles
                         WHERE export_allowed = 1
                         ORDER BY created_at DESC
-                        """
-                    ).fetchall()
+                        """,
+                        [],
+                        limit,
+                    )
                 contains_high_risk = _profile_rows_contain_high_risk(rows)
                 if contains_high_risk and not confirmed_high_risk_export:
                     return fail(
@@ -304,14 +342,16 @@ def export_csv():
                 if module_type:
                     where_clauses.append("module_type = ?")
                     params.append(module_type)
-                rows = conn.execute(
+                rows, row_count_before_limit = _fetch_limited_rows(
+                    conn,
                     f"""
                     SELECT * FROM records
                     WHERE {' AND '.join(where_clauses)}
                     ORDER BY created_at DESC
                     """,
                     params,
-                ).fetchall()
+                    limit,
+                )
                 contains_high_risk = _record_rows_contain_high_risk(rows)
                 if contains_high_risk and not confirmed_high_risk_export:
                     return fail(
@@ -322,72 +362,95 @@ def export_csv():
                 rows = _record_export_rows(rows)
             elif export_type == "student_followups":
                 if user_id:
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         """
                         SELECT * FROM student_profile_followups
                         WHERE user_id = ? AND export_allowed = 1
                         ORDER BY created_at DESC
                         """,
                         (user_id,),
-                    ).fetchall()
+                        limit,
+                    )
                 else:
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         """
                         SELECT * FROM student_profile_followups
                         WHERE export_allowed = 1
                         ORDER BY created_at DESC
-                        """
-                    ).fetchall()
+                        """,
+                        [],
+                        limit,
+                    )
                 rows = _student_followup_rows(rows)
             elif export_type == "sandplay":
                 if user_id:
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         """
                         SELECT * FROM student_sandplay_entries
                         WHERE user_id = ? AND export_allowed = 1
                         ORDER BY created_at DESC
                         """,
                         (user_id,),
-                    ).fetchall()
+                        limit,
+                    )
                 else:
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         """
                         SELECT * FROM student_sandplay_entries
                         WHERE export_allowed = 1
                         ORDER BY created_at DESC
-                        """
-                    ).fetchall()
+                        """,
+                        [],
+                        limit,
+                    )
                 rows = _sandplay_rows(rows)
             elif export_type == "parent_assessments":
                 if user_id:
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         """
                         SELECT * FROM parent_assessment_submissions
                         WHERE user_id = ? AND export_allowed = 1
                         ORDER BY created_at DESC
                         """,
                         (user_id,),
-                    ).fetchall()
+                        limit,
+                    )
                 else:
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         """
                         SELECT * FROM parent_assessment_submissions
                         WHERE export_allowed = 1
                         ORDER BY created_at DESC
-                        """
-                    ).fetchall()
+                        """,
+                        [],
+                        limit,
+                    )
                 rows = _parent_export_rows(rows)
             elif export_type in {"raw_wide", "long"}:
-                rows = conn.execute(
+                rows, row_count_before_limit = _fetch_limited_rows(
+                    conn,
                     """
                     SELECT * FROM parent_assessment_submissions
                     WHERE research_consent = 1 AND export_allowed = 1
                     ORDER BY created_at DESC
-                    """
-                ).fetchall()
+                    """,
+                    [],
+                    limit,
+                )
                 rows = _parent_raw_wide_rows(rows) if export_type == "raw_wide" else _parent_long_rows(rows)
+                if len(rows) > limit:
+                    row_count_before_limit = len(rows)
+                    rows = rows[:limit]
             elif export_type == "codebook":
                 rows = _codebook_rows()
+                row_count_before_limit = len(rows)
+                rows = rows[:limit]
             else:
                 table = EXPORT_TABLES.get(export_type)
                 if table is None:
@@ -396,12 +459,19 @@ def export_csv():
                         "支持的 type：goals, diaries, feedback, checkins, assessments, profile, student_profiles, records, student_followups, sandplay, parent_assessments, raw_wide, long, codebook, reports, supervision, cards",
                     )
                 if user_id and table != "training_cards":
-                    rows = conn.execute(
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
                         f"SELECT * FROM {table} WHERE user_id = ? ORDER BY created_at DESC",
                         (user_id,),
-                    ).fetchall()
+                        limit,
+                    )
                 else:
-                    rows = conn.execute(f"SELECT * FROM {table} ORDER BY created_at DESC").fetchall()
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
+                        f"SELECT * FROM {table} ORDER BY created_at DESC",
+                        [],
+                        limit,
+                    )
 
             write_audit_log(
                 conn,
@@ -414,6 +484,9 @@ def export_csv():
                     "user_id_filter": user_id,
                     "module_type_filter": module_type,
                     "row_count": len(rows),
+                    "limit": limit,
+                    "row_count_before_limit": row_count_before_limit,
+                    "row_count_exported": len(rows),
                     "contains_high_risk": contains_high_risk,
                     "confirmed_high_risk_export": confirmed_high_risk_export,
                 },

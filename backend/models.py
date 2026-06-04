@@ -2,6 +2,7 @@
 
 MVP_TABLES = [
     "users",
+    "schema_migrations",
     "goals",
     "emotion_diaries",
     "feedback_results",
@@ -30,6 +31,13 @@ SCHEMA_SQL = [
         source TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+        version TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        applied_at TEXT NOT NULL
     )
     """,
     """
@@ -281,6 +289,8 @@ SCHEMA_SQL = [
         review_status TEXT NOT NULL DEFAULT 'pending',
         reviewer_id TEXT,
         review_note TEXT,
+        action_taken TEXT,
+        closed_reason TEXT,
         reviewed_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
@@ -315,4 +325,15 @@ SCHEMA_SQL = [
         replied_at TEXT
     )
     """,
+]
+
+
+INDEX_SQL = [
+    "CREATE INDEX IF NOT EXISTS idx_emotion_diaries_user_created ON emotion_diaries(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_feedback_results_user_created ON feedback_results(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_student_profiles_user_created ON student_profiles(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_student_profiles_risk_created ON student_profiles(risk_level, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_risk_review_status_created ON risk_review_records(review_status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_audit_logs_action_created ON audit_logs(action, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_records_module_created ON records(module_type, created_at)",
 ]

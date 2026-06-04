@@ -16,6 +16,7 @@
     "pages/checkin/index",
     "pages/weekly-report/index",
     "pages/supervision/index",
+    "pages/debug/index",
     "pages/integration-test/index"
   ],
   "window": {

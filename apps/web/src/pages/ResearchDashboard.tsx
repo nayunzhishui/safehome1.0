@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { SafeHomeApiClient } from "../services/safehomeApi";
+import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
 import type { Checkin, EmotionDiary, Goal, RiskReviewRecord, StudentProfileRecord, TrainingCard } from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
@@ -205,7 +205,7 @@ export function ResearchDashboard() {
       setState((current) => ({
         ...current,
         status: "error",
-        message: error instanceof Error ? error.message : "读取失败，请确认 backend 是否已启动。",
+        message: formatSafeHomeError(error, "读取失败，请确认 backend 是否已启动。"),
       }));
     }
   }

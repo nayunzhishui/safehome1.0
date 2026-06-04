@@ -1,6 +1,6 @@
 export const API_BASE_PATH = "/api";
 
-export const DEFAULT_USER_ID = "demo-parent";
+export const MOCK_USER_ID = "mock-parent";
 
 export const API_ENDPOINTS = {
   healthz: "/healthz",

@@ -1,6 +1,6 @@
 # API 接口文档
 
-最后更新时间：2026-06-03
+最后更新时间：2026-06-04
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
@@ -17,8 +17,10 @@
 - CSV 导出接口返回 `text/csv; charset=utf-8`。
 - 时间字段：后端当前使用 ISO 8601 字符串。
 - CORS 来源白名单由 `ALLOWED_ORIGINS` 环境变量配置；开发默认允许 `http://127.0.0.1:5173` 和 `http://localhost:5173`。
-- 当前没有登录鉴权；开发环境未传 `user_id` 时，写入接口可使用默认测试用户 `demo-parent`。
+- 当前没有完整登录鉴权；开发环境未传 `user_id` 时，写入和查询接口可使用默认测试用户 `demo-parent`。
 - 当 `APP_ENV=production` 时，目标、情绪记录、反馈、画像、打卡、督导、测评结果等写入接口必须传匿名 `user_id`，例如 `parent_xxx`、`student_xxx`、`tester_xxx`，否则返回 `validation_error`。
+- 当 `APP_ENV=production` 时，目标、情绪记录、打卡、周报和测评结果等用户查询接口也必须传匿名 `user_id`，否则返回 `validation_error`。
+- 后台敏感接口必须带 `X-Admin-Token`：`/api/admin/export`、`/api/risk-review`、`/api/profile-results` 列表、`/api/profile-results/<id>/reviews`、`/api/profile-results/<id>/review`。
 - 当前不接入复杂 AI 调用，即时反馈由 `content/feedback_rules.json` 规则匹配生成。
 
 通用成功响应：
@@ -46,16 +48,28 @@
 
 ### `GET /healthz`
 
-用途：确认后端是否启动。
+用途：确认后端是否启动。该接口只返回轻量状态，不检查数据库。
 
 响应示例：
 
 ```json
 {
   "ok": true,
-  "service": "safehome-backend"
+  "service": "safehome-backend",
+  "env": "development",
+  "version": "safehome-2026-06-04"
 }
 ```
+
+### `GET /healthz/deep`
+
+用途：云托管和部署诊断。该接口只做只读检查，不返回 token、用户数据或自由文本。
+
+检查项：
+
+- 数据库是否可连接；
+- 核心表是否存在；
+- content 必需文件是否存在。
 
 ## 0A. 用户同意记录
 
@@ -108,6 +122,8 @@
 
 用途：查看 high/medium 风险初筛后进入人工关注的复核队列。
 
+请求头：必须带 `X-Admin-Token`。
+
 查询参数：
 
 | 参数 | 类型 | 必填 | 说明 |
@@ -126,6 +142,8 @@
 
 用途：保存风险复核处理状态和人工备注。
 
+请求头：必须带 `X-Admin-Token`。
+
 请求字段：
 
 | 字段 | 类型 | 必填 | 说明 |
@@ -133,10 +151,12 @@
 | `reviewer_id` | string | 否 | 复核人匿名 ID，默认 `web-admin` |
 | `review_status` | string | 否 | `pending`、`reviewed`、`follow_up_needed`、`transferred`、`closed`，默认 `reviewed` |
 | `review_note` | string | 否 | 后台人工备注，不应保存完整高风险原文 |
+| `action_taken` | string | 否 | 已采取的最小处置动作 |
+| `closed_reason` | string | 否 | 关闭或暂不继续处理的原因 |
 
 边界：
 
-- `POST /api/feedback/generate` 和 `POST /api/profile` 命中 medium/high 风险时会自动创建 `pending` 复核记录。
+- `POST /api/feedback/generate`、`POST /api/profile`、画像 followup、沙盘反思、督导请求和家长测评开放文本命中 medium/high 风险时会自动创建 `pending` 复核记录。
 - 复核更新会写入 `audit_logs.action=review_risk`。
 - 该接口只做人工关注流转，不承诺实时危机干预。
 - `matched_categories_json` 仅保存命中的风险类别和关键词摘要，不保存完整自由文本原文。
@@ -596,6 +616,7 @@
 | `user_id` | string | 否 | 除 `cards`、`codebook`、`raw_wide`、`long` 外，可按用户筛选 |
 | `module_type` | string | 否 | `type=records` 时可按模块筛选，例如 `student_profile` |
 | `confirm_high_risk` | boolean | 否 | 当 `profile`、`student_profiles` 或 `records` 导出含高风险/需复核记录时，必须为 `true` |
+| `limit` | number | 否 | 默认 `1000`，最大 `5000`；超过最大值返回 `400 invalid_export_limit` |
 
 响应：
 
@@ -607,7 +628,9 @@
 - `type=profile` 会从 `student_profiles` 中导出学生画像摘要，默认使用匿名 ID，不导出真实 `user_id`、自由文本原文和联系方式。
 - `type=records` 会从 `records` 导出统一研究摘要，可按 `module_type` 筛选。
 - 如果画像或 records 导出包含 `risk_level=high` 或 `requires_review=true`，未带 `confirm_high_risk=true` 会返回 `409 high_risk_export_confirmation_required`。
-- 导出审计会记录 `contains_high_risk` 和 `confirmed_high_risk_export`。
+- 导出审计会记录 `contains_high_risk`、`confirmed_high_risk_export`、`limit`、`row_count_before_limit` 和 `row_count_exported`。
+- `type=profile` / `student_profiles` 导出包含 `research_authorization_status` 和 `consent_summary_json`。
+- `type=parent_assessments` 导出包含 `research_consent` 和 `research_consent_status`。
 
 本地开发调用示例：
 
@@ -828,6 +851,8 @@ Invoke-WebRequest `
 
 用途：查询 `student_profiles` 中的学生画像历史结果，用于复测和轮次追踪。
 
+请求头：后台列表接口必须带 `X-Admin-Token`。
+
 查询参数：
 
 | 参数 | 类型 | 必填 | 说明 |
@@ -857,6 +882,8 @@ Invoke-WebRequest `
 
 用途：查看某条学生画像的人工复核记录列表。
 
+请求头：必须带 `X-Admin-Token`。
+
 响应字段：
 
 | 字段 | 类型 | 说明 |
@@ -866,6 +893,8 @@ Invoke-WebRequest `
 ### `POST /api/profile-results/<profile_id>/review`
 
 用途：保存人工复核备注、复核结论和处置状态。该接口不会覆盖学生端画像报告。
+
+请求头：必须带 `X-Admin-Token`。
 
 请求字段：
 
@@ -884,6 +913,8 @@ Invoke-WebRequest `
 - 保存后写入 `profile_reviews`；
 - 保存后写入 `audit_logs`，`action=review_profile`；
 - 不修改 `student_profiles` 的原始画像结果，不覆盖学生端报告。
+
+学生画像保存时会在 `report.consent_summary` 和 `records.data_json.consent_summary` 中记录最近一次同意状态，但当前试点阶段不强制阻断画像提交。
 
 ### ReadFeedback 合并后的画像扩展接口
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { safeHomeApi as api } from "../services/safehomeApi";
+import { formatSafeHomeError, safeHomeApi as api } from "../services/safehomeApi";
 import type { ProfileDimension, StudentProfileRecord } from "../../../../shared/types/api";
 
 function parseJson<T>(value: string | null | undefined, fallback: T): T {
@@ -67,7 +67,7 @@ export function ProfilesManagement() {
         setMessage(profiles.length ? "已读取学生画像结果。" : "暂无学生画像结果。");
       } catch (error) {
         setStatus("error");
-        setMessage(error instanceof Error ? error.message : "学生画像结果读取失败。");
+        setMessage(formatSafeHomeError(error, "学生画像结果读取失败。"));
       }
     }
 

@@ -51,6 +51,7 @@
 | 个人中心 |  |  |  |  | 检查入口清楚，信息不过度拥挤 |
 | 人工督导 |  |  |  |  | 检查非实时、非危机边界 |
 | 联调测试 |  |  |  |  | 保留开发属性，不做正式入口 |
+| 云托管诊断 debug |  |  |  |  | 仅开发排错，不进 tabBar；102002 时显示 env、service、path、method |
 | 学生画像结果（规划） |  |  |  |  | 检查是否显示置信度、优势提示和非诊断边界，不使用“人格”定性 |
 | 沙盘表达任务（规划） |  |  |  |  | 检查是否说明仅作表达媒介和访谈线索，不自动解释潜意识 |
 
@@ -65,6 +66,7 @@
 | `/content/cards` |  |  |  |  | 检查训练卡只读管理视角，确认高风险禁用情境和复盘问题不缺失 |
 | `/supervision` |  |  |  |  | 检查人工督导边界 |
 | `/export` |  |  |  |  | 检查导出脱敏提醒 |
+| 后台 401 错误 |  |  |  |  | 检查是否提示“后台令牌缺失或无效，请检查 X-Admin-Token。” |
 | `/reports` |  |  |  |  | 检查周报复盘表达 |
 | `/content/rules` |  |  |  |  | 检查规则不是诊断规则；反馈规则需保留正例、反例、不确定样例和边界说明 |
 | `/integration-test` |  |  |  |  | 保留联调功能 |
@@ -176,6 +178,7 @@ P0 立即修复：
 5. 高风险边界表达错误。
 6. 学生画像出现人格定性或诊断化结论；
 7. 高风险文本仍展示普通训练建议。
+8. followup、沙盘反思、督导请求或家长测评开放文本命中高风险后未进入人工复核。
 
 P1 本轮修复：
 
@@ -210,4 +213,85 @@ P2 问题：
 不舒服最多的页面：
 
 下一轮优先修复：
+```
+
+## 9. 2026-06-04 自动预检记录
+
+验收性质：命令行自动预检，不替代浏览器逐页视觉检查和微信开发者工具人工点击。
+
+### 9.1 Web 页面可达性
+
+本轮使用本地 Web 服务 `http://127.0.0.1:5174` 检查以下页面，均返回 200：
+
+```text
+/
+/dashboard
+/diaries
+/feedback
+/profiles
+/reviews
+/reports
+/export
+/content/rules
+```
+
+### 9.2 后端接口可达性
+
+本轮使用本地后端 `http://127.0.0.1:5050` 检查以下接口，均返回 200：
+
+```text
+/healthz
+/api/profile-results?limit=1
+/api/risk-review?limit=1
+/api/goals?limit=1
+/api/diaries?limit=1
+/api/checkins?limit=1
+```
+
+说明：首次检查时 `/api/risk-review?limit=1` 返回 404，原因是 5050 端口运行的是旧后端进程。重启本地后端后恢复 200。正式人工验收前应确认后端已重启并加载最新代码。
+
+### 9.3 小程序页面路由存在性
+
+以下页面文件存在，且已注册到 `apps/miniprogram/app.json`：
+
+```text
+pages/home/index
+pages/assessment/index
+pages/assessment-detail/index
+pages/assessment-result/index
+pages/training-card/index
+pages/checkin/index
+pages/weekly-report/index
+pages/supervision/index
+pages/integration-test/index
+```
+
+### 9.4 问题分级
+
+P0 问题：
+
+```text
+自动预检未发现。
+```
+
+P1 问题：
+
+```text
+自动预检未发现。
+```
+
+P2 问题：
+
+```text
+1. 尚未在微信开发者工具中人工点击：测一测 -> 学生画像测评 -> 画像报告 -> 推荐训练卡跳转。
+2. 尚未在浏览器中做截图级视觉验收：/profiles、/reviews、/reports、/export、/content/rules。
+3. 当前导出页预览已隐藏自由文本和敏感 JSON 字段，但真实 CSV 下载格式未改变；diaries、supervision 等导出仍可能包含自由文本或联系方式，外发前必须二次脱敏。
+```
+
+下一轮优先验收：
+
+```text
+1. 微信开发者工具人工走通学生画像测评链路。
+2. 浏览器逐页检查 /profiles、/reviews、/reports、/export、/content/rules。
+3. 将人工发现的问题继续按 P0/P1/P2 写入本清单。
 ```

@@ -3,7 +3,7 @@
 from flask import Blueprint, request
 
 from database import get_connection, json_dumps, new_id, now_iso
-from routes.utils import ok
+from routes.utils import fail, ok, resolve_user_id_for_query
 from services.report_service import build_weekly_report
 
 bp = Blueprint("reports", __name__, url_prefix="/api")
@@ -11,7 +11,10 @@ bp = Blueprint("reports", __name__, url_prefix="/api")
 
 @bp.get("/weekly-report")
 def weekly_report():
-    user_id = request.args.get("user_id") or "demo-parent"
+    try:
+        user_id = resolve_user_id_for_query(request.args.get("user_id"))
+    except ValueError as exc:
+        return fail("validation_error", str(exc), status=400)
     week_start = request.args.get("week_start")
     report = build_weekly_report(user_id=user_id, week_start=week_start)
     report_id = new_id("weekly")

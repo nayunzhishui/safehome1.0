@@ -18,7 +18,8 @@ from services.student_profile_model_service import (
     get_model_info_payload,
     get_student_assessment_payload,
 )
-from routes.utils import fail, ok, parse_bool, parse_int, require_user_id
+from routes.utils import admin_token_error_response, fail, ok, parse_bool, parse_int, require_admin_token, require_user_id
+from routes.consent import get_latest_consent
 
 bp = Blueprint("profile", __name__, url_prefix="/api")
 
@@ -107,6 +108,18 @@ def _assessment_answers(payload: dict, result: dict) -> dict:
     }
 
 
+def _consent_summary(conn, user_id: str) -> dict:
+    summary = {}
+    for consent_type in ["user_agreement", "privacy_policy", "non_diagnostic_notice", "research_authorization"]:
+        latest = get_latest_consent(conn, user_id, consent_type)
+        summary[consent_type] = {
+            "status": "agreed" if latest and latest.get("agreed") else "missing_or_declined",
+            "version": latest.get("consent_version") if latest else None,
+            "recorded_at": latest.get("agreed_at") if latest and latest.get("agreed") else latest.get("created_at") if latest else None,
+        }
+    return summary
+
+
 def _save_profile_result(payload: dict, result: dict) -> dict:
     user_id = require_user_id(payload)
     result_id = new_id("assessment")
@@ -144,6 +157,9 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
+        consent_summary = _consent_summary(conn, user_id)
+        report = dict(result.get("report") or {})
+        report["consent_summary"] = consent_summary
         conn.execute(
             """
             INSERT INTO assessment_results (
@@ -203,7 +219,7 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
                 result.get("pc2"),
                 result.get("nearest_distance"),
                 result.get("second_distance"),
-                json_dumps(result.get("report", {})),
+                json_dumps(report),
                 json_dumps(result.get("visuals", {})),
                 1,
                 result.get("data_quality", "valid"),
@@ -238,6 +254,7 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
                         "pc2": result.get("pc2"),
                         "risk_level": result.get("risk_level", "low"),
                         "requires_review": bool(result.get("requires_review")),
+                        "consent_summary": consent_summary,
                         "recommended_card_ids": recommended_card_ids,
                         "rules_version": result.get("rules_version"),
                     }
@@ -256,6 +273,7 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
     saved["student_profile_id"] = profile_id
     saved["answers"] = answers
     saved["scores"] = scores
+    saved["consent_summary"] = consent_summary
     return saved
 
 
@@ -275,6 +293,7 @@ def create_profile():
     saved = _save_profile_result(payload, result)
     result["assessment_result_id"] = saved.get("id")
     result["student_profile_id"] = saved.get("student_profile_id")
+    result["consent_summary"] = saved.get("consent_summary")
     result["saved_to_assessment_results"] = True
     result["saved_to_student_profiles"] = True
     return ok(result, status=201)
@@ -301,6 +320,11 @@ def check_risk():
 
 @bp.get("/profile-results")
 def list_profile_results():
+    try:
+        require_admin_token()
+    except ValueError as exc:
+        return admin_token_error_response(exc)
+
     user_id = request.args.get("user_id")
     limit = parse_int(request.args.get("limit"), 50)
     round_number = parse_int(request.args.get("round"))
@@ -426,6 +450,7 @@ def create_profile_followup(profile_id: str):
     round_no = parse_int(payload.get("round_no"), 1) or 1
     state_score = parse_int(payload.get("state_score"))
     text = str(payload.get("text") or "").strip()[:800]
+    risk_result = check_text_risk(text, source="student_profile_followup")
     timestamp = now_iso()
     followup_id = new_id("followup")
 
@@ -470,15 +495,28 @@ def create_profile_followup(profile_id: str):
                 profile_item.get("user_id"),
                 "profile_followup",
                 followup_id,
-                json_dumps({"profile_id": profile_id, "round_no": round_no, "state_score": state_score, "keywords": keywords}),
+                json_dumps(
+                    {
+                        "profile_id": profile_id,
+                        "round_no": round_no,
+                        "state_score": state_score,
+                        "keywords": keywords,
+                        "risk_level": risk_result.get("risk_level", "low"),
+                        "requires_review": bool(risk_result.get("requires_review")),
+                    }
+                ),
                 timestamp,
                 timestamp,
                 1,
             ),
         )
+        create_risk_review_record(conn, profile_item.get("user_id"), "student_profile_followup", followup_id, risk_result)
         conn.commit()
         row = conn.execute("SELECT * FROM student_profile_followups WHERE id = ?", (followup_id,)).fetchone()
-    return ok(row_to_dict(row), status=201)
+    item = row_to_dict(row)
+    item["risk"] = risk_result
+    item["boundary_notice"] = risk_result.get("boundary_notice")
+    return ok(item, status=201)
 
 
 @bp.get("/profile-results/<profile_id>/sandplay")
@@ -516,6 +554,8 @@ def create_profile_sandplay(profile_id: str):
     timestamp = now_iso()
     entry_id = new_id("sandplay")
     summary = summarize_sandplay_scene(scene)
+    reflection_text = str(payload.get("reflection_text") or "").strip()[:800]
+    risk_result = check_text_risk(reflection_text, source="student_sandplay")
 
     with get_connection() as conn:
         profile = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
@@ -538,7 +578,7 @@ def create_profile_sandplay(profile_id: str):
                 profile_item.get("user_id"),
                 task_title[:120],
                 json_dumps(scene),
-                str(payload.get("reflection_text") or "").strip()[:800],
+                reflection_text,
                 json_dumps(summary),
                 timestamp,
                 1,
@@ -557,22 +597,39 @@ def create_profile_sandplay(profile_id: str):
                 profile_item.get("user_id"),
                 "sandplay_task",
                 entry_id,
-                json_dumps({"profile_id": profile_id, "task_title": task_title, "summary": summary}),
+                json_dumps(
+                    {
+                        "profile_id": profile_id,
+                        "task_title": task_title,
+                        "summary": summary,
+                        "risk_level": risk_result.get("risk_level", "low"),
+                        "requires_review": bool(risk_result.get("requires_review")),
+                        "note": "沙盘内容只作为表达线索，不做潜意识解释。",
+                    }
+                ),
                 timestamp,
                 timestamp,
                 1,
             ),
         )
+        create_risk_review_record(conn, profile_item.get("user_id"), "student_sandplay", entry_id, risk_result)
         conn.commit()
         row = conn.execute("SELECT * FROM student_sandplay_entries WHERE id = ?", (entry_id,)).fetchone()
     item = row_to_dict(row)
     item["scene"] = json_loads(item.get("scene_json"), {})
     item["summary"] = json_loads(item.get("summary_json"), {})
+    item["risk"] = risk_result
+    item["boundary_notice"] = risk_result.get("boundary_notice")
     return ok(item, status=201)
 
 
 @bp.get("/profile-results/<profile_id>/reviews")
 def list_profile_reviews(profile_id: str):
+    try:
+        require_admin_token()
+    except ValueError as exc:
+        return admin_token_error_response(exc)
+
     with get_connection() as conn:
         profile = conn.execute("SELECT id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
         if profile is None:
@@ -590,6 +647,11 @@ def list_profile_reviews(profile_id: str):
 
 @bp.post("/profile-results/<profile_id>/review")
 def create_profile_review(profile_id: str):
+    try:
+        actor_id = require_admin_token()
+    except ValueError as exc:
+        return admin_token_error_response(exc)
+
     payload = request.get_json(silent=True) or {}
     review_status = str(payload.get("review_status") or "reviewed").strip()
     review_decision = str(payload.get("review_decision") or "").strip()
@@ -604,7 +666,6 @@ def create_profile_review(profile_id: str):
 
     timestamp = now_iso()
     review_id = new_id("review")
-    actor_id = _actor_id(payload)
     visible_to_student = 1 if parse_bool(payload.get("visible_to_student"), False) else 0
 
     with get_connection() as conn:

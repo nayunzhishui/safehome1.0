@@ -8,11 +8,11 @@ import type {
   WeeklyReport,
 } from "../types/api";
 
-import { DEFAULT_USER_ID } from "../constants/api";
+import { MOCK_USER_ID } from "../constants/api";
 
 export const mockGoal: Goal = {
   id: "goal_mock_001",
-  user_id: DEFAULT_USER_ID,
+  user_id: MOCK_USER_ID,
   scene: "作业拖延",
   smart_goal: "本周在孩子开始作业前，先用一句观察句替代催促。",
   motivation: "减少晚上作业时的冲突。",
@@ -24,7 +24,7 @@ export const mockGoal: Goal = {
 
 export const mockDiary: EmotionDiary = {
   id: "diary_mock_001",
-  user_id: DEFAULT_USER_ID,
+  user_id: MOCK_USER_ID,
   goal_id: mockGoal.id,
   event_time: "2026-05-20T20:30:00+08:00",
   scene: "作业拖延",
@@ -91,7 +91,7 @@ export const mockTrainingCards: TrainingCard[] = [
 
 export const mockCheckin: Checkin = {
   id: "checkin_mock_001",
-  user_id: DEFAULT_USER_ID,
+  user_id: MOCK_USER_ID,
   card_id: "three_second_pause",
   diary_id: mockDiary.id,
   completed: 1,
@@ -103,7 +103,7 @@ export const mockCheckin: Checkin = {
 
 export const mockWeeklyReport: WeeklyReport = {
   id: "weekly_mock_001",
-  user_id: DEFAULT_USER_ID,
+  user_id: MOCK_USER_ID,
   week_start: "2026-05-18",
   week_end: "2026-05-24",
   frequent_scenes: [["作业拖延", 1]],
@@ -115,7 +115,7 @@ export const mockWeeklyReport: WeeklyReport = {
 
 export const mockSupervisionRequest: SupervisionRequest = {
   id: "supervision_mock_001",
-  user_id: DEFAULT_USER_ID,
+  user_id: MOCK_USER_ID,
   diary_id: mockDiary.id,
   message: "想请老师看看我这次回应还能怎么调整。",
   contact: "demo@example.com",

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { safeHomeApi as api } from "../services/safehomeApi";
+import { formatSafeHomeError, safeHomeApi as api } from "../services/safehomeApi";
 import type { ProfileReviewInput, ProfileReviewStatus, StudentProfileRecord } from "../../../../shared/types/api";
 
 interface ReviewDraft {
@@ -70,7 +70,7 @@ export function ReviewManagement() {
       setMessage(reviewItems.length ? "已筛选需复核画像。" : "当前暂无需复核画像。");
     } catch (error) {
       setStatus("error");
-      setMessage(error instanceof Error ? error.message : "需复核画像读取失败。");
+      setMessage(formatSafeHomeError(error, "需复核画像读取失败。"));
     }
   }
 
@@ -106,7 +106,7 @@ export function ReviewManagement() {
       await loadReviewItems();
     } catch (error) {
       setStatus("error");
-      setMessage(error instanceof Error ? error.message : "人工复核保存失败。");
+      setMessage(formatSafeHomeError(error, "人工复核保存失败。"));
     } finally {
       setSavingId("");
     }

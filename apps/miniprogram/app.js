@@ -1,8 +1,11 @@
+const { getCloudConfig } = require("./services/cloudConfig");
+
 App({
   onLaunch() {
     if (wx.cloud && wx.cloud.init) {
+      const cloudConfig = getCloudConfig();
       wx.cloud.init({
-        env: "prod-d3gl35otiaa7c8d24",
+        env: cloudConfig.cloudEnvId,
         traceUser: true,
       });
     }

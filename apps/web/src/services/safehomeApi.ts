@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, DEFAULT_USER_ID } from "../../../../shared/constants/api";
+import { API_ENDPOINTS } from "../../../../shared/constants/api";
 import type {
   ApiResponse,
   AssessmentResult,
@@ -33,6 +33,7 @@ import type {
   TrainingCard,
   WeeklyReport,
 } from "../../../../shared/types/api";
+import { getAnonymousUserId } from "./userIdentity";
 
 export interface SafeHomeApiClientOptions {
   baseUrl?: string;
@@ -51,13 +52,20 @@ export class SafeHomeApiError extends Error {
   }
 }
 
+export function formatSafeHomeError(error: unknown, fallback: string): string {
+  if (error instanceof SafeHomeApiError && error.status === 401) {
+    return "后台令牌缺失或无效，请检查 X-Admin-Token。";
+  }
+  return error instanceof Error ? error.message : fallback;
+}
+
 export class SafeHomeApiClient {
   private readonly baseUrl: string;
   private readonly defaultUserId: string;
 
   constructor(options: SafeHomeApiClientOptions = {}) {
     this.baseUrl = options.baseUrl ?? import.meta.env.VITE_SAFEHOME_API_BASE_URL ?? "http://127.0.0.1:5050";
-    this.defaultUserId = options.defaultUserId ?? DEFAULT_USER_ID;
+    this.defaultUserId = options.defaultUserId ?? getAnonymousUserId();
   }
 
   async healthz(): Promise<{ ok: true; service: string }> {
@@ -72,7 +80,7 @@ export class SafeHomeApiClient {
   }
 
   listGoals(params: { user_id?: string; status?: string } = {}): Promise<ListResponse<Goal>> {
-    return this.requestData<ListResponse<Goal>>(this.withQuery(API_ENDPOINTS.goals, params));
+    return this.requestData<ListResponse<Goal>>(this.withQuery(API_ENDPOINTS.goals, this.withDefaultUserParam(params)));
   }
 
   createConsent(input: ConsentInput): Promise<ConsentRecord> {
@@ -83,7 +91,7 @@ export class SafeHomeApiClient {
   }
 
   listConsentRecords(params: { user_id?: string } = {}): Promise<ListResponse<ConsentRecord>> {
-    return this.requestData<ListResponse<ConsentRecord>>(this.withQuery(API_ENDPOINTS.consent, params));
+    return this.requestData<ListResponse<ConsentRecord>>(this.withQuery(API_ENDPOINTS.consent, this.withDefaultUserParam(params)));
   }
 
   createDiary(input: EmotionDiaryInput): Promise<EmotionDiary> {
@@ -94,7 +102,7 @@ export class SafeHomeApiClient {
   }
 
   listDiaries(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<EmotionDiary>> {
-    return this.requestData<ListResponse<EmotionDiary>>(this.withQuery(API_ENDPOINTS.diaries, params));
+    return this.requestData<ListResponse<EmotionDiary>>(this.withQuery(API_ENDPOINTS.diaries, this.withDefaultUserParam(params)));
   }
 
   generateFeedback(input: FeedbackGenerateInput): Promise<FeedbackResult> {
@@ -216,7 +224,7 @@ export class SafeHomeApiClient {
   }
 
   listAssessmentResults(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<AssessmentResult>> {
-    return this.requestData<ListResponse<AssessmentResult>>(this.withQuery(API_ENDPOINTS.assessmentResults, params));
+    return this.requestData<ListResponse<AssessmentResult>>(this.withQuery(API_ENDPOINTS.assessmentResults, this.withDefaultUserParam(params)));
   }
 
   createCheckin(input: CheckinInput): Promise<Checkin> {
@@ -227,11 +235,11 @@ export class SafeHomeApiClient {
   }
 
   listCheckins(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<Checkin>> {
-    return this.requestData<ListResponse<Checkin>>(this.withQuery(API_ENDPOINTS.checkins, params));
+    return this.requestData<ListResponse<Checkin>>(this.withQuery(API_ENDPOINTS.checkins, this.withDefaultUserParam(params)));
   }
 
   getWeeklyReport(params: { user_id?: string; week_start?: string } = {}): Promise<WeeklyReport> {
-    return this.requestData<WeeklyReport>(this.withQuery(API_ENDPOINTS.weeklyReport, params));
+    return this.requestData<WeeklyReport>(this.withQuery(API_ENDPOINTS.weeklyReport, this.withDefaultUserParam(params)));
   }
 
   createSupervision(input: SupervisionInput): Promise<SupervisionRequest> {
@@ -276,6 +284,9 @@ export class SafeHomeApiClient {
       } catch {
         message = `导出失败：HTTP ${response.status}`;
       }
+      if (response.status === 401) {
+        message = "后台令牌缺失或无效，请检查 X-Admin-Token。";
+      }
       throw new SafeHomeApiError(message, "export_error", response.status);
     }
 
@@ -284,6 +295,10 @@ export class SafeHomeApiClient {
 
   private withDefaultUser<T extends { user_id?: string }>(input: T): T {
     return { ...input, user_id: input.user_id ?? this.defaultUserId };
+  }
+
+  private withDefaultUserParam<T extends { user_id?: string }>(params: T): T {
+    return { ...params, user_id: params.user_id ?? this.defaultUserId };
   }
 
   private withQuery(path: string, params: Record<string, string | number | boolean | undefined>): string {
@@ -324,7 +339,8 @@ export class SafeHomeApiClient {
 
     const payload = await response.json();
     if (!response.ok) {
-      throw new SafeHomeApiError(payload?.error?.message ?? "请求失败", payload?.error?.code ?? "http_error", response.status);
+      const message = response.status === 401 ? "后台令牌缺失或无效，请检查 X-Admin-Token。" : payload?.error?.message ?? "请求失败";
+      throw new SafeHomeApiError(message, payload?.error?.code ?? "http_error", response.status);
     }
     return payload as T;
   }

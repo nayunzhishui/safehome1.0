@@ -5,7 +5,7 @@ import os
 from flask import Flask, jsonify, request
 
 from config import Config
-from database import init_db
+from database import check_database_health, init_db
 from routes.admin import bp as admin_bp
 from routes.assessments import bp as assessments_bp
 from routes.cards import bp as cards_bp
@@ -19,6 +19,25 @@ from routes.profile import bp as profile_bp
 from routes.risk_review import bp as risk_review_bp
 from routes.reports import bp as reports_bp
 from routes.supervision import bp as supervision_bp
+
+
+SERVICE_VERSION = "safehome-2026-06-04"
+REQUIRED_CONTENT_FILES = [
+    "training_cards.json",
+    "feedback_rules.json",
+    "risk_keywords.json",
+    "readfeedback/student_profile_model.json",
+]
+
+
+def check_content_health(content_dir) -> dict:
+    missing_files = [filename for filename in REQUIRED_CONTENT_FILES if not (content_dir / filename).exists()]
+    return {
+        "ok": not missing_files,
+        "content_dir": str(content_dir),
+        "required_files_ok": not missing_files,
+        "missing_files": missing_files,
+    }
 
 
 def create_app(config_class: type[Config] = Config) -> Flask:
@@ -52,7 +71,29 @@ def create_app(config_class: type[Config] = Config) -> Flask:
 
     @app.get("/healthz")
     def healthz():
-        return jsonify({"ok": True, "service": "safehome-backend"})
+        return jsonify(
+            {
+                "ok": True,
+                "service": "safehome-backend",
+                "env": app.config.get("APP_ENV"),
+                "version": SERVICE_VERSION,
+            }
+        )
+
+    @app.get("/healthz/deep")
+    def deep_healthz():
+        database = check_database_health()
+        content = check_content_health(app.config["CONTENT_DIR"])
+        return jsonify(
+            {
+                "ok": bool(database.get("ok") and content.get("ok")),
+                "service": "safehome-backend",
+                "env": app.config.get("APP_ENV"),
+                "version": SERVICE_VERSION,
+                "database": database,
+                "content": content,
+            }
+        )
 
     return app
 

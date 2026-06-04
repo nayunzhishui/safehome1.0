@@ -30,6 +30,16 @@ def test_development_allows_demo_parent_for_write_endpoint(tmp_path, monkeypatch
     assert response.get_json()["data"]["user_id"] == "demo-parent"
 
 
+def test_development_allows_demo_parent_for_query_endpoint(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch, "development")
+    client = app.test_client()
+
+    response = client.get("/api/goals")
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["items"] == []
+
+
 def test_production_rejects_missing_user_id_for_core_write_endpoints(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, "production")
     client = app.test_client()
@@ -50,6 +60,25 @@ def test_production_rejects_missing_user_id_for_core_write_endpoints(tmp_path, m
 
     for path, payload in cases:
         response = client.post(path, json=payload)
+        body = response.get_json()
+        assert response.status_code == 400, path
+        assert body["error"]["code"] == "validation_error", path
+        assert "匿名 user_id" in body["error"]["message"], path
+
+
+def test_production_rejects_missing_user_id_for_query_endpoints(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch, "production")
+    client = app.test_client()
+    paths = [
+        "/api/goals",
+        "/api/diaries",
+        "/api/checkins",
+        "/api/weekly-report",
+        "/api/assessment-results",
+    ]
+
+    for path in paths:
+        response = client.get(path)
         body = response.get_json()
         assert response.status_code == 400, path
         assert body["error"]["code"] == "validation_error", path

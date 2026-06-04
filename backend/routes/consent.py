@@ -18,6 +18,19 @@ ALLOWED_CONSENT_TYPES = {
 DEFAULT_CONSENT_VERSION = "2026.06-consent-v1"
 
 
+def get_latest_consent(conn, user_id: str, consent_type: str) -> dict | None:
+    row = conn.execute(
+        """
+        SELECT * FROM consent_records
+        WHERE user_id = ? AND consent_type = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+        """,
+        (user_id, consent_type),
+    ).fetchone()
+    return row_to_dict(row)
+
+
 @bp.post("")
 def create_consent_record():
     payload = request.get_json(silent=True) or {}

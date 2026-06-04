@@ -7,6 +7,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = PROJECT_ROOT / "backend"
+ADMIN_HEADERS = {"X-Admin-Token": "safehome-local-admin-token"}
 
 
 def _fresh_app(tmp_path, content_dir: Path | None = None):
@@ -81,6 +82,7 @@ def test_profile_review_creates_review_and_audit_without_overwriting_profile(tmp
             "action_summary": "已完成人工复核。",
             "visible_to_student": False,
         },
+        headers=ADMIN_HEADERS,
     )
 
     assert review_response.status_code == 201

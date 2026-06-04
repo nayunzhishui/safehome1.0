@@ -1,9 +1,9 @@
-const DEFAULT_CONTAINER_SERVICE = "flask-gh3l";
-const DEFAULT_CLOUD_ENV_ID = "prod-d3gl35otiaa7c8d24";
-// 仅用于 wx.downloadFile / 分享链接 / 二维码等需要完整 HTTPS URL 的场景；
-// 常规 API 调用仍通过 wx.cloud.callContainer，不走此域名。
-const DEFAULT_HTTP_BASE_URL = "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com";
-const DEFAULT_USER_ID = "demo-parent";
+const { getAnonymousUserId } = require("./userIdentity");
+const { DEFAULT_CLOUD_CONFIG, getCloudConfig } = require("./cloudConfig");
+
+const DEFAULT_CONTAINER_SERVICE = DEFAULT_CLOUD_CONFIG.containerService;
+const DEFAULT_CLOUD_ENV_ID = DEFAULT_CLOUD_CONFIG.cloudEnvId;
+const DEFAULT_HTTP_BASE_URL = DEFAULT_CLOUD_CONFIG.httpBaseUrl;
 
 const API_ENDPOINTS = {
   healthz: "/healthz",
@@ -26,10 +26,11 @@ const API_ENDPOINTS = {
 };
 
 function createSafeHomeApi(options = {}) {
-  const containerService = options.containerService || DEFAULT_CONTAINER_SERVICE;
-  const cloudEnvId = options.cloudEnvId || DEFAULT_CLOUD_ENV_ID;
-  const httpBaseUrl = options.httpBaseUrl || DEFAULT_HTTP_BASE_URL;
-  const defaultUserId = options.defaultUserId || DEFAULT_USER_ID;
+  const cloudConfig = getCloudConfig(options);
+  const containerService = cloudConfig.containerService;
+  const cloudEnvId = cloudConfig.cloudEnvId;
+  const httpBaseUrl = cloudConfig.httpBaseUrl;
+  const defaultUserId = options.defaultUserId || getAnonymousUserId();
 
   function withDefaultUser(data = {}) {
     return {
@@ -39,11 +40,20 @@ function createSafeHomeApi(options = {}) {
   }
 
   function request(path, options = {}) {
+    const method = options.method || "GET";
+    const debug = {
+      env: cloudEnvId,
+      service: containerService,
+      path,
+      method,
+    };
+
     return new Promise((resolve, reject) => {
       if (!wx.cloud || !wx.cloud.callContainer) {
         reject({
           code: "cloud_container_unavailable",
-          message: "云托管调用不可用，请确认微信开发者工具已启用云开发环境。",
+          message: `云托管调用不可用，请确认微信开发者工具已启用云开发环境。当前 env=${cloudEnvId}，service=${containerService}，path=${path}。`,
+          debug,
         });
         return;
       }
@@ -53,7 +63,7 @@ function createSafeHomeApi(options = {}) {
           env: cloudEnvId,
         },
         path,
-        method: options.method || "GET",
+        method,
         data: options.data || {},
         header: {
           "content-type": "application/json",
@@ -70,6 +80,7 @@ function createSafeHomeApi(options = {}) {
               message: buildErrorMessage("请求失败", statusCode, payload),
               statusCode,
               payload,
+              debug,
             });
             return;
           }
@@ -79,6 +90,7 @@ function createSafeHomeApi(options = {}) {
               code: payload.error ? payload.error.code : "api_error",
               message: payload.error ? payload.error.message : "接口返回错误",
               statusCode,
+              debug,
             });
             return;
           }
@@ -88,8 +100,9 @@ function createSafeHomeApi(options = {}) {
         fail(err) {
           reject({
             code: err.errCode || "network_error",
-            message: err.errMsg || "云托管调用失败",
+            message: `云托管调用失败，请检查云环境 ID、云托管服务名和服务状态。当前 env=${cloudEnvId}，service=${containerService}，path=${path}。`,
             detail: err,
+            debug,
           });
         },
       });
@@ -118,6 +131,15 @@ function createSafeHomeApi(options = {}) {
   }
 
   return {
+    getDebugConfig() {
+      return {
+        cloudEnvId,
+        containerService,
+        httpBaseUrl,
+        defaultUserId,
+      };
+    },
+
     healthz() {
       return request(API_ENDPOINTS.healthz);
     },
@@ -130,7 +152,7 @@ function createSafeHomeApi(options = {}) {
     },
 
     listGoals(params = {}) {
-      return request(`${API_ENDPOINTS.goals}${queryString(params)}`);
+      return request(`${API_ENDPOINTS.goals}${queryString(withDefaultUser(params))}`);
     },
 
     createConsent(data) {
@@ -141,7 +163,7 @@ function createSafeHomeApi(options = {}) {
     },
 
     listConsentRecords(params = {}) {
-      return request(`${API_ENDPOINTS.consent}${queryString(params)}`);
+      return request(`${API_ENDPOINTS.consent}${queryString(withDefaultUser(params))}`);
     },
 
     createDiary(data) {
@@ -152,7 +174,7 @@ function createSafeHomeApi(options = {}) {
     },
 
     listDiaries(params = {}) {
-      return request(`${API_ENDPOINTS.diaries}${queryString(params)}`);
+      return request(`${API_ENDPOINTS.diaries}${queryString(withDefaultUser(params))}`);
     },
 
     generateFeedback(data) {
@@ -220,7 +242,7 @@ function createSafeHomeApi(options = {}) {
     },
 
     listAssessmentResults(params = {}) {
-      return request(`${API_ENDPOINTS.assessmentResults}${queryString(params)}`);
+      return request(`${API_ENDPOINTS.assessmentResults}${queryString(withDefaultUser(params))}`);
     },
 
     createCheckin(data) {
@@ -231,11 +253,11 @@ function createSafeHomeApi(options = {}) {
     },
 
     listCheckins(params = {}) {
-      return request(`${API_ENDPOINTS.checkins}${queryString(params)}`);
+      return request(`${API_ENDPOINTS.checkins}${queryString(withDefaultUser(params))}`);
     },
 
     getWeeklyReport(params = {}) {
-      return request(`${API_ENDPOINTS.weeklyReport}${queryString(params)}`);
+      return request(`${API_ENDPOINTS.weeklyReport}${queryString(withDefaultUser(params))}`);
     },
 
     createSupervision(data) {
@@ -256,6 +278,5 @@ module.exports = {
   DEFAULT_CLOUD_ENV_ID,
   DEFAULT_CONTAINER_SERVICE,
   DEFAULT_HTTP_BASE_URL,
-  DEFAULT_USER_ID,
   createSafeHomeApi,
 };

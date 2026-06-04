@@ -20,7 +20,8 @@ function formatRequestError(error, fallback) {
   const code = String(error && error.code ? error.code : "");
   const message = error && error.message ? error.message : "";
   if (code === "102002" || message.includes("102002")) {
-    return "云托管请求失败（102002）。请先打开联调测试页运行 /healthz；如果 /healthz 也失败，请检查 CloudBase 环境和 flask-gh3l 服务是否正在运行。";
+    const config = api.getDebugConfig();
+    return `云托管请求失败（102002）。请先打开联调测试页运行 /healthz；如果 /healthz 也失败，请检查 CloudBase 环境和 ${config.containerService} 服务是否正在运行。`;
   }
   return message || fallback;
 }

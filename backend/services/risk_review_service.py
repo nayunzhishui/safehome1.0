@@ -78,6 +78,8 @@ def update_risk_review_record(
     reviewer_id: str,
     review_status: str,
     review_note: str | None = None,
+    action_taken: str | None = None,
+    closed_reason: str | None = None,
 ) -> dict | None:
     if review_status not in REVIEW_STATUSES:
         raise ValueError("review_status 不在支持范围内")
@@ -87,10 +89,11 @@ def update_risk_review_record(
         """
         UPDATE risk_review_records
         SET reviewer_id = ?, review_status = ?, review_note = ?,
+            action_taken = ?, closed_reason = ?,
             reviewed_at = ?, updated_at = ?
         WHERE id = ?
         """,
-        (reviewer_id, review_status, review_note, timestamp, timestamp, review_id),
+        (reviewer_id, review_status, review_note, action_taken, closed_reason, timestamp, timestamp, review_id),
     )
     row = conn.execute("SELECT * FROM risk_review_records WHERE id = ?", (review_id,)).fetchone()
     if row is None:
@@ -107,6 +110,8 @@ def update_risk_review_record(
             "source_type": row["source_type"],
             "source_id": row["source_id"],
             "risk_level": row["risk_level"],
+            "action_taken": action_taken,
+            "closed_reason": closed_reason,
         },
     )
     return row_to_dict(row)

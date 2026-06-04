@@ -3,7 +3,7 @@
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, json_dumps, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts
-from routes.utils import fail, ok, parse_int, require_fields, require_user_id
+from routes.utils import fail, ok, parse_int, require_fields, require_user_id, resolve_user_id_for_query
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
 
@@ -138,7 +138,10 @@ def create_assessment_result():
 
 @bp.get("/assessment-results")
 def list_assessment_results():
-    user_id = request.args.get("user_id") or "demo-parent"
+    try:
+        user_id = resolve_user_id_for_query(request.args.get("user_id"))
+    except ValueError as exc:
+        return fail("validation_error", str(exc), status=400)
     limit = parse_int(request.args.get("limit"), 50)
 
     with get_connection() as conn:

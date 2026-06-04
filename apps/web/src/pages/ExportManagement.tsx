@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { ADMIN_EXPORT_TYPES } from "../../../../shared/constants/api";
-import { SafeHomeApiClient } from "../services/safehomeApi";
+import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
 
 type ExportType = (typeof ADMIN_EXPORT_TYPES)[number];
 type LoadStatus = "idle" | "loading" | "success" | "error";
@@ -198,7 +198,7 @@ export function ExportManagement() {
     } catch (error) {
       setState({
         status: "error",
-        message: error instanceof Error ? error.message : "读取失败，请确认 backend 是否已启动，令牌是否正确。",
+        message: formatSafeHomeError(error, "读取失败，请确认 backend 是否已启动，令牌是否正确。"),
         previewText: "",
       });
     }
@@ -231,7 +231,7 @@ export function ExportManagement() {
       setState((current) => ({
         ...current,
         status: "error",
-        message: error instanceof Error ? error.message : "导出失败，请确认 backend 是否已启动，令牌是否正确。",
+        message: formatSafeHomeError(error, "导出失败，请确认 backend 是否已启动，令牌是否正确。"),
       }));
     }
   }
@@ -295,7 +295,7 @@ export function ExportManagement() {
               value={canFilterByUser ? userId : ""}
               disabled={!canFilterByUser}
               onChange={(event) => setUserId(event.target.value)}
-              placeholder={canFilterByUser ? "例如 demo-parent" : "训练卡内容不按用户筛选"}
+              placeholder={canFilterByUser ? "例如 web_user_..." : "训练卡内容不按用户筛选"}
             />
           </label>
 

@@ -1,19 +1,18 @@
 const {
   API_ENDPOINTS,
-  DEFAULT_CLOUD_ENV_ID,
-  DEFAULT_CONTAINER_SERVICE,
   createSafeHomeApi,
 } = require("../../services/api");
 
 const api = createSafeHomeApi();
+const debugConfig = api.getDebugConfig();
 
 Page({
   data: {
     status: "idle",
     message: "请先启动 backend，再点击按钮进行最小联调。",
     diagnostics: {
-      env: DEFAULT_CLOUD_ENV_ID,
-      service: DEFAULT_CONTAINER_SERVICE,
+      env: debugConfig.cloudEnvId,
+      service: debugConfig.containerService,
       path: API_ENDPOINTS.healthz,
     },
     diary: null,
@@ -66,7 +65,8 @@ Page({
         cards: cardsResult.items || [],
       });
     } catch (error) {
-      const diagnosticText = `入口检查：env=${DEFAULT_CLOUD_ENV_ID}，service=${DEFAULT_CONTAINER_SERVICE}，path=${API_ENDPOINTS.healthz}`;
+      const currentConfig = api.getDebugConfig();
+      const diagnosticText = `入口检查：env=${currentConfig.cloudEnvId}，service=${currentConfig.containerService}，path=${API_ENDPOINTS.healthz}`;
 
       this.setData({
         status: "error",

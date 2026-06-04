@@ -5,6 +5,7 @@ import hashlib
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts
+from routes.consent import DEFAULT_CONSENT_VERSION, get_latest_consent
 from routes.utils import fail, ok, parse_bool, require_user_id
 from services.content_loader import ContentLoadError
 from services.parent_assessment_service import (
@@ -12,6 +13,8 @@ from services.parent_assessment_service import (
     create_parent_assessment_result,
     get_parent_assessment_payload,
 )
+from services.risk_review_service import create_risk_review_record
+from services.risk_service import check_text_risk
 
 bp = Blueprint("parent_assessments", __name__, url_prefix="/api")
 
@@ -29,6 +32,68 @@ def _expand_parent_row(item: dict | None) -> dict | None:
     item["report"] = json_loads(item.get("report_json"), {})
     item["quality_flags"] = json_loads(item.get("quality_flags_json"), {})
     return item
+
+
+def _parent_assessment_open_text(payload: dict) -> list[str]:
+    texts: list[str] = []
+    for field in ["free_text", "raw_text", "reflection_text"]:
+        if payload.get(field):
+            texts.append(str(payload.get(field)))
+
+    question_answers = payload.get("question_answers")
+    if isinstance(question_answers, dict):
+        texts.extend(str(value) for value in question_answers.values() if value)
+    elif isinstance(question_answers, list):
+        for item in question_answers:
+            if isinstance(item, dict) and item.get("value"):
+                texts.append(str(item.get("value")))
+    return texts
+
+
+def _apply_high_risk_parent_boundary(result: dict, risk_result: dict) -> None:
+    if risk_result.get("allow_auto_feedback") is not False:
+        return
+    report = dict(result.get("report") or {})
+    report["action_title"] = "优先确认现实支持"
+    report["action"] = risk_result.get("safe_response")
+    report["course"] = "人工关注与现实支持"
+    report["boundary_notice"] = risk_result.get("boundary_notice")
+    result["report"] = report
+
+
+def _ensure_research_consent(conn, user_id: str, agreed: bool, consent_version: str, timestamp: str) -> dict:
+    latest = get_latest_consent(conn, user_id, "research_authorization")
+    if latest and bool(latest.get("agreed")) == agreed:
+        return {
+            "research_authorization": "agreed" if agreed else "declined",
+            "consent_version": latest.get("consent_version"),
+            "record_id": latest.get("id"),
+        }
+
+    record_id = new_id("consent")
+    conn.execute(
+        """
+        INSERT INTO consent_records (
+            id, user_id, consent_type, consent_version, agreed,
+            agreed_at, revoked_at, created_at
+        )
+        VALUES (?, ?, 'research_authorization', ?, ?, ?, ?, ?)
+        """,
+        (
+            record_id,
+            user_id,
+            consent_version,
+            1 if agreed else 0,
+            timestamp if agreed else None,
+            None if agreed else timestamp,
+            timestamp,
+        ),
+    )
+    return {
+        "research_authorization": "agreed" if agreed else "declined",
+        "consent_version": consent_version,
+        "record_id": record_id,
+    }
 
 
 @bp.get("/parent-assessment")
@@ -52,13 +117,18 @@ def create_parent_assessment():
         return fail("missing_parent_assessment_answers", str(exc), status=400)
     except ContentLoadError as exc:
         return fail("content_load_error", str(exc), status=500)
+    risk_result = check_text_risk(_parent_assessment_open_text(payload), source="parent_assessment")
+    _apply_high_risk_parent_boundary(result, risk_result)
 
     submission_id = new_id("parent")
     timestamp = now_iso()
     completed_at = payload.get("completed_at") or timestamp
+    research_consent = parse_bool(payload.get("research_consent"), True)
+    consent_version = str(payload.get("consent_version") or DEFAULT_CONSENT_VERSION).strip() or DEFAULT_CONSENT_VERSION
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
+        consent_summary = _ensure_research_consent(conn, user_id, research_consent, consent_version, timestamp)
         conn.execute(
             """
             INSERT INTO parent_assessment_submissions (
@@ -75,7 +145,7 @@ def create_parent_assessment():
                 user_id,
                 _anonymous_id(user_id),
                 str(payload.get("participant_code") or "").strip()[:120],
-                1 if parse_bool(payload.get("research_consent"), True) else 0,
+                1 if research_consent else 0,
                 str(payload.get("study_batch") or "").strip()[:120],
                 str(payload.get("source_channel") or "safehome-web").strip()[:120],
                 result.get("questionnaire_version"),
@@ -111,6 +181,9 @@ def create_parent_assessment():
                         "anonymous_id": _anonymous_id(user_id),
                         "profile_key": result.get("profile_key"),
                         "report_role": result.get("report", {}).get("role"),
+                        "risk_level": risk_result.get("risk_level", "low"),
+                        "requires_review": bool(risk_result.get("requires_review")),
+                        "consent_summary": consent_summary,
                         "duration_seconds": result.get("duration_seconds", 0),
                         "quality_flags": result.get("quality_flags", {}).get("flags", []),
                     }
@@ -120,11 +193,15 @@ def create_parent_assessment():
                 1,
             ),
         )
+        create_risk_review_record(conn, user_id, "parent_assessment", submission_id, risk_result)
         conn.commit()
         row = conn.execute("SELECT * FROM parent_assessment_submissions WHERE id = ?", (submission_id,)).fetchone()
 
     item = _expand_parent_row(row_to_dict(row))
     item["report_url"] = f"/assessment/report/{submission_id}"
+    item["risk"] = risk_result
+    item["boundary_notice"] = risk_result.get("boundary_notice")
+    item["consent_summary"] = consent_summary
     return ok(item, status=201)
 
 
