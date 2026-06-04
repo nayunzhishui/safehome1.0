@@ -31,6 +31,13 @@ function reviewStatusText(status?: string | null): string {
   return "未复核";
 }
 
+function recommendedCardsText(profile: StudentProfileRecord | null, recommendedCards: string[]): string {
+  if (!profile) return "暂无";
+  if (profile.risk_level === "high") return "高风险记录不显示普通训练卡，需人工关注。";
+  if (profile.requires_review && recommendedCards.length === 0) return "需人工关注，暂无普通训练卡推荐。";
+  return recommendedCards.join("、") || "暂无";
+}
+
 export function ProfilesManagement() {
   const [items, setItems] = useState<StudentProfileRecord[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -166,7 +173,7 @@ export function ProfilesManagement() {
               <div className="detailRow"><span>风险状态</span><strong>{riskText(selected.risk_level)}</strong></div>
               <div className="detailRow"><span>人工关注</span><strong>{selected.requires_review ? "需要" : "暂不需要"}</strong></div>
               <div className="detailRow"><span>复核状态</span><strong>{reviewStatusText(selected.latest_review?.review_status)}</strong></div>
-              <div className="detailRow"><span>推荐训练卡</span><strong>{recommendedCards.join("、") || "暂无"}</strong></div>
+              <div className="detailRow"><span>推荐训练卡</span><strong>{recommendedCardsText(selected, recommendedCards)}</strong></div>
               <div className="detailRow"><span>画像 ID</span><strong>{selected.id}</strong></div>
               <div className="detailRow"><span>关联测评 ID</span><strong>{selected.assessment_result_id || "暂无"}</strong></div>
               <div className="detailRow"><span>保存时间</span><strong>{selected.created_at}</strong></div>
@@ -202,6 +209,13 @@ export function ProfilesManagement() {
                 <h3>边界说明</h3>
                 <p>{selected.boundary_notice || "本结果只用于支持性理解和练习推荐，不构成诊断。"}</p>
               </div>
+
+              {selected.risk_level === "high" ? (
+                <section className="guidanceBox" aria-label="高风险提示">
+                  <h3>需人工关注</h3>
+                  <p>该画像包含高风险或需复核线索，后台只显示人工关注提示，不展示普通训练卡跳转。系统不是实时危机服务。</p>
+                </section>
+              ) : null}
             </div>
           ) : (
             <div className="emptyState">请选择一条画像记录。</div>

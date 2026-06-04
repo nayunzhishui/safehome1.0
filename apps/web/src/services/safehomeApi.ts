@@ -5,6 +5,8 @@ import type {
   CardRecommendResponse,
   Checkin,
   CheckinInput,
+  ConsentInput,
+  ConsentRecord,
   EmotionDiary,
   EmotionDiaryInput,
   FeedbackGenerateInput,
@@ -20,6 +22,8 @@ import type {
   ProfileReview,
   ProfileReviewInput,
   RiskCheckResult,
+  RiskReviewInput,
+  RiskReviewRecord,
   StudentProfileInput,
   StudentAssessmentPayload,
   StudentProfileRecord,
@@ -71,6 +75,17 @@ export class SafeHomeApiClient {
     return this.requestData<ListResponse<Goal>>(this.withQuery(API_ENDPOINTS.goals, params));
   }
 
+  createConsent(input: ConsentInput): Promise<ConsentRecord> {
+    return this.requestData<ConsentRecord>(API_ENDPOINTS.consent, {
+      method: "POST",
+      body: this.withDefaultUser(input),
+    });
+  }
+
+  listConsentRecords(params: { user_id?: string } = {}): Promise<ListResponse<ConsentRecord>> {
+    return this.requestData<ListResponse<ConsentRecord>>(this.withQuery(API_ENDPOINTS.consent, params));
+  }
+
   createDiary(input: EmotionDiaryInput): Promise<EmotionDiary> {
     return this.requestData<EmotionDiary>(API_ENDPOINTS.diaries, {
       method: "POST",
@@ -117,6 +132,17 @@ export class SafeHomeApiClient {
 
   checkRisk(input: { text?: string; free_text?: string; raw_text?: string; source?: string }): Promise<RiskCheckResult> {
     return this.requestData<RiskCheckResult>(API_ENDPOINTS.riskCheck, {
+      method: "POST",
+      body: input,
+    });
+  }
+
+  listRiskReviews(params: { status?: string; limit?: number } = {}): Promise<ListResponse<RiskReviewRecord>> {
+    return this.requestData<ListResponse<RiskReviewRecord>>(this.withQuery(API_ENDPOINTS.riskReview, params));
+  }
+
+  updateRiskReview(id: string, input: RiskReviewInput): Promise<RiskReviewRecord> {
+    return this.requestData<RiskReviewRecord>(`${API_ENDPOINTS.riskReview}/${encodeURIComponent(id)}/review`, {
       method: "POST",
       body: input,
     });

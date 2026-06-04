@@ -18,6 +18,7 @@ Page({
     frequentEmotions: [],
     commonPatterns: [],
     completedCardsText: "",
+    profileTrendNamesText: "",
   },
 
   onLoad() {
@@ -35,6 +36,9 @@ Page({
         frequentEmotions: formatPairs(report.frequent_emotions || []),
         commonPatterns: formatPairs(report.common_patterns || []),
         completedCardsText: (report.completed_cards || []).join("、"),
+        profileTrendNamesText: ((report.profile_trend && report.profile_trend.profile_names) || [])
+          .map((item) => `${item[0]} ${item[1]} 次`)
+          .join("、"),
         loading: false,
       });
     } catch (error) {

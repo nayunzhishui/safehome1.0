@@ -27,8 +27,17 @@
 
   <view wx:else class="weekly-content">
     <view class="notice-card">
-      <text class="notice-title">温和说明</text>
-      <text class="notice-text">这里不评价家长或孩子，只整理本周记录中的场景、情绪和练习情况。</text>
+      <text class="notice-title">过程复盘说明</text>
+      <text class="notice-text">周报是过程复盘，不是成绩单。这里不评价家长或孩子，只整理本周记录中的场景、情绪和练习情况。</text>
+    </view>
+
+    <view class="profile-card">
+      <text class="profile-title">阶段性画像线索</text>
+      <text class="profile-text">
+        {{report.profile_trend && report.profile_trend.profile_count ? '本周画像可作为理解近期压力状态的补充线索，不代表固定判断。' : '本周还没有阶段性画像线索，也不影响你继续记录和练习。'}}
+      </text>
+      <text wx:if="{{profileTrendNamesText}}" class="profile-meta">{{profileTrendNamesText}}</text>
+      <text wx:if="{{report.profile_trend && report.profile_trend.requires_review_count}}" class="profile-meta">有内容需要人工关注，请优先等待或提交人工支持。</text>
     </view>
 
     <view class="change-card safe-card">
@@ -51,8 +60,8 @@
         <text class="stat-label">条互动线索</text>
       </view>
       <view class="stat-card">
-        <text class="stat-value">{{completedCardsText ? '已练' : '待练'}}</text>
-        <text class="stat-label">训练卡状态</text>
+        <text class="stat-value">{{completedCardsText ? '已记' : '待记'}}</text>
+        <text class="stat-label">练习尝试</text>
       </view>
     </view>
 
@@ -105,8 +114,8 @@
     </view>
 
     <view class="practice-card">
-      <text class="practice-title">已完成练习卡</text>
-      <text class="practice-text">{{completedCardsText || '本周还没有打卡记录。可以先选择一张容易练的训练卡。'}}</text>
+      <text class="practice-title">已记录练习卡</text>
+      <text class="practice-text">{{completedCardsText || '本周还没有练习尝试记录。可以先选择一张容易练的训练卡。'}}</text>
     </view>
 
     <view class="next-step-card">

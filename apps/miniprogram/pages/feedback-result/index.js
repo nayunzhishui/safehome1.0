@@ -8,10 +8,14 @@ Page({
     loading: true,
     errorMessage: "",
     feedback: null,
+    isHighRisk: false,
+    canShowTraining: true,
+    nextAction: null,
     labelsText: "",
     patternCards: [],
     emotionOverview: null,
     recommendedTrainings: [],
+    riskSupportText: "",
   },
 
   onLoad(options) {
@@ -30,12 +34,20 @@ Page({
 
     try {
       const feedback = await api.generateFeedback({ diary_id: diaryId });
+      const isHighRisk = feedback.risk_level === "high" || (feedback.risk && feedback.risk.allow_recommended_training_cards === false);
+      const canShowTraining = !isHighRisk;
       this.setData({
         feedback,
+        isHighRisk,
+        canShowTraining,
         labelsText: (feedback.labels || feedback.tags || []).join("、"),
         patternCards: this.buildPatternCards(feedback),
-        emotionOverview: this.buildEmotionOverview(feedback),
-        recommendedTrainings: this.buildRecommendedTrainings(feedback),
+        emotionOverview: this.buildEmotionOverview(feedback, isHighRisk),
+        nextAction: this.buildNextAction(feedback, isHighRisk),
+        recommendedTrainings: this.buildRecommendedTrainings(feedback, canShowTraining),
+        riskSupportText:
+          (feedback.risk && feedback.risk.safe_response) ||
+          "如果这次记录涉及现实安全风险，请先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。本系统不能替代危机干预。",
         loading: false,
       });
     } catch (error) {
@@ -65,10 +77,37 @@ Page({
     ];
   },
 
-  buildEmotionOverview(feedback) {
+  buildNextAction(feedback, isHighRisk) {
+    if (isHighRisk) {
+      return {
+        title: "先联系现实支持",
+        text:
+          (feedback.risk && feedback.risk.safe_response) ||
+          "如果这次记录涉及现实安全风险，请优先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。",
+        buttonText: "提交人工关注",
+      };
+    }
+
+    const cardCount = (feedback.recommended_card_ids || []).length;
+    return {
+      title: "开始一个小练习",
+      text: cardCount > 0 ? "系统已为这次记录匹配到可练习动作，建议先选 1 个完成。" : "可以先从暂停和一句短回应开始，不需要一次做很多。",
+      buttonText: "开始一个小练习",
+    };
+  },
+
+  buildEmotionOverview(feedback, isHighRisk) {
     const tags = feedback.tags || [];
     const labels = feedback.labels || [];
     const labelsText = labels.join("、");
+
+    if (isHighRisk) {
+      return {
+        mainEmotion: "需要优先关注安全",
+        intensity: "建议人工关注",
+        trigger: feedback.trigger_summary || "本次记录包含需要优先现实支持的线索。",
+      };
+    }
 
     return {
       mainEmotion: tags.includes("high_emotion_intensity") ? "着急 / 生气 / 委屈" : "焦虑 / 着急 / 困惑",
@@ -77,7 +116,11 @@ Page({
     };
   },
 
-  buildRecommendedTrainings(feedback) {
+  buildRecommendedTrainings(feedback, canShowTraining) {
+    if (!canShowTraining) {
+      return [];
+    }
+
     const tags = feedback.tags || [];
     const trainings = [
       {
@@ -121,6 +164,14 @@ Page({
   },
 
   openTrainingCard() {
+    if (!this.data.canShowTraining) {
+      wx.showToast({
+        title: "当前提示需要优先现实支持，不进入普通训练卡。",
+        icon: "none",
+      });
+      return;
+    }
+
     const tags = this.data.feedback && this.data.feedback.tags ? this.data.feedback.tags : [];
     wx.navigateTo({
       url: `/pages/training-card/index?tags=${encodeURIComponent(tags.join(","))}&diary_id=${encodeURIComponent(this.data.diaryId)}`,

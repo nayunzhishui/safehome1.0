@@ -1,0 +1,25 @@
+{
+  "file": "feedback_rules.json",
+  "root_required": ["version", "rules"],
+  "lists": [
+    {
+      "field": "rules",
+      "item_required": [
+        "id",
+        "label",
+        "match_keywords",
+        "supportive_feedback",
+        "alternative_response",
+        "recommended_card_ids",
+        "positive_examples",
+        "negative_examples",
+        "boundary_note",
+        "recommended_review"
+      ],
+      "item_list_min_lengths": {
+        "positive_examples": 1,
+        "negative_examples": 1
+      }
+    }
+  ]
+}

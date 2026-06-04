@@ -10,6 +10,11 @@ Page({
     emotionBefore: 5,
     emotionAfter: 5,
     reflection: "",
+    reflectionPrompts: [
+      "这次做到哪一步？",
+      "练习前后情绪有什么变化？",
+      "下次想轻一点尝试什么？",
+    ],
     submitting: false,
     successMessage: "",
     errorMessage: "",
@@ -54,7 +59,7 @@ Page({
       });
 
       this.setData({
-        successMessage: "已完成本次练习打卡。可以先观察这次练习对自己回应方式的帮助。",
+        successMessage: "已记录这次尝试。可以先观察这次练习对自己回应方式的帮助。",
       });
     } catch (error) {
       this.setData({

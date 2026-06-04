@@ -1,0 +1,25 @@
+{
+  "file": "training_cards.json",
+  "root_required": ["version", "cards"],
+  "lists": [
+    {
+      "field": "cards",
+      "item_required": [
+        "id",
+        "title",
+        "purpose",
+        "steps",
+        "tags",
+        "theory_source",
+        "target_skill",
+        "not_suitable_for",
+        "reflection_questions",
+        "review_status"
+      ],
+      "item_list_min_lengths": {
+        "reflection_questions": 2,
+        "not_suitable_for": 1
+      }
+    }
+  ]
+}

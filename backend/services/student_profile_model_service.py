@@ -421,7 +421,10 @@ def _build_response(scores: dict[str, Any], profile_result: dict[str, Any], text
     profile_code = profile_result.get("profile_code")
     text = " ".join(text_answers.values())
     dimensions = _dimensions(scores.get("features", {}))
-    recommended_card_ids = _recommended_cards(profile_code)
+    if risk_result.get("allow_recommended_training_cards") is False or risk_result.get("risk_level") == "high":
+        recommended_card_ids = []
+    else:
+        recommended_card_ids = _recommended_cards(profile_code)
     sandplay_task = _sandplay_task(profile_code)
     report = {
         "role": profile_result.get("profile_name"),

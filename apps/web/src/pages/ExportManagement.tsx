@@ -19,7 +19,7 @@ const EXPORT_TYPE_LABELS: Record<ExportType, string> = {
   goals: "目标数据",
   diaries: "情绪记录",
   feedback: "反馈结果",
-  checkins: "打卡记录",
+  checkins: "练习尝试记录",
   assessments: "测一测结果",
   profile: "学生画像",
   student_profiles: "学生画像 KMeans",
@@ -39,7 +39,7 @@ const EXPORT_TYPE_NOTES: Record<ExportType, string> = {
   goals: "用于查看试点目标设定情况。",
   diaries: "用于查看家长提交的情绪事件记录。",
   feedback: "用于查看规则反馈结果和推荐卡片线索。",
-  checkins: "用于查看训练卡练习后的打卡情况。",
+  checkins: "用于查看训练卡练习后的尝试和复盘情况。",
   assessments: "用于查看测一测填写结果。",
   profile: "用于导出学生画像摘要，默认匿名化且不含自由文本原文。",
   student_profiles: "用于导出学生 KMeans/PCA 画像摘要，默认匿名化且不含自由文本原文。",
@@ -54,6 +54,93 @@ const EXPORT_TYPE_NOTES: Record<ExportType, string> = {
   supervision: "用于查看家长提交的人工补充支持请求。",
   cards: "用于查看后端训练卡表中的内容快照。",
 };
+
+const SENSITIVE_PREVIEW_FIELDS = new Set([
+  "event_description",
+  "raw_text",
+  "automatic_thought",
+  "body_sensation",
+  "behavior",
+  "supportive_feedback",
+  "alternative_response",
+  "answers_json",
+  "scores_json",
+  "data_json",
+  "report_json",
+  "quality_flags_json",
+  "message",
+  "contact",
+  "risk_hint",
+  "supervisor_reply",
+  "reflection",
+]);
+
+function parseCsvRows(text: string): string[][] {
+  const rows: string[][] = [];
+  let current = "";
+  let row: string[] = [];
+  let inQuotes = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    const next = text[index + 1];
+
+    if (char === '"' && next === '"') {
+      current += '"';
+      index += 1;
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === "," && !inQuotes) {
+      row.push(current);
+      current = "";
+    } else if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && next === "\n") {
+        index += 1;
+      }
+      row.push(current);
+      rows.push(row);
+      row = [];
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+
+  if (current || row.length > 0) {
+    row.push(current);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+function csvCell(value: string) {
+  if (/[",\r\n]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+function buildSafeCsvPreview(text: string) {
+  const normalized = text.replace(/^\uFEFF/, "").trim();
+  if (!normalized) {
+    return "";
+  }
+
+  const rows = parseCsvRows(normalized);
+  const [headers = [], ...dataRows] = rows;
+  const previewRows = [headers, ...dataRows.slice(0, 7)].map((row, rowIndex) => {
+    if (rowIndex === 0) {
+      return row;
+    }
+    return row.map((value, index) => {
+      const fieldName = headers[index] || "";
+      return SENSITIVE_PREVIEW_FIELDS.has(fieldName) && value ? "[已隐藏]" : value;
+    });
+  });
+
+  return previewRows.map((row) => row.map(csvCell).join(",")).join("\n");
+}
 
 export function ExportManagement() {
   const [exportType, setExportType] = useState<ExportType>("diaries");
@@ -101,11 +188,7 @@ export function ExportManagement() {
     try {
       const blob = await readCsvBlob();
       const text = (await blob.text()).replace(/^\uFEFF/, "");
-      const preview = text
-        .split(/\r?\n/)
-        .filter(Boolean)
-        .slice(0, 8)
-        .join("\n");
+      const preview = buildSafeCsvPreview(text);
 
       setState({
         status: "success",
@@ -159,7 +242,7 @@ export function ExportManagement() {
         <div>
           <p className="eyebrow">Data Export</p>
           <h1>数据导出</h1>
-          <p className="summary">复用现有后台 CSV 导出接口，用于试点数据核对和研究资料整理。导出前请确认使用场景和数据保护要求。</p>
+          <p className="summary">复用现有后台 CSV 导出接口，用于试点数据核对和研究资料整理。导出前请确认授权和脱敏要求。</p>
         </div>
         <div className="dashboardActions">
           <a className="secondaryButton" href="/dashboard">
@@ -172,6 +255,13 @@ export function ExportManagement() {
       </div>
 
       <div className={`status ${state.status}`}>{state.message}</div>
+
+      <section className="guidanceBox" aria-label="导出前确认">
+        <h2>导出前确认</h2>
+        <p>
+          导出前请确认用户授权、研究授权和脱敏要求。页面预览会隐藏自由文本、联系方式和 JSON 敏感字段；真实 CSV 文件仍保持后端接口原格式，保存后请按 `docs/数据字典.md` 再次核对字段用途。
+        </p>
+      </section>
 
       <div className="metricGrid" aria-label="导出概况">
         <MetricCard label="导出类型" value={ADMIN_EXPORT_TYPES.length} />
@@ -263,8 +353,13 @@ export function ExportManagement() {
             <section className="guidanceBox" aria-label="数据保护提示">
               <h3>数据保护提示</h3>
               <p>
-                导出文件可能包含试点记录、联系方式或复盘文本。对外讨论、汇报或归档前，请先确认是否需要去除可识别个人身份的信息。
+                导出文件可能包含试点记录、联系方式或复盘文本。对外讨论、汇报或归档前，请先确认授权范围，并去除可识别个人身份的信息。
               </p>
+            </section>
+
+            <section className="guidanceBox" aria-label="数据字典">
+              <h3>数据字典</h3>
+              <p>字段名、中文含义、数据类型、脱敏状态、敏感性、研究用途和缺失说明已整理在本地文档：docs/数据字典.md。</p>
             </section>
 
             {needsHighRiskConfirmation ? (
@@ -276,7 +371,7 @@ export function ExportManagement() {
 
             <section className="guidanceBox" aria-label="CSV 预览">
               <h3>CSV 预览</h3>
-              {state.previewText ? <pre className="csvPreview">{state.previewText}</pre> : <p>点击“预览 CSV”后，这里会显示前几行内容。</p>}
+              {state.previewText ? <pre className="csvPreview">{state.previewText}</pre> : <p>点击“预览 CSV”后，这里会显示前几行内容；自由文本和敏感 JSON 字段会在预览中隐藏。</p>}
             </section>
           </div>
         </section>

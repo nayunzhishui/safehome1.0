@@ -51,7 +51,7 @@ function getEmotionDelta(checkin: Checkin) {
 export function CheckinsManagement() {
   const [state, setState] = useState<CheckinsState>({
     status: "idle",
-    message: "正在准备练习打卡记录。",
+    message: "正在准备练习尝试记录。",
     checkins: [],
     cards: [],
   });
@@ -64,7 +64,7 @@ export function CheckinsManagement() {
     return state.checkins.find((checkin) => checkin.id === state.selectedId) ?? state.checkins[0];
   }, [state.checkins, state.selectedId]);
 
-  const completedCount = state.checkins.filter((checkin) => checkin.completed === 1).length;
+  const recordedAttemptCount = state.checkins.filter((checkin) => checkin.completed === 1).length;
   const linkedDiaryCount = state.checkins.filter((checkin) => checkin.diary_id).length;
   const withReflectionCount = state.checkins.filter((checkin) => checkin.reflection).length;
 
@@ -72,14 +72,14 @@ export function CheckinsManagement() {
     setState((current) => ({
       ...current,
       status: "loading",
-      message: "正在读取练习打卡记录...",
+      message: "正在读取练习尝试记录...",
     }));
 
     try {
       const [checkins, cards] = await Promise.all([api.listCheckins({ limit: 50 }), api.listCards()]);
       setState({
         status: "success",
-        message: checkins.items.length > 0 ? "已读取小程序端保存的练习打卡记录。" : "当前还没有练习打卡记录。",
+        message: checkins.items.length > 0 ? "已读取小程序端保存的练习尝试记录。" : "当前还没有练习尝试记录。",
         checkins: checkins.items,
         cards: cards.items,
         selectedId: checkins.items[0]?.id,
@@ -98,41 +98,41 @@ export function CheckinsManagement() {
   }, []);
 
   return (
-    <section className="dashboardShell" aria-label="练习打卡记录后台">
+    <section className="dashboardShell" aria-label="练习尝试记录后台">
       <div className="dashboardHeader">
         <div>
           <p className="eyebrow">Research Platform</p>
-          <h1>练习打卡记录</h1>
-          <p className="summary">查看小程序端保存的训练卡练习和打卡情况，用于观察练习完成度和复盘文本是否完整。</p>
+          <h1>练习尝试记录</h1>
+          <p className="summary">查看小程序端保存的训练卡练习和复盘情况，用于观察用户尝试了哪些小动作、留下了哪些过程线索。</p>
         </div>
         <div className="dashboardActions">
           <a className="secondaryButton" href="/dashboard">
             返回总览
           </a>
           <button className="primaryButton" type="button" onClick={loadCheckins} disabled={state.status === "loading"}>
-            {state.status === "loading" ? "刷新中..." : "刷新打卡"}
+            {state.status === "loading" ? "刷新中..." : "刷新记录"}
           </button>
         </div>
       </div>
 
       <div className={`status ${state.status}`}>{state.message}</div>
 
-      <div className="metricGrid" aria-label="打卡概况">
-        <MetricCard label="打卡记录" value={state.checkins.length} />
-        <MetricCard label="已完成" value={completedCount} />
+      <div className="metricGrid" aria-label="练习尝试概况">
+        <MetricCard label="尝试记录" value={state.checkins.length} />
+        <MetricCard label="已记录尝试" value={recordedAttemptCount} />
         <MetricCard label="关联记录" value={linkedDiaryCount} />
         <MetricCard label="含复盘" value={withReflectionCount} />
       </div>
 
       <div className="dashboardGrid goalsGrid">
-        <section className="listPanel" aria-label="打卡列表">
+        <section className="listPanel" aria-label="练习尝试列表">
           <div className="sectionTitleRow">
-            <h2>打卡列表</h2>
+            <h2>尝试列表</h2>
             <span className="countBadge">{state.checkins.length} 条</span>
           </div>
 
           {state.checkins.length === 0 ? (
-            <div className="emptyState">还没有打卡记录。请先在小程序完成一张训练卡练习。</div>
+            <div className="emptyState">还没有练习尝试记录。请先在小程序记录一次训练卡练习。</div>
           ) : (
             <div className="recordList">
               {state.checkins.map((checkin) => {
@@ -149,7 +149,7 @@ export function CheckinsManagement() {
                     <span className="recordScene">{cardTitle}</span>
                     <span className="recordDescription">{checkin.reflection || "未填写复盘"}</span>
                     <span className="recordMeta">
-                      {checkin.completed === 1 ? "已完成" : "未完成"} · {formatDateTime(checkin.created_at)}
+                      {checkin.completed === 1 ? "已记录尝试" : "这次还没有完整记录"} · {formatDateTime(checkin.created_at)}
                       {delta !== null ? ` · 情绪变化 ${delta > 0 ? "+" : ""}${delta}` : ""}
                     </span>
                   </button>
@@ -159,9 +159,9 @@ export function CheckinsManagement() {
           )}
         </section>
 
-        <section className="detailPanel" aria-label="打卡详情">
+        <section className="detailPanel" aria-label="练习尝试详情">
           <div className="sectionTitleRow">
-            <h2>打卡详情</h2>
+            <h2>尝试详情</h2>
             {selectedCheckin && <span className="countBadge">ID {selectedCheckin.id.slice(0, 8)}</span>}
           </div>
 
@@ -171,11 +171,11 @@ export function CheckinsManagement() {
               <DetailRow label="训练卡" value={cardTitleById.get(selectedCheckin.card_id) ?? selectedCheckin.card_id} />
               <DetailRow label="训练卡 ID" value={selectedCheckin.card_id} />
               <DetailRow label="关联记录 ID" value={selectedCheckin.diary_id} />
-              <DetailRow label="完成状态" value={selectedCheckin.completed === 1 ? "已完成" : "未完成"} />
-              <DetailRow label="练习前评分" value={selectedCheckin.emotion_before} />
-              <DetailRow label="练习后评分" value={selectedCheckin.emotion_after} />
+              <DetailRow label="记录状态" value={selectedCheckin.completed === 1 ? "已记录尝试" : "这次还没有完整记录"} />
+              <DetailRow label="练习前情绪强度" value={selectedCheckin.emotion_before} />
+              <DetailRow label="练习后情绪强度" value={selectedCheckin.emotion_after} />
               <DetailRow
-                label="评分变化"
+                label="前后情绪变化"
                 value={getEmotionDelta(selectedCheckin) === null ? null : `${getEmotionDelta(selectedCheckin)! > 0 ? "+" : ""}${getEmotionDelta(selectedCheckin)}`}
               />
               <DetailRow label="家长复盘" value={selectedCheckin.reflection} />
@@ -184,12 +184,12 @@ export function CheckinsManagement() {
               <section className="guidanceBox" aria-label="试点评估用途">
                 <h3>试点评估用途</h3>
                 <p>
-                  打卡页用于观察家长是否完成训练卡练习、是否留下复盘，以及练习前后情绪评分是否便于后续复盘。这里不展示诊断性标签，也不判断家长或孩子是否存在心理问题。
+                  练习记录用于观察家长尝试了哪些训练卡、做到哪一步、前后情绪有什么变化，以及下次想轻一点尝试什么。这里不展示诊断性标签，也不判断家长或孩子是否存在心理问题。
                 </p>
               </section>
             </div>
           ) : (
-            <div className="emptyState">选择左侧打卡记录后，这里会显示详情。</div>
+            <div className="emptyState">选择左侧练习尝试记录后，这里会显示详情。</div>
           )}
         </section>
       </div>

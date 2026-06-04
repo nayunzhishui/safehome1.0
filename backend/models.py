@@ -259,6 +259,34 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS consent_records (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        consent_type TEXT NOT NULL,
+        consent_version TEXT NOT NULL,
+        agreed INTEGER NOT NULL,
+        agreed_at TEXT NOT NULL,
+        revoked_at TEXT,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS risk_review_records (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        source_type TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        risk_level TEXT NOT NULL,
+        matched_categories_json TEXT NOT NULL DEFAULT '[]',
+        review_status TEXT NOT NULL DEFAULT 'pending',
+        reviewer_id TEXT,
+        review_note TEXT,
+        reviewed_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS weekly_reports (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,

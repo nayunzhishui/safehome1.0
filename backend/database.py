@@ -96,6 +96,33 @@ def ensure_user(conn: sqlite3.Connection, user_id: str, nickname: str | None = N
     )
 
 
+def write_audit_log(
+    conn: sqlite3.Connection,
+    action: str,
+    actor_id: str | None = None,
+    target_type: str | None = None,
+    target_id: str | None = None,
+    metadata: dict | None = None,
+) -> str:
+    audit_id = new_id("audit")
+    conn.execute(
+        """
+        INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, metadata_json, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            audit_id,
+            actor_id,
+            action,
+            target_type,
+            target_id,
+            json_dumps(metadata or {}),
+            now_iso(),
+        ),
+    )
+    return audit_id
+
+
 def load_content_json(filename: str) -> dict:
     path = Config.CONTENT_DIR / filename
     return json.loads(path.read_text(encoding="utf-8"))

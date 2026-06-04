@@ -9,6 +9,10 @@
         <view class="note-dot" aria-hidden="true"></view>
         <text>用于生成支持性反馈，不评价谁对谁错。</text>
       </view>
+      <view class="hero-note privacy-note">
+        <view class="note-dot" aria-hidden="true"></view>
+        <text>请不要填写姓名、学校、电话等强身份信息。</text>
+      </view>
     </view>
     <image
       class="hero-image"
@@ -58,8 +62,8 @@
       <view class="section-head">
         <text class="section-index">02</text>
         <view class="section-copy">
-          <text class="section-title">我和孩子当时的感受</text>
-          <text class="section-hint">先记录自己的感受，再记录你观察到的孩子感受。</text>
+          <text class="section-title">我的情绪</text>
+          <text class="section-hint">先记录自己的感受和强度，后面可以展开补充更多信息。</text>
         </view>
       </view>
       <view class="field-group">
@@ -81,6 +85,40 @@
         </view>
       </view>
 
+    </view>
+
+    <view class="diary-section">
+      <view class="section-head">
+        <text class="section-index">03</text>
+        <view class="section-copy">
+          <text class="section-title">我当时怎么回应</text>
+          <text class="section-hint">只记录能看到的动作和话语，不需要评判对错。</text>
+        </view>
+      </view>
+      <view class="field-group">
+        <text class="field-label">我当时的做法</text>
+        <textarea
+          class="textarea"
+          value="{{behavior}}"
+          placeholder="例如：我连续提醒了几次，后来声音提高了一些。"
+          bindinput="onTextInput"
+          data-key="behavior"
+        />
+      </view>
+    </view>
+
+    <button class="more-toggle" bindtap="toggleMoreFields">
+      {{showMoreFields ? '收起更多记录项' : '展开更多记录项'}}
+    </button>
+
+    <view wx:if="{{showMoreFields}}" class="diary-section more-section">
+      <view class="section-head">
+        <text class="section-index">04</text>
+        <view class="section-copy">
+          <text class="section-title">更多线索（可选）</text>
+          <text class="section-hint">这些内容可以帮助复盘，但不填也能提交。</text>
+        </view>
+      </view>
       <view class="field-group">
         <text class="field-label">孩子当时看起来的情绪</text>
         <view class="tag-grid">
@@ -97,16 +135,6 @@
         <view class="slider-row">
           <text class="slider-label">强度 {{childEmotionIntensity}} / 10</text>
           <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#F47B48" block-color="#F47B48" bindchange="onChildIntensityChange" />
-        </view>
-      </view>
-    </view>
-
-    <view class="diary-section">
-      <view class="section-head">
-        <text class="section-index">03</text>
-        <view class="section-copy">
-          <text class="section-title">我当时的想法和身体反应</text>
-          <text class="section-hint">不用判断是否合理，只写下当时自动冒出来的内容。</text>
         </view>
       </view>
       <view class="field-group">
@@ -134,26 +162,6 @@
         </view>
         <input class="input" value="{{bodySensationNote}}" placeholder="也可以补充一句身体感觉，可不填" bindinput="onTextInput" data-key="bodySensationNote" />
       </view>
-    </view>
-
-    <view class="diary-section">
-      <view class="section-head">
-        <text class="section-index">04</text>
-        <view class="section-copy">
-          <text class="section-title">我做了什么，孩子后来怎样</text>
-          <text class="section-hint">只记录能看到的动作和反应，不需要评判对错。</text>
-        </view>
-      </view>
-      <view class="field-group">
-        <text class="field-label">我当时的做法</text>
-        <textarea
-          class="textarea"
-          value="{{behavior}}"
-          placeholder="例如：我连续提醒了几次，后来声音提高了一些。"
-          bindinput="onTextInput"
-          data-key="behavior"
-        />
-      </view>
       <view class="field-group">
         <text class="field-label">孩子后来的反应</text>
         <textarea
@@ -163,16 +171,6 @@
           bindinput="onTextInput"
           data-key="childReaction"
         />
-      </view>
-    </view>
-
-    <view class="diary-section">
-      <view class="section-head">
-        <text class="section-index">05</text>
-        <view class="section-copy">
-          <text class="section-title">补充一点结果（可选）</text>
-          <text class="section-hint">能写一点就可以，后续反馈会保持支持性和非诊断。</text>
-        </view>
       </view>
       <view class="field-group">
         <text class="field-label">当下结果</text>

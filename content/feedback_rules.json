@@ -9,6 +9,11 @@
       "supportive_feedback": "你不是不关心孩子，而是当压力升高时，大脑会自动寻找一个明确原因。现在可以先把评价换成对事实和感受的描述。",
       "alternative_response": "把“你怎么又这样”换成“我看到这件事又卡住了，我们先看看发生了什么”。",
       "recommended_card_ids": ["nonjudgmental_response", "emotion_naming"],
+      "positive_examples": ["你怎么又这样，我说多少遍了", "你就是太懒了", "你总是不听话"],
+      "negative_examples": ["我看到作业还没开始", "这次事情让我们都很着急", "我们先看看卡在哪里"],
+      "uncertain_examples": ["你这次又没写完，但我想先听你说说原因"],
+      "boundary_note": "只识别整体评价或标签化表达；具体事实描述不应归为评判。",
+      "recommended_review": false,
       "risk_level": "low"
     },
     {
@@ -19,6 +24,11 @@
       "supportive_feedback": "你希望孩子行动起来，这个愿望很真实。下一步可以把高压命令缩小成一个具体、可完成的小请求。",
       "alternative_response": "把“你必须马上写”换成“我们先从 10 分钟开始，你想先做哪一项？”。",
       "recommended_card_ids": ["three_second_pause", "alternative_behavior"],
+      "positive_examples": ["你必须马上写完", "你给我立刻去做", "今天一定要全部完成"],
+      "negative_examples": ["我们先做 10 分钟", "你想先做语文还是先整理错题", "现在先选第一步"],
+      "uncertain_examples": ["现在快迟到了，需要马上出门"],
+      "boundary_note": "安全或时间边界下的必要提醒不应简单归为高压命令。",
+      "recommended_review": false,
       "risk_level": "low"
     },
     {
@@ -29,6 +39,11 @@
       "supportive_feedback": "当同一类问题反复出现时，家长很容易得出一个固定解释。现在可以先增加一个备选解释，为新的回应方式留出空间。",
       "alternative_response": "把“他就是故意拖”换成“他可能不知道从哪里开始，我们先找一个最小入口”。",
       "recommended_card_ids": ["cognitive_flexibility", "nonjudgmental_response"],
+      "positive_examples": ["他就是故意拖", "孩子就是不上心", "他没救了"],
+      "negative_examples": ["他可能不知道从哪里开始", "也许题目太多了", "我们先确认发生了什么"],
+      "uncertain_examples": ["他看起来像故意拖，但我还不确定原因"],
+      "boundary_note": "规则只提示固定负性归因，不判断孩子真实动机。",
+      "recommended_review": false,
       "risk_level": "low"
     },
     {
@@ -39,6 +54,11 @@
       "supportive_feedback": "你已经做了很多努力，只是当前方式可能进入了短期有效、长期成本较高的循环。可以尝试把催促改成一次明确请求。",
       "alternative_response": "把“我说多少遍了”换成“现在只做第一步：把作业本打开”。",
       "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
+      "positive_examples": ["我说多少遍了", "我催了很多次", "我一直反复提醒"],
+      "negative_examples": ["现在只做第一步", "请先把作业本打开", "我们约定 10 分钟后看一次"],
+      "uncertain_examples": ["我提醒了两次，因为孩子没有听见"],
+      "boundary_note": "偶发提醒不等于情绪性反复催促；需结合次数和语气理解。",
+      "recommended_review": false,
       "risk_level": "low"
     },
     {
@@ -49,6 +69,11 @@
       "supportive_feedback": "你担心的是孩子的未来，这份担心背后有爱和责任。现在可以先把注意力拉回当前可处理的一小步。",
       "alternative_response": "把“以后肯定完了”换成“这次结果让我们担心，我们先看今天能补上的一个点”。",
       "recommended_card_ids": ["cognitive_flexibility", "emotion_naming"],
+      "positive_examples": ["以后肯定完了", "全都毁了", "没有希望了"],
+      "negative_examples": ["这次结果让我们担心", "先看今天能补上的一点", "当前还有一个小步骤可以做"],
+      "uncertain_examples": ["我担心后果会比较严重，但还想先看看能做什么"],
+      "boundary_note": "灾难化预测属于压力下的思维线索，不代表事实判断或临床风险评估。",
+      "recommended_review": true,
       "risk_level": "medium"
     }
   ],

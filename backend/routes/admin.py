@@ -7,7 +7,7 @@ from io import StringIO
 
 from flask import Blueprint, Response, current_app, request
 
-from database import get_connection, json_dumps, new_id, now_iso
+from database import get_connection, write_audit_log
 from routes.utils import fail, parse_bool
 from services.content_loader import ContentLoadError, load_parent_scales, load_student_scales
 
@@ -403,29 +403,20 @@ def export_csv():
                 else:
                     rows = conn.execute(f"SELECT * FROM {table} ORDER BY created_at DESC").fetchall()
 
-            conn.execute(
-                """
-                INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, metadata_json, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    new_id("audit"),
-                    "admin-token",
-                    f"export_{export_type}",
-                    "export",
-                    export_type,
-                    json_dumps(
-                        {
-                            "type": export_type,
-                            "user_id_filter": user_id,
-                            "module_type_filter": module_type,
-                            "row_count": len(rows),
-                            "contains_high_risk": contains_high_risk,
-                            "confirmed_high_risk_export": confirmed_high_risk_export,
-                        }
-                    ),
-                    now_iso(),
-                ),
+            write_audit_log(
+                conn,
+                action=f"export_{export_type}",
+                actor_id="admin-token",
+                target_type="export",
+                target_id=export_type,
+                metadata={
+                    "type": export_type,
+                    "user_id_filter": user_id,
+                    "module_type_filter": module_type,
+                    "row_count": len(rows),
+                    "contains_high_risk": contains_high_risk,
+                    "confirmed_high_risk_export": confirmed_high_risk_export,
+                },
             )
             conn.commit()
     except ContentLoadError as exc:

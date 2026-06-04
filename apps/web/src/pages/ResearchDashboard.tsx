@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
-import type { Checkin, EmotionDiary, Goal, TrainingCard } from "../../../../shared/types/api";
+import type { Checkin, EmotionDiary, Goal, RiskReviewRecord, StudentProfileRecord, TrainingCard } from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
 
@@ -12,6 +12,15 @@ interface OverviewState {
   diaries: EmotionDiary[];
   checkins: Checkin[];
   cards: TrainingCard[];
+  riskReviews: RiskReviewRecord[];
+  profiles: StudentProfileRecord[];
+}
+
+interface TodoItem {
+  title: string;
+  value: string | number;
+  note: string;
+  href?: string;
 }
 
 const api = new SafeHomeApiClient();
@@ -21,7 +30,7 @@ const COMPLETED_ADMIN_PAGES = [
   { path: "/goals", label: "目标管理", note: "查看小程序端目标设定" },
   { path: "/diaries", label: "情绪记录", note: "查看记录列表、详情、反馈和训练卡推荐" },
   { path: "/feedback", label: "反馈结果", note: "通过导出接口查看已生成反馈" },
-  { path: "/checkins", label: "打卡记录", note: "查看训练卡练习打卡" },
+  { path: "/checkins", label: "练习记录", note: "查看训练卡练习尝试" },
   { path: "/reports", label: "周报记录", note: "通过导出接口查看已生成周报" },
   { path: "/supervision", label: "督导请求", note: "通过导出接口查看人工督导请求" },
   { path: "/content/cards", label: "训练卡", note: "只读查看训练卡内容" },
@@ -49,6 +58,56 @@ function formatTime(value?: string | null) {
   });
 }
 
+function toDate(value?: string | null) {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function dateKey(date: Date) {
+  return date.toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+}
+
+function isToday(value?: string | null) {
+  const date = toDate(value);
+  if (!date) {
+    return false;
+  }
+  return dateKey(date) === dateKey(new Date());
+}
+
+function isThisWeek(value?: string | null) {
+  const date = toDate(value);
+  if (!date) {
+    return false;
+  }
+
+  const today = new Date();
+  const start = new Date(today);
+  const day = today.getDay() === 0 ? 6 : today.getDay() - 1;
+  start.setDate(today.getDate() - day);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 7);
+  return date >= start && date < end;
+}
+
+function isOpenRiskReview(item: RiskReviewRecord) {
+  return !["reviewed", "closed"].includes(item.review_status);
+}
+
+function isOpenProfileReview(item: StudentProfileRecord) {
+  const latestStatus = item.latest_review?.review_status;
+  return Boolean(item.requires_review) && !["reviewed", "closed"].includes(latestStatus || "");
+}
+
 export function ResearchDashboard() {
   const [state, setState] = useState<OverviewState>({
     status: "idle",
@@ -57,26 +116,79 @@ export function ResearchDashboard() {
     diaries: [],
     checkins: [],
     cards: [],
+    riskReviews: [],
+    profiles: [],
   });
 
   const latestDiary = state.diaries[0];
   const latestGoal = state.goals[0];
   const activeGoals = useMemo(() => state.goals.filter((goal) => goal.status === "active"), [state.goals]);
   const completedCheckins = useMemo(() => state.checkins.filter((checkin) => checkin.completed === 1), [state.checkins]);
+  const todayDiaries = useMemo(() => state.diaries.filter((diary) => isToday(diary.created_at)), [state.diaries]);
+  const todayHighRiskReviews = useMemo(
+    () => state.riskReviews.filter((item) => item.risk_level === "high" && isToday(item.created_at)),
+    [state.riskReviews],
+  );
+  const todayHighRiskProfiles = useMemo(
+    () => state.profiles.filter((item) => item.risk_level === "high" && isToday(item.created_at)),
+    [state.profiles],
+  );
+  const pendingRiskReviews = useMemo(() => state.riskReviews.filter(isOpenRiskReview), [state.riskReviews]);
+  const pendingProfileReviews = useMemo(() => state.profiles.filter(isOpenProfileReview), [state.profiles]);
+  const weeklyCheckins = useMemo(() => state.checkins.filter((checkin) => isThisWeek(checkin.created_at)), [state.checkins]);
+  const todoItems: TodoItem[] = [
+    {
+      title: "今日新增记录",
+      value: todayDiaries.length,
+      note: todayDiaries.length > 0 ? "优先查看是否需要补充反馈或训练卡建议。" : "今天暂未读取到新的情绪记录。",
+      href: "/diaries",
+    },
+    {
+      title: "今日高风险",
+      value: todayHighRiskReviews.length + todayHighRiskProfiles.length,
+      note: "只显示数量，不展示高风险原文；请进入复核或画像页面查看处置状态。",
+      href: "/reviews",
+    },
+    {
+      title: "待人工复核",
+      value: pendingRiskReviews.length + pendingProfileReviews.length,
+      note: "包含风险复核队列和需复核画像。",
+      href: "/reviews",
+    },
+    {
+      title: "本周练习尝试",
+      value: weeklyCheckins.length,
+      note: "用于观察练习积累，不作为完成率或考核。",
+      href: "/checkins",
+    },
+    {
+      title: "最近导出记录",
+      value: "待接入",
+      note: "导出审计已写入 audit_logs，当前还没有前端列表接口。",
+      href: "/export",
+    },
+    {
+      title: "内容文件异常",
+      value: "需运行脚本",
+      note: "提交前运行 python backend\\scripts\\validate_content.py。",
+    },
+  ];
 
   async function loadOverview() {
     setState((current) => ({
       ...current,
       status: "loading",
-      message: "正在读取目标、记录、打卡和训练卡数据...",
+      message: "正在读取目标、记录、练习、风险复核和训练卡数据...",
     }));
 
     try {
-      const [goals, diaries, checkins, cards] = await Promise.all([
+      const [goals, diaries, checkins, cards, riskReviews, profiles] = await Promise.all([
         api.listGoals(),
         api.listDiaries({ limit: 50 }),
         api.listCheckins({ limit: 50 }),
         api.listCards(),
+        api.listRiskReviews({ limit: 50 }),
+        api.listProfileResults({ limit: 50 }),
       ]);
 
       setState({
@@ -86,6 +198,8 @@ export function ResearchDashboard() {
         diaries: diaries.items,
         checkins: checkins.items,
         cards: cards.items,
+        riskReviews: riskReviews.items,
+        profiles: profiles.items,
       });
     } catch (error) {
       setState((current) => ({
@@ -120,16 +234,40 @@ export function ResearchDashboard() {
 
       <div className={`status ${state.status}`}>{state.message}</div>
 
+      <section className="guidanceBox" aria-label="今日待处理">
+        <div className="sectionTitleRow">
+          <h2>今日待处理</h2>
+          <span className="countBadge">P2-06</span>
+        </div>
+        <div className="recordList">
+          {todoItems.map((item) =>
+            item.href ? (
+              <a className="recordItem textLink" href={item.href} key={item.title}>
+                <span className="recordScene">{item.title}</span>
+                <span className="recordDescription">{item.note}</span>
+                <span className="recordMeta">{item.value}</span>
+              </a>
+            ) : (
+              <div className="recordItem" key={item.title}>
+                <span className="recordScene">{item.title}</span>
+                <span className="recordDescription">{item.note}</span>
+                <span className="recordMeta">{item.value}</span>
+              </div>
+            ),
+          )}
+        </div>
+      </section>
+
       <div className="metricGrid" aria-label="总览指标">
         <MetricCard label="目标总数" value={state.goals.length} />
         <MetricCard label="进行中目标" value={activeGoals.length} />
         <MetricCard label="情绪记录" value={state.diaries.length} />
-        <MetricCard label="完成打卡" value={completedCheckins.length} />
+        <MetricCard label="已记录尝试" value={completedCheckins.length} />
       </div>
 
       <div className="metricGrid" aria-label="内容与练习指标">
         <MetricCard label="训练卡" value={state.cards.length} />
-        <MetricCard label="打卡记录" value={state.checkins.length} />
+        <MetricCard label="尝试记录" value={state.checkins.length} />
         <MetricCard label="已关联目标记录" value={state.diaries.filter((diary) => diary.goal_id).length} />
         <MetricCard label="可用数据类型" value={4} />
       </div>

@@ -21,6 +21,9 @@
 .state-text,
 .notice-title,
 .notice-text,
+.profile-title,
+.profile-text,
+.profile-meta,
 .change-label,
 .change-title,
 .change-text,
@@ -134,6 +137,33 @@
   border: 1rpx solid rgba(87, 139, 95, 0.18);
   border-radius: var(--safe-radius-md);
   background: rgba(233, 242, 223, 0.72);
+}
+
+.profile-card {
+  margin-top: 20rpx;
+  padding: 24rpx 28rpx;
+  border: 1rpx solid rgba(244, 127, 69, 0.2);
+  border-radius: var(--safe-radius-md);
+  background: rgba(255, 245, 235, 0.82);
+}
+
+.profile-title {
+  margin-bottom: 8rpx;
+  color: var(--safe-orange);
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.profile-text,
+.profile-meta {
+  color: var(--safe-text);
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.profile-meta {
+  margin-top: 8rpx;
+  color: var(--safe-muted);
 }
 
 .notice-title {

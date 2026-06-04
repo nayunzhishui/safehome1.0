@@ -1,0 +1,10 @@
+{
+  "file": "student_profile_rules.json",
+  "root_required": ["version", "module", "review_status", "rules"],
+  "lists": [
+    {
+      "field": "rules",
+      "item_required": ["id", "profile_code", "profile_name", "trigger", "dimensions", "content", "recommended_card_ids", "risk_level", "requires_review", "enabled"]
+    }
+  ]
+}

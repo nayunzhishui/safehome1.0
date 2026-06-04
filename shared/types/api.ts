@@ -32,6 +32,55 @@ export interface User {
   updated_at: ISODateTime;
 }
 
+export type ConsentType =
+  | "user_agreement"
+  | "privacy_policy"
+  | "non_diagnostic_notice"
+  | "research_authorization"
+  | "contact_permission";
+
+export interface ConsentRecord {
+  id: ID;
+  user_id: ID;
+  consent_type: ConsentType;
+  consent_version: string;
+  agreed: number;
+  agreed_at: ISODateTime;
+  revoked_at?: ISODateTime | null;
+  created_at: ISODateTime;
+}
+
+export interface ConsentInput {
+  user_id?: ID;
+  consent_type: ConsentType;
+  consent_version?: string;
+  agreed: boolean;
+}
+
+export type RiskReviewStatus = "pending" | "reviewed" | "follow_up_needed" | "transferred" | "closed";
+
+export interface RiskReviewRecord {
+  id: ID;
+  user_id: ID;
+  source_type: "feedback" | "student_profile" | string;
+  source_id: ID;
+  risk_level: RiskLevel;
+  matched_categories_json: string;
+  review_status: RiskReviewStatus;
+  reviewer_id?: string | null;
+  review_note?: string | null;
+  reviewed_at?: ISODateTime | null;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface RiskReviewInput {
+  reviewer_id?: string;
+  review_status: RiskReviewStatus;
+  review_note?: string;
+  note?: string;
+}
+
 export interface Goal {
   id: ID;
   user_id: ID;
@@ -101,6 +150,7 @@ export interface FeedbackResult {
   alternative_response: string;
   recommended_card_ids: ID[];
   risk_level: RiskLevel;
+  risk?: RiskCheckResult;
 }
 
 export interface FeedbackGenerateInput {

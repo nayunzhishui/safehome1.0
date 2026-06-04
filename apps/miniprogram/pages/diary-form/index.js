@@ -29,6 +29,7 @@ Page({
     childReaction: "",
     shortTermResult: "",
     longTermImpact: "",
+    showMoreFields: false,
     errorMessage: "",
   },
 
@@ -65,6 +66,10 @@ Page({
 
   onChildIntensityChange(event) {
     this.setData({ childEmotionIntensity: Number(event.detail.value), errorMessage: "" });
+  },
+
+  toggleMoreFields() {
+    this.setData({ showMoreFields: !this.data.showMoreFields });
   },
 
   async submitDiary() {

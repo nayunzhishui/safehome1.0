@@ -14,8 +14,10 @@ const API_ENDPOINTS = {
   cardsRecommend: "/api/cards/recommend",
   assessments: "/api/assessments",
   assessmentResults: "/api/assessment-results",
+  consent: "/api/consent",
   profile: "/api/profile",
   riskCheck: "/api/risk/check",
+  riskReview: "/api/risk-review",
   modelInfo: "/api/model/info",
   checkins: "/api/checkins",
   weeklyReport: "/api/weekly-report",
@@ -131,6 +133,17 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.goals}${queryString(params)}`);
     },
 
+    createConsent(data) {
+      return request(API_ENDPOINTS.consent, {
+        method: "POST",
+        data: withDefaultUser(data),
+      });
+    },
+
+    listConsentRecords(params = {}) {
+      return request(`${API_ENDPOINTS.consent}${queryString(params)}`);
+    },
+
     createDiary(data) {
       return request(API_ENDPOINTS.diaries, {
         method: "POST",
@@ -158,6 +171,17 @@ function createSafeHomeApi(options = {}) {
 
     checkRisk(data) {
       return request(API_ENDPOINTS.riskCheck, {
+        method: "POST",
+        data,
+      });
+    },
+
+    listRiskReviews(params = {}) {
+      return request(`${API_ENDPOINTS.riskReview}${queryString(params)}`);
+    },
+
+    updateRiskReview(id, data) {
+      return request(`${API_ENDPOINTS.riskReview}/${encodeURIComponent(id)}/review`, {
         method: "POST",
         data,
       });

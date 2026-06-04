@@ -90,7 +90,7 @@
       </view>
     </view>
 
-    <button wx:if="{{!profileSummary || profileSummary.allowAutoFeedback}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看可练习任务</button>
+    <button wx:if="{{!profileSummary || profileSummary.canOpenRecommendedCards}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看可练习任务</button>
     <button class="safe-secondary-button action-button" bindtap="backToAssessment">返回测一测</button>
 
     <view class="safe-section">

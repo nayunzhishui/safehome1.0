@@ -3,7 +3,7 @@
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, new_id, now_iso, row_to_dict, rows_to_dicts
-from routes.utils import fail, ok, parse_bool, parse_int, require_fields
+from routes.utils import fail, ok, parse_bool, parse_int, require_fields, require_user_id
 
 bp = Blueprint("checkins", __name__, url_prefix="/api/checkins")
 
@@ -15,7 +15,10 @@ def create_checkin():
     if missing:
         return fail("missing_fields", f"缺少必填字段：{', '.join(missing)}")
 
-    user_id = payload.get("user_id") or "demo-parent"
+    try:
+        user_id = require_user_id(payload)
+    except ValueError as exc:
+        return fail("validation_error", str(exc), status=400)
     timestamp = now_iso()
     checkin_id = new_id("checkin")
 

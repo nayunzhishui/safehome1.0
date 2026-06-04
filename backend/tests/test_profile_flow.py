@@ -117,6 +117,10 @@ def test_high_risk_profile_and_records_export_requires_confirmation(tmp_path):
 
     create_response = client.post("/api/profile", json=_high_risk_profile_payload("student-risk-export"))
     assert create_response.status_code == 201
+    created = create_response.get_json()["data"]
+    assert created["risk_level"] == "high"
+    assert created["recommended_card_ids"] == []
+    assert created["allow_auto_feedback"] is False
 
     blocked_profile_export = client.get("/api/admin/export?type=profile", headers=headers)
     assert blocked_profile_export.status_code == 409
@@ -146,6 +150,10 @@ def test_high_risk_profile_and_records_export_requires_confirmation(tmp_path):
 
     with get_connection() as conn:
         records_count = conn.execute("SELECT COUNT(*) FROM records WHERE module_type = 'student_profile'").fetchone()[0]
+        stored_recommended = conn.execute(
+            "SELECT recommended_task_ids_json FROM student_profiles WHERE id = ?",
+            (created["student_profile_id"],),
+        ).fetchone()[0]
         profile_export_audit = conn.execute(
             """
             SELECT metadata_json FROM audit_logs
@@ -164,6 +172,7 @@ def test_high_risk_profile_and_records_export_requires_confirmation(tmp_path):
         ).fetchone()[0]
 
     assert records_count == 1
+    assert json.loads(stored_recommended) == []
     assert json.loads(profile_export_audit)["contains_high_risk"] is True
     assert json.loads(profile_export_audit)["confirmed_high_risk_export"] is True
     assert json.loads(records_export_audit)["module_type_filter"] == "student_profile"

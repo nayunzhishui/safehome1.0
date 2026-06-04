@@ -180,7 +180,7 @@ function buildTrendSuggestion(profileResults: AssessmentResult[], checkins: Chec
     return "下周继续保留一张最容易完成的训练卡，观察练习前后感受是否有轻微变化。";
   }
   if (profileResults.length > 0) {
-    return "下周可以从画像推荐的一张训练卡开始，先完成一次 3-5 分钟小练习。";
+    return "下周可以参考阶段性画像推荐的一张训练卡，先记录一次 3-5 分钟小练习。";
   }
   return "下周先完成一次具体记录或一次支持性测评，再生成更稳定的趋势线索。";
 }
@@ -255,7 +255,7 @@ export function ReportsManagement() {
         <div>
           <p className="eyebrow">Research Platform</p>
           <h1>周报记录</h1>
-          <p className="summary">只读查看已经生成的周度复盘记录。当前页面不主动生成新周报，避免额外写入本地数据库。</p>
+          <p className="summary">只读查看已经生成的周度复盘记录。周报是过程复盘，画像只是阶段性补充线索，不用于固定判断。</p>
         </div>
         <div className="dashboardActions">
           <a className="secondaryButton" href="/dashboard">
@@ -274,6 +274,13 @@ export function ReportsManagement() {
 
       <div className={`status ${state.status}`}>{state.message}</div>
 
+      <section className="guidanceBox" aria-label="周报与画像关系">
+        <h2>周报与画像关系</h2>
+        <p>
+          本周复盘主要来自情绪记录、练习尝试和人工关注状态；如果有阶段性画像，只作为理解近期压力状态的补充线索。画像不是固定判断，重点仍是找到下周可以尝试的一小步。
+        </p>
+      </section>
+
       <div className="metricGrid" aria-label="周报概况">
         <MetricCard label="周报记录" value={state.reports.length} />
         <MetricCard label="关联用户" value={uniqueUsers.size} />
@@ -281,7 +288,7 @@ export function ReportsManagement() {
         <MetricCard label="画像复测" value={studentProfiles.length} />
         <MetricCard label="需复核画像" value={reviewProfiles.length} />
         <MetricCard label="高风险画像" value={highRiskProfiles.length} />
-        <MetricCard label="练习打卡" value={completedCheckins} />
+        <MetricCard label="练习尝试" value={completedCheckins} />
         <MetricCard label="读取方式" value="CSV + API" />
       </div>
 
@@ -292,12 +299,12 @@ export function ReportsManagement() {
         </div>
         <div className="overviewGrid">
           <article className="guidanceBox">
-            <h3>画像趋势</h3>
-            <p>已读取 {studentProfiles.length} 条学生画像结果，其中 {reviewProfiles.length} 条需要人工关注，{highRiskProfiles.length} 条为高风险。</p>
+            <h3>阶段性画像线索</h3>
+            <p>已读取 {studentProfiles.length} 条学生画像结果。这里只作为补充线索查看，其中 {reviewProfiles.length} 条需要人工关注，{highRiskProfiles.length} 条为高风险。</p>
           </article>
           <article className="guidanceBox">
             <h3>练习积累</h3>
-            <p>已读取 {state.checkins.length} 条打卡记录，其中 {completedCheckins} 条为已完成练习。</p>
+            <p>已读取 {state.checkins.length} 条练习尝试记录，其中 {completedCheckins} 条已记录尝试。</p>
           </article>
         </div>
         <section className="guidanceBox" aria-label="下周一个小任务">
@@ -351,14 +358,14 @@ export function ReportsManagement() {
               <DetailRow label="高频场景" value={summarizeJsonList(selectedReport.frequent_scenes_json)} />
               <DetailRow label="常见情绪" value={summarizeJsonList(selectedReport.frequent_emotions_json)} />
               <DetailRow label="常见模式" value={summarizeJsonList(selectedReport.common_patterns_json)} />
-              <DetailRow label="完成训练卡" value={summarizeJsonList(selectedReport.completed_cards_json)} />
+              <DetailRow label="已记录训练卡" value={summarizeJsonList(selectedReport.completed_cards_json)} />
               <DetailRow label="下周建议" value={selectedReport.next_week_suggestion} />
               <DetailRow label="创建时间" value={formatDateTime(selectedReport.created_at)} />
 
               <section className="guidanceBox" aria-label="周报边界提示">
                 <h3>边界提示</h3>
                 <p>
-                  周报用于帮助研究者查看家长练习和记录趋势，只做复盘线索整理，不用于诊断家长、孩子或家庭关系。
+                  周报用于帮助研究者查看家长练习和记录趋势，只做复盘线索整理；阶段性画像只作为补充线索，不用于诊断家长、孩子或家庭关系。
                 </p>
               </section>
             </div>

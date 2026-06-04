@@ -35,6 +35,12 @@ const flowSteps = [
 
 const scenes = ["孩子写作业拖延", "亲子争吵", "手机使用冲突", "考试成绩焦虑", "孩子顶嘴或沉默", "家长事后内疚"];
 
+const startSteps = [
+  { title: "第一步：记录一次具体事件", text: "写下发生了什么、我的情绪和当时回应。" },
+  { title: "第二步：查看支持性反馈", text: "把这次记录中的互动线索和可调整位置看清楚。" },
+  { title: "第三步：选择一个小练习并打卡", text: "从推荐训练卡里选一个动作，完成后记录一次尝试。" },
+];
+
 const ethics = [
   "本系统不提供心理诊断。",
   "不替代心理咨询、医学诊断、危机干预或法律判断。",
@@ -45,7 +51,7 @@ const ethics = [
 
 const quickEntries = [
   { title: "情绪日记", text: "记录此刻", tone: "green" },
-  { title: "AI分析", text: "智能反馈", tone: "blue" },
+  { title: "规则识别", text: "支持性反馈", tone: "blue" },
   { title: "训练中心", text: "提升自己", tone: "leaf" },
   { title: "专家支持", text: "人工督导", tone: "soft" },
 ];
@@ -143,13 +149,29 @@ export function LandingPage() {
             <span className="miniFace" aria-hidden="true">?</span>
             <div>
               <strong>有点烦，孩子写作业磨蹭</strong>
-              <small>AI 分析已完成</small>
+              <small>支持性反馈已完成</small>
             </div>
           </section>
           <section className="tipMini" aria-label="安心小贴士">
             <strong>安心小贴士</strong>
             <span>允许自己有情绪，照顾好自己，才能更好地陪伴孩子。</span>
           </section>
+        </div>
+      </section>
+
+      <section className="landingSection startSection" id="start">
+        <div className="sectionIntro">
+          <p className="eyebrow">三步开始</p>
+          <h2>第一次使用时，先完成一个最小闭环</h2>
+          <p>不用一次写很多内容，先从一件具体小事开始。</p>
+        </div>
+        <div className="startGrid">
+          {startSteps.map((step) => (
+            <article className="startCard" key={step.title}>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </article>
+          ))}
         </div>
       </section>
 

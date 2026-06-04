@@ -5,7 +5,7 @@ import hashlib
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts
-from routes.utils import fail, ok, parse_bool
+from routes.utils import fail, ok, parse_bool, require_user_id
 from services.content_loader import ContentLoadError
 from services.parent_assessment_service import (
     ParentAssessmentInputError,
@@ -43,13 +43,16 @@ def get_parent_assessment():
 def create_parent_assessment():
     payload = request.get_json(silent=True) or {}
     try:
+        user_id = require_user_id(payload)
+    except ValueError as exc:
+        return fail("validation_error", str(exc), status=400)
+    try:
         result = create_parent_assessment_result(payload)
     except ParentAssessmentInputError as exc:
         return fail("missing_parent_assessment_answers", str(exc), status=400)
     except ContentLoadError as exc:
         return fail("content_load_error", str(exc), status=500)
 
-    user_id = payload.get("user_id") or "demo-parent"
     submission_id = new_id("parent")
     timestamp = now_iso()
     completed_at = payload.get("completed_at") or timestamp

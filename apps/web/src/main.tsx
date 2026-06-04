@@ -29,10 +29,10 @@ import "./styles.css";
 const adminLinks = [
   { href: "/dashboard", label: "总览仪表盘", match: (path: string) => path === "/dashboard" },
   { href: "/diaries", label: "用户与记录", match: (path: string) => path === "/diaries" || path.startsWith("/diaries/") },
-  { href: "/feedback", label: "AI反馈审核", match: (path: string) => path === "/feedback" || path.startsWith("/feedback/") },
+  { href: "/feedback", label: "支持性反馈审核", match: (path: string) => path === "/feedback" || path.startsWith("/feedback/") },
   { href: "/content/cards", label: "训练卡管理", match: (path: string) => path === "/content/cards" },
   { href: "/supervision", label: "督导工作台", match: (path: string) => path === "/supervision" || path.startsWith("/supervision/") },
-  { href: "/checkins", label: "练习打卡", match: (path: string) => path === "/checkins" },
+  { href: "/checkins", label: "练习记录", match: (path: string) => path === "/checkins" },
   { href: "/reports", label: "周度报告", match: (path: string) => path === "/reports" },
   { href: "/profiles", label: "学生画像", match: (path: string) => path === "/profiles" || path.startsWith("/profiles/") },
   { href: "/reviews", label: "人工复核", match: (path: string) => path === "/reviews" },

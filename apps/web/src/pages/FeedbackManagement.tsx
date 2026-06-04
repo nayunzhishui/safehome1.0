@@ -123,6 +123,12 @@ function summarizeJsonList(value: string) {
   return value;
 }
 
+function feedbackRecommendedCardsText(item?: FeedbackExportRow): string {
+  if (!item) return "未记录";
+  if (item.risk_level === "high") return "高风险记录不显示普通训练卡，需人工关注。";
+  return summarizeJsonList(item.recommended_card_ids_json);
+}
+
 export function FeedbackManagement() {
   const [state, setState] = useState<FeedbackState>({
     status: "idle",
@@ -260,14 +266,24 @@ export function FeedbackManagement() {
               <DetailRow label="互动模式" value={selectedFeedback.pattern_summary} />
               <DetailRow label="支持性反馈" value={selectedFeedback.supportive_feedback} />
               <DetailRow label="替代回应" value={selectedFeedback.alternative_response} />
-              <DetailRow label="推荐训练卡" value={summarizeJsonList(selectedFeedback.recommended_card_ids_json)} />
+              <DetailRow label="推荐训练卡" value={feedbackRecommendedCardsText(selectedFeedback)} />
               <DetailRow label="风险提示" value={selectedFeedback.risk_level} />
               <DetailRow label="创建时间" value={formatDateTime(selectedFeedback.created_at)} />
+
+              <section className="guidanceBox" aria-label="下一步行动">
+                <h3>下一步行动</h3>
+                <p>
+                  {selectedFeedback.risk_level === "high"
+                    ? "该记录需要优先人工关注，不显示普通训练卡入口。"
+                    : "可引导用户从推荐训练卡中选择一个小练习，完成后记录一次尝试。"}
+                </p>
+              </section>
 
               <section className="guidanceBox" aria-label="反馈边界提示">
                 <h3>边界提示</h3>
                 <p>
                   反馈结果用于检查规则输出和推荐卡片是否稳定，不用于诊断家长、孩子或家庭关系。需要进一步理解时，应回到具体记录和支持性练习建议。
+                  如果风险提示为 high，后台不应把它作为普通训练卡推荐处理。
                 </p>
               </section>
             </div>

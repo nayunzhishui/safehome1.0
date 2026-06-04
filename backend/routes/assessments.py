@@ -3,7 +3,7 @@
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, json_dumps, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts
-from routes.utils import fail, ok, parse_int, require_fields
+from routes.utils import fail, ok, parse_int, require_fields, require_user_id
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
 
@@ -94,7 +94,10 @@ def create_assessment_result():
     if not isinstance(answers, list):
         return fail("invalid_answers", "answers 必须是数组")
 
-    user_id = payload.get("user_id") or "demo-parent"
+    try:
+        user_id = require_user_id(payload)
+    except ValueError as exc:
+        return fail("validation_error", str(exc), status=400)
     scores, total_score = _score_answers(worksheet, answers)
     timestamp = now_iso()
     result_id = new_id("assessment")

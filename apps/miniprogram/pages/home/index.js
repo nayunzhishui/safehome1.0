@@ -20,6 +20,23 @@ Page({
         readTime: "5分钟阅读",
       },
     ],
+    startSteps: [
+      {
+        title: "第一步",
+        text: "记录一次具体事件",
+        detail: "写下发生了什么、我的情绪和当时回应。",
+      },
+      {
+        title: "第二步",
+        text: "查看支持性反馈",
+        detail: "看看这次记录中的互动线索和可调整位置。",
+      },
+      {
+        title: "第三步",
+        text: "选择一个小练习并打卡",
+        detail: "从推荐训练卡里选一个动作，记录一次尝试。",
+      },
+    ],
     coreEntries: [
       {
         key: "diary",
@@ -31,9 +48,9 @@ Page({
       },
       {
         key: "feedback",
-        title: "AI分析",
-        subtitle: "智能反馈",
-        iconText: "AI",
+        title: "规则识别",
+        subtitle: "支持性反馈",
+        iconText: "识",
         accentColor: "#8069A8",
         accentBg: "#F1ECF8",
       },
@@ -66,7 +83,7 @@ Page({
       mood: "有点烦",
       time: "昨天 21:30",
       trigger: "孩子写作业磨蹭",
-      status: "AI 分析已完成",
+      status: "支持性反馈已完成",
     },
     growthStats: [
       {

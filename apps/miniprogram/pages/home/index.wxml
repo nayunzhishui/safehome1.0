@@ -27,6 +27,17 @@
   </view>
 
   <view class="safe-section">
+    <section-title title="三步开始" subtitle="第一次使用时，先完成一个最小闭环" />
+    <view class="start-step-list">
+      <view wx:for="{{startSteps}}" wx:key="title" class="start-step-card">
+        <text class="start-step-kicker">{{item.title}}</text>
+        <text class="start-step-title">{{item.text}}</text>
+        <text class="start-step-detail">{{item.detail}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
     <section-title
       title="快速入口"
       subtitle="核心功能快捷进入，降低操作成本"

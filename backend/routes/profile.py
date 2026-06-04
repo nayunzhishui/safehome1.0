@@ -6,6 +6,7 @@ from flask import Blueprint, request
 
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts
 from services.content_loader import ContentLoadError
+from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
 from services.sandplay_service import SandplayInputError, summarize_sandplay_scene, validate_sandplay_scene
 from services.student_profile_model_service import (
@@ -17,7 +18,7 @@ from services.student_profile_model_service import (
     get_model_info_payload,
     get_student_assessment_payload,
 )
-from routes.utils import fail, ok, parse_bool, parse_int
+from routes.utils import fail, ok, parse_bool, parse_int, require_user_id
 
 bp = Blueprint("profile", __name__, url_prefix="/api")
 
@@ -107,7 +108,7 @@ def _assessment_answers(payload: dict, result: dict) -> dict:
 
 
 def _save_profile_result(payload: dict, result: dict) -> dict:
-    user_id = payload.get("user_id") or "demo-parent"
+    user_id = require_user_id(payload)
     result_id = new_id("assessment")
     profile_id = new_id("profile")
     timestamp = now_iso()
@@ -246,6 +247,8 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
                 1,
             ),
         )
+        risk_result = check_text_risk(payload.get("free_text") or "", source="student_profile")
+        create_risk_review_record(conn, user_id, "student_profile", profile_id, risk_result)
         conn.commit()
         row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
 
@@ -259,6 +262,10 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
 @bp.post("/profile")
 def create_profile():
     payload = request.get_json(silent=True) or {}
+    try:
+        require_user_id(payload)
+    except ValueError as exc:
+        return fail("validation_error", str(exc), status=400)
     try:
         result = generate_student_profile(payload)
     except ProfileInputError as exc:

@@ -1,8 +1,12 @@
 # API 接口文档
 
+最后更新时间：2026-06-03
+
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
 进度口径：真实可调用接口以前文已实现章节为准；第 10 节“0版网页评估画像整合”已有基础画像、风险检查、模型信息、画像历史、人工复核、周报画像趋势、`type=profile` 脱敏导出、`type=records` 统一研究导出和高风险导出二次确认。当前总进度见 `docs/项目进度统一口径.md`。
+
+阅读方式：先看“通用约定”和对应接口章节；若与历史日志冲突，以本文开头进度口径和 `docs/项目进度统一口径.md` 为准。
 
 ## 通用约定
 
@@ -12,7 +16,9 @@
 - JSON 响应格式：统一包裹在 `ok` 和 `data` 中。
 - CSV 导出接口返回 `text/csv; charset=utf-8`。
 - 时间字段：后端当前使用 ISO 8601 字符串。
-- 当前没有登录鉴权，未传 `user_id` 时，多数接口会使用默认测试用户 `demo-parent`。
+- CORS 来源白名单由 `ALLOWED_ORIGINS` 环境变量配置；开发默认允许 `http://127.0.0.1:5173` 和 `http://localhost:5173`。
+- 当前没有登录鉴权；开发环境未传 `user_id` 时，写入接口可使用默认测试用户 `demo-parent`。
+- 当 `APP_ENV=production` 时，目标、情绪记录、反馈、画像、打卡、督导、测评结果等写入接口必须传匿名 `user_id`，例如 `parent_xxx`、`student_xxx`、`tester_xxx`，否则返回 `validation_error`。
 - 当前不接入复杂 AI 调用，即时反馈由 `content/feedback_rules.json` 规则匹配生成。
 
 通用成功响应：
@@ -50,6 +56,90 @@
   "service": "safehome-backend"
 }
 ```
+
+## 0A. 用户同意记录
+
+### `POST /api/consent`
+
+用途：记录用户使用说明、隐私说明、非诊断边界说明、匿名研究授权等同意状态。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `user_id` | string | 否 | 匿名用户 ID；开发环境缺省为 `demo-parent`，生产环境必填 |
+| `consent_type` | string | 是 | `user_agreement`、`privacy_policy`、`non_diagnostic_notice`、`research_authorization`、`contact_permission` |
+| `consent_version` | string | 否 | 同意文本版本，缺省为 `2026.06-consent-v1` |
+| `agreed` | boolean | 是 | 是否同意；`research_authorization` 允许为 `false` |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 同意记录 ID |
+| `user_id` | string | 匿名用户 ID |
+| `consent_type` | string | 同意类型 |
+| `consent_version` | string | 同意文本版本 |
+| `agreed` | integer | 1 表示同意，0 表示不同意或撤回 |
+| `agreed_at` | string | 记录该选择的时间 |
+| `revoked_at` | string/null | 不同意或撤回时的时间 |
+| `created_at` | string | 创建时间 |
+
+### `GET /api/consent?user_id=xxx`
+
+用途：查看某个匿名用户的同意记录。
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `items` | array | 同意记录列表 |
+| `count` | integer | 记录数 |
+
+边界：
+
+- 不采集真实姓名、手机号、身份证号等强身份信息。
+- 匿名研究授权不与基础使用强绑定。
+- 当前只是同意记录，不是完整登录或权限系统。
+
+## 0B. 风险人工复核记录
+
+### `GET /api/risk-review`
+
+用途：查看 high/medium 风险初筛后进入人工关注的复核队列。
+
+查询参数：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `status` | string | 否 | 可筛选 `pending`、`reviewed`、`follow_up_needed`、`transferred`、`closed` |
+| `limit` | number | 否 | 默认 50 |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `items` | array | 风险复核记录列表 |
+| `count` | integer | 记录数 |
+
+### `POST /api/risk-review/<id>/review`
+
+用途：保存风险复核处理状态和人工备注。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `reviewer_id` | string | 否 | 复核人匿名 ID，默认 `web-admin` |
+| `review_status` | string | 否 | `pending`、`reviewed`、`follow_up_needed`、`transferred`、`closed`，默认 `reviewed` |
+| `review_note` | string | 否 | 后台人工备注，不应保存完整高风险原文 |
+
+边界：
+
+- `POST /api/feedback/generate` 和 `POST /api/profile` 命中 medium/high 风险时会自动创建 `pending` 复核记录。
+- 复核更新会写入 `audit_logs.action=review_risk`。
+- 该接口只做人工关注流转，不承诺实时危机干预。
+- `matched_categories_json` 仅保存命中的风险类别和关键词摘要，不保存完整自由文本原文。
 
 ## 1. 目标设定
 
@@ -184,6 +274,7 @@
 | `event_description` | string | 否 | 事件描述，未保存时可直接传入 |
 | `automatic_thought` | string | 否 | 自动想法 |
 | `behavior` | string | 否 | 当时行为 |
+| `free_text` | string | 否 | 补充自由文本，用于风险预检 |
 | `raw_text` | string | 否 | 原始记录文本 |
 
 说明：
@@ -191,6 +282,8 @@
 - 如果传入 `diary_id`，后端会优先读取数据库中的该条情绪事件记录。
 - 如果 `diary_id` 不存在，会返回 `not_found`。
 - 如果没有匹配任何规则，会返回一条通用支持性反馈。
+- 生成普通反馈前会先检查 `event_description`、`automatic_thought`、`behavior`、`free_text`、`raw_text` 中的风险关键词。
+- 如果命中 high 风险，后端不会生成普通互动反馈，也不会推荐普通训练卡；`recommended_card_ids=[]`，`supportive_feedback` 使用风险安全提示，`alternative_response` 使用边界说明。
 
 响应字段：
 
@@ -206,6 +299,7 @@
 | `alternative_response` | string | 替代回应建议 |
 | `recommended_card_ids` | array | 推荐训练卡 ID |
 | `risk_level` | string | `low`、`medium`、`high` |
+| `risk` | object | 风险预检结果，包含 `allow_auto_feedback`、`allow_recommended_training_cards`、`matched_categories`、`safe_response`、`boundary_notice` |
 
 ## 4. 训练卡
 
@@ -527,7 +621,8 @@ Invoke-WebRequest `
 ## 9. 当前已知接口边界
 
 - 当前没有完整登录认证和角色权限控制。
-- 当前后台导出接口已增加 `X-Admin-Token` 令牌校验；正式部署前必须通过 `ADMIN_EXPORT_TOKEN` 环境变量改掉默认本地令牌。
+- 当前后台导出接口已增加 `X-Admin-Token` 令牌校验；开发环境默认令牌为 `safehome-local-admin-token`。
+- 当 `APP_ENV=production` 时，后端启动必须显式配置 `ADMIN_EXPORT_TOKEN`，且禁止继续使用默认本地令牌。
 - 当前没有分页总数 `total`。
 - 当前列表接口只提供简单 `limit`。
 - 当前即时反馈由规则匹配生成，不代表诊断、评估或治疗建议。

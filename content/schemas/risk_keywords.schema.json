@@ -1,0 +1,14 @@
+{
+  "file": "risk_keywords.json",
+  "root_required": ["version", "categories", "handling_rules"],
+  "lists": [
+    {
+      "field": "categories",
+      "item_required": ["id", "label", "risk_level", "keywords", "safe_response"]
+    },
+    {
+      "field": "handling_rules",
+      "item_required": ["risk_level", "requires_review", "allow_auto_feedback", "allow_recommended_training_cards"]
+    }
+  ]
+}

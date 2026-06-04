@@ -21,6 +21,7 @@ function buildProfileSummary(result) {
     medium: "建议人工关注",
     high: "优先现实支持",
   };
+  const recommendedCardIds = scores.risk_level === "high" || scores.allow_auto_feedback === false ? [] : scores.recommended_card_ids || [];
   return {
     profileName: scores.profile_name || "阶段性支持画像",
     profileCode: scores.profile_code || "",
@@ -29,14 +30,15 @@ function buildProfileSummary(result) {
     riskLevelText: riskTextMap[riskLevel] || riskLevel,
     requiresReview: !!scores.requires_review,
     allowAutoFeedback: scores.allow_auto_feedback !== false,
+    canOpenRecommendedCards: scores.risk_level !== "high" && scores.allow_auto_feedback !== false && recommendedCardIds.length > 0,
     dimensions: scores.dimensions || [],
     supportiveExplanation: scores.supportive_explanation || "",
     strengthNote: scores.strength_note || "",
     smallStep: scores.small_step || "",
     boundaryNotice: scores.boundary_notice || "",
-    recommendedCardIds: scores.recommended_card_ids || [],
+    recommendedCardIds,
     recommendedCardsText:
-      scores.recommended_card_ids && scores.recommended_card_ids.length ? scores.recommended_card_ids.join("、") : "暂无普通训练卡推荐",
+      recommendedCardIds.length ? recommendedCardIds.join("、") : "暂无普通训练卡推荐",
   };
 }
 
@@ -92,6 +94,14 @@ Page({
 
   openRecommendedCards() {
     const profileSummary = this.data.profileSummary;
+    if (profileSummary && !profileSummary.canOpenRecommendedCards) {
+      wx.showToast({
+        title: "当前没有普通训练卡推荐，请先查看现实支持提示。",
+        icon: "none",
+      });
+      return;
+    }
+
     if (profileSummary && profileSummary.recommendedCardIds && profileSummary.recommendedCardIds.length) {
       wx.navigateTo({
         url: `/pages/training-card/index?card_ids=${encodeURIComponent(profileSummary.recommendedCardIds.join(","))}`,

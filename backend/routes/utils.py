@@ -2,6 +2,8 @@
 
 from flask import jsonify
 
+from config import Config
+
 
 def ok(data=None, status: int = 200):
     return jsonify({"ok": True, "data": data if data is not None else {}}), status
@@ -13,6 +15,15 @@ def fail(code: str, message: str, status: int = 400):
 
 def require_fields(payload: dict, fields: list[str]) -> list[str]:
     return [field for field in fields if payload.get(field) in (None, "")]
+
+
+def require_user_id(payload: dict) -> str:
+    user_id = payload.get("user_id")
+    if user_id:
+        return str(user_id)
+    if str(Config.APP_ENV).lower() == "development":
+        return "demo-parent"
+    raise ValueError("正式环境必须提供匿名 user_id")
 
 
 def parse_int(value, default: int | None = None) -> int | None:

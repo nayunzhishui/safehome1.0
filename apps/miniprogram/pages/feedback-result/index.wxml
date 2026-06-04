@@ -27,8 +27,15 @@
     </view>
 
     <view class="support-card safe-card">
-      <text class="support-label">支持性总结</text>
+      <text class="support-label">我看到了什么</text>
       <text class="support-text">{{feedback.supportive_feedback}}</text>
+    </view>
+
+    <view class="safe-section">
+      <section-title title="这不代表什么" subtitle="反馈只看这一次记录，不给人贴标签" />
+      <view class="not-diagnosis-card safe-card">
+        <text>这不代表孩子、家长或家庭关系有固定问题，也不是诊断、评分或治疗建议。</text>
+      </view>
     </view>
 
     <view class="safe-section">
@@ -63,15 +70,25 @@
     </view>
 
     <view class="safe-section">
-      <section-title title="下一步小练习" subtitle="先从一个很小的动作开始" />
+      <section-title title="你可以先尝试什么" subtitle="先做一个很小的动作" />
       <view class="practice-card safe-card">
-        <text class="practice-title">下一次情绪升高前，先做一次暂停</text>
-        <text class="practice-text">可以先停 3 次呼吸，再用一句短话说出期待。比如：“我想先知道你卡在哪里。”</text>
+        <text class="practice-title">{{nextAction.title}}</text>
+        <text class="practice-text">{{nextAction.text}}</text>
+        <button wx:if="{{canShowTraining}}" class="practice-main-button" bindtap="openTrainingCard">开始一个小练习</button>
+        <button wx:if="{{isHighRisk}}" class="practice-main-button" bindtap="openSupervision">提交人工关注</button>
       </view>
     </view>
 
-    <view class="safe-section">
-      <section-title title="推荐训练卡" subtitle="建议先选 1 个练习，不需要一次完成很多" />
+    <view wx:if="{{isHighRisk}}" class="safe-section">
+      <view class="risk-support-card">
+        <text class="risk-support-title">优先联系现实支持</text>
+        <text class="risk-support-text">{{riskSupportText}}</text>
+        <text class="risk-support-note">这里不是实时危机服务，也不替代线下专业支持或当地紧急服务。</text>
+      </view>
+    </view>
+
+    <view wx:if="{{canShowTraining}}" class="safe-section">
+      <section-title title="推荐一个小练习" subtitle="建议先选 1 个练习，不需要一次完成很多" />
       <view class="training-list">
         <training-task-card
           wx:for="{{recommendedTrainings}}"
@@ -96,7 +113,8 @@
     </view>
 
     <view class="action-grid">
-      <button class="safe-primary-button action-button" bindtap="openTrainingCard">开始推荐训练</button>
+      <button wx:if="{{canShowTraining}}" class="safe-primary-button action-button" bindtap="openTrainingCard">开始一个小练习</button>
+      <button wx:if="{{isHighRisk}}" class="safe-primary-button action-button" bindtap="openSupervision">提交人工关注</button>
       <button class="safe-outline-button action-button" bindtap="saveFeedback">保存本次反馈</button>
     </view>
 
