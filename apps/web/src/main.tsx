@@ -19,28 +19,54 @@ import {
   StudentEntryPage,
   StudentReportPage,
 } from "./pages/ReadFeedbackIntegrationPages";
+import { FamilyBindPage } from "./pages/FamilyBindPage";
+import { LoginPage } from "./pages/LoginPage";
+import { PrivacyCenterPage } from "./pages/PrivacyCenterPage";
+import { RegisterPage } from "./pages/RegisterPage";
 import { ResearchDashboard } from "./pages/ResearchDashboard";
 import { ReportsManagement } from "./pages/ReportsManagement";
 import { ReviewManagement } from "./pages/ReviewManagement";
 import { RulesManagement } from "./pages/RulesManagement";
 import { SupervisionManagement } from "./pages/SupervisionManagement";
+import { getStoredAuthUser } from "./services/authState";
 import "./styles.css";
 
-const adminLinks = [
-  { href: "/dashboard", label: "总览仪表盘", match: (path: string) => path === "/dashboard" },
-  { href: "/diaries", label: "用户与记录", match: (path: string) => path === "/diaries" || path.startsWith("/diaries/") },
-  { href: "/feedback", label: "支持性反馈审核", match: (path: string) => path === "/feedback" || path.startsWith("/feedback/") },
-  { href: "/content/cards", label: "训练卡管理", match: (path: string) => path === "/content/cards" },
-  { href: "/supervision", label: "督导工作台", match: (path: string) => path === "/supervision" || path.startsWith("/supervision/") },
-  { href: "/checkins", label: "练习记录", match: (path: string) => path === "/checkins" },
-  { href: "/reports", label: "周度报告", match: (path: string) => path === "/reports" },
-  { href: "/profiles", label: "学生画像", match: (path: string) => path === "/profiles" || path.startsWith("/profiles/") },
-  { href: "/reviews", label: "人工复核", match: (path: string) => path === "/reviews" },
-  { href: "/goals", label: "目标管理", match: (path: string) => path === "/goals" },
-  { href: "/content/rules", label: "反馈规则", match: (path: string) => path === "/content/rules" },
-  { href: "/export", label: "数据导出", match: (path: string) => path === "/export" },
-  { href: "/integration-test", label: "联调测试", match: (path: string) => path === "/integration-test" },
+interface AdminLink {
+  href: string;
+  label: string;
+  match: (path: string) => boolean;
+  roles?: string[];
+}
+
+const allAdminLinks: AdminLink[] = [
+  { href: "/dashboard", label: "总览仪表盘", match: (p) => p === "/dashboard", roles: ["admin", "researcher", "supervisor"] },
+  { href: "/diaries", label: "用户与记录", match: (p) => p === "/diaries" || p.startsWith("/diaries/"), roles: ["admin", "researcher"] },
+  { href: "/feedback", label: "支持性反馈审核", match: (p) => p === "/feedback" || p.startsWith("/feedback/"), roles: ["admin", "researcher"] },
+  { href: "/content/cards", label: "训练卡管理", match: (p) => p === "/content/cards", roles: ["admin", "researcher"] },
+  { href: "/supervision", label: "督导工作台", match: (p) => p === "/supervision" || p.startsWith("/supervision/"), roles: ["admin", "supervisor"] },
+  { href: "/checkins", label: "练习记录", match: (p) => p === "/checkins", roles: ["admin", "researcher"] },
+  { href: "/reports", label: "周度报告", match: (p) => p === "/reports", roles: ["admin", "researcher"] },
+  { href: "/profiles", label: "学生画像", match: (p) => p === "/profiles" || p.startsWith("/profiles/"), roles: ["admin", "researcher", "supervisor"] },
+  { href: "/reviews", label: "人工复核", match: (p) => p === "/reviews", roles: ["admin", "supervisor"] },
+  { href: "/goals", label: "目标管理", match: (p) => p === "/goals", roles: ["admin", "researcher"] },
+  { href: "/content/rules", label: "反馈规则", match: (p) => p === "/content/rules", roles: ["admin", "researcher"] },
+  { href: "/export", label: "数据导出", match: (p) => p === "/export", roles: ["admin", "researcher"] },
+  { href: "/integration-test", label: "联调测试", match: (p) => p === "/integration-test", roles: ["admin"] },
+  { href: "/privacy", label: "隐私中心", match: (p) => p === "/privacy" },
+  { href: "/family", label: "家庭绑定", match: (p) => p === "/family" || p.startsWith("/family/"), roles: ["parent", "student"] },
 ];
+
+const publicLinks: AdminLink[] = [
+  { href: "/privacy", label: "隐私中心", match: (p) => p === "/privacy" },
+  { href: "/login", label: "登录", match: (p) => p === "/login" },
+  { href: "/register", label: "注册", match: (p) => p === "/register" },
+];
+
+function visibleLinks(): AdminLink[] {
+  const user = getStoredAuthUser();
+  if (!user || !user.role) return publicLinks;
+  return allAdminLinks.filter((link) => !link.roles || link.roles.includes(user.role));
+}
 
 function App() {
   const path = window.location.pathname;
@@ -62,6 +88,7 @@ function App() {
   const isProfilesPath = path === "/profiles" || path.startsWith("/profiles/");
   const isReviewsPath = path === "/reviews";
   const isFeedbackPath = path === "/feedback";
+  const isFamilyPath = path === "/family" || path.startsWith("/family/");
   const isKnownAdminPath = [
     "/dashboard",
     "/goals",
@@ -76,6 +103,7 @@ function App() {
     "/content/rules",
     "/export",
     "/integration-test",
+    "/family",
   ].some((route) => path === route || path.startsWith(`${route}/`));
   const shouldRenderDeferredAdmin =
     isKnownAdminPath &&
@@ -97,6 +125,9 @@ function App() {
     <>
       {isLandingPath ? <LandingPage /> : null}
       {isAboutStudyPath ? <AboutStudyPage /> : null}
+      {path === "/login" ? <LoginPage /> : null}
+      {path === "/register" ? <RegisterPage /> : null}
+      {path === "/privacy" ? <PrivacyCenterPage /> : null}
       {isParentAssessmentPath ? <ParentAssessmentPage /> : null}
       {isParentReportPath ? <ParentReportPage /> : null}
       {isStudentEntryPath ? <StudentEntryPage /> : null}
@@ -113,6 +144,7 @@ function App() {
       {isReportsPath ? <ReportsManagement /> : null}
       {isProfilesPath ? <ProfilesManagement /> : null}
       {isReviewsPath ? <ReviewManagement /> : null}
+      {isFamilyPath ? <FamilyBindPage /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}
@@ -134,7 +166,7 @@ function App() {
           </span>
         </a>
         <nav className="adminNav" aria-label="后台功能导航">
-          {adminLinks.map((link) => (
+          {visibleLinks().map((link) => (
             <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
               <span className="navDot" aria-hidden="true" />
               {link.label}

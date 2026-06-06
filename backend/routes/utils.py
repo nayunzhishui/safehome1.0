@@ -25,6 +25,27 @@ def admin_token_error_response(exc: ValueError):
     return fail("unauthorized", str(exc), status=401)
 
 
+def get_request_user_id() -> str | None:
+    payload = None
+    if request.method in {"POST", "PUT", "PATCH"}:
+        payload = request.get_json(silent=True) or {}
+    user_id = request.args.get("user_id") or request.headers.get("X-User-Id") or (payload or {}).get("user_id")
+    return str(user_id) if user_id else None
+
+
+def require_admin_or_owner(record_user_id: str | None) -> str:
+    if request.headers.get("X-Admin-Token"):
+        return require_admin_token()
+    request_user_id = get_request_user_id()
+    if record_user_id and request_user_id and str(record_user_id) == str(request_user_id):
+        return str(request_user_id)
+    raise ValueError("需要后台令牌或匹配的匿名 user_id")
+
+
+def auth_error_response(exc: ValueError):
+    return fail("unauthorized", str(exc), status=401)
+
+
 def require_fields(payload: dict, fields: list[str]) -> list[str]:
     return [field for field in fields if payload.get(field) in (None, "")]
 

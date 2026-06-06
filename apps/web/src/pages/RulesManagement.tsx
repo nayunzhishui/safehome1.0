@@ -13,6 +13,10 @@ interface FeedbackRule {
   supportive_feedback: string;
   recommended_card_ids: string[];
   risk_level: RiskLevel;
+  version?: string;
+  theory_source?: string;
+  review_status?: string;
+  enabled?: boolean;
 }
 
 interface FeedbackRulesContent {
@@ -186,8 +190,8 @@ function FeedbackRulesView({
                 >
                   <span className="recordScene">{rule.label}</span>
                   <span className="recordDescription">{rule.explanation}</span>
-                  <span className="recordMeta">
-                    风险提示 {riskLabel(rule.risk_level)} · 推荐 {rule.recommended_card_ids.length} 张训练卡
+                <span className="recordMeta">
+                    风险提示 {riskLabel(rule.risk_level)} · {rule.review_status || "未标记"} · 推荐 {rule.recommended_card_ids.length} 张训练卡
                   </span>
                 </button>
               ))}
@@ -205,6 +209,10 @@ function FeedbackRulesView({
             <div className="detailContent">
               <DetailRow label="规则标签" value={selectedRule.label} />
               <DetailRow label="风险提示" value={riskLabel(selectedRule.risk_level)} />
+              <DetailRow label="内容版本" value={selectedRule.version} />
+              <DetailRow label="理论来源" value={selectedRule.theory_source} />
+              <DetailRow label="审核状态" value={selectedRule.review_status} />
+              <DetailRow label="启用状态" value={selectedRule.enabled === false ? "停用" : "启用"} />
               <DetailRow label="规则解释" value={selectedRule.explanation} />
               <DetailRow label="支持性反馈" value={selectedRule.supportive_feedback} />
               <DetailRow label="推荐训练卡" value={selectedRule.recommended_card_ids.join("、")} />

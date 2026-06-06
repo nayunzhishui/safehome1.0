@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { formatSafeHomeError, safeHomeApi as api } from "../services/safehomeApi";
+import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
 import type { ProfileDimension, StudentProfileRecord } from "../../../../shared/types/api";
 
 function parseJson<T>(value: string | null | undefined, fallback: T): T {
@@ -42,6 +43,7 @@ export function ProfilesManagement() {
   const [items, setItems] = useState<StudentProfileRecord[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [selectedDetail, setSelectedDetail] = useState<StudentProfileRecord | null>(null);
+  const [adminToken, setAdminToken] = useState(getStoredAdminToken);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [message, setMessage] = useState("正在读取学生画像结果...");
 
@@ -58,7 +60,8 @@ export function ProfilesManagement() {
       setStatus("loading");
       setMessage("正在读取学生画像结果...");
       try {
-        const result = await api.listProfileResults({ limit: 100 });
+        const token = getStoredAdminToken().trim();
+        const result = await api.listProfileResults({ limit: 100 }, token);
         const profiles = result.items || [];
         setItems(profiles);
         const selectedProfile = profiles.find((item) => item.id === pathProfileId) ?? profiles[0];
@@ -81,7 +84,8 @@ export function ProfilesManagement() {
         return;
       }
       try {
-        const detail = await api.getProfileResult(selectedId);
+        const token = getStoredAdminToken().trim();
+        const detail = await api.getProfileResult(selectedId, token);
         setSelectedDetail(detail);
       } catch {
         setSelectedDetail(null);
@@ -109,6 +113,21 @@ export function ProfilesManagement() {
           <p>从 `student_profiles` 读取画像记录，用于查看置信度、风险状态、推荐训练卡、维度观察和人工复核状态。</p>
         </div>
         <div className={`status compact ${status}`}>{message}</div>
+      </section>
+
+      <section className="guidanceBox" aria-label="后台令牌">
+        <label className="tokenField">
+          后台令牌
+          <input
+            type="password"
+            value={adminToken}
+            onChange={(event) => {
+              setAdminToken(event.target.value);
+              setStoredAdminToken(event.target.value);
+            }}
+            placeholder="请输入 X-Admin-Token"
+          />
+        </label>
       </section>
 
       <section className="metricGrid">

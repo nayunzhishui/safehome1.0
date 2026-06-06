@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
+import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
 import type { EmotionDiary, FeedbackResult, TrainingCard } from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
@@ -20,7 +21,6 @@ interface DiaryInsight {
 }
 
 const api = new SafeHomeApiClient();
-const LOCAL_ADMIN_EXPORT_TOKEN = "safehome-local-admin-token";
 const RAW_TEXT_PREFIXES = [
   { key: "childReaction", label: "孩子反应", prefix: "孩子反应：" },
   { key: "shortTermResult", label: "短期结果", prefix: "短期结果：" },
@@ -83,15 +83,15 @@ function parseRawText(value?: string | null) {
 export function AdminDashboard() {
   const [state, setState] = useState<AdminDashboardState>({
     status: "idle",
-    message: "点击刷新，可以查看当前测试用户的情绪事件记录。",
+    message: "点击刷新，可以查看云端最新情绪事件记录。",
     diaries: [],
   });
   const [insights, setInsights] = useState<Record<string, DiaryInsight>>({});
   const [insightStatus, setInsightStatus] = useState<InsightStatus>("idle");
   const [insightMessage, setInsightMessage] = useState("选择一条记录后，可以生成对应的即时反馈和训练卡推荐。");
-  const [adminToken, setAdminToken] = useState(LOCAL_ADMIN_EXPORT_TOKEN);
+  const [adminToken, setAdminToken] = useState(getStoredAdminToken);
   const [exportStatus, setExportStatus] = useState<ExportStatus>("idle");
-  const [exportMessage, setExportMessage] = useState("导出需要后台令牌。本地默认令牌已填入。");
+  const [exportMessage, setExportMessage] = useState("导出需要后台令牌。云端验收请填写云托管 ADMIN_EXPORT_TOKEN。");
 
   const selectedDiary = useMemo(() => {
     return state.diaries.find((diary) => diary.id === state.selectedId) ?? state.diaries[0];
@@ -100,6 +100,16 @@ export function AdminDashboard() {
   const selectedRawText = useMemo(() => parseRawText(selectedDiary?.raw_text), [selectedDiary?.raw_text]);
 
   async function loadDiaries() {
+    const token = adminToken.trim();
+    if (!token) {
+      setState((current) => ({
+        ...current,
+        status: "error",
+        message: "请先填写后台令牌。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。",
+      }));
+      return;
+    }
+
     setState((current) => ({
       ...current,
       status: "loading",
@@ -107,7 +117,7 @@ export function AdminDashboard() {
     }));
 
     try {
-      const result = await api.listDiaries({ limit: 50 });
+      const result = await api.listDiaries({ limit: 50 }, token);
       setState({
         status: "success",
         message: result.items.length > 0 ? "已读取最新情绪事件记录。" : "当前还没有情绪事件记录。",
@@ -131,6 +141,12 @@ export function AdminDashboard() {
     if (!selectedDiary) {
       return;
     }
+    const token = adminToken.trim();
+    if (!token) {
+      setInsightStatus("error");
+      setInsightMessage("请先填写后台令牌。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。");
+      return;
+    }
 
     if (insights[selectedDiary.id]) {
       setInsightStatus("success");
@@ -142,7 +158,7 @@ export function AdminDashboard() {
     setInsightMessage("正在生成即时反馈和推荐训练卡...");
 
     try {
-      const feedback = await api.generateFeedback({ diary_id: selectedDiary.id });
+      const feedback = await api.generateFeedback({ diary_id: selectedDiary.id }, token);
       const cards = await api.recommendCards({ tags: feedback.tags, limit: 3 });
       setInsights((current) => ({
         ...current,
@@ -195,6 +211,18 @@ export function AdminDashboard() {
           <p className="summary">第一版只用于查看情绪事件记录，帮助确认小程序保存的数据是否正常。</p>
         </div>
         <div className="dashboardActions">
+          <label className="tokenField">
+            <span>后台令牌</span>
+            <input
+              type="password"
+              value={adminToken}
+              onChange={(event) => {
+                setAdminToken(event.target.value);
+                setStoredAdminToken(event.target.value);
+              }}
+              placeholder="填写 ADMIN_EXPORT_TOKEN 后刷新"
+            />
+          </label>
           <button className="primaryButton" type="button" onClick={loadDiaries} disabled={state.status === "loading"}>
             {state.status === "loading" ? "刷新中..." : "刷新记录"}
           </button>
@@ -319,7 +347,7 @@ export function AdminDashboard() {
         <div className="sectionTitleRow">
           <div>
             <h2>数据导出</h2>
-            <p className="summary">导出接口已增加后台令牌校验，本地默认令牌为 `safehome-local-admin-token`。</p>
+            <p className="summary">云端后台需要填写与云托管环境变量 `ADMIN_EXPORT_TOKEN` 一致的令牌。</p>
           </div>
           <button className="primaryButton" type="button" onClick={downloadCsv} disabled={exportStatus === "loading"}>
             {exportStatus === "loading" ? "导出中..." : "导出情绪记录 CSV"}
@@ -327,7 +355,15 @@ export function AdminDashboard() {
         </div>
         <label className="tokenField">
           <span>后台导出令牌</span>
-          <input value={adminToken} onChange={(event) => setAdminToken(event.target.value)} placeholder="请输入后台导出令牌" />
+          <input
+            type="password"
+            value={adminToken}
+            onChange={(event) => {
+              setAdminToken(event.target.value);
+              setStoredAdminToken(event.target.value);
+            }}
+            placeholder="请输入后台导出令牌"
+          />
         </label>
         <div className={`status compact ${exportStatus}`}>{exportMessage}</div>
       </section>

@@ -1,0 +1,19 @@
+{
+  "version": "candidate-2026-06",
+  "source_type": "internal_candidate",
+  "review_status": "draft_manual_review_required",
+  "cards": [
+    {"id": "student_candidate_exam_body_map", "title": "考试前身体地图", "type": "student_support", "target_skill": "身体觉察", "tags": ["考试焦虑", "身体"], "steps": ["标出身体最紧的位置。", "给紧张打 0-10 分。", "选一个能降低 1 分的小动作。"], "not_suitable_for": ["高风险危机或现实安全威胁"], "boundary_note": "不替代医疗或心理危机支持。"},
+    {"id": "student_candidate_three_feelings", "title": "给三个感受命名", "type": "student_support", "target_skill": "情绪觉察", "tags": ["情绪命名"], "steps": ["写下三个可能的感受词。", "选最接近的一个。", "写一句“我现在有点……”"], "not_suitable_for": ["自伤自杀或安全风险"], "boundary_note": "不是诊断。"},
+    {"id": "student_candidate_one_kind_sentence", "title": "给自己一句支持", "type": "student_compassion", "target_skill": "自我关怀", "tags": ["自我支持"], "steps": ["写下责备自己的话。", "把它改成对朋友会说的话。", "读一遍新句子。"], "not_suitable_for": ["高风险危机场景"], "boundary_note": "不承诺立即改善。"},
+    {"id": "student_candidate_uncertainty_scale", "title": "不确定性温度计", "type": "student_cbt", "target_skill": "不确定性耐受", "tags": ["不确定", "考试"], "steps": ["写下最担心的不确定。", "打 0-10 分。", "写一个可以等一等的理由。"], "not_suitable_for": ["安全风险或急性危机"], "boundary_note": "不用于判断风险等级。"},
+    {"id": "student_candidate_small_start", "title": "只开始两分钟", "type": "student_behavior", "target_skill": "接近行动", "tags": ["启动", "拖延"], "steps": ["把任务缩到两分钟。", "只打开材料或写第一行。", "记录做到哪一步。"], "not_suitable_for": ["高风险危机"], "boundary_note": "不作为成绩考核。"},
+    {"id": "student_candidate_two_thoughts", "title": "给想法找第二种说法", "type": "student_cbt", "target_skill": "认知灵活化", "tags": ["想法", "灵活"], "steps": ["写下最重的想法。", "写一个温和一点的说法。", "比较两个说法的感受差异。"], "not_suitable_for": ["自伤自杀或现实安全威胁"], "boundary_note": "不证明哪个想法一定正确。"},
+    {"id": "student_candidate_support_person", "title": "找一个现实支持人", "type": "student_support", "target_skill": "现实支持", "tags": ["支持", "求助"], "steps": ["写下一个可信成年人。", "写一句可以发送的话。", "决定是否今天联系。"], "not_suitable_for": ["正在发生的紧急危险"], "boundary_note": "紧急危险应立即联系现实紧急支持。"},
+    {"id": "student_candidate_before_exam_card", "title": "考前 30 秒提醒卡", "type": "student_support", "target_skill": "考试焦虑", "tags": ["考试", "提醒"], "steps": ["写一句事实提醒。", "写一句支持提醒。", "写一个开考后第一步。"], "not_suitable_for": ["高风险危机"], "boundary_note": "不是治疗承诺。"},
+    {"id": "student_candidate_sandplay_resource", "title": "资源象征小记录", "type": "student_expression", "target_skill": "表达媒介", "tags": ["沙盘", "资源"], "steps": ["选一个代表压力的象征。", "选一个代表支持的象征。", "写一句它们之间的距离。"], "not_suitable_for": ["需要解释潜意识或做诊断的场景", "高风险危机"], "boundary_note": "沙盘只作为表达线索。"},
+    {"id": "student_candidate_after_conflict_reset", "title": "冲突后重置", "type": "student_support", "target_skill": "亲子沟通修复", "tags": ["冲突", "修复"], "steps": ["等身体平稳一点。", "写下自己想被理解的一点。", "选择是否用一句话告诉家长。"], "not_suitable_for": ["暴力、虐待或安全风险"], "boundary_note": "安全问题优先找现实帮助。"},
+    {"id": "student_candidate_sleep_pressure_note", "title": "睡前压力便签", "type": "student_reflection", "target_skill": "复盘", "tags": ["睡前", "压力"], "steps": ["写下还挂在心上的一件事。", "写明明天再处理的第一步。", "把便签放到明天的位置。"], "not_suitable_for": ["持续严重失眠或高风险文本"], "boundary_note": "持续严重睡眠问题需现实支持。"},
+    {"id": "student_candidate_weekly_tiny_win", "title": "本周一个小进展", "type": "student_review", "target_skill": "周报复盘", "tags": ["复盘", "进展"], "steps": ["写下一个很小的尝试。", "写它发生的条件。", "下周复制一次。"], "not_suitable_for": ["高风险危机"], "boundary_note": "不用于评价好坏。"}
+  ]
+}

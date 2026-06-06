@@ -73,6 +73,26 @@
   opacity: 0.72;
 }
 
+.error-state {
+  margin-top: 24rpx;
+}
+
+.error-action-button {
+  width: 100%;
+  min-height: 80rpx;
+  margin-top: 20rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary);
+  color: #ffffff;
+  font-size: 27rpx;
+  font-weight: 850;
+  line-height: 80rpx;
+}
+
+.error-action-button::after {
+  border: 0;
+}
+
 .boundary-card {
   margin-top: 32rpx;
   padding: 24rpx 28rpx;

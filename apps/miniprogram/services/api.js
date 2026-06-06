@@ -16,9 +16,11 @@ const API_ENDPOINTS = {
   assessmentResults: "/api/assessment-results",
   consent: "/api/consent",
   profile: "/api/profile",
+  profileResults: "/api/profile-results",
   riskCheck: "/api/risk/check",
   riskReview: "/api/risk-review",
   modelInfo: "/api/model/info",
+  parentAssessments: "/api/parent-assessments",
   checkins: "/api/checkins",
   weeklyReport: "/api/weekly-report",
   supervision: "/api/supervision",
@@ -78,6 +80,9 @@ function createSafeHomeApi(options = {}) {
             reject({
               code: payload && payload.error ? payload.error.code : "http_error",
               message: buildErrorMessage("请求失败", statusCode, payload),
+              path,
+              method,
+              status: statusCode,
               statusCode,
               payload,
               debug,
@@ -89,7 +94,11 @@ function createSafeHomeApi(options = {}) {
             reject({
               code: payload.error ? payload.error.code : "api_error",
               message: payload.error ? payload.error.message : "接口返回错误",
+              path,
+              method,
+              status: statusCode,
               statusCode,
+              payload,
               debug,
             });
             return;
@@ -101,6 +110,9 @@ function createSafeHomeApi(options = {}) {
           reject({
             code: err.errCode || "network_error",
             message: `云托管调用失败，请检查云环境 ID、云托管服务名和服务状态。当前 env=${cloudEnvId}，service=${containerService}，path=${path}。`,
+            path,
+            method,
+            status: 0,
             detail: err,
             debug,
           });
@@ -191,6 +203,36 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    getProfileResult(id, params = {}) {
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`);
+    },
+
+    getProfileVisuals(id, params = {}) {
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/visuals${queryString(withDefaultUser(params))}`);
+    },
+
+    listProfileFollowups(id, params = {}) {
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/followups${queryString(withDefaultUser(params))}`);
+    },
+
+    createProfileFollowup(id, data) {
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/followups`, {
+        method: "POST",
+        data: withDefaultUser(data),
+      });
+    },
+
+    listProfileSandplay(id, params = {}) {
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/sandplay${queryString(withDefaultUser(params))}`);
+    },
+
+    createProfileSandplay(id, data) {
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/sandplay`, {
+        method: "POST",
+        data: withDefaultUser(data),
+      });
+    },
+
     checkRisk(data) {
       return request(API_ENDPOINTS.riskCheck, {
         method: "POST",
@@ -262,6 +304,17 @@ function createSafeHomeApi(options = {}) {
 
     createSupervision(data) {
       return request(API_ENDPOINTS.supervision, {
+        method: "POST",
+        data: withDefaultUser(data),
+      });
+    },
+
+    getParentAssessmentResult(id, params = {}) {
+      return request(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`);
+    },
+
+    createParentReportAction(id, data) {
+      return request(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}/actions`, {
         method: "POST",
         data: withDefaultUser(data),
       });

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import { ADMIN_EXPORT_TYPES } from "../../../../shared/constants/api";
 import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
+import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
 
 type ExportType = (typeof ADMIN_EXPORT_TYPES)[number];
 type LoadStatus = "idle" | "loading" | "success" | "error";
@@ -13,7 +14,6 @@ interface ExportState {
 }
 
 const api = new SafeHomeApiClient();
-const LOCAL_ADMIN_EXPORT_TOKEN = "safehome-local-admin-token";
 
 const EXPORT_TYPE_LABELS: Record<ExportType, string> = {
   goals: "目标数据",
@@ -147,7 +147,7 @@ export function ExportManagement() {
   const [userId, setUserId] = useState("");
   const [moduleType, setModuleType] = useState("");
   const [highRiskConfirmed, setHighRiskConfirmed] = useState(false);
-  const [adminToken, setAdminToken] = useState(LOCAL_ADMIN_EXPORT_TOKEN);
+  const [adminToken, setAdminToken] = useState(getStoredAdminToken);
   const [state, setState] = useState<ExportState>({
     status: "idle",
     message: "请选择导出类型，可先预览 CSV 前几行，再按需保存文件。",
@@ -259,7 +259,7 @@ export function ExportManagement() {
       <section className="guidanceBox" aria-label="导出前确认">
         <h2>导出前确认</h2>
         <p>
-          导出前请确认用户授权、研究授权和脱敏要求。页面预览会隐藏自由文本、联系方式和 JSON 敏感字段；真实 CSV 文件仍保持后端接口原格式，保存后请按 `docs/数据字典.md` 再次核对字段用途。
+          导出前请确认用户授权、研究授权和脱敏要求。后端已按字段白名单输出 CSV，页面预览仍会再次隐藏可能敏感字段。保存后请按 docs/数据字典.md 核对字段用途。
         </p>
       </section>
 
@@ -315,7 +315,10 @@ export function ExportManagement() {
             <input
               type="password"
               value={adminToken}
-              onChange={(event) => setAdminToken(event.target.value)}
+              onChange={(event) => {
+                setAdminToken(event.target.value);
+                setStoredAdminToken(event.target.value);
+              }}
               placeholder="请输入 X-Admin-Token"
             />
           </label>

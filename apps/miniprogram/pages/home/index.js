@@ -49,7 +49,7 @@ Page({
       {
         key: "feedback",
         title: "规则识别",
-        subtitle: "支持性反馈",
+        subtitle: "先记录事件",
         iconText: "识",
         accentColor: "#8069A8",
         accentBg: "#F1ECF8",
@@ -136,7 +136,11 @@ Page({
       return;
     }
     if (key === "feedback") {
-      wx.navigateTo({ url: "/pages/feedback-result/index" });
+      wx.showToast({
+        title: "请先记录一次事件",
+        icon: "none",
+      });
+      wx.navigateTo({ url: "/pages/diary-form/index" });
       return;
     }
     if (key === "supervision") {

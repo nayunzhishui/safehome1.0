@@ -130,11 +130,12 @@ def test_followup_and_sandplay_high_risk_text_create_pending_reviews(tmp_path, m
 
     followup_response = client.post(
         f"/api/profile-results/{profile_id}/followups",
-        json={"round_no": 1, "text": "最近又出现不想活的念头，需要现实支持。"},
+        json={"user_id": "student-followup-risk", "round_no": 1, "text": "最近又出现不想活的念头，需要现实支持。"},
     )
     sandplay_response = client.post(
         f"/api/profile-results/{profile_id}/sandplay",
         json={
+            "user_id": "student-followup-risk",
             "scene": {"symbols": [{"type": "stone", "x": 30, "y": 40}]},
             "reflection_text": "我觉得撑不住，也不想活了。",
         },

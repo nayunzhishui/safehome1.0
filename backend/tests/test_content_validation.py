@@ -75,3 +75,60 @@ def test_training_card_requires_at_least_two_reflection_questions(tmp_path):
     errors = validator.validate_content(content_dir, SCHEMA_ROOT)
 
     assert any("training_cards.json.cards[emotion_naming].reflection_questions 至少需要 2 项" in error for error in errors)
+
+
+def test_duplicate_training_card_id_reports_error(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "training_cards.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["cards"].append(dict(payload["cards"][0]))
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("training_cards.json.cards[emotion_naming].id 重复" in error for error in errors)
+
+
+def test_unknown_recommended_card_id_reports_error(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "feedback_rules.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["rules"][0]["recommended_card_ids"] = ["missing_card_id"]
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("feedback_rules.json.rules[judgmental_language].recommended_card_ids 包含不存在的训练卡：missing_card_id" in error for error in errors)
+
+
+def test_high_risk_feedback_rule_cannot_recommend_regular_cards(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "feedback_rules.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["rules"][0]["risk_level"] = "high"
+    payload["rules"][0]["recommended_card_ids"] = ["emotion_naming"]
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("feedback_rules.json.rules[judgmental_language] high 风险规则不得推荐普通训练卡" in error for error in errors)
+
+
+def test_legal_non_diagnostic_boundary_text_is_allowed(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "feedback_rules.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["safety_notes"] = ["反馈只用于自我理解和亲子沟通练习，不构成诊断。"]
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert not any("feedback_rules.json 风险边界文案" in error for error in errors)

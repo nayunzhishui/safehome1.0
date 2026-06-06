@@ -55,5 +55,12 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Browser/runtime cache artifacts
+outputs/**/Default/Cache/
+outputs/**/Default/Code Cache/
+outputs/**/Default/GPUCache/
+outputs/**/Default/Service Worker/
+outputs/**/edge-profiles/
+
 # Codex temporary artifacts
 .codex_tmp/

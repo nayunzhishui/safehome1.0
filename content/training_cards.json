@@ -1,12 +1,15 @@
 {
-  "version": "2026.05-mvp-training-cards-v1",
+  "version": "2026.06-training-cards-v2",
   "cards": [
     {
       "id": "emotion_naming",
       "type": "emotion_awareness",
       "title": "情绪识别卡：先命名情绪",
       "purpose": "帮助家长在回应孩子前，先识别自己和孩子的情绪。",
-      "tags": ["emotion_awareness", "high_emotion_intensity"],
+      "tags": [
+        "emotion_awareness",
+        "high_emotion_intensity"
+      ],
       "steps": [
         "暂停 3 秒，先不急着讲道理。",
         "在心里说出自己的情绪：我现在是着急、失望，还是害怕？",
@@ -17,8 +20,16 @@
       "duration_minutes": 3,
       "theory_source": "UP",
       "target_skill": "emotion_awareness",
-      "suitable_for": ["亲子冲突后", "情绪强度中等", "家长愿意先暂停观察"],
-      "not_suitable_for": ["高风险危机场景", "现实安全威胁", "需要立即线下支持的情况"],
+      "suitable_for": [
+        "亲子冲突后",
+        "情绪强度中等",
+        "家长愿意先暂停观察"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要立即线下支持的情况"
+      ],
       "reflection_questions": [
         "我刚才命名出了哪一种情绪？",
         "命名情绪后，语气或动作有没有一点变化？",
@@ -33,7 +44,10 @@
       "type": "behavior_substitution",
       "title": "3 秒暂停卡：开口前先停一下",
       "purpose": "降低自动催促、吼叫或指责的概率。",
-      "tags": ["high_demand_language", "emotional_behavior"],
+      "tags": [
+        "high_demand_language",
+        "emotional_behavior"
+      ],
       "steps": [
         "发现自己想立刻批评时，先闭嘴 3 秒。",
         "做一次慢呼吸，让语速降下来。",
@@ -44,8 +58,16 @@
       "duration_minutes": 1,
       "theory_source": "UP",
       "target_skill": "pause_before_response",
-      "suitable_for": ["家长想催促或批评前", "情绪刚升高时", "低风险日常冲突"],
-      "not_suitable_for": ["高风险危机场景", "孩子或家长现实安全受威胁", "需要立即离开现场的情况"],
+      "suitable_for": [
+        "家长想催促或批评前",
+        "情绪刚升高时",
+        "低风险日常冲突"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "孩子或家长现实安全受威胁",
+        "需要立即离开现场的情况"
+      ],
       "reflection_questions": [
         "这次我在哪一刻停了下来？",
         "暂停后第一句话有没有更具体一点？",
@@ -60,7 +82,10 @@
       "type": "cognitive_flexibility",
       "title": "认知灵活化卡：换一种解释",
       "purpose": "帮助家长从单一负性归因转向更灵活的理解。",
-      "tags": ["negative_attribution", "catastrophic_prediction"],
+      "tags": [
+        "negative_attribution",
+        "catastrophic_prediction"
+      ],
       "steps": [
         "写下脑中第一个解释，例如：他就是故意拖。",
         "问自己：还有没有第二种可能？",
@@ -71,8 +96,16 @@
       "duration_minutes": 5,
       "theory_source": "UP/CBT",
       "target_skill": "cognitive_flexibility",
-      "suitable_for": ["家长出现单一负性解释时", "亲子问题反复出现后", "低到中等压力场景"],
-      "not_suitable_for": ["高风险危机场景", "现实安全威胁", "需要先处理基本安全的情况"],
+      "suitable_for": [
+        "家长出现单一负性解释时",
+        "亲子问题反复出现后",
+        "低到中等压力场景"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要先处理基本安全的情况"
+      ],
       "reflection_questions": [
         "我写下的第一个解释是什么？",
         "我找到的第二种可能是什么？",
@@ -87,7 +120,10 @@
       "type": "nonjudgmental_response",
       "title": "非评判回应卡：把批评改成确认",
       "purpose": "训练家长把评判性语言转换成支持性表达。",
-      "tags": ["judgmental_language", "parent_child_conflict"],
+      "tags": [
+        "judgmental_language",
+        "parent_child_conflict"
+      ],
       "steps": [
         "找到自己想说的批评句。",
         "删掉“又、总是、必须、怎么这么”等高压词。",
@@ -98,8 +134,16 @@
       "duration_minutes": 4,
       "theory_source": "UP",
       "target_skill": "nonjudgmental_response",
-      "suitable_for": ["出现评判性语言后", "亲子冲突复盘时", "家长愿意改写一句话时"],
-      "not_suitable_for": ["高风险危机场景", "现实安全威胁", "需要专业介入的持续伤害情境"],
+      "suitable_for": [
+        "出现评判性语言后",
+        "亲子冲突复盘时",
+        "家长愿意改写一句话时"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要专业介入的持续伤害情境"
+      ],
       "reflection_questions": [
         "我删掉了哪一个评判词？",
         "改写后的句子更像观察还是评价？",
@@ -114,7 +158,11 @@
       "type": "behavior_substitution",
       "title": "替代行为卡：用具体请求替代威胁",
       "purpose": "把短期有效但长期成本高的威胁、催促，换成可执行请求。",
-      "tags": ["threat_language", "repeated_urging", "emotional_behavior"],
+      "tags": [
+        "threat_language",
+        "repeated_urging",
+        "emotional_behavior"
+      ],
       "steps": [
         "识别原本想做的情绪性行为，例如威胁、催促、冷处理。",
         "把要求缩小成一个 10 分钟内能完成的小动作。",
@@ -125,8 +173,16 @@
       "duration_minutes": 5,
       "theory_source": "UP",
       "target_skill": "behavior_substitution",
-      "suitable_for": ["反复催促后", "想把要求缩小成一步时", "低风险日常任务冲突"],
-      "not_suitable_for": ["高风险危机场景", "暴力或安全威胁", "需要立即保护人身安全的情况"],
+      "suitable_for": [
+        "反复催促后",
+        "想把要求缩小成一步时",
+        "低风险日常任务冲突"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "暴力或安全威胁",
+        "需要立即保护人身安全的情况"
+      ],
       "reflection_questions": [
         "我把原来的要求缩小成了哪一步？",
         "孩子是否更容易知道先做什么？",
@@ -141,7 +197,12 @@
       "type": "cbt",
       "title": "自动想法卡：把担心写成一句话",
       "purpose": "帮助学生把压力场景中的自动想法写清楚，再尝试寻找更平衡的解释。",
-      "tags": ["student_profile", "pressure_alert", "test_anxiety", "cbt"],
+      "tags": [
+        "student_profile",
+        "pressure_alert",
+        "test_anxiety",
+        "cbt"
+      ],
       "steps": [
         "写下刚才最让你担心的一件事。",
         "把脑中最强烈的一句话写下来，例如：如果考不好，大家会失望。",
@@ -152,8 +213,16 @@
       "duration_minutes": 5,
       "theory_source": "CBT",
       "target_skill": "automatic_thought_awareness",
-      "suitable_for": ["学生能安全书写压力想法时", "考试担心或评价压力后", "低到中等压力场景"],
-      "not_suitable_for": ["高风险危机场景", "自伤自杀或暴力风险文本", "需要立即现实支持的情况"],
+      "suitable_for": [
+        "学生能安全书写压力想法时",
+        "考试担心或评价压力后",
+        "低到中等压力场景"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "自伤自杀或暴力风险文本",
+        "需要立即现实支持的情况"
+      ],
       "reflection_questions": [
         "我写下的自动想法是哪一句？",
         "我找到的一个支持证据和一个不完全支持证据是什么？",
@@ -168,7 +237,11 @@
       "type": "emotion_regulation",
       "title": "情绪命名卡：说出现在最明显的感受",
       "purpose": "帮助学生在压力升高时先识别情绪，降低被情绪推着走的感觉。",
-      "tags": ["student_profile", "pressure_alert", "emotion_regulation"],
+      "tags": [
+        "student_profile",
+        "pressure_alert",
+        "emotion_regulation"
+      ],
       "steps": [
         "停下来，感受身体最明显的位置。",
         "从紧张、担心、委屈、生气、害怕、难过中选一个最接近的词。",
@@ -179,8 +252,16 @@
       "duration_minutes": 3,
       "theory_source": "UP",
       "target_skill": "emotion_naming",
-      "suitable_for": ["学生压力升高但仍可自我观察时", "考试或学习压力后", "低到中等情绪强度"],
-      "not_suitable_for": ["高风险危机场景", "现实安全威胁", "急性失控或需要线下支持的情况"],
+      "suitable_for": [
+        "学生压力升高但仍可自我观察时",
+        "考试或学习压力后",
+        "低到中等情绪强度"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "急性失控或需要线下支持的情况"
+      ],
       "reflection_questions": [
         "我选出的情绪词是什么？",
         "命名情绪后身体感觉有没有变化？",
@@ -195,7 +276,11 @@
       "type": "self_support",
       "title": "自我支持卡：把责备换成支持句",
       "purpose": "帮助学生把强烈自责改写成更具体、更能支持行动的话。",
-      "tags": ["student_profile", "self_compassion", "test_anxiety"],
+      "tags": [
+        "student_profile",
+        "self_compassion",
+        "test_anxiety"
+      ],
       "steps": [
         "写下一句正在责备自己的话。",
         "想象朋友遇到同样情况，你会怎么对他说？",
@@ -206,8 +291,16 @@
       "duration_minutes": 5,
       "theory_source": "CBT/self-compassion",
       "target_skill": "self_support_statement",
-      "suitable_for": ["学生出现自责但无高风险表达时", "考试失利后", "愿意尝试改写一句话时"],
-      "not_suitable_for": ["高风险危机场景", "自伤自杀或暴力风险文本", "需要立即现实支持的情况"],
+      "suitable_for": [
+        "学生出现自责但无高风险表达时",
+        "考试失利后",
+        "愿意尝试改写一句话时"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "自伤自杀或暴力风险文本",
+        "需要立即现实支持的情况"
+      ],
       "reflection_questions": [
         "我原来责备自己的话是什么？",
         "我改写出的支持句是什么？",
@@ -222,7 +315,12 @@
       "type": "expressive_task",
       "title": "沙盘表达卡：给压力选一个象征物",
       "purpose": "帮助学生用表达任务呈现压力感受，作为后续交流和自我理解的线索。",
-      "tags": ["student_profile", "pressure_alert", "sandplay", "expressive_task"],
+      "tags": [
+        "student_profile",
+        "pressure_alert",
+        "sandplay",
+        "expressive_task"
+      ],
       "steps": [
         "从身边物品或想象图像中，选一个最像当前压力的象征物。",
         "描述它的位置、大小、颜色或状态。",
@@ -233,8 +331,16 @@
       "duration_minutes": 8,
       "theory_source": "expressive_support",
       "target_skill": "symbolic_expression",
-      "suitable_for": ["学生愿意用图像或物品表达压力时", "语言表达困难但愿意描述象征物时", "低风险支持性访谈前"],
-      "not_suitable_for": ["高风险危机场景", "现实安全威胁", "需要解释潜意识或做诊断的场景"],
+      "suitable_for": [
+        "学生愿意用图像或物品表达压力时",
+        "语言表达困难但愿意描述象征物时",
+        "低风险支持性访谈前"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要解释潜意识或做诊断的场景"
+      ],
       "reflection_questions": [
         "我选择的压力象征物是什么？",
         "支持象征物给了我什么提醒？",
@@ -242,6 +348,197 @@
       ],
       "review_status": "pilot_ready",
       "reviewer_note": "沙盘表达只作为表达媒介和访谈线索，不自动解释潜意识。",
+      "enabled": true
+    },
+    {
+      "id": "parent_after_conflict_repair",
+      "type": "parent_up",
+      "title": "冲突后一句修复",
+      "purpose": "帮助家长在冲突后用一句具体、非评判的话修复关系。",
+      "tags": [
+        "repair",
+        "relationship",
+        "parent_support"
+      ],
+      "steps": [
+        "等情绪下降后再说。",
+        "承认刚才有些着急。",
+        "邀请孩子一起找下一小步。"
+      ],
+      "example": "刚才我有些着急，那句话可能让你难受了。我们先重新说一次。",
+      "duration_minutes": 3,
+      "theory_source": "UP/parent-child repair",
+      "target_skill": "after_conflict_repair",
+      "suitable_for": [
+        "低风险亲子冲突后",
+        "家长愿意先修复一句话时"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况"
+      ],
+      "reflection_questions": [
+        "我承认了哪一个具体反应？",
+        "孩子听到后有没有更愿意继续说？",
+        "下次我想保留哪一句修复话？"
+      ],
+      "review_status": "manual_reviewed_small_batch",
+      "reviewer_note": "6.6 第一批小样本内容导入，用于低风险冲突后修复练习。",
+      "version": "content-2026-06-6.6-p1",
+      "enabled": true
+    },
+    {
+      "id": "parent_repair_question",
+      "type": "parent_support",
+      "title": "一个修复问题",
+      "purpose": "帮助家长在冲突后先听见孩子最难受的一点。",
+      "tags": [
+        "repair",
+        "question",
+        "parent_support"
+      ],
+      "steps": [
+        "问：刚才哪句话让你最难受？",
+        "只听不解释。",
+        "说：我会调整这一点。"
+      ],
+      "example": "刚才哪句话让你最难受？我先听你说，不急着解释。",
+      "duration_minutes": 4,
+      "theory_source": "supportive communication",
+      "target_skill": "repair_question",
+      "suitable_for": [
+        "亲子冲突复盘",
+        "家长愿意先倾听时"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况"
+      ],
+      "reflection_questions": [
+        "我有没有先听完再回应？",
+        "孩子说出的最难受一点是什么？",
+        "我能调整的一句话是什么？"
+      ],
+      "review_status": "manual_reviewed_small_batch",
+      "reviewer_note": "6.6 第一批小样本内容导入，用于低风险修复提问。",
+      "version": "content-2026-06-6.6-p1",
+      "enabled": true
+    },
+    {
+      "id": "parent_body_signal_check",
+      "type": "parent_up",
+      "title": "身体信号小检查",
+      "purpose": "帮助家长在压力升高时先识别身体信号，再进入沟通。",
+      "tags": [
+        "body_awareness",
+        "pause",
+        "parent_support"
+      ],
+      "steps": [
+        "观察肩膀、呼吸和胃部感受。",
+        "给紧张程度打 0-10 分。",
+        "选择一个能降低 1 分的小动作。"
+      ],
+      "example": "我先注意到肩膀很紧，给紧张打 7 分。现在先放慢一次呼吸。",
+      "duration_minutes": 3,
+      "theory_source": "UP/body awareness",
+      "target_skill": "body_signal_awareness",
+      "suitable_for": [
+        "家长身体紧张升高时",
+        "开口前需要先暂停时"
+      ],
+      "not_suitable_for": [
+        "急性身体危险",
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实医疗支持的情况"
+      ],
+      "reflection_questions": [
+        "我最先注意到哪个身体信号？",
+        "我选择了哪个降低 1 分的小动作？",
+        "做完后语气有没有一点变化？"
+      ],
+      "review_status": "manual_reviewed_small_batch",
+      "reviewer_note": "6.6 第一批小样本内容导入，用于身体觉察练习。",
+      "version": "content-2026-06-6.6-p1",
+      "enabled": true
+    },
+    {
+      "id": "student_exam_body_map",
+      "type": "student_support",
+      "title": "考试前身体地图",
+      "purpose": "帮助学生把考试前的紧张落到具体身体感受和一个小动作上。",
+      "tags": [
+        "exam_pressure",
+        "body_awareness",
+        "student_support"
+      ],
+      "steps": [
+        "标出身体最紧的位置。",
+        "给紧张打 0-10 分。",
+        "选一个能降低 1 分的小动作。"
+      ],
+      "example": "我注意到胸口紧，紧张是 7 分。我先把脚踩稳，再看第一题。",
+      "duration_minutes": 4,
+      "theory_source": "UP/body awareness",
+      "target_skill": "exam_body_awareness",
+      "suitable_for": [
+        "考试前紧张但仍能自我观察时",
+        "低到中等压力场景"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况"
+      ],
+      "reflection_questions": [
+        "我标出的身体位置在哪里？",
+        "紧张分数有没有变化？",
+        "我选的 1 分小动作是什么？"
+      ],
+      "review_status": "manual_reviewed_small_batch",
+      "reviewer_note": "6.6 第一批小样本内容导入，用于学生考试压力身体觉察。",
+      "version": "content-2026-06-6.6-p1",
+      "enabled": true
+    },
+    {
+      "id": "student_two_thoughts",
+      "type": "student_cbt",
+      "title": "给想法找第二种说法",
+      "purpose": "帮助学生把压力想法改写成更温和、可行动的第二种说法。",
+      "tags": [
+        "thought_flexibility",
+        "exam_pressure",
+        "student_support"
+      ],
+      "steps": [
+        "写下最重的想法。",
+        "写一个温和一点的说法。",
+        "比较两个说法的感受差异。"
+      ],
+      "example": "把“我肯定不行”改成“我现在很担心，但可以先做最容易的一题”。",
+      "duration_minutes": 5,
+      "theory_source": "CBT/cognitive flexibility",
+      "target_skill": "second_thought_reframe",
+      "suitable_for": [
+        "学生能安全书写压力想法时",
+        "低到中等考试压力场景"
+      ],
+      "not_suitable_for": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况"
+      ],
+      "reflection_questions": [
+        "最重的想法是哪一句？",
+        "第二种说法更温和在哪里？",
+        "新的说法帮助我先做哪一步？"
+      ],
+      "review_status": "manual_reviewed_small_batch",
+      "reviewer_note": "6.6 第一批小样本内容导入，用于认知灵活化。",
+      "version": "content-2026-06-6.6-p1",
       "enabled": true
     }
   ]

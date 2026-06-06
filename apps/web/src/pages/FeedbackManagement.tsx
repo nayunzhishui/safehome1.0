@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
+import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
 
@@ -26,7 +27,6 @@ interface FeedbackState {
 }
 
 const api = new SafeHomeApiClient();
-const LOCAL_ADMIN_EXPORT_TOKEN = "safehome-local-admin-token";
 
 function parseCsv(text: string): FeedbackExportRow[] {
   const normalized = text.replace(/^\uFEFF/, "").trim();
@@ -135,7 +135,7 @@ export function FeedbackManagement() {
     message: "点击读取，可以通过当前 CSV 导出接口查看已生成的反馈结果。",
     feedback: [],
   });
-  const [adminToken, setAdminToken] = useState(LOCAL_ADMIN_EXPORT_TOKEN);
+  const [adminToken, setAdminToken] = useState(getStoredAdminToken);
 
   const selectedFeedback = useMemo(() => {
     return state.feedback.find((item) => item.id === state.selectedId) ?? state.feedback[0];
@@ -210,7 +210,13 @@ export function FeedbackManagement() {
 
       <label className="tokenField">
         后台导出令牌
-        <input value={adminToken} onChange={(event) => setAdminToken(event.target.value)} />
+        <input
+          value={adminToken}
+          onChange={(event) => {
+            setAdminToken(event.target.value);
+            setStoredAdminToken(event.target.value);
+          }}
+        />
       </label>
 
       <div className={`status ${state.status}`}>{state.message}</div>

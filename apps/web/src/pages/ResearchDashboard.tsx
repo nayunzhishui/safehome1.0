@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
+import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
 import type { Checkin, EmotionDiary, Goal, RiskReviewRecord, StudentProfileRecord, TrainingCard } from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
@@ -109,6 +110,7 @@ function isOpenProfileReview(item: StudentProfileRecord) {
 }
 
 export function ResearchDashboard() {
+  const [adminToken, setAdminToken] = useState(getStoredAdminToken);
   const [state, setState] = useState<OverviewState>({
     status: "idle",
     message: "正在准备研究者平台总览。",
@@ -187,8 +189,8 @@ export function ResearchDashboard() {
         api.listDiaries({ limit: 50 }),
         api.listCheckins({ limit: 50 }),
         api.listCards(),
-        api.listRiskReviews({ limit: 50 }),
-        api.listProfileResults({ limit: 50 }),
+        api.listRiskReviews({ limit: 50 }, getStoredAdminToken().trim()),
+        api.listProfileResults({ limit: 50 }, getStoredAdminToken().trim()),
       ]);
 
       setState({
@@ -233,6 +235,21 @@ export function ResearchDashboard() {
       </div>
 
       <div className={`status ${state.status}`}>{state.message}</div>
+
+      <section className="guidanceBox" aria-label="后台令牌">
+        <label className="tokenField">
+          后台令牌
+          <input
+            type="password"
+            value={adminToken}
+            onChange={(event) => {
+              setAdminToken(event.target.value);
+              setStoredAdminToken(event.target.value);
+            }}
+            placeholder="请输入 X-Admin-Token"
+          />
+        </label>
+      </section>
 
       <section className="guidanceBox" aria-label="今日待处理">
         <div className="sectionTitleRow">

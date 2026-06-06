@@ -1,80 +1,379 @@
 {
-  "version": "2026.05-mvp-feedback-rules-v1",
+  "version": "2026.06-feedback-rules-v2",
   "rules": [
     {
       "id": "judgmental_language",
       "label": "评判性语言",
-      "match_keywords": ["你怎么又这样", "你总是", "你就是", "真不懂事", "太懒了"],
+      "match_keywords": [
+        "你怎么又这样",
+        "你总是",
+        "你就是",
+        "真不懂事",
+        "太懒了"
+      ],
       "explanation": "记录中出现了较多对孩子整体评价的表达。这类表达通常能快速释放家长压力，但可能让孩子更防御或退缩。",
       "supportive_feedback": "你不是不关心孩子，而是当压力升高时，大脑会自动寻找一个明确原因。现在可以先把评价换成对事实和感受的描述。",
       "alternative_response": "把“你怎么又这样”换成“我看到这件事又卡住了，我们先看看发生了什么”。",
-      "recommended_card_ids": ["nonjudgmental_response", "emotion_naming"],
-      "positive_examples": ["你怎么又这样，我说多少遍了", "你就是太懒了", "你总是不听话"],
-      "negative_examples": ["我看到作业还没开始", "这次事情让我们都很着急", "我们先看看卡在哪里"],
-      "uncertain_examples": ["你这次又没写完，但我想先听你说说原因"],
+      "recommended_card_ids": [
+        "nonjudgmental_response",
+        "emotion_naming"
+      ],
+      "positive_examples": [
+        "你怎么又这样，我说多少遍了",
+        "你就是太懒了",
+        "你总是不听话"
+      ],
+      "negative_examples": [
+        "我看到作业还没开始",
+        "这次事情让我们都很着急",
+        "我们先看看卡在哪里"
+      ],
+      "uncertain_examples": [
+        "你这次又没写完，但我想先听你说说原因"
+      ],
       "boundary_note": "只识别整体评价或标签化表达；具体事实描述不应归为评判。",
       "recommended_review": false,
-      "risk_level": "low"
+      "risk_level": "low",
+      "version": "content-2026-06-baseline",
+      "theory_source": "UP/supportive_feedback",
+      "review_status": "pilot_ready",
+      "enabled": true,
+      "boundary_notice": "只识别整体评价或标签化表达；具体事实描述不应归为评判。",
+      "examples": [
+        "你怎么又这样，我说多少遍了",
+        "你就是太懒了",
+        "你总是不听话"
+      ],
+      "counter_examples": [
+        "我看到作业还没开始",
+        "这次事情让我们都很着急",
+        "我们先看看卡在哪里"
+      ]
     },
     {
       "id": "high_demand_language",
       "label": "高要求表达",
-      "match_keywords": ["必须马上", "立刻去做", "不能再", "一定要", "你给我"],
+      "match_keywords": [
+        "必须马上",
+        "立刻去做",
+        "不能再",
+        "一定要",
+        "你给我"
+      ],
       "explanation": "记录中出现了较强的命令式或高要求表达。它可能短期推动行动，但也容易让亲子互动进入对抗。",
       "supportive_feedback": "你希望孩子行动起来，这个愿望很真实。下一步可以把高压命令缩小成一个具体、可完成的小请求。",
       "alternative_response": "把“你必须马上写”换成“我们先从 10 分钟开始，你想先做哪一项？”。",
-      "recommended_card_ids": ["three_second_pause", "alternative_behavior"],
-      "positive_examples": ["你必须马上写完", "你给我立刻去做", "今天一定要全部完成"],
-      "negative_examples": ["我们先做 10 分钟", "你想先做语文还是先整理错题", "现在先选第一步"],
-      "uncertain_examples": ["现在快迟到了，需要马上出门"],
+      "recommended_card_ids": [
+        "three_second_pause",
+        "alternative_behavior"
+      ],
+      "positive_examples": [
+        "你必须马上写完",
+        "你给我立刻去做",
+        "今天一定要全部完成"
+      ],
+      "negative_examples": [
+        "我们先做 10 分钟",
+        "你想先做语文还是先整理错题",
+        "现在先选第一步"
+      ],
+      "uncertain_examples": [
+        "现在快迟到了，需要马上出门"
+      ],
       "boundary_note": "安全或时间边界下的必要提醒不应简单归为高压命令。",
       "recommended_review": false,
-      "risk_level": "low"
+      "risk_level": "low",
+      "version": "content-2026-06-baseline",
+      "theory_source": "UP/supportive_feedback",
+      "review_status": "pilot_ready",
+      "enabled": true,
+      "boundary_notice": "安全或时间边界下的必要提醒不应简单归为高压命令。",
+      "examples": [
+        "你必须马上写完",
+        "你给我立刻去做",
+        "今天一定要全部完成"
+      ],
+      "counter_examples": [
+        "我们先做 10 分钟",
+        "你想先做语文还是先整理错题",
+        "现在先选第一步"
+      ]
     },
     {
       "id": "negative_attribution",
       "label": "负性归因",
-      "match_keywords": ["故意拖", "就是懒", "不想学", "没救了", "不上心"],
+      "match_keywords": [
+        "故意拖",
+        "就是懒",
+        "不想学",
+        "没救了",
+        "不上心"
+      ],
       "explanation": "记录中出现了把孩子行为归因为稳定缺点的倾向。单一归因会让家长更难看见其他可能原因。",
       "supportive_feedback": "当同一类问题反复出现时，家长很容易得出一个固定解释。现在可以先增加一个备选解释，为新的回应方式留出空间。",
       "alternative_response": "把“他就是故意拖”换成“他可能不知道从哪里开始，我们先找一个最小入口”。",
-      "recommended_card_ids": ["cognitive_flexibility", "nonjudgmental_response"],
-      "positive_examples": ["他就是故意拖", "孩子就是不上心", "他没救了"],
-      "negative_examples": ["他可能不知道从哪里开始", "也许题目太多了", "我们先确认发生了什么"],
-      "uncertain_examples": ["他看起来像故意拖，但我还不确定原因"],
+      "recommended_card_ids": [
+        "cognitive_flexibility",
+        "nonjudgmental_response"
+      ],
+      "positive_examples": [
+        "他就是故意拖",
+        "孩子就是不上心",
+        "他没救了"
+      ],
+      "negative_examples": [
+        "他可能不知道从哪里开始",
+        "也许题目太多了",
+        "我们先确认发生了什么"
+      ],
+      "uncertain_examples": [
+        "他看起来像故意拖，但我还不确定原因"
+      ],
       "boundary_note": "规则只提示固定负性归因，不判断孩子真实动机。",
       "recommended_review": false,
-      "risk_level": "low"
+      "risk_level": "low",
+      "version": "content-2026-06-baseline",
+      "theory_source": "UP/supportive_feedback",
+      "review_status": "pilot_ready",
+      "enabled": true,
+      "boundary_notice": "规则只提示固定负性归因，不判断孩子真实动机。",
+      "examples": [
+        "他就是故意拖",
+        "孩子就是不上心",
+        "他没救了"
+      ],
+      "counter_examples": [
+        "他可能不知道从哪里开始",
+        "也许题目太多了",
+        "我们先确认发生了什么"
+      ]
     },
     {
       "id": "repeated_urging",
       "label": "情绪性行为：反复催促",
-      "match_keywords": ["说多少遍", "催了很多次", "一直催", "反复提醒", "忍不住催"],
+      "match_keywords": [
+        "说多少遍",
+        "催了很多次",
+        "一直催",
+        "反复提醒",
+        "忍不住催"
+      ],
       "explanation": "记录中出现了反复催促。催促通常说明家长很想让事情变好，但当催促次数增加，孩子可能更容易麻木或反抗。",
       "supportive_feedback": "你已经做了很多努力，只是当前方式可能进入了短期有效、长期成本较高的循环。可以尝试把催促改成一次明确请求。",
       "alternative_response": "把“我说多少遍了”换成“现在只做第一步：把作业本打开”。",
-      "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
-      "positive_examples": ["我说多少遍了", "我催了很多次", "我一直反复提醒"],
-      "negative_examples": ["现在只做第一步", "请先把作业本打开", "我们约定 10 分钟后看一次"],
-      "uncertain_examples": ["我提醒了两次，因为孩子没有听见"],
+      "recommended_card_ids": [
+        "alternative_behavior",
+        "three_second_pause"
+      ],
+      "positive_examples": [
+        "我说多少遍了",
+        "我催了很多次",
+        "我一直反复提醒"
+      ],
+      "negative_examples": [
+        "现在只做第一步",
+        "请先把作业本打开",
+        "我们约定 10 分钟后看一次"
+      ],
+      "uncertain_examples": [
+        "我提醒了两次，因为孩子没有听见"
+      ],
       "boundary_note": "偶发提醒不等于情绪性反复催促；需结合次数和语气理解。",
       "recommended_review": false,
-      "risk_level": "low"
+      "risk_level": "low",
+      "version": "content-2026-06-baseline",
+      "theory_source": "UP/supportive_feedback",
+      "review_status": "pilot_ready",
+      "enabled": true,
+      "boundary_notice": "偶发提醒不等于情绪性反复催促；需结合次数和语气理解。",
+      "examples": [
+        "我说多少遍了",
+        "我催了很多次",
+        "我一直反复提醒"
+      ],
+      "counter_examples": [
+        "现在只做第一步",
+        "请先把作业本打开",
+        "我们约定 10 分钟后看一次"
+      ]
     },
     {
       "id": "catastrophic_prediction",
       "label": "灾难化预测",
-      "match_keywords": ["以后肯定完了", "考不上怎么办", "将来怎么办", "全都毁了", "没有希望"],
+      "match_keywords": [
+        "以后肯定完了",
+        "考不上怎么办",
+        "将来怎么办",
+        "全都毁了",
+        "没有希望"
+      ],
       "explanation": "记录中出现了把当前事件推向严重未来后果的表达。这常见于高压力场景，不代表事实一定会如此。",
       "supportive_feedback": "你担心的是孩子的未来，这份担心背后有爱和责任。现在可以先把注意力拉回当前可处理的一小步。",
       "alternative_response": "把“以后肯定完了”换成“这次结果让我们担心，我们先看今天能补上的一个点”。",
-      "recommended_card_ids": ["cognitive_flexibility", "emotion_naming"],
-      "positive_examples": ["以后肯定完了", "全都毁了", "没有希望了"],
-      "negative_examples": ["这次结果让我们担心", "先看今天能补上的一点", "当前还有一个小步骤可以做"],
-      "uncertain_examples": ["我担心后果会比较严重，但还想先看看能做什么"],
+      "recommended_card_ids": [
+        "cognitive_flexibility",
+        "emotion_naming"
+      ],
+      "positive_examples": [
+        "以后肯定完了",
+        "全都毁了",
+        "没有希望了"
+      ],
+      "negative_examples": [
+        "这次结果让我们担心",
+        "先看今天能补上的一点",
+        "当前还有一个小步骤可以做"
+      ],
+      "uncertain_examples": [
+        "我担心后果会比较严重，但还想先看看能做什么"
+      ],
       "boundary_note": "灾难化预测属于压力下的思维线索，不代表事实判断或临床风险评估。",
       "recommended_review": true,
-      "risk_level": "medium"
+      "risk_level": "medium",
+      "version": "content-2026-06-baseline",
+      "theory_source": "UP/supportive_feedback",
+      "review_status": "pilot_ready",
+      "enabled": true,
+      "boundary_notice": "灾难化预测属于压力下的思维线索，不代表事实判断或临床风险评估。",
+      "examples": [
+        "以后肯定完了",
+        "全都毁了",
+        "没有希望了"
+      ],
+      "counter_examples": [
+        "这次结果让我们担心",
+        "先看今天能补上的一点",
+        "当前还有一个小步骤可以做"
+      ]
+    },
+    {
+      "id": "parent_repair_attempt",
+      "label": "尝试修复",
+      "title": "尝试修复",
+      "match_keywords": [
+        "刚才我太急了",
+        "我们重新说",
+        "我想补一句"
+      ],
+      "trigger_tags": [
+        "repair",
+        "relationship"
+      ],
+      "explanation": "记录中出现了关系修复的表达线索。",
+      "supportive_feedback": "记录中能看到修复关系的尝试。可以把这类句子保留下来，作为下次冲突后的可复制动作。",
+      "alternative_response": "把解释先放后，先说“刚才那句话可能让你难受了，我们重新来”。",
+      "recommended_card_ids": [
+        "parent_after_conflict_repair",
+        "parent_repair_question"
+      ],
+      "risk_level": "low",
+      "positive_examples": [
+        "刚才我太急了，我们重新说",
+        "我想补一句，刚才那句话不太合适"
+      ],
+      "negative_examples": [
+        "你就是不听话",
+        "我都解释这么多了你还这样"
+      ],
+      "examples": [
+        "刚才我太急了，我们重新说"
+      ],
+      "counter_examples": [
+        "你就是不听话"
+      ],
+      "boundary_note": "不把一次修复视为关系结论。",
+      "boundary_notice": "不把一次修复视为关系结论，也不替代高风险危机或现实安全处理。",
+      "recommended_review": false,
+      "theory_source": "UP/parent-child repair",
+      "review_status": "manual_reviewed_small_batch",
+      "version": "content-2026-06-6.6-p1",
+      "enabled": true
+    },
+    {
+      "id": "parent_body_alarm",
+      "label": "身体警报",
+      "title": "身体警报",
+      "match_keywords": [
+        "胸口紧",
+        "头很胀",
+        "手发抖"
+      ],
+      "trigger_tags": [
+        "body_awareness",
+        "pressure_signal"
+      ],
+      "explanation": "记录中出现身体紧张或压力升高线索。",
+      "supportive_feedback": "身体信号可能提示压力正在升高。先照顾身体，再进入沟通会更稳。",
+      "alternative_response": "先停一下，做一次身体信号小检查。",
+      "recommended_card_ids": [
+        "parent_body_signal_check"
+      ],
+      "risk_level": "low",
+      "positive_examples": [
+        "我当时胸口紧，头很胀",
+        "我发现自己手发抖"
+      ],
+      "negative_examples": [
+        "我看到作业还没开始",
+        "我们先看第一步"
+      ],
+      "examples": [
+        "我当时胸口紧，头很胀"
+      ],
+      "counter_examples": [
+        "我看到作业还没开始"
+      ],
+      "boundary_note": "身体不适明显时应寻求现实医疗支持。",
+      "boundary_notice": "身体不适明显时应寻求现实医疗支持；本规则不构成诊断。",
+      "recommended_review": false,
+      "theory_source": "UP/body awareness",
+      "review_status": "manual_reviewed_small_batch",
+      "version": "content-2026-06-6.6-p1",
+      "enabled": true
+    },
+    {
+      "id": "student_exam_freeze",
+      "label": "考试卡住",
+      "title": "考试卡住",
+      "match_keywords": [
+        "一想到考试就动不了",
+        "打开书就发呆",
+        "题目太多不知道开始"
+      ],
+      "trigger_tags": [
+        "exam_pressure",
+        "freeze",
+        "student_support"
+      ],
+      "explanation": "文本中出现考试压力下启动困难的线索。",
+      "supportive_feedback": "这像是压力下的启动困难线索。可以先把身体紧张和最重想法写清楚，再选一个很小的开始。",
+      "alternative_response": "先做一次考试前身体地图，或把最重的想法改写成第二种说法。",
+      "recommended_card_ids": [
+        "student_exam_body_map",
+        "student_two_thoughts"
+      ],
+      "risk_level": "low",
+      "positive_examples": [
+        "一想到考试就动不了",
+        "打开书就发呆"
+      ],
+      "negative_examples": [
+        "我已经开始做第一题",
+        "我只是想换个时间复习"
+      ],
+      "examples": [
+        "一想到考试就动不了"
+      ],
+      "counter_examples": [
+        "我已经开始做第一题"
+      ],
+      "boundary_note": "不代表能力判断。",
+      "boundary_notice": "不代表能力判断；如出现高风险危机或现实安全风险，应优先联系现实支持。",
+      "recommended_review": false,
+      "theory_source": "CBT/UP/student support",
+      "review_status": "manual_reviewed_small_batch",
+      "version": "content-2026-06-6.6-p1",
+      "enabled": true
     }
   ],
   "safety_notes": [

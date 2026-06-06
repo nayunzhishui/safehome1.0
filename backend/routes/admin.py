@@ -5,9 +5,11 @@ import hashlib
 import json
 from io import StringIO
 
-from flask import Blueprint, Response, current_app, request
+from flask import Blueprint, Response, request
 
 from database import get_connection, write_audit_log
+from routes.auth_utils import AuthError, auth_error_response, require_role
+from routes.privacy import research_revoked_filter
 from routes.utils import fail, parse_bool
 from services.content_loader import ContentLoadError, load_parent_scales, load_student_scales
 
@@ -50,9 +52,203 @@ def _fetch_limited_rows(conn, base_sql: str, params: list | tuple | None, limit:
     return rows, count_row["count"]
 
 
+def _append_research_consent_filter(conn, where_clauses: list[str], params: list, column: str = "user_id") -> None:
+    clause, clause_params = research_revoked_filter(conn, column)
+    if clause:
+        where_clauses.append(clause)
+        params.extend(clause_params)
+
+
 def _anonymous_id(user_id: str) -> str:
     digest = hashlib.sha256(user_id.encode("utf-8")).hexdigest()[:12]
     return f"anon_{digest}"
+
+
+def _value_hash(value: str | None) -> str:
+    if not value:
+        return ""
+    return hashlib.sha256(str(value).encode("utf-8")).hexdigest()[:12]
+
+
+def _safe_text_length(value) -> int:
+    return len(str(value or ""))
+
+
+def _json_list_count(value) -> int:
+    parsed = _loads(value, [])
+    return len(parsed) if isinstance(parsed, list) else 0
+
+
+def _json_dict_keys(value) -> str:
+    parsed = _loads(value, {})
+    if not isinstance(parsed, dict):
+        return ""
+    return ",".join(sorted(str(key) for key in parsed.keys()))
+
+
+def _goal_export_rows(rows) -> list[dict]:
+    return [
+        {
+            "id": row["id"],
+            "anonymous_id": _anonymous_id(row["user_id"]),
+            "scene": row["scene"],
+            "status": row["status"],
+            "smart_goal_length": _safe_text_length(row["smart_goal"]),
+            "motivation_length": _safe_text_length(row["motivation"]),
+            "start_date": row["start_date"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+        for row in rows
+    ]
+
+
+def _diary_export_rows(rows) -> list[dict]:
+    return [
+        {
+            "id": row["id"],
+            "anonymous_id": _anonymous_id(row["user_id"]),
+            "goal_id": row["goal_id"],
+            "event_time": row["event_time"],
+            "scene": row["scene"],
+            "parent_emotion": row["parent_emotion"],
+            "parent_emotion_intensity": row["parent_emotion_intensity"],
+            "child_emotion": row["child_emotion"],
+            "child_emotion_intensity": row["child_emotion_intensity"],
+            "event_description_length": _safe_text_length(row["event_description"]),
+            "automatic_thought_length": _safe_text_length(row["automatic_thought"]),
+            "body_sensation_length": _safe_text_length(row["body_sensation"]),
+            "behavior_length": _safe_text_length(row["behavior"]),
+            "raw_text_length": _safe_text_length(row["raw_text"]),
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+        for row in rows
+    ]
+
+
+def _feedback_export_rows(rows) -> list[dict]:
+    return [
+        {
+            "id": row["id"],
+            "anonymous_id": _anonymous_id(row["user_id"] or ""),
+            "diary_id": row["diary_id"],
+            "tags_count": _json_list_count(row["tags_json"]),
+            "tags_json": row["tags_json"],
+            "trigger_summary_length": _safe_text_length(row["trigger_summary"]),
+            "pattern_summary_length": _safe_text_length(row["pattern_summary"]),
+            "supportive_feedback_length": _safe_text_length(row["supportive_feedback"]),
+            "alternative_response_length": _safe_text_length(row["alternative_response"]),
+            "recommended_card_ids_json": row["recommended_card_ids_json"],
+            "risk_level": row["risk_level"],
+            "created_at": row["created_at"],
+        }
+        for row in rows
+    ]
+
+
+def _checkin_export_rows(rows) -> list[dict]:
+    return [
+        {
+            "id": row["id"],
+            "anonymous_id": _anonymous_id(row["user_id"]),
+            "card_id": row["card_id"],
+            "diary_id": row["diary_id"],
+            "completed": row["completed"],
+            "emotion_before": row["emotion_before"],
+            "emotion_after": row["emotion_after"],
+            "reflection_length": _safe_text_length(row["reflection"]),
+            "created_at": row["created_at"],
+        }
+        for row in rows
+    ]
+
+
+def _assessment_export_rows(rows) -> list[dict]:
+    return [
+        {
+            "id": row["id"],
+            "anonymous_id": _anonymous_id(row["user_id"]),
+            "worksheet_id": row["worksheet_id"],
+            "worksheet_title": row["worksheet_title"],
+            "category": row["category"],
+            "answers_count": _json_list_count(row["answers_json"]),
+            "scores_keys": _json_dict_keys(row["scores_json"]),
+            "total_score": row["total_score"],
+            "result_summary_length": _safe_text_length(row["result_summary"]),
+            "created_at": row["created_at"],
+        }
+        for row in rows
+    ]
+
+
+def _weekly_report_export_rows(rows) -> list[dict]:
+    return [
+        {
+            "id": row["id"],
+            "anonymous_id": _anonymous_id(row["user_id"]),
+            "week_start": row["week_start"],
+            "week_end": row["week_end"],
+            "frequent_scenes_count": _json_list_count(row["frequent_scenes_json"]),
+            "frequent_emotions_count": _json_list_count(row["frequent_emotions_json"]),
+            "common_patterns_count": _json_list_count(row["common_patterns_json"]),
+            "completed_cards_count": _json_list_count(row["completed_cards_json"]),
+            "next_week_suggestion_length": _safe_text_length(row["next_week_suggestion"]),
+            "created_at": row["created_at"],
+        }
+        for row in rows
+    ]
+
+
+def _supervision_export_rows(rows) -> list[dict]:
+    return [
+        {
+            "id": row["id"],
+            "anonymous_id": _anonymous_id(row["user_id"]),
+            "diary_id": row["diary_id"],
+            "message_length": _safe_text_length(row["message"]),
+            "contact_length": _safe_text_length(row["contact"]),
+            "risk_hint_length": _safe_text_length(row["risk_hint"]),
+            "risk_level": row["risk_level"],
+            "status": row["status"],
+            "supervisor_reply_length": _safe_text_length(row["supervisor_reply"]),
+            "created_at": row["created_at"],
+            "replied_at": row["replied_at"],
+        }
+        for row in rows
+    ]
+
+
+def _cards_export_rows(rows) -> list[dict]:
+    return [
+        {
+            "id": row["id"],
+            "type": row["type"],
+            "title": row["title"],
+            "tags_json": row["tags_json"],
+            "enabled": row["enabled"],
+            "version": row["version"],
+            "duration_minutes": row["duration_minutes"],
+            "steps_count": _json_list_count(row["steps_json"]),
+            "purpose_length": _safe_text_length(row["purpose"]),
+            "example_length": _safe_text_length(row["example"]),
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+        for row in rows
+    ]
+
+
+EXPORT_ROW_TRANSFORMS = {
+    "goals": _goal_export_rows,
+    "diaries": _diary_export_rows,
+    "feedback": _feedback_export_rows,
+    "checkins": _checkin_export_rows,
+    "assessments": _assessment_export_rows,
+    "reports": _weekly_report_export_rows,
+    "supervision": _supervision_export_rows,
+    "cards": _cards_export_rows,
+}
 
 
 def _profile_export_rows(rows) -> list[dict]:
@@ -103,13 +299,21 @@ def _record_export_rows(rows) -> list[dict]:
     for row in rows:
         item = dict(row)
         data = _loads(item.get("data_json"), {})
+        recommended_card_ids = data.get("recommended_card_ids") or data.get("recommended_task_ids") or []
+        if not isinstance(recommended_card_ids, list):
+            recommended_card_ids = []
         export_rows.append(
             {
                 "id": item.get("id"),
                 "anonymous_id": data.get("anonymous_id") or _anonymous_id(item.get("user_id") or ""),
                 "module_type": item.get("module_type"),
                 "source_id": item.get("source_id"),
-                "data_json": item.get("data_json"),
+                "risk_level": data.get("risk_level", ""),
+                "requires_review": 1 if data.get("requires_review") else 0,
+                "profile_code": data.get("profile_code", ""),
+                "profile_name": data.get("profile_name", ""),
+                "recommended_card_ids": ",".join(str(card_id) for card_id in recommended_card_ids),
+                "data_keys": ",".join(sorted(str(key) for key in data.keys())),
                 "created_at": item.get("created_at"),
                 "updated_at": item.get("updated_at"),
                 "export_allowed": item.get("export_allowed"),
@@ -246,7 +450,7 @@ def _parent_raw_wide_rows(rows) -> list[dict]:
         export_row = {
             "id": row["id"],
             "anonymous_id": row["anonymous_id"],
-            "participant_code": row["participant_code"],
+            "participant_code_hash": _value_hash(row["participant_code"]),
             "study_batch": row["study_batch"],
             "source_channel": row["source_channel"],
             "duration_seconds": row["duration_seconds"],
@@ -270,7 +474,7 @@ def _parent_long_rows(rows) -> list[dict]:
                 {
                     "submission_id": row["id"],
                     "anonymous_id": row["anonymous_id"],
-                    "participant_code": row["participant_code"],
+                    "participant_code_hash": _value_hash(row["participant_code"]),
                     "scale_code": item.get("scale_code"),
                     "item_code": item_code,
                     "dimension": item.get("dimension"),
@@ -285,12 +489,22 @@ def _parent_long_rows(rows) -> list[dict]:
 
 @bp.get("/export")
 def export_csv():
-    admin_token = current_app.config.get("ADMIN_EXPORT_TOKEN")
-    request_token = request.headers.get("X-Admin-Token", "")
-    if not admin_token or request_token != admin_token:
-        return fail("unauthorized", "导出数据需要后台导出令牌", status=401)
-
     export_type = request.args.get("type", "diaries")
+    try:
+        actor = require_role("admin", "researcher", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    if actor["role"] == "researcher" and export_type not in {
+        "profile",
+        "student_profiles",
+        "records",
+        "parent_assessments",
+        "raw_wide",
+        "long",
+        "codebook",
+        "cards",
+    }:
+        return fail("forbidden", "researcher 仅可访问脱敏研究导出", status=403)
     limit, limit_error = _parse_export_limit(request.args.get("limit"))
     if limit_error:
         return limit_error
@@ -303,28 +517,22 @@ def export_csv():
     try:
         with get_connection() as conn:
             if export_type in PROFILE_EXPORT_TYPES:
+                where_clauses = ["export_allowed = 1"]
+                params = []
+                _append_research_consent_filter(conn, where_clauses, params)
                 if user_id:
-                    rows, row_count_before_limit = _fetch_limited_rows(
-                        conn,
-                        """
-                        SELECT * FROM student_profiles
-                        WHERE user_id = ? AND export_allowed = 1
-                        ORDER BY created_at DESC
-                        """,
-                        (user_id,),
-                        limit,
-                    )
-                else:
-                    rows, row_count_before_limit = _fetch_limited_rows(
-                        conn,
-                        """
-                        SELECT * FROM student_profiles
-                        WHERE export_allowed = 1
-                        ORDER BY created_at DESC
-                        """,
-                        [],
-                        limit,
-                    )
+                    where_clauses.append("user_id = ?")
+                    params.append(user_id)
+                rows, row_count_before_limit = _fetch_limited_rows(
+                    conn,
+                    f"""
+                    SELECT * FROM student_profiles
+                    WHERE {' AND '.join(where_clauses)}
+                    ORDER BY created_at DESC
+                    """,
+                    params,
+                    limit,
+                )
                 contains_high_risk = _profile_rows_contain_high_risk(rows)
                 if contains_high_risk and not confirmed_high_risk_export:
                     return fail(
@@ -336,6 +544,7 @@ def export_csv():
             elif export_type == "records":
                 where_clauses = ["export_allowed = 1"]
                 params = []
+                _append_research_consent_filter(conn, where_clauses, params)
                 if user_id:
                     where_clauses.append("user_id = ?")
                     params.append(user_id)
@@ -361,86 +570,71 @@ def export_csv():
                     )
                 rows = _record_export_rows(rows)
             elif export_type == "student_followups":
+                where_clauses = ["export_allowed = 1"]
+                params = []
+                _append_research_consent_filter(conn, where_clauses, params)
                 if user_id:
-                    rows, row_count_before_limit = _fetch_limited_rows(
-                        conn,
-                        """
-                        SELECT * FROM student_profile_followups
-                        WHERE user_id = ? AND export_allowed = 1
-                        ORDER BY created_at DESC
-                        """,
-                        (user_id,),
-                        limit,
-                    )
-                else:
-                    rows, row_count_before_limit = _fetch_limited_rows(
-                        conn,
-                        """
-                        SELECT * FROM student_profile_followups
-                        WHERE export_allowed = 1
-                        ORDER BY created_at DESC
-                        """,
-                        [],
-                        limit,
-                    )
-                rows = _student_followup_rows(rows)
-            elif export_type == "sandplay":
-                if user_id:
-                    rows, row_count_before_limit = _fetch_limited_rows(
-                        conn,
-                        """
-                        SELECT * FROM student_sandplay_entries
-                        WHERE user_id = ? AND export_allowed = 1
-                        ORDER BY created_at DESC
-                        """,
-                        (user_id,),
-                        limit,
-                    )
-                else:
-                    rows, row_count_before_limit = _fetch_limited_rows(
-                        conn,
-                        """
-                        SELECT * FROM student_sandplay_entries
-                        WHERE export_allowed = 1
-                        ORDER BY created_at DESC
-                        """,
-                        [],
-                        limit,
-                    )
-                rows = _sandplay_rows(rows)
-            elif export_type == "parent_assessments":
-                if user_id:
-                    rows, row_count_before_limit = _fetch_limited_rows(
-                        conn,
-                        """
-                        SELECT * FROM parent_assessment_submissions
-                        WHERE user_id = ? AND export_allowed = 1
-                        ORDER BY created_at DESC
-                        """,
-                        (user_id,),
-                        limit,
-                    )
-                else:
-                    rows, row_count_before_limit = _fetch_limited_rows(
-                        conn,
-                        """
-                        SELECT * FROM parent_assessment_submissions
-                        WHERE export_allowed = 1
-                        ORDER BY created_at DESC
-                        """,
-                        [],
-                        limit,
-                    )
-                rows = _parent_export_rows(rows)
-            elif export_type in {"raw_wide", "long"}:
+                    where_clauses.append("user_id = ?")
+                    params.append(user_id)
                 rows, row_count_before_limit = _fetch_limited_rows(
                     conn,
-                    """
-                    SELECT * FROM parent_assessment_submissions
-                    WHERE research_consent = 1 AND export_allowed = 1
+                    f"""
+                    SELECT * FROM student_profile_followups
+                    WHERE {' AND '.join(where_clauses)}
                     ORDER BY created_at DESC
                     """,
-                    [],
+                    params,
+                    limit,
+                )
+                rows = _student_followup_rows(rows)
+            elif export_type == "sandplay":
+                where_clauses = ["export_allowed = 1"]
+                params = []
+                _append_research_consent_filter(conn, where_clauses, params)
+                if user_id:
+                    where_clauses.append("user_id = ?")
+                    params.append(user_id)
+                rows, row_count_before_limit = _fetch_limited_rows(
+                    conn,
+                    f"""
+                    SELECT * FROM student_sandplay_entries
+                    WHERE {' AND '.join(where_clauses)}
+                    ORDER BY created_at DESC
+                    """,
+                    params,
+                    limit,
+                )
+                rows = _sandplay_rows(rows)
+            elif export_type == "parent_assessments":
+                where_clauses = ["export_allowed = 1"]
+                params = []
+                _append_research_consent_filter(conn, where_clauses, params)
+                if user_id:
+                    where_clauses.append("user_id = ?")
+                    params.append(user_id)
+                rows, row_count_before_limit = _fetch_limited_rows(
+                    conn,
+                    f"""
+                    SELECT * FROM parent_assessment_submissions
+                    WHERE {' AND '.join(where_clauses)}
+                    ORDER BY created_at DESC
+                    """,
+                    params,
+                    limit,
+                )
+                rows = _parent_export_rows(rows)
+            elif export_type in {"raw_wide", "long"}:
+                where_clauses = ["research_consent = 1", "export_allowed = 1"]
+                params = []
+                _append_research_consent_filter(conn, where_clauses, params)
+                rows, row_count_before_limit = _fetch_limited_rows(
+                    conn,
+                    f"""
+                    SELECT * FROM parent_assessment_submissions
+                    WHERE {' AND '.join(where_clauses)}
+                    ORDER BY created_at DESC
+                    """,
+                    params,
                     limit,
                 )
                 rows = _parent_raw_wide_rows(rows) if export_type == "raw_wide" else _parent_long_rows(rows)
@@ -472,11 +666,14 @@ def export_csv():
                         [],
                         limit,
                     )
+                transform = EXPORT_ROW_TRANSFORMS.get(export_type)
+                if transform:
+                    rows = transform(rows)
 
             write_audit_log(
                 conn,
                 action=f"export_{export_type}",
-                actor_id="admin-token",
+                actor_id=actor["id"],
                 target_type="export",
                 target_id=export_type,
                 metadata={

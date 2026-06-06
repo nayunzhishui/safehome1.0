@@ -17,6 +17,8 @@ MVP_TABLES = [
     "parent_report_actions",
     "records",
     "audit_logs",
+    "privacy_requests",
+    "family_links",
     "weekly_reports",
     "supervision_requests",
 ]
@@ -31,6 +33,36 @@ SCHEMA_SQL = [
         source TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS privacy_requests (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        request_type TEXT NOT NULL,
+        reason TEXT,
+        status TEXT NOT NULL DEFAULT 'pending',
+        handled_by TEXT,
+        handled_note TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS family_links (
+        id TEXT PRIMARY KEY,
+        parent_user_id TEXT NOT NULL,
+        student_user_id TEXT,
+        bind_code TEXT NOT NULL,
+        relation_label TEXT,
+        status TEXT NOT NULL DEFAULT 'pending',
+        expires_at TEXT,
+        attempt_count INTEGER NOT NULL DEFAULT 0,
+        last_attempt_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        confirmed_at TEXT,
+        revoked_at TEXT
     )
     """,
     """
@@ -330,10 +362,13 @@ SCHEMA_SQL = [
 
 INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_emotion_diaries_user_created ON emotion_diaries(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)",
     "CREATE INDEX IF NOT EXISTS idx_feedback_results_user_created ON feedback_results(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_student_profiles_user_created ON student_profiles(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_student_profiles_risk_created ON student_profiles(risk_level, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_risk_review_status_created ON risk_review_records(review_status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_audit_logs_action_created ON audit_logs(action, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_records_module_created ON records(module_type, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_privacy_requests_user_created ON privacy_requests(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_family_links_code_status ON family_links(bind_code, status)",
 ]

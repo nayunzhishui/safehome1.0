@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
+import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
 import type { AssessmentResult, Checkin, RiskLevel } from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
@@ -35,7 +36,6 @@ interface ProfileScores {
 }
 
 const api = new SafeHomeApiClient();
-const LOCAL_ADMIN_EXPORT_TOKEN = "safehome-local-admin-token";
 
 function parseCsv(text: string): WeeklyReportExportRow[] {
   const normalized = text.replace(/^\uFEFF/, "").trim();
@@ -193,7 +193,7 @@ export function ReportsManagement() {
     profileResults: [],
     checkins: [],
   });
-  const [adminToken, setAdminToken] = useState(LOCAL_ADMIN_EXPORT_TOKEN);
+  const [adminToken, setAdminToken] = useState(getStoredAdminToken);
 
   const selectedReport = useMemo(() => {
     return state.reports.find((item) => item.id === state.selectedId) ?? state.reports[0];
@@ -269,7 +269,13 @@ export function ReportsManagement() {
 
       <label className="tokenField">
         后台导出令牌
-        <input value={adminToken} onChange={(event) => setAdminToken(event.target.value)} />
+        <input
+          value={adminToken}
+          onChange={(event) => {
+            setAdminToken(event.target.value);
+            setStoredAdminToken(event.target.value);
+          }}
+        />
       </label>
 
       <div className={`status ${state.status}`}>{state.message}</div>

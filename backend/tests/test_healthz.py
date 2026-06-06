@@ -45,8 +45,16 @@ def test_deep_healthz_checks_database_and_content(tmp_path, monkeypatch):
     data = response.get_json()
     assert data["ok"] is True
     assert data["database"]["ok"] is True
+    assert data["database"]["expected_schema_version"] == "2026_06_04_001"
+    assert data["database"]["current_schema_version"] == "2026_06_04_001"
+    assert data["database"]["schema_version_ok"] is True
     assert data["database"]["required_tables_ok"] is True
     assert data["database"]["missing_tables"] == []
+    assert data["database"]["database_path_parent_exists"] is True
+    assert data["database"]["database_file_exists"] is True
+    assert data["database"]["training_cards_count"] > 0
+    assert data["database"]["content_training_cards_count"] == data["database"]["training_cards_count"]
+    assert data["database"]["training_cards_sync_ok"] is True
     assert data["content"]["ok"] is True
     assert data["content"]["required_files_ok"] is True
     assert data["content"]["missing_files"] == []

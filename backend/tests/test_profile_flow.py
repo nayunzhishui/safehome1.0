@@ -91,7 +91,7 @@ def test_profile_review_creates_review_and_audit_without_overwriting_profile(tmp
     assert review["review_status"] == "reviewed"
     assert review["visible_to_student"] == 0
 
-    detail_response = client.get(f"/api/profile-results/{profile_id}")
+    detail_response = client.get(f"/api/profile-results/{profile_id}?user_id=student-review")
     assert detail_response.status_code == 200
     detail = detail_response.get_json()["data"]
     assert detail["id"] == profile_id
@@ -191,13 +191,14 @@ def test_profile_visuals_followup_and_sandplay_flow(tmp_path):
 
     followup_response = client.post(
         f"/api/profile-results/{profile_id}/followups",
-        json={"round_no": 1, "fit": "比较像", "task_done": "已尝试", "state_score": 3, "text": "比上次稍微放松一些。"},
+        json={"user_id": "student-visuals", "round_no": 1, "fit": "比较像", "task_done": "已尝试", "state_score": 3, "text": "比上次稍微放松一些。"},
     )
     assert followup_response.status_code == 201
 
     sandplay_response = client.post(
         f"/api/profile-results/{profile_id}/sandplay",
         json={
+            "user_id": "student-visuals",
             "scene": {
                 "symbols": [
                     {"type": "stone", "x": 25, "y": 40},
@@ -210,7 +211,7 @@ def test_profile_visuals_followup_and_sandplay_flow(tmp_path):
     assert sandplay_response.status_code == 201
     assert sandplay_response.get_json()["data"]["summary"]["symbol_count"] == 2
 
-    visuals_response = client.get(f"/api/profile-results/{profile_id}/visuals")
+    visuals_response = client.get(f"/api/profile-results/{profile_id}/visuals?user_id=student-visuals")
     assert visuals_response.status_code == 200
     visuals = visuals_response.get_json()["data"]
     assert len(visuals["radar"]) == 4
@@ -245,7 +246,7 @@ def test_parent_assessment_report_and_export(tmp_path):
     data = response.get_json()["data"]
     assert data["report"]["boundary_notice"]
 
-    detail = client.get(f"/api/parent-assessments/{data['id']}")
+    detail = client.get(f"/api/parent-assessments/{data['id']}?user_id=parent-flow")
     assert detail.status_code == 200
     assert detail.get_json()["data"]["participant_code"] == "P001"
 

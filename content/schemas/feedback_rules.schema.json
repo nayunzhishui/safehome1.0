@@ -14,7 +14,12 @@
         "positive_examples",
         "negative_examples",
         "boundary_note",
-        "recommended_review"
+        "recommended_review",
+        "risk_level",
+        "version",
+        "theory_source",
+        "review_status",
+        "enabled"
       ],
       "item_list_min_lengths": {
         "positive_examples": 1,

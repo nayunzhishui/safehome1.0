@@ -3,7 +3,7 @@
 from flask import Blueprint, request
 
 from database import get_connection, json_dumps, new_id, now_iso, row_to_dict
-from routes.utils import fail, ok, require_user_id
+from routes.utils import auth_error_response, fail, ok, require_admin_or_owner, require_user_id
 from services.feedback_service import generate_feedback
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
@@ -55,6 +55,10 @@ def generate():
             diary = conn.execute("SELECT * FROM emotion_diaries WHERE id = ?", (diary_id,)).fetchone()
             if diary is None:
                 return fail("not_found", "未找到对应的情绪事件记录", status=404)
+            try:
+                require_admin_or_owner(diary["user_id"])
+            except ValueError as exc:
+                return auth_error_response(exc)
             source_payload.update(row_to_dict(diary))
 
         risk_result = check_text_risk(_feedback_risk_text(source_payload), source="feedback")

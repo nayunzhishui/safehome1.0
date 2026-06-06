@@ -33,6 +33,7 @@ import type {
   TrainingCard,
   WeeklyReport,
 } from "../../../../shared/types/api";
+import { getStoredAdminToken } from "./adminToken";
 import { getAnonymousUserId } from "./userIdentity";
 
 export interface SafeHomeApiClientOptions {
@@ -54,7 +55,7 @@ export class SafeHomeApiError extends Error {
 
 export function formatSafeHomeError(error: unknown, fallback: string): string {
   if (error instanceof SafeHomeApiError && error.status === 401) {
-    return "后台令牌缺失或无效，请检查 X-Admin-Token。";
+    return "后台令牌缺失或无效。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。";
   }
   return error instanceof Error ? error.message : fallback;
 }
@@ -101,14 +102,18 @@ export class SafeHomeApiClient {
     });
   }
 
-  listDiaries(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<EmotionDiary>> {
-    return this.requestData<ListResponse<EmotionDiary>>(this.withQuery(API_ENDPOINTS.diaries, this.withDefaultUserParam(params)));
+  listDiaries(params: { user_id?: string; limit?: number } = {}, adminToken?: string): Promise<ListResponse<EmotionDiary>> {
+    const query = adminToken ? params : this.withDefaultUserParam(params);
+    return this.requestData<ListResponse<EmotionDiary>>(this.withQuery(API_ENDPOINTS.diaries, query), {
+      headers: this.adminHeaders(adminToken),
+    });
   }
 
-  generateFeedback(input: FeedbackGenerateInput): Promise<FeedbackResult> {
+  generateFeedback(input: FeedbackGenerateInput, adminToken?: string): Promise<FeedbackResult> {
     return this.requestData<FeedbackResult>(API_ENDPOINTS.feedbackGenerate, {
       method: "POST",
       body: this.withDefaultUser(input),
+      headers: this.adminHeaders(adminToken),
     });
   }
 
@@ -119,22 +124,37 @@ export class SafeHomeApiClient {
     });
   }
 
-  listProfileResults(params: { user_id?: string; round?: number; limit?: number } = {}): Promise<ListResponse<StudentProfileRecord>> {
-    return this.requestData<ListResponse<StudentProfileRecord>>(this.withQuery(API_ENDPOINTS.profileResults, params));
+  listProfileResults(
+    params: { user_id?: string; round?: number; limit?: number } = {},
+    adminToken?: string,
+  ): Promise<ListResponse<StudentProfileRecord>> {
+    return this.requestData<ListResponse<StudentProfileRecord>>(this.withQuery(API_ENDPOINTS.profileResults, params), {
+      headers: this.adminHeaders(adminToken),
+    });
   }
 
-  getProfileResult(id: string): Promise<StudentProfileRecord> {
-    return this.requestData<StudentProfileRecord>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}`);
+  getProfileResult(id: string, adminToken?: string): Promise<StudentProfileRecord> {
+    if (adminToken) {
+      return this.requestData<StudentProfileRecord>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}`, {
+        headers: this.adminHeaders(adminToken),
+      });
+    }
+    return this.requestData<StudentProfileRecord>(
+      this.withQuery(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}`, this.withDefaultUserParam({})),
+    );
   }
 
-  listProfileReviews(id: string): Promise<ListResponse<ProfileReview>> {
-    return this.requestData<ListResponse<ProfileReview>>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/reviews`);
+  listProfileReviews(id: string, adminToken?: string): Promise<ListResponse<ProfileReview>> {
+    return this.requestData<ListResponse<ProfileReview>>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/reviews`, {
+      headers: this.adminHeaders(adminToken),
+    });
   }
 
-  createProfileReview(id: string, input: ProfileReviewInput): Promise<ProfileReview> {
+  createProfileReview(id: string, input: ProfileReviewInput, adminToken?: string): Promise<ProfileReview> {
     return this.requestData<ProfileReview>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/review`, {
       method: "POST",
       body: input,
+      headers: this.adminHeaders(adminToken),
     });
   }
 
@@ -145,14 +165,17 @@ export class SafeHomeApiClient {
     });
   }
 
-  listRiskReviews(params: { status?: string; limit?: number } = {}): Promise<ListResponse<RiskReviewRecord>> {
-    return this.requestData<ListResponse<RiskReviewRecord>>(this.withQuery(API_ENDPOINTS.riskReview, params));
+  listRiskReviews(params: { status?: string; limit?: number } = {}, adminToken?: string): Promise<ListResponse<RiskReviewRecord>> {
+    return this.requestData<ListResponse<RiskReviewRecord>>(this.withQuery(API_ENDPOINTS.riskReview, params), {
+      headers: this.adminHeaders(adminToken),
+    });
   }
 
-  updateRiskReview(id: string, input: RiskReviewInput): Promise<RiskReviewRecord> {
+  updateRiskReview(id: string, input: RiskReviewInput, adminToken?: string): Promise<RiskReviewRecord> {
     return this.requestData<RiskReviewRecord>(`${API_ENDPOINTS.riskReview}/${encodeURIComponent(id)}/review`, {
       method: "POST",
       body: input,
+      headers: this.adminHeaders(adminToken),
     });
   }
 
@@ -165,7 +188,9 @@ export class SafeHomeApiClient {
   }
 
   getProfileVisuals(id: string): Promise<ProfileVisuals> {
-    return this.requestData<ProfileVisuals>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/visuals`);
+    return this.requestData<ProfileVisuals>(
+      this.withQuery(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/visuals`, this.withDefaultUserParam({})),
+    );
   }
 
   createProfileFollowup(
@@ -174,7 +199,7 @@ export class SafeHomeApiClient {
   ): Promise<Record<string, unknown>> {
     return this.requestData<Record<string, unknown>>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/followups`, {
       method: "POST",
-      body: input,
+      body: this.withDefaultUser(input),
     });
   }
 
@@ -184,7 +209,7 @@ export class SafeHomeApiClient {
   ): Promise<Record<string, unknown>> {
     return this.requestData<Record<string, unknown>>(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/sandplay`, {
       method: "POST",
-      body: input,
+      body: this.withDefaultUser(input),
     });
   }
 
@@ -200,13 +225,15 @@ export class SafeHomeApiClient {
   }
 
   getParentAssessmentResult(id: string): Promise<ParentAssessmentResult> {
-    return this.requestData<ParentAssessmentResult>(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}`);
+    return this.requestData<ParentAssessmentResult>(
+      this.withQuery(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}`, this.withDefaultUserParam({})),
+    );
   }
 
   createParentReportAction(id: string, actionKey: string): Promise<Record<string, unknown>> {
     return this.requestData<Record<string, unknown>>(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}/actions`, {
       method: "POST",
-      body: { action_key: actionKey },
+      body: this.withDefaultUser({ action_key: actionKey }),
     });
   }
 
@@ -270,7 +297,7 @@ export class SafeHomeApiClient {
         }),
       ),
       {
-        headers: { "X-Admin-Token": params.adminToken },
+        headers: this.adminHeaders(params.adminToken),
       },
     );
 
@@ -285,7 +312,7 @@ export class SafeHomeApiClient {
         message = `导出失败：HTTP ${response.status}`;
       }
       if (response.status === 401) {
-        message = "后台令牌缺失或无效，请检查 X-Admin-Token。";
+        message = "后台令牌缺失或无效。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。";
       }
       throw new SafeHomeApiError(message, "export_error", response.status);
     }
@@ -299,6 +326,11 @@ export class SafeHomeApiClient {
 
   private withDefaultUserParam<T extends { user_id?: string }>(params: T): T {
     return { ...params, user_id: params.user_id ?? this.defaultUserId };
+  }
+
+  private adminHeaders(adminToken?: string): Record<string, string> {
+    const token = (adminToken || getStoredAdminToken()).trim();
+    return token ? { "X-Admin-Token": token } : {};
   }
 
   private withQuery(path: string, params: Record<string, string | number | boolean | undefined>): string {
@@ -318,29 +350,32 @@ export class SafeHomeApiClient {
 
   private async requestData<T>(
     path: string,
-    options: { method?: "GET" | "POST"; body?: unknown } = {},
+    options: { method?: "GET" | "POST"; body?: unknown; headers?: Record<string, string> } = {},
   ): Promise<T> {
     const payload = await this.requestRaw<ApiResponse<T>>(path, options);
-    if (!payload.ok) {
-      throw new SafeHomeApiError(payload.error.message, payload.error.code, 200);
-    }
     return payload.data;
   }
 
   private async requestRaw<T>(
     path: string,
-    options: { method?: "GET" | "POST"; body?: unknown } = {},
+    options: { method?: "GET" | "POST"; body?: unknown; headers?: Record<string, string> } = {},
   ): Promise<T> {
     const response = await fetch(this.absoluteUrl(path), {
       method: options.method ?? "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
     });
 
     const payload = await response.json();
     if (!response.ok) {
-      const message = response.status === 401 ? "后台令牌缺失或无效，请检查 X-Admin-Token。" : payload?.error?.message ?? "请求失败";
+      const message =
+        response.status === 401
+          ? "后台令牌缺失或无效。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。"
+          : payload?.error?.message ?? "请求失败";
       throw new SafeHomeApiError(message, payload?.error?.code ?? "http_error", response.status);
+    }
+    if (payload && typeof payload === "object" && payload.ok === false) {
+      throw new SafeHomeApiError(payload.error?.message ?? "请求失败", payload.error?.code ?? "api_error", response.status);
     }
     return payload as T;
   }

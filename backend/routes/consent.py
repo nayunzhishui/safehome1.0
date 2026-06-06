@@ -12,6 +12,7 @@ ALLOWED_CONSENT_TYPES = {
     "privacy_policy",
     "non_diagnostic_notice",
     "research_authorization",
+    "anonymous_research",
     "contact_permission",
 }
 

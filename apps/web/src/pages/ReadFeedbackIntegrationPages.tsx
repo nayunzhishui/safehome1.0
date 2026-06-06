@@ -399,7 +399,7 @@ export function AboutStudyPage() {
       <section className="landingSection ethicsSection">
         <div className="ethicsList">
           <div className="ethicsItem">自由文本只作为辅助线索，不作为诊断依据。</div>
-          <div className="ethicsItem">聚类画像是阶段性支持参考，不代表固定人格。</div>
+          <div className="ethicsItem">聚类画像是阶段性支持参考，不代表固定特征。</div>
           <div className="ethicsItem">高风险表达需要优先联系现实中的可信成年人或专业支持资源。</div>
           <div className="ethicsItem">研究导出应默认匿名化、脱敏，并保留审计记录。</div>
         </div>
@@ -541,7 +541,7 @@ export function StudentAssessmentPage() {
             <section className="guidanceBox consent-panel">
               <h2>开始前，请先了解</h2>
               <ul>
-                <li>这不是医学或心理疾病诊断。</li>
+                <li>这不是医学或心理诊断。</li>
                 <li>匿名编号用于后续追踪，可不填写真实姓名。</li>
                 <li>画像来自研究聚类模型，只作为阶段性支持参考。</li>
                 <li>如出现自伤、自杀或严重安全风险，请优先联系线下专业支持。</li>
@@ -907,7 +907,7 @@ export function ParentAssessmentPage() {
             <section className="guidanceBox consent-panel">
               <h2>开始前，请先了解</h2>
               <ul>
-                <li>这不是医学或心理疾病诊断。</li>
+                <li>这不是医学或心理诊断。</li>
                 <li>测评不要求填写姓名、手机号等强身份信息。</li>
                 <li>匿名研究使用同意与生成反馈同意分开记录。</li>
                 <li>如需删除数据，可联系项目负责人并提供报告编号或匿名编号。</li>
@@ -1049,7 +1049,7 @@ export function ParentReportPage() {
             <article className="panel">
               <span>报告定位</span>
               <h2>支持性反馈，不作诊断</h2>
-              <p>这份报告用于帮助你理解近期体验，不用于判断人格、能力或亲子关系好坏。</p>
+              <p>这份报告用于帮助你理解近期体验，不用于判断固定特征、能力或亲子关系好坏。</p>
             </article>
             <article className="panel">
               <span>测评内容</span>
@@ -1110,7 +1110,7 @@ export function ParentReportPage() {
             </article>
             <article className="panel">
               <h2>结果不代表什么</h2>
-              <p>本报告不代表医学或心理疾病诊断，不用于判断人格好坏、亲子关系好坏，也不说明你是不是“合格父母”。</p>
+              <p>本报告不代表医学或心理诊断，不用于判断固定特征好坏、亲子关系好坏，也不说明你是不是“合格父母”。</p>
             </article>
           </section>
 

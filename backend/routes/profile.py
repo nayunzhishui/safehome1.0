@@ -18,7 +18,17 @@ from services.student_profile_model_service import (
     get_model_info_payload,
     get_student_assessment_payload,
 )
-from routes.utils import admin_token_error_response, fail, ok, parse_bool, parse_int, require_admin_token, require_user_id
+from routes.utils import (
+    admin_token_error_response,
+    auth_error_response,
+    fail,
+    ok,
+    parse_bool,
+    parse_int,
+    require_admin_or_owner,
+    require_admin_token,
+    require_user_id,
+)
 from routes.consent import get_latest_consent
 
 bp = Blueprint("profile", __name__, url_prefix="/api")
@@ -364,6 +374,12 @@ def list_profile_results():
 def get_profile_result(profile_id: str):
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        if row is None:
+            return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        try:
+            actor_id = require_admin_or_owner(row["user_id"])
+        except ValueError as exc:
+            return auth_error_response(exc)
         latest_review = conn.execute(
             """
             SELECT * FROM profile_reviews
@@ -373,25 +389,22 @@ def get_profile_result(profile_id: str):
             """,
             (profile_id,),
         ).fetchone()
-        if row is not None:
-            conn.execute(
-                """
-                INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, metadata_json, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    new_id("audit"),
-                    _actor_id(),
-                    "view_profile",
-                    "student_profile",
-                    profile_id,
-                    json_dumps({"route": "/api/profile-results/<id>"}),
-                    now_iso(),
-                ),
-            )
-            conn.commit()
-    if row is None:
-        return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        conn.execute(
+            """
+            INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, metadata_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                new_id("audit"),
+                actor_id,
+                "view_profile",
+                "student_profile",
+                profile_id,
+                json_dumps({"route": "/api/profile-results/<id>"}),
+                now_iso(),
+            ),
+        )
+        conn.commit()
     data = row_to_dict(row)
     _expand_profile_row(data)
     data["latest_review"] = row_to_dict(latest_review)
@@ -404,6 +417,10 @@ def get_profile_visuals(profile_id: str):
         row = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
         if row is None:
             return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        try:
+            require_admin_or_owner(row["user_id"])
+        except ValueError as exc:
+            return auth_error_response(exc)
         followup_rows = conn.execute(
             """
             SELECT * FROM student_profile_followups
@@ -430,9 +447,13 @@ def get_profile_visuals(profile_id: str):
 @bp.get("/profile-results/<profile_id>/followups")
 def list_profile_followups(profile_id: str):
     with get_connection() as conn:
-        profile = conn.execute("SELECT id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        profile = conn.execute("SELECT id, user_id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
         if profile is None:
             return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        try:
+            require_admin_or_owner(profile["user_id"])
+        except ValueError as exc:
+            return auth_error_response(exc)
         rows = conn.execute(
             """
             SELECT * FROM student_profile_followups
@@ -458,6 +479,10 @@ def create_profile_followup(profile_id: str):
         profile = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
         if profile is None:
             return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        try:
+            require_admin_or_owner(profile["user_id"])
+        except ValueError as exc:
+            return auth_error_response(exc)
         profile_item = row_to_dict(profile)
         keywords = extract_keywords(text)
         conn.execute(
@@ -522,9 +547,13 @@ def create_profile_followup(profile_id: str):
 @bp.get("/profile-results/<profile_id>/sandplay")
 def list_profile_sandplay(profile_id: str):
     with get_connection() as conn:
-        profile = conn.execute("SELECT id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
+        profile = conn.execute("SELECT id, user_id FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
         if profile is None:
             return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        try:
+            require_admin_or_owner(profile["user_id"])
+        except ValueError as exc:
+            return auth_error_response(exc)
         rows = conn.execute(
             """
             SELECT * FROM student_sandplay_entries
@@ -561,6 +590,10 @@ def create_profile_sandplay(profile_id: str):
         profile = conn.execute("SELECT * FROM student_profiles WHERE id = ?", (profile_id,)).fetchone()
         if profile is None:
             return fail("not_found", "没有找到对应的学生画像结果", status=404)
+        try:
+            require_admin_or_owner(profile["user_id"])
+        except ValueError as exc:
+            return auth_error_response(exc)
         profile_item = row_to_dict(profile)
         report = json_loads(profile_item.get("report_json"), {})
         task_title = str(payload.get("task_title") or report.get("sandplay_task", {}).get("title") or "沙盘式表达任务")

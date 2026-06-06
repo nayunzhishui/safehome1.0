@@ -18,7 +18,10 @@
     <text>正在生成反馈...</text>
   </view>
 
-  <alert-card wx:elif="{{errorMessage}}" type="warning" title="反馈生成遇到问题" content="{{errorMessage}}" />
+  <view wx:elif="{{errorMessage}}" class="error-state">
+    <alert-card type="warning" title="反馈生成遇到问题" content="{{errorMessage}}" />
+    <button wx:if="{{missingDiaryId}}" class="error-action-button" bindtap="goToDiaryForm">去记录一次事件</button>
+  </view>
 
   <view wx:else class="feedback-content">
     <view class="boundary-card">

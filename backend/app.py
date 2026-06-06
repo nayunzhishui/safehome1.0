@@ -1,20 +1,25 @@
 """Flask application entrypoint for the SafeHome MVP backend."""
 
+import json
 import os
 
 from flask import Flask, jsonify, request
+from flask.json.provider import DefaultJSONProvider
 
 from config import Config
 from database import check_database_health, init_db
 from routes.admin import bp as admin_bp
 from routes.assessments import bp as assessments_bp
+from routes.auth import bp as auth_bp
 from routes.cards import bp as cards_bp
 from routes.checkins import bp as checkins_bp
 from routes.consent import bp as consent_bp
 from routes.diaries import bp as diaries_bp
 from routes.feedback import bp as feedback_bp
+from routes.family import bp as family_bp
 from routes.goals import bp as goals_bp
 from routes.parent_assessments import bp as parent_assessments_bp
+from routes.privacy import bp as privacy_bp
 from routes.profile import bp as profile_bp
 from routes.risk_review import bp as risk_review_bp
 from routes.reports import bp as reports_bp
@@ -30,6 +35,16 @@ REQUIRED_CONTENT_FILES = [
 ]
 
 
+class SafeHomeJSONProvider(DefaultJSONProvider):
+    ensure_ascii = False
+
+    def dumps(self, obj, **kwargs) -> str:
+        kwargs.setdefault("default", self.default)
+        kwargs.setdefault("ensure_ascii", self.ensure_ascii)
+        kwargs.setdefault("sort_keys", self.sort_keys)
+        return json.dumps(obj, **kwargs)
+
+
 def check_content_health(content_dir) -> dict:
     missing_files = [filename for filename in REQUIRED_CONTENT_FILES if not (content_dir / filename).exists()]
     return {
@@ -43,18 +58,23 @@ def check_content_health(content_dir) -> dict:
 def create_app(config_class: type[Config] = Config) -> Flask:
     config_class.validate()
     app = Flask(__name__)
+    app.json = SafeHomeJSONProvider(app)
     app.config.from_object(config_class)
+    app.config.pop("JSON_AS_ASCII", None)
     init_db()
 
+    app.register_blueprint(auth_bp)
     app.register_blueprint(goals_bp)
     app.register_blueprint(diaries_bp)
     app.register_blueprint(feedback_bp)
+    app.register_blueprint(family_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(parent_assessments_bp)
     app.register_blueprint(assessments_bp)
     app.register_blueprint(cards_bp)
     app.register_blueprint(checkins_bp)
     app.register_blueprint(consent_bp)
+    app.register_blueprint(privacy_bp)
     app.register_blueprint(risk_review_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(supervision_bp)

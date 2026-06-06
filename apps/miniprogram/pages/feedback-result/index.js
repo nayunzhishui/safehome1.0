@@ -10,6 +10,7 @@ Page({
     feedback: null,
     isHighRisk: false,
     canShowTraining: true,
+    missingDiaryId: false,
     nextAction: null,
     labelsText: "",
     patternCards: [],
@@ -26,11 +27,15 @@ Page({
 
   async loadFeedback(diaryId) {
     if (!diaryId) {
-      this.setData({ loading: false, errorMessage: "缺少记录 ID，请返回重新提交。" });
+      this.setData({
+        loading: false,
+        missingDiaryId: true,
+        errorMessage: "缺少记录 ID。支持性反馈需要先提交一条情绪记录。",
+      });
       return;
     }
 
-    this.setData({ loading: true, errorMessage: "" });
+    this.setData({ loading: true, errorMessage: "", missingDiaryId: false });
 
     try {
       const feedback = await api.generateFeedback({ diary_id: diaryId });
@@ -161,6 +166,10 @@ Page({
       title: "本次反馈已保留在当前记录中",
       icon: "none",
     });
+  },
+
+  goToDiaryForm() {
+    wx.navigateTo({ url: "/pages/diary-form/index" });
   },
 
   openTrainingCard() {

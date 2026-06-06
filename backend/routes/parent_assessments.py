@@ -6,7 +6,7 @@ from flask import Blueprint, request
 
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts
 from routes.consent import DEFAULT_CONSENT_VERSION, get_latest_consent
-from routes.utils import fail, ok, parse_bool, require_user_id
+from routes.utils import auth_error_response, fail, ok, parse_bool, require_admin_or_owner, require_admin_token, require_user_id
 from services.content_loader import ContentLoadError
 from services.parent_assessment_service import (
     ParentAssessmentInputError,
@@ -207,6 +207,11 @@ def create_parent_assessment():
 
 @bp.get("/parent-assessments")
 def list_parent_assessments():
+    try:
+        require_admin_token()
+    except ValueError as exc:
+        return auth_error_response(exc)
+
     with get_connection() as conn:
         rows = conn.execute(
             """
@@ -227,6 +232,10 @@ def get_parent_assessment_result(submission_id: str):
         row = conn.execute("SELECT * FROM parent_assessment_submissions WHERE id = ?", (submission_id,)).fetchone()
     if row is None:
         return fail("not_found", "没有找到对应的家长测评报告", status=404)
+    try:
+        require_admin_or_owner(row["user_id"])
+    except ValueError as exc:
+        return auth_error_response(exc)
     return ok(_expand_parent_row(row_to_dict(row)))
 
 
@@ -239,9 +248,13 @@ def create_parent_report_action(submission_id: str):
     action_id = new_id("parent_action")
     timestamp = now_iso()
     with get_connection() as conn:
-        row = conn.execute("SELECT id FROM parent_assessment_submissions WHERE id = ?", (submission_id,)).fetchone()
+        row = conn.execute("SELECT id, user_id FROM parent_assessment_submissions WHERE id = ?", (submission_id,)).fetchone()
         if row is None:
             return fail("not_found", "没有找到对应的家长测评报告", status=404)
+        try:
+            require_admin_or_owner(row["user_id"])
+        except ValueError as exc:
+            return auth_error_response(exc)
         conn.execute(
             """
             INSERT INTO parent_report_actions (id, submission_id, action_key, created_at)

@@ -1,0 +1,19 @@
+{
+  "version": "candidate-2026-06",
+  "source_type": "internal_candidate",
+  "review_status": "draft_manual_review_required",
+  "matrix": [
+    {"dimension": "UP 模块", "formal_content": ["emotion_naming", "three_second_pause"], "candidate_content": ["parent_candidate_pause_before_repeat", "parent_candidate_body_signal_check"], "gap": "需要人工审核后再扩展正式卡。"},
+    {"dimension": "CBT/认知灵活化", "formal_content": ["cognitive_flexibility", "cbt_auto_thought_student"], "candidate_content": ["parent_candidate_two_possible_reasons", "student_candidate_two_thoughts"], "gap": "可增加更多家长场景例子。"},
+    {"dimension": "情绪觉察", "formal_content": ["emotion_naming", "student_emotion_naming"], "candidate_content": ["student_candidate_three_feelings"], "gap": "学生低龄表达版本待补。"},
+    {"dimension": "身体感觉/放松", "formal_content": ["three_second_pause"], "candidate_content": ["parent_candidate_body_signal_check", "student_candidate_exam_body_map"], "gap": "正式内容覆盖偏少。"},
+    {"dimension": "情绪性行为替代", "formal_content": ["alternative_behavior"], "candidate_content": ["parent_candidate_lower_volume", "parent_candidate_micro_choice"], "gap": "需要更多催促、讲道理、冷处理场景。"},
+    {"dimension": "暴露/接近行动", "formal_content": [], "candidate_content": ["parent_candidate_ten_minute_start", "student_candidate_small_start"], "gap": "暂不导入正式暴露训练，只保留低风险接近行动候选。"},
+    {"dimension": "自我关怀", "formal_content": ["self_support_statement"], "candidate_content": ["parent_candidate_self_kind_sentence", "student_candidate_one_kind_sentence"], "gap": "家长端正式卡待审核。"},
+    {"dimension": "亲子沟通修复", "formal_content": ["nonjudgmental_response"], "candidate_content": ["parent_candidate_after_conflict_repair", "parent_candidate_repair_question"], "gap": "可作为第一批候选导入方向。"},
+    {"dimension": "学生考试焦虑", "formal_content": ["cbt_auto_thought_student", "student_emotion_naming"], "candidate_content": ["student_candidate_before_exam_card", "student_candidate_uncertainty_scale"], "gap": "需心理学审核考试场景措辞。"},
+    {"dimension": "风险边界", "formal_content": ["risk_keywords.json"], "candidate_content": ["candidate_high_risk_no_card"], "gap": "候选规则不参与运行。"},
+    {"dimension": "人工复核", "formal_content": ["risk_review_records"], "candidate_content": ["student_candidate_support_person"], "gap": "内容与后台 SOP 仍需人工验收。"},
+    {"dimension": "周报复盘", "formal_content": ["weekly_reports"], "candidate_content": ["parent_candidate_weekly_one_pattern", "student_candidate_weekly_tiny_win"], "gap": "可先作为复盘候选文本。"}
+  ]
+}

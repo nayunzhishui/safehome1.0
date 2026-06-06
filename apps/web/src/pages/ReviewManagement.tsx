@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { formatSafeHomeError, safeHomeApi as api } from "../services/safehomeApi";
+import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
 import type { ProfileReviewInput, ProfileReviewStatus, StudentProfileRecord } from "../../../../shared/types/api";
 
 interface ReviewDraft {
@@ -46,6 +47,7 @@ export function ReviewManagement() {
   const [items, setItems] = useState<StudentProfileRecord[]>([]);
   const [drafts, setDrafts] = useState<Record<string, ReviewDraft>>({});
   const [savingId, setSavingId] = useState("");
+  const [adminToken, setAdminToken] = useState(getStoredAdminToken);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [message, setMessage] = useState("正在读取需复核画像...");
 
@@ -56,7 +58,7 @@ export function ReviewManagement() {
     setStatus("loading");
     setMessage("正在读取需复核画像...");
     try {
-      const result = await api.listProfileResults({ limit: 100 });
+      const result = await api.listProfileResults({ limit: 100 }, getStoredAdminToken().trim());
       const reviewItems = (result.items || []).filter(needsReview);
       setItems(reviewItems);
       setDrafts((current) => {
@@ -101,7 +103,7 @@ export function ReviewManagement() {
     setSavingId(id);
     setMessage("正在保存人工复核记录...");
     try {
-      await api.createProfileReview(id, input);
+      await api.createProfileReview(id, input, adminToken.trim());
       setMessage("人工复核记录已保存，学生端报告未被覆盖。");
       await loadReviewItems();
     } catch (error) {
@@ -121,6 +123,21 @@ export function ReviewManagement() {
           <p>筛选需人工关注的学生画像。人工备注单独保存，不自动覆盖学生端报告。</p>
         </div>
         <div className={`status compact ${status}`}>{message}</div>
+      </section>
+
+      <section className="guidanceBox" aria-label="后台令牌">
+        <label className="tokenField">
+          后台令牌
+          <input
+            type="password"
+            value={adminToken}
+            onChange={(event) => {
+              setAdminToken(event.target.value);
+              setStoredAdminToken(event.target.value);
+            }}
+            placeholder="请输入 X-Admin-Token"
+          />
+        </label>
       </section>
 
       <section className="metricGrid">

@@ -24,6 +24,18 @@ export const API_ENDPOINTS = {
   weeklyReport: "/api/weekly-report",
   supervision: "/api/supervision",
   adminExport: "/api/admin/export",
+  privacyConsentStatus: "/api/privacy/consent-status",
+  privacyRevokeConsent: "/api/privacy/revoke-consent",
+  privacyDeleteMyData: "/api/privacy/delete-my-data",
+  privacyExportMyData: "/api/privacy/export-my-data",
+  authRegister: "/api/auth/register",
+  authLogin: "/api/auth/login",
+  authLogout: "/api/auth/logout",
+  authMe: "/api/auth/me",
+  familyCreateBindCode: "/api/family/create-bind-code",
+  familyBindStudent: "/api/family/bind-student",
+  familyMembers: "/api/family/members",
+  familyUnbind: "/api/family/unbind",
 } as const;
 
 export const GOAL_STATUSES = ["active", "done", "paused"] as const;

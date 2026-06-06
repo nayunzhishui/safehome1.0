@@ -15,9 +15,15 @@ def _fresh_app(tmp_path, monkeypatch, app_env: str = "development"):
             sys.modules.pop(name, None)
     monkeypatch.setenv("APP_ENV", app_env)
     if app_env == "production":
+        monkeypatch.setenv("DB_PROVIDER", "sqlite")
+        monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
         monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
+        monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
     else:
+        monkeypatch.delenv("DB_PROVIDER", raising=False)
+        monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
         monkeypatch.delenv("ADMIN_EXPORT_TOKEN", raising=False)
+        monkeypatch.delenv("SECRET_KEY", raising=False)
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
     module = importlib.import_module("app")
@@ -132,7 +138,7 @@ def test_profile_records_consent_summary_and_exports_status(tmp_path, monkeypatc
     created = profile_response.get_json()["data"]
     assert created["consent_summary"]["research_authorization"]["status"] == "agreed"
 
-    detail_response = client.get(f"/api/profile-results/{created['student_profile_id']}")
+    detail_response = client.get(f"/api/profile-results/{created['student_profile_id']}?user_id=student-consent")
     assert detail_response.status_code == 200
     detail = detail_response.get_json()["data"]
     assert detail["report"]["consent_summary"]["research_authorization"]["status"] == "agreed"
