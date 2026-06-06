@@ -14,6 +14,14 @@ def _fresh_app(tmp_path, monkeypatch, app_env: str = "development"):
             sys.modules.pop(name, None)
     monkeypatch.setenv("APP_ENV", app_env)
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
+    if app_env == "production":
+        monkeypatch.setenv("DB_PROVIDER", "sqlite")
+        monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+        monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
+    else:
+        monkeypatch.delenv("DB_PROVIDER", raising=False)
+        monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
+        monkeypatch.delenv("SECRET_KEY", raising=False)
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
     module = importlib.import_module("app")

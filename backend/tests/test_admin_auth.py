@@ -1,4 +1,5 @@
 import importlib
+import json
 import sys
 from pathlib import Path
 
@@ -122,3 +123,49 @@ def test_profile_review_endpoints_require_admin_token(tmp_path, monkeypatch):
     assert no_token_post.status_code == 401
     assert ok_post.status_code == 201
     assert ok_post.get_json()["data"]["reviewer_id"] == "admin-token"
+
+
+def test_diary_admin_list_can_read_all_users_without_user_filter(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    for user_id in ["parent-a", "parent-b"]:
+        response = client.post(
+            "/api/diaries",
+            json={
+                "user_id": user_id,
+                "scene": "作业拖延",
+                "event_description": f"{user_id} 的记录",
+                "parent_emotion": "着急",
+            },
+        )
+        assert response.status_code == 201
+
+    owner_response = client.get("/api/diaries?user_id=parent-a")
+    admin_response = client.get("/api/diaries?limit=10", headers=ADMIN_HEADERS)
+    wrong_token = client.get("/api/diaries?limit=10", headers={"X-Admin-Token": "wrong-token"})
+
+    assert owner_response.status_code == 200
+    assert len(owner_response.get_json()["data"]["items"]) == 1
+    assert admin_response.status_code == 200
+    assert len(admin_response.get_json()["data"]["items"]) == 2
+    assert wrong_token.status_code == 401
+
+    import database
+
+    with database.get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT * FROM audit_logs
+            WHERE action = 'list_diaries_admin'
+            ORDER BY created_at DESC
+            LIMIT 1
+            """
+        ).fetchone()
+
+    assert row is not None
+    assert row["actor_id"] == "admin-token"
+    metadata = json.loads(row["metadata_json"])
+    assert metadata["route"] == "/api/diaries"
+    assert metadata["row_count"] == 2
+    assert metadata["limit"] == 10
