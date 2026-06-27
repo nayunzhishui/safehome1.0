@@ -20,6 +20,10 @@ Component({
       type: String,
       value: "",
     },
+    reason: {
+      type: String,
+      value: "",
+    },
     tag: {
       type: String,
       value: "",

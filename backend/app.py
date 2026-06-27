@@ -14,6 +14,7 @@ from routes.auth import bp as auth_bp
 from routes.cards import bp as cards_bp
 from routes.checkins import bp as checkins_bp
 from routes.consent import bp as consent_bp
+from routes.content_review import bp as content_review_bp
 from routes.diaries import bp as diaries_bp
 from routes.feedback import bp as feedback_bp
 from routes.family import bp as family_bp
@@ -74,6 +75,7 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     app.register_blueprint(cards_bp)
     app.register_blueprint(checkins_bp)
     app.register_blueprint(consent_bp)
+    app.register_blueprint(content_review_bp)
     app.register_blueprint(privacy_bp)
     app.register_blueprint(risk_review_bp)
     app.register_blueprint(reports_bp)

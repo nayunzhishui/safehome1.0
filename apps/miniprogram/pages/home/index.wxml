@@ -2,8 +2,8 @@
   <view class="home-hero">
     <view class="home-topline">
       <view>
-        <text class="home-greeting">早上好，妈妈</text>
-        <text class="home-subtitle">新的 一天，记得先照顾自己哦</text>
+        <text class="home-greeting">今天也辛苦了</text>
+        <text class="home-subtitle">先照顾一下自己，再选择今天的一小步</text>
       </view>
       <button class="notice-button" aria-label="查看提醒">
         <view class="notice-dot"></view>
@@ -12,35 +12,36 @@
 
     <view class="mood-panel">
       <view class="mood-copy">
-        <text class="mood-label">今日情绪状态</text>
+        <text class="mood-label">情绪天气</text>
         <view class="mood-main">
           <text class="mood-face">☺</text>
           <view>
-            <text class="mood-title">还可以</text>
-            <text class="mood-text">轻度压力</text>
+            <text class="mood-title">记录一次</text>
+            <text class="mood-text">今天已有 {{todayRecordCount}} 条记录{{todayRecordCountReady ? '' : '，联网后会自动更新'}}</text>
           </view>
         </view>
-        <button class="mood-action" bindtap="startDiary">记录我的情绪</button>
+        <button class="mood-action" bindtap="startDiary">记录一次</button>
       </view>
       <image class="mood-image" src="/assets/illustrations/home-family-care.png" mode="aspectFill" />
     </view>
   </view>
 
   <view class="safe-section">
-    <section-title title="三步开始" subtitle="第一次使用时，先完成一个最小闭环" />
+    <section-title title="三步开始" subtitle="第一次使用时，先完成一个最小闭环" more-text="了解三步" bind:more="openGettingStarted" />
     <view class="start-step-list">
-      <view wx:for="{{startSteps}}" wx:key="title" class="start-step-card">
+      <button wx:for="{{startSteps}}" wx:key="title" class="start-step-card" data-key="{{item.key}}" bindtap="openStartStep">
         <text class="start-step-kicker">{{item.title}}</text>
         <text class="start-step-title">{{item.text}}</text>
         <text class="start-step-detail">{{item.detail}}</text>
-      </view>
+        <text class="start-step-action">{{item.actionText}} ›</text>
+      </button>
     </view>
   </view>
 
   <view class="safe-section">
     <section-title
       title="快速入口"
-      subtitle="核心功能快捷进入，降低操作成本"
+      subtitle="先从测评、记录和练习中选择今天最适合的一步"
       more-text="更多"
       bind:more="openHotTopics"
     />

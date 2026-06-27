@@ -1,0 +1,73 @@
+{
+  "version": "2026.06-assessment-training-map-v1",
+  "updated_at": "2026-06-27",
+  "boundary_notice": "测评结果到训练卡的映射只作为支持性练习建议，不构成诊断、治疗方案、危机干预或固定评价。真实量表、草稿量表和试用内容正式开放前必须经过人工复核。",
+  "rules": [
+    {
+      "rule_id": "student_profile_pressure_alert_basic_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "student_profile_v1",
+        "profile_code": "pressure_alert",
+        "risk_level": "low_or_medium"
+      },
+      "theme": ["student_profile", "pressure_alert", "emotion_regulation"],
+      "recommended_card_ids": ["student_emotion_naming", "cbt_auto_thought_student", "self_support_statement"],
+      "card_roles": [
+        { "card_id": "student_emotion_naming", "role": "今日练习" },
+        { "card_id": "cbt_auto_thought_student", "role": "备用练习" },
+        { "card_id": "self_support_statement", "role": "长期练习" }
+      ],
+      "reason": "当阶段性画像显示压力警觉或考试压力相关线索时，先练习情绪命名和自动想法整理，有助于把压力体验拆成更小、更可处理的步骤。",
+      "today_suggestion": "今天先完成一张情绪命名卡，只需要写出当前最明显的一个感受。",
+      "long_term_suggestion": "接下来 3 天可以按情绪命名、自动想法记录、自我支持句三个步骤轻量练习。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、明显现实安全风险或无法保持基本安全，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "训练推荐只作为支持性练习建议，不构成诊断或治疗方案。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "parent_reflective_functioning_supportive_pause",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "scale_id": "parent_reflective_functioning_prfq",
+        "dimension": "PRFQ_IC",
+        "level": "needs_support"
+      },
+      "theme": ["parent_child_communication", "parent_support", "emotion_awareness"],
+      "recommended_card_ids": ["emotion_naming", "nonjudgmental_response", "parent_repair_question"],
+      "card_roles": [
+        { "card_id": "emotion_naming", "role": "今日练习" },
+        { "card_id": "nonjudgmental_response", "role": "备用练习" },
+        { "card_id": "parent_repair_question", "role": "长期练习" }
+      ],
+      "reason": "当家长在理解孩子行为和感受时需要更多支持，可以先从命名情绪、减少评判和提出一个修复问题开始。",
+      "today_suggestion": "今天先完成一张情绪命名卡，帮助自己在开口前看见当下感受。",
+      "long_term_suggestion": "接下来 3 天可以从命名情绪、非评判回应、一个修复问题三个步骤开始。",
+      "not_suitable_when": "如果正在发生现实安全风险、严重冲突或明显危机，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "该映射只用于草稿阶段的练习方向设计，不评价家长好坏，也不构成诊断。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "erq_expressive_suppression_gentle_expression",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "scale_id": "emotion_regulation_erq_gross",
+        "dimension": "ERQ_ES",
+        "level": "high_or_needs_support"
+      },
+      "theme": ["emotion_regulation", "emotion_awareness", "cognitive_flexibility"],
+      "recommended_card_ids": ["emotion_naming", "cognitive_flexibility", "three_second_pause"],
+      "card_roles": [
+        { "card_id": "emotion_naming", "role": "今日练习" },
+        { "card_id": "cognitive_flexibility", "role": "备用练习" },
+        { "card_id": "three_second_pause", "role": "长期练习" }
+      ],
+      "reason": "当表达抑制相关线索较强时，可以先练习识别感受，再尝试换一种解释，并在高压力时用暂停帮助自己留出选择空间。",
+      "today_suggestion": "今天先完成一张情绪命名卡，不要求表达很多，只先确认一个身体或情绪信号。",
+      "long_term_suggestion": "接下来 3 天可以从命名情绪、换一种解释、开口前暂停三个步骤开始。",
+      "not_suitable_when": "如果情绪表达涉及现实安全风险、暴力、自伤或他伤线索，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "训练推荐只提供练习方向，不说明某种情绪调节方式好坏，也不构成治疗方案。",
+      "review_status": "draft"
+    }
+  ]
+}

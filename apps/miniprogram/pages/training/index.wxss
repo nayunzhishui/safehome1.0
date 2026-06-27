@@ -67,6 +67,229 @@
   font-size: 20rpx;
 }
 
+.recommendation-card {
+  margin-top: 0;
+}
+
+.recommendation-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  margin-bottom: 20rpx;
+}
+
+.recommendation-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.recommendation-kicker {
+  display: block;
+  margin-bottom: 8rpx;
+  color: var(--safe-primary);
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.recommendation-title {
+  display: block;
+  color: var(--safe-title);
+  font-size: 30rpx;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.recommendation-action {
+  min-width: 120rpx;
+  min-height: 64rpx;
+  margin: 0;
+  padding: 0 22rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary);
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 850;
+  line-height: 64rpx;
+}
+
+.recommendation-action::after {
+  border: 0;
+}
+
+.recommendation-label {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.recommendation-label:first-of-type {
+  margin-top: 0;
+}
+
+.recommendation-text,
+.recommendation-boundary {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.7;
+}
+
+.recommendation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.recommendation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  padding: 18rpx;
+  border: 1rpx solid rgba(87, 139, 95, 0.16);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-primary-pale);
+}
+
+.recommendation-role {
+  flex: 0 0 auto;
+  padding: 6rpx 12rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-card);
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.recommendation-item-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.recommendation-card-title {
+  display: block;
+  color: var(--safe-title);
+  font-size: 26rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.recommendation-purpose {
+  display: block;
+  margin-top: 6rpx;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.recommendation-boundary {
+  color: var(--safe-muted);
+}
+
+.plan-card {
+  margin-top: 0;
+}
+
+.plan-head {
+  margin-bottom: 20rpx;
+}
+
+.plan-kicker {
+  display: block;
+  margin-bottom: 8rpx;
+  color: var(--safe-primary);
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.plan-title {
+  display: block;
+  color: var(--safe-title);
+  font-size: 30rpx;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.plan-summary {
+  display: block;
+  margin-top: 10rpx;
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.7;
+}
+
+.plan-days {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.plan-day {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 20rpx;
+  border: 1rpx solid rgba(111, 143, 184, 0.22);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-blue-soft);
+  text-align: left;
+  line-height: 1.5;
+}
+
+.plan-day::after {
+  border: 0;
+}
+
+.plan-day-index,
+.plan-day-role,
+.plan-day-card,
+.plan-day-suggestion {
+  display: block;
+}
+
+.plan-day-index {
+  color: var(--safe-info);
+  font-size: 22rpx;
+  font-weight: 850;
+}
+
+.plan-day-role {
+  margin-top: 6rpx;
+  color: var(--safe-primary-deep);
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.plan-day-card {
+  margin-top: 6rpx;
+  color: var(--safe-title);
+  font-size: 27rpx;
+  font-weight: 850;
+}
+
+.plan-day-suggestion {
+  margin-top: 8rpx;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.plan-boundary {
+  display: block;
+  margin-top: 16rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.7;
+}
+
 .starter-card {
   margin-top: 0;
 }

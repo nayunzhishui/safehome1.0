@@ -13,6 +13,10 @@
 .result-kicker,
 .result-title,
 .result-summary,
+.source-notice-title,
+.source-notice-status,
+.source-notice-text,
+.source-notice-note,
 .profile-name,
 .profile-code,
 .review-tip,
@@ -22,6 +26,12 @@
 .dimension-summary,
 .next-step-label,
 .next-step-text,
+.recommendation-label,
+.recommendation-text,
+.recommendation-role,
+.recommendation-title,
+.recommendation-purpose,
+.recommendation-boundary,
 .support-title,
 .support-text,
 .cell-label,
@@ -49,6 +59,52 @@
   color: var(--safe-text);
   font-size: 26rpx;
   line-height: 1.7;
+}
+
+.source-notice-card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border: 1rpx solid #e8dfcc;
+  border-radius: 24rpx;
+  background: #fffaf3;
+  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+}
+
+.source-notice-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.source-notice-title {
+  color: var(--safe-title);
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.source-notice-status {
+  padding: 6rpx 12rpx;
+  border: 1rpx solid #d8c69b;
+  border-radius: 999rpx;
+  background: #fff3d8;
+  color: #8a6a36;
+  font-size: 20rpx;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.source-notice-text,
+.source-notice-note {
+  margin-top: 14rpx;
+  color: #675c48;
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.source-notice-note {
+  color: #8a6a36;
 }
 
 .result-grid {
@@ -109,6 +165,7 @@
 
 .profile-copy-card,
 .next-step-card,
+.recommendation-card,
 .support-card {
   margin-top: 20rpx;
   padding: 24rpx;
@@ -170,6 +227,11 @@
   background: #f9fcf6;
 }
 
+.recommendation-card {
+  border: 1rpx solid #dcebd8;
+  background: #ffffff;
+}
+
 .next-step-label {
   margin-top: 12rpx;
   color: var(--safe-primary);
@@ -180,6 +242,65 @@
 
 .next-step-label:first-child {
   margin-top: 0;
+}
+
+.recommendation-label {
+  margin-top: 14rpx;
+  color: var(--safe-primary);
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.recommendation-label:first-child {
+  margin-top: 0;
+}
+
+.recommendation-text,
+.recommendation-boundary {
+  margin-top: 8rpx;
+  color: #596a5b;
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.recommendation-list {
+  display: grid;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.recommendation-item {
+  padding: 18rpx;
+  border: 1rpx solid #e8efdf;
+  border-radius: 18rpx;
+  background: #f9fcf6;
+}
+
+.recommendation-role {
+  color: #4caf7d;
+  font-size: 21rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.recommendation-title {
+  margin-top: 6rpx;
+  color: var(--safe-title);
+  font-size: 26rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.recommendation-purpose {
+  margin-top: 8rpx;
+  color: #677265;
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.recommendation-boundary {
+  color: #7a6b54;
 }
 
 .support-card {

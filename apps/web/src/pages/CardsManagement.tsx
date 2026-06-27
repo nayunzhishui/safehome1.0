@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { SafeHomeApiClient } from "../services/safehomeApi";
+import trainingCardsContent from "../../../../content/training_cards.json";
 import type { TrainingCard } from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
@@ -12,7 +12,7 @@ interface CardsState {
   selectedId?: string;
 }
 
-const api = new SafeHomeApiClient();
+const contentCards = trainingCardsContent.cards as TrainingCard[];
 
 function displayText(value?: string | number | boolean | null) {
   if (value === undefined || value === null || value === "") {
@@ -38,30 +38,21 @@ export function CardsManagement() {
   const enabledCards = state.cards.filter((card) => card.enabled);
   const disabledCards = state.cards.filter((card) => !card.enabled);
   const cardTypes = new Set(state.cards.map((card) => card.type));
-  const tags = new Set(state.cards.flatMap((card) => card.tags));
+  const reviewStatuses = new Set(state.cards.map((card) => card.review_status || "未标记"));
 
-  async function loadCards() {
+  function loadCards() {
     setState((current) => ({
       ...current,
       status: "loading",
       message: "正在读取训练卡内容...",
     }));
 
-    try {
-      const result = await api.listCards();
-      setState({
-        status: "success",
-        message: result.items.length > 0 ? "已读取训练卡内容。" : "当前还没有训练卡内容。",
-        cards: result.items,
-        selectedId: result.items[0]?.id,
-      });
-    } catch (error) {
-      setState((current) => ({
-        ...current,
-        status: "error",
-        message: error instanceof Error ? error.message : "读取失败，请确认 backend 是否已启动。",
-      }));
-    }
+    setState({
+      status: "success",
+      message: contentCards.length > 0 ? "已读取本地训练卡内容。" : "当前还没有训练卡内容。",
+      cards: contentCards,
+      selectedId: contentCards[0]?.id,
+    });
   }
 
   useEffect(() => {
@@ -74,14 +65,14 @@ export function CardsManagement() {
         <div>
           <p className="eyebrow">Content Management</p>
           <h1>训练卡管理</h1>
-          <p className="summary">只读查看当前内容库中的训练卡，用于确认卡片标题、标签、步骤和示例是否适合试点使用。</p>
+          <p className="summary">只读查看当前内容库中的训练卡，用于确认卡片标题、审核状态、适用边界、步骤和示例是否适合试点使用。</p>
         </div>
         <div className="dashboardActions">
           <a className="secondaryButton" href="/dashboard">
             返回总览
           </a>
           <button className="primaryButton" type="button" onClick={loadCards} disabled={state.status === "loading"}>
-            {state.status === "loading" ? "刷新中..." : "刷新训练卡"}
+            {state.status === "loading" ? "刷新中..." : "刷新本地内容"}
           </button>
         </div>
       </div>
@@ -92,7 +83,7 @@ export function CardsManagement() {
         <MetricCard label="训练卡总数" value={state.cards.length} />
         <MetricCard label="启用卡片" value={enabledCards.length} />
         <MetricCard label="停用卡片" value={disabledCards.length} />
-        <MetricCard label="标签数量" value={tags.size} />
+        <MetricCard label="审核状态" value={reviewStatuses.size} />
       </div>
 
       <div className="dashboardGrid goalsGrid">
@@ -116,7 +107,7 @@ export function CardsManagement() {
                   <span className="recordScene">{card.title}</span>
                   <span className="recordDescription">{card.purpose}</span>
                   <span className="recordMeta">
-                    {card.enabled ? "启用" : "停用"} · {card.type} · {card.duration_minutes} 分钟
+                    {card.enabled ? "启用" : "停用"} · {card.review_status || "未标记"} · {card.duration_minutes} 分钟
                   </span>
                 </button>
               ))}
@@ -135,10 +126,17 @@ export function CardsManagement() {
               <DetailRow label="卡片标题" value={selectedCard.title} />
               <DetailRow label="卡片类型" value={selectedCard.type} />
               <DetailRow label="启用状态" value={selectedCard.enabled} />
+              <DetailRow label="审核状态" value={selectedCard.review_status} />
+              <DetailRow label="审核备注" value={selectedCard.reviewer_note} />
               <DetailRow label="预计时长" value={`${selectedCard.duration_minutes} 分钟`} />
               <DetailRow label="练习目的" value={selectedCard.purpose} />
+              <DetailRow label="理论来源" value={selectedCard.theory_source} />
+              <DetailRow label="目标技能" value={selectedCard.target_skill} />
               <DetailRow label="标签" value={selectedCard.tags.join("、")} />
+              <DetailRow label="适合场景" value={(selectedCard.suitable_for || []).join("、")} />
+              <DetailRow label="不适合场景" value={(selectedCard.not_suitable_for || []).join("、")} />
               <DetailRow label="练习步骤" value={selectedCard.steps.map((step, index) => `${index + 1}. ${step}`).join("\n")} />
+              <DetailRow label="复盘问题" value={(selectedCard.reflection_questions || []).map((question, index) => `${index + 1}. ${question}`).join("\n")} />
               <DetailRow label="示例" value={selectedCard.example} />
 
               <section className="guidanceBox" aria-label="内容边界提示">

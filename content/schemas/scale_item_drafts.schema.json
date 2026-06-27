@@ -1,0 +1,34 @@
+{
+  "file": "scale_item_drafts.json",
+  "root_required": ["version", "boundary_notice", "drafts"],
+  "lists": [
+    {
+      "field": "drafts",
+      "item_required": [
+        "scale_id",
+        "display_name",
+        "source_folder",
+        "source_files",
+        "audience",
+        "theme",
+        "enabled",
+        "review_status",
+        "item_status",
+        "scoring_status",
+        "instructions",
+        "likert",
+        "dimensions",
+        "items",
+        "scoring_notes",
+        "supportive_interpretation_draft"
+      ],
+      "item_list_min_lengths": {
+        "source_files": 1,
+        "likert": 2,
+        "dimensions": 1,
+        "items": 1,
+        "scoring_notes": 1
+      }
+    }
+  ]
+}

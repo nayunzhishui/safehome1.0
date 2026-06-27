@@ -1,0 +1,27 @@
+<view class="safe-page getting-page">
+  <view class="intro-card">
+    <text class="intro-kicker">新手说明</text>
+    <text class="intro-title">用“三步”完成一次最小陪伴练习</text>
+    <text class="intro-text">当亲子互动里出现压力时，可以先把它当作一次“情绪反射弧”：事件出现后，我们会有情绪、想法、身体反应和行为。把这条链路写下来，才更容易找到下一次可以轻轻调整的位置。</text>
+  </view>
+
+  <view class="step-list">
+    <view wx:for="{{steps}}" wx:key="title" class="step-card">
+      <text class="step-title">{{item.title}}</text>
+      <text class="step-text">{{item.text}}</text>
+    </view>
+  </view>
+
+  <view class="boundary-card">
+    <text class="boundary-title">使用边界</text>
+    <view wx:for="{{boundaries}}" wx:key="*this" class="boundary-row">
+      <text class="boundary-dot"></text>
+      <text class="boundary-text">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="action-row">
+    <button class="primary-action" bindtap="startDiary">记录一次</button>
+    <button class="secondary-action" bindtap="openTraining">去训练中心</button>
+  </view>
+</view>

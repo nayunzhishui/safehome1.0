@@ -32,6 +32,7 @@ export const API_ENDPOINTS = {
   authLogin: "/api/auth/login",
   authLogout: "/api/auth/logout",
   authMe: "/api/auth/me",
+  contentReviewUpdate: "/api/content-review/update",
   familyCreateBindCode: "/api/family/create-bind-code",
   familyBindStudent: "/api/family/bind-student",
   familyMembers: "/api/family/members",

@@ -214,6 +214,40 @@
   line-height: 1.75;
 }
 
+.today-suggestion-card {
+  margin-top: 20rpx;
+}
+
+.today-suggestion-label {
+  display: block;
+  margin-bottom: 10rpx;
+  color: var(--safe-primary);
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.today-suggestion-text {
+  display: block;
+  color: var(--safe-title);
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.65;
+}
+
+.today-suggestion-reason,
+.today-suggestion-boundary {
+  display: block;
+  margin-top: 12rpx;
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.7;
+}
+
+.today-suggestion-boundary {
+  color: var(--safe-muted);
+}
+
 .practice-card {
   margin-top: 20rpx;
   background: linear-gradient(135deg, var(--safe-card), var(--safe-orange-soft));

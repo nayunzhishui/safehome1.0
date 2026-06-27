@@ -73,11 +73,11 @@ safehome1.0/
 
 ## 重要文档
 
-- `docs/安心陪伴_Codex项目说明与执行任务书.md`
+- `docsold/安心陪伴_Codex项目说明与执行任务书1.0.md`
 - `docs/MVP1.0功能边界.md`
 - `docs/MVP1.1功能迭代方案.md`
 - `docs/0版网页整合与GitHub参考优化路线.md`
-- `docs/并行开发任务清单.md`
+- `docsold/并行开发任务清单.md`
 - `docs/API接口文档.md`
 - `docs/数据库字段说明.md`
 - `docs/开发日志.md`

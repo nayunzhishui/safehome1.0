@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
 
+import assessmentTrainingMap from "../../../../content/assessment_training_map.json";
+import diaryTrainingMap from "../../../../content/diary_training_map.json";
 import feedbackRules from "../../../../content/feedback_rules.json";
 import studentProfileRules from "../../../../content/student_profile_rules.json";
 
 type RiskLevel = "low" | "medium" | "high";
-type RuleTab = "feedback" | "profile";
+type RuleTab = "feedback" | "profile" | "assessmentTraining" | "diaryTraining";
 
 interface FeedbackRule {
   id: string;
@@ -17,6 +19,7 @@ interface FeedbackRule {
   theory_source?: string;
   review_status?: string;
   enabled?: boolean;
+  boundary_notice?: string;
 }
 
 interface FeedbackRulesContent {
@@ -63,8 +66,30 @@ interface StudentProfileRulesContent {
   safety_notes: string[];
 }
 
+interface TrainingMapRule {
+  rule_id: string;
+  source_type: "assessment" | "diary";
+  trigger_condition: Record<string, unknown>;
+  theme: string[];
+  recommended_card_ids: string[];
+  reason: string;
+  today_suggestion: string;
+  long_term_suggestion?: string;
+  not_suitable_when: string;
+  boundary_notice: string;
+  review_status: string;
+}
+
+interface TrainingMapContent {
+  version: string;
+  boundary_notice: string;
+  rules: TrainingMapRule[];
+}
+
 const rulesContent = feedbackRules as FeedbackRulesContent;
 const profileRulesContent = studentProfileRules as StudentProfileRulesContent;
+const assessmentTrainingContent = assessmentTrainingMap as TrainingMapContent;
+const diaryTrainingContent = diaryTrainingMap as TrainingMapContent;
 
 function displayText(value?: string | number | null) {
   if (value === undefined || value === null || value === "") {
@@ -94,6 +119,8 @@ export function RulesManagement() {
   const [activeTab, setActiveTab] = useState<RuleTab>("feedback");
   const [selectedId, setSelectedId] = useState<string | undefined>(rulesContent.rules[0]?.id);
   const [selectedProfileId, setSelectedProfileId] = useState<string | undefined>(profileRulesContent.rules[0]?.id);
+  const [selectedAssessmentTrainingId, setSelectedAssessmentTrainingId] = useState<string | undefined>(assessmentTrainingContent.rules[0]?.rule_id);
+  const [selectedDiaryTrainingId, setSelectedDiaryTrainingId] = useState<string | undefined>(diaryTrainingContent.rules[0]?.rule_id);
 
   const selectedRule = useMemo(() => {
     return rulesContent.rules.find((rule) => rule.id === selectedId) ?? rulesContent.rules[0];
@@ -101,6 +128,12 @@ export function RulesManagement() {
   const selectedProfileRule = useMemo(() => {
     return profileRulesContent.rules.find((rule) => rule.id === selectedProfileId) ?? profileRulesContent.rules[0];
   }, [selectedProfileId]);
+  const selectedAssessmentTrainingRule = useMemo(() => {
+    return assessmentTrainingContent.rules.find((rule) => rule.rule_id === selectedAssessmentTrainingId) ?? assessmentTrainingContent.rules[0];
+  }, [selectedAssessmentTrainingId]);
+  const selectedDiaryTrainingRule = useMemo(() => {
+    return diaryTrainingContent.rules.find((rule) => rule.rule_id === selectedDiaryTrainingId) ?? diaryTrainingContent.rules[0];
+  }, [selectedDiaryTrainingId]);
 
   const mediumOrHighRules = rulesContent.rules.filter((rule) => rule.risk_level !== "low");
   const recommendedCardIds = new Set(rulesContent.rules.flatMap((rule) => rule.recommended_card_ids));
@@ -132,6 +165,16 @@ export function RulesManagement() {
         <button className={activeTab === "profile" ? "primaryButton" : "secondaryButton"} type="button" onClick={() => setActiveTab("profile")}>
           画像规则
         </button>
+        <button
+          className={activeTab === "assessmentTraining" ? "primaryButton" : "secondaryButton"}
+          type="button"
+          onClick={() => setActiveTab("assessmentTraining")}
+        >
+          测评推荐
+        </button>
+        <button className={activeTab === "diaryTraining" ? "primaryButton" : "secondaryButton"} type="button" onClick={() => setActiveTab("diaryTraining")}>
+          日记推荐
+        </button>
       </div>
 
       <div className="status success">已读取反馈规则内容。当前页面只读展示，不提供编辑或发布能力。</div>
@@ -144,19 +187,54 @@ export function RulesManagement() {
             <MetricCard label="推荐卡片" value={recommendedCardIds.size} />
             <MetricCard label="安全提示" value={rulesContent.safety_notes.length} />
           </>
-        ) : (
+        ) : null}
+        {activeTab === "profile" ? (
           <>
             <MetricCard label="画像规则" value={profileRulesContent.rules.length} />
             <MetricCard label="启用规则" value={enabledProfileRules.length} />
             <MetricCard label="推荐卡片" value={profileRecommendedCardIds.size} />
             <MetricCard label="规则状态" value={profileRulesContent.review_status} />
           </>
-        )}
+        ) : null}
+        {activeTab === "assessmentTraining" ? (
+          <>
+            <MetricCard label="测评推荐" value={assessmentTrainingContent.rules.length} />
+            <MetricCard label="草稿规则" value={assessmentTrainingContent.rules.filter((rule) => rule.review_status === "draft").length} />
+            <MetricCard label="推荐卡片" value={new Set(assessmentTrainingContent.rules.flatMap((rule) => rule.recommended_card_ids)).size} />
+            <MetricCard label="规则版本" value={assessmentTrainingContent.version} />
+          </>
+        ) : null}
+        {activeTab === "diaryTraining" ? (
+          <>
+            <MetricCard label="日记推荐" value={diaryTrainingContent.rules.length} />
+            <MetricCard label="草稿规则" value={diaryTrainingContent.rules.filter((rule) => rule.review_status === "draft").length} />
+            <MetricCard label="推荐卡片" value={new Set(diaryTrainingContent.rules.flatMap((rule) => rule.recommended_card_ids)).size} />
+            <MetricCard label="规则版本" value={diaryTrainingContent.version} />
+          </>
+        ) : null}
       </div>
 
       {activeTab === "feedback" ? <FeedbackRulesView selectedRule={selectedRule} setSelectedId={setSelectedId} /> : null}
       {activeTab === "profile" ? (
         <ProfileRulesView selectedProfileRule={selectedProfileRule} selectedProfileId={selectedProfileId} setSelectedProfileId={setSelectedProfileId} />
+      ) : null}
+      {activeTab === "assessmentTraining" ? (
+        <TrainingMapRulesView
+          content={assessmentTrainingContent}
+          selectedRule={selectedAssessmentTrainingRule}
+          selectedRuleId={selectedAssessmentTrainingId}
+          setSelectedRuleId={setSelectedAssessmentTrainingId}
+          title="测评推荐规则"
+        />
+      ) : null}
+      {activeTab === "diaryTraining" ? (
+        <TrainingMapRulesView
+          content={diaryTrainingContent}
+          selectedRule={selectedDiaryTrainingRule}
+          selectedRuleId={selectedDiaryTrainingId}
+          setSelectedRuleId={setSelectedDiaryTrainingId}
+          title="日记推荐规则"
+        />
       ) : null}
     </section>
   );
@@ -215,6 +293,7 @@ function FeedbackRulesView({
               <DetailRow label="启用状态" value={selectedRule.enabled === false ? "停用" : "启用"} />
               <DetailRow label="规则解释" value={selectedRule.explanation} />
               <DetailRow label="支持性反馈" value={selectedRule.supportive_feedback} />
+              <DetailRow label="边界说明" value={selectedRule.boundary_notice} />
               <DetailRow label="推荐训练卡" value={selectedRule.recommended_card_ids.join("、")} />
 
               <section className="guidanceBox" aria-label="展示边界提示">
@@ -236,6 +315,82 @@ function FeedbackRulesView({
           )}
         </section>
       </div>
+  );
+}
+
+function TrainingMapRulesView({
+  content,
+  selectedRule,
+  selectedRuleId,
+  setSelectedRuleId,
+  title,
+}: {
+  content: TrainingMapContent;
+  selectedRule?: TrainingMapRule;
+  selectedRuleId?: string;
+  setSelectedRuleId: (id: string) => void;
+  title: string;
+}) {
+  return (
+    <div className="dashboardGrid goalsGrid">
+      <section className="listPanel" aria-label={`${title}列表`}>
+        <div className="sectionTitleRow">
+          <h2>{title}</h2>
+          <span className="countBadge">{content.version}</span>
+        </div>
+
+        {content.rules.length === 0 ? (
+          <div className="emptyState">当前没有推荐规则。请检查内容库是否已初始化。</div>
+        ) : (
+          <div className="recordList">
+            {content.rules.map((rule) => (
+              <button
+                className={`recordItem ${selectedRuleId === rule.rule_id ? "active" : ""}`}
+                key={rule.rule_id}
+                type="button"
+                onClick={() => setSelectedRuleId(rule.rule_id)}
+              >
+                <span className="recordScene">{rule.rule_id}</span>
+                <span className="recordDescription">{rule.reason}</span>
+                <span className="recordMeta">
+                  {rule.source_type} · {rule.review_status} · 推荐 {rule.recommended_card_ids.length} 张训练卡
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="detailPanel" aria-label={`${title}详情`}>
+        <div className="sectionTitleRow">
+          <h2>推荐规则详情</h2>
+          {selectedRule && <span className="countBadge">ID {selectedRule.rule_id}</span>}
+        </div>
+
+        {selectedRule ? (
+          <div className="detailContent">
+            <DetailRow label="规则来源" value={selectedRule.source_type} />
+            <DetailRow label="审核状态" value={selectedRule.review_status} />
+            <DetailRow label="触发条件" value={JSON.stringify(selectedRule.trigger_condition)} />
+            <DetailRow label="主题" value={selectedRule.theme.join("、")} />
+            <DetailRow label="推荐训练卡" value={selectedRule.recommended_card_ids.join("、")} />
+            <DetailRow label="推荐理由" value={selectedRule.reason} />
+            <DetailRow label="今日建议" value={selectedRule.today_suggestion} />
+            <DetailRow label="长期建议" value={selectedRule.long_term_suggestion || "情绪日记规则不生成长期建议"} />
+            <DetailRow label="不适合场景" value={selectedRule.not_suitable_when} />
+            <DetailRow label="边界说明" value={selectedRule.boundary_notice} />
+
+            <section className="guidanceBox" aria-label="规则边界">
+              <h3>规则边界</h3>
+              <p>{content.boundary_notice}</p>
+              <p>推荐规则只作为支持性练习建议；高风险或现实安全风险场景不得用普通训练卡替代现实支持和人工支持。</p>
+            </section>
+          </div>
+        ) : (
+          <div className="emptyState">选择左侧推荐规则后，这里会显示详情。</div>
+        )}
+      </section>
+    </div>
   );
 }
 

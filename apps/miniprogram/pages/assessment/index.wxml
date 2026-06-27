@@ -45,15 +45,19 @@
     <text>正在读取测一测内容...</text>
   </view>
 
-  <view wx:for="{{categories}}" wx:key="category" class="safe-section">
-    <section-title title="{{item.category}}" subtitle="点击进入填写" />
+  <view wx:for="{{categories}}" wx:key="key" class="safe-section">
+    <section-title title="{{item.title}}" subtitle="{{item.subtitle}}" />
+    <view wx:if="{{!item.items.length && item.emptyText}}" class="empty-section-card">
+      <text>{{item.emptyText}}</text>
+    </view>
     <view class="worksheet-list">
       <view
         wx:for="{{item.items}}"
         wx:for-item="worksheet"
         wx:key="id"
-        class="worksheet-card {{worksheet.is_reference ? 'reference' : ''}} {{worksheet.is_student_profile ? 'student-profile' : ''}}"
+        class="worksheet-card {{worksheet.is_reference ? 'reference' : ''}} {{worksheet.is_student_profile ? 'student-profile' : ''}} {{worksheet.is_enabled_for_user ? '' : 'disabled'}}"
         data-id="{{worksheet.id}}"
+        data-enabled="{{worksheet.is_enabled_for_user}}"
         bindtap="openAssessmentEntry"
       >
         <view class="worksheet-main">
@@ -61,8 +65,13 @@
             <text class="profile-badge">学生支持性画像</text>
             <text class="profile-badge ghost">非诊断</text>
           </view>
+          <view wx:if="{{!worksheet.is_student_profile}}" class="profile-badge-row">
+            <text class="profile-badge soft">{{worksheet.source_label}}</text>
+            <text class="profile-badge soft">{{worksheet.topic_label}}</text>
+            <text class="profile-badge ghost">{{worksheet.review_label}}</text>
+          </view>
           <text class="worksheet-title">{{worksheet.display_title}}</text>
-          <text class="worksheet-meta">{{worksheet.source_label}} · {{worksheet.question_count}} 个填写项</text>
+          <text class="worksheet-meta">{{worksheet.topic_label}} · {{worksheet.question_count}} 个填写项</text>
           <text class="worksheet-desc">{{worksheet.instructions}}</text>
         </view>
         <text class="worksheet-action">{{worksheet.action_text}}</text>

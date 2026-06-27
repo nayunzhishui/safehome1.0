@@ -45,6 +45,7 @@ def test_feedback_high_risk_blocks_training_cards_and_common_rules(tmp_path):
     assert data["risk"]["allow_recommended_training_cards"] is False
     assert data["supportive_feedback"] == data["risk"]["safe_response"]
     assert data["alternative_response"] == data["risk"]["boundary_notice"]
+    assert data["training_recommendation_rules"] == []
 
     from database import get_connection
 
@@ -79,6 +80,13 @@ def test_feedback_low_risk_keeps_existing_rule_flow(tmp_path):
     assert data["risk"]["allow_auto_feedback"] is True
     assert "judgmental_language" in data["tags"]
     assert data["recommended_card_ids"]
+    assert data["training_recommendation_rules"]
+    rule = data["training_recommendation_rules"][0]
+    assert rule["rule_id"] == "diary_judgmental_language_nonjudgmental_response"
+    assert rule["source_type"] == "diary"
+    assert rule["today_suggestion"]
+    assert rule["long_term_suggestion"] == ""
+    assert len(rule["recommended_card_ids"]) <= 3
     assert data["supportive_feedback"]
 
 

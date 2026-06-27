@@ -28,11 +28,31 @@
           "required": true,
           "dimension": "test_anxiety",
           "options": [
-            { "label": "1 很少", "value": "1", "score": 1 },
-            { "label": "2 偶尔", "value": "2", "score": 2 },
-            { "label": "3 有时", "value": "3", "score": 3 },
-            { "label": "4 经常", "value": "4", "score": 4 },
-            { "label": "5 几乎总是", "value": "5", "score": 5 }
+            {
+              "label": "1 很少",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 偶尔",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有时",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 经常",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 几乎总是",
+              "value": "5",
+              "score": 5
+            }
           ]
         },
         {
@@ -42,11 +62,31 @@
           "required": true,
           "dimension": "uncertainty_intolerance",
           "options": [
-            { "label": "1 很少", "value": "1", "score": 1 },
-            { "label": "2 偶尔", "value": "2", "score": 2 },
-            { "label": "3 有时", "value": "3", "score": 3 },
-            { "label": "4 经常", "value": "4", "score": 4 },
-            { "label": "5 几乎总是", "value": "5", "score": 5 }
+            {
+              "label": "1 很少",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 偶尔",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有时",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 经常",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 几乎总是",
+              "value": "5",
+              "score": 5
+            }
           ]
         },
         {
@@ -56,11 +96,31 @@
           "required": true,
           "dimension": "pressure_alert",
           "options": [
-            { "label": "1 很少", "value": "1", "score": 1 },
-            { "label": "2 偶尔", "value": "2", "score": 2 },
-            { "label": "3 有时", "value": "3", "score": 3 },
-            { "label": "4 经常", "value": "4", "score": 4 },
-            { "label": "5 几乎总是", "value": "5", "score": 5 }
+            {
+              "label": "1 很少",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 偶尔",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有时",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 经常",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 几乎总是",
+              "value": "5",
+              "score": 5
+            }
           ]
         },
         {
@@ -70,11 +130,31 @@
           "required": true,
           "dimension": "self_support",
           "options": [
-            { "label": "1 很少", "value": "1", "score": 1 },
-            { "label": "2 偶尔", "value": "2", "score": 2 },
-            { "label": "3 有时", "value": "3", "score": 3 },
-            { "label": "4 经常", "value": "4", "score": 4 },
-            { "label": "5 几乎总是", "value": "5", "score": 5 }
+            {
+              "label": "1 很少",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 偶尔",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有时",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 经常",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 几乎总是",
+              "value": "5",
+              "score": 5
+            }
           ]
         },
         {
@@ -93,8 +173,17 @@
         }
       ],
       "scoring": "第一版仅保存量表分数和自由文本，不直接生成诊断结论。后续可由规则版画像服务读取 test_anxiety、iu_score、fear_score、self_compassion 和 free_text，生成阶段性支持画像、置信度、维度解释和推荐任务。",
-      "recommended_card_ids": ["student_emotion_naming", "cbt_auto_thought_student", "self_support_statement", "sandplay_expression_01"],
-      "source_version": "2026.06-student-profile-v1-draft"
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "cbt_auto_thought_student",
+        "self_support_statement",
+        "sandplay_expression_01"
+      ],
+      "source_version": "2026.06-student-profile-v1-draft",
+      "source_type": "project_draft",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "项目版支持性画像，已用于试点链路；仍需在试点前人工验收中复核文案和边界。"
     },
     {
       "id": "worksheet_3_1_anxiety",
@@ -117,11 +206,31 @@
           "type": "scale",
           "required": true,
           "options": [
-            { "label": "0", "value": "0", "score": 0 },
-            { "label": "1", "value": "1", "score": 1 },
-            { "label": "2", "value": "2", "score": 2 },
-            { "label": "3", "value": "3", "score": 3 },
-            { "label": "4", "value": "4", "score": 4 }
+            {
+              "label": "0",
+              "value": "0",
+              "score": 0
+            },
+            {
+              "label": "1",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4",
+              "value": "4",
+              "score": 4
+            }
           ]
         },
         {
@@ -132,8 +241,15 @@
         }
       ],
       "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
-      "recommended_card_ids": ["emotion_naming", "three_second_pause"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming",
+        "three_second_pause"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_3_2_other_emotions",
@@ -156,11 +272,31 @@
           "type": "scale",
           "required": true,
           "options": [
-            { "label": "0", "value": "0", "score": 0 },
-            { "label": "1", "value": "1", "score": 1 },
-            { "label": "2", "value": "2", "score": 2 },
-            { "label": "3", "value": "3", "score": 3 },
-            { "label": "4", "value": "4", "score": 4 }
+            {
+              "label": "0",
+              "value": "0",
+              "score": 0
+            },
+            {
+              "label": "1",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4",
+              "value": "4",
+              "score": 4
+            }
           ]
         },
         {
@@ -171,8 +307,14 @@
         }
       ],
       "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
-      "recommended_card_ids": ["emotion_naming"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_3_2_depression",
@@ -195,11 +337,31 @@
           "type": "scale",
           "required": true,
           "options": [
-            { "label": "0", "value": "0", "score": 0 },
-            { "label": "1", "value": "1", "score": 1 },
-            { "label": "2", "value": "2", "score": 2 },
-            { "label": "3", "value": "3", "score": 3 },
-            { "label": "4", "value": "4", "score": 4 }
+            {
+              "label": "0",
+              "value": "0",
+              "score": 0
+            },
+            {
+              "label": "1",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4",
+              "value": "4",
+              "score": 4
+            }
           ]
         },
         {
@@ -210,8 +372,15 @@
         }
       ],
       "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
-      "recommended_card_ids": ["emotion_naming", "nonjudgmental_response"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming",
+        "nonjudgmental_response"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_3_4_positive_emotion",
@@ -234,11 +403,31 @@
           "type": "scale",
           "required": true,
           "options": [
-            { "label": "0", "value": "0", "score": 0 },
-            { "label": "1", "value": "1", "score": 1 },
-            { "label": "2", "value": "2", "score": 2 },
-            { "label": "3", "value": "3", "score": 3 },
-            { "label": "4", "value": "4", "score": 4 }
+            {
+              "label": "0",
+              "value": "0",
+              "score": 0
+            },
+            {
+              "label": "1",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4",
+              "value": "4",
+              "score": 4
+            }
           ]
         },
         {
@@ -249,8 +438,14 @@
         }
       ],
       "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
-      "recommended_card_ids": ["emotion_naming"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_3_5_progress",
@@ -275,8 +470,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["alternative_behavior"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "alternative_behavior"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_4_1_goals",
@@ -333,8 +534,15 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "alternative_behavior",
+        "three_second_pause"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_4_2_decision_balance",
@@ -359,8 +567,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["cognitive_flexibility"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "cognitive_flexibility"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_5_1_three_components",
@@ -425,8 +639,15 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["emotion_naming", "cognitive_flexibility"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming",
+        "cognitive_flexibility"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_6_1_emotion_arc",
@@ -451,8 +672,15 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["emotion_naming", "three_second_pause"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming",
+        "three_second_pause"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_7_1_mindful_emotion",
@@ -507,18 +735,49 @@
           "type": "scale",
           "required": false,
           "options": [
-            { "label": "0", "value": "0", "score": 0 },
-            { "label": "2", "value": "2", "score": 2 },
-            { "label": "4", "value": "4", "score": 4 },
-            { "label": "6", "value": "6", "score": 6 },
-            { "label": "8", "value": "8", "score": 8 },
-            { "label": "10", "value": "10", "score": 10 }
+            {
+              "label": "0",
+              "value": "0",
+              "score": 0
+            },
+            {
+              "label": "2",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "4",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "6",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "8",
+              "value": "8",
+              "score": 8
+            },
+            {
+              "label": "10",
+              "value": "10",
+              "score": 10
+            }
           ]
         }
       ],
       "scoring": "第一版仅保存用户填写内容和数值合计，不生成诊断判断。",
-      "recommended_card_ids": ["emotion_naming", "three_second_pause"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming",
+        "three_second_pause"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_8_1_cognitive_flexibility",
@@ -549,8 +808,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["cognitive_flexibility"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "cognitive_flexibility"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_8_2_downward_arrow",
@@ -575,8 +840,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["cognitive_flexibility"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "cognitive_flexibility"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_9_1_emotional_behavior_list",
@@ -607,8 +878,15 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "alternative_behavior",
+        "three_second_pause"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_9_2_coping_behavior",
@@ -633,8 +911,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["alternative_behavior"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "alternative_behavior"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_10_1_body_induction",
@@ -659,8 +943,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["emotion_naming"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_10_2_body_training",
@@ -685,8 +975,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["emotion_naming"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "emotion_naming"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_11_1_emotion_exposure_hierarchy",
@@ -711,8 +1007,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["three_second_pause"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "three_second_pause"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_11_2_emotion_exposure_record",
@@ -737,8 +1039,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["three_second_pause"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "three_second_pause"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_13_1_progress_evaluation",
@@ -763,8 +1071,14 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["alternative_behavior"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "alternative_behavior"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "worksheet_13_2_practice_plan",
@@ -789,8 +1103,15 @@
         }
       ],
       "scoring": "记录型工作表不自动计分。",
-      "recommended_card_ids": ["alternative_behavior", "three_second_pause"],
-      "source_version": "2026.05-pdf-original"
+      "recommended_card_ids": [
+        "alternative_behavior",
+        "three_second_pause"
+      ],
+      "source_version": "2026.05-pdf-original",
+      "source_type": "simplified_worksheet",
+      "review_status": "draft_only",
+      "enabled_for_user": false,
+      "review_note": "电子版简化记录，完整题项、授权和计分规则未全部核验前不作为正式真实量表开放。"
     },
     {
       "id": "appendix_b_examples_3_5_9_2",
@@ -816,7 +1137,11 @@
       ],
       "scoring": "示例参考不自动计分。",
       "recommended_card_ids": [],
-      "source_version": "2026.05-pdf-original"
+      "source_version": "2026.05-pdf-original",
+      "source_type": "demo",
+      "review_status": "demo_only",
+      "enabled_for_user": false,
+      "review_note": "示例参考仅用于查看或后续人工整理，不作为正式可填写量表。"
     },
     {
       "id": "appendix_b_examples_7_1_13_2",
@@ -842,7 +1167,11 @@
       ],
       "scoring": "示例参考不自动计分。",
       "recommended_card_ids": [],
-      "source_version": "2026.05-pdf-original"
+      "source_version": "2026.05-pdf-original",
+      "source_type": "demo",
+      "review_status": "demo_only",
+      "enabled_for_user": false,
+      "review_note": "示例参考仅用于查看或后续人工整理，不作为正式可填写量表。"
     },
     {
       "id": "appendix_b_examples_10_2",
@@ -868,7 +1197,11 @@
       ],
       "scoring": "示例参考不自动计分。",
       "recommended_card_ids": [],
-      "source_version": "2026.05-pdf-original"
+      "source_version": "2026.05-pdf-original",
+      "source_type": "demo",
+      "review_status": "demo_only",
+      "enabled_for_user": false,
+      "review_note": "示例参考仅用于查看或后续人工整理，不作为正式可填写量表。"
     }
   ]
 }

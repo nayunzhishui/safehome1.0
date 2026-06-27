@@ -12,6 +12,10 @@ def _load_payload() -> dict:
     return load_content_json("assessment_worksheets.json")
 
 
+def _load_assessment_training_map() -> dict:
+    return load_content_json("assessment_training_map.json")
+
+
 def _worksheets() -> list[dict]:
     return _load_payload().get("worksheets", [])
 
@@ -33,6 +37,10 @@ def _summarize_worksheet(worksheet: dict) -> dict:
         "pages": worksheet.get("pages"),
         "instructions": worksheet.get("instructions"),
         "source_version": worksheet.get("source_version"),
+        "source_type": worksheet.get("source_type"),
+        "review_status": worksheet.get("review_status"),
+        "enabled_for_user": worksheet.get("enabled_for_user", True),
+        "review_note": worksheet.get("review_note"),
         "question_count": len(worksheet.get("questions", [])),
         "is_reference": worksheet.get("category") == "示例参考",
     }
@@ -60,6 +68,22 @@ def _score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | No
     return {"total_score": total if has_score else None}, total if has_score else None
 
 
+def _training_rules_for_worksheet(worksheet_id: str) -> list[dict]:
+    try:
+        payload = _load_assessment_training_map()
+    except FileNotFoundError:
+        return []
+
+    matched_rules = []
+    for rule in payload.get("rules", []):
+        if not isinstance(rule, dict):
+            continue
+        condition = rule.get("trigger_condition") or {}
+        if condition.get("worksheet_id") == worksheet_id or condition.get("scale_id") == worksheet_id:
+            matched_rules.append(rule)
+    return matched_rules
+
+
 @bp.get("/assessments")
 def list_assessments():
     payload = _load_payload()
@@ -76,7 +100,13 @@ def get_assessment(worksheet_id: str):
     if worksheet is None:
         return fail("not_found", "没有找到对应的测一测内容", status=404)
     payload = _load_payload()
-    return ok({**worksheet, "boundary_notice": payload.get("boundary_notice")})
+    return ok(
+        {
+            **worksheet,
+            "boundary_notice": payload.get("boundary_notice"),
+            "training_recommendation_rules": _training_rules_for_worksheet(worksheet_id),
+        }
+    )
 
 
 @bp.post("/assessment-results")
@@ -89,6 +119,8 @@ def create_assessment_result():
     worksheet = _find_worksheet(payload["worksheet_id"])
     if worksheet is None:
         return fail("not_found", "没有找到对应的测一测内容", status=404)
+    if worksheet.get("enabled_for_user") is False:
+        return fail("assessment_not_enabled", "这份测一测内容仍在人工审核中，暂不开放填写。", status=400)
 
     answers = payload.get("answers")
     if not isinstance(answers, list):

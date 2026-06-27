@@ -1,6 +1,8 @@
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
+const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
+const THREE_DAY_LIGHT_PLAN_KEY = "safehome:threeDayLightPlan";
 
 function parseJsonSafe(value, fallback) {
   if (!value) return fallback;
@@ -42,6 +44,167 @@ function buildProfileSummary(result) {
   };
 }
 
+function buildSourceNotice(worksheet, profileSummary) {
+  if (profileSummary) {
+    return {
+      title: "项目版支持性画像",
+      statusText: "试点前复核",
+      content: "本结果来自项目版学生支持性画像规则，用于理解本次填写中的阶段性线索。它不是临床诊断，也不是固定标签；如页面提示需要人工关注，应优先联系现实中的可信成年人、学校老师或专业支持。",
+      reviewNote: worksheet && worksheet.review_note ? worksheet.review_note : "",
+    };
+  }
+
+  const sourceType = worksheet && worksheet.source_type ? worksheet.source_type : "";
+  const reviewStatus = worksheet && worksheet.review_status ? worksheet.review_status : "";
+  const enabledForUser = worksheet ? worksheet.enabled_for_user !== false : true;
+  const reviewNote = worksheet && worksheet.review_note ? worksheet.review_note : "";
+
+  if (sourceType === "demo" || reviewStatus === "demo_only") {
+    return {
+      title: "示例参考",
+      statusText: "示例未开放",
+      content: "本结果来自示例参考内容，只适合查看格式和理解记录方式，不作为正式测评结果，也不用于训练推荐或结论判断。",
+      reviewNote,
+    };
+  }
+
+  if (sourceType === "simplified_worksheet" || reviewStatus === "draft_only") {
+    return {
+      title: "电子版简化工作表",
+      statusText: enabledForUser ? "可填写" : "草稿待审核",
+      content: "本结果来自电子版简化工作表，仅供自我观察和讨论准备。完整题项、来源、计分和解释在人工核验前，不应被理解为正式量表报告。",
+      reviewNote,
+    };
+  }
+
+  if (!enabledForUser || ["draft", "pending_review", "metadata_only", "needs_ethics_review"].includes(reviewStatus)) {
+    return {
+      title: "真实量表草稿",
+      statusText: "待人工复核",
+      content: "本结果来自仍在整理或复核中的量表资料，只能作为草稿记录。正式开放前需要继续核对题项来源、计分规则、解释边界和伦理风险。",
+      reviewNote,
+    };
+  }
+
+  return {
+    title: "支持性测评结果",
+    statusText: "可填写",
+    content: "本结果用于自我观察和后续练习参考，不替代心理咨询、医学诊断、危机干预或法律判断。",
+    reviewNote,
+  };
+}
+
+function buildTrainingRecommendation(worksheet, profileSummary, cardsPayload) {
+  if (profileSummary && !profileSummary.allowAutoFeedback) {
+    return null;
+  }
+
+  const rules = worksheet && Array.isArray(worksheet.training_recommendation_rules) ? worksheet.training_recommendation_rules : [];
+  if (!rules.length) {
+    return null;
+  }
+
+  const matchedRule = rules.find((rule) => {
+    const condition = rule.trigger_condition || {};
+    if (condition.profile_code && profileSummary && profileSummary.profileCode) {
+      return condition.profile_code === profileSummary.profileCode;
+    }
+    return true;
+  });
+  if (!matchedRule) {
+    return null;
+  }
+
+  const cards = cardsPayload && Array.isArray(cardsPayload.items) ? cardsPayload.items : [];
+  const cardMap = cards.reduce((acc, card) => {
+    acc[card.id] = card;
+    return acc;
+  }, {});
+  const roleMap = (matchedRule.card_roles || []).reduce((acc, item) => {
+    if (item && item.card_id) {
+      acc[item.card_id] = item.role || "";
+    }
+    return acc;
+  }, {});
+  const recommendedCards = (matchedRule.recommended_card_ids || []).slice(0, 3).map((cardId) => ({
+    id: cardId,
+    title: cardMap[cardId] ? cardMap[cardId].title : cardId,
+    purpose: cardMap[cardId] ? cardMap[cardId].purpose : "",
+    role: roleMap[cardId] || "推荐练习",
+  }));
+
+  if (!recommendedCards.length) {
+    return null;
+  }
+
+  return {
+    reason: matchedRule.reason || "",
+    todaySuggestion: matchedRule.today_suggestion || "",
+    longTermSuggestion: matchedRule.long_term_suggestion || "",
+    boundaryNotice: matchedRule.boundary_notice || "",
+    notSuitableWhen: matchedRule.not_suitable_when || "",
+    recommendedCards,
+    cardIds: recommendedCards.map((card) => card.id),
+  };
+}
+
+function saveLatestTrainingRecommendation(trainingRecommendation) {
+  if (!trainingRecommendation || !trainingRecommendation.cardIds || !trainingRecommendation.cardIds.length) {
+    return;
+  }
+
+  wx.setStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY, {
+    sourceType: "assessment",
+    sourceTitle: "测一测结果推荐",
+    reason: trainingRecommendation.reason || "",
+    todaySuggestion: trainingRecommendation.todaySuggestion || "",
+    longTermSuggestion: trainingRecommendation.longTermSuggestion || "",
+    boundaryNotice: trainingRecommendation.boundaryNotice || "",
+    cardIds: trainingRecommendation.cardIds,
+    cards: trainingRecommendation.recommendedCards || [],
+    updatedAt: new Date().toISOString(),
+  });
+  saveThreeDayLightPlan(trainingRecommendation);
+}
+
+function saveThreeDayLightPlan(trainingRecommendation) {
+  if (
+    !trainingRecommendation.longTermSuggestion ||
+    !Array.isArray(trainingRecommendation.recommendedCards) ||
+    !trainingRecommendation.recommendedCards.length
+  ) {
+    return;
+  }
+
+  const cards = trainingRecommendation.recommendedCards;
+  const days = [0, 1, 2].map((index) => {
+    const card = cards[index] || cards[cards.length - 1];
+    return {
+      day: index + 1,
+      title: `第 ${index + 1} 天`,
+      cardId: card.id,
+      cardTitle: card.title,
+      role: card.role || ["今日练习", "备用练习", "长期练习"][index],
+      purpose: card.purpose || "",
+      suggestion:
+        index === 0
+          ? trainingRecommendation.todaySuggestion || "先完成一张最轻量的练习卡。"
+          : index === 1
+            ? "延续昨天的观察，换一张备用练习卡试一次。"
+            : "回到长期方向，只保留一个最容易坚持的小动作。",
+    };
+  });
+
+  wx.setStorageSync(THREE_DAY_LIGHT_PLAN_KEY, {
+    sourceType: "assessment",
+    sourceTitle: "测一测 3 天轻量计划",
+    longTermSuggestion: trainingRecommendation.longTermSuggestion,
+    boundaryNotice: trainingRecommendation.boundaryNotice || "3 天轻量计划只作为支持性练习建议，不构成诊断或治疗方案。",
+    days,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
 Page({
   data: {
     resultId: "",
@@ -53,6 +216,8 @@ Page({
     totalScoreText: "",
     recommendedCardsText: "",
     profileSummary: null,
+    sourceNotice: null,
+    trainingRecommendation: null,
   },
 
   onLoad(options) {
@@ -66,12 +231,16 @@ Page({
   async loadResult() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const [results, worksheet] = await Promise.all([
+      const [results, worksheet, cards] = await Promise.all([
         api.listAssessmentResults({ limit: 20 }),
         this.data.worksheetId ? api.getAssessment(this.data.worksheetId) : Promise.resolve(null),
+        api.listCards().catch(() => ({ items: [] })),
       ]);
       const result = (results.items || []).find((item) => item.id === this.data.resultId) || (results.items || [])[0];
       const profileSummary = buildProfileSummary(result);
+      const sourceNotice = buildSourceNotice(worksheet, profileSummary);
+      const trainingRecommendation = buildTrainingRecommendation(worksheet, profileSummary, cards);
+      saveLatestTrainingRecommendation(trainingRecommendation);
       this.setData({
         result,
         worksheet,
@@ -83,6 +252,8 @@ Page({
             ? worksheet.recommended_card_ids.join("、")
             : "暂无固定推荐",
         profileSummary,
+        sourceNotice,
+        trainingRecommendation,
       });
     } catch (error) {
       this.setData({
@@ -102,6 +273,13 @@ Page({
       return;
     }
 
+    const trainingRecommendation = this.data.trainingRecommendation;
+    if (trainingRecommendation && trainingRecommendation.cardIds && trainingRecommendation.cardIds.length) {
+      wx.navigateTo({
+        url: `/pages/training-card/index?card_ids=${encodeURIComponent(trainingRecommendation.cardIds.join(","))}`,
+      });
+      return;
+    }
     if (profileSummary && profileSummary.recommendedCardIds && profileSummary.recommendedCardIds.length) {
       wx.navigateTo({
         url: `/pages/training-card/index?card_ids=${encodeURIComponent(profileSummary.recommendedCardIds.join(","))}`,

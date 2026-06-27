@@ -1,0 +1,26 @@
+{
+  "file": "scales_catalog.json",
+  "root_required": ["version", "boundary_notice", "review_policy", "scales"],
+  "lists": [
+    {
+      "field": "scales",
+      "item_required": [
+        "id",
+        "display_name",
+        "audience",
+        "theme",
+        "source_folder",
+        "source_files",
+        "source_type",
+        "review_status",
+        "enabled",
+        "item_status",
+        "scoring_status",
+        "notes"
+      ],
+      "item_list_min_lengths": {
+        "source_files": 1
+      }
+    }
+  ]
+}

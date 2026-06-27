@@ -1,0 +1,130 @@
+.getting-page {
+  display: grid;
+  gap: 24rpx;
+  padding-bottom: 48rpx;
+}
+
+.intro-card,
+.step-card,
+.boundary-card {
+  border: 1rpx solid var(--safe-border);
+  border-radius: 18rpx;
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: 0 12rpx 30rpx rgba(52, 66, 58, 0.07);
+}
+
+.intro-card {
+  padding: 30rpx;
+  background: linear-gradient(120deg, #edf6e8, #fff7f0);
+}
+
+.intro-kicker,
+.intro-title,
+.intro-text,
+.step-title,
+.step-text,
+.boundary-title,
+.boundary-text {
+  display: block;
+}
+
+.intro-kicker {
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 850;
+}
+
+.intro-title {
+  margin-top: 10rpx;
+  color: var(--safe-title);
+  font-size: 38rpx;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.intro-text {
+  margin-top: 18rpx;
+  color: var(--safe-text);
+  font-size: 26rpx;
+  line-height: 1.75;
+}
+
+.step-list {
+  display: grid;
+  gap: 18rpx;
+}
+
+.step-card {
+  padding: 24rpx;
+}
+
+.step-title {
+  color: var(--safe-title);
+  font-size: 29rpx;
+  font-weight: 850;
+}
+
+.step-text {
+  margin-top: 12rpx;
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.boundary-card {
+  padding: 24rpx;
+  background: #fff7f0;
+}
+
+.boundary-title {
+  color: var(--safe-title);
+  font-size: 29rpx;
+  font-weight: 850;
+}
+
+.boundary-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  margin-top: 16rpx;
+}
+
+.boundary-dot {
+  width: 12rpx;
+  height: 12rpx;
+  flex: 0 0 auto;
+  margin-top: 14rpx;
+  border-radius: 50%;
+  background: var(--safe-primary);
+}
+
+.boundary-text {
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+}
+
+.primary-action,
+.secondary-action {
+  min-height: 84rpx;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  font-weight: 850;
+}
+
+.primary-action {
+  background: var(--safe-primary);
+  color: #ffffff;
+}
+
+.secondary-action {
+  border: 1rpx solid var(--safe-border);
+  background: rgba(255, 253, 248, 0.92);
+  color: var(--safe-primary-deep);
+}

@@ -91,7 +91,18 @@
     </view>
 
     <view wx:if="{{canShowTraining}}" class="safe-section">
-      <section-title title="推荐一个小练习" subtitle="建议先选 1 个练习，不需要一次完成很多" />
+      <section-title title="今日建议" subtitle="来自这次情绪日记的轻量练习推荐" />
+      <view wx:if="{{trainingRecommendation}}" class="today-suggestion-card safe-card">
+        <text class="today-suggestion-label">今天先做</text>
+        <text class="today-suggestion-text">{{trainingRecommendation.today_suggestion}}</text>
+        <text class="today-suggestion-reason">推荐理由：{{trainingRecommendation.reason}}</text>
+        <text class="today-suggestion-boundary">{{trainingRecommendation.boundary_notice}}</text>
+      </view>
+      <view wx:else class="today-suggestion-card safe-card">
+        <text class="today-suggestion-label">今天先做</text>
+        <text class="today-suggestion-text">这次记录暂时没有匹配到具体训练卡，可以先做一次暂停和情绪命名。</text>
+        <text class="today-suggestion-boundary">今日建议只作为支持性练习参考，不构成诊断或治疗方案。</text>
+      </view>
       <view class="training-list">
         <training-task-card
           wx:for="{{recommendedTrainings}}"
@@ -101,6 +112,7 @@
           stage="{{item.stage}}"
           duration="{{item.duration}}"
           scenario="{{item.scenario}}"
+          reason="{{item.reason}}"
           tag="{{item.tag}}"
           bind:tapcard="openTrainingCard"
         />

@@ -21,6 +21,10 @@
       <view class="meta-dot"></view>
       <text>适用情境：{{scenario}}</text>
     </view>
+    <view wx:if="{{reason}}" class="meta-row">
+      <view class="meta-dot"></view>
+      <text>推荐理由：{{reason}}</text>
+    </view>
     <view wx:if="{{duration}}" class="meta-row">
       <view class="meta-dot clock-dot"></view>
       <text>预计用时：{{duration}}</text>

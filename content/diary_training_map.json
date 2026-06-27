@@ -1,0 +1,91 @@
+{
+  "version": "2026.06-diary-training-map-v1",
+  "updated_at": "2026-06-27",
+  "boundary_notice": "情绪日记到训练卡的映射只生成今日轻量练习建议，不构成诊断、治疗方案或危机处理。若日记包含现实安全风险或高风险文本，应优先进入人工支持和现实支持。",
+  "rules": [
+    {
+      "rule_id": "diary_judgmental_language_nonjudgmental_response",
+      "source_type": "diary",
+      "trigger_condition": {
+        "feedback_rule_id": "judgmental_language",
+        "risk_level": "low"
+      },
+      "theme": ["parent_child_conflict", "nonjudgmental_response", "emotion_awareness"],
+      "recommended_card_ids": ["nonjudgmental_response", "emotion_naming", "parent_repair_question"],
+      "card_roles": [
+        { "card_id": "nonjudgmental_response", "role": "今日练习" },
+        { "card_id": "emotion_naming", "role": "备用练习" },
+        { "card_id": "parent_repair_question", "role": "长期练习" }
+      ],
+      "reason": "当日记中出现整体评价或标签化表达时，先把批评改成事实和感受描述，更容易让对话留有余地。",
+      "today_suggestion": "今天先练一张非评判回应卡，把一句评价改写成一句事实描述。",
+      "long_term_suggestion": "",
+      "not_suitable_when": "如果日记中出现暴力、自伤、自杀、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "今日建议只是一张轻量练习卡，不评价家长好坏，也不构成治疗方案。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "diary_high_demand_language_pause",
+      "source_type": "diary",
+      "trigger_condition": {
+        "feedback_rule_id": "high_demand_language",
+        "risk_level": "low"
+      },
+      "theme": ["high_demand_language", "pause", "behavior_substitution"],
+      "recommended_card_ids": ["three_second_pause", "alternative_behavior", "emotion_naming"],
+      "card_roles": [
+        { "card_id": "three_second_pause", "role": "今日练习" },
+        { "card_id": "alternative_behavior", "role": "备用练习" },
+        { "card_id": "emotion_naming", "role": "长期练习" }
+      ],
+      "reason": "当日记中出现高要求或命令式表达时，先暂停几秒，再把要求缩小成一个具体请求，通常更容易执行。",
+      "today_suggestion": "今天先练一张 3 秒暂停卡，在开口前给自己一个很短的停顿。",
+      "long_term_suggestion": "",
+      "not_suitable_when": "如果当下需要处理现实安全、医疗或危机问题，不应把普通暂停练习作为替代。",
+      "boundary_notice": "今日建议只用于沟通练习，不替代现实安全处理或专业支持。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "diary_parent_body_alarm_body_check",
+      "source_type": "diary",
+      "trigger_condition": {
+        "feedback_rule_id": "parent_body_alarm",
+        "risk_level": "low"
+      },
+      "theme": ["body_awareness", "pressure_signal", "parent_support"],
+      "recommended_card_ids": ["parent_body_signal_check", "three_second_pause", "emotion_naming"],
+      "card_roles": [
+        { "card_id": "parent_body_signal_check", "role": "今日练习" },
+        { "card_id": "three_second_pause", "role": "备用练习" },
+        { "card_id": "emotion_naming", "role": "长期练习" }
+      ],
+      "reason": "当日记中出现身体紧张或压力升高线索时，先照顾身体信号，再进入沟通会更稳。",
+      "today_suggestion": "今天先做一次身体信号小检查，只观察一个最明显的身体感觉。",
+      "long_term_suggestion": "",
+      "not_suitable_when": "如果身体不适明显、持续或伴随现实安全风险，应优先寻求现实医疗或人工支持。",
+      "boundary_notice": "身体信号练习只用于自我观察，不构成医学判断或治疗建议。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "diary_student_exam_freeze_body_map",
+      "source_type": "diary",
+      "trigger_condition": {
+        "feedback_rule_id": "student_exam_freeze",
+        "risk_level": "low"
+      },
+      "theme": ["student_support", "exam_pressure", "body_awareness"],
+      "recommended_card_ids": ["student_exam_body_map", "student_two_thoughts", "student_emotion_naming"],
+      "card_roles": [
+        { "card_id": "student_exam_body_map", "role": "今日练习" },
+        { "card_id": "student_two_thoughts", "role": "备用练习" },
+        { "card_id": "student_emotion_naming", "role": "长期练习" }
+      ],
+      "reason": "当日记中出现考试压力下卡住或启动困难时，先把身体压力画出来，再选择一个很小的开始。",
+      "today_suggestion": "今天先做一张考试前身体地图，不要求马上解决所有复习任务。",
+      "long_term_suggestion": "",
+      "not_suitable_when": "如果文本中出现自伤、自杀、暴力或明显危机，应优先联系现实中的可信成年人和专业支持。",
+      "boundary_notice": "今日建议只作为学习压力下的轻量支持，不评价能力，也不构成诊断。",
+      "review_status": "draft"
+    }
+  ]
+}

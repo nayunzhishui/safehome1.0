@@ -1,5 +1,10 @@
+const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
+const THREE_DAY_LIGHT_PLAN_KEY = "safehome:threeDayLightPlan";
+
 Page({
   data: {
+    latestRecommendation: null,
+    threeDayPlan: null,
     trainingStages: [
       {
         title: "阶段一：认识和稳定情绪",
@@ -130,6 +135,73 @@ Page({
         ],
       },
     ],
+  },
+
+  onShow() {
+    this.loadLatestRecommendation();
+    this.loadThreeDayPlan();
+  },
+
+  loadLatestRecommendation() {
+    const recommendation = wx.getStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY);
+    if (!recommendation || !Array.isArray(recommendation.cardIds) || !recommendation.cardIds.length) {
+      this.setData({ latestRecommendation: null });
+      return;
+    }
+
+    this.setData({
+      latestRecommendation: {
+        ...recommendation,
+        cards: Array.isArray(recommendation.cards) ? recommendation.cards.slice(0, 3) : [],
+        cardIdsText: recommendation.cardIds.slice(0, 3).join(","),
+        sourceLabel: recommendation.sourceTitle || "最近推荐",
+      },
+    });
+  },
+
+  loadThreeDayPlan() {
+    const plan = wx.getStorageSync(THREE_DAY_LIGHT_PLAN_KEY);
+    if (!plan || plan.sourceType !== "assessment" || !Array.isArray(plan.days) || !plan.days.length) {
+      this.setData({ threeDayPlan: null });
+      return;
+    }
+
+    this.setData({
+      threeDayPlan: {
+        ...plan,
+        days: plan.days.slice(0, 3),
+      },
+    });
+  },
+
+  openPlanDay(event) {
+    const cardId = event.currentTarget.dataset.cardId || "";
+    if (!cardId) {
+      wx.showToast({
+        title: "这一天还没有对应训练卡。",
+        icon: "none",
+      });
+      return;
+    }
+
+    wx.navigateTo({
+      url: `/pages/training-card/index?card_ids=${encodeURIComponent(cardId)}`,
+    });
+  },
+
+  openLatestRecommendation() {
+    const recommendation = this.data.latestRecommendation;
+    if (!recommendation || !recommendation.cardIdsText) {
+      wx.showToast({
+        title: "还没有最近推荐，可以先完成一次测一测或情绪日记。",
+        icon: "none",
+      });
+      return;
+    }
+
+    wx.navigateTo({
+      url: `/pages/training-card/index?card_ids=${encodeURIComponent(recommendation.cardIdsText)}`,
+    });
   },
 
   openTrainingCard(event) {

@@ -7,6 +7,8 @@ import type {
   CheckinInput,
   ConsentInput,
   ConsentRecord,
+  ContentReviewUpdateInput,
+  ContentReviewUpdateResult,
   EmotionDiary,
   EmotionDiaryInput,
   FeedbackGenerateInput,
@@ -278,6 +280,14 @@ export class SafeHomeApiClient {
 
   buildAdminExportUrl(params: { type?: string; user_id?: string; module_type?: string; confirm_high_risk?: boolean } = {}): string {
     return this.absoluteUrl(this.withQuery(API_ENDPOINTS.adminExport, params));
+  }
+
+  updateContentReview(input: ContentReviewUpdateInput, adminToken?: string): Promise<ContentReviewUpdateResult> {
+    return this.requestData<ContentReviewUpdateResult>(API_ENDPOINTS.contentReviewUpdate, {
+      method: "POST",
+      body: input,
+      headers: this.adminHeaders(adminToken),
+    });
   }
 
   async downloadAdminExport(params: {

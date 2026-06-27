@@ -23,6 +23,7 @@ FORBIDDEN_TERMS = [
 
 BOUNDARY_TERMS = ["不构成诊断", "不构成临床诊断", "不替代心理咨询", "不替代危机干预"]
 HIGH_RISK_BLOCK_TERMS = ["高风险", "危机", "安全", "现实支持"]
+REVIEW_STATUSES = {"draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled"}
 
 
 def load_json(path: Path) -> dict:
@@ -139,12 +140,24 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
     errors.extend(load_errors)
     student_profile_rules, load_errors = load_content_or_error(content_dir, "student_profile_rules.json")
     errors.extend(load_errors)
+    scales_catalog, load_errors = load_content_or_error(content_dir, "scales_catalog.json")
+    errors.extend(load_errors)
+    scale_item_drafts, load_errors = load_content_or_error(content_dir, "scale_item_drafts.json")
+    errors.extend(load_errors)
+    assessment_training_map, load_errors = load_content_or_error(content_dir, "assessment_training_map.json")
+    errors.extend(load_errors)
+    diary_training_map, load_errors = load_content_or_error(content_dir, "diary_training_map.json")
+    errors.extend(load_errors)
 
     for filename, payload in [
         ("training_cards.json", training_cards),
         ("feedback_rules.json", feedback_rules),
         ("risk_keywords.json", risk_keywords),
         ("student_profile_rules.json", student_profile_rules),
+        ("scales_catalog.json", scales_catalog),
+        ("scale_item_drafts.json", scale_item_drafts),
+        ("assessment_training_map.json", assessment_training_map),
+        ("diary_training_map.json", diary_training_map),
     ]:
         if payload:
             errors.extend(validate_forbidden_terms(filename, payload))
@@ -171,6 +184,28 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
         if rule.get("risk_level") == "high" and rule.get("recommended_card_ids"):
             errors.append(f"feedback_rules.json.rules[{rule_id}] high 风险规则不得推荐普通训练卡")
 
+    if assessment_training_map:
+        errors.extend(
+            validate_training_map_rules(
+                "assessment_training_map.json",
+                assessment_training_map,
+                card_ids,
+                expected_source_type="assessment",
+                require_long_term=True,
+            )
+        )
+
+    if diary_training_map:
+        errors.extend(
+            validate_training_map_rules(
+                "diary_training_map.json",
+                diary_training_map,
+                card_ids,
+                expected_source_type="diary",
+                require_empty_long_term=True,
+            )
+        )
+
     for rule in risk_keywords.get("handling_rules", []):
         if not isinstance(rule, dict):
             continue
@@ -190,6 +225,60 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
         if not any(term in text for term in BOUNDARY_TERMS):
             errors.append(f"{filename} 风险边界文案需包含“不构成诊断”或“不替代心理咨询/危机干预”的同义表达")
 
+    return errors
+
+
+def validate_training_map_rules(
+    filename: str,
+    payload: dict,
+    card_ids: set[str],
+    *,
+    expected_source_type: str,
+    require_long_term: bool = False,
+    require_empty_long_term: bool = False,
+) -> list[str]:
+    errors: list[str] = []
+    for rule in payload.get("rules", []):
+        if not isinstance(rule, dict):
+            continue
+        rule_id = rule.get("rule_id", "unknown")
+        recommended_card_ids = rule.get("recommended_card_ids", [])
+        condition = rule.get("trigger_condition", {})
+        risk_condition = str(condition.get("risk_level", "")).lower() if isinstance(condition, dict) else ""
+
+        if len(recommended_card_ids) > 3:
+            errors.append(f"{filename}.rules[{rule_id}].recommended_card_ids 不得超过 3 张训练卡")
+        for card_id in recommended_card_ids:
+            if card_id not in card_ids:
+                errors.append(f"{filename}.rules[{rule_id}].recommended_card_ids 包含不存在的训练卡：{card_id}")
+        for role in rule.get("card_roles", []):
+            if not isinstance(role, dict):
+                errors.append(f"{filename}.rules[{rule_id}].card_roles 必须是 object 数组")
+                continue
+            role_card_id = role.get("card_id")
+            if role_card_id and role_card_id not in recommended_card_ids:
+                errors.append(f"{filename}.rules[{rule_id}].card_roles 包含未推荐的训练卡：{role_card_id}")
+        if rule.get("source_type") != expected_source_type:
+            errors.append(f"{filename}.rules[{rule_id}].source_type 必须为 {expected_source_type}")
+        if rule.get("review_status") not in REVIEW_STATUSES:
+            errors.append(f"{filename}.rules[{rule_id}].review_status 不在允许枚举中")
+        if "high" in risk_condition and recommended_card_ids:
+            errors.append(f"{filename}.rules[{rule_id}] high 风险条件不得推荐普通训练卡")
+        if not rule.get("reason"):
+            errors.append(f"{filename}.rules[{rule_id}].reason 缺失")
+        if not rule.get("today_suggestion"):
+            errors.append(f"{filename}.rules[{rule_id}].today_suggestion 缺失")
+        if not any(term in str(rule.get("not_suitable_when", "")) for term in HIGH_RISK_BLOCK_TERMS):
+            errors.append(f"{filename}.rules[{rule_id}].not_suitable_when 缺少高风险/危机/安全/现实支持边界")
+        if not any(
+            term in str(rule.get("boundary_notice", ""))
+            for term in ["不构成诊断", "不构成医学判断", "不构成治疗建议", "不构成治疗方案", "不替代"]
+        ):
+            errors.append(f"{filename}.rules[{rule_id}].boundary_notice 需包含非诊断或非治疗边界")
+        if require_long_term and not rule.get("long_term_suggestion"):
+            errors.append(f"{filename}.rules[{rule_id}].long_term_suggestion 缺失，测评推荐需要长期方向")
+        if require_empty_long_term and rule.get("long_term_suggestion"):
+            errors.append(f"{filename}.rules[{rule_id}].long_term_suggestion 应留空，情绪日记只生成今日建议")
     return errors
 
 

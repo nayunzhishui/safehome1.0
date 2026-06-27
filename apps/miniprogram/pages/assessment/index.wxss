@@ -220,6 +220,12 @@
   background: linear-gradient(135deg, var(--safe-primary-pale) 0%, var(--safe-card) 72%);
 }
 
+.worksheet-card.disabled {
+  border-color: #e4e0d6;
+  background: #fbfaf6;
+  opacity: 0.78;
+}
+
 .worksheet-main {
   flex: 1;
   min-width: 0;
@@ -247,6 +253,23 @@
   border: 1rpx solid #bfe3c4;
   background: var(--safe-primary-pale);
   color: #3e7f5d;
+}
+
+.profile-badge.soft {
+  border: 1rpx solid #e6d8be;
+  background: #fff8ed;
+  color: #8a6a36;
+}
+
+.empty-section-card {
+  margin-top: 20rpx;
+  padding: 22rpx;
+  border: 1rpx dashed #d7cfbf;
+  border-radius: 20rpx;
+  background: #fffaf3;
+  color: #7a6b54;
+  font-size: 24rpx;
+  line-height: 1.6;
 }
 
 .worksheet-title,

@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request
 
-from database import get_connection, json_dumps, new_id, now_iso, row_to_dict
+from database import get_connection, json_dumps, load_content_json, new_id, now_iso, row_to_dict
 from routes.utils import auth_error_response, fail, ok, require_admin_or_owner, require_user_id
 from services.feedback_service import generate_feedback
 from services.risk_review_service import create_risk_review_record
@@ -39,9 +39,39 @@ def _high_risk_feedback_result(risk_result: dict) -> dict:
         "supportive_feedback": risk_result["safe_response"],
         "alternative_response": risk_result["boundary_notice"],
         "recommended_card_ids": [],
+        "training_recommendation_rules": [],
         "risk_level": risk_result["risk_level"],
         "risk": risk_result,
     }
+
+
+def _matches_diary_training_rule(rule: dict, feedback_result: dict) -> bool:
+    condition = rule.get("trigger_condition", {})
+    expected_feedback_rule = condition.get("feedback_rule_id")
+    expected_risk_level = condition.get("risk_level")
+    tags = set(feedback_result.get("tags") or [])
+    risk_level = feedback_result.get("risk_level", "low")
+
+    if rule.get("source_type") != "diary":
+        return False
+    if expected_feedback_rule and expected_feedback_rule not in tags:
+        return False
+    if expected_risk_level and expected_risk_level != risk_level:
+        return False
+    return True
+
+
+def _match_diary_training_rules(feedback_result: dict) -> list[dict]:
+    if feedback_result.get("risk_level") == "high":
+        return []
+
+    rules_payload = load_content_json("diary_training_map.json")
+    matched_rules = []
+    for rule in rules_payload.get("rules", []):
+        if _matches_diary_training_rule(rule, feedback_result):
+            matched_rules.append(rule)
+
+    return matched_rules[:1]
 
 
 @bp.post("/generate")
@@ -68,6 +98,11 @@ def generate():
             result = generate_feedback(source_payload)
             result["risk_level"] = _highest_risk_level(result.get("risk_level"), risk_result.get("risk_level"))
             result["risk"] = risk_result
+            result["training_recommendation_rules"] = (
+                _match_diary_training_rules(result)
+                if risk_result.get("allow_recommended_training_cards") is not False
+                else []
+            )
 
         feedback_id = new_id("feedback")
         try:

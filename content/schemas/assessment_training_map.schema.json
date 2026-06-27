@@ -1,0 +1,26 @@
+{
+  "file": "assessment_training_map.json",
+  "root_required": ["version", "boundary_notice", "rules"],
+  "lists": [
+    {
+      "field": "rules",
+      "item_required": [
+        "rule_id",
+        "source_type",
+        "trigger_condition",
+        "theme",
+        "recommended_card_ids",
+        "reason",
+        "today_suggestion",
+        "long_term_suggestion",
+        "not_suitable_when",
+        "boundary_notice",
+        "review_status"
+      ],
+      "item_list_min_lengths": {
+        "theme": 1,
+        "recommended_card_ids": 1
+      }
+    }
+  ]
+}

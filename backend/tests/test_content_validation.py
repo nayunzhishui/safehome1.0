@@ -23,6 +23,10 @@ def _copy_required_content(target: Path) -> None:
         "feedback_rules.json",
         "risk_keywords.json",
         "student_profile_rules.json",
+        "scales_catalog.json",
+        "scale_item_drafts.json",
+        "assessment_training_map.json",
+        "diary_training_map.json",
     ]:
         shutil.copy(CONTENT_ROOT / filename, target / filename)
 
@@ -132,3 +136,31 @@ def test_legal_non_diagnostic_boundary_text_is_allowed(tmp_path):
     errors = validator.validate_content(content_dir, SCHEMA_ROOT)
 
     assert not any("feedback_rules.json 风险边界文案" in error for error in errors)
+
+
+def test_assessment_training_map_high_risk_condition_cannot_recommend_cards(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "assessment_training_map.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["rules"][0]["trigger_condition"]["risk_level"] = "high"
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("assessment_training_map.json.rules[student_profile_pressure_alert_basic_support] high 风险条件不得推荐普通训练卡" in error for error in errors)
+
+
+def test_diary_training_map_requires_allowed_review_status(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "diary_training_map.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["rules"][0]["review_status"] = "open_without_review"
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("diary_training_map.json.rules[diary_judgmental_language_nonjudgmental_response].review_status 不在允许枚举中" in error for error in errors)

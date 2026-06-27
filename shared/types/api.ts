@@ -149,6 +149,7 @@ export interface FeedbackResult {
   supportive_feedback: string;
   alternative_response: string;
   recommended_card_ids: ID[];
+  training_recommendation_rules?: TrainingRecommendationRule[];
   risk_level: RiskLevel;
   risk?: RiskCheckResult;
 }
@@ -171,7 +172,29 @@ export interface TrainingCard {
   steps: string[];
   example: string;
   duration_minutes: number;
+  theory_source?: string;
+  target_skill?: string;
+  suitable_for?: string[];
+  not_suitable_for?: string[];
+  reflection_questions?: string[];
+  review_status?: string;
+  reviewer_note?: string;
   enabled: boolean;
+}
+
+export interface ContentReviewUpdateInput {
+  content_type: string;
+  item_id: ID;
+  review_status?: string;
+  enabled_for_user?: boolean;
+}
+
+export interface ContentReviewUpdateResult {
+  content_type: string;
+  item_id: ID;
+  review_status?: string;
+  enabled_for_user?: boolean;
+  filename: string;
 }
 
 export interface AssessmentOption {
@@ -193,6 +216,21 @@ export interface AssessmentSection {
   content: string;
 }
 
+export interface TrainingRecommendationRule {
+  rule_id: ID;
+  source_type: "assessment" | "diary";
+  trigger_condition: Record<string, unknown>;
+  theme: string[];
+  recommended_card_ids: ID[];
+  card_roles?: Array<{ card_id: ID; role: string }>;
+  reason: string;
+  today_suggestion: string;
+  long_term_suggestion?: string;
+  not_suitable_when: string;
+  boundary_notice: string;
+  review_status: string;
+}
+
 export interface AssessmentWorksheet {
   id: ID;
   source_file: string;
@@ -206,7 +244,12 @@ export interface AssessmentWorksheet {
   scoring: string;
   recommended_card_ids: ID[];
   source_version: string;
+  source_type?: string;
+  review_status?: string;
+  enabled_for_user?: boolean;
+  review_note?: string;
   boundary_notice?: string;
+  training_recommendation_rules?: TrainingRecommendationRule[];
 }
 
 export interface AssessmentListItem {
@@ -218,6 +261,10 @@ export interface AssessmentListItem {
   pages: number;
   instructions: string;
   source_version: string;
+  source_type?: string;
+  review_status?: string;
+  enabled_for_user?: boolean;
+  review_note?: string;
   question_count: number;
   is_reference: boolean;
 }

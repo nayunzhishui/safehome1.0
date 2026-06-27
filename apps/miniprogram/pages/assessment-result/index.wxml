@@ -18,6 +18,18 @@
       />
     </view>
 
+    <view wx:if="{{sourceNotice}}" class="safe-section">
+      <section-title title="结果来源说明" subtitle="先确认这份结果适合怎样理解" />
+      <view class="source-notice-card">
+        <view class="source-notice-head">
+          <text class="source-notice-title">{{sourceNotice.title}}</text>
+          <text class="source-notice-status">{{sourceNotice.statusText}}</text>
+        </view>
+        <text class="source-notice-text">{{sourceNotice.content}}</text>
+        <text wx:if="{{sourceNotice.reviewNote}}" class="source-notice-note">{{sourceNotice.reviewNote}}</text>
+      </view>
+    </view>
+
     <view wx:if="{{profileSummary}}" class="safe-section">
       <section-title title="阶段性画像" subtitle="基于本次填写生成，仅用于支持性理解" />
       <view class="profile-result-card {{profileSummary.riskLevel === 'high' ? 'high-risk' : ''}}">
@@ -62,6 +74,26 @@
         <text wx:if="{{profileSummary.strengthNote}}" class="next-step-text">{{profileSummary.strengthNote}}</text>
         <text wx:if="{{profileSummary.smallStep}}" class="next-step-label">可以先做</text>
         <text wx:if="{{profileSummary.smallStep}}" class="next-step-text">{{profileSummary.smallStep}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{trainingRecommendation}}" class="safe-section">
+      <section-title title="推荐训练卡" subtitle="最多 3 张，先选今天能做的一张" />
+      <view class="recommendation-card">
+        <text wx:if="{{trainingRecommendation.reason}}" class="recommendation-label">推荐理由</text>
+        <text wx:if="{{trainingRecommendation.reason}}" class="recommendation-text">{{trainingRecommendation.reason}}</text>
+        <text wx:if="{{trainingRecommendation.todaySuggestion}}" class="recommendation-label">今日建议</text>
+        <text wx:if="{{trainingRecommendation.todaySuggestion}}" class="recommendation-text">{{trainingRecommendation.todaySuggestion}}</text>
+        <text wx:if="{{trainingRecommendation.longTermSuggestion}}" class="recommendation-label">长期方向</text>
+        <text wx:if="{{trainingRecommendation.longTermSuggestion}}" class="recommendation-text">{{trainingRecommendation.longTermSuggestion}}</text>
+        <view class="recommendation-list">
+          <view wx:for="{{trainingRecommendation.recommendedCards}}" wx:key="id" class="recommendation-item">
+            <text class="recommendation-role">{{item.role}}</text>
+            <text class="recommendation-title">{{item.title}}</text>
+            <text wx:if="{{item.purpose}}" class="recommendation-purpose">{{item.purpose}}</text>
+          </view>
+        </view>
+        <text wx:if="{{trainingRecommendation.boundaryNotice}}" class="recommendation-boundary">{{trainingRecommendation.boundaryNotice}}</text>
       </view>
     </view>
 

@@ -11,6 +11,53 @@
     </view>
   </view>
 
+  <view wx:if="{{latestRecommendation}}" class="recommendation-card safe-card">
+    <view class="recommendation-head">
+      <view class="recommendation-copy">
+        <text class="recommendation-kicker">{{latestRecommendation.sourceLabel}}</text>
+        <text class="recommendation-title">今天可以先练这个方向</text>
+      </view>
+      <button class="recommendation-action" bindtap="openLatestRecommendation">查看</button>
+    </view>
+    <text wx:if="{{latestRecommendation.reason}}" class="recommendation-label">推荐理由</text>
+    <text wx:if="{{latestRecommendation.reason}}" class="recommendation-text">{{latestRecommendation.reason}}</text>
+    <text wx:if="{{latestRecommendation.todaySuggestion}}" class="recommendation-label">今日建议</text>
+    <text wx:if="{{latestRecommendation.todaySuggestion}}" class="recommendation-text">{{latestRecommendation.todaySuggestion}}</text>
+    <view class="recommendation-list">
+      <view wx:for="{{latestRecommendation.cards}}" wx:key="id" class="recommendation-item">
+        <text class="recommendation-role">{{item.role}}</text>
+        <view class="recommendation-item-copy">
+          <text class="recommendation-card-title">{{item.title}}</text>
+          <text wx:if="{{item.purpose}}" class="recommendation-purpose">{{item.purpose}}</text>
+        </view>
+      </view>
+    </view>
+    <text wx:if="{{latestRecommendation.boundaryNotice}}" class="recommendation-boundary">{{latestRecommendation.boundaryNotice}}</text>
+  </view>
+
+  <view wx:if="{{threeDayPlan}}" class="plan-card safe-card">
+    <view class="plan-head">
+      <text class="plan-kicker">{{threeDayPlan.sourceTitle}}</text>
+      <text class="plan-title">3 天轻量练习</text>
+      <text class="plan-summary">{{threeDayPlan.longTermSuggestion}}</text>
+    </view>
+    <view class="plan-days">
+      <button
+        wx:for="{{threeDayPlan.days}}"
+        wx:key="day"
+        class="plan-day"
+        data-card-id="{{item.cardId}}"
+        bindtap="openPlanDay"
+      >
+        <text class="plan-day-index">{{item.title}}</text>
+        <text class="plan-day-role">{{item.role}}</text>
+        <text class="plan-day-card">{{item.cardTitle}}</text>
+        <text class="plan-day-suggestion">{{item.suggestion}}</text>
+      </button>
+    </view>
+    <text class="plan-boundary">{{threeDayPlan.boundaryNotice}}</text>
+  </view>
+
   <view class="starter-card safe-card">
     <view class="starter-head">
       <text class="starter-icon">1</text>

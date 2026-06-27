@@ -1,6 +1,7 @@
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
+const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
 
 Page({
   data: {
@@ -15,6 +16,7 @@ Page({
     labelsText: "",
     patternCards: [],
     emotionOverview: null,
+    trainingRecommendation: null,
     recommendedTrainings: [],
     riskSupportText: "",
   },
@@ -39,8 +41,13 @@ Page({
 
     try {
       const feedback = await api.generateFeedback({ diary_id: diaryId });
+      const cardResponse = await api.listCards().catch(() => ({ items: [] }));
+      const cards = Array.isArray(cardResponse.items) ? cardResponse.items : [];
       const isHighRisk = feedback.risk_level === "high" || (feedback.risk && feedback.risk.allow_recommended_training_cards === false);
       const canShowTraining = !isHighRisk;
+      const trainingRecommendation = this.buildTrainingRecommendation(feedback, canShowTraining);
+      const recommendedTrainings = this.buildRecommendedTrainings(trainingRecommendation, cards);
+      this.saveLatestTrainingRecommendation(trainingRecommendation, recommendedTrainings);
       this.setData({
         feedback,
         isHighRisk,
@@ -49,7 +56,8 @@ Page({
         patternCards: this.buildPatternCards(feedback),
         emotionOverview: this.buildEmotionOverview(feedback, isHighRisk),
         nextAction: this.buildNextAction(feedback, isHighRisk),
-        recommendedTrainings: this.buildRecommendedTrainings(feedback, canShowTraining),
+        trainingRecommendation,
+        recommendedTrainings,
         riskSupportText:
           (feedback.risk && feedback.risk.safe_response) ||
           "如果这次记录涉及现实安全风险，请先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。本系统不能替代危机干预。",
@@ -121,44 +129,72 @@ Page({
     };
   },
 
-  buildRecommendedTrainings(feedback, canShowTraining) {
+  buildTrainingRecommendation(feedback, canShowTraining) {
     if (!canShowTraining) {
+      return null;
+    }
+
+    const rules = feedback.training_recommendation_rules || [];
+    return rules.length > 0 ? rules[0] : null;
+  },
+
+  getCardRole(rule, cardId, index) {
+    const roles = Array.isArray(rule.card_roles) ? rule.card_roles : [];
+    const matchedRole = roles.find((item) => item.card_id === cardId);
+    if (matchedRole && matchedRole.role) {
+      return matchedRole.role;
+    }
+    return ["今日练习", "备用练习", "长期练习"][index] || "推荐练习";
+  },
+
+  buildRecommendedTrainings(rule, cards) {
+    if (!rule) {
       return [];
     }
 
-    const tags = feedback.tags || [];
-    const trainings = [
-      {
-        title: "暂停训练",
-        subtitle: "先稳定身体反应，再进入沟通",
-        stage: "推荐训练",
-        duration: "3-5 分钟",
-        scenario: "情绪升高、准备催促前",
-        tag: "推荐",
-      },
-    ];
-
-    if (tags.includes("judgmental_language") || tags.includes("parent_child_conflict")) {
-      trainings.push({
-        title: "非评判陪伴",
-        subtitle: "先接住孩子的情绪，再讨论问题",
-        stage: "推荐训练",
-        duration: "5-10 分钟",
-        scenario: "孩子委屈、生气或不愿说话时",
-        tag: "推荐",
-      });
-    }
-
-    trainings.push({
-      title: "关系修复",
-      subtitle: "冲突后重新连接",
-      stage: "推荐训练",
-      duration: "8-10 分钟",
-      scenario: "刚发生争吵或冷处理后",
-      tag: "进阶",
+    const cardMap = {};
+    cards.forEach((card) => {
+      cardMap[card.id] = card;
     });
 
-    return trainings;
+    return (rule.recommended_card_ids || []).slice(0, 3).map((cardId, index) => {
+      const card = cardMap[cardId] || {};
+      const role = this.getCardRole(rule, cardId, index);
+      const minutes = card.duration_minutes ? `${card.duration_minutes} 分钟` : "3-10 分钟";
+      return {
+        cardId,
+        title: card.title || cardId,
+        subtitle: card.purpose || rule.today_suggestion || "今日轻量练习",
+        stage: role,
+        duration: minutes,
+        scenario: "今天先选 1 张完成即可",
+        reason: rule.reason || "与这次日记中的互动线索相关。",
+        tag: role,
+      };
+    });
+  },
+
+  saveLatestTrainingRecommendation(rule, trainings) {
+    if (!rule || !trainings || !trainings.length) {
+      return;
+    }
+
+    wx.setStorageSync(LATEST_TRAINING_RECOMMENDATION_KEY, {
+      sourceType: "diary",
+      sourceTitle: "情绪日记今日建议",
+      reason: rule.reason || "",
+      todaySuggestion: rule.today_suggestion || "",
+      longTermSuggestion: "",
+      boundaryNotice: rule.boundary_notice || "",
+      cardIds: trainings.map((item) => item.cardId).filter(Boolean),
+      cards: trainings.map((item) => ({
+        id: item.cardId,
+        title: item.title,
+        purpose: item.subtitle,
+        role: item.stage,
+      })),
+      updatedAt: new Date().toISOString(),
+    });
   },
 
   saveFeedback() {
@@ -182,8 +218,10 @@ Page({
     }
 
     const tags = this.data.feedback && this.data.feedback.tags ? this.data.feedback.tags : [];
+    const rule = this.data.trainingRecommendation || {};
+    const cardIds = Array.isArray(rule.recommended_card_ids) ? rule.recommended_card_ids.join(",") : "";
     wx.navigateTo({
-      url: `/pages/training-card/index?tags=${encodeURIComponent(tags.join(","))}&diary_id=${encodeURIComponent(this.data.diaryId)}`,
+      url: `/pages/training-card/index?tags=${encodeURIComponent(tags.join(","))}&card_ids=${encodeURIComponent(cardIds)}&diary_id=${encodeURIComponent(this.data.diaryId)}`,
     });
   },
 

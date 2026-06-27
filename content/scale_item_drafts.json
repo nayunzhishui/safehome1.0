@@ -1,0 +1,330 @@
+{
+  "version": "2026.06-scale-item-drafts-v1",
+  "updated_at": "2026-06-27",
+  "boundary_notice": "本文件仅保存量表题项录入草稿，用于人工核对、计分复核和伦理边界审查。所有草稿默认不开放给用户填写，不输出诊断结论，不评价家长、学生或家庭人格。",
+  "drafts": [
+    {
+      "scale_id": "parent_reflective_functioning_prfq",
+      "display_name": "家长反思功能问卷",
+      "source_folder": "反思功能测评",
+      "source_files": [
+        "反思功能问卷_PRFQ_Chinese-家长反思功能问卷.docx",
+        "反思功能问卷_PRFQ_syntax_Word_format.docx"
+      ],
+      "source_citation": "Luyten, P., Mayes, L. C., Nijssens, L., & Fonagy, P. (2017). The parental reflective functioning questionnaire: Development and preliminary validation. PLOS ONE, 12(5), e0176218.",
+      "audience": "parent",
+      "theme": "parent_child_communication",
+      "enabled": false,
+      "review_status": "item_draft_pending_human_review",
+      "item_status": "draft_extracted",
+      "scoring_status": "draft_from_syntax_pending_review",
+      "instructions": "下面所列的是一系列关于您对孩子行为的感受和反应的陈述。请根据同意程度作答。本草稿仅用于人工核对，未开放给用户填写。",
+      "likert": [
+        { "value": 1, "label": "非常不同意" },
+        { "value": 2, "label": "不同意" },
+        { "value": 3, "label": "有些不同意" },
+        { "value": 4, "label": "中立或不确定" },
+        { "value": 5, "label": "有些同意" },
+        { "value": 6, "label": "同意" },
+        { "value": 7, "label": "非常同意" }
+      ],
+      "dimensions": [
+        {
+          "code": "PRFQ_PM",
+          "label": "前心智化模式",
+          "source_label": "PRFQ Pre-Mentalizing Modes",
+          "item_codes": ["PRFQ01", "PRFQ04", "PRFQ07", "PRFQ10", "PRFQ13", "PRFQ16"],
+          "note": "维度名称为 syntax 原始含义直译，正式展示前需要改写为支持性、非评价表达。"
+        },
+        {
+          "code": "PRFQ_CM",
+          "label": "对心理状态的确定性",
+          "source_label": "PRFQ Certainty about Mental States",
+          "item_codes": ["PRFQ02", "PRFQ05", "PRFQ08", "PRFQ11", "PRFQ14", "PRFQ17"],
+          "reverse_item_codes": ["PRFQ11"],
+          "note": "PRFQ11 根据 syntax 反向计分。"
+        },
+        {
+          "code": "PRFQ_IC",
+          "label": "对心理状态的兴趣与好奇",
+          "source_label": "PRFQ Interest and Curiosity in Mental States",
+          "item_codes": ["PRFQ03", "PRFQ06", "PRFQ09", "PRFQ12", "PRFQ15", "PRFQ18"],
+          "reverse_item_codes": ["PRFQ18"],
+          "note": "PRFQ18 根据 syntax 反向计分。"
+        }
+      ],
+      "items": [
+        {
+          "item_code": "PRFQ01",
+          "display_order": 1,
+          "text": "只有孩子对我笑的时候我才能确定孩子是喜欢我的。",
+          "dimension": "PRFQ_PM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ02",
+          "display_order": 2,
+          "text": "我总是知道孩子想要什么。",
+          "dimension": "PRFQ_CM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ03",
+          "display_order": 3,
+          "text": "我喜欢思考孩子的行为和感受以及背后的原因。",
+          "dimension": "PRFQ_IC",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ04",
+          "display_order": 4,
+          "text": "孩子在陌生人面前哭闹让我很窘迫。",
+          "dimension": "PRFQ_PM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ05",
+          "display_order": 5,
+          "text": "我完全能读懂孩子的内心。",
+          "dimension": "PRFQ_CM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ06",
+          "display_order": 6,
+          "text": "我很想知道孩子的想法和感受。",
+          "dimension": "PRFQ_IC",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ07",
+          "display_order": 7,
+          "text": "我发现我自己很难主动地和孩子一起玩角色游戏。",
+          "dimension": "PRFQ_PM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ08",
+          "display_order": 8,
+          "text": "我总是能预测出孩子将要做什么。",
+          "dimension": "PRFQ_CM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ09",
+          "display_order": 9,
+          "text": "很多时候我想知道孩子是什么感受。",
+          "dimension": "PRFQ_IC",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ10",
+          "display_order": 10,
+          "text": "有时候因为孩子生病而阻止了我去做我想要做的事情。",
+          "dimension": "PRFQ_PM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ11",
+          "display_order": 11,
+          "text": "我有时会对孩子的反应做出错误的判断。",
+          "dimension": "PRFQ_CM",
+          "reverse_scored": true
+        },
+        {
+          "item_code": "PRFQ12",
+          "display_order": 12,
+          "text": "我试图用孩子的眼光来看待各种情况。",
+          "dimension": "PRFQ_IC",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ13",
+          "display_order": 13,
+          "text": "当我的孩子胡搅蛮缠时，他（她）只是想气我。",
+          "dimension": "PRFQ_PM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ14",
+          "display_order": 14,
+          "text": "我一直很清楚我对孩子所做的一切以及原因。",
+          "dimension": "PRFQ_CM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ15",
+          "display_order": 15,
+          "text": "我尽力去了解孩子不良行为的原因。",
+          "dimension": "PRFQ_IC",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ16",
+          "display_order": 16,
+          "text": "很多时候孩子的行为表现非常令人迷惑，不知道为什么他会那样。",
+          "dimension": "PRFQ_PM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ17",
+          "display_order": 17,
+          "text": "我一直很清楚孩子所作所为的原因。",
+          "dimension": "PRFQ_CM",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "PRFQ18",
+          "display_order": 18,
+          "text": "我觉得猜测孩子的心理感受是没有意义的。",
+          "dimension": "PRFQ_IC",
+          "reverse_scored": true
+        }
+      ],
+      "scoring_notes": [
+        "PRFQ11 和 PRFQ18 按 syntax 进行 1-7 反向计分。",
+        "PRFQ_PM = PRFQ1、4、7、10、13、16 的均值。",
+        "PRFQ_CM = PRFQ2、5、8、11rr、14、17 的均值。",
+        "PRFQ_IC = PRFQ3、6、9、12、15、18rr 的均值。",
+        "正式开放前必须由人工核对中文题项、维度译名、计分解释和伦理边界。"
+      ],
+      "supportive_interpretation_draft": "结果只用于观察家长在理解孩子行为和情绪时可能使用的关注方式，不评价家长好坏，也不构成诊断。正式结果页应使用“可能”“看起来”“可以作为线索”等保守措辞。",
+      "recommended_card_ids": ["emotion_naming", "nonjudgmental_response"]
+    },
+    {
+      "scale_id": "emotion_regulation_erq_gross",
+      "display_name": "情绪调节问卷（Gross ERQ）",
+      "source_folder": "情绪调节问卷-GROSS-GERQ",
+      "source_files": [
+        "Gross情绪调节问卷.pdf",
+        "Gross情绪调节问卷.docx",
+        "指标值计算-Gross情绪调节量表GERQ.sps"
+      ],
+      "source_citation": "本地资料说明：由 Gross 编制，王力等人修订；正式开放前需人工补全标准引用和授权边界。",
+      "audience": "adult",
+      "theme": "emotion_regulation",
+      "enabled": false,
+      "review_status": "item_draft_pending_human_review",
+      "item_status": "draft_extracted",
+      "scoring_status": "draft_from_pdf_and_sps_pending_review",
+      "scoring_method": "按两个维度分别求和：认知重评使用 ERQ01、ERQ03、ERQ05、ERQ07、ERQ08、ERQ10；表达抑制使用 ERQ02、ERQ04、ERQ06、ERQ09。正式是否使用求和、均分或其它常模解释需人工确认。",
+      "reverse_item_codes": [],
+      "not_open_reason": "题项、计分和维度已形成草稿，但标准引用、授权范围、中文题项准确性、用户端解释边界和是否适合家长优先版本仍需人工复核；因此不得开放用户填写。",
+      "manual_review_todos": [
+        "核对 Gross ERQ 中文修订版本的标准引用和授权范围。",
+        "核对 10 个中文题项是否与本项目允许使用的版本一致。",
+        "确认计分口径使用求和还是均分，以及是否需要维度分或总分。",
+        "确认本地资料未见反向计分说明这一判断是否正确。",
+        "将认知重评、表达抑制的用户端解释改写为支持性、非评价、非诊断表达。",
+        "确认是否适合进入家长优先版本，或仅作为成人自助/后台候选。"
+      ],
+      "instructions": "以下句子描述不同情绪调节方式。请根据同意程度作答。本草稿仅用于人工核对，未开放给用户填写。",
+      "likert": [
+        { "value": 1, "label": "完全不同意" },
+        { "value": 2, "label": "不同意" },
+        { "value": 3, "label": "有点不同意" },
+        { "value": 4, "label": "不确定" },
+        { "value": 5, "label": "有点同意" },
+        { "value": 6, "label": "同意" },
+        { "value": 7, "label": "完全同意" }
+      ],
+      "dimensions": [
+        {
+          "code": "ERQ_CR",
+          "label": "认知重评",
+          "source_label": "Cognitive Reappraisal",
+          "item_codes": ["ERQ01", "ERQ03", "ERQ05", "ERQ07", "ERQ08", "ERQ10"],
+          "note": "维度来自本地 PDF 第 2 页和 sps 计分脚本；正式展示前需要改写为支持性、非评价表达。"
+        },
+        {
+          "code": "ERQ_ES",
+          "label": "表达抑制",
+          "source_label": "Expressive Suppression",
+          "item_codes": ["ERQ02", "ERQ04", "ERQ06", "ERQ09"],
+          "note": "维度来自本地 PDF 第 2 页和 sps 计分脚本；用户端解释需避免把分数写成好坏判断。"
+        }
+      ],
+      "items": [
+        {
+          "item_code": "ERQ01",
+          "display_order": 1,
+          "text": "当我想多感受到积极情绪的时候（比如高兴和乐趣），我就改变我所考虑的事情，比如“其实这样也不错”。",
+          "dimension": "ERQ_CR",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ02",
+          "display_order": 2,
+          "text": "我保持自己的情绪不外露。",
+          "dimension": "ERQ_ES",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ03",
+          "display_order": 3,
+          "text": "当我想少感受一些消极情绪的时候（比如悲伤或愤怒），我改变我所考虑的事情。比如“算了，她就是一直讨厌我”。",
+          "dimension": "ERQ_CR",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ04",
+          "display_order": 4,
+          "text": "当我正感受到积极情绪时时，我很小心地不让它们表露出来。",
+          "dimension": "ERQ_ES",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ05",
+          "display_order": 5,
+          "text": "当我面对压力的时候，我使自己以一种有助于保持平衡的方式考虑它。",
+          "dimension": "ERQ_CR",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ06",
+          "display_order": 6,
+          "text": "通过不表达自己，我控制了自己的情绪。",
+          "dimension": "ERQ_ES",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ07",
+          "display_order": 7,
+          "text": "当我想要感受到积极情绪的时候，我改变自己对处境的考虑方式。",
+          "dimension": "ERQ_CR",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ08",
+          "display_order": 8,
+          "text": "我对我的生活很满意。我通过改变自己对处境的考虑方式来控制我的情绪。",
+          "dimension": "ERQ_CR",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ09",
+          "display_order": 9,
+          "text": "当我正感到消极情绪的时候，我确保不会表露出来。",
+          "dimension": "ERQ_ES",
+          "reverse_scored": false
+        },
+        {
+          "item_code": "ERQ10",
+          "display_order": 10,
+          "text": "当我想减少消极的情绪体验的时候，我改变自己对处境的考虑方式。",
+          "dimension": "ERQ_CR",
+          "reverse_scored": false
+        }
+      ],
+      "scoring_notes": [
+        "本地 PDF 第 2 页写明：重新评价 = T1、T3、T5、T7、T8、T10。",
+        "本地 PDF 第 2 页写明：表达抑制 = T2、T4、T6、T9。",
+        "sps 计分脚本写明 gerqcogre = gerq1 + gerq3 + gerq5 + gerq7 + gerq8 + gerq10。",
+        "sps 计分脚本写明 gerqinhib = gerq2 + gerq4 + gerq6 + gerq9。",
+        "未见反向计分说明；正式开放前必须由人工核对题项、计分方式、标准引用和伦理边界。"
+      ],
+      "supportive_interpretation_draft": "结果只用于观察个人常用的情绪调节方式，不评价好坏，也不构成诊断。用户端解释应使用“可能更常使用某种方式”“可以作为练习选择线索”等保守措辞。",
+      "recommended_card_ids": ["emotion_naming", "cognitive_flexibility"]
+    }
+  ]
+}

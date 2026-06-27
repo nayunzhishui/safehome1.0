@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/home/index",
+    "pages/getting-started/index",
     "pages/training/index",
     "pages/course/index",
     "pages/profile/index",

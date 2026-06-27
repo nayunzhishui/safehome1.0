@@ -1,0 +1,255 @@
+{
+  "version": "2026.06-scales-catalog-v1",
+  "updated_at": "2026-06-27",
+  "source_root": "D:\\codex\\workspace\\safehome1.0其他内容\\夏老师文件\\2026年6月18日发给董俊杰的(1)\\测评问卷-量表",
+  "boundary_notice": "量表目录只用于内容盘点、人工审核和后续支持性测评接入规划。未完成授权、题项、计分和伦理复核的量表不得面向用户开放；结果只作自我观察和练习推荐线索，不构成诊断。",
+  "review_policy": {
+    "default_enabled": false,
+    "required_before_enable": [
+      "确认来源和授权范围",
+      "核对题项原文和友好说明",
+      "核对计分规则、反向计分和维度解释",
+      "补充非诊断边界和高风险处理说明",
+      "通过内容校验和人工复核"
+    ],
+    "high_risk_rule": "涉及焦虑、抑郁、睡眠障碍、创伤或其他可能被误解为筛查诊断的量表，未完成人工审核前只允许作为后台候选，不在用户端开放。"
+  },
+  "scales": [
+    {
+      "id": "parental_burnout_pba",
+      "display_name": "父母养育倦怠问卷",
+      "audience": "parent",
+      "theme": "parenting_stress",
+      "source_folder": "父母养育倦怠问卷",
+      "source_files": [
+        "Parental Burnout Assessment with scoring.docx",
+        "父母养育倦怠问卷的中文修订与信效度检验.pdf",
+        "简式养育倦怠量表中文版的修订_王玮.pdf"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "pending_extraction",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": ["three_second_pause", "nonjudgmental_response"],
+      "notes": "优先用于家长压力与照顾耗竭观察；需确认正式题项版本、计分阈值和边界文案。"
+    },
+    {
+      "id": "parental_autonomy_support",
+      "display_name": "父母自主支持量表",
+      "audience": "parent",
+      "theme": "parent_child_communication",
+      "source_folder": "父母自主支持量表",
+      "source_files": [
+        "9题项.docx",
+        "1-1-姚梅林-父母和班主任自主支持对青少年幸福感和孤独感的影响_个体为中心的视角.pdf",
+        "1-2-博士论文-An Assessment of Perceived Parental Autonomy-Support and Control.pdf"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "source_insufficient",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": ["nonjudgmental_response", "alternative_behavior"],
+      "notes": "可服务亲子沟通与自主支持主题；已检查 9题项.docx，当前文件只有来源引用，未见题项正文，需继续查找正式题项。"
+    },
+    {
+      "id": "parent_reflective_functioning_prfq",
+      "display_name": "家长反思功能问卷",
+      "audience": "parent",
+      "theme": "parent_child_communication",
+      "source_folder": "反思功能测评",
+      "source_files": [
+        "反思功能问卷_PRFQ_Chinese-家长反思功能问卷.docx",
+        "反思功能问卷_PRFQ_syntax_Word_format.docx",
+        "反思功能问卷_家长反思功能问卷-网址链接.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "draft_from_syntax_pending_review",
+      "recommended_card_ids": ["emotion_naming", "nonjudgmental_response"],
+      "notes": "已从 PRFQ 中文 docx 抽取 18 个题项草稿，并从 syntax 文件记录三个维度和反向计分；正式开放前必须人工核对中文题项、维度译名、计分解释和伦理边界。"
+    },
+    {
+      "id": "family_cohesion_adaptability",
+      "display_name": "家庭亲密度与适应性量表",
+      "audience": "family",
+      "theme": "family_support",
+      "source_folder": "家庭亲密度与适应性量表",
+      "source_files": [
+        "家庭亲密度与适应性分类.sps"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "missing_items",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": ["nonjudgmental_response", "alternative_behavior"],
+      "notes": "当前只看到计分/分类脚本，题项来源不足；不能开放填写。"
+    },
+    {
+      "id": "emotion_regulation_erq_gross",
+      "display_name": "情绪调节问卷（Gross ERQ）",
+      "audience": "adult",
+      "theme": "emotion_regulation",
+      "source_folder": "情绪调节问卷-GROSS-GERQ",
+      "source_files": [
+        "Gross情绪调节问卷.docx",
+        "Gross情绪调节问卷.pdf",
+        "指标值计算-Gross情绪调节量表GERQ.sps"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "draft_from_pdf_and_sps_pending_review",
+      "not_open_reason": "题项和计分仍为草稿，标准引用、授权范围、用户端解释边界和是否适合家长优先版本尚未人工复核。",
+      "recommended_card_ids": ["emotion_naming", "cognitive_flexibility"],
+      "notes": "已从本地 PDF 抽取 10 个题项草稿，并用 PDF 第 2 页和 sps 脚本记录认知重评、表达抑制两个维度；正式开放前必须人工核对题项、计分、标准引用和伦理边界。"
+    },
+    {
+      "id": "self_compassion_scs_cn",
+      "display_name": "自我关怀量表",
+      "audience": "adult",
+      "theme": "self_compassion",
+      "source_folder": "自我关怀",
+      "source_files": [
+        "ChineseSCS-26题自我关怀量表.pdf",
+        "2011-中国临床心理学杂志-中文版自悯量表的信效度研究.pdf"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "pending_extraction",
+      "scoring_status": "partially_implemented_in_readfeedback",
+      "recommended_card_ids": ["self_support_statement", "three_second_pause"],
+      "notes": "readfeedback 已有简版题项；P3 需补 catalog 与正式开放审核的一致性。"
+    },
+    {
+      "id": "perceived_social_support_psss",
+      "display_name": "领悟社会支持量表",
+      "audience": "adult",
+      "theme": "support_resource",
+      "source_folder": "领悟社会支持",
+      "source_files": [
+        "肖水源的社会支持评定量表与姜乾金的领悟社会支持量表.doc",
+        "指标值计算-领悟社会支持PSSS.sps"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "pending_extraction",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": ["alternative_behavior", "nonjudgmental_response"],
+      "notes": "可用于支持资源主题；需确认 PSSS 与社会支持评定量表的边界和计分口径。"
+    },
+    {
+      "id": "acceptance_action_aaq2",
+      "display_name": "接纳与行动问卷（AAQ-II）",
+      "audience": "adult",
+      "theme": "psychological_flexibility",
+      "source_folder": "接纳行动问卷AAQ",
+      "source_files": [
+        "2-1-接纳与行动问卷第二版AAQII.docx",
+        "接纳与行动问卷第二版中文版测评大学生的信效度.pdf"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "pending_extraction",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": ["cognitive_flexibility", "alternative_behavior"],
+      "notes": "可服务心理灵活性主题；需确认是否适合家长端首批用户。"
+    },
+    {
+      "id": "mindful_attention_awareness_maas",
+      "display_name": "正念注意觉知量表",
+      "audience": "adult",
+      "theme": "mindfulness",
+      "source_folder": "正念觉知相关量表",
+      "source_files": [
+        "正念注意觉知量表.docx",
+        "正念注意觉知量表.pdf",
+        "正念注意觉知量表(MAAS)的修订及信效度检验_陈思佚.pdf"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": true,
+      "item_status": "pending_extraction",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": ["emotion_naming", "three_second_pause"],
+      "notes": "可用于情绪觉察和正念练习入口；需避免承诺训练效果。"
+    },
+    {
+      "id": "sleep_isi_psqi",
+      "display_name": "失眠与睡眠质量量表（ISI/PSQI）",
+      "audience": "adult",
+      "theme": "sleep_health",
+      "source_folder": "失眠量表-ISI-PSQI",
+      "source_files": [
+        "失眠严重指数量表说明.docx",
+        "匹兹堡睡眠质量指数问卷--(附评分标准).doc",
+        "指标值计算-ISI.sps",
+        "指标值计算-PSQI.sps"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "needs_ethics_review",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "pending_extraction",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": [],
+      "notes": "睡眠量表可能被误解为健康筛查；只登记资源，暂不开放。"
+    },
+    {
+      "id": "gad7_anxiety",
+      "display_name": "GAD-7 焦虑相关量表",
+      "audience": "adult",
+      "theme": "anxiety_screening",
+      "source_folder": "焦虑测评-GAD-7",
+      "source_files": [
+        "(完整版)广泛性焦虑障碍量表(GAD-7).doc",
+        "广泛性焦虑量表中文版在中医内科门诊人群应用的信度和效度.pdf",
+        "指标值计算-GAD.sps"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "needs_ethics_review",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "pending_extraction",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": [],
+      "notes": "名称和分数容易被理解为筛查诊断；暂不进入用户端。"
+    },
+    {
+      "id": "phq9_cesd10_depression",
+      "display_name": "PHQ-9/CES-D10 抑郁相关量表",
+      "audience": "adult",
+      "theme": "depression_screening",
+      "source_folder": "抑郁测评-CESD10-PHQ9",
+      "source_files": [
+        "精选-PHQ-9抑郁症筛查量表.doc",
+        "cesd-10-流调中心抑郁水平评定.jpg"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "needs_ethics_review",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "pending_extraction",
+      "scoring_status": "pending_review",
+      "recommended_card_ids": [],
+      "notes": "涉及抑郁筛查语义，必须由人工确认边界、风险提示和开放策略后再处理。"
+    }
+  ]
+}
