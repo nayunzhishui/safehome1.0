@@ -1,0 +1,51 @@
+.auth-page {
+  min-height: 100vh;
+}
+
+.auth-card {
+  margin: 48rpx 28rpx;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-top: 28rpx;
+  color: #5f4d3f;
+  font-size: 28rpx;
+}
+
+.field input,
+.picker-value {
+  min-height: 88rpx;
+  padding: 0 24rpx;
+  border: 1rpx solid #e4d7c4;
+  border-radius: 16rpx;
+  background: #fffdf8;
+  line-height: 88rpx;
+}
+
+.message {
+  margin-top: 24rpx;
+  color: #7a5d38;
+  font-size: 26rpx;
+}
+
+.message.error {
+  color: #a84232;
+}
+
+.primary-action,
+.ghost-action {
+  margin-top: 28rpx;
+}
+
+.primary-action {
+  color: #fff;
+  background: #4e7c6b;
+}
+
+.ghost-action {
+  color: #4e7c6b;
+  background: transparent;
+}

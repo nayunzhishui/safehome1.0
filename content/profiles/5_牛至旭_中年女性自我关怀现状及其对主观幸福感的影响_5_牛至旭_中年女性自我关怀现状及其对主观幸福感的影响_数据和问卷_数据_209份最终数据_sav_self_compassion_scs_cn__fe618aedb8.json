@@ -1,0 +1,248 @@
+{
+  "schema_version": "2026.06-profile-model-v1",
+  "model_id": "5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响__5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响_数据和问卷_数据_209份最终数据_sav__self_compassion_scs_cn",
+  "group_id": "5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响__5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响_数据和问卷_数据_209份最终数据_sav__self_compassion_scs_cn",
+  "standard_scale_name": "自我关怀量表（SCS）",
+  "scale_id": "self_compassion_scs_cn",
+  "worksheet_id": "self_compassion_scs_cn",
+  "research_dir": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】",
+  "source_dataset": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】\\数据和问卷\\数据\\209份最终数据.sav",
+  "n_cases": 209,
+  "n_features": 7,
+  "features": [
+    {
+      "feature_id": "SCS14",
+      "source_variable": "Q14_Row5",
+      "question_no": 14,
+      "worksheet_question_id": "SCS14",
+      "label": "14、5. 当我心情不好时，我会更关爱自己。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.339713,
+      "std": 1.191839
+    },
+    {
+      "feature_id": "SCS14_Q14_Row7",
+      "source_variable": "Q14_Row7",
+      "question_no": 14,
+      "worksheet_question_id": "SCS14",
+      "label": "14、7. 当我倒霉的时候，我会提醒自己：其实这世上有很多人和我一样不走运。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.090909,
+      "std": 1.196631
+    },
+    {
+      "feature_id": "SCS14_Q14_Row9",
+      "source_variable": "Q14_Row9",
+      "question_no": 14,
+      "worksheet_question_id": "SCS14",
+      "label": "14、9.遇到烦心事时，我会尽量让自己的情绪保持稳定。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.5311,
+      "std": 1.111161
+    },
+    {
+      "feature_id": "SCS14_Q14_Row12",
+      "source_variable": "Q14_Row12",
+      "question_no": 14,
+      "worksheet_question_id": "SCS14",
+      "label": "14、12.当我经历艰难困苦时，我会关心自己、善待自己。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.492823,
+      "std": 1.124412
+    },
+    {
+      "feature_id": "SCS14_Q14_Row14",
+      "source_variable": "Q14_Row14",
+      "question_no": 14,
+      "worksheet_question_id": "SCS14",
+      "label": "14、14.当一些令人痛苦的事情发生时，我尽量用平和的心态来面对。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.578947,
+      "std": 1.104465
+    },
+    {
+      "feature_id": "SCS14_Q14_Row15",
+      "source_variable": "Q14_Row15",
+      "question_no": 14,
+      "worksheet_question_id": "SCS14",
+      "label": "14、15.我尽量把自己的失败看成人生经历的一部分。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.502392,
+      "std": 1.170304
+    },
+    {
+      "feature_id": "SCS14_Q14_Row17",
+      "source_variable": "Q14_Row17",
+      "question_no": 14,
+      "worksheet_question_id": "SCS14",
+      "label": "14、17.当我在一些对自己重要的事情上失败时，我会尽量全面、客观地看待这些事情。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.588517,
+      "std": 1.12945
+    }
+  ],
+  "preprocessing": {
+    "initial_rows": 209,
+    "initial_features": 7,
+    "retained_rows": 209,
+    "retained_features": 7,
+    "row_missing_threshold": 0.4,
+    "column_min_non_missing": 62,
+    "imputation": "column_mean_after_row_filter"
+  },
+  "model_selection": [
+    {
+      "k": 2,
+      "inertia": 908.682,
+      "silhouette": 0.3164,
+      "min_cluster_size": 91
+    },
+    {
+      "k": 3,
+      "inertia": 718.317,
+      "silhouette": 0.2618,
+      "min_cluster_size": 29
+    },
+    {
+      "k": 4,
+      "inertia": 648.794,
+      "silhouette": 0.2081,
+      "min_cluster_size": 27
+    },
+    {
+      "k": 5,
+      "inertia": 590.611,
+      "silhouette": 0.2024,
+      "min_cluster_size": 11
+    },
+    {
+      "k": 6,
+      "inertia": 534.518,
+      "silhouette": 0.2238,
+      "min_cluster_size": 11
+    }
+  ],
+  "chosen_k": 2,
+  "pca": {
+    "components": [
+      [
+        -0.371106,
+        -0.303395,
+        -0.405037,
+        -0.408243,
+        -0.399164,
+        -0.374023,
+        -0.374551
+      ],
+      [
+        0.335412,
+        0.669806,
+        0.189499,
+        0.020947,
+        -0.284619,
+        -0.37138,
+        -0.428461
+      ]
+    ],
+    "explained_ratio": [
+      0.617752,
+      0.104734
+    ]
+  },
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "profile_id": "profile_0",
+      "profile_name": "画像1：5. 当我心情不好时，我会更关爱自己。、9.遇到烦心事时，我会尽量让自己的情绪保持稳定。较低",
+      "n": 91,
+      "percent": 43.5,
+      "center_z": {
+        "SCS14": -0.746,
+        "SCS14_Q14_Row7": -0.5994,
+        "SCS14_Q14_Row9": -0.745,
+        "SCS14_Q14_Row12": -0.7413,
+        "SCS14_Q14_Row14": -0.7033,
+        "SCS14_Q14_Row15": -0.6828,
+        "SCS14_Q14_Row17": -0.6767
+      },
+      "mean_scores": {
+        "SCS14": 2.4505,
+        "SCS14_Q14_Row7": 2.3736,
+        "SCS14_Q14_Row9": 2.7033,
+        "SCS14_Q14_Row12": 2.6593,
+        "SCS14_Q14_Row14": 2.8022,
+        "SCS14_Q14_Row15": 2.7033,
+        "SCS14_Q14_Row17": 2.8242
+      },
+      "pca_centroid": {
+        "pc1": 1.8527,
+        "pc2": -0.0647
+      },
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：5. 当我心情不好时，我会更关爱自己。、9.遇到烦心事时，我会尽量让自己的情绪保持稳定。较低。它只用于群体参照和支持性解释，不代表固定标签。",
+      "display_name": "自我批判型",
+      "product_explanation": "心情不好的时候，你比较难对自己温和——可能容易自我批评或者情绪很难平稳下来。这在经历压力或失败时会让你更消耗。",
+      "strength_note": "你对自己有高标准，这说明你在意成长和做得更好。",
+      "small_step": "下次对自己说苛刻的话时，想象你在对一个好朋友说同样的情况——你会怎么回应？用那句话来代替。",
+      "recommended_card_ids": [
+        "scs_self_kindness",
+        "scs_common_humanity"
+      ],
+      "card_reason": "根据该簇相对偏低或需支持的题项线索（SCS14, SCS14_Q14_Row9, SCS14_Q14_Row12）生成，供人工审核。"
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "profile_1",
+      "profile_name": "画像2：5. 当我心情不好时，我会更关爱自己。、9.遇到烦心事时，我会尽量让自己的情绪保持稳定。较高",
+      "n": 118,
+      "percent": 56.5,
+      "center_z": {
+        "SCS14": 0.5753,
+        "SCS14_Q14_Row7": 0.4623,
+        "SCS14_Q14_Row9": 0.5745,
+        "SCS14_Q14_Row12": 0.5717,
+        "SCS14_Q14_Row14": 0.5424,
+        "SCS14_Q14_Row15": 0.5266,
+        "SCS14_Q14_Row17": 0.5219
+      },
+      "mean_scores": {
+        "SCS14": 4.0254,
+        "SCS14_Q14_Row7": 3.6441,
+        "SCS14_Q14_Row9": 4.1695,
+        "SCS14_Q14_Row12": 4.1356,
+        "SCS14_Q14_Row14": 4.178,
+        "SCS14_Q14_Row15": 4.1186,
+        "SCS14_Q14_Row17": 4.178
+      },
+      "pca_centroid": {
+        "pc1": -1.4288,
+        "pc2": 0.0499
+      },
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：5. 当我心情不好时，我会更关爱自己。、9.遇到烦心事时，我会尽量让自己的情绪保持稳定。较高。它只用于群体参照和支持性解释，不代表固定标签。",
+      "display_name": "自我关爱型",
+      "product_explanation": "心情不好时，你能给自己一些关怀和善意，情绪不容易长时间卡住。这种对自己的温柔是一种主动的自我照料，也是帮助他人的前提。",
+      "strength_note": "自我关怀不是自私，是让自己能持续有能力照顾和支持别人。",
+      "small_step": "找一个本周让你感到满意的小事，不需要很大，只是允许自己承认它。",
+      "recommended_card_ids": [
+        "scs_self_kindness",
+        "scs_common_humanity"
+      ],
+      "card_reason": "根据该簇相对偏低或需支持的题项线索（SCS14_Q14_Row7, SCS14_Q14_Row17, SCS14_Q14_Row15）生成，供人工审核。"
+    }
+  ],
+  "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
+  "created_at": "2026-06-29"
+}

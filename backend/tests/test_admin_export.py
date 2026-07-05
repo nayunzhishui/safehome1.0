@@ -117,3 +117,54 @@ def test_admin_export_limit_applies_and_audit_records_counts(tmp_path):
     assert metadata["limit"] == 1
     assert metadata["row_count_before_limit"] == 2
     assert metadata["row_count_exported"] == 1
+
+
+def test_assessment_export_only_includes_active_assessment_ids(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+
+    active_response = client.post(
+        "/api/assessment-results",
+        json={
+            "user_id": "assessment-export-filter",
+            "worksheet_id": "student_profile_v1",
+            "answers": [{"question_id": "test_anxiety", "prompt": "测试题", "value": "2", "score": 2}],
+        },
+    )
+    assert active_response.status_code == 201
+
+    import database
+
+    with database.get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO assessment_results (
+                id, user_id, worksheet_id, worksheet_title, category,
+                answers_json, scores_json, total_score, result_summary, created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                "legacy_export_assessment_result",
+                "assessment-export-filter",
+                "worksheet_3_1_anxiety",
+                "工作表3.1：总体焦虑水平及干扰程度量表",
+                "量表类",
+                database.json_dumps([]),
+                database.json_dumps({}),
+                None,
+                "旧版自建工作表记录",
+                database.now_iso(),
+            ),
+        )
+        conn.commit()
+
+    response = client.get(
+        "/api/admin/export?type=assessments",
+        headers={"X-Admin-Token": "safehome-local-admin-token"},
+    )
+
+    assert response.status_code == 200
+    csv_text = response.get_data(as_text=True)
+    assert "student_profile_v1" in csv_text
+    assert "worksheet_3_1_anxiety" not in csv_text

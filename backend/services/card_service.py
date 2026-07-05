@@ -24,7 +24,14 @@ def recommend_cards(tags: list[str] | None = None, limit: int = 3) -> list[dict]
 
     ranked = sorted(cards, key=lambda card: (score(card), card.get("id", "")), reverse=True)
     matched = [card for card in ranked if score(card) > 0]
-    return (matched or cards)[:limit]
+    if matched:
+        return matched[:limit]
+
+    cards_by_type: dict[str, list[dict]] = {}
+    for card in cards:
+        cards_by_type.setdefault(card.get("type") or "general", []).append(card)
+    diverse_cards = [type_cards[0] for type_cards in cards_by_type.values()]
+    return diverse_cards[:limit]
 
 
 def get_card_ids(cards: list[dict]) -> list[str]:

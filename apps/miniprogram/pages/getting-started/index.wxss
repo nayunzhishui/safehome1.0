@@ -5,22 +5,27 @@
 }
 
 .intro-card,
+.section-card,
 .step-card,
 .boundary-card {
   border: 1rpx solid var(--safe-border);
-  border-radius: 18rpx;
-  background: rgba(255, 253, 248, 0.96);
-  box-shadow: 0 12rpx 30rpx rgba(52, 66, 58, 0.07);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .intro-card {
   padding: 30rpx;
-  background: linear-gradient(120deg, #edf6e8, #fff7f0);
+  border-left: 8rpx solid var(--safe-primary);
+  background: var(--safe-card);
 }
 
 .intro-kicker,
 .intro-title,
 .intro-text,
+.section-kicker,
+.section-title,
+.section-text,
 .step-title,
 .step-text,
 .boundary-title,
@@ -52,6 +57,96 @@
 .step-list {
   display: grid;
   gap: 18rpx;
+}
+
+.section-card {
+  padding: 26rpx;
+}
+
+.section-kicker {
+  color: var(--safe-primary-deep);
+  font-size: 23rpx;
+  font-weight: 850;
+}
+
+.section-title {
+  margin-top: 10rpx;
+  color: var(--safe-title);
+  font-size: 30rpx;
+  font-weight: 850;
+  line-height: 1.48;
+}
+
+.section-text {
+  margin-top: 12rpx;
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.68;
+}
+
+.reason-row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.reason-index {
+  width: 42rpx;
+  height: 42rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--safe-primary-soft);
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.reason-text {
+  flex: 1;
+  min-width: 0;
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.arc-scroll {
+  margin-top: 20rpx;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.arc-chain {
+  display: inline-flex;
+  align-items: center;
+  gap: 12rpx;
+  padding-bottom: 4rpx;
+}
+
+.arc-node {
+  max-width: 280rpx;
+  min-height: 66rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-bg-leaf);
+  color: var(--safe-primary-deep);
+  font-size: 23rpx;
+  font-weight: 800;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.arc-arrow {
+  color: var(--safe-muted);
+  font-size: 28rpx;
+  font-weight: 800;
 }
 
 .step-card {

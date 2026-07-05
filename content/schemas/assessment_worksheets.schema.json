@@ -1,0 +1,37 @@
+{
+  "file": "assessment_worksheets.json",
+  "root_required": ["version", "boundary_notice", "worksheets"],
+  "lists": [
+    {
+      "field": "worksheets",
+      "item_required": [
+        "id",
+        "source_file",
+        "source_title",
+        "display_title",
+        "category",
+        "audience_class",
+        "reflex_node",
+        "search_keywords",
+        "sensitive_category",
+        "pages",
+        "instructions",
+        "sections",
+        "questions",
+        "scoring",
+        "recommended_card_ids",
+        "source_version",
+        "source_type",
+        "review_status",
+        "enabled_for_user",
+        "boundary_notice",
+        "result_disclaimer"
+      ],
+      "item_list_min_lengths": {
+        "search_keywords": 1,
+        "sections": 1,
+        "questions": 1
+      }
+    }
+  ]
+}

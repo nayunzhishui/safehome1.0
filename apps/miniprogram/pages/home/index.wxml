@@ -1,107 +1,98 @@
 <view class="safe-page home-page">
-  <view class="home-hero">
-    <view class="home-topline">
-      <view>
-        <text class="home-greeting">今天也辛苦了</text>
-        <text class="home-subtitle">先照顾一下自己，再选择今天的一小步</text>
-      </view>
-      <button class="notice-button" aria-label="查看提醒">
-        <view class="notice-dot"></view>
-      </button>
-    </view>
 
-    <view class="mood-panel">
-      <view class="mood-copy">
-        <text class="mood-label">情绪天气</text>
-        <view class="mood-main">
-          <text class="mood-face">☺</text>
-          <view>
-            <text class="mood-title">记录一次</text>
-            <text class="mood-text">今天已有 {{todayRecordCount}} 条记录{{todayRecordCountReady ? '' : '，联网后会自动更新'}}</text>
-          </view>
-        </view>
-        <button class="mood-action" bindtap="startDiary">记录一次</button>
-      </view>
-      <image class="mood-image" src="/assets/illustrations/home-family-care.png" mode="aspectFill" />
+  <!-- 顶栏 -->
+  <view class="home-topline">
+    <view>
+      <text class="home-greeting">安心陪伴</text>
+      <text class="home-subtitle">选择今天的一小步</text>
     </view>
-  </view>
-
-  <view class="safe-section">
-    <section-title title="三步开始" subtitle="第一次使用时，先完成一个最小闭环" more-text="了解三步" bind:more="openGettingStarted" />
-    <view class="start-step-list">
-      <button wx:for="{{startSteps}}" wx:key="title" class="start-step-card" data-key="{{item.key}}" bindtap="openStartStep">
-        <text class="start-step-kicker">{{item.title}}</text>
-        <text class="start-step-title">{{item.text}}</text>
-        <text class="start-step-detail">{{item.detail}}</text>
-        <text class="start-step-action">{{item.actionText}} ›</text>
-      </button>
-    </view>
-  </view>
-
-  <view class="safe-section">
-    <section-title
-      title="快速入口"
-      subtitle="先从测评、记录和练习中选择今天最适合的一步"
-      more-text="更多"
-      bind:more="openHotTopics"
-    />
-    <view class="quick-entry-grid">
-      <button
-        wx:for="{{coreEntries}}"
-        wx:key="key"
-        class="quick-entry"
-        data-key="{{item.key}}"
-        bindtap="openCoreEntry"
-      >
-        <view class="quick-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">
-          {{item.iconText}}
-        </view>
-        <text class="quick-title">{{item.title}}</text>
-        <text class="quick-subtitle">{{item.subtitle}}</text>
-      </button>
-    </view>
-  </view>
-
-  <view class="safe-section">
-    <section-title title="今日推荐训练" subtitle="根据情绪状态推荐一个可以开始的小练习" more-text="查看全部" bind:more="openRecommendedTraining" />
-    <button class="daily-training-card" bindtap="openRecommendedTraining">
-      <image class="daily-training-image" src="/assets/illustrations/course-cover-emotion.png" mode="aspectFill" />
-      <view class="daily-training-copy">
-        <text class="daily-training-title">5分钟呼吸放松练习</text>
-        <text class="daily-training-text">缓解紧张情绪，找回平静</text>
-        <view class="training-tags">
-          <text>5分钟</text>
-          <text>初级</text>
-        </view>
-      </view>
-      <view class="play-button"></view>
+    <button class="notice-button" aria-label="查看提醒" bindtap="openMessages">
+      <view wx:if="{{unreadMessageCount > 0}}" class="notice-dot"></view>
     </button>
   </view>
 
+  <!-- 情绪天气：紧凑横条 -->
+  <button class="mood-strip" bindtap="openThermometer">
+    <view class="mood-strip-left">
+      <text class="mood-strip-label">情绪天气</text>
+      <text class="mood-strip-sub">今天已记录 {{thermometerRecordCount}} 次{{thermometerRecordReady ? '' : '，联网后更新'}}</text>
+    </view>
+    <text class="mood-strip-face">☺</text>
+    <text class="mood-strip-action">记录 ›</text>
+  </button>
+
+  <!-- 核心入口：两个并排大按钮 -->
+  <view class="core-actions">
+    <button class="core-btn core-btn--primary" data-key="assessment" bindtap="openCoreEntry">
+      <text class="core-btn-title">测一测</text>
+      <text class="core-btn-sub">了解当前状态</text>
+    </button>
+    <button class="core-btn core-btn--secondary" data-key="diary" bindtap="openCoreEntry">
+      <text class="core-btn-title">情绪日记</text>
+      <text class="core-btn-sub">记录一次具体事件</text>
+    </button>
+  </view>
+
+  <!-- 三步开始：横向步骤条 -->
+  <view class="safe-section">
+    <section-title title="三步开始" subtitle="完成一个最小练习闭环" more-text="了解三步" bind:more="openGettingStarted" />
+    <view class="step-row">
+      <button
+        wx:for="{{startSteps}}"
+        wx:key="title"
+        class="step-chip"
+        data-key="{{item.key}}"
+        bindtap="openStartStep"
+      >
+        <text class="step-chip-num">{{index + 1}}</text>
+        <text class="step-chip-title">{{item.title}}</text>
+        <text class="step-chip-action">{{item.actionText}}</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 其他入口：竖向列表 -->
+  <view class="safe-section">
+    <section-title title="更多" subtitle="" />
+    <view class="quick-list">
+      <button class="quick-list-row" data-key="training" bindtap="openCoreEntry">
+        <view class="quick-list-copy">
+          <text class="quick-list-title">训练中心</text>
+          <text class="quick-list-sub">选择今天的小练习</text>
+        </view>
+        <text class="quick-list-arrow">›</text>
+      </button>
+      <button class="quick-list-row" data-key="feedback" bindtap="openCoreEntry">
+        <view class="quick-list-copy">
+          <text class="quick-list-title">支持性反馈</text>
+          <text class="quick-list-sub">查看上次记录的互动线索</text>
+        </view>
+        <text class="quick-list-arrow">›</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 最近记录 -->
   <view class="safe-section">
     <section-title title="最近记录" subtitle="方便继续查看与跟进" more-text="查看全部" bind:more="openWeeklyReport" />
-    <button class="recent-record-card" bindtap="openWeeklyReport">
-      <text class="recent-face">☹</text>
+    <button wx:if="{{latestRecord}}" class="recent-record-card" bindtap="openWeeklyReport">
       <view class="recent-copy">
         <text class="recent-time">{{latestRecord.time}}</text>
         <text class="recent-title">{{latestRecord.mood}}，{{latestRecord.trigger}}</text>
-        <text class="recent-meta">触发事件：{{latestRecord.trigger}}</text>
       </view>
       <text class="recent-status">{{latestRecord.status}} ›</text>
     </button>
-  </view>
-
-  <view class="safe-section">
-    <view class="home-tip-card">
-      <view>
-        <text class="tip-title">安心小贴士</text>
-        <text class="tip-text">允许自己有情绪，照顾好自己，才能更好地陪伴孩子。</text>
+    <button wx:else class="recent-record-card recent-record-card--empty" bindtap="startDiary">
+      <view class="recent-copy">
+        <text class="recent-time">还没有记录</text>
+        <text class="recent-title">可以先写下一件刚发生的小事</text>
       </view>
-      <image class="tip-image" src="/assets/illustrations/weekly-growth.png" mode="aspectFill" />
-    </view>
+      <text class="recent-status">去记录 ›</text>
+    </button>
   </view>
 
-  <view class="safe-section dev-entry-section">
+  <view wx:if="{{showDevEntry}}" class="safe-section dev-entry-section">
     <button class="dev-entry" bindtap="openIntegrationTest">进入联调测试页</button>
   </view>
+
 </view>

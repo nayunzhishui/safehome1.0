@@ -5,12 +5,6 @@
       <text class="title">请老师补充看看</text>
       <text class="summary">如果这次记录让你有些拿不准，可以提交给老师，补充理解和练习建议。</text>
     </view>
-    <image
-      class="hero-image"
-      src="/assets/illustrations/supervision-guide.png"
-      mode="aspectFill"
-      aria-hidden="true"
-    />
   </view>
 
   <view class="boundary-card">

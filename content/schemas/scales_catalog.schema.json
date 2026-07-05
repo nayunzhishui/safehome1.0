@@ -9,6 +9,11 @@
         "display_name",
         "audience",
         "theme",
+        "audience_class",
+        "category",
+        "reflex_node",
+        "search_keywords",
+        "sensitive_category",
         "source_folder",
         "source_files",
         "source_type",
@@ -16,10 +21,13 @@
         "enabled",
         "item_status",
         "scoring_status",
+        "boundary_notice",
+        "result_disclaimer",
         "notes"
       ],
       "item_list_min_lengths": {
-        "source_files": 1
+        "source_files": 1,
+        "search_keywords": 1
       }
     }
   ]

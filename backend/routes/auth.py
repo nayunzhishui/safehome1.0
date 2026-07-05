@@ -1,8 +1,15 @@
-"""Formal pilot username/password auth endpoints."""
+"""Formal pilot username/password and WeChat auth endpoints."""
+
+import hashlib
+import json
+import os
+from urllib.parse import urlencode
+from urllib.request import urlopen
 
 from flask import Blueprint, request
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from config import Config
 from database import ensure_user, get_connection, new_id, now_iso, row_to_dict
 from routes.auth_utils import PUBLIC_REGISTER_ROLES, AuthError, auth_error_response, generate_auth_token, require_login
 from routes.utils import fail, ok, require_admin_token
@@ -17,8 +24,34 @@ def _public_user(row: dict) -> dict:
         "role": row.get("role") or "parent",
         "nickname": row.get("nickname"),
         "anonymous_id": row.get("anonymous_id"),
+        "avatar_url": row.get("avatar_url"),
         "status": row.get("status") or "active",
     }
+
+
+def _wechat_session_from_code(code: str) -> dict:
+    appid = os.environ.get("WECHAT_APPID", "").strip()
+    secret = os.environ.get("WECHAT_SECRET", "").strip()
+    if appid and secret:
+        query = urlencode(
+            {
+                "appid": appid,
+                "secret": secret,
+                "js_code": code,
+                "grant_type": "authorization_code",
+            }
+        )
+        with urlopen(f"https://api.weixin.qq.com/sns/jscode2session?{query}", timeout=8) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        if payload.get("errcode"):
+            raise ValueError(payload.get("errmsg") or "微信登录校验失败")
+        if not payload.get("openid"):
+            raise ValueError("微信登录没有返回 openid")
+        return payload
+    if Config.APP_ENV == "production":
+        raise ValueError("生产环境缺少 WECHAT_APPID 或 WECHAT_SECRET")
+    digest = hashlib.sha256(code.encode("utf-8")).hexdigest()[:24]
+    return {"openid": f"dev_openid_{digest}", "session_key": None, "dev_fallback": True}
 
 
 @bp.post("/register")
@@ -80,6 +113,58 @@ def login():
 
     user = _public_user(row_to_dict(row))
     return ok({"token": generate_auth_token(user), "user": user})
+
+
+@bp.post("/wechat-login")
+def wechat_login():
+    payload = request.get_json(silent=True) or {}
+    code = str(payload.get("code") or "").strip()
+    nickname = str(payload.get("nickname") or payload.get("nickName") or "").strip() or None
+    avatar_url = str(payload.get("avatar_url") or payload.get("avatarUrl") or "").strip() or None
+    anonymous_id = str(payload.get("anonymous_id") or "").strip() or None
+    if not code:
+        return fail("validation_error", "缺少微信登录 code", status=400)
+
+    try:
+        session = _wechat_session_from_code(code)
+    except ValueError as exc:
+        return fail("wechat_login_failed", str(exc), status=400)
+
+    openid = session["openid"]
+    timestamp = now_iso()
+    with get_connection() as conn:
+        row = conn.execute("SELECT * FROM users WHERE wechat_openid = ?", (openid,)).fetchone()
+        if row is None:
+            user_id = new_id("user")
+            ensure_user(conn, user_id, nickname)
+            conn.execute(
+                """
+                UPDATE users
+                SET wechat_openid = ?, avatar_url = ?, anonymous_id = ?,
+                    role = 'parent', source = 'wechat', status = 'active',
+                    last_login_at = ?, updated_at = ?
+                WHERE id = ?
+                """,
+                (openid, avatar_url, anonymous_id, timestamp, timestamp, user_id),
+            )
+        else:
+            user_id = row["id"]
+            conn.execute(
+                """
+                UPDATE users
+                SET nickname = COALESCE(?, nickname),
+                    avatar_url = COALESCE(?, avatar_url),
+                    anonymous_id = COALESCE(?, anonymous_id),
+                    last_login_at = ?, updated_at = ?
+                WHERE id = ?
+                """,
+                (nickname, avatar_url, anonymous_id, timestamp, timestamp, user_id),
+            )
+        conn.commit()
+        row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+
+    user = _public_user(row_to_dict(row))
+    return ok({"token": generate_auth_token(user), "user": user, "dev_fallback": bool(session.get("dev_fallback"))})
 
 
 @bp.post("/admin-create-account")

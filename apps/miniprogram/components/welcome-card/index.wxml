@@ -8,23 +8,4 @@
       <text>{{streakText}}</text>
     </view>
   </view>
-  <image
-    wx:if="{{imageSrc}}"
-    class="welcome-image"
-    src="{{imageSrc}}"
-    mode="aspectFill"
-    aria-hidden="true"
-  />
-  <view wx:else class="welcome-art" aria-hidden="true">
-    <view class="sun"></view>
-    <view class="cloud cloud-left"></view>
-    <view class="cloud cloud-right"></view>
-    <view class="family">
-      <view class="adult adult-left"></view>
-      <view class="adult adult-right"></view>
-      <view class="child"></view>
-    </view>
-    <view class="plant plant-left"></view>
-    <view class="plant plant-right"></view>
-  </view>
 </view>

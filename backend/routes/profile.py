@@ -1,6 +1,7 @@
 """Student profile and risk-check endpoints."""
 
 import hashlib
+from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, request
 
@@ -28,6 +29,7 @@ from routes.utils import (
     require_admin_or_owner,
     require_admin_token,
     require_user_id,
+    resolve_user_id_for_query,
 )
 from routes.consent import get_latest_consent
 
@@ -36,6 +38,32 @@ bp = Blueprint("profile", __name__, url_prefix="/api")
 
 PROFILE_WORKSHEET_ID = "student_profile_v1"
 PROFILE_WORKSHEET_TITLE = "学生支持性画像测评"
+
+
+def _date_key(value: str | None) -> str | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00")).date().isoformat()
+    except ValueError:
+        return str(value)[:10] or None
+
+
+def _week_bounds() -> tuple[str, str]:
+    today = datetime.now(timezone.utc).date()
+    start = today - timedelta(days=today.weekday())
+    end = start + timedelta(days=7)
+    return start.isoformat(), end.isoformat()
+
+
+def _streak_from_dates(date_keys: set[str]) -> int:
+    today = datetime.now(timezone.utc).date()
+    streak = 0
+    current = today
+    while current.isoformat() in date_keys:
+        streak += 1
+        current -= timedelta(days=1)
+    return streak
 
 
 def _anonymous_id(user_id: str) -> str:
@@ -128,6 +156,80 @@ def _consent_summary(conn, user_id: str) -> dict:
             "recorded_at": latest.get("agreed_at") if latest and latest.get("agreed") else latest.get("created_at") if latest else None,
         }
     return summary
+
+
+@bp.get("/profile/stats")
+def get_profile_stats():
+    try:
+        user_id = resolve_user_id_for_query(request.args.get("user_id"))
+    except ValueError as exc:
+        return fail("validation_error", str(exc), status=400)
+
+    week_start, week_end = _week_bounds()
+    with get_connection() as conn:
+        diary_rows = conn.execute(
+            """
+            SELECT id, event_time, created_at
+            FROM emotion_diaries
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 120
+            """,
+            (user_id,),
+        ).fetchall()
+        checkin_rows = conn.execute(
+            """
+            SELECT id, created_at
+            FROM checkins
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 120
+            """,
+            (user_id,),
+        ).fetchall()
+        assessment_rows = conn.execute(
+            """
+            SELECT worksheet_id, created_at
+            FROM assessment_results
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 120
+            """,
+            (user_id,),
+        ).fetchall()
+        worksheet_row = conn.execute(
+            "SELECT COUNT(*) AS count FROM assessment_worksheets WHERE enabled_for_user = 1"
+        ).fetchone()
+        unread_row = conn.execute(
+            "SELECT COUNT(*) AS count FROM messages WHERE user_id = ? AND status = 'unread'",
+            (user_id,),
+        ).fetchone()
+
+    diary_dates = {_date_key(row["event_time"] or row["created_at"]) for row in diary_rows}
+    checkin_dates = {_date_key(row["created_at"]) for row in checkin_rows}
+    active_dates = {date for date in diary_dates.union(checkin_dates) if date}
+    weekly_diaries = sum(1 for row in diary_rows if week_start <= (_date_key(row["event_time"] or row["created_at"]) or "") < week_end)
+    weekly_checkins = sum(1 for row in checkin_rows if week_start <= (_date_key(row["created_at"]) or "") < week_end)
+    weekly_assessments = sum(1 for row in assessment_rows if week_start <= (_date_key(row["created_at"]) or "") < week_end)
+    completed_worksheets = {row["worksheet_id"] for row in assessment_rows if row["worksheet_id"]}
+    enabled_worksheet_count = int(worksheet_row["count"] if worksheet_row else 0)
+
+    return ok(
+        {
+            "user_id": user_id,
+            "streak_days": _streak_from_dates(active_dates),
+            "weekly_record_count": weekly_diaries + weekly_checkins,
+            "weekly_diary_count": weekly_diaries,
+            "weekly_checkin_count": weekly_checkins,
+            "weekly_assessment_count": weekly_assessments,
+            "assessment_completed_count": len(completed_worksheets),
+            "unfinished_assessment_count": max(enabled_worksheet_count - len(completed_worksheets), 0),
+            "unread_message_count": int(unread_row["count"] if unread_row else 0),
+            "week_start": week_start,
+            "week_end": (datetime.fromisoformat(week_end) - timedelta(days=1)).date().isoformat(),
+            "boundary_notice": "这些统计只用于回顾记录和练习进展，不代表诊断、评价或能力判断。",
+        }
+    )
 
 
 def _save_profile_result(payload: dict, result: dict) -> dict:

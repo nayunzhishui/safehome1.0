@@ -1,0 +1,20 @@
+<view class="safe-page auth-page">
+  <view class="safe-card auth-card">
+    <view class="safe-eyebrow">SafeHome</view>
+    <view class="safe-h1">登录</view>
+    <view class="safe-body">使用已注册账号进入。登录后会丢弃本机匿名试用 ID。</view>
+
+    <view class="field">
+      <text>用户名</text>
+      <input value="{{username}}" placeholder="请输入用户名" bindinput="onUsernameInput" />
+    </view>
+    <view class="field">
+      <text>密码</text>
+      <input value="{{password}}" password placeholder="请输入密码" bindinput="onPasswordInput" />
+    </view>
+
+    <view wx:if="{{message}}" class="message {{status}}">{{message}}</view>
+    <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitLogin">登录</button>
+    <button class="ghost-action" bindtap="goRegister">注册新账号</button>
+  </view>
+</view>

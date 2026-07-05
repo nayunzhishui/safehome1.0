@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-import { API_ENDPOINTS } from "../../../../shared/constants/api";
-import { getAnonymousUserId } from "../services/userIdentity";
 import { saveAuthSession } from "../services/authState";
+import { formatSafeHomeError, safeHomeApi } from "../services/safehomeApi";
 
 const ROLES = [
   { value: "parent", label: "家长" },
@@ -32,50 +31,17 @@ export function RegisterPage() {
     setStatus("loading");
     setMessage("正在注册...");
     try {
-      const base = import.meta.env.VITE_SAFEHOME_API_BASE_URL || "http://127.0.0.1:5050";
-      const url = `${base}${API_ENDPOINTS.authRegister}`;
-      let resp: Response;
-      try {
-        resp = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: username.trim(),
-            password,
-            role,
-            nickname: nickname.trim() || undefined,
-            anonymous_id: getAnonymousUserId(),
-          }),
-        });
-      } catch {
-        setStatus("error");
-        setMessage(`无法连接后端，请确认 Flask 服务已启动（${base}）`);
-        return;
-      }
-      let body: { ok: boolean; data?: { token: string; user: unknown }; error?: { message?: string } };
-      try {
-        body = await resp.json() as typeof body;
-      } catch {
-        setStatus("error");
-        setMessage(`后端返回了非 JSON 响应（HTTP ${resp.status}），请查看 Flask 日志。`);
-        return;
-      }
-      if (resp.status === 404) {
-        setStatus("error");
-        setMessage("注册接口不存在或路径不匹配，请确认后端已部署最新版本并注册了 auth blueprint。");
-      } else if (resp.status >= 500) {
-        setStatus("error");
-        setMessage(`后端注册接口异常（HTTP ${resp.status}），请查看 Flask 日志。`);
-      } else if (body.ok) {
-        saveAuthSession(body.data!.token, body.data!.user);
-        window.location.href = "/dashboard";
-      } else {
-        setStatus("error");
-        setMessage(body.error?.message ?? `注册失败（HTTP ${resp.status}）`);
-      }
-    } catch {
+      const data = await safeHomeApi.register({
+        username: username.trim(),
+        password,
+        role,
+        nickname: nickname.trim() || undefined,
+      });
+      saveAuthSession(data.token, data.user);
+      window.location.href = "/dashboard";
+    } catch (error) {
       setStatus("error");
-      setMessage("发生未知错误，请刷新页面重试。");
+      setMessage(formatSafeHomeError(error, "注册失败，请稍后重试。"));
     }
   }
 

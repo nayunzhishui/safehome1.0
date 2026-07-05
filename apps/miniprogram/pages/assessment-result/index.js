@@ -44,6 +44,28 @@ function buildProfileSummary(result) {
   };
 }
 
+function buildScaleDimensions(result, profileSummary) {
+  // 学生画像走 profileSummary，不在这里处理；其它多维量表（如 ERQ）从 scores_json.dimensions 读取。
+  if (profileSummary || !result) return [];
+  const scores = parseJsonSafe(result.scores_json, {});
+  const dimensions = Array.isArray(scores.dimensions) ? scores.dimensions : [];
+  return dimensions
+    .filter((item) => item && (item.label || item.key))
+    .map((item) => {
+      const isMean = item.score_method === "mean";
+      const hasCount = item.item_count !== undefined && item.item_count !== null;
+      const valueText = isMean ? `平均 ${item.score} 分` : `合计 ${item.score} 分`;
+      const countText = hasCount ? `${item.item_count} 题${isMean ? "均值" : "合计"} ${item.score} 分` : valueText;
+      return {
+        key: item.key || item.label,
+        label: item.label || item.key,
+        score: item.score,
+        itemCount: item.item_count,
+        summary: `${countText}（仅本维度内观察，不与其它维度相加比较）`,
+      };
+    });
+}
+
 function buildSourceNotice(worksheet, profileSummary) {
   if (profileSummary) {
     return {
@@ -89,8 +111,141 @@ function buildSourceNotice(worksheet, profileSummary) {
   return {
     title: "支持性测评结果",
     statusText: "可填写",
-    content: "本结果用于自我观察和后续练习参考，不替代心理咨询、医学诊断、危机干预或法律判断。",
+    content: worksheet && worksheet.result_disclaimer
+      ? worksheet.result_disclaimer
+      : "本结果用于自我观察和后续练习参考，不替代心理咨询、医学诊断、危机干预或法律判断。",
     reviewNote,
+  };
+}
+
+function buildRiskSummary(result) {
+  if (!result) return null;
+  const scores = parseJsonSafe(result.scores_json, {});
+  const risk = scores.risk || null;
+  if (!risk || risk.risk_level === "low") return null;
+  const riskTextMap = {
+    medium: "建议人工关注",
+    high: "优先现实支持",
+  };
+  return {
+    riskLevel: risk.risk_level,
+    title: riskTextMap[risk.risk_level] || "需要关注",
+    text:
+      risk.risk_level === "high"
+        ? "本次填写中出现需要优先关注的安全线索，系统不生成普通训练建议。请优先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。"
+        : "本次填写中出现建议人工关注的线索。结果仅用于分流和复核，不构成风险评估结论。",
+  };
+}
+
+function normalizePlotPosition(value, min, max, invert = false) {
+  if (min === max) return 50;
+  const ratio = (value - min) / (max - min);
+  const percent = 10 + ratio * 80;
+  return invert ? 100 - percent : percent;
+}
+
+function compactFeatureLabel(label) {
+  return String(label || "")
+    .replace(/^\d+[.、，,]?\s*/, "")
+    .slice(0, 8);
+}
+
+function buildRadarFeatures(payload) {
+  const features = Array.isArray(payload.feature_profile) ? payload.feature_profile : [];
+  return features
+    .filter((item) => item && typeof item.z_score === "number")
+    .sort((a, b) => Math.abs(b.z_score) - Math.abs(a.z_score))
+    .slice(0, 6)
+    .map((item) => {
+      const value = Math.max(0.08, Math.min(1, (Number(item.z_score) + 2) / 4));
+      return {
+        id: item.feature_id,
+        label: compactFeatureLabel(item.label || item.feature_id),
+        zScore: Number(item.z_score),
+        value,
+      };
+    });
+}
+
+function buildProfilePositionSummary(payload) {
+  if (!payload || payload.available === false || !payload.position) {
+    return null;
+  }
+  const position = payload.position;
+  const interpretation = payload.interpretation || {};
+  const canUseInterpretation = interpretation.can_use_interpretation !== false && position.can_use_interpretation !== false;
+  const clusters = Array.isArray(payload.clusters) ? payload.clusters : [];
+  const radarFeatures = buildRadarFeatures(payload);
+  const coordinates = clusters
+    .map((cluster) => cluster.pca_centroid || {})
+    .concat([{ pc1: position.pc1, pc2: position.pc2 }])
+    .filter((item) => typeof item.pc1 === "number" && typeof item.pc2 === "number");
+  if (!coordinates.length) {
+    return {
+      modelId: payload.model_id || "",
+      researchDir: payload.research_dir || "",
+      nCasesText: payload.n_cases ? `${payload.n_cases} 份既往样本` : "",
+      profileName: position.display_name || position.profile_name || "阶段性画像位置",
+      confidenceText: position.confidence !== undefined && position.confidence !== null ? `${Math.round(Number(position.confidence) * 100)}%` : "仅作参考",
+      canUseInterpretation,
+      reliabilityText: canUseInterpretation ? "" : interpretation.message || "本次结果只作为位置参考，不做明确画像解释。",
+      explanation: payload.explanation || "",
+      boundaryNotice: payload.boundary_notice || "",
+      featureText:
+        payload.feature_summary && payload.feature_summary.total_features
+          ? `${payload.feature_summary.answered_features}/${payload.feature_summary.total_features} 个题项用于定位`
+          : "",
+      clusterPoints: [],
+      userPoint: null,
+      radarFeatures,
+      strengthNote: payload.strength_note || "",
+      smallStep: payload.small_step || "",
+    };
+  }
+  const xs = coordinates.map((item) => item.pc1);
+  const ys = coordinates.map((item) => item.pc2);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const clusterPoints = clusters
+    .filter((cluster) => cluster.pca_centroid && typeof cluster.pca_centroid.pc1 === "number" && typeof cluster.pca_centroid.pc2 === "number")
+    .map((cluster) => {
+      const left = normalizePlotPosition(cluster.pca_centroid.pc1, minX, maxX);
+      const top = normalizePlotPosition(cluster.pca_centroid.pc2, minY, maxY, true);
+      return {
+        ...cluster,
+        label: cluster.display_name || `画像${Number(cluster.cluster_id) + 1}`,
+        xPercent: left,
+        yPercent: top,
+        style: `left:${left}%;top:${top}%;`,
+      };
+    });
+  const userLeft = normalizePlotPosition(position.pc1, minX, maxX);
+  const userTop = normalizePlotPosition(position.pc2, minY, maxY, true);
+  return {
+    modelId: payload.model_id || "",
+    researchDir: payload.research_dir || "",
+    nCasesText: payload.n_cases ? `${payload.n_cases} 份既往样本` : "",
+    profileName: position.display_name || position.profile_name || "阶段性画像位置",
+    confidenceText: position.confidence !== undefined && position.confidence !== null ? `${Math.round(Number(position.confidence) * 100)}%` : "仅作参考",
+    canUseInterpretation,
+    reliabilityText: canUseInterpretation ? "" : interpretation.message || "本次结果只作为位置参考，不做明确画像解释。",
+    explanation: payload.explanation || "",
+    boundaryNotice: payload.boundary_notice || "",
+    featureText:
+      payload.feature_summary && payload.feature_summary.total_features
+        ? `${payload.feature_summary.answered_features}/${payload.feature_summary.total_features} 个题项用于定位`
+        : "",
+    clusterPoints,
+    userPoint: {
+      xPercent: userLeft,
+      yPercent: userTop,
+      style: `left:${userLeft}%;top:${userTop}%;`,
+    },
+    radarFeatures,
+    strengthNote: payload.strength_note || "",
+    smallStep: payload.small_step || "",
   };
 }
 
@@ -218,6 +373,9 @@ Page({
     profileSummary: null,
     sourceNotice: null,
     trainingRecommendation: null,
+    scaleDimensions: [],
+    riskSummary: null,
+    profilePosition: null,
   },
 
   onLoad(options) {
@@ -226,6 +384,10 @@ Page({
       worksheetId: decodeURIComponent(options.worksheet_id || ""),
     });
     this.loadResult();
+  },
+
+  onReady() {
+    this.drawProfilePositionCharts();
   },
 
   async loadResult() {
@@ -238,29 +400,155 @@ Page({
       ]);
       const result = (results.items || []).find((item) => item.id === this.data.resultId) || (results.items || [])[0];
       const profileSummary = buildProfileSummary(result);
+      let profilePosition = null;
+      if (result && !profileSummary) {
+        const positionPayload = await api.getAssessmentProfilePosition(result.id).catch(() => null);
+        profilePosition = buildProfilePositionSummary(positionPayload);
+      }
+      const scaleDimensions = buildScaleDimensions(result, profileSummary);
       const sourceNotice = buildSourceNotice(worksheet, profileSummary);
+      const riskSummary = buildRiskSummary(result);
       const trainingRecommendation = buildTrainingRecommendation(worksheet, profileSummary, cards);
       saveLatestTrainingRecommendation(trainingRecommendation);
-      this.setData({
-        result,
-        worksheet,
-        loading: false,
-        totalScoreText: result && result.total_score !== null && result.total_score !== undefined ? `${result.total_score}` : "本工作表不自动计分",
-        recommendedCardsText: profileSummary
-          ? profileSummary.recommendedCardsText
-          : worksheet && worksheet.recommended_card_ids && worksheet.recommended_card_ids.length
-            ? worksheet.recommended_card_ids.join("、")
-            : "暂无固定推荐",
-        profileSummary,
-        sourceNotice,
-        trainingRecommendation,
-      });
+      this.setData(
+        {
+          result,
+          worksheet,
+          loading: false,
+          totalScoreText: result && result.total_score !== null && result.total_score !== undefined ? `${result.total_score}` : "本工作表不自动计分",
+          recommendedCardsText: profileSummary
+            ? profileSummary.recommendedCardsText
+            : worksheet && worksheet.recommended_card_ids && worksheet.recommended_card_ids.length
+              ? worksheet.recommended_card_ids.join("、")
+              : "暂无固定推荐",
+          profileSummary,
+          scaleDimensions,
+          sourceNotice,
+          trainingRecommendation,
+          riskSummary,
+          profilePosition,
+        },
+        () => this.drawProfilePositionCharts(),
+      );
     } catch (error) {
       this.setData({
         loading: false,
-        errorMessage: error.message || "结果读取失败，请确认 backend 是否已启动。",
+        errorMessage: error.message || "结果暂时没能读取，请检查网络后再试一次。",
       });
     }
+  },
+
+  drawProfilePositionCharts() {
+    const profilePosition = this.data.profilePosition;
+    if (!profilePosition) return;
+    this.drawPositionCanvas(profilePosition);
+    this.drawRadarCanvas(profilePosition);
+  },
+
+  withCanvasSize(selector, fallback, draw) {
+    wx.createSelectorQuery()
+      .in(this)
+      .select(selector)
+      .boundingClientRect((rect) => {
+        draw({
+          width: rect && rect.width ? rect.width : fallback.width,
+          height: rect && rect.height ? rect.height : fallback.height,
+        });
+      })
+      .exec();
+  },
+
+  drawPositionCanvas(profilePosition) {
+    if (!profilePosition.userPoint) return;
+    this.withCanvasSize(".position-canvas", { width: 320, height: 180 }, ({ width, height }) => {
+      const ctx = wx.createCanvasContext("profilePlotCanvas", this);
+      ctx.clearRect(0, 0, width, height);
+      ctx.setFillStyle("#f8fbf5");
+      ctx.fillRect(0, 0, width, height);
+      ctx.setStrokeStyle("#dfe5dc");
+      ctx.setLineWidth(1);
+      ctx.beginPath();
+      ctx.moveTo(24, height / 2);
+      ctx.lineTo(width - 24, height / 2);
+      ctx.moveTo(width / 2, 20);
+      ctx.lineTo(width / 2, height - 20);
+      ctx.stroke();
+
+      (profilePosition.clusterPoints || []).forEach((point) => {
+        const x = (Number(point.xPercent) / 100) * width;
+        const y = (Number(point.yPercent) / 100) * height;
+        ctx.setFillStyle("#e8f0ea");
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.setFillStyle("#5d725f");
+        ctx.setFontSize(10);
+        ctx.fillText(point.label || "画像", x + 10, y + 4);
+      });
+
+      const ux = (Number(profilePosition.userPoint.xPercent) / 100) * width;
+      const uy = (Number(profilePosition.userPoint.yPercent) / 100) * height;
+      ctx.setFillStyle("#4f7c6b");
+      ctx.beginPath();
+      ctx.arc(ux, uy, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.setFillStyle("#202622");
+      ctx.setFontSize(11);
+      ctx.fillText("当前位置", Math.min(ux + 12, width - 62), Math.max(uy - 12, 18));
+      ctx.draw();
+    });
+  },
+
+  drawRadarCanvas(profilePosition) {
+    const features = profilePosition.radarFeatures || [];
+    if (features.length < 3) return;
+    this.withCanvasSize(".radar-canvas", { width: 320, height: 220 }, ({ width, height }) => {
+      const ctx = wx.createCanvasContext("profileRadarCanvas", this);
+      const centerX = width / 2;
+      const centerY = height / 2 + 6;
+      const radius = Math.min(width, height) * 0.34;
+      ctx.clearRect(0, 0, width, height);
+      ctx.setFillStyle("#ffffff");
+      ctx.fillRect(0, 0, width, height);
+
+      [0.33, 0.66, 1].forEach((ratio) => {
+        ctx.setStrokeStyle("#dfe5dc");
+        ctx.beginPath();
+        features.forEach((_item, index) => {
+          const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
+          const x = centerX + Math.cos(angle) * radius * ratio;
+          const y = centerY + Math.sin(angle) * radius * ratio;
+          if (index === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.stroke();
+      });
+
+      ctx.setStrokeStyle("#4f7c6b");
+      ctx.setFillStyle("rgba(79, 124, 107, 0.18)");
+      ctx.beginPath();
+      features.forEach((item, index) => {
+        const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
+        const x = centerX + Math.cos(angle) * radius * item.value;
+        const y = centerY + Math.sin(angle) * radius * item.value;
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.setFillStyle("#596a5b");
+      ctx.setFontSize(10);
+      features.forEach((item, index) => {
+        const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
+        const x = centerX + Math.cos(angle) * (radius + 18);
+        const y = centerY + Math.sin(angle) * (radius + 18);
+        ctx.fillText(item.label, Math.max(4, Math.min(x - 18, width - 46)), Math.max(12, Math.min(y + 4, height - 8)));
+      });
+      ctx.draw();
+    });
   },
 
   openRecommendedCards() {

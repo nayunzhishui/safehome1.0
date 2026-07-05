@@ -7,10 +7,10 @@ from io import StringIO
 
 from flask import Blueprint, Response, request
 
-from database import get_connection, write_audit_log
+from database import get_connection, json_dumps, json_loads, load_content_json, now_iso, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.privacy import research_revoked_filter
-from routes.utils import fail, parse_bool
+from routes.utils import fail, ok, parse_bool, parse_int
 from services.content_loader import ContentLoadError, load_parent_scales, load_student_scales
 
 bp = Blueprint("admin", __name__, url_prefix="/api/admin")
@@ -29,6 +29,158 @@ EXPORT_TABLES = {
 PROFILE_EXPORT_TYPES = {"profile", "student_profiles"}
 DEFAULT_EXPORT_LIMIT = 1000
 MAX_EXPORT_LIMIT = 5000
+
+WORKSHEET_WRITABLE_FIELDS = {
+    "display_title",
+    "source_title",
+    "source_file",
+    "category",
+    "audience_class",
+    "reflex_node",
+    "questions",
+    "dimensions",
+    "dimension_score_method",
+    "scoring_notes",
+    "search_keywords",
+    "boundary_notice",
+    "result_disclaimer",
+    "instructions",
+    "sensitive_category",
+    "profile_model_id",
+    "enabled_for_user",
+    "review_status",
+    "review_note",
+    "source_version",
+    "source_type",
+    "audience",
+    "audience_class_detail",
+    "recommended_card_ids",
+    "sections",
+    "scoring",
+    "pages",
+    "_meta",
+}
+
+
+def _worksheet_json(value: str | None, fallback):
+    try:
+        return json_loads(value, fallback)
+    except (TypeError, json.JSONDecodeError):
+        return fallback
+
+
+def _worksheet_from_row(row) -> dict:
+    item = dict(row)
+    return {
+        "id": item.get("id"),
+        "display_title": item.get("display_title"),
+        "source_title": item.get("source_title"),
+        "source_file": item.get("source_file"),
+        "category": item.get("category"),
+        "audience_class": item.get("audience_class"),
+        "reflex_node": item.get("reflex_node"),
+        "questions": _worksheet_json(item.get("questions_json"), []),
+        "dimensions": _worksheet_json(item.get("dimensions_json"), []),
+        "dimension_score_method": item.get("dimension_score_method"),
+        "scoring_notes": _worksheet_json(item.get("scoring_notes_json"), {}),
+        "search_keywords": _worksheet_json(item.get("search_keywords_json"), []),
+        "boundary_notice": item.get("boundary_notice"),
+        "result_disclaimer": item.get("result_disclaimer"),
+        "instructions": item.get("instructions"),
+        "sensitive_category": item.get("sensitive_category"),
+        "profile_model_id": item.get("profile_model_id"),
+        "enabled_for_user": bool(item.get("enabled_for_user", 1)),
+        "review_status": item.get("review_status"),
+        "review_note": item.get("review_note"),
+        "source_version": item.get("source_version"),
+        "source_type": item.get("source_type"),
+        "audience": item.get("audience"),
+        "audience_class_detail": item.get("audience_class_detail"),
+        "recommended_card_ids": _worksheet_json(item.get("recommended_card_ids_json"), []),
+        "sections": _worksheet_json(item.get("sections_json"), []),
+        "scoring": item.get("scoring"),
+        "pages": item.get("pages"),
+        "_meta": _worksheet_json(item.get("_meta_json"), {}),
+        "created_at": item.get("created_at"),
+        "updated_at": item.get("updated_at"),
+    }
+
+
+def _worksheet_db_values(payload: dict, timestamp: str, created_at: str | None = None) -> dict:
+    return {
+        "id": payload["id"],
+        "display_title": payload.get("display_title") or payload.get("source_title") or payload["id"],
+        "source_title": payload.get("source_title"),
+        "source_file": payload.get("source_file"),
+        "category": payload.get("category"),
+        "audience_class": payload.get("audience_class"),
+        "reflex_node": payload.get("reflex_node"),
+        "questions_json": json_dumps(payload.get("questions", [])),
+        "dimensions_json": json_dumps(payload.get("dimensions", [])),
+        "dimension_score_method": payload.get("dimension_score_method") or "sum",
+        "scoring_notes_json": json_dumps(payload.get("scoring_notes", {})),
+        "search_keywords_json": json_dumps(payload.get("search_keywords", [])),
+        "boundary_notice": payload.get("boundary_notice"),
+        "result_disclaimer": payload.get("result_disclaimer"),
+        "instructions": payload.get("instructions"),
+        "sensitive_category": str(payload.get("sensitive_category") or "none"),
+        "profile_model_id": payload.get("profile_model_id"),
+        "enabled_for_user": 1 if payload.get("enabled_for_user", True) else 0,
+        "review_status": payload.get("review_status") or "approved",
+        "review_note": payload.get("review_note"),
+        "source_version": payload.get("source_version"),
+        "source_type": payload.get("source_type"),
+        "audience": payload.get("audience"),
+        "audience_class_detail": payload.get("audience_class_detail"),
+        "recommended_card_ids_json": json_dumps(payload.get("recommended_card_ids", [])),
+        "sections_json": json_dumps(payload.get("sections", [])),
+        "scoring": payload.get("scoring"),
+        "pages": payload.get("pages"),
+        "_meta_json": json_dumps(payload.get("_meta", {})),
+        "created_at": created_at or timestamp,
+        "updated_at": timestamp,
+    }
+
+
+def _save_worksheet(conn, payload: dict, created_at: str | None = None) -> dict:
+    timestamp = now_iso()
+    row = _worksheet_db_values(payload, timestamp, created_at=created_at)
+    columns = list(row.keys())
+    placeholders = ", ".join("?" for _ in columns)
+    column_sql = ", ".join(columns)
+    update_columns = [column for column in columns if column not in {"id", "created_at"}]
+    params = [row[column] for column in columns]
+    if getattr(conn, "provider", "sqlite") == "mysql":
+        updates = ", ".join(f"{column}=VALUES({column})" for column in update_columns)
+        conn.execute(
+            f"""
+            INSERT INTO assessment_worksheets ({column_sql})
+            VALUES ({placeholders})
+            ON DUPLICATE KEY UPDATE {updates}
+            """,
+            params,
+        )
+    else:
+        updates = ", ".join(f"{column}=excluded.{column}" for column in update_columns)
+        conn.execute(
+            f"""
+            INSERT INTO assessment_worksheets ({column_sql})
+            VALUES ({placeholders})
+            ON CONFLICT(id) DO UPDATE SET {updates}
+            """,
+            params,
+        )
+    saved = conn.execute("SELECT * FROM assessment_worksheets WHERE id = ?", (payload["id"],)).fetchone()
+    return _worksheet_from_row(saved)
+
+
+def _requested_enabled_true(payload: dict) -> bool:
+    if "enabled_for_user" not in payload:
+        return False
+    value = payload.get("enabled_for_user")
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "是", "开放"}
+    return bool(value)
 
 
 def _parse_export_limit(value: str | None) -> tuple[int | None, tuple | None]:
@@ -50,6 +202,11 @@ def _fetch_limited_rows(conn, base_sql: str, params: list | tuple | None, limit:
     count_row = conn.execute(f"SELECT COUNT(*) AS count FROM ({base_sql}) AS export_source", params).fetchone()
     rows = conn.execute(f"{base_sql} LIMIT ?", [*params, limit]).fetchall()
     return rows, count_row["count"]
+
+
+def _active_assessment_ids() -> list[str]:
+    payload = load_content_json("assessment_worksheets.json")
+    return [item["id"] for item in payload.get("worksheets", []) if isinstance(item, dict) and item.get("id")]
 
 
 def _append_research_consent_filter(conn, where_clauses: list[str], params: list, column: str = "user_id") -> None:
@@ -442,6 +599,163 @@ def _codebook_rows() -> list[dict]:
     return _scale_items(load_parent_scales(), "parent_dual_scale") + _scale_items(load_student_scales(), "student_profile")
 
 
+@bp.get("/worksheets")
+def list_admin_worksheets():
+    try:
+        require_role("admin", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    with get_connection() as conn:
+        rows = conn.execute("SELECT * FROM assessment_worksheets ORDER BY updated_at DESC").fetchall()
+    return ok({"items": [_worksheet_from_row(row) for row in rows], "count": len(rows)})
+
+
+@bp.post("/worksheets")
+def create_admin_worksheet():
+    try:
+        actor = require_role("admin", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    payload = request.get_json(silent=True) or {}
+    if not payload.get("id"):
+        return fail("missing_fields", "缺少必填字段：id", status=400)
+    if _requested_enabled_true(payload):
+        return fail(
+            "review_required",
+            "测评题库管理不能直接开放用户端入口。请先保存为待复核，再通过内容审核流程开放。",
+            status=400,
+        )
+    payload = {**payload, "enabled_for_user": False, "review_status": payload.get("review_status") or "pilot_review_required"}
+    with get_connection() as conn:
+        existing = conn.execute("SELECT id FROM assessment_worksheets WHERE id = ?", (payload["id"],)).fetchone()
+        if existing:
+            return fail("worksheet_exists", "该测评 ID 已存在，请改用更新接口。", status=409)
+        saved = _save_worksheet(conn, payload)
+        write_audit_log(
+            conn,
+            action="create_assessment_worksheet",
+            actor_id=actor["id"],
+            target_type="assessment_worksheet",
+            target_id=payload["id"],
+            metadata={"review_status": saved.get("review_status"), "enabled_for_user": saved.get("enabled_for_user")},
+        )
+        conn.commit()
+    return ok(saved, status=201)
+
+
+@bp.put("/worksheets/<worksheet_id>")
+def update_admin_worksheet(worksheet_id: str):
+    try:
+        actor = require_role("admin", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    payload = request.get_json(silent=True) or {}
+    update_payload = {key: value for key, value in payload.items() if key in WORKSHEET_WRITABLE_FIELDS}
+    if not update_payload:
+        return fail("missing_fields", "没有可更新的字段", status=400)
+    if _requested_enabled_true(update_payload):
+        return fail(
+            "review_required",
+            "测评题库管理不能直接把测评开放到用户端。请通过内容审核流程开放。",
+            status=400,
+        )
+    with get_connection() as conn:
+        existing = conn.execute("SELECT * FROM assessment_worksheets WHERE id = ?", (worksheet_id,)).fetchone()
+        if existing is None:
+            return fail("not_found", "没有找到对应测评。", status=404)
+        merged = {**_worksheet_from_row(existing), **update_payload, "id": worksheet_id}
+        saved = _save_worksheet(conn, merged, created_at=existing["created_at"])
+        write_audit_log(
+            conn,
+            action="update_assessment_worksheet",
+            actor_id=actor["id"],
+            target_type="assessment_worksheet",
+            target_id=worksheet_id,
+            metadata={"fields": sorted(update_payload.keys())},
+        )
+        conn.commit()
+    return ok(saved)
+
+
+@bp.delete("/worksheets/<worksheet_id>")
+def disable_admin_worksheet(worksheet_id: str):
+    try:
+        actor = require_role("admin", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    timestamp = now_iso()
+    with get_connection() as conn:
+        existing = conn.execute("SELECT * FROM assessment_worksheets WHERE id = ?", (worksheet_id,)).fetchone()
+        if existing is None:
+            return fail("not_found", "没有找到对应测评。", status=404)
+        conn.execute(
+            """
+            UPDATE assessment_worksheets
+            SET enabled_for_user = 0, review_status = 'disabled', updated_at = ?
+            WHERE id = ?
+            """,
+            (timestamp, worksheet_id),
+        )
+        write_audit_log(
+            conn,
+            action="disable_assessment_worksheet",
+            actor_id=actor["id"],
+            target_type="assessment_worksheet",
+            target_id=worksheet_id,
+            metadata={"enabled_for_user": False, "review_status": "disabled"},
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM assessment_worksheets WHERE id = ?", (worksheet_id,)).fetchone()
+    return ok(_worksheet_from_row(row))
+
+
+def _assessment_result_from_row(row) -> dict:
+    item = dict(row)
+    item["answers"] = json_loads(item.get("answers_json"), [])
+    item["scores"] = json_loads(item.get("scores_json"), {})
+    if item.get("profile_cluster_id") in {"", None}:
+        item["profile_cluster_id"] = None
+    else:
+        try:
+            item["profile_cluster_id"] = int(item["profile_cluster_id"])
+        except (TypeError, ValueError):
+            item["profile_cluster_id"] = None
+    return item
+
+
+@bp.get("/assessment-results")
+def list_admin_assessment_results():
+    try:
+        require_role("admin", "researcher", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
+
+    limit = min(parse_int(request.args.get("limit"), 100), 500)
+    worksheet_id = request.args.get("worksheet_id")
+    profile_model_id = request.args.get("profile_model_id")
+    where = []
+    params: list = []
+    if worksheet_id:
+        where.append("worksheet_id = ?")
+        params.append(worksheet_id)
+    if profile_model_id:
+        where.append("profile_model_id = ?")
+        params.append(profile_model_id)
+    where_sql = f"WHERE {' AND '.join(where)}" if where else ""
+    params.append(limit)
+    with get_connection() as conn:
+        rows = conn.execute(
+            f"""
+            SELECT * FROM assessment_results
+            {where_sql}
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            params,
+        ).fetchall()
+    return ok({"items": [_assessment_result_from_row(row) for row in rows], "count": len(rows)})
+
+
 def _parent_raw_wide_rows(rows) -> list[dict]:
     item_codes = [item["item_code"] for item in _scale_items(load_parent_scales(), "parent_dual_scale")]
     export_rows = []
@@ -652,11 +966,32 @@ def export_csv():
                         "invalid_export_type",
                         "支持的 type：goals, diaries, feedback, checkins, assessments, profile, student_profiles, records, student_followups, sandplay, parent_assessments, raw_wide, long, codebook, reports, supervision, cards",
                     )
+                where_clauses = []
+                params = []
                 if user_id and table != "training_cards":
+                    where_clauses.append("user_id = ?")
+                    params.append(user_id)
+                if export_type == "assessments":
+                    active_assessment_ids = _active_assessment_ids()
+                    if not active_assessment_ids:
+                        where_clauses.append("1 = 0")
+                    else:
+                        placeholders = ", ".join("?" for _ in active_assessment_ids)
+                        where_clauses.append(f"worksheet_id IN ({placeholders})")
+                        params.extend(active_assessment_ids)
+                where_sql = f" WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
+                if params:
                     rows, row_count_before_limit = _fetch_limited_rows(
                         conn,
-                        f"SELECT * FROM {table} WHERE user_id = ? ORDER BY created_at DESC",
-                        (user_id,),
+                        f"SELECT * FROM {table}{where_sql} ORDER BY created_at DESC",
+                        params,
+                        limit,
+                    )
+                elif where_clauses:
+                    rows, row_count_before_limit = _fetch_limited_rows(
+                        conn,
+                        f"SELECT * FROM {table}{where_sql} ORDER BY created_at DESC",
+                        [],
                         limit,
                     )
                 else:

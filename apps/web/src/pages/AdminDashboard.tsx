@@ -91,7 +91,7 @@ export function AdminDashboard() {
   const [insightMessage, setInsightMessage] = useState("选择一条记录后，可以生成对应的即时反馈和训练卡推荐。");
   const [adminToken, setAdminToken] = useState(getStoredAdminToken);
   const [exportStatus, setExportStatus] = useState<ExportStatus>("idle");
-  const [exportMessage, setExportMessage] = useState("导出需要后台令牌。云端验收请填写云托管 ADMIN_EXPORT_TOKEN。");
+  const [exportMessage, setExportMessage] = useState("导出需要后台令牌。刷新页面后需要重新填写。");
 
   const selectedDiary = useMemo(() => {
     return state.diaries.find((diary) => diary.id === state.selectedId) ?? state.diaries[0];
@@ -105,7 +105,7 @@ export function AdminDashboard() {
       setState((current) => ({
         ...current,
         status: "error",
-        message: "请先填写后台令牌。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。",
+        message: "请先填写后台令牌。请使用当前部署环境提供的后台令牌。",
       }));
       return;
     }
@@ -144,7 +144,7 @@ export function AdminDashboard() {
     const token = adminToken.trim();
     if (!token) {
       setInsightStatus("error");
-      setInsightMessage("请先填写后台令牌。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。");
+      setInsightMessage("请先填写后台令牌。请使用当前部署环境提供的后台令牌。");
       return;
     }
 
@@ -220,7 +220,7 @@ export function AdminDashboard() {
                 setAdminToken(event.target.value);
                 setStoredAdminToken(event.target.value);
               }}
-              placeholder="填写 ADMIN_EXPORT_TOKEN 后刷新"
+              placeholder="填写后台令牌后刷新"
             />
           </label>
           <button className="primaryButton" type="button" onClick={loadDiaries} disabled={state.status === "loading"}>
@@ -347,7 +347,7 @@ export function AdminDashboard() {
         <div className="sectionTitleRow">
           <div>
             <h2>数据导出</h2>
-            <p className="summary">云端后台需要填写与云托管环境变量 `ADMIN_EXPORT_TOKEN` 一致的令牌。</p>
+            <p className="summary">云端后台需要填写当前部署环境提供的后台令牌。令牌只保存在当前页面内存里，刷新后需要重新输入。</p>
           </div>
           <button className="primaryButton" type="button" onClick={downloadCsv} disabled={exportStatus === "loading"}>
             {exportStatus === "loading" ? "导出中..." : "导出情绪记录 CSV"}

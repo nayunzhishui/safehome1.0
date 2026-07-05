@@ -1,0 +1,36 @@
+<view class="safe-page emergency-page">
+  <view class="safe-card safe-card--hero">
+    <text class="page-kicker">安全优先</text>
+    <text class="page-title">先找现实帮助</text>
+    <text class="page-summary">如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。</text>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="现在先做" subtitle="只用于稳定当下，不替代专业帮助" />
+    <view class="step-list">
+      <view wx:for="{{supportSteps}}" wx:key="*this" class="step-row">
+        <text class="step-number">{{index + 1}}</text>
+        <text class="step-text">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <section-title title="5-4-3-2-1 接地法" subtitle="把注意力拉回此刻" />
+    <view class="step-list">
+      <view wx:for="{{groundingSteps}}" wx:key="*this" class="step-row">
+        <text class="step-number">{{index + 1}}</text>
+        <text class="step-text">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <view class="warning-card">
+      <text class="warning-title">重要边界</text>
+      <text class="warning-text">本小程序不能提供实时危机干预、医疗诊断或法律判断。遇到紧急安全风险时，请先使用现实资源。</text>
+    </view>
+  </view>
+
+  <button class="safe-primary-button bottom-action" bindtap="goHome">回到首页</button>
+</view>

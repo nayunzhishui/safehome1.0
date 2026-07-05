@@ -4,7 +4,7 @@
 
 .detail-hero {
   position: relative;
-  min-height: 286rpx;
+  min-height: 252rpx;
   overflow: hidden;
 }
 
@@ -12,7 +12,6 @@
   max-width: 480rpx;
 }
 
-.hero-kicker,
 .hero-title,
 .hero-summary,
 .hero-mark-main,
@@ -24,22 +23,12 @@
 .state-text,
 .match-label,
 .match-text,
-.overview-label,
-.overview-value,
 .today-label,
 .today-text,
 .tip-title,
 .tip-text,
-.block-title,
-.example-text {
+.list-note {
   display: block;
-}
-
-.hero-kicker {
-  margin-bottom: 10rpx;
-  color: var(--safe-primary);
-  font-size: 24rpx;
-  font-weight: 800;
 }
 
 .hero-title {
@@ -96,9 +85,9 @@
 .task-card {
   margin-top: 28rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-lg);
+  border-radius: 24rpx;
   background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
+  box-shadow: 0 10rpx 24rpx rgba(52, 66, 58, 0.06);
 }
 
 .state-card {
@@ -172,6 +161,17 @@
   line-height: 1.6;
 }
 
+.list-note {
+  margin-top: 22rpx;
+  padding: 20rpx 24rpx;
+  border: 1rpx solid rgba(87, 139, 95, 0.16);
+  border-radius: 20rpx;
+  background: rgba(233, 242, 223, 0.52);
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  line-height: 1.58;
+}
+
 .task-card {
   overflow: hidden;
 }
@@ -179,7 +179,7 @@
 .task-head {
   display: flex;
   gap: 20rpx;
-  padding: 30rpx;
+  padding: 28rpx 28rpx 22rpx;
   background: rgba(255, 253, 248, 0.96);
 }
 
@@ -187,15 +187,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56rpx;
-  height: 56rpx;
-  flex: 0 0 56rpx;
-  border-radius: 20rpx;
-  background: var(--safe-primary);
-  color: #ffffff;
+  width: 64rpx;
+  height: 46rpx;
+  flex: 0 0 64rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary-soft);
+  color: var(--safe-primary-deep);
   font-size: 24rpx;
   font-weight: 900;
-  line-height: 56rpx;
+  line-height: 46rpx;
 }
 
 .task-title-wrap {
@@ -212,7 +212,7 @@
 }
 
 .card-type {
-  color: var(--safe-primary);
+  color: var(--safe-primary-deep);
   font-size: 24rpx;
   font-weight: 800;
 }
@@ -242,41 +242,11 @@
   line-height: 1.35;
 }
 
-.overview-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18rpx;
-  padding: 0 30rpx 26rpx;
-}
-
-.overview-item {
-  min-height: 136rpx;
-  padding: 22rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card-strong);
-}
-
-.overview-label {
-  color: var(--safe-muted);
-  font-size: 22rpx;
-  font-weight: 700;
-}
-
-.overview-value {
-  margin-top: 12rpx;
-  color: var(--safe-title);
-  font-size: 25rpx;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
 .today-step,
-.tip-box,
-.detail-block {
-  margin: 0 30rpx 26rpx;
+.tip-box {
+  margin: 0 28rpx 22rpx;
   padding: 24rpx;
-  border-radius: var(--safe-radius-md);
+  border-radius: 22rpx;
 }
 
 .today-step {
@@ -302,7 +272,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 14rpx;
-  padding: 0 30rpx 26rpx;
+  padding: 0 28rpx 22rpx;
 }
 
 .tag-pill {
@@ -328,79 +298,16 @@
   line-height: 1.65;
 }
 
-.detail-block {
-  border: 1rpx solid var(--safe-border);
-  background: var(--safe-card-strong);
-}
-
-.block-title {
-  color: var(--safe-title);
-  font-size: 29rpx;
-  font-weight: 900;
-}
-
-.step-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18rpx;
-  margin-top: 18rpx;
-}
-
-.step-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 16rpx;
-}
-
-.step-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42rpx;
-  height: 42rpx;
-  flex: 0 0 42rpx;
-  border-radius: 50%;
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary);
-  font-size: 22rpx;
-  font-weight: 900;
-  line-height: 42rpx;
-}
-
-.step-text {
-  min-width: 0;
-  flex: 1;
-  color: var(--safe-text);
-  font-size: 26rpx;
-  line-height: 1.65;
-}
-
-.example-block {
-  border-color: rgba(244, 127, 69, 0.24);
-  background: #fffaf3;
-}
-
-.example-text {
-  margin-top: 16rpx;
-  color: var(--safe-text);
-  font-size: 26rpx;
-  line-height: 1.75;
-}
-
-.reflection-block {
-  background: var(--safe-bg-leaf);
-}
-
 .primary-button {
   min-height: 88rpx;
-  margin: 4rpx 30rpx 30rpx;
+  margin: 4rpx 28rpx 28rpx;
   border-radius: var(--safe-radius-pill);
-  background: linear-gradient(135deg, var(--safe-primary), var(--safe-primary-deep));
+  background: var(--safe-primary);
   color: #ffffff;
   font-size: 28rpx;
   font-weight: 800;
   line-height: 88rpx;
-  box-shadow: 0 14rpx 28rpx rgba(87, 139, 95, 0.24);
+  box-shadow: 0 8rpx 18rpx rgba(87, 139, 95, 0.18);
 }
 
 .primary-button::after {

@@ -11,7 +11,7 @@
 .hero-copy {
   position: relative;
   z-index: 1;
-  max-width: 480rpx;
+  max-width: none;
 }
 
 .hero-kicker,
@@ -44,24 +44,14 @@
   line-height: 1.7;
 }
 
-.hero-image {
-  position: absolute;
-  right: -20rpx;
-  bottom: -18rpx;
-  width: 250rpx;
-  height: 220rpx;
-  border-radius: var(--safe-radius-lg);
-  opacity: 0.9;
-}
-
 .progress-card {
   position: relative;
   min-height: 164rpx;
   overflow: hidden;
   padding: 28rpx;
   border: 1rpx solid rgba(87, 139, 95, 0.18);
-  border-radius: var(--safe-radius-lg);
-  background: linear-gradient(135deg, var(--safe-primary-pale), var(--safe-card));
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
 }
 

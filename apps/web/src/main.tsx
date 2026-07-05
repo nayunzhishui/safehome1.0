@@ -30,6 +30,7 @@ import { ReviewManagement } from "./pages/ReviewManagement";
 import { RulesManagement } from "./pages/RulesManagement";
 import { ScalesReview } from "./pages/ScalesReview";
 import { SupervisionManagement } from "./pages/SupervisionManagement";
+import { WorksheetsManagement } from "./pages/WorksheetsManagement";
 import { getStoredAuthUser } from "./services/authState";
 import "./styles.css";
 
@@ -46,6 +47,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/feedback", label: "支持性反馈审核", match: (p) => p === "/feedback" || p.startsWith("/feedback/"), roles: ["admin", "researcher"] },
   { href: "/content/review", label: "内容审核总览", match: (p) => p === "/content/review", roles: ["admin", "researcher", "supervisor"] },
   { href: "/content/scales", label: "量表目录审核", match: (p) => p === "/content/scales", roles: ["admin", "researcher"] },
+  { href: "/content/worksheets", label: "测评题库管理", match: (p) => p === "/content/worksheets", roles: ["admin"] },
   { href: "/content/cards", label: "训练卡管理", match: (p) => p === "/content/cards", roles: ["admin", "researcher"] },
   { href: "/supervision", label: "督导工作台", match: (p) => p === "/supervision" || p.startsWith("/supervision/"), roles: ["admin", "supervisor"] },
   { href: "/checkins", label: "练习记录", match: (p) => p === "/checkins", roles: ["admin", "researcher"] },
@@ -127,6 +129,7 @@ function App() {
   const isSupervisionPath = path === "/supervision" || path.startsWith("/supervision/");
   const isContentReviewPath = path === "/content/review";
   const isScalesPath = path === "/content/scales";
+  const isWorksheetsPath = path === "/content/worksheets";
   const isCardsPath = path === "/content/cards";
   const isRulesPath = path === "/content/rules";
   const isExportPath = path === "/export";
@@ -147,6 +150,7 @@ function App() {
     "/supervision",
     "/content/review",
     "/content/scales",
+    "/content/worksheets",
     "/content/cards",
     "/content/rules",
     "/export",
@@ -168,6 +172,7 @@ function App() {
     !isSupervisionPath &&
     !isContentReviewPath &&
     !isScalesPath &&
+    !isWorksheetsPath &&
     !isCardsPath &&
     !isRulesPath &&
     !isExportPath &&
@@ -194,6 +199,7 @@ function App() {
       {isSupervisionPath ? <SupervisionManagement /> : null}
       {isContentReviewPath ? <ContentReviewOverview /> : null}
       {isScalesPath ? <ScalesReview /> : null}
+      {isWorksheetsPath ? <WorksheetsManagement /> : null}
       {isCardsPath ? <CardsManagement /> : null}
       {isRulesPath ? <RulesManagement /> : null}
       {isExportPath ? <ExportManagement /> : null}

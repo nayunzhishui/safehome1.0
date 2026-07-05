@@ -1,34 +1,27 @@
 <view class="safe-page safe-page--with-tabbar diary-page">
   <view class="diary-hero safe-card safe-card--hero">
     <view class="hero-copy">
-      <text class="hero-kicker">情绪事件记录</text>
       <text class="hero-title">记录刚才发生的一小段</text>
-      <text class="hero-summary">不需要写得完整，先把此刻能想到的写下来。</text>
+      <text class="hero-summary">先写一个具体片段。句子可以短，事情不用一次讲完整。</text>
       <text wx:if="{{goalId}}" class="goal-hint">已关联本周小目标</text>
-      <view class="hero-note">
-        <view class="note-dot" aria-hidden="true"></view>
-        <text>用于生成支持性反馈，不评价谁对谁错。</text>
+      <view class="hero-steps">
+        <text>1 分钟写事件</text>
+        <text>选一个情绪</text>
+        <text>保存后看反馈</text>
       </view>
       <view class="hero-note privacy-note">
         <view class="note-dot" aria-hidden="true"></view>
-        <text>请不要填写姓名、学校、电话等强身份信息。</text>
+        <text>用于生成支持性反馈，不评价谁对谁错；请不要填写姓名、学校、电话等强身份信息。</text>
       </view>
     </view>
-    <image
-      class="hero-image"
-      src="/assets/illustrations/diary-reflection.png"
-      mode="aspectFill"
-      aria-hidden="true"
-    />
   </view>
 
   <view class="diary-form">
     <view class="diary-section">
       <view class="section-head">
-        <text class="section-index">01</text>
         <view class="section-copy">
           <text class="section-title">发生了什么</text>
-          <text class="section-hint">选择一个常见场景，再写下刚才的具体片段。</text>
+          <text class="section-hint">选一个场景，再写下刚才最清楚的一小段。</text>
         </view>
       </view>
       <view class="tag-grid">
@@ -51,7 +44,7 @@
         <textarea
           class="textarea textarea--large"
           value="{{eventDescription}}"
-          placeholder="例如：孩子一直没有开始写作业，我提醒了几次，声音慢慢变大。"
+          placeholder="刚才发生了什么？写一个片段就可以，例如：孩子一直没开始写作业，我提醒了几次，声音慢慢变大。"
           bindinput="onTextInput"
           data-key="eventDescription"
         />
@@ -60,10 +53,9 @@
 
     <view class="diary-section">
       <view class="section-head">
-        <text class="section-index">02</text>
         <view class="section-copy">
-          <text class="section-title">我的情绪</text>
-          <text class="section-hint">先记录自己的感受和强度，后面可以展开补充更多信息。</text>
+          <text class="section-title">我和孩子当时的感受</text>
+          <text class="section-hint">只需要按当时看起来最接近的状态选择。</text>
         </view>
       </view>
       <view class="field-group">
@@ -85,15 +77,42 @@
         </view>
       </view>
 
+      <view class="field-group">
+        <text class="field-label">孩子当时看起来的情绪</text>
+        <view class="tag-grid">
+          <button
+            wx:for="{{childEmotionOptions}}"
+            wx:key="*this"
+            class="tag tag--child {{childEmotion === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="selectChildEmotion"
+          >
+            {{item}}
+          </button>
+        </view>
+        <view class="slider-row slider-row--child">
+          <text class="slider-label">强度 {{childEmotionIntensity}} / 10</text>
+          <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#D7784A" block-color="#D7784A" bindchange="onChildIntensityChange" />
+        </view>
+      </view>
     </view>
 
     <view class="diary-section">
       <view class="section-head">
-        <text class="section-index">03</text>
         <view class="section-copy">
-          <text class="section-title">我当时怎么回应</text>
-          <text class="section-hint">只记录能看到的动作和话语，不需要评判对错。</text>
+          <text class="section-title">我当时想到什么、做了什么</text>
+          <text class="section-hint">记录当时脑中闪过的话，以及能看到的动作。</text>
         </view>
+      </view>
+      <view class="field-group">
+        <text class="field-label">当时心里的第一反应</text>
+        <textarea
+          class="textarea"
+          value="{{automaticThought}}"
+          placeholder="当时脑子里冒出的一句话是什么？例如：再这样下去会不会更难收拾。"
+          bindinput="onTextInput"
+          data-key="automaticThought"
+        />
       </view>
       <view class="field-group">
         <text class="field-label">我当时的做法</text>
@@ -108,44 +127,15 @@
     </view>
 
     <button class="more-toggle" bindtap="toggleMoreFields">
-      {{showMoreFields ? '收起更多记录项' : '展开更多记录项'}}
+      {{showMoreFields ? '收起可选内容' : '还有什么想记录的？（可选）'}}
     </button>
 
     <view wx:if="{{showMoreFields}}" class="diary-section more-section">
       <view class="section-head">
-        <text class="section-index">04</text>
         <view class="section-copy">
           <text class="section-title">更多线索（可选）</text>
-          <text class="section-hint">这些内容可以帮助复盘，但不填也能提交。</text>
+          <text class="section-hint">身体感受、后续结果和担心可以帮助复盘；不填也能提交。</text>
         </view>
-      </view>
-      <view class="field-group">
-        <text class="field-label">孩子当时看起来的情绪</text>
-        <view class="tag-grid">
-          <button
-            wx:for="{{childEmotionOptions}}"
-            wx:key="*this"
-            class="tag {{childEmotion === item ? 'active' : ''}}"
-            data-value="{{item}}"
-            bindtap="selectChildEmotion"
-          >
-            {{item}}
-          </button>
-        </view>
-        <view class="slider-row">
-          <text class="slider-label">强度 {{childEmotionIntensity}} / 10</text>
-          <slider min="0" max="10" step="1" value="{{childEmotionIntensity}}" activeColor="#F47B48" block-color="#F47B48" bindchange="onChildIntensityChange" />
-        </view>
-      </view>
-      <view class="field-group">
-        <text class="field-label">脑子里闪过的想法</text>
-        <textarea
-          class="textarea"
-          value="{{automaticThought}}"
-          placeholder="例如：我当时脑中冒出一个念头：再这样下去会不会更难收拾。"
-          bindinput="onTextInput"
-          data-key="automaticThought"
-        />
       </view>
       <view class="field-group">
         <text class="field-label">身体感觉</text>
@@ -199,8 +189,10 @@
     </view>
 
     <view class="submit-area">
-      <text class="submit-tip">记录保存后，会进入即时反馈和训练卡推荐。</text>
-      <button class="primary-button" bindtap="submitDiary" disabled="{{submitting}}">
+      <view class="submit-note">
+        <text>保存后会进入支持性反馈和训练卡推荐。反馈只用于观察和练习，不做诊断。</text>
+      </view>
+      <button class="primary-button safe-primary-button" bindtap="submitDiary" disabled="{{submitting}}">
         {{submitting ? '提交中...' : '保存并查看反馈'}}
       </button>
     </view>

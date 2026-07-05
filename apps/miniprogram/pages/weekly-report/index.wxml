@@ -5,12 +5,6 @@
       <text class="hero-title">看看这一周的小变化</text>
       <text class="hero-summary">这不是评分，也不是判断。只是把记录和练习整理出来，帮你找到下周可以继续的一小步。</text>
     </view>
-    <image
-      class="hero-image"
-      src="/assets/illustrations/weekly-growth.png"
-      mode="aspectFill"
-      aria-hidden="true"
-    />
   </view>
 
   <view wx:if="{{loading}}" class="state-card safe-card">

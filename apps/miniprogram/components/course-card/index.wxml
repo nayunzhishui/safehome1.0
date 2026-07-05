@@ -1,9 +1,5 @@
 <button class="course-card" bindtap="handleTap">
-  <view class="course-cover">
-    <view class="cover-sun"></view>
-    <view class="cover-tree"></view>
-    <view class="cover-family"></view>
-  </view>
+  <view class="course-cover"></view>
   <view class="course-content">
     <view class="course-title-row">
       <text class="course-title">{{title}}</text>

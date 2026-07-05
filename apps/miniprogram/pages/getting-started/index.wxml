@@ -2,11 +2,38 @@
   <view class="intro-card">
     <text class="intro-kicker">新手说明</text>
     <text class="intro-title">用“三步”完成一次最小陪伴练习</text>
-    <text class="intro-text">当亲子互动里出现压力时，可以先把它当作一次“情绪反射弧”：事件出现后，我们会有情绪、想法、身体反应和行为。把这条链路写下来，才更容易找到下一次可以轻轻调整的位置。</text>
+    <text class="intro-text">当亲子互动里出现压力时，可以先把它看成一条“情绪反射弧”。这里不是给谁下结论，而是帮助你把反应链条看清楚，再选择一个可练习的小位置。</text>
+  </view>
+
+  <view class="section-card">
+    <text class="section-kicker">它是什么</text>
+    <text class="section-title">情绪反射弧是一条可观察链路</text>
+    <text class="section-text">压力不是只来自事件本身，也会经过想法、身体感觉和行为反应。把这条链路拆开看，才更容易找到下一次能调整的一小步。</text>
+  </view>
+
+  <view class="section-card">
+    <text class="section-kicker">为什么先记录具体事件</text>
+    <view wx:for="{{eventReasons}}" wx:key="*this" class="reason-row">
+      <text class="reason-index">{{index + 1}}</text>
+      <text class="reason-text">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <text class="section-kicker">视觉链路</text>
+    <text class="section-title">诱因/应激源 → 反应（想法·身体感觉·行为） → 觉察 → 接纳 → 转化 → 应对（适应性策略与行为） → 结果（适应与发展）</text>
+    <scroll-view class="arc-scroll" scroll-x="true">
+      <view class="arc-chain">
+        <block wx:for="{{arcNodes}}" wx:key="*this">
+          <view class="arc-node">{{item}}</view>
+          <text wx:if="{{index < arcNodes.length - 1}}" class="arc-arrow">→</text>
+        </block>
+      </view>
+    </scroll-view>
   </view>
 
   <view class="step-list">
-    <view wx:for="{{steps}}" wx:key="title" class="step-card">
+    <view wx:for="{{exerciseSteps}}" wx:key="title" class="step-card">
       <text class="step-title">{{item.title}}</text>
       <text class="step-text">{{item.text}}</text>
     </view>

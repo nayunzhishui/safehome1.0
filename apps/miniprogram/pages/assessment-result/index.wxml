@@ -4,126 +4,87 @@
   </view>
 
   <view wx:elif="{{result}}">
-    <view class="result-hero">
-      <text class="result-kicker">测一测已保存</text>
+    <view class="result-head">
       <text class="result-title">{{result.worksheet_title}}</text>
-      <text class="result-summary">{{result.result_summary}}</text>
+      <text class="result-meta">{{result.result_summary}}</text>
     </view>
 
-    <view class="safe-section">
-      <alert-card
-        type="info"
-        title="结果边界"
-        content="{{profileSummary ? '这里显示的是阶段性支持画像，只用于理解本次填写中的线索，不代表固定标签。如提示需要人工关注，请优先联系现实中的可信成年人、学校老师或专业支持。' : '这里显示的是本次填写记录和维度数据，只用于自我观察和练习参考，不替代心理咨询、医学诊断、危机干预或法律判断。'}}"
-      />
+    <view wx:if="{{riskSummary}}" class="risk-strip {{riskSummary.riskLevel === 'high' ? 'high' : ''}}">
+      <text class="risk-title">{{riskSummary.title}}</text>
+      <text class="risk-text">{{riskSummary.text}}</text>
     </view>
 
-    <view wx:if="{{sourceNotice}}" class="safe-section">
-      <section-title title="结果来源说明" subtitle="先确认这份结果适合怎样理解" />
-      <view class="source-notice-card">
-        <view class="source-notice-head">
-          <text class="source-notice-title">{{sourceNotice.title}}</text>
-          <text class="source-notice-status">{{sourceNotice.statusText}}</text>
+    <view wx:if="{{profilePosition}}" class="safe-section">
+      <view class="profile-card">
+        <text class="profile-display-name">{{profilePosition.profileName}}</text>
+        <text class="profile-confidence">与既往样本的接近度 {{profilePosition.confidenceText}}</text>
+        <text wx:if="{{!profilePosition.canUseInterpretation}}" class="profile-warning">{{profilePosition.reliabilityText}}</text>
+        <text wx:if="{{profilePosition.nCasesText}}" class="profile-meta">参照 {{profilePosition.nCasesText}}</text>
+        <text wx:if="{{profilePosition.featureText}}" class="profile-meta">{{profilePosition.featureText}}</text>
+        <canvas wx:if="{{profilePosition.userPoint}}" canvas-id="profilePlotCanvas" class="position-canvas"></canvas>
+        <canvas wx:if="{{profilePosition.radarFeatures.length >= 3}}" canvas-id="profileRadarCanvas" class="radar-canvas"></canvas>
+        <text wx:if="{{profilePosition.explanation}}" class="profile-explanation">{{profilePosition.explanation}}</text>
+        <view wx:if="{{profilePosition.strengthNote || profilePosition.smallStep}}" class="profile-steps">
+          <view wx:if="{{profilePosition.strengthNote}}" class="profile-step">
+            <text class="step-label">优势提示</text>
+            <text class="step-text">{{profilePosition.strengthNote}}</text>
+          </view>
+          <view wx:if="{{profilePosition.smallStep}}" class="profile-step">
+            <text class="step-label">可以先做</text>
+            <text class="step-text">{{profilePosition.smallStep}}</text>
+          </view>
         </view>
-        <text class="source-notice-text">{{sourceNotice.content}}</text>
-        <text wx:if="{{sourceNotice.reviewNote}}" class="source-notice-note">{{sourceNotice.reviewNote}}</text>
+        <text class="profile-boundary">{{profilePosition.boundaryNotice}}</text>
       </view>
     </view>
 
     <view wx:if="{{profileSummary}}" class="safe-section">
-      <section-title title="阶段性画像" subtitle="基于本次填写生成，仅用于支持性理解" />
-      <view class="profile-result-card {{profileSummary.riskLevel === 'high' ? 'high-risk' : ''}}">
-        <text class="profile-name">{{profileSummary.profileName}}</text>
-        <text class="profile-code">规则编码：{{profileSummary.profileCode || '未设置'}}</text>
-        <view class="profile-metrics">
-          <view class="profile-metric">
-            <text class="cell-label">匹配置信度</text>
-            <text class="cell-value">{{profileSummary.confidenceText}}</text>
+      <view class="profile-card {{profileSummary.riskLevel === 'high' ? 'high-risk' : ''}}">
+        <text class="profile-display-name">{{profileSummary.profileName}}</text>
+        <text wx:if="{{profileSummary.supportiveExplanation}}" class="profile-explanation">{{profileSummary.supportiveExplanation}}</text>
+        <view wx:if="{{profileSummary.strengthNote || profileSummary.smallStep}}" class="profile-steps">
+          <view wx:if="{{profileSummary.strengthNote}}" class="profile-step">
+            <text class="step-label">优势提示</text>
+            <text class="step-text">{{profileSummary.strengthNote}}</text>
           </view>
-          <view class="profile-metric">
-            <text class="cell-label">关注提示</text>
-            <text class="cell-value">{{profileSummary.riskLevelText}}</text>
+          <view wx:if="{{profileSummary.smallStep}}" class="profile-step">
+            <text class="step-label">可以先做</text>
+            <text class="step-text">{{profileSummary.smallStep}}</text>
           </view>
         </view>
-        <text wx:if="{{profileSummary.requiresReview}}" class="review-tip">本次结果建议人工关注，系统暂不把它当作普通练习建议处理。</text>
       </view>
     </view>
 
-    <view wx:if="{{profileSummary && profileSummary.supportiveExplanation}}" class="safe-section">
-      <section-title title="支持性解释" subtitle="帮助你理解本次填写，不做固定标签" />
-      <view class="profile-copy-card">
-        <text class="profile-copy-text">{{profileSummary.supportiveExplanation}}</text>
-      </view>
-    </view>
-
-    <view wx:if="{{profileSummary && profileSummary.dimensions.length}}" class="safe-section">
-      <section-title title="维度观察" subtitle="只表示本次填写中的线索" />
+    <view wx:if="{{!profileSummary && scaleDimensions.length}}" class="safe-section">
+      <section-title title="维度得分" subtitle="各维度分开看，不相加、不比高低" />
       <view class="dimension-list">
-        <view wx:for="{{profileSummary.dimensions}}" wx:key="key" class="dimension-card">
-          <text class="dimension-title">{{item.label}}</text>
-          <text class="dimension-level">{{item.level}}</text>
-          <text class="dimension-summary">{{item.summary}}</text>
+        <view wx:for="{{scaleDimensions}}" wx:key="key" class="dimension-row">
+          <text class="dimension-label">{{item.label}}</text>
+          <text class="dimension-score">{{item.score}} 分</text>
         </view>
-      </view>
-    </view>
-
-    <view wx:if="{{profileSummary && (profileSummary.strengthNote || profileSummary.smallStep)}}" class="safe-section">
-      <section-title title="下一小步" subtitle="先做一个能完成的练习动作" />
-      <view class="next-step-card">
-        <text wx:if="{{profileSummary.strengthNote}}" class="next-step-label">优势提示</text>
-        <text wx:if="{{profileSummary.strengthNote}}" class="next-step-text">{{profileSummary.strengthNote}}</text>
-        <text wx:if="{{profileSummary.smallStep}}" class="next-step-label">可以先做</text>
-        <text wx:if="{{profileSummary.smallStep}}" class="next-step-text">{{profileSummary.smallStep}}</text>
       </view>
     </view>
 
     <view wx:if="{{trainingRecommendation}}" class="safe-section">
-      <section-title title="推荐训练卡" subtitle="最多 3 张，先选今天能做的一张" />
-      <view class="recommendation-card">
-        <text wx:if="{{trainingRecommendation.reason}}" class="recommendation-label">推荐理由</text>
-        <text wx:if="{{trainingRecommendation.reason}}" class="recommendation-text">{{trainingRecommendation.reason}}</text>
-        <text wx:if="{{trainingRecommendation.todaySuggestion}}" class="recommendation-label">今日建议</text>
-        <text wx:if="{{trainingRecommendation.todaySuggestion}}" class="recommendation-text">{{trainingRecommendation.todaySuggestion}}</text>
-        <text wx:if="{{trainingRecommendation.longTermSuggestion}}" class="recommendation-label">长期方向</text>
-        <text wx:if="{{trainingRecommendation.longTermSuggestion}}" class="recommendation-text">{{trainingRecommendation.longTermSuggestion}}</text>
-        <view class="recommendation-list">
-          <view wx:for="{{trainingRecommendation.recommendedCards}}" wx:key="id" class="recommendation-item">
-            <text class="recommendation-role">{{item.role}}</text>
-            <text class="recommendation-title">{{item.title}}</text>
-            <text wx:if="{{item.purpose}}" class="recommendation-purpose">{{item.purpose}}</text>
+      <section-title title="推荐训练卡" subtitle="先选今天能做的一张" />
+      <view class="recommendation-block">
+        <text wx:if="{{trainingRecommendation.todaySuggestion}}" class="rec-suggestion">{{trainingRecommendation.todaySuggestion}}</text>
+        <view class="rec-card-list">
+          <view wx:for="{{trainingRecommendation.recommendedCards}}" wx:key="id" class="rec-card-row">
+            <text class="rec-role">{{item.role}}</text>
+            <view class="rec-card-copy">
+              <text class="rec-card-title">{{item.title}}</text>
+              <text wx:if="{{item.purpose}}" class="rec-card-purpose">{{item.purpose}}</text>
+            </view>
           </view>
         </view>
-        <text wx:if="{{trainingRecommendation.boundaryNotice}}" class="recommendation-boundary">{{trainingRecommendation.boundaryNotice}}</text>
       </view>
     </view>
 
-    <view wx:if="{{profileSummary && profileSummary.requiresReview}}" class="safe-section">
-      <view class="support-card">
-        <text class="support-title">优先联系现实支持</text>
-        <text class="support-text">如果你现在处在明显痛苦或安全风险中，请先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。本系统不能替代危机干预。</text>
-      </view>
+    <view class="result-actions">
+      <button wx:if="{{!profileSummary || profileSummary.canOpenRecommendedCards}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看可练习任务</button>
+      <button class="safe-outline-button action-button" bindtap="backToAssessment">返回测一测</button>
     </view>
-
-    <view class="safe-section">
-      <section-title title="填写摘要" subtitle="用于自我观察和后续练习" />
-      <view class="result-grid">
-        <view class="result-cell">
-          <text class="cell-label">分类</text>
-          <text class="cell-value">{{result.category || '未分类'}}</text>
-        </view>
-        <view class="result-cell">
-          <text class="cell-label">分数记录</text>
-          <text class="cell-value">{{totalScoreText}}</text>
-        </view>
-        <view class="result-cell wide">
-          <text class="cell-label">后续练习</text>
-          <text class="cell-value">{{recommendedCardsText}}</text>
-        </view>
-      </view>
-    </view>
-
-    <button wx:if="{{!profileSummary || profileSummary.canOpenRecommendedCards}}" class="safe-primary-button action-button" bindtap="openRecommendedCards">查看可练习任务</button>
-    <button class="safe-secondary-button action-button" bindtap="backToAssessment">返回测一测</button>
 
     <view class="safe-section">
       <bottom-tip-card text="这份结果只是一次观察记录，可以过一段时间再看有没有变化。" />

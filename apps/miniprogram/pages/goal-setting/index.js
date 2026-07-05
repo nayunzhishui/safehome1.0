@@ -71,7 +71,7 @@ Page({
       });
     } catch (error) {
       this.setData({
-        errorMessage: error.message || "保存失败，请确认 backend 是否已启动。",
+        errorMessage: error.message || "目标暂时没能保存，请检查网络后再试一次。",
       });
     } finally {
       this.setData({ submitting: false });

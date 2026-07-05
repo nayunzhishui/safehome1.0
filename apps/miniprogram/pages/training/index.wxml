@@ -1,13 +1,31 @@
 <view class="safe-page safe-page--with-tabbar training-page">
   <view class="training-hero safe-card safe-card--hero">
     <view class="hero-copy">
-      <text class="hero-kicker">陪伴训练</text>
       <text class="hero-title">从先稳定自己开始</text>
       <text class="hero-summary">每天选一个小练习，不需要一次做很多。先让身体慢下来，再进入沟通。</text>
+      <view class="hero-steps">
+        <text>看见情绪</text>
+        <text>慢下来</text>
+        <text>再回应</text>
+      </view>
     </view>
-    <view class="hero-badge">
-      <text class="hero-badge-number">10</text>
-      <text class="hero-badge-text">分钟以内</text>
+  </view>
+
+  <view class="training-entry-panel safe-card">
+    <text class="entry-kicker">训练入口</text>
+    <view class="entry-grid">
+      <button class="entry-item entry-item--active">
+        <text class="entry-title">通用训练</text>
+        <text class="entry-desc">按阶段浏览训练卡</text>
+      </button>
+      <button class="entry-item" bindtap="openPersonalizedPlan">
+        <text class="entry-title">个性化方案</text>
+        <text class="entry-desc">根据测评推荐练习</text>
+      </button>
+      <button class="entry-item" bindtap="openProgramList">
+        <text class="entry-title">项目测试</text>
+        <text class="entry-desc">暑期试点练习包</text>
+      </button>
     </view>
   </view>
 
@@ -17,7 +35,7 @@
         <text class="recommendation-kicker">{{latestRecommendation.sourceLabel}}</text>
         <text class="recommendation-title">今天可以先练这个方向</text>
       </view>
-      <button class="recommendation-action" bindtap="openLatestRecommendation">查看</button>
+      <button class="recommendation-action" bindtap="openLatestRecommendation">查看练习</button>
     </view>
     <text wx:if="{{latestRecommendation.reason}}" class="recommendation-label">推荐理由</text>
     <text wx:if="{{latestRecommendation.reason}}" class="recommendation-text">{{latestRecommendation.reason}}</text>
@@ -60,7 +78,7 @@
 
   <view class="starter-card safe-card">
     <view class="starter-head">
-      <text class="starter-icon">1</text>
+      <text class="starter-icon">先</text>
       <view class="starter-copy">
         <text class="starter-title">新手推荐路径</text>
         <text class="starter-text">如果不知道从哪张卡开始，先按这三个小练习走一遍。</text>
@@ -84,17 +102,17 @@
 
   <view class="path-card">
     <view class="path-item">
-      <text class="path-index">01</text>
+        <text class="path-index">1</text>
       <text class="path-text">认识和稳定情绪</text>
     </view>
     <view class="path-line"></view>
     <view class="path-item">
-      <text class="path-index">02</text>
+        <text class="path-index">2</text>
       <text class="path-text">改变想法和行为</text>
     </view>
     <view class="path-line"></view>
     <view class="path-item">
-      <text class="path-index">03</text>
+        <text class="path-index">3</text>
       <text class="path-text">改善亲子关系</text>
     </view>
   </view>

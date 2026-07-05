@@ -204,6 +204,14 @@ Page({
     });
   },
 
+  openPersonalizedPlan() {
+    wx.navigateTo({ url: "/pages/personalized-plan/index" });
+  },
+
+  openProgramList() {
+    wx.navigateTo({ url: "/pages/program-list/index" });
+  },
+
   openTrainingCard(event) {
     const id = event.currentTarget.dataset.id || event.target.dataset.id || "";
     wx.navigateTo({

@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { ProfileRadarChart } from "../components/ProfileRadarChart";
+import { ProfileScatterChart } from "../components/ProfileScatterChart";
 import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
 import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
-import type { Checkin, EmotionDiary, Goal, RiskReviewRecord, StudentProfileRecord, TrainingCard } from "../../../../shared/types/api";
+import type {
+  AssessmentProfilePosition,
+  AssessmentResult,
+  Checkin,
+  EmotionDiary,
+  Goal,
+  RiskReviewRecord,
+  StudentProfileRecord,
+  TrainingCard,
+} from "../../../../shared/types/api";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
 
@@ -15,6 +26,9 @@ interface OverviewState {
   cards: TrainingCard[];
   riskReviews: RiskReviewRecord[];
   profiles: StudentProfileRecord[];
+  assessmentResults: AssessmentResult[];
+  selectedAssessmentResultId: string;
+  profilePosition: AssessmentProfilePosition | null;
 }
 
 interface TodoItem {
@@ -34,6 +48,7 @@ const COMPLETED_ADMIN_PAGES = [
   { path: "/checkins", label: "练习记录", note: "查看训练卡练习尝试" },
   { path: "/reports", label: "周报记录", note: "通过导出接口查看已生成周报" },
   { path: "/supervision", label: "督导请求", note: "通过导出接口查看人工督导请求" },
+  { path: "/content/worksheets", label: "测评题库", note: "管理小程序实际读取的测评入口和画像绑定" },
   { path: "/content/cards", label: "训练卡", note: "只读查看训练卡内容" },
   { path: "/content/rules", label: "反馈规则", note: "只读查看反馈规则边界和支持性反馈" },
   { path: "/export", label: "数据导出", note: "复用后台 CSV 导出接口" },
@@ -120,6 +135,9 @@ export function ResearchDashboard() {
     cards: [],
     riskReviews: [],
     profiles: [],
+    assessmentResults: [],
+    selectedAssessmentResultId: "",
+    profilePosition: null,
   });
 
   const latestDiary = state.diaries[0];
@@ -184,14 +202,19 @@ export function ResearchDashboard() {
     }));
 
     try {
-      const [goals, diaries, checkins, cards, riskReviews, profiles] = await Promise.all([
+      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults] = await Promise.all([
         api.listGoals(),
         api.listDiaries({ limit: 50 }),
         api.listCheckins({ limit: 50 }),
         api.listCards(),
         api.listRiskReviews({ limit: 50 }, getStoredAdminToken().trim()),
         api.listProfileResults({ limit: 50 }, getStoredAdminToken().trim()),
+        api.listAdminAssessmentResults({ limit: 50 }, getStoredAdminToken().trim()),
       ]);
+      const firstAssessment = assessmentResults.items[0];
+      const profilePosition = firstAssessment
+        ? await api.getAssessmentProfilePosition(firstAssessment.id, { user_id: firstAssessment.user_id })
+        : null;
 
       setState({
         status: "success",
@@ -202,6 +225,9 @@ export function ResearchDashboard() {
         cards: cards.items,
         riskReviews: riskReviews.items,
         profiles: profiles.items,
+        assessmentResults: assessmentResults.items,
+        selectedAssessmentResultId: firstAssessment?.id || "",
+        profilePosition,
       });
     } catch (error) {
       setState((current) => ({
@@ -215,6 +241,24 @@ export function ResearchDashboard() {
   useEffect(() => {
     void loadOverview();
   }, []);
+
+  async function selectAssessmentResult(resultId: string) {
+    const selected = state.assessmentResults.find((item) => item.id === resultId);
+    setState((current) => ({ ...current, selectedAssessmentResultId: resultId, profilePosition: null }));
+    if (!selected) {
+      return;
+    }
+    try {
+      const profilePosition = await api.getAssessmentProfilePosition(selected.id, { user_id: selected.user_id });
+      setState((current) => ({ ...current, profilePosition }));
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        status: "error",
+        message: formatSafeHomeError(error, "读取画像落点失败。"),
+      }));
+    }
+  }
 
   return (
     <section className="dashboardShell" aria-label="研究者平台总览">
@@ -286,8 +330,64 @@ export function ResearchDashboard() {
         <MetricCard label="训练卡" value={state.cards.length} />
         <MetricCard label="尝试记录" value={state.checkins.length} />
         <MetricCard label="已关联目标记录" value={state.diaries.filter((diary) => diary.goal_id).length} />
-        <MetricCard label="可用数据类型" value={4} />
+        <MetricCard label="测评结果" value={state.assessmentResults.length} />
       </div>
+
+      <section className="guidanceBox" aria-label="测评画像落点">
+        <div className="sectionTitleRow">
+          <h2>测评画像落点</h2>
+          <span className="countBadge">T4-03</span>
+        </div>
+        {state.assessmentResults.length > 0 ? (
+          <>
+            <label className="tokenField">
+              选择测评结果
+              <select
+                value={state.selectedAssessmentResultId}
+                onChange={(event) => {
+                  void selectAssessmentResult(event.target.value);
+                }}
+              >
+                {state.assessmentResults.map((result) => (
+                  <option key={result.id} value={result.id}>
+                    {result.worksheet_title} · {formatTime(result.created_at)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="dashboardGrid overviewGrid">
+              <section className="listPanel" aria-label="画像散点图">
+                <div className="sectionTitleRow">
+                  <h3>群体位置</h3>
+                  <span className="recordMeta">{state.profilePosition?.position?.profile_name || "暂无位置"}</span>
+                </div>
+                <ProfileScatterChart profile={state.profilePosition} />
+              </section>
+              <section className="detailPanel" aria-label="画像雷达图">
+                <div className="sectionTitleRow">
+                  <h3>维度轮廓</h3>
+                  <span className="recordMeta">{state.profilePosition?.feature_summary?.data_quality || "暂无数据"}</span>
+                </div>
+                <ProfileRadarChart profile={state.profilePosition} />
+              </section>
+            </div>
+            {state.profilePosition ? (
+              <section className="guidanceBox" aria-label="画像解释字段">
+                <h3>{state.profilePosition.position?.display_name || state.profilePosition.position?.profile_name || "阶段性画像"}</h3>
+                <p>{state.profilePosition.explanation || state.profilePosition.interpretation?.message || "当前没有可展示的画像解释。"}</p>
+                <DetailRow label="优势提示" value={state.profilePosition.strength_note || "暂无"} />
+                <DetailRow label="下一小步" value={state.profilePosition.small_step || "暂无"} />
+                <DetailRow label="置信度" value={String(state.profilePosition.position?.confidence ?? "暂无")} />
+              </section>
+            ) : null}
+            <p className="muted">
+              画像落点只用于研究后台查看既往样本相对位置，不构成诊断、筛查或固定标签。
+            </p>
+          </>
+        ) : (
+          <div className="emptyState">当前匿名用户下还没有可查看的测评结果。</div>
+        )}
+      </section>
 
       <div className="dashboardGrid overviewGrid">
         <section className="listPanel" aria-label="最近情绪记录">
@@ -383,5 +483,14 @@ function MetricCard({ label, value }: { label: string; value: number }) {
       <span>{label}</span>
       <strong>{value}</strong>
     </article>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="detailRow">
+      <span className="detailLabel">{label}</span>
+      <span className="detailValue">{value || "暂无"}</span>
+    </div>
   );
 }

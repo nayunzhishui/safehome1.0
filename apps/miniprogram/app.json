@@ -1,8 +1,18 @@
 {
   "pages": [
     "pages/home/index",
+    "pages/login/index",
+    "pages/register/index",
+    "pages/messages/index",
+    "pages/message-detail/index",
+    "pages/emergency-guide/index",
+    "pages/emergency-resources/index",
     "pages/getting-started/index",
+    "pages/thermometer/index",
     "pages/training/index",
+    "pages/personalized-plan/index",
+    "pages/program-list/index",
+    "pages/program-detail/index",
     "pages/course/index",
     "pages/profile/index",
     "pages/goal-setting/index",

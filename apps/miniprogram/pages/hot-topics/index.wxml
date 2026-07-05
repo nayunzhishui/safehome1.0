@@ -3,12 +3,6 @@
     <text class="hero-kicker">教育热榜</text>
     <text class="hero-title">看看其他家庭如何处理类似问题</text>
     <text class="hero-text">这里不是评价谁做得对错，而是把常见亲子互动片段整理成更容易练习的小步骤。</text>
-    <image
-      class="hero-image"
-      src="/assets/illustrations/hot-topics-family-talk.png"
-      mode="aspectFill"
-      aria-hidden="true"
-    />
   </view>
 
   <view class="safe-section">

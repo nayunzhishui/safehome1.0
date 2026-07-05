@@ -2,22 +2,23 @@
   min-height: 100vh;
   padding: 32rpx;
   padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
-  background: #fff7ec;
+  background: var(--safe-bg);
 }
 
 .hero {
   margin-bottom: 28rpx;
   padding: 32rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: 24rpx;
-  background: linear-gradient(135deg, #ffffff 0%, #f7faf4 100%);
-  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
+  border: 1rpx solid var(--safe-border);
+  border-left: 8rpx solid var(--safe-primary);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .eyebrow {
   display: block;
   margin-bottom: 10rpx;
-  color: #4caf7d;
+  color: var(--safe-primary-deep);
   font-size: 24rpx;
   font-weight: 700;
 }
@@ -25,7 +26,7 @@
 .title {
   display: block;
   margin-bottom: 14rpx;
-  color: #333333;
+  color: var(--safe-title);
   font-size: 40rpx;
   font-weight: 700;
   line-height: 1.32;
@@ -33,17 +34,17 @@
 
 .summary {
   display: block;
-  color: #555555;
+  color: var(--safe-text);
   font-size: 28rpx;
   line-height: 1.7;
 }
 
 .panel {
   padding: 32rpx;
-  border: 1rpx solid #efe7dc;
-  border-radius: 24rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-md);
   background: #ffffff;
-  box-shadow: 0 12rpx 32rpx rgba(80, 64, 45, 0.08);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .selected-card {
@@ -173,12 +174,12 @@
 .primary-button {
   min-height: 88rpx;
   margin-top: 8rpx;
-  border-radius: 44rpx;
-  background: linear-gradient(135deg, #7ccb8a, #4caf7d);
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary);
   color: #ffffff;
   font-size: 28rpx;
   font-weight: 700;
-  box-shadow: 0 12rpx 26rpx rgba(76, 175, 125, 0.22);
+  box-shadow: 0 8rpx 18rpx rgba(87, 139, 95, 0.18);
 }
 
 .secondary-button {

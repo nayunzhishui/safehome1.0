@@ -1,0 +1,241 @@
+# Claude 使用记录
+
+更新时间：2026-06-28
+
+本文档用于记录 Claude Code / Claude 协作会话的可恢复地址和对话摘要。
+
+## 1. 使用规则
+
+只要本项目使用 Claude Code 或 Claude 进行对话、审查、开发、排查、总结，就必须在本文件追加一条记录。
+
+每条记录至少包含：
+
+```text
+1. 使用日期和时间；
+2. 使用工具或模型，例如 Claude Code、Claude、Claude Opus；
+3. 可供 /RESUME 的地址或会话标识；
+4. 本次对话摘要；
+5. 本次是否修改文件；
+6. 后续需要 Codex 或 Claude 继续处理的事项。
+```
+
+## 2. 记录边界
+
+记录时应遵守：
+
+```text
+1. 不记录真实 token、密钥、账号密码、Cookie 或数据库连接串。
+2. 不记录未脱敏的用户隐私、联系方式、研究原始敏感文本。
+3. 如果 /RESUME 地址里包含敏感参数，只记录脱敏后的可识别信息。
+4. 摘要要写清楚 Claude 做了什么、发现了什么、留下了什么下一步。
+5. 如果 Claude 只做只读审查，也要记录。
+```
+
+## 3. 追加模板
+
+后续每次 Claude 使用后，在“4. 使用记录”下面追加：
+
+```markdown
+### YYYY-MM-DD HH:mm：简短标题
+
+- 使用工具：
+- /RESUME 地址：
+- 对话摘要：
+- 修改文件：
+- 验证情况：
+- 后续事项：
+```
+
+## 4. 使用记录
+
+### 2026-06-28：建立 Claude 使用记录规则
+
+- 使用工具：Codex
+- /RESUME 地址：本次不是 Claude Code 会话，暂无 Claude /RESUME 地址
+- 对话摘要：根据用户要求，在 `docs/10Claude协作` 下建立 Claude 使用记录文档，明确以后只要 Claude Code 或 Claude 参与本项目，就要记录可供 `/RESUME` 的地址和对话摘要。
+- 修改文件：新增 `docs/10Claude协作/Claude使用记录.md`，并同步更新事实基准、开发日志、当前进度交接和开发说明。
+- 验证情况：文档创建后检查文件存在和 git 状态。
+- 后续事项：下一次 Claude 使用后，按本文模板追加真实 `/RESUME` 地址和摘要。
+
+### 2026-06-29：制定并细化三任务总计划（量表录入 / 聚类画像 / 前端重构）
+
+- 使用工具：Claude Code（Claude Opus 4.8）
+- /RESUME 地址：本地会话，暂无可公开的 /RESUME 地址（按本地会话记录恢复）
+- 对话摘要：用户要求协作完善并细化三任务总计划。先以只读探索评估技术栈，结论为 Flask + React 19/Vite + 原生小程序三端主流且基本最新，**不更换技术栈**（唯一偏旧的是 Flask 2.2，可小升不影响）。分三轮确认关键决策：①量表全部开放（含 GAD-7/PHQ-9/DASS/失眠/EPQ/大五等诊断筛查类，用户明确授权，实现上强制保留非诊断免责声明）、按「情绪反射弧 / 家长自助 / 学生自助」三大类 + 情绪反射弧 7 节点 + 搜索组织、用导入脚本 `build_worksheets.py` 落地；②既往 9 组数据每组单独聚类（绝不合并）、散点 + 雷达双视图、独立目录 `analysis/profiling` 可装依赖、画像解释用「客观特征 + 支持建议」口径；③前端小程序为主、全站视觉重构、风格简洁高效干净清爽优雅温暖去 AI 味。计划已细化为 28 个子任务 + 精确事实基准（带文件:行号）+ 3 张附录（量表分类映射、9 组拆分、PRFQ 口径），并按「计划供 Codex 自动化执行」要求标注【Codex 在本处如何操作】差异。
+- 修改文件：新增 `docs/00_当前事实基准/Claude计划模式.md`；更新 `docs/00_当前事实基准/项目进度统一口径.md` 第 8 节文档分类索引；更新本文件。
+- 验证情况：本阶段为只读探索 + 计划撰写，未改业务代码、未跑测试；下一步进入任务一实现并按子任务跑 validate_content / pytest / web build / 小程序检查。
+- 后续事项：执行任务一 T1-01（内容模型扩展），逐步推进至任务三；执行期需人工核对 PRFQ 历史 .sav 点数、父母自主支持报告人方向。
+
+### 2026-06-29：Codex 自动化执行 Claude计划模式三任务
+
+- 使用工具：Codex；执行依据为 Claude Code 产出的 `docs/00_当前事实基准/Claude计划模式.md`
+- /RESUME 地址：本次不是 Claude Code 会话，暂无 Claude `/RESUME` 地址；恢复入口为 `docs/02_专项进度与验收/Claude计划模式自动化执行记录_20260629.md`
+- 对话摘要：按用户要求自动化执行三任务。任务一完成量表台账、题项草稿、worksheet 构建、后端 assessment API、shared 类型和小程序测评列表/详情/结果链路。任务二按研究组 × 数据文件 × 同一问卷/同一量表生成 23 个既往数据聚合画像模型，并接入后端画像位置接口、小程序 Canvas 散点和雷达。任务三完成小程序视觉 token 收敛、公共组件重构、主路径去插画/去渐变和前端设计规范。任务结束后完成一次 review 审核，未发现 P0/P1 阻断问题。
+- 修改文件：详见 `docs/02_专项进度与验收/Claude计划模式自动化执行记录_20260629.md`；核心包括 `analysis/profiling/`、`backend/routes/assessments.py`、`backend/services/assessment_profile_service.py`、`content/assessment_worksheets.json`、`content/profiles/`、`apps/miniprogram/`、`shared/types/api.ts`、`docs/10Claude协作/前端设计规范_Claude.md`。
+- 验证情况：内容校验通过；后端目标测试 27 passed；聚类脚本生成 23 个模型且 skipped=0；小程序主路径 JS 语法检查通过；小程序样式扫描无渐变和插画资源残留；review 后补充画像位置接口 `feature_profile` 断言并重跑通过。
+- 后续事项：用微信开发者工具做端到端预览和截图验收；人工复核高优先级量表源文件、题项、维度、反向题和用户端开放范围。
+
+### 2026-06-29：聚类画像审核、命名与产品文案
+
+- 使用工具：Claude Code（Claude Opus 4.8）
+- /RESUME 地址：本地会话
+- 对话摘要：对23个聚类模型逐批审核，最终保留8个有效模型（删除CD-RISC-10×4、RSCA班次×3、PRFQ山东×2、PRFQ n=51、RFQ-8 n=51），同步更新画像报告、02_分组聚类设计、画像模型构建摘要、项目进度口径。对8个模型的16个画像完成四层人工审核（源文件核验/变量列名核验/k选择理由/理论对齐）并写入Word审核计划。为所有画像命名（如：过度确定型/外归因型/困惑回避型/行为驱动型/内省清晰型等），命名写入profile JSON的`display_name`字段、02_分组聚类设计.md画像命名列、画像聚类结果报告.md各画像行。打通后端→前端display_name传递链路，修复一处情绪弹性重复报告条目。对profiles/目录下12个过期JSON执行删除，8个有效文件保留并加display_name。新建rfq8_reflective_functioning worksheet（含完整8道题、正确选项标签），为6个已有worksheet写入profile_model_id，HPLP取高鸣聪n=309版本。为16个画像写入产品文案（product_explanation/strength_note/small_step），后端优先使用product_explanation，前端wxml新增优势提示/可以先做展示区块。
+- 修改文件：`content/profiles/*.json`（8个，加display_name+文案）、`content/assessment_worksheets.json`（7个worksheet加profile_model_id，新增rfq8）、`backend/services/assessment_profile_service.py`（透传display_name/strength_note/small_step）、`apps/miniprogram/pages/assessment-result/index.js`（用display_name作标签和profileName）、`apps/miniprogram/pages/assessment-result/index.wxml`（新增优势提示/小步展示）、`analysis/profiling/build_profile_models.py`（preserve display_names on re-run，write_reports加命名列）、`safehome1.0其他内容/画像聚类结果报告_20260629.md`（删重复条目，各行加命名前缀）、`safehome1.0其他内容/画像系统设计_Claude_20260628/02_分组聚类设计.md`（加画像命名列）
+- 验证情况：Python脚本执行均成功；display_name、product_explanation写入已通过脚本验证；前端改动为纯数据透传，未引入新依赖
+- 后续事项：为各画像补充推荐训练卡ID（recommended_card_ids）；用微信开发者工具端到端预览画像位置卡片和文案展示；RFQ-8 worksheet正式开放前需人工核对题项原文与计分规则
+
+---
+
+## 附：画像产品文案（2026-06-29定稿）
+
+### PRFQ 父母反思功能问卷（k=3）
+
+**过度确定型**（n=92，27.4%）
+- 支持性解释：你对孩子的状态有较强的把握感，能预测孩子的反应，偶尔也会判断出错。这种确定感有时是准确的理解，有时也可能是用熟悉的模式来解读孩子，而不是在当下重新观察。
+- 优势提示：你对孩子是有关注和了解的，这是亲子联结的基础。
+- 可以先做：下次孩子有出乎你意料的反应时，先停一下，问自己：他现在真正想要的是什么？不急着给答案。
+
+**外归因型**（n=108，32.1%）
+- 支持性解释：当孩子出现行为问题时，你更容易从孩子的意图或性格来解释——比如"他是故意的"。这是一种常见的快速归因方式，在压力下尤其容易启动。
+- 优势提示：你对孩子的行为是敏感的，能注意到孩子什么时候让你不舒服。
+- 可以先做：下次孩子做了让你烦躁的事，试试把"他是故意的"改成一个问题：他当时在感受什么？
+
+**困惑回避型**（n=136，40.5%）
+- 支持性解释：孩子的行为常常让你感到迷惑，同时你也觉得猜测孩子的想法没有太大意义。这两者加在一起，可能让亲子之间的心理连接感比较远。
+- 优势提示：你对自己的迷惑是诚实的，这比假装了解更真实。
+- 可以先做：找一次孩子安静的时候，不问对错，只是好奇地问他：你今天最开心的一件事是什么？
+
+### RFQ-8 反思功能问卷（k=2）
+
+**行为驱动型**（n=223，66.4%）
+- 支持性解释：你的行为和情绪有时对自己也不太透明——做了某件事、说了某句话，事后才发现说不清为什么。这很常见，尤其是在关系中压力大的时候。
+- 优势提示：你能注意到自己的行为和情绪，这是觉察的起点。
+- 可以先做：下次做了一件事后感到后悔，不是批评自己，而是好奇地问：我当时在担心什么？
+
+**内省清晰型**（n=113，33.6%）
+- 支持性解释：你对自己的感受和行为动机有较清晰的觉察，能相对清楚地知道自己为什么这么做或这么感受。这种清晰感是情绪调节的重要资源。
+- 优势提示：自我觉察是你的稳定器，在关系中也能给对方带来更多安全感。
+- 可以先做：把这种觉察用到一次对话里——当你感到不舒服时，试着说出来，而不是等待对方猜。
+
+### RSCA 青少年心理韧性量表（k=2）
+
+**独立应对型**（n=322，49.4%）
+- 支持性解释：遇到困难或心情不好时，你更倾向于独自消化，找不到或不去找合适的倾诉对象。这不是弱点，有时是习惯，有时是还没找到合适的人。
+- 优势提示：独立面对压力是有韧性的，你有自己的方式撑过去。
+- 可以先做：找一个你觉得还算安全的人，下次遇到麻烦只说一件事，不需要说全部。
+
+**社会联结型**（n=330，50.6%）
+- 支持性解释：遇到困难时，你能找到可以求助或倾诉的人。这种能力在压力大的时候是真正的资源，说明你在关系里有一定的安全感。
+- 优势提示：你能使用身边的支持，这是保护性资源中很重要的一项。
+- 可以先做：想想上次帮助过你的那个人，用一种方式让他们知道你感激他们的存在。
+
+### 青少年情绪弹性问卷（k=2）
+
+**情绪波动型**（n=313，49.4%）
+- 支持性解释：你对批评和挫折比较敏感，不好的情绪需要较长时间才能平复。这说明你的情绪系统是敏锐的，只是暂时还缺少一些让情绪流动起来的方式。
+- 优势提示：高敏感意味着你能更深地感受事情，这也是共情力的来源。
+- 可以先做：下次情绪来了，给自己5分钟：不评判、不分析，只是注意自己的身体感觉在哪里。
+
+**情绪稳健型**（n=321，50.6%）
+- 支持性解释：你在压力和挫折中能找到情绪出口，不好的感受不容易在你身上停留太久。这种弹性是可以继续练习和维护的。
+- 优势提示：情绪恢复能力是你的保护性资源，在帮助他人时也能起到稳定作用。
+- 可以先做：回想一次你让自己从坏心情里走出来的经历，写下那一刻你做了什么，留作下次参考。
+
+### HPLP 健康促进生活方式量表（k=2，两组样本共用）
+
+**健康被动型**
+- 支持性解释：你较少主动寻求专业健康建议或做自我健康检查，可能觉得没有必要，或者不太清楚怎么开始。
+- 优势提示：有意识到健康管理的重要性，本身就是第一步。
+- 可以先做：选一件最小的事开始——比如查一下附近医院的位置，或者记录一天的作息。
+
+**健康主动型**
+- 支持性解释：你有主动管理健康的习惯，能定期进行自我检查并寻求专业建议。这种主动性对长期健康维护很有价值。
+- 优势提示：健康自我管理能力是高资源状态，有助于在压力下保持稳定。
+- 可以先做：把你现在坚持的一个健康习惯，分享给一个你关心的人。
+
+### SCS 自我关怀量表（k=2）
+
+**自我批判型**（n=91，43.5%）
+- 支持性解释：心情不好的时候，你比较难对自己温和——可能容易自我批评或者情绪很难平稳下来。这在经历压力或失败时会让你更消耗。
+- 优势提示：你对自己有高标准，这说明你在意成长和做得更好。
+- 可以先做：下次对自己说苛刻的话时，想象你在对一个好朋友说同样的情况——你会怎么回应？用那句话来代替。
+
+**自我关爱型**（n=118，56.5%）
+- 支持性解释：心情不好时，你能给自己一些关怀和善意，情绪不容易长时间卡住。这种对自己的温柔是一种主动的自我照料，也是帮助他人的前提。
+- 优势提示：自我关怀不是自私，是让自己能持续有能力照顾和支持别人。
+- 可以先做：找一个本周让你感到满意的小事，不需要很大，只是允许自己承认它。
+
+### 一般调节聚焦问卷（k=2）
+
+**调节低激活型**（n=358，50.7%）
+- 支持性解释：在学业目标追求和规避失败上，你目前的动机激活程度相对较低。这可能是正在休息的状态，也可能是缺少一个让你觉得有意义的方向。
+- 优势提示：低激活也可以是一种稳定，你没有在焦虑中消耗自己。
+- 可以先做：找一件最近三天里你愿意做一小步的事——不是应该做，而是愿意做。
+
+**调节高激活型**（n=348，49.3%）
+- 支持性解释：你在追求目标和避免失败上都有较高的动机激活，行动意愿比较强。注意区分哪些是你真正想要的，哪些是焦虑在推着你走。
+- 优势提示：高激活状态意味着你有能量，关键是找到把这个能量用在哪里。
+- 可以先做：把本周最想完成的一件事写下来，只选一件，其他的先放进清单等待。
+
+### 2026-06-30：Codex 按 Claude计划模式执行任务四至任务五
+
+- 使用工具：Codex；执行依据为 Claude Code 产出的 `docs/00_当前事实基准/Claude计划模式.md`
+- /RESUME 地址：本次不是 Claude Code 会话，暂无 Claude `/RESUME` 地址；恢复入口为 `docs/02_专项进度与验收/Claude计划模式自动化执行记录_20260630.md`
+- 对话摘要：用户要求先审核 Claude计划模式中的任务四至任务五，再自动开发到完成。任务四完成 `assessment_worksheets` 入库、量表导入脚本、数据库优先读取、后台量表 CRUD、schema 版本升级、`/healthz/deep` 量表同步检查、测评结果画像落点缓存、Web 研究看板 ECharts 图表和 Web/小程序登录注册接入。任务五完成 20 张训练卡、测评维度推荐、情绪日记推荐、画像簇训练卡映射、小程序训练卡页和反馈页硬编码修复。
+- 修改文件：详见 `docs/02_专项进度与验收/Claude计划模式自动化执行记录_20260630.md`；核心包括 `backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/services/training_recommendation_service.py`、`content/training_cards.json`、`content/assessment_training_map.json`、`content/diary_training_map.json`、`content/profiles/*.json`、`analysis/profiling/suggest_cluster_card_map.py`、`apps/web/`、`apps/miniprogram/` 和 `shared/`。
+- 验证情况：Python 编译通过；内容校验通过；量表导入脚本幂等通过；任务相关测试 20 passed；后端完整测试 127 passed；Web build 通过但提示 ECharts chunk 大；小程序 JS 和 JSON 静态检查通过。
+- 后续事项：人工配置真实腾讯云 MySQL 和 CloudBase 环境变量后复测 `/healthz/deep`；浏览器验收 Web 研究看板图表；微信开发者工具验收登录、注册、反馈页、训练卡页和测评结果页。
+
+### 2026-07-02：Codex 按 Claude计划模式执行任务九审查
+
+- 使用工具：Codex；执行依据为 `docs/00_当前事实基准/Claude计划模式.md` 中任务九 T9-01 至 T9-31
+- /RESUME 地址：本次不是 Claude Code 会话，暂无 Claude `/RESUME` 地址；恢复入口为 `docs/02_专项进度与验收/Claude计划模式任务九执行记录_20260702.md`
+- 对话摘要：用户要求按任务九 31 项审查小程序、请求层、CloudBase、SQLite/MySQL、Flask、argparse、项目结构、环境变量、logging 和异常追踪。已完成本地自动审查、修复、验收工程、外部验收脚本、数据库字段检查表、CloudBase 发布验收清单和上传包构建脚本。
+- 修改文件：详见 `docs/02_专项进度与验收/Claude计划模式任务九执行记录_20260702.md`；核心包括 `backend/app.py`、`backend/tests/test_healthz.py`、`backend/tests/test_text_encoding_roundtrip.py`、`apps/miniprogram/services/api.js`、多个小程序页面失败态、`apps/web/src/services/adminToken.ts`、`shared/constants/api.ts`、`scripts/run_task9_review_checks.ps1`、`scripts/run_task9_external_checks.ps1`、`scripts/build_task9_cloudbase_package.ps1`、`scripts/verify_task9_cloudbase_package.ps1`、`scripts/audit_task9_completion.ps1` 和任务九相关文档。
+- 验证情况：后端测试 143 passed；Web build 通过；小程序 JS/JSON 静态检查通过；本地 SQLite 备份恢复演练通过；任务九上传包校验通过；严格完成审计脚本因 CloudBase `/readyz` 404 失败；CloudBase `/healthz` 和 `/healthz/deep` 返回 200，且 `/healthz/deep` 显示 MySQL 可用；本机 `docker` 命令不存在，不能执行本地 Docker build。
+- 后续事项：将 `.codex_tmp/safehome-cloudbase-task9-20260702_135817.zip` 发布到 CloudBase 服务 `flask-gh3l`，重新运行 `scripts/run_task9_external_checks.ps1 -SkipSqliteBackupRestore`，再做微信开发者工具和真机验收。
+
+### 2026-07-03：Codex 继续补强任务九发布包校验
+
+- 使用工具：Codex；延续任务九完成审计
+- /RESUME 地址：本次不是 Claude Code 会话，恢复入口仍为 `docs/02_专项进度与验收/Claude计划模式任务九执行记录_20260702.md`
+- 对话摘要：继续在 CloudBase 发布权限缺失的条件下补强本地可交付物。为外部检查增加重试参数，为 CloudBase 上传包生成固定 latest 文件和 SHA256 sidecar，让校验脚本默认优先检查 latest 并校验 SHA256，同时把 Python 语法检查改为内存 compile，避免并发 pycache 写入冲突。
+- 修改文件：`scripts/run_task9_external_checks.ps1`、`scripts/build_task9_cloudbase_package.ps1`、`scripts/verify_task9_cloudbase_package.ps1`、任务九执行记录、发布清单、开发日志、当前进度交接、开发说明和统一口径。
+- 验证情况：生成并校验 `.codex_tmp/safehome-cloudbase-task9-latest.zip`；SHA256 为 `E2FB72F9291CF70074A4D993EE7F71209901A7A6B0E7C5E7EA140B826751E333`；CloudBase `/healthz` 和 `/healthz/deep` 可返回 200，`/readyz` 重试后仍为 404。
+- 后续事项：上传 latest 包到 CloudBase 服务 `flask-gh3l`，发布后运行 `scripts/run_task9_external_checks.ps1 -SkipSqliteBackupRestore`、`scripts/audit_task9_completion.ps1` 和 `scripts/write_task9_audit_snapshot.ps1`。
+
+### 2026-07-03：Codex 补齐任务九外部人工验收证据表
+
+- 使用工具：Codex；延续任务九完成审计
+- /RESUME 地址：本次不是 Claude Code 会话，恢复入口仍为 `docs/02_专项进度与验收/Claude计划模式任务九执行记录_20260702.md`
+- 对话摘要：新增任务九专用外部人工验收证据表，覆盖 CloudBase 发布证据、发布后命令证据、微信开发者工具页面证据和真机验收证据，并纳入严格完成审计必备交付物。
+- 修改文件：`docs/02_专项进度与验收/任务九外部人工验收证据表_20260703.md`、`scripts/audit_task9_completion.ps1`、任务九执行记录、开发日志、当前进度交接、开发说明和统一口径。
+- 验证情况：证据表已创建，严格完成审计已检查该文件存在；任务九仍因 CloudBase `/readyz` 404 不能完成。
+- 后续事项：发布 latest 包后按证据表补齐外部验收记录。
+
+### 2026-07-03：Codex 补齐任务九外部证据校验脚本
+
+- 使用工具：Codex；延续任务九完成审计
+- /RESUME 地址：本次不是 Claude Code 会话，恢复入口仍为 `docs/02_专项进度与验收/Claude计划模式任务九执行记录_20260702.md`
+- 对话摘要：新增外部证据校验脚本，要求任务九外部人工验收证据表全部复选项完成，并将 `allow_complete` 改为 `yes` 后，严格完成审计才可能通过。
+- 修改文件：`scripts/verify_task9_external_evidence.ps1`、`scripts/audit_task9_completion.ps1`、`scripts/run_task9_review_checks.ps1`、任务九外部证据表和事实基准文档。
+- 验证情况：`verify_task9_external_evidence.ps1` 当前按预期失败，提示仍有 27 个未勾选项；任务九仍因 CloudBase `/readyz` 404 不能完成。
+- 后续事项：发布 latest 包后，完成微信开发者工具和真机验收，勾选证据表并设置 `allow_complete: yes`，再运行严格完成审计。
+
+### 2026-07-04：Codex 修复任务九 CloudBase 发布包超长文件名
+
+- 使用工具：Codex；根据用户提供的 CloudBase 控制台截图和部署日志排查。
+- /RESUME 地址：本次不是 Claude Code 会话，恢复入口仍为 `docs/02_专项进度与验收/Claude计划模式任务九执行记录_20260702.md`。
+- 对话摘要：用户上传任务九 CloudBase 包后，版本 `flask-gh3l-010` 构建失败。日志显示失败发生在检出 ZIP 包阶段，`content/profiles/... File name too long`。判断不是 CPU、内存、端口或 Flask 启动问题，而是 ZIP 解压时遇到超长中文文件名。已改为在发布包临时目录中短名化 `content/profiles/*.json`，源文件和 JSON 内 `model_id` 保持不变。
+- 修改文件：`scripts/build_task9_cloudbase_package.ps1`、`scripts/verify_task9_cloudbase_package.ps1`、`docs/00_当前事实基准/开发日志.md`、`docs/00_当前事实基准/当前进度交接.md`、`docs/00_当前事实基准/开发说明.md`、`docs/00_当前事实基准/项目进度统一口径.md`、`docs/10Claude协作/Claude使用记录.md`。
+- 验证情况：`scripts/build_task9_cloudbase_package.ps1` 通过；`scripts/verify_task9_cloudbase_package.ps1` 通过；`scripts/run_task9_review_checks.ps1 -SkipHeavyChecks` 通过；ZIP 内 `content/profiles` 条目已变为 `profile_001_85aea5e3aa28.json` 等短文件名。
+- 后续事项：重新上传 `.codex_tmp/safehome-cloudbase-task9-latest.zip`，SHA256=`4821AEA9C7E1C3422C541A7B0C50B9A7E190A9352B6BEAFD7860BDBBC0301F74`，确认 CloudBase 不再出现 `File name too long`，再检查 `/readyz`。
+
+### 2026-07-04：Codex 验证 CloudBase 发布成功
+
+- 使用工具：Codex；根据用户提供的 CloudBase 成功上线截图继续验收。
+- /RESUME 地址：本次不是 Claude Code 会话，恢复入口仍为 `docs/02_专项进度与验收/Claude计划模式任务九执行记录_20260702.md`。
+- 对话摘要：用户已成功发布 CloudBase 服务 `flask-gh3l`，线上版本 `flask-gh3l-012`，发布时间 `2026-07-04 01:36:51`。复跑外部检查确认 `/healthz`、`/readyz`、`/healthz/deep` 均返回 200，审计快照状态变为 `ready_for_manual_miniprogram_acceptance`。严格审计仍未通过，剩余阻断为外部人工验收证据表中微信开发者工具和真机验收项未完成。
+- 修改文件：`docs/02_专项进度与验收/任务九外部人工验收证据表_20260703.md`、`scripts/write_task9_audit_snapshot.ps1`、`docs/02_专项进度与验收/task9_completion_audit_snapshot_20260703.md`、`docs/02_专项进度与验收/task9_completion_audit_snapshot_20260703.json`、事实基准文档和本记录。
+- 验证情况：`scripts/run_task9_external_checks.ps1 -SkipSqliteBackupRestore` 通过；`scripts/write_task9_audit_snapshot.ps1` 通过；`scripts/audit_task9_completion.ps1` 未通过，原因是 `verify_task9_external_evidence.ps1` 提示外部证据表仍有未勾选项。
+- 后续事项：按任务九外部人工验收证据表完成微信开发者工具和真机验收，全部勾选后再把 `allow_complete` 改为 `yes` 并运行严格完成审计。

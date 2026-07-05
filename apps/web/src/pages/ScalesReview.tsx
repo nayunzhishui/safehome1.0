@@ -13,9 +13,11 @@ interface ScaleCatalogItem {
   review_status: string;
   enabled: boolean;
   first_batch_candidate?: boolean;
+  excluded_from_user_flow?: boolean;
   item_status?: string;
   scoring_status?: string;
   not_open_reason?: string;
+  exclusion_reason?: string;
   recommended_card_ids?: string[];
   notes?: string;
 }
@@ -62,6 +64,7 @@ export function ScalesReview() {
   const enabledScales = scales.filter((scale) => scale.enabled);
   const firstBatch = scales.filter((scale) => scale.first_batch_candidate);
   const extracted = scales.filter((scale) => scale.item_status === "draft_extracted");
+  const excluded = scales.filter((scale) => scale.excluded_from_user_flow);
   const blocked = scales.filter((scale) => !scale.enabled);
 
   return (
@@ -78,18 +81,24 @@ export function ScalesReview() {
           <a className="secondaryButton" href="/content/review">
             内容总览
           </a>
+          <a className="secondaryButton" href="/content/worksheets">
+            测评题库
+          </a>
           <a className="secondaryButton" href="/content/rules">
             规则
           </a>
         </div>
       </div>
 
-      <div className="status success">已读取 {scalesCatalog.version}。当前页面只读展示，不修改 content JSON。</div>
+      <div className="status success">
+        已读取 {scalesCatalog.version}。当前页面只读展示量表目录；小程序实际可见入口以“测评题库管理”和 assessment_worksheets 为准。
+      </div>
 
       <div className="metricGrid" aria-label="量表目录概况">
         <MetricCard label="量表总数" value={scales.length} />
         <MetricCard label="第一批候选" value={firstBatch.length} />
         <MetricCard label="题项草稿" value={extracted.length} />
+        <MetricCard label="已剔除" value={excluded.length} />
         <MetricCard label="用户端开放" value={enabledScales.length} />
       </div>
 
@@ -135,8 +144,10 @@ export function ScalesReview() {
               <DetailRow label="题项状态" value={statusText(selectedScale.item_status)} />
               <DetailRow label="计分状态" value={statusText(selectedScale.scoring_status)} />
               <DetailRow label="第一批候选" value={selectedScale.first_batch_candidate ? "是" : "否"} />
+              <DetailRow label="剔除用户端流程" value={selectedScale.excluded_from_user_flow ? "是" : "否"} />
               <DetailRow label="推荐训练卡" value={(selectedScale.recommended_card_ids || []).join("、") || "暂无"} />
               <DetailRow label="不能开放原因" value={selectedScale.not_open_reason || "未完成人工复核前默认不开放。"} />
+              <DetailRow label="剔除原因" value={selectedScale.exclusion_reason || "未标记为剔除。"} />
               <DetailRow label="来源文件" value={(selectedScale.source_files || []).join("\n")} />
               <DetailRow label="备注" value={selectedScale.notes} />
 

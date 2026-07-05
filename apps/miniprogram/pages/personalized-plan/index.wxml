@@ -1,0 +1,46 @@
+<view class="safe-page plan-page">
+  <view class="page-head">
+    <text class="safe-h1">个性化训练方案</text>
+    <text class="safe-subtitle">根据最近测评和阶段性画像，推荐更适合先练的小动作。</text>
+  </view>
+
+  <view wx:if="{{!loading && plan && !plan.has_assessment}}" class="safe-card empty-card">
+    <text class="safe-h3">{{plan.next_action.title}}</text>
+    <text class="safe-body">{{plan.next_action.description}}</text>
+    <button class="safe-primary-button" bindtap="openAssessment">去测一测</button>
+  </view>
+
+  <view wx:for="{{planItems}}" wx:key="source_result_id" class="safe-card item-card">
+    <view class="item-head">
+      <text class="item-tag">{{item.sourceLabel}}</text>
+      <text class="item-source">{{item.source_worksheet.title}}</text>
+    </view>
+    <text wx:if="{{item.cluster_name}}" class="item-title">{{item.cluster_name}}</text>
+    <text class="item-reason">{{item.reason}}</text>
+    <view class="card-list">
+      <view wx:for="{{item.cards}}" wx:for-item="card" wx:key="id" class="card-chip">
+        <text class="chip-title">{{card.title}}</text>
+        <text wx:if="{{card.duration_minutes}}" class="chip-meta">{{card.duration_minutes}} 分钟</text>
+      </view>
+    </view>
+    <button class="safe-primary-button" data-card-ids="{{item.cardIdsText}}" bindtap="openCard">打开训练卡</button>
+    <text class="item-boundary">{{item.boundary_notice}}</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-card empty-card">
+    <text class="safe-body">正在读取训练方案...</text>
+  </view>
+
+  <view wx:if="{{!loading && errorMessage}}" class="safe-card empty-card">
+    <text class="safe-h3">暂时没能读取</text>
+    <text class="safe-body">{{errorMessage}}</text>
+    <button class="safe-primary-button" bindtap="loadPlan">重试</button>
+  </view>
+
+  <view wx:if="{{!loading && plan && plan.has_assessment && !planItems.length}}" class="safe-card empty-card">
+    <text class="safe-h3">暂未匹配到训练卡</text>
+    <text class="safe-body">可以先从通用训练里选择一张最容易完成的卡。</text>
+  </view>
+
+  <view class="boundary-note">{{boundaryNotice}}</view>
+</view>

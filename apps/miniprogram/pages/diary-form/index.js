@@ -114,7 +114,7 @@ Page({
       });
     } catch (error) {
       this.setData({
-        errorMessage: error.message || "提交失败，请确认 backend 是否已启动。",
+        errorMessage: error.message || "这次记录暂时没能保存，可能是网络的原因。你写的内容还在，检查网络后再点一次保存就好。",
       });
     } finally {
       this.setData({ submitting: false });

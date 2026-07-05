@@ -1,11 +1,11 @@
 .course-card {
   width: 100%;
   display: flex;
-  gap: 22rpx;
-  padding: 22rpx;
+  gap: 18rpx;
+  padding: 24rpx;
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-md);
-  background: rgba(255, 253, 248, 0.96);
+  background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
   text-align: left;
 }
@@ -16,43 +16,12 @@
 
 .course-cover {
   position: relative;
-  width: 162rpx;
-  height: 142rpx;
+  width: 10rpx;
+  min-height: 142rpx;
   flex: 0 0 auto;
   overflow: hidden;
-  border-radius: var(--safe-radius-sm);
-  background: linear-gradient(135deg, var(--safe-primary-pale), var(--safe-orange-soft));
-}
-
-.cover-sun {
-  position: absolute;
-  top: 18rpx;
-  right: 18rpx;
-  width: 34rpx;
-  height: 34rpx;
-  border-radius: 50%;
-  background: var(--safe-orange);
-}
-
-.cover-tree {
-  position: absolute;
-  left: 20rpx;
-  bottom: 0;
-  width: 42rpx;
-  height: 88rpx;
-  border-radius: 42rpx 42rpx 0 0;
-  background: #9fbc94;
-}
-
-.cover-family {
-  position: absolute;
-  right: 24rpx;
-  bottom: 18rpx;
-  width: 70rpx;
-  height: 74rpx;
-  border-radius: 44rpx 44rpx 18rpx 18rpx;
-  background: var(--safe-orange);
-  box-shadow: -34rpx 18rpx 0 -8rpx var(--safe-primary);
+  border-radius: 999rpx;
+  background: var(--safe-primary);
 }
 
 .course-content {
@@ -68,7 +37,7 @@
 
 .course-title {
   color: var(--safe-title);
-  font-size: 30rpx;
+  font-size: 29rpx;
   font-weight: 800;
 }
 

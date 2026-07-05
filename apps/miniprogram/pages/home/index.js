@@ -25,6 +25,10 @@ Page({
   data: {
     todayRecordCount: 0,
     todayRecordCountReady: false,
+    thermometerRecordCount: 0,
+    thermometerRecordReady: false,
+    unreadMessageCount: 0,
+    latestRecord: null,
     hotTopics: [
       {
         id: "exam-setback",
@@ -81,7 +85,7 @@ Page({
         key: "diary",
         title: "情绪日记",
         subtitle: "记录一次",
-        iconText: "✎",
+        iconText: "记",
         accentColor: "#4E7C6B",
         accentBg: "#E7F0E2",
       },
@@ -89,7 +93,7 @@ Page({
         key: "training",
         title: "训练中心",
         subtitle: "选择练习",
-        iconText: "⌁",
+        iconText: "练",
         accentColor: "#4E7C6B",
         accentBg: "#EEF4E8",
       },
@@ -101,63 +105,47 @@ Page({
         accentColor: "#8069A8",
         accentBg: "#F1ECF8",
       },
-      {
-        key: "supervision",
-        title: "人工支持",
-        subtitle: "需要时提交",
-        iconText: "●",
-        accentColor: "#6A86B4",
-        accentBg: "#E9F0FA",
-      },
     ],
-    latestRecord: {
-      mood: "有点烦",
-      time: "昨天 21:30",
-      trigger: "孩子写作业磨蹭",
-      status: "支持性反馈已完成",
-    },
-    growthStats: [
-      {
-        label: "连续打卡",
-        value: "7天",
-      },
-      {
-        label: "情绪日记",
-        value: "12篇",
-      },
-      {
-        label: "训练完成",
-        value: "8次",
-      },
-    ],
-    recommendedTask: {
-      title: "情绪命名练习",
-      subtitle: "先把感受说清楚，再选择下一步回应",
-      stage: "今日推荐",
-      duration: "3-5 分钟",
-      scenario: "亲子冲突前、语气升高前",
-      tag: "推荐",
-    },
   },
 
   onShow() {
-    this.refreshTodayRecordCount();
+    this.refreshHomeData();
   },
 
-  async refreshTodayRecordCount() {
+  async refreshHomeData() {
     try {
       const todayKey = formatLocalDate(new Date());
-      const result = await api.listDiaries({ limit: 100 });
+      const [result, stats, thermometerDay] = await Promise.all([
+        api.listDiaries({ limit: 20 }),
+        api.getProfileStats().catch(() => null),
+        api.getEmotionThermometerDay({ date: todayKey }).catch(() => null),
+      ]);
       const items = result && Array.isArray(result.items) ? result.items : [];
       const todayRecordCount = items.filter((item) => getDiaryDateKey(item) === todayKey).length;
+      const thermometerRecordCount = thermometerDay && thermometerDay.summary ? thermometerDay.summary.count || 0 : 0;
+      const latest = items[0] || null;
       this.setData({
         todayRecordCount,
         todayRecordCountReady: true,
+        thermometerRecordCount,
+        thermometerRecordReady: !!thermometerDay,
+        unreadMessageCount: stats ? stats.unread_message_count || 0 : 0,
+        latestRecord: latest
+          ? {
+              mood: latest.parent_emotion || "一次记录",
+              time: (latest.event_time || latest.created_at || "").slice(0, 16).replace("T", " "),
+              trigger: latest.scene || latest.event_description || "亲子互动",
+              status: "查看复盘",
+            }
+          : null,
       });
     } catch (error) {
       this.setData({
         todayRecordCount: 0,
         todayRecordCountReady: false,
+        thermometerRecordCount: 0,
+        thermometerRecordReady: false,
+        latestRecord: null,
       });
     }
   },
@@ -170,8 +158,16 @@ Page({
     wx.navigateTo({ url: "/pages/diary-form/index" });
   },
 
+  openThermometer() {
+    wx.navigateTo({ url: "/pages/thermometer/index" });
+  },
+
   openWeeklyReport() {
     wx.navigateTo({ url: "/pages/weekly-report/index" });
+  },
+
+  openMessages() {
+    wx.navigateTo({ url: "/pages/messages/index" });
   },
 
   openIntegrationTest() {

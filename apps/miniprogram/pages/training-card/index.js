@@ -35,7 +35,11 @@ Page({
     try {
       const result = cardIds.length ? await api.listCards() : await api.recommendCards({ tags, limit: 3 });
       const allCards = result.items || [];
-      const selectedCards = cardIds.length ? allCards.filter((card) => cardIds.includes(card.id)) : allCards.slice(0, 3);
+      const cardMap = {};
+      allCards.forEach((card) => {
+        cardMap[card.id] = card;
+      });
+      const selectedCards = cardIds.length ? cardIds.map((cardId) => cardMap[cardId]).filter(Boolean) : allCards.slice(0, 3);
       this.setData({
         cards: selectedCards.map((card, index) => this.formatCard(card, index)),
         loading: false,
@@ -44,7 +48,7 @@ Page({
       this.setData({
         loading: false,
         errorMessage: "训练卡暂时没有加载成功",
-        errorDetail: error.message || "请确认 backend 是否已启动。",
+        errorDetail: error.message || "请检查网络后再试一次。",
       });
     }
   },
@@ -56,13 +60,13 @@ Page({
       typeLabel: this.getTypeLabel(card.type),
       tagsText: (card.tags || []).join("、"),
       durationText: card.duration_minutes ? `${card.duration_minutes} 分钟` : "1 次小练习",
-      scenarioText: "适合这次记录中的互动线索",
-      todayGoal: "今天先完成一个能做到的小回应动作。",
+      scenarioText: (card.suitable_for || [])[0] || "适合这次记录中的互动线索",
+      todayGoal: card.purpose || "今天先完成一个能做到的小回应动作。",
       stepsList: (card.steps || []).map((step, stepIndex) => ({
         text: step,
         numberText: `${stepIndex + 1}`,
       })),
-      reflectionPrompt: "练习后可以简单记一句：这次我先做了什么，情绪有没有一点变化？",
+      reflectionPrompt: (card.reflection_questions || [])[0] || "练习后可以简单记一句：这次我先做了什么，情绪有没有一点变化？",
     };
   },
 

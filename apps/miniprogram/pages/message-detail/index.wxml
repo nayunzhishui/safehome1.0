@@ -1,0 +1,19 @@
+<view class="safe-page message-detail-page">
+  <view wx:if="{{loading}}" class="safe-card state-card">正在打开消息...</view>
+  <view wx:elif="{{errorMessage}}" class="safe-card state-card">{{errorMessage}}</view>
+  <view wx:else class="safe-card safe-card--hero">
+    <text class="detail-kicker">{{message.message_type === 'supervision_feedback' ? '人工补充反馈' : '消息提醒'}}</text>
+    <text class="detail-title">{{message.title}}</text>
+    <text class="detail-time">{{message.created_at}}</text>
+    <text class="detail-body">{{message.body || '暂无更多内容。'}}</text>
+  </view>
+
+  <view class="safe-section">
+    <view class="boundary-card">
+      <text class="boundary-title">先确认边界</text>
+      <text class="boundary-text">这里的内容适合补充理解一条记录，不适合处理紧急安全风险。如正在经历自伤、自杀、暴力、失控或其他安全风险，请先找现实支持。</text>
+    </view>
+  </view>
+
+  <button class="safe-primary-button bottom-action" bindtap="goMessages">返回消息列表</button>
+</view>

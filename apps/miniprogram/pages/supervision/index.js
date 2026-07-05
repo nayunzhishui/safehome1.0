@@ -48,7 +48,7 @@ Page({
       });
     } catch (error) {
       this.setData({
-        errorMessage: error.message || "提交失败，请确认 backend 是否已启动。",
+        errorMessage: error.message || "这次提交暂时没能成功，请检查网络后再试一次。",
       });
     } finally {
       this.setData({ submitting: false });

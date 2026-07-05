@@ -1,10 +1,10 @@
 .training-card {
   width: 100%;
   display: block;
-  padding: 28rpx;
+  padding: 26rpx;
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-md);
-  background: linear-gradient(135deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 242, 226, 0.88) 100%);
+  background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
 }
 
@@ -19,20 +19,20 @@
 }
 
 .training-mark {
-  width: 76rpx;
-  height: 76rpx;
+  width: 66rpx;
+  height: 66rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  border-radius: 50%;
-  background: var(--safe-primary);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-primary-pale);
 }
 
 .mark-face {
-  width: 34rpx;
-  height: 34rpx;
-  border: 4rpx solid #ffffff;
+  width: 28rpx;
+  height: 28rpx;
+  border: 4rpx solid var(--safe-primary);
   border-radius: 50%;
 }
 
@@ -50,7 +50,7 @@
 
 .training-title {
   color: var(--safe-title);
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 800;
 }
 
@@ -76,7 +76,7 @@
 
 .training-arrow {
   color: var(--safe-primary);
-  font-size: 42rpx;
+  font-size: 36rpx;
   line-height: 1;
 }
 

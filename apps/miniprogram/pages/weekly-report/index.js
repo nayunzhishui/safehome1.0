@@ -44,7 +44,7 @@ Page({
     } catch (error) {
       this.setData({
         loading: false,
-        errorMessage: error.message || "周度复盘获取失败，请确认 backend 是否已启动。",
+        errorMessage: error.message || "周度复盘暂时没能加载，请检查网络后再试一次。",
       });
     }
   },

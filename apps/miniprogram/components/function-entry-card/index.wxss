@@ -1,13 +1,13 @@
 .entry-card {
-  min-height: 198rpx;
+  min-height: 184rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24rpx 16rpx;
+  padding: 24rpx 18rpx;
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-md);
-  background: rgba(255, 253, 248, 0.96);
+  background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
 }
 
@@ -16,14 +16,14 @@
 }
 
 .entry-icon {
-  width: 78rpx;
-  height: 78rpx;
+  width: 68rpx;
+  height: 68rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 18rpx;
   border-radius: var(--safe-radius-sm);
-  font-size: 34rpx;
+  font-size: 30rpx;
   font-weight: 800;
 }
 
@@ -35,7 +35,7 @@
 
 .entry-title {
   color: var(--safe-title);
-  font-size: 28rpx;
+  font-size: 27rpx;
   font-weight: 800;
 }
 

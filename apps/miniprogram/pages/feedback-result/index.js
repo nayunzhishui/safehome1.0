@@ -66,7 +66,7 @@ Page({
     } catch (error) {
       this.setData({
         loading: false,
-        errorMessage: error.message || "反馈生成失败，请确认 backend 是否已启动。",
+        errorMessage: error.message || "反馈暂时没能生成，请检查网络后再试一次。你的这次记录已经保存好了。",
       });
     }
   },
@@ -110,9 +110,9 @@ Page({
   },
 
   buildEmotionOverview(feedback, isHighRisk) {
-    const tags = feedback.tags || [];
     const labels = feedback.labels || [];
-    const labelsText = labels.join("、");
+    const tags = feedback.tags || [];
+    const labelsText = labels.length ? labels.join(" / ") : "";
 
     if (isHighRisk) {
       return {
@@ -123,7 +123,7 @@ Page({
     }
 
     return {
-      mainEmotion: tags.includes("high_emotion_intensity") ? "着急 / 生气 / 委屈" : "焦虑 / 着急 / 困惑",
+      mainEmotion: labelsText || feedback.trigger_summary || "这次记录中的情绪线索",
       intensity: tags.includes("high_emotion_intensity") ? "中等偏高" : "中等",
       trigger: feedback.trigger_summary || labelsText || "一次具体亲子互动事件",
     };

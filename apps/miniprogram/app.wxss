@@ -1,48 +1,47 @@
 page {
-  --safe-primary: #578b5f;
-  --safe-primary-soft: #e9f2df;
-  --safe-primary-pale: #f3f8ee;
-  --safe-primary-deep: #2f5f48;
-  --safe-orange: #f47f45;
-  --safe-orange-soft: #fff1e4;
-  --safe-yellow: #f1c86d;
-  --safe-peach: #ffe3d2;
-  --safe-blue: #6f9cc5;
-  --safe-blue-soft: #eef6fb;
-  --safe-purple: #8767b7;
-  --safe-purple-soft: #f3effb;
-  --safe-cyan: #b7d7d6;
-  --safe-bg: #fff8ee;
-  --safe-bg-soft: #f7efe6;
-  --safe-bg-leaf: #f6faf2;
-  --safe-card: #fffdf8;
+  --safe-primary: #4f7c6b;
+  --safe-primary-soft: #e8f0ea;
+  --safe-primary-pale: #f4f8f5;
+  --safe-primary-deep: #2f5b4d;
+  --safe-orange: #d98243;
+  --safe-orange-soft: #fbf0e6;
+  --safe-yellow: #d9b85d;
+  --safe-peach: #f7e5d8;
+  --safe-blue: #627f9f;
+  --safe-blue-soft: #eef3f7;
+  --safe-purple: #746390;
+  --safe-purple-soft: #f1eef6;
+  --safe-cyan: #a8c8c4;
+  --safe-bg: #f7f8f5;
+  --safe-bg-soft: #f2f4f0;
+  --safe-bg-leaf: #f7faf5;
+  --safe-card: #ffffff;
   --safe-card-strong: #ffffff;
   --safe-title: #202622;
-  --safe-text: #555f59;
-  --safe-muted: #7d8580;
-  --safe-border: #e4dccf;
-  --safe-border-strong: #d4cbbd;
+  --safe-text: #535f58;
+  --safe-muted: #78817b;
+  --safe-border: #dfe5dc;
+  --safe-border-strong: #cbd5ca;
   --safe-success: #578b5f;
   --safe-warning: #e79a42;
   --safe-danger: #d76f67;
   --safe-info: #6f8fb8;
-  --safe-shadow-card: 0 16rpx 38rpx rgba(52, 66, 58, 0.08);
-  --safe-shadow-float: 0 22rpx 54rpx rgba(52, 66, 58, 0.12);
-  --safe-radius-xs: 12rpx;
+  --safe-shadow-card: 0 8rpx 20rpx rgba(37, 55, 44, 0.05);
+  --safe-shadow-float: 0 14rpx 34rpx rgba(37, 55, 44, 0.08);
+  --safe-radius-xs: 8rpx;
   --safe-radius-sm: 16rpx;
-  --safe-radius-md: 24rpx;
-  --safe-radius-lg: 32rpx;
+  --safe-radius-md: 16rpx;
+  --safe-radius-lg: 20rpx;
   --safe-radius-pill: 999rpx;
   --safe-page-x: 40rpx;
   --safe-section-gap: 40rpx;
   --safe-card-pad: 28rpx;
   --safe-touch: 88rpx;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 8% 0%, rgba(220, 233, 214, 0.72), transparent 360rpx),
-    linear-gradient(180deg, #fffdf8 0%, var(--safe-bg) 46%, var(--safe-bg-leaf) 100%);
+  background: var(--safe-bg);
   color: var(--safe-title);
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Heiti SC", "STHeiti", "SimHei", "Microsoft YaHei", "PingFang SC", sans-serif;
+  line-height: 1.7;
   font-size: 28rpx;
 }
 
@@ -70,10 +69,7 @@ textarea {
   min-height: 100vh;
   padding: var(--safe-page-x);
   padding-bottom: calc(44rpx + env(safe-area-inset-bottom));
-  background:
-    radial-gradient(circle at 10% 0%, rgba(220, 233, 214, 0.68), transparent 360rpx),
-    radial-gradient(circle at 92% 12%, rgba(241, 200, 109, 0.16), transparent 280rpx),
-    linear-gradient(180deg, #fffdf8 0%, var(--safe-bg) 52%, var(--safe-bg-leaf) 100%);
+  background: var(--safe-bg);
 }
 
 .safe-page--with-tabbar {
@@ -100,7 +96,7 @@ textarea {
 .supervision-card {
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-md);
-  background: rgba(255, 253, 248, 0.94);
+  background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
 }
 
@@ -110,21 +106,20 @@ textarea {
 
 .safe-card--hero {
   border-radius: var(--safe-radius-lg);
-  background:
-    linear-gradient(108deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 248, 238, 0.9) 52%, rgba(233, 242, 223, 0.72) 100%);
+  background: var(--safe-card);
   box-shadow: var(--safe-shadow-float);
 }
 
 .safe-card--green {
-  background: linear-gradient(135deg, var(--safe-primary-pale), #fffdf8);
+  background: var(--safe-primary-pale);
 }
 
 .safe-card--orange {
-  background: linear-gradient(135deg, var(--safe-orange-soft), #fffdf8);
+  background: var(--safe-orange-soft);
 }
 
 .safe-card--blue {
-  background: linear-gradient(135deg, var(--safe-blue-soft), #fffdf8);
+  background: var(--safe-blue-soft);
 }
 
 .safe-title,
@@ -207,9 +202,9 @@ textarea {
 }
 
 .safe-primary-button {
-  background: linear-gradient(135deg, var(--safe-primary), var(--safe-primary-deep));
+  background: var(--safe-primary);
   color: #ffffff;
-  box-shadow: 0 14rpx 28rpx rgba(78, 124, 107, 0.22);
+  box-shadow: 0 8rpx 18rpx rgba(78, 124, 107, 0.18);
 }
 
 .safe-secondary-button {
@@ -220,22 +215,22 @@ textarea {
 
 .safe-outline-button {
   border: 1rpx solid var(--safe-primary);
-  background: rgba(255, 253, 248, 0.92);
+  background: #ffffff;
   color: var(--safe-primary-deep);
 }
 
 .safe-ghost-button {
   min-height: 72rpx;
   border: 1rpx solid var(--safe-border);
-  background: rgba(255, 253, 248, 0.72);
+  background: #ffffff;
   color: var(--safe-muted);
   font-size: 24rpx;
 }
 
 .safe-orange-button {
-  background: linear-gradient(135deg, #ff965d, var(--safe-orange));
+  background: var(--safe-orange);
   color: #ffffff;
-  box-shadow: 0 14rpx 28rpx rgba(244, 127, 69, 0.22);
+  box-shadow: 0 8rpx 18rpx rgba(217, 130, 67, 0.18);
 }
 
 .safe-button-sm {
@@ -323,7 +318,7 @@ textarea {
   padding: 22rpx 24rpx;
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-md);
-  background: rgba(255, 253, 248, 0.96);
+  background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
   text-align: left;
 }
@@ -369,19 +364,11 @@ textarea {
   gap: 10rpx;
   overflow: hidden;
   padding: 32rpx;
-  background:
-    linear-gradient(110deg, rgba(255, 253, 248, 0.96) 0%, rgba(255, 247, 240, 0.88) 54%, rgba(220, 233, 214, 0.62) 100%);
+  background: var(--safe-card);
 }
 
 .page-head::before {
-  content: "";
-  position: absolute;
-  right: 42rpx;
-  top: 34rpx;
-  width: 88rpx;
-  height: 88rpx;
-  border: 2rpx solid rgba(78, 124, 107, 0.28);
-  border-radius: 50%;
+  display: none;
 }
 
 .head-image {
@@ -402,8 +389,8 @@ textarea {
   gap: 14rpx;
   margin: 34rpx calc(var(--safe-page-x) * -1) calc(var(--safe-page-x) * -1);
   padding: 18rpx var(--safe-page-x) calc(18rpx + env(safe-area-inset-bottom));
-  background: rgba(255, 247, 240, 0.92);
-  border-top: 1rpx solid rgba(225, 216, 204, 0.86);
+  background: rgba(247, 248, 245, 0.94);
+  border-top: 1rpx solid var(--safe-border);
   backdrop-filter: blur(16rpx);
 }
 

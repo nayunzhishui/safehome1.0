@@ -1,0 +1,44 @@
+﻿{
+    "generatedAt":  "2026-07-04T01:43:22.8391611+08:00",
+    "branch":  "codex/task9-code-review",
+    "completionStatus":  "ready_for_manual_miniprogram_acceptance",
+    "planTaskCount":  31,
+    "recordTaskCount":  31,
+    "package":  {
+                    "path":  ".codex_tmp/safehome-cloudbase-task9-latest.zip",
+                    "sizeBytes":  360169,
+                    "sha256":  "4821AEA9C7E1C3422C541A7B0C50B9A7E190A9352B6BEAFD7860BDBBC0301F74"
+                },
+    "cloudBase":  {
+                      "baseUrl":  "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com",
+                      "endpoints":  [
+                                        {
+                                            "path":  "/healthz",
+                                            "ok":  true,
+                                            "statusCode":  200,
+                                            "error":  null,
+                                            "bodyPreview":  "{\"env\":\"production\",\"ok\":true,\"service\":\"safehome-backend\",\"version\":\"safehome-2026-06-04\"}\n"
+                                        },
+                                        {
+                                            "path":  "/readyz",
+                                            "ok":  true,
+                                            "statusCode":  200,
+                                            "error":  null,
+                                            "bodyPreview":  "{\"content\":{\"content_dir\":\"/app/content\",\"missing_files\":[],\"ok\":true,\"required_files_ok\":true},\"database\":{\"assessment_worksheets_count\":27,\"content_assessment_worksheets_count\":27,\"content_training_cards_count\":34,\"current_schema_version\":\"2026_07_01_003\",\"database_file_exists\":null,\"database_path"
+                                        },
+                                        {
+                                            "path":  "/healthz/deep",
+                                            "ok":  true,
+                                            "statusCode":  200,
+                                            "error":  null,
+                                            "bodyPreview":  "{\"content\":{\"content_dir\":\"/app/content\",\"missing_files\":[],\"ok\":true,\"required_files_ok\":true},\"database\":{\"assessment_worksheets_count\":27,\"content_assessment_worksheets_count\":27,\"content_training_cards_count\":34,\"current_schema_version\":\"2026_07_01_003\",\"database_file_exists\":null,\"database_path"
+                                        }
+                                    ]
+                  },
+    "remainingRequiredActions":  [
+                                     "Complete WeChat DevTools miniprogram acceptance.",
+                                     "Complete real-device miniprogram acceptance.",
+                                     "Fill docs/02_涓撻」杩涘害涓庨獙鏀?浠诲姟涔濆閮ㄤ汉宸ラ獙鏀惰瘉鎹〃_20260703.md and set allow_complete: yes only after all external checks pass.",
+                                     "Run scripts/audit_task9_completion.ps1 again."
+                                 ]
+}

@@ -2,7 +2,7 @@ export type ID = string;
 export type ISODateTime = string;
 export type ISODate = string;
 
-export type UserRole = "parent" | "student" | "admin";
+export type UserRole = "parent" | "student" | "admin" | "researcher" | "supervisor";
 export type GoalStatus = "active" | "done" | "paused";
 export type RiskLevel = "low" | "medium" | "high";
 export type SupervisionStatus = "pending" | "replied" | "closed";
@@ -25,8 +25,12 @@ export type ApiResponse<T> = ApiSuccess<T> | ApiError;
 
 export interface User {
   id: ID;
+  username?: string | null;
   nickname?: string | null;
   role: UserRole;
+  anonymous_id?: string | null;
+  avatar_url?: string | null;
+  status?: string | null;
   source?: string | null;
   created_at: ISODateTime;
   updated_at: ISODateTime;
@@ -139,6 +143,36 @@ export interface EmotionDiaryInput {
   raw_text?: string;
 }
 
+export interface EmotionThermometerRecord {
+  id: ID;
+  user_id: ID;
+  intensity_level: number;
+  brief_text?: string | null;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface EmotionThermometerInput {
+  user_id?: ID;
+  nickname?: string;
+  intensity_level: number;
+  brief_text?: string;
+  created_at?: ISODateTime;
+}
+
+export interface EmotionThermometerDayResponse {
+  user_id: ID;
+  date: ISODate;
+  items: EmotionThermometerRecord[];
+  summary: {
+    count: number;
+    min: number | null;
+    max: number | null;
+    avg: number | null;
+  };
+  boundary_notice: string;
+}
+
 export interface FeedbackResult {
   id: ID;
   diary_id?: ID | null;
@@ -182,6 +216,82 @@ export interface TrainingCard {
   enabled: boolean;
 }
 
+export interface TrainingPlanCard {
+  id: ID;
+  title: string;
+  type?: string | null;
+  duration_minutes?: number | null;
+}
+
+export interface TrainingPlanItem {
+  source_type: "assessment_dimension" | "profile_cluster";
+  source_result_id: ID;
+  source_worksheet: {
+    id: ID;
+    title: string;
+  };
+  dimension?: string | null;
+  cluster_id?: number | string | null;
+  cluster_name?: string | null;
+  card_ids: ID[];
+  cards: TrainingPlanCard[];
+  reason: string;
+  boundary_notice: string;
+}
+
+export interface TrainingPlan {
+  user_id: ID;
+  has_assessment: boolean;
+  latest_result?: Record<string, unknown> | null;
+  plan_items: TrainingPlanItem[];
+  next_action?: {
+    title: string;
+    description: string;
+    url: string;
+  } | null;
+  boundary_notice: string;
+}
+
+export interface ProgramSession {
+  session_no: number;
+  title: string;
+  objective: string;
+  duration_minutes: number;
+  steps: string[];
+  writing_prompt?: string;
+  reflection_questions: string[];
+  disclaimer: string;
+}
+
+export interface ProgramSummary {
+  id: ID;
+  title: string;
+  target_constructs: string[];
+  audience: string;
+  theory_source: string;
+  review_status: string;
+  boundary_notice: string;
+  session_count: number;
+  first_session_title?: string;
+}
+
+export interface Program extends ProgramSummary {
+  enabled?: boolean;
+  recommended_card_ids?: ID[];
+  sessions: ProgramSession[];
+}
+
+export interface ProgramListResponse {
+  version: string;
+  boundary_notice: string;
+  items: ProgramSummary[];
+}
+
+export interface ProgramDetailResponse {
+  version: string;
+  program: Program;
+}
+
 export interface ContentReviewUpdateInput {
   content_type: string;
   item_id: ID;
@@ -208,6 +318,8 @@ export interface AssessmentQuestion {
   prompt: string;
   type: "text" | "scale";
   required?: boolean;
+  dimension?: string;
+  reverse_scored?: boolean;
   options?: AssessmentOption[];
 }
 
@@ -237,6 +349,11 @@ export interface AssessmentWorksheet {
   source_title: string;
   display_title: string;
   category: string;
+  audience?: string;
+  audience_class?: string;
+  reflex_node?: string;
+  search_keywords?: string[];
+  sensitive_category?: string;
   pages: number;
   instructions: string;
   sections: AssessmentSection[];
@@ -249,6 +366,8 @@ export interface AssessmentWorksheet {
   enabled_for_user?: boolean;
   review_note?: string;
   boundary_notice?: string;
+  result_disclaimer?: string;
+  profile_model_id?: string | null;
   training_recommendation_rules?: TrainingRecommendationRule[];
 }
 
@@ -258,6 +377,11 @@ export interface AssessmentListItem {
   source_title: string;
   display_title: string;
   category: string;
+  audience?: string;
+  audience_class?: string;
+  reflex_node?: string;
+  search_keywords?: string[];
+  sensitive_category?: string;
   pages: number;
   instructions: string;
   source_version: string;
@@ -265,6 +389,9 @@ export interface AssessmentListItem {
   review_status?: string;
   enabled_for_user?: boolean;
   review_note?: string;
+  boundary_notice?: string;
+  result_disclaimer?: string;
+  profile_model_id?: string | null;
   question_count: number;
   is_reference: boolean;
 }
@@ -286,10 +413,18 @@ export interface AssessmentResult {
   scores_json: string;
   total_score?: number | null;
   result_summary?: string | null;
+  profile_model_id?: string | null;
+  profile_cluster_id?: number | null;
+  profile_pc1?: number | null;
+  profile_pc2?: number | null;
+  profile_confidence?: number | null;
   created_at: ISODateTime;
   answers?: AssessmentAnswer[];
-  scores?: Record<string, number | null>;
+  scores?: Record<string, unknown>;
   recommended_card_ids?: ID[];
+  risk?: RiskCheckResult | null;
+  boundary_notice?: string | null;
+  result_disclaimer?: string | null;
 }
 
 export interface AssessmentResultInput {
@@ -298,6 +433,112 @@ export interface AssessmentResultInput {
   worksheet_id: ID;
   answers: AssessmentAnswer[];
   result_summary?: string;
+}
+
+export interface AssessmentProfileCluster {
+  cluster_id: number;
+  profile_id?: string;
+  profile_name: string;
+  display_name?: string;
+  n: number;
+  percent: number;
+  pca_centroid?: { pc1?: number | null; pc2?: number | null };
+  supportive_explanation?: string;
+  recommended_card_ids?: ID[];
+  card_reason?: string;
+}
+
+export interface AssessmentProfilePosition {
+  available: boolean;
+  reason?: string;
+  model_id?: string;
+  group_id?: string;
+  standard_scale_name?: string;
+  scale_id?: string;
+  worksheet_id?: ID;
+  research_dir?: string;
+  source_dataset?: string;
+  n_cases?: number;
+  n_features?: number;
+  chosen_k?: number;
+  position?: {
+    pc1?: number | null;
+    pc2?: number | null;
+    cluster_id?: number | null;
+    profile_id?: string | null;
+    profile_name?: string;
+    display_name?: string;
+    nearest_distance?: number | null;
+    second_distance?: number | null;
+    confidence?: number;
+    interpretation_status?: "usable" | "low_confidence" | "outlier";
+    can_use_interpretation?: boolean;
+  };
+  interpretation?: {
+    status: "usable" | "low_confidence" | "outlier";
+    can_use_interpretation: boolean;
+    message: string;
+    distance_threshold?: number | null;
+  };
+  clusters?: AssessmentProfileCluster[];
+  feature_summary?: {
+    answered_features: number;
+    missing_features: number;
+    total_features: number;
+    missing_feature_ids?: string[];
+    data_quality: "complete" | "partial";
+  };
+  feature_profile?: Array<{
+    feature_id: string;
+    label: string;
+    raw_score?: number | null;
+    z_score: number;
+  }>;
+  raw_scores?: Record<string, number | null>;
+  z_scores?: Record<string, number>;
+  explanation?: string;
+  strength_note?: string;
+  small_step?: string;
+  boundary_notice?: string;
+}
+
+export interface AdminWorksheet extends AssessmentWorksheet {
+  created_at?: ISODateTime;
+  updated_at?: ISODateTime;
+}
+
+export type AdminWorksheetInput = Partial<AdminWorksheet> & {
+  id?: ID;
+  display_title?: string;
+};
+
+export interface UserMessage {
+  id: ID;
+  user_id: ID;
+  message_type: "system" | "supervision_feedback" | string;
+  title: string;
+  body?: string | null;
+  source_type?: string | null;
+  source_id?: string | null;
+  status: "unread" | "read" | string;
+  is_unread?: boolean;
+  created_at: ISODateTime;
+  read_at?: ISODateTime | null;
+}
+
+export interface ProfileStats {
+  user_id: ID;
+  streak_days: number;
+  weekly_record_count: number;
+  weekly_diary_count: number;
+  weekly_checkin_count: number;
+  weekly_assessment_count: number;
+  assessment_completed_count: number;
+  unfinished_assessment_count: number;
+  unread_message_count: number;
+  week_start: string;
+  week_end: string;
+  boundary_notice: string;
 }
 
 export interface ProfileDimension {
@@ -660,4 +901,9 @@ export interface AssessmentListResponse {
   version: string;
   boundary_notice: string;
   items: AssessmentListItem[];
+  groups?: Array<{
+    key: string;
+    count: number;
+    nodes: Array<{ key: string; count: number }>;
+  }>;
 }

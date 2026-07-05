@@ -3,61 +3,38 @@
     <text>正在读取测一测内容...</text>
   </view>
 
-    <view wx:elif="{{worksheet}}">
+  <view wx:elif="{{worksheet}}">
     <view class="assessment-detail-head">
       <text class="page-title">{{worksheet.display_title}}</text>
       <text class="page-subtitle">{{worksheet.displaySourceText}} · {{worksheet.category}}</text>
     </view>
 
-    <view class="safe-section">
-      <alert-card type="info" title="边界提示" content="{{worksheet.boundary_notice}}" />
+    <view class="instruction-block">
+      <text>{{worksheet.instructions}}</text>
     </view>
 
-    <view wx:if="{{worksheet.isStudentProfile}}" class="safe-section">
-      <view class="profile-notice-card">
-        <text class="profile-notice-title">阶段性支持画像</text>
-        <text class="profile-notice-text">本次填写会整理近期压力反应、支持资源和练习建议。结果只表示这次填写中的线索，不代表固定标签。</text>
-        <text class="profile-notice-text strong">如果填写内容涉及明显安全风险，系统会优先进入人工关注提示，不生成普通训练建议。</text>
-      </view>
+    <view wx:if="{{worksheet.sensitive_category && worksheet.sensitive_category !== 'none'}}" class="sensitive-strip">
+      <text>注意：本内容含敏感语义，结果只作为自我观察线索，不作为诊断建议。</text>
     </view>
 
-    <view class="safe-section">
-      <section-title title="开始前说明" subtitle="按你这段时间的真实感受填写即可" />
-      <view class="instruction-card">
-        <text>{{worksheet.instructions}}</text>
-      </view>
-    </view>
-
-    <view class="safe-section">
-      <section-title title="内容说明" subtitle="先了解每一组问题在看什么" />
-      <view class="section-card" wx:for="{{worksheet.sections}}" wx:key="title">
-        <text class="section-card-title">{{item.title}}</text>
-        <text class="section-card-content">{{item.content}}</text>
-      </view>
-    </view>
-
-    <view class="safe-section">
-      <section-title title="填写记录" subtitle="没有标准答案，也不评价好坏" />
-      <view class="answer-guide-card">
-        <text class="answer-guide-title">怎么填写</text>
-        <text class="answer-guide-text">如果不确定，可以选更接近最近一段时间的状态。文本题写一个片段就可以。</text>
-      </view>
-      <view class="question-card" wx:for="{{worksheet.questions}}" wx:key="id" wx:for-index="questionIndex">
-        <text class="question-title">{{item.prompt}}<text wx:if="{{item.required}}" class="required"> *</text></text>
+    <view class="question-list">
+      <view class="question-card" wx:for="{{worksheet.questions}}" wx:key="id" wx:for-index="qi">
+        <view class="question-head">
+          <text class="question-num">{{qi + 1}}</text>
+          <text class="question-title">{{item.prompt}}<text wx:if="{{item.required}}" class="required"> *</text></text>
+        </view>
 
         <view wx:if="{{item.type === 'scale'}}" class="option-row">
           <button
             wx:for="{{item.options}}"
-            wx:for-item="option"
+            wx:for-item="opt"
             wx:key="value"
-            class="option-button {{item.answerValue === option.value ? 'active' : ''}}"
-            data-index="{{questionIndex}}"
-            data-value="{{option.value}}"
-            data-score="{{option.score}}"
+            class="option-button {{item.answerValue === opt.value ? 'active' : ''}}"
+            data-index="{{qi}}"
+            data-value="{{opt.value}}"
+            data-score="{{opt.score}}"
             bindtap="selectOption"
-          >
-            {{option.label}}
-          </button>
+          >{{opt.label}}</button>
         </view>
 
         <textarea
@@ -65,7 +42,7 @@
           class="answer-textarea"
           value="{{item.answerValue}}"
           placeholder="写下你观察到的情况，简短一点也可以"
-          data-index="{{questionIndex}}"
+          data-index="{{qi}}"
           bindinput="onTextInput"
         />
       </view>
@@ -79,8 +56,8 @@
       {{submitting ? '保存中...' : (worksheet.isStudentProfile ? '生成阶段性画像' : '保存观察记录')}}
     </button>
 
-    <view class="safe-section">
-      <bottom-tip-card text="保存后可以回到测一测首页查看最近记录，再选择一个小练习继续。" />
+    <view class="boundary-footer">
+      <text>{{worksheet.boundary_notice}}</text>
     </view>
   </view>
 

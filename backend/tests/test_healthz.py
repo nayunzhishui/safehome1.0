@@ -45,8 +45,8 @@ def test_deep_healthz_checks_database_and_content(tmp_path, monkeypatch):
     data = response.get_json()
     assert data["ok"] is True
     assert data["database"]["ok"] is True
-    assert data["database"]["expected_schema_version"] == "2026_06_04_001"
-    assert data["database"]["current_schema_version"] == "2026_06_04_001"
+    assert data["database"]["expected_schema_version"] == "2026_07_01_003"
+    assert data["database"]["current_schema_version"] == "2026_07_01_003"
     assert data["database"]["schema_version_ok"] is True
     assert data["database"]["required_tables_ok"] is True
     assert data["database"]["missing_tables"] == []
@@ -55,7 +55,73 @@ def test_deep_healthz_checks_database_and_content(tmp_path, monkeypatch):
     assert data["database"]["training_cards_count"] > 0
     assert data["database"]["content_training_cards_count"] == data["database"]["training_cards_count"]
     assert data["database"]["training_cards_sync_ok"] is True
+    assert data["database"]["assessment_worksheets_count"] > 0
+    assert data["database"]["assessment_worksheets_count"] >= data["database"]["content_assessment_worksheets_count"]
+    assert data["database"]["worksheets_sync_ok"] is True
     assert data["content"]["ok"] is True
     assert data["content"]["required_files_ok"] is True
     assert data["content"]["missing_files"] == []
     assert "test-secret-token" not in response.get_data(as_text=True)
+
+
+def test_readyz_checks_database_and_content(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    response = client.get("/readyz")
+
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["ok"] is True
+    assert data["database"]["ok"] is True
+    assert data["content"]["ok"] is True
+    assert "test-secret-token" not in response.get_data(as_text=True)
+
+
+def test_create_app_accepts_temporary_config_overrides(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    import app as app_module
+
+    override_path = tmp_path / "override.sqlite3"
+    override_app = app_module.create_app(
+        config_overrides={
+            "APP_ENV": "development",
+            "DATABASE_PATH": override_path,
+            "CONTENT_DIR": PROJECT_ROOT / "content",
+            "ADMIN_EXPORT_TOKEN": "override-admin-token",
+        },
+        init_database=True,
+    )
+
+    response = override_app.test_client().get("/readyz")
+
+    assert app.config["DATABASE_PATH"] != override_path
+    assert override_app.config["DATABASE_PATH"] == override_path
+    assert override_path.exists()
+    assert response.status_code == 200
+
+
+def test_unknown_route_returns_stable_json_error(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    response = client.get("/missing-route")
+    body = response.get_json()
+
+    assert response.status_code == 404
+    assert body == {"ok": False, "error": {"code": "not_found", "message": "没有找到对应接口。"}}
+
+
+def test_unhandled_exception_returns_stable_json_error(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+
+    @app.get("/boom")
+    def boom():
+        raise RuntimeError("database password leaked in raw exception")
+
+    response = app.test_client().get("/boom")
+    body = response.get_json()
+
+    assert response.status_code == 500
+    assert body == {"ok": False, "error": {"code": "internal_error", "message": "服务暂时没有响应，请稍后再试。"}}
+    assert "database password" not in response.get_data(as_text=True)

@@ -1,0 +1,91 @@
+.plan-page {
+  display: flex;
+  flex-direction: column;
+  gap: 26rpx;
+}
+
+.page-head {
+  padding: 26rpx 0 4rpx;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.empty-card,
+.item-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.item-tag {
+  padding: 6rpx 14rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary-soft);
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
+  font-weight: 850;
+}
+
+.item-source {
+  flex: 1;
+  min-width: 0;
+  color: var(--safe-muted);
+  font-size: 23rpx;
+  text-align: right;
+}
+
+.item-title {
+  color: var(--safe-title);
+  font-size: 30rpx;
+  font-weight: 850;
+}
+
+.item-reason,
+.item-boundary,
+.boundary-note {
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.card-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 18rpx 20rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-bg-leaf);
+}
+
+.chip-title {
+  color: var(--safe-title);
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.chip-meta {
+  color: var(--safe-muted);
+  font-size: 23rpx;
+}
+
+.boundary-note {
+  padding: 22rpx;
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-orange-soft);
+}

@@ -99,13 +99,26 @@ def _normalise_text_answers(payload: dict, scales_payload: dict) -> dict[str, st
     return text_answers
 
 
-def _validate_answers(answers: dict[str, str], item_codes: set[str]) -> list[str]:
+def _likert_values(scales_payload: dict) -> list[int]:
+    values = [
+        int(float(option["value"]))
+        for option in scales_payload.get("likert", [])
+        if isinstance(option, dict) and _as_number(option.get("value")) is not None
+    ]
+    return sorted(set(values)) or [1, 2, 3, 4, 5]
+
+
+def _validate_answers(answers: dict[str, str], item_codes: set[str], allowed_values: set[str]) -> list[str]:
     errors: list[str] = []
     for code in sorted(item_codes):
         value = answers.get(code, "")
-        if value not in {"1", "2", "3", "4", "5"}:
+        if value not in allowed_values:
             errors.append(code)
     return errors
+
+
+def _reverse_score(raw: int, likert_values: list[int]) -> int:
+    return min(likert_values) + max(likert_values) - raw
 
 
 def _mean(values: list[float]) -> float:
@@ -115,7 +128,9 @@ def _mean(values: list[float]) -> float:
 def score_student_answers(answers: dict[str, str]) -> dict[str, Any]:
     scales_payload = load_student_scales()
     items = _student_items(scales_payload)
-    missing = _validate_answers(answers, set(items))
+    likert_values = _likert_values(scales_payload)
+    allowed_values = {str(value) for value in likert_values}
+    missing = _validate_answers(answers, set(items), allowed_values)
     if missing:
         raise ProfileInputError(missing)
 
@@ -127,7 +142,7 @@ def score_student_answers(answers: dict[str, str]) -> dict[str, Any]:
 
     for item_code, item in items.items():
         raw = int(answers[item_code])
-        scored = 6 - raw if item.get("reverse_scored") else raw
+        scored = _reverse_score(raw, likert_values) if item.get("reverse_scored") else raw
         scale_code = item.get("scale_code")
         dimension = item.get("dimension")
         feature = item.get("feature")

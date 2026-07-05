@@ -1,0 +1,64 @@
+<view class="safe-page program-detail-page" wx:if="{{program}}">
+  <view class="safe-card hero-card">
+    <text class="program-kicker">项目测试</text>
+    <text class="program-title">{{program.title}}</text>
+    <text class="program-summary">{{program.boundary_notice}}</text>
+    <view class="construct-row">
+      <text wx:for="{{program.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
+    </view>
+  </view>
+
+  <scroll-view class="session-tabs" scroll-x="true">
+    <button
+      wx:for="{{sessions}}"
+      wx:key="session_no"
+      class="session-tab {{item.isActive ? 'session-tab--active' : ''}}"
+      data-session-no="{{item.session_no}}"
+      bindtap="selectSession"
+    >
+      第 {{item.session_no}} 节
+    </button>
+  </scroll-view>
+
+  <view class="safe-card session-card" wx:if="{{selectedSession}}">
+    <text class="session-title">{{selectedSession.title}}</text>
+    <text class="session-objective">{{selectedSession.objective}}</text>
+    <text class="session-meta">预计 {{selectedSession.duration_minutes}} 分钟</text>
+
+    <view class="section-block">
+      <text class="section-title">练习步骤</text>
+      <view wx:for="{{selectedSession.steps}}" wx:key="*this" class="step-row">
+        <text class="step-index">{{index + 1}}</text>
+        <text class="step-text">{{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{selectedSession.writing_prompt}}" class="section-block">
+      <text class="section-title">书写提示</text>
+      <text class="prompt-box">{{selectedSession.writing_prompt}}</text>
+      <textarea class="draft-input" value="{{draftText}}" placeholder="这里的草稿只保存在本机，不会上传。" bindinput="onDraftInput" />
+      <button class="safe-primary-button" bindtap="saveDraft">保存本机草稿</button>
+    </view>
+
+    <view class="section-block">
+      <text class="section-title">反思问题</text>
+      <view wx:for="{{selectedSession.reflection_questions}}" wx:key="*this" class="question-row">{{item}}</view>
+    </view>
+
+    <view class="session-disclaimer">{{selectedSession.disclaimer}}</view>
+  </view>
+</view>
+
+<view class="safe-page program-detail-page" wx:else>
+  <view class="safe-card" wx:if="{{loading}}">
+    <text class="safe-body">正在读取项目内容...</text>
+  </view>
+  <view class="safe-card" wx:elif="{{errorMessage}}">
+    <text class="safe-h3">暂时没能读取</text>
+    <text class="safe-body">{{errorMessage}}</text>
+    <button class="safe-primary-button" bindtap="retryLoad">重试</button>
+  </view>
+  <view class="safe-card" wx:else>
+    <text class="safe-body">没有找到对应项目内容。</text>
+  </view>
+</view>

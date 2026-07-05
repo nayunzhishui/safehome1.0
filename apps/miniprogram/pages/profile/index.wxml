@@ -15,24 +15,21 @@
 
   <view class="safe-section">
     <section-title title="我的记录" subtitle="查看复盘、反馈、训练和测评记录" />
-    <view class="entry-grid">
-      <view wx:for="{{recordEntries}}" wx:key="title" data-group="recordEntries" data-index="{{index}}" bindtap="openEntry">
-        <function-entry-card
-          title="{{item.title}}"
-          subtitle="{{item.subtitle}}"
-          icon-text="{{item.iconText}}"
-          accent-color="{{item.accentColor}}"
-          accent-bg="{{item.accentBg}}"
-        />
-      </view>
+    <view class="plain-list">
+      <button wx:for="{{recordEntries}}" wx:key="title" class="plain-row" data-group="recordEntries" data-index="{{index}}" bindtap="openEntry">
+        <view class="row-copy">
+          <text class="row-title">{{item.title}}</text>
+          <text class="row-subtitle">{{item.subtitle}}</text>
+        </view>
+        <text class="row-arrow">›</text>
+      </button>
     </view>
   </view>
 
   <view class="safe-section">
     <section-title title="专业支持" subtitle="需要时获得进一步补充反馈" />
-    <view class="support-list">
+    <view class="plain-list">
       <button wx:for="{{supportEntries}}" wx:key="title" class="support-row" data-group="supportEntries" data-index="{{index}}" bindtap="openEntry">
-        <view class="row-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">{{item.iconText}}</view>
         <view class="row-copy">
           <text class="row-title">{{item.title}}</text>
           <text class="row-subtitle">{{item.subtitle}}</text>
@@ -48,9 +45,8 @@
       <text class="safety-title">如果出现紧急安全风险</text>
       <text class="safety-text">请先联系身边可信赖的人、学校老师、当地紧急医疗或心理危机支持。本小程序不能提供实时危机干预。</text>
     </view>
-    <view class="support-list safety-list">
+    <view class="plain-list safety-list">
       <button wx:for="{{safetyEntries}}" wx:key="title" class="support-row" data-group="safetyEntries" data-index="{{index}}" bindtap="openEntry">
-        <view class="row-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">{{item.iconText}}</view>
         <view class="row-copy">
           <text class="row-title">{{item.title}}</text>
           <text class="row-subtitle">{{item.subtitle}}</text>
@@ -62,9 +58,8 @@
 
   <view class="safe-section">
     <section-title title="设置与说明" subtitle="了解工具边界和后续说明" />
-    <view class="support-list">
+    <view class="plain-list">
       <button wx:for="{{settingsEntries}}" wx:key="title" class="support-row" data-group="settingsEntries" data-index="{{index}}" bindtap="openEntry">
-        <view class="row-icon" style="background: {{item.accentBg}}; color: {{item.accentColor}};">{{item.iconText}}</view>
         <view class="row-copy">
           <text class="row-title">{{item.title}}</text>
           <text class="row-subtitle">{{item.subtitle}}</text>

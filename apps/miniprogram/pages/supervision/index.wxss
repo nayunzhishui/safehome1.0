@@ -8,9 +8,10 @@
   margin-bottom: 28rpx;
   padding: 32rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 28rpx;
-  background: linear-gradient(135deg, var(--safe-primary-pale) 0%, var(--safe-card) 72%);
-  box-shadow: 0 14rpx 34rpx rgba(52, 66, 58, 0.08);
+  border-left: 8rpx solid var(--safe-primary);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .hero-copy {
@@ -44,21 +45,11 @@
   line-height: 1.7;
 }
 
-.hero-image {
-  width: 100%;
-  height: 260rpx;
-  display: block;
-  margin-top: 24rpx;
-  overflow: hidden;
-  border-radius: 22rpx;
-  background: #fff4e8;
-}
-
 .boundary-card {
   margin-bottom: 24rpx;
   padding: 24rpx;
   border: 1rpx solid #efc09d;
-  border-radius: 24rpx;
+  border-radius: var(--safe-radius-md);
   background: var(--safe-orange-soft);
 }
 
@@ -86,9 +77,9 @@
 .form-card {
   padding: 32rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 28rpx;
+  border-radius: var(--safe-radius-md);
   background: var(--safe-card);
-  box-shadow: 0 14rpx 34rpx rgba(52, 66, 58, 0.08);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .field {

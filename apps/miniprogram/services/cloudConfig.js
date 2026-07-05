@@ -4,6 +4,8 @@ const DEFAULT_CLOUD_CONFIG = {
   cloudEnvId: "prod-d3gl35otiaa7c8d24",
   containerService: "flask-gh3l",
   httpBaseUrl: "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com",
+  localHttpBaseUrl: "http://127.0.0.1:5000",
+  useLocalHttp: false,
 };
 
 function readExtConfig() {
@@ -34,6 +36,8 @@ function normalizeConfig(config = {}) {
     cloudEnvId: config.cloudEnvId || config.env || DEFAULT_CLOUD_CONFIG.cloudEnvId,
     containerService: config.containerService || config.service || DEFAULT_CLOUD_CONFIG.containerService,
     httpBaseUrl: config.httpBaseUrl || config.baseUrl || DEFAULT_CLOUD_CONFIG.httpBaseUrl,
+    localHttpBaseUrl: config.localHttpBaseUrl || DEFAULT_CLOUD_CONFIG.localHttpBaseUrl,
+    useLocalHttp: config.useLocalHttp === true || config.transport === "local-http",
   };
 }
 

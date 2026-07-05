@@ -143,6 +143,11 @@
   display: block;
 }
 
+.profileChart {
+  width: 100%;
+  min-height: 320px;
+}
+
 .keyword-row {
   display: grid;
   grid-template-columns: 72px 1fr 32px;
@@ -975,6 +980,7 @@ h4 {
 
 .tokenField input,
 .tokenField select,
+.tokenField textarea,
 .filter-form input,
 .filter-form select {
   min-height: 42px;
@@ -984,6 +990,21 @@ h4 {
   border-radius: 8px;
   background: #fffefa;
   color: var(--safe-ink);
+}
+
+.tokenField textarea {
+  min-height: 92px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.checkboxLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 14px;
+  color: var(--safe-green-deep);
+  font-weight: 800;
 }
 
 .tokenField.inlineCheck {

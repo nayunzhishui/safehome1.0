@@ -1,0 +1,130 @@
+.messages-page {
+  padding-bottom: 64rpx;
+}
+
+.page-kicker,
+.page-title,
+.page-summary,
+.message-title,
+.message-body,
+.message-time,
+.empty-title,
+.empty-text {
+  display: block;
+}
+
+.page-kicker {
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 850;
+}
+
+.page-title {
+  margin-top: 12rpx;
+  color: var(--safe-title);
+  font-size: 42rpx;
+  font-weight: 900;
+}
+
+.page-summary {
+  margin-top: 14rpx;
+  color: var(--safe-text);
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.message-list {
+  margin-top: 28rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  overflow: hidden;
+  box-shadow: var(--safe-shadow-card);
+}
+
+.message-row {
+  display: flex;
+  gap: 18rpx;
+  align-items: center;
+  min-height: 132rpx;
+  padding: 24rpx;
+  border-bottom: 1rpx solid var(--safe-border);
+  background: var(--safe-card);
+  text-align: left;
+}
+
+.message-row:last-child {
+  border-bottom: 0;
+}
+
+.message-row::after {
+  border: 0;
+}
+
+.message-row--unread {
+  border-left: 6rpx solid var(--safe-primary);
+}
+
+.message-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.message-title {
+  color: var(--safe-title);
+  font-size: 29rpx;
+  font-weight: 850;
+}
+
+.message-body {
+  margin-top: 8rpx;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.message-time {
+  margin-top: 8rpx;
+  color: var(--safe-muted);
+  font-size: 21rpx;
+}
+
+.message-status {
+  color: var(--safe-primary-deep);
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.state-card {
+  margin-top: 28rpx;
+  color: var(--safe-text);
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+
+.retry-button {
+  margin-top: 20rpx;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 24rpx;
+}
+
+.auth-button {
+  flex: 1;
+  margin: 0;
+}
+
+.empty-title {
+  color: var(--safe-title);
+  font-size: 30rpx;
+  font-weight: 850;
+}
+
+.empty-text {
+  margin-top: 8rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+}

@@ -1,0 +1,37 @@
+<view class="safe-page messages-page">
+  <view class="safe-card safe-card--hero">
+    <text class="page-kicker">消息提醒</text>
+    <text class="page-title">需要你看看</text>
+    <text class="page-summary">这里主要放人工督导补充反馈和必要提醒，不做营销推送。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-card state-card">正在加载消息...</view>
+  <view wx:elif="{{errorMessage}}" class="safe-card state-card">
+    <text>{{errorMessage}}</text>
+    <view wx:if="{{needsLogin}}" class="auth-actions">
+      <button class="safe-primary-button auth-button" bindtap="goLogin">去登录</button>
+      <button class="safe-outline-button auth-button" bindtap="goRegister">注册账号</button>
+    </view>
+    <button wx:else class="safe-outline-button retry-button" bindtap="loadMessages">重新加载</button>
+  </view>
+
+  <view wx:elif="{{messages.length}}" class="message-list">
+    <button wx:for="{{messages}}" wx:key="id" class="message-row {{item.is_unread ? 'message-row--unread' : ''}}" data-id="{{item.id}}" bindtap="openMessage">
+      <view class="message-copy">
+        <text class="message-title">{{item.title}}</text>
+        <text class="message-body">{{item.body || '打开查看详情。'}}</text>
+        <text class="message-time">{{item.created_at}}</text>
+      </view>
+      <text class="message-status">{{item.is_unread ? '未读' : '已读'}}</text>
+    </button>
+  </view>
+
+  <view wx:else class="safe-card state-card">
+    <text class="empty-title">暂时没有新消息</text>
+    <text class="empty-text">如果老师后续补充反馈，会出现在这里。</text>
+  </view>
+
+  <view class="safe-section">
+    <bottom-tip-card text="消息只用于补充说明和支持提醒，不替代紧急帮助。" />
+  </view>
+</view>

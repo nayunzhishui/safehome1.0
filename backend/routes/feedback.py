@@ -71,7 +71,7 @@ def _match_diary_training_rules(feedback_result: dict) -> list[dict]:
         if _matches_diary_training_rule(rule, feedback_result):
             matched_rules.append(rule)
 
-    return matched_rules[:1]
+    return matched_rules[:2]
 
 
 @bp.post("/generate")

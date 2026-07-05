@@ -1,0 +1,30 @@
+<view class="safe-page auth-page">
+  <view class="safe-card auth-card">
+    <view class="safe-eyebrow">SafeHome</view>
+    <view class="safe-h1">注册</view>
+    <view class="safe-body">当前开放家长和学生账号。研究者、督导和管理员由项目负责人单独开通。</view>
+
+    <view class="field">
+      <text>用户名</text>
+      <input value="{{username}}" placeholder="至少 3 个字符" bindinput="onUsernameInput" />
+    </view>
+    <view class="field">
+      <text>密码</text>
+      <input value="{{password}}" password placeholder="至少 8 个字符" bindinput="onPasswordInput" />
+    </view>
+    <view class="field">
+      <text>角色</text>
+      <picker range="{{roleOptions}}" range-key="label" value="{{roleIndex}}" bindchange="onRoleChange">
+        <view class="picker-value">{{roleOptions[roleIndex].label}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text>昵称（可选）</text>
+      <input value="{{nickname}}" placeholder="选填" bindinput="onNicknameInput" />
+    </view>
+
+    <view wx:if="{{message}}" class="message {{status}}">{{message}}</view>
+    <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitRegister">注册</button>
+    <button class="ghost-action" bindtap="goLogin">已有账号，去登录</button>
+  </view>
+</view>

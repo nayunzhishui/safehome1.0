@@ -20,4 +20,11 @@ export function getAnonymousUserId(): string {
   return generated;
 }
 
+export function clearAnonymousUserId(): void {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return;
+  }
+  window.localStorage.removeItem(STORAGE_KEY);
+}
+
 export { STORAGE_KEY as ANONYMOUS_USER_STORAGE_KEY };

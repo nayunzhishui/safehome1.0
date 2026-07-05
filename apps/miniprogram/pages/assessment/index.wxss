@@ -3,7 +3,7 @@
 }
 
 .assessment-head {
-  padding: 8rpx 0 4rpx;
+  padding: 8rpx 0 2rpx;
 }
 
 .page-title,
@@ -25,22 +25,42 @@
   line-height: 1.55;
 }
 
-.family-art-card {
+.head-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 18rpx;
+}
+
+.head-tags text {
+  min-height: 42rpx;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16rpx;
+  border: 1rpx solid rgba(87, 139, 95, 0.16);
+  border-radius: var(--safe-radius-pill);
+  background: rgba(233, 242, 223, 0.54);
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.assessment-intro-card {
   position: relative;
-  min-height: 236rpx;
+  min-height: 0;
   overflow: hidden;
   margin-top: 24rpx;
   padding: 26rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 28rpx;
-  background: linear-gradient(135deg, var(--safe-primary-pale) 0%, var(--safe-card) 72%);
-  box-shadow: 0 14rpx 34rpx rgba(82, 112, 64, 0.12);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .art-copy {
   position: relative;
   z-index: 1;
-  width: 58%;
+  width: 100%;
 }
 
 .art-title,
@@ -62,96 +82,15 @@
   line-height: 1.55;
 }
 
-.family-art {
-  position: absolute;
-  right: 18rpx;
-  bottom: 0;
-  width: 232rpx;
-  height: 196rpx;
-}
-
-.sun {
-  position: absolute;
-  right: 34rpx;
-  top: 4rpx;
-  width: 50rpx;
-  height: 50rpx;
-  border-radius: 50%;
-  background: var(--safe-yellow);
-}
-
-.adult-left,
-.adult-right,
-.child {
-  position: absolute;
-  bottom: 34rpx;
-  border-radius: 999rpx 999rpx 22rpx 22rpx;
-}
-
-.adult-left {
-  left: 38rpx;
-  width: 58rpx;
-  height: 94rpx;
-  background: var(--safe-orange);
-}
-
-.adult-right {
-  right: 44rpx;
-  width: 62rpx;
-  height: 108rpx;
-  background: var(--safe-primary);
-}
-
-.child {
-  left: 112rpx;
-  width: 50rpx;
-  height: 72rpx;
-  background: var(--safe-blue);
-}
-
-.adult-left::before,
-.adult-right::before,
-.child::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: #f2bf8c;
-}
-
-.adult-left::before,
-.adult-right::before {
-  top: -34rpx;
-  width: 48rpx;
-  height: 48rpx;
-}
-
-.child::before {
-  top: -28rpx;
-  width: 38rpx;
-  height: 38rpx;
-}
-
-.grass {
-  position: absolute;
-  left: 8rpx;
-  right: 8rpx;
-  bottom: 0;
-  height: 44rpx;
-  border-radius: 44rpx 44rpx 0 0;
-  background: #cfe6bd;
-}
-
 .info-card {
   display: grid;
   gap: 14rpx;
   margin-top: 20rpx;
   padding: 20rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 24rpx;
+  border-radius: 22rpx;
   background: var(--safe-card);
-  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+  box-shadow: 0 8rpx 18rpx rgba(52, 66, 58, 0.05);
 }
 
 .info-row {
@@ -178,6 +117,69 @@
   text-align: right;
 }
 
+.assessment-controls {
+  display: grid;
+  gap: 18rpx;
+}
+
+.audience-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10rpx;
+}
+
+.audience-tab {
+  min-height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10rpx;
+  border: 1rpx solid #e4eadc;
+  border-radius: 14rpx;
+  background: #ffffff;
+  color: #596a5b;
+  font-size: 23rpx;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.audience-tab.active {
+  border-color: #9ed5a6;
+  background: var(--safe-primary-pale);
+  color: var(--safe-primary-deep);
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-height: 76rpx;
+  padding: 0 16rpx;
+  border: 1rpx solid #e4eadc;
+  border-radius: 16rpx;
+  background: #ffffff;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  height: 72rpx;
+  color: var(--safe-title);
+  font-size: 25rpx;
+}
+
+.search-clear {
+  flex: 0 0 auto;
+  min-height: 52rpx;
+  padding: 0 16rpx;
+  border: 1rpx solid #d9e5d4;
+  border-radius: 999rpx;
+  background: #f8fbf5;
+  color: #4f7356;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
 .entry-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -196,9 +198,9 @@
 .recent-card,
 .loading-box,
 .error-box {
-  border-radius: 24rpx;
+  border-radius: var(--safe-radius-md);
   background: var(--safe-card);
-  box-shadow: 0 10rpx 26rpx rgba(80, 64, 45, 0.08);
+  box-shadow: var(--safe-shadow-card);
 }
 
 .worksheet-card {
@@ -217,7 +219,8 @@
 
 .worksheet-card.student-profile {
   border-color: #bfe3c4;
-  background: linear-gradient(135deg, var(--safe-primary-pale) 0%, var(--safe-card) 72%);
+  border-left: 8rpx solid var(--safe-primary);
+  background: var(--safe-card);
 }
 
 .worksheet-card.disabled {
@@ -306,6 +309,10 @@
   color: var(--safe-text);
   font-size: 24rpx;
   line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .worksheet-action {

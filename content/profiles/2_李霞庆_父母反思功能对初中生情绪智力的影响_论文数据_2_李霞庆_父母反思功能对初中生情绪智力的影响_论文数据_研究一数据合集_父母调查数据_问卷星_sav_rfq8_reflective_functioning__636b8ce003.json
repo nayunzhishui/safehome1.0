@@ -1,0 +1,212 @@
+{
+  "schema_version": "2026.06-profile-model-v1",
+  "model_id": "2_李霞庆_父母反思功能对初中生情绪智力的影响_论文数据__2_李霞庆_父母反思功能对初中生情绪智力的影响_论文数据_研究一数据合集_父母调查数据_问卷星_sav__rfq8_reflective_functioning",
+  "group_id": "2_李霞庆_父母反思功能对初中生情绪智力的影响_论文数据__2_李霞庆_父母反思功能对初中生情绪智力的影响_论文数据_研究一数据合集_父母调查数据_问卷星_sav__rfq8_reflective_functioning",
+  "standard_scale_name": "反思功能问卷8题（RFQ-8）",
+  "scale_id": "rfq8_reflective_functioning",
+  "worksheet_id": null,
+  "research_dir": "2 李霞庆【父母反思功能对初中生情绪智力的影响】论文数据",
+  "source_dataset": "2 李霞庆【父母反思功能对初中生情绪智力的影响】论文数据\\研究一数据合集\\父母调查数据--问卷星.sav",
+  "n_cases": 336,
+  "n_features": 5,
+  "features": [
+    {
+      "feature_id": "RFQ01",
+      "source_variable": "T1",
+      "question_no": 1,
+      "worksheet_question_id": "RFQ01",
+      "label": "1.我猜不出他人的想法",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 7,
+      "mean": 4.366071,
+      "std": 1.403623
+    },
+    {
+      "feature_id": "RFQ03",
+      "source_variable": "T3",
+      "question_no": 3,
+      "worksheet_question_id": "RFQ03",
+      "label": "3.当我生气时会说出一些气话，而我却不知道为什么会这么说",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 7,
+      "mean": 4.235119,
+      "std": 1.622411
+    },
+    {
+      "feature_id": "RFQ05",
+      "source_variable": "T5",
+      "question_no": 5,
+      "worksheet_question_id": "RFQ05",
+      "label": "5.如果我对自己没有把握，我可能会做出冒犯他人的行为",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 7,
+      "mean": 3.872024,
+      "std": 1.575007
+    },
+    {
+      "feature_id": "RFQ06",
+      "source_variable": "T6",
+      "question_no": 6,
+      "worksheet_question_id": "RFQ06",
+      "label": "6.有时我会做一些不确切知道为什么要去做的事",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 7,
+      "mean": 4.125,
+      "std": 1.522402
+    },
+    {
+      "feature_id": "RFQ07",
+      "source_variable": "T7",
+      "question_no": 7,
+      "worksheet_question_id": "RFQ07",
+      "label": "7.我总是知道我的感受",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 7,
+      "mean": 5.223214,
+      "std": 1.205467
+    }
+  ],
+  "preprocessing": {
+    "initial_rows": 336,
+    "initial_features": 5,
+    "retained_rows": 336,
+    "retained_features": 5,
+    "row_missing_threshold": 0.4,
+    "column_min_non_missing": 100,
+    "imputation": "column_mean_after_row_filter"
+  },
+  "model_selection": [
+    {
+      "k": 2,
+      "inertia": 1189.307,
+      "silhouette": 0.2729,
+      "min_cluster_size": 113
+    },
+    {
+      "k": 3,
+      "inertia": 1014.64,
+      "silhouette": 0.2172,
+      "min_cluster_size": 70
+    },
+    {
+      "k": 4,
+      "inertia": 889.545,
+      "silhouette": 0.2006,
+      "min_cluster_size": 76
+    },
+    {
+      "k": 5,
+      "inertia": 785.55,
+      "silhouette": 0.2088,
+      "min_cluster_size": 54
+    },
+    {
+      "k": 6,
+      "inertia": 731.788,
+      "silhouette": 0.2098,
+      "min_cluster_size": 36
+    }
+  ],
+  "chosen_k": 2,
+  "pca": {
+    "components": [
+      [
+        -0.389188,
+        -0.527241,
+        -0.464257,
+        -0.545525,
+        0.239617
+      ],
+      [
+        -0.39381,
+        -0.156011,
+        -0.042949,
+        0.072106,
+        -0.901959
+      ]
+    ],
+    "explained_ratio": [
+      0.439489,
+      0.190288
+    ]
+  },
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "profile_id": "profile_0",
+      "profile_name": "画像1：有时我会做一些不确切知道为什么要去做的事、当我生气时会说出一些气话，而我却不知道为什么会这么说较高",
+      "n": 223,
+      "percent": 66.4,
+      "center_z": {
+        "RFQ01": 0.3175,
+        "RFQ03": 0.4383,
+        "RFQ05": 0.4229,
+        "RFQ06": 0.4746,
+        "RFQ07": -0.2075
+      },
+      "mean_scores": {
+        "RFQ01": 4.8117,
+        "RFQ03": 4.9462,
+        "RFQ05": 4.5381,
+        "RFQ06": 4.8475,
+        "RFQ07": 4.9731
+      },
+      "pca_centroid": {
+        "pc1": -0.8596,
+        "pc2": 0.0098
+      },
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：有时我会做一些不确切知道为什么要去做的事、当我生气时会说出一些气话，而我却不知道为什么会这么说较高。它只用于群体参照和支持性解释，不代表固定标签。",
+      "display_name": "行为驱动型",
+      "product_explanation": "你的行为和情绪有时对自己也不太透明——做了某件事、说了某句话，事后才发现说不清为什么。这很常见，尤其是在关系中压力大的时候。",
+      "strength_note": "你能注意到自己的行为和情绪，这是觉察的起点。",
+      "small_step": "下次做了一件事后感到后悔，不是批评自己，而是好奇地问：我当时在担心什么？",
+      "recommended_card_ids": [
+        "validation_before_advice",
+        "one_open_question"
+      ],
+      "card_reason": "根据该簇相对偏低或需支持的题项线索（RFQ07, RFQ01, RFQ05）生成，供人工审核。"
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "profile_1",
+      "profile_name": "画像2：我总是知道我的感受较高，有时我会做一些不确切知道为什么要去做的事、当我生气时会说出一些气话，而我却不知道为什么会这么说较低",
+      "n": 113,
+      "percent": 33.6,
+      "center_z": {
+        "RFQ01": -0.6265,
+        "RFQ03": -0.8649,
+        "RFQ05": -0.8346,
+        "RFQ06": -0.9366,
+        "RFQ07": 0.4095
+      },
+      "mean_scores": {
+        "RFQ01": 3.4867,
+        "RFQ03": 2.8319,
+        "RFQ05": 2.5575,
+        "RFQ06": 2.6991,
+        "RFQ07": 5.7168
+      },
+      "pca_centroid": {
+        "pc1": 1.6964,
+        "pc2": -0.0194
+      },
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：我总是知道我的感受较高，有时我会做一些不确切知道为什么要去做的事、当我生气时会说出一些气话，而我却不知道为什么会这么说较低。它只用于群体参照和支持性解释，不代表固定标签。",
+      "display_name": "内省清晰型",
+      "product_explanation": "你对自己的感受和行为动机有较清晰的觉察，能相对清楚地知道自己为什么这么做或这么感受。这种清晰感是情绪调节的重要资源。",
+      "strength_note": "自我觉察是你的稳定器，在关系中也能给对方带来更多安全感。",
+      "small_step": "把这种觉察用到一次对话里：当你感到不舒服时，试着说出来，而不是等待对方猜。",
+      "recommended_card_ids": [
+        "validation_before_advice",
+        "one_open_question"
+      ],
+      "card_reason": "根据该簇相对偏低或需支持的题项线索（RFQ06, RFQ03, RFQ05）生成，供人工审核。"
+    }
+  ],
+  "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
+  "created_at": "2026-06-29"
+}

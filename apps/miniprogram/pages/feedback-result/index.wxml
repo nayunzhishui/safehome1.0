@@ -1,16 +1,14 @@
 <view class="safe-page feedback-page">
   <view class="feedback-hero safe-card safe-card--hero">
     <view class="hero-copy">
-      <text class="hero-kicker">本次反馈</text>
       <text class="hero-title">先看见发生了什么</text>
       <text class="hero-summary">以下内容用于自我观察和练习参考，不评价谁对谁错。</text>
+      <view class="hero-steps">
+        <text>支持性总结</text>
+        <text>一个小练习</text>
+        <text>必要时找人看</text>
+      </view>
     </view>
-    <image
-      class="hero-image"
-      src="/assets/illustrations/feedback-support.png"
-      mode="aspectFill"
-      aria-hidden="true"
-    />
   </view>
 
   <view wx:if="{{loading}}" class="loading-card safe-card">
@@ -24,14 +22,14 @@
   </view>
 
   <view wx:else class="feedback-content">
-    <view class="boundary-card">
-      <text class="boundary-title">温和说明</text>
-      <text class="boundary-text">这不是诊断报告，也不是评分。它只是把这次记录拆成几个可以观察的位置，帮助你找到下一次能练的小动作。</text>
-    </view>
-
     <view class="support-card safe-card">
       <text class="support-label">我看到了什么</text>
       <text class="support-text">{{feedback.supportive_feedback}}</text>
+    </view>
+
+    <view class="boundary-card">
+      <text class="boundary-title">温和说明</text>
+      <text class="boundary-text">这不是诊断报告，也不是评分。它只是把这次记录拆成几个可以观察的位置，帮助你找到下一次能练的小动作。</text>
     </view>
 
     <view class="safe-section">
@@ -77,7 +75,7 @@
       <view class="practice-card safe-card">
         <text class="practice-title">{{nextAction.title}}</text>
         <text class="practice-text">{{nextAction.text}}</text>
-        <button wx:if="{{canShowTraining}}" class="practice-main-button" bindtap="openTrainingCard">开始一个小练习</button>
+        <button wx:if="{{canShowTraining}}" class="practice-main-button" bindtap="openTrainingCard">开始练习</button>
         <button wx:if="{{isHighRisk}}" class="practice-main-button" bindtap="openSupervision">提交人工关注</button>
       </view>
     </view>
@@ -104,18 +102,25 @@
         <text class="today-suggestion-boundary">今日建议只作为支持性练习参考，不构成诊断或治疗方案。</text>
       </view>
       <view class="training-list">
-        <training-task-card
-          wx:for="{{recommendedTrainings}}"
-          wx:key="title"
-          title="{{item.title}}"
-          subtitle="{{item.subtitle}}"
-          stage="{{item.stage}}"
-          duration="{{item.duration}}"
-          scenario="{{item.scenario}}"
-          reason="{{item.reason}}"
-          tag="{{item.tag}}"
-          bind:tapcard="openTrainingCard"
-        />
+        <view wx:for="{{recommendedTrainings}}" wx:for-index="trainingIndex" wx:key="title">
+          <training-task-card
+            wx:if="{{trainingIndex < 2}}"
+            title="{{item.title}}"
+            subtitle="{{item.subtitle}}"
+            stage="{{item.stage}}"
+            duration="{{item.duration}}"
+            scenario="{{item.scenario}}"
+            reason="{{item.reason}}"
+            tag="{{item.tag}}"
+            bind:tapcard="openTrainingCard"
+          />
+        </view>
+        <!--
+          Keep the page calm by showing only two cards before the full recommendation page.
+        -->
+        <view wx:if="{{recommendedTrainings.length > 2}}" class="training-more-row">
+          <button class="more-training-button" bindtap="openTrainingCard">查看全部推荐</button>
+        </view>
       </view>
     </view>
 
@@ -128,7 +133,6 @@
     </view>
 
     <view class="action-grid">
-      <button wx:if="{{canShowTraining}}" class="safe-primary-button action-button" bindtap="openTrainingCard">开始一个小练习</button>
       <button wx:if="{{isHighRisk}}" class="safe-primary-button action-button" bindtap="openSupervision">提交人工关注</button>
       <button class="safe-outline-button action-button" bindtap="saveFeedback">保存本次反馈</button>
     </view>

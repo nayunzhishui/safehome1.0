@@ -1,0 +1,23 @@
+{
+  "file": "programs.json",
+  "root_required": ["version", "boundary_notice", "programs"],
+  "lists": [
+    {
+      "field": "programs",
+      "item_required": [
+        "id",
+        "title",
+        "target_constructs",
+        "theory_source",
+        "audience",
+        "review_status",
+        "boundary_notice",
+        "sessions"
+      ],
+      "item_list_min_lengths": {
+        "target_constructs": 1,
+        "sessions": 1
+      }
+    }
+  ]
+}

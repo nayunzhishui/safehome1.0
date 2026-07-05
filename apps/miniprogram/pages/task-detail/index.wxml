@@ -63,9 +63,11 @@
   </view>
 
   <view class="action-bar">
-    <button class="safe-outline-button action-button" bindtap="startPractice">从第一步开始</button>
     <button class="safe-primary-button action-button" bindtap="finishPractice">完成并打卡</button>
-    <button class="safe-secondary-button action-button" bindtap="recordFeeling">暂存感受</button>
+    <view class="secondary-actions">
+      <button class="soft-action-button" bindtap="startPractice">从第一步开始</button>
+      <button class="soft-action-button" bindtap="recordFeeling">暂存感受</button>
+    </view>
   </view>
 
   <view class="safe-section">

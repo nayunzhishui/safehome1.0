@@ -1,0 +1,74 @@
+<view class="safe-page thermometer-page">
+  <view class="page-head">
+    <text class="safe-h1">情绪温度计</text>
+    <text class="safe-subtitle">今天可以记录多次，只看一天里的小变化。</text>
+  </view>
+
+  <view class="safe-card record-panel">
+    <view class="panel-top">
+      <text class="safe-h3">现在的强度</text>
+      <text class="level-text">{{intensityLevel}} / 10</text>
+    </view>
+    <slider
+      min="1"
+      max="10"
+      step="1"
+      value="{{intensityLevel}}"
+      activeColor="#4f7c6b"
+      backgroundColor="#dfe5dc"
+      bindchange="onIntensityChange"
+      bindchanging="onIntensityChange"
+    />
+    <textarea
+      class="brief-input"
+      value="{{briefText}}"
+      maxlength="200"
+      placeholder="可选：用一句话写下刚才发生了什么。"
+      bindinput="onBriefInput"
+    />
+    <button class="safe-primary-button" loading="{{saving}}" bindtap="saveRecord">记录一次</button>
+  </view>
+
+  <view class="safe-card curve-panel">
+    <view class="panel-top">
+      <view>
+        <text class="safe-h3">今日曲线</text>
+        <text class="safe-caption">共 {{summary.count}} 次，平均 {{summary.avg || "-"}}</text>
+      </view>
+      <button class="refresh-button" bindtap="loadDay">刷新</button>
+    </view>
+    <canvas
+      id="moodCurve"
+      class="curve-canvas"
+      type="2d"
+      bindtouchstart="handleCanvasTap"
+    ></canvas>
+    <view wx:if="{{selectedPoint}}" class="selected-point">
+      <text class="safe-h3">{{selectedPoint.label}} · {{selectedPoint.intensity_level}} / 10</text>
+      <text class="safe-body">{{selectedPoint.brief_text || "这次没有写备注。"}}</text>
+    </view>
+    <view wx:if="{{!summary.count && !loading}}" class="empty-tip">
+      <text>今天还没有记录。先记录一次，再看曲线。</text>
+    </view>
+  </view>
+
+  <view wx:if="{{errorMessage}}" class="safe-card list-panel">
+    <text class="safe-h3">暂时没能完成</text>
+    <text class="safe-body">{{errorMessage}}</text>
+    <button class="safe-primary-button" bindtap="loadDay">重试读取</button>
+  </view>
+
+  <view class="safe-card list-panel">
+    <text class="safe-h3">今天的记录</text>
+    <view wx:for="{{records}}" wx:key="id" class="record-row">
+      <view class="record-badge">{{item.intensity_level}}</view>
+      <view class="record-copy">
+        <text class="row-title">{{item.timeLabel}}</text>
+        <text class="row-desc">{{item.brief_text || "没有备注"}}</text>
+      </view>
+    </view>
+    <text wx:if="{{!records.length}}" class="safe-caption">记录后会按时间显示在这里。</text>
+  </view>
+
+  <view class="boundary-note">{{boundaryNotice}}</view>
+</view>

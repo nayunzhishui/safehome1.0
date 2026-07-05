@@ -1,0 +1,320 @@
+{
+  "schema_version": "2026.06-profile-model-v1",
+  "model_id": "1_王季璇_数据及数据分析结果_亲子沟通_学业浮力_情绪弹性__1_王季璇_数据及数据分析结果_亲子沟通_学业浮力_情绪弹性_总数据_王季璇230720_sav__emotional_resilience_11",
+  "group_id": "1_王季璇_数据及数据分析结果_亲子沟通_学业浮力_情绪弹性__1_王季璇_数据及数据分析结果_亲子沟通_学业浮力_情绪弹性_总数据_王季璇230720_sav__emotional_resilience_11",
+  "standard_scale_name": "青少年情绪弹性问卷",
+  "scale_id": "emotional_resilience_11",
+  "worksheet_id": "emotional_resilience_11",
+  "research_dir": "1 王季璇 数据及数据分析结果【亲子沟通 学业浮力 情绪弹性】",
+  "source_dataset": "1 王季璇 数据及数据分析结果【亲子沟通 学业浮力 情绪弹性】\\总数据-王季璇230720.sav",
+  "n_cases": 634,
+  "n_features": 11,
+  "features": [
+    {
+      "feature_id": "ERES01",
+      "source_variable": "Q1",
+      "question_no": 1,
+      "worksheet_question_id": "ERES01",
+      "label": "1心情不佳时，我能想一些令人开心的事情",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 4.123028,
+      "std": 1.508338
+    },
+    {
+      "feature_id": "ERES02",
+      "source_variable": "Q2",
+      "question_no": 2,
+      "worksheet_question_id": "ERES02",
+      "label": "2他人的批评指责会让我长时间难过",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.559937,
+      "std": 1.496696
+    },
+    {
+      "feature_id": "ERES03",
+      "source_variable": "Q3",
+      "question_no": 3,
+      "worksheet_question_id": "ERES03",
+      "label": "3无论遇到什么困难，我都能保持好的心情",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.611987,
+      "std": 1.549676
+    },
+    {
+      "feature_id": "ERES04",
+      "source_variable": "Q4",
+      "question_no": 4,
+      "worksheet_question_id": "ERES04",
+      "label": "4我的心情不容易受到外界的干扰",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.359621,
+      "std": 1.489186
+    },
+    {
+      "feature_id": "ERES05",
+      "source_variable": "Q5",
+      "question_no": 5,
+      "worksheet_question_id": "ERES05",
+      "label": "5不开心的事情会让我苦恼很长时间",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.334385,
+      "std": 1.533594
+    },
+    {
+      "feature_id": "ERES06",
+      "source_variable": "Q6",
+      "question_no": 6,
+      "worksheet_question_id": "ERES06",
+      "label": "6我能在短时间内调整自己的消极情绪",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 4.009464,
+      "std": 1.501809
+    },
+    {
+      "feature_id": "ERES07",
+      "source_variable": "Q7",
+      "question_no": 7,
+      "worksheet_question_id": "ERES07",
+      "label": "7白天不愉快的事情常让我晚上难以入睡",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.394322,
+      "std": 1.644904
+    },
+    {
+      "feature_id": "ERES08",
+      "source_variable": "Q8",
+      "question_no": 8,
+      "worksheet_question_id": "ERES08",
+      "label": "8面对压力或挫折时，我能够“自我找乐”",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.933754,
+      "std": 1.510853
+    },
+    {
+      "feature_id": "ERES09",
+      "source_variable": "Q9",
+      "question_no": 9,
+      "worksheet_question_id": "ERES09",
+      "label": "9无论感觉多么糟糕，我都能往好处想",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.944795,
+      "std": 1.46842
+    },
+    {
+      "feature_id": "ERES10",
+      "source_variable": "Q10",
+      "question_no": 10,
+      "worksheet_question_id": "ERES10",
+      "label": "10别人的误解会让我感到很难过",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 4.157729,
+      "std": 1.549513
+    },
+    {
+      "feature_id": "ERES11",
+      "source_variable": "Q11",
+      "question_no": 11,
+      "worksheet_question_id": "ERES11",
+      "label": "11和别人争吵后，我的情绪很难平静下来",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.782334,
+      "std": 1.585603
+    }
+  ],
+  "preprocessing": {
+    "initial_rows": 634,
+    "initial_features": 11,
+    "retained_rows": 634,
+    "retained_features": 11,
+    "row_missing_threshold": 0.4,
+    "column_min_non_missing": 190,
+    "imputation": "column_mean_after_row_filter"
+  },
+  "model_selection": [
+    {
+      "k": 2,
+      "inertia": 5403.902,
+      "silhouette": 0.191,
+      "min_cluster_size": 313
+    },
+    {
+      "k": 3,
+      "inertia": 4806.385,
+      "silhouette": 0.1387,
+      "min_cluster_size": 156
+    },
+    {
+      "k": 4,
+      "inertia": 4390.625,
+      "silhouette": 0.1438,
+      "min_cluster_size": 120
+    },
+    {
+      "k": 5,
+      "inertia": 4179.035,
+      "silhouette": 0.13,
+      "min_cluster_size": 63
+    },
+    {
+      "k": 6,
+      "inertia": 3986.529,
+      "silhouette": 0.1177,
+      "min_cluster_size": 65
+    }
+  ],
+  "chosen_k": 2,
+  "pca": {
+    "components": [
+      [
+        -0.286407,
+        0.297956,
+        -0.362226,
+        -0.307979,
+        0.293676,
+        -0.336612,
+        0.247872,
+        -0.367649,
+        -0.349854,
+        0.180646,
+        0.227913
+      ],
+      [
+        -0.217171,
+        -0.343515,
+        -0.216098,
+        -0.186843,
+        -0.342449,
+        -0.210377,
+        -0.328974,
+        -0.256482,
+        -0.257823,
+        -0.453608,
+        -0.381387
+      ]
+    ],
+    "explained_ratio": [
+      0.363509,
+      0.171385
+    ]
+  },
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "profile_id": "profile_0",
+      "profile_name": "画像1：他人的批评指责会让我长时间难过、不开心的事情会让我苦恼很长时间较高，面对压力或挫折时，我能够“自我找乐”、无论遇到什么困难，我都能保持好的心情较低",
+      "n": 313,
+      "percent": 49.4,
+      "center_z": {
+        "ERES01": -0.5137,
+        "ERES02": 0.3837,
+        "ERES03": -0.6361,
+        "ERES04": -0.5204,
+        "ERES05": 0.3694,
+        "ERES06": -0.6105,
+        "ERES07": 0.2633,
+        "ERES08": -0.6498,
+        "ERES09": -0.6129,
+        "ERES10": 0.1663,
+        "ERES11": 0.2219
+      },
+      "mean_scores": {
+        "ERES01": 3.3482,
+        "ERES02": 4.1342,
+        "ERES03": 2.6262,
+        "ERES04": 2.5847,
+        "ERES05": 3.901,
+        "ERES06": 3.0927,
+        "ERES07": 3.8275,
+        "ERES08": 2.9521,
+        "ERES09": 3.0447,
+        "ERES10": 4.4153,
+        "ERES11": 4.1342
+      },
+      "pca_centroid": {
+        "pc1": 1.5653,
+        "pc2": 0.2944
+      },
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：他人的批评指责会让我长时间难过、不开心的事情会让我苦恼很长时间较高，面对压力或挫折时，我能够“自我找乐”、无论遇到什么困难，我都能保持好的心情较低。它只用于群体参照和支持性解释，不代表固定标签。",
+      "display_name": "情绪波动型",
+      "product_explanation": "你对批评和挫折比较敏感，不好的情绪需要较长时间才能平复。这说明你的情绪系统是敏锐的，只是暂时还缺少一些让情绪流动起来的方式。",
+      "strength_note": "高敏感意味着你能更深地感受事情，这也是共情力的来源。",
+      "small_step": "下次情绪来了，给自己5分钟：不评判、不分析，只是注意自己的身体感觉在哪里。",
+      "recommended_card_ids": [
+        "rsca_emotion_regulation",
+        "rsca_positive_cognition"
+      ],
+      "card_reason": "根据该簇相对偏低或需支持的题项线索（ERES08, ERES03, ERES09）生成，供人工审核。"
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "profile_1",
+      "profile_name": "画像2：面对压力或挫折时，我能够“自我找乐”、无论遇到什么困难，我都能保持好的心情较高，他人的批评指责会让我长时间难过、不开心的事情会让我苦恼很长时间较低",
+      "n": 321,
+      "percent": 50.6,
+      "center_z": {
+        "ERES01": 0.5009,
+        "ERES02": -0.3741,
+        "ERES03": 0.6203,
+        "ERES04": 0.5074,
+        "ERES05": -0.3602,
+        "ERES06": 0.5953,
+        "ERES07": -0.2568,
+        "ERES08": 0.6336,
+        "ERES09": 0.5977,
+        "ERES10": -0.1621,
+        "ERES11": -0.2164
+      },
+      "mean_scores": {
+        "ERES01": 4.8785,
+        "ERES02": 3.0,
+        "ERES03": 4.5732,
+        "ERES04": 4.1153,
+        "ERES05": 2.7819,
+        "ERES06": 4.9034,
+        "ERES07": 2.972,
+        "ERES08": 4.891,
+        "ERES09": 4.8224,
+        "ERES10": 3.9065,
+        "ERES11": 3.4393
+      },
+      "pca_centroid": {
+        "pc1": -1.5263,
+        "pc2": -0.287
+      },
+      "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：面对压力或挫折时，我能够“自我找乐”、无论遇到什么困难，我都能保持好的心情较高，他人的批评指责会让我长时间难过、不开心的事情会让我苦恼很长时间较低。它只用于群体参照和支持性解释，不代表固定标签。",
+      "display_name": "情绪稳健型",
+      "product_explanation": "你在压力和挫折中能找到情绪出口，不好的感受不容易在你身上停留太久。这种弹性是可以继续练习和维护的。",
+      "strength_note": "情绪恢复能力是你的保护性资源，在帮助他人时也能起到稳定作用。",
+      "small_step": "回想一次你让自己从坏心情里走出来的经历，写下那一刻你做了什么，留作下次参考。",
+      "recommended_card_ids": [
+        "rsca_emotion_regulation",
+        "rsca_positive_cognition"
+      ],
+      "card_reason": "根据该簇相对偏低或需支持的题项线索（ERES02, ERES05, ERES07）生成，供人工审核。"
+    }
+  ],
+  "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
+  "created_at": "2026-06-29"
+}

@@ -1,0 +1,68 @@
+.message-detail-page {
+  padding-bottom: 72rpx;
+}
+
+.detail-kicker,
+.detail-title,
+.detail-time,
+.detail-body,
+.boundary-title,
+.boundary-text {
+  display: block;
+}
+
+.detail-kicker {
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 850;
+}
+
+.detail-title {
+  margin-top: 12rpx;
+  color: var(--safe-title);
+  font-size: 38rpx;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.detail-time {
+  margin-top: 12rpx;
+  color: var(--safe-muted);
+  font-size: 22rpx;
+}
+
+.detail-body {
+  margin-top: 28rpx;
+  color: var(--safe-text);
+  font-size: 27rpx;
+  line-height: 1.8;
+}
+
+.state-card {
+  color: var(--safe-text);
+  font-size: 26rpx;
+}
+
+.boundary-card {
+  padding: 24rpx 28rpx;
+  border: 1rpx solid rgba(215, 111, 103, 0.26);
+  border-radius: var(--safe-radius-md);
+  background: rgba(255, 244, 240, 0.92);
+}
+
+.boundary-title {
+  color: #9F3E38;
+  font-size: 27rpx;
+  font-weight: 900;
+}
+
+.boundary-text {
+  margin-top: 10rpx;
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.75;
+}
+
+.bottom-action {
+  margin-top: 32rpx;
+}

@@ -1,6 +1,9 @@
 import { API_ENDPOINTS } from "../../../../shared/constants/api";
 import type {
   ApiResponse,
+  AdminWorksheet,
+  AdminWorksheetInput,
+  AssessmentProfilePosition,
   AssessmentResult,
   CardRecommendResponse,
   Checkin,
@@ -36,7 +39,9 @@ import type {
   WeeklyReport,
 } from "../../../../shared/types/api";
 import { getStoredAdminToken } from "./adminToken";
-import { getAnonymousUserId } from "./userIdentity";
+import type { AuthUser } from "./authState";
+import { getStoredAuthUser, getToken } from "./authState";
+import { clearAnonymousUserId, getAnonymousUserId } from "./userIdentity";
 
 export interface SafeHomeApiClientOptions {
   baseUrl?: string;
@@ -56,8 +61,8 @@ export class SafeHomeApiError extends Error {
 }
 
 export function formatSafeHomeError(error: unknown, fallback: string): string {
-  if (error instanceof SafeHomeApiError && error.status === 401) {
-    return "后台令牌缺失或无效。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。";
+  if (error instanceof SafeHomeApiError && error.status === 401 && error.code === "admin_unauthorized") {
+    return "后台令牌缺失或无效。请使用当前部署环境提供的后台令牌。";
   }
   return error instanceof Error ? error.message : fallback;
 }
@@ -73,6 +78,29 @@ export class SafeHomeApiClient {
 
   async healthz(): Promise<{ ok: true; service: string }> {
     return this.requestRaw(API_ENDPOINTS.healthz);
+  }
+
+  async login(creds: { username: string; password: string }): Promise<{ token: string; user: AuthUser }> {
+    const data = await this.requestData<{ token: string; user: AuthUser }>(API_ENDPOINTS.authLogin, {
+      method: "POST",
+      body: creds,
+    });
+    clearAnonymousUserId();
+    return data;
+  }
+
+  async register(creds: {
+    username: string;
+    password: string;
+    role?: string;
+    nickname?: string;
+  }): Promise<{ token: string; user: AuthUser }> {
+    const data = await this.requestData<{ token: string; user: AuthUser }>(API_ENDPOINTS.authRegister, {
+      method: "POST",
+      body: { ...creds, anonymous_id: this.defaultUserId },
+    });
+    clearAnonymousUserId();
+    return data;
   }
 
   createGoal(input: GoalInput): Promise<Goal> {
@@ -256,6 +284,24 @@ export class SafeHomeApiClient {
     return this.requestData<ListResponse<AssessmentResult>>(this.withQuery(API_ENDPOINTS.assessmentResults, this.withDefaultUserParam(params)));
   }
 
+  listAdminAssessmentResults(
+    params: { worksheet_id?: string; profile_model_id?: string; limit?: number } = {},
+    adminToken?: string,
+  ): Promise<ListResponse<AssessmentResult>> {
+    return this.requestData<ListResponse<AssessmentResult>>(this.withQuery(API_ENDPOINTS.adminAssessmentResults, params), {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  getAssessmentProfilePosition(
+    id: string,
+    params: { user_id?: string; model_id?: string } = {},
+  ): Promise<AssessmentProfilePosition> {
+    return this.requestData<AssessmentProfilePosition>(
+      this.withQuery(`${API_ENDPOINTS.assessmentResults}/${encodeURIComponent(id)}/profile-position`, this.withDefaultUserParam(params)),
+    );
+  }
+
   createCheckin(input: CheckinInput): Promise<Checkin> {
     return this.requestData<Checkin>(API_ENDPOINTS.checkins, {
       method: "POST",
@@ -286,6 +332,35 @@ export class SafeHomeApiClient {
     return this.requestData<ContentReviewUpdateResult>(API_ENDPOINTS.contentReviewUpdate, {
       method: "POST",
       body: input,
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  listAdminWorksheets(adminToken?: string): Promise<ListResponse<AdminWorksheet>> {
+    return this.requestData<ListResponse<AdminWorksheet>>(API_ENDPOINTS.adminWorksheets, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  createAdminWorksheet(input: AdminWorksheetInput, adminToken?: string): Promise<AdminWorksheet> {
+    return this.requestData<AdminWorksheet>(API_ENDPOINTS.adminWorksheets, {
+      method: "POST",
+      body: input,
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  updateAdminWorksheet(id: string, input: AdminWorksheetInput, adminToken?: string): Promise<AdminWorksheet> {
+    return this.requestData<AdminWorksheet>(`${API_ENDPOINTS.adminWorksheets}/${encodeURIComponent(id)}`, {
+      method: "PUT",
+      body: input,
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  disableAdminWorksheet(id: string, adminToken?: string): Promise<AdminWorksheet> {
+    return this.requestData<AdminWorksheet>(`${API_ENDPOINTS.adminWorksheets}/${encodeURIComponent(id)}`, {
+      method: "DELETE",
       headers: this.adminHeaders(adminToken),
     });
   }
@@ -322,7 +397,7 @@ export class SafeHomeApiClient {
         message = `导出失败：HTTP ${response.status}`;
       }
       if (response.status === 401) {
-        message = "后台令牌缺失或无效。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。";
+        message = "后台令牌缺失或无效。请使用当前部署环境提供的后台令牌。";
       }
       throw new SafeHomeApiError(message, "export_error", response.status);
     }
@@ -331,11 +406,15 @@ export class SafeHomeApiClient {
   }
 
   private withDefaultUser<T extends { user_id?: string }>(input: T): T {
-    return { ...input, user_id: input.user_id ?? this.defaultUserId };
+    return { ...input, user_id: input.user_id ?? this.currentDefaultUserId() };
   }
 
   private withDefaultUserParam<T extends { user_id?: string }>(params: T): T {
-    return { ...params, user_id: params.user_id ?? this.defaultUserId };
+    return { ...params, user_id: params.user_id ?? this.currentDefaultUserId() };
+  }
+
+  private currentDefaultUserId(): string {
+    return getStoredAuthUser()?.id || this.defaultUserId;
   }
 
   private adminHeaders(adminToken?: string): Record<string, string> {
@@ -360,7 +439,7 @@ export class SafeHomeApiClient {
 
   private async requestData<T>(
     path: string,
-    options: { method?: "GET" | "POST"; body?: unknown; headers?: Record<string, string> } = {},
+    options: { method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"; body?: unknown; headers?: Record<string, string> } = {},
   ): Promise<T> {
     const payload = await this.requestRaw<ApiResponse<T>>(path, options);
     return payload.data;
@@ -368,21 +447,25 @@ export class SafeHomeApiClient {
 
   private async requestRaw<T>(
     path: string,
-    options: { method?: "GET" | "POST"; body?: unknown; headers?: Record<string, string> } = {},
+    options: { method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"; body?: unknown; headers?: Record<string, string> } = {},
   ): Promise<T> {
+    const token = getToken();
+    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
     const response = await fetch(this.absoluteUrl(path), {
       method: options.method ?? "GET",
-      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      headers: { "Content-Type": "application/json", ...authHeader, ...(options.headers || {}) },
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
     });
 
     const payload = await response.json();
     if (!response.ok) {
+      const isAdminRequest = path.startsWith("/api/admin") || Boolean(options.headers?.["X-Admin-Token"]);
       const message =
-        response.status === 401
-          ? "后台令牌缺失或无效。云端验收请填写云托管 ADMIN_EXPORT_TOKEN，而不是本地默认令牌。"
-          : payload?.error?.message ?? "请求失败";
-      throw new SafeHomeApiError(message, payload?.error?.code ?? "http_error", response.status);
+        response.status === 401 && isAdminRequest
+          ? "后台令牌缺失或无效。请使用当前部署环境提供的后台令牌。"
+          : payload?.error?.message ?? (response.status === 401 ? "需要先登录或重新登录。" : "请求失败");
+      const code = response.status === 401 && isAdminRequest ? "admin_unauthorized" : payload?.error?.code ?? "http_error";
+      throw new SafeHomeApiError(message, code, response.status);
     }
     if (payload && typeof payload === "object" && payload.ok === false) {
       throw new SafeHomeApiError(payload.error?.message ?? "请求失败", payload.error?.code ?? "api_error", response.status);

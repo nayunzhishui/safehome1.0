@@ -5,9 +5,11 @@ MVP_TABLES = [
     "schema_migrations",
     "goals",
     "emotion_diaries",
+    "emotion_thermometer",
     "feedback_results",
     "training_cards",
     "checkins",
+    "assessment_worksheets",
     "assessment_results",
     "student_profiles",
     "profile_reviews",
@@ -21,6 +23,7 @@ MVP_TABLES = [
     "family_links",
     "weekly_reports",
     "supervision_requests",
+    "messages",
 ]
 
 
@@ -31,6 +34,8 @@ SCHEMA_SQL = [
         nickname TEXT,
         role TEXT DEFAULT 'parent',
         source TEXT,
+        wechat_openid TEXT,
+        avatar_url TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )
@@ -106,6 +111,16 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS emotion_thermometer (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        intensity_level INTEGER NOT NULL,
+        brief_text TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS feedback_results (
         id TEXT PRIMARY KEY,
         user_id TEXT,
@@ -150,6 +165,41 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS assessment_worksheets (
+        id TEXT PRIMARY KEY,
+        display_title TEXT NOT NULL,
+        source_title TEXT,
+        source_file TEXT,
+        category TEXT,
+        audience_class TEXT,
+        reflex_node TEXT,
+        questions_json TEXT NOT NULL DEFAULT '[]',
+        dimensions_json TEXT NOT NULL DEFAULT '[]',
+        dimension_score_method TEXT NOT NULL DEFAULT 'sum',
+        scoring_notes_json TEXT NOT NULL DEFAULT '{}',
+        search_keywords_json TEXT NOT NULL DEFAULT '[]',
+        boundary_notice TEXT,
+        result_disclaimer TEXT,
+        instructions TEXT,
+        sensitive_category TEXT NOT NULL DEFAULT 'none',
+        profile_model_id TEXT,
+        enabled_for_user INTEGER NOT NULL DEFAULT 1,
+        review_status TEXT NOT NULL DEFAULT 'approved',
+        review_note TEXT,
+        source_version TEXT,
+        source_type TEXT,
+        audience TEXT,
+        audience_class_detail TEXT,
+        recommended_card_ids_json TEXT NOT NULL DEFAULT '[]',
+        sections_json TEXT NOT NULL DEFAULT '[]',
+        scoring TEXT,
+        pages INTEGER,
+        _meta_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS assessment_results (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
@@ -160,6 +210,11 @@ SCHEMA_SQL = [
         scores_json TEXT NOT NULL,
         total_score INTEGER,
         result_summary TEXT,
+        profile_model_id TEXT,
+        profile_cluster_id INTEGER,
+        profile_pc1 REAL,
+        profile_pc2 REAL,
+        profile_confidence REAL,
         created_at TEXT NOT NULL
     )
     """,
@@ -357,13 +412,31 @@ SCHEMA_SQL = [
         replied_at TEXT
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS messages (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        message_type TEXT NOT NULL,
+        title TEXT NOT NULL,
+        body TEXT,
+        source_type TEXT,
+        source_id TEXT,
+        status TEXT NOT NULL DEFAULT 'unread',
+        created_at TEXT NOT NULL,
+        read_at TEXT
+    )
+    """,
 ]
 
 
 INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_emotion_diaries_user_created ON emotion_diaries(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_emotion_thermometer_user_created ON emotion_thermometer(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)",
+    "CREATE INDEX IF NOT EXISTS idx_users_wechat_openid ON users(wechat_openid)",
     "CREATE INDEX IF NOT EXISTS idx_feedback_results_user_created ON feedback_results(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_assessment_results_user_created ON assessment_results(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_assessment_results_profile_model ON assessment_results(profile_model_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_student_profiles_user_created ON student_profiles(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_student_profiles_risk_created ON student_profiles(risk_level, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_risk_review_status_created ON risk_review_records(review_status, created_at)",
@@ -371,4 +444,6 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_records_module_created ON records(module_type, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_privacy_requests_user_created ON privacy_requests(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_family_links_code_status ON family_links(bind_code, status)",
+    "CREATE INDEX IF NOT EXISTS idx_assessment_worksheets_audience_enabled ON assessment_worksheets(audience_class, enabled_for_user)",
+    "CREATE INDEX IF NOT EXISTS idx_messages_user_status_created ON messages(user_id, status, created_at)",
 ]

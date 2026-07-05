@@ -24,9 +24,11 @@ def _copy_required_content(target: Path) -> None:
         "risk_keywords.json",
         "student_profile_rules.json",
         "scales_catalog.json",
+        "assessment_worksheets.json",
         "scale_item_drafts.json",
         "assessment_training_map.json",
         "diary_training_map.json",
+        "programs.json",
     ]:
         shutil.copy(CONTENT_ROOT / filename, target / filename)
 
@@ -109,6 +111,95 @@ def test_unknown_recommended_card_id_reports_error(tmp_path):
     assert any("feedback_rules.json.rules[judgmental_language].recommended_card_ids 包含不存在的训练卡：missing_card_id" in error for error in errors)
 
 
+def _write_profile_model(content_dir: Path, **overrides) -> None:
+    profile_dir = content_dir / "profiles"
+    profile_dir.mkdir(exist_ok=True)
+    model = {
+        "schema_version": "2026.06-profile-model-v1",
+        "model_id": "test_profile_model",
+        "standard_scale_name": "测试画像模型",
+        "scale_id": "student_profile_v1",
+        "worksheet_id": "student_profile_v1",
+        "n_cases": 80,
+        "n_features": 2,
+        "boundary_notice": "本画像只用于阶段性自我理解，不构成诊断。",
+        "features": [
+            {
+                "feature_id": "test_anxiety",
+                "worksheet_question_id": "test_anxiety",
+                "mean": 3.0,
+                "std": 1.0,
+            },
+            {
+                "feature_id": "iu_total",
+                "worksheet_question_id": "iu_total",
+                "mean": 3.0,
+                "std": 1.0,
+            },
+        ],
+        "clusters": [
+            {
+                "cluster_id": 0,
+                "profile_name": "测试画像",
+                "n": 40,
+                "percent": 50.0,
+                "center_z": {"test_anxiety": 0.1, "iu_total": -0.1},
+                "pca_centroid": [0.0, 0.0],
+                "supportive_explanation": "这是支持性阶段画像，不代表固定标签，不构成诊断。",
+                "recommended_card_ids": ["emotion_naming"],
+            }
+        ],
+    }
+    model.update(overrides)
+    (profile_dir / "test_profile_model.json").write_text(json.dumps(model, ensure_ascii=False), encoding="utf-8")
+
+
+def test_profile_model_question_ids_must_link_to_real_worksheet_questions(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    _write_profile_model(
+        content_dir,
+        features=[
+            {
+                "feature_id": "test_anxiety",
+                "worksheet_question_id": "missing_question_id",
+                "mean": 3.0,
+                "std": 1.0,
+            },
+        ],
+    )
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("worksheet_question_id" in error and "missing_question_id" in error for error in errors)
+
+
+def test_profile_model_recommended_cards_must_exist(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    _write_profile_model(
+        content_dir,
+        clusters=[
+            {
+                "cluster_id": 0,
+                "profile_name": "测试画像",
+                "n": 40,
+                "percent": 50.0,
+                "center_z": {"test_anxiety": 0.1, "iu_total": -0.1},
+                "pca_centroid": [0.0, 0.0],
+                "supportive_explanation": "这是支持性阶段画像，不代表固定标签，不构成诊断。",
+                "recommended_card_ids": ["missing_training_card"],
+            }
+        ],
+    )
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("recommended_card_ids" in error and "missing_training_card" in error for error in errors)
+
+
 def test_high_risk_feedback_rule_cannot_recommend_regular_cards(tmp_path):
     validator = _validator()
     content_dir = tmp_path / "content"
@@ -164,3 +255,53 @@ def test_diary_training_map_requires_allowed_review_status(tmp_path):
     errors = validator.validate_content(content_dir, SCHEMA_ROOT)
 
     assert any("diary_training_map.json.rules[diary_judgmental_language_nonjudgmental_response].review_status 不在允许枚举中" in error for error in errors)
+
+
+def test_legacy_self_built_assessment_ids_cannot_return_to_content(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "assessment_worksheets.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["worksheets"].append(
+        {
+            "id": "worksheet_3_1_anxiety",
+            "display_title": "工作表3.1：总体焦虑水平及干扰程度量表",
+        }
+    )
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("worksheet_3_1_anxiety" in error and "已下线旧版自建工作表" in error for error in errors)
+
+
+def test_screening_or_health_scales_require_boundary_when_enabled(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "scales_catalog.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    scale = next(item for item in payload["scales"] if item["id"] == "gad7_anxiety")
+    scale["review_status"] = "pilot_review_required"
+    scale["enabled"] = True
+    scale["first_batch_candidate"] = True
+    scale["excluded_from_user_flow"] = False
+    scale["recommended_card_ids"] = ["emotion_naming"]
+    scale["sensitive_category"] = "screening_or_health"
+    scale.pop("boundary_notice", None)
+    scale.pop("result_disclaimer", None)
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("gad7_anxiety" in error and "boundary_notice" in error for error in errors)
+    assert any("gad7_anxiety" in error and "result_disclaimer" in error for error in errors)
+
+    scale["boundary_notice"] = "本结果只用于自我观察，不构成诊断或筛查结论。"
+    scale["result_disclaimer"] = "本结果只用于自我观察，不构成诊断或筛查结论。"
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert not any("gad7_anxiety" in error for error in errors)

@@ -143,9 +143,9 @@
   gap: 18rpx;
   padding: 22rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
+  border-radius: 22rpx;
   background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
+  box-shadow: 0 8rpx 18rpx rgba(52, 66, 58, 0.05);
 }
 
 .step-index {
@@ -175,9 +175,9 @@
 .record-card {
   padding: 24rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
+  border-radius: 22rpx;
   background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
+  box-shadow: 0 8rpx 18rpx rgba(52, 66, 58, 0.05);
 }
 
 .script-card {
@@ -227,4 +227,25 @@
   width: 100%;
   min-height: 82rpx;
   font-size: 26rpx;
+}
+
+.secondary-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
+}
+
+.soft-action-button {
+  min-height: 72rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-pill);
+  background: rgba(255, 253, 248, 0.84);
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 72rpx;
+}
+
+.soft-action-button::after {
+  border: 0;
 }

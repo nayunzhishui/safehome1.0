@@ -1,6 +1,6 @@
 {
   "version": "2026.06-scales-catalog-v1",
-  "updated_at": "2026-06-27",
+  "updated_at": "2026-06-29",
   "source_root": "D:\\codex\\workspace\\safehome1.0其他内容\\夏老师文件\\2026年6月18日发给董俊杰的(1)\\测评问卷-量表",
   "boundary_notice": "量表目录只用于内容盘点、人工审核和后续支持性测评接入规划。未完成授权、题项、计分和伦理复核的量表不得面向用户开放；结果只作自我观察和练习推荐线索，不构成诊断。",
   "review_policy": {
@@ -20,40 +20,71 @@
       "display_name": "父母养育倦怠问卷",
       "audience": "parent",
       "theme": "parenting_stress",
-      "source_folder": "父母养育倦怠问卷",
+      "source_folder": "家长自主量表/父母养育倦怠问卷",
       "source_files": [
-        "Parental Burnout Assessment with scoring.docx",
-        "父母养育倦怠问卷的中文修订与信效度检验.pdf",
-        "简式养育倦怠量表中文版的修订_王玮.pdf"
+        "Parental Burnout Assessment with scoring.docx"
       ],
       "source_type": "authorized_resource",
       "review_status": "metadata_only",
       "enabled": false,
-      "first_batch_candidate": true,
-      "item_status": "pending_extraction",
-      "scoring_status": "pending_review",
-      "recommended_card_ids": ["three_second_pause", "nonjudgmental_response"],
-      "notes": "优先用于家长压力与照顾耗竭观察；需确认正式题项版本、计分阈值和边界文案。"
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "partial_rule_pending_dimension_review",
+      "recommended_card_ids": [
+        "three_second_pause",
+        "nonjudgmental_response"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 23/23 个题项；正式开放前仍需人工复核。",
+      "audience_class": "parent",
+      "category": "家长自助",
+      "reflex_node": "reaction",
+      "search_keywords": [
+        "父母养育倦怠",
+        "PBA",
+        "家长压力",
+        "照顾耗竭"
+      ],
+      "sensitive_category": "parenting_stress",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
     },
     {
       "id": "parental_autonomy_support",
-      "display_name": "父母自主支持量表",
+      "display_name": "父母自主支持量表（题项待人工补录）",
       "audience": "parent",
-      "theme": "parent_child_communication",
-      "source_folder": "父母自主支持量表",
+      "theme": "parental_autonomy_support",
+      "source_folder": "家长自主量表/父母自主支持量表",
       "source_files": [
-        "9题项.docx",
-        "1-1-姚梅林-父母和班主任自主支持对青少年幸福感和孤独感的影响_个体为中心的视角.pdf",
-        "1-2-博士论文-An Assessment of Perceived Parental Autonomy-Support and Control.pdf"
+        "9题项.docx"
       ],
       "source_type": "authorized_resource",
       "review_status": "metadata_only",
       "enabled": false,
       "first_batch_candidate": true,
-      "item_status": "source_insufficient",
-      "scoring_status": "pending_review",
-      "recommended_card_ids": ["nonjudgmental_response", "alternative_behavior"],
-      "notes": "可服务亲子沟通与自主支持主题；已检查 9题项.docx，当前文件只有来源引用，未见题项正文，需继续查找正式题项。"
+      "item_status": "missing_item_text",
+      "scoring_status": "missing_item_text",
+      "recommended_card_ids": [
+        "nonjudgmental_response",
+        "alternative_behavior"
+      ],
+      "notes": "9题项.docx 当前只读到来源引用，未确认题项正文。",
+      "audience_class": "parent",
+      "category": "家长自助",
+      "reflex_node": "support",
+      "search_keywords": [
+        "父母自主支持",
+        "自主支持",
+        "亲子支持"
+      ],
+      "sensitive_category": "none",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项原文未确认，暂不开放填写。",
+      "exclusion_reason": "题项原文未确认，暂不开放填写。"
     },
     {
       "id": "parent_reflective_functioning_prfq",
@@ -67,20 +98,33 @@
         "反思功能问卷_家长反思功能问卷-网址链接.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "draft_from_syntax_pending_review",
-      "recommended_card_ids": ["emotion_naming", "nonjudgmental_response"],
-      "notes": "已从 PRFQ 中文 docx 抽取 18 个题项草稿，并从 syntax 文件记录三个维度和反向计分；正式开放前必须人工核对中文题项、维度译名、计分解释和伦理边界。"
+      "recommended_card_ids": [
+        "emotion_naming",
+        "nonjudgmental_response"
+      ],
+      "notes": "已从 PRFQ 中文 docx 抽取 18 个题项草稿，并从 syntax 文件记录三个维度和反向计分；正式开放前必须人工核对中文题项、维度译名、计分解释和伦理边界。已按用户要求由题项草稿进入小程序可填写列表；正式试点前仍需人工复核来源、计分和边界。",
+      "audience_class": "parent",
+      "category": "成人自助",
+      "reflex_node": "reflection",
+      "search_keywords": [
+        "家长反思功能问卷",
+        "parent_child_communication"
+      ],
+      "sensitive_category": "none",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。"
     },
     {
       "id": "family_cohesion_adaptability",
-      "display_name": "家庭亲密度与适应性量表",
-      "audience": "family",
-      "theme": "family_support",
-      "source_folder": "家庭亲密度与适应性量表",
+      "display_name": "家庭亲密度与适应性量表（题项待人工补录）",
+      "audience": "parent",
+      "theme": "family_functioning",
+      "source_folder": "家长自主量表/家庭亲密度与适应性量表",
       "source_files": [
         "家庭亲密度与适应性分类.sps"
       ],
@@ -88,10 +132,27 @@
       "review_status": "metadata_only",
       "enabled": false,
       "first_batch_candidate": true,
-      "item_status": "missing_items",
-      "scoring_status": "pending_review",
-      "recommended_card_ids": ["nonjudgmental_response", "alternative_behavior"],
-      "notes": "当前只看到计分/分类脚本，题项来源不足；不能开放填写。"
+      "item_status": "missing_item_text",
+      "scoring_status": "classification_script_without_items",
+      "recommended_card_ids": [
+        "nonjudgmental_response",
+        "alternative_behavior"
+      ],
+      "notes": "当前只看到分类脚本，未发现完整题项原文。",
+      "audience_class": "parent",
+      "category": "家长自助",
+      "reflex_node": "family_context",
+      "search_keywords": [
+        "家庭亲密度",
+        "家庭适应性",
+        "FACES"
+      ],
+      "sensitive_category": "family_functioning",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项原文未确认，暂不开放填写。",
+      "exclusion_reason": "题项原文未确认，暂不开放填写。"
     },
     {
       "id": "emotion_regulation_erq_gross",
@@ -105,151 +166,831 @@
         "指标值计算-Gross情绪调节量表GERQ.sps"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "draft_from_pdf_and_sps_pending_review",
       "not_open_reason": "题项和计分仍为草稿，标准引用、授权范围、用户端解释边界和是否适合家长优先版本尚未人工复核。",
-      "recommended_card_ids": ["emotion_naming", "cognitive_flexibility"],
-      "notes": "已从本地 PDF 抽取 10 个题项草稿，并用 PDF 第 2 页和 sps 脚本记录认知重评、表达抑制两个维度；正式开放前必须人工核对题项、计分、标准引用和伦理边界。"
+      "recommended_card_ids": [
+        "emotion_naming",
+        "cognitive_flexibility"
+      ],
+      "notes": "已从本地 PDF 抽取 10 个题项草稿，并用 PDF 第 2 页和 sps 脚本记录认知重评、表达抑制两个维度；正式开放前必须人工核对题项、计分、标准引用和伦理边界。已按用户要求由题项草稿进入小程序可填写列表；正式试点前仍需人工复核来源、计分和边界。",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "reflex_node": "reflection",
+      "search_keywords": [
+        "情绪调节问卷（Gross ERQ）",
+        "emotion_regulation"
+      ],
+      "sensitive_category": "none",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。"
     },
     {
       "id": "self_compassion_scs_cn",
-      "display_name": "自我关怀量表",
+      "display_name": "自我关怀量表（SCS 中文版）",
       "audience": "adult",
       "theme": "self_compassion",
-      "source_folder": "自我关怀",
+      "source_folder": "基于情绪反射弧的分类/自我关怀",
       "source_files": [
-        "ChineseSCS-26题自我关怀量表.pdf",
-        "2011-中国临床心理学杂志-中文版自悯量表的信效度研究.pdf"
+        "ChineseSCS-26题自我关怀量表.pdf"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
       "first_batch_candidate": true,
-      "item_status": "pending_extraction",
-      "scoring_status": "partially_implemented_in_readfeedback",
-      "recommended_card_ids": ["self_support_statement", "three_second_pause"],
-      "notes": "readfeedback 已有简版题项；P3 需补 catalog 与正式开放审核的一致性。"
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "recommended_card_ids": [
+        "self_support_statement",
+        "three_second_pause"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 26/26 个题项；正式开放前仍需人工复核。",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "reflex_node": "acceptance",
+      "search_keywords": [
+        "自我关怀",
+        "自悯",
+        "SCS"
+      ],
+      "sensitive_category": "none",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
     },
     {
       "id": "perceived_social_support_psss",
-      "display_name": "领悟社会支持量表",
+      "display_name": "领悟社会支持量表（PSSS）",
       "audience": "adult",
-      "theme": "support_resource",
-      "source_folder": "领悟社会支持",
+      "theme": "social_support",
+      "source_folder": "基于情绪反射弧的分类/领悟社会支持",
       "source_files": [
-        "肖水源的社会支持评定量表与姜乾金的领悟社会支持量表.doc",
-        "指标值计算-领悟社会支持PSSS.sps"
+        "肖水源的社会支持评定量表与姜乾金的领悟社会支持量表.doc"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
       "first_batch_candidate": true,
-      "item_status": "pending_extraction",
-      "scoring_status": "pending_review",
-      "recommended_card_ids": ["alternative_behavior", "nonjudgmental_response"],
-      "notes": "可用于支持资源主题；需确认 PSSS 与社会支持评定量表的边界和计分口径。"
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "reflex_node": "resource",
+      "search_keywords": [
+        "领悟社会支持",
+        "PSSS",
+        "社会支持"
+      ],
+      "sensitive_category": "none",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
     },
     {
       "id": "acceptance_action_aaq2",
       "display_name": "接纳与行动问卷（AAQ-II）",
       "audience": "adult",
       "theme": "psychological_flexibility",
-      "source_folder": "接纳行动问卷AAQ",
+      "source_folder": "基于情绪反射弧的分类/接纳行动问卷AAQ",
       "source_files": [
-        "2-1-接纳与行动问卷第二版AAQII.docx",
-        "接纳与行动问卷第二版中文版测评大学生的信效度.pdf"
+        "2-1-接纳与行动问卷第二版AAQII.docx"
       ],
       "source_type": "authorized_resource",
       "review_status": "metadata_only",
       "enabled": false,
-      "first_batch_candidate": true,
-      "item_status": "pending_extraction",
-      "scoring_status": "pending_review",
-      "recommended_card_ids": ["cognitive_flexibility", "alternative_behavior"],
-      "notes": "可服务心理灵活性主题；需确认是否适合家长端首批用户。"
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "recommended_card_ids": [
+        "cognitive_flexibility",
+        "alternative_behavior"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 7/7 个题项；正式开放前仍需人工复核。",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "reflex_node": "acceptance",
+      "search_keywords": [
+        "AAQ-II",
+        "接纳行动",
+        "心理灵活性"
+      ],
+      "sensitive_category": "none",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
     },
     {
       "id": "mindful_attention_awareness_maas",
-      "display_name": "正念注意觉知量表",
+      "display_name": "正念注意觉知量表（MAAS）",
       "audience": "adult",
       "theme": "mindfulness",
-      "source_folder": "正念觉知相关量表",
+      "source_folder": "基于情绪反射弧的分类/正念觉知相关量表",
       "source_files": [
-        "正念注意觉知量表.docx",
-        "正念注意觉知量表.pdf",
-        "正念注意觉知量表(MAAS)的修订及信效度检验_陈思佚.pdf"
+        "正念注意觉知量表 答题纸.pdf"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "recommended_card_ids": [
+        "emotion_naming",
+        "three_second_pause"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 15/15 个题项；正式开放前仍需人工复核。",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "reflex_node": "awareness",
+      "search_keywords": [
+        "正念注意觉知",
+        "MAAS",
+        "觉察"
+      ],
+      "sensitive_category": "none",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
+    },
+    {
+      "id": "sleep_isi_psqi",
+      "display_name": "失眠与睡眠质量量表（ISI/PSQI，题项待人工补录）",
+      "audience": "adult",
+      "theme": "sleep_health",
+      "source_folder": "基于情绪反射弧的分类/失眠量表-ISI-PSQI",
+      "source_files": [
+        "失眠严重指数量表说明.docx",
+        "匹兹堡睡眠质量指数问卷--(附评分标准).doc",
+        "ISI2001.pdf"
       ],
       "source_type": "authorized_resource",
       "review_status": "metadata_only",
       "enabled": false,
-      "first_batch_candidate": true,
-      "item_status": "pending_extraction",
-      "scoring_status": "pending_review",
-      "recommended_card_ids": ["emotion_naming", "three_second_pause"],
-      "notes": "可用于情绪觉察和正念练习入口；需避免承诺训练效果。"
-    },
-    {
-      "id": "sleep_isi_psqi",
-      "display_name": "失眠与睡眠质量量表（ISI/PSQI）",
-      "audience": "adult",
-      "theme": "sleep_health",
-      "source_folder": "失眠量表-ISI-PSQI",
-      "source_files": [
-        "失眠严重指数量表说明.docx",
-        "匹兹堡睡眠质量指数问卷--(附评分标准).doc",
-        "指标值计算-ISI.sps",
-        "指标值计算-PSQI.sps"
-      ],
-      "source_type": "authorized_resource",
-      "review_status": "needs_ethics_review",
-      "enabled": false,
       "first_batch_candidate": false,
-      "item_status": "pending_extraction",
-      "scoring_status": "pending_review",
+      "excluded_from_user_flow": true,
+      "item_status": "missing_item_text",
+      "scoring_status": "partial_rule_without_item_text",
+      "not_open_reason": "题项原文未确认，暂不开放填写。",
+      "exclusion_reason": "题项原文未确认，暂不开放填写。",
       "recommended_card_ids": [],
-      "notes": "睡眠量表可能被误解为健康筛查；只登记资源，暂不开放。"
+      "notes": "本轮仅确认 ISI 7 个评价领域和总分范围，未确认逐题原文；PSQI 需按复杂计分表人工复核。",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "reflex_node": "state_observation",
+      "search_keywords": [
+        "ISI",
+        "PSQI",
+        "失眠",
+        "睡眠质量"
+      ],
+      "sensitive_category": "screening_or_health",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。"
     },
     {
       "id": "gad7_anxiety",
-      "display_name": "GAD-7 焦虑相关量表",
+      "display_name": "GAD-7 焦虑相关自评量表",
       "audience": "adult",
-      "theme": "anxiety_screening",
-      "source_folder": "焦虑测评-GAD-7",
+      "theme": "anxiety_observation",
+      "source_folder": "基于情绪反射弧的分类/焦虑测评-GAD-7",
       "source_files": [
-        "(完整版)广泛性焦虑障碍量表(GAD-7).doc",
-        "广泛性焦虑量表中文版在中医内科门诊人群应用的信度和效度.pdf",
-        "指标值计算-GAD.sps"
+        "(完整版)广泛性焦虑障碍量表(GAD-7).doc"
       ],
       "source_type": "authorized_resource",
-      "review_status": "needs_ethics_review",
-      "enabled": false,
-      "first_batch_candidate": false,
-      "item_status": "pending_extraction",
-      "scoring_status": "pending_review",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "excluded_from_user_flow": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_sensitive_review",
+      "not_open_reason": "",
+      "exclusion_reason": "",
       "recommended_card_ids": [],
-      "notes": "名称和分数容易被理解为筛查诊断；暂不进入用户端。"
+      "notes": "已由抽取脚本从本地源文件读取 7/7 个题项；正式开放前仍需人工复核。",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "reflex_node": "state_observation",
+      "search_keywords": [
+        "GAD-7",
+        "焦虑",
+        "广泛性焦虑"
+      ],
+      "sensitive_category": "screening_or_health",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。"
     },
     {
       "id": "phq9_cesd10_depression",
-      "display_name": "PHQ-9/CES-D10 抑郁相关量表",
+      "display_name": "PHQ-9 抑郁相关自评量表（CES-D10待复核）",
       "audience": "adult",
-      "theme": "depression_screening",
-      "source_folder": "抑郁测评-CESD10-PHQ9",
+      "theme": "depression_observation",
+      "source_folder": "基于情绪反射弧的分类/抑郁测评-CESD10-PHQ9",
       "source_files": [
         "精选-PHQ-9抑郁症筛查量表.doc",
         "cesd-10-流调中心抑郁水平评定.jpg"
       ],
       "source_type": "authorized_resource",
-      "review_status": "needs_ethics_review",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "excluded_from_user_flow": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_sensitive_review",
+      "not_open_reason": "",
+      "exclusion_reason": "",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 9/9 个题项；正式开放前仍需人工复核。",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "reflex_node": "state_observation",
+      "search_keywords": [
+        "PHQ-9",
+        "CES-D10",
+        "抑郁",
+        "情绪低落"
+      ],
+      "sensitive_category": "screening_or_health",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。"
+    },
+    {
+      "id": "rsca_adolescent_resilience",
+      "display_name": "青少年心理韧性量表（RSCA）",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "resilience",
+      "reflex_node": "resource",
+      "search_keywords": [
+        "青少年心理韧性",
+        "RSCA",
+        "学生韧性"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "学生自助量表/2022年6月施测学生问卷",
+      "source_files": [
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
       "enabled": false,
       "first_batch_candidate": false,
-      "item_status": "pending_extraction",
-      "scoring_status": "pending_review",
+      "item_status": "draft_extracted",
+      "scoring_status": "partial_rule_pending_dimension_mapping",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "涉及抑郁筛查语义，必须由人工确认边界、风险提示和开放策略后再处理。"
+      "notes": "已由抽取脚本从本地源文件读取 27/27 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+    },
+    {
+      "id": "academic_buoyancy_4",
+      "display_name": "学业复原力/学业浮力量表",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "academic_resilience",
+      "reflex_node": "resource",
+      "search_keywords": [
+        "学业浮力",
+        "学业复原力",
+        "Academic Buoyancy"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "学生自助量表/2022年6月施测学生问卷",
+      "source_files": [
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 4/4 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+    },
+    {
+      "id": "afq_y8_avoidance_fusion",
+      "display_name": "青少年回避与融合问卷（AFQ-Y8）",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "psychological_flexibility",
+      "reflex_node": "fusion",
+      "search_keywords": [
+        "AFQ-Y8",
+        "回避融合",
+        "心理灵活性"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "学生自助量表/2022年6月施测学生问卷",
+      "source_files": [
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 8/8 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+    },
+    {
+      "id": "cfi2_cognitive_flexibility",
+      "display_name": "认知灵活性问卷中文版（CFI-2）",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "cognitive_flexibility",
+      "reflex_node": "transformation",
+      "search_keywords": [
+        "认知灵活性",
+        "CFI-2",
+        "灵活选择",
+        "灵活效能"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "学生自助量表/2022年6月施测学生问卷",
+      "source_files": [
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [
+        "cognitive_flexibility",
+        "alternative_behavior"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+    },
+    {
+      "id": "emotional_resilience_11",
+      "display_name": "青少年情绪弹性问卷",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "emotion_resilience",
+      "reflex_node": "reaction",
+      "search_keywords": [
+        "情绪弹性",
+        "情绪恢复",
+        "积极情绪"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "学生自助量表/2022年6月施测学生问卷",
+      "source_files": [
+        "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+        "青少年情绪弹性问卷.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "self_support_statement"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 11/11 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
+    },
+    {
+      "id": "study_engagement_uwes_s_17",
+      "display_name": "学习投入量表（UWES-S 中文版）",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "study_engagement",
+      "reflex_node": "behavior",
+      "search_keywords": [
+        "学习投入",
+        "UWES-S",
+        "活力",
+        "奉献",
+        "专注"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "学生自助量表/学习投入量表",
+      "source_files": [
+        "学习投入量表.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "cbt_auto_thought_student"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 17/17 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
+    },
+    {
+      "id": "cd_risc10_brief_resilience",
+      "display_name": "简式心理韧性量表（CD-RISC-10）",
+      "audience": "adult",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "theme": "resilience",
+      "reflex_node": "resource",
+      "search_keywords": [
+        "CD-RISC-10",
+        "简式心理韧性",
+        "韧性"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "基于情绪反射弧的分类",
+      "source_files": [
+        "简式心理韧性量表-10题.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [
+        "cognitive_flexibility",
+        "self_support_statement"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 10/10 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
+    },
+    {
+      "id": "regulatory_focus_general_18",
+      "display_name": "一般调节聚焦问卷",
+      "audience": "adult",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "theme": "regulatory_focus",
+      "reflex_node": "motivation",
+      "search_keywords": [
+        "调节聚焦",
+        "促进定向",
+        "预防定向"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "基于情绪反射弧的分类",
+      "source_files": [
+        "一般调节聚焦问卷-孙天娇要来的.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "pending_dimension_mapping",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 18/18 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+    },
+    {
+      "id": "fmi_12_mindfulness",
+      "display_name": "弗赖堡正念调查量表（FMI-12）",
+      "audience": "adult",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "theme": "mindfulness",
+      "reflex_node": "awareness",
+      "search_keywords": [
+        "FMI",
+        "弗赖堡正念",
+        "觉知",
+        "接受"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "基于情绪反射弧的分类/正念觉知相关量表",
+      "source_files": [
+        "弗赖堡正念调查量表FMI.pdf"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [
+        "emotion_naming",
+        "three_second_pause"
+      ],
+      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+    },
+    {
+      "id": "hplp_c_health_promoting_lifestyle",
+      "display_name": "健康促进生活方式量表（HPLP-C）",
+      "audience": "adult",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "theme": "health_lifestyle",
+      "reflex_node": "behavior",
+      "search_keywords": [
+        "HPLP-C",
+        "健康促进生活方式",
+        "生活习惯"
+      ],
+      "sensitive_category": "health_lifestyle",
+      "source_folder": "基于情绪反射弧的分类/健康促进生活方式量表",
+      "source_files": [
+        "健康促进生活方式量表(HPLP-C).docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "partial_rule_pending_dimension_review",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 42/42 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+    },
+    {
+      "id": "swls_life_satisfaction",
+      "display_name": "生活满意度量表（SWLS）",
+      "audience": "adult",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "theme": "wellbeing",
+      "reflex_node": "outcome",
+      "search_keywords": [
+        "SWLS",
+        "生活满意度",
+        "主观幸福感"
+      ],
+      "sensitive_category": "wellbeing",
+      "source_folder": "基于情绪反射弧的分类/主观幸福感-生活满意度",
+      "source_files": [
+        "生活满意度量表(SWLS).docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "first_batch_candidate": false,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 5/5 个题项；正式开放前仍需人工复核。",
+      "excluded_from_user_flow": true,
+      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
+      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+    },
+    {
+      "id": "big_five_bfi_60",
+      "display_name": "大五人格问卷（60题简版）",
+      "audience": "adult",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "theme": "personality_observation",
+      "reflex_node": "trait_observation",
+      "search_keywords": [
+        "大五人格",
+        "BFI",
+        "人格",
+        "外倾性",
+        "神经质"
+      ],
+      "sensitive_category": "personality",
+      "source_folder": "基于情绪反射弧的分类/大五人格",
+      "source_files": [
+        "大五人格问卷(简版)记分+纬度解释.doc"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": "",
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "partial_rule_pending_dimension_review",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 60/60 个题项；正式开放前仍需人工复核。"
+    },
+    {
+      "id": "attribution_style_student_36",
+      "display_name": "归因方式问卷（学生用）",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "attribution_style",
+      "reflex_node": "appraisal",
+      "search_keywords": [
+        "归因方式",
+        "归因风格",
+        "学生归因"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "基于情绪反射弧的分类/归因风格问卷",
+      "source_files": [
+        "归因方式问卷(学生用).doc"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": "",
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "partial_rule_pending_open_reason_support",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 36/36 个题项；正式开放前仍需人工复核。"
+    },
+    {
+      "id": "ghq12_general_health",
+      "display_name": "一般健康问卷（GHQ-12）",
+      "audience": "adult",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "theme": "mental_health_observation",
+      "reflex_node": "state_observation",
+      "search_keywords": [
+        "GHQ-12",
+        "一般健康问卷",
+        "心理健康自评"
+      ],
+      "sensitive_category": "screening_or_health",
+      "source_folder": "基于情绪反射弧的分类/心理健康自评问卷【GHQ12]",
+      "source_files": [
+        "一般健康问卷GHQ-12.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": "",
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_sensitive_review",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。"
+    },
+    {
+      "id": "epq_emotional_stability_24",
+      "display_name": "EPQ 情绪稳定性量表",
+      "audience": "adult",
+      "audience_class": "adult",
+      "category": "成人自助",
+      "theme": "emotion_stability",
+      "reflex_node": "trait_observation",
+      "search_keywords": [
+        "EPQ",
+        "情绪稳定性",
+        "艾森克"
+      ],
+      "sensitive_category": "personality",
+      "source_folder": "基于情绪反射弧的分类/情绪稳定性-EPQ",
+      "source_files": [
+        "EPQ 情绪稳定性量表.docx"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": "",
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "pending_sensitive_review",
+      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 24/24 个题项；正式开放前仍需人工复核。"
+    },
+    {
+      "id": "emotional_intelligence_eis_33",
+      "display_name": "青少年情绪智力量表（EIS）",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "emotional_intelligence",
+      "reflex_node": "emotion_skill",
+      "search_keywords": [
+        "EIS",
+        "青少年情绪智力",
+        "情绪能力"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "学生自助量表/青少年情绪智力量表（EIS）",
+      "source_files": [
+        "青少年情绪智力质量EIS.sav",
+        "指标值计算-中学生情绪智力量表（EIS）.sps"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": "",
+      "first_batch_candidate": true,
+      "item_status": "draft_extracted",
+      "scoring_status": "rule_available_pending_review",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "recommended_card_ids": [],
+      "notes": "已由抽取脚本从本地源文件读取 33/33 个题项；正式开放前仍需人工复核。"
+    },
+    {
+      "id": "cognitive_curiosity_student",
+      "display_name": "认知好奇量表-自评（题项待人工补录）",
+      "audience": "student",
+      "audience_class": "student",
+      "category": "学生自助",
+      "theme": "cognitive_curiosity",
+      "reflex_node": "motivation",
+      "search_keywords": [
+        "认知好奇",
+        "兴趣型认知好奇",
+        "剥夺型认知好奇"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "学生自助量表/认知好奇量表-自评",
+      "source_files": [
+        "指标值计算-学生自评认知好奇总分与因子分 - 初中.sps",
+        "指标值计算-学生自评认知好奇总分与因子分-高中.sps"
+      ],
+      "source_type": "authorized_resource",
+      "review_status": "metadata_only",
+      "enabled": false,
+      "excluded_from_user_flow": true,
+      "item_status": "missing_item_text",
+      "scoring_status": "partial_rule_without_item_text",
+      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "notes": "SPSS 脚本可确认 10 题总分与兴趣型/剥夺型维度，但未包含题项原文。",
+      "not_open_reason": "题项原文未确认，暂不开放填写。",
+      "exclusion_reason": "题项原文未确认，暂不开放填写。"
     }
   ]
 }

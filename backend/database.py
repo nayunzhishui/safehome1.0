@@ -14,16 +14,20 @@ from models import INDEX_SQL, SCHEMA_SQL
 REQUIRED_HEALTH_TABLES = [
     "users",
     "schema_migrations",
+    "assessment_worksheets",
+    "assessment_results",
     "emotion_diaries",
+    "emotion_thermometer",
     "feedback_results",
     "student_profiles",
     "risk_review_records",
     "audit_logs",
     "consent_records",
     "records",
+    "messages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_06_04_001"
-CURRENT_SCHEMA_NAME = "baseline_safehome_schema"
+CURRENT_SCHEMA_VERSION = "2026_07_01_003"
+CURRENT_SCHEMA_NAME = "t8_thermometer_programs_training_plan"
 MYSQL_VARCHAR_COLUMNS = {
     "id",
     "version",
@@ -34,6 +38,8 @@ MYSQL_VARCHAR_COLUMNS = {
     "username",
     "phone_or_email",
     "password_hash",
+    "wechat_openid",
+    "avatar_url",
     "status",
     "last_login_at",
     "source",
@@ -52,6 +58,19 @@ MYSQL_VARCHAR_COLUMNS = {
     "worksheet_id",
     "worksheet_title",
     "category",
+    "audience_class",
+    "reflex_node",
+    "review_status",
+    "profile_model_id",
+    "dimension_score_method",
+    "display_title",
+    "source_file",
+    "source_title",
+    "sensitive_category",
+    "source_version",
+    "source_type",
+    "audience",
+    "audience_class_detail",
     "anonymous_id",
     "assessment_result_id",
     "profile_code",
@@ -105,6 +124,8 @@ MYSQL_VARCHAR_COLUMNS = {
     "week_start",
     "week_end",
     "replied_at",
+    "message_type",
+    "read_at",
 }
 
 
@@ -136,20 +157,28 @@ class MySQLConnection:
             charset="utf8mb4",
             cursorclass=pymysql.cursors.DictCursor,
             autocommit=False,
+            connect_timeout=5,
+            read_timeout=10,
+            write_timeout=10,
         )
 
     def __enter__(self):
+        self._connection.ping(reconnect=True)
         return self
 
     def __exit__(self, exc_type, exc, traceback):
         if exc_type is None:
             self.commit()
         else:
-            self._connection.rollback()
+            try:
+                self._connection.rollback()
+            except Exception:
+                pass
         self.close()
         return False
 
     def execute(self, sql: str, params=None):
+        self._connection.ping(reconnect=True)
         cursor = self._connection.cursor()
         cursor.execute(_mysqlize_query(sql), tuple(params or ()))
         return cursor
@@ -224,7 +253,7 @@ def mysqlize_schema_statement(statement: str) -> str:
 
 def mysqlize_column_definition(column: str, definition: str) -> str:
     line = _mysql_column_line(f"{column} {definition}")
-    return line.split(" ", 1)[1]
+    return line.split(" ", 1)[1].replace("REAL", "DOUBLE")
 
 
 def _parse_index_statement(statement: str) -> tuple[str, str] | None:
@@ -264,6 +293,7 @@ def init_db() -> None:
         for statement in INDEX_SQL:
             create_index(conn, statement)
         sync_training_cards(conn)
+        sync_assessment_worksheets(conn)
         record_schema_migration(conn)
         conn.commit()
 
@@ -290,6 +320,9 @@ def check_database_health() -> dict:
         "training_cards_count": 0,
         "content_training_cards_count": 0,
         "training_cards_sync_ok": False,
+        "assessment_worksheets_count": 0,
+        "content_assessment_worksheets_count": 0,
+        "worksheets_sync_ok": False,
     }
     try:
         with get_connection() as conn:
@@ -297,17 +330,26 @@ def check_database_health() -> dict:
             result["current_schema_version"] = get_latest_schema_version(conn)
             result["schema_version_ok"] = result["current_schema_version"] == CURRENT_SCHEMA_VERSION
             result["training_cards_count"] = get_table_count(conn, "training_cards")
+            result["assessment_worksheets_count"] = get_table_count(conn, "assessment_worksheets")
         existing_tables = {row["name"] for row in rows}
         missing_tables = [table for table in REQUIRED_HEALTH_TABLES if table not in existing_tables]
         content_training_cards = load_content_json("training_cards.json").get("cards", [])
+        content_assessment_worksheets = load_content_json("assessment_worksheets.json").get("worksheets", [])
         result["content_training_cards_count"] = len(content_training_cards)
+        result["content_assessment_worksheets_count"] = len(content_assessment_worksheets)
         result["training_cards_sync_ok"] = result["training_cards_count"] == result["content_training_cards_count"]
+        result["worksheets_sync_ok"] = result["assessment_worksheets_count"] >= result["content_assessment_worksheets_count"]
         result["missing_tables"] = missing_tables
         result["required_tables_ok"] = not missing_tables
         if is_mysql_enabled():
             result["database_path_parent_exists"] = None
             result["database_file_exists"] = None
-        result["ok"] = bool(not missing_tables and result["schema_version_ok"] and result["training_cards_sync_ok"])
+        result["ok"] = bool(
+            not missing_tables
+            and result["schema_version_ok"]
+            and result["training_cards_sync_ok"]
+            and result["worksheets_sync_ok"]
+        )
     except (sqlite3.Error, OSError, json.JSONDecodeError, RuntimeError, Exception) as exc:
         result["error"] = str(exc)
     return result
@@ -349,6 +391,7 @@ def create_index(conn, statement: str) -> None:
     if row:
         return
     try:
+        # index_name and target are parsed from trusted INDEX_SQL schema statements, not request input.
         conn.execute(f"CREATE INDEX {index_name} ON {target}")
     except Exception as exc:
         if "Duplicate key name" in str(exc) or "1061" in str(exc):
@@ -383,6 +426,7 @@ def ensure_mysql_index_columns(conn) -> None:
             if str(row["data_type"]).lower() not in {"tinytext", "text", "mediumtext", "longtext"}:
                 continue
             null_clause = "NOT NULL" if row["is_nullable"] == "NO" else "NULL"
+            # table/column come from parsed internal INDEX_SQL targets and MYSQL_VARCHAR_COLUMNS allowlist.
             conn.execute(f"ALTER TABLE {table} MODIFY COLUMN {column} VARCHAR(255) {null_clause}")
 
 
@@ -404,6 +448,7 @@ def get_table_count(conn, table: str) -> int:
     if not _VALID_TABLE_NAME.match(table):
         raise ValueError(f"非法表名: {table}")
     try:
+        # table is accepted only after the local identifier regex above.
         row = conn.execute(f"SELECT COUNT(*) AS count FROM {table}").fetchone()
     except Exception:
         return 0
@@ -426,11 +471,14 @@ def ensure_column(conn, table: str, column: str, definition: str) -> None:
         ).fetchall()
         columns = {row["name"] for row in rows}
         if column not in columns:
+            # table/column are accepted only after the local identifier regex above.
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {mysqlize_column_definition(column, definition)}")
         return
 
+    # table is accepted only after the local identifier regex above.
     columns = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()}
     if column not in columns:
+        # table/column are accepted only after the local identifier regex above.
         conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
 
 
@@ -482,6 +530,8 @@ def ensure_schema_columns(conn) -> None:
         "phone_or_email": "TEXT",
         "password_hash": "TEXT",
         "anonymous_id": "TEXT",
+        "wechat_openid": "TEXT",
+        "avatar_url": "TEXT",
         "status": "TEXT DEFAULT 'active'",
         "last_login_at": "TEXT",
     }
@@ -504,6 +554,17 @@ def ensure_schema_columns(conn) -> None:
     for column, definition in student_profile_columns.items():
         ensure_column(conn, "student_profiles", column, definition)
 
+    assessment_result_columns = {
+        "profile_model_id": "TEXT",
+        "profile_cluster_id": "INTEGER",
+        "profile_pc1": "REAL",
+        "profile_pc2": "REAL",
+        "profile_confidence": "REAL",
+    }
+    for column, definition in assessment_result_columns.items():
+        ensure_column(conn, "assessment_results", column, definition)
+    _normalize_assessment_profile_cluster(conn)
+
     risk_review_columns = {
         "action_taken": "TEXT",
         "closed_reason": "TEXT",
@@ -518,6 +579,19 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in family_link_columns.items():
         ensure_column(conn, "family_links", column, definition)
+
+
+def _normalize_assessment_profile_cluster(conn) -> None:
+    """Normalize legacy empty-string profile cluster values after the INTEGER switch."""
+    try:
+        conn.execute("UPDATE assessment_results SET profile_cluster_id = NULL WHERE profile_cluster_id = ''")
+    except Exception:
+        return
+    if _connection_provider(conn) == "mysql":
+        try:
+            conn.execute("ALTER TABLE assessment_results MODIFY COLUMN profile_cluster_id INTEGER NULL")
+        except Exception:
+            pass
 
 
 def now_iso() -> str:
@@ -666,6 +740,113 @@ def sync_training_cards(conn) -> None:
                     enabled = excluded.enabled,
                     version = excluded.version,
                     updated_at = excluded.updated_at
+                """,
+                params,
+            )
+
+
+def _sensitive_category(value) -> str:
+    if isinstance(value, bool):
+        return "screening_or_health" if value else "none"
+    return str(value or "none")
+
+
+def sync_assessment_worksheets(conn) -> None:
+    if not (Config.CONTENT_DIR / "assessment_worksheets.json").exists():
+        return
+    payload = load_content_json("assessment_worksheets.json")
+    timestamp = now_iso()
+    columns = [
+        "id",
+        "display_title",
+        "source_title",
+        "source_file",
+        "category",
+        "audience_class",
+        "reflex_node",
+        "questions_json",
+        "dimensions_json",
+        "dimension_score_method",
+        "scoring_notes_json",
+        "search_keywords_json",
+        "boundary_notice",
+        "result_disclaimer",
+        "instructions",
+        "sensitive_category",
+        "profile_model_id",
+        "enabled_for_user",
+        "review_status",
+        "review_note",
+        "source_version",
+        "source_type",
+        "audience",
+        "audience_class_detail",
+        "recommended_card_ids_json",
+        "sections_json",
+        "scoring",
+        "pages",
+        "_meta_json",
+        "created_at",
+        "updated_at",
+    ]
+    for worksheet in payload.get("worksheets", []):
+        if not isinstance(worksheet, dict) or not worksheet.get("id"):
+            continue
+        existing = conn.execute("SELECT created_at FROM assessment_worksheets WHERE id = ?", (worksheet["id"],)).fetchone()
+        row = {
+            "id": worksheet["id"],
+            "display_title": worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
+            "source_title": worksheet.get("source_title"),
+            "source_file": worksheet.get("source_file"),
+            "category": worksheet.get("category"),
+            "audience_class": worksheet.get("audience_class"),
+            "reflex_node": worksheet.get("reflex_node"),
+            "questions_json": json_dumps(worksheet.get("questions", [])),
+            "dimensions_json": json_dumps(worksheet.get("dimensions", [])),
+            "dimension_score_method": worksheet.get("dimension_score_method") or "sum",
+            "scoring_notes_json": json_dumps(worksheet.get("scoring_notes", {})),
+            "search_keywords_json": json_dumps(worksheet.get("search_keywords", [])),
+            "boundary_notice": worksheet.get("boundary_notice"),
+            "result_disclaimer": worksheet.get("result_disclaimer"),
+            "instructions": worksheet.get("instructions"),
+            "sensitive_category": _sensitive_category(worksheet.get("sensitive_category")),
+            "profile_model_id": worksheet.get("profile_model_id"),
+            "enabled_for_user": 1 if worksheet.get("enabled_for_user", True) else 0,
+            "review_status": worksheet.get("review_status") or "approved",
+            "review_note": worksheet.get("review_note"),
+            "source_version": worksheet.get("source_version"),
+            "source_type": worksheet.get("source_type"),
+            "audience": worksheet.get("audience"),
+            "audience_class_detail": worksheet.get("audience_class_detail"),
+            "recommended_card_ids_json": json_dumps(worksheet.get("recommended_card_ids", [])),
+            "sections_json": json_dumps(worksheet.get("sections", [])),
+            "scoring": worksheet.get("scoring"),
+            "pages": worksheet.get("pages"),
+            "_meta_json": json_dumps(worksheet.get("_meta", {})),
+            "created_at": existing["created_at"] if existing else timestamp,
+            "updated_at": timestamp,
+        }
+        params = [row[column] for column in columns]
+        placeholders = ", ".join("?" for _ in columns)
+        column_sql = ", ".join(columns)
+        update_columns = [column for column in columns if column not in {"id", "created_at"}]
+        if _connection_provider(conn) == "mysql":
+            updates = ", ".join(f"{column}=VALUES({column})" for column in update_columns)
+            conn.execute(
+                f"""
+                INSERT INTO assessment_worksheets ({column_sql})
+                VALUES ({placeholders})
+                ON DUPLICATE KEY UPDATE {updates}
+                """,
+                params,
+            )
+        else:
+            updates = ", ".join(f"{column}=excluded.{column}" for column in update_columns)
+            conn.execute(
+                f"""
+                INSERT INTO assessment_worksheets ({column_sql})
+                VALUES ({placeholders})
+                ON CONFLICT(id) DO UPDATE SET {updates}
                 """,
                 params,
             )

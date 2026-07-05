@@ -5,12 +5,6 @@
       <text class="hero-title">按需要慢慢看</text>
       <text class="hero-summary">这里整理一些陪伴练习相关内容。可以先选一个主题看一小节，不需要一次学完。</text>
     </view>
-    <image
-      class="hero-image"
-      src="/assets/illustrations/course-cover-emotion.png"
-      mode="aspectFill"
-      aria-hidden="true"
-    />
   </view>
 
   <view class="safe-section">

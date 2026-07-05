@@ -1,39 +1,25 @@
 <view class="safe-page assessment-page">
   <view class="assessment-head">
     <text class="page-title">支持性测评</text>
-    <text class="page-subtitle">按当前情况做一次自我观察，结果只用于练习参考，不给人贴标签。</text>
-  </view>
-
-  <view class="family-art-card">
-    <view class="art-copy">
-      <text class="art-title">先看见最近的状态</text>
-      <text class="art-text">可以从一张工作表开始，记录压力反应、支持资源和可练习的一小步。</text>
-    </view>
-    <view class="family-art">
-      <view class="sun"></view>
-      <view class="adult-left"></view>
-      <view class="child"></view>
-      <view class="adult-right"></view>
-      <view class="grass"></view>
-    </view>
+    <text class="page-subtitle">按当前情况做一次自我观察。结果只用于理解线索和选择练习，不给人贴标签。</text>
   </view>
 
   <view class="safe-section">
-    <section-title title="测一测说明" subtitle="用于自我观察，不是评价或结论" />
-    <view class="info-card">
-      <view wx:for="{{infoItems}}" wx:key="label" class="info-row">
-        <text class="info-label">{{item.label}}</text>
-        <text class="info-value">{{item.value}}</text>
+    <view class="assessment-controls">
+      <view class="audience-tabs">
+        <button
+          wx:for="{{tabs}}"
+          wx:key="key"
+          class="audience-tab {{activeAudience === item.key ? 'active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="switchAudience"
+        >{{item.label}}</button>
+      </view>
+      <view class="search-row">
+        <input class="search-input" value="{{searchKeyword}}" placeholder="搜索量表、主题或关键词" bindinput="onSearchInput" />
+        <button wx:if="{{searchKeyword}}" class="search-clear" bindtap="clearSearch">清除</button>
       </view>
     </view>
-  </view>
-
-  <view class="safe-section">
-    <alert-card
-      type="info"
-      title="边界提示"
-      content="{{boundaryNotice || '本内容用于自我观察和练习记录，不用于诊断，不替代心理咨询、医学诊断、危机干预或法律判断。'}}"
-    />
   </view>
 
   <view wx:if="{{errorMessage}}" class="error-box">
@@ -55,23 +41,14 @@
         wx:for="{{item.items}}"
         wx:for-item="worksheet"
         wx:key="id"
-        class="worksheet-card {{worksheet.is_reference ? 'reference' : ''}} {{worksheet.is_student_profile ? 'student-profile' : ''}} {{worksheet.is_enabled_for_user ? '' : 'disabled'}}"
+        class="worksheet-card {{worksheet.is_student_profile ? 'student-profile' : ''}} {{worksheet.is_enabled_for_user ? '' : 'disabled'}}"
         data-id="{{worksheet.id}}"
         data-enabled="{{worksheet.is_enabled_for_user}}"
         bindtap="openAssessmentEntry"
       >
         <view class="worksheet-main">
-          <view wx:if="{{worksheet.is_student_profile}}" class="profile-badge-row">
-            <text class="profile-badge">学生支持性画像</text>
-            <text class="profile-badge ghost">非诊断</text>
-          </view>
-          <view wx:if="{{!worksheet.is_student_profile}}" class="profile-badge-row">
-            <text class="profile-badge soft">{{worksheet.source_label}}</text>
-            <text class="profile-badge soft">{{worksheet.topic_label}}</text>
-            <text class="profile-badge ghost">{{worksheet.review_label}}</text>
-          </view>
           <text class="worksheet-title">{{worksheet.display_title}}</text>
-          <text class="worksheet-meta">{{worksheet.topic_label}} · {{worksheet.question_count}} 个填写项</text>
+          <text class="worksheet-meta">{{worksheet.topic_label}} · {{worksheet.question_count}} 项 · 约{{worksheet.estimated_minutes}}分钟</text>
           <text class="worksheet-desc">{{worksheet.instructions}}</text>
         </view>
         <text class="worksheet-action">{{worksheet.action_text}}</text>

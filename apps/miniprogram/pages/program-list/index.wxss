@@ -1,0 +1,68 @@
+.program-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: 26rpx;
+}
+
+.page-head {
+  padding: 26rpx 0 4rpx;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.program-card,
+.empty-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.program-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.program-status,
+.program-count {
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
+  font-weight: 850;
+}
+
+.program-title {
+  color: var(--safe-title);
+  font-size: 32rpx;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.program-meta,
+.program-first,
+.boundary-note {
+  color: var(--safe-text);
+  font-size: 25rpx;
+  line-height: 1.6;
+}
+
+.construct-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.construct-chip {
+  padding: 6rpx 14rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary-soft);
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.boundary-note {
+  padding: 22rpx;
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-orange-soft);
+}

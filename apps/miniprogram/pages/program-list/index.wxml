@@ -1,0 +1,35 @@
+<view class="safe-page program-list-page">
+  <view class="page-head">
+    <text class="safe-h1">项目测试</text>
+    <text class="safe-subtitle">先选一个主题，按小节慢慢练习。</text>
+  </view>
+
+  <view wx:for="{{programs}}" wx:key="id" class="safe-card program-card" data-id="{{item.id}}" bindtap="openProgram">
+    <view class="program-head">
+      <text class="program-status">{{item.review_status}}</text>
+      <text class="program-count">{{item.session_count}} 小节</text>
+    </view>
+    <text class="program-title">{{item.title}}</text>
+    <text class="program-meta">{{item.audience}}</text>
+    <view class="construct-row">
+      <text wx:for="{{item.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
+    </view>
+    <text class="program-first">第一节：{{item.first_session_title}}</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-card empty-card">
+    <text class="safe-body">正在读取项目测试内容...</text>
+  </view>
+
+  <view wx:if="{{!loading && errorMessage}}" class="safe-card empty-card">
+    <text class="safe-h3">暂时没能读取</text>
+    <text class="safe-body">{{errorMessage}}</text>
+    <button class="safe-primary-button" bindtap="loadPrograms">重试</button>
+  </view>
+
+  <view wx:if="{{!loading && !errorMessage && !programs.length}}" class="safe-card empty-card">
+    <text class="safe-body">当前还没有可显示的项目测试内容。</text>
+  </view>
+
+  <view class="boundary-note">{{boundaryNotice}}</view>
+</view>

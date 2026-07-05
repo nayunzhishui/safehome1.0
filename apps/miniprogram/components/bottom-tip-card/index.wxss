@@ -1,16 +1,17 @@
 .bottom-tip-card {
   position: relative;
   overflow: hidden;
-  padding: 30rpx 34rpx;
+  padding: 26rpx 30rpx;
   border: 1rpx solid var(--safe-border);
+  border-left: 8rpx solid var(--safe-primary);
   border-radius: var(--safe-radius-md);
-  background: linear-gradient(135deg, var(--safe-primary-pale), var(--safe-orange-soft));
+  background: var(--safe-card);
 }
 
 .tip-copy {
   position: relative;
   z-index: 1;
-  padding-right: 130rpx;
+  padding-right: 0;
 }
 
 .tip-text,
@@ -20,7 +21,7 @@
 
 .tip-text {
   color: var(--safe-title);
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 700;
   line-height: 1.55;
 }
@@ -30,36 +31,4 @@
   color: var(--safe-muted);
   font-size: 24rpx;
   line-height: 1.55;
-}
-
-.tip-plant {
-  position: absolute;
-  right: 24rpx;
-  bottom: 0;
-  width: 106rpx;
-  height: 104rpx;
-}
-
-.tip-plant view {
-  position: absolute;
-  bottom: 0;
-  width: 30rpx;
-  border-radius: 30rpx 30rpx 0 0;
-  background: #9fbc94;
-}
-
-.tip-plant view:nth-child(1) {
-  left: 4rpx;
-  height: 68rpx;
-}
-
-.tip-plant view:nth-child(2) {
-  left: 38rpx;
-  height: 100rpx;
-  background: var(--safe-primary);
-}
-
-.tip-plant view:nth-child(3) {
-  right: 4rpx;
-  height: 82rpx;
 }

@@ -1,7 +1,6 @@
 <view class="safe-page training-card-page">
   <view class="detail-hero safe-card safe-card--hero">
     <view class="hero-copy">
-      <text class="hero-kicker">推荐训练卡</text>
       <text class="hero-title">今天先练这一小步</text>
       <text class="hero-summary">每次选一张卡就可以。重点不是做完整，而是多一个能暂停、观察和回应的机会。</text>
     </view>
@@ -29,6 +28,10 @@
       <text class="match-text">{{tagsText}}</text>
     </view>
 
+    <view class="list-note">
+      <text>先选最容易完成的一张。点开后再看详细步骤和示例话术。</text>
+    </view>
+
     <view wx:for="{{cards}}" wx:key="id" class="task-card">
       <view class="task-head">
         <text class="task-number">{{item.orderText}}</text>
@@ -39,17 +42,6 @@
           </view>
           <text class="card-title">{{item.title}}</text>
           <text class="body-text">{{item.purpose}}</text>
-        </view>
-      </view>
-
-      <view class="overview-grid">
-        <view class="overview-item">
-          <text class="overview-label">适用情境</text>
-          <text class="overview-value">{{item.scenarioText}}</text>
-        </view>
-        <view class="overview-item">
-          <text class="overview-label">预计用时</text>
-          <text class="overview-value">{{item.durationText}}</text>
         </view>
       </view>
 
@@ -65,26 +57,6 @@
       <view class="tip-box">
         <text class="tip-title">练习前先提醒自己</text>
         <text class="tip-text">这张卡只是帮助你练一个更小的回应动作，不需要一次做得很完整。</text>
-      </view>
-
-      <view class="detail-block">
-        <text class="block-title">三步练习</text>
-        <view class="step-list">
-          <view wx:for="{{item.stepsList}}" wx:for-item="step" wx:key="numberText" class="step-item">
-            <text class="step-number">{{step.numberText}}</text>
-            <text class="step-text">{{step.text}}</text>
-          </view>
-        </view>
-      </view>
-
-      <view class="detail-block example-block">
-        <text class="block-title">示例话术</text>
-        <text class="example-text">{{item.example}}</text>
-      </view>
-
-      <view class="detail-block reflection-block">
-        <text class="block-title">练习后可以记一句</text>
-        <text class="body-text">{{item.reflectionPrompt}}</text>
       </view>
 
       <button class="primary-button" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">查看练习步骤</button>

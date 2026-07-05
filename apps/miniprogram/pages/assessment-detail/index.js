@@ -72,7 +72,7 @@ Page({
     } catch (error) {
       this.setData({
         loading: false,
-        errorMessage: error.message || "工作表读取失败，请确认 backend 是否已启动。",
+        errorMessage: error.message || "内容暂时没能读取，请检查网络后再试一次。",
       });
     }
   },
@@ -174,7 +174,7 @@ Page({
       });
     } catch (error) {
       this.setData({
-        errorMessage: error.message || "保存失败，请确认 backend 是否已启动。",
+        errorMessage: error.message || "保存暂时没能完成，请检查网络后再试一次。你填写的内容还在。",
       });
     } finally {
       this.setData({ submitting: false });

@@ -1,6 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
-
-const api = createSafeHomeApi();
+const { DEFAULT_CLOUD_CONFIG, saveCloudConfig } = require("../../services/cloudConfig");
 
 function toText(value) {
   if (value === undefined || value === null) {
@@ -23,11 +22,20 @@ function formatError(error) {
 
 Page({
   data: {
-    config: api.getDebugConfig(),
+    config: {},
     status: "idle",
     resultTitle: "等待测试",
     resultText: "请点击下面按钮测试云托管入口。",
     lastError: null,
+  },
+
+  onLoad() {
+    this.refreshApi();
+  },
+
+  refreshApi() {
+    this.api = createSafeHomeApi();
+    this.setData({ config: this.api.getDebugConfig() });
   },
 
   async runCheck(title, action) {
@@ -56,12 +64,49 @@ Page({
   },
 
   testHealthz() {
-    return this.runCheck("healthz 测试", () => api.healthz());
+    return this.runCheck("healthz 测试", () => this.api.healthz());
+  },
+
+  useLocalBackend() {
+    saveCloudConfig({
+      ...DEFAULT_CLOUD_CONFIG,
+      useLocalHttp: true,
+      transport: "local-http",
+      localHttpBaseUrl: "http://127.0.0.1:5000",
+    });
+    this.refreshApi();
+    this.setData({
+      status: "idle",
+      resultTitle: "已切换本地 5000",
+      resultText: "现在会用 wx.request 请求 http://127.0.0.1:5000。请点击“测试 assessments”。",
+      lastError: null,
+    });
+    wx.showToast({ title: "已切换本地后端", icon: "success" });
+  },
+
+  useCloudBackend() {
+    saveCloudConfig({
+      ...DEFAULT_CLOUD_CONFIG,
+      useLocalHttp: false,
+      transport: "cloud-container",
+    });
+    this.refreshApi();
+    this.setData({
+      status: "idle",
+      resultTitle: "已切回云托管",
+      resultText: "现在会用 wx.cloud.callContainer 请求 CloudBase 云托管。",
+      lastError: null,
+    });
+    wx.showToast({ title: "已切回云托管", icon: "success" });
+  },
+
+  testAssessments() {
+    return this.runCheck("assessments 测试", () => this.api.listAssessments());
   },
 
   testRiskCheck() {
     return this.runCheck("risk/check 测试", () =>
-      api.checkRisk({
+      this.api.checkRisk({
         text: "我今天有些着急，想先停下来观察一下。",
         source: "debug",
       }),
@@ -70,7 +115,7 @@ Page({
 
   testProfile() {
     return this.runCheck("profile 最小请求测试", () =>
-      api.createProfile({
+      this.api.createProfile({
         scores: {
           test_anxiety: 3.2,
           iu_score: 3.1,

@@ -1,0 +1,153 @@
+{
+  "version": "2026-07-01-t8-programs-v1",
+  "boundary_notice": "项目测试内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。",
+  "programs": [
+    {
+      "id": "self_compassion_exam_anxiety",
+      "title": "考试焦虑下的自我关怀书写",
+      "target_constructs": ["情绪调节", "考试压力", "自我关怀"],
+      "theory_source": "以自我关怀书写与UP跨诊断情绪调节框架为基础的试点草案",
+      "audience": "学生与家长陪伴练习",
+      "enabled": true,
+      "review_status": "pilot_draft",
+      "recommended_card_ids": ["scs_self_kindness", "scs_mindful_moment", "exam_micro_start"],
+      "boundary_notice": "本项目用于考试压力场景下的自我支持练习，不构成诊断、筛查或治疗方案。",
+      "sessions": [
+        {
+          "session_no": 1,
+          "title": "把考试压力写成一个可以观察的片段",
+          "objective": "先把压力事件、身体反应和第一反应分开写清楚，再补一句支持自己的表达。",
+          "duration_minutes": 8,
+          "steps": [
+            "写下最近一次与考试、作业或成绩有关的具体片段。",
+            "标出当时最明显的情绪、身体感觉和脑中冒出的第一句话。",
+            "把责备自己的句子改写成一句更温和、具体、可执行的话。",
+            "选一个 10 分钟内能完成的小动作，作为今天的练习。"
+          ],
+          "writing_prompt": "当我想到这次考试或作业时，我最先担心的是……我可以先对自己说……",
+          "reflection_questions": [
+            "这次书写后，压力有没有从一团感觉变成更具体的线索？",
+            "哪一句支持自己的话最容易在今天重复使用？"
+          ],
+          "disclaimer": "本节只用于自我观察和陪伴练习，不构成诊断或治疗建议。"
+        },
+        {
+          "session_no": 2,
+          "title": "区分事实、预测和自我评价",
+          "objective": "练习把事实、担心的预测和对自己的评价分开放。",
+          "duration_minutes": 8,
+          "steps": ["写事实", "写预测", "写评价", "补一个更灵活的解释"],
+          "reflection_questions": ["哪一类句子最容易让压力升高？", "有没有一个更温和但仍然真实的说法？"],
+          "disclaimer": "本节只用于练习参考，不构成诊断或治疗建议。"
+        },
+        {
+          "session_no": 3,
+          "title": "给下一次考试前的自己留一张支持卡",
+          "objective": "形成一张短句式的考前支持卡。",
+          "duration_minutes": 6,
+          "steps": ["写一个常见压力信号", "写一句提醒", "写一个具体行动"],
+          "reflection_questions": ["这张卡适合在什么时刻拿出来？", "哪一步最容易先做？"],
+          "disclaimer": "本节只用于练习参考，不构成诊断或治疗建议。"
+        }
+      ]
+    },
+    {
+      "id": "self_compassion_relationship_growth",
+      "title": "亲密关系中的自我成长书写",
+      "target_constructs": ["情绪调节", "关系沟通", "自我关怀"],
+      "theory_source": "以亲密关系自我成长主题和自我关怀书写为基础的试点草案",
+      "audience": "学生与青年自我观察练习",
+      "enabled": true,
+      "review_status": "pilot_draft",
+      "recommended_card_ids": ["scs_common_humanity", "one_open_question", "validation_before_advice"],
+      "boundary_notice": "本项目用于关系场景中的自我观察与沟通练习，不构成诊断、筛查或关系结论。",
+      "sessions": [
+        {
+          "session_no": 1,
+          "title": "写下关系里的一个触发点",
+          "objective": "把关系中的触发点、当时感受和自己真正需要的支持分开看见。",
+          "duration_minutes": 8,
+          "steps": [
+            "选择一个最近让自己在关系中不舒服的小片段。",
+            "写下当时发生了什么，不解释对错。",
+            "写下自己最明显的情绪和身体反应。",
+            "补一句对自己的理解：我这样反应，可能是在保护什么需要。"
+          ],
+          "writing_prompt": "在这段关系里，我最近被触发的一刻是……那时我真正想被看见的是……",
+          "reflection_questions": [
+            "这次书写帮我看见了哪个需要？",
+            "如果下一次再出现类似片段，我可以先做哪一个小动作？"
+          ],
+          "disclaimer": "本节只用于自我观察和沟通练习，不构成诊断、筛查或关系建议。"
+        },
+        {
+          "session_no": 2,
+          "title": "把责备句改成需要句",
+          "objective": "练习从责备和猜测转向表达具体需要。",
+          "duration_minutes": 7,
+          "steps": ["写一句责备句", "标出其中的担心", "改写成一个具体需要", "准备一句开放问题"],
+          "reflection_questions": ["改写后语气有什么变化？", "哪一句更容易被对方听见？"],
+          "disclaimer": "本节只用于练习参考，不构成诊断、筛查或关系建议。"
+        },
+        {
+          "session_no": 3,
+          "title": "给自己一段关系中的温和回应",
+          "objective": "形成一段稳定自己的短回应。",
+          "duration_minutes": 6,
+          "steps": ["命名情绪", "承认需要", "选择一个边界或请求"],
+          "reflection_questions": ["这段回应中最稳定自己的部分是什么？", "是否需要现实支持或人工反馈？"],
+          "disclaimer": "本节只用于练习参考，不构成诊断、筛查或关系建议。"
+        }
+      ]
+    },
+    {
+      "id": "academic_pressure_sleep_health",
+      "title": "学业压力与睡眠健康促进",
+      "target_constructs": ["学业压力", "睡眠管理", "健康促进"],
+      "theory_source": "以学业压力、健康促进生活方式和睡眠管理主题为基础的试点草案",
+      "audience": "学生与家长支持性练习",
+      "enabled": true,
+      "review_status": "pilot_draft",
+      "recommended_card_ids": ["body_scan_before_study", "exam_micro_start", "parent_body_grounding"],
+      "boundary_notice": "本项目用于学习压力与睡眠习惯的支持性练习，不构成诊断、筛查或医疗建议。",
+      "sessions": [
+        {
+          "session_no": 1,
+          "title": "找出睡前最容易卡住的一步",
+          "objective": "先记录学业压力如何影响睡前行为，再选择一个低负担调整点。",
+          "duration_minutes": 8,
+          "steps": [
+            "写下最近一次睡前被学业任务影响的具体片段。",
+            "标出当时的想法、身体感觉和行为。",
+            "找出最容易先调整的一步，例如提前收尾、放下手机或做一次呼吸。",
+            "把调整写成今天能完成的一句话。"
+          ],
+          "writing_prompt": "最近一次睡前我被学习压力影响时，最卡住的一步是……今晚我先尝试……",
+          "reflection_questions": [
+            "这个调整点是否足够小，今天就能做？",
+            "如果做不到，下一步可以再缩小到什么程度？"
+          ],
+          "disclaimer": "本节只用于习惯观察和练习提示，不构成诊断、筛查或医疗建议。"
+        },
+        {
+          "session_no": 2,
+          "title": "学习任务收尾仪式",
+          "objective": "练习用固定小步骤帮助自己从学习状态过渡到休息状态。",
+          "duration_minutes": 6,
+          "steps": ["列出未完成事项", "写下明天第一步", "整理桌面", "做一次身体扫描"],
+          "reflection_questions": ["哪一步最能降低睡前反复想？", "这个收尾仪式需要几分钟？"],
+          "disclaimer": "本节只用于习惯练习参考，不构成诊断、筛查或医疗建议。"
+        },
+        {
+          "session_no": 3,
+          "title": "把睡前担心改成明天行动",
+          "objective": "把睡前担心转成明天可以开始的一小步。",
+          "duration_minutes": 6,
+          "steps": ["写一个睡前担心", "标出能控制的部分", "写明天第一步", "放入提醒"],
+          "reflection_questions": ["哪些担心可以留到明天处理？", "明天第一步是否足够具体？"],
+          "disclaimer": "本节只用于习惯练习参考，不构成诊断、筛查或医疗建议。"
+        }
+      ]
+    }
+  ]
+}

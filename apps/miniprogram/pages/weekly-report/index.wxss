@@ -63,16 +63,6 @@
   line-height: 1.7;
 }
 
-.hero-image {
-  position: absolute;
-  right: -20rpx;
-  bottom: -18rpx;
-  width: 250rpx;
-  height: 220rpx;
-  border-radius: var(--safe-radius-lg);
-  opacity: 0.88;
-}
-
 .weekly-content {
   display: flex;
   flex-direction: column;
@@ -350,9 +340,9 @@
 }
 
 .primary-button {
-  background: linear-gradient(135deg, var(--safe-primary), var(--safe-primary-deep));
+  background: var(--safe-primary);
   color: #ffffff;
-  box-shadow: 0 14rpx 28rpx rgba(87, 139, 95, 0.24);
+  box-shadow: 0 8rpx 18rpx rgba(87, 139, 95, 0.18);
 }
 
 .secondary-button {

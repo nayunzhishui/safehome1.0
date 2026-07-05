@@ -1,6 +1,6 @@
 # API 接口文档
 
-最后更新时间：2026-06-06
+最后更新时间：2026-07-02
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
@@ -19,7 +19,7 @@
 
 **本地开发**：后端运行在 `5050` 端口（可通过 `PORT` 环境变量修改），前端 Vite dev server 运行在 `5173`，默认请求本地后端。
 
-**云端验收**：在 `apps/web/.env.local` 中设置 `VITE_SAFEHOME_API_BASE_URL=<云端API地址>`，本地 `5173` 页面会把 API 请求转发到云端。此时 `/healthz/deep` 必须显示 `database.provider=mysql`，且 Web 后台使用云端 `ADMIN_EXPORT_TOKEN`。
+**云端验收**：在 `apps/web/.env.local` 中设置 `VITE_SAFEHOME_API_BASE_URL=<云端API地址>`，本地 `5173` 页面会把 API 请求转发到云端。此时 `/readyz` 或 `/healthz/deep` 必须显示 `database.provider=mysql`，且 Web 后台使用云端 `ADMIN_EXPORT_TOKEN`。
 
 注意：历史文档中部分示例仍写 `5000` 端口，实际本地后端默认端口为 `5050`（`app.py` 中 `PORT` 环境变量默认值）。
 
@@ -84,7 +84,73 @@
 
 - 数据库是否可连接；
 - 核心表是否存在；
-- content 必需文件是否存在。
+- content 必需文件是否存在；
+- `training_cards` 是否与 `content/training_cards.json` 同步；
+- `assessment_worksheets` 是否与 `content/assessment_worksheets.json` 同步。
+
+### `GET /readyz`
+
+用途：部署 readiness 检查。该接口和 `/healthz/deep` 使用同一组只读检查，但当数据库或 content 不可用时返回 `503`，便于云托管、负载均衡或部署脚本判断服务是否真正可接流量。
+
+响应外形与 `/healthz/deep` 一致：
+
+```json
+{
+  "ok": true,
+  "service": "safehome-backend",
+  "env": "development",
+  "version": "safehome-2026-06-04",
+  "database": {},
+  "content": {}
+}
+```
+
+全局未处理异常会返回稳定 JSON，不向用户暴露堆栈或内部错误：
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "internal_error",
+    "message": "服务暂时没有响应，请稍后再试。"
+  }
+}
+```
+
+## 0T8. 任务八新增接口
+
+### `POST /api/emotion-thermometer`
+
+用途：保存一次当天情绪温度计记录，用于自我观察和日曲线展示，不构成诊断或筛查。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `user_id` | string | 生产必填 | 匿名用户 ID，开发环境可缺省为 `demo-parent` |
+| `intensity_level` | integer | 是 | 1-10 的情绪强度 |
+| `brief_text` | string | 否 | 200 字内简短备注 |
+| `created_at` | string | 否 | ISO 时间；缺省为后端当前时间 |
+
+### `GET /api/emotion-thermometer/day?user_id=&date=YYYY-MM-DD`
+
+用途：返回某用户某一天的温度计记录、`min/max/avg/count` 汇总和边界说明。日期过滤使用 `substr(created_at, 1, 10)=date`，不依赖数据库当前日期函数。
+
+### `GET /api/training-plan?user_id=`
+
+用途：根据最近测评结果、测评训练规则和画像簇推荐卡，生成最小个性化训练计划。没有测评记录时只返回“先完成一次测一测”的下一步提示。
+
+### `GET /api/programs`
+
+用途：返回三个项目测试练习包摘要。内容来自 `content/programs.json`。
+
+### `GET /api/programs/<id>`
+
+用途：返回单个项目测试练习包详情，包括 sessions、书写提示、反思问题和非诊断边界。小程序端书写草稿只本地缓存，不上传后端。
+
+### 共享错误码
+
+任务八已在 `shared/constants/api.ts` 增加 `API_ERROR_CODES`，当前覆盖 `unauthorized`、`forbidden`、`not_found`、`missing_user_id`、`invalid_date`、`invalid_intensity_level`、`brief_text_too_long`、`review_required`、`content_validation_failed`。任务九补充 `/readyz` 端点和全局 `internal_error` 稳定错误外形。
 
 ## 0A. 用户同意记录
 
@@ -334,7 +400,7 @@
 | `supportive_feedback` | string | 支持性反馈 |
 | `alternative_response` | string | 替代回应建议 |
 | `recommended_card_ids` | array | 推荐训练卡 ID |
-| `training_recommendation_rules` | array | 命中的情绪日记训练推荐规则，最多返回 1 条；每条规则最多包含 3 张训练卡、推荐理由、今日建议和边界说明 |
+| `training_recommendation_rules` | array | 命中的情绪日记训练推荐规则，最多返回 2 条；每条规则最多包含 3 张训练卡、推荐理由、今日建议和边界说明 |
 | `risk_level` | string | `low`、`medium`、`high` |
 | `risk` | object | 风险预检结果，包含 `allow_auto_feedback`、`allow_recommended_training_cards`、`matched_categories`、`safe_response`、`boundary_notice` |
 
@@ -388,13 +454,17 @@
 
 ### `GET /api/assessments`
 
-用途：返回小程序“测一测”中的量表和工作表列表。
+用途：返回小程序“测一测”中的当前可用支持性测评列表。2026-06-30 起，接口优先从数据库 `assessment_worksheets` 读取；数据库未初始化或未同步时回退 `content/assessment_worksheets.json`。旧版自建 UP 工作表和附录示例仍下线，不回流到用户端。
 
 查询参数：
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `category` | string | 否 | 按分类筛选，例如 `量表类` |
+| `audience_class` | string | 否 | 按对象筛选：`student`、`parent`、`adult` 等 |
+| `reflex_node` | string | 否 | 按情绪反射弧或主题节点筛选 |
+| `enabled` | string | 否 | `true` 只返回已开放项，`false` 只返回未开放项 |
+| `q`/`query` | string | 否 | 按 ID、标题、分类和搜索关键词模糊检索 |
 
 响应字段：
 
@@ -403,6 +473,7 @@
 | `version` | string | 内容库版本 |
 | `boundary_notice` | string | 统一边界提示 |
 | `items` | array | 测一测条目列表 |
+| `groups` | array | 按 `audience_class` 和 `reflex_node` 聚合的计数树 |
 
 条目字段：
 
@@ -413,18 +484,26 @@
 | `source_title` | string | 原工作表标题 |
 | `display_title` | string | 小程序展示标题 |
 | `category` | string | 分类 |
+| `audience` | string | 目标对象 |
+| `audience_class` | string | 前端筛选大类 |
+| `reflex_node` | string | 情绪反射弧或主题节点 |
+| `search_keywords` | array | 搜索关键词 |
+| `sensitive_category` | string | 敏感语义类别；`none` 表示普通 |
 | `pages` | integer | PDF 页数 |
 | `instructions` | string | 填写说明 |
-| `source_type` | string | 内容来源类型，例如 `project_draft`、`simplified_worksheet`、`demo` |
-| `review_status` | string | 审核状态，例如 `pilot_review_required`、`draft_only`、`demo_only` |
+| `source_type` | string | 内容来源类型 |
+| `review_status` | string | 审核状态 |
 | `enabled_for_user` | boolean | 是否允许用户端进入填写 |
 | `review_note` | string | 审核说明或暂不开放原因 |
+| `boundary_notice` | string | 条目边界提示 |
+| `result_disclaimer` | string | 结果页免责声明 |
+| `profile_model_id` | string/null | 可选，默认使用该工作表下样本量最大的画像模型 |
 | `question_count` | integer | 当前电子化填写项数量 |
 | `is_reference` | boolean | 是否为附录示例参考 |
 
 ### `GET /api/assessments/<worksheet_id>`
 
-用途：返回单个量表或工作表详情。
+用途：返回单个当前测评详情。已下线的旧版自建工作表 ID 会返回 `404 not_found`，不会继续提供详情或填写入口。
 
 响应字段：
 
@@ -435,6 +514,9 @@
 | `source_title` | string | 原工作表标题 |
 | `display_title` | string | 小程序展示标题 |
 | `category` | string | 分类 |
+| `audience_class` | string | 前端筛选大类 |
+| `reflex_node` | string | 情绪反射弧或主题节点 |
+| `sensitive_category` | string | 敏感语义类别 |
 | `pages` | integer | PDF 页数 |
 | `instructions` | string | 原文或补录说明 |
 | `sections` | array | 原工作表分区 |
@@ -446,13 +528,15 @@
 | `enabled_for_user` | boolean | 是否允许用户端进入填写 |
 | `review_note` | string | 审核说明或暂不开放原因 |
 | `boundary_notice` | string | 统一边界提示 |
+| `result_disclaimer` | string | 结果页免责声明 |
+| `profile_model_id` | string/null | 可选画像模型 ID |
 | `training_recommendation_rules` | array | 与该测评匹配的训练推荐规则草稿，来源于 `content/assessment_training_map.json`，用于结果页展示推荐理由、今日建议和长期方向 |
 
 ### `POST /api/assessment-results`
 
 用途：保存用户一次测一测填写结果。
 
-说明：如果对应工作表 `enabled_for_user=false`，接口返回 `assessment_not_enabled`，不保存结果。
+说明：如果对应测评不存在或已下线，接口返回 `not_found`，不保存结果。如果对应测评仍存在但 `enabled_for_user=false`，接口返回 `assessment_not_enabled`，不保存结果。
 
 请求字段：
 
@@ -485,13 +569,22 @@
 | `answers_json` | string | 答案 JSON |
 | `scores_json` | string | 分数 JSON |
 | `total_score` | integer/null | 数值题合计；记录型工作表为空 |
+| `scores` | object | 本次计算出的总分、维度分、风险摘要等结构化分数 |
 | `result_summary` | string | 支持性结果摘要 |
 | `created_at` | string | 创建时间 |
 | `recommended_card_ids` | array | 建议关联训练卡 |
+| `risk` | object/null | 自由文本风险检查结果；高风险时不推荐普通训练卡 |
+| `boundary_notice` | string | 量表边界提示 |
+| `result_disclaimer` | string | 结果免责声明 |
+| `profile_model_id` | string/null | 本次结果缓存的画像模型 ID |
+| `profile_cluster_id` | string/null | 本次结果缓存的最接近画像簇 ID |
+| `profile_pc1` | number/null | 本次结果在画像模型 PCA 二维图上的横坐标 |
+| `profile_pc2` | number/null | 本次结果在画像模型 PCA 二维图上的纵坐标 |
+| `profile_confidence` | number/null | 本次画像落点置信度 |
 
 ### `GET /api/assessment-results`
 
-用途：查询测一测历史结果。
+用途：查询测一测历史结果。接口只返回当前内容库仍保留的测评 ID 对应结果；旧版自建 UP 工作表或附录示例的历史残留记录不会返回给用户端。
 
 查询参数：
 
@@ -505,6 +598,41 @@
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `items` | array | 测一测结果列表 |
+
+### `GET /api/assessment-results/<result_id>/profile-position`
+
+用途：根据一条已保存的测一测结果，实时计算其在既往调研数据聚类画像中的相对位置。该接口不落表，不返回逐行既往样本，只返回聚合模型、聚类中心和用户坐标。无对应画像模型时返回 `available=false`，不影响普通测评结果页。
+
+查询参数：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `user_id` | string | 否 | 用户 ID，缺省为匿名用户 ID |
+| `model_id` | string | 否 | 指定画像模型；不传时使用 worksheet 指向模型或同 worksheet 下样本量最大的模型 |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `available` | boolean | 是否有可用画像位置 |
+| `reason` | string | `available=false` 时的原因 |
+| `model_id` | string | 使用的聚合画像模型 ID |
+| `standard_scale_name` | string | 标准量表名 |
+| `scale_id` | string | 量表 ID |
+| `worksheet_id` | string | 工作表 ID |
+| `research_dir` | string | 既往调研研究组目录 |
+| `source_dataset` | string | 来源数据文件相对路径 |
+| `n_cases` | integer | 模型样本量 |
+| `n_features` | integer | 模型题项数 |
+| `chosen_k` | integer | 聚类数量 |
+| `position` | object | 用户 PCA 坐标、最近簇、接近度和距离 |
+| `clusters` | array | 聚类中心、人数、占比和支持性解释 |
+| `feature_summary` | object | 本次题项覆盖情况 |
+| `feature_profile` | array | 本次题项相对 z 分数，用于结果页雷达图 |
+| `raw_scores` | object | 本次题项有效分，不含原始逐行研究数据 |
+| `z_scores` | object | 本次题项标准分 |
+| `explanation` | string | 支持性位置解释 |
+| `boundary_notice` | string | 非诊断、非筛查边界 |
 
 ### `POST /api/checkins`
 
@@ -662,6 +790,65 @@
 - 不新增数据库，不替代正式环境的后端接口 + `audit_logs` 方案；
 - 正式发布前所有 content JSON 修改仍需人工复核。
 
+### `GET /api/admin/worksheets`
+
+用途：后台读取数据库中的测评量表列表，用于任务四量表入库后的管理和核对。
+
+鉴权：
+
+```text
+Authorization: Bearer <admin token>
+```
+
+开发阶段兼容旧后台令牌：
+
+```text
+X-Admin-Token: safehome-local-admin-token
+```
+
+查询参数：
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `category` | string | 否 | 按分类筛选 |
+| `audience_class` | string | 否 | 按对象大类筛选 |
+| `review_status` | string | 否 | 按审核状态筛选 |
+| `enabled` | string | 否 | `true` 或 `false` |
+| `q` | string | 否 | 按 ID、标题、来源和关键词搜索 |
+
+响应字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `items` | array | 量表列表 |
+| `count` | integer | 返回数量 |
+
+### `POST /api/admin/worksheets`
+
+用途：后台新增一条测评量表记录，写入 `assessment_worksheets` 表并记录审计日志。
+
+说明：该接口面向本地和后台管理，不代表自动开放用户端。若要给用户端展示，仍需人工确认 `enabled_for_user`、`review_status`、非诊断边界和题项授权。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `id` | string | 是 | 量表 ID |
+| `display_title` | string | 是 | 展示标题 |
+| `category` | string | 否 | 分类 |
+| `audience_class` | string | 否 | 对象大类 |
+| `reflex_node` | string | 否 | 情绪反射弧节点 |
+| `questions` | array | 否 | 题项数组，会保存为 JSON |
+| `dimensions` | array | 否 | 维度数组，会保存为 JSON |
+| `enabled_for_user` | boolean | 否 | 是否允许用户端进入填写 |
+| `review_status` | string | 否 | 审核状态，默认 `draft` |
+
+### `PUT /api/admin/worksheets/<worksheet_id>`
+
+用途：后台更新一条测评量表记录，写入 `assessment_worksheets` 表并记录审计日志。
+
+说明：可更新字段与新增接口基本一致。接口不会删除历史测评结果，不会替代人工审核。
+
 ### `GET /api/admin/export`
 
 用途：导出后台数据，当前版本返回 CSV 文件流。
@@ -691,6 +878,7 @@
 - 当前不支持 `format` 参数。
 - `type=profile` 会从 `student_profiles` 中导出学生画像摘要，默认使用匿名 ID，不导出真实 `user_id`、自由文本原文和联系方式。
 - `type=records` 会从 `records` 导出统一研究摘要，可按 `module_type` 筛选。
+- `type=assessments` 只导出当前 `content/assessment_worksheets.json` 中仍保留的测评 ID；旧版自建 UP 工作表和附录示例的历史残留记录不会导出。
 - 如果画像或 records 导出包含 `risk_level=high` 或 `requires_review=true`，未带 `confirm_high_risk=true` 会返回 `409 high_risk_export_confirmation_required`。
 - 导出审计会记录 `contains_high_risk`、`confirmed_high_risk_export`、`limit`、`row_count_before_limit` 和 `row_count_exported`。
 - `type=profile` / `student_profiles` 导出包含 `research_authorization_status` 和 `consent_summary_json`。
@@ -1076,4 +1264,125 @@ Invoke-WebRequest `
 - 未授权或 `export_allowed=false` 的记录不得导出；
 - 当前后台导出会写入 `audit_logs`，记录导出类型、筛选用户和导出行数；
 - 后续应继续补充导出数据字典和人工复核处置日志。
+
+## 2026-07-01：任务六/任务七新增接口
+
+### `POST /api/auth/wechat-login`
+
+用途：微信小程序登录或绑定用户。开发环境在未配置微信密钥时使用稳定兜底 openid，生产环境必须配置 `WECHAT_APPID` 和 `WECHAT_SECRET`。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是 | 微信登录 code |
+| `nickname` / `nickName` | string | 否 | 昵称 |
+| `avatar_url` / `avatarUrl` | string | 否 | 头像地址 |
+| `anonymous_id` | string | 否 | 旧匿名 ID，用于平滑迁移 |
+
+返回：`token`、`user`、`dev_fallback`。
+
+### `GET /api/profile/stats`
+
+用途：小程序“我的”页和首页读取轻量统计。
+
+查询字段：`user_id`。
+
+返回包含：连续天数、本周记录数、本周日记数、本周训练数、本周测评数、已完成测评数、未完成测评数、未读消息数和边界说明。
+
+### `GET /api/messages`
+
+用途：读取用户消息列表。
+
+权限：
+
+- 普通用户必须携带 `Authorization: Bearer <token>`，只能读取自己的消息；
+- `admin`、`supervisor` 可按权限带 `user_id` 查询；
+- 不再允许只靠 `user_id` 查询参数读取消息。
+
+查询字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `user_id` | string | 用户 ID |
+| `status` | string | 可选 `unread` 或 `read` |
+| `limit` | number | 最大 100 |
+
+返回：`items`、`count`、`unread_count`。
+
+### `GET /api/messages/<message_id>`
+
+用途：读取消息详情，并把未读消息标记为已读。
+
+查询字段：`user_id`。
+
+权限：同 `GET /api/messages`。
+
+### `POST /api/messages/<message_id>/read`
+
+用途：显式标记消息已读。
+
+请求字段：`user_id`。
+
+权限：同 `GET /api/messages`。
+
+### `POST /api/supervision/<request_id>/reply`
+
+用途：后台督导或管理员给人工督导请求补充回复。保存后会向用户写入一条 `supervision_feedback` 消息。
+
+权限：后台 `admin` 或 `supervisor`。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `supervisor_reply` / `reply` | string | 是 | 补充反馈 |
+
+边界：该回复用于补充理解和练习建议，不替代紧急危机处理。
+
+### `GET /api/admin/worksheets`
+
+用途：后台读取数据库中的小程序测评题库入口。该接口读取 `assessment_worksheets`，不是只读量表目录。
+
+权限：后台 `admin`。
+
+### `POST /api/admin/worksheets`
+
+用途：后台新增测评题库入口。
+
+权限：后台 `admin`。
+
+必要字段：`id`。建议同时填写 `display_title`、`category`、`review_status`、`boundary_notice`、`result_disclaimer`、`profile_model_id`。
+
+约束：该接口不能直接设置 `enabled_for_user=true`。新增入口默认隐藏，开放必须走内容审核流程。
+
+### `PUT /api/admin/worksheets/<worksheet_id>`
+
+用途：后台更新测评题库入口，可更新用户端开放状态和 `profile_model_id` 绑定。
+
+权限：后台 `admin`。
+
+约束：该接口不能把 `enabled_for_user` 改为 `true`。如需开放用户端入口，应完成人工题项、授权、伦理复核后，通过内容审核流程开放。
+
+### `DELETE /api/admin/worksheets/<worksheet_id>`
+
+用途：软隐藏测评题库入口，不删除原内容和历史记录。实现方式为设置 `enabled_for_user=0`、`review_status=disabled`。
+
+权限：后台 `admin`。
+
+### `GET /api/admin/assessment-results`
+
+用途：后台查看测评结果和画像落点回填字段。
+
+权限：后台 `admin` 或 `researcher`。
+
+查询字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `limit` | number | 最大 500 |
+| `worksheet_id` | string | 按测评入口筛选 |
+| `profile_model_id` | string | 按画像模型筛选 |
+
+返回字段中 `profile_cluster_id` 为整数或 `null`，不要再按字符串处理。
 

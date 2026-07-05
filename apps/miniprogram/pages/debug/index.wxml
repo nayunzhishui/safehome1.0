@@ -8,11 +8,16 @@
       <text class="line">env：{{config.cloudEnvId}}</text>
       <text class="line">service：{{config.containerService}}</text>
       <text class="line">baseUrl：{{config.httpBaseUrl}}</text>
+      <text class="line">localBaseUrl：{{config.localHttpBaseUrl}}</text>
+      <text class="line">transport：{{config.transport}}</text>
       <text class="line">defaultUserId：{{config.defaultUserId}}</text>
     </view>
 
     <view class="actions">
+      <button class="secondary-button" bindtap="useLocalBackend" disabled="{{status === 'running'}}">切换本地 5000</button>
+      <button class="secondary-button" bindtap="useCloudBackend" disabled="{{status === 'running'}}">切回云托管</button>
       <button class="primary-button" bindtap="testHealthz" disabled="{{status === 'running'}}">测试 healthz</button>
+      <button class="secondary-button" bindtap="testAssessments" disabled="{{status === 'running'}}">测试 assessments</button>
       <button class="secondary-button" bindtap="testRiskCheck" disabled="{{status === 'running'}}">测试 risk/check</button>
       <button class="secondary-button" bindtap="testProfile" disabled="{{status === 'running'}}">测试 profile</button>
     </view>
