@@ -99,9 +99,11 @@ def safe_slug(value: str, max_length: int = 80) -> str:
     return slug[:max_length] or "group"
 
 
-def model_filename(model_id: str) -> str:
+def model_filename(model_id: str, sequence: int | None = None) -> str:
     digest = hashlib.sha1(model_id.encode("utf-8")).hexdigest()[:10]
-    return f"{safe_slug(model_id, 128)}__{digest}.json"
+    if sequence is None:
+        return f"profile_{digest}.json"
+    return f"profile_{sequence:03d}_{digest}.json"
 
 
 def parse_question_no(value) -> int | None:
@@ -471,7 +473,7 @@ def main() -> int:
                     dn = existing_display_names[mid].get(cluster["cluster_id"])
                     if dn:
                         cluster["display_name"] = dn
-            out_path = CONTENT_PROFILE_DIR / model_filename(model["model_id"])
+            out_path = CONTENT_PROFILE_DIR / model_filename(model["model_id"], len(models))
             out_path.write_text(json.dumps(model, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     summary = {
