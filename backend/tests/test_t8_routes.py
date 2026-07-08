@@ -19,15 +19,23 @@ def _fresh_app(tmp_path, monkeypatch):
     return module.app
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def test_emotion_thermometer_day_returns_sorted_records_and_summary(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "t8-thermo")
 
     for level, created_at in [(7, "2026-07-01T09:10:00+00:00"), (3, "2026-07-01T08:10:00+00:00")]:
         response = client.post(
             "/api/emotion-thermometer",
+            headers={"Authorization": f"Bearer {token}"},
             json={
-                "user_id": "t8-user",
                 "intensity_level": level,
                 "brief_text": "一次温度记录",
                 "created_at": created_at,
@@ -35,12 +43,21 @@ def test_emotion_thermometer_day_returns_sorted_records_and_summary(tmp_path, mo
         )
         assert response.status_code == 201
 
-    response = client.get("/api/emotion-thermometer/day?user_id=t8-user&date=2026-07-01")
+    response = client.get(
+        f"/api/emotion-thermometer/day?user_id={user_id}&date=2026-07-01",
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 200
     data = response.get_json()["data"]
     assert [item["intensity_level"] for item in data["items"]] == [3, 7]
-    assert data["summary"] == {"count": 2, "min": 3, "max": 7, "avg": 5.0}
+    assert data["summary"]["count"] == 2
+    assert data["summary"]["min"] == 3
+    assert data["summary"]["max"] == 7
+    assert data["summary"]["avg"] == 5.0
+    assert data["summary"]["valence_avg"] is None
+    assert data["summary"]["arousal_avg"] is None
+    assert data["summary"]["control_avg"] is None
     assert "诊断" in data["boundary_notice"]
 
 
@@ -66,8 +83,9 @@ def test_programs_endpoints_return_pilot_programs(tmp_path, monkeypatch):
 def test_training_plan_prompts_when_no_assessment(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    _user_id, token = _wechat_login(client, "no-assessment-user")
 
-    response = client.get("/api/training-plan?user_id=no-assessment-user")
+    response = client.get("/api/training-plan", headers={"Authorization": f"Bearer {token}"})
 
     assert response.status_code == 200
     data = response.get_json()["data"]
@@ -79,11 +97,12 @@ def test_training_plan_prompts_when_no_assessment(tmp_path, monkeypatch):
 def test_training_plan_uses_latest_assessment_recommendation(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "training-plan-user")
 
     create_response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "training-plan-user",
             "worksheet_id": "student_profile_v1",
             "answers": [
                 {"question_id": "test_anxiety", "prompt": "考试紧张", "value": "5", "score": 5},
@@ -93,7 +112,10 @@ def test_training_plan_uses_latest_assessment_recommendation(tmp_path, monkeypat
     )
     assert create_response.status_code == 201
 
-    response = client.get("/api/training-plan?user_id=training-plan-user")
+    response = client.get(
+        f"/api/training-plan?user_id={user_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 200
     data = response.get_json()["data"]

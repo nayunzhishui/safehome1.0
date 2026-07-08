@@ -5420,3 +5420,2812 @@ program{ id, title, target_constructs[], theory_source, audience,
 ```
 
 交付物：错误码和异常追踪审查表。
+
+---
+
+# 任务十：小程序登录闭环、测评体验、训练反馈、阶段性画像与文本分析能力补强（修订版，下一轮执行要求）
+
+适用仓库：
+
+```text
+D:\codex\workspace\safehome1.0
+```
+
+相关图片位置：
+
+```text
+D:\codex\workspace\safehome1.0其他内容\文档图片\改错用图第一
+```
+
+请先查看该图片文件夹内所有图片。图片和任务的对应关系需要你根据截图内容自行判断，不要要求我逐张解释。若某张图片无法打开或无法判断，请在报告中单独列出“无法判断的图片”。
+
+---
+
+## 0. Context（为什么做）
+
+SafeHome 当前已经完成了家长端主闭环、小程序测一测、训练卡、情绪温度计、个性化训练方案、项目测试、周报、画像落点和 CloudBase 部署等大量基础功能。但当前小程序仍存在若干体验、内容、登录、记录追踪和后续研究分析方面的问题。
+
+本轮任务是 **任务十**，目标不是重构整个项目，而是在现有 SafeHome 技术架构上补强以下能力：
+
+1. 统一登录入口与登录后使用规则；
+2. 优化测一测指导语、结果页、题项选项和上线审核；
+3. 补充“我的”页面中的设置、说明、隐私与边界内容；
+4. 补充个性化训练方案、项目测试和训练卡文本填写位置；
+5. 检查课程界面是否真实接入；
+6. 设计微信授权登录和手机号授权登录；在真实配置具备时接入，缺少配置或授权权限时只完成接口骨架、配置检查、文档和前端入口，不伪造授权成功；
+7. 让最近记录和本周复盘纳入测一测结果；
+8. 优化情绪温度计为轻量多维情绪记录与温度计式交互；
+9. 实现阶段性反馈、画像逐步收束、训练卡效用评价和动态训练推荐；
+10. 设计情感计算和社会网络分析功能，为后续文本分析做准备。
+
+本轮任务必须遵守 SafeHome 的项目边界：系统是非诊断、非治疗、非危机干预系统。所有结果只用于自我观察、支持性反馈、练习建议、研究分析和人工复核线索，不得写成临床诊断、人格判断或治疗效果。
+
+---
+
+## 0A. 用户确认后的修订口径（优先于下文细则）
+
+1. 本任务十要求下一轮一次性连续执行完 T10-01 至 T10-16，不拆成多轮等待确认；除明确需要用户提供微信配置、人工验收、真机截图或外部平台权限的事项外，执行者需要自动判断、自动修复、自动验证并完整留痕。
+2. T10-01 与 T10-02 合并执行：登录页、我的页面、全局登录守卫、登录用户身份绑定和后端私有数据权限视为同一个闭环，不重复开发。后端不得信任前端随意传入的 `user_id` 查询私有数据；用户私有数据应优先从 `Authorization: Bearer token` 解析当前用户，管理员或督导场景必须有独立权限校验。
+3. T10-07 微信授权登录和手机号授权登录按“配置具备则接入，配置缺失则完成骨架和文档”的口径执行：不硬编码 AppID/AppSecret，不伪造授权成功，不把账号密码登录删除；账号密码登录作为调试/备用入口保留。
+4. T10-13 统一称为“轻量多维情绪结构”：强度是温度计主字段，效价、唤醒度、可控感是补充维度。若正文出现“三维/四维”表述，以本条为准。
+5. T10-12 必须把真机截图中出现的量表选项挤压、重叠、截断、不可读问题纳入验收。Likert 题、单选题、长选项题需要分别保证移动端可读、可点、不会把数字和文字压成竖条。
+6. T10-16 中 `docs/10Claude协作/Claude使用记录.md` 只在本轮实际使用 Claude 或 Claude Code 时更新；如果只使用 Codex，不更新该文档，并在最终报告中说明原因。
+7. 用户明确要求：不要新增云端与本地一致性核对专项，不新增 P0/P1/P2 优先级拆分，不降低 T10-14 和 T10-15 的执行范围。
+8. 阶段性反馈必须放在小程序首页“最近记录”下面，作为单独板块展示；页面设计沿用当前小程序方案，不另起一套视觉风格。
+
+## 0B. 代码级执行明细（下一轮优先按此落地）
+
+本节基于当前仓库代码状态补充，目的是让下一轮执行者知道“具体改哪些文件、补哪些字段、加哪些内容”。若本节与后续 T10-01 至 T10-16 的泛化描述冲突，以本节为准。
+
+### T10-01 / T10-02 登录闭环与用户身份规则
+
+当前代码事实：
+
+```text
+backend/routes/auth.py 已有 /api/auth/register、/api/auth/login、/api/auth/wechat-login、/api/auth/me。
+backend/routes/auth_utils.py 已有 require_login、require_role、get_current_actor。
+backend/routes/utils.py 仍有 require_user_id、resolve_user_id_for_query，并会在 development 下回退 demo-parent。
+apps/miniprogram/services/api.js 会从 auth_user 取 user_id，但缺少登录时仍会回退 anonymous id。
+apps/miniprogram/pages/profile/index.js 目前只显示“试点体验模式/已登录”，还没有完整登录卡、退出入口和登录/注册入口。
+```
+
+必须改动：
+
+```text
+1. backend/routes/auth_utils.py
+   - 新增 resolve_actor_user_id(requested_user_id=None, payload=None, allow_legacy_admin=False, allow_dev_fallback=False)。
+   - 非 admin/supervisor/researcher 只能返回 token 中的 actor["id"]。
+   - admin/supervisor/researcher 可按权限读取 requested_user_id。
+   - 未登录时返回 AuthError，不再静默使用前端 user_id。
+
+2. backend/routes/assessments.py
+   - create_assessment_result、list_assessment_results、get_assessment_profile_position 改为使用 token 解析用户。
+   - GET /api/assessments 可保持公开读取题库，但提交和结果查询必须登录。
+
+3. backend/routes/messages.py
+   - 保留当前按 require_login 查询用户消息的方向。
+   - 确认 GET/POST read 不允许普通用户通过 query user_id 读取别人消息。
+
+4. backend/routes/training_plan.py、reports.py、emotion_thermometer.py、programs.py、checkins/diaries/supervision 相关路由
+   - 所有保存记录和私有查询统一改为 token 解析 user_id。
+   - 仅保留 development/debug 页面必要的临时兼容，并在执行记录中说明。
+
+5. apps/miniprogram/utils/authGuard.js（新增）
+   - getAuthUser()
+   - getAuthToken()
+   - isLoggedIn()
+   - requireLogin({ redirectUrl, message })
+   - logout()
+
+6. apps/miniprogram/app.js
+   - onLaunch 同步 auth_token/auth_user 到 globalData。
+   - 暴露 setAuthSession、clearAuthSession。
+
+7. apps/miniprogram/services/api.js
+   - 增加 isAuthRequiredEndpoint 或 request options.requiresAuth。
+   - 需要保存/查询用户私有数据的接口无 token 时直接抛 auth_required，不再默认 anonymous user_id。
+   - 保留 listAssessments、getAssessment、healthz、readyz 等公开读取接口。
+
+8. apps/miniprogram/pages/profile/index.{js,wxml,wxss}
+   - 顶部新增登录状态卡：
+     已登录：昵称、角色、账号状态、退出登录。
+     未登录：登录、注册、微信授权登录入口。
+   - openEntry 对周报、消息、训练记录、测评记录、人工督导等私有入口调用 requireLogin。
+
+9. 需要加登录守卫的页面
+   - pages/diary-form/index.js
+   - pages/thermometer/index.js
+   - pages/assessment-detail/index.js 的 submitWorksheet
+   - pages/checkin/index.js 的 submitCheckin
+   - pages/personalized-plan/index.js
+   - pages/program-detail/index.js 的正式提交
+   - pages/messages/index.js、pages/message-detail/index.js
+   - pages/weekly-report/index.js
+   - pages/supervision/index.js
+```
+
+必须加入的文案：
+
+```text
+请先登录，这样系统才能保存你的记录并生成后续复盘。
+登录后，你的记录只会用于本工具内的复盘、训练建议和必要的人工补充反馈。
+```
+
+必须新增或更新测试：
+
+```text
+backend/tests/test_auth_route.py
+backend/tests/test_sensitive_owner_auth.py
+backend/tests/test_assessments_route.py
+新增或补充：未登录提交测评/温度计/周报查询返回 401；普通用户不能通过 user_id 查询他人记录；admin/supervisor 权限路径仍可用。
+```
+
+### T10-03 量表指导语细化
+
+当前代码事实：
+
+```text
+content/assessment_worksheets.json 是小程序题库主数据源。
+backend/routes/assessments.py 的 _summarize_worksheet 和 get_assessment 已透传 instructions、boundary_notice、result_disclaimer。
+apps/miniprogram/pages/assessment-detail/index.wxml 已展示 worksheet.instructions。
+```
+
+必须改动：
+
+```text
+1. content/assessment_worksheets.json
+   - 为所有 enabled_for_user=true 的量表补 instructions。
+   - 不改题项 prompt、options、dimension、reverse_scored、score。
+   - 敏感量表必须同时保留 boundary_notice、result_disclaimer。
+
+2. content/scales_catalog.json
+   - 同步记录指导语状态字段，如 instruction_status 或 review_note。
+
+3. docs/02_专项进度与验收/P3量表录入进度表.md
+   - 增加“指导语是否已按量表类型区分”记录。
+```
+
+每类必须加入的指导语内容：
+
+```text
+家长反思功能类：按最近与孩子互动时的真实感受作答，不追求标准答案。
+情绪调节/情绪弹性类：按最近一段时间的通常反应作答。
+自我关怀类：按自己遇到压力或挫折时的习惯反应作答。
+学业压力/学习类：按最近学习、考试、作业相关状态作答。
+心理健康筛查类：结果仅作自我观察，不用于诊断、筛查结论或治疗建议。
+人格/特质类：不生成固定人格标签，只作为了解自己反应倾向的线索。
+睡眠/健康生活方式类：只用于习惯观察，不替代医疗判断。
+亲子沟通/家庭关系类：聚焦具体互动，不评判家庭好坏。
+```
+
+### T10-04 我的页面设置、知情、隐私与边界
+
+必须改动：
+
+```text
+1. apps/miniprogram/pages/profile/index.js
+   - settingsEntries 中“知情与边界”“隐私说明”从空 url 改为真实页面。
+
+2. apps/miniprogram/pages/settings-detail/index.{js,wxml,wxss,json}（建议新增）
+   - 支持 type=consent / privacy / boundary / about。
+   - 从本地静态内容或 content 转换后的轻量 JSON 读取说明。
+
+3. apps/miniprogram/app.json
+   - 注册 settings-detail 页面。
+
+4. content/consent.md、content/privacy.md
+   - 如已有内容可复用，不另造冲突版本。
+   - 如小程序不能直接读 md，则新增 content/miniprogram_notices.json 或在页面中放精简版常量，并注明来源。
+```
+
+必须加入的用户端内容：
+
+```text
+本工具不做诊断、不做治疗、不处理紧急危机。
+记录会用于你的复盘、训练建议和必要的人工补充反馈。
+高风险内容可能进入人工关注，但紧急情况仍应优先联系现实中的可靠人员或当地紧急资源。
+研究分析默认使用脱敏或聚合数据，不默认展示自由文本原文。
+```
+
+### T10-05 个性化训练方案、项目测试、训练卡文本填写
+
+当前代码事实：
+
+```text
+backend/routes/training_plan.py 已能从 assessment_results 和 profile cluster 生成 plan items。
+content/programs.json 已作为项目测试内容源。
+apps/miniprogram/pages/program-detail/index.js 目前主要用本地 draft 保存文本。
+apps/miniprogram/pages/checkin/index.js 已有 reflection、emotion_before、emotion_after。
+```
+
+必须改动：
+
+```text
+1. backend/routes/training_plan.py
+   - _assessment_plan_items 和 _cluster_plan_item 输出字段补全：
+     source_worksheet_id、source_worksheet_title、source_dimension、source_profile_name、recommendation_reason、next_step、boundary_notice、evidence_summary。
+   - get_training_plan 响应增加 has_recent_checkin、last_completed_card_ids、empty_state。
+
+2. content/assessment_training_map.json
+   - 为 15 个当前开放量表补推荐规则或确认无推荐规则原因。
+   - 每条规则包含 trigger_condition、recommended_card_ids、reason、boundary_notice。
+
+3. content/training_cards.json
+   - 每张卡补可填写提示字段：
+     pre_practice_prompt、emotion_word_prompt、new_response_prompt、post_practice_prompt、one_sentence_note_prompt。
+   - 不改变训练卡核心步骤含义。
+
+4. backend/routes/programs.py
+   - 新增 POST /api/programs/<program_id>/entries。
+   - 将项目测试填写文本保存到 records 表：
+     module_type='program_entry'，source_id=program_id，data_json 包含 session_no、answers、reflection、analysis_consent、boundary_notice。
+
+5. apps/miniprogram/services/api.js
+   - 新增 createProgramEntry(programId, data)。
+
+6. apps/miniprogram/pages/program-detail/index.{js,wxml,wxss}
+   - 从“仅本地草稿”升级为“保存草稿 + 登录后正式提交”。
+   - 增加书写提示、反思问题、提交说明、非诊断边界。
+
+7. apps/miniprogram/pages/training-card/index.{js,wxml,wxss}
+   - 展示训练卡文本填写区入口或跳转 checkin 时携带 card_id/card_title。
+
+8. apps/miniprogram/pages/checkin/index.{js,wxml,wxss}
+   - 在现有 reflection 基础上增加主观帮助评价 helpfulness_rating：有帮助 / 一般 / 暂时没有帮助。
+   - 增加 skip_reason 或 pause_reason（如果用户暂不完成）。
+```
+
+如需数据库字段：
+
+```text
+优先复用 records.data_json 存项目测试文本。
+checkins 如需长期统计训练卡效用，可最小新增：
+helpfulness_rating TEXT
+skip_reason TEXT
+source_recommendation_id TEXT
+before_thermometer_id TEXT
+after_thermometer_id TEXT
+```
+
+### T10-06 课程界面接入
+
+当前代码事实：
+
+```text
+apps/miniprogram/pages/course/index.js 是静态课程入口。
+backend/routes/programs.py 管的是项目测试，不等同课程。
+```
+
+必须改动：
+
+```text
+1. 如果只做最小修复：
+   - apps/miniprogram/pages/course/index.{js,wxml}
+   - 将“课程详情后续接入”改为自然文案。
+
+2. 如果正式接入课程：
+   - 新增 content/courses.json。
+   - 新增 backend/routes/courses.py：GET /api/courses、GET /api/courses/<id>。
+   - shared/constants/api.ts 和 apps/miniprogram/services/api.js 增 courses 端点。
+   - 新增 apps/miniprogram/pages/course-detail/index.*。
+   - 如要记录学习进度，优先写 records 表，module_type='course_progress'。
+```
+
+课程内容第一版只需加入：
+
+```text
+课程标题、主题、适用场景、预计时长、内容小节、与训练卡或项目测试的关系、边界说明。
+```
+
+### T10-07 微信授权登录和手机号授权登录
+
+当前代码事实：
+
+```text
+backend/routes/auth.py 已有 /api/auth/wechat-login。
+_wechat_session_from_code 在非 production 且缺少配置时会 dev_fallback。
+users 表已有 wechat_openid、phone_or_email、avatar_url 等字段。
+apps/miniprogram/services/api.js 已有 wechatLogin(data)。
+```
+
+必须改动：
+
+```text
+1. backend/routes/auth.py
+   - 保留 /api/auth/wechat-login。
+   - 返回 dev_fallback 时，前端只能提示“开发调试登录”，不能把它当正式微信授权。
+   - 新增 /api/auth/wechat-phone 或 /api/auth/bind-phone。
+   - 手机号接口缺少 WECHAT_APPID/WECHAT_SECRET 或微信授权能力时返回明确错误 code：wechat_phone_config_missing，不伪造手机号。
+
+2. backend/database.py / models.py
+   - 确认 users.phone_or_email 已有并可复用；如要区分手机号来源，可新增 phone_verified_at TEXT、phone_source TEXT。
+
+3. apps/miniprogram/pages/login/index.{js,wxml,wxss}
+   - 增加“微信授权登录”按钮，调用 wx.login 后 api.wechatLogin。
+   - 增加“手机号授权/绑定”按钮，使用 getPhoneNumber 事件拿 code，再调用后端。
+   - 明确账号密码登录是调试/备用方式。
+
+4. apps/miniprogram/services/api.js
+   - 新增 bindWechatPhone(data)。
+
+5. docs/04_部署联调/**
+   - 记录需要在微信公众平台/CloudBase 配置的项：
+     WECHAT_APPID、WECHAT_SECRET、手机号授权权限、隐私协议声明、服务器域名/云托管访问。
+```
+
+### T10-08 最近记录纳入测一测
+
+必须改动：
+
+```text
+1. backend/routes/assessments.py
+   - list_assessment_results 继续返回最近测评结果，但要使用登录态用户。
+   - 可增加 query 参数 include_summary=true，用于返回 worksheet_title、created_at、total_score、scores.dimensions 简要信息。
+
+2. apps/miniprogram/pages/assessment/index.{js,wxml,wxss}
+   - 当前已调用 api.listAssessmentResults({ limit: 3 })，需要确认未登录时显示登录提示。
+   - 增加最近测一测记录区域：量表名、填写时间、是否有画像、查看结果。
+
+3. apps/miniprogram/pages/profile/index.{js,wxml}
+   - “测评记录”入口进入 assessment 页或新增 history 参数。
+```
+
+### T10-09 测一测结果页、图表和后端技术字段清理
+
+当前代码事实：
+
+```text
+apps/miniprogram/pages/assessment-result/index.js 已有 profilePlotCanvas、profileRadarCanvas 绘制逻辑。
+后端 assessment_results 返回 profile_model_id、profile_cluster_id、profile_pc1、profile_pc2、profile_confidence 等技术字段。
+```
+
+必须改动：
+
+```text
+1. apps/miniprogram/pages/assessment-result/index.{js,wxml,wxss}
+   - 不显示 profile_model_id、cluster_id、z_score、feature_id、debug 字段。
+   - 用户端只显示：更接近的画像名称、置信度说明、PCA 位置图、雷达图、推荐训练、非诊断说明。
+   - 低置信度、离群、数据不足时显示“本次结果只作为位置参考，暂不做明确画像解释”。
+
+2. backend/routes/assessments.py
+   - profile-position 接口可以保留技术字段给前端绘图，但前端不得原样展示。
+   - 如需新增 display_payload，可在后端生成面向用户的解释字段。
+
+3. shared/types/api.ts
+   - 增加 user-facing 字段类型，如 reliability_status、display_summary、boundary_notice。
+```
+
+### T10-10 训练卡文案去模板化并补文本区
+
+必须改动：
+
+```text
+1. content/training_cards.json
+   - 去掉重复模板句。
+   - 每张训练卡补：
+     suitable_scene、today_goal、steps、example_phrase、before_note_prompt、after_note_prompt、boundary_notice。
+
+2. apps/miniprogram/pages/training-card/index.{js,wxml,wxss}
+   - 展示适用情境、预计用时、今天小目标、步骤、示例话术。
+   - 不在卡片里写诊断或人格判断。
+
+3. apps/miniprogram/pages/checkin/index.{js,wxml,wxss}
+   - 承接训练卡文本填写。
+   - 提交后写入 checkins.reflection 和新增的 helpfulness_rating/skip_reason。
+```
+
+### T10-11 本周复盘纳入测一测结果
+
+当前代码事实：
+
+```text
+backend/services/report_service.py 当前读取 emotion_diaries、checkins、feedback_results、student_profiles。
+尚未读取 assessment_results 和 emotion_thermometer。
+backend/routes/reports.py 会把 weekly report 写入 weekly_reports 表，但表字段目前没有 assessment_summary_json。
+```
+
+必须改动：
+
+```text
+1. backend/services/report_service.py
+   - 查询 assessment_results：
+     SELECT * FROM assessment_results WHERE user_id=? AND substr(created_at,1,10) BETWEEN ? AND ?
+   - 查询 emotion_thermometer。
+   - 生成 assessment_summary：
+     count、worksheet_names、dimension_summaries、profile_position_count、requires_review_count、recommended_card_ids。
+   - 生成 thermometer_summary：
+     count、avg_intensity、avg_valence、avg_arousal、avg_control（新增字段后）。
+   - next_week_suggestion 综合 diaries、assessment_results、checkins、profiles、thermometer。
+
+2. backend/routes/reports.py
+   - 响应中返回 assessment_summary、thermometer_summary、training_effectiveness_summary。
+   - 如需持久化，weekly_reports 表新增 assessment_summary_json、thermometer_summary_json、training_effectiveness_json。
+
+3. shared/types/api.ts
+   - WeeklyReport 增 assessment_summary、thermometer_summary、training_effectiveness_summary。
+
+4. apps/miniprogram/pages/weekly-report/index.{js,wxml,wxss}
+   - 展示本周完成测一测数量、量表名、维度变化摘要、推荐训练。
+   - 没有测评时显示友好空态。
+```
+
+### T10-12 量表题项、选项和上线前人工审核
+
+当前代码事实：
+
+```text
+apps/miniprogram/pages/assessment-detail/index.wxml 当前 scale 题用 option-row + option-button。
+apps/miniprogram/pages/assessment-detail/index.wxss 当前本地版本已是纵向按钮布局。
+用户真机截图仍出现选项挤压，下一轮必须确认真机加载的是最新代码或云端包。
+```
+
+必须改动：
+
+```text
+1. apps/miniprogram/pages/assessment-detail/index.{wxml,wxss}
+   - 保证 option-button min-height、white-space、overflow-wrap、line-height 在真机窄屏有效。
+   - 对 5/7 点 Likert 题使用纵向完整文字按钮；不要用挤压横排。
+   - 对短数字量表如 1-7，可增加 compact 模式，但必须保留清楚标签。
+
+2. backend/scripts/validate_content.py 或新增 scripts/audit_assessment_content.py
+   - 输出每个 enabled worksheet 的题项数、选项数、空选项、长选项、敏感边界、计分状态。
+
+3. docs/02_专项进度与验收/任务十量表上线前人工审核清单.md
+   - 生成表格字段：
+     worksheet_id、量表名称、enabled_for_user、题项状态、选项状态、计分规则状态、反向题状态、维度状态、是否建议隐藏、人工审核内容、原因。
+```
+
+### T10-13 情绪温度计轻量多维结构
+
+必须改动：
+
+```text
+1. backend/models.py
+   - emotion_thermometer 表保留 intensity_level。
+   - 新增字段：
+     valence_level INTEGER
+     arousal_level INTEGER
+     control_level INTEGER
+     emotion_label TEXT
+
+2. backend/database.py
+   - ensure_schema_columns 对 emotion_thermometer 幂等补列。
+   - CURRENT_SCHEMA_NAME 升级。
+
+3. backend/routes/emotion_thermometer.py
+   - _normalize_level 复用到 valence/arousal/control。
+   - POST 接收 intensity_level、valence_level、arousal_level、control_level、emotion_label、brief_text。
+   - GET /day 返回这些字段和多维 summary。
+
+4. shared/types/api.ts
+   - EmotionThermometerRecord / EmotionThermometerInput 增上述字段。
+
+5. apps/miniprogram/pages/thermometer/index.{js,wxml,wxss}
+   - 强度用温度计式视觉。
+   - 效价、唤醒度、可控感用滑杆或分段按钮。
+   - 当天摘要展示多维变化。
+   - 边界文案保持非诊断。
+```
+
+### T10-14 阶段性反馈、画像收束、训练卡效用评价
+
+必须改动：
+
+```text
+1. backend/services/progress_summary_service.py（新增）
+   - build_progress_summary(user_id, range_days)
+   - build_profile_convergence(user_id, worksheet_id=None)
+   - build_training_effectiveness(user_id, range_days)
+
+2. backend/routes/progress_summary.py（新增）
+   - GET /api/progress-summary?range=7d|14d|30d
+   - GET /api/profile-trend?worksheet_id=
+   - GET /api/training-effectiveness
+   - 全部使用 require_login/resolve_actor_user_id。
+
+3. backend/models.py / database.py
+   - 如果 T10-10/T10-14 需要，给 checkins 补：
+     helpfulness_rating、skip_reason、source_recommendation_id、before_thermometer_id、after_thermometer_id。
+
+4. backend/services/training_recommendation_service.py
+   - 推荐逻辑增加训练完成率、主观反馈、跳过原因、风险状态。
+   - 高风险时不输出普通训练推荐。
+
+5. shared/constants/api.ts、shared/types/api.ts、apps/miniprogram/services/api.js
+   - 新增 progressSummary、profileTrend、trainingEffectiveness 端点和类型。
+
+6. apps/miniprogram/pages/home/index.{js,wxml,wxss}
+   - 阶段性反馈主展示位置放在首页“最近记录”板块下面，作为独立 safe-section。
+   - index.js 增加 progressSummary、progressSummaryLoading、progressSummaryError、progressSummaryEmpty 等状态。
+   - refreshHomeData 追加 api.getProgressSummary({ range: "7d" }).catch(() => null)，不要影响首页原有最近记录加载。
+   - index.wxml 在“最近记录” section 后、dev-entry 前插入“阶段性反馈” section。
+   - index.wxss 沿用当前首页设计语言：section-title、safe-card、recent-record-card/quick-list 的卡片结构、var(--safe-primary)、var(--safe-card)、var(--safe-border)、var(--safe-shadow-card)，不新增插图、不做营销式大卡。
+   - 板块内容只展示用户可理解字段：记录是否足够、近期变化、画像稳定性提示、训练卡反馈、下一步建议、非诊断边界。
+   - 未登录时显示“登录后可以查看阶段性反馈”；数据不足时显示“记录还不够，先继续完成测评和练习”。
+
+7. apps/miniprogram/pages/personalized-plan/index.{js,wxml,wxss}
+   - 使用 training effectiveness 调整推荐理由。
+```
+
+阶段性反馈必须加入的状态：
+
+```text
+insufficient：记录还不够，先继续完成测评和练习。
+fluctuating：近期结果仍在波动中，暂不做明确归纳。
+converging：近期有一些方向逐渐稳定，可以继续观察。
+stable：近期结果较稳定，但仍只作为阶段性观察。
+low_confidence：本次结果可信度不足，不做明确画像解释。
+```
+
+### T10-15 情感计算与社会网络分析
+
+必须改动：
+
+```text
+1. analysis/text_analysis/README.md（新增）
+   - 说明文本来源、脱敏规则、输出位置、不能用于诊断。
+
+2. analysis/text_analysis/build_text_features.py（新增）
+   - 输入：数据库或脱敏导出。
+   - 输出：outputs/text_analysis/text_features_summary.json。
+   - 不输出原始自由文本。
+   - 输出 emotion_keywords、emotion_categories、valence_hint、arousal_hint、intensity_hint、text_length、analysis_version。
+
+3. analysis/text_analysis/build_social_network.py（新增）
+   - 输出 nodes、edges、top_nodes、top_edges、scene_emotion_pairs、person_emotion_pairs、behavior_emotion_pairs。
+   - 只输出聚合共现，不输出原句。
+
+4. analysis/text_analysis/dictionaries/*.json（可新增）
+   - emotion_terms、scene_terms、person_terms、behavior_terms、stopwords。
+
+5. docs/02_专项进度与验收/任务十文本来源清单.md（新增）
+   - 字段、来源模块、是否自由文本、是否敏感、是否默认导出、是否脱敏、是否可用于情感计算、是否可用于社会网络分析。
+```
+
+可选后端接入：
+
+```text
+只有离线脚本通过并确认权限后，才新增 backend/services/text_analysis_service.py 和 backend/routes/text_analysis.py。
+普通用户端不展示复杂社会网络图；第一版最多展示简化摘要。
+```
+
+### T10-16 验收和留痕
+
+必须更新：
+
+```text
+docs/02_专项进度与验收/任务十执行记录_YYYYMMDD.md
+docs/02_专项进度与验收/任务十量表上线前人工审核清单.md
+docs/02_专项进度与验收/任务十文本来源清单.md
+docs/00_当前事实基准/开发日志.md
+docs/00_当前事实基准/当前进度交接.md
+docs/00_当前事实基准/开发说明.md
+docs/03_技术真相/API接口文档.md（如 API 有改动）
+docs/03_技术真相/数据库字段说明.md（如字段有改动）
+docs/03_技术真相/数据字典.md（如字段有改动）
+docs/10Claude协作/Claude使用记录.md（仅实际使用 Claude 或 Claude Code 时）
+```
+
+必须运行：
+
+```powershell
+python backend\scripts\validate_content.py
+cd backend; python -m pytest tests -q
+cd apps\web; npm run build
+Get-ChildItem apps\miniprogram -Recurse -Filter *.js  | ForEach-Object { node --check $_.FullName }
+Get-ChildItem apps\miniprogram -Recurse -Filter *.json | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json | Out-Null }
+```
+
+必须人工验收：
+
+```text
+微信开发者工具编译。
+真机扫码预览。
+未登录访问填写类页面是否提示登录。
+测一测选项在真机窄屏是否仍挤压。
+微信授权登录在真实配置下是否可用。
+手机号授权在真实权限下是否可用。
+阶段性反馈是否不显示后端技术字段。
+高风险内容是否不进入普通训练推荐。
+```
+
+---
+
+## 1. 执行前必读
+
+请先阅读以下文件，再开始审查和修改：
+
+```text
+AGENTS.md
+docs/00_当前事实基准/项目进度统一口径.md
+docs/00_当前事实基准/当前进度交接.md
+docs/00_当前事实基准/Claude计划模式.md
+docs/03_技术真相/API接口文档.md
+docs/03_技术真相/数据库字段说明.md
+docs/03_技术真相/项目架构边界与后续开发规则.md
+docs/05_伦理试用/知情同意与隐私授权流程.md
+docs/05_伦理试用/匿名用户ID与试用数据隔离方案.md
+docs/05_伦理试用/文案低AI味与伦理表达检查.md
+docs/10Claude协作/Claude使用记录.md
+```
+
+同时检查图片：
+
+```text
+D:\codex\workspace\safehome1.0其他内容\文档图片\改错用图第一
+```
+
+请在执行记录中写明：
+
+```text
+1. 共读取了多少张图片；
+2. 每张图片初步对应任务十中的哪一项；
+3. 哪些图片无法判断；
+4. 哪些问题已经在当前代码中被修复；
+5. 哪些问题仍需修改。
+```
+
+---
+
+## 2. 全局规则
+
+### 2.1 先判断状态，再决定是否修改
+
+每个子任务都必须先做状态判断：
+
+```text
+已完成：只记录证据，不重复开发。
+部分完成：只补缺口。
+未完成：按最小改动实现。
+需要人工确认：不要臆造，列入人工确认清单。
+```
+
+### 2.2 禁止事项
+
+本轮禁止：
+
+```text
+1. git add . / commit / push，除非我明确要求。
+2. 删除业务文件、内容库、历史文档和测试文件。
+3. 重构整体架构。
+4. 修改真实 .env、token、密钥、数据库密码。
+5. 提交数据库文件、备份文件、node_modules、dist、原始研究数据。
+6. 擅自改量表题项原文、选项、维度和计分规则。
+7. 把待审核量表标记为 fully_approved。
+8. 新增 AI 自由咨询、临床诊断、医疗级危机干预。
+9. 在用户端展示 profile_model_id、cluster_id、z_score、feature_id、debug 等后端技术字段。
+10. 把画像写成“人格类型”“诊断类型”“异常类型”。
+```
+
+### 2.3 允许修改范围
+
+按子任务需要，可以修改：
+
+```text
+backend/**
+apps/miniprogram/**
+apps/web/**
+shared/**
+content/**
+docs/**
+backend/tests/**
+scripts/**
+analysis/**
+```
+
+涉及数据库字段时，必须同步：
+
+```text
+backend/models.py
+backend/database.py
+docs/03_技术真相/数据库字段说明.md
+docs/03_技术真相/数据字典.md
+```
+
+涉及 API 时，必须同步：
+
+```text
+docs/03_技术真相/API接口文档.md
+shared/types/api.ts
+shared/constants/api.ts
+apps/miniprogram/services/api.js
+apps/web/src/services/safehomeApi.ts
+```
+
+### 2.4 验证命令
+
+每轮修改后至少运行与本轮相关的验证。完整验证命令参考：
+
+```powershell
+cd D:\codex\workspace\safehome1.0
+python backend\scripts\validate_content.py
+
+cd D:\codex\workspace\safehome1.0\backend
+python -m pytest tests -q
+
+cd D:\codex\workspace\safehome1.0\apps\web
+npm run build
+
+cd D:\codex\workspace\safehome1.0
+Get-ChildItem apps\miniprogram -Recurse -Filter *.js  | ForEach-Object { node --check $_.FullName }
+Get-ChildItem apps\miniprogram -Recurse -Filter *.json | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json | Out-Null }
+```
+
+如果完整验证太重，先跑目标测试，但最终报告必须说明哪些验证已跑、哪些未跑、原因是什么。
+
+---
+
+# 任务十：小程序体验、登录、训练反馈、阶段性画像与文本分析补强
+
+## T10-01 登录闭环、我的页面与用户身份规则
+
+**目标**：明确当前登录页和个人主页位置，把登录状态放到“我的”页面最上方，并在未登录填写任何内容时提示先登录。
+
+**审查范围**：
+
+```text
+apps/miniprogram/app.js
+apps/miniprogram/app.json
+apps/miniprogram/pages/login/**
+apps/miniprogram/pages/register/**
+apps/miniprogram/pages/profile/**
+apps/miniprogram/services/api.js
+apps/miniprogram/services/userIdentity.js
+shared/constants/api.ts
+backend/routes/auth.py
+backend/routes/auth_utils.py
+```
+
+**改动要求**：
+
+1. 找到当前小程序登录页、注册页和“我的”页面。
+2. 在“我的”页面最上方展示登录状态：
+
+   * 已登录：显示用户昵称、角色、账号状态、退出登录入口；
+   * 未登录：显示“登录 / 注册”入口。
+3. 未登录用户点击需要保存数据的功能时，统一提示：
+
+```text
+请先登录，这样系统才能保存你的记录并生成后续复盘。
+```
+
+4. 需要拦截的功能至少包括：
+
+   * 情绪日记；
+   * 情绪温度计；
+   * 测一测；
+   * 训练卡打卡；
+   * 个性化训练方案；
+   * 项目测试填写；
+   * 消息 / 督导；
+   * 本周复盘。
+5. 不要破坏现有 `auth_token`、`auth_user` 和 `Authorization: Bearer token` 请求链路。
+6. 记录当前哪些页面已经有登录拦截，哪些页面需要补。
+
+**允许修改**：
+
+```text
+apps/miniprogram/app.js
+apps/miniprogram/pages/profile/**
+apps/miniprogram/pages/login/**
+apps/miniprogram/pages/register/**
+apps/miniprogram/services/api.js
+apps/miniprogram/utils/** 或新增登录守卫工具
+docs/00_当前事实基准/当前进度交接.md
+docs/00_当前事实基准/开发日志.md
+docs/00_当前事实基准/开发说明.md
+```
+
+**完成标准**：
+
+```text
+1. “我的”页面顶部能清楚显示登录状态。
+2. 未登录进入填写类页面时有清楚提示和登录入口。
+3. 已登录后可回到原页面继续操作。
+4. 小程序 JS/JSON 检查通过。
+```
+
+---
+
+## T10-02 全局“先登录后使用”规则（并入 T10-01 执行）
+
+**目标**：本项与 T10-01 合并执行，不重复开发。小程序正式使用时必须先登录，登录账号作为查询记录的主标识。
+
+**背景**：当前项目曾支持匿名 user_id，后续正式试用需要改为登录账号作为主查询标识。匿名 ID 可作为历史兼容或注册时关联线索，但不能作为正式使用主标识。
+
+**审查范围**：
+
+```text
+apps/miniprogram/app.js
+apps/miniprogram/services/api.js
+apps/miniprogram/services/userIdentity.js
+backend/routes/utils.py
+backend/routes/auth.py
+docs/05_伦理试用/匿名用户ID与试用数据隔离方案.md
+```
+
+**改动要求**：
+
+1. 小程序启动时检查登录状态。
+2. 未登录用户应优先进入登录/注册页，或者在首页只显示登录入口和使用说明，不允许继续填写数据。
+3. 登录后，所有业务请求默认使用 `auth_user.id`。
+4. 旧匿名 ID 暂不自动迁移，除非后续单独设计迁移规则。
+5. 如果保留匿名 ID，只作为：
+
+   * 注册前临时标识；
+   * 微信登录时传给后端的 `anonymous_id`；
+   * 历史数据迁移时的线索。
+6. 文档中说明：本轮不做匿名历史数据自动合并。
+
+**允许修改**：
+
+```text
+apps/miniprogram/app.js
+apps/miniprogram/services/api.js
+apps/miniprogram/pages/home/**
+apps/miniprogram/pages/login/**
+apps/miniprogram/pages/register/**
+docs/05_伦理试用/匿名用户ID与试用数据隔离方案.md
+docs/00_当前事实基准/当前进度交接.md
+```
+
+**完成标准**：
+
+```text
+1. 未登录不能提交任何正式记录。
+2. 登录后新增的目标、日记、测评、打卡、周报查询均绑定登录用户。
+3. 旧匿名数据不被错误覆盖。
+4. 关键页面有清楚的登录提示。
+```
+
+---
+
+## T10-03 不同量表制定不同指导语
+
+**目标**：目前量表指导语过于相似，需要根据不同量表制定差异化指导语。
+
+**审查范围**：
+
+```text
+content/assessment_worksheets.json
+content/scales_catalog.json
+content/scale_item_drafts.json
+backend/routes/assessments.py
+apps/miniprogram/pages/assessment-detail/**
+docs/02_专项进度与验收/P3量表录入进度表.md
+```
+
+**改动要求**：
+
+1. 先列出当前用户端开放的全部量表。
+2. 按量表类型分别制定指导语，例如：
+
+   * 家长反思功能类；
+   * 情绪调节类；
+   * 自我关怀类；
+   * 学业压力/学习类；
+   * 心理健康筛查类；
+   * 人格/特质类；
+   * 睡眠/健康生活方式类；
+   * 亲子沟通/家庭关系类。
+3. 指导语应包含：
+
+   * 这份量表适合什么时候填写；
+   * 填写时如何理解题项；
+   * 是否按最近一段时间作答；
+   * 是否需要凭第一反应选择；
+   * 结果如何使用；
+   * 非诊断边界。
+4. 敏感量表必须保留 `boundary_notice` 和 `result_disclaimer`。
+5. 不得修改题项原文、选项、维度和计分规则。
+6. 如果某量表题项或计分未确认，不要写成正式开放语气，应标记为“待人工复核后开放”。
+
+**允许修改**：
+
+```text
+content/assessment_worksheets.json
+content/scales_catalog.json
+docs/02_专项进度与验收/P3量表录入进度表.md
+docs/量表待人工录入清单.md
+apps/miniprogram/pages/assessment-detail/**
+```
+
+**完成标准**：
+
+```text
+1. 每份用户端开放量表都有相对贴合自身主题的 instructions。
+2. 小程序详情页优先展示量表自身指导语。
+3. 敏感量表展示边界说明。
+4. validate_content.py 通过。
+```
+
+---
+
+## T10-04 “我的—设置与说明”补充知情与边界、隐私说明
+
+**目标**：补充“我的”页面下“设置与说明”中的知情与边界、隐私说明内容。
+
+**审查范围**：
+
+```text
+apps/miniprogram/pages/profile/**
+content/consent.md
+content/privacy.md
+docs/05_伦理试用/知情同意与隐私授权流程.md
+docs/05_伦理试用/匿名用户ID与试用数据隔离方案.md
+docs/05_伦理试用/content伦理边界校验说明.md
+```
+
+**改动要求**：
+
+1. 在“我的”页面或设置说明页中补充以下内容：
+
+   * 使用说明；
+   * 知情与边界；
+   * 隐私说明；
+   * 非诊断声明；
+   * 数据保存与使用说明；
+   * 高风险内容处理说明；
+   * 研究授权与基础使用的关系。
+2. 用户端语言要简洁清楚，不要堆法律术语。
+3. 不要承诺治疗效果。
+4. 不要写“系统会诊断”“系统会判断疾病”“系统会处理危机”。
+5. 高风险说明应写成：
+
+   * 系统会做关键词初筛；
+   * medium/high 风险进入人工关注；
+   * 紧急情况优先联系线下专业人员或当地紧急资源。
+6. 如果已有 `content/consent.md` 和 `content/privacy.md`，优先复用，不重复造一套冲突文本。
+
+**允许修改**：
+
+```text
+apps/miniprogram/pages/profile/**
+apps/miniprogram/pages/settings/** 或新增说明页
+content/consent.md
+content/privacy.md
+docs/05_伦理试用/**
+```
+
+**完成标准**：
+
+```text
+1. “我的”页面能进入知情与边界、隐私说明。
+2. 文案符合非诊断、非治疗、非危机干预边界。
+3. 小程序 JS/JSON 检查通过。
+```
+
+---
+
+## T10-05 个性化训练方案与项目测试内容补充，并预留文本填写位置
+
+**目标**：补充训练中心中“个性化方案”的内容，针对每份量表填写后的不同结果推荐不同训练；补充项目测试三个项目的填写内容；为后续文本分析预留用户填写文本位置。
+
+**审查范围**：
+
+```text
+backend/routes/training_plan.py
+backend/services/training_recommendation_service.py
+content/training_cards.json
+content/programs.json
+content/assessment_training_map.json
+content/diary_training_map.json
+apps/miniprogram/pages/personalized-plan/**
+apps/miniprogram/pages/program-list/**
+apps/miniprogram/pages/program-detail/**
+apps/miniprogram/pages/training-card/**
+apps/miniprogram/pages/checkin/**
+shared/types/api.ts
+shared/constants/api.ts
+```
+
+**改动要求**：
+
+1. 检查当前个性化训练方案是否已经根据：
+
+   * 最近测评结果；
+   * 量表维度分；
+   * 画像簇；
+   * 训练卡推荐规则；
+   * 训练完成记录；
+     生成训练建议。
+2. 如果当前只展示简单卡片，需要补充：
+
+   * 推荐原因；
+   * 对应来源量表；
+   * 对应维度或画像；
+   * 建议先做哪一步；
+   * 非诊断边界。
+3. 项目测试中的三个项目需要补充可填写内容，包括：
+
+   * 任务说明；
+   * 书写提示；
+   * 反思问题；
+   * 提交后的保存方式；
+   * 后续文本分析用途说明。
+4. 训练卡和项目测试中需要有用户可填写文本的位置，例如：
+
+   * 练习前我注意到的想法；
+   * 我现在的情绪词；
+   * 我尝试的新回应；
+   * 练习后的变化；
+   * 今天最想记录的一句话。
+5. 这些文本后续要能进入可分析的数据结构。优先复用：
+
+   * `checkins.reflection`；
+   * `records.data_json`；
+   * 项目测试如已有保存结构则复用；
+   * 如没有，先提出最小新增表或字段方案，不要直接大改。
+6. 用户端必须说明：这些文本用于自我复盘和研究分析，不作为诊断。
+
+**允许修改**：
+
+```text
+backend/routes/training_plan.py
+backend/services/training_recommendation_service.py
+content/training_cards.json
+content/programs.json
+apps/miniprogram/pages/personalized-plan/**
+apps/miniprogram/pages/program-detail/**
+apps/miniprogram/pages/training-card/**
+apps/miniprogram/pages/checkin/**
+shared/types/api.ts
+shared/constants/api.ts
+docs/03_技术真相/API接口文档.md
+docs/03_技术真相/数据库字段说明.md
+```
+
+**完成标准**：
+
+```text
+1. 个性化训练方案能说明“为什么推荐”。
+2. 项目测试三个项目有真实可填写内容。
+3. 训练卡和项目测试有文本填写位置。
+4. 文本保存路径清楚。
+5. validate_content.py 通过。
+```
+
+---
+
+## T10-06 课程界面接入状态审查与最小方案
+
+**目标**：检查课程界面设置规则，以及 Claude计划模式任务中关于课程界面的要求是否完成；确认课程是否已经接入。
+
+**当前问题**：课程界面点击后显示“课程详情后续接入”。
+
+**审查范围**：
+
+```text
+apps/miniprogram/pages/course/**
+content/**
+backend/routes/**
+shared/constants/api.ts
+shared/types/api.ts
+docs/00_当前事实基准/Claude计划模式.md
+docs/06_产品规划/**
+docs/01_当前执行入口/**
+```
+
+**改动要求**：
+
+1. 判断当前课程页是否只是静态列表。
+2. 判断是否已有课程 content 数据源。
+3. 判断是否已有课程 API。
+4. 判断 Claude计划模式或其他任务文档中是否要求接入课程详情。
+5. 如果没有真实接入，请给出最小接入方案：
+
+   * `content/courses.json`；
+   * `GET /api/courses`；
+   * `GET /api/courses/<id>`；
+   * 小程序课程详情页；
+   * 学习进度记录；
+   * 是否与训练卡、项目测试联动。
+6. 如果本轮不正式开发课程详情，至少把“课程详情后续接入”改成更自然的用户文案，例如：
+
+```text
+课程内容正在整理中，后续会逐步接入。你可以先完成训练卡和测一测，系统会根据记录推荐更合适的练习。
+```
+
+**允许修改**：
+
+```text
+apps/miniprogram/pages/course/**
+content/courses.json（如确需新增）
+backend/routes/courses.py（如确需新增）
+shared/**
+docs/06_产品规划/**
+docs/03_技术真相/API接口文档.md
+```
+
+**完成标准**：
+
+```text
+1. 明确课程是否已接入。
+2. 如果未接入，给出最小接入路线。
+3. 用户端不再出现生硬的“后续接入”提示。
+```
+
+---
+
+## T10-07 微信授权登录与手机号授权登录方案
+
+**目标**：当前登录界面只有账号密码登录，需要设计微信授权登录和手机号授权登录；在真实微信配置、CloudBase 配置和手机号授权权限具备时接入，缺少配置时只完成接口骨架、配置项、文档和前端按钮，不伪造真实授权成功。
+
+**审查范围**：
+
+```text
+backend/routes/auth.py
+backend/routes/auth_utils.py
+backend/models.py
+backend/database.py
+apps/miniprogram/pages/login/**
+apps/miniprogram/pages/register/**
+apps/miniprogram/services/api.js
+apps/miniprogram/app.js
+docs/04_部署联调/**
+```
+
+**改动要求**：
+
+### 微信授权登录
+
+请设计流程：
+
+```text
+1. 小程序端调用 wx.login() 获取 code。
+2. 小程序把 code 发给后端 /api/auth/wechat-login。
+3. 后端使用微信 AppID / AppSecret 调微信接口换取 openid/session_key。
+4. 后端根据 openid 查找或创建用户。
+5. 后端返回 SafeHome 自己的 auth token 和 user。
+6. 小程序保存 auth_token 和 auth_user。
+```
+
+### 手机号授权登录
+
+请设计流程：
+
+```text
+1. 小程序端使用微信手机号授权能力获取 code。
+2. 后端使用微信接口换取手机号。
+3. 后端绑定手机号到用户账号。
+4. 前端不保存明文敏感信息。
+5. 数据库只保存必要字段。
+```
+
+### 注意事项
+
+1. 不要硬编码 AppID、AppSecret。
+2. 如果缺少微信配置，请列出需要我在微信公众平台或 CloudBase 中提供/配置的内容。
+3. 保留账号密码登录作为调试入口。
+4. 正式用户入口优先微信授权登录。
+5. 手机号登录涉及隐私，要在隐私说明中同步说明用途。
+6. 如果本轮无法完整接入微信官方接口，先完成接口骨架、配置项、文档和前端按钮，不伪造真实授权成功。
+
+**允许修改**：
+
+```text
+backend/routes/auth.py
+backend/routes/auth_utils.py
+backend/models.py
+backend/database.py
+backend/requirements.txt
+apps/miniprogram/pages/login/**
+apps/miniprogram/pages/register/**
+apps/miniprogram/services/api.js
+docs/04_部署联调/**
+docs/03_技术真相/API接口文档.md
+docs/05_伦理试用/隐私相关文档
+```
+
+**完成标准**：
+
+```text
+1. 登录页显示微信授权登录入口。
+2. 登录页说明账号密码登录是调试/备用方式。
+3. 微信登录所需配置项文档清楚。
+4. 不硬编码密钥。
+5. 小程序 JS 检查通过。
+```
+
+---
+
+## T10-08 最近记录页纳入测一测记录
+
+**目标**：最近记录页需要显示用户填写量表后的记录。
+
+**审查范围**：
+
+```text
+apps/miniprogram/pages/profile/**
+apps/miniprogram/pages/home/**
+apps/miniprogram/pages/assessment-result/**
+apps/miniprogram/services/api.js
+backend/routes/assessments.py
+backend/routes/profile.py
+backend/routes/reports.py
+```
+
+**改动要求**：
+
+1. 找到当前“最近记录”展示逻辑。
+2. 确认当前是否只显示情绪日记、训练卡或其他记录。
+3. 加入测一测结果记录，来源为 `assessment_results`。
+4. 最近记录卡片至少显示：
+
+   * 量表名称；
+   * 完成时间；
+   * 维度结果摘要；
+   * 是否有关联画像落点；
+   * 是否有训练推荐；
+   * 点击进入结果页。
+5. 不要把学生画像和普通测一测混淆。`student_profile_v1` 仍按原画像逻辑处理。
+6. 如果后端没有统一最近记录接口，可先在前端组合调用；若组合调用复杂，再设计最小 API。
+
+**允许修改**：
+
+```text
+apps/miniprogram/pages/profile/**
+apps/miniprogram/pages/home/**
+apps/miniprogram/services/api.js
+backend/routes/reports.py 或新增 recent_records service/route
+shared/types/api.ts
+shared/constants/api.ts
+docs/03_技术真相/API接口文档.md
+```
+
+**完成标准**：
+
+```text
+1. 用户完成测一测后，最近记录能看到该结果。
+2. 点击记录能进入对应结果页。
+3. 已登录用户只能看到自己的记录。
+```
+
+---
+
+## T10-09 测一测结果页、图片/图表显示与后端标记清理
+
+**目标**：修复测一测填写后结果页前端显示不完整的问题，并清理用户端展示的后端技术标记。
+
+**审查范围**：
+
+```text
+apps/miniprogram/pages/assessment-result/**
+apps/miniprogram/components/profile-scatter/**
+apps/miniprogram/components/profile-radar/**
+apps/miniprogram/utils/chart.js
+backend/services/assessment_profile_service.py
+backend/routes/assessments.py
+content/profiles/**
+```
+
+**改动要求**：
+
+1. 查看截图，确认结果页图片、散点图、雷达图或卡片显示不完整的具体位置。
+2. 修复布局问题：
+
+   * canvas 高度；
+   * 容器宽度；
+   * 图片裁切；
+   * 卡片溢出；
+   * 长文本换行；
+   * 小屏适配。
+3. 用户端不要展示：
+
+   * `profile_model_id`；
+   * `cluster_id`；
+   * `feature_id`；
+   * `z_score`；
+   * `pc1/pc2`；
+   * `debug`；
+   * `backend`；
+   * 任何技术字段名。
+4. 用户端只展示：
+
+   * 量表名称；
+   * 维度结果；
+   * 阶段性观察；
+   * 支持性解释；
+   * 推荐练习；
+   * 非诊断边界。
+5. 所有测一测结果页都按这一规则处理，不只改某一个量表。
+6. 如果需要保留技术字段，只允许在 debug 页或 Web 后台展示。
+
+**允许修改**：
+
+```text
+apps/miniprogram/pages/assessment-result/**
+apps/miniprogram/components/profile-scatter/**
+apps/miniprogram/components/profile-radar/**
+apps/miniprogram/utils/chart.js
+backend/services/assessment_profile_service.py（仅在返回字段需要补 display 文案时）
+docs/05_伦理试用/文案低AI味与伦理表达检查.md
+```
+
+**完成标准**：
+
+```text
+1. 结果页图片/图表显示完整。
+2. 普通用户端不再看到后端技术字段。
+3. 各类测一测结果页展示规则一致。
+4. 小程序 JS/JSON 检查通过。
+```
+
+---
+
+## T10-10 训练卡文案去模板化，并补充填写区
+
+**目标**：训练卡中去掉“练习前先提醒自己”等模板化表达，并为用户填写文本预留位置。
+
+**审查范围**：
+
+```text
+content/training_cards.json
+apps/miniprogram/pages/training-card/**
+apps/miniprogram/pages/checkin/**
+backend/routes/checkins.py
+docs/05_伦理试用/文案低AI味与伦理表达检查.md
+```
+
+**改动要求**：
+
+1. 全量搜索并改写类似表达：
+
+   * “练习前先提醒自己”；
+   * “请你尝试”；
+   * “你可以试着”；
+   * 过度模板化、AI味重、空泛的句子。
+2. 改写为更具体、行动化、真实的训练手册语言。
+3. 每张训练卡保留：
+
+   * 练习目的；
+   * 具体步骤；
+   * 示例；
+   * 反思问题；
+   * 用户填写文本位置。
+4. 文本位置建议包括：
+
+   * 练习前一句话；
+   * 练习中观察；
+   * 练习后反思；
+   * 是否有帮助；
+   * 下次想调整什么。
+5. 不承诺疗效，不写“治愈”“立即改善”“改变人生”。
+
+**允许修改**：
+
+```text
+content/training_cards.json
+apps/miniprogram/pages/training-card/**
+apps/miniprogram/pages/checkin/**
+backend/routes/checkins.py（如需扩展保存字段）
+backend/models.py / database.py（仅在确需新增字段时）
+docs/03_技术真相/数据库字段说明.md
+```
+
+**完成标准**：
+
+```text
+1. 训练卡不再出现明显模板化提示。
+2. 用户可填写训练反思文本。
+3. 文本能保存到现有或新增数据结构中。
+4. validate_content.py 通过。
+```
+
+---
+
+## T10-11 本周复盘纳入情绪日记与测一测结果
+
+**目标**：本周复盘页面需要同时接收情绪日记、测一测结果和反馈结果。
+
+**审查范围**：
+
+```text
+backend/routes/reports.py
+backend/services/report_service.py
+apps/miniprogram/pages/weekly-report/**
+shared/types/api.ts
+shared/constants/api.ts
+backend/tests/test_*report*.py
+```
+
+**改动要求**：
+
+1. 当前周报已读取情绪日记、打卡、反馈、学生画像。请加入通用测一测结果 `assessment_results`。
+2. 周报中新增：
+
+   * 本周完成测一测数量；
+   * 完成的量表名称；
+   * 各量表维度结果摘要；
+   * 是否有关联画像落点；
+   * 是否有训练推荐；
+   * 需人工关注或高风险提示；
+   * 与训练卡完成情况的关联。
+3. 下一周建议应综合：
+
+   * 情绪日记高频场景；
+   * 高频情绪；
+   * 测一测维度；
+   * 训练卡完成情况；
+   * 画像趋势；
+   * 风险状态。
+4. 用户端文案必须保持：
+
+   * 阶段性观察；
+   * 支持性复盘；
+   * 非诊断；
+   * 不做固定标签。
+5. shared 类型和小程序页面同步更新。
+
+**允许修改**：
+
+```text
+backend/services/report_service.py
+backend/routes/reports.py
+apps/miniprogram/pages/weekly-report/**
+shared/types/api.ts
+docs/03_技术真相/API接口文档.md
+backend/tests/**
+```
+
+**完成标准**：
+
+```text
+1. 本周复盘能显示测一测结果。
+2. 情绪日记、测一测、反馈、训练卡能共同进入复盘。
+3. 没有记录时显示友好空态。
+4. 后端目标测试通过。
+```
+
+---
+
+## T10-12 题项、选项与上线前人工审核清单
+
+**目标**：检查当前题项和选项显示错误，列出必须由我审核计分规则和题项后才能上线的量表。
+
+**审查范围**：
+
+```text
+content/assessment_worksheets.json
+content/scale_item_drafts.json
+content/scales_catalog.json
+docs/02_专项进度与验收/P3量表录入进度表.md
+docs/量表待人工录入清单.md
+backend/scripts/validate_content.py
+backend/scripts/build_worksheets.py
+apps/miniprogram/pages/assessment-detail/**
+```
+
+**改动要求**：
+
+1. 检查当前用户端开放量表的题项和选项展示。
+2. 对照 catalog、draft、worksheet 和相关文档，找出：
+
+   * 题项缺失；
+   * 题项顺序异常；
+   * 选项错位；
+   * 选项分值错误；
+   * 反向计分未确认；
+   * 维度归属未确认；
+   * 指导语或边界说明缺失；
+   * 来源文件未人工复核；
+   * 移动端窄屏下选项纵向挤压、重叠、截断或不可读；
+   * Likert 横向选项过密，导致数字和文字错位；
+   * 题项卡片内选项区域高度、宽度或换行策略不适配真机。
+3. 输出一份清单，至少包含：
+
+```text
+worksheet_id
+量表名称
+当前 enabled_for_user 状态
+题项状态
+选项状态
+计分规则状态
+反向题状态
+维度状态
+是否建议暂时隐藏
+需要我人工审核的内容
+原因
+```
+
+4. 对未确认量表，建议设置为待审核或隐藏，不要默认开放。
+5. 不要自行臆造题项、选项、维度和计分规则。
+6. 如需改 `enabled_for_user`，先在报告中说明原因，再做最小改动。
+
+**允许修改**：
+
+```text
+docs/02_专项进度与验收/任务十量表上线前人工审核清单.md
+content/assessment_worksheets.json（仅在确认需要隐藏或补边界时）
+content/scales_catalog.json（仅补状态字段或说明）
+apps/miniprogram/pages/assessment-detail/**（仅修展示错误）
+```
+
+**完成标准**：
+
+```text
+1. 形成清楚的人工审核清单。
+2. 明确哪些量表不能直接上线。
+3. 已开放量表题项和选项在微信开发者工具和真机窄屏下显示正常，不重叠、不截断、可点击。
+4. validate_content.py 通过。
+```
+
+---
+
+## T10-13 情绪温度计加入轻量多维情绪结构并改为温度计式交互
+
+**目标**：情绪温度计不只记录强度，还要加入轻量多维情绪结构，并把当前强度记录页面改成更像“温度计”的形式。
+
+**重要要求**：先搜索/查阅理论依据，再改动。不要凭印象直接改。
+
+**审查范围**：
+
+```text
+backend/routes/emotion_thermometer.py
+backend/models.py
+backend/database.py
+apps/miniprogram/pages/thermometer/**
+apps/miniprogram/utils/chart.js
+shared/types/api.ts
+docs/03_技术真相/API接口文档.md
+docs/03_技术真相/数据库字段说明.md
+```
+
+**理论检索要求**：
+
+请先搜索并简要记录适合本项目的轻量多维情绪结构候选，例如：
+
+```text
+1. 愉悦度 / 不愉悦度；
+2. 唤醒度 / 激活度；
+3. 控制感 / 可调节感；
+4. 情绪强度；
+5. 情绪效价；
+6. 身体紧张度。
+```
+
+选择时要结合 SafeHome 的定位：轻量、自我观察、非诊断、适合家长和学生填写。
+
+**建议实现方向**：
+
+第一版可采用：强度作为温度计主字段，效价、唤醒度、可控感作为轻量多维补充字段。
+
+```text
+1. intensity_level：情绪强度，1-10；
+2. valence_level：愉悦—不愉悦，1-10；
+3. arousal_level：平静—激活，1-10；
+4. control_level：可控感，1-10；
+5. emotion_label：当前最接近的情绪词；
+6. brief_text：简短备注。
+```
+
+也可以根据理论检索结果调整，但必须在报告中说明原因。
+
+**前端要求**：
+
+1. 当前强度记录页面改为温度计式视觉。
+2. 强度用温度计形态展示，不只是普通输入框。
+3. 多维结构用滑杆、刻度或卡片形式展示。
+4. 当天记录展示变化曲线或摘要。
+5. 保留边界说明：
+
+```text
+情绪温度计只用于自我观察和练习提示，不构成诊断、筛查或风险评估。
+```
+
+**后端要求**：
+
+1. 如新增字段，使用 `ensure_column` 幂等补列。
+2. MySQL 兼容字段类型。
+3. API 返回旧字段兼容。
+4. 更新 shared 类型和 API 文档。
+
+**允许修改**：
+
+```text
+backend/models.py
+backend/database.py
+backend/routes/emotion_thermometer.py
+apps/miniprogram/pages/thermometer/**
+apps/miniprogram/utils/chart.js
+shared/types/api.ts
+docs/03_技术真相/API接口文档.md
+docs/03_技术真相/数据库字段说明.md
+docs/05_伦理试用/文案低AI味与伦理表达检查.md
+```
+
+**完成标准**：
+
+```text
+1. 理论依据有简要记录。
+2. 情绪温度计支持强度主字段 + 效价、唤醒度、可控感等轻量多维记录。
+3. 页面呈现更像温度计。
+4. 旧的强度记录不被破坏。
+5. 后端测试和小程序检查通过。
+```
+
+---
+
+## T10-14 阶段性反馈、画像逐步收束、训练卡效用评价与动态推荐
+
+**目标**：实现阶段性反馈与画像逐步收束功能。系统需要追踪用户量表填写、训练卡使用和情绪记录，纵向记录每一次填写分数、画像落点、训练卡完成情况和训练反馈，实现训练卡效用评价与动态调整训练卡推送。
+
+这是任务十的重点任务。请先设计，再分阶段实现，不要一次性大改。
+
+### T10-14-01 数据追踪设计
+
+请审查现有数据表是否能支持：
+
+```text
+assessment_results
+student_profiles
+checkins
+emotion_diaries
+emotion_thermometer
+feedback_results
+training_cards
+records
+weekly_reports
+```
+
+需要追踪的数据包括：
+
+```text
+1. 用户每一次测一测填写时间；
+2. 每一次量表总分和维度分；
+3. 每一次画像落点、画像簇、置信度；
+4. 每一次推荐了哪些训练卡；
+5. 用户是否打开训练卡；
+6. 用户是否完成训练卡；
+7. 训练前后的情绪温度计变化；
+8. 训练后的文字反思；
+9. 情绪日记中的高频场景和高频情绪；
+10. 每周复盘中的变化趋势；
+11. 训练卡主观反馈：有帮助 / 一般 / 暂时没有帮助；
+12. 训练卡跳过原因或未完成原因。
+```
+
+优先复用现有表。只有在现有结构无法表达时，才新增轻量表或字段。
+
+### T10-14-02 阶段性反馈逻辑
+
+设计并实现阶段性反馈服务，建议新增或扩展：
+
+```text
+backend/services/progress_summary_service.py
+backend/routes/progress_summary.py
+```
+
+可选 API：
+
+```text
+GET /api/progress-summary?user_id=&range=7d|14d|30d
+GET /api/profile-trend?user_id=&worksheet_id=
+GET /api/training-effectiveness?user_id=
+```
+
+阶段性反馈应包括：
+
+```text
+1. 最近 7/14/30 天测评变化；
+2. 同一量表维度分变化；
+3. 情绪温度计趋势；
+4. 训练卡完成数量；
+5. 训练卡完成前后情绪变化；
+6. 高频情绪场景；
+7. 高频训练类型；
+8. 当前记录是否足够形成趋势；
+9. 下一步练习建议。
+```
+
+文案规则：
+
+```text
+数据不足：显示“记录还不够，先继续完成测评和练习。”
+变化不稳定：显示“近期结果仍在波动中，暂不做明确归纳。”
+趋势较稳定：显示“近期记录显示某些模式较稳定，可继续观察。”
+```
+
+不得使用：
+
+```text
+人格固定
+诊断
+异常
+高危患者
+治疗有效
+疗效显著
+```
+
+### T10-14-03 画像逐步收束逻辑
+
+设计“画像逐步收束”规则：
+
+```text
+1. 单次测评不做固定画像判断。
+2. 多次同一量表结果后，比较维度分变化。
+3. 多次画像落点后，比较是否持续接近同一画像簇。
+4. 连续多次接近同一画像，可显示“近期结果较稳定”。
+5. 多个画像间波动，显示“近期仍在变化中”。
+6. 置信度低或离群时，不做明确画像解释。
+7. 数据不足时只提示继续记录。
+```
+
+建议输出字段：
+
+```text
+stability_status: insufficient | fluctuating | converging | stable | low_confidence
+summary_text
+evidence_items
+latest_profile
+previous_profiles
+dimension_trends
+boundary_notice
+```
+
+### T10-14-04 训练卡效用评价
+
+设计训练卡效用评价逻辑：
+
+```text
+1. 记录训练卡被推荐；
+2. 记录训练卡被打开；
+3. 记录训练卡是否完成；
+4. 记录训练前后情绪温度计；
+5. 记录用户主观反馈；
+6. 记录练习后文字反思；
+7. 统计完成率；
+8. 统计跳过率；
+9. 统计用户反馈；
+10. 根据结果调整后续推荐。
+```
+
+如果现有 `checkins` 不足以记录这些内容，可以最小新增字段，例如：
+
+```text
+helpfulness_rating TEXT
+before_thermometer_id TEXT
+after_thermometer_id TEXT
+reflection_text TEXT
+skip_reason TEXT
+source_recommendation_id TEXT
+```
+
+或新增轻量表：
+
+```text
+training_recommendation_events
+```
+
+但新增表前必须先说明为什么现有表不够。
+
+### T10-14-05 动态调整训练卡推送
+
+推荐策略分阶段：
+
+```text
+初始阶段：
+- 根据量表维度分、画像簇、情绪日记推荐。
+
+记录积累阶段：
+- 加入训练卡完成率；
+- 加入用户主观反馈；
+- 加入训练前后情绪变化；
+- 加入用户常见场景；
+- 加入未完成原因。
+
+高风险阶段：
+- 停止普通自动训练推荐；
+- 转入人工关注和现实支持提示。
+```
+
+推荐调整规则：
+
+```text
+1. 多次未完成某类训练，减少同类推荐，换成更短练习。
+2. 多次完成且反馈较好，推荐相近或进阶练习。
+3. 情绪温度计显示练习后更稳定，可保留该类练习。
+4. 用户反馈“暂时没有帮助”，下次推荐替代练习。
+5. 数据不足时不做强推荐，只给轻量开始建议。
+```
+
+用户端展示推荐理由时不能显示复杂后端字段，只显示：
+
+```text
+因为你最近完成了……
+因为你最近在……场景记录较多
+因为这张卡比较短，适合先开始
+因为你之前完成过相近练习
+```
+
+### T10-14-06 前端展示
+
+建议展示位置：
+
+```text
+apps/miniprogram/pages/home/**（主展示位置：最近记录下面的独立板块）
+apps/miniprogram/pages/weekly-report/**
+apps/miniprogram/pages/personalized-plan/**
+apps/web/src/pages/ResearchDashboard.tsx
+```
+
+小程序端展示：
+
+```text
+1. 首页“最近记录”下面新增“阶段性反馈”独立板块；
+2. 最近变化；
+3. 画像稳定性提示；
+4. 训练卡完成反馈；
+5. 下一步建议。
+6. 未登录、数据不足、低置信度时显示克制空态，不强行解释。
+```
+
+首页设计要求：
+
+```text
+1. 沿用当前小程序首页方案，不新建另一套视觉系统。
+2. 继续使用 safe-section、section-title、safe-card、recent-record-card/quick-list 风格。
+3. 继续使用现有 CSS 变量：--safe-primary、--safe-card、--safe-border、--safe-shadow-card 等。
+4. 不新增插图，不做营销化大横幅，不占用首屏核心入口。
+5. 板块位置固定在“最近记录”之后、开发联调入口之前。
+```
+
+Web 后台展示：
+
+```text
+1. 用户趋势；
+2. 量表维度变化；
+3. 训练卡效用；
+4. 风险复核提示；
+5. 研究导出摘要。
+```
+
+### T10-14-07 验收标准
+
+```text
+1. 用户完成两次同一量表后，能看到维度变化。
+2. 用户完成训练卡后，阶段性反馈能读取训练记录。
+3. 情绪温度计记录能进入趋势摘要。
+4. 数据不足时不强行解释。
+5. 高风险内容不进入普通训练推荐。
+6. 小程序端不展示后端技术字段。
+7. shared 类型同步。
+8. API 文档同步。
+9. pytest 通过。
+10. Web build 通过。
+11. 小程序 JS/JSON 检查通过。
+```
+
+---
+
+## T10-15 情感计算与社会网络分析功能
+
+**目标**：使用用户填写后的文本进行情感计算和社会网络分析，为后续研究和阶段性反馈提供依据。第一版优先做离线、可解释、脱敏、聚合分析，不直接作为诊断或风险评估。
+
+### T10-15-01 审查现有文本来源
+
+请先审查哪些文本来源可用：
+
+```text
+emotion_diaries.event_description
+emotion_diaries.automatic_thought
+emotion_diaries.behavior
+feedback_results.supportive_feedback
+checkins.reflection
+assessment_results.answers_json 中的自由文本
+student_profiles.text_features_json
+supervision_requests
+programs / 项目测试填写文本
+records.data_json
+```
+
+输出一份文本来源清单：
+
+```text
+字段
+来源模块
+是否含用户自由文本
+是否敏感
+是否默认导出
+是否需要脱敏
+是否可用于情感计算
+是否可用于社会网络分析
+```
+
+### T10-15-02 情感计算第一版
+
+第一版优先使用可解释规则或轻量词典，不接入黑箱医疗判断。
+
+建议功能：
+
+```text
+1. 情绪词识别；
+2. 情绪类别归纳；
+3. 情绪强度线索；
+4. 情绪效价线索；
+5. 高频情绪变化；
+6. 与情绪温度计记录对应；
+7. 与训练卡完成前后变化对应。
+```
+
+输出字段建议：
+
+```text
+sentiment_summary
+emotion_keywords
+emotion_categories
+valence_hint
+arousal_hint
+intensity_hint
+text_length
+analysis_version
+boundary_notice
+```
+
+用户端文案只能写：
+
+```text
+文本中更常出现的情绪线索是……
+最近记录中较常出现的词是……
+这些结果只用于自我观察和研究分析，不构成诊断。
+```
+
+不得写：
+
+```text
+你有抑郁
+你焦虑严重
+你存在人格问题
+你属于高危患者
+```
+
+### T10-15-03 社会网络分析第一版
+
+目标是从文本中提取“人物—场景—情绪—行为”的共现网络。
+
+候选节点：
+
+```text
+人物：妈妈、爸爸、孩子、老师、同学、家人
+场景：作业、考试、手机、睡觉、沟通、成绩、上学
+情绪：生气、担心、委屈、着急、内疚、害怕、难过
+行为：催促、回避、争吵、解释、安慰、沉默、指责、道歉
+```
+
+建议输出：
+
+```text
+nodes: [{id, label, type, count}]
+edges: [{source, target, weight, cooccur_count}]
+top_nodes
+top_edges
+scene_emotion_pairs
+person_emotion_pairs
+behavior_emotion_pairs
+analysis_version
+boundary_notice
+```
+
+第一版建议只在 Web 后台或研究导出中展示聚合网络，不在普通用户端展示复杂图谱。
+
+### T10-15-04 技术实现路径
+
+请按三阶段实现：
+
+#### 第一阶段：离线脚本
+
+新增或补充：
+
+```text
+analysis/text_analysis/
+analysis/text_analysis/build_text_features.py
+analysis/text_analysis/build_social_network.py
+analysis/text_analysis/README.md
+```
+
+要求：
+
+```text
+1. 从数据库或脱敏导出读取文本；
+2. 不输出原始文本；
+3. 输出聚合 JSON；
+4. 记录分析版本；
+5. 记录停用词、词典和规则。
+```
+
+#### 第二阶段：后端服务
+
+在离线脚本稳定后，再考虑新增：
+
+```text
+backend/services/text_analysis_service.py
+backend/routes/text_analysis.py
+```
+
+API 可选：
+
+```text
+GET /api/text-analysis/summary?user_id=
+GET /api/text-analysis/network?user_id=
+```
+
+需要管理员或本人权限，不能开放给无关用户。
+
+#### 第三阶段：Web 后台展示
+
+接入：
+
+```text
+apps/web/src/pages/ResearchDashboard.tsx
+apps/web/src/components/TextEmotionSummary.tsx
+apps/web/src/components/SocialNetworkGraph.tsx
+```
+
+小程序端第一版只展示简化摘要，不展示复杂图谱。
+
+### T10-15-05 数据与伦理边界
+
+要求：
+
+```text
+1. 默认不导出自由文本原文。
+2. 优先导出脱敏特征和聚合结果。
+3. 不做诊断。
+4. 不做临床风险预测。
+5. 不做人格判断。
+6. 高风险词仍走 risk_review_records，不由情感计算替代。
+7. 所有分析结果都要有 boundary_notice。
+```
+
+### T10-15-06 验收标准
+
+```text
+1. 形成文本来源清单。
+2. 离线脚本可运行。
+3. 输出脱敏聚合 JSON。
+4. 不包含原始自由文本。
+5. 能生成情绪关键词摘要。
+6. 能生成共现网络节点和边。
+7. 文档说明清楚分析边界。
+8. 不影响小程序主流程。
+```
+
+---
+
+## T10-16 任务十验收与留痕
+
+**目标**：任务十所有子任务结束后，必须形成可交接记录。
+
+### 必须新增或更新文档
+
+```text
+docs/02_专项进度与验收/任务十执行记录_YYYYMMDD.md
+docs/02_专项进度与验收/任务十量表上线前人工审核清单.md
+docs/00_当前事实基准/当前进度交接.md
+docs/00_当前事实基准/开发日志.md
+docs/00_当前事实基准/开发说明.md
+docs/10Claude协作/Claude使用记录.md
+```
+
+说明：`docs/10Claude协作/Claude使用记录.md` 仅在本轮实际使用 Claude 或 Claude Code 时更新；如果只使用 Codex，不更新该文档，并在最终报告中说明原因。
+
+如涉及 API、数据库、数据字典，还要同步：
+
+```text
+docs/03_技术真相/API接口文档.md
+docs/03_技术真相/数据库字段说明.md
+docs/03_技术真相/数据字典.md
+```
+
+### 任务十最终验收命令
+
+```powershell
+cd D:\codex\workspace\safehome1.0
+python backend\scripts\validate_content.py
+
+cd D:\codex\workspace\safehome1.0\backend
+python -m pytest tests -q
+
+cd D:\codex\workspace\safehome1.0\apps\web
+npm run build
+
+cd D:\codex\workspace\safehome1.0
+Get-ChildItem apps\miniprogram -Recurse -Filter *.js  | ForEach-Object { node --check $_.FullName }
+Get-ChildItem apps\miniprogram -Recurse -Filter *.json | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json | Out-Null }
+```
+
+### 最终报告格式
+
+任务完成后，请按以下格式汇报：
+
+```text
+1. 本轮读取的图片与对应问题
+2. 本轮完成概况
+3. T10-01 至 T10-15 状态表
+4. 修改文件列表
+5. 新增文件列表
+6. 数据库/API/shared 是否有改动
+7. 内容库是否有改动
+8. 量表上线前仍需人工审核清单
+9. 运行过的验证命令与结果
+10. 未运行的验证命令与原因
+11. 仍需微信开发者工具/真机人工验收的事项
+12. 下一轮建议，不超过 5 条
+```
+
+### 状态表模板
+
+```markdown
+| 子任务 | 状态 | 证据 | 修改文件 | 验证结果 | 仍需人工确认 |
+|---|---|---|---|---|---|
+| T10-01 登录页与我的页面 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-02 强制登录规则 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-03 量表指导语 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-04 知情隐私说明 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-05 个性化方案与项目测试 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-06 课程接入审查 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-07 微信/手机号登录 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-08 最近记录 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-09 结果页显示 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-10 训练卡文案 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-11 本周复盘 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-12 量表审核清单 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-13 情绪温度计轻量多维结构 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-14 阶段性反馈与画像收束 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+| T10-15 情感计算与社会网络分析 | 已完成/部分完成/无需修改/待人工 |  |  |  |  |
+```
+
+---
+
+# 任务十一：任务十深化 —— 收尾缺口 · 训练闭环动态化 · 复盘契约持久化 · 情感计算与SNA真实化
+
+> 适用仓库：`D:\codex\workspace\safehome1.0`
+> 创建：2026-07-06 · 来源：Claude Code 审计（5 组只读代码审计 + 真机截图核对）
+> 本轮定位：**不是重写，是补齐与深化**。任务十把 16 个子项的「骨架」搭好，但审计确认约一半只是「骨架在、实质浅或缺失」。任务十一把这些落到实处。
+> 行号引用来自审计当时的代码状态：**改之前先核对行号是否漂移**（沿用本文件 §3 惯例）。
+
+## 0. Context（为什么做）
+
+任务十自评「16 项全部已补强/已完成」，只读审计实测：
+
+```text
+🔴 未达原意（用户明确点名但没做到）：
+  - 训练卡「练习前先提醒自己」字样仍硬编码（training-card/index.wxml:68）。
+  - 情绪温度计仍是滑杆，非温度计造型（thermometer/index.wxml:12-21）。
+  - 课程仍是死 toast，无真接入（course/index.js:68-73）。
+🟡 骨架在、实质浅：
+  - 16 个启用量表里 15 个指导语一字不差；review_note 却写「已按类型细化」（过度声明）。
+  - 阶段性反馈按「记录条数」而非真波动判定（progress_summary_service.py:153-159）；stable/low_confidence 是死状态。
+  - 动态推荐没吃 checkin 反馈（training_recommendation_service.py:13-43）。
+  - 本周复盘字段契约错位、多维未聚合、且不持久化（report_service.py:138-149 / reports.py:26-45）。
+  - 情感计算词典是「死文件」从不加载、无中文分词、valence/arousal 写死字符串（analyze_text_sources.py:37-70,122-125 / build_text_features.py:32-33）。
+🕳 边界/安全：
+  - supervision 未登录可写 demo-parent（supervision.py:23）。
+  - 用户端泄漏「（CES-D10待复核）」标题与「开放前必须展示…人工复核入口」内部审核语。
+```
+
+四条工作流：**S1 收尾缺口 → S2 训练闭环动态化 → S3 复盘契约持久化 → S4 情感计算+SNA真实化**。
+
+## 0A. 执行口径（优先于下文细则）
+
+```text
+1. 一次性连续执行 T11-01 → T11-21；除需用户提供微信配置/真机截图/受版权词库外，自动判断→修复→验证→留痕。
+2. 先判断状态再改：多数子项是「补缺口」，已对的部分不重写；改前核对审计给的 file:line 是否漂移。
+3. 顺序：S1 先做（成本低、清「假完成」、多为用户原话点名）→ S2 → S3 → S4（最重）。
+4. S4 走真实路线：jieba 分词 + 大连理工情感本体/BosonNLP；但严格离线（analysis/，不进后端运行时，
+   仅新增只读研究端点）；只输出聚合/脱敏结果，绝不输出原始自由文本。
+5. 边界不变：非诊断/非治疗/非危机干预；用户端文案不得写成诊断、人格判断、疗效。
+6. 沿用当前小程序设计语言（safe-* token），不新起视觉体系、不堆插图。
+```
+
+## 0B. 全局规则 / 禁止 / 允许 / 同步 / 验证（沿用任务十 §2，不复述）
+
+```text
+禁止：git add./commit/push（除非用户要求）、删业务文件、改量表题项原文与计分规则、
+      把待审核量表标 fully_approved、用户端展示 profile_model_id/cluster_id/z_score/feature_id/debug、
+      把画像写成人格类型/诊断类型/异常类型、新增 AI 自由咨询/临床诊断/危机干预。
+允许改：backend/** apps/miniprogram/** apps/web/** shared/** content/** docs/** backend/tests/** scripts/** analysis/**。
+改 DB 字段 → 同步 backend/models.py + backend/database.py + docs/03_技术真相/数据库字段说明.md + 数据字典.md，并升 CURRENT_SCHEMA_VERSION/NAME。
+改 API → 同步 shared/types/api.ts + shared/constants/api.ts + apps/miniprogram/services/api.js + apps/web/src/services/safehomeApi.ts + docs/03_技术真相/API接口文档.md。
+每子任务完成向 docs/02_专项进度与验收/任务十一执行记录_YYYYMMDD.md 追加证据。
+```
+
+## 0C. 与用户原始 15 条需求的对应
+
+| 原始条目 | 任务十一落点 |
+|---|---|
+| #2 差异化指导语 | T11-02 |
+| #9 去「练习前先提醒自己」 | T11-01 |
+| #13 温度计造型 | T11-03 |
+| #7 最近记录 / #1 登录页与我的页 / #12 强制登录 | T11-04、T11-05、T11-06 |
+| #8 结果页去后端标记（残留泄漏） | T11-07 |
+| #4 / #14 训练个性化、效用评价与动态推荐 | T11-08 ~ T11-12 |
+| #5 课程接入 | T11-13 |
+| #10 复盘纳入测评/温度计 | T11-14 |
+| #15 情感计算 + 社会网络分析 | T11-15 ~ T11-20 |
+
+---
+
+## S1 · 收尾 T10 缺口
+
+### T11-01 去掉「练习前先提醒自己」及模板残留
+
+**目标**：删除用户明确点名要去掉的「练习前先提醒自己」字样，并清掉训练卡文本区里成批复制的模板句，让文本区呈现自然、逐卡不同。
+
+**当前代码事实（核对行号漂移）**：
+```text
+apps/miniprogram/pages/training-card/index.wxml:68  <text class="tip-title">练习前先提醒自己</text>
+apps/miniprogram/pages/training-card/index.wxml:73  <text class="tip-title">练习后可以记一句</text>
+content/training_cards.json  「练习前」「先提醒自己」作为 tip 文案 ~34 张卡重复出现。
+```
+
+**必须改动**：
+```text
+1. apps/miniprogram/pages/training-card/index.wxml
+   - 删除第 68 行「练习前先提醒自己」标题；tip-box 只保留提示正文（item.beforePrompt），
+     或将标题改为中性自然表达（如「可以先想一下」）。第 73 行「练习后可以记一句」同理评估，
+     保留则改为自然文案，不用命令式「提醒自己」。
+2. content/training_cards.json
+   - 扫描并清除所有卡片里以「练习前先提醒自己」为模板的重复句；beforePrompt/afterPrompt 由 T11-09 逐卡改写。
+3. 全局扫描 apps/miniprogram/**/*.{wxml,js} 与 content/training_cards.json 再确认无「练习前先提醒自己」残留。
+```
+
+**完成标准**：全仓 grep「练习前先提醒自己」为 0 命中；训练卡页 tip 区文案自然、无命令式模板句；小程序 JS/JSON 检查通过。
+**测试**：`node --check apps/miniprogram/pages/training-card/index.js`；真机看训练卡详情无该字样。
+
+### T11-02 量表差异化指导语（8 类模板落地）
+
+**目标**：把 15 个启用量表一字不差的通用指导语，按量表类型改成差异化指导语；修正 review_note 的过度声明。
+
+**当前代码事实**：
+```text
+content/assessment_worksheets.json 共 27 份，enabled_for_user=true 为 16 份。
+其中 15 份 instructions 完全相同的通用串（仅 student_profile_v1 不同）。
+catalog/worksheet review_note 已写「指导语已按任务十量表类型细化」——与事实不符（过度声明）。
+content/scales_catalog.json 的 emotion_regulation_erq(_gross) 缺 instruction_status。
+详情页只渲染 worksheet.instructions（assessment-detail/index.wxml:13）。
+```
+
+**必须改动**：按下表为每个启用 worksheet 写差异化 `instructions`（1–2 句，口吻克制、非诊断）：
+
+```text
+家长反思类   → parent_reflective_functioning_prfq
+  「请按最近与孩子互动时的真实感受作答，不追求标准答案，也不评判自己做得好不好。」
+情绪调节/弹性 → emotion_regulation_erq、cd_risc10_brief_resilience、emotional_resilience_11、emotional_intelligence_eis_33
+  「请按最近一段时间遇到情绪波动时的通常反应作答，只是观察你的习惯方式，没有对错。」
+自我关怀类   → self_compassion_scs_cn
+  「请按自己遇到压力或挫折时的习惯反应作答，看看你平时怎样对待自己。」
+觉察/正念类   → mindful_attention_awareness_maas
+  「请留意最近当下的注意力与身体感受，按通常状态作答，没有标准答案。」
+学业/学习类   → study_engagement_uwes_s_17、attribution_style_student_36
+  「请按最近学习、考试、作业相关的真实状态作答，只作了解自己学习方式的线索。」
+心理健康筛查（敏感）→ gad7_anxiety、phq9_cesd10_depression、ghq12_general_health
+  「请按最近一段时间的真实情况作答。结果仅作自我观察，不用于诊断、筛查结论或治疗建议。」
+人格/特质（敏感）→ big_five_bfi_60、epq_emotional_stability_24
+  「请按平时更接近自己的情况作答。结果不生成固定人格标签，只作为了解自己反应倾向的线索。」
+社会支持/关系 → perceived_social_support_psss
+  「请按你实际能获得的支持情况作答，聚焦具体的人和事，不评判多少。」
+（student_profile_v1 指导语已独特，保留不动。）
+```
+```text
+其他配套：
+- content/scales_catalog.json：同步每条 instruction_status（如 type_specific_done），补 emotion_regulation_erq 的缺失项。
+- 修正 review_note：仅在指导语确已按类型落地后才写「已细化」，否则如实标注状态，去掉过度声明。
+- 不改题项 prompt/options/dimension/reverse_scored/score；敏感量表的 boundary_notice/result_disclaimer 见 T11-07。
+- 运行 backend/scripts/build_worksheets.py 让生成区回填（人工区深合并保留）。
+```
+
+**完成标准**：16 份启用量表指导语按类型互不相同；`validate_content.py`、`build_worksheets.py` 通过；详情页可见对应指导语。
+**测试**：`python backend/scripts/build_worksheets.py`；`python backend/scripts/validate_content.py`；真机抽查 3 类量表指导语不同。
+
+### T11-03 情绪温度计改为温度计造型
+
+**目标**：把「现在的强度」从普通滑杆改成竖式温度计视觉（球泡 + 管柱 + 水银高度随强度变化），满足用户「做一个温度计的形式」。补充维度与今日曲线保留。
+
+**当前代码事实**：
+```text
+apps/miniprogram/pages/thermometer/index.wxml:12-21  强度=<slider min=1 max=10>
+apps/miniprogram/pages/thermometer/index.wxml:24-38  愉悦度/身体唤起/可控感=三个 micro-slider
+apps/miniprogram/pages/thermometer/index.wxml:65-70  今日曲线 canvas（折线，index.js:189-209 绘制）
+intensityLevel 等已在 data 中，saveRecord 已提交多维字段（T10-13 已通）。
+```
+
+**必须改动**：
+```text
+1. apps/miniprogram/pages/thermometer/index.wxml
+   - 用温度计结构替换第 12-21 行 slider：
+     竖直管 .thermo-tube（外壳）+ .thermo-fill（水银，内联 style="height:{{intensityLevel*10}}%"）
+     + .thermo-bulb（底部球泡）+ 右侧 1..10 刻度 .thermo-ticks。
+     交互：管身 bindtap/bindtouchmove → setLevelByTouch 计算落点对应 1..10；另留 +/- 微调按钮兜底。
+2. apps/miniprogram/pages/thermometer/index.wxss（新增样式）
+   - .thermo-tube{position:relative;width:64rpx;height:360rpx;border-radius:40rpx;background:var(--safe-bg);
+     border:2rpx solid var(--safe-border);overflow:hidden;}
+   - .thermo-fill{position:absolute;left:0;bottom:0;width:100%;
+     background:linear-gradient(to top,#6a86b4,#7aa78f,#d18a55);transition:height .15s;}  /* 低→冷，高→暖 */
+   - .thermo-bulb{width:96rpx;height:96rpx;border-radius:50%;background:#d18a55;margin:-16rpx auto 0;}
+   - 数字 {{intensityLevel}}/10 显示在管旁。
+3. apps/miniprogram/pages/thermometer/index.js
+   - 新增 setLevelByTouch(e)：按触点 y 相对管高换算 level（夹紧 1..10）→ setData(intensityLevel)。
+   - 保留 onValence/Arousal/ControlChange、saveRecord、loadDay、drawMoodCurve 不变。
+4. 三个补充维度可保留 micro-slider 或改分段按钮（择一，保持简洁）；emotion_label 输入与今日曲线保留。
+   边界文案保持非诊断。
+```
+
+**完成标准**：强度以温度计造型呈现且可点/可拖设值；多维与曲线不回归；JS/JSON 检查通过。
+**测试**：`node --check apps/miniprogram/pages/thermometer/index.js`；真机点/拖温度计能改强度、能记录、能看曲线。
+
+### T11-04 最近记录可点 + 画像徽标 + 未登录提示
+
+**目标**：让测一测最近记录卡可点进结果页、有画像的显「有画像」徽标、未登录时给登录入口而非静默空白。
+
+**当前代码事实**：
+```text
+apps/miniprogram/pages/assessment/index.wxml:59-68  最近记录显示 量表名/时间/summary，卡片无 bindtap、无画像标记。
+apps/miniprogram/pages/assessment/index.js:192-199  listAssessmentResults 出错时静默置空，无未登录提示。
+后端 list_assessment_results 已返回 worksheet_title/created_at/total_score + scores.dimensions；
+结果行可含 profile_cluster_id/profile_model_id（T4/T10 落点字段）。
+```
+
+**必须改动**：
+```text
+1. apps/miniprogram/pages/assessment/index.wxml
+   - 最近记录卡加 bindtap="openResult" data-id="{{item.id}}" → navigate 到 assessment-result（带 result id）。
+   - 行内在有 profile_cluster_id/profile_model_id 时显示「有画像」徽标（复用 tag-pill 样式）。
+   - 新增未登录态：needsLogin 时显示「登录后查看你的测评记录」+ 去登录按钮。
+2. apps/miniprogram/pages/assessment/index.js
+   - openResult：wx.navigateTo 到结果页并传 result id（沿用结果页现有入参）。
+   - 捕获 auth_required：setData(needsLogin:true) 而非静默置空；已登录出错才显示重试。
+```
+
+**完成标准**：最近记录可点进结果页、有画像有徽标、未登录有登录入口；JS 检查通过。
+**测试**：`node --check apps/miniprogram/pages/assessment/index.js`；真机未登录/已登录两态走查。
+
+### T11-05 全局登录守卫补齐
+
+**目标**：把 authGuard.requireLogin 真正接到所有「保存/查询私有数据」的页面入口或提交处，并统一「auth_required → 跳登录」的被动兜底。
+
+**当前代码事实**：
+```text
+apps/miniprogram/utils/authGuard.js:13  requireLogin({redirectUrl,message}) 已实现（toast+跳登录）。
+仅 profile/index.js:137 主动调用；被动 auth_required→跳登录只在 assessment-detail/index.js:194-211、messages/index.js:31-53。
+缺页面级守卫：diary-form(submit ~:75)、thermometer(save ~:94)、checkin(submit ~:62)、supervision(:27)、
+  personalized-plan、program-detail(正式提交)、weekly-report、message-detail。
+```
+
+**必须改动**：
+```text
+1. 在上述每个页面的「进入即需登录」或「提交动作」处调用 authGuard.requireLogin，未登录 return 并跳登录。
+2. 把 assessment-detail/messages 的 auth_required 反应式处理抽成 authGuard 公共方法（如 handleAuthError(err)），
+   各页 catch 统一调用，避免各写各的。
+3. 私有页 onShow/onLoad 可用 isLoggedIn() 预判，未登录展示登录引导卡（沿用 T11-04 文案风格）。
+必须文案：请先登录，这样系统才能保存你的记录并生成后续复盘。
+```
+
+**完成标准**：8 个私有页未登录进入或提交都有登录提示与入口，登录后可回原页继续；JS 检查通过。
+**测试**：逐页 `node --check`；真机未登录触发每页提交，确认拦截并跳登录。
+
+### T11-06 supervision 权限洞 + 收紧 dev 回退与匿名注入
+
+**目标**：堵住未登录可写 demo-parent 的后端洞，收紧开发态回退与前端匿名 user_id 注入。
+
+**当前代码事实**：
+```text
+backend/routes/supervision.py:23  仍用 require_user_id，无 require_login → 未登录/伪造可写 demo-parent。
+backend/config.py:17  APP_ENV 默认 development；多数私有路由 allow_dev_fallback=True → 本地仍信任前端 user_id/demo-parent。
+apps/miniprogram/services/api.js:100-105  withDefaultUser 仍向私有 payload 注入匿名 user_id（getAnonymousUserId:80）。
+backend/routes/auth_utils.py:83-110  resolve_actor_user_id 已实现（:107-108 为 dev demo-parent 回退）。
+backend/routes/utils.py:53-67  legacy require_user_id/resolve_user_id_for_query 仍被 consent/feedback/goals/parent_assessments/privacy/profile/supervision 使用。
+```
+
+**必须改动**：
+```text
+1. backend/routes/supervision.py：改用 resolve_actor_user_id/require_login，未登录 401；owner 校验按 token actor。
+2. 收紧回退：resolve_actor_user_id 的 allow_dev_fallback 默认 False，demo-parent 仅在显式 debug 开关下可用；
+   逐步把 consent/feedback/goals/parent_assessments/privacy/profile 迁出 legacy require_user_id。
+3. apps/miniprogram/services/api.js：requiresAuth 端点不再注入匿名 user_id（withDefaultUser 仅对公开接口用）。
+4. 说明保留 debug 页面必要的临时兼容，并在执行记录写明。
+```
+
+**必须新增/更新测试**：
+```text
+backend/tests/test_sensitive_owner_auth.py / test_user_id_policy.py：
+  未登录提交 supervision → 401；普通用户伪造 user_id 查他人 → 只返回自己的；admin/supervisor 权限路径仍可用。
+```
+**完成标准**：supervision 未登录不可写；私有路由默认不信任前端 user_id；pytest 通过。
+**测试**：`python -m pytest backend/tests/test_user_id_policy.py backend/tests/test_sensitive_owner_auth.py -q`。
+
+### T11-07 清理用户端泄漏的后端/审核字段
+
+**目标**：把泄漏到用户端的内部审核语与复核标记移出用户可见字段，替换为正常免责文案。
+
+**当前代码事实**：
+```text
+敏感量表 boundary_notice 与 result_disclaimer 都被写成内部审核语：
+  「该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。」
+  出现于 content/assessment_worksheets.json:6195/11283/11564/12842/13173/15447/17593/18148 及 content/scales_catalog.json:48…
+PHQ-9 display_title/source_title 带「（CES-D10待复核）」：
+  content/assessment_worksheets.json:12849-12850、content/scale_item_drafts.json:4689、content/scales_catalog.json:407。
+```
+
+**必须改动**：
+```text
+1. 敏感量表 boundary_notice / result_disclaimer 替换为面向用户的正常免责，例如：
+   「本量表仅用于自我观察与练习参考，不构成诊断、筛查结论或人格判断；如有困扰，请联系现实中的专业资源。」
+   把原内部审核语移入非用户字段 review_note（catalog/worksheet 内部区），不再进用户端。
+2. PHQ-9：display_title/source_title 去掉「（CES-D10待复核）」，改为干净标题「PHQ-9 抑郁相关自评量表」；
+   把「CES-D10待复核 / 版本」信息移入 review_note 或 source_version 字段。
+   同步 content/scales_catalog.json、content/scale_item_drafts.json。
+3. 运行 build_worksheets.py 回填；确认 assessment-detail 底部免责、结果页免责显示的是正常文案而非内部审核语。
+```
+
+**完成标准**：用户端不再出现「开放前必须展示…人工复核入口」「（CES-D10待复核）」；敏感量表免责为正常用户文案；`validate_content.py` 仍要求敏感类必备边界（不回归）。
+**测试**：`python backend/scripts/validate_content.py`；`python backend/scripts/build_worksheets.py`；真机看 PHQ-9 标题与敏感量表免责。
+
+---
+
+## S2 · 训练闭环动态化
+
+### T11-08 训练地图覆盖补全
+
+**目标**：为未覆盖的启用量表补训练推荐规则，修正失效/错配 id。
+
+**当前代码事实**：
+```text
+content/assessment_training_map.json 现 ~19 条规则，仅覆盖 ~4 个启用量表（prfq、emotion_regulation_erq、self_compassion_scs_cn + student_profile）。
+未覆盖的启用量表（~11）：gad7_anxiety、phq9_cesd10_depression、perceived_social_support_psss、mindful_attention_awareness_maas、
+  big_five_bfi_60、epq_emotional_stability_24、ghq12_general_health、attribution_style_student_36、study_engagement_uwes_s_17、
+  emotional_resilience_11、emotional_intelligence_eis_33。
+存在失效/错配：引用 rsca_adolescent_resilience(enabled:false)；scale id emotion_regulation_erq vs catalog emotion_regulation_erq_gross。
+```
+
+**必须改动**：
+```text
+1. 为上述 ~11 个启用量表补规则：trigger_condition（按维度高/低）、recommended_card_ids（取自 content/training_cards.json 现有卡 id）、
+   reason（支持性、非诊断）、boundary_notice。
+2. 敏感量表（gad7/phq9/ghq12/big_five/epq）推荐须温和、非诊断，并标注高风险时抑制普通推荐（与 T11-11 一致）。
+3. 修正 id：去掉/替换 rsca(disabled) 引用；统一 erq id 与 catalog 一致。
+```
+
+**完成标准**：每个启用量表有推荐规则或明确「无推荐理由」；引用的卡 id 均存在；`validate_content.py` 通过。
+**测试**：`python backend/scripts/validate_content.py`；抽查 2 个敏感量表填写后推荐温和且不含诊断。
+
+### T11-09 训练卡 prompt 去重、逐卡撰写
+
+**目标**：把 34 张训练卡完全相同的文本区提示改成逐卡不同，避免后续文本分析输入是同一套模板。
+
+**当前代码事实**：
+```text
+content/training_cards.json 约 34 张卡，pre_practice_prompt/emotion_word_prompt/new_response_prompt/
+  post_practice_prompt/one_sentence_note_prompt/after_note_prompt/boundary_notice 逐字节相同（仅 pre_practice_prompt 内插了卡名）。
+逐卡不同的内容只在 suitable_scene/today_goal/steps/example_phrase。
+```
+
+**必须改动**：
+```text
+1. 按每张卡的 suitable_scene/today_goal/steps 改写 5 个填写提示字段，使其与该卡主题相关、互不雷同。
+   例：情绪命名类卡 emotion_word_prompt 引导「给此刻情绪起个具体的名字」；
+       行为激活类卡 new_response_prompt 引导「写下一个今天能做的更小的动作」。
+2. 不改训练卡核心步骤含义；boundary_notice 可按卡类型分 2-3 种，而非全表一句。
+```
+
+**完成标准**：训练卡文本提示逐卡不同（抽查任意 5 张不重复）；JSON 校验通过。
+**测试**：`python backend/scripts/validate_content.py`；`ConvertFrom-Json` 校验；真机抽查训练卡文本区提示不同。
+
+### T11-10 阶段性反馈：真波动/收束计算
+
+**目标**：把阶段性反馈从「按记录条数」判定改成真实波动/收束计算，让 5 个状态都能真正产生。
+
+**当前代码事实**：
+```text
+backend/services/progress_summary_service.py:153-159  _status 仅按记录条数返回 converging/fluctuating（从不测真波动）。
+:68-89 _dimension_trends 已算 newest−oldest 维度 delta；:41-53 repeated_worksheets 已算 score_delta。
+stable 仅来自 build_profile_convergence（首页未调用）；low_confidence 无处产生 → 首页 2 个状态是死代码。
+```
+
+**必须改动**：
+```text
+1. 重写 _status：对情绪温度计 intensity_level 时间序列、重复测评 total_score/维度 delta 计算标准差/变异系数（CV）：
+   - CV 低且样本足 → stable；CV 中 → converging；CV 高 → fluctuating；
+   - 样本稀疏或信号相互矛盾 → low_confidence；样本不足阈值 → insufficient。
+2. build_progress_summary 输出的 stability_status 覆盖全部 5 状态；首页 statusTextMap 已有映射（home/index.js:28-34）。
+3. 阈值与窗口（range_days）写成常量并在执行记录说明取值依据。
+```
+
+**完成标准**：5 个状态都能由真实数据触发；`/api/progress-summary` 返回随波动变化；pytest 通过。
+**测试**：`python -m pytest backend/tests/test_t10_routes.py -q`（补波动用例：高波动→fluctuating，低波动足量→stable）。
+
+### T11-11 训练卡动态推荐（吃反馈信号）
+
+**目标**：让推荐真正消费 checkin 反馈——降权被反复跳过/无帮助的卡，升权有帮助的卡，保留高风险抑制。
+
+**当前代码事实**：
+```text
+backend/services/training_recommendation_service.py:13-43  纯按测评维度阈值匹配；仅高风险抑制(:21-28)；从不读 checkins。
+checkins 已有 helpfulness_rating/skip_reason/source_recommendation_id/before_thermometer_id/after_thermometer_id（models.py:176-180 / database.py:580-584）。
+```
+
+**必须改动**：
+```text
+1. 推荐函数读取该用户 checkins：统计每卡完成次数、helpfulness_rating（有帮助/一般/暂时没有帮助）、skip_reason。
+2. 打分调整：反复「暂时没有帮助」或跳过 → 降权；「有帮助」→ 升权；完成率纳入。
+3. 高风险状态仍抑制普通推荐（保留现有护栏）。输出附 recommendation_reason 供前端展示。
+```
+
+**完成标准**：同一用户在不同反馈历史下推荐结果不同；高风险仍抑制；pytest 通过。
+**测试**：`python -m pytest backend/tests/test_t10_routes.py -q`（补：标记某卡「暂时没有帮助」后其排序下降）。
+
+### T11-12 训练卡效用评价（真前后测）
+
+**目标**：用打卡前后的情绪温度计落点计算每卡效用，替代当前仅包一层计数摘要。
+
+**当前代码事实**：
+```text
+backend/services/progress_summary_service.py:251-278  build_training_effectiveness 仅包 _checkin_summary(:264)，无真评价。
+checkins 有 before_thermometer_id/after_thermometer_id/helpfulness_rating。
+```
+
+**必须改动**：
+```text
+1. build_training_effectiveness：按 checkins.before/after_thermometer_id 关联 emotion_thermometer.intensity_level，
+   计算每卡前后强度 delta 均值 + 有帮助率随时间趋势；输出 per-card effectiveness 摘要。
+2. personalized-plan 推荐理由引用该摘要（「这张卡对你近期强度平均下降 X」类支持性表达，非疗效承诺）。
+3. 样本不足时标注「样本偏小，仅供参考」。
+```
+
+**完成标准**：`/api/training-effectiveness` 返回逐卡前后 delta 与有帮助率；样本不足有兜底；pytest 通过。
+**测试**：`python -m pytest backend/tests/test_t10_routes.py -q`（补：造前后温度记录→delta 正确）。
+
+### T11-13 课程真接入
+
+**目标**：把课程从死 toast 升级为真实内容 + 详情页 + 后端接口。
+
+**当前代码事实**：
+```text
+apps/miniprogram/pages/course/index.js:9-45  硬编码 5 课数组；openCourse():68-73 仅 toast，不跳转。
+无 content/courses.json、无 backend/routes/courses.py、无 pages/course-detail/。
+backend/routes/programs.py 可作后端蓝图范式参考。
+```
+
+**必须改动**：
+```text
+1. content/courses.json：每课含 id/title/theme/scene/duration/sections[]/relation_to_cards_or_programs/boundary_notice。
+2. backend/routes/courses.py：GET /api/courses、GET /api/courses/<id>；在 backend/app.py 注册蓝图。
+3. 同步 shared/constants/api.ts + shared/types/api.ts + apps/miniprogram/services/api.js（courses 端点与类型）。
+4. apps/miniprogram/pages/course-detail/index.*（新增）：渲染课程小节、与训练卡/项目测试关系、边界说明。
+5. course/index.js openCourse → wx.navigateTo 到 course-detail；如记录学习进度优先写 records（module_type='course_progress'）。
+```
+
+**完成标准**：课程列表来自后端、点击进详情、详情展示小节与边界；Web/小程序检查通过。
+**测试**：`python -m pytest backend/tests -q`（补 courses 路由用例）；`node --check` 课程页；真机点课程进详情。
+
+---
+
+## S3 · 本周复盘字段契约与持久化
+
+### T11-14 本周复盘纳入测评/温度计（字段对齐 + 持久化 + 展示）
+
+**目标**：把本周复盘的测评/温度计摘要字段对齐规格、聚合多维、持久化并在页面展示维度变化与推荐训练。
+
+**当前代码事实**：
+```text
+backend/services/report_service.py:55-70  已查 assessment_results + emotion_thermometer；
+  但 :138-142 产出 assessment_trend{assessment_count,worksheet_names,dimension_names}（非规格 assessment_summary），
+  缺 dimension_summaries(维度 delta)、profile_position_count、requires_review_count、recommended_card_ids；
+  :143-149 thermometer_trend 有 avg_intensity，缺 avg_valence/avg_arousal/avg_control；
+  :112-121 next_week_suggestion 只用 profiles+checkins+diaries。
+backend/routes/reports.py:26-45  INSERT 仅 8 个旧列；:48 返回 **report（trend 透传但不持久化）。
+backend/models.py:404-415  weekly_reports 无 assessment_summary_json/thermometer_summary_json/training_effectiveness_summary_json。
+shared/types/api.ts:940-957  WeeklyReport 仅 profile_trend?。
+apps/miniprogram/pages/weekly-report/index.*  显示 测评数量/量表名/维度名/温度趋势，但显示维度「名字」非「变化」，无推荐训练区。
+```
+
+**必须改动**：
+```text
+1. report_service.py：
+   - 产出 assessment_summary{count,worksheet_names,dimension_summaries[含每维 delta 与方向],profile_position_count,requires_review_count,recommended_card_ids}。
+   - 产出 thermometer_summary{count,avg_intensity,avg_valence,avg_arousal,avg_control,intensity_trend}。
+   - 产出 training_effectiveness_summary（复用 T11-12 输出；不可用时给计数占位并标注）。
+   - next_week_suggestion 纳入 assessment_results 与 thermometer 信号。
+2. backend/models.py + backend/database.py：weekly_reports 经 ensure_schema_columns 幂等加
+   assessment_summary_json / thermometer_summary_json / training_effectiveness_summary_json（*_json 自动 LONGTEXT，勿进 MYSQL_VARCHAR_COLUMNS）；升 CURRENT_SCHEMA_VERSION/NAME。
+3. backend/routes/reports.py：INSERT 持久化上述新列；响应返回三个 summary。
+4. shared/types/api.ts：WeeklyReport 增 assessment_summary/thermometer_summary/training_effectiveness_summary。
+5. apps/miniprogram/pages/weekly-report/index.*：展示 本周测评次数/量表名/维度变化(delta 方向)/推荐训练；保留友好空态；复用 safe-* token。
+6. 同步 docs/03_技术真相/数据库字段说明.md、数据字典.md、API接口文档.md。
+```
+
+**完成标准**：周报返回并持久化测评/温度计/效用三摘要；页面显示维度变化与推荐训练；无测评有空态；pytest 通过。
+**测试**：`python -m pytest backend/tests -q`（补：造本周测评+温度记录→周报摘要非空且持久化）；`node --check` 周报页。
+
+---
+
+## S4 · 情感计算 + 社会网络分析真实化（离线，聚合脱敏，非诊断）
+
+> 硬边界：只输出聚合/脱敏结果，绝不输出原始自由文本；不做诊断、危机预测、人格判断、个体标签；原始 .sav/逐行隐私数据严禁入仓；普通用户端不展示复杂社会网络图。
+
+### T11-15 接入真中文分词（jieba）
+
+**目标**：用 jieba 分词替换朴素子串匹配，为情感计算与共现打底。
+
+**当前代码事实**：
+```text
+analysis/text_analysis/analyze_text_sources.py:122-125  匹配为 word in text（比按字切分还粗）。
+全仓无 jieba/HanLP（import jieba → ModuleNotFoundError）。
+analysis/profiling/requirements-analysis.txt 为离线分析依赖清单。
+```
+
+**必须改动**：
+```text
+1. 依赖：analysis/profiling/requirements-analysis.txt（或新增 analysis/text_analysis/requirements.txt）加 jieba、networkx（供 T11-18）。
+   仅离线环境安装，不进 backend/requirements.txt、不进后端运行时。
+2. analyze_text_sources.py：新增 tokenize(text) 用 jieba.lcut；加载 dictionaries/*.json 为自定义词典（jieba.load_userdict 或 add_word），
+   应用 stopwords 过滤；匹配改为「分词后命中词典」而非子串。
+```
+
+**完成标准**：脚本用 jieba 分词；stopwords 生效；三脚本仍可复现、输出不含原文。
+**测试**：`python analysis/text_analysis/build_text_features.py --output outputs/text_analysis/text_features_summary.json`（有种子数据时命中词非空）。
+
+### T11-16 让 JSON 词典真正生效（消除死文件）
+
+**目标**：删除硬编码词典，改为启动时加载 dictionaries/*.json，消除双份维护。
+
+**当前代码事实**：
+```text
+analyze_text_sources.py:37-70  硬编码 EMOTION_KEYWORDS/INTENSITY_KEYWORDS/NODE_KEYWORDS。
+dictionaries/*.json（emotion/scene/person/behavior/stopwords）从未被任何脚本读取（死文件）。
+```
+
+**必须改动**：
+```text
+1. 删除 :37-70 硬编码；新增 load_dictionaries() 从 dictionaries/emotion_terms.json/scene_terms.json/person_terms.json/
+   behavior_terms.json/stopwords.json 读入，供三脚本共用。
+2. 词典结构对齐情感计算需要（词→类别/极性/强度；见 T11-17）。缺文件时报清晰错误，不静默回退硬编码。
+```
+
+**完成标准**：词典唯一来源为 JSON；改词无需改 .py；脚本可复现。
+**测试**：改 emotion_terms.json 加一词→输出统计随之变化。
+
+### T11-17 引入情感本体 + 真 valence/arousal 映射
+
+**目标**：引入验证过的情感词库（大连理工情感本体 DLUT / BosonNLP），做真实 valence/arousal 聚合，替换写死字符串。
+
+**当前代码事实**：
+```text
+build_text_features.py:32-33  valence_hint/arousal_hint = 写死字符串 "aggregate_only"。
+现 emotion 词典仅 16 词/8 类（占位级）。
+```
+
+**必须改动**：
+```text
+1. 引入 DLUT 情感词汇本体（7 大类/21 小类 + 极性 polarity + 强度 intensity）或 BosonNLP：
+   - 在 dictionaries/ 放入转换后的词表；若原始词库许可证不允许入仓，则只放小样本 + README 注明获取方式，由用户放置完整表。
+   - README 写明来源、许可证、脱敏与不入仓约束。
+2. build_text_features.py：valence = mean(polarity_sign × intensity)；arousal = mean(intensity 按 类别加权)；
+   仍只输出聚合值（不出原文、不出个体标签）。analysis_version 升级。
+```
+
+**完成标准**：valence/arousal 为真实聚合数值而非固定字符串；词库规模显著扩大；输出聚合脱敏。
+**测试**：种子数据下 valence/arousal 数值合理（正/负文本方向正确）。
+
+### T11-18 真社会网络指标（networkx）
+
+**目标**：共现网络补真实图指标，top 节点按中心性而非频次。
+
+**当前代码事实**：
+```text
+build_social_network.py:41-47  输出 nodes/edges/top_nodes/top_edges/*_emotion_pairs，仅原始共现权重，无图指标。
+analyze_text_sources.py:158-162  记录内两两建边。
+```
+
+**必须改动**：
+```text
+1. 用 networkx 建图，计算 度中心性/介数中心性/特征向量中心性 + 社区发现（Louvain 或 greedy_modularity_communities）。
+2. top_nodes 按中心性排序；边权归一化；可选按时间窗切分。
+3. 输出仍为聚合共现 + 指标，无原句。
+```
+
+**完成标准**：输出含中心性与社区划分；top 节点按中心性；无原文。
+**测试**：`python analysis/text_analysis/build_social_network.py --output outputs/text_analysis/social_network_summary.json`（有数据时指标非空）。
+
+### T11-19 对接情绪反射弧框架
+
+**目标**：把扁平共现升级为情绪反射弧链条结构，支持「诱因→反应→结果」模式挖掘。
+
+**当前代码事实**：
+```text
+节点类型现为扁平 person/scene/behavior/emotion。
+项目有情绪反射弧框架：诱因/应激源 → 想法 → 身体感觉/情绪 → 行为/反应 → 结果。
+```
+
+**必须改动**：
+```text
+1. 词典类别映射到反射弧节点（诱因/想法/身体感觉/情绪/行为/结果）；
+   共现边标注链条方向段（如 诱因-情绪、情绪-行为），而非无向扁平。
+2. 输出 scene_emotion/person_emotion/behavior_emotion 之外，增 反射弧链条聚合（trigger→reaction→outcome 计数）。
+```
+
+**完成标准**：网络承载反射弧链条结构；输出可读出「诱因→反应→结果」聚合；仍聚合脱敏。
+**测试**：种子数据下链条聚合计数正确。
+
+### T11-20 只读研究报告面 + 文本来源清单补列
+
+**目标**：离线脚本验证通过后，提供只读研究报告接口（管理员/研究者鉴权），并补齐文本来源清单字段列。
+
+**当前代码事实**：
+```text
+无 backend/services/text_analysis_service.py / backend/routes/text_analysis.py（离线，符合规格）。
+docs/02_专项进度与验收/任务十文本来源清单.md 编目 9 源，但「是否敏感/是否默认导出/是否脱敏」未独立成列。
+analyze_text_sources.py 的 TEXT_SOURCES 元组（约 :25-35）含 sentiment_ok/network_ok 布尔。
+```
+
+**必须改动**：
+```text
+1. 仅在三脚本可复现且用户确认权限后，新增 backend/services/text_analysis_service.py + backend/routes/text_analysis.py：
+   只读端点，读 outputs/text_analysis/*.json 聚合（无原文），require_role 管理员/研究者；普通用户端不接。
+   如需 Web 后台展示，同步 shared 端点与 safehomeApi.ts；第一版最多展示简化摘要。
+2. docs/02_专项进度与验收 文本来源清单（改为任务十一版）：加独立列 是否敏感/是否默认导出/是否脱敏/可用于情感计算/可用于SNA，
+   与 TEXT_SOURCES 元组字段逐一对齐。
+```
+
+**完成标准**：只读端点鉴权正确、无原文外泄；清单列与代码字段对齐；离线→验证→接入的门槛在执行记录写明。
+**测试**：`python -m pytest backend/tests -q`（补：非管理员访问 text-analysis → 401/403；返回不含原文）。
+
+---
+
+## T11-21 验收与留痕
+
+**必须运行**：
+```powershell
+cd D:\codex\workspace\safehome1.0
+python backend\scripts\validate_content.py
+python backend\scripts\build_worksheets.py
+python backend\scripts\audit_assessment_content.py
+cd backend; python -m pytest tests -q
+cd ..\apps\web; npm run build   # 若改动 Web
+cd ..\..
+Get-ChildItem apps\miniprogram -Recurse -Filter *.js  | ForEach-Object { node --check $_.FullName }
+Get-ChildItem apps\miniprogram -Recurse -Filter *.json | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json | Out-Null }
+python analysis\text_analysis\build_text_features.py --output outputs\text_analysis\text_features_summary.json
+python analysis\text_analysis\build_social_network.py --output outputs\text_analysis\social_network_summary.json
+```
+
+**必须人工验收（真机）**：
+```text
+温度计呈温度计造型、可点/拖设值；测一测选项窄屏可读；最近记录可点、有画像有徽标；
+未登录进入填写类页面被拦截并跳登录；训练卡无「练习前先提醒自己」；
+PHQ-9 标题干净、敏感量表用户端免责为正常文案；高风险内容不进普通训练推荐。
+```
+
+**必须留痕**：
+```text
+docs/02_专项进度与验收/任务十一执行记录_YYYYMMDD.md（逐子任务证据 + 已跑/未跑验证 + 原因）
+docs/02_专项进度与验收 文本来源清单（任务十一补列版）
+docs/00_当前事实基准/{开发日志.md,当前进度交接.md,开发说明.md}
+docs/03_技术真相/{数据库字段说明.md,数据字典.md,API接口文档.md}（如字段/API 有改动）
+docs/10Claude协作/Claude使用记录.md（仅实际使用 Claude/Claude Code 时）
+```
+
+**任务十一状态表（执行者回填）**：
+```text
+| 子任务 | 状态(已完成/部分/无需修改/待人工) | 证据(file:line) | 已跑验证 | 备注 |
+| T11-01 去「练习前先提醒自己」 | | | | |
+| T11-02 差异化指导语 | | | | |
+| T11-03 温度计造型 | | | | |
+| T11-04 最近记录可点+徽标+未登录 | | | | |
+| T11-05 全局登录守卫 | | | | |
+| T11-06 supervision 权限+回退收紧 | | | | |
+| T11-07 清用户端泄漏字段 | | | | |
+| T11-08 训练地图补全 | | | | |
+| T11-09 训练卡 prompt 去重 | | | | |
+| T11-10 真波动/收束 | | | | |
+| T11-11 动态推荐吃反馈 | | | | |
+| T11-12 训练卡效用前后测 | | | | |
+| T11-13 课程真接入 | | | | |
+| T11-14 本周复盘契约+持久化 | | | | |
+| T11-15 jieba 分词 | | | | |
+| T11-16 词典真加载 | | | | |
+| T11-17 情感本体+VA映射 | | | | |
+| T11-18 真 SNA 指标 | | | | |
+| T11-19 对接情绪反射弧 | | | | |
+| T11-20 只读研究报告面+清单补列 | | | | |
+```

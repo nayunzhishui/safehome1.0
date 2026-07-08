@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
@@ -34,6 +35,15 @@ Page({
   },
 
   onLoad(options) {
+    const redirect = options && options.goal_id
+      ? `/pages/diary-form/index?goal_id=${encodeURIComponent(decodeURIComponent(options.goal_id))}`
+      : "/pages/diary-form/index";
+    if (!requireLogin({
+      redirectUrl: redirect,
+      message: "请先登录后再记录事件。",
+    })) {
+      return;
+    }
     if (options && options.goal_id) {
       this.setData({ goalId: decodeURIComponent(options.goal_id) });
     }

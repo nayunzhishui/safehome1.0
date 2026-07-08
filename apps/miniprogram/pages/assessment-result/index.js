@@ -40,7 +40,7 @@ function buildProfileSummary(result) {
     boundaryNotice: scores.boundary_notice || "",
     recommendedCardIds,
     recommendedCardsText:
-      recommendedCardIds.length ? recommendedCardIds.join("、") : "暂无普通训练卡推荐",
+      recommendedCardIds.length ? "已为你准备练习建议" : "暂无普通训练卡推荐",
   };
 }
 
@@ -145,9 +145,12 @@ function normalizePlotPosition(value, min, max, invert = false) {
 }
 
 function compactFeatureLabel(label) {
-  return String(label || "")
-    .replace(/^\d+[.、，,]?\s*/, "")
-    .slice(0, 8);
+  const text = String(label || "").trim();
+  const numberMatch = text.match(/^(\d+)[.、，,]?\s*/);
+  if (numberMatch) {
+    return `题${numberMatch[1]}`;
+  }
+  return text.slice(0, 4);
 }
 
 function buildRadarFeatures(payload) {
@@ -281,9 +284,9 @@ function buildTrainingRecommendation(worksheet, profileSummary, cardsPayload) {
     }
     return acc;
   }, {});
-  const recommendedCards = (matchedRule.recommended_card_ids || []).slice(0, 3).map((cardId) => ({
+  const recommendedCards = (matchedRule.recommended_card_ids || []).slice(0, 3).map((cardId, index) => ({
     id: cardId,
-    title: cardMap[cardId] ? cardMap[cardId].title : cardId,
+    title: cardMap[cardId] ? cardMap[cardId].title : `练习卡 ${index + 1}`,
     purpose: cardMap[cardId] ? cardMap[cardId].purpose : "",
     role: roleMap[cardId] || "推荐练习",
   }));
@@ -419,7 +422,7 @@ Page({
           recommendedCardsText: profileSummary
             ? profileSummary.recommendedCardsText
             : worksheet && worksheet.recommended_card_ids && worksheet.recommended_card_ids.length
-              ? worksheet.recommended_card_ids.join("、")
+              ? "已为你准备练习建议"
               : "暂无固定推荐",
           profileSummary,
           scaleDimensions,

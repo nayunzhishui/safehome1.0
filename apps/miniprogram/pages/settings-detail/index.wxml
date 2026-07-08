@@ -1,0 +1,23 @@
+<view class="safe-page settings-detail-page">
+  <view class="safe-card safe-card--hero hero-card">
+    <text class="hero-kicker">{{notice.kicker}}</text>
+    <text class="hero-title">{{notice.title}}</text>
+    <text class="hero-summary">{{notice.subtitle}}</text>
+  </view>
+
+  <view wx:for="{{notice.sections}}" wx:key="title" class="safe-section">
+    <section-title title="{{item.title}}" subtitle="" />
+    <view class="notice-card">
+      <view wx:for="{{item.items}}" wx:key="*this" wx:for-item="line" class="notice-row">
+        <text class="dot"></text>
+        <text class="notice-text">{{line}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="safe-section">
+    <bottom-tip-card text="先确认边界，再慢慢记录；如果出现紧急安全风险，优先找现实帮助。" />
+  </view>
+
+  <button class="safe-primary-button back-button" bindtap="goBack">返回</button>
+</view>

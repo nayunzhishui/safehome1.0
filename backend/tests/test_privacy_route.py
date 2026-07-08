@@ -48,6 +48,13 @@ def _register(client, username: str):
     return data["user"]["id"], data["token"]
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def test_revoke_research_consent_writes_consent_and_audit(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
@@ -76,11 +83,13 @@ def test_revoke_research_consent_writes_consent_and_audit(tmp_path):
 def test_delete_request_and_my_data_summary_avoid_raw_text(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "privacy-summary-user")
 
     diary = client.post(
         "/api/diaries",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "privacy-summary-user",
+            "user_id": user_id,
             "scene": "作业沟通",
             "event_description": "PRIVATE_RAW_EVENT",
             "parent_emotion": "着急",
@@ -90,9 +99,9 @@ def test_delete_request_and_my_data_summary_avoid_raw_text(tmp_path):
 
     delete_response = client.post(
         "/api/privacy/delete-my-data",
-        json={"user_id": "privacy-summary-user", "reason": "希望删除试用数据"},
+        json={"user_id": user_id, "reason": "希望删除试用数据"},
     )
-    summary_response = client.get("/api/privacy/export-my-data?user_id=privacy-summary-user")
+    summary_response = client.get(f"/api/privacy/export-my-data?user_id={user_id}")
 
     assert delete_response.status_code == 201
     assert summary_response.status_code == 200

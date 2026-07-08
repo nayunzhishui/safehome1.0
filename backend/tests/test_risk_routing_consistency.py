@@ -22,6 +22,13 @@ def _fresh_app(tmp_path):
     return module.app
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def _risk_review_count() -> int:
     import database
 
@@ -92,6 +99,7 @@ def test_medium_and_high_text_create_risk_review_records(tmp_path):
 def test_high_profile_parent_assessment_and_supervision_use_boundary_routing(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    supervision_user_id, supervision_token = _wechat_login(client, "risk-high-supervision")
 
     profile = client.post(
         "/api/profile",
@@ -111,7 +119,8 @@ def test_high_profile_parent_assessment_and_supervision_use_boundary_routing(tmp
     )
     supervision = client.post(
         "/api/supervision",
-        json={"user_id": "risk-high-supervision", "message": "我不想活了，需要人工支持。"},
+        headers={"Authorization": f"Bearer {supervision_token}"},
+        json={"user_id": supervision_user_id, "message": "我不想活了，需要人工支持。"},
     )
 
     assert profile.status_code == 201

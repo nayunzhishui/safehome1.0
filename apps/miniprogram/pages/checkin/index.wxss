@@ -129,6 +129,46 @@
   line-height: 1.6;
 }
 
+.helpfulness-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.helpfulness-chip {
+  min-height: 64rpx;
+  margin: 0;
+  padding: 0 20rpx;
+  border: 1rpx solid #e9e3d8;
+  border-radius: 999rpx;
+  background: #fffdf9;
+  color: #555555;
+  font-size: 25rpx;
+  line-height: 64rpx;
+}
+
+.helpfulness-chip--active {
+  border-color: var(--safe-primary);
+  background: var(--safe-primary-pale);
+  color: var(--safe-primary-deep);
+}
+
+.helpfulness-chip::after {
+  border: 0;
+}
+
+.pause-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 76rpx;
+  padding: 0 20rpx;
+  border: 1rpx solid #e9e3d8;
+  border-radius: 18rpx;
+  background: #fffdf9;
+  color: #333333;
+  font-size: 26rpx;
+}
+
 .reflection-prompts {
   margin-bottom: 16rpx;
   padding: 18rpx;

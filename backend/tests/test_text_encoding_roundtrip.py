@@ -21,15 +21,24 @@ def _fresh_app_and_database(tmp_path, monkeypatch):
     return app_module.app, database
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def test_diary_text_roundtrip_preserves_chinese_english_digits_punctuation_and_emoji(tmp_path, monkeypatch):
     app, database = _fresh_app_and_database(tmp_path, monkeypatch)
     client = app.test_client()
     mixed_text = "今天孩子说 homework 还没写完，家长提醒 2 次；先停一下，再一起看🙂。"
+    user_id, token = _wechat_login(client, "encoding-user")
 
     create_response = client.post(
         "/api/diaries",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "encoding-user",
+            "user_id": user_id,
             "scene": "作业沟通",
             "event_description": mixed_text,
             "parent_emotion": "着急",
@@ -51,7 +60,10 @@ def test_diary_text_roundtrip_preserves_chinese_english_digits_punctuation_and_e
     assert row["event_description"] == mixed_text
     assert row["raw_text"] == mixed_text
 
-    list_response = client.get("/api/diaries?user_id=encoding-user")
+    list_response = client.get(
+        f"/api/diaries?user_id={user_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert list_response.status_code == 200
     items = list_response.get_json()["data"]["items"]

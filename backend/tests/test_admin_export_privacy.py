@@ -21,6 +21,13 @@ def _fresh_app(tmp_path):
     return module.app
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def _csv(client, export_type: str, query: str = "") -> str:
     response = client.get(f"/api/admin/export?type={export_type}{query}", headers=ADMIN_HEADERS)
     assert response.status_code == 200
@@ -30,11 +37,13 @@ def _csv(client, export_type: str, query: str = "") -> str:
 def test_diaries_export_uses_lengths_not_original_text(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "parent-private-diary")
 
     response = client.post(
         "/api/diaries",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "parent-private-diary",
+            "user_id": user_id,
             "scene": "作业沟通",
             "event_description": "PRIVATE_EVENT_TEXT_001",
             "parent_emotion": "着急",

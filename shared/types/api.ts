@@ -147,6 +147,10 @@ export interface EmotionThermometerRecord {
   id: ID;
   user_id: ID;
   intensity_level: number;
+  valence_level?: number | null;
+  arousal_level?: number | null;
+  control_level?: number | null;
+  emotion_label?: string | null;
   brief_text?: string | null;
   created_at: ISODateTime;
   updated_at: ISODateTime;
@@ -156,6 +160,10 @@ export interface EmotionThermometerInput {
   user_id?: ID;
   nickname?: string;
   intensity_level: number;
+  valence_level?: number;
+  arousal_level?: number;
+  control_level?: number;
+  emotion_label?: string;
   brief_text?: string;
   created_at?: ISODateTime;
 }
@@ -230,25 +238,172 @@ export interface TrainingPlanItem {
     id: ID;
     title: string;
   };
+  source_worksheet_id?: ID;
+  source_worksheet_title?: string;
+  source_dimension?: string | null;
+  source_profile_name?: string | null;
   dimension?: string | null;
   cluster_id?: number | string | null;
   cluster_name?: string | null;
   card_ids: ID[];
   cards: TrainingPlanCard[];
   reason: string;
+  recommendation_reason?: string;
+  next_step?: string;
+  evidence_summary?: string;
   boundary_notice: string;
 }
 
 export interface TrainingPlan {
   user_id: ID;
   has_assessment: boolean;
+  has_recent_checkin?: boolean;
+  last_completed_card_ids?: ID[];
   latest_result?: Record<string, unknown> | null;
   plan_items: TrainingPlanItem[];
+  empty_state?: {
+    title: string;
+    description: string;
+    url: string;
+  } | null;
   next_action?: {
     title: string;
     description: string;
     url: string;
   } | null;
+  boundary_notice: string;
+}
+
+export interface ProgressSummary {
+  user_id: ID;
+  range: "7d" | "14d" | "30d" | string;
+  days: number;
+  start_date: ISODate;
+  end_date: ISODate;
+  stability_status: "insufficient" | "fluctuating" | "converging" | "stable" | "low_confidence" | string;
+  summary_text: string;
+  assessment: {
+    count: number;
+    latest?: { id: ID; title?: string | null; created_at?: ISODateTime | null } | null;
+    repeated_worksheets: Array<{
+      worksheet_id: ID;
+      title: string;
+      count: number;
+      latest_score?: number | null;
+      previous_score?: number | null;
+      score_delta?: number | null;
+      dimension_trends: Array<{
+        key: string;
+        label: string;
+        latest_score: number;
+        previous_score: number;
+        score_delta: number;
+      }>;
+    }>;
+  };
+  thermometer: {
+    count: number;
+    avg: number | null;
+    min: number | null;
+    max: number | null;
+    trend_text: string;
+  };
+  checkins: {
+    count: number;
+    completed_count: number;
+    top_cards: Array<[ID, number]>;
+    average_emotion_delta: number | null;
+    helpfulness_counts?: Array<[string, number]>;
+    skip_reasons?: Array<[string, number]>;
+    effectiveness_text?: string;
+  };
+  diaries: {
+    count: number;
+    frequent_scenes: Array<[string, number]>;
+    frequent_emotions: Array<[string, number]>;
+  };
+  next_action: string;
+  boundary_notice: string;
+}
+
+export interface ProfileTrendResponse {
+  user_id: ID;
+  range: string;
+  assessment: ProgressSummary["assessment"];
+  thermometer: ProgressSummary["thermometer"];
+  stability_status: ProgressSummary["stability_status"];
+  summary_text: string;
+  boundary_notice: string;
+}
+
+export interface TrainingEffectivenessResponse {
+  user_id: ID;
+  range: string;
+  checkins: ProgressSummary["checkins"];
+  per_card_effectiveness?: Array<{
+    card_id: ID;
+    sample_count: number;
+    thermometer_pair_count: number;
+    average_intensity_delta: number;
+    helpful_rate: number;
+    sample_note: string;
+  }>;
+  next_action: string;
+  boundary_notice: string;
+}
+
+export interface CourseSection {
+  title: string;
+  body: string;
+}
+
+export interface CourseSummary {
+  id: ID;
+  title: string;
+  theme: string;
+  scene: string;
+  duration_minutes: number;
+  section_count: number;
+  first_section_title?: string;
+  relation_to_cards_or_programs: ID[];
+  boundary_notice: string;
+}
+
+export interface Course extends CourseSummary {
+  enabled?: boolean;
+  sections: CourseSection[];
+}
+
+export interface CourseListResponse {
+  version: string;
+  boundary_notice: string;
+  items: CourseSummary[];
+}
+
+export interface CourseDetailResponse {
+  version: string;
+  course: Course;
+}
+
+export interface TextAnalysisOutputStatus {
+  available: boolean;
+  filename: string;
+  raw_text_included: false;
+  reason?: string;
+  record_count?: number;
+  analysis_version?: string;
+  generated_at?: ISODateTime;
+  [key: string]: unknown;
+}
+
+export interface TextAnalysisSummaryResponse {
+  items: {
+    features: TextAnalysisOutputStatus;
+    network: TextAnalysisOutputStatus;
+    summary: TextAnalysisOutputStatus;
+  };
+  actor_id: ID;
+  raw_text_included: false;
   boundary_notice: string;
 }
 
@@ -854,6 +1009,38 @@ export interface WeeklyReport {
   frequent_emotions: Array<[string, number]>;
   common_patterns: Array<[string, number]>;
   completed_cards: ID[];
+  assessment_summary?: {
+    count: number;
+    worksheet_names: Array<[string, number]>;
+    dimension_summaries: Array<{
+      key: string;
+      label: string;
+      count: number;
+      latest_score: number;
+      previous_score?: number | null;
+      score_delta?: number | null;
+      direction: string;
+    }>;
+    profile_position_count: number;
+    requires_review_count: number;
+    recommended_card_ids: ID[];
+  };
+  thermometer_summary?: {
+    count: number;
+    avg_intensity: number | null;
+    min_intensity: number | null;
+    max_intensity: number | null;
+    avg_valence?: number | null;
+    avg_arousal?: number | null;
+    avg_control?: number | null;
+    intensity_trend: string;
+    trend_text: string;
+  };
+  training_effectiveness_summary?: {
+    checkins?: ProgressSummary["checkins"];
+    per_card_effectiveness?: TrainingEffectivenessResponse["per_card_effectiveness"];
+    next_action?: string;
+  };
   profile_trend?: {
     profile_count: number;
     latest_round: number;

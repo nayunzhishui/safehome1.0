@@ -30,9 +30,12 @@
 
 .user-name,
 .user-state,
+.user-role,
 .streak-text,
 .growth-level,
 .profile-note,
+.auth-title,
+.auth-text,
 .row-title,
 .row-subtitle,
 .safety-title,
@@ -54,6 +57,14 @@
   line-height: 1.45;
 }
 
+.user-role {
+  margin-top: 6rpx;
+  color: var(--safe-primary-deep);
+  font-size: 23rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
 .streak-text {
   margin-top: 10rpx;
   color: var(--safe-primary-deep);
@@ -71,6 +82,59 @@
   font-weight: 800;
   line-height: 1.35;
   text-align: center;
+}
+
+.auth-panel {
+  margin-top: 24rpx;
+  padding: 24rpx 28rpx;
+}
+
+.auth-title {
+  color: var(--safe-title);
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.auth-text {
+  margin-top: 8rpx;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.auth-primary,
+.auth-secondary {
+  min-height: 72rpx;
+  margin: 0;
+  border-radius: var(--safe-radius-pill);
+  font-size: 26rpx;
+  font-weight: 850;
+  line-height: 72rpx;
+}
+
+.auth-primary {
+  flex: 1;
+  background: var(--safe-primary);
+  color: #ffffff;
+}
+
+.auth-secondary {
+  flex: 1;
+  border: 1rpx solid rgba(87, 139, 95, 0.28);
+  background: #ffffff;
+  color: var(--safe-primary-deep);
+}
+
+.auth-primary::after,
+.auth-secondary::after {
+  border: 0;
 }
 
 .profile-note {

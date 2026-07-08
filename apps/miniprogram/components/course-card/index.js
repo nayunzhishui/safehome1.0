@@ -1,5 +1,9 @@
 Component({
   properties: {
+    courseId: {
+      type: String,
+      value: "",
+    },
     title: {
       type: String,
       value: "",
@@ -27,7 +31,7 @@ Component({
   },
   methods: {
     handleTap() {
-      this.triggerEvent("tapcard");
+      this.triggerEvent("tapcard", { id: this.properties.courseId });
     },
   },
 });

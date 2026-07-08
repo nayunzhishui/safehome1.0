@@ -3,6 +3,7 @@
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
+from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import (
     admin_token_error_response,
     fail,
@@ -10,8 +11,6 @@ from routes.utils import (
     parse_int,
     require_admin_token,
     require_fields,
-    require_user_id,
-    resolve_user_id_for_query,
 )
 
 bp = Blueprint("diaries", __name__, url_prefix="/api/diaries")
@@ -25,9 +24,9 @@ def create_diary():
         return fail("missing_fields", f"缺少必填字段：{', '.join(missing)}")
 
     try:
-        user_id = require_user_id(payload)
-    except ValueError as exc:
-        return fail("validation_error", str(exc), status=400)
+        user_id = resolve_actor_user_id(payload=payload)
+    except AuthError as exc:
+        return auth_error_response(exc)
     timestamp = now_iso()
     diary_id = new_id("diary")
 
@@ -79,9 +78,9 @@ def list_diaries():
             return admin_token_error_response(exc)
 
     try:
-        user_id = None if admin_actor else resolve_user_id_for_query(requested_user_id)
-    except ValueError as exc:
-        return fail("validation_error", str(exc), status=400)
+        user_id = None if admin_actor else resolve_actor_user_id(requested_user_id)
+    except AuthError as exc:
+        return auth_error_response(exc)
     limit = parse_int(request.args.get("limit"), 50)
 
     with get_connection() as conn:

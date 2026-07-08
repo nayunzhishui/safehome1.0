@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { isLoggedIn, requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
@@ -138,6 +139,17 @@ function buildAssessmentSections(items, activeAudience, query) {
   return sections;
 }
 
+function formatRecentResult(item) {
+  const isProfile = item && (item.worksheet_id === "student_profile_v1" || item.category === "学生画像");
+  return {
+    ...item,
+    is_profile: isProfile,
+    badge_text: isProfile ? "阶段性画像" : "测评记录",
+    worksheet_title: cleanDisplayTitle(item.worksheet_title || "测一测记录"),
+    result_summary: cleanDisplayText(item.result_summary || "已保存本次填写。"),
+  };
+}
+
 Page({
   data: {
     loading: true,
@@ -149,6 +161,7 @@ Page({
     allAssessments: [],
     categories: [],
     recentResults: [],
+    recentLoginTip: "",
     infoItems: [
       { label: "内容来源", value: "项目内容库与已授权工作表" },
       { label: "结果用途", value: "用于自我观察、阶段性画像和练习记录" },
@@ -190,11 +203,24 @@ Page({
   },
 
   async loadRecentResults() {
+    if (!isLoggedIn()) {
+      this.setData({
+        recentResults: [],
+        recentLoginTip: "登录后会在这里显示最近的测一测记录。",
+      });
+      return;
+    }
     try {
       const result = await api.listAssessmentResults({ limit: 3 });
-      this.setData({ recentResults: result.items || [] });
+      this.setData({
+        recentResults: (result.items || []).map(formatRecentResult),
+        recentLoginTip: "",
+      });
     } catch (error) {
-      this.setData({ recentResults: [] });
+      this.setData({
+        recentResults: [],
+        recentLoginTip: "最近记录暂时没能读取，请稍后再试。",
+      });
     }
   },
 
@@ -215,6 +241,12 @@ Page({
   },
 
   openAssessmentEntry(event) {
+    if (!requireLogin({
+      redirectUrl: "/pages/assessment/index",
+      message: "请先登录后再填写测评。",
+    })) {
+      return;
+    }
     const id = event.currentTarget.dataset.id;
     const enabled = event.currentTarget.dataset.enabled !== "false";
     if (!id) return;
@@ -224,6 +256,22 @@ Page({
     }
     wx.navigateTo({
       url: `/pages/assessment-detail/index?id=${encodeURIComponent(id)}`,
+    });
+  },
+
+  openRecentResult(event) {
+    const id = event.currentTarget.dataset.id || "";
+    const worksheetId = event.currentTarget.dataset.worksheetId || "";
+    if (!id) return;
+    wx.navigateTo({
+      url: `/pages/assessment-result/index?id=${encodeURIComponent(id)}&worksheet_id=${encodeURIComponent(worksheetId)}`,
+    });
+  },
+
+  goLogin() {
+    requireLogin({
+      redirectUrl: "/pages/assessment/index",
+      message: "登录后可以查看自己的测评记录。",
     });
   },
 

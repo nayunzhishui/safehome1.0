@@ -25,7 +25,7 @@
         </view>
 
         <view wx:if="{{item.type === 'scale'}}" class="option-row">
-          <button
+          <view
             wx:for="{{item.options}}"
             wx:for-item="opt"
             wx:key="value"
@@ -34,7 +34,10 @@
             data-value="{{opt.value}}"
             data-score="{{opt.score}}"
             bindtap="selectOption"
-          >{{opt.label}}</button>
+          >
+            <text class="option-value">{{opt.value}}</text>
+            <text class="option-label">{{opt.displayLabel}}</text>
+          </view>
         </view>
 
         <textarea
@@ -50,6 +53,7 @@
 
     <view wx:if="{{errorMessage}}" class="error-box">
       <text>{{errorMessage}}</text>
+      <button wx:if="{{needsLogin}}" class="safe-primary-button login-button" bindtap="goLogin">去登录后继续</button>
     </view>
 
     <button class="safe-primary-button submit-button" bindtap="submitWorksheet" disabled="{{submitting}}">

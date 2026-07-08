@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from config import Config
-from database import json_loads, load_content_json
+from database import get_connection, json_loads, load_content_json
 
 
 def evaluate_training_rules(
@@ -15,6 +15,7 @@ def evaluate_training_rules(
     scores_json: str | dict,
     worksheet: dict | None = None,
     risk_result: dict | None = None,
+    user_id: str | None = None,
 ) -> list[dict]:
     """Return assessment training rules whose dimension conditions match scores."""
 
@@ -40,6 +41,8 @@ def evaluate_training_rules(
             continue
         if _evaluate_condition(condition, dim_map, model, worksheet, worksheet_id):
             matched.append(rule)
+    if user_id:
+        matched = _apply_user_feedback(matched, user_id)
     return matched
 
 
@@ -50,6 +53,74 @@ def flatten_card_ids(rules: list[dict]) -> list[str]:
             if card_id and card_id not in ids:
                 ids.append(card_id)
     return ids
+
+
+def _apply_user_feedback(rules: list[dict], user_id: str) -> list[dict]:
+    feedback = _load_card_feedback(user_id)
+    if not feedback:
+        return rules
+    adjusted = []
+    for rule_index, rule in enumerate(rules):
+        cloned = dict(rule)
+        card_ids = list(cloned.get("recommended_card_ids") or [])
+        scored_cards = []
+        for index, card_id in enumerate(card_ids):
+            score = 100 - rule_index * 5 - index
+            stats = feedback.get(card_id, {})
+            score += int(stats.get("helpful", 0)) * 8
+            score += int(stats.get("neutral", 0)) * 1
+            score -= int(stats.get("not_helpful_yet", 0)) * 10
+            score -= int(stats.get("skipped", 0)) * 6
+            score += min(int(stats.get("completed", 0)), 5)
+            scored_cards.append((score, card_id, stats))
+        scored_cards.sort(key=lambda item: item[0], reverse=True)
+        cloned["recommended_card_ids"] = [card_id for _score, card_id, _stats in scored_cards]
+        cloned["recommendation_reason"] = _feedback_reason(scored_cards)
+        adjusted.append((sum(score for score, _card_id, _stats in scored_cards), cloned))
+    adjusted.sort(key=lambda item: item[0], reverse=True)
+    return [rule for _score, rule in adjusted]
+
+
+def _feedback_reason(scored_cards: list[tuple[float, str, dict]]) -> str:
+    helpful = [card_id for _score, card_id, stats in scored_cards if int(stats.get("helpful", 0)) > 0]
+    not_helpful = [
+        card_id
+        for _score, card_id, stats in scored_cards
+        if int(stats.get("not_helpful_yet", 0)) > 0 or int(stats.get("skipped", 0)) > 0
+    ]
+    if helpful:
+        return "已结合你之前标记为有帮助的训练卡，优先保留更容易执行的小练习。"
+    if not_helpful:
+        return "已结合你之前暂时没有帮助或跳过的训练反馈，降低相似训练卡的优先级。"
+    return "已结合近期训练完成情况做轻量排序。"
+
+
+def _load_card_feedback(user_id: str) -> dict[str, dict[str, int]]:
+    with get_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT card_id, completed, helpfulness_rating, skip_reason
+            FROM checkins
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 50
+            """,
+            (user_id,),
+        ).fetchall()
+    feedback: dict[str, dict[str, int]] = {}
+    for row in rows:
+        card_id = row["card_id"]
+        if not card_id:
+            continue
+        stats = feedback.setdefault(card_id, {"completed": 0, "helpful": 0, "neutral": 0, "not_helpful_yet": 0, "skipped": 0})
+        if row["completed"]:
+            stats["completed"] += 1
+        helpfulness = row["helpfulness_rating"]
+        if helpfulness in stats:
+            stats[helpfulness] += 1
+        if row["skip_reason"]:
+            stats["skipped"] += 1
+    return feedback
 
 
 def _load_rules() -> list[dict]:

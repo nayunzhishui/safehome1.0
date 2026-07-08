@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "设置与说明",
+  "usingComponents": {
+    "section-title": "/components/section-title/index",
+    "bottom-tip-card": "/components/bottom-tip-card/index"
+  }
+}

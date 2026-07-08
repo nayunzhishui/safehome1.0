@@ -31,6 +31,26 @@
     </view>
 
     <view class="field">
+      <text class="label">这次练习对你有帮助吗？</text>
+      <view class="helpfulness-row">
+        <button
+          wx:for="{{helpfulnessOptions}}"
+          wx:key="value"
+          class="helpfulness-chip {{helpfulnessRating === item.value ? 'helpfulness-chip--active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="chooseHelpfulness"
+        >
+          {{item.label}}
+        </button>
+      </view>
+    </view>
+
+    <view class="field">
+      <text class="label">如果暂时不想完成，可以写一个原因（可选）</text>
+      <input class="pause-input" value="{{skipReason}}" placeholder="例如：今天太累，先暂停一下。" bindinput="onSkipReasonInput" />
+    </view>
+
+    <view class="field">
       <text class="label">练习复盘</text>
       <view class="reflection-prompts">
         <text class="prompt-title">可以围绕这三个问题写：</text>

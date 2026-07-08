@@ -2,7 +2,12 @@
   <view class="safe-card auth-card">
     <view class="safe-eyebrow">SafeHome</view>
     <view class="safe-h1">登录</view>
-    <view class="safe-body">使用已注册账号进入。登录后会丢弃本机匿名试用 ID。</view>
+    <view class="safe-body">登录后可以查看消息、阶段性反馈和个人记录。微信登录不可用时，可使用账号密码。</view>
+
+    <button class="wechat-action" loading="{{wechatLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitWechatLogin">微信一键登录</button>
+    <button class="phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="bindPhone">绑定手机号</button>
+    <view class="auth-note">手机号绑定需要微信公众平台授权和后端配置；配置缺失时不会伪造绑定成功。</view>
+    <view class="divider"><text>或使用账号密码</text></view>
 
     <view class="field">
       <text>用户名</text>
@@ -14,7 +19,7 @@
     </view>
 
     <view wx:if="{{message}}" class="message {{status}}">{{message}}</view>
-    <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitLogin">登录</button>
+    <button class="primary-action" loading="{{loading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitLogin">登录</button>
     <button class="ghost-action" bindtap="goRegister">注册新账号</button>
   </view>
 </view>

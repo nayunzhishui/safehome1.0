@@ -6,7 +6,8 @@ from pathlib import Path
 from flask import Blueprint, current_app, request
 
 from database import get_connection, json_loads, load_content_json, row_to_dict, rows_to_dicts
-from routes.utils import fail, ok, resolve_user_id_for_query
+from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
+from routes.utils import fail, ok
 from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
 
 
@@ -36,6 +37,39 @@ def _compact_cards(card_ids: list[str], cards_by_id: dict[str, dict]) -> list[di
             }
         )
     return cards
+
+
+def _worksheet_ref(row: dict, worksheet: dict) -> dict:
+    worksheet_id = row.get("worksheet_id")
+    worksheet_title = row.get("worksheet_title") or worksheet.get("display_title") or worksheet_id
+    return {
+        "id": worksheet_id,
+        "title": worksheet_title,
+    }
+
+
+def _recent_checkin_state(user_id: str) -> dict:
+    with get_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT card_id, completed, created_at
+            FROM checkins
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 20
+            """,
+            (user_id,),
+        ).fetchall()
+    checkins = rows_to_dicts(rows)
+    completed = [
+        row.get("card_id")
+        for row in checkins
+        if row.get("completed") and row.get("card_id")
+    ]
+    return {
+        "has_recent_checkin": bool(checkins),
+        "last_completed_card_ids": list(dict.fromkeys(completed))[:5],
+    }
 
 
 def _load_profile_models() -> dict[str, dict]:
@@ -72,45 +106,56 @@ def _cluster_plan_item(row: dict, worksheet: dict, cards_by_id: dict[str, dict],
     card_ids = [card_id for card_id in cluster.get("recommended_card_ids", []) if card_id in cards_by_id]
     if not card_ids:
         return None
+    worksheet_ref = _worksheet_ref(row, worksheet)
+    cluster_name = cluster.get("profile_name")
+    reason = cluster.get("card_reason") or f"根据最近一次“{worksheet_ref['title']}”的阶段性画像，优先推荐这些小练习。"
     return {
         "source_type": "profile_cluster",
         "source_result_id": row.get("id"),
-        "source_worksheet": {
-            "id": row.get("worksheet_id"),
-            "title": row.get("worksheet_title") or worksheet.get("display_title"),
-        },
+        "source_worksheet": worksheet_ref,
+        "source_worksheet_id": worksheet_ref["id"],
+        "source_worksheet_title": worksheet_ref["title"],
+        "source_dimension": None,
+        "source_profile_name": cluster_name,
         "cluster_id": cluster.get("cluster_id"),
-        "cluster_name": cluster.get("profile_name"),
+        "cluster_name": cluster_name,
         "card_ids": card_ids[:3],
         "cards": _compact_cards(card_ids, cards_by_id),
-        "reason": cluster.get("card_reason")
-        or f"根据最近一次“{row.get('worksheet_title') or worksheet.get('display_title')}”的阶段性画像，优先推荐这些小练习。",
+        "reason": reason,
+        "recommendation_reason": reason,
+        "next_step": "先选一张最容易完成的训练卡，做完后简单打卡。",
+        "evidence_summary": f"来源于最近一次支持性测评的阶段性画像：{cluster_name or '未命名画像'}。",
         "boundary_notice": "画像推荐只表示当前更接近某类练习线索，不代表固定类型或诊断。",
     }
 
 
-def _assessment_plan_items(row: dict, worksheet: dict, cards_by_id: dict[str, dict]) -> list[dict]:
+def _assessment_plan_items(row: dict, worksheet: dict, cards_by_id: dict[str, dict], user_id: str) -> list[dict]:
     scores = json_loads(row.get("scores_json"), fallback={})
-    rules = evaluate_training_rules(str(row.get("worksheet_id")), scores, worksheet=worksheet)
+    rules = evaluate_training_rules(str(row.get("worksheet_id")), scores, worksheet=worksheet, user_id=user_id)
     items = []
     for rule in rules:
         card_ids = [card_id for card_id in flatten_card_ids([rule]) if card_id in cards_by_id]
         if not card_ids:
             continue
         trigger_dimension = (rule.get("trigger_condition") or {}).get("dimension")
+        worksheet_ref = _worksheet_ref(row, worksheet)
+        reason = rule.get("reason") or f"根据最近一次“{worksheet_ref['title']}”的支持性测评结果生成。"
         items.append(
             {
                 "source_type": "assessment_dimension",
                 "source_result_id": row.get("id"),
-                "source_worksheet": {
-                    "id": row.get("worksheet_id"),
-                    "title": row.get("worksheet_title") or worksheet.get("display_title"),
-                },
+                "source_worksheet": worksheet_ref,
+                "source_worksheet_id": worksheet_ref["id"],
+                "source_worksheet_title": worksheet_ref["title"],
+                "source_dimension": trigger_dimension,
+                "source_profile_name": None,
                 "dimension": trigger_dimension,
                 "card_ids": card_ids[:3],
                 "cards": _compact_cards(card_ids, cards_by_id),
-                "reason": rule.get("reason")
-                or f"根据最近一次“{row.get('worksheet_title') or worksheet.get('display_title')}”的支持性测评结果生成。",
+                "reason": reason,
+                "recommendation_reason": rule.get("recommendation_reason") or reason,
+                "next_step": rule.get("today_suggestion") or "先完成一个 1 到 5 分钟的小练习，再记录一点感受。",
+                "evidence_summary": f"来源于“{worksheet_ref['title']}”的维度线索：{trigger_dimension or '整体结果'}。",
                 "boundary_notice": rule.get("boundary_notice")
                 or "训练推荐只用于自我练习参考，不构成诊断或治疗建议。",
             }
@@ -141,9 +186,9 @@ def _dedupe_plan_items(items: list[dict], limit: int = 8) -> list[dict]:
 @bp.get("")
 def get_training_plan():
     try:
-        user_id = resolve_user_id_for_query(request.args.get("user_id"))
-    except ValueError as exc:
-        return fail("missing_user_id", str(exc), status=400)
+        user_id = resolve_actor_user_id(request.args.get("user_id"))
+    except AuthError as exc:
+        return auth_error_response(exc)
 
     with get_connection() as conn:
         rows = conn.execute(
@@ -165,25 +210,36 @@ def get_training_plan():
     plan_items: list[dict] = []
     for row in results:
         worksheet = worksheets.get(row.get("worksheet_id"), {})
-        plan_items.extend(_assessment_plan_items(row, worksheet, cards_by_id))
+        plan_items.extend(_assessment_plan_items(row, worksheet, cards_by_id, user_id))
         cluster_item = _cluster_plan_item(row, worksheet, cards_by_id, profile_models)
         if cluster_item:
             plan_items.append(cluster_item)
 
     plan_items = _dedupe_plan_items(plan_items)
+    checkin_state = _recent_checkin_state(user_id)
+    empty_state = None
+    if not results:
+        empty_state = {
+            "title": "先完成一次测一测",
+            "description": "完成支持性测评后，这里会按结果推荐更合适的小练习。",
+            "url": "/pages/assessment/index",
+        }
+    elif not plan_items:
+        empty_state = {
+            "title": "暂时没有匹配到训练推荐",
+            "description": "可以先从训练中心选择一张容易完成的训练卡，后续测评记录更多后再生成推荐。",
+            "url": "/pages/training/index",
+        }
     return ok(
         {
             "user_id": user_id,
             "has_assessment": bool(results),
+            "has_recent_checkin": checkin_state["has_recent_checkin"],
+            "last_completed_card_ids": checkin_state["last_completed_card_ids"],
             "latest_result": row_to_dict(results[0]) if results else None,
             "plan_items": plan_items,
-            "next_action": None
-            if results
-            else {
-                "title": "先完成一次测一测",
-                "description": "完成支持性测评后，这里会按结果推荐更合适的小练习。",
-                "url": "/pages/assessment/index",
-            },
+            "empty_state": empty_state,
+            "next_action": empty_state,
             "boundary_notice": "个性化训练计划只用于阶段性练习建议，不构成诊断、筛查或治疗方案。",
         }
     )

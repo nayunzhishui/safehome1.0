@@ -274,11 +274,35 @@
   padding-bottom: 0;
 }
 
+.dimension-change-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.dimension-change-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  padding: 14rpx 0;
+  border-top: 1rpx solid var(--safe-border);
+}
+
 .row-name {
   min-width: 0;
   color: var(--safe-title);
   font-size: 28rpx;
   line-height: 1.5;
+}
+
+.row-desc {
+  display: block;
+  margin-top: 6rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.55;
 }
 
 .row-count {

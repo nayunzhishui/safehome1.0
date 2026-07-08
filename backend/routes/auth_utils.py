@@ -6,6 +6,7 @@ from typing import Callable
 from flask import current_app, request
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
+from config import Config
 from database import get_connection, row_to_dict
 from routes.utils import fail, require_admin_token
 
@@ -79,8 +80,43 @@ def require_role(*roles: str, allow_legacy_admin: bool = True) -> dict:
     return actor
 
 
+def resolve_actor_user_id(
+    requested_user_id: str | None = None,
+    payload: dict | None = None,
+    allow_legacy_admin: bool = False,
+    allow_dev_fallback: bool = False,
+) -> str:
+    """Resolve private-data ownership from the signed token before request data.
+
+    Normal users can only act as themselves. Admin, supervisor and researcher
+    actors may target an explicit user_id for review/debug workflows.
+    """
+
+    payload_user_id = (payload or {}).get("user_id")
+    explicit_user_id = requested_user_id or payload_user_id
+    actor = get_current_actor(allow_legacy_admin=allow_legacy_admin)
+    if actor:
+        role = actor.get("role")
+        if role in {"admin", "supervisor", "researcher"}:
+            if explicit_user_id:
+                return str(explicit_user_id)
+            if actor.get("source") == "legacy_admin_token":
+                raise AuthError("后台查询需要指定 user_id", status=400)
+        return str(actor["id"])
+
+    if allow_dev_fallback and str(Config.APP_ENV).lower() == "development":
+        return str(explicit_user_id or "demo-parent")
+
+    raise AuthError("需要先登录", status=401)
+
+
 def auth_error_response(exc: AuthError):
-    return fail("forbidden" if exc.status == 403 else "unauthorized", str(exc), status=exc.status)
+    code_by_status = {
+        400: "validation_error",
+        401: "unauthorized",
+        403: "forbidden",
+    }
+    return fail(code_by_status.get(exc.status, "auth_error"), str(exc), status=exc.status)
 
 
 def role_required(*roles: str, allow_legacy_admin: bool = True):

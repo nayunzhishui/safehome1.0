@@ -33,6 +33,43 @@
   color: #a84232;
 }
 
+.wechat-action {
+  margin-top: 32rpx;
+  color: #fff;
+  background: #4e7c6b;
+}
+
+.phone-action {
+  margin-top: 18rpx;
+  border: 1rpx solid rgba(78, 124, 107, 0.28);
+  color: #4e7c6b;
+  background: #fffdf8;
+}
+
+.auth-note {
+  margin-top: 14rpx;
+  color: #8a7b70;
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin: 30rpx 0 8rpx;
+  color: #8a7b70;
+  font-size: 24rpx;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1rpx;
+  background: #eadfce;
+}
+
 .primary-action,
 .ghost-action {
   margin-top: 28rpx;

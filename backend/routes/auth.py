@@ -167,6 +167,42 @@ def wechat_login():
     return ok({"token": generate_auth_token(user), "user": user, "dev_fallback": bool(session.get("dev_fallback"))})
 
 
+@bp.post("/bind-phone")
+def bind_phone():
+    """Bind a WeChat-authorized phone number when platform config is available.
+
+    The pilot build intentionally does not fake phone authorization. Mini
+    Program getPhoneNumber returns a short-lived code that must be exchanged
+    through WeChat's API with real AppID/AppSecret and permissions.
+    """
+
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+
+    payload = request.get_json(silent=True) or {}
+    code = str(payload.get("code") or "").strip()
+    if not code:
+        return fail("validation_error", "缺少手机号授权 code", status=400)
+
+    appid = os.environ.get("WECHAT_APPID", "").strip()
+    secret = os.environ.get("WECHAT_SECRET", "").strip()
+    if not appid or not secret:
+        return fail(
+            "wechat_phone_config_missing",
+            "缺少 WECHAT_APPID/WECHAT_SECRET 或小程序手机号授权配置，不能伪造手机号绑定。",
+            status=400,
+        )
+
+    # Keep the endpoint explicit and safe until access_token management is added.
+    return fail(
+        "wechat_phone_not_configured",
+        "手机号授权接口骨架已存在，但尚未配置微信 access_token 交换流程。",
+        status=400,
+    )
+
+
 @bp.post("/admin-create-account")
 def admin_create_account():
     """管理员用 X-Admin-Token 创建任意角色账号（研究者/督导/管理员等）。"""

@@ -9,16 +9,56 @@
       <text class="safe-h3">现在的强度</text>
       <text class="level-text">{{intensityLevel}} / 10</text>
     </view>
-    <slider
-      min="1"
-      max="10"
-      step="1"
-      value="{{intensityLevel}}"
-      activeColor="#4f7c6b"
-      backgroundColor="#dfe5dc"
-      bindchange="onIntensityChange"
-      bindchanging="onIntensityChange"
-    />
+    <view class="thermometer-control">
+      <view class="thermometer-scale">
+        <text>10</text>
+        <text>7</text>
+        <text>4</text>
+        <text>1</text>
+      </view>
+      <view
+        id="intensityThermometer"
+        class="thermometer-shell"
+        bindtap="onThermometerTap"
+        bindtouchmove="onThermometerMove"
+      >
+        <view class="thermometer-track">
+          <view class="thermometer-fill" style="height: {{intensityPercent}}%;"></view>
+          <view class="thermometer-mercury" style="bottom: {{intensityPercent}}%;"></view>
+        </view>
+        <view class="thermometer-bulb"></view>
+      </view>
+      <view class="thermometer-actions">
+        <button class="step-button" bindtap="increaseIntensity">+</button>
+        <text class="step-label">点按或拖动温度计</text>
+        <button class="step-button" bindtap="decreaseIntensity">-</button>
+      </view>
+    </view>
+    <view class="micro-panel">
+      <text class="micro-title">补充观察（可保持默认）</text>
+      <view class="micro-row">
+        <text class="micro-label">愉悦度</text>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{valenceLevel}}" activeColor="#7aa78f" backgroundColor="#dfe5dc" bindchange="onValenceChange" bindchanging="onValenceChange" />
+        <text class="micro-value">{{valenceLevel}}</text>
+      </view>
+      <view class="micro-row">
+        <text class="micro-label">身体唤起</text>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{arousalLevel}}" activeColor="#d18a55" backgroundColor="#eadfd0" bindchange="onArousalChange" bindchanging="onArousalChange" />
+        <text class="micro-value">{{arousalLevel}}</text>
+      </view>
+      <view class="micro-row">
+        <text class="micro-label">可控感</text>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{controlLevel}}" activeColor="#6a86b4" backgroundColor="#dfe5dc" bindchange="onControlChange" bindchanging="onControlChange" />
+        <text class="micro-value">{{controlLevel}}</text>
+      </view>
+      <input
+        class="emotion-input"
+        value="{{emotionLabel}}"
+        maxlength="40"
+        placeholder="可选：给这次情绪起个名字，如着急、烦躁、平静"
+        bindinput="onEmotionLabelInput"
+      />
+    </view>
     <textarea
       class="brief-input"
       value="{{briefText}}"
@@ -64,6 +104,7 @@
       <view class="record-badge">{{item.intensity_level}}</view>
       <view class="record-copy">
         <text class="row-title">{{item.timeLabel}}</text>
+        <text wx:if="{{item.emotion_label}}" class="row-meta">{{item.emotion_label}} · 愉悦 {{item.valence_level || '-'}} · 唤起 {{item.arousal_level || '-'}} · 可控 {{item.control_level || '-'}}</text>
         <text class="row-desc">{{item.brief_text || "没有备注"}}</text>
       </view>
     </view>

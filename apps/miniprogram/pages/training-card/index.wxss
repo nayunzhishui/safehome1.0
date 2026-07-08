@@ -254,6 +254,14 @@
   background: var(--safe-orange-soft);
 }
 
+.example-box {
+  margin: 0 28rpx 22rpx;
+  padding: 24rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: 22rpx;
+  background: #fffdf8;
+}
+
 .today-label {
   color: var(--safe-orange);
   font-size: 24rpx;
@@ -296,6 +304,14 @@
   color: var(--safe-text);
   font-size: 25rpx;
   line-height: 1.65;
+}
+
+.boundary-text {
+  display: block;
+  margin: 0 28rpx 22rpx;
+  color: var(--safe-muted);
+  font-size: 23rpx;
+  line-height: 1.6;
 }
 
 .primary-button {

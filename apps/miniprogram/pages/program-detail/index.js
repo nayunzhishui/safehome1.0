@@ -21,6 +21,9 @@ Page({
     sessions: [],
     selectedSession: null,
     draftText: "",
+    analysisConsent: false,
+    submitting: false,
+    successMessage: "",
     loading: true,
     errorMessage: "",
   },
@@ -87,7 +90,11 @@ Page({
   },
 
   onDraftInput(event) {
-    this.setData({ draftText: event.detail.value });
+    this.setData({ draftText: event.detail.value, successMessage: "", errorMessage: "" });
+  },
+
+  onAnalysisConsentChange(event) {
+    this.setData({ analysisConsent: !!event.detail.value.length });
   },
 
   saveDraft() {
@@ -97,5 +104,42 @@ Page({
     }
     wx.setStorageSync(draftKey(this.data.programId, session.session_no), this.data.draftText || "");
     wx.showToast({ title: "已保存在本机", icon: "success" });
+  },
+
+  async submitEntry() {
+    const session = this.data.selectedSession;
+    const draftText = (this.data.draftText || "").trim();
+    if (!this.data.programId || !session) {
+      this.setData({ errorMessage: "缺少项目信息，请返回重新打开。" });
+      return;
+    }
+    if (!draftText) {
+      this.setData({ errorMessage: "请先写一点草稿或反思，再提交。" });
+      return;
+    }
+    this.setData({ submitting: true, successMessage: "", errorMessage: "" });
+    try {
+      await api.createProgramEntry(this.data.programId, {
+        session_no: session.session_no,
+        answers: {
+          writing_prompt: session.writing_prompt || "",
+          draft_text: draftText,
+        },
+        reflection: draftText,
+        analysis_consent: this.data.analysisConsent,
+        boundary_notice: this.data.program ? this.data.program.boundary_notice : "",
+      });
+      wx.removeStorageSync(draftKey(this.data.programId, session.session_no));
+      this.setData({
+        draftText: "",
+        successMessage: "已提交。它只用于本工具内复盘、训练建议和必要的人工补充反馈。",
+      });
+    } catch (error) {
+      this.setData({
+        errorMessage: error.message || "暂时没能提交，请登录后再试一次。",
+      });
+    } finally {
+      this.setData({ submitting: false });
+    }
   },
 });

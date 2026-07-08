@@ -59,6 +59,8 @@
 }
 ```
 
+补充约定（2026-07-09）：鉴权辅助层会按状态码返回稳定错误码：`400 -> validation_error`、`401 -> unauthorized`、`403 -> forbidden`。参数缺失或后台查询缺少必要 `user_id` 时，不应返回 `unauthorized`，避免前端误提示登录过期。
+
 ## 0. 健康检查
 
 ### `GET /healthz`
@@ -129,12 +131,33 @@
 |---|---|---|---|
 | `user_id` | string | 生产必填 | 匿名用户 ID，开发环境可缺省为 `demo-parent` |
 | `intensity_level` | integer | 是 | 1-10 的情绪强度 |
+| `valence_level` | integer | 否 | 1-10 的愉悦度/不愉悦度观察，只作自我观察 |
+| `arousal_level` | integer | 否 | 1-10 的身体唤起水平观察，只作自我观察 |
+| `control_level` | integer | 否 | 1-10 的可控感观察，只作自我观察 |
+| `emotion_label` | string | 否 | 40 字内情绪命名，例如“着急”“担心”；不作为诊断标签 |
 | `brief_text` | string | 否 | 200 字内简短备注 |
 | `created_at` | string | 否 | ISO 时间；缺省为后端当前时间 |
 
 ### `GET /api/emotion-thermometer/day?user_id=&date=YYYY-MM-DD`
 
-用途：返回某用户某一天的温度计记录、`min/max/avg/count` 汇总和边界说明。日期过滤使用 `substr(created_at, 1, 10)=date`，不依赖数据库当前日期函数。
+用途：返回某用户某一天的温度计记录、`min/max/avg/count` 汇总、`valence_avg/arousal_avg/control_avg` 轻量维度均值和边界说明。日期过滤使用 `substr(created_at, 1, 10)=date`，不依赖数据库当前日期函数。
+
+### `GET /api/progress-summary?range=7d`
+
+用途：首页“最近记录”下方的阶段性反馈。汇总近期情绪记录、测评记录、情绪温度计和训练打卡，只输出支持性过程反馈，不输出诊断、筛查或人格判断。生产环境需要 Bearer token；开发环境可回退到匿名 `user_id`。
+
+响应重点字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `stability_status` | string | `insufficient/fluctuating/converging/stable/low_confidence` |
+| `summary_text` | string | 支持性阶段总结 |
+| `diaries` | object | 近期情绪记录数量、高频场景和高频情绪 |
+| `assessments` | object | 近期测评次数、最近测评名称和画像结果 |
+| `thermometer` | object | 温度计次数、平均强度和趋势提示 |
+| `checkins` | object | 训练打卡次数、最近训练卡 |
+| `next_suggestions` | array | 下一步建议 |
+| `boundary_notice` | string | 非诊断边界说明 |
 
 ### `GET /api/training-plan?user_id=`
 
@@ -709,6 +732,14 @@
 | `frequent_emotions` | array | 高频情绪，形如 `[["着急", 2]]` |
 | `common_patterns` | array | 常见标签，形如 `[["judgmental_language", 1]]` |
 | `completed_cards` | array | 已完成训练卡 ID |
+| `assessment_trend.assessment_count` | number | 本周普通测评提交次数 |
+| `assessment_trend.worksheet_names` | array | 本周测评名称频次 |
+| `assessment_trend.dimension_names` | array | 本周测评维度频次 |
+| `thermometer_trend.record_count` | number | 本周情绪温度计记录次数 |
+| `thermometer_trend.avg_intensity` | number | 本周平均情绪强度 |
+| `thermometer_trend.min_intensity` | number | 本周最低情绪强度 |
+| `thermometer_trend.max_intensity` | number | 本周最高情绪强度 |
+| `thermometer_trend.trend_text` | string | 支持性趋势说明，不做诊断判断 |
 | `profile_trend.profile_count` | number | 本周画像记录数 |
 | `profile_trend.latest_round` | number | 本周最高画像轮次 |
 | `profile_trend.profile_names` | array | 本周画像名称频次 |
@@ -1385,4 +1416,179 @@ Invoke-WebRequest `
 | `profile_model_id` | string | 按画像模型筛选 |
 
 返回字段中 `profile_cluster_id` 为整数或 `null`，不要再按字符串处理。
+
+## 2026-07-05：任务十新增/补强接口
+
+### `POST /api/auth/bind-phone`
+
+用途：微信小程序手机号绑定入口。
+
+权限：必须携带 `Authorization: Bearer <token>`，不能匿名绑定。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是 | 微信 `getPhoneNumber` 返回的手机号授权 code |
+
+当前边界：
+
+- 若未配置 `WECHAT_APPID` 或 `WECHAT_SECRET`，返回 `wechat_phone_config_missing`；
+- 不会伪造手机号绑定成功；
+- 当前第一版只完成接口骨架和配置失败提示，正式换取手机号需要后续接入微信服务端接口。
+
+### `POST /api/programs/<program_id>/entries`
+
+用途：保存项目测试/课程练习过程记录，例如自我关怀书写、睡眠健康促进练习。
+
+权限：优先从 Bearer token 解析用户；开发环境允许兼容 `user_id` 兜底。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `session_no` | number/string | 是 | 项目 session 序号 |
+| `answers` | object | 否 | 页面草稿字段 |
+| `reflection` | string | 否 | 练习后反思 |
+| `analysis_consent` | boolean | 否 | 是否允许进入后续脱敏聚合分析 |
+
+返回：`record` 和 `boundary_notice`。
+
+保存位置：`records`，其中 `module_type=program_entry`，`source_id=<program_id>`。
+
+### `GET /api/training-plan`
+
+任务十补强字段：
+
+| 字段 | 说明 |
+|---|---|
+| `has_recent_checkin` | 用户近期是否有训练打卡 |
+| `last_completed_card_ids` | 近期已完成训练卡 ID |
+| `empty_state` | 没有推荐时的用户端空状态 |
+| `plan_items[].source_worksheet_id` | 推荐来源测评 ID |
+| `plan_items[].source_worksheet_title` | 推荐来源测评名称 |
+| `plan_items[].source_dimension` | 推荐来源维度 |
+| `plan_items[].source_profile_name` | 推荐来源画像名称 |
+| `plan_items[].recommendation_reason` | 推荐理由 |
+| `plan_items[].next_step` | 下一步练习建议 |
+| `plan_items[].evidence_summary` | 来源证据摘要 |
+
+边界：推荐只表示“更适合先尝试的练习线索”，不表示用户属于某种固定类型。
+
+### `GET /api/progress-summary`
+
+用途：首页“阶段性反馈”板块读取近期过程摘要。
+
+查询字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `range` | string | `7d`、`14d`、`30d`，默认 `7d` |
+
+返回包含：测评摘要、情绪温度计摘要、训练打卡摘要、情绪记录摘要、阶段状态、下一步建议和非诊断边界。
+
+### `GET /api/profile-trend`
+
+用途：返回阶段性画像/测评趋势的最小摘要。
+
+查询字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `worksheet_id` | string | 可选，按测评筛选 |
+
+返回包含：记录数、最近结果、簇计数、稳定性状态和边界说明。
+
+### `GET /api/training-effectiveness`
+
+用途：返回训练打卡效果的轻量摘要。
+
+查询字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `range` | string | `7d`、`14d`、`30d`，默认 `30d` |
+
+返回包含：`training_effectiveness`、兼容字段 `checkins`、`per_card_effectiveness`、`next_action` 和 `boundary_notice`。
+
+任务十一补充：
+
+- 优先使用 `checkins.before_thermometer_id` 和 `checkins.after_thermometer_id` 关联温度计记录计算练习前后变化；
+- 如果没有温度计记录，则兼容使用 `emotion_before` 和 `emotion_after`；
+- `per_card_effectiveness` 只表示过程观察摘要，不表示训练疗效承诺。
+
+### `GET /api/courses`
+
+用途：返回小程序课程页可展示的课程列表。
+
+数据来源：`content/courses.json`。
+
+返回包含：
+
+| 字段 | 说明 |
+|---|---|
+| `items` | 课程摘要列表 |
+| `boundary_notice` | 非诊断边界说明 |
+
+课程摘要包含 `id`、`title`、`subtitle`、`summary`、`tags`、`duration_minutes`、`level`、`section_count`、`recommended_card_ids` 和 `boundary_notice`。
+
+### `GET /api/courses/<course_id>`
+
+用途：返回单个课程详情，供小程序课程详情页展示。
+
+数据来源：`content/courses.json`。
+
+返回包含：
+
+| 字段 | 说明 |
+|---|---|
+| `course` | 课程详情 |
+| `boundary_notice` | 非诊断边界说明 |
+
+课程详情包含课程摘要字段、`sections`、`practice_steps` 和 `next_action`。当前课程只作为支持性练习材料，不构成诊断、治疗或危机干预。
+
+### `GET /api/text-analysis/summary`
+
+用途：后台或研究视角读取离线文本分析聚合结果。
+
+权限：需要管理员或研究者权限；当前兼容 `X-Admin-Token`。
+
+数据来源：
+
+```text
+outputs/text_analysis/text_analysis_summary.json
+outputs/text_analysis/text_features_summary.json
+outputs/text_analysis/social_network_summary.json
+```
+
+返回包含：
+
+| 字段 | 说明 |
+|---|---|
+| `outputs` | 各输出文件是否存在、更新时间、记录数和是否包含原文 |
+| `summary` | 已存在输出文件的聚合摘要 |
+| `boundary_notice` | 文本分析边界说明 |
+
+边界：
+
+- 该接口只读取离线聚合输出文件；
+- 不直接读取用户原始记录；
+- 不返回 `event_description`、`raw_text`、`message`、`reflection` 等原文；
+- 文本分析只用于脱敏研究摘要和内容质量观察，不用于诊断、个体画像定性或危机判断。
+
+补充约定（2026-07-09）：离线文本分析脚本读取人工督导回复时使用数据库真实字段 `supervision_requests.supervisor_reply`，只参与脱敏聚合输出，不向接口返回原文。
+
+### `POST /api/checkins`
+
+任务十补充可选字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `helpfulness_rating` | string/number | 用户主观有帮助程度 |
+| `skip_reason` | string | 暂停或跳过原因 |
+| `source_recommendation_id` | string | 来源推荐 ID |
+| `before_thermometer_id` | string | 练习前温度计记录 |
+| `after_thermometer_id` | string | 练习后温度计记录 |
+
+边界：这些字段只用于过程复盘和聚合分析，不用于诊断或效果承诺。
 

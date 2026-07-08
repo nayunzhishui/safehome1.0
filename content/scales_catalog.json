@@ -45,8 +45,8 @@
         "照顾耗竭"
       ],
       "sensitive_category": "parenting_stress",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "excluded_from_user_flow": true,
       "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
       "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
@@ -117,7 +117,9 @@
       ],
       "sensitive_category": "none",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。"
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "family_cohesion_adaptability",
@@ -221,7 +223,9 @@
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": false,
       "not_open_reason": "",
-      "exclusion_reason": ""
+      "exclusion_reason": "",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "perceived_social_support_psss",
@@ -253,7 +257,9 @@
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": false,
       "not_open_reason": "",
-      "exclusion_reason": ""
+      "exclusion_reason": "",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "acceptance_action_aaq2",
@@ -323,7 +329,9 @@
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": false,
       "not_open_reason": "",
-      "exclusion_reason": ""
+      "exclusion_reason": "",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "sleep_isi_psqi",
@@ -357,8 +365,8 @@
         "睡眠质量"
       ],
       "sensitive_category": "screening_or_health",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。"
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。"
     },
     {
       "id": "gad7_anxiety",
@@ -389,12 +397,14 @@
         "广泛性焦虑"
       ],
       "sensitive_category": "screening_or_health",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。"
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "phq9_cesd10_depression",
-      "display_name": "PHQ-9 抑郁相关自评量表（CES-D10待复核）",
+      "display_name": "PHQ-9 情绪低落相关自评量表",
       "audience": "adult",
       "theme": "depression_observation",
       "source_folder": "基于情绪反射弧的分类/抑郁测评-CESD10-PHQ9",
@@ -423,8 +433,10 @@
         "情绪低落"
       ],
       "sensitive_category": "screening_or_health",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。"
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "rsca_adolescent_resilience",
@@ -592,7 +604,9 @@
       "notes": "已由抽取脚本从本地源文件读取 11/11 个题项；正式开放前仍需人工复核。",
       "excluded_from_user_flow": false,
       "not_open_reason": "",
-      "exclusion_reason": ""
+      "exclusion_reason": "",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "study_engagement_uwes_s_17",
@@ -629,7 +643,9 @@
       "notes": "已由抽取脚本从本地源文件读取 17/17 个题项；正式开放前仍需人工复核。",
       "excluded_from_user_flow": false,
       "not_open_reason": "",
-      "exclusion_reason": ""
+      "exclusion_reason": "",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "cd_risc10_brief_resilience",
@@ -664,7 +680,9 @@
       "notes": "已由抽取脚本从本地源文件读取 10/10 个题项；正式开放前仍需人工复核。",
       "excluded_from_user_flow": false,
       "not_open_reason": "",
-      "exclusion_reason": ""
+      "exclusion_reason": "",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "regulatory_focus_general_18",
@@ -758,8 +776,8 @@
       "first_batch_candidate": false,
       "item_status": "draft_extracted",
       "scoring_status": "partial_rule_pending_dimension_review",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
       "notes": "已由抽取脚本从本地源文件读取 42/42 个题项；正式开放前仍需人工复核。",
       "excluded_from_user_flow": true,
@@ -790,8 +808,8 @@
       "first_batch_candidate": false,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
       "notes": "已由抽取脚本从本地源文件读取 5/5 个题项；正式开放前仍需人工复核。",
       "excluded_from_user_flow": true,
@@ -827,10 +845,12 @@
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "partial_rule_pending_dimension_review",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 60/60 个题项；正式开放前仍需人工复核。"
+      "notes": "已由抽取脚本从本地源文件读取 60/60 个题项；正式开放前仍需人工复核。",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "attribution_style_student_36",
@@ -862,7 +882,9 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 36/36 个题项；正式开放前仍需人工复核。"
+      "notes": "已由抽取脚本从本地源文件读取 36/36 个题项；正式开放前仍需人工复核。",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "ghq12_general_health",
@@ -891,10 +913,12 @@
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_sensitive_review",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。"
+      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "epq_emotional_stability_24",
@@ -923,10 +947,12 @@
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "pending_sensitive_review",
-      "boundary_notice": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
-      "result_disclaimer": "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。",
+      "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 24/24 个题项；正式开放前仍需人工复核。"
+      "notes": "已由抽取脚本从本地源文件读取 24/24 个题项；正式开放前仍需人工复核。",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "emotional_intelligence_eis_33",
@@ -959,7 +985,9 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 33/33 个题项；正式开放前仍需人工复核。"
+      "notes": "已由抽取脚本从本地源文件读取 33/33 个题项；正式开放前仍需人工复核。",
+      "instruction_status": "type_specific_draft",
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
     },
     {
       "id": "cognitive_curiosity_student",

@@ -1,53 +1,55 @@
+const { createSafeHomeApi } = require("../../services/api");
+
+const api = createSafeHomeApi();
+
+function formatCourse(course) {
+  return {
+    ...course,
+    category: course.theme || "陪伴练习",
+    description: course.scene || "选一小节慢慢看。",
+    lessonCount: course.section_count || 1,
+    progress: 0,
+  };
+}
+
 Page({
   data: {
     activeCategory: "全部",
-    categories: ["全部", "情绪管理", "亲子沟通", "家庭关系", "压力应对", "青春期陪伴"],
+    categories: ["全部"],
     weeklyProgress: {
-      learnedLessons: 3,
-      suggestion: "本周可以继续学习一节亲子沟通课程，并配合一次 UP 训练。",
+      learnedLessons: 0,
+      suggestion: "本周可以先看一节内容，再配合一张训练卡做一次小练习。",
     },
-    courses: [
-      {
-        title: "理解孩子的情绪",
-        description: "学会看见孩子行为背后的情绪需求。",
-        category: "情绪管理",
-        lessonCount: 12,
-        progress: 30,
-      },
-      {
-        title: "家长情绪调节入门",
-        description: "先稳定自己，才能更稳地回应孩子。",
-        category: "情绪管理",
-        lessonCount: 10,
-        progress: 60,
-      },
-      {
-        title: "非评判陪伴方法",
-        description: "练习先接住情绪，再讨论具体问题。",
-        category: "亲子沟通",
-        lessonCount: 8,
-        progress: 20,
-      },
-      {
-        title: "冲突后的关系修复",
-        description: "在争吵后重新建立一点连接和安全感。",
-        category: "家庭关系",
-        lessonCount: 9,
-        progress: 0,
-      },
-      {
-        title: "考试压力下的亲子沟通",
-        description: "在成绩和升学压力下减少指责与对抗。",
-        category: "压力应对",
-        lessonCount: 7,
-        progress: 60,
-      },
-    ],
+    courses: [],
     visibleCourses: [],
+    loading: true,
+    errorMessage: "",
+    boundaryNotice: "",
   },
 
   onLoad() {
-    this.filterCourses("全部");
+    this.loadCourses();
+  },
+
+  async loadCourses() {
+    this.setData({ loading: true, errorMessage: "" });
+    try {
+      const payload = await api.listCourses();
+      const courses = (payload.items || []).map(formatCourse);
+      const themes = Array.from(new Set(courses.map((item) => item.category).filter(Boolean)));
+      this.setData({
+        courses,
+        categories: ["全部"].concat(themes),
+        boundaryNotice: payload.boundary_notice || "",
+        loading: false,
+      });
+      this.filterCourses(this.data.activeCategory);
+    } catch (error) {
+      this.setData({
+        loading: false,
+        errorMessage: error.message || "课程内容暂时没能加载，请检查网络后再试一次。",
+      });
+    }
   },
 
   selectCategory(event) {
@@ -65,10 +67,18 @@ Page({
     });
   },
 
-  openCourse() {
-    wx.showToast({
-      title: "课程详情后续接入",
-      icon: "none",
+  openCourse(event) {
+    const courseId = event.detail && event.detail.id;
+    if (!courseId) {
+      wx.showToast({ title: "课程信息暂时不完整", icon: "none" });
+      return;
+    }
+    wx.navigateTo({
+      url: `/pages/course-detail/index?id=${encodeURIComponent(courseId)}`,
     });
+  },
+
+  retryLoadCourses() {
+    this.loadCourses();
   },
 });

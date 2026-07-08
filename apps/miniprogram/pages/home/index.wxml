@@ -91,6 +91,49 @@
     </button>
   </view>
 
+  <!-- 阶段性反馈 -->
+  <view class="safe-section">
+    <section-title title="阶段性反馈" subtitle="根据近期记录整理，不做诊断" more-text="本周复盘" bind:more="openWeeklyReport" />
+    <view wx:if="{{progressSummary}}" class="progress-card">
+      <view class="progress-card-head">
+        <view class="progress-copy">
+          <text class="progress-kicker">{{progressSummary.statusText}}</text>
+          <text class="progress-title">{{progressSummary.summaryText}}</text>
+          <text class="progress-period">{{progressSummary.periodText}}</text>
+        </view>
+        <text class="progress-badge">{{progressSummary.totalSignalCount}}</text>
+      </view>
+      <view class="progress-grid">
+        <view class="progress-metric">
+          <text class="progress-number">{{progressSummary.assessmentCount}}</text>
+          <text class="progress-label">测评记录</text>
+        </view>
+        <view class="progress-metric">
+          <text class="progress-number">{{progressSummary.checkinCount}}</text>
+          <text class="progress-label">练习打卡</text>
+        </view>
+        <view class="progress-metric">
+          <text class="progress-number">{{progressSummary.thermometerCount}}</text>
+          <text class="progress-label">情绪温度</text>
+        </view>
+      </view>
+      <view class="progress-lines">
+        <text class="progress-line">常见场景：{{progressSummary.topScene}}</text>
+        <text class="progress-line">常见情绪：{{progressSummary.topEmotion}}</text>
+        <text class="progress-line progress-line--strong">{{progressSummary.nextAction}}</text>
+      </view>
+      <text class="progress-boundary">{{progressSummary.boundaryNotice}}</text>
+    </view>
+    <view wx:else class="progress-card progress-card--empty">
+      <text class="progress-kicker">还不能归纳</text>
+      <text class="progress-title">{{progressSummaryError || '记录还不够，先继续完成测评和练习。'}}</text>
+      <view class="progress-empty-actions">
+        <button class="progress-empty-btn" bindtap="openAssessment">去测一测</button>
+        <button class="progress-empty-btn progress-empty-btn--secondary" bindtap="openWeeklyReport">看本周复盘</button>
+      </view>
+    </view>
+  </view>
+
   <view wx:if="{{showDevEntry}}" class="safe-section dev-entry-section">
     <button class="dev-entry" bindtap="openIntegrationTest">进入联调测试页</button>
   </view>

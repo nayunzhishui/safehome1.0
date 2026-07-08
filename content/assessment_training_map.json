@@ -1,6 +1,6 @@
 {
   "version": "2026.07-assessment-training-map-v2",
-  "updated_at": "2026-06-30",
+  "updated_at": "2026-07-06",
   "boundary_notice": "测评结果到训练卡的映射只作为支持性练习建议，不构成诊断、治疗方案、危机干预或固定评价。真实量表、草稿量表和试用内容正式开放前必须经过人工复核。",
   "rules": [
     {
@@ -85,7 +85,7 @@
       "rule_id": "erq_expressive_suppression_gentle_expression",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "emotion_regulation_erq_gross",
+        "scale_id": "emotion_regulation_erq",
         "dimension": "ERQ_ES",
         "level": "high_or_needs_support"
       },
@@ -566,7 +566,7 @@
       "rule_id": "rsca_total_needs_regulation",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "rsca_adolescent_resilience",
+        "scale_id": "emotional_resilience_11",
         "dimension": "TOTAL",
         "level": "needs_support"
       },
@@ -600,7 +600,7 @@
       "rule_id": "rsca_total_high_positive",
       "source_type": "assessment",
       "trigger_condition": {
-        "scale_id": "rsca_adolescent_resilience",
+        "scale_id": "emotional_resilience_11",
         "dimension": "TOTAL",
         "level": "high"
       },
@@ -626,6 +626,369 @@
       "reason": "复原力得分较高时，提取小事实并复制到下一步。",
       "today_suggestion": "今天先完成「rsca_positive_cognition」对应的一张训练卡，只做一个最小动作。",
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "mindful_attention_awareness_maas_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "mindful_attention_awareness_maas",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "awareness"
+      ],
+      "recommended_card_ids": [
+        "scs_mindful_moment",
+        "emotion_naming"
+      ],
+      "card_roles": [
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "emotion_naming",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当觉察线索需要更多练习时，先用一分钟观察和情绪命名帮助自己从自动反应里停一下。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "study_engagement_uwes_s_17_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "study_engagement_uwes_s_17",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "behavior"
+      ],
+      "recommended_card_ids": [
+        "exam_micro_start",
+        "body_scan_before_study"
+      ],
+      "card_roles": [
+        {
+          "card_id": "exam_micro_start",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "body_scan_before_study",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当学习投入需要支持时，先从十分钟启动和学习前身体扫描开始，降低开始任务的门槛。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "cd_risc10_brief_resilience_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "cd_risc10_brief_resilience",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "resource"
+      ],
+      "recommended_card_ids": [
+        "rsca_positive_cognition",
+        "rsca_emotion_regulation"
+      ],
+      "card_roles": [
+        {
+          "card_id": "rsca_positive_cognition",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "rsca_emotion_regulation",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当韧性资源需要继续稳定时，先记录一个小事实，再配合三步稳定情绪练习。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "perceived_social_support_psss_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "perceived_social_support_psss",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "resource"
+      ],
+      "recommended_card_ids": [
+        "self_support_statement",
+        "one_open_question"
+      ],
+      "card_roles": [
+        {
+          "card_id": "self_support_statement",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "one_open_question",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当支持感需要被看见时，先写一句自我支持，再尝试向可信的人提出一个开放问题。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "gad7_anxiety_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "gad7_anxiety",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "state_observation"
+      ],
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "parent_body_grounding"
+      ],
+      "card_roles": [
+        {
+          "card_id": "student_emotion_naming",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "parent_body_grounding",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当紧张和担心线索较明显时，先做情绪命名和身体落地，不把分数当作诊断结论。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "phq9_cesd10_depression_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "phq9_cesd10_depression",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "state_observation"
+      ],
+      "recommended_card_ids": [
+        "self_support_statement",
+        "student_emotion_naming"
+      ],
+      "card_roles": [
+        {
+          "card_id": "self_support_statement",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "student_emotion_naming",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当情绪低落和精力变化线索较明显时，先做一句自我支持和一个情绪命名，不把分数当作诊断结论。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "big_five_bfi_60_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "big_five_bfi_60",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "trait_observation"
+      ],
+      "recommended_card_ids": [
+        "nonjudgmental_response",
+        "cognitive_flexibility"
+      ],
+      "card_roles": [
+        {
+          "card_id": "nonjudgmental_response",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "cognitive_flexibility",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "人格倾向类结果只用于自我理解，推荐从非评判回应和换一种解释开始练习，不做人格定性。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "attribution_style_student_36_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "attribution_style_student_36",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "appraisal"
+      ],
+      "recommended_card_ids": [
+        "student_two_thoughts",
+        "auto_thought_rewrite"
+      ],
+      "card_roles": [
+        {
+          "card_id": "student_two_thoughts",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "auto_thought_rewrite",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当归因习惯需要更多弹性时，先给同一件事找第二种说法，再改写一个自动想法。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "ghq12_general_health_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "ghq12_general_health",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "state_observation"
+      ],
+      "recommended_card_ids": [
+        "parent_body_grounding",
+        "scs_mindful_moment"
+      ],
+      "card_roles": [
+        {
+          "card_id": "parent_body_grounding",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当一般压力和日常功能线索需要关注时，先做身体落地和一分钟观察，不把分数当作诊断结论。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "epq_emotional_stability_24_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "epq_emotional_stability_24",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "trait_observation"
+      ],
+      "recommended_card_ids": [
+        "emotion_naming",
+        "three_second_pause"
+      ],
+      "card_roles": [
+        {
+          "card_id": "emotion_naming",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "three_second_pause",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "情绪稳定性结果只作为阶段性观察，推荐先命名情绪并在开口前暂停三秒，不做人格定性。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
+      "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
+      "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "emotional_intelligence_eis_33_supportive_default",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "emotional_intelligence_eis_33",
+        "level": "supportive_default"
+      },
+      "theme": [
+        "assessment_result",
+        "training_recommendation",
+        "emotion_skill"
+      ],
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "erq_expression_gentle"
+      ],
+      "card_roles": [
+        {
+          "card_id": "student_emotion_naming",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "erq_expression_gentle",
+          "role": "备用练习"
+        }
+      ],
+      "reason": "当情绪技能线索需要练习时，先识别情绪，再尝试低风险、温和表达。",
+      "today_suggestion": "今天先选第一张卡，只做一个最小动作即可。",
+      "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
       "review_status": "draft"

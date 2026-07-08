@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
@@ -14,8 +15,15 @@ Page({
   },
 
   onLoad(options) {
+    const diaryId = decodeURIComponent(options.diary_id || "");
+    if (!requireLogin({
+      redirectUrl: `/pages/supervision/index?diary_id=${encodeURIComponent(diaryId)}`,
+      message: "请先登录后再提交人工督导。",
+    })) {
+      return;
+    }
     this.setData({
-      diaryId: decodeURIComponent(options.diary_id || ""),
+      diaryId,
     });
   },
 

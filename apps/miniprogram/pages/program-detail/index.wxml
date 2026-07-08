@@ -36,7 +36,7 @@
     <view wx:if="{{selectedSession.writing_prompt}}" class="section-block">
       <text class="section-title">书写提示</text>
       <text class="prompt-box">{{selectedSession.writing_prompt}}</text>
-      <textarea class="draft-input" value="{{draftText}}" placeholder="这里的草稿只保存在本机，不会上传。" bindinput="onDraftInput" />
+      <textarea class="draft-input" value="{{draftText}}" placeholder="可以先写在这里。保存草稿只留在本机；点击正式提交后才会上传。" bindinput="onDraftInput" />
       <button class="safe-primary-button" bindtap="saveDraft">保存本机草稿</button>
     </view>
 
@@ -46,6 +46,18 @@
     </view>
 
     <view class="session-disclaimer">{{selectedSession.disclaimer}}</view>
+
+    <view class="submit-block">
+      <checkbox-group bindchange="onAnalysisConsentChange">
+        <label class="consent-row">
+          <checkbox value="yes" checked="{{analysisConsent}}" color="#4E7C6B" />
+          <text>允许将本次内容用于脱敏聚合分析，不默认展示原文。</text>
+        </label>
+      </checkbox-group>
+      <view wx:if="{{successMessage}}" class="status success">{{successMessage}}</view>
+      <view wx:if="{{errorMessage}}" class="status error">{{errorMessage}}</view>
+      <button class="safe-primary-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitEntry">登录后正式提交</button>
+    </view>
   </view>
 </view>
 

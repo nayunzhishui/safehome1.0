@@ -1,0 +1,8 @@
+{
+  "homework": ["作业"],
+  "exam": ["考试", "成绩"],
+  "phone": ["手机"],
+  "sleep": ["睡觉"],
+  "communication": ["沟通", "亲子冲突"],
+  "school": ["上学"]
+}

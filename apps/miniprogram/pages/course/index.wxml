@@ -34,12 +34,26 @@
     </scroll-view>
   </view>
 
-  <view class="safe-section">
+  <view wx:if="{{errorMessage}}" class="safe-section">
+    <view class="course-state-card">
+      <text>{{errorMessage}}</text>
+      <button class="retry-button" bindtap="retryLoadCourses">重新加载</button>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-section">
+    <view class="course-state-card">
+      <text>正在读取课程内容...</text>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && !errorMessage}}" class="safe-section">
     <section-title title="可选内容" subtitle="更像说明和练习参考，不是必须完成的课程任务" />
     <view class="course-list">
       <course-card
         wx:for="{{visibleCourses}}"
-        wx:key="title"
+        wx:key="id"
+        course-id="{{item.id}}"
         title="{{item.title}}"
         description="{{item.description}}"
         category="{{item.category}}"
@@ -49,6 +63,10 @@
         bind:tapcard="openCourse"
       />
     </view>
+  </view>
+
+  <view wx:if="{{boundaryNotice}}" class="safe-section">
+    <view class="boundary-card">{{boundaryNotice}}</view>
   </view>
 
   <view class="safe-section">

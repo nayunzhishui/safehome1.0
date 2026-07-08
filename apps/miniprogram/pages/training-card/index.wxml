@@ -50,14 +50,31 @@
         <text class="today-text">{{item.todayGoal}}</text>
       </view>
 
+      <view class="today-step">
+        <text class="today-label">适用情境</text>
+        <text class="today-text">{{item.scenarioText}}</text>
+      </view>
+
+      <view wx:if="{{item.examplePhrase}}" class="example-box">
+        <text class="today-label">示例话术</text>
+        <text class="today-text">“{{item.examplePhrase}}”</text>
+      </view>
+
       <view wx:if="{{item.tagsText}}" class="tag-row">
-        <text class="tag-pill">匹配线索：{{item.tagsText}}</text>
+        <text class="tag-pill">{{item.tagsText}}</text>
       </view>
 
       <view class="tip-box">
-        <text class="tip-title">练习前先提醒自己</text>
-        <text class="tip-text">这张卡只是帮助你练一个更小的回应动作，不需要一次做得很完整。</text>
+        <text class="tip-title">开始前看一眼</text>
+        <text class="tip-text">{{item.beforePrompt || '这张卡只是帮助你练一个更小的回应动作，不需要一次做得很完整。'}}</text>
       </view>
+
+      <view class="tip-box">
+        <text class="tip-title">练习后可以记一句</text>
+        <text class="tip-text">{{item.afterPrompt}}</text>
+      </view>
+
+      <text class="boundary-text">{{item.boundaryNotice}}</text>
 
       <button class="primary-button" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">查看练习步骤</button>
     </view>

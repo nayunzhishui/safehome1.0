@@ -34,8 +34,16 @@ SCHEMA_SQL = [
         nickname TEXT,
         role TEXT DEFAULT 'parent',
         source TEXT,
+        username TEXT,
+        phone_or_email TEXT,
+        password_hash TEXT,
+        anonymous_id TEXT,
         wechat_openid TEXT,
         avatar_url TEXT,
+        status TEXT DEFAULT 'active',
+        last_login_at TEXT,
+        phone_verified_at TEXT,
+        phone_source TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )
@@ -115,6 +123,10 @@ SCHEMA_SQL = [
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         intensity_level INTEGER NOT NULL,
+        valence_level INTEGER,
+        arousal_level INTEGER,
+        control_level INTEGER,
+        emotion_label TEXT,
         brief_text TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
@@ -161,6 +173,11 @@ SCHEMA_SQL = [
         emotion_before INTEGER,
         emotion_after INTEGER,
         reflection TEXT,
+        helpfulness_rating TEXT,
+        skip_reason TEXT,
+        source_recommendation_id TEXT,
+        before_thermometer_id TEXT,
+        after_thermometer_id TEXT,
         created_at TEXT NOT NULL
     )
     """,
@@ -393,6 +410,9 @@ SCHEMA_SQL = [
         frequent_emotions_json TEXT NOT NULL,
         common_patterns_json TEXT NOT NULL,
         completed_cards_json TEXT NOT NULL,
+        assessment_summary_json TEXT NOT NULL DEFAULT '{}',
+        thermometer_summary_json TEXT NOT NULL DEFAULT '{}',
+        training_effectiveness_summary_json TEXT NOT NULL DEFAULT '{}',
         next_week_suggestion TEXT,
         created_at TEXT NOT NULL
     )

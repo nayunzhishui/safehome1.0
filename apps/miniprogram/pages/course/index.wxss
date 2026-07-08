@@ -135,3 +135,29 @@
   gap: 20rpx;
   margin-top: 20rpx;
 }
+
+.course-state-card,
+.boundary-card {
+  padding: 24rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.6;
+  box-shadow: var(--safe-shadow-card);
+}
+
+.retry-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58rpx;
+  margin-top: 16rpx;
+  padding: 0 22rpx;
+  border: 1rpx solid var(--safe-border-strong);
+  border-radius: var(--safe-radius-pill);
+  color: var(--safe-primary-deep);
+  font-size: 23rpx;
+  font-weight: 800;
+}

@@ -53,6 +53,13 @@ def _create_profile(client):
     return response.get_json()["data"]["student_profile_id"]
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def test_risk_review_list_requires_admin_token(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
@@ -128,10 +135,13 @@ def test_profile_review_endpoints_require_admin_token(tmp_path, monkeypatch):
 def test_diary_admin_list_can_read_all_users_without_user_filter(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    owner_a_id, owner_a_token = _wechat_login(client, "parent-a")
+    owner_b_id, owner_b_token = _wechat_login(client, "parent-b")
 
-    for user_id in ["parent-a", "parent-b"]:
+    for user_id, token in [(owner_a_id, owner_a_token), (owner_b_id, owner_b_token)]:
         response = client.post(
             "/api/diaries",
+            headers={"Authorization": f"Bearer {token}"},
             json={
                 "user_id": user_id,
                 "scene": "作业拖延",
@@ -141,7 +151,10 @@ def test_diary_admin_list_can_read_all_users_without_user_filter(tmp_path, monke
         )
         assert response.status_code == 201
 
-    owner_response = client.get("/api/diaries?user_id=parent-a")
+    owner_response = client.get(
+        f"/api/diaries?user_id={owner_a_id}",
+        headers={"Authorization": f"Bearer {owner_a_token}"},
+    )
     admin_response = client.get("/api/diaries?limit=10", headers=ADMIN_HEADERS)
     wrong_token = client.get("/api/diaries?limit=10", headers={"X-Admin-Token": "wrong-token"})
 

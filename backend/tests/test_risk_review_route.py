@@ -22,6 +22,13 @@ def _fresh_app(tmp_path, monkeypatch):
     return module.app
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
@@ -156,10 +163,12 @@ def test_followup_and_sandplay_high_risk_text_create_pending_reviews(tmp_path, m
 def test_supervision_high_risk_message_creates_pending_review(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "parent-supervision-risk")
 
     response = client.post(
         "/api/supervision",
-        json={"user_id": "parent-supervision-risk", "message": "我不想活了，需要人工支持。"},
+        headers={"Authorization": f"Bearer {token}"},
+        json={"user_id": user_id, "message": "我不想活了，需要人工支持。"},
     )
 
     assert response.status_code == 201

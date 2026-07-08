@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
@@ -9,6 +10,13 @@ Page({
     cardTitle: "这张训练卡",
     emotionBefore: 5,
     emotionAfter: 5,
+    helpfulnessOptions: [
+      { label: "有帮助", value: "helpful" },
+      { label: "一般", value: "neutral" },
+      { label: "暂时没有帮助", value: "not_helpful_yet" },
+    ],
+    helpfulnessRating: "",
+    skipReason: "",
     reflection: "",
     reflectionPrompts: [
       "这次做到哪一步？",
@@ -21,10 +29,19 @@ Page({
   },
 
   onLoad(options) {
+    const cardId = decodeURIComponent(options.card_id || "");
+    const diaryId = decodeURIComponent(options.diary_id || "");
+    const cardTitle = decodeURIComponent(options.card_title || "这张训练卡");
+    if (!requireLogin({
+      redirectUrl: `/pages/checkin/index?card_id=${encodeURIComponent(cardId)}&diary_id=${encodeURIComponent(diaryId)}&card_title=${encodeURIComponent(cardTitle)}`,
+      message: "请先登录后再记录练习。",
+    })) {
+      return;
+    }
     this.setData({
-      cardId: decodeURIComponent(options.card_id || ""),
-      diaryId: decodeURIComponent(options.diary_id || ""),
-      cardTitle: decodeURIComponent(options.card_title || "这张训练卡"),
+      cardId,
+      diaryId,
+      cardTitle,
     });
   },
 
@@ -38,6 +55,18 @@ Page({
 
   onReflectionInput(event) {
     this.setData({ reflection: event.detail.value, successMessage: "", errorMessage: "" });
+  },
+
+  chooseHelpfulness(event) {
+    this.setData({
+      helpfulnessRating: event.currentTarget.dataset.value || "",
+      successMessage: "",
+      errorMessage: "",
+    });
+  },
+
+  onSkipReasonInput(event) {
+    this.setData({ skipReason: event.detail.value, successMessage: "", errorMessage: "" });
   },
 
   async submitCheckin() {
@@ -56,6 +85,8 @@ Page({
         emotion_before: this.data.emotionBefore,
         emotion_after: this.data.emotionAfter,
         reflection: this.data.reflection.trim(),
+        helpfulness_rating: this.data.helpfulnessRating || undefined,
+        skip_reason: this.data.skipReason.trim() || undefined,
       });
 
       this.setData({

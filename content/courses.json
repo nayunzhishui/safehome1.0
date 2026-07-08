@@ -1,0 +1,127 @@
+{
+  "version": "2026.07-course-v1",
+  "updated_at": "2026-07-06",
+  "boundary_notice": "课程内容只用于陪伴练习、情绪理解和自我观察，不构成诊断、治疗方案或危机干预。",
+  "courses": [
+    {
+      "id": "understand_child_emotion",
+      "title": "理解孩子的情绪",
+      "theme": "情绪管理",
+      "scene": "孩子哭闹、顶嘴或沉默时，先看见行为背后的情绪需求。",
+      "duration_minutes": 12,
+      "enabled": true,
+      "sections": [
+        {
+          "title": "先看见情绪，不急着纠正",
+          "body": "孩子的行为常常是情绪和需求的外显。先用一句话确认感受，再讨论具体规则。"
+        },
+        {
+          "title": "把行为和人分开",
+          "body": "可以描述具体行为和影响，避免把孩子说成某种固定类型。"
+        },
+        {
+          "title": "连接一张训练卡",
+          "body": "看完后可练“情绪识别卡”或“一个开放问题卡”。"
+        }
+      ],
+      "relation_to_cards_or_programs": ["emotion_naming", "one_open_question"],
+      "boundary_notice": "本课程只提供陪伴理解和练习建议，不评价孩子人格，也不替代心理咨询或紧急帮助。"
+    },
+    {
+      "id": "parent_emotion_regulation_intro",
+      "title": "家长情绪调节入门",
+      "theme": "情绪管理",
+      "scene": "家长已经很着急、想立刻批评或讲道理时，先稳定自己的反应。",
+      "duration_minutes": 10,
+      "enabled": true,
+      "sections": [
+        {
+          "title": "先暂停，再回应",
+          "body": "暂停不是放弃管教，而是给自己留出一个更稳的回应空间。"
+        },
+        {
+          "title": "找身体信号",
+          "body": "胸口紧、声音变大、手心出汗，都可以作为暂停提醒。"
+        },
+        {
+          "title": "连接一张训练卡",
+          "body": "看完后可练“3 秒暂停卡”或“家长身体落地卡”。"
+        }
+      ],
+      "relation_to_cards_or_programs": ["three_second_pause", "parent_body_grounding"],
+      "boundary_notice": "本课程只用于自我观察和陪伴练习，不构成诊断、治疗方案或危机干预。"
+    },
+    {
+      "id": "nonjudgmental_companion",
+      "title": "非评判陪伴方法",
+      "theme": "亲子沟通",
+      "scene": "亲子沟通中容易出现指责、贴标签或反复催促时，练习换一种开口。",
+      "duration_minutes": 8,
+      "enabled": true,
+      "sections": [
+        {
+          "title": "把判断句换成观察句",
+          "body": "少用“你就是”，多用“我看到刚才发生了”。"
+        },
+        {
+          "title": "先确认，再建议",
+          "body": "确认感受并不等于同意行为，它能降低对抗强度。"
+        },
+        {
+          "title": "连接一张训练卡",
+          "body": "看完后可练“非评判回应卡”或“先确认再建议卡”。"
+        }
+      ],
+      "relation_to_cards_or_programs": ["nonjudgmental_response", "validation_before_advice"],
+      "boundary_notice": "本课程只提供沟通练习建议，不评价家长或孩子，也不替代专业咨询。"
+    },
+    {
+      "id": "repair_after_conflict_course",
+      "title": "冲突后的关系修复",
+      "theme": "家庭关系",
+      "scene": "争吵、冷战或说重话之后，用一个小动作恢复连接。",
+      "duration_minutes": 9,
+      "enabled": true,
+      "sections": [
+        {
+          "title": "修复不等于立刻解决",
+          "body": "修复先恢复一点安全感，问题可以稍后再谈。"
+        },
+        {
+          "title": "说一句可承受的话",
+          "body": "可以从“刚才我声音有点大，我想重新说一次”开始。"
+        },
+        {
+          "title": "连接一张训练卡",
+          "body": "看完后可练“冲突后一句修复”或“一个修复问题”。"
+        }
+      ],
+      "relation_to_cards_or_programs": ["parent_after_conflict_repair", "parent_repair_question"],
+      "boundary_notice": "本课程只提供关系修复练习建议；如存在暴力、自伤或现实安全风险，应优先寻求现实支持。"
+    },
+    {
+      "id": "exam_pressure_communication",
+      "title": "考试压力下的亲子沟通",
+      "theme": "压力应对",
+      "scene": "考试、成绩和升学压力升高时，减少指责与对抗。",
+      "duration_minutes": 7,
+      "enabled": true,
+      "sections": [
+        {
+          "title": "先分清压力来源",
+          "body": "压力可能来自任务、担心、比较或不确定。先问清楚，不急着推解决方案。"
+        },
+        {
+          "title": "把任务变小",
+          "body": "先约定一个十分钟能开始的动作，比一次性要求改变更容易执行。"
+        },
+        {
+          "title": "连接一张训练卡",
+          "body": "看完后可练“考试 10 分钟启动卡”或“学习前身体扫描卡”。"
+        }
+      ],
+      "relation_to_cards_or_programs": ["exam_micro_start", "body_scan_before_study"],
+      "boundary_notice": "本课程只提供压力沟通和练习建议，不构成诊断、治疗方案或学业评价。"
+    }
+  ]
+}

@@ -4686,7 +4686,7 @@
     },
     {
       "scale_id": "phq9_cesd10_depression",
-      "display_name": "PHQ-9 抑郁相关自评量表（CES-D10待复核）",
+      "display_name": "PHQ-9 情绪低落相关自评量表",
       "source_folder": "基于情绪反射弧的分类/抑郁测评-CESD10-PHQ9",
       "source_files": [
         "精选-PHQ-9抑郁症筛查量表.doc",

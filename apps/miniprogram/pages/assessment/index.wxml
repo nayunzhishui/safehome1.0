@@ -59,11 +59,30 @@
   <view wx:if="{{recentResults.length}}" class="safe-section">
     <section-title title="最近记录" subtitle="只显示最近 3 条测一测记录" />
     <view class="recent-list">
-      <view wx:for="{{recentResults}}" wx:key="id" class="recent-card">
+      <view
+        wx:for="{{recentResults}}"
+        wx:key="id"
+        class="recent-card clickable {{item.is_profile ? 'recent-card--profile' : ''}}"
+        data-id="{{item.id}}"
+        data-worksheet-id="{{item.worksheet_id}}"
+        bindtap="openRecentResult"
+      >
+        <view class="recent-head">
+          <text class="recent-badge">{{item.badge_text}}</text>
+          <text class="recent-action">查看</text>
+        </view>
         <text class="recent-title">{{item.worksheet_title}}</text>
         <text class="recent-meta">{{item.created_at}}</text>
         <text class="recent-summary">{{item.result_summary}}</text>
       </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{recentLoginTip}}" class="safe-section">
+    <section-title title="最近记录" subtitle="登录后显示你的测一测记录" />
+    <view class="recent-login-card">
+      <text>{{recentLoginTip}}</text>
+      <button class="login-link-button" bindtap="goLogin">去登录</button>
     </view>
   </view>
 

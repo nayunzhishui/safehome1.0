@@ -3,7 +3,8 @@
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, new_id, now_iso, row_to_dict, rows_to_dicts
-from routes.utils import fail, ok, parse_bool, parse_int, require_fields, require_user_id, resolve_user_id_for_query
+from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
+from routes.utils import fail, ok, parse_bool, parse_int, require_fields
 
 bp = Blueprint("checkins", __name__, url_prefix="/api/checkins")
 
@@ -16,9 +17,9 @@ def create_checkin():
         return fail("missing_fields", f"缺少必填字段：{', '.join(missing)}")
 
     try:
-        user_id = require_user_id(payload)
-    except ValueError as exc:
-        return fail("validation_error", str(exc), status=400)
+        user_id = resolve_actor_user_id(payload=payload)
+    except AuthError as exc:
+        return auth_error_response(exc)
     timestamp = now_iso()
     checkin_id = new_id("checkin")
 
@@ -28,9 +29,11 @@ def create_checkin():
             """
             INSERT INTO checkins (
                 id, user_id, card_id, diary_id, completed, emotion_before,
-                emotion_after, reflection, created_at
+                emotion_after, reflection, helpfulness_rating, skip_reason,
+                source_recommendation_id, before_thermometer_id,
+                after_thermometer_id, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 checkin_id,
@@ -41,6 +44,11 @@ def create_checkin():
                 parse_int(payload.get("emotion_before"), None),
                 parse_int(payload.get("emotion_after"), None),
                 payload.get("reflection"),
+                payload.get("helpfulness_rating"),
+                payload.get("skip_reason"),
+                payload.get("source_recommendation_id"),
+                payload.get("before_thermometer_id"),
+                payload.get("after_thermometer_id"),
                 timestamp,
             ),
         )
@@ -53,9 +61,9 @@ def create_checkin():
 @bp.get("")
 def list_checkins():
     try:
-        user_id = resolve_user_id_for_query(request.args.get("user_id"))
-    except ValueError as exc:
-        return fail("validation_error", str(exc), status=400)
+        user_id = resolve_actor_user_id(request.args.get("user_id"))
+    except AuthError as exc:
+        return auth_error_response(exc)
     limit = parse_int(request.args.get("limit"), 50)
 
     with get_connection() as conn:

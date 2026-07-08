@@ -18,6 +18,7 @@ from routes.cards import bp as cards_bp
 from routes.checkins import bp as checkins_bp
 from routes.consent import bp as consent_bp
 from routes.content_review import bp as content_review_bp
+from routes.courses import bp as courses_bp
 from routes.diaries import bp as diaries_bp
 from routes.emotion_thermometer import bp as emotion_thermometer_bp
 from routes.feedback import bp as feedback_bp
@@ -27,10 +28,12 @@ from routes.messages import bp as messages_bp
 from routes.parent_assessments import bp as parent_assessments_bp
 from routes.privacy import bp as privacy_bp
 from routes.profile import bp as profile_bp
+from routes.progress_summary import bp as progress_summary_bp
 from routes.risk_review import bp as risk_review_bp
 from routes.programs import bp as programs_bp
 from routes.reports import bp as reports_bp
 from routes.supervision import bp as supervision_bp
+from routes.text_analysis import bp as text_analysis_bp
 from routes.training_plan import bp as training_plan_bp
 
 
@@ -40,6 +43,7 @@ REQUIRED_CONTENT_FILES = [
     "feedback_rules.json",
     "risk_keywords.json",
     "programs.json",
+    "courses.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -136,17 +140,20 @@ def create_app(
     app.register_blueprint(family_bp)
     app.register_blueprint(messages_bp)
     app.register_blueprint(profile_bp)
+    app.register_blueprint(progress_summary_bp)
     app.register_blueprint(parent_assessments_bp)
     app.register_blueprint(assessments_bp)
     app.register_blueprint(cards_bp)
     app.register_blueprint(checkins_bp)
     app.register_blueprint(consent_bp)
     app.register_blueprint(content_review_bp)
+    app.register_blueprint(courses_bp)
     app.register_blueprint(privacy_bp)
     app.register_blueprint(risk_review_bp)
     app.register_blueprint(programs_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(supervision_bp)
+    app.register_blueprint(text_analysis_bp)
     app.register_blueprint(training_plan_bp)
     app.register_blueprint(admin_bp)
 

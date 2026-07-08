@@ -3,8 +3,8 @@
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, new_id, now_iso, row_to_dict
-from routes.auth_utils import AuthError, auth_error_response, require_role
-from routes.utils import fail, ok, require_fields, require_user_id
+from routes.auth_utils import AuthError, auth_error_response, require_role, resolve_actor_user_id
+from routes.utils import fail, ok, require_fields
 from services.message_service import create_message
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
@@ -20,9 +20,9 @@ def create_supervision_request():
         return fail("missing_fields", f"缺少必填字段：{', '.join(missing)}")
 
     try:
-        user_id = require_user_id(payload)
-    except ValueError as exc:
-        return fail("validation_error", str(exc), status=400)
+        user_id = resolve_actor_user_id(payload=payload)
+    except AuthError as exc:
+        return auth_error_response(exc)
     timestamp = now_iso()
     request_id = new_id("supervision")
     risk_result = check_text_risk([payload.get("message"), payload.get("risk_hint")], source="supervision")

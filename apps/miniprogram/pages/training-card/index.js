@@ -2,6 +2,29 @@ const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
 
+const INTERNAL_TOKEN_RE = /(^|_)(SCS|RSCA|HPLP|PRFQ|RFQ|PSSS|student|self|scs|rsca|hplp|prfq|rfq|psss)(_|$)|^[a-z]+_[a-z0-9_]+$/;
+
+function isUserFacingTag(tag) {
+  if (!tag || typeof tag !== "string") {
+    return false;
+  }
+  if (INTERNAL_TOKEN_RE.test(tag)) {
+    return false;
+  }
+  return /[\u4e00-\u9fa5]/.test(tag);
+}
+
+function formatRecommendationSource(tags, cardIds) {
+  if (cardIds && cardIds.length) {
+    return "来自本次测评结果，先推荐一张最容易完成的小练习。";
+  }
+  const visibleTags = (tags || []).filter(isUserFacingTag).slice(0, 3);
+  if (visibleTags.length) {
+    return `来自这次记录中的${visibleTags.join("、")}线索。`;
+  }
+  return "来自这次记录或测评结果中的可练习线索。";
+}
+
 Page({
   data: {
     loading: true,
@@ -22,7 +45,7 @@ Page({
     const cardIds = cardIdsText ? cardIdsText.split(",").filter(Boolean) : [];
     this.setData({
       tags,
-      tagsText: tags.join("、"),
+      tagsText: formatRecommendationSource(tags, cardIds),
       cardIds,
       diaryId: decodeURIComponent(options.diary_id || ""),
     });
@@ -58,10 +81,14 @@ Page({
       ...card,
       orderText: `0${index + 1}`,
       typeLabel: this.getTypeLabel(card.type),
-      tagsText: (card.tags || []).join("、"),
+      tagsText: (card.tags || []).filter(isUserFacingTag).slice(0, 3).join("、"),
       durationText: card.duration_minutes ? `${card.duration_minutes} 分钟` : "1 次小练习",
-      scenarioText: (card.suitable_for || [])[0] || "适合这次记录中的互动线索",
-      todayGoal: card.purpose || "今天先完成一个能做到的小回应动作。",
+      scenarioText: card.suitable_scene || (card.suitable_for || [])[0] || "适合这次记录中的互动线索",
+      todayGoal: card.today_goal || card.purpose || "今天先完成一个能做到的小回应动作。",
+      examplePhrase: card.example_phrase || card.example || "",
+      beforePrompt: card.before_note_prompt || card.pre_practice_prompt || "",
+      afterPrompt: card.after_note_prompt || card.post_practice_prompt || "",
+      boundaryNotice: card.boundary_notice || "这张卡只是陪伴练习建议，不替代专业咨询或紧急帮助。",
       stepsList: (card.steps || []).map((step, stepIndex) => ({
         text: step,
         numberText: `${stepIndex + 1}`,

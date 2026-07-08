@@ -21,6 +21,13 @@ def _fresh_app(tmp_path):
     return module.app
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def test_feedback_high_risk_blocks_training_cards_and_common_rules(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
@@ -93,11 +100,14 @@ def test_feedback_low_risk_keeps_existing_rule_flow(tmp_path):
 def test_feedback_diary_id_requires_matching_owner_or_admin(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    owner_id, owner_token = _wechat_login(client, "parent-owner")
+    other_id, other_token = _wechat_login(client, "parent-other")
 
     diary_response = client.post(
         "/api/diaries",
+        headers={"Authorization": f"Bearer {owner_token}"},
         json={
-            "user_id": "parent-owner",
+            "user_id": owner_id,
             "scene": "作业拖延",
             "event_description": "孩子写作业拖延，我催了很多次。",
             "parent_emotion": "着急",
@@ -108,11 +118,13 @@ def test_feedback_diary_id_requires_matching_owner_or_admin(tmp_path):
 
     wrong_owner = client.post(
         "/api/feedback/generate",
-        json={"user_id": "parent-other", "diary_id": diary_id},
+        headers={"Authorization": f"Bearer {other_token}"},
+        json={"user_id": other_id, "diary_id": diary_id},
     )
     owner = client.post(
         "/api/feedback/generate",
-        json={"user_id": "parent-owner", "diary_id": diary_id},
+        headers={"Authorization": f"Bearer {owner_token}"},
+        json={"user_id": owner_id, "diary_id": diary_id},
     )
     admin = client.post(
         "/api/feedback/generate",

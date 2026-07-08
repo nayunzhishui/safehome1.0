@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { formatTime, hitTestPoint, prepareLinePoints } = require("../../utils/chart");
+const { requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
@@ -15,6 +16,11 @@ Page({
   data: {
     date: todayKey(),
     intensityLevel: 5,
+    intensityPercent: 50,
+    valenceLevel: 5,
+    arousalLevel: 5,
+    controlLevel: 5,
+    emotionLabel: "",
     briefText: "",
     records: [],
     summary: { count: 0, min: null, max: null, avg: null },
@@ -26,6 +32,13 @@ Page({
   },
 
   onLoad() {
+    if (!requireLogin({
+      redirectUrl: "/pages/thermometer/index",
+      message: "请先登录后再记录情绪温度。",
+    })) {
+      return;
+    }
+    this.syncIntensityVisual(this.data.intensityLevel);
     this.loadDay();
   },
 
@@ -33,8 +46,63 @@ Page({
     this.drawCurve();
   },
 
-  onIntensityChange(event) {
-    this.setData({ intensityLevel: Number(event.detail.value) });
+  clampIntensity(value) {
+    return Math.max(1, Math.min(10, Math.round(Number(value) || 1)));
+  },
+
+  syncIntensityVisual(value) {
+    const level = this.clampIntensity(value);
+    this.setData({
+      intensityLevel: level,
+      intensityPercent: Math.round((level / 10) * 100),
+    });
+  },
+
+  setIntensityFromTouch(event) {
+    const touch = event.touches && event.touches[0] ? event.touches[0] : event.changedTouches && event.changedTouches[0];
+    if (!touch) return;
+    wx.createSelectorQuery()
+      .in(this)
+      .select("#intensityThermometer")
+      .boundingClientRect((rect) => {
+        if (!rect || !rect.height) return;
+        const y = touch.clientY !== undefined ? touch.clientY : touch.y;
+        const ratio = 1 - Math.max(0, Math.min(rect.height, y - rect.top)) / rect.height;
+        this.syncIntensityVisual(1 + ratio * 9);
+      })
+      .exec();
+  },
+
+  onThermometerTap(event) {
+    this.setIntensityFromTouch(event);
+  },
+
+  onThermometerMove(event) {
+    this.setIntensityFromTouch(event);
+  },
+
+  decreaseIntensity() {
+    this.syncIntensityVisual(this.data.intensityLevel - 1);
+  },
+
+  increaseIntensity() {
+    this.syncIntensityVisual(this.data.intensityLevel + 1);
+  },
+
+  onValenceChange(event) {
+    this.setData({ valenceLevel: Number(event.detail.value) });
+  },
+
+  onArousalChange(event) {
+    this.setData({ arousalLevel: Number(event.detail.value) });
+  },
+
+  onControlChange(event) {
+    this.setData({ controlLevel: Number(event.detail.value) });
+  },
+
+  onEmotionLabelInput(event) {
+    this.setData({ emotionLabel: event.detail.value });
   },
 
   onBriefInput(event) {
@@ -73,11 +141,15 @@ Page({
     api
       .createEmotionThermometer({
         intensity_level: this.data.intensityLevel,
+        valence_level: this.data.valenceLevel,
+        arousal_level: this.data.arousalLevel,
+        control_level: this.data.controlLevel,
+        emotion_label: this.data.emotionLabel,
         brief_text: this.data.briefText,
       })
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
-        this.setData({ briefText: "", saving: false });
+        this.setData({ briefText: "", emotionLabel: "", saving: false });
         this.loadDay();
       })
       .catch((error) => {

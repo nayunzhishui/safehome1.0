@@ -32,7 +32,7 @@ SOURCE_ROOT = Path(
 )
 
 NON_DIAGNOSTIC_NOTICE = "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。"
-SENSITIVE_NOTICE = "该量表含健康、筛查或人格语义，开放前必须展示非诊断免责声明，并保留人工复核入口。"
+SENSITIVE_NOTICE = "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。"
 PRESERVE_CURATED_DRAFT_IDS = {"parent_reflective_functioning_prfq", "emotion_regulation_erq_gross"}
 
 
@@ -968,7 +968,7 @@ def scale_specs() -> list[ScaleSpec]:
         ),
         ScaleSpec(
             scale_id="phq9_cesd10_depression",
-            display_name="PHQ-9 抑郁相关自评量表（CES-D10待复核）",
+            display_name="PHQ-9 情绪低落相关自评量表",
             source_folder="基于情绪反射弧的分类/抑郁测评-CESD10-PHQ9",
             source_files=["精选-PHQ-9抑郁症筛查量表.doc", "cesd-10-流调中心抑郁水平评定.jpg"],
             source_type="authorized_resource",

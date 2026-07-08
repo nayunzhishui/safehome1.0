@@ -40,14 +40,21 @@ const API_ENDPOINTS = {
   cards: "/api/cards",
   cardsRecommend: "/api/cards/recommend",
   trainingPlan: "/api/training-plan",
+  courses: "/api/courses",
+  courseDetailBase: "/api/courses/:id",
   programs: "/api/programs",
   programDetailBase: "/api/programs/:id",
+  programEntriesBase: "/api/programs/:id/entries",
   assessments: "/api/assessments",
   assessmentResults: "/api/assessment-results",
   assessmentProfilePositionBase: "/api/assessment-results/:id/profile-position",
   consent: "/api/consent",
   profile: "/api/profile",
   profileStats: "/api/profile/stats",
+  progressSummary: "/api/progress-summary",
+  profileTrend: "/api/profile-trend",
+  trainingEffectiveness: "/api/training-effectiveness",
+  textAnalysisSummary: "/api/text-analysis/summary",
   profileResults: "/api/profile-results",
   messages: "/api/messages",
   riskCheck: "/api/risk/check",
@@ -56,6 +63,7 @@ const API_ENDPOINTS = {
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
   authWechatLogin: "/api/auth/wechat-login",
+  authBindPhone: "/api/auth/bind-phone",
   authLogout: "/api/auth/logout",
   authMe: "/api/auth/me",
   parentAssessments: "/api/parent-assessments",
@@ -126,6 +134,21 @@ function createSafeHomeApi(options = {}) {
     const authHeader = authToken ? { Authorization: `Bearer ${authToken}` } : {};
 
     return new Promise((resolve, reject) => {
+      if (options.requiresAuth && !authToken) {
+        reject({
+          code: "auth_required",
+          message: ERROR_MESSAGES_BY_CODE.auth_required,
+          retryable: false,
+          path,
+          method,
+          status: 401,
+          statusCode: 401,
+          debug,
+          debugMessage: "本接口需要先登录，小程序端未找到 auth_token。",
+        });
+        return;
+      }
+
       if (useLocalHttp) {
         wx.request({
           url: `${localHttpBaseUrl}${path}`,
@@ -335,6 +358,14 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    bindWechatPhone(data) {
+      return request(API_ENDPOINTS.authBindPhone, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      });
+    },
+
     register(data) {
       return request(API_ENDPOINTS.authRegister, {
         method: "POST",
@@ -362,50 +393,55 @@ function createSafeHomeApi(options = {}) {
       return request(API_ENDPOINTS.goals, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     listGoals(params = {}) {
-      return request(`${API_ENDPOINTS.goals}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.goals}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createConsent(data) {
       return request(API_ENDPOINTS.consent, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     listConsentRecords(params = {}) {
-      return request(`${API_ENDPOINTS.consent}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.consent}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createDiary(data) {
       return request(API_ENDPOINTS.diaries, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     listDiaries(params = {}) {
-      return request(`${API_ENDPOINTS.diaries}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.diaries}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createEmotionThermometer(data) {
       return request(API_ENDPOINTS.emotionThermometer, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     getEmotionThermometerDay(params = {}) {
-      return request(`${API_ENDPOINTS.emotionThermometerDay}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.emotionThermometerDay}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     generateFeedback(data) {
       return request(API_ENDPOINTS.feedbackGenerate, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
@@ -413,55 +449,71 @@ function createSafeHomeApi(options = {}) {
       return request(API_ENDPOINTS.profile, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     getProfileResult(id, params = {}) {
-      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     getProfileVisuals(id, params = {}) {
-      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/visuals${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/visuals${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     getProfileStats(params = {}) {
-      return request(`${API_ENDPOINTS.profileStats}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.profileStats}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    getProgressSummary(params = {}) {
+      return request(`${API_ENDPOINTS.progressSummary}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    getProfileTrend(params = {}) {
+      return request(`${API_ENDPOINTS.profileTrend}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    getTrainingEffectiveness(params = {}) {
+      return request(`${API_ENDPOINTS.trainingEffectiveness}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     listMessages(params = {}) {
-      return request(`${API_ENDPOINTS.messages}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.messages}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     getMessage(id, params = {}) {
-      return request(`${API_ENDPOINTS.messages}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.messages}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     markMessageRead(id, data = {}) {
       return request(`${API_ENDPOINTS.messages}/${encodeURIComponent(id)}/read`, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     listProfileFollowups(id, params = {}) {
-      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/followups${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/followups${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createProfileFollowup(id, data) {
       return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/followups`, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     listProfileSandplay(id, params = {}) {
-      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/sandplay${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/sandplay${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createProfileSandplay(id, data) {
       return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/sandplay`, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
@@ -501,7 +553,15 @@ function createSafeHomeApi(options = {}) {
     },
 
     getTrainingPlan(params = {}) {
-      return request(`${API_ENDPOINTS.trainingPlan}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.trainingPlan}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    listCourses() {
+      return request(API_ENDPOINTS.courses);
+    },
+
+    getCourse(id) {
+      return request(endpointWithId(API_ENDPOINTS.courseDetailBase, id));
     },
 
     listPrograms() {
@@ -510,6 +570,14 @@ function createSafeHomeApi(options = {}) {
 
     getProgram(id) {
       return request(endpointWithId(API_ENDPOINTS.programDetailBase, id));
+    },
+
+    createProgramEntry(programId, data) {
+      return request(endpointWithId(API_ENDPOINTS.programEntriesBase, programId), {
+        method: "POST",
+        data: withDefaultUser(data),
+        requiresAuth: true,
+      });
     },
 
     listAssessments(params = {}) {
@@ -524,47 +592,51 @@ function createSafeHomeApi(options = {}) {
       return request(API_ENDPOINTS.assessmentResults, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     listAssessmentResults(params = {}) {
-      return request(`${API_ENDPOINTS.assessmentResults}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.assessmentResults}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     getAssessmentProfilePosition(id, params = {}) {
-      return request(`${endpointWithId(API_ENDPOINTS.assessmentProfilePositionBase, id)}${queryString(withDefaultUser(params))}`);
+      return request(`${endpointWithId(API_ENDPOINTS.assessmentProfilePositionBase, id)}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createCheckin(data) {
       return request(API_ENDPOINTS.checkins, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     listCheckins(params = {}) {
-      return request(`${API_ENDPOINTS.checkins}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.checkins}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     getWeeklyReport(params = {}) {
-      return request(`${API_ENDPOINTS.weeklyReport}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.weeklyReport}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createSupervision(data) {
       return request(API_ENDPOINTS.supervision, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 
     getParentAssessmentResult(id, params = {}) {
-      return request(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`);
+      return request(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createParentReportAction(id, data) {
       return request(`${API_ENDPOINTS.parentAssessments}/${encodeURIComponent(id)}/actions`, {
         method: "POST",
         data: withDefaultUser(data),
+        requiresAuth: true,
       });
     },
 

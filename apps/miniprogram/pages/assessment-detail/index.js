@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
@@ -18,6 +19,21 @@ function cleanDisplayTitle(value) {
   return cleanDisplayText(value).replace(/^工作表\d+(?:\.\d+)?[：:\s]*/, "");
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function formatOption(option) {
+  const value = String(option.value ?? option.score ?? "");
+  const rawLabel = cleanDisplayText(option.label || value);
+  const displayLabel = value ? rawLabel.replace(new RegExp(`^${escapeRegExp(value)}[\\.、\\s]*`), "") || rawLabel : rawLabel;
+  return {
+    ...option,
+    value,
+    displayLabel,
+  };
+}
+
 function withAnswerState(worksheet) {
   const isStudentProfile = worksheet.id === "student_profile_v1" || worksheet.category === "学生画像";
   const isReference = !!worksheet.is_reference || worksheet.category === "示例参考";
@@ -35,6 +51,7 @@ function withAnswerState(worksheet) {
     questions: (worksheet.questions || []).map((question) => ({
       ...question,
       prompt: cleanDisplayText(question.prompt),
+      options: (question.options || []).map(formatOption),
       answerValue: "",
       answerScore: undefined,
     })),
@@ -48,10 +65,18 @@ Page({
     loading: true,
     submitting: false,
     errorMessage: "",
+    needsLogin: false,
   },
 
   onLoad(options) {
     const worksheetId = decodeURIComponent(options.id || "");
+    if (!requireLogin({
+      redirectUrl: `/pages/assessment-detail/index?id=${encodeURIComponent(worksheetId)}`,
+      message: "请先登录后再填写测评。",
+    })) {
+      this.setData({ worksheetId, loading: false, needsLogin: true });
+      return;
+    }
     this.setData({ worksheetId });
     this.loadWorksheet(worksheetId);
   },
@@ -68,6 +93,7 @@ Page({
       this.setData({
         worksheet: withAnswerState(worksheet),
         loading: false,
+        needsLogin: false,
       });
     } catch (error) {
       this.setData({
@@ -173,11 +199,25 @@ Page({
         url: `/pages/assessment-result/index?id=${encodeURIComponent(resultId)}&worksheet_id=${encodeURIComponent(worksheet.id)}`,
       });
     } catch (error) {
+      const needsLogin = error && (
+        error.statusCode === 401
+        || error.status === 401
+        || error.code === "auth_required"
+        || error.code === "unauthorized"
+      );
       this.setData({
+        needsLogin,
         errorMessage: error.message || "保存暂时没能完成，请检查网络后再试一次。你填写的内容还在。",
       });
     } finally {
       this.setData({ submitting: false });
     }
+  },
+
+  goLogin() {
+    requireLogin({
+      redirectUrl: `/pages/assessment-detail/index?id=${encodeURIComponent(this.data.worksheetId)}`,
+      message: "请先登录后再填写测评。",
+    });
   },
 });

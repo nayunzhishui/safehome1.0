@@ -5,7 +5,8 @@ import json
 from flask import Blueprint, request
 
 from database import ensure_user, get_connection, json_dumps, json_loads, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts
-from routes.utils import fail, ok, parse_int, require_fields, require_user_id, resolve_user_id_for_query
+from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
+from routes.utils import fail, ok, parse_int, require_fields
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
@@ -357,9 +358,9 @@ def create_assessment_result():
         return fail("invalid_answers", "answers 必须是数组")
 
     try:
-        user_id = require_user_id(payload)
-    except ValueError as exc:
-        return fail("validation_error", str(exc), status=400)
+        user_id = resolve_actor_user_id(payload=payload)
+    except AuthError as exc:
+        return auth_error_response(exc)
     scores, total_score = _score_answers(worksheet, answers)
     text_values = [
         str(answer.get("value", "")).strip()
@@ -420,7 +421,7 @@ def create_assessment_result():
     result = row_to_dict(row)
     result["answers"] = answers
     result["scores"] = scores
-    training_rules = evaluate_training_rules(worksheet["id"], scores, worksheet=worksheet, risk_result=risk_result)
+    training_rules = evaluate_training_rules(worksheet["id"], scores, worksheet=worksheet, risk_result=risk_result, user_id=user_id)
     recommended_card_ids = flatten_card_ids(training_rules) or worksheet.get("recommended_card_ids", [])
     if risk_result and not risk_result.get("allow_recommended_training_cards", True):
         recommended_card_ids = []
@@ -436,9 +437,9 @@ def create_assessment_result():
 @bp.get("/assessment-results")
 def list_assessment_results():
     try:
-        user_id = resolve_user_id_for_query(request.args.get("user_id"))
-    except ValueError as exc:
-        return fail("validation_error", str(exc), status=400)
+        user_id = resolve_actor_user_id(request.args.get("user_id"))
+    except AuthError as exc:
+        return auth_error_response(exc)
     limit = parse_int(request.args.get("limit"), 50)
     active_worksheet_ids = _active_worksheet_ids()
     if not active_worksheet_ids:
@@ -463,9 +464,9 @@ def list_assessment_results():
 @bp.get("/assessment-results/<result_id>/profile-position")
 def get_assessment_profile_position(result_id: str):
     try:
-        user_id = resolve_user_id_for_query(request.args.get("user_id"))
-    except ValueError as exc:
-        return fail("validation_error", str(exc), status=400)
+        user_id = resolve_actor_user_id(request.args.get("user_id"))
+    except AuthError as exc:
+        return auth_error_response(exc)
 
     with get_connection() as conn:
         row = conn.execute(

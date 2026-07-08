@@ -21,6 +21,13 @@ def _fresh_app(tmp_path):
     return module.app
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def test_admin_export_writes_audit_log_after_success(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
@@ -122,11 +129,13 @@ def test_admin_export_limit_applies_and_audit_records_counts(tmp_path):
 def test_assessment_export_only_includes_active_assessment_ids(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "assessment-export-filter")
 
     active_response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "assessment-export-filter",
+            "user_id": user_id,
             "worksheet_id": "student_profile_v1",
             "answers": [{"question_id": "test_anxiety", "prompt": "测试题", "value": "2", "score": 2}],
         },
@@ -146,7 +155,7 @@ def test_assessment_export_only_includes_active_assessment_ids(tmp_path):
             """,
             (
                 "legacy_export_assessment_result",
-                "assessment-export-filter",
+                user_id,
                 "worksheet_3_1_anxiety",
                 "工作表3.1：总体焦虑水平及干扰程度量表",
                 "量表类",

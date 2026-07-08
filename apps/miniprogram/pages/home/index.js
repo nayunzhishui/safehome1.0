@@ -21,6 +21,42 @@ function getDiaryDateKey(item) {
   return formatLocalDate(parsed);
 }
 
+function formatProgressSummary(summary) {
+  if (!summary) {
+    return null;
+  }
+  const statusTextMap = {
+    insufficient: "记录还不够",
+    fluctuating: "仍在观察",
+    converging: "开始形成线索",
+    stable: "较稳定",
+    low_confidence: "暂不归纳",
+  };
+  const scenes = summary.diaries && Array.isArray(summary.diaries.frequent_scenes)
+    ? summary.diaries.frequent_scenes
+    : [];
+  const emotions = summary.diaries && Array.isArray(summary.diaries.frequent_emotions)
+    ? summary.diaries.frequent_emotions
+    : [];
+  const assessmentCount = summary.assessment ? summary.assessment.count || 0 : 0;
+  const checkinCount = summary.checkins ? summary.checkins.completed_count || 0 : 0;
+  const thermometerCount = summary.thermometer ? summary.thermometer.count || 0 : 0;
+  return {
+    status: summary.stability_status,
+    statusText: statusTextMap[summary.stability_status] || "阶段复盘",
+    summaryText: summary.summary_text || "记录还不够，先继续完成测评和练习。",
+    periodText: `${summary.start_date || ""} 至 ${summary.end_date || ""}`,
+    assessmentCount,
+    checkinCount,
+    thermometerCount,
+    totalSignalCount: assessmentCount + checkinCount + thermometerCount,
+    topScene: scenes.length ? scenes[0][0] : "待观察",
+    topEmotion: emotions.length ? emotions[0][0] : "待观察",
+    nextAction: summary.next_action || "先完成一次测一测或一张训练卡。",
+    boundaryNotice: summary.boundary_notice || "阶段性反馈只用于整理近期记录和练习线索，不构成诊断。",
+  };
+}
+
 Page({
   data: {
     todayRecordCount: 0,
@@ -29,6 +65,9 @@ Page({
     thermometerRecordReady: false,
     unreadMessageCount: 0,
     latestRecord: null,
+    progressSummary: null,
+    progressSummaryReady: false,
+    progressSummaryError: "",
     hotTopics: [
       {
         id: "exam-setback",
@@ -115,21 +154,26 @@ Page({
   async refreshHomeData() {
     try {
       const todayKey = formatLocalDate(new Date());
-      const [result, stats, thermometerDay] = await Promise.all([
-        api.listDiaries({ limit: 20 }),
+      const [result, stats, thermometerDay, progressSummary] = await Promise.all([
+        api.listDiaries({ limit: 20 }).catch(() => ({ items: [] })),
         api.getProfileStats().catch(() => null),
         api.getEmotionThermometerDay({ date: todayKey }).catch(() => null),
+        api.getProgressSummary({ range: "7d" }).catch((error) => ({ __error: error })),
       ]);
       const items = result && Array.isArray(result.items) ? result.items : [];
       const todayRecordCount = items.filter((item) => getDiaryDateKey(item) === todayKey).length;
       const thermometerRecordCount = thermometerDay && thermometerDay.summary ? thermometerDay.summary.count || 0 : 0;
       const latest = items[0] || null;
+      const progressError = progressSummary && progressSummary.__error ? progressSummary.__error : null;
       this.setData({
         todayRecordCount,
         todayRecordCountReady: true,
         thermometerRecordCount,
         thermometerRecordReady: !!thermometerDay,
         unreadMessageCount: stats ? stats.unread_message_count || 0 : 0,
+        progressSummary: progressError ? null : formatProgressSummary(progressSummary),
+        progressSummaryReady: !progressError,
+        progressSummaryError: progressError ? progressError.message || "登录后可以查看阶段性反馈。" : "",
         latestRecord: latest
           ? {
               mood: latest.parent_emotion || "一次记录",
@@ -145,6 +189,9 @@ Page({
         todayRecordCountReady: false,
         thermometerRecordCount: 0,
         thermometerRecordReady: false,
+        progressSummary: null,
+        progressSummaryReady: false,
+        progressSummaryError: "联网后可以查看阶段性反馈。",
         latestRecord: null,
       });
     }
@@ -164,6 +211,10 @@ Page({
 
   openWeeklyReport() {
     wx.navigateTo({ url: "/pages/weekly-report/index" });
+  },
+
+  openAssessment() {
+    wx.navigateTo({ url: "/pages/assessment/index" });
   },
 
   openMessages() {

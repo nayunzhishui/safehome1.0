@@ -1,0 +1,17 @@
+﻿worksheet_id,量表名称,enabled_for_user,题项数,选项总数,空选项数,长选项数,敏感类别,边界文案完整,计分状态,建议
+student_profile_v1,学生支持性画像测评,True,6,20,0,0,none,是,需人工复核,按人工清单核对题项和计分
+emotion_regulation_erq,情绪调节问卷（Gross ERQ）,True,10,70,0,0,none,是,需人工复核,按人工清单核对题项和计分
+parent_reflective_functioning_prfq,家长反思功能问卷,True,18,126,0,0,none,是,需人工复核,按人工清单核对题项和计分
+self_compassion_scs_cn,自我关怀量表（SCS 中文版）,True,26,130,0,0,none,是,需人工复核,按人工清单核对题项和计分
+mindful_attention_awareness_maas,正念注意觉知量表（MAAS）,True,15,90,0,0,none,是,需人工复核,按人工清单核对题项和计分
+emotional_resilience_11,青少年情绪弹性问卷,True,11,66,0,0,none,是,需人工复核,按人工清单核对题项和计分
+study_engagement_uwes_s_17,学习投入量表（UWES-S 中文版）,True,17,119,0,0,none,是,需人工复核,按人工清单核对题项和计分
+cd_risc10_brief_resilience,简式心理韧性量表（CD-RISC-10）,True,10,50,0,0,none,是,需人工复核,按人工清单核对题项和计分
+perceived_social_support_psss,领悟社会支持量表（PSSS）,True,12,84,0,0,none,是,需人工复核,按人工清单核对题项和计分
+gad7_anxiety,GAD-7 焦虑相关自评量表,True,7,28,0,0,screening_or_health,是,需人工复核,按人工清单核对题项和计分
+phq9_cesd10_depression,PHQ-9 情绪低落相关自评量表,True,9,36,0,0,screening_or_health,是,需人工复核,按人工清单核对题项和计分
+big_five_bfi_60,大五人格问卷（60题简版）,True,60,300,0,0,personality,是,需人工复核,按人工清单核对题项和计分
+attribution_style_student_36,归因方式问卷（学生用）,True,36,252,0,0,none,是,需人工复核,按人工清单核对题项和计分
+ghq12_general_health,一般健康问卷（GHQ-12）,True,12,48,0,0,screening_or_health,是,需人工复核,按人工清单核对题项和计分
+epq_emotional_stability_24,EPQ 情绪稳定性量表,True,24,48,0,0,personality,是,需人工复核,按人工清单核对题项和计分
+emotional_intelligence_eis_33,青少年情绪智力量表（EIS）,True,33,165,0,0,none,是,需人工复核,按人工清单核对题项和计分

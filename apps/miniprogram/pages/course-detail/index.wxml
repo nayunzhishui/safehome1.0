@@ -1,0 +1,42 @@
+<view class="safe-page course-detail-page">
+  <view wx:if="{{loading}}" class="state-card">
+    <text>正在读取课程内容...</text>
+  </view>
+
+  <view wx:elif="{{errorMessage}}" class="state-card error">
+    <text>{{errorMessage}}</text>
+    <button class="outline-button" bindtap="retryLoadCourse">重新加载</button>
+  </view>
+
+  <view wx:elif="{{course}}">
+    <view class="detail-hero safe-card safe-card--hero">
+      <text class="hero-kicker">{{course.theme}}</text>
+      <text class="hero-title">{{course.title}}</text>
+      <text class="hero-summary">{{course.scene}}</text>
+      <text class="hero-meta">{{course.durationText}} · {{course.sections.length}} 小节</text>
+    </view>
+
+    <view class="safe-section">
+      <section-title title="课程小节" subtitle="按顺序看一遍，也可以只看最需要的一节" />
+      <view class="section-list">
+        <view wx:for="{{course.sections}}" wx:key="title" class="section-card">
+          <text class="section-index">{{index + 1}}</text>
+          <view class="section-copy">
+            <text class="section-title">{{item.title}}</text>
+            <text class="section-body">{{item.body}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{course.relationText}}" class="safe-section">
+      <view class="relation-card">
+        <text class="relation-title">关联训练卡</text>
+        <text class="relation-text">{{course.relationText}}</text>
+        <button class="safe-primary-button" bindtap="goTraining">去训练页</button>
+      </view>
+    </view>
+
+    <view class="boundary-note">{{course.boundary_notice}}</view>
+  </view>
+</view>

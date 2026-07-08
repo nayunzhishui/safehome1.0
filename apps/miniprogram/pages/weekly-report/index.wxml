@@ -57,6 +57,53 @@
         <text class="stat-value">{{completedCardsText ? '已记' : '待记'}}</text>
         <text class="stat-label">练习尝试</text>
       </view>
+      <view class="stat-card">
+        <text class="stat-value">{{report.assessment_trend ? report.assessment_trend.assessment_count : 0}}</text>
+        <text class="stat-label">测评记录</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-value">{{report.thermometer_trend ? report.thermometer_trend.record_count : 0}}</text>
+        <text class="stat-label">温度记录</text>
+      </view>
+    </view>
+
+    <view class="review-section">
+      <view class="section-head">
+        <text class="section-title">本周测评记录</text>
+        <text class="section-hint">只整理你完成过的测评，不做固定判断</text>
+      </view>
+      <view class="review-card">
+        <text wx:if="{{assessmentNamesText}}" class="row-desc">{{assessmentNamesText}}</text>
+        <text wx:else class="muted">本周还没有测评记录。</text>
+        <view wx:if="{{dimensionSummaries.length}}" class="dimension-change-list">
+          <view wx:for="{{dimensionSummaries}}" wx:key="label" class="dimension-change-row">
+            <text class="row-name">{{item.label}}</text>
+            <text class="row-count">{{item.direction}} {{item.deltaText}}</text>
+          </view>
+        </view>
+        <text wx:if="{{recommendedCardsText}}" class="row-desc">推荐训练：{{recommendedCardsText}}</text>
+      </view>
+    </view>
+
+    <view class="review-section">
+      <view class="section-head">
+        <text class="section-title">情绪温度趋势</text>
+        <text class="section-hint">只看记录中的小变化</text>
+      </view>
+      <view class="review-card">
+        <text class="row-desc">{{report.thermometer_trend ? report.thermometer_trend.trend_text : '本周还没有情绪温度记录。'}}</text>
+        <text class="row-desc">{{thermometerDetailText}}</text>
+      </view>
+    </view>
+
+    <view class="review-section">
+      <view class="section-head">
+        <text class="section-title">训练效用线索</text>
+        <text class="section-hint">只看练习前后记录，不承诺疗效</text>
+      </view>
+      <view class="review-card">
+        <text class="row-desc">{{trainingEffectivenessText}}</text>
+      </view>
     </view>
 
     <view class="review-section">

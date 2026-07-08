@@ -1,0 +1,32 @@
+{
+  "version": "sample_dlut_style_v1",
+  "source_note": "小样本词表按大连理工情感本体常见类别字段整理为项目测试样例；完整 DLUT 或 BosonNLP 词库需按许可证由用户放置，不直接入仓。",
+  "terms": [
+    {"word": "着急", "category": "anxiety", "polarity": -1, "intensity": 5, "arousal_weight": 0.8, "reflex_node": "emotion"},
+    {"word": "焦虑", "category": "anxiety", "polarity": -1, "intensity": 7, "arousal_weight": 0.9, "reflex_node": "emotion"},
+    {"word": "担心", "category": "anxiety", "polarity": -1, "intensity": 5, "arousal_weight": 0.7, "reflex_node": "emotion"},
+    {"word": "紧张", "category": "anxiety", "polarity": -1, "intensity": 6, "arousal_weight": 0.85, "reflex_node": "emotion"},
+    {"word": "害怕", "category": "fear", "polarity": -1, "intensity": 7, "arousal_weight": 0.9, "reflex_node": "emotion"},
+    {"word": "恐惧", "category": "fear", "polarity": -1, "intensity": 8, "arousal_weight": 0.95, "reflex_node": "emotion"},
+    {"word": "生气", "category": "anger", "polarity": -1, "intensity": 6, "arousal_weight": 0.9, "reflex_node": "emotion"},
+    {"word": "愤怒", "category": "anger", "polarity": -1, "intensity": 8, "arousal_weight": 1.0, "reflex_node": "emotion"},
+    {"word": "烦", "category": "irritation", "polarity": -1, "intensity": 4, "arousal_weight": 0.65, "reflex_node": "emotion"},
+    {"word": "烦躁", "category": "irritation", "polarity": -1, "intensity": 6, "arousal_weight": 0.75, "reflex_node": "emotion"},
+    {"word": "委屈", "category": "sadness", "polarity": -1, "intensity": 5, "arousal_weight": 0.45, "reflex_node": "emotion"},
+    {"word": "难过", "category": "sadness", "polarity": -1, "intensity": 6, "arousal_weight": 0.4, "reflex_node": "emotion"},
+    {"word": "失望", "category": "sadness", "polarity": -1, "intensity": 5, "arousal_weight": 0.45, "reflex_node": "emotion"},
+    {"word": "沮丧", "category": "sadness", "polarity": -1, "intensity": 6, "arousal_weight": 0.35, "reflex_node": "emotion"},
+    {"word": "无力", "category": "helplessness", "polarity": -1, "intensity": 6, "arousal_weight": 0.25, "reflex_node": "body_feeling"},
+    {"word": "崩溃", "category": "crisis_expression", "polarity": -1, "intensity": 9, "arousal_weight": 1.0, "reflex_node": "reaction"},
+    {"word": "控制不住", "category": "crisis_expression", "polarity": -1, "intensity": 8, "arousal_weight": 0.95, "reflex_node": "reaction"},
+    {"word": "内疚", "category": "guilt", "polarity": -1, "intensity": 5, "arousal_weight": 0.45, "reflex_node": "thought"},
+    {"word": "羞愧", "category": "shame", "polarity": -1, "intensity": 6, "arousal_weight": 0.5, "reflex_node": "thought"},
+    {"word": "平静", "category": "calm", "polarity": 1, "intensity": 4, "arousal_weight": 0.2, "reflex_node": "emotion"},
+    {"word": "放松", "category": "calm", "polarity": 1, "intensity": 4, "arousal_weight": 0.15, "reflex_node": "body_feeling"},
+    {"word": "安心", "category": "calm", "polarity": 1, "intensity": 5, "arousal_weight": 0.2, "reflex_node": "emotion"},
+    {"word": "开心", "category": "positive", "polarity": 1, "intensity": 5, "arousal_weight": 0.55, "reflex_node": "emotion"},
+    {"word": "高兴", "category": "positive", "polarity": 1, "intensity": 5, "arousal_weight": 0.55, "reflex_node": "emotion"},
+    {"word": "期待", "category": "positive", "polarity": 1, "intensity": 5, "arousal_weight": 0.65, "reflex_node": "thought"},
+    {"word": "有希望", "category": "positive", "polarity": 1, "intensity": 6, "arousal_weight": 0.5, "reflex_node": "outcome"}
+  ]
+}

@@ -19,17 +19,25 @@ def _fresh_app(tmp_path):
     return module.app
 
 
+def _wechat_login(client, code: str):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    return data["user"]["id"], data["token"]
+
+
 def test_legacy_self_built_assessment_is_removed_from_api(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    _user_id, token = _wechat_login(client, "legacy-self-built")
 
     detail_response = client.get("/api/assessments/worksheet_3_1_anxiety")
     assert detail_response.status_code == 404
 
     submit_response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "parent-legacy-check",
             "worksheet_id": "worksheet_3_1_anxiety",
             "answers": [{"question_id": "q1", "prompt": "测试题", "value": "1", "score": 1}],
         },
@@ -54,11 +62,12 @@ def test_legacy_self_built_assessment_is_removed_from_api(tmp_path):
 def test_legacy_assessment_results_are_hidden_from_user_history(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "history-filter-check")
 
     active_response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "history-filter-check",
             "worksheet_id": "student_profile_v1",
             "answers": [{"question_id": "test_anxiety", "prompt": "测试题", "value": "2", "score": 2}],
         },
@@ -78,7 +87,7 @@ def test_legacy_assessment_results_are_hidden_from_user_history(tmp_path):
             """,
             (
                 "legacy_assessment_result",
-                "history-filter-check",
+                user_id,
                 "worksheet_3_1_anxiety",
                 "工作表3.1：总体焦虑水平及干扰程度量表",
                 "量表类",
@@ -91,7 +100,10 @@ def test_legacy_assessment_results_are_hidden_from_user_history(tmp_path):
         )
         conn.commit()
 
-    list_response = client.get("/api/assessment-results?user_id=history-filter-check")
+    list_response = client.get(
+        f"/api/assessment-results?user_id={user_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
     assert list_response.status_code == 200
     items = list_response.get_json()["data"]["items"]
     assert [item["worksheet_id"] for item in items] == ["student_profile_v1"]
@@ -100,11 +112,12 @@ def test_legacy_assessment_results_are_hidden_from_user_history(tmp_path):
 def test_enabled_student_profile_assessment_result_still_saves(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    _user_id, token = _wechat_login(client, "student-enabled-check")
 
     response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "student-enabled-check",
             "worksheet_id": "student_profile_v1",
             "answers": [{"question_id": "test_anxiety", "prompt": "测试题", "value": "3", "score": 3}],
         },
@@ -157,6 +170,7 @@ def test_erq_detail_exposes_dimensions(tmp_path):
 def test_erq_submission_scores_each_dimension_separately(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    _user_id, token = _wechat_login(client, "erq-dimension-check")
 
     # 认知重评 6 题各填 5 分，表达抑制 4 题各填 2 分
     cr_items = ["ERQ01", "ERQ03", "ERQ05", "ERQ07", "ERQ08", "ERQ10"]
@@ -169,8 +183,8 @@ def test_erq_submission_scores_each_dimension_separately(tmp_path):
 
     response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "erq-dimension-check",
             "worksheet_id": "emotion_regulation_erq",
             "answers": answers,
         },
@@ -199,6 +213,7 @@ def test_prfq_appears_in_assessment_list(tmp_path):
 def test_prfq_submission_uses_reverse_scoring_and_dimension_mean(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    _user_id, token = _wechat_login(client, "prfq-reverse-check")
 
     # 全部 18 题都填 6 分。PRFQ11、PRFQ18 为反向题（7 点量表翻转为 8-6=2）。
     all_items = [f"PRFQ{i:02d}" for i in range(1, 19)]
@@ -208,8 +223,8 @@ def test_prfq_submission_uses_reverse_scoring_and_dimension_mean(tmp_path):
 
     response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "prfq-reverse-check",
             "worksheet_id": "parent_reflective_functioning_prfq",
             "answers": answers,
         },
@@ -255,11 +270,12 @@ def test_assessment_list_filters_by_audience_and_search(tmp_path):
 def test_assessment_text_answer_high_risk_creates_review_and_blocks_cards(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "assessment-risk-check")
 
     response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "assessment-risk-check",
             "worksheet_id": "student_profile_v1",
             "answers": [{"question_id": "free_text", "prompt": "压力事件", "value": "我最近不想活"}],
         },
@@ -276,7 +292,7 @@ def test_assessment_text_answer_high_risk_creates_review_and_blocks_cards(tmp_pa
     with get_connection() as conn:
         saved_count = conn.execute(
             "SELECT COUNT(*) FROM risk_review_records WHERE user_id = ? AND source_type = ?",
-            ("assessment-risk-check", "assessment_result"),
+            (user_id, "assessment_result"),
         ).fetchone()[0]
 
     assert saved_count == 1
@@ -285,6 +301,7 @@ def test_assessment_text_answer_high_risk_creates_review_and_blocks_cards(tmp_pa
 def test_assessment_profile_position_returns_cluster_for_modeled_scale(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "profile-position-check")
 
     answers = [
         {"question_id": f"ERES{i:02d}", "prompt": f"ERES{i:02d}", "value": "4", "score": 4}
@@ -292,8 +309,8 @@ def test_assessment_profile_position_returns_cluster_for_modeled_scale(tmp_path)
     ]
     submit_response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "profile-position-check",
             "worksheet_id": "emotional_resilience_11",
             "answers": answers,
         },
@@ -301,7 +318,10 @@ def test_assessment_profile_position_returns_cluster_for_modeled_scale(tmp_path)
     assert submit_response.status_code == 201
     result_id = submit_response.get_json()["data"]["id"]
 
-    response = client.get(f"/api/assessment-results/{result_id}/profile-position?user_id=profile-position-check")
+    response = client.get(
+        f"/api/assessment-results/{result_id}/profile-position?user_id={user_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 200
     data = response.get_json()["data"]
@@ -334,6 +354,7 @@ def test_assessment_profile_position_returns_cluster_for_modeled_scale(tmp_path)
 def test_assessment_profile_position_marks_outlier_without_strong_interpretation(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "profile-position-outlier")
 
     answers = [
         {"question_id": f"ERES{i:02d}", "prompt": f"ERES{i:02d}", "value": "99", "score": 99}
@@ -341,8 +362,8 @@ def test_assessment_profile_position_marks_outlier_without_strong_interpretation
     ]
     submit_response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "profile-position-outlier",
             "worksheet_id": "emotional_resilience_11",
             "answers": answers,
         },
@@ -350,7 +371,10 @@ def test_assessment_profile_position_marks_outlier_without_strong_interpretation
     assert submit_response.status_code == 201
     result_id = submit_response.get_json()["data"]["id"]
 
-    response = client.get(f"/api/assessment-results/{result_id}/profile-position?user_id=profile-position-outlier")
+    response = client.get(
+        f"/api/assessment-results/{result_id}/profile-position?user_id={user_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 200
     data = response.get_json()["data"]
@@ -364,6 +388,7 @@ def test_assessment_profile_position_marks_outlier_without_strong_interpretation
 def test_assessment_profile_position_is_optional_for_unmodeled_scale(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    user_id, token = _wechat_login(client, "profile-position-unavailable")
 
     answers = [
         {"question_id": "ERQ01", "prompt": "ERQ01", "value": "4", "score": 4},
@@ -371,8 +396,8 @@ def test_assessment_profile_position_is_optional_for_unmodeled_scale(tmp_path):
     ]
     submit_response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
-            "user_id": "profile-position-unavailable",
             "worksheet_id": "emotion_regulation_erq",
             "answers": answers,
         },
@@ -380,7 +405,10 @@ def test_assessment_profile_position_is_optional_for_unmodeled_scale(tmp_path):
     assert submit_response.status_code == 201
     result_id = submit_response.get_json()["data"]["id"]
 
-    response = client.get(f"/api/assessment-results/{result_id}/profile-position?user_id=profile-position-unavailable")
+    response = client.get(
+        f"/api/assessment-results/{result_id}/profile-position?user_id={user_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
 
     assert response.status_code == 200
     data = response.get_json()["data"]

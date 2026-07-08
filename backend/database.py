@@ -26,8 +26,8 @@ REQUIRED_HEALTH_TABLES = [
     "records",
     "messages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_01_003"
-CURRENT_SCHEMA_NAME = "t8_thermometer_programs_training_plan"
+CURRENT_SCHEMA_VERSION = "2026_07_06_001"
+CURRENT_SCHEMA_NAME = "t11_weekly_report_summaries"
 MYSQL_VARCHAR_COLUMNS = {
     "id",
     "version",
@@ -534,6 +534,8 @@ def ensure_schema_columns(conn) -> None:
         "avatar_url": "TEXT",
         "status": "TEXT DEFAULT 'active'",
         "last_login_at": "TEXT",
+        "phone_verified_at": "TEXT",
+        "phone_source": "TEXT",
     }
     for column, definition in user_columns.items():
         ensure_column(conn, "users", column, definition)
@@ -564,6 +566,33 @@ def ensure_schema_columns(conn) -> None:
     for column, definition in assessment_result_columns.items():
         ensure_column(conn, "assessment_results", column, definition)
     _normalize_assessment_profile_cluster(conn)
+
+    thermometer_columns = {
+        "valence_level": "INTEGER",
+        "arousal_level": "INTEGER",
+        "control_level": "INTEGER",
+        "emotion_label": "TEXT",
+    }
+    for column, definition in thermometer_columns.items():
+        ensure_column(conn, "emotion_thermometer", column, definition)
+
+    checkin_columns = {
+        "helpfulness_rating": "TEXT",
+        "skip_reason": "TEXT",
+        "source_recommendation_id": "TEXT",
+        "before_thermometer_id": "TEXT",
+        "after_thermometer_id": "TEXT",
+    }
+    for column, definition in checkin_columns.items():
+        ensure_column(conn, "checkins", column, definition)
+
+    weekly_report_columns = {
+        "assessment_summary_json": "TEXT NOT NULL DEFAULT '{}'",
+        "thermometer_summary_json": "TEXT NOT NULL DEFAULT '{}'",
+        "training_effectiveness_summary_json": "TEXT NOT NULL DEFAULT '{}'",
+    }
+    for column, definition in weekly_report_columns.items():
+        ensure_column(conn, "weekly_reports", column, definition)
 
     risk_review_columns = {
         "action_taken": "TEXT",
