@@ -21,6 +21,7 @@ jobs:
         run: |
           python -m pip install -r backend/requirements.txt
           python -m pip install -r analysis/text_analysis/requirements.txt
+          python -m pip install -r analysis/profiling/requirements.txt
 
       - name: Validate content
         run: python backend/scripts/validate_content.py

@@ -40,7 +40,7 @@ from routes.training_plan import bp as training_plan_bp
 from services.runtime_metrics import record_response, snapshot as runtime_metrics_snapshot
 
 
-SERVICE_VERSION = "safehome-2026-06-04"
+SERVICE_VERSION = os.environ.get("SERVICE_VERSION", "safehome-2026-07-10-task12-login").strip() or "safehome-2026-07-10-task12-login"
 REQUIRED_CONTENT_FILES = [
     "training_cards.json",
     "feedback_rules.json",
