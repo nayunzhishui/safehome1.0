@@ -1,0 +1,62 @@
+<view class="safe-page growth-page">
+  <view class="safe-card safe-card--hero">
+    <text class="growth-kicker">变化记录，不是疗效证明</text>
+    <text class="growth-title">关系探索成长仪表盘</text>
+    <text class="growth-copy">次数、1–5量尺和画像维度分开查看，避免不同含义的数字被混在一起。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-card">正在读取...</view>
+  <view wx:elif="{{growth}}">
+    <view class="safe-card section-card chart-card">
+      <text class="section-title">变化曲线</text>
+      <view wx:if="{{curveGroups.length}}">
+        <scroll-view scroll-x class="filter-scroll"><view class="filter-row"><button wx:for="{{curveGroups}}" wx:key="key" class="filter-chip {{selectedGroup === item.key ? 'filter-chip--active' : ''}}" data-key="{{item.key}}" bindtap="selectCurveGroup">{{item.label}}</button></view></scroll-view>
+        <scroll-view scroll-x class="filter-scroll metric-scroll"><view class="filter-row"><button wx:for="{{selectedMetrics}}" wx:key="key" class="metric-chip {{selectedMetric === item.key ? 'metric-chip--active' : ''}}" data-key="{{item.key}}" bindtap="selectMetric">{{item.label}}</button></view></scroll-view>
+        <text class="chart-title">{{selectedMetricLabel}}</text>
+        <canvas canvas-id="growthChart" class="chart-canvas" width="620" height="300" aria-label="{{selectedMetricLabel}}变化折线图"></canvas>
+        <visualization-state wx:if="{{selectedPoints.length < 2}}" state="insufficient" message="目前只有 {{selectedPoints.length}} 个点，至少两次记录后才显示趋势。"></visualization-state>
+        <text wx:else class="trend-copy">{{trendText}}</text>
+      </view>
+      <visualization-state wx:else state="insufficient" message="还没有可绘制的数据。先完成一次测评或本周记录。"></visualization-state>
+    </view>
+
+    <view class="safe-card section-card">
+      <text class="section-title">成长时间轴</text>
+      <scroll-view scroll-x class="filter-scroll"><view class="filter-row"><button wx:for="{{timelineFilters}}" wx:key="key" class="filter-chip {{timelineFilter === item.key ? 'filter-chip--active' : ''}}" data-key="{{item.key}}" bindtap="selectTimelineFilter">{{item.label}}</button></view></scroll-view>
+      <view wx:if="{{filteredTimeline.length}}" class="timeline-list">
+        <view wx:for="{{filteredTimeline}}" wx:key="id" class="timeline-row">
+          <text class="timeline-dot"></text>
+          <view class="timeline-content"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.typeLabel}}</text></view><text class="timeline-meta">{{item.dateText}} · {{item.summary}}</text></view>
+        </view>
+      </view>
+      <view wx:else class="empty-state">这一类还没有记录。</view>
+    </view>
+
+    <view class="safe-card section-card source-card">
+      <text class="section-title">成长报告</text>
+      <view class="source-block source-block--system"><text class="source-label">系统汇总</text><text class="growth-copy">{{growth.growth_report.change_summary}}</text><text class="growth-copy">下一步建议：{{growth.growth_report.next_step}}</text></view>
+      <view class="source-block"><text class="source-label">研究者确认</text><view wx:if="{{researcherConfirmations.length}}"><text wx:for="{{researcherConfirmations}}" wx:key="id" class="source-line">{{item.dateText}} · {{item.title}}</text></view><text wx:else class="source-empty">暂时还没有研究者确认内容。</text></view>
+      <view class="source-block"><button class="source-toggle" bindtap="toggleSelfNarratives">用户原话（仅你可见）{{showSelfNarratives ? '收起' : '展开'}}</button><view wx:if="{{showSelfNarratives}}"><view wx:for="{{selfNarratives}}" wx:key="id" class="self-narrative"><text class="source-label">{{item.date}} · {{item.typeLabel}}</text><text class="source-line">{{item.text}}</text></view><text wx:if="{{!selfNarratives.length}}" class="source-empty">目前没有开放文字记录。</text></view></view>
+      <text class="boundary-copy">{{growth.growth_report.boundary_notice}}</text>
+    </view>
+
+    <view class="safe-card section-card">
+      <text class="section-title">本周补充记录</text>
+      <label class="field-label">主动社交次数<input type="number" data-key="active_social_count" value="{{form.active_social_count}}" bindinput="onFieldInput" /></label>
+      <label class="field-label">真实表达次数<input type="number" data-key="authentic_expression_count" value="{{form.authentic_expression_count}}" bindinput="onFieldInput" /></label>
+      <label class="field-label">挫折后怎样应对<textarea maxlength="300" data-key="setback_coping" value="{{form.setback_coping}}" bindinput="onFieldInput" /></label>
+      <label class="field-label">当前关系靠近意愿：{{form.approach_willingness}}<slider min="1" max="5" step="1" data-key="approach_willingness" value="{{form.approach_willingness}}" bindchange="onSliderChange" /></label>
+      <label class="field-label">当前担忧强度：{{form.worry_intensity}}<slider min="1" max="5" step="1" data-key="worry_intensity" value="{{form.worry_intensity}}" bindchange="onSliderChange" /></label>
+      <label class="field-label">最近一周最有成就感的事<textarea maxlength="500" data-key="achievement" value="{{form.achievement}}" bindinput="onFieldInput" /></label>
+      <label class="field-label">最近一周最挫败的事<textarea maxlength="500" data-key="setback" value="{{form.setback}}" bindinput="onFieldInput" /></label>
+      <button class="safe-primary-button" loading="{{savingWeekly}}" disabled="{{savingWeekly}}" bindtap="saveWeekly">保存本周记录</button>
+    </view>
+
+    <view class="safe-card section-card">
+      <text class="section-title">记录一个关键事件</text>
+      <textarea class="event-input" maxlength="500" data-key="event_summary" value="{{form.event_summary}}" bindinput="onFieldInput" placeholder="例如：一次靠近、被拒绝、表达边界或感到被理解的时刻"></textarea>
+      <button class="safe-outline-button" loading="{{savingEvent}}" disabled="{{savingEvent}}" bindtap="saveEvent">加入时间轴</button>
+    </view>
+  </view>
+  <visualization-state wx:if="{{errorMessage}}" state="error" message="{{errorMessage}}"></visualization-state>
+</view>

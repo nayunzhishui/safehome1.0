@@ -1,0 +1,68 @@
+<view class="safe-page researcher-dashboard-page">
+  <view class="safe-card safe-card--hero">
+    <text class="dashboard-kicker">研究者专属</text>
+    <text class="dashboard-title">关系探索评估仪表盘</text>
+    <text class="dashboard-copy">画像、维度和洞察只作为访谈探索线索。所有访问和操作均写入审计日志。</text>
+  </view>
+  <view wx:if="{{loading}}" class="safe-card">正在读取档案...</view>
+  <view wx:elif="{{errorMessage}}" class="safe-card error-card">{{errorMessage}}</view>
+  <view wx:else class="dashboard-layout">
+    <scroll-view scroll-x class="dossier-tabs">
+      <button wx:for="{{items}}" wx:key="id" class="dossier-tab {{selected.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectEnrollment">{{item.nickname || item.user_id}} · {{item.review_status}}</button>
+    </scroll-view>
+
+    <view wx:if="{{selected}}">
+      <view class="safe-card dossier-card">
+        <text class="section-title">用户档案与报名</text>
+        <text class="detail-line">用户：{{selected.nickname || selected.user_id}}</text>
+        <text class="detail-line">状态：{{selected.status}} / {{selected.review_status}}</text>
+        <text class="detail-line">量表：{{selected.worksheet_id}}</text>
+        <text class="detail-line">画像：{{selected.profile.profile_name}}</text>
+        <text class="detail-line">{{selected.profile.profile_description}}</text>
+      </view>
+
+      <view class="safe-card dossier-card">
+        <text class="section-title">预设评估问题</text>
+        <text wx:for="{{selected.profile.suggested_assessment_questions}}" wx:key="*this" class="detail-line">{{index + 1}}. {{item}}</text>
+      </view>
+
+      <view class="safe-card dossier-card">
+        <text class="section-title">初筛报告</text>
+        <view wx:if="{{selected.latestReport}}" class="action-row">
+          <button class="small-action" bindtap="openReport">查看</button>
+          <button wx:if="{{selected.latestReport.status !== 'confirmed'}}" class="small-action" bindtap="confirmReport">人工确认</button>
+          <button wx:if="{{selected.latestReport.status === 'confirmed'}}" class="small-action primary" bindtap="sendReport">发送用户</button>
+        </view>
+        <button wx:else class="safe-primary-button" bindtap="createReport">生成报告</button>
+      </view>
+
+      <view class="safe-card dossier-card">
+        <text class="section-title">线上任务材料（{{selected.tasks.length}}）</text>
+        <view wx:for="{{selected.tasks}}" wx:key="id" class="material-card">
+          <text class="material-title">{{item.typeText}} · {{item.review_status}}</text>
+          <text wx:if="{{item.narration}}" class="detail-line">画外音：{{item.narration}}</text>
+          <text wx:for="{{item.answerRows}}" wx:for-item="answer" wx:key="context" class="detail-line">{{answer.context}}：{{answer.answer}}</text>
+        </view>
+        <canvas wx:if="{{selected.drawingTask}}" canvas-id="researchDrawingCanvas" class="material-canvas" aria-label="用户授权提交的关系绘画预览，材料仅用于人工复核"></canvas>
+        <text class="boundary-line">绘画只作为叙事材料，不自动解释象征或潜意识。</text>
+      </view>
+
+      <view class="safe-card dossier-card">
+        <text class="section-title">人工备注</text>
+        <text wx:for="{{selected.research_notes}}" wx:key="id" class="detail-line">{{item.note}}</text>
+        <textarea class="note-input" maxlength="1000" value="{{note}}" bindinput="onNoteInput" placeholder="写下待核对的问题或访谈线索，不覆盖用户原报告"></textarea>
+        <button class="safe-outline-button" bindtap="saveNote">保存备注</button>
+      </view>
+
+      <view class="safe-card dossier-card">
+        <text class="section-title">治疗性反馈会议材料</text>
+        <button class="safe-outline-button" bindtap="draftNarrative">生成探索手记草稿</button>
+        <view wx:if="{{narrative}}" class="narrative-box">
+          <text class="detail-line">状态：{{narrative.status}}</text>
+          <text class="detail-line">{{narrative.draft.boundary_notice}}</text>
+          <button wx:if="{{narrative.status !== 'confirmed'}}" class="safe-primary-button" bindtap="confirmNarrative">确认后交付用户</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

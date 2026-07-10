@@ -81,6 +81,7 @@
       id="moodCurve"
       class="curve-canvas"
       type="2d"
+      aria-label="今日情绪强度变化曲线，具体记录见下方列表"
       bindtouchstart="handleCanvasTap"
     ></canvas>
     <view wx:if="{{selectedPoint}}" class="selected-point">

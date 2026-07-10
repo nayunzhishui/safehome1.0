@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "safehome.relationship-pilot.v1",
+  "title": "SafeHome Relationship Pilot Contract",
+  "type": "object",
+  "$defs": {
+    "RelationshipDimension": {
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "code": { "type": "string" },
+        "label": { "type": "string" },
+        "score": { "type": "number" },
+        "item_count": { "type": "integer" }
+      },
+      "additionalProperties": true
+    },
+    "RadarFeature": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "z_score": { "type": "number" }
+      },
+      "required": ["code", "z_score"],
+      "additionalProperties": false
+    },
+    "RelationshipPilotTask": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "enrollment_id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "task_type": { "enum": ["relationship_drawing", "sentence_completion"] },
+        "narration": { "type": ["string", "null"] },
+        "drawing_data": { "type": "object", "additionalProperties": true },
+        "answers": { "type": "object", "additionalProperties": { "type": "string" } },
+        "material_consent": { "enum": [0, 1] },
+        "risk_level": { "enum": ["low", "medium", "high"] },
+        "review_status": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "enrollment_id", "user_id", "task_type", "material_consent", "risk_level", "review_status", "created_at"],
+      "additionalProperties": true
+    },
+    "RelationshipPilotEnrollment": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "nickname": { "type": ["string", "null"] },
+        "assessment_result_id": { "type": "string" },
+        "worksheet_id": { "type": "string" },
+        "profile_model_id": { "type": ["string", "null"] },
+        "profile_cluster_id": { "type": ["integer", "null"] },
+        "status": { "type": "string" },
+        "review_status": { "type": "string" },
+        "dimensions": { "type": "array", "items": { "$ref": "#/$defs/RelationshipDimension" } },
+        "radar_features": { "type": "array", "items": { "$ref": "#/$defs/RadarFeature" } },
+        "profile": {
+          "type": "object",
+          "properties": {
+            "profile_name": { "type": "string" },
+            "profile_description": { "type": "string" },
+            "confidence": { "type": "number" },
+            "interpretation_status": { "enum": ["usable", "low_confidence", "outlier"] },
+            "suggested_assessment_questions": { "type": "array", "items": { "type": "string" } },
+            "recommended_project_tasks": { "type": "array", "items": { "type": "string" } },
+            "boundary_notice": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "tasks_count": { "type": "integer" },
+        "report_id": { "type": ["string", "null"] },
+        "report_status": { "enum": ["pending_review", "ready", "confirmed", "sent", "updated", null] },
+        "notes_count": { "type": "integer" },
+        "tasks": { "type": "array", "items": { "$ref": "#/$defs/RelationshipPilotTask" } },
+        "reports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "status": { "type": "string" },
+              "version": { "type": "string" },
+              "created_at": { "type": "string" },
+              "confirmed_at": { "type": ["string", "null"] }
+            },
+            "required": ["id", "status", "version", "created_at"],
+            "additionalProperties": false
+          }
+        },
+        "research_notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "note": { "type": "string" },
+              "researcher_id": { "type": "string" },
+              "created_at": { "type": "string" }
+            },
+            "required": ["id", "note", "researcher_id", "created_at"],
+            "additionalProperties": false
+          }
+        },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "user_id", "assessment_result_id", "worksheet_id", "status", "review_status", "dimensions", "radar_features", "profile", "created_at"],
+      "additionalProperties": true
+    },
+    "FourLayerProfile": {
+      "type": "object",
+      "properties": {
+        "basic": {
+          "type": "object",
+          "properties": {
+            "stage_name": { "type": "string" },
+            "description": { "type": "string" },
+            "dimensions": { "type": "array", "items": { "$ref": "#/$defs/RelationshipDimension" } }
+          },
+          "additionalProperties": true
+        },
+        "tension": {
+          "type": "object",
+          "properties": { "clues": { "type": "array", "items": { "type": "string" } }, "status": { "type": "string" } },
+          "required": ["clues"],
+          "additionalProperties": true
+        },
+        "mechanism": {
+          "type": "object",
+          "properties": { "hypotheses": { "type": "array", "items": { "type": "string" } }, "status": { "type": "string" } },
+          "required": ["hypotheses"],
+          "additionalProperties": true
+        },
+        "dynamic": {
+          "type": "object",
+          "properties": {
+            "rounds_count": { "type": "integer" },
+            "changes": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+            "description": { "type": "string" }
+          },
+          "required": ["rounds_count", "changes"],
+          "additionalProperties": true
+        }
+      },
+      "required": ["basic", "tension", "mechanism", "dynamic"],
+      "additionalProperties": false
+    },
+    "HypothesisFeedback": {
+      "type": "object",
+      "properties": {
+        "hypothesis_index": { "type": "integer" },
+        "response": { "enum": ["matches", "does_not_match", "uncertain"] },
+        "updated_at": { "type": "string" }
+      },
+      "required": ["hypothesis_index", "response", "updated_at"],
+      "additionalProperties": false
+    },
+    "RelationshipScreeningReport": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "enrollment_id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "status": { "enum": ["pending_review", "ready", "confirmed", "sent", "updated"] },
+        "version": { "type": "string" },
+        "sent_at": { "type": ["string", "null"] },
+        "hypothesis_feedback": { "type": "array", "items": { "$ref": "#/$defs/HypothesisFeedback" } },
+        "report": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "profile_name": { "type": "string" },
+            "profile_description": { "type": "string" },
+            "confidence": { "type": ["number", "null"] },
+            "interpretation_status": { "enum": ["usable", "low_confidence", "outlier", null] },
+            "personalized_interpretation": { "type": "string" },
+            "dimensions": { "type": "array", "items": { "$ref": "#/$defs/RelationshipDimension" } },
+            "radar_features": { "type": "array", "items": { "$ref": "#/$defs/RadarFeature" } },
+            "suggested_assessment_questions": { "type": "array", "items": { "type": "string" } },
+            "recommended_project_tasks": { "type": "array", "items": { "type": "string" } },
+            "four_layer_profile": { "$ref": "#/$defs/FourLayerProfile" },
+            "boundary_notice": { "type": "string" },
+            "generated_at": { "type": "string" },
+            "version": { "type": "string" }
+          },
+          "required": ["title", "profile_name", "profile_description", "personalized_interpretation", "dimensions", "radar_features", "suggested_assessment_questions", "recommended_project_tasks", "boundary_notice", "generated_at", "version"],
+          "additionalProperties": false
+        },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "enrollment_id", "user_id", "status", "version", "report", "created_at"],
+      "additionalProperties": true
+    },
+    "RelationshipGrowth": {
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "curves": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "round": { "type": "integer" }, "value": { "type": "number" }, "created_at": { "type": "string" } },
+              "required": ["round", "value", "created_at"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "type": { "enum": ["assessment", "project_task", "weekly_supplement", "key_event", "report", "researcher_feedback"] },
+              "title": { "type": "string" },
+              "created_at": { "type": "string" },
+              "summary": { "type": "string" },
+              "risk_level": { "enum": ["low", "medium", "high"] }
+            },
+            "required": ["id", "type", "title", "created_at", "summary"],
+            "additionalProperties": false
+          }
+        },
+        "growth_report": { "type": "object", "additionalProperties": true }
+      },
+      "required": ["user_id", "curves", "timeline", "growth_report"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -10,7 +10,7 @@ from flask.json.provider import DefaultJSONProvider
 from werkzeug.exceptions import HTTPException
 
 from config import Config
-from database import check_database_health, init_db
+from database import check_database_health, get_connection, init_db
 from routes.admin import bp as admin_bp
 from routes.assessments import bp as assessments_bp
 from routes.auth import bp as auth_bp
@@ -27,14 +27,17 @@ from routes.goals import bp as goals_bp
 from routes.messages import bp as messages_bp
 from routes.parent_assessments import bp as parent_assessments_bp
 from routes.privacy import bp as privacy_bp
+from routes.product_events import bp as product_events_bp
 from routes.profile import bp as profile_bp
 from routes.progress_summary import bp as progress_summary_bp
 from routes.risk_review import bp as risk_review_bp
 from routes.programs import bp as programs_bp
 from routes.reports import bp as reports_bp
+from routes.relationship_pilot_routes import bp as relationship_pilot_bp
 from routes.supervision import bp as supervision_bp
 from routes.text_analysis import bp as text_analysis_bp
 from routes.training_plan import bp as training_plan_bp
+from services.runtime_metrics import record_response, snapshot as runtime_metrics_snapshot
 
 
 SERVICE_VERSION = "safehome-2026-06-04"
@@ -61,12 +64,43 @@ class SafeHomeJSONProvider(DefaultJSONProvider):
 
 def check_content_health(content_dir) -> dict:
     missing_files = [filename for filename in REQUIRED_CONTENT_FILES if not (content_dir / filename).exists()]
+    versions = {}
+    for filename in ["assessment_worksheets.json", "scales_catalog.json", "training_cards.json"]:
+        path = content_dir / filename
+        if not path.exists():
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            versions[filename] = payload.get("version") or payload.get("updated_at") or "unknown"
+        except (OSError, json.JSONDecodeError):
+            versions[filename] = "unreadable"
+    model_versions = {}
+    profiles_dir = content_dir / "profiles"
+    if profiles_dir.exists():
+        for path in profiles_dir.glob("task12_*_profile_model.json"):
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                model_versions[path.stem] = payload.get("model_version") or payload.get("version") or payload.get("model_id") or "unknown"
+            except (OSError, json.JSONDecodeError):
+                model_versions[path.stem] = "unreadable"
     return {
         "ok": not missing_files,
         "content_dir": str(content_dir),
         "required_files_ok": not missing_files,
         "missing_files": missing_files,
+        "content_versions": versions,
+        "relationship_profile_model_versions": model_versions,
     }
+
+
+def operational_backlog() -> dict:
+    try:
+        with get_connection() as conn:
+            pending = conn.execute("SELECT COUNT(*) AS count FROM risk_review_records WHERE review_status IN ('pending', 'priority_review')").fetchone()
+            high_priority = conn.execute("SELECT COUNT(*) AS count FROM risk_review_records WHERE review_status IN ('pending', 'priority_review') AND risk_level = 'high'").fetchone()
+        return {"ok": True, "risk_review_pending": int(pending["count"]), "risk_review_high_priority": int(high_priority["count"])}
+    except Exception:
+        return {"ok": False, "risk_review_pending": None, "risk_review_high_priority": None}
 
 
 def apply_config_overrides(config_class: type[Config], config_overrides: dict | None) -> None:
@@ -149,9 +183,11 @@ def create_app(
     app.register_blueprint(content_review_bp)
     app.register_blueprint(courses_bp)
     app.register_blueprint(privacy_bp)
+    app.register_blueprint(product_events_bp)
     app.register_blueprint(risk_review_bp)
     app.register_blueprint(programs_bp)
     app.register_blueprint(reports_bp)
+    app.register_blueprint(relationship_pilot_bp)
     app.register_blueprint(supervision_bp)
     app.register_blueprint(text_analysis_bp)
     app.register_blueprint(training_plan_bp)
@@ -159,10 +195,11 @@ def create_app(
 
     @app.after_request
     def add_cors_headers(response):
+        record_response(response.status_code)
         origin = request.headers.get("Origin")
         if origin in app.config.get("ALLOWED_ORIGINS", []):
             response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token, Authorization"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token, Authorization, Idempotency-Key"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
         return response
 
@@ -217,6 +254,8 @@ def build_readiness_payload(app: Flask) -> dict:
         "version": SERVICE_VERSION,
         "database": database,
         "content": content,
+        "runtime_metrics": runtime_metrics_snapshot(),
+        "operational_backlog": operational_backlog(),
     }
 
 

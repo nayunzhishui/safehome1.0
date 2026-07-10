@@ -127,6 +127,22 @@
   gap: 14rpx;
 }
 
+.profile-questions {
+  margin-top: 20rpx;
+  padding: 16rpx 18rpx;
+  border-left: 4rpx solid var(--safe-primary);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-primary-soft);
+}
+
+.profile-question {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
 .profile-step {
   padding: 16rpx 18rpx;
   border-radius: var(--safe-radius-md);

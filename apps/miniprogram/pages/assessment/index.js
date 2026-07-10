@@ -22,6 +22,7 @@ const NODE_LABELS = {
   outcome: "结果",
   reflection: "理解",
   motivation: "动机",
+  relationship_support: "关系探索",
 };
 
 function cleanDisplayText(value) {
@@ -170,7 +171,11 @@ Page({
     ],
   },
 
-  onLoad() {
+  onLoad(options = {}) {
+    const requestedAudience = String(options.audience_class || "");
+    const activeAudience = AUDIENCE_TABS.some((item) => item.key === requestedAudience) ? requestedAudience : this.data.activeAudience;
+    const searchKeyword = decodeURIComponent(options.query || "");
+    this.setData({ activeAudience, searchKeyword });
     this.loadAssessments();
   },
 

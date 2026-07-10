@@ -30,6 +30,8 @@ exports/
 
 # Node / frontend
 node_modules/
+apps/web/test-results/
+apps/web/playwright-report/
 dist/
 build/
 .vite/
@@ -67,4 +69,5 @@ outputs/**/edge-profiles/
 .codex/
 .tmp/
 outputs/text_analysis/
+outputs/task12_relationship_profiles/private/
 *.zip

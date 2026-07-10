@@ -55,12 +55,7 @@ Page({
     this.setData({ loading: true, status: "loading", message: "正在登录..." });
     api.login({ username, password })
       .then((result) => {
-        const app = getApp();
-        if (app && app.setAuthSession) {
-          app.setAuthSession(result.token, result.user);
-        }
-        wx.showToast({ title: "已登录", icon: "success" });
-        navigateAfterAuth(this.data.redirectUrl);
+        this.completeLogin(result, "已登录");
       })
       .catch((error) => {
         this.setData({ status: "error", message: error.message || "登录失败，请稍后重试。" });
@@ -68,6 +63,15 @@ Page({
       .finally(() => {
         this.setData({ loading: false });
       });
+  },
+
+  completeLogin(result, toastTitle) {
+    const app = getApp();
+    if (app && app.setAuthSession) {
+      app.setAuthSession(result.token, result.user);
+    }
+    wx.showToast({ title: toastTitle, icon: "success" });
+    navigateAfterAuth(this.data.redirectUrl);
   },
 
   submitWechatLogin() {
@@ -95,17 +99,12 @@ Page({
         }
         api.wechatLogin({ code: loginResult.code })
           .then((result) => {
-            const app = getApp();
-            if (app && app.setAuthSession) {
-              app.setAuthSession(result.token, result.user);
-            }
-            wx.showToast({ title: "已登录", icon: "success" });
-            navigateAfterAuth(this.data.redirectUrl);
+            this.completeLogin(result, "微信登录成功");
           })
           .catch((error) => {
             this.setData({
               status: "error",
-              message: error.debugMessage || error.message || "微信登录暂不可用，请使用账号密码登录。",
+              message: error.message || "微信登录暂不可用，请尝试其他登录方式。",
             });
           })
           .finally(() => {
@@ -122,40 +121,29 @@ Page({
     });
   },
 
-  bindPhone(event) {
-    const token = wx.getStorageSync("auth_token");
-    if (!token) {
-      this.setData({
-        status: "error",
-        message: "请先完成微信登录或账号登录，再绑定手机号。",
-      });
-      return;
-    }
+  handlePhoneLogin(event) {
     const detail = event.detail || {};
     const code = detail.code || "";
     if (!code) {
       this.setData({
-        status: "error",
-        message: "没有拿到手机号授权 code。请确认小程序已配置手机号授权，或继续使用账号密码登录。",
+        status: "idle",
+        message: "你已取消手机号授权，可以继续选择其他登录方式。",
       });
       return;
     }
     this.setData({
       phoneLoading: true,
       status: "loading",
-      message: "正在检查手机号授权配置...",
+      message: "正在完成手机号登录...",
     });
-    api.bindWechatPhone({ code })
-      .then(() => {
-        this.setData({
-          status: "success",
-          message: "手机号已绑定。",
-        });
+    api.phoneLogin({ code })
+      .then((result) => {
+        this.completeLogin(result, "手机号登录成功");
       })
       .catch((error) => {
         this.setData({
           status: "error",
-          message: error.debugMessage || error.message || "手机号授权暂不可用，请继续使用账号密码登录。",
+          message: error.message || "手机号登录暂不可用，请尝试其他登录方式。",
         });
       })
       .finally(() => {

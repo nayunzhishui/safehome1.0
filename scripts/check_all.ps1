@@ -13,8 +13,7 @@ function Invoke-Step {
     & $Action
     Write-Host "OK: $Name"
   } catch {
-    Write-Error "FAILED: $Name"
-    throw
+    throw "FAILED: $Name`n$($_.Exception.Message)"
   }
 }
 
@@ -54,6 +53,19 @@ try {
     }
   }
 
+  Invoke-Step "web typecheck" {
+    Push-Location "apps\web"
+    try {
+      Invoke-Native "npx" @("tsc", "--noEmit")
+    } finally {
+      Pop-Location
+    }
+  }
+
+  Invoke-Step "miniprogram structure audit" {
+    Invoke-Native "python" @("backend\scripts\audit_miniprogram_frontend.py")
+  }
+
   Invoke-Step "miniprogram JS syntax" {
     Get-ChildItem -Path "apps\miniprogram" -Recurse -Filter "*.js" | ForEach-Object {
       Invoke-Native "node" @("--check", $_.FullName)
@@ -62,7 +74,12 @@ try {
 
   Invoke-Step "miniprogram JSON parse" {
     Get-ChildItem -Path "apps\miniprogram" -Recurse -Filter "*.json" | ForEach-Object {
-      Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json | Out-Null
+      $jsonPath = $_.FullName
+      try {
+        Get-Content -Raw -Encoding UTF8 -LiteralPath $jsonPath | ConvertFrom-Json | Out-Null
+      } catch {
+        throw "Invalid JSON: $jsonPath`n$($_.Exception.Message)"
+      }
     }
   }
 } finally {

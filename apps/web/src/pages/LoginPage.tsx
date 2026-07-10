@@ -3,6 +3,12 @@ import { useState } from "react";
 import { saveAuthSession } from "../services/authState";
 import { formatSafeHomeError, safeHomeApi } from "../services/safehomeApi";
 
+function destinationForRole(role: string): string {
+  if (["admin", "researcher", "supervisor"].includes(role)) return "/dashboard";
+  if (role === "student") return "/student";
+  return "/";
+}
+
 export function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +27,7 @@ export function LoginPage() {
     try {
       const data = await safeHomeApi.login({ username: username.trim(), password });
       saveAuthSession(data.token, data.user);
-      window.location.href = "/dashboard";
+      window.location.href = destinationForRole(data.user.role);
     } catch (error) {
       setStatus("error");
       setMessage(formatSafeHomeError(error, "登录失败，请确认账号密码。"));

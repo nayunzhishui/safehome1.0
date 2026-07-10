@@ -237,3 +237,10 @@
   font-size: 24rpx;
   line-height: 1.7;
 }
+.researcher-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  border-left: 5rpx solid var(--safe-primary);
+}

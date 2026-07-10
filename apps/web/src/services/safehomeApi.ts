@@ -4,7 +4,10 @@ import type {
   AdminWorksheet,
   AdminWorksheetInput,
   AssessmentProfilePosition,
+  AssessmentListItem,
   AssessmentResult,
+  AssessmentResultInput,
+  AssessmentWorksheet,
   CardRecommendResponse,
   Checkin,
   CheckinInput,
@@ -24,6 +27,8 @@ import type {
   ParentAssessmentPayload,
   ParentAssessmentResult,
   ProfileVisuals,
+  RelationshipPilotEnrollment,
+  RelationshipScreeningReport,
   ProfileReview,
   ProfileReviewInput,
   RiskCheckResult,
@@ -36,6 +41,7 @@ import type {
   SupervisionInput,
   SupervisionRequest,
   TrainingCard,
+  UserMessage,
   WeeklyReport,
 } from "../../../../shared/types/api";
 import { getStoredAdminToken } from "./adminToken";
@@ -302,6 +308,77 @@ export class SafeHomeApiClient {
     );
   }
 
+  listAssessments(params: { audience_class?: string; q?: string } = {}): Promise<ListResponse<AssessmentListItem> & { boundary_notice?: string }> {
+    return this.requestData(this.withQuery(API_ENDPOINTS.assessments, params));
+  }
+
+  getAssessment(id: string): Promise<AssessmentWorksheet> {
+    return this.requestData(`${API_ENDPOINTS.assessments}/${encodeURIComponent(id)}`);
+  }
+
+  createAssessmentResult(input: AssessmentResultInput): Promise<AssessmentResult> {
+    return this.requestData(API_ENDPOINTS.assessmentResults, { method: "POST", body: input });
+  }
+
+  getRelationshipResearchDashboard(adminToken?: string): Promise<ListResponse<RelationshipPilotEnrollment> & { boundary_notice?: string }> {
+    return this.requestData(`${API_ENDPOINTS.relationshipPilot}/researcher/dashboard`, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  getRelationshipEnrollment(id: string, adminToken?: string): Promise<RelationshipPilotEnrollment> {
+    return this.requestData(`${API_ENDPOINTS.relationshipPilot}/enrollments/${encodeURIComponent(id)}`, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  getRelationshipReport(id: string, adminToken?: string): Promise<RelationshipScreeningReport> {
+    return this.requestData(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}`, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  confirmRelationshipReport(id: string, adminToken?: string): Promise<RelationshipScreeningReport> {
+    return this.requestData(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}/confirm`, {
+      method: "POST",
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  updateRelationshipReport(
+    id: string,
+    input: {
+      version: string;
+      profile_description?: string;
+      personalized_interpretation?: string;
+      suggested_assessment_questions?: string[];
+      recommended_project_tasks?: string[];
+      boundary_notice?: string;
+    },
+    adminToken?: string,
+  ): Promise<RelationshipScreeningReport> {
+    return this.requestData(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: input,
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  sendRelationshipReport(id: string, adminToken?: string): Promise<UserMessage> {
+    return this.requestData(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}/send`, {
+      method: "POST",
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  createRelationshipResearchNote(id: string, note: string, adminToken?: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.relationshipPilot}/enrollments/${encodeURIComponent(id)}/notes`, {
+      method: "POST",
+      body: { note },
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
   createCheckin(input: CheckinInput): Promise<Checkin> {
     return this.requestData<Checkin>(API_ENDPOINTS.checkins, {
       method: "POST",
@@ -405,12 +482,14 @@ export class SafeHomeApiClient {
     return response.blob();
   }
 
-  private withDefaultUser<T extends { user_id?: string }>(input: T): T {
-    return { ...input, user_id: input.user_id ?? this.currentDefaultUserId() };
+  private withDefaultUser<T extends object>(input: T): T & { user_id: string } {
+    const userId = "user_id" in input ? (input as { user_id?: string }).user_id : undefined;
+    return { ...input, user_id: userId ?? this.currentDefaultUserId() };
   }
 
-  private withDefaultUserParam<T extends { user_id?: string }>(params: T): T {
-    return { ...params, user_id: params.user_id ?? this.currentDefaultUserId() };
+  private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {
+    const userId = "user_id" in params ? (params as { user_id?: string }).user_id : undefined;
+    return { ...params, user_id: userId ?? this.currentDefaultUserId() };
   }
 
   private currentDefaultUserId(): string {
@@ -442,6 +521,9 @@ export class SafeHomeApiClient {
     options: { method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"; body?: unknown; headers?: Record<string, string> } = {},
   ): Promise<T> {
     const payload = await this.requestRaw<ApiResponse<T>>(path, options);
+    if (!payload.ok) {
+      throw new SafeHomeApiError(payload.error.message, payload.error.code, 400);
+    }
     return payload.data;
   }
 
@@ -450,7 +532,7 @@ export class SafeHomeApiClient {
     options: { method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"; body?: unknown; headers?: Record<string, string> } = {},
   ): Promise<T> {
     const token = getToken();
-    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+    const authHeader: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
     const response = await fetch(this.absoluteUrl(path), {
       method: options.method ?? "GET",
       headers: { "Content-Type": "application/json", ...authHeader, ...(options.headers || {}) },

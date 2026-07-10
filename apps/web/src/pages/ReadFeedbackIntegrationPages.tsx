@@ -433,6 +433,7 @@ export function StudentEntryPage() {
           </p>
           <div className="heroActions">
             <a className="primaryButton landingPrimary" href="/student/assessment">开始填写</a>
+            <a className="secondaryButton landingSecondary" href="/relationship-assessment">关系探索试点测评</a>
             <a className="secondaryButton landingSecondary" href="/about-study">先看边界</a>
           </div>
         </div>

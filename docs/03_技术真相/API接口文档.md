@@ -1300,18 +1300,20 @@ Invoke-WebRequest `
 
 ### `POST /api/auth/wechat-login`
 
-用途：微信小程序登录或绑定用户。开发环境在未配置微信密钥时使用稳定兜底 openid，生产环境必须配置 `WECHAT_APPID` 和 `WECHAT_SECRET`。
+用途：微信小程序登录或绑定用户。通过 `wx.cloud.callContainer` 调用时，后端优先读取云托管注入的 `X-WX-OPENID` 和 `X-WX-SOURCE`；非云托管环境才使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。开发环境在两者都不可用时保留稳定兜底 openid。
 
 请求字段：
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `code` | string | 是 | 微信登录 code |
+| `code` | string | 条件必填 | 微信登录 code；云托管可信身份头存在时可省略 |
 | `nickname` / `nickName` | string | 否 | 昵称 |
 | `avatar_url` / `avatarUrl` | string | 否 | 头像地址 |
 | `anonymous_id` | string | 否 | 旧匿名 ID，用于平滑迁移 |
 
-返回：`token`、`user`、`dev_fallback`。
+返回：`token`、`user`、`dev_fallback`、`identity_source`。`identity_source` 可为 `cloudbase_header`、`jscode2session` 或 `development_fallback`。
+
+生产边界：接口不会把 `WECHAT_APPID`、`WECHAT_SECRET` 或微信服务端原始错误暴露给用户；停用账号不能通过微信重新登录。
 
 ### `GET /api/profile/stats`
 
@@ -1431,11 +1433,26 @@ Invoke-WebRequest `
 |---|---|---|---|
 | `code` | string | 是 | 微信 `getPhoneNumber` 返回的手机号授权 code |
 
-当前边界：
+实现：使用微信 `getPhoneNumber` 一次性 code 换取已验证手机号；云托管优先读取 `/.tencentcloudbase/wx/cloudbase_access_token`，非云托管环境使用 `WECHAT_APPID/WECHAT_SECRET` 获取普通 access token。数据库只保存基于服务端密钥生成的不可逆 `phone_hash`，不保存完整手机号。
 
-- 若未配置 `WECHAT_APPID` 或 `WECHAT_SECRET`，返回 `wechat_phone_config_missing`；
-- 不会伪造手机号绑定成功；
-- 当前第一版只完成接口骨架和配置失败提示，正式换取手机号需要后续接入微信服务端接口。
+返回：`token`、`user`、`phone_bound=true`、仅本次响应可见的 `phone_masked`。
+
+错误：未开通微信开放接口服务时返回 `wechat_phone_config_missing`；授权 code 失效返回 `wechat_phone_exchange_failed`；手机号已属于其他账号返回 `phone_account_conflict`。
+
+### `POST /api/auth/phone-login`
+
+用途：微信小程序手机号快捷登录。用户通过 `button open-type="getPhoneNumber"` 授权后，前端提交一次性 code；后端换取手机号、计算不可逆摘要、查找或创建家长账号并返回登录 token。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是 | 微信 `getPhoneNumber` 返回的一次性手机号授权 code |
+| `anonymous_id` | string | 否 | 旧匿名 ID，用于平滑迁移 |
+
+账号合并规则：同一次云托管请求携带可信 `X-WX-OPENID` 时，优先把微信身份和手机号摘要绑定到同一账号；若二者已属于不同账号则返回 `409 phone_account_conflict`，不静默合并。
+
+返回：`token`、`user`、`phone_bound=true`、`phone_masked`。完整手机号不会写入响应日志、研究导出或数据库。
 
 ### `POST /api/programs/<program_id>/entries`
 
@@ -1591,4 +1608,54 @@ outputs/text_analysis/social_network_summary.json
 | `after_thermometer_id` | string | 练习后温度计记录 |
 
 边界：这些字段只用于过程复盘和聚合分析，不用于诊断或效果承诺。
+
+## 2026-07-10：任务十二关系探索试点接口
+
+统一前缀：`/api/relationship-pilot`。普通用户必须使用 Bearer 登录令牌且只能访问自己的记录；研究者、督导、管理员可查看授权试点档案。Web 后台兼容 `X-Admin-Token`。研究者查看、确认、发送、备注等操作写入 `audit_logs`。
+
+| 方法与路径 | 权限 | 用途 |
+|---|---|---|
+| `POST /enrollments` | 学生 | 明确研究授权后，关联最近或指定的三份关系测评结果、维度、雷达和画像 |
+| `GET /enrollments` | 登录用户/研究者 | 用户查自己；研究者查授权报名列表 |
+| `GET /enrollments/<id>` | 本人/研究者 | 查看报名、报告、项目材料和研究备注；敏感材料访问会审计 |
+| `POST /enrollments/<id>/report` | 本人/研究者 | 生成同源关系健康初筛报告；未复核时为 `pending_review` |
+| `GET /reports/<id>` | 本人/研究者 | 查看报告；`download=1` 下载脱敏结构化 JSON |
+| `POST /reports/<id>/confirm` | 研究者/督导/管理员 | 人工确认报告 |
+| `POST /reports/<id>/send` | 研究者/督导/管理员 | 仅发送已确认报告；消息只含摘要与报告 ID |
+| `POST /enrollments/<id>/tasks` | 本人 | 保存关系绘画笔画数据或句子补全；需材料授权并执行风险预检 |
+| `GET /researcher/dashboard` | 研究者/督导/管理员 | 查看报名、画像、报告、任务数、备注数和复核状态 |
+| `POST /enrollments/<id>/notes` | 研究者/督导/管理员 | 新增不覆盖用户原报告的人工备注 |
+| `POST /enrollments/<id>/narrative` | 研究者/督导/管理员 | 生成探索手记草稿 |
+| `POST /narratives/<id>/confirm` | 研究者/督导/管理员 | 确认后允许用户查看探索手记 |
+| `GET /narratives/<id>` | 本人/研究者 | 用户只能查看已确认版本 |
+| `POST /enrollments/<id>/longitudinal` | 本人 | 保存每周补充测量或关键事件；开放文本进入风险预检 |
+| `GET /growth` | 本人/研究者 | 返回变化曲线、成长时间轴、成长报告和四层阶段性画像 |
+
+三份关系测评 ID：
+
+```text
+regulatory_focus_relationship_18
+micro_ysq_relationship_18
+relationship_initiation_intention_action
+```
+
+报告、画像、四层画像和成长报告只作阶段性观察、访谈准备和项目任务选择，不构成诊断、人格标签、关系能力评价或疗效证明。
+
+### 2026-07-10 关系试点接口加固
+
+| 方法与路径 | 权限 | 补充约定 |
+|---|---|---|
+| `GET /reports/<id>?download=1` | 本人/研究者 | 返回仅含用户可见字段的下载JSON；小程序据同源报告生成长图，不含模型中心、研究备注和内部ID |
+| `PUT /reports/<id>/hypotheses/<index>` | 本人 | `response`仅允许`matches`、`does_not_match`、`uncertain`，用于共同核对机制假设 |
+| `PATCH /reports/<id>` | 研究者/督导/管理员 | 更新白名单内的用户可见文案并提供新`version`，报告状态变为`updated` |
+| `POST /reports/<id>/send` | 研究者/督导/管理员 | `confirmed`或`updated`可发送；同一版本重复调用返回既有消息，不重复创建 |
+| `POST /enrollments/<id>/tasks` | 本人 | 支持`Idempotency-Key`请求头，弱网重试不重复保存 |
+| `POST /enrollments/<id>/longitudinal` | 本人 | 支持`Idempotency-Key`请求头，周记录/关键事件重试不重复保存 |
+| `POST /api/product-events` | 登录用户 | 只接受枚举事件和枚举元数据，拒绝自由文本、绘画、句子及开放叙事原文 |
+
+产品事件允许：`relationship_entry_clicked`、`relationship_step_completed`、`relationship_report_downloaded`、`relationship_task_save_failed`。报告确认继续复用服务端既有 `relationship_report_confirmed` 审计，不重复采集。元数据仅允许 `action`、`stage`、`status`、`source` 和布尔值 `retryable`，且字符串值必须命中服务端枚举。
+
+登录补充：`POST /api/auth/wechat-login`优先使用CloudBase注入的可信`X-WX-OPENID`/`X-WX-SOURCE`；`POST /api/auth/phone-login`用微信`getPhoneNumber`凭证换取手机号并仅保存HMAC摘要。生产环境需配置CloudBase开放接口 `/wxa/business/getuserphonenumber`，否则手机号快捷登录不会可用。
+
+`GET /readyz`现同时返回数据库schema版本、内容版本、任务十二画像模型版本、风险复核积压和不含请求正文的进程内聚合指标。指标仅记录请求总量、错误量及指定操作失败次数。
 

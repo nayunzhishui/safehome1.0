@@ -192,7 +192,7 @@ def test_bind_phone_requires_login_and_reports_missing_wechat_config(tmp_path, m
         headers={"Authorization": f"Bearer {token}"},
         json={"code": "phone-code"},
     )
-    assert response.status_code == 400
+    assert response.status_code == 503
     body = response.get_json()
     assert body["error"]["code"] == "wechat_phone_config_missing"
 

@@ -1,0 +1,4 @@
+<view class="visual-state visual-state--{{tone}}" role="status">
+  <text class="visual-state__label">{{label}}</text>
+  <text class="visual-state__description">{{description}}</text>
+</view>

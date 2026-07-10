@@ -26,6 +26,14 @@
     <text>这里用于查看记录、复盘和支持入口。当前不做诊断，也不替代专业咨询或紧急帮助。</text>
   </view>
 
+  <view class="safe-card researcher-entry">
+    <view class="row-copy">
+      <text class="row-title">{{isResearcher ? '研究者评估仪表盘' : '研究者登录'}}</text>
+      <text class="row-subtitle">{{isResearcher ? '查看报名、报告、任务材料和人工备注' : '仅限由管理员创建的研究者账号'}}</text>
+    </view>
+    <button class="auth-secondary" bindtap="goResearcher">{{isResearcher ? '进入仪表盘' : '账号登录'}}</button>
+  </view>
+
   <view class="safe-section">
     <section-title title="我的记录" subtitle="查看复盘、反馈、训练和测评记录" />
     <view class="plain-list">

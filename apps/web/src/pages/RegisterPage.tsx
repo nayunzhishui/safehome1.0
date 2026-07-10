@@ -3,6 +3,10 @@ import { useState } from "react";
 import { saveAuthSession } from "../services/authState";
 import { formatSafeHomeError, safeHomeApi } from "../services/safehomeApi";
 
+function destinationForRole(role: string): string {
+  return role === "student" ? "/student" : "/";
+}
+
 const ROLES = [
   { value: "parent", label: "家长" },
   { value: "student", label: "学生" },
@@ -38,7 +42,7 @@ export function RegisterPage() {
         nickname: nickname.trim() || undefined,
       });
       saveAuthSession(data.token, data.user);
-      window.location.href = "/dashboard";
+      window.location.href = destinationForRole(data.user.role);
     } catch (error) {
       setStatus("error");
       setMessage(formatSafeHomeError(error, "注册失败，请稍后重试。"));

@@ -38,7 +38,7 @@ export function PrivacyCenterPage() {
   const authToken = getStoredAuthToken();
   const authUser = getStoredAuthUser();
   const userId = authUser?.id || getAnonymousUserId();
-  const authHeaders = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+  const authHeaders: Record<string, string> = authToken ? { Authorization: `Bearer ${authToken}` } : {};
 
   useEffect(() => {
     loadStatus();

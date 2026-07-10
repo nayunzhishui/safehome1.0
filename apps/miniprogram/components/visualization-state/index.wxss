@@ -1,0 +1,7 @@
+.visual-state { display: grid; gap: 5rpx; padding: 16rpx 18rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-sm); background: var(--safe-bg-soft); }
+.visual-state__label, .visual-state__description { display: block; }
+.visual-state__label { color: var(--safe-title); font-size: 22rpx; font-weight: 800; }
+.visual-state__description { color: var(--safe-muted); font-size: 21rpx; line-height: 1.55; }
+.visual-state--warning { border-color: rgba(184, 127, 45, 0.3); background: var(--safe-orange-soft); }
+.visual-state--success { border-color: rgba(79, 124, 107, 0.3); background: var(--safe-primary-soft); }
+.visual-state--danger { border-color: rgba(168, 66, 50, 0.28); background: #fff3f0; }

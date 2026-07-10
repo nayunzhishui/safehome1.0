@@ -1,6 +1,6 @@
 {
   "version": "2026.07-assessment-training-map-v2",
-  "updated_at": "2026-07-06",
+  "updated_at": "2026-07-10",
   "boundary_notice": "测评结果到训练卡的映射只作为支持性练习建议，不构成诊断、治疗方案、危机干预或固定评价。真实量表、草稿量表和试用内容正式开放前必须经过人工复核。",
   "rules": [
     {
@@ -991,6 +991,117 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "task12_regulatory_focus_relationship_18_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "regulatory_focus_relationship_18",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "relationship_exploration",
+        "student_support"
+      ],
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "cbt_auto_thought_student",
+        "self_support_statement"
+      ],
+      "card_roles": [
+        {
+          "card_id": "student_emotion_naming",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "cbt_auto_thought_student",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "self_support_statement",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "根据本次关系体验记录，推荐从觉察、表达和自我支持中选择一个轻量动作。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "task12_micro_ysq_relationship_18_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "micro_ysq_relationship_18",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "relationship_exploration",
+        "student_support"
+      ],
+      "recommended_card_ids": [
+        "self_support_statement",
+        "scs_mindful_moment",
+        "student_two_thoughts"
+      ],
+      "card_roles": [
+        {
+          "card_id": "self_support_statement",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "scs_mindful_moment",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "student_two_thoughts",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "根据本次关系体验记录，推荐从觉察、表达和自我支持中选择一个轻量动作。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "review_status": "draft"
+    },
+    {
+      "rule_id": "task12_relationship_initiation_intention_action_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "relationship_initiation_intention_action",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "relationship_exploration",
+        "student_support"
+      ],
+      "recommended_card_ids": [
+        "one_open_question",
+        "erq_expression_gentle",
+        "self_support_statement"
+      ],
+      "card_roles": [
+        {
+          "card_id": "one_open_question",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "erq_expression_gentle",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "self_support_statement",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "根据本次关系体验记录，推荐从觉察、表达和自我支持中选择一个轻量动作。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
       "review_status": "draft"
     }
   ]

@@ -1,8 +1,10 @@
 const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
 const THREE_DAY_LIGHT_PLAN_KEY = "safehome:threeDayLightPlan";
+const { getAuthUser } = require("../../utils/authGuard");
 
 Page({
   data: {
+    relationshipPilotAvailable: false,
     latestRecommendation: null,
     threeDayPlan: null,
     trainingStages: [
@@ -138,6 +140,8 @@ Page({
   },
 
   onShow() {
+    const user = getAuthUser();
+    this.setData({ relationshipPilotAvailable: !!(user && user.role === "student") });
     this.loadLatestRecommendation();
     this.loadThreeDayPlan();
   },
@@ -210,6 +214,10 @@ Page({
 
   openProgramList() {
     wx.navigateTo({ url: "/pages/program-list/index" });
+  },
+
+  openRelationshipPilot() {
+    wx.navigateTo({ url: "/pages/relationship-pilot/index" });
   },
 
   openTrainingCard(event) {

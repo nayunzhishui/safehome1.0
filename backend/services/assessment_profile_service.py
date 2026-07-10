@@ -131,6 +131,15 @@ def _feature_value(
         if bounds:
             low, high = bounds
             value = low + high - value
+    transform = feature.get("input_transform") or {}
+    if transform.get("type") == "linear_range":
+        input_min = float(transform.get("input_min"))
+        input_max = float(transform.get("input_max"))
+        output_min = float(transform.get("output_min"))
+        output_max = float(transform.get("output_max"))
+        if input_max <= input_min:
+            return None, True
+        value = output_min + ((value - input_min) / (input_max - input_min)) * (output_max - output_min)
     return value, False
 
 
@@ -283,6 +292,9 @@ def build_assessment_profile_position(
             "can_use_interpretation": interpretation_guard["can_use_interpretation"],
         },
         "interpretation": interpretation_guard,
+        "radar_support": model.get("radar_support", {}),
+        "suggested_assessment_questions": nearest_cluster.get("suggested_assessment_questions", []),
+        "recommended_project_tasks": nearest_cluster.get("recommended_project_tasks", []),
         "clusters": [
             {
                 "cluster_id": cluster.get("cluster_id"),
@@ -293,6 +305,10 @@ def build_assessment_profile_position(
                 "percent": cluster.get("percent"),
                 "pca_centroid": cluster.get("pca_centroid"),
                 "supportive_explanation": cluster.get("supportive_explanation"),
+                "dimension_means": cluster.get("dimension_means", {}),
+                "dimension_z": cluster.get("dimension_z", {}),
+                "suggested_assessment_questions": cluster.get("suggested_assessment_questions", []),
+                "recommended_project_tasks": cluster.get("recommended_project_tasks", []),
                 "recommended_card_ids": cluster.get("recommended_card_ids", []),
                 "card_reason": cluster.get("card_reason", ""),
             }

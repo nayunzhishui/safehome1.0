@@ -1,12 +1,16 @@
 """Formal pilot username/password and WeChat auth endpoints."""
 
 import hashlib
+import hmac
 import json
 import os
+import time
+from pathlib import Path
 from urllib.parse import urlencode
-from urllib.request import urlopen
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import Config
@@ -15,6 +19,15 @@ from routes.auth_utils import PUBLIC_REGISTER_ROLES, AuthError, auth_error_respo
 from routes.utils import fail, ok, require_admin_token
 
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
+CLOUDBASE_ACCESS_TOKEN_PATH = "/.tencentcloudbase/wx/cloudbase_access_token"
+_WECHAT_ACCESS_TOKEN_CACHE: dict[str, float | str] = {"appid": "", "token": "", "expires_at": 0.0}
+
+
+class WechatAuthError(ValueError):
+    def __init__(self, code: str, message: str, status: int = 400) -> None:
+        super().__init__(message)
+        self.code = code
+        self.status = status
 
 
 def _public_user(row: dict) -> dict:
@@ -29,6 +42,27 @@ def _public_user(row: dict) -> dict:
     }
 
 
+def _trusted_cloudbase_openid() -> str | None:
+    """Read the identity header injected by WeChat CloudBase callContainer.
+
+    Production requests must also carry X-WX-SOURCE so a direct public HTTP
+    request cannot opt into this path by supplying only an openid-shaped value.
+    CloudBase owns and injects these headers on the callContainer route.
+    """
+
+    openid = str(request.headers.get("X-WX-OPENID") or "").strip()
+    source = str(request.headers.get("X-WX-SOURCE") or "").strip()
+    if not openid:
+        return None
+    if str(Config.APP_ENV).lower() == "production" and not source:
+        return None
+    return openid
+
+
+def _read_json_response(response) -> dict:
+    return json.loads(response.read().decode("utf-8"))
+
+
 def _wechat_session_from_code(code: str) -> dict:
     appid = os.environ.get("WECHAT_APPID", "").strip()
     secret = os.environ.get("WECHAT_SECRET", "").strip()
@@ -41,17 +75,134 @@ def _wechat_session_from_code(code: str) -> dict:
                 "grant_type": "authorization_code",
             }
         )
-        with urlopen(f"https://api.weixin.qq.com/sns/jscode2session?{query}", timeout=8) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+        try:
+            with urlopen(f"https://api.weixin.qq.com/sns/jscode2session?{query}", timeout=8) as response:
+                payload = _read_json_response(response)
+        except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
+            raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 502) from exc
         if payload.get("errcode"):
-            raise ValueError(payload.get("errmsg") or "微信登录校验失败")
+            raise WechatAuthError("wechat_login_failed", "微信登录凭证已失效，请重新尝试。", 400)
         if not payload.get("openid"):
-            raise ValueError("微信登录没有返回 openid")
-        return payload
+            raise WechatAuthError("wechat_login_failed", "微信登录暂未完成，请重新尝试。", 400)
+        return {**payload, "identity_source": "jscode2session"}
     if Config.APP_ENV == "production":
-        raise ValueError("生产环境缺少 WECHAT_APPID 或 WECHAT_SECRET")
+        raise WechatAuthError(
+            "wechat_login_config_missing",
+            "微信登录暂不可用，请尝试手机号快捷登录或账号密码登录。",
+            503,
+        )
     digest = hashlib.sha256(code.encode("utf-8")).hexdigest()[:24]
-    return {"openid": f"dev_openid_{digest}", "session_key": None, "dev_fallback": True}
+    return {
+        "openid": f"dev_openid_{digest}",
+        "session_key": None,
+        "dev_fallback": True,
+        "identity_source": "development_fallback",
+    }
+
+
+def _cloudbase_access_token() -> str | None:
+    token_path = Path(os.environ.get("CLOUDBASE_ACCESS_TOKEN_PATH", CLOUDBASE_ACCESS_TOKEN_PATH))
+    try:
+        token = token_path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    return token or None
+
+
+def _standard_wechat_access_token() -> str | None:
+    appid = os.environ.get("WECHAT_APPID", "").strip()
+    secret = os.environ.get("WECHAT_SECRET", "").strip()
+    if not appid or not secret:
+        return None
+
+    now = time.time()
+    if (
+        _WECHAT_ACCESS_TOKEN_CACHE.get("appid") == appid
+        and _WECHAT_ACCESS_TOKEN_CACHE.get("token")
+        and float(_WECHAT_ACCESS_TOKEN_CACHE.get("expires_at") or 0) > now + 60
+    ):
+        return str(_WECHAT_ACCESS_TOKEN_CACHE["token"])
+
+    query = urlencode({"grant_type": "client_credential", "appid": appid, "secret": secret})
+    try:
+        with urlopen(f"https://api.weixin.qq.com/cgi-bin/token?{query}", timeout=8) as response:
+            payload = _read_json_response(response)
+    except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
+        raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 502) from exc
+    token = str(payload.get("access_token") or "").strip()
+    if not token:
+        raise WechatAuthError("wechat_phone_config_invalid", "手机号快捷登录暂不可用，请使用其他登录方式。", 503)
+    expires_in = max(int(payload.get("expires_in") or 7200), 300)
+    _WECHAT_ACCESS_TOKEN_CACHE.update({"appid": appid, "token": token, "expires_at": now + expires_in})
+    return token
+
+
+def _wechat_api_credential() -> tuple[str, str]:
+    cloudbase_token = _cloudbase_access_token()
+    if cloudbase_token:
+        return "cloudbase_access_token", cloudbase_token
+    standard_token = _standard_wechat_access_token()
+    if standard_token:
+        return "access_token", standard_token
+    raise WechatAuthError(
+        "wechat_phone_config_missing",
+        "手机号快捷登录尚未开通，请使用微信一键登录或账号密码登录。",
+        503,
+    )
+
+
+def _normalize_phone_number(value: str) -> str:
+    normalized = "".join(char for char in str(value or "") if char.isdigit())
+    if normalized.startswith("86") and len(normalized) == 13:
+        normalized = normalized[2:]
+    if len(normalized) < 7 or len(normalized) > 15:
+        raise WechatAuthError("wechat_phone_invalid", "微信没有返回有效手机号，请重新授权。", 400)
+    return normalized
+
+
+def _phone_hash(phone_number: str) -> str:
+    key = str(current_app.config["SECRET_KEY"]).encode("utf-8")
+    message = f"safehome-phone-v1:{phone_number}".encode("utf-8")
+    return hmac.new(key, message, hashlib.sha256).hexdigest()
+
+
+def _mask_phone(phone_number: str) -> str:
+    if len(phone_number) < 7:
+        return "****"
+    return f"{phone_number[:3]}****{phone_number[-4:]}"
+
+
+def _wechat_phone_from_code(code: str) -> dict:
+    credential_name, credential = _wechat_api_credential()
+    query = urlencode({credential_name: credential})
+    request_body = json.dumps({"code": code}, ensure_ascii=False).encode("utf-8")
+    api_request = Request(
+        f"https://api.weixin.qq.com/wxa/business/getuserphonenumber?{query}",
+        data=request_body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urlopen(api_request, timeout=8) as response:
+            payload = _read_json_response(response)
+    except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
+        raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 502) from exc
+    if payload.get("errcode") not in {None, 0}:
+        raise WechatAuthError("wechat_phone_exchange_failed", "手机号授权已失效，请重新授权后再试。", 400)
+    phone_info = payload.get("phone_info") or payload.get("phoneInfo") or {}
+    phone_number = _normalize_phone_number(
+        phone_info.get("purePhoneNumber") or phone_info.get("phoneNumber") or phone_info.get("pure_phone_number")
+    )
+    return {
+        "phone_number": phone_number,
+        "pure_phone_number": phone_number,
+        "country_code": str(phone_info.get("countryCode") or phone_info.get("country_code") or ""),
+    }
+
+
+def _wechat_error_response(exc: WechatAuthError):
+    current_app.logger.warning("wechat_auth_failed code=%s status=%s", exc.code, exc.status)
+    return fail(exc.code, str(exc), status=exc.status)
 
 
 @bp.post("/register")
@@ -122,13 +273,20 @@ def wechat_login():
     nickname = str(payload.get("nickname") or payload.get("nickName") or "").strip() or None
     avatar_url = str(payload.get("avatar_url") or payload.get("avatarUrl") or "").strip() or None
     anonymous_id = str(payload.get("anonymous_id") or "").strip() or None
-    if not code:
-        return fail("validation_error", "缺少微信登录 code", status=400)
-
-    try:
-        session = _wechat_session_from_code(code)
-    except ValueError as exc:
-        return fail("wechat_login_failed", str(exc), status=400)
+    cloudbase_openid = _trusted_cloudbase_openid()
+    if cloudbase_openid:
+        session = {
+            "openid": cloudbase_openid,
+            "dev_fallback": False,
+            "identity_source": "cloudbase_header",
+        }
+    else:
+        if not code:
+            return fail("validation_error", "缺少微信登录凭证", status=400)
+        try:
+            session = _wechat_session_from_code(code)
+        except WechatAuthError as exc:
+            return _wechat_error_response(exc)
 
     openid = session["openid"]
     timestamp = now_iso()
@@ -149,6 +307,8 @@ def wechat_login():
             )
         else:
             user_id = row["id"]
+            if row["status"] and row["status"] != "active":
+                return fail("account_inactive", "账号暂不可用", status=403)
             conn.execute(
                 """
                 UPDATE users
@@ -164,17 +324,82 @@ def wechat_login():
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
     user = _public_user(row_to_dict(row))
-    return ok({"token": generate_auth_token(user), "user": user, "dev_fallback": bool(session.get("dev_fallback"))})
+    return ok(
+        {
+            "token": generate_auth_token(user),
+            "user": user,
+            "dev_fallback": bool(session.get("dev_fallback")),
+            "identity_source": session.get("identity_source") or "jscode2session",
+        }
+    )
+
+
+@bp.post("/phone-login")
+def phone_login():
+    payload = request.get_json(silent=True) or {}
+    code = str(payload.get("code") or "").strip()
+    anonymous_id = str(payload.get("anonymous_id") or "").strip() or None
+    if not code:
+        return fail("validation_error", "缺少手机号授权凭证", status=400)
+
+    try:
+        phone_info = _wechat_phone_from_code(code)
+    except WechatAuthError as exc:
+        return _wechat_error_response(exc)
+
+    phone_number = _normalize_phone_number(phone_info.get("pure_phone_number") or phone_info.get("phone_number"))
+    phone_hash = _phone_hash(phone_number)
+    cloudbase_openid = _trusted_cloudbase_openid()
+    timestamp = now_iso()
+    with get_connection() as conn:
+        phone_row = conn.execute("SELECT * FROM users WHERE phone_hash = ?", (phone_hash,)).fetchone()
+        openid_row = (
+            conn.execute("SELECT * FROM users WHERE wechat_openid = ?", (cloudbase_openid,)).fetchone()
+            if cloudbase_openid
+            else None
+        )
+        if phone_row is not None and openid_row is not None and phone_row["id"] != openid_row["id"]:
+            return fail("phone_account_conflict", "该手机号已关联其他账号，请使用原账号登录。", status=409)
+
+        row = phone_row or openid_row
+        if row is None:
+            user_id = new_id("user")
+            ensure_user(conn, user_id, "微信用户")
+        else:
+            user_id = row["id"]
+            if row["status"] and row["status"] != "active":
+                return fail("account_inactive", "账号暂不可用", status=403)
+
+        conn.execute(
+            """
+            UPDATE users
+            SET phone_hash = ?, phone_verified_at = ?, phone_source = 'wechat_phone',
+                wechat_openid = COALESCE(?, wechat_openid),
+                anonymous_id = COALESCE(?, anonymous_id),
+                role = COALESCE(role, 'parent'),
+                source = CASE WHEN source IS NULL OR source = 'mvp' THEN 'wechat_phone' ELSE source END,
+                status = 'active', last_login_at = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (phone_hash, timestamp, cloudbase_openid, anonymous_id, timestamp, timestamp, user_id),
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+
+    user = _public_user(row_to_dict(row))
+    return ok(
+        {
+            "token": generate_auth_token(user),
+            "user": user,
+            "phone_bound": True,
+            "phone_masked": _mask_phone(phone_number),
+        }
+    )
 
 
 @bp.post("/bind-phone")
 def bind_phone():
-    """Bind a WeChat-authorized phone number when platform config is available.
-
-    The pilot build intentionally does not fake phone authorization. Mini
-    Program getPhoneNumber returns a short-lived code that must be exchanged
-    through WeChat's API with real AppID/AppSecret and permissions.
-    """
+    """Bind a WeChat-authorized phone number without storing the raw number."""
 
     try:
         actor = require_login(allow_legacy_admin=False)
@@ -186,20 +411,37 @@ def bind_phone():
     if not code:
         return fail("validation_error", "缺少手机号授权 code", status=400)
 
-    appid = os.environ.get("WECHAT_APPID", "").strip()
-    secret = os.environ.get("WECHAT_SECRET", "").strip()
-    if not appid or not secret:
-        return fail(
-            "wechat_phone_config_missing",
-            "缺少 WECHAT_APPID/WECHAT_SECRET 或小程序手机号授权配置，不能伪造手机号绑定。",
-            status=400,
-        )
+    try:
+        phone_info = _wechat_phone_from_code(code)
+    except WechatAuthError as exc:
+        return _wechat_error_response(exc)
 
-    # Keep the endpoint explicit and safe until access_token management is added.
-    return fail(
-        "wechat_phone_not_configured",
-        "手机号授权接口骨架已存在，但尚未配置微信 access_token 交换流程。",
-        status=400,
+    phone_number = _normalize_phone_number(phone_info.get("pure_phone_number") or phone_info.get("phone_number"))
+    phone_hash = _phone_hash(phone_number)
+    timestamp = now_iso()
+    with get_connection() as conn:
+        existing = conn.execute("SELECT id FROM users WHERE phone_hash = ?", (phone_hash,)).fetchone()
+        if existing is not None and existing["id"] != actor["id"]:
+            return fail("phone_account_conflict", "该手机号已关联其他账号，请使用原账号登录。", status=409)
+        conn.execute(
+            """
+            UPDATE users
+            SET phone_hash = ?, phone_verified_at = ?, phone_source = 'wechat_phone', updated_at = ?
+            WHERE id = ?
+            """,
+            (phone_hash, timestamp, timestamp, actor["id"]),
+        )
+        conn.commit()
+        row = conn.execute("SELECT * FROM users WHERE id = ?", (actor["id"],)).fetchone()
+
+    user = _public_user(row_to_dict(row))
+    return ok(
+        {
+            "token": generate_auth_token(user),
+            "user": user,
+            "phone_bound": True,
+            "phone_masked": _mask_phone(phone_number),
+        }
     )
 
 

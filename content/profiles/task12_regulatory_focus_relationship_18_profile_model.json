@@ -1,0 +1,787 @@
+{
+  "schema_version": "2026.06-profile-model-v1",
+  "model_id": "task12_regulatory_focus_relationship_18_profile_v1",
+  "group_id": "task12_data1_regulatory_focus_relationship_18",
+  "standard_scale_name": "关系情境中的行动关注方式",
+  "scale_id": "regulatory_focus_relationship_18",
+  "worksheet_id": "regulatory_focus_relationship_18",
+  "worksheet_link_status": "connected_pilot_review_required",
+  "research_dir": "数据1",
+  "source_dataset": "数据1/全部数据1.0.xlsx（逐行数据未入仓）",
+  "n_cases": 425,
+  "n_features": 18,
+  "features": [
+    {
+      "feature_id": "Q1",
+      "source_variable": "Q1",
+      "question_no": 1,
+      "worksheet_question_id": "Q1",
+      "label": "1.总的来说，我专注于预防生活中的负面事件。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.687059,
+      "std": 1.007477,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q2",
+      "source_variable": "Q2",
+      "question_no": 2,
+      "worksheet_question_id": "Q2",
+      "label": "2.我担心自己不能履行自己的责任和义务。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.552941,
+      "std": 1.115726,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q3",
+      "source_variable": "Q3",
+      "question_no": 3,
+      "worksheet_question_id": "Q3",
+      "label": "3.我经常想象我将如何实现我的希望和抱负。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.964706,
+      "std": 0.881804,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q4",
+      "source_variable": "Q4",
+      "question_no": 4,
+      "worksheet_question_id": "Q4",
+      "label": "4.我经常想起我害怕将来会变成的那个人。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 2.790588,
+      "std": 1.204269,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q5",
+      "source_variable": "Q5",
+      "question_no": 5,
+      "worksheet_question_id": "Q5",
+      "label": "5.我经常想我未来最理想的样子。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.981176,
+      "std": 0.925266,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q6",
+      "source_variable": "Q6",
+      "question_no": 6,
+      "worksheet_question_id": "Q6",
+      "label": "6.我通常专注于我希望在未来取得的成功。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.816471,
+      "std": 0.914825,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q7",
+      "source_variable": "Q7",
+      "question_no": 7,
+      "worksheet_question_id": "Q7",
+      "label": "7.我经常担心自己无法完成学业目标。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.282353,
+      "std": 1.145957,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q8",
+      "source_variable": "Q8",
+      "question_no": 8,
+      "worksheet_question_id": "Q8",
+      "label": "8.我经常思考如何在学术上取得成功。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.522353,
+      "std": 0.97261,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q9",
+      "source_variable": "Q9",
+      "question_no": 9,
+      "worksheet_question_id": "Q9",
+      "label": "9.我经常想象自己正在经历一些糟糕的事情，我担心这些事情可能会发生在我身上。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.291765,
+      "std": 1.143597,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q10",
+      "source_variable": "Q10",
+      "question_no": 10,
+      "worksheet_question_id": "Q10",
+      "label": "10.我经常思考如何在生活中避免失败。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.642353,
+      "std": 0.89395,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q11",
+      "source_variable": "Q11",
+      "question_no": 11,
+      "worksheet_question_id": "Q11",
+      "label": "11.我更倾向于防止损失，而不是追求收益。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.310588,
+      "std": 0.898368,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q12",
+      "source_variable": "Q12",
+      "question_no": 12,
+      "worksheet_question_id": "Q12",
+      "label": "12.我现在在学校的主要目标是实现我的学术抱负。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.442353,
+      "std": 0.934109,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q13",
+      "source_variable": "Q13",
+      "question_no": 13,
+      "worksheet_question_id": "Q13",
+      "label": "13.我现在在学校的主要目标是避免学业失败。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.557647,
+      "std": 1.043566,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q14",
+      "source_variable": "Q14",
+      "question_no": 14,
+      "worksheet_question_id": "Q14",
+      "label": "14.我认为自己是一个主要努力实现“理想自我”的人——实现我的希望、愿望和抱负。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.844706,
+      "std": 0.845404,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q15",
+      "source_variable": "Q15",
+      "question_no": 15,
+      "worksheet_question_id": "Q15",
+      "label": "15.我认为自己是一个主要努力成为我“应该”成为的自己的人——履行我的职责、责任和义务。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.868235,
+      "std": 0.82408,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q16",
+      "source_variable": "Q16",
+      "question_no": 16,
+      "worksheet_question_id": "Q16",
+      "label": "16.总的来说，我专注于在生活中取得积极成果。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 4.016471,
+      "std": 0.740246,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q17",
+      "source_variable": "Q17",
+      "question_no": 17,
+      "worksheet_question_id": "Q17",
+      "label": "17.我经常想象自己正在经历一些美好的事情，我希望这些事情会发生在我身上。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 4.014118,
+      "std": 0.772947,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    },
+    {
+      "feature_id": "Q18",
+      "source_variable": "Q18",
+      "question_no": 18,
+      "worksheet_question_id": "Q18",
+      "label": "18.总的来说，比起防止失败，我更倾向于取得成功。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 5,
+      "mean": 3.771765,
+      "std": 0.906008,
+      "input_transform": {
+        "type": "linear_range",
+        "input_min": 1,
+        "input_max": 7,
+        "output_min": 1,
+        "output_max": 5
+      }
+    }
+  ],
+  "preprocessing": {
+    "retained_rows": 425,
+    "retained_features": 18,
+    "imputation": "none_required",
+    "standardization": "z_score_by_training_mean_std",
+    "random_seed": 20260710
+  },
+  "model_selection": [
+    {
+      "method": "gaussian_mixture",
+      "k": 2,
+      "bic": 21130.86,
+      "aic": 20835.06,
+      "silhouette": 0.1401,
+      "min_cluster_ratio": 0.4447,
+      "stability": 1.0,
+      "readability": 1.0
+    },
+    {
+      "method": "gaussian_mixture",
+      "k": 3,
+      "bic": 20890.77,
+      "aic": 20445.04,
+      "silhouette": 0.1312,
+      "min_cluster_ratio": 0.2424,
+      "stability": 0.8212,
+      "readability": 1.0
+    },
+    {
+      "method": "gaussian_mixture",
+      "k": 4,
+      "bic": 16905.31,
+      "aic": 16309.65,
+      "silhouette": 0.0537,
+      "min_cluster_ratio": 0.16,
+      "stability": 0.7935,
+      "readability": 1.0
+    },
+    {
+      "method": "gaussian_mixture",
+      "k": 5,
+      "bic": 15866.65,
+      "aic": 15121.06,
+      "silhouette": 0.0699,
+      "min_cluster_ratio": 0.0353,
+      "stability": 0.8538,
+      "readability": 1.0
+    },
+    {
+      "method": "gaussian_mixture",
+      "k": 6,
+      "bic": 14980.49,
+      "aic": 14084.98,
+      "silhouette": 0.0148,
+      "min_cluster_ratio": 0.0329,
+      "stability": 0.693,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 2,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.1413,
+      "min_cluster_ratio": 0.4729,
+      "stability": 1.0,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 3,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.1305,
+      "min_cluster_ratio": 0.2635,
+      "stability": 0.9782,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 4,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.102,
+      "min_cluster_ratio": 0.1506,
+      "stability": 0.9247,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 5,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.102,
+      "min_cluster_ratio": 0.1082,
+      "stability": 0.9136,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 6,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.084,
+      "min_cluster_ratio": 0.1035,
+      "stability": 0.7432,
+      "readability": 1.0
+    }
+  ],
+  "selected_method": "gaussian_mixture",
+  "selection_reason": "GMM同时满足最小簇比例、稳定性和最低分离度门槛，并在合格候选中BIC最低；保留KMeans作对照。",
+  "chosen_k": 3,
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "profile_id": "task12_regulatory_focus_0",
+      "profile_name": "成长目标较突出、可继续校准安全感的阶段",
+      "display_name": "成长目标较突出、可继续校准安全感的阶段",
+      "n": 103,
+      "percent": 24.2,
+      "center_z": {
+        "Q1": -0.5448,
+        "Q2": -0.7941,
+        "Q3": 0.0374,
+        "Q4": -0.7611,
+        "Q5": -0.0895,
+        "Q6": 0.2349,
+        "Q7": -0.7223,
+        "Q8": 0.1213,
+        "Q9": -0.9951,
+        "Q10": -0.6454,
+        "Q11": -0.6828,
+        "Q12": 0.184,
+        "Q13": -0.4338,
+        "Q14": 0.2704,
+        "Q15": 0.1478,
+        "Q16": 0.3229,
+        "Q17": 0.0447,
+        "Q18": 0.3481
+      },
+      "mean_scores": {
+        "Q1": 3.1262,
+        "Q2": 2.5922,
+        "Q3": 3.9903,
+        "Q4": 1.8447,
+        "Q5": 3.8932,
+        "Q6": 4.0583,
+        "Q7": 2.4175,
+        "Q8": 3.6408,
+        "Q9": 2.0971,
+        "Q10": 3.0291,
+        "Q11": 2.6699,
+        "Q12": 3.6117,
+        "Q13": 3.0583,
+        "Q14": 4.0971,
+        "Q15": 4.0,
+        "Q16": 4.2621,
+        "Q17": 4.0388,
+        "Q18": 4.1068
+      },
+      "dimension_means": {
+        "PROM": 3.9666,
+        "PREV": 2.7594,
+        "RFD": 1.2071
+      },
+      "dimension_z": {
+        "PROM": 0.2533,
+        "PREV": -1.1312,
+        "RFD": 1.1124
+      },
+      "pca_centroid": {
+        "pc1": 0.0914,
+        "pc2": -2.2297
+      },
+      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“成长目标较突出、可继续校准安全感的阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
+      "product_explanation": "你当前的题项组合与“成长目标较突出、可继续校准安全感的阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
+      "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
+      "suggested_assessment_questions": [
+        "当你想靠近一个目标时，最期待获得什么？",
+        "你最希望避免的损失或不安是什么？"
+      ],
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "cbt_auto_thought_student",
+        "self_support_statement"
+      ],
+      "recommended_project_tasks": [
+        "完成一个关系情境记录",
+        "选择一个低压力微行动",
+        "一周后复盘体验变化"
+      ],
+      "card_reason": "围绕本画像呈现的关系关注点，先从觉察、表达和自我支持中选择轻量练习。",
+      "human_review_status": "profile_name_and_interpretation_pending_researcher_review"
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "task12_regulatory_focus_1",
+      "profile_name": "成长与安全关注相对平衡的观察阶段",
+      "display_name": "成长与安全关注相对平衡的观察阶段",
+      "n": 165,
+      "percent": 38.8,
+      "center_z": {
+        "Q1": 0.4207,
+        "Q2": 0.4156,
+        "Q3": 0.5792,
+        "Q4": 0.4244,
+        "Q5": 0.5429,
+        "Q6": 0.5187,
+        "Q7": 0.3445,
+        "Q8": 0.463,
+        "Q9": 0.4922,
+        "Q10": 0.5604,
+        "Q11": 0.3012,
+        "Q12": 0.3315,
+        "Q13": 0.1958,
+        "Q14": 0.563,
+        "Q15": 0.5521,
+        "Q16": 0.4731,
+        "Q17": 0.5295,
+        "Q18": 0.445
+      },
+      "mean_scores": {
+        "Q1": 4.1091,
+        "Q2": 4.0303,
+        "Q3": 4.4727,
+        "Q4": 3.303,
+        "Q5": 4.4848,
+        "Q6": 4.2848,
+        "Q7": 3.6909,
+        "Q8": 3.9818,
+        "Q9": 3.8545,
+        "Q10": 4.1455,
+        "Q11": 3.5818,
+        "Q12": 3.7697,
+        "Q13": 3.7758,
+        "Q14": 4.3152,
+        "Q15": 4.3333,
+        "Q16": 4.3697,
+        "Q17": 4.4364,
+        "Q18": 4.1818
+      },
+      "dimension_means": {
+        "PROM": 4.2552,
+        "PREV": 3.8694,
+        "RFD": 0.3859
+      },
+      "dimension_z": {
+        "PROM": 0.7499,
+        "PREV": 0.7066,
+        "RFD": 0.0122
+      },
+      "pca_centroid": {
+        "pc1": -1.8811,
+        "pc2": 0.6293
+      },
+      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“成长与安全关注相对平衡的观察阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
+      "product_explanation": "你当前的题项组合与“成长与安全关注相对平衡的观察阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
+      "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
+      "suggested_assessment_questions": [
+        "当你想靠近一个目标时，最期待获得什么？",
+        "你最希望避免的损失或不安是什么？"
+      ],
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "cbt_auto_thought_student",
+        "self_support_statement"
+      ],
+      "recommended_project_tasks": [
+        "完成一个关系情境记录",
+        "选择一个低压力微行动",
+        "一周后复盘体验变化"
+      ],
+      "card_reason": "围绕本画像呈现的关系关注点，先从觉察、表达和自我支持中选择轻量练习。",
+      "human_review_status": "profile_name_and_interpretation_pending_researcher_review"
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "task12_regulatory_focus_2",
+      "profile_name": "安全顾虑较突出、可尝试小步探索的阶段",
+      "display_name": "安全顾虑较突出、可尝试小步探索的阶段",
+      "n": 157,
+      "percent": 36.9,
+      "center_z": {
+        "Q1": -0.0749,
+        "Q2": 0.1026,
+        "Q3": -0.6463,
+        "Q4": 0.0704,
+        "Q5": -0.5198,
+        "Q6": -0.7178,
+        "Q7": 0.1293,
+        "Q8": -0.5797,
+        "Q9": 0.1592,
+        "Q10": -0.1551,
+        "Q11": 0.1485,
+        "Q12": -0.4821,
+        "Q13": 0.0896,
+        "Q14": -0.7897,
+        "Q15": -0.6934,
+        "Q16": -0.7297,
+        "Q17": -0.5981,
+        "Q18": -0.7169
+      },
+      "mean_scores": {
+        "Q1": 3.6115,
+        "Q2": 3.6815,
+        "Q3": 3.414,
+        "Q4": 2.8726,
+        "Q5": 3.5096,
+        "Q6": 3.1656,
+        "Q7": 3.4204,
+        "Q8": 2.9618,
+        "Q9": 3.4841,
+        "Q10": 3.5159,
+        "Q11": 3.4459,
+        "Q12": 2.9873,
+        "Q13": 3.6561,
+        "Q14": 3.1847,
+        "Q15": 3.293,
+        "Q16": 3.4841,
+        "Q17": 3.5541,
+        "Q18": 3.121
+      },
+      "dimension_means": {
+        "PROM": 3.2647,
+        "PREV": 3.4423,
+        "RFD": -0.1776
+      },
+      "dimension_z": {
+        "PROM": -0.9542,
+        "PREV": -0.0005,
+        "RFD": -0.7426
+      },
+      "pca_centroid": {
+        "pc1": 1.917,
+        "pc2": 0.8014
+      },
+      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“安全顾虑较突出、可尝试小步探索的阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
+      "product_explanation": "你当前的题项组合与“安全顾虑较突出、可尝试小步探索的阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
+      "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
+      "suggested_assessment_questions": [
+        "当你想靠近一个目标时，最期待获得什么？",
+        "你最希望避免的损失或不安是什么？"
+      ],
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "cbt_auto_thought_student",
+        "self_support_statement"
+      ],
+      "recommended_project_tasks": [
+        "完成一个关系情境记录",
+        "选择一个低压力微行动",
+        "一周后复盘体验变化"
+      ],
+      "card_reason": "围绕本画像呈现的关系关注点，先从觉察、表达和自我支持中选择轻量练习。",
+      "human_review_status": "profile_name_and_interpretation_pending_researcher_review"
+    }
+  ],
+  "pca": {
+    "components": [
+      [
+        -0.151985,
+        -0.085837,
+        -0.324249,
+        -0.109498,
+        -0.259638,
+        -0.317932,
+        -0.081819,
+        -0.28347,
+        -0.092511,
+        -0.22321,
+        -0.049657,
+        -0.222957,
+        -0.040677,
+        -0.339126,
+        -0.32725,
+        -0.329319,
+        -0.273125,
+        -0.281965
+      ],
+      [
+        0.230172,
+        0.340085,
+        -0.036705,
+        0.36003,
+        -0.003542,
+        -0.116623,
+        0.354794,
+        -0.0543,
+        0.437774,
+        0.299483,
+        0.353543,
+        -0.103551,
+        0.24445,
+        -0.129509,
+        -0.062795,
+        -0.140781,
+        -0.047829,
+        -0.195761
+      ]
+    ],
+    "explained_ratio": [
+      0.261988,
+      0.168606
+    ]
+  },
+  "radar_support": {
+    "dimensions": [
+      {
+        "code": "PROM",
+        "mean": 3.8193,
+        "std": 0.5813
+      },
+      {
+        "code": "PREV",
+        "mean": 3.4426,
+        "std": 0.604
+      },
+      {
+        "code": "RFD",
+        "mean": 0.3767,
+        "std": 0.7465
+      }
+    ],
+    "value_source": "clusters[].dimension_z"
+  },
+  "cross_validation_status": "exploratory_pending_researcher_review",
+  "boundary_notice": "画像只表示本次题项组合与既往样本聚合中心的相对接近程度，不构成诊断、筛查、人格标签、关系能力评价或疗效证明。"
+}

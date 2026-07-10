@@ -27,6 +27,14 @@ const ERROR_MESSAGES_BY_CODE = {
   not_found: "没有找到对应内容，可能已经更新或不可访问。",
   network_error: "现在没能连上，请检查网络后再试一次。",
   local_http_error: "本地后端连接失败，请确认 Flask 已启动后再试一次。",
+  wechat_login_config_missing: "微信登录暂不可用，请尝试手机号快捷登录或账号密码登录。",
+  wechat_login_failed: "微信登录凭证已失效，请重新尝试。",
+  wechat_phone_config_missing: "手机号快捷登录尚未开通，请使用微信一键登录或账号密码登录。",
+  wechat_phone_config_invalid: "手机号快捷登录暂不可用，请使用其他登录方式。",
+  wechat_phone_exchange_failed: "手机号授权已失效，请重新授权后再试。",
+  wechat_phone_invalid: "微信没有返回有效手机号，请重新授权。",
+  wechat_service_unavailable: "微信服务暂时没有响应，请稍后重试。",
+  phone_account_conflict: "该手机号已关联其他账号，请使用原账号登录。",
 };
 
 const API_ENDPOINTS = {
@@ -63,6 +71,7 @@ const API_ENDPOINTS = {
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
   authWechatLogin: "/api/auth/wechat-login",
+  authPhoneLogin: "/api/auth/phone-login",
   authBindPhone: "/api/auth/bind-phone",
   authLogout: "/api/auth/logout",
   authMe: "/api/auth/me",
@@ -71,6 +80,8 @@ const API_ENDPOINTS = {
   weeklyReport: "/api/weekly-report",
   supervision: "/api/supervision",
   adminExport: "/api/admin/export",
+  relationshipPilot: "/api/relationship-pilot",
+  productEvents: "/api/product-events",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -358,6 +369,23 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    phoneLogin(data) {
+      return request(API_ENDPOINTS.authPhoneLogin, {
+        method: "POST",
+        data: {
+          ...data,
+          anonymous_id: defaultUserId,
+        },
+      }).then((result) => {
+        if (result && result.token) {
+          wx.setStorageSync("auth_token", result.token);
+          wx.setStorageSync("auth_user", result.user || null);
+          wx.removeStorageSync("safehome_anonymous_user_id");
+        }
+        return result;
+      });
+    },
+
     bindWechatPhone(data) {
       return request(API_ENDPOINTS.authBindPhone, {
         method: "POST",
@@ -602,6 +630,122 @@ function createSafeHomeApi(options = {}) {
 
     getAssessmentProfilePosition(id, params = {}) {
       return request(`${endpointWithId(API_ENDPOINTS.assessmentProfilePositionBase, id)}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    createRelationshipEnrollment(data) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/enrollments`, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      });
+    },
+
+    listRelationshipEnrollments() {
+      return request(`${API_ENDPOINTS.relationshipPilot}/enrollments`, { requiresAuth: true });
+    },
+
+    getRelationshipEnrollment(id) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/enrollments/${encodeURIComponent(id)}`, { requiresAuth: true });
+    },
+
+    createRelationshipReport(enrollmentId) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/enrollments/${encodeURIComponent(enrollmentId)}/report`, {
+        method: "POST",
+        requiresAuth: true,
+      });
+    },
+
+    getRelationshipReport(id) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}`, { requiresAuth: true });
+    },
+
+    saveRelationshipHypothesisFeedback(id, hypothesisIndex, response) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}/hypotheses/${encodeURIComponent(hypothesisIndex)}`, {
+        method: "PUT",
+        data: { response },
+        requiresAuth: true,
+      });
+    },
+
+    confirmRelationshipReport(id) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}/confirm`, {
+        method: "POST",
+        requiresAuth: true,
+      });
+    },
+
+    sendRelationshipReport(id) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}/send`, {
+        method: "POST",
+        requiresAuth: true,
+      });
+    },
+
+    createRelationshipTask(enrollmentId, data) {
+      const payload = { ...data };
+      const idempotencyKey = payload.idempotency_key || "";
+      delete payload.idempotency_key;
+      return request(`${API_ENDPOINTS.relationshipPilot}/enrollments/${encodeURIComponent(enrollmentId)}/tasks`, {
+        method: "POST",
+        data: payload,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
+    getRelationshipResearchDashboard() {
+      return request(`${API_ENDPOINTS.relationshipPilot}/researcher/dashboard`, { requiresAuth: true });
+    },
+
+    createRelationshipResearchNote(enrollmentId, data) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/enrollments/${encodeURIComponent(enrollmentId)}/notes`, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      });
+    },
+
+    createRelationshipNarrative(enrollmentId, data = {}) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/enrollments/${encodeURIComponent(enrollmentId)}/narrative`, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      });
+    },
+
+    confirmRelationshipNarrative(id) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/narratives/${encodeURIComponent(id)}/confirm`, {
+        method: "POST",
+        requiresAuth: true,
+      });
+    },
+
+    getRelationshipNarrative(id) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/narratives/${encodeURIComponent(id)}`, { requiresAuth: true });
+    },
+
+    createRelationshipLongitudinal(enrollmentId, data) {
+      const payload = { ...data };
+      const idempotencyKey = payload.idempotency_key || "";
+      delete payload.idempotency_key;
+      return request(`${API_ENDPOINTS.relationshipPilot}/enrollments/${encodeURIComponent(enrollmentId)}/longitudinal`, {
+        method: "POST",
+        data: payload,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
+    getRelationshipGrowth(params = {}) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/growth${queryString(params)}`, { requiresAuth: true });
+    },
+
+    trackProductEvent(eventName, metadata = {}) {
+      return request(API_ENDPOINTS.productEvents, {
+        method: "POST",
+        data: { event_name: eventName, metadata },
+        requiresAuth: true,
+      });
     },
 
     createCheckin(data) {

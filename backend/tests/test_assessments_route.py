@@ -1,7 +1,10 @@
 import importlib
+import json
 import os
 import sys
 from pathlib import Path
+
+import pytest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -154,6 +157,47 @@ def test_erq_appears_in_assessment_list(tmp_path):
     assert "emotion_regulation_erq" in ids
 
 
+def test_confirmed_pilot_expansion_appears_and_accepts_submission(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "pilot-expansion-check")
+    pilot_ids = {
+        "acceptance_action_aaq2",
+        "academic_buoyancy_4",
+        "afq_y8_avoidance_fusion",
+        "cfi2_cognitive_flexibility",
+        "fmi_12_mindfulness",
+        "swls_life_satisfaction",
+    }
+
+    list_response = client.get("/api/assessments")
+    assert list_response.status_code == 200
+    visible_ids = {item["id"] for item in list_response.get_json()["data"]["items"]}
+    assert pilot_ids.issubset(visible_ids)
+
+    for worksheet_id in pilot_ids:
+        detail_response = client.get(f"/api/assessments/{worksheet_id}")
+        assert detail_response.status_code == 200
+        worksheet = detail_response.get_json()["data"]
+        assert worksheet["enabled_for_user"] is True
+        assert worksheet["review_status"] == "pilot_review_required"
+        answers = [
+            {
+                "question_id": question["id"],
+                "prompt": question["prompt"],
+                "value": question["options"][0]["value"],
+                "score": question["options"][0]["score"],
+            }
+            for question in worksheet["questions"]
+        ]
+        submit_response = client.post(
+            "/api/assessment-results",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"worksheet_id": worksheet_id, "answers": answers},
+        )
+        assert submit_response.status_code == 201
+
+
 def test_erq_detail_exposes_dimensions(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
@@ -247,6 +291,177 @@ def test_prfq_submission_uses_reverse_scoring_and_dimension_mean(tmp_path):
     saved_answers = {item["question_id"]: item for item in data["answers"]}
     assert saved_answers["PRFQ11"]["score"] == 6
     assert saved_answers["PRFQ18"]["score"] == 6
+
+
+def test_declarative_relationship_scoring_supports_products_and_no_total(tmp_path):
+    _fresh_app(tmp_path)
+    from routes.assessments import _score_answers
+
+    options = [{"value": str(value), "score": value} for value in range(1, 6)]
+    worksheet = {
+        "dimension_score_method": "mean",
+        "total_score_method": "none",
+        "questions": [
+            {"id": item_id, "dimension": dimension, "options": options}
+            for item_id, dimension in [
+                ("a1", "BENEFIT"),
+                ("b1", "BENEFIT"),
+                ("a2", "BENEFIT"),
+                ("b2", "BENEFIT"),
+                ("a4", "REJ_THREAT"),
+                ("b4", "REJ_THREAT"),
+                ("a5", "AUTH_PROTECT"),
+                ("b5", "AUTH_PROTECT"),
+            ]
+        ],
+        "dimensions": [
+            {
+                "code": "BENEFIT",
+                "label": "获益信念",
+                "calculation": {
+                    "type": "mean_of_products",
+                    "pairs": [["a1", "b1"], ["a2", "b2"]],
+                },
+            },
+            {
+                "code": "REJ_THREAT",
+                "label": "拒绝威胁",
+                "calculation": {"type": "product", "items": ["a4", "b4"]},
+            },
+            {
+                "code": "AUTH_PROTECT",
+                "label": "权威保护",
+                "calculation": {
+                    "type": "mean_terms",
+                    "terms": [
+                        {"item": "a5", "reverse_min": 1, "reverse_max": 5},
+                        {"item": "b5"},
+                    ],
+                },
+            },
+        ],
+        "derived_dimensions": [
+            {
+                "code": "THREAT",
+                "label": "威胁信念",
+                "calculation": {"type": "mean_dimensions", "dimensions": ["REJ_THREAT"]},
+            }
+        ],
+    }
+    raw = {"a1": 2, "b1": 3, "a2": 4, "b2": 5, "a4": 3, "b4": 4, "a5": 2, "b5": 5}
+    answers = [{"question_id": key, "value": str(value)} for key, value in raw.items()]
+
+    scores, total = _score_answers(worksheet, answers)
+
+    dimensions = {item["key"]: item for item in scores["dimensions"]}
+    assert dimensions["BENEFIT"]["score"] == 13
+    assert dimensions["REJ_THREAT"]["score"] == 12
+    assert dimensions["AUTH_PROTECT"]["score"] == 4.5
+    assert dimensions["THREAT"]["score"] == 12
+    assert scores["total_score"] is None
+    assert total is None
+
+
+@pytest.mark.parametrize(
+    ("worksheet_id", "question_count"),
+    [
+        ("regulatory_focus_relationship_18", 18),
+        ("micro_ysq_relationship_18", 18),
+        ("relationship_initiation_intention_action", 31),
+    ],
+)
+def test_task12_relationship_assessments_are_available_and_save(tmp_path, worksheet_id, question_count):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, f"task12-{worksheet_id}")
+
+    detail = client.get(f"/api/assessments/{worksheet_id}")
+    assert detail.status_code == 200
+    worksheet = detail.get_json()["data"]
+    assert len(worksheet["questions"]) == question_count
+    assert "不构成诊断" in worksheet["result_disclaimer"]
+
+    answers = [
+        {
+            "question_id": question["id"],
+            "prompt": question["prompt"],
+            "value": question["options"][0]["value"],
+        }
+        for question in worksheet["questions"]
+    ]
+    saved = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"worksheet_id": worksheet_id, "answers": answers},
+    )
+
+    assert saved.status_code == 201
+    data = saved.get_json()["data"]
+    assert data["worksheet_id"] == worksheet_id
+    assert data["total_score"] is None
+    assert data["scores"]["dimensions"]
+
+
+def test_profile_feature_can_transform_worksheet_range_to_training_range(tmp_path):
+    _fresh_app(tmp_path)
+    from services.assessment_profile_service import _feature_value
+
+    feature = {
+        "feature_id": "Q1",
+        "worksheet_question_id": "Q1",
+        "input_transform": {
+            "type": "linear_range",
+            "input_min": 1,
+            "input_max": 7,
+            "output_min": 1,
+            "output_max": 5,
+        },
+    }
+    answers = {"Q1": {"question_id": "Q1", "value": "7", "score": 7}}
+    questions = {"Q1": {"id": "Q1", "options": [{"value": str(i), "score": i} for i in range(1, 8)]}}
+
+    value, missing = _feature_value(feature, answers, questions)
+
+    assert missing is False
+    assert value == 5
+
+
+def test_task12_three_scales_return_aggregate_profile_positions(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    user_id, token = _wechat_login(client, "task12-profile-chain")
+
+    for worksheet_id in [
+        "regulatory_focus_relationship_18",
+        "micro_ysq_relationship_18",
+        "relationship_initiation_intention_action",
+    ]:
+        detail = client.get(f"/api/assessments/{worksheet_id}").get_json()["data"]
+        answers = []
+        for question in detail["questions"]:
+            option = question["options"][len(question["options"]) // 2]
+            answers.append({"question_id": question["id"], "prompt": question["prompt"], "value": option["value"]})
+        saved = client.post(
+            "/api/assessment-results",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"worksheet_id": worksheet_id, "answers": answers},
+        )
+        assert saved.status_code == 201
+        result_id = saved.get_json()["data"]["id"]
+
+        response = client.get(
+            f"/api/assessment-results/{result_id}/profile-position?user_id={user_id}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.get_json()["data"]
+        assert data["available"] is True
+        assert data["model_id"].startswith("task12_")
+        assert data["feature_summary"]["data_quality"] == "complete"
+        assert data["radar_support"]["dimensions"]
+        assert data["suggested_assessment_questions"]
+        assert "training_points" not in json.dumps(data, ensure_ascii=False)
 
 
 def test_assessment_list_filters_by_audience_and_search(tmp_path):

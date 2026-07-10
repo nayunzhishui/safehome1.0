@@ -699,7 +699,9 @@
           "description": "维度来自本地 PDF 第 2 页和 sps 计分脚本；用户端解释需避免把分数写成好坏判断。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "本地 PDF 第 2 页写明：重新评价 = T1、T3、T5、T7、T8、T10；本地 PDF 第 2 页写明：表达抑制 = T2、T4、T6、T9；sps 计分脚本写明 gerqcogre = gerq1 + gerq3 + gerq5 + gerq7 + gerq8 + gerq10；sps 计分脚本写明 gerqinhib = gerq2 + gerq4 + gerq6 + gerq9；未见反向计分说明；正式开放前必须由人工核对题项、计分方式、标准引用和伦理边界。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -712,7 +714,11 @@
       "review_note": "已从本地 PDF 抽取 10 个题项草稿，并用 PDF 第 2 页和 sps 脚本记录认知重评、表达抑制两个维度；正式开放前必须人工核对题项、计分、标准引用和伦理边界。已按用户要求由题项草稿进入小程序可填写列表；正式试点前仍需人工复核来源、计分和边界。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "parent_reflective_functioning_prfq",
@@ -1596,7 +1602,9 @@
           "description": "PRFQ18 根据 syntax 反向计分。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "mean",
+      "total_score_method": "sum",
       "scoring": "PRFQ11 和 PRFQ18 按 syntax 进行 1-7 反向计分；PRFQ_PM = PRFQ1、4、7、10、13、16 的均值；PRFQ_CM = PRFQ2、5、8、11rr、14、17 的均值；PRFQ_IC = PRFQ3、6、9、12、15、18rr 的均值；正式开放前必须由人工核对中文题项、维度译名、计分解释和伦理边界。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -1609,7 +1617,11 @@
       "review_note": "已从 PRFQ 中文 docx 抽取 18 个题项草稿，并从 syntax 文件记录三个维度和反向计分；正式开放前必须人工核对中文题项、维度译名、计分解释和伦理边界。已按用户要求由题项草稿进入小程序可填写列表；正式试点前仍需人工复核来源、计分和边界。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "self_compassion_scs_cn",
@@ -2638,7 +2650,9 @@
           "description": ""
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "mean",
+      "total_score_method": "sum",
       "scoring": "PDF 写明六个维度题项，负向维度自我批评、自我隔离、过度沉迷先 1-5 反向后再参与总自我关怀均分。",
       "recommended_card_ids": [
         "self_support_statement",
@@ -2651,7 +2665,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 26/26 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "mindful_attention_awareness_maas",
@@ -3303,7 +3321,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "本地答题纸可读到 15 题和 1-6 选项；正式均分/总分解释需人工复核。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -3316,7 +3336,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 15/15 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "emotional_resilience_11",
@@ -3812,7 +3836,9 @@
           "description": ""
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件写明积极情绪能力项目为 1、3、4、8、9；情绪恢复能力项目为 2、5、6、7、10、11。",
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -3825,7 +3851,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 11/11 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "study_engagement_uwes_s_17",
@@ -4662,7 +4692,9 @@
           "description": ""
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件写明 17 题、7 点计分，1-6 活力、7-11 奉献、12-17 专注。",
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -4675,7 +4707,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 17/17 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "cd_risc10_brief_resilience",
@@ -5072,7 +5108,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件写明 CD-RISC-10 为单维结构，0-4 分，总分 0-40，分数越高代表心理韧性水平越高。",
       "recommended_card_ids": [
         "cognitive_flexibility",
@@ -5085,7 +5123,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 10/10 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "parental_burnout_pba",
@@ -6181,7 +6223,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "本地文件可读到 0-6 频率选项和题项；维度、阈值和正式解释需人工复核。",
       "recommended_card_ids": [
         "three_second_pause",
@@ -6194,7 +6238,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 23/23 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "acceptance_action_aaq2",
@@ -6216,7 +6264,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
         }
       ],
       "questions": [
@@ -6553,7 +6601,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "本地文件可读到 7 个题项和 1-7 选项；正式分数解释需继续核对。",
       "recommended_card_ids": [
         "cognitive_flexibility",
@@ -6561,12 +6611,16 @@
       ],
       "source_version": "2026.06-acceptance_action_aaq2-from-scale-draft",
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled_for_user": false,
-      "review_note": "已由抽取脚本从本地源文件读取 7/7 个题项；正式开放前仍需人工复核。",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "2026-07-10 已按项目负责人确认开放试用；已读取 7/7 个题项，计分解释仍需在试点期持续人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "rsca_adolescent_resilience",
@@ -7575,7 +7629,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件写明 27 题、1-5 分，1、2、5、6、9、12、15、16、17、21、26、27 为反向计分；精确维度题项映射仍需人工复核。",
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -7589,7 +7645,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 27/27 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "academic_buoyancy_4",
@@ -7611,7 +7671,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
         }
       ],
       "questions": [
@@ -7770,7 +7830,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件写明 4 题、1-5 分，分数用于观察日常学业压力下的应对能力。",
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -7779,12 +7841,16 @@
       ],
       "source_version": "2026.06-academic_buoyancy_4-from-scale-draft",
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled_for_user": false,
-      "review_note": "已由抽取脚本从本地源文件读取 4/4 个题项；正式开放前仍需人工复核。",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "2026-07-10 已按项目负责人确认开放试用；已读取 4/4 个题项，计分解释仍需在试点期持续人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "afq_y8_avoidance_fusion",
@@ -7806,7 +7872,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
         }
       ],
       "questions": [
@@ -8109,7 +8175,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件写明 8 题、1-5 分，分数越高心理僵化程度越高、心理灵活性越低；结果解释必须支持性改写。",
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -8118,12 +8186,16 @@
       ],
       "source_version": "2026.06-afq_y8_avoidance_fusion-from-scale-draft",
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled_for_user": false,
-      "review_note": "已由抽取脚本从本地源文件读取 8/8 个题项；正式开放前仍需人工复核。",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "2026-07-10 已按项目负责人确认开放试用；已读取 8/8 个题项，支持性解释仍需在试点期持续人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "cfi2_cognitive_flexibility",
@@ -8146,7 +8218,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
         }
       ],
       "questions": [
@@ -8614,7 +8686,9 @@
           "description": ""
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件写明三个因子：灵活选择 1、2、3、5、6、10；灵活意愿 4、11、12；灵活效能 7、8、9；2、3、5、10 反向计分。",
       "recommended_card_ids": [
         "cognitive_flexibility",
@@ -8622,12 +8696,16 @@
       ],
       "source_version": "2026.06-cfi2_cognitive_flexibility-from-scale-draft",
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled_for_user": false,
-      "review_note": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "2026-07-10 已按项目负责人确认开放试用；已读取 12/12 个题项，维度与反向计分解释仍需在试点期持续人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "regulatory_focus_general_18",
@@ -9492,7 +9570,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "本地文件可读到 18 个题项和 1-7 选项；促进/预防维度题项映射需人工复核。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -9506,7 +9586,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 18/18 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "fmi_12_mindfulness",
@@ -9529,7 +9613,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
         }
       ],
       "questions": [
@@ -9916,7 +10000,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "PDF 使用手册写明 12 题、1-4 分，总分为各题相加；觉知/接受精确题项映射需人工复核。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -9924,12 +10010,16 @@
       ],
       "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft",
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled_for_user": false,
-      "review_note": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "2026-07-10 已按项目负责人确认开放试用；已读取 12/12 个题项，觉知与接受维度解释仍需在试点期持续人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "hplp_c_health_promoting_lifestyle",
@@ -11268,7 +11358,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "本地文件可读到 42 个题项和 1-4 选项；维度归属、是否适合用户端开放和健康建议边界需人工复核。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -11282,7 +11374,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 42/42 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "swls_life_satisfaction",
@@ -11304,7 +11400,7 @@
       "sections": [
         {
           "title": "填写说明",
-          "content": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。"
+          "content": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。"
         }
       ],
       "questions": [
@@ -11549,7 +11645,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "本地文件可读到 5 个题项和 1-7 选项；源文件包含等级解释，用户端必须改写为非诊断、非标签化表达。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -11558,12 +11656,16 @@
       ],
       "source_version": "2026.06-swls_life_satisfaction-from-scale-draft",
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled_for_user": false,
-      "review_note": "已由抽取脚本从本地源文件读取 5/5 个题项；正式开放前仍需人工复核。",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "2026-07-10 已按项目负责人确认开放试用；已读取 5/5 个题项，用户端仅提供非诊断解释并继续试点期人工复核。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "rfq8_reflective_functioning",
@@ -12559,7 +12661,9 @@
           "description": ""
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件可读到 PSSS 12 题和 1-7 选项；同文件中的 SSRS 不与 PSSS 混合录入。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -12573,7 +12677,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "gad7_anxiety",
@@ -12827,7 +12935,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件可读到 7 题和 0-3 计分；源文件含诊断分级文字，用户端必须改为非诊断、非筛查说明。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -12841,7 +12951,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 7/7 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "phq9_cesd10_depression",
@@ -13158,7 +13272,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "本轮只录入 PHQ-9 主版本；CES-D10 来源为图片，需人工/OCR 复核后另行录入。源文件含诊断分级文字，用户端必须改为非诊断说明。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -13172,7 +13288,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 9/9 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "big_five_bfi_60",
@@ -15432,7 +15552,9 @@
           "description": ""
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件含 60 个中文题项和五个维度计分键；维度归属和反向题已按源文件文字初录，仍需人工逐项核对。用户端结果不得输出人格定性标签。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -15446,7 +15568,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 60/60 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "attribution_style_student_36",
@@ -17155,7 +17281,9 @@
           "description": ""
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件为 12 个情境，每个情境包含一个开放式主要原因和 3 个 1-7 归因判断。本轮将 3 个判断题拆为 36 个可填写题项；开放式主要原因暂未进入现有单选题库。",
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -17169,7 +17297,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 36/36 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "ghq12_general_health",
@@ -17578,7 +17710,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件写明 12 题、1-4 分和积极项目 1、3、4、7、8、12；用户端不得给出心理健康筛查结论。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -17592,7 +17726,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "epq_emotional_stability_24",
@@ -18133,7 +18271,9 @@
           "description": "当前只记录题项集合；维度解释和计分方向需人工复核。"
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "源文件可读到 24 个是/否题项；计分方向、常模和解释边界必须人工复核，用户端不得输出人格定性。",
       "recommended_card_ids": [
         "emotion_naming",
@@ -18147,7 +18287,11 @@
       "review_note": "已由抽取脚本从本地源文件读取 24/24 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
     },
     {
       "id": "emotional_intelligence_eis_33",
@@ -19401,7 +19545,9 @@
           "description": ""
         }
       ],
+      "derived_dimensions": [],
       "dimension_score_method": "sum",
+      "total_score_method": "sum",
       "scoring": "题项来自 EIS .sav 变量标签；维度和反向题来自同目录 SPSS 计分脚本。",
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -19415,8 +19561,3020 @@
       "review_note": "已由抽取脚本从本地源文件读取 33/33 个题项；正式开放前仍需人工复核。",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "profile_model_id": null
+      "profile_model_id": null,
+      "_meta": {
+        "total_score_method": "sum",
+        "derived_dimensions": []
+      }
+    },
+    {
+      "id": "regulatory_focus_relationship_18",
+      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_title": "关系情境中的行动关注方式",
+      "display_title": "关系情境中的行动关注方式",
+      "category": "学生自助",
+      "audience": "student",
+      "audience_class": "student",
+      "reflex_node": "relationship_support",
+      "search_keywords": [
+        "大学生关系",
+        "关系主动性",
+        "关系情境中的行动关注方式"
+      ],
+      "sensitive_category": "relationship_exploration",
+      "pages": 1,
+      "instructions": "请根据最近一段时间的真实情况填写。结果只用于自我观察、画像候选和练习参考，不用于诊断、筛查或评价人格。",
+      "sections": [
+        {
+          "title": "填写说明",
+          "content": "请根据你在关系和生活目标中的通常体验作答。不同分量表分别解释，不计算诊断性总分。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "Q1",
+          "prompt": "1.总的来说，我专注于预防生活中的负面事件。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q2",
+          "prompt": "2.我担心自己不能履行自己的责任和义务。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q3",
+          "prompt": "3.我经常想象我将如何实现我的希望和抱负。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q4",
+          "prompt": "4.我经常想起我害怕将来会变成的那个人。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q5",
+          "prompt": "5.我经常想我未来最理想的样子。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q6",
+          "prompt": "6.我通常专注于我希望在未来取得的成功。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q7",
+          "prompt": "7.我经常担心自己无法完成学业目标。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q8",
+          "prompt": "8.我经常思考如何在学术上取得成功。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q9",
+          "prompt": "9.我经常想象自己正在经历一些糟糕的事情，我担心这些事情可能会发生在我身上。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q10",
+          "prompt": "10.我经常思考如何在生活中避免失败。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q11",
+          "prompt": "11.我更倾向于防止损失，而不是追求收益。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q12",
+          "prompt": "12.我现在在学校的主要目标是实现我的学术抱负。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q13",
+          "prompt": "13.我现在在学校的主要目标是避免学业失败。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q14",
+          "prompt": "14.我认为自己是一个主要努力实现“理想自我”的人——实现我的希望、愿望和抱负。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q15",
+          "prompt": "15.我认为自己是一个主要努力成为我“应该”成为的自己的人——履行我的职责、责任和义务。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PREV",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q16",
+          "prompt": "16.总的来说，我专注于在生活中取得积极成果。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q17",
+          "prompt": "17.我经常想象自己正在经历一些美好的事情，我希望这些事情会发生在我身上。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Q18",
+          "prompt": "18.总的来说，比起防止失败，我更倾向于取得成功。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PROM",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 不同意",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 比较不同意",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 不确定",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 比较同意",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 同意",
+              "value": "6",
+              "score": 6
+            },
+            {
+              "label": "7 非常同意",
+              "value": "7",
+              "score": 7
+            }
+          ]
+        }
+      ],
+      "dimensions": [
+        {
+          "code": "PROM",
+          "label": "成长与获得关注",
+          "item_ids": [
+            "Q3",
+            "Q5",
+            "Q6",
+            "Q8",
+            "Q12",
+            "Q14",
+            "Q16",
+            "Q17",
+            "Q18"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "PREV",
+          "label": "安全与避免损失关注",
+          "item_ids": [
+            "Q1",
+            "Q2",
+            "Q4",
+            "Q7",
+            "Q9",
+            "Q10",
+            "Q11",
+            "Q13",
+            "Q15"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean"
+          }
+        }
+      ],
+      "derived_dimensions": [],
+      "dimension_score_method": "mean",
+      "total_score_method": "none",
+      "scoring": "PROM 与 PREV 分别取题项均值；RFD=PROM-PREV 仅供研究画像定位；数据1实测为1-5，新问卷为1-7，模型接入时必须按元数据换算。",
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "cbt_auto_thought_student",
+        "self_support_statement"
+      ],
+      "source_version": "2026.06-regulatory_focus_relationship_18-from-scale-draft",
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "profile_model_id": "task12_regulatory_focus_relationship_18_profile_v1",
+      "_meta": {
+        "total_score_method": "none",
+        "derived_dimensions": []
+      }
+    },
+    {
+      "id": "micro_ysq_relationship_18",
+      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_title": "关系中的常见担心与期待",
+      "display_title": "关系中的常见担心与期待",
+      "category": "学生自助",
+      "audience": "student",
+      "audience_class": "student",
+      "reflex_node": "relationship_support",
+      "search_keywords": [
+        "大学生关系",
+        "关系主动性",
+        "关系中的常见担心与期待"
+      ],
+      "sensitive_category": "relationship_exploration",
+      "pages": 1,
+      "instructions": "请根据最近一段时间的真实情况填写。结果只用于自我观察、画像候选和练习参考，不用于诊断、筛查或评价人格。",
+      "sections": [
+        {
+          "title": "填写说明",
+          "content": "请根据这些描述与你近期关系体验的符合程度作答。结果用于识别可练习的主题，不用于给人格下结论。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "YSQ1",
+          "prompt": "1.我总觉得没人会真正关心我、爱我或理解我。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ2",
+          "prompt": "2.我担心重要的人最终都会离开我。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ3",
+          "prompt": "3.我觉得别人如果有机会，就会伤害、欺骗或利用我。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ4",
+          "prompt": "4.我内心深处觉得自己有严重缺陷，不值得被爱。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ5",
+          "prompt": "5.我觉得自己和别人不一样，无法真正融入任何群体。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ6",
+          "prompt": "6.没有别人的帮助，我自己很难应对生活中的挑战。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ7",
+          "prompt": "7.我总觉得一场大灾难，比如事故、疾病，随时可能发生在我身上。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ8",
+          "prompt": "8.我常常为了取悦别人而忽略自己的想法和感受。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ9",
+          "prompt": "9.我必须压抑自己的情绪和欲望，否则会惹麻烦或被人讨厌。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ10",
+          "prompt": "10.我应该得到特殊待遇，规则不该限制我。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ11",
+          "prompt": "11.我很难坚持完成需要长期努力的事情，例如学习、锻炼。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ12",
+          "prompt": "12.即使让自己很累，我也忍不住要去照顾别人的需要。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ13",
+          "prompt": "13.我非常在意别人怎么看我，总想让他们喜欢我。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ14",
+          "prompt": "14.我习惯把情绪藏在心里，不让人看出我的真实感受。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ15",
+          "prompt": "15.我对自己要求很高，总觉得必须做到最好才算合格。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ16",
+          "prompt": "16.我认为犯错的人就应该受到严厉惩罚。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ17",
+          "prompt": "17.我容易把某些人看得特别优秀或强大，幻想他们能解决我的一切问题。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        },
+        {
+          "id": "YSQ18",
+          "prompt": "18.为了避免冲突或被抛弃，我常常被迫去做自己不愿意的事。",
+          "type": "scale",
+          "required": true,
+          "dimension": "EMS_M",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 完全不符合",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 大多不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 有些不符合",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 有些符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 大多符合",
+              "value": "5",
+              "score": 5
+            },
+            {
+              "label": "6 完全符合",
+              "value": "6",
+              "score": 6
+            }
+          ]
+        }
+      ],
+      "dimensions": [
+        {
+          "code": "EMS_M",
+          "label": "关系担心线索均值",
+          "item_ids": [
+            "YSQ1",
+            "YSQ2",
+            "YSQ3",
+            "YSQ4",
+            "YSQ5",
+            "YSQ6",
+            "YSQ7",
+            "YSQ8",
+            "YSQ9",
+            "YSQ10",
+            "YSQ11",
+            "YSQ12",
+            "YSQ13",
+            "YSQ14",
+            "YSQ15",
+            "YSQ16",
+            "YSQ17",
+            "YSQ18"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean"
+          }
+        }
+      ],
+      "derived_dimensions": [],
+      "dimension_score_method": "mean",
+      "total_score_method": "none",
+      "scoring": "18题取均值和原始和分供研究复核；不按阈值输出人格或图式标签。",
+      "recommended_card_ids": [
+        "self_support_statement",
+        "scs_mindful_moment",
+        "student_two_thoughts"
+      ],
+      "source_version": "2026.06-micro_ysq_relationship_18-from-scale-draft",
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "profile_model_id": "task12_micro_ysq_relationship_18_profile_v1",
+      "_meta": {
+        "total_score_method": "none",
+        "derived_dimensions": []
+      }
+    },
+    {
+      "id": "relationship_initiation_intention_action",
+      "source_file": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_title": "关系主动性：想法、意愿与行动",
+      "display_title": "关系主动性：想法、意愿与行动",
+      "category": "学生自助",
+      "audience": "student",
+      "audience_class": "student",
+      "reflex_node": "relationship_support",
+      "search_keywords": [
+        "大学生关系",
+        "关系主动性",
+        "关系主动性：想法、意愿与行动"
+      ],
+      "sensitive_category": "relationship_exploration",
+      "pages": 1,
+      "instructions": "请根据最近一段时间的真实情况填写。结果只用于自我观察、画像候选和练习参考，不用于诊断、筛查或评价人格。",
+      "sections": [
+        {
+          "title": "填写说明",
+          "content": "请按题目中的可能性、同意程度或过去一个月的频率作答。开放题在结果页另行选填。"
+        }
+      ],
+      "questions": [
+        {
+          "id": "a1",
+          "prompt": "1a.如果我主动认识新朋友，我很可能会遇到愿意理解我、关心我的人。（可能性计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "BENEFIT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不可能",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常可能",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "b1",
+          "prompt": "1b.这样的结果对我来说是非常有价值的。（同意度计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "BENEFIT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "a2",
+          "prompt": "2a.如果我尝试了解某个有好感的人，即使最后没发展成恋爱，也可能让我更清楚自己适合怎样的关系。（可能性计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "BENEFIT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不可能",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常可能",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "b2",
+          "prompt": "2b.我认为这种自我了解的过程是有意义的。（同意度计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "BENEFIT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "a3",
+          "prompt": "3a.如果我适度表达想进一步了解的意愿，可能会获得更多建立亲密关系的机会。（可能性计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "BENEFIT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不可能",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常可能",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "b3",
+          "prompt": "3b.我很看重这种拓展情感连接的可能性。（同意度计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "BENEFIT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "a4",
+          "prompt": "4a.如果我主动靠近别人，我可能会更容易经历拒绝或尴尬。（可能性计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "REJ_THREAT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不可能",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常可能",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "b4",
+          "prompt": "4b.这样的情况会让我感到不安或受伤。（同意度计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "REJ_THREAT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "a5",
+          "prompt": "5a.如果我开始主动靠近别人，我担心自己会为了被喜欢而忽视自己的真实感受。（可能性计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "AUTH_THREAT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不可能",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常可能",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "b5",
+          "prompt": "5b如果真的为了被喜欢而忽视自己的真实感受，这对我来说是让我不舒服或难以接受的。（同意度计分）",
+          "type": "scale",
+          "required": true,
+          "dimension": "AUTH_THREAT",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "SN1",
+          "prompt": "1.我身边重要的人（如家人、密友）会支持我主动认识可能发展亲密关系的人。",
+          "type": "scale",
+          "required": true,
+          "dimension": "SN",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "SN2",
+          "prompt": "2.如果我愿意尝试建立恋爱关系，我的朋友或同学大多会理解和鼓励我。",
+          "type": "scale",
+          "required": true,
+          "dimension": "SN",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "SN3",
+          "prompt": "3.在我所在的大学环境中，学生主动创造建立亲密关系的机会通常是可以被接受的。",
+          "type": "scale",
+          "required": true,
+          "dimension": "SN",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "SN4",
+          "prompt": "4.我觉得周围大多数人认为“适度主动”在亲密关系发展中是合理的。",
+          "type": "scale",
+          "required": true,
+          "dimension": "SN",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "PBC1",
+          "prompt": "1.如果我想认识可能发展亲密关系的人，我知道可以通过哪些方式开始（如参加活动、主动聊天等）。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PBC",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "PBC2",
+          "prompt": "2.即使目前没有明确的心动对象，我也有办法增加认识新朋友的机会。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PBC",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "PBC3",
+          "prompt": "3.对我来说，主动与愿意进一步了解的人交流是完全可以做到的。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PBC",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "PBC4",
+          "prompt": "4.当我想建立更深的关系时，我能找到合适的话题来展开对话。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PBC",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "PBC5",
+          "prompt": "5.如果主动交流没有得到理想回应，我也能够接受这种结果，并继续保持基本的自信。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PBC",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "PBC6",
+          "prompt": "6.当我想主动靠近别人时，我能分辨这是出于真实喜欢，还是出于焦虑和孤独。",
+          "type": "scale",
+          "required": true,
+          "dimension": "PBC",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "BI1",
+          "prompt": "1.在未来一个月内，我愿意主动增加认识新朋友或潜在恋爱对象的机会。",
+          "type": "scale",
+          "required": true,
+          "dimension": "BI",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "BI2",
+          "prompt": "2.即使短期内没有收获，我也愿意继续尝试主动建立人际连接。",
+          "type": "scale",
+          "required": true,
+          "dimension": "BI",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "BI3",
+          "prompt": "3.如果遇到愿意进一步了解的人，我愿意主动与对方交流或保持联系。",
+          "type": "scale",
+          "required": true,
+          "dimension": "BI",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "BI4",
+          "prompt": "4.我愿意尝试在社交场合中主动发起一次简短对话（如打招呼、提问、回应动态）。",
+          "type": "scale",
+          "required": true,
+          "dimension": "BI",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "BI5",
+          "prompt": "5.我愿意为提升亲密关系机会做一些准备，例如改善社交形象、接受他人介绍或展示真实自我。",
+          "type": "scale",
+          "required": true,
+          "dimension": "BI",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "BI6",
+          "prompt": "6.我愿意在与他人交往时，更多地表达真实的自己，哪怕这可能不被立刻喜欢。",
+          "type": "scale",
+          "required": true,
+          "dimension": "BI",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 非常不同意",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 非常同意",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "RAP1",
+          "prompt": "1.在过去一个月里，我有意识地觉察过自己在人际关系中的真实感受。",
+          "type": "scale",
+          "required": true,
+          "dimension": "RAP",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 从未",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 总是",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "RAP2",
+          "prompt": "2.在过去一个月里，我曾尝试在人际交往中表达自己的偏好、需求或边界。",
+          "type": "scale",
+          "required": true,
+          "dimension": "RAP",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 从未",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 总是",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "RAP3",
+          "prompt": "3.在过去一个月里，我曾主动向他人发起一次新的交流或互动（如开启话题、添加联系方式、邀请共同活动等）。",
+          "type": "scale",
+          "required": true,
+          "dimension": "RAP",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 从未",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 总是",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "RAP4",
+          "prompt": "4.在过去一个月里，我在人际互动中有意识地坚持做自己，即使这样做让我感到有些不安或担心不被理解。",
+          "type": "scale",
+          "required": true,
+          "dimension": "RAP",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 从未",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 总是",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        },
+        {
+          "id": "RAP5",
+          "prompt": "5.在过去一个月里，我有意识地尝试过一些方法（如情绪记录、微行动、边界练习、话题准备等）来改善自己的人际关系。",
+          "type": "scale",
+          "required": true,
+          "dimension": "RAP",
+          "reverse_scored": false,
+          "options": [
+            {
+              "label": "1 从未",
+              "value": "1",
+              "score": 1
+            },
+            {
+              "label": "2 比较不符合",
+              "value": "2",
+              "score": 2
+            },
+            {
+              "label": "3 不确定",
+              "value": "3",
+              "score": 3
+            },
+            {
+              "label": "4 比较符合",
+              "value": "4",
+              "score": 4
+            },
+            {
+              "label": "5 总是",
+              "value": "5",
+              "score": 5
+            }
+          ]
+        }
+      ],
+      "dimensions": [
+        {
+          "code": "BENEFIT",
+          "label": "主动关系获益信念",
+          "item_ids": [
+            "a1",
+            "b1",
+            "a2",
+            "b2",
+            "a3",
+            "b3"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean_of_products",
+            "pairs": [
+              [
+                "a1",
+                "b1"
+              ],
+              [
+                "a2",
+                "b2"
+              ],
+              [
+                "a3",
+                "b3"
+              ]
+            ]
+          }
+        },
+        {
+          "code": "REJ_THREAT",
+          "label": "拒绝相关担心",
+          "item_ids": [
+            "a4",
+            "b4"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "product",
+            "items": [
+              "a4",
+              "b4"
+            ]
+          }
+        },
+        {
+          "code": "AUTH_THREAT",
+          "label": "失去真实感相关担心",
+          "item_ids": [
+            "a5",
+            "b5"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "product",
+            "items": [
+              "a5",
+              "b5"
+            ]
+          }
+        },
+        {
+          "code": "AUTH_PROTECT",
+          "label": "真实自我保护线索",
+          "item_ids": [
+            "a5",
+            "b5"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean_terms",
+            "terms": [
+              {
+                "item": "a5",
+                "reverse_min": 1,
+                "reverse_max": 5
+              },
+              {
+                "item": "b5"
+              }
+            ]
+          }
+        },
+        {
+          "code": "SN",
+          "label": "重要他人支持感",
+          "item_ids": [
+            "SN1",
+            "SN2",
+            "SN3",
+            "SN4"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "PBC",
+          "label": "关系行动可控感",
+          "item_ids": [
+            "PBC1",
+            "PBC2",
+            "PBC3",
+            "PBC4",
+            "PBC5",
+            "PBC6"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "BI",
+          "label": "关系行动意愿",
+          "item_ids": [
+            "BI1",
+            "BI2",
+            "BI3",
+            "BI4",
+            "BI5",
+            "BI6"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "RAP",
+          "label": "近月关系行动",
+          "item_ids": [
+            "RAP1",
+            "RAP2",
+            "RAP3",
+            "RAP4",
+            "RAP5"
+          ],
+          "reverse_item_codes": [],
+          "description": "",
+          "calculation": {
+            "type": "mean"
+          }
+        }
+      ],
+      "derived_dimensions": [
+        {
+          "code": "THREAT",
+          "label": "综合威胁信念",
+          "calculation": {
+            "type": "mean_dimensions",
+            "dimensions": [
+              "REJ_THREAT",
+              "AUTH_THREAT"
+            ]
+          }
+        }
+      ],
+      "dimension_score_method": "mean",
+      "total_score_method": "none",
+      "scoring": "获益、威胁与真实自我保护按冻结乘积公式计算；SN/PBC/BI/RAP分别取均值；不计算诊断性总分。",
+      "recommended_card_ids": [
+        "one_open_question",
+        "erq_expression_gentle",
+        "self_support_statement"
+      ],
+      "source_version": "2026.06-relationship_initiation_intention_action-from-scale-draft",
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_review_required",
+      "enabled_for_user": true,
+      "review_note": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "profile_model_id": "task12_relationship_initiation_intention_action_profile_v1",
+      "_meta": {
+        "total_score_method": "none",
+        "derived_dimensions": [
+          {
+            "code": "THREAT",
+            "label": "综合威胁信念",
+            "calculation": {
+              "type": "mean_dimensions",
+              "dimensions": [
+                "REJ_THREAT",
+                "AUTH_THREAT"
+              ]
+            }
+          }
+        ]
+      }
     }
   ],
-  "updated_at": "2026-06-29"
+  "updated_at": "2026-07-10"
 }

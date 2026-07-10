@@ -1,0 +1,4 @@
+.relationship-status { display: inline-flex; min-height: 44rpx; align-items: center; padding: 4rpx 16rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-pill); background: var(--safe-bg-soft); color: var(--safe-muted); font-size: 21rpx; line-height: 1.3; }
+.relationship-status--warning { border-color: rgba(184, 127, 45, 0.3); background: var(--safe-orange-soft); color: #72552f; }
+.relationship-status--success { border-color: rgba(79, 124, 107, 0.3); background: var(--safe-primary-soft); color: var(--safe-primary-deep); }
+.relationship-status--info { border-color: rgba(98, 127, 159, 0.28); background: var(--safe-blue-soft); color: var(--safe-blue); }

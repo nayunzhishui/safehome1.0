@@ -25,9 +25,16 @@ REQUIRED_HEALTH_TABLES = [
     "consent_records",
     "records",
     "messages",
+    "relationship_pilot_enrollments",
+    "relationship_screening_reports",
+    "relationship_pilot_tasks",
+    "relationship_research_notes",
+    "relationship_narratives",
+    "relationship_longitudinal_entries",
+    "relationship_hypothesis_feedback",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_06_001"
-CURRENT_SCHEMA_NAME = "t11_weekly_report_summaries"
+CURRENT_SCHEMA_VERSION = "2026_07_10_003"
+CURRENT_SCHEMA_NAME = "relationship_experience_hardening"
 MYSQL_VARCHAR_COLUMNS = {
     "id",
     "version",
@@ -37,6 +44,12 @@ MYSQL_VARCHAR_COLUMNS = {
     "role",
     "username",
     "phone_or_email",
+    "phone_hash",
+    "enrollment_id",
+    "report_id",
+    "response",
+    "assessment_result_id",
+    "idempotency_key",
     "password_hash",
     "wechat_openid",
     "avatar_url",
@@ -257,7 +270,7 @@ def mysqlize_column_definition(column: str, definition: str) -> str:
 
 
 def _parse_index_statement(statement: str) -> tuple[str, str] | None:
-    match = re.match(r"\s*CREATE\s+INDEX\s+IF\s+NOT\s+EXISTS\s+(\w+)\s+ON\s+(.+)", statement, re.IGNORECASE)
+    match = re.match(r"\s*CREATE\s+(?:UNIQUE\s+)?INDEX\s+IF\s+NOT\s+EXISTS\s+(\w+)\s+ON\s+(.+)", statement, re.IGNORECASE)
     if not match:
         return None
     return match.group(1), match.group(2)
@@ -392,7 +405,8 @@ def create_index(conn, statement: str) -> None:
         return
     try:
         # index_name and target are parsed from trusted INDEX_SQL schema statements, not request input.
-        conn.execute(f"CREATE INDEX {index_name} ON {target}")
+        unique = "UNIQUE " if re.match(r"\s*CREATE\s+UNIQUE\s+INDEX", statement, re.IGNORECASE) else ""
+        conn.execute(f"CREATE {unique}INDEX {index_name} ON {target}")
     except Exception as exc:
         if "Duplicate key name" in str(exc) or "1061" in str(exc):
             return
@@ -531,6 +545,7 @@ def ensure_schema_columns(conn) -> None:
         "password_hash": "TEXT",
         "anonymous_id": "TEXT",
         "wechat_openid": "TEXT",
+        "phone_hash": "TEXT",
         "avatar_url": "TEXT",
         "status": "TEXT DEFAULT 'active'",
         "last_login_at": "TEXT",
@@ -608,6 +623,11 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in family_link_columns.items():
         ensure_column(conn, "family_links", column, definition)
+
+    relationship_task_columns = {"idempotency_key": "TEXT"}
+    for column, definition in relationship_task_columns.items():
+        ensure_column(conn, "relationship_pilot_tasks", column, definition)
+        ensure_column(conn, "relationship_longitudinal_entries", column, definition)
 
 
 def _normalize_assessment_profile_cluster(conn) -> None:

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 
 import type { AssessmentProfileCluster, AssessmentProfilePosition } from "../../../../shared/types/api";
+import { VisualizationState } from "./VisualizationState";
 
 interface ProfileScatterChartProps {
   profile: AssessmentProfilePosition | null;
@@ -64,9 +65,20 @@ export function ProfileScatterChart({ profile }: ProfileScatterChartProps) {
     };
   }, [profile]);
 
-  if (!profile?.available) {
-    return <div className="emptyState">{profile?.reason || "暂无画像位置数据。"}</div>;
+  if (
+    !profile?.available
+    || !profile.position
+    || typeof profile.position.pc1 !== "number"
+    || typeof profile.position.pc2 !== "number"
+  ) {
+    return <VisualizationState state="insufficient" message={profile?.reason || "暂无画像位置数据。"} />;
   }
 
-  return <div ref={chartRef} className="profileChart" aria-label="画像散点落点图" />;
+  const interpretationState = profile.interpretation?.status || profile.position?.interpretation_status || "usable";
+  return (
+    <>
+      {interpretationState !== "usable" ? <VisualizationState state={interpretationState} message={profile.interpretation?.message} /> : null}
+      <div ref={chartRef} className="profileChart" aria-label="画像散点落点图" />
+    </>
+  );
 }

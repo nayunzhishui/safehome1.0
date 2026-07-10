@@ -6,18 +6,28 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "test:miniprogram-devtools": "powershell -ExecutionPolicy Bypass -File ../../scripts/run_miniprogram_devtools_check.ps1"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.0.0",
-    "echarts": "5.6.0",
+    "@vitejs/plugin-react": "^6.0.3",
+    "echarts": "^6.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "typescript": "^5.8.0",
-    "vite": "^7.0.0"
+    "vite": "^8.1.4"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.1",
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0"
+    "@types/react-dom": "^19.0.0",
+    "miniprogram-automator": "0.12.1"
+  },
+  "overrides": {
+    "jpeg-js": "0.4.4",
+    "minimist": "1.2.8",
+    "mkdirp": "0.5.6",
+    "phin": "3.7.1"
   }
 }

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "关系探索试点",
+  "usingComponents": {
+    "relationship-status": "/components/relationship-status/index"
+  }
+}

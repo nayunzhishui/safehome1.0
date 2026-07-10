@@ -3,7 +3,9 @@
 }
 
 .auth-card {
-  margin: 48rpx 28rpx;
+  margin: 48rpx 0;
+  padding: 36rpx;
+  border-color: var(--safe-border-strong);
 }
 
 .field {
@@ -11,7 +13,7 @@
   flex-direction: column;
   gap: 12rpx;
   margin-top: 28rpx;
-  color: #5f4d3f;
+  color: var(--safe-text);
   font-size: 28rpx;
 }
 
@@ -19,33 +21,35 @@
 .picker-value {
   min-height: 88rpx;
   padding: 0 24rpx;
-  border: 1rpx solid #e4d7c4;
-  border-radius: 16rpx;
-  background: #fffdf8;
+  border: 1rpx solid var(--safe-border-strong);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-card);
   line-height: 88rpx;
 }
 
 .message {
   margin-top: 24rpx;
-  color: #7a5d38;
+  color: var(--safe-text);
   font-size: 26rpx;
 }
 
 .message.error {
-  color: #a84232;
+  color: var(--safe-danger);
 }
 
 .primary-action,
 .ghost-action {
   margin-top: 28rpx;
+  border-radius: var(--safe-radius-pill);
+  font-weight: 800;
 }
 
 .primary-action {
   color: #fff;
-  background: #4e7c6b;
+  background: var(--safe-primary);
 }
 
 .ghost-action {
-  color: #4e7c6b;
+  color: var(--safe-primary-deep);
   background: transparent;
 }

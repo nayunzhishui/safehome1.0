@@ -156,6 +156,15 @@ export interface EmotionThermometerRecord {
   updated_at: ISODateTime;
 }
 
+export interface AuthSession {
+  token: string;
+  user: User;
+  dev_fallback?: boolean;
+  identity_source?: "cloudbase_header" | "jscode2session" | "development_fallback" | string;
+  phone_bound?: boolean;
+  phone_masked?: string;
+}
+
 export interface EmotionThermometerInput {
   user_id?: ID;
   nickname?: string;
@@ -599,6 +608,10 @@ export interface AssessmentProfileCluster {
   percent: number;
   pca_centroid?: { pc1?: number | null; pc2?: number | null };
   supportive_explanation?: string;
+  dimension_means?: Record<string, number>;
+  dimension_z?: Record<string, number>;
+  suggested_assessment_questions?: string[];
+  recommended_project_tasks?: string[];
   recommended_card_ids?: ID[];
   card_reason?: string;
 }
@@ -636,6 +649,9 @@ export interface AssessmentProfilePosition {
     distance_threshold?: number | null;
   };
   clusters?: AssessmentProfileCluster[];
+  radar_support?: {
+    dimensions?: Array<{ code: string; label?: string }>;
+  };
   feature_summary?: {
     answered_features: number;
     missing_features: number;
@@ -654,6 +670,8 @@ export interface AssessmentProfilePosition {
   explanation?: string;
   strength_note?: string;
   small_step?: string;
+  suggested_assessment_questions?: string[];
+  recommended_project_tasks?: string[];
   boundary_notice?: string;
 }
 
@@ -680,6 +698,17 @@ export interface UserMessage {
   created_at: ISODateTime;
   read_at?: ISODateTime | null;
 }
+
+export type {
+  FourLayerProfile,
+  HypothesisFeedback,
+  RadarFeature,
+  RelationshipDimension,
+  RelationshipGrowth,
+  RelationshipPilotEnrollment,
+  RelationshipPilotTask,
+  RelationshipScreeningReport,
+} from "./relationship-pilot.generated";
 
 export interface ProfileStats {
   user_id: ID;
@@ -1025,6 +1054,12 @@ export interface WeeklyReport {
     requires_review_count: number;
     recommended_card_ids: ID[];
   };
+  radar_support?: {
+    dimensions?: Array<{ code: string; mean?: number; std?: number }>;
+    value_source?: string;
+  };
+  suggested_assessment_questions?: string[];
+  recommended_project_tasks?: string[];
   thermometer_summary?: {
     count: number;
     avg_intensity: number | null;

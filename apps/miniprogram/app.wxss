@@ -19,15 +19,15 @@ page {
   --safe-card-strong: #ffffff;
   --safe-title: #202622;
   --safe-text: #535f58;
-  --safe-muted: #78817b;
+  --safe-muted: #68736d;
   --safe-border: #dfe5dc;
   --safe-border-strong: #cbd5ca;
   --safe-success: #578b5f;
   --safe-warning: #e79a42;
   --safe-danger: #d76f67;
   --safe-info: #6f8fb8;
-  --safe-shadow-card: 0 8rpx 20rpx rgba(37, 55, 44, 0.05);
-  --safe-shadow-float: 0 14rpx 34rpx rgba(37, 55, 44, 0.08);
+  --safe-shadow-card: none;
+  --safe-shadow-float: 0 4rpx 10rpx rgba(37, 55, 44, 0.07);
   --safe-radius-xs: 8rpx;
   --safe-radius-sm: 16rpx;
   --safe-radius-md: 16rpx;
@@ -40,12 +40,13 @@ page {
   min-height: 100vh;
   background: var(--safe-bg);
   color: var(--safe-title);
-  font-family: "Heiti SC", "STHeiti", "SimHei", "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
   line-height: 1.7;
   font-size: 28rpx;
 }
 
 button {
+  min-height: var(--safe-touch);
   margin: 0;
   padding: 0;
   border-radius: 0;
@@ -53,6 +54,14 @@ button {
   color: inherit;
   font: inherit;
   line-height: normal;
+}
+
+button[disabled] {
+  opacity: 0.56;
+}
+
+button:active {
+  transform: scale(0.985);
 }
 
 button::after {
@@ -63,6 +72,10 @@ input,
 textarea {
   color: var(--safe-title);
   font: inherit;
+}
+
+input {
+  min-height: 80rpx;
 }
 
 .safe-page {
@@ -105,6 +118,7 @@ textarea {
 }
 
 .safe-card--hero {
+  border-color: var(--safe-border-strong);
   border-radius: var(--safe-radius-lg);
   background: var(--safe-card);
   box-shadow: var(--safe-shadow-float);
@@ -129,6 +143,15 @@ textarea {
   font-weight: 850;
   line-height: 1.24;
   letter-spacing: 0;
+}
+
+.safe-eyebrow {
+  display: block;
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
+  font-weight: 800;
+  letter-spacing: 2rpx;
+  text-transform: uppercase;
 }
 
 .safe-subtitle,
@@ -204,7 +227,7 @@ textarea {
 .safe-primary-button {
   background: var(--safe-primary);
   color: #ffffff;
-  box-shadow: 0 8rpx 18rpx rgba(78, 124, 107, 0.18);
+  box-shadow: 0 3rpx 8rpx rgba(78, 124, 107, 0.16);
 }
 
 .safe-secondary-button {
@@ -220,7 +243,7 @@ textarea {
 }
 
 .safe-ghost-button {
-  min-height: 72rpx;
+  min-height: var(--safe-touch);
   border: 1rpx solid var(--safe-border);
   background: #ffffff;
   color: var(--safe-muted);
@@ -230,11 +253,11 @@ textarea {
 .safe-orange-button {
   background: var(--safe-orange);
   color: #ffffff;
-  box-shadow: 0 8rpx 18rpx rgba(217, 130, 67, 0.18);
+  box-shadow: 0 3rpx 8rpx rgba(217, 130, 67, 0.16);
 }
 
 .safe-button-sm {
-  min-height: 68rpx;
+  min-height: var(--safe-touch);
   padding: 0 26rpx;
   font-size: 24rpx;
 }

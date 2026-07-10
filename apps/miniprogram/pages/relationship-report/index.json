@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "关系健康初筛报告",
+  "usingComponents": {
+    "relationship-status": "/components/relationship-status/index"
+  }
+}

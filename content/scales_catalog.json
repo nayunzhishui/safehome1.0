@@ -1,6 +1,6 @@
 {
   "version": "2026.06-scales-catalog-v1",
-  "updated_at": "2026-06-29",
+  "updated_at": "2026-07-10",
   "source_root": "D:\\codex\\workspace\\safehome1.0其他内容\\夏老师文件\\2026年6月18日发给董俊杰的(1)\\测评问卷-量表",
   "boundary_notice": "量表目录只用于内容盘点、人工审核和后续支持性测评接入规划。未完成授权、题项、计分和伦理复核的量表不得面向用户开放；结果只作自我观察和练习推荐线索，不构成诊断。",
   "review_policy": {
@@ -271,16 +271,16 @@
         "2-1-接纳与行动问卷第二版AAQII.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
-      "first_batch_candidate": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "recommended_card_ids": [
         "cognitive_flexibility",
         "alternative_behavior"
       ],
-      "notes": "已由抽取脚本从本地源文件读取 7/7 个题项；正式开放前仍需人工复核。",
+      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 7/7 个题项，计分解释仍需在试点期持续人工复核。",
       "audience_class": "adult",
       "category": "成人自助",
       "reflex_node": "acceptance",
@@ -292,9 +292,9 @@
       "sensitive_category": "none",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
     },
     {
       "id": "mindful_attention_awareness_maas",
@@ -489,18 +489,18 @@
         "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
-      "first_batch_candidate": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 4/4 个题项；正式开放前仍需人工复核。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 4/4 个题项，计分解释仍需在试点期持续人工复核。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
     },
     {
       "id": "afq_y8_avoidance_fusion",
@@ -521,18 +521,18 @@
         "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
-      "first_batch_candidate": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 8/8 个题项；正式开放前仍需人工复核。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 8/8 个题项，支持性解释仍需在试点期持续人工复核。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
     },
     {
       "id": "cfi2_cognitive_flexibility",
@@ -554,9 +554,9 @@
         "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
-      "first_batch_candidate": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
@@ -565,10 +565,10 @@
         "cognitive_flexibility",
         "alternative_behavior"
       ],
-      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 12/12 个题项，维度与反向计分解释仍需在试点期持续人工复核。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
     },
     {
       "id": "emotional_resilience_11",
@@ -736,9 +736,9 @@
         "弗赖堡正念调查量表FMI.pdf"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
-      "first_batch_candidate": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
@@ -747,10 +747,10 @@
         "emotion_naming",
         "three_second_pause"
       ],
-      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 12/12 个题项，觉知与接受维度解释仍需在试点期持续人工复核。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
     },
     {
       "id": "hplp_c_health_promoting_lifestyle",
@@ -803,18 +803,18 @@
         "生活满意度量表(SWLS).docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
-      "first_batch_candidate": false,
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 5/5 个题项；正式开放前仍需人工复核。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 5/5 个题项，用户端仅提供非诊断解释并继续试点期人工复核。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": "",
+      "exclusion_reason": ""
     },
     {
       "id": "big_five_bfi_60",
@@ -1019,6 +1019,117 @@
       "notes": "SPSS 脚本可确认 10 题总分与兴趣型/剥夺型维度，但未包含题项原文。",
       "not_open_reason": "题项原文未确认，暂不开放填写。",
       "exclusion_reason": "题项原文未确认，暂不开放填写。"
+    },
+    {
+      "id": "regulatory_focus_relationship_18",
+      "display_name": "关系情境中的行动关注方式",
+      "audience": "student",
+      "audience_class": "student",
+      "theme": "relationship_exploration",
+      "category": "学生自助",
+      "reflex_node": "relationship_support",
+      "search_keywords": [
+        "大学生关系",
+        "关系主动性",
+        "关系情境中的行动关注方式"
+      ],
+      "sensitive_category": "relationship_exploration",
+      "source_folder": "数据1",
+      "source_files": [
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx",
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx",
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx"
+      ],
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "audited_local_source",
+      "scoring_status": "frozen_task12_formula",
+      "recommended_card_ids": [
+        "student_emotion_naming",
+        "cbt_auto_thought_student",
+        "self_support_statement"
+      ],
+      "profile_model_id": "task12_regulatory_focus_relationship_18_profile_v1",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "excluded_from_user_flow": false,
+      "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。"
+    },
+    {
+      "id": "micro_ysq_relationship_18",
+      "display_name": "关系中的常见担心与期待",
+      "audience": "student",
+      "audience_class": "student",
+      "theme": "relationship_exploration",
+      "category": "学生自助",
+      "reflex_node": "relationship_support",
+      "search_keywords": [
+        "大学生关系",
+        "关系主动性",
+        "关系中的常见担心与期待"
+      ],
+      "sensitive_category": "relationship_exploration",
+      "source_folder": "数据1",
+      "source_files": [
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx",
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx",
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx"
+      ],
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "audited_local_source",
+      "scoring_status": "frozen_task12_formula",
+      "recommended_card_ids": [
+        "self_support_statement",
+        "scs_mindful_moment",
+        "student_two_thoughts"
+      ],
+      "profile_model_id": "task12_micro_ysq_relationship_18_profile_v1",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "excluded_from_user_flow": false,
+      "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。"
+    },
+    {
+      "id": "relationship_initiation_intention_action",
+      "display_name": "关系主动性：想法、意愿与行动",
+      "audience": "student",
+      "audience_class": "student",
+      "theme": "relationship_exploration",
+      "category": "学生自助",
+      "reflex_node": "relationship_support",
+      "search_keywords": [
+        "大学生关系",
+        "关系主动性",
+        "关系主动性：想法、意愿与行动"
+      ],
+      "sensitive_category": "relationship_exploration",
+      "source_folder": "数据1",
+      "source_files": [
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx",
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx",
+        "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx"
+      ],
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_review_required",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "audited_local_source",
+      "scoring_status": "frozen_task12_formula",
+      "recommended_card_ids": [
+        "one_open_question",
+        "erq_expression_gentle",
+        "self_support_statement"
+      ],
+      "profile_model_id": "task12_relationship_initiation_intention_action_profile_v1",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "excluded_from_user_flow": false,
+      "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。"
     }
   ]
 }

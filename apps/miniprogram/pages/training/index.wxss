@@ -495,3 +495,8 @@
   gap: 18rpx;
   margin-top: 20rpx;
 }
+.relationship-pilot-entry {
+  display: grid;
+  gap: 14rpx;
+  border-left: 6rpx solid var(--safe-primary);
+}

@@ -45,8 +45,8 @@ def test_deep_healthz_checks_database_and_content(tmp_path, monkeypatch):
     data = response.get_json()
     assert data["ok"] is True
     assert data["database"]["ok"] is True
-    assert data["database"]["expected_schema_version"] == "2026_07_06_001"
-    assert data["database"]["current_schema_version"] == "2026_07_06_001"
+    assert data["database"]["expected_schema_version"] == "2026_07_10_003"
+    assert data["database"]["current_schema_version"] == "2026_07_10_003"
     assert data["database"]["schema_version_ok"] is True
     assert data["database"]["required_tables_ok"] is True
     assert data["database"]["missing_tables"] == []
@@ -61,6 +61,13 @@ def test_deep_healthz_checks_database_and_content(tmp_path, monkeypatch):
     assert data["content"]["ok"] is True
     assert data["content"]["required_files_ok"] is True
     assert data["content"]["missing_files"] == []
+    assert data["content"]["content_versions"]["assessment_worksheets.json"]
+    assert len(data["content"]["relationship_profile_model_versions"]) == 3
+    assert data["runtime_metrics"]["api_responses_total"] >= 0
+    assert data["runtime_metrics"]["api_error_rate"] >= 0
+    assert "请求正文" in data["runtime_metrics"]["privacy"]
+    assert data["operational_backlog"]["ok"] is True
+    assert data["operational_backlog"]["risk_review_pending"] == 0
     assert "test-secret-token" not in response.get_data(as_text=True)
 
 

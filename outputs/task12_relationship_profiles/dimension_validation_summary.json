@@ -1,0 +1,294 @@
+{
+  "schema_version": "task12-relationship-dataset-v1",
+  "raw_text_included": false,
+  "source_hashes": {
+    "原始量表.xlsx": "fd6e507ac299ceb74353bed65dce6adebf2daf58cd217d7591c036aad4b45ecc",
+    "全部数据1.0.xlsx": "1f45d6408be55c731c8ffb87f37f95655beca99ffaa3c020596df1e5208f94ec",
+    "清洗好的469份.xlsx": "7b730d3e0259151849ae17ba01c1e28fd245fa1b6533a4e376dad978c7cd428a",
+    "问卷计分算分说明书.docx": "0a426cf6b774b51fd4ff8367185b17172400796c483c441c0e885f6f09758157"
+  },
+  "sample_counts": {
+    "original": 713,
+    "all_data": 425,
+    "cleaned": 469
+  },
+  "matrix_shapes": {
+    "regulatory_focus": [
+      425,
+      18
+    ],
+    "micro_ysq": [
+      425,
+      18
+    ],
+    "relationship": [
+      425,
+      31
+    ]
+  },
+  "observed_ranges": {
+    "regulatory_focus": {
+      "columns": 18,
+      "minimum": 1.0,
+      "maximum": 5.0,
+      "missing_cells": 0
+    },
+    "micro_ysq": {
+      "columns": 18,
+      "minimum": 1.0,
+      "maximum": 6.0,
+      "missing_cells": 0
+    },
+    "relationship": {
+      "columns": 31,
+      "minimum": 1.0,
+      "maximum": 5.0,
+      "missing_cells": 0
+    }
+  },
+  "within_all_data_validation": {
+    "PROM": {
+      "source_column": "促进聚焦",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.8462745098,
+      "max_absolute_difference": 1.1111111111,
+      "exact_within_1e_8": false
+    },
+    "PREV": {
+      "source_column": "防御聚焦",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "RFD": {
+      "source_column": "调节聚焦优势指数",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.8462745098,
+      "max_absolute_difference": 1.1111111111,
+      "exact_within_1e_8": false
+    },
+    "EMS_SUM": {
+      "source_column": "早期图示总分",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "BENEFIT": {
+      "source_column": "获益预期",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "REJ_THREAT": {
+      "source_column": "拒绝或尴尬威胁",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "AUTH_THREAT": {
+      "source_column": "真实性威胁冲突",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "THREAT": {
+      "source_column": "威胁预期总分",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "AUTH_PROTECT": {
+      "source_column": "真实性保护指数",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "SN": {
+      "source_column": "主观规范计分",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "PBC": {
+      "source_column": "知觉行为控制",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.1558823529,
+      "max_absolute_difference": 0.75,
+      "exact_within_1e_8": false
+    },
+    "BI": {
+      "source_column": "BI整体行为意向总分",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    },
+    "RAP": {
+      "source_column": "关系主动性实践",
+      "available": true,
+      "n_compared": 425,
+      "mean_absolute_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "exact_within_1e_8": true
+    }
+  },
+  "cleaned_cross_sample_validation": {
+    "PROM": {
+      "cleaned_column": "PF",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 3.819346,
+      "cleaned_mean": 3.798389,
+      "absolute_mean_difference": 0.020957,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "PREV": {
+      "cleaned_column": "PrF",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 3.442614,
+      "cleaned_mean": 3.455579,
+      "absolute_mean_difference": 0.012965,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "RFD": {
+      "cleaned_column": "PF_PrF",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 0.376732,
+      "cleaned_mean": 0.34281,
+      "absolute_mean_difference": 0.033922,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "EMS_SUM": {
+      "cleaned_column": "YSQ",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 57.752941,
+      "cleaned_mean": 58.119403,
+      "absolute_mean_difference": 0.366462,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "BENEFIT": {
+      "cleaned_column": "BE",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 13.912941,
+      "cleaned_mean": 13.612651,
+      "absolute_mean_difference": 0.30029,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "REJ_THREAT": {
+      "cleaned_column": "拒绝或尴尬威胁",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 13.084706,
+      "cleaned_mean": 13.063966,
+      "absolute_mean_difference": 0.02074,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "AUTH_THREAT": {
+      "cleaned_column": "真实性威胁冲突",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 14.054118,
+      "cleaned_mean": 14.01919,
+      "absolute_mean_difference": 0.034928,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "THREAT": {
+      "cleaned_column": "TE",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 13.569412,
+      "cleaned_mean": 13.541578,
+      "absolute_mean_difference": 0.027834,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "AUTH_PROTECT": {
+      "cleaned_column": "RP",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 3.256471,
+      "cleaned_mean": 3.239872,
+      "absolute_mean_difference": 0.016599,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "SN": {
+      "cleaned_column": "SN",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 3.852353,
+      "cleaned_mean": 3.820362,
+      "absolute_mean_difference": 0.03199,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "PBC": {
+      "cleaned_column": "PBC",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 3.242353,
+      "cleaned_mean": 3.248401,
+      "absolute_mean_difference": 0.006048,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "BI": {
+      "cleaned_column": "BI",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 3.339608,
+      "cleaned_mean": 3.33973,
+      "absolute_mean_difference": 0.000122,
+      "comparison_scope": "aggregate_only_different_samples"
+    },
+    "RAP": {
+      "cleaned_column": "RPP",
+      "available": true,
+      "recomputed_n": 425,
+      "cleaned_n": 469,
+      "recomputed_mean": 3.197176,
+      "cleaned_mean": 3.212793,
+      "absolute_mean_difference": 0.015617,
+      "comparison_scope": "aggregate_only_different_samples"
+    }
+  },
+  "source_conflicts": [
+    "原始量表、全部数据1.0、清洗好的469份样本数不同，不能无ID逐行拼接。",
+    "当前调节聚焦题项观测为1-5，新版问卷和计分说明写1-7。",
+    "当前数据PBC为6题，新版问卷与信度报告按4题。",
+    "全部数据1.0中的促进聚焦派生列与冻结公式不一致，但按题项复算的均值与469份清洗表PF均值接近，应以题项复算为建模输入并保留人工复核。",
+    "全部数据1.0中的PBC派生列可由PBC3-PBC6四题精确复现，不是六题均值。"
+  ]
+}

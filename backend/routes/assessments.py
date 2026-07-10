@@ -190,9 +190,11 @@ def _effective_score(question: dict | None, score: int) -> int:
 def _score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | None]:
     question_map = {question.get("id"): question for question in worksheet.get("questions", [])}
     score_method = worksheet.get("dimension_score_method", "sum")
+    total_score_method = worksheet.get("total_score_method") or (worksheet.get("_meta") or {}).get("total_score_method", "sum")
     total = 0
     has_score = False
     dimension_totals: dict[str, dict] = {}
+    item_scores: dict[str, int | float] = {}
 
     for answer in answers:
         question = question_map.get(answer.get("question_id"))
@@ -207,6 +209,7 @@ def _score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | No
             # answer 里保留用户实际选择的原始分，便于审计；维度和总分用反向计分后的有效分。
             answer["score"] = int(score)
             effective = _effective_score(question, int(score))
+            item_scores[answer.get("question_id")] = effective
             total += effective
             has_score = True
             dimension = question.get("dimension") if question else None
@@ -216,29 +219,109 @@ def _score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | No
                 bucket["item_count"] += 1
 
     dimension_labels = _dimension_labels(worksheet)
+    dimension_specs = {
+        item.get("code") or item.get("key"): item
+        for item in worksheet.get("dimensions", [])
+        if isinstance(item, dict) and (item.get("code") or item.get("key"))
+    }
     dimensions = []
-    for dimension, bucket in dimension_totals.items():
+    dimension_scores: dict[str, int | float] = {}
+    ordered_dimension_codes = list(dimension_specs) or list(dimension_totals)
+    for dimension in ordered_dimension_codes:
+        bucket = dimension_totals.get(dimension, {"score": 0, "item_count": 0})
         item_count = bucket["item_count"]
-        if score_method == "mean" and item_count:
+        calculation = dimension_specs.get(dimension, {}).get("calculation")
+        calculated = _calculate_dimension(calculation, item_scores, dimension_scores)
+        if calculated is not None:
+            value = calculated
+            calculation_method = calculation.get("type", score_method)
+        elif score_method == "mean" and item_count:
             value: int | float = round(bucket["score"] / item_count, 2)
+            calculation_method = score_method
         else:
             value = bucket["score"]
+            calculation_method = score_method
+        dimension_scores[dimension] = value
         dimensions.append(
             {
                 "key": dimension,
                 "label": dimension_labels.get(dimension, dimension),
                 "score": value,
                 "item_count": item_count,
-                "score_method": score_method,
+                "score_method": calculation_method,
             }
         )
 
-    scores: dict = {"total_score": total if has_score else None}
+    derived_dimensions = worksheet.get("derived_dimensions") or (worksheet.get("_meta") or {}).get("derived_dimensions", [])
+    for spec in derived_dimensions:
+        if not isinstance(spec, dict) or not spec.get("code"):
+            continue
+        calculation = spec.get("calculation") or {}
+        value = _calculate_dimension(calculation, item_scores, dimension_scores)
+        if value is None:
+            continue
+        dimension_scores[spec["code"]] = value
+        dimensions.append(
+            {
+                "key": spec["code"],
+                "label": spec.get("label", spec["code"]),
+                "score": value,
+                "item_count": len(calculation.get("dimensions", [])),
+                "score_method": calculation.get("type", "derived"),
+            }
+        )
+
+    persisted_total = total if has_score and total_score_method != "none" else None
+    scores: dict = {"total_score": persisted_total}
     # 维度分单独保存供结果页、画像候选和导出使用；总分不替代维度解释。
     if dimensions:
         scores["dimensions"] = dimensions
 
-    return scores, total if has_score else None
+    return scores, persisted_total
+
+
+def _rounded(value: float) -> int | float:
+    rounded = round(value, 2)
+    return int(rounded) if rounded.is_integer() else rounded
+
+
+def _calculate_dimension(calculation: dict | None, item_scores: dict, dimension_scores: dict) -> int | float | None:
+    if not calculation:
+        return None
+    calculation_type = calculation.get("type")
+    if calculation_type == "product":
+        values = [item_scores.get(item) for item in calculation.get("items", [])]
+        if not values or any(value is None for value in values):
+            return None
+        product = 1
+        for value in values:
+            product *= value
+        return _rounded(float(product))
+    if calculation_type == "mean_of_products":
+        products = []
+        for pair in calculation.get("pairs", []):
+            values = [item_scores.get(item) for item in pair]
+            if values and all(value is not None for value in values):
+                product = 1
+                for value in values:
+                    product *= value
+                products.append(product)
+        return _rounded(sum(products) / len(products)) if products else None
+    if calculation_type == "mean_terms":
+        values = []
+        for term in calculation.get("terms", []):
+            value = item_scores.get(term.get("item"))
+            if value is None:
+                continue
+            if term.get("reverse_min") is not None and term.get("reverse_max") is not None:
+                value = term["reverse_min"] + term["reverse_max"] - value
+            values.append(value)
+        return _rounded(sum(values) / len(values)) if values else None
+    if calculation_type == "mean_dimensions":
+        values = [dimension_scores.get(code) for code in calculation.get("dimensions", [])]
+        values = [value for value in values if value is not None]
+        return _rounded(sum(values) / len(values)) if values else None
+    return None
 
 
 def _dimension_labels(worksheet: dict) -> dict[str, str]:

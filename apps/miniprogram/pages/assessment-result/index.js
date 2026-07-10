@@ -170,6 +170,26 @@ function buildRadarFeatures(payload) {
     });
 }
 
+function buildDimensionRadarFeatures(payload, position, clusters) {
+  const selected = clusters.find((cluster) => Number(cluster.cluster_id) === Number(position.cluster_id));
+  const dimensionRows = payload.radar_support && Array.isArray(payload.radar_support.dimensions)
+    ? payload.radar_support.dimensions
+    : [];
+  if (!selected || !selected.dimension_z || dimensionRows.length < 3) return [];
+  return dimensionRows
+    .filter((dimension) => typeof selected.dimension_z[dimension.code] === "number")
+    .slice(0, 8)
+    .map((dimension) => {
+      const zScore = Number(selected.dimension_z[dimension.code]);
+      return {
+        id: dimension.code,
+        label: dimension.code,
+        zScore,
+        value: Math.max(0.08, Math.min(1, (zScore + 2) / 4)),
+      };
+    });
+}
+
 function buildProfilePositionSummary(payload) {
   if (!payload || payload.available === false || !payload.position) {
     return null;
@@ -178,7 +198,8 @@ function buildProfilePositionSummary(payload) {
   const interpretation = payload.interpretation || {};
   const canUseInterpretation = interpretation.can_use_interpretation !== false && position.can_use_interpretation !== false;
   const clusters = Array.isArray(payload.clusters) ? payload.clusters : [];
-  const radarFeatures = buildRadarFeatures(payload);
+  const dimensionRadarFeatures = buildDimensionRadarFeatures(payload, position, clusters);
+  const radarFeatures = dimensionRadarFeatures.length >= 3 ? dimensionRadarFeatures : buildRadarFeatures(payload);
   const coordinates = clusters
     .map((cluster) => cluster.pca_centroid || {})
     .concat([{ pc1: position.pc1, pc2: position.pc2 }])
@@ -191,6 +212,7 @@ function buildProfilePositionSummary(payload) {
       profileName: position.display_name || position.profile_name || "阶段性画像位置",
       confidenceText: position.confidence !== undefined && position.confidence !== null ? `${Math.round(Number(position.confidence) * 100)}%` : "仅作参考",
       canUseInterpretation,
+      visualizationState: interpretation.status && interpretation.status !== "usable" ? interpretation.status : "data",
       reliabilityText: canUseInterpretation ? "" : interpretation.message || "本次结果只作为位置参考，不做明确画像解释。",
       explanation: payload.explanation || "",
       boundaryNotice: payload.boundary_notice || "",
@@ -203,6 +225,8 @@ function buildProfilePositionSummary(payload) {
       radarFeatures,
       strengthNote: payload.strength_note || "",
       smallStep: payload.small_step || "",
+      suggestedQuestions: payload.suggested_assessment_questions || [],
+      projectTasks: payload.recommended_project_tasks || [],
     };
   }
   const xs = coordinates.map((item) => item.pc1);
@@ -233,6 +257,7 @@ function buildProfilePositionSummary(payload) {
     profileName: position.display_name || position.profile_name || "阶段性画像位置",
     confidenceText: position.confidence !== undefined && position.confidence !== null ? `${Math.round(Number(position.confidence) * 100)}%` : "仅作参考",
     canUseInterpretation,
+    visualizationState: interpretation.status && interpretation.status !== "usable" ? interpretation.status : "data",
     reliabilityText: canUseInterpretation ? "" : interpretation.message || "本次结果只作为位置参考，不做明确画像解释。",
     explanation: payload.explanation || "",
     boundaryNotice: payload.boundary_notice || "",
@@ -249,6 +274,8 @@ function buildProfilePositionSummary(payload) {
     radarFeatures,
     strengthNote: payload.strength_note || "",
     smallStep: payload.small_step || "",
+    suggestedQuestions: payload.suggested_assessment_questions || [],
+    projectTasks: payload.recommended_project_tasks || [],
   };
 }
 

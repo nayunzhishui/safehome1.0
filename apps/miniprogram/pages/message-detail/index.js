@@ -36,4 +36,15 @@ Page({
   goMessages() {
     wx.navigateBack();
   },
+
+  openSource() {
+    const message = this.data.message;
+    if (message && message.source_type === "relationship_screening_report" && message.source_id) {
+      wx.navigateTo({ url: `/pages/relationship-report/index?id=${encodeURIComponent(message.source_id)}` });
+      return;
+    }
+    if (message && message.source_type === "relationship_narrative" && message.source_id) {
+      wx.navigateTo({ url: `/pages/relationship-narrative/index?id=${encodeURIComponent(message.source_id)}` });
+    }
+  },
 });

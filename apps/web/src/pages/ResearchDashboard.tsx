@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { ProfileRadarChart } from "../components/ProfileRadarChart";
+import { RelationshipStatusBadge } from "../components/RelationshipStatusBadge";
 import { ProfileScatterChart } from "../components/ProfileScatterChart";
 import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
 import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
@@ -11,6 +12,8 @@ import type {
   EmotionDiary,
   Goal,
   RiskReviewRecord,
+  RelationshipPilotEnrollment,
+  RelationshipScreeningReport,
   StudentProfileRecord,
   TrainingCard,
 } from "../../../../shared/types/api";
@@ -29,6 +32,9 @@ interface OverviewState {
   assessmentResults: AssessmentResult[];
   selectedAssessmentResultId: string;
   profilePosition: AssessmentProfilePosition | null;
+  relationshipEnrollments: RelationshipPilotEnrollment[];
+  selectedRelationshipEnrollment: RelationshipPilotEnrollment | null;
+  relationshipReport: RelationshipScreeningReport | null;
 }
 
 interface TodoItem {
@@ -138,6 +144,9 @@ export function ResearchDashboard() {
     assessmentResults: [],
     selectedAssessmentResultId: "",
     profilePosition: null,
+    relationshipEnrollments: [],
+    selectedRelationshipEnrollment: null,
+    relationshipReport: null,
   });
 
   const latestDiary = state.diaries[0];
@@ -202,7 +211,7 @@ export function ResearchDashboard() {
     }));
 
     try {
-      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults] = await Promise.all([
+      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults, relationshipPilot] = await Promise.all([
         api.listGoals(),
         api.listDiaries({ limit: 50 }),
         api.listCheckins({ limit: 50 }),
@@ -210,10 +219,19 @@ export function ResearchDashboard() {
         api.listRiskReviews({ limit: 50 }, getStoredAdminToken().trim()),
         api.listProfileResults({ limit: 50 }, getStoredAdminToken().trim()),
         api.listAdminAssessmentResults({ limit: 50 }, getStoredAdminToken().trim()),
+        api.getRelationshipResearchDashboard(getStoredAdminToken().trim()),
       ]);
       const firstAssessment = assessmentResults.items[0];
       const profilePosition = firstAssessment
         ? await api.getAssessmentProfilePosition(firstAssessment.id, { user_id: firstAssessment.user_id })
+        : null;
+      const firstRelationship = relationshipPilot.items[0];
+      const selectedRelationshipEnrollment = firstRelationship
+        ? await api.getRelationshipEnrollment(firstRelationship.id, getStoredAdminToken().trim())
+        : null;
+      const firstRelationshipReportId = selectedRelationshipEnrollment?.reports?.[0]?.id;
+      const relationshipReport = firstRelationshipReportId
+        ? await api.getRelationshipReport(firstRelationshipReportId, getStoredAdminToken().trim())
         : null;
 
       setState({
@@ -228,6 +246,9 @@ export function ResearchDashboard() {
         assessmentResults: assessmentResults.items,
         selectedAssessmentResultId: firstAssessment?.id || "",
         profilePosition,
+        relationshipEnrollments: relationshipPilot.items,
+        selectedRelationshipEnrollment,
+        relationshipReport,
       });
     } catch (error) {
       setState((current) => ({
@@ -258,6 +279,39 @@ export function ResearchDashboard() {
         message: formatSafeHomeError(error, "读取画像落点失败。"),
       }));
     }
+  }
+
+  async function selectRelationshipEnrollment(enrollmentId: string) {
+    try {
+      const enrollment = await api.getRelationshipEnrollment(enrollmentId, getStoredAdminToken().trim());
+      const reportId = enrollment.reports?.[0]?.id;
+      const relationshipReport = reportId
+        ? await api.getRelationshipReport(reportId, getStoredAdminToken().trim())
+        : null;
+      setState((current) => ({ ...current, selectedRelationshipEnrollment: enrollment, relationshipReport }));
+    } catch (error) {
+      setState((current) => ({ ...current, status: "error", message: formatSafeHomeError(error, "读取关系试点档案失败。") }));
+    }
+  }
+
+  async function confirmRelationshipReport() {
+    if (!state.relationshipReport) return;
+    const report = await api.confirmRelationshipReport(state.relationshipReport.id, getStoredAdminToken().trim());
+    setState((current) => ({ ...current, relationshipReport: report }));
+  }
+
+  async function sendRelationshipReport() {
+    if (!state.relationshipReport) return;
+    await api.sendRelationshipReport(state.relationshipReport.id, getStoredAdminToken().trim());
+    setState((current) => ({ ...current, message: "关系初筛报告已发送到用户消息。" }));
+  }
+
+  async function addRelationshipNote() {
+    if (!state.selectedRelationshipEnrollment) return;
+    const note = window.prompt("请输入仅供研究者使用的访谈备注：")?.trim();
+    if (!note) return;
+    await api.createRelationshipResearchNote(state.selectedRelationshipEnrollment.id, note, getStoredAdminToken().trim());
+    await selectRelationshipEnrollment(state.selectedRelationshipEnrollment.id);
   }
 
   return (
@@ -333,6 +387,65 @@ export function ResearchDashboard() {
         <MetricCard label="测评结果" value={state.assessmentResults.length} />
       </div>
 
+      <section className="guidanceBox" aria-label="亲密关系项目试点档案">
+        <div className="sectionTitleRow">
+          <h2>亲密关系项目试点</h2>
+          <span className="countBadge">{state.relationshipEnrollments.length} 份报名</span>
+        </div>
+        {state.relationshipEnrollments.length ? (
+          <>
+            <label className="tokenField">
+              选择用户档案
+              <select
+                value={state.selectedRelationshipEnrollment?.id || ""}
+                onChange={(event) => void selectRelationshipEnrollment(event.target.value)}
+              >
+                {state.relationshipEnrollments.map((item) => (
+                  <option key={item.id} value={item.id}>{item.nickname || item.user_id} · {item.review_status}</option>
+                ))}
+              </select>
+            </label>
+            {state.selectedRelationshipEnrollment ? (
+              <div className="dashboardGrid overviewGrid">
+                <section className="listPanel">
+                  <h3>{state.selectedRelationshipEnrollment.profile.profile_name || "阶段性画像"}</h3>
+                  <p>{state.selectedRelationshipEnrollment.profile.profile_description}</p>
+                  <DetailRow label="量表" value={state.selectedRelationshipEnrollment.worksheet_id} />
+                  <DetailRow label="线上材料" value={`${state.selectedRelationshipEnrollment.tasks?.length || 0} 份`} />
+                  <DetailRow label="人工备注" value={`${state.selectedRelationshipEnrollment.research_notes?.length || 0} 条`} />
+                  <h4>建议评估问题</h4>
+                  <ul>{(state.selectedRelationshipEnrollment.profile.suggested_assessment_questions || []).map((question) => <li key={question}>{question}</li>)}</ul>
+                  <button className="secondaryButton" type="button" onClick={() => void addRelationshipNote()}>新增人工备注</button>
+                </section>
+                <section className="detailPanel">
+                  <h3>{state.relationshipReport?.report.title || "尚未生成初筛报告"}</h3>
+                  {state.relationshipReport ? (
+                    <>
+                      <p>{state.relationshipReport.report.personalized_interpretation}</p>
+                      <div className="detailRow"><span>报告状态</span><RelationshipStatusBadge status={state.relationshipReport.status} /></div>
+                      <DetailRow label="版本" value={state.relationshipReport.version} />
+                      <DetailRow label="基础画像" value={state.relationshipReport.report.four_layer_profile?.basic.stage_name || "暂无"} />
+                      <DetailRow label="张力线索" value={state.relationshipReport.report.four_layer_profile?.tension.clues.join("；") || "暂无"} />
+                      <DetailRow label="机制假设" value={state.relationshipReport.report.four_layer_profile?.mechanism.hypotheses.join("；") || "暂无"} />
+                      <div className="dashboardActions">
+                        {["confirmed", "updated"].includes(state.relationshipReport.status) ? (
+                          <button className="primaryButton" type="button" onClick={() => void sendRelationshipReport()}>发送到用户消息</button>
+                        ) : state.relationshipReport.status === "sent" ? (
+                          <span className="muted">此版本已发送，如需更正请先生成更新版本。</span>
+                        ) : (
+                          <button className="secondaryButton" type="button" onClick={() => void confirmRelationshipReport()}>人工确认</button>
+                        )}
+                      </div>
+                      <p className="muted">{state.relationshipReport.report.boundary_notice}</p>
+                    </>
+                  ) : <div className="emptyState">用户端或研究者端生成报告后可在这里复核。</div>}
+                </section>
+              </div>
+            ) : null}
+          </>
+        ) : <div className="emptyState">当前还没有第二阶段报名记录。</div>}
+      </section>
+
       <section className="guidanceBox" aria-label="测评画像落点">
         <div className="sectionTitleRow">
           <h2>测评画像落点</h2>
@@ -378,6 +491,21 @@ export function ResearchDashboard() {
                 <DetailRow label="优势提示" value={state.profilePosition.strength_note || "暂无"} />
                 <DetailRow label="下一小步" value={state.profilePosition.small_step || "暂无"} />
                 <DetailRow label="置信度" value={String(state.profilePosition.position?.confidence ?? "暂无")} />
+                {state.profilePosition.suggested_assessment_questions?.length ? (
+                  <div className="overviewBlock">
+                    <h4>建议评估问题</h4>
+                    <ul>
+                      {state.profilePosition.suggested_assessment_questions.map((question) => (
+                        <li key={question}>{question}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {state.profilePosition.recommended_project_tasks?.length ? (
+                  <DetailRow label="项目任务线索" value={state.profilePosition.recommended_project_tasks.join("；")} />
+                ) : null}
+                <a className="textLink" href="/content/worksheets">进入量表与画像人工复核</a>
+                <p className="muted">{state.profilePosition.boundary_notice}</p>
               </section>
             ) : null}
             <p className="muted">

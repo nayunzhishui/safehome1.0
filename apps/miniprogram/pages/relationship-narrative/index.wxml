@@ -1,0 +1,26 @@
+<view class="safe-page narrative-page">
+  <view wx:if="{{loading}}" class="safe-card">正在读取...</view>
+  <view wx:elif="{{errorMessage}}" class="safe-card error-card">{{errorMessage}}</view>
+  <view wx:else>
+    <view class="safe-card safe-card--hero narrative-card">
+      <text class="narrative-kicker">研究者已确认 · 可共同修订</text>
+      <text class="narrative-title">我的关系探索手记</text>
+      <text class="narrative-copy">起点画像：{{narrative.draft.starting_profile.profile_name}}</text>
+    </view>
+    <view class="safe-card narrative-card">
+      <text class="section-title">一起讨论的问题</text>
+      <text wx:for="{{narrative.draft.selected_assessment_questions}}" wx:key="*this" class="narrative-copy">{{index + 1}}. {{item}}</text>
+    </view>
+    <view class="safe-card narrative-card">
+      <text class="section-title">线上任务材料</text>
+      <text wx:for="{{taskRows}}" wx:key="task_type" class="narrative-copy">{{item.task_type}}：{{item.narration || item.review_status}}</text>
+    </view>
+    <view class="safe-card narrative-card">
+      <text class="section-title">研究者备注</text>
+      <text wx:for="{{noteRows}}" wx:key="*this" class="narrative-copy">{{item}}</text>
+      <text class="section-title">下一步项目任务</text>
+      <text class="narrative-copy">{{narrative.draft.next_project_task}}</text>
+    </view>
+    <view class="boundary-card">{{narrative.draft.boundary_notice}}</view>
+  </view>
+</view>

@@ -38,6 +38,12 @@ Page({
         url: "/pages/assessment/index",
         private: true,
       },
+      {
+        title: "关系探索成长仪表盘",
+        subtitle: "查看多次测评、任务、事件和变化记录",
+        url: "/pages/relationship-growth/index",
+        private: true,
+      },
     ],
     supportEntries: [
       {
@@ -82,6 +88,7 @@ Page({
       },
     ],
     stats: null,
+    isResearcher: false,
   },
 
   onShow() {
@@ -103,6 +110,7 @@ Page({
           growthLevel: stats.weekly_record_count > 0 ? "本周有记录" : "本周待记录",
           roleText: storedUser && storedUser.role ? this.formatRole(storedUser.role) : "",
         },
+        isResearcher: !!(storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)),
       });
     } catch (error) {
       this.setData({
@@ -160,6 +168,15 @@ Page({
 
   goRegister() {
     wx.navigateTo({ url: "/pages/register/index?redirect=%2Fpages%2Fprofile%2Findex" });
+  },
+
+  goResearcher() {
+    const storedUser = getAuthUser();
+    if (storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)) {
+      wx.navigateTo({ url: "/pages/researcher-dashboard/index" });
+      return;
+    }
+    wx.navigateTo({ url: "/pages/login/index?redirect=%2Fpages%2Fresearcher-dashboard%2Findex" });
   },
 
   doLogout() {

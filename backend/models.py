@@ -24,6 +24,13 @@ MVP_TABLES = [
     "weekly_reports",
     "supervision_requests",
     "messages",
+    "relationship_pilot_enrollments",
+    "relationship_screening_reports",
+    "relationship_pilot_tasks",
+    "relationship_research_notes",
+    "relationship_narratives",
+    "relationship_longitudinal_entries",
+    "relationship_hypothesis_feedback",
 ]
 
 
@@ -39,6 +46,7 @@ SCHEMA_SQL = [
         password_hash TEXT,
         anonymous_id TEXT,
         wechat_openid TEXT,
+        phone_hash TEXT,
         avatar_url TEXT,
         status TEXT DEFAULT 'active',
         last_login_at TEXT,
@@ -46,6 +54,108 @@ SCHEMA_SQL = [
         phone_source TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS relationship_pilot_enrollments (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        assessment_result_id TEXT NOT NULL,
+        worksheet_id TEXT NOT NULL,
+        profile_model_id TEXT,
+        profile_cluster_id INTEGER,
+        dimensions_json TEXT NOT NULL DEFAULT '[]',
+        radar_features_json TEXT NOT NULL DEFAULT '[]',
+        profile_json TEXT NOT NULL DEFAULT '{}',
+        consent_scope TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'enrolled',
+        review_status TEXT NOT NULL DEFAULT 'pending_review',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS relationship_screening_reports (
+        id TEXT PRIMARY KEY,
+        enrollment_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        assessment_result_id TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending_review',
+        version TEXT NOT NULL,
+        report_json TEXT NOT NULL,
+        confirmed_by TEXT,
+        confirmed_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS relationship_pilot_tasks (
+        id TEXT PRIMARY KEY,
+        enrollment_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        task_type TEXT NOT NULL,
+        drawing_data_json TEXT NOT NULL DEFAULT '{}',
+        narration TEXT,
+        answers_json TEXT NOT NULL DEFAULT '{}',
+        material_consent INTEGER NOT NULL DEFAULT 0,
+        risk_level TEXT NOT NULL DEFAULT 'low',
+        review_status TEXT NOT NULL DEFAULT 'pending_review',
+        idempotency_key TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS relationship_research_notes (
+        id TEXT PRIMARY KEY,
+        enrollment_id TEXT NOT NULL,
+        researcher_id TEXT NOT NULL,
+        note TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS relationship_narratives (
+        id TEXT PRIMARY KEY,
+        enrollment_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        draft_json TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'draft',
+        confirmed_by TEXT,
+        confirmed_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS relationship_longitudinal_entries (
+        id TEXT PRIMARY KEY,
+        enrollment_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        entry_type TEXT NOT NULL,
+        measures_json TEXT NOT NULL DEFAULT '{}',
+        narratives_json TEXT NOT NULL DEFAULT '{}',
+        event_at TEXT,
+        risk_level TEXT NOT NULL DEFAULT 'low',
+        review_status TEXT NOT NULL DEFAULT 'recorded',
+        idempotency_key TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS relationship_hypothesis_feedback (
+        id TEXT PRIMARY KEY,
+        report_id TEXT NOT NULL,
+        enrollment_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        hypothesis_index INTEGER NOT NULL,
+        response TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(report_id, user_id, hypothesis_index)
     )
     """,
     """
@@ -454,6 +564,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_emotion_thermometer_user_created ON emotion_thermometer(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)",
     "CREATE INDEX IF NOT EXISTS idx_users_wechat_openid ON users(wechat_openid)",
+    "CREATE INDEX IF NOT EXISTS idx_users_phone_hash ON users(phone_hash)",
     "CREATE INDEX IF NOT EXISTS idx_feedback_results_user_created ON feedback_results(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_assessment_results_user_created ON assessment_results(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_assessment_results_profile_model ON assessment_results(profile_model_id, created_at)",
@@ -466,4 +577,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_family_links_code_status ON family_links(bind_code, status)",
     "CREATE INDEX IF NOT EXISTS idx_assessment_worksheets_audience_enabled ON assessment_worksheets(audience_class, enabled_for_user)",
     "CREATE INDEX IF NOT EXISTS idx_messages_user_status_created ON messages(user_id, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_relationship_hypothesis_report ON relationship_hypothesis_feedback(report_id, hypothesis_index)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_task_idempotency_unique ON relationship_pilot_tasks(user_id, idempotency_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_longitudinal_idempotency_unique ON relationship_longitudinal_entries(user_id, idempotency_key)",
 ]

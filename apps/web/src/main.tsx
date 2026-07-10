@@ -1,38 +1,38 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 
-import { AdminDashboard } from "./pages/AdminDashboard";
-import { CardsManagement } from "./pages/CardsManagement";
-import { CheckinsManagement } from "./pages/CheckinsManagement";
-import { ContentReviewOverview } from "./pages/ContentReviewOverview";
-import { DeferredAdminPage } from "./pages/DeferredAdminPage";
-import { ExportManagement } from "./pages/ExportManagement";
-import { FeedbackManagement } from "./pages/FeedbackManagement";
-import { GoalsManagement } from "./pages/GoalsManagement";
-import { IntegrationSmokeTest } from "./pages/IntegrationSmokeTest";
-import { LandingPage } from "./pages/LandingPage";
-import { ProfilesManagement } from "./pages/ProfilesManagement";
-import {
-  AboutStudyPage,
-  ParentAssessmentPage,
-  ParentReportPage,
-  StudentAssessmentPage,
-  StudentEntryPage,
-  StudentReportPage,
-} from "./pages/ReadFeedbackIntegrationPages";
-import { FamilyBindPage } from "./pages/FamilyBindPage";
-import { LoginPage } from "./pages/LoginPage";
-import { PrivacyCenterPage } from "./pages/PrivacyCenterPage";
-import { RegisterPage } from "./pages/RegisterPage";
-import { ResearchDashboard } from "./pages/ResearchDashboard";
-import { ReportsManagement } from "./pages/ReportsManagement";
-import { ReviewManagement } from "./pages/ReviewManagement";
-import { RulesManagement } from "./pages/RulesManagement";
-import { ScalesReview } from "./pages/ScalesReview";
-import { SupervisionManagement } from "./pages/SupervisionManagement";
-import { WorksheetsManagement } from "./pages/WorksheetsManagement";
 import { getStoredAuthUser } from "./services/authState";
 import "./styles.css";
+
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard").then((module) => ({ default: module.AdminDashboard })));
+const CardsManagement = lazy(() => import("./pages/CardsManagement").then((module) => ({ default: module.CardsManagement })));
+const CheckinsManagement = lazy(() => import("./pages/CheckinsManagement").then((module) => ({ default: module.CheckinsManagement })));
+const ContentReviewOverview = lazy(() => import("./pages/ContentReviewOverview").then((module) => ({ default: module.ContentReviewOverview })));
+const DeferredAdminPage = lazy(() => import("./pages/DeferredAdminPage").then((module) => ({ default: module.DeferredAdminPage })));
+const ExportManagement = lazy(() => import("./pages/ExportManagement").then((module) => ({ default: module.ExportManagement })));
+const FeedbackManagement = lazy(() => import("./pages/FeedbackManagement").then((module) => ({ default: module.FeedbackManagement })));
+const GoalsManagement = lazy(() => import("./pages/GoalsManagement").then((module) => ({ default: module.GoalsManagement })));
+const IntegrationSmokeTest = lazy(() => import("./pages/IntegrationSmokeTest").then((module) => ({ default: module.IntegrationSmokeTest })));
+const LandingPage = lazy(() => import("./pages/LandingPage").then((module) => ({ default: module.LandingPage })));
+const ProfilesManagement = lazy(() => import("./pages/ProfilesManagement").then((module) => ({ default: module.ProfilesManagement })));
+const AboutStudyPage = lazy(() => import("./pages/ReadFeedbackIntegrationPages").then((module) => ({ default: module.AboutStudyPage })));
+const ParentAssessmentPage = lazy(() => import("./pages/ReadFeedbackIntegrationPages").then((module) => ({ default: module.ParentAssessmentPage })));
+const ParentReportPage = lazy(() => import("./pages/ReadFeedbackIntegrationPages").then((module) => ({ default: module.ParentReportPage })));
+const StudentAssessmentPage = lazy(() => import("./pages/ReadFeedbackIntegrationPages").then((module) => ({ default: module.StudentAssessmentPage })));
+const StudentEntryPage = lazy(() => import("./pages/ReadFeedbackIntegrationPages").then((module) => ({ default: module.StudentEntryPage })));
+const StudentReportPage = lazy(() => import("./pages/ReadFeedbackIntegrationPages").then((module) => ({ default: module.StudentReportPage })));
+const FamilyBindPage = lazy(() => import("./pages/FamilyBindPage").then((module) => ({ default: module.FamilyBindPage })));
+const LoginPage = lazy(() => import("./pages/LoginPage").then((module) => ({ default: module.LoginPage })));
+const PrivacyCenterPage = lazy(() => import("./pages/PrivacyCenterPage").then((module) => ({ default: module.PrivacyCenterPage })));
+const RegisterPage = lazy(() => import("./pages/RegisterPage").then((module) => ({ default: module.RegisterPage })));
+const ResearchDashboard = lazy(() => import("./pages/ResearchDashboard").then((module) => ({ default: module.ResearchDashboard })));
+const RelationshipAssessmentPage = lazy(() => import("./pages/RelationshipAssessmentPage").then((module) => ({ default: module.RelationshipAssessmentPage })));
+const ReportsManagement = lazy(() => import("./pages/ReportsManagement").then((module) => ({ default: module.ReportsManagement })));
+const ReviewManagement = lazy(() => import("./pages/ReviewManagement").then((module) => ({ default: module.ReviewManagement })));
+const RulesManagement = lazy(() => import("./pages/RulesManagement").then((module) => ({ default: module.RulesManagement })));
+const ScalesReview = lazy(() => import("./pages/ScalesReview").then((module) => ({ default: module.ScalesReview })));
+const SupervisionManagement = lazy(() => import("./pages/SupervisionManagement").then((module) => ({ default: module.SupervisionManagement })));
+const WorksheetsManagement = lazy(() => import("./pages/WorksheetsManagement").then((module) => ({ default: module.WorksheetsManagement })));
 
 interface AdminLink {
   href: string;
@@ -114,6 +114,14 @@ function AccessDeniedPage({ path, allowedRoles }: { path: string; allowedRoles: 
   );
 }
 
+function RouteFallback() {
+  return (
+    <section className="dashboardShell" aria-live="polite" aria-label="页面加载中">
+      <div className="status">正在加载页面...</div>
+    </section>
+  );
+}
+
 function App() {
   const path = window.location.pathname;
   const isLandingPath = path === "/";
@@ -123,6 +131,7 @@ function App() {
   const isStudentEntryPath = path === "/student";
   const isStudentAssessmentPath = path === "/student/assessment";
   const isStudentReportPath = path.startsWith("/student/report/");
+  const isRelationshipAssessmentPath = path === "/relationship-assessment";
   const isDashboardPath = path === "/dashboard";
   const isDiariesPath = path === "/diaries" || path.startsWith("/diaries/");
   const isCheckinsPath = path === "/checkins";
@@ -192,6 +201,7 @@ function App() {
       {isStudentEntryPath ? <StudentEntryPage /> : null}
       {isStudentAssessmentPath ? <StudentAssessmentPage /> : null}
       {isStudentReportPath ? <StudentReportPage /> : null}
+      {isRelationshipAssessmentPath ? <RelationshipAssessmentPage /> : null}
       {isDashboardPath ? <ResearchDashboard /> : null}
       {path === "/goals" ? <GoalsManagement /> : null}
       {isFeedbackPath ? <FeedbackManagement /> : null}
@@ -212,9 +222,10 @@ function App() {
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}
     </>
   );
+  const suspendedPageContent = <Suspense fallback={<RouteFallback />}>{pageContent}</Suspense>;
 
   if (!isKnownAdminPath) {
-    return <main className="page landingMode">{pageContent}</main>;
+    return <main className="page landingMode">{suspendedPageContent}</main>;
   }
 
   return (
@@ -254,7 +265,7 @@ function App() {
           <span className="adminPath">safehome1.0 {path}</span>
           <strong>管理员后台</strong>
         </header>
-        {pageContent}
+        {suspendedPageContent}
       </section>
     </main>
   );

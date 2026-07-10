@@ -1719,3 +1719,34 @@ ul {
     display: grid;
   }
 }
+.relationshipStatus {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 2px 10px;
+  border: 1px solid var(--safe-line);
+  border-radius: 999px;
+  color: var(--safe-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.relationshipStatus--warning { border-color: #e8cda6; background: #fbf0e6; color: #72552f; }
+.relationshipStatus--success { border-color: #bfd3c8; background: #e8f0ea; color: #2f5b4d; }
+.relationshipStatus--info { border-color: #ccd9e5; background: #eef3f7; color: #58749a; }
+
+.visualizationState {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--safe-line);
+  border-radius: 12px;
+  background: #f7f8f6;
+  color: var(--safe-muted);
+  font-size: 13px;
+}
+.visualizationState strong { color: var(--safe-ink); font-size: 14px; }
+.visualizationState--warning { border-color: #e8cda6; background: #fbf0e6; }
+.visualizationState--success { border-color: #bfd3c8; background: #e8f0ea; }
+.visualizationState--danger { border-color: #e5bdb6; background: #fff3f0; }

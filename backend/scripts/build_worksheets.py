@@ -54,6 +54,8 @@ def dimension_lookup(draft: dict) -> dict[str, dict]:
 
 
 def score_method_for(scale_id: str, draft: dict) -> str:
+    if draft.get("dimension_score_method") in {"mean", "sum"}:
+        return draft["dimension_score_method"]
     if scale_id in {"parent_reflective_functioning_prfq", "self_compassion_scs_cn"}:
         return "mean"
     if len(draft.get("dimensions", [])) > 1:
@@ -79,7 +81,6 @@ def recommended_card_ids_for(scale: dict, draft: dict) -> list[str]:
 def build_worksheet_from_scale(scale: dict, draft: dict, worksheet_id: str | None = None) -> dict:
     scale_id = scale["id"]
     target_id = worksheet_id or SCALE_WORKSHEET_ALIASES.get(scale_id, scale_id)
-    likert = option_rows(draft.get("likert", []))
     questions = []
     for item in sorted(draft.get("items", []), key=lambda value: value.get("display_order", 0)):
         questions.append(
@@ -90,7 +91,7 @@ def build_worksheet_from_scale(scale: dict, draft: dict, worksheet_id: str | Non
                 "required": True,
                 "dimension": item.get("dimension"),
                 "reverse_scored": bool(item.get("reverse_scored", False)),
-                "options": likert,
+                "options": option_rows(item.get("likert") or draft.get("likert", [])),
             }
         )
 
@@ -99,15 +100,16 @@ def build_worksheet_from_scale(scale: dict, draft: dict, worksheet_id: str | Non
         code = dimension.get("code")
         if not code:
             continue
-        dimensions.append(
-            {
+        dimension_row = {
                 "code": code,
                 "label": dimension.get("label", code),
                 "item_ids": dimension.get("item_codes", []),
                 "reverse_item_codes": dimension.get("reverse_item_codes", []),
                 "description": dimension.get("note") or dimension.get("source_label") or "",
             }
-        )
+        if dimension.get("calculation"):
+            dimension_row["calculation"] = dimension["calculation"]
+        dimensions.append(dimension_row)
 
     boundary_notice = scale.get("boundary_notice") or DEFAULT_BOUNDARY_NOTICE
     result_disclaimer = scale.get("result_disclaimer") or boundary_notice
@@ -136,7 +138,9 @@ def build_worksheet_from_scale(scale: dict, draft: dict, worksheet_id: str | Non
         ],
         "questions": questions,
         "dimensions": dimensions,
+        "derived_dimensions": draft.get("derived_dimensions", []),
         "dimension_score_method": score_method_for(scale["id"], draft),
+        "total_score_method": draft.get("total_score_method", "sum"),
         "scoring": build_scoring_text(draft, scale),
         "recommended_card_ids": recommended_card_ids_for(scale, draft),
         "source_version": f"2026.06-{scale_id}-from-scale-draft",
@@ -147,6 +151,10 @@ def build_worksheet_from_scale(scale: dict, draft: dict, worksheet_id: str | Non
         "boundary_notice": boundary_notice,
         "result_disclaimer": result_disclaimer,
         "profile_model_id": scale.get("profile_model_id"),
+        "_meta": {
+            "total_score_method": draft.get("total_score_method", "sum"),
+            "derived_dimensions": draft.get("derived_dimensions", []),
+        },
     }
 
 
@@ -252,7 +260,9 @@ def build_worksheets(content_dir: Path = CONTENT_ROOT) -> dict:
         generated_ids.append(scale_id)
 
     worksheets_payload["version"] = "2026.06-assessment-worksheets-scale-build-v1"
-    worksheets_payload["updated_at"] = "2026-06-29"
+    worksheets_payload["updated_at"] = (
+        catalog_payload.get("updated_at") or drafts_payload.get("updated_at") or worksheets_payload.get("updated_at")
+    )
     worksheets_payload["boundary_notice"] = (
         "当前测一测内容来自项目内容库和已抽取量表草稿。所有结果只用于自我观察、阶段性画像候选和练习参考，"
         "不构成诊断、筛查结论或人格标签。敏感语义量表必须展示边界提示并保留人工复核。"

@@ -1,0 +1,717 @@
+{
+  "schema_version": "2026.06-profile-model-v1",
+  "model_id": "task12_micro_ysq_relationship_18_profile_v1",
+  "group_id": "task12_data1_micro_ysq_relationship_18",
+  "standard_scale_name": "关系中的常见担心与期待",
+  "scale_id": "micro_ysq_relationship_18",
+  "worksheet_id": "micro_ysq_relationship_18",
+  "worksheet_link_status": "connected_pilot_review_required",
+  "research_dir": "数据1",
+  "source_dataset": "数据1/全部数据1.0.xlsx（逐行数据未入仓）",
+  "n_cases": 425,
+  "n_features": 18,
+  "features": [
+    {
+      "feature_id": "YSQ1",
+      "source_variable": "YSQ1",
+      "question_no": 1,
+      "worksheet_question_id": "YSQ1",
+      "label": "1.我总觉得没人会真正关心我、爱我或理解我。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 2.807059,
+      "std": 1.437464
+    },
+    {
+      "feature_id": "YSQ2",
+      "source_variable": "YSQ2",
+      "question_no": 2,
+      "worksheet_question_id": "YSQ2",
+      "label": "2.我担心重要的人最终都会离开我。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.475294,
+      "std": 1.532388
+    },
+    {
+      "feature_id": "YSQ3",
+      "source_variable": "YSQ3",
+      "question_no": 3,
+      "worksheet_question_id": "YSQ3",
+      "label": "3.我觉得别人如果有机会，就会伤害、欺骗或利用我。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 2.96,
+      "std": 1.261484
+    },
+    {
+      "feature_id": "YSQ4",
+      "source_variable": "YSQ4",
+      "question_no": 4,
+      "worksheet_question_id": "YSQ4",
+      "label": "4.我内心深处觉得自己有严重缺陷，不值得被爱。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 2.611765,
+      "std": 1.442988
+    },
+    {
+      "feature_id": "YSQ5",
+      "source_variable": "YSQ5",
+      "question_no": 5,
+      "worksheet_question_id": "YSQ5",
+      "label": "5.我觉得自己和别人不一样，无法真正融入任何群体。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 2.696471,
+      "std": 1.404065
+    },
+    {
+      "feature_id": "YSQ6",
+      "source_variable": "YSQ6",
+      "question_no": 6,
+      "worksheet_question_id": "YSQ6",
+      "label": "6.没有别人的帮助，我自己很难应对生活中的挑战。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 2.428235,
+      "std": 1.168268
+    },
+    {
+      "feature_id": "YSQ7",
+      "source_variable": "YSQ7",
+      "question_no": 7,
+      "worksheet_question_id": "YSQ7",
+      "label": "7.我总觉得一场大灾难，比如事故、疾病，随时可能发生在我身上。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 2.682353,
+      "std": 1.43905
+    },
+    {
+      "feature_id": "YSQ8",
+      "source_variable": "YSQ8",
+      "question_no": 8,
+      "worksheet_question_id": "YSQ8",
+      "label": "8.我常常为了取悦别人而忽略自己的想法和感受。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.249412,
+      "std": 1.398791
+    },
+    {
+      "feature_id": "YSQ9",
+      "source_variable": "YSQ9",
+      "question_no": 9,
+      "worksheet_question_id": "YSQ9",
+      "label": "9.我必须压抑自己的情绪和欲望，否则会惹麻烦或被人讨厌。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.096471,
+      "std": 1.478509
+    },
+    {
+      "feature_id": "YSQ10",
+      "source_variable": "YSQ10",
+      "question_no": 10,
+      "worksheet_question_id": "YSQ10",
+      "label": "10.我应该得到特殊待遇，规则不该限制我。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 2.430588,
+      "std": 1.244472
+    },
+    {
+      "feature_id": "YSQ11",
+      "source_variable": "YSQ11",
+      "question_no": 11,
+      "worksheet_question_id": "YSQ11",
+      "label": "11.我很难坚持完成需要长期努力的事情，例如学习、锻炼。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.36,
+      "std": 1.294259
+    },
+    {
+      "feature_id": "YSQ12",
+      "source_variable": "YSQ12",
+      "question_no": 12,
+      "worksheet_question_id": "YSQ12",
+      "label": "12.即使让自己很累，我也忍不住要去照顾别人的需要。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.72,
+      "std": 1.272034
+    },
+    {
+      "feature_id": "YSQ13",
+      "source_variable": "YSQ13",
+      "question_no": 13,
+      "worksheet_question_id": "YSQ13",
+      "label": "13.我非常在意别人怎么看我，总想让他们喜欢我。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.762353,
+      "std": 1.34689
+    },
+    {
+      "feature_id": "YSQ14",
+      "source_variable": "YSQ14",
+      "question_no": 14,
+      "worksheet_question_id": "YSQ14",
+      "label": "14.我习惯把情绪藏在心里，不让人看出我的真实感受。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 4.007059,
+      "std": 1.276925
+    },
+    {
+      "feature_id": "YSQ15",
+      "source_variable": "YSQ15",
+      "question_no": 15,
+      "worksheet_question_id": "YSQ15",
+      "label": "15.我对自己要求很高，总觉得必须做到最好才算合格。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.778824,
+      "std": 1.267893
+    },
+    {
+      "feature_id": "YSQ16",
+      "source_variable": "YSQ16",
+      "question_no": 16,
+      "worksheet_question_id": "YSQ16",
+      "label": "16.我认为犯错的人就应该受到严厉惩罚。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 4.098824,
+      "std": 1.255435
+    },
+    {
+      "feature_id": "YSQ17",
+      "source_variable": "YSQ17",
+      "question_no": 17,
+      "worksheet_question_id": "YSQ17",
+      "label": "17.我容易把某些人看得特别优秀或强大，幻想他们能解决我的一切问题。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.197647,
+      "std": 1.369755
+    },
+    {
+      "feature_id": "YSQ18",
+      "source_variable": "YSQ18",
+      "question_no": 18,
+      "worksheet_question_id": "YSQ18",
+      "label": "18.为了避免冲突或被抛弃，我常常被迫去做自己不愿意的事。",
+      "reverse_scored": false,
+      "score_min": 1,
+      "score_max": 6,
+      "mean": 3.390588,
+      "std": 1.289927
+    }
+  ],
+  "preprocessing": {
+    "retained_rows": 425,
+    "retained_features": 18,
+    "imputation": "none_required",
+    "standardization": "z_score_by_training_mean_std",
+    "random_seed": 20260710
+  },
+  "model_selection": [
+    {
+      "method": "gaussian_mixture",
+      "k": 2,
+      "bic": 20104.44,
+      "aic": 19808.63,
+      "silhouette": 0.2172,
+      "min_cluster_ratio": 0.4212,
+      "stability": 1.0,
+      "readability": 1.0
+    },
+    {
+      "method": "gaussian_mixture",
+      "k": 3,
+      "bic": 19681.55,
+      "aic": 19235.82,
+      "silhouette": 0.1346,
+      "min_cluster_ratio": 0.2282,
+      "stability": 0.9654,
+      "readability": 1.0
+    },
+    {
+      "method": "gaussian_mixture",
+      "k": 4,
+      "bic": 19504.97,
+      "aic": 18909.32,
+      "silhouette": 0.1233,
+      "min_cluster_ratio": 0.1976,
+      "stability": 0.9014,
+      "readability": 1.0
+    },
+    {
+      "method": "gaussian_mixture",
+      "k": 5,
+      "bic": 18417.33,
+      "aic": 17671.75,
+      "silhouette": 0.0303,
+      "min_cluster_ratio": 0.1059,
+      "stability": 0.6015,
+      "readability": 1.0
+    },
+    {
+      "method": "gaussian_mixture",
+      "k": 6,
+      "bic": 17498.6,
+      "aic": 16603.09,
+      "silhouette": 0.0222,
+      "min_cluster_ratio": 0.0871,
+      "stability": 0.9257,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 2,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.2152,
+      "min_cluster_ratio": 0.4988,
+      "stability": 1.0,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 3,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.1354,
+      "min_cluster_ratio": 0.2353,
+      "stability": 0.9944,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 4,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.1241,
+      "min_cluster_ratio": 0.2118,
+      "stability": 0.9499,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 5,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.115,
+      "min_cluster_ratio": 0.1341,
+      "stability": 0.9222,
+      "readability": 1.0
+    },
+    {
+      "method": "kmeans",
+      "k": 6,
+      "bic": null,
+      "aic": null,
+      "silhouette": 0.091,
+      "min_cluster_ratio": 0.1129,
+      "stability": 0.6527,
+      "readability": 1.0
+    }
+  ],
+  "selected_method": "gaussian_mixture",
+  "selection_reason": "GMM同时满足最小簇比例、稳定性和最低分离度门槛，并在合格候选中BIC最低；保留KMeans作对照。",
+  "chosen_k": 4,
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "profile_id": "task12_micro_ysq_0",
+      "profile_name": "关系担心线索相对较少的观察阶段",
+      "display_name": "关系担心线索相对较少的观察阶段",
+      "n": 93,
+      "percent": 21.9,
+      "center_z": {
+        "YSQ1": -0.653,
+        "YSQ2": -0.8277,
+        "YSQ3": -0.5733,
+        "YSQ4": -0.9355,
+        "YSQ5": -0.7923,
+        "YSQ6": -0.7341,
+        "YSQ7": -0.809,
+        "YSQ8": -1.2456,
+        "YSQ9": -1.119,
+        "YSQ10": -0.3914,
+        "YSQ11": -0.583,
+        "YSQ12": -1.0262,
+        "YSQ13": -1.1145,
+        "YSQ14": -0.8736,
+        "YSQ15": -0.4333,
+        "YSQ16": -0.1793,
+        "YSQ17": -0.7898,
+        "YSQ18": -1.1544
+      },
+      "mean_scores": {
+        "YSQ1": 1.8925,
+        "YSQ2": 2.2581,
+        "YSQ3": 2.2473,
+        "YSQ4": 1.2688,
+        "YSQ5": 1.5806,
+        "YSQ6": 1.5806,
+        "YSQ7": 1.5161,
+        "YSQ8": 1.5161,
+        "YSQ9": 1.4516,
+        "YSQ10": 1.9462,
+        "YSQ11": 2.6237,
+        "YSQ12": 2.4301,
+        "YSQ13": 2.2796,
+        "YSQ14": 2.8817,
+        "YSQ15": 3.2258,
+        "YSQ16": 3.871,
+        "YSQ17": 2.1183,
+        "YSQ18": 1.914
+      },
+      "dimension_means": {
+        "EMS_M": 2.1446
+      },
+      "dimension_z": {
+        "EMS_M": -1.2961
+      },
+      "pca_centroid": {
+        "pc1": -3.4705,
+        "pc2": -0.4915
+      },
+      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“关系担心线索相对较少的观察阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
+      "product_explanation": "你当前的题项组合与“关系担心线索相对较少的观察阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
+      "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
+      "suggested_assessment_questions": [
+        "这些担心通常在什么关系场景里出现？",
+        "哪一次例外经验让你感到更安全或被理解？"
+      ],
+      "recommended_card_ids": [
+        "self_support_statement",
+        "scs_mindful_moment",
+        "student_two_thoughts"
+      ],
+      "recommended_project_tasks": [
+        "完成一个关系情境记录",
+        "选择一个低压力微行动",
+        "一周后复盘体验变化"
+      ],
+      "card_reason": "围绕本画像呈现的关系关注点，先从觉察、表达和自我支持中选择轻量练习。",
+      "human_review_status": "profile_name_and_interpretation_pending_researcher_review"
+    },
+    {
+      "cluster_id": 1,
+      "profile_id": "task12_micro_ysq_1",
+      "profile_name": "关系担心线索相对较少的观察阶段",
+      "display_name": "关系担心线索相对较少的观察阶段",
+      "n": 84,
+      "percent": 19.8,
+      "center_z": {
+        "YSQ1": -0.7388,
+        "YSQ2": -0.559,
+        "YSQ3": -0.5846,
+        "YSQ4": -0.776,
+        "YSQ5": -0.8583,
+        "YSQ6": -0.5452,
+        "YSQ7": -0.5564,
+        "YSQ8": 0.0698,
+        "YSQ9": -0.2496,
+        "YSQ10": -0.4108,
+        "YSQ11": -0.1898,
+        "YSQ12": 0.4802,
+        "YSQ13": 0.3204,
+        "YSQ14": 0.1544,
+        "YSQ15": 0.0669,
+        "YSQ16": -0.2341,
+        "YSQ17": -0.1938,
+        "YSQ18": -0.048
+      },
+      "mean_scores": {
+        "YSQ1": 1.7143,
+        "YSQ2": 2.5595,
+        "YSQ3": 2.1905,
+        "YSQ4": 1.4762,
+        "YSQ5": 1.4762,
+        "YSQ6": 1.7619,
+        "YSQ7": 1.869,
+        "YSQ8": 3.3929,
+        "YSQ9": 2.75,
+        "YSQ10": 1.9405,
+        "YSQ11": 3.0595,
+        "YSQ12": 4.381,
+        "YSQ13": 4.2143,
+        "YSQ14": 4.2619,
+        "YSQ15": 3.881,
+        "YSQ16": 3.7976,
+        "YSQ17": 2.9524,
+        "YSQ18": 3.3452
+      },
+      "dimension_means": {
+        "EMS_M": 2.8347
+      },
+      "dimension_z": {
+        "EMS_M": -0.4554
+      },
+      "pca_centroid": {
+        "pc1": -1.1756,
+        "pc2": 1.564
+      },
+      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“关系担心线索相对较少的观察阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
+      "product_explanation": "你当前的题项组合与“关系担心线索相对较少的观察阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
+      "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
+      "suggested_assessment_questions": [
+        "这些担心通常在什么关系场景里出现？",
+        "哪一次例外经验让你感到更安全或被理解？"
+      ],
+      "recommended_card_ids": [
+        "self_support_statement",
+        "scs_mindful_moment",
+        "student_two_thoughts"
+      ],
+      "recommended_project_tasks": [
+        "完成一个关系情境记录",
+        "选择一个低压力微行动",
+        "一周后复盘体验变化"
+      ],
+      "card_reason": "围绕本画像呈现的关系关注点，先从觉察、表达和自我支持中选择轻量练习。",
+      "human_review_status": "profile_name_and_interpretation_pending_researcher_review"
+    },
+    {
+      "cluster_id": 2,
+      "profile_id": "task12_micro_ysq_2",
+      "profile_name": "部分关系担心正在浮现的观察阶段",
+      "display_name": "部分关系担心正在浮现的观察阶段",
+      "n": 155,
+      "percent": 36.5,
+      "center_z": {
+        "YSQ1": 0.2282,
+        "YSQ2": 0.2286,
+        "YSQ3": 0.1838,
+        "YSQ4": 0.2888,
+        "YSQ5": 0.4089,
+        "YSQ6": 0.3851,
+        "YSQ7": 0.3318,
+        "YSQ8": 0.079,
+        "YSQ9": 0.1714,
+        "YSQ10": 0.2442,
+        "YSQ11": 0.1816,
+        "YSQ12": -0.1722,
+        "YSQ13": -0.0821,
+        "YSQ14": -0.0258,
+        "YSQ15": -0.1735,
+        "YSQ16": 0.0433,
+        "YSQ17": 0.1362,
+        "YSQ18": 0.0758
+      },
+      "mean_scores": {
+        "YSQ1": 3.1355,
+        "YSQ2": 3.8129,
+        "YSQ3": 3.2065,
+        "YSQ4": 3.0194,
+        "YSQ5": 3.271,
+        "YSQ6": 2.8839,
+        "YSQ7": 3.1548,
+        "YSQ8": 3.3484,
+        "YSQ9": 3.3355,
+        "YSQ10": 2.7161,
+        "YSQ11": 3.6,
+        "YSQ12": 3.471,
+        "YSQ13": 3.6516,
+        "YSQ14": 3.9742,
+        "YSQ15": 3.5742,
+        "YSQ16": 4.1484,
+        "YSQ17": 3.3677,
+        "YSQ18": 3.4968
+      },
+      "dimension_means": {
+        "EMS_M": 3.3982
+      },
+      "dimension_z": {
+        "EMS_M": 0.2311
+      },
+      "pca_centroid": {
+        "pc1": 0.6148,
+        "pc2": -0.6656
+      },
+      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“部分关系担心正在浮现的观察阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
+      "product_explanation": "你当前的题项组合与“部分关系担心正在浮现的观察阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
+      "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
+      "suggested_assessment_questions": [
+        "这些担心通常在什么关系场景里出现？",
+        "哪一次例外经验让你感到更安全或被理解？"
+      ],
+      "recommended_card_ids": [
+        "self_support_statement",
+        "scs_mindful_moment",
+        "student_two_thoughts"
+      ],
+      "recommended_project_tasks": [
+        "完成一个关系情境记录",
+        "选择一个低压力微行动",
+        "一周后复盘体验变化"
+      ],
+      "card_reason": "围绕本画像呈现的关系关注点，先从觉察、表达和自我支持中选择轻量练习。",
+      "human_review_status": "profile_name_and_interpretation_pending_researcher_review"
+    },
+    {
+      "cluster_id": 3,
+      "profile_id": "task12_micro_ysq_3",
+      "profile_name": "多项关系担心值得温和梳理的阶段",
+      "display_name": "多项关系担心值得温和梳理的阶段",
+      "n": 93,
+      "percent": 21.9,
+      "center_z": {
+        "YSQ1": 0.953,
+        "YSQ2": 0.9547,
+        "YSQ3": 0.8042,
+        "YSQ4": 1.1638,
+        "YSQ5": 0.9004,
+        "YSQ6": 0.5889,
+        "YSQ7": 0.7617,
+        "YSQ8": 1.0232,
+        "YSQ9": 1.045,
+        "YSQ10": 0.362,
+        "YSQ11": 0.4466,
+        "YSQ12": 0.8417,
+        "YSQ13": 0.928,
+        "YSQ14": 0.754,
+        "YSQ15": 0.6511,
+        "YSQ16": 0.3233,
+        "YSQ17": 0.7287,
+        "YSQ18": 1.0497
+      },
+      "mean_scores": {
+        "YSQ1": 4.1613,
+        "YSQ2": 4.957,
+        "YSQ3": 3.957,
+        "YSQ4": 4.3011,
+        "YSQ5": 3.957,
+        "YSQ6": 3.1183,
+        "YSQ7": 3.7957,
+        "YSQ8": 4.6882,
+        "YSQ9": 4.6559,
+        "YSQ10": 2.8817,
+        "YSQ11": 3.9677,
+        "YSQ12": 4.828,
+        "YSQ13": 5.0215,
+        "YSQ14": 4.957,
+        "YSQ15": 4.5806,
+        "YSQ16": 4.5161,
+        "YSQ17": 4.2151,
+        "YSQ18": 4.7312
+      },
+      "dimension_means": {
+        "EMS_M": 4.2939
+      },
+      "dimension_z": {
+        "EMS_M": 1.3222
+      },
+      "pca_centroid": {
+        "pc1": 3.5077,
+        "pc2": 0.1882
+      },
+      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“多项关系担心值得温和梳理的阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
+      "product_explanation": "你当前的题项组合与“多项关系担心值得温和梳理的阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
+      "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
+      "suggested_assessment_questions": [
+        "这些担心通常在什么关系场景里出现？",
+        "哪一次例外经验让你感到更安全或被理解？"
+      ],
+      "recommended_card_ids": [
+        "self_support_statement",
+        "scs_mindful_moment",
+        "student_two_thoughts"
+      ],
+      "recommended_project_tasks": [
+        "完成一个关系情境记录",
+        "选择一个低压力微行动",
+        "一周后复盘体验变化"
+      ],
+      "card_reason": "围绕本画像呈现的关系关注点，先从觉察、表达和自我支持中选择轻量练习。",
+      "human_review_status": "profile_name_and_interpretation_pending_researcher_review"
+    }
+  ],
+  "pca": {
+    "components": [
+      [
+        0.249656,
+        0.260609,
+        0.228512,
+        0.300302,
+        0.273547,
+        0.216381,
+        0.246588,
+        0.288379,
+        0.30302,
+        0.14079,
+        0.163063,
+        0.216112,
+        0.251733,
+        0.222174,
+        0.150036,
+        0.098349,
+        0.214537,
+        0.293021
+      ],
+      [
+        -0.195523,
+        -0.118194,
+        -0.240734,
+        -0.174704,
+        -0.240724,
+        -0.251531,
+        -0.233322,
+        0.198362,
+        0.057535,
+        -0.27903,
+        -0.1301,
+        0.43245,
+        0.352316,
+        0.305697,
+        0.332434,
+        -0.025917,
+        0.010868,
+        0.174178
+      ]
+    ],
+    "explained_ratio": [
+      0.385659,
+      0.104182
+    ]
+  },
+  "radar_support": {
+    "dimensions": [
+      {
+        "code": "EMS_M",
+        "mean": 3.2085,
+        "std": 0.8209
+      }
+    ],
+    "value_source": "clusters[].dimension_z"
+  },
+  "cross_validation_status": "exploratory_pending_researcher_review",
+  "boundary_notice": "画像只表示本次题项组合与既往样本聚合中心的相对接近程度，不构成诊断、筛查、人格标签、关系能力评价或疗效证明。"
+}

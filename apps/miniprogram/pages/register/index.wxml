@@ -23,7 +23,7 @@
       <input value="{{nickname}}" placeholder="选填" bindinput="onNicknameInput" />
     </view>
 
-    <view wx:if="{{message}}" class="message {{status}}">{{message}}</view>
+    <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
     <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitRegister">注册</button>
     <button class="ghost-action" bindtap="goLogin">已有账号，去登录</button>
   </view>

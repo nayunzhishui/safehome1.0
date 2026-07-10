@@ -29,6 +29,13 @@
     </view>
   </view>
 
+  <view wx:if="{{relationshipPilotAvailable}}" class="safe-card relationship-pilot-entry">
+    <text class="entry-kicker">项目试点 · 大学生关系探索</text>
+    <text class="entry-title">从测一测到评估问题与微行动</text>
+    <text class="entry-desc">聚合阶段性画像、初筛报告、关系绘画、句子补全和连续复盘。它不是治疗或诊断服务。</text>
+    <button class="safe-primary-button" bindtap="openRelationshipPilot">进入关系探索试点</button>
+  </view>
+
   <view wx:if="{{latestRecommendation}}" class="recommendation-card safe-card">
     <view class="recommendation-head">
       <view class="recommendation-copy">

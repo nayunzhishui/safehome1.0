@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import * as echarts from "echarts";
 
 import type { AssessmentProfilePosition } from "../../../../shared/types/api";
+import { VisualizationState } from "./VisualizationState";
 
 interface ProfileRadarChartProps {
   profile: AssessmentProfilePosition | null;
@@ -13,7 +14,24 @@ function clampRadarValue(value: number) {
 
 export function ProfileRadarChart({ profile }: ProfileRadarChartProps) {
   const chartRef = useRef<HTMLDivElement | null>(null);
-  const features = useMemo(() => (profile?.feature_profile || []).slice(0, 10), [profile]);
+  const features = useMemo(() => {
+    const selectedCluster = (profile?.clusters || []).find(
+      (cluster) => cluster.cluster_id === profile?.position?.cluster_id,
+    );
+    const dimensionRows = profile?.radar_support?.dimensions || [];
+    const dimensions = dimensionRows
+      .map((dimension) => ({
+        feature_id: dimension.code,
+        label: dimension.code,
+        z_score: selectedCluster?.dimension_z?.[dimension.code],
+      }))
+      .filter((dimension): dimension is { feature_id: string; label: string; z_score: number } => typeof dimension.z_score === "number")
+      .slice(0, 10);
+    if (dimensions.length >= 3) {
+      return dimensions;
+    }
+    return (profile?.feature_profile || []).slice(0, 10);
+  }, [profile]);
 
   useEffect(() => {
     if (!chartRef.current || !profile?.available || features.length === 0) {
@@ -55,11 +73,17 @@ export function ProfileRadarChart({ profile }: ProfileRadarChartProps) {
   }, [features, profile]);
 
   if (!profile?.available) {
-    return <div className="emptyState">{profile?.reason || "暂无维度雷达数据。"}</div>;
+    return <VisualizationState state="insufficient" message={profile?.reason || "暂无维度雷达数据。"} />;
   }
   if (features.length === 0) {
-    return <div className="emptyState">这条结果缺少可用于雷达图的维度数据。</div>;
+    return <VisualizationState state="insufficient" message="这条结果缺少可用于雷达图的维度数据。" />;
   }
 
-  return <div ref={chartRef} className="profileChart" aria-label="画像维度雷达图" />;
+  const interpretationState = profile.interpretation?.status || profile.position?.interpretation_status || "usable";
+  return (
+    <>
+      {interpretationState !== "usable" ? <VisualizationState state={interpretationState} message={profile.interpretation?.message} /> : null}
+      <div ref={chartRef} className="profileChart" aria-label="画像维度雷达图" />
+    </>
+  );
 }

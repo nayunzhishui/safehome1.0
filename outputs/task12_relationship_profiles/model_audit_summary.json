@@ -1,0 +1,141 @@
+{
+  "schema_version": "task12-relationship-model-audit-v1",
+  "raw_text_included": false,
+  "participant_rows_included": false,
+  "audit_scope": "aggregate_only_exploratory_review",
+  "software": {
+    "python": "3.11.5",
+    "numpy": "1.26.4",
+    "scikit_learn": "1.3.0"
+  },
+  "random_seed": 20260710,
+  "input_hashes": {
+    "item_matrices_npz": "ba13b7a94c813f0a1361935eb16372f7103fe466c15bafccba88f1fbdb4eba68",
+    "dimension_validation_summary": "16c09f1d2961ac007bd339d3d48a8e5a4febe8636eee11a4ea3695f88cd2b4d0"
+  },
+  "source_conflicts": [
+    "原始量表、全部数据1.0、清洗好的469份样本数不同，不能无ID逐行拼接。",
+    "当前调节聚焦题项观测为1-5，新版问卷和计分说明写1-7。",
+    "当前数据PBC为6题，新版问卷与信度报告按4题。",
+    "全部数据1.0中的促进聚焦派生列与冻结公式不一致，但按题项复算的均值与469份清洗表PF均值接近，应以题项复算为建模输入并保留人工复核。",
+    "全部数据1.0中的PBC派生列可由PBC3-PBC6四题精确复现，不是六题均值。"
+  ],
+  "models": [
+    {
+      "scale_id": "regulatory_focus_relationship_18",
+      "n_cases": 425,
+      "n_features": 18,
+      "selected_method": "gaussian_mixture",
+      "chosen_k": 3,
+      "selected_metrics": {
+        "method": "gaussian_mixture",
+        "k": 3,
+        "bic": 20890.77,
+        "aic": 20445.04,
+        "silhouette": 0.1312,
+        "min_cluster_ratio": 0.2424,
+        "stability": 0.8212,
+        "readability": 1.0
+      },
+      "pca_explained_ratio_sum": 0.431,
+      "reliability_alpha": {
+        "PROM": 0.838,
+        "PREV": 0.755
+      },
+      "mean_max_posterior": 0.941,
+      "posterior_below_0_60_ratio": 0.021,
+      "posterior_below_0_80_ratio": 0.115,
+      "online_euclidean_vs_gmm_agreement": 0.976,
+      "bootstrap_ari": {
+        "iterations": 50,
+        "median": 0.309,
+        "p10": 0.124,
+        "minimum": 0.103
+      },
+      "duplicate_profile_names": [],
+      "mean_item_floor_ratio": 0.033,
+      "mean_item_ceiling_ratio": 0.199,
+      "model_artifact_sha256": "e6ecf9489f50df7167e25ca91c39e0c5bd5a1cc6dcc895643da9a8123bc9fd38"
+    },
+    {
+      "scale_id": "micro_ysq_relationship_18",
+      "n_cases": 425,
+      "n_features": 18,
+      "selected_method": "gaussian_mixture",
+      "chosen_k": 4,
+      "selected_metrics": {
+        "method": "gaussian_mixture",
+        "k": 4,
+        "bic": 19504.97,
+        "aic": 18909.32,
+        "silhouette": 0.1233,
+        "min_cluster_ratio": 0.1976,
+        "stability": 0.9014,
+        "readability": 1.0
+      },
+      "pca_explained_ratio_sum": 0.49,
+      "reliability_alpha": {
+        "EMS18": 0.9
+      },
+      "mean_max_posterior": 0.95,
+      "posterior_below_0_60_ratio": 0.031,
+      "posterior_below_0_80_ratio": 0.087,
+      "online_euclidean_vs_gmm_agreement": 0.927,
+      "bootstrap_ari": {
+        "iterations": 50,
+        "median": 0.701,
+        "p10": 0.427,
+        "minimum": 0.314
+      },
+      "duplicate_profile_names": [
+        "关系担心线索相对较少的观察阶段"
+      ],
+      "mean_item_floor_ratio": 0.15,
+      "mean_item_ceiling_ratio": 0.061,
+      "model_artifact_sha256": "46e25b538f79780e8c2f1751a831c085ba29d38e254316d09118f3e58a4e1112"
+    },
+    {
+      "scale_id": "relationship_initiation_intention_action",
+      "n_cases": 425,
+      "n_features": 31,
+      "selected_method": "gaussian_mixture",
+      "chosen_k": 2,
+      "selected_metrics": {
+        "method": "gaussian_mixture",
+        "k": 2,
+        "bic": 36212.73,
+        "aic": 35706.22,
+        "silhouette": 0.1182,
+        "min_cluster_ratio": 0.4118,
+        "stability": 0.9887,
+        "readability": 1.0
+      },
+      "pca_explained_ratio_sum": 0.359,
+      "reliability_alpha": {
+        "SN": 0.786,
+        "PBC6": 0.819,
+        "BI": 0.83,
+        "RAP": 0.785
+      },
+      "mean_max_posterior": 0.975,
+      "posterior_below_0_60_ratio": 0.021,
+      "posterior_below_0_80_ratio": 0.042,
+      "online_euclidean_vs_gmm_agreement": 0.941,
+      "bootstrap_ari": {
+        "iterations": 50,
+        "median": 0.729,
+        "p10": 0.569,
+        "minimum": 0.448
+      },
+      "duplicate_profile_names": [],
+      "mean_item_floor_ratio": 0.04,
+      "mean_item_ceiling_ratio": 0.12,
+      "model_artifact_sha256": "6084ed17e10ef505ae4abe3e1d88ffc6ad6dc2534b4a5021c75898709b209377"
+    }
+  ],
+  "interpretation_notes": [
+    "bootstrap_ari重抽训练样本并在完整样本上预测，衡量的是样本扰动稳定性；与仅改变初始化种子的ARI不同。",
+    "online_euclidean_vs_gmm_agreement低于1表示当前线上最近中心规则与离线GMM分类并不完全一致。",
+    "所有结果仅用于模型审查，不构成个体诊断、人格分类或效果结论。"
+  ]
+}

@@ -46,6 +46,7 @@ export const API_ENDPOINTS = {
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
   authWechatLogin: "/api/auth/wechat-login",
+  authPhoneLogin: "/api/auth/phone-login",
   authBindPhone: "/api/auth/bind-phone",
   authLogout: "/api/auth/logout",
   authMe: "/api/auth/me",
@@ -56,6 +57,8 @@ export const API_ENDPOINTS = {
   familyBindStudent: "/api/family/bind-student",
   familyMembers: "/api/family/members",
   familyUnbind: "/api/family/unbind",
+  relationshipPilot: "/api/relationship-pilot",
+  productEvents: "/api/product-events",
 } as const;
 
 export const API_ERROR_CODES = {
@@ -89,6 +92,7 @@ export const ASSESSMENT_REFLEX_NODES = [
   "outcome",
   "reflection",
   "motivation",
+  "relationship_support",
 ] as const;
 
 export const ASSESSMENT_SENSITIVE_CATEGORIES = [
@@ -98,6 +102,7 @@ export const ASSESSMENT_SENSITIVE_CATEGORIES = [
   "parenting_stress",
   "health_lifestyle",
   "wellbeing",
+  "relationship_exploration",
 ] as const;
 
 export const SUPERVISION_STATUSES = ["pending", "replied", "closed"] as const;
