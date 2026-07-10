@@ -35,9 +35,39 @@ def test_generated_models_do_not_contain_row_level_training_points(tmp_path):
     module = _module()
     output_dir = tmp_path / "profiles"
     report_path = tmp_path / "method-report.md"
+    npz_path = tmp_path / "synthetic_item_matrices.npz"
+    rng = np.random.default_rng(20260710)
+
+    def two_groups(feature_count: int) -> np.ndarray:
+        return np.vstack(
+            [
+                rng.normal(2.0, 0.2, (60, feature_count)),
+                rng.normal(4.0, 0.2, (60, feature_count)),
+            ]
+        )
+
+    regulatory_columns = [f"Q{index}" for index in range(1, 19)]
+    micro_ysq_columns = [f"YSQ{index}" for index in range(1, 19)]
+    relationship_columns = (
+        [f"a{index}" for index in range(1, 6)]
+        + [f"b{index}" for index in range(1, 6)]
+        + [f"SN{index}" for index in range(1, 5)]
+        + [f"PBC{index}" for index in range(1, 7)]
+        + [f"BI{index}" for index in range(1, 7)]
+        + [f"RAP{index}" for index in range(1, 6)]
+    )
+    np.savez_compressed(
+        npz_path,
+        regulatory_focus=two_groups(len(regulatory_columns)),
+        regulatory_focus_columns=np.array(regulatory_columns),
+        micro_ysq=two_groups(len(micro_ysq_columns)),
+        micro_ysq_columns=np.array(micro_ysq_columns),
+        relationship=two_groups(len(relationship_columns)),
+        relationship_columns=np.array(relationship_columns),
+    )
 
     result = module.build_profiles(
-        PROJECT_ROOT / "outputs" / "task12_relationship_profiles" / "private" / "item_matrices.npz",
+        npz_path,
         PROJECT_ROOT / "outputs" / "task12_relationship_profiles" / "item_mapping_preview.csv",
         output_dir,
         report_path,
