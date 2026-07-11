@@ -61,7 +61,7 @@ export function RegisterPage() {
         </p>
       </div>
 
-      <form onSubmit={(e) => { void handleSubmit(e); }} style={{ maxWidth: 400 }}>
+      <form className="authForm" onSubmit={(e) => { void handleSubmit(e); }}>
         <label className="tokenField">
           用户名
           <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="至少3个字符" autoComplete="username" />
@@ -78,20 +78,20 @@ export function RegisterPage() {
             ))}
           </select>
         </label>
-        <p className="subtitle" style={{ margin: "0 0 12px" }}>
+        <p className="subtitle authHint">
           研究者、督导和管理员账号由项目负责人单独开通。
         </p>
         <label className="tokenField">
           昵称（可选）
           <input value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder="选填" />
         </label>
-        <div className={`status compact ${status}`}>{message}</div>
-        <button className="pill" type="submit" disabled={status === "loading"} style={{ marginTop: 12 }}>
+        {message ? <div className={`status compact ${status}`} role={status === "error" ? "alert" : "status"} aria-live="polite">{message}</div> : null}
+        <button className="primaryButton authSubmit" type="submit" disabled={status === "loading"}>
           注册
         </button>
       </form>
 
-      <p style={{ marginTop: 16 }}>
+      <p className="authLinks">
         已有账号？<a href="/login">登录</a> ｜ <a href="/privacy">隐私中心</a>
       </p>
     </section>

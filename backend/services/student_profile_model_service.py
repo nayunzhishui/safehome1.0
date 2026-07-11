@@ -396,7 +396,19 @@ def build_student_visuals(scores: dict[str, Any], profile_result: dict[str, Any]
                 "cluster_id": profile_result.get("cluster_id"),
                 "profile_code": profile_result.get("profile_code"),
             },
-            "points": model.get("training_points", []),
+            # 逐行训练散点即使已去标识也可能被重识别；客户端只接收聚合中心。
+            "points": [],
+            "aggregate_centroids": [
+                {
+                    "cluster_id": cluster.get("cluster_id"),
+                    "profile_code": cluster.get("profile_id"),
+                    "pc1": (cluster.get("center_pc") or [None, None])[0],
+                    "pc2": (cluster.get("center_pc") or [None, None])[1],
+                    "n": cluster.get("n"),
+                    "percent": cluster.get("percent"),
+                }
+                for cluster in model.get("clusters", [])
+            ],
             "clusters": [
                 {
                     **cluster,

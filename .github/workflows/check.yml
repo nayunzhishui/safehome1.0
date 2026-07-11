@@ -35,9 +35,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install web dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Typecheck web
+        working-directory: apps/web
+        run: npm run typecheck
 
       - name: Build web
-        run: |
-          cd apps/web
-          npm install
-          npm run build
+        working-directory: apps/web
+        run: npm run build
+
+      - name: Audit miniprogram structure
+        run: python backend/scripts/audit_miniprogram_frontend.py
+
+      - name: Validate miniprogram JavaScript and JSON
+        run: python backend/scripts/validate_miniprogram_assets.py

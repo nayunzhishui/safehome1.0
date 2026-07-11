@@ -6,6 +6,12 @@
   "scale_id": "regulatory_focus_relationship_18",
   "worksheet_id": "regulatory_focus_relationship_18",
   "worksheet_link_status": "connected_pilot_review_required",
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
+  "production_approval_status": "pending_researcher_review",
+  "model_governance_version": "profile_model_governance_v1",
+  "scoring_version": "worksheet_server_score_v1",
+  "assignment_version": "gmm_diag_posterior_v1",
   "research_dir": "数据1",
   "source_dataset": "数据1/全部数据1.0.xlsx（逐行数据未入仓）",
   "n_cases": 425,
@@ -466,6 +472,80 @@
   "selected_method": "gaussian_mixture",
   "selection_reason": "GMM同时满足最小簇比例、稳定性和最低分离度门槛，并在合格候选中BIC最低；保留KMeans作对照。",
   "chosen_k": 3,
+  "mixture_weights": [
+    0.24986907,
+    0.38798392,
+    0.36214702
+  ],
+  "diag_covariances": [
+    {
+      "Q1": 1.34685212,
+      "Q2": 0.92487856,
+      "Q3": 0.76057321,
+      "Q4": 0.55873208,
+      "Q5": 0.82401984,
+      "Q6": 0.68291306,
+      "Q7": 0.9265875,
+      "Q8": 0.76435198,
+      "Q9": 0.62066585,
+      "Q10": 1.07648127,
+      "Q11": 0.84362987,
+      "Q12": 0.92072362,
+      "Q13": 1.31405312,
+      "Q14": 0.62578023,
+      "Q15": 0.62289639,
+      "Q16": 0.59376271,
+      "Q17": 0.783798,
+      "Q18": 0.48938467
+    },
+    {
+      "Q1": 0.62644446,
+      "Q2": 0.63802931,
+      "Q3": 0.49001329,
+      "Q4": 0.86701496,
+      "Q5": 0.41424043,
+      "Q6": 0.53952479,
+      "Q7": 0.94391738,
+      "Q8": 0.79944944,
+      "Q9": 0.68002861,
+      "Q10": 0.51897653,
+      "Q11": 0.9676755,
+      "Q12": 0.96224181,
+      "Q13": 1.00763315,
+      "Q14": 0.5712101,
+      "Q15": 0.65027869,
+      "Q16": 0.58550084,
+      "Q17": 0.6374058,
+      "Q18": 0.75015698
+    },
+    {
+      "Q1": 0.7608771,
+      "Q2": 0.80898615,
+      "Q3": 0.93356558,
+      "Q4": 0.84935014,
+      "Q5": 1.15749068,
+      "Q6": 0.87045368,
+      "Q7": 0.6069665,
+      "Q8": 0.80166079,
+      "Q9": 0.63644446,
+      "Q10": 0.81464899,
+      "Q11": 0.70166194,
+      "Q12": 0.72160488,
+      "Q13": 0.5962004,
+      "Q14": 0.70390755,
+      "Q15": 0.81241862,
+      "Q16": 0.88019132,
+      "Q17": 0.87818258,
+      "Q18": 0.81034049
+    }
+  ],
+  "assignment_thresholds": {
+    "calibration_source": "training_empirical_exploratory",
+    "min_posterior": 0.781943,
+    "max_entropy": 0.515217,
+    "max_mahalanobis": 7.414756,
+    "note": "阈值来自训练样本经验分布，只用于受控试点；待留出样本或独立样本后重新冻结。"
+  },
   "clusters": [
     {
       "cluster_id": 0,
@@ -533,8 +613,8 @@
       "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
-        "当你想靠近一个目标时，最期待获得什么？",
-        "你最希望避免的损失或不安是什么？"
+        "成长目标更突出时，你希望怎样同时照顾安全感？",
+        "哪一个小行动既能靠近目标，也不会让压力一下变大？"
       ],
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -615,8 +695,8 @@
       "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
-        "当你想靠近一个目标时，最期待获得什么？",
-        "你最希望避免的损失或不安是什么？"
+        "成长期待和安全顾虑同时出现时，你通常先回应哪一边？",
+        "怎样安排一个兼顾两边的小步骤？"
       ],
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -697,8 +777,8 @@
       "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
-        "当你想靠近一个目标时，最期待获得什么？",
-        "你最希望避免的损失或不安是什么？"
+        "安全顾虑出现时，你最想先保护什么？",
+        "什么支持能让你愿意尝试一个风险较低的小行动？"
       ],
       "recommended_card_ids": [
         "student_emotion_naming",
@@ -783,5 +863,10 @@
     "value_source": "clusters[].dimension_z"
   },
   "cross_validation_status": "exploratory_pending_researcher_review",
-  "boundary_notice": "画像只表示本次题项组合与既往样本聚合中心的相对接近程度，不构成诊断、筛查、人格标签、关系能力评价或疗效证明。"
+  "boundary_notice": "画像只表示本次题项组合与既往样本聚合中心的相对接近程度，不构成诊断、筛查、人格标签、关系能力评价或疗效证明。",
+  "training_source_hashes": {
+    "item_matrices.npz": "ba13b7a94c813f0a1361935eb16372f7103fe466c15bafccba88f1fbdb4eba68",
+    "item_mapping_preview.csv": "f24cc3e9c3602e850b5ec3b1878295c99ca5ceacfacd4046e4efa373b6ff1e02"
+  },
+  "artifact_hash": "33d4a5ae70198e5eb5e7f2aef827b7267cc4d315b478a63974e010f13fc0dd47"
 }

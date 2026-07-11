@@ -6,6 +6,12 @@
   "scale_id": "relationship_initiation_intention_action",
   "worksheet_id": "relationship_initiation_intention_action",
   "worksheet_link_status": "connected_pilot_review_required",
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
+  "production_approval_status": "pending_researcher_review",
+  "model_governance_version": "profile_model_governance_v1",
+  "scoring_version": "worksheet_server_score_v1",
+  "assignment_version": "gmm_diag_posterior_v1",
   "research_dir": "数据1",
   "source_dataset": "数据1/全部数据1.0.xlsx（逐行数据未入仓）",
   "n_cases": 425,
@@ -496,6 +502,85 @@
   "selected_method": "gaussian_mixture",
   "selection_reason": "GMM同时满足最小簇比例、稳定性和最低分离度门槛，并在合格候选中BIC最低；保留KMeans作对照。",
   "chosen_k": 2,
+  "mixture_weights": [
+    0.58782944,
+    0.41217056
+  ],
+  "diag_covariances": [
+    {
+      "a1": 0.91080086,
+      "b1": 1.04572659,
+      "a2": 1.10996787,
+      "b2": 1.09185923,
+      "a3": 1.08773578,
+      "b3": 1.08094702,
+      "a4": 1.07968415,
+      "b4": 1.05049239,
+      "a5": 0.95628141,
+      "b5": 1.14961255,
+      "SN1": 0.99544545,
+      "SN2": 1.03043242,
+      "SN3": 1.07017231,
+      "SN4": 1.10114993,
+      "PBC1": 1.02206141,
+      "PBC2": 0.90433437,
+      "PBC3": 0.96948308,
+      "PBC4": 0.97214543,
+      "PBC5": 0.94956753,
+      "PBC6": 1.12006642,
+      "BI1": 0.79750297,
+      "BI2": 0.8299067,
+      "BI3": 1.07017834,
+      "BI4": 1.02813712,
+      "BI5": 1.06314582,
+      "BI6": 1.02789891,
+      "RAP1": 0.94511759,
+      "RAP2": 0.82588951,
+      "RAP3": 0.82369606,
+      "RAP4": 0.94564537,
+      "RAP5": 0.86502057
+    },
+    {
+      "a1": 0.72393495,
+      "b1": 0.7043584,
+      "a2": 0.42770395,
+      "b2": 0.58696223,
+      "a3": 0.57256734,
+      "b3": 0.55070679,
+      "a4": 0.82031938,
+      "b4": 0.92256721,
+      "a5": 1.05786837,
+      "b5": 0.76354559,
+      "SN1": 0.844303,
+      "SN2": 0.70310703,
+      "SN3": 0.69500904,
+      "SN4": 0.60903592,
+      "PBC1": 0.59910318,
+      "PBC2": 0.67782897,
+      "PBC3": 0.50835008,
+      "PBC4": 0.62970538,
+      "PBC5": 0.71324752,
+      "PBC6": 0.64833291,
+      "BI1": 0.74396767,
+      "BI2": 0.46633582,
+      "BI3": 0.28196712,
+      "BI4": 0.37145608,
+      "BI5": 0.43700004,
+      "BI6": 0.54605951,
+      "RAP1": 0.75420593,
+      "RAP2": 0.80535782,
+      "RAP3": 0.81385714,
+      "RAP4": 0.84657256,
+      "RAP5": 0.84491362
+    }
+  ],
+  "assignment_thresholds": {
+    "calibration_source": "training_empirical_exploratory",
+    "min_posterior": 0.939598,
+    "max_entropy": 0.329036,
+    "max_mahalanobis": 10.173219,
+    "note": "阈值来自训练样本经验分布，只用于受控试点；待留出样本或独立样本后重新冻结。"
+  },
   "clusters": [
     {
       "cluster_id": 0,
@@ -602,7 +687,7 @@
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
         "你现在更想靠近关系，还是先保护自己的节奏？",
-        "把意愿变成一个小行动时，最需要什么支持？"
+        "下一次愿意尝试的最小行动是什么？"
       ],
       "recommended_card_ids": [
         "one_open_question",
@@ -722,7 +807,7 @@
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
         "你现在更想靠近关系，还是先保护自己的节奏？",
-        "把意愿变成一个小行动时，最需要什么支持？"
+        "下一次愿意尝试的最小行动是什么？"
       ],
       "recommended_card_ids": [
         "one_open_question",
@@ -863,5 +948,10 @@
     "value_source": "clusters[].dimension_z"
   },
   "cross_validation_status": "exploratory_pending_researcher_review",
-  "boundary_notice": "画像只表示本次题项组合与既往样本聚合中心的相对接近程度，不构成诊断、筛查、人格标签、关系能力评价或疗效证明。"
+  "boundary_notice": "画像只表示本次题项组合与既往样本聚合中心的相对接近程度，不构成诊断、筛查、人格标签、关系能力评价或疗效证明。",
+  "training_source_hashes": {
+    "item_matrices.npz": "ba13b7a94c813f0a1361935eb16372f7103fe466c15bafccba88f1fbdb4eba68",
+    "item_mapping_preview.csv": "f24cc3e9c3602e850b5ec3b1878295c99ca5ceacfacd4046e4efa373b6ff1e02"
+  },
+  "artifact_hash": "d0e92c6420f9db4af368d3274c245539d8d63769ee969b3dc1ff640451f5f844"
 }

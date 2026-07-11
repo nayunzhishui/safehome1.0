@@ -298,6 +298,31 @@ button {
   border: 0;
 }
 
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #1f6f56;
+  outline-offset: 3px;
+}
+
+.skipLink {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: #fff;
+  color: #173f31;
+  box-shadow: 0 8px 24px rgba(36, 43, 39, 0.2);
+  transform: translateY(-140%);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
 .page {
   min-height: 100vh;
 }
@@ -569,7 +594,7 @@ h4 {
 .researchButton,
 .landingPrimary,
 .landingSecondary {
-  min-height: 42px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1729,6 +1754,63 @@ ul {
   color: var(--safe-muted);
   font-size: 12px;
   font-weight: 700;
+}
+
+.authForm {
+  width: min(100%, 420px);
+}
+
+.authSubmit {
+  min-width: 112px;
+  margin-top: 4px;
+}
+
+.authHint {
+  margin: 0 0 12px;
+}
+
+.authLinks {
+  margin: 0;
+  line-height: 1.8;
+}
+
+.authLinks a {
+  color: var(--safe-green-deep);
+  font-weight: 800;
+}
+
+.familySection {
+  margin-top: 16px;
+}
+
+.familyRelations {
+  margin-top: 24px;
+}
+
+.bindCodeCard {
+  margin-top: 12px;
+}
+
+.bindCodeValue {
+  overflow-wrap: anywhere;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 2rem;
+  letter-spacing: 0;
+}
+
+.familyUnbind {
+  margin-top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 .relationshipStatus--warning { border-color: #e8cda6; background: #fbf0e6; color: #72552f; }

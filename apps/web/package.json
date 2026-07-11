@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:miniprogram-devtools": "powershell -ExecutionPolicy Bypass -File ../../scripts/run_miniprogram_devtools_check.ps1"

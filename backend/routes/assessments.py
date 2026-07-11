@@ -4,13 +4,11 @@ import json
 
 from flask import Blueprint, request
 
-from database import ensure_user, get_connection, json_dumps, json_loads, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts
+from database import get_connection, json_loads, load_content_json, row_to_dict, rows_to_dicts
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import fail, ok, parse_int, require_fields
+from services.assessment_execution_service import AssessmentSubmissionError, submit_assessment
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
-from services.risk_review_service import create_risk_review_record
-from services.risk_service import check_text_risk
-from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
 
@@ -170,171 +168,6 @@ def _summarize_worksheet(worksheet: dict) -> dict:
     }
 
 
-def _option_score_bounds(question: dict) -> tuple[int, int] | None:
-    scores = [option.get("score") for option in question.get("options", []) if isinstance(option.get("score"), (int, float))]
-    if not scores:
-        return None
-    return int(min(scores)), int(max(scores))
-
-
-def _effective_score(question: dict | None, score: int) -> int:
-    # 反向计分题（如 PRFQ11、PRFQ18）按量表上下界翻转：effective = (min + max) - 原分。
-    if question and question.get("reverse_scored"):
-        bounds = _option_score_bounds(question)
-        if bounds:
-            low, high = bounds
-            return low + high - score
-    return score
-
-
-def _score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | None]:
-    question_map = {question.get("id"): question for question in worksheet.get("questions", [])}
-    score_method = worksheet.get("dimension_score_method", "sum")
-    total_score_method = worksheet.get("total_score_method") or (worksheet.get("_meta") or {}).get("total_score_method", "sum")
-    total = 0
-    has_score = False
-    dimension_totals: dict[str, dict] = {}
-    item_scores: dict[str, int | float] = {}
-
-    for answer in answers:
-        question = question_map.get(answer.get("question_id"))
-        selected_value = answer.get("value")
-        score = answer.get("score")
-        if score is None and question:
-            for option in question.get("options", []):
-                if str(option.get("value")) == str(selected_value):
-                    score = option.get("score")
-                    break
-        if isinstance(score, (int, float)):
-            # answer 里保留用户实际选择的原始分，便于审计；维度和总分用反向计分后的有效分。
-            answer["score"] = int(score)
-            effective = _effective_score(question, int(score))
-            item_scores[answer.get("question_id")] = effective
-            total += effective
-            has_score = True
-            dimension = question.get("dimension") if question else None
-            if dimension:
-                bucket = dimension_totals.setdefault(dimension, {"score": 0, "item_count": 0})
-                bucket["score"] += effective
-                bucket["item_count"] += 1
-
-    dimension_labels = _dimension_labels(worksheet)
-    dimension_specs = {
-        item.get("code") or item.get("key"): item
-        for item in worksheet.get("dimensions", [])
-        if isinstance(item, dict) and (item.get("code") or item.get("key"))
-    }
-    dimensions = []
-    dimension_scores: dict[str, int | float] = {}
-    ordered_dimension_codes = list(dimension_specs) or list(dimension_totals)
-    for dimension in ordered_dimension_codes:
-        bucket = dimension_totals.get(dimension, {"score": 0, "item_count": 0})
-        item_count = bucket["item_count"]
-        calculation = dimension_specs.get(dimension, {}).get("calculation")
-        calculated = _calculate_dimension(calculation, item_scores, dimension_scores)
-        if calculated is not None:
-            value = calculated
-            calculation_method = calculation.get("type", score_method)
-        elif score_method == "mean" and item_count:
-            value: int | float = round(bucket["score"] / item_count, 2)
-            calculation_method = score_method
-        else:
-            value = bucket["score"]
-            calculation_method = score_method
-        dimension_scores[dimension] = value
-        dimensions.append(
-            {
-                "key": dimension,
-                "label": dimension_labels.get(dimension, dimension),
-                "score": value,
-                "item_count": item_count,
-                "score_method": calculation_method,
-            }
-        )
-
-    derived_dimensions = worksheet.get("derived_dimensions") or (worksheet.get("_meta") or {}).get("derived_dimensions", [])
-    for spec in derived_dimensions:
-        if not isinstance(spec, dict) or not spec.get("code"):
-            continue
-        calculation = spec.get("calculation") or {}
-        value = _calculate_dimension(calculation, item_scores, dimension_scores)
-        if value is None:
-            continue
-        dimension_scores[spec["code"]] = value
-        dimensions.append(
-            {
-                "key": spec["code"],
-                "label": spec.get("label", spec["code"]),
-                "score": value,
-                "item_count": len(calculation.get("dimensions", [])),
-                "score_method": calculation.get("type", "derived"),
-            }
-        )
-
-    persisted_total = total if has_score and total_score_method != "none" else None
-    scores: dict = {"total_score": persisted_total}
-    # 维度分单独保存供结果页、画像候选和导出使用；总分不替代维度解释。
-    if dimensions:
-        scores["dimensions"] = dimensions
-
-    return scores, persisted_total
-
-
-def _rounded(value: float) -> int | float:
-    rounded = round(value, 2)
-    return int(rounded) if rounded.is_integer() else rounded
-
-
-def _calculate_dimension(calculation: dict | None, item_scores: dict, dimension_scores: dict) -> int | float | None:
-    if not calculation:
-        return None
-    calculation_type = calculation.get("type")
-    if calculation_type == "product":
-        values = [item_scores.get(item) for item in calculation.get("items", [])]
-        if not values or any(value is None for value in values):
-            return None
-        product = 1
-        for value in values:
-            product *= value
-        return _rounded(float(product))
-    if calculation_type == "mean_of_products":
-        products = []
-        for pair in calculation.get("pairs", []):
-            values = [item_scores.get(item) for item in pair]
-            if values and all(value is not None for value in values):
-                product = 1
-                for value in values:
-                    product *= value
-                products.append(product)
-        return _rounded(sum(products) / len(products)) if products else None
-    if calculation_type == "mean_terms":
-        values = []
-        for term in calculation.get("terms", []):
-            value = item_scores.get(term.get("item"))
-            if value is None:
-                continue
-            if term.get("reverse_min") is not None and term.get("reverse_max") is not None:
-                value = term["reverse_min"] + term["reverse_max"] - value
-            values.append(value)
-        return _rounded(sum(values) / len(values)) if values else None
-    if calculation_type == "mean_dimensions":
-        values = [dimension_scores.get(code) for code in calculation.get("dimensions", [])]
-        values = [value for value in values if value is not None]
-        return _rounded(sum(values) / len(values)) if values else None
-    return None
-
-
-def _dimension_labels(worksheet: dict) -> dict[str, str]:
-    labels: dict[str, str] = {}
-    for dimension in worksheet.get("dimensions", []) or []:
-        if isinstance(dimension, dict):
-            code = dimension.get("code") or dimension.get("key")
-            label = dimension.get("label")
-            if code and label:
-                labels[code] = label
-    return labels
-
-
 def _training_rules_for_worksheet(worksheet_id: str) -> list[dict]:
     try:
         payload = _load_assessment_training_map()
@@ -436,84 +269,22 @@ def create_assessment_result():
     if worksheet.get("enabled_for_user") is False:
         return fail("assessment_not_enabled", "这份测一测内容仍在人工审核中，暂不开放填写。", status=400)
 
-    answers = payload.get("answers")
-    if not isinstance(answers, list):
-        return fail("invalid_answers", "answers 必须是数组")
+    submitted_answers = payload.get("answers")
 
     try:
         user_id = resolve_actor_user_id(payload=payload)
     except AuthError as exc:
         return auth_error_response(exc)
-    scores, total_score = _score_answers(worksheet, answers)
-    text_values = [
-        str(answer.get("value", "")).strip()
-        for answer in answers
-        if str(answer.get("value", "")).strip()
-        and not isinstance(answer.get("score"), (int, float))
-    ]
-    risk_result = check_text_risk(text_values, source="assessment") if text_values else None
-    if risk_result:
-        scores["risk"] = {
-            "risk_level": risk_result.get("risk_level"),
-            "requires_review": risk_result.get("requires_review"),
-            "allow_recommended_training_cards": risk_result.get("allow_recommended_training_cards"),
-        }
-    timestamp = now_iso()
-    result_id = new_id("assessment")
-    result_summary = payload.get("result_summary") or worksheet.get("result_disclaimer") or "本次内容已保存。结果仅用于自我观察和练习记录，不构成诊断。"
-    if risk_result and not risk_result.get("allow_auto_feedback", True):
-        result_summary = risk_result.get("safe_response") or result_summary
-
-    with get_connection() as conn:
-        ensure_user(conn, user_id, payload.get("nickname"))
-        conn.execute(
-            """
-            INSERT INTO assessment_results (
-                id, user_id, worksheet_id, worksheet_title, category,
-                answers_json, scores_json, total_score, result_summary, created_at
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                result_id,
-                user_id,
-                worksheet["id"],
-                worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
-                worksheet.get("category"),
-                json_dumps(answers),
-                json_dumps(scores),
-                total_score,
-                result_summary,
-                timestamp,
-            ),
+    try:
+        result = submit_assessment(
+            worksheet,
+            submitted_answers,
+            user_id=user_id,
+            nickname=payload.get("nickname"),
+            result_summary=payload.get("result_summary"),
         )
-        create_risk_review_record(conn, user_id, "assessment_result", result_id, risk_result)
-        conn.commit()
-        row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
-        result_row = row_to_dict(row)
-        if result_row:
-            result_row["answers"] = answers
-            try:
-                position = build_assessment_profile_position(result_row, worksheet)
-                _backfill_profile_position(conn, result_id, position)
-                conn.commit()
-                row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
-            except ProfilePositionUnavailable:
-                pass
-
-    result = row_to_dict(row)
-    result["answers"] = answers
-    result["scores"] = scores
-    training_rules = evaluate_training_rules(worksheet["id"], scores, worksheet=worksheet, risk_result=risk_result, user_id=user_id)
-    recommended_card_ids = flatten_card_ids(training_rules) or worksheet.get("recommended_card_ids", [])
-    if risk_result and not risk_result.get("allow_recommended_training_cards", True):
-        recommended_card_ids = []
-        training_rules = []
-    result["recommended_card_ids"] = recommended_card_ids
-    result["training_recommendation_rules"] = training_rules
-    result["risk"] = risk_result
-    result["boundary_notice"] = worksheet.get("boundary_notice")
-    result["result_disclaimer"] = worksheet.get("result_disclaimer")
+    except AssessmentSubmissionError as exc:
+        return fail(exc.code, exc.message)
     return ok(result, status=201)
 
 

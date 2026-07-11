@@ -49,7 +49,10 @@ def test_private_assessment_results_use_token_owner_before_user_id(tmp_path, mon
         json={
             "user_id": "spoofed-user-id",
             "worksheet_id": "student_profile_v1",
-            "answers": [],
+            "answers": [
+                {"question_id": question_id, "value": "1"}
+                for question_id in ["test_anxiety", "iu_score", "fear_score", "self_compassion"]
+            ],
         },
     )
     assert create_response.status_code == 201
@@ -153,7 +156,18 @@ def test_weekly_report_includes_assessment_and_thermometer_summary(tmp_path, mon
             "worksheet_id": "self_compassion_scs_cn",
             "created_at": "2026-07-06T08:00:00+00:00",
             "answers": [
-                {"question_id": "q1", "prompt": "测试", "value": "3", "score": 3},
+                {
+                    "question_id": question["id"],
+                    "value": next(
+                        (
+                            option["value"]
+                            for option in question["options"]
+                            if str(option.get("value")) == "3"
+                        ),
+                        question["options"][0]["value"],
+                    ),
+                }
+                for question in client.get("/api/assessments/self_compassion_scs_cn").get_json()["data"]["questions"]
             ],
         },
     )
@@ -281,8 +295,8 @@ def test_training_plan_includes_source_and_empty_state_fields(tmp_path, monkeypa
         json={
             "worksheet_id": "student_profile_v1",
             "answers": [
-                {"question_id": "test_anxiety", "prompt": "考试紧张", "value": "5", "score": 5},
-                {"question_id": "iu_total", "prompt": "不确定", "value": "5", "score": 5},
+                {"question_id": question_id, "value": "5"}
+                for question_id in ["test_anxiety", "iu_score", "fear_score", "self_compassion"]
             ],
         },
     )
@@ -343,7 +357,16 @@ def test_text_analysis_script_outputs_aggregate_without_raw_text(tmp_path, monke
     env["CONTENT_DIR"] = str(PROJECT_ROOT / "content")
     env["APP_ENV"] = "development"
     result = subprocess.run(
-        [sys.executable, str(PROJECT_ROOT / "analysis" / "text_analysis" / "analyze_text_sources.py"), "--user-id", user_id, "--output", str(output)],
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "analysis" / "text_analysis" / "analyze_text_sources.py"),
+            "--user-id",
+            user_id,
+            "--minimum-support",
+            "1",
+            "--output",
+            str(output),
+        ],
         cwd=PROJECT_ROOT,
         env=env,
         check=True,

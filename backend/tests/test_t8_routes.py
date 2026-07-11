@@ -71,12 +71,17 @@ def test_programs_endpoints_return_pilot_programs(tmp_path, monkeypatch):
     ids = {item["id"] for item in items}
     assert "self_compassion_exam_anxiety" in ids
     assert "academic_pressure_sleep_health" in ids
+    assert all(item["measurement_plan"]["measurement_point_labels"] for item in items)
+    assert all(item["measurement_plan"]["requires_manual_review"] is True for item in items)
 
     detail_response = client.get("/api/programs/self_compassion_exam_anxiety")
     assert detail_response.status_code == 200
     program = detail_response.get_json()["data"]["program"]
     assert program["review_status"] == "pilot_draft"
     assert len(program["sessions"]) >= 3
+    assert program["measurement_plan"]["baseline_worksheet_ids"]
+    assert program["measurement_plan"]["post_worksheet_ids"]
+    assert program["measurement_plan"]["status"] == "draft_requires_research_review"
     assert "不构成诊断" in program["boundary_notice"]
 
 
@@ -105,8 +110,8 @@ def test_training_plan_uses_latest_assessment_recommendation(tmp_path, monkeypat
         json={
             "worksheet_id": "student_profile_v1",
             "answers": [
-                {"question_id": "test_anxiety", "prompt": "考试紧张", "value": "5", "score": 5},
-                {"question_id": "iu_total", "prompt": "不确定", "value": "5", "score": 5},
+                {"question_id": question_id, "value": "5"}
+                for question_id in ["test_anxiety", "iu_score", "fear_score", "self_compassion"]
             ],
         },
     )
@@ -123,3 +128,74 @@ def test_training_plan_uses_latest_assessment_recommendation(tmp_path, monkeypat
     assert data["plan_items"]
     assert data["plan_items"][0]["cards"]
     assert "不构成" in data["boundary_notice"]
+
+
+def test_training_plan_assignment_persists_and_is_private(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    user_id, token = _wechat_login(client, "training-assignment-user")
+    _other_id, other_token = _wechat_login(client, "training-assignment-other")
+
+    saved = client.post(
+        "/api/training-plan/assignment",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "phase": "practice",
+            "cadence": "every_other_day",
+            "status": "active",
+            "start_date": "2026-07-11",
+            "goal_text": "先稳定完成一张卡，再逐步增加练习。",
+        },
+    )
+    assert saved.status_code == 200
+    assignment = saved.get_json()["data"]
+    assert assignment["user_id"] == user_id
+    assert assignment["phase"] == "practice"
+    assert assignment["agreement_status"] == "self_selected"
+
+    plan = client.get("/api/training-plan", headers={"Authorization": f"Bearer {token}"})
+    assert plan.status_code == 200
+    assert plan.get_json()["data"]["assignment"]["cadence"] == "every_other_day"
+
+    other_plan = client.get("/api/training-plan", headers={"Authorization": f"Bearer {other_token}"})
+    assert other_plan.status_code == 200
+    assert other_plan.get_json()["data"]["assignment"] is None
+
+    with app.app_context():
+        from database import get_connection, json_loads
+
+        with get_connection() as conn:
+            row = conn.execute(
+                "SELECT metadata_json FROM audit_logs WHERE action = 'training_plan_assignment_saved'"
+            ).fetchone()
+        metadata = json_loads(row["metadata_json"], {})
+        assert metadata["has_goal_text"] is True
+        assert "先稳定" not in row["metadata_json"]
+
+
+def test_training_plan_assignment_rejects_invalid_values_without_writing(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    user_id, token = _wechat_login(client, "training-assignment-invalid")
+
+    response = client.post(
+        "/api/training-plan/assignment",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "phase": "diagnostic_phase",
+            "cadence": "daily",
+            "start_date": "2026-07-11",
+        },
+    )
+    assert response.status_code == 400
+    assert response.get_json()["error"]["code"] == "invalid_training_phase"
+
+    with app.app_context():
+        from database import get_connection
+
+        with get_connection() as conn:
+            row = conn.execute(
+                "SELECT COUNT(*) AS count FROM records WHERE user_id = ? AND module_type = 'training_plan_assignment'",
+                (user_id,),
+            ).fetchone()
+    assert row["count"] == 0

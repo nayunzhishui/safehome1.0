@@ -5,6 +5,10 @@
   "standard_scale_name": "青少年情绪弹性问卷",
   "scale_id": "emotional_resilience_11",
   "worksheet_id": "emotional_resilience_11",
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
+  "model_governance_version": "profile_model_governance_v1",
+  "artifact_hash": "290c1d07e90daf0e117d3326ffc228f15c89c1a5290bb590e238df84ee4ab766",
   "research_dir": "1 王季璇 数据及数据分析结果【亲子沟通 学业浮力 情绪弹性】",
   "source_dataset": "1 王季璇 数据及数据分析结果【亲子沟通 学业浮力 情绪弹性】\\总数据-王季璇230720.sav",
   "n_cases": 634,
@@ -257,7 +261,7 @@
         "pc2": 0.2944
       },
       "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：他人的批评指责会让我长时间难过、不开心的事情会让我苦恼很长时间较高，面对压力或挫折时，我能够“自我找乐”、无论遇到什么困难，我都能保持好的心情较低。它只用于群体参照和支持性解释，不代表固定标签。",
-      "display_name": "情绪波动型",
+      "display_name": "情绪线索较易波动的阶段性位置",
       "product_explanation": "你对批评和挫折比较敏感，不好的情绪需要较长时间才能平复。这说明你的情绪系统是敏锐的，只是暂时还缺少一些让情绪流动起来的方式。",
       "strength_note": "高敏感意味着你能更深地感受事情，这也是共情力的来源。",
       "small_step": "下次情绪来了，给自己5分钟：不评判、不分析，只是注意自己的身体感觉在哪里。",
@@ -304,7 +308,7 @@
         "pc2": -0.287
       },
       "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：面对压力或挫折时，我能够“自我找乐”、无论遇到什么困难，我都能保持好的心情较高，他人的批评指责会让我长时间难过、不开心的事情会让我苦恼很长时间较低。它只用于群体参照和支持性解释，不代表固定标签。",
-      "display_name": "情绪稳健型",
+      "display_name": "情绪调节资源较可用的阶段性位置",
       "product_explanation": "你在压力和挫折中能找到情绪出口，不好的感受不容易在你身上停留太久。这种弹性是可以继续练习和维护的。",
       "strength_note": "情绪恢复能力是你的保护性资源，在帮助他人时也能起到稳定作用。",
       "small_step": "回想一次你让自己从坏心情里走出来的经历，写下那一刻你做了什么，留作下次参考。",

@@ -18,6 +18,103 @@
   gap: 20rpx;
 }
 
+.assignment-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.assignment-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.assignment-state {
+  flex: 0 0 auto;
+  padding: 6rpx 14rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-blue-soft);
+  color: var(--safe-blue);
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.assignment-label {
+  color: var(--safe-title);
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10rpx;
+}
+
+.segmented-control--wrap {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.segmented-control--compact {
+  grid-template-columns: 1fr;
+}
+
+.segment-button {
+  min-height: var(--safe-touch);
+  padding: 0 14rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-sm);
+  background: #ffffff;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  font-weight: 750;
+}
+
+.segment-button--active {
+  border-color: var(--safe-primary);
+  background: var(--safe-primary-soft);
+  color: var(--safe-primary-deep);
+}
+
+.assignment-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18rpx;
+}
+
+.assignment-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.picker-value,
+.goal-input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-sm);
+  background: #ffffff;
+  color: var(--safe-title);
+  font-size: 25rpx;
+}
+
+.picker-value {
+  min-height: var(--safe-touch);
+  display: flex;
+  align-items: center;
+  padding: 0 20rpx;
+}
+
+.goal-input {
+  min-height: 144rpx;
+  padding: 20rpx;
+  line-height: 1.6;
+}
+
 .item-head {
   display: flex;
   align-items: center;

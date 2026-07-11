@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from config import Config
-from models import INDEX_SQL, SCHEMA_SQL
+from models import IDENTITY_UNIQUE_INDEX_SQL, INDEX_SQL, SCHEMA_SQL
 
 
 REQUIRED_HEALTH_TABLES = [
@@ -33,8 +33,9 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_10_003"
-CURRENT_SCHEMA_NAME = "relationship_experience_hardening"
+CURRENT_SCHEMA_VERSION = "2026_07_11_004"
+CURRENT_SCHEMA_NAME = "identity_uniqueness_and_records_index"
+IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
     "version",
@@ -305,6 +306,10 @@ def init_db() -> None:
         ensure_schema_columns(conn)
         for statement in INDEX_SQL:
             create_index(conn, statement)
+        identity_status = check_identity_uniqueness(conn)
+        if identity_status["ok"]:
+            for statement in IDENTITY_UNIQUE_INDEX_SQL:
+                create_index(conn, statement)
         sync_training_cards(conn)
         sync_assessment_worksheets(conn)
         record_schema_migration(conn)
@@ -317,12 +322,6 @@ def check_database_health() -> dict:
     result = {
         "ok": False,
         "provider": Config.DB_PROVIDER,
-        "path": str(path),
-        "mysql": {
-            "host": Config.MYSQL_HOST if is_mysql_enabled() else "",
-            "port": Config.MYSQL_PORT if is_mysql_enabled() else None,
-            "database": Config.MYSQL_DATABASE if is_mysql_enabled() else "",
-        },
         "database_path_parent_exists": path.parent.exists(),
         "database_file_exists": path.exists(),
         "expected_schema_version": CURRENT_SCHEMA_VERSION,
@@ -336,6 +335,9 @@ def check_database_health() -> dict:
         "assessment_worksheets_count": 0,
         "content_assessment_worksheets_count": 0,
         "worksheets_sync_ok": False,
+        "identity_uniqueness_ok": False,
+        "identity_duplicate_groups": {},
+        "identity_unique_indexes_ok": False,
     }
     try:
         with get_connection() as conn:
@@ -344,6 +346,10 @@ def check_database_health() -> dict:
             result["schema_version_ok"] = result["current_schema_version"] == CURRENT_SCHEMA_VERSION
             result["training_cards_count"] = get_table_count(conn, "training_cards")
             result["assessment_worksheets_count"] = get_table_count(conn, "assessment_worksheets")
+            identity_status = check_identity_uniqueness(conn)
+            result["identity_uniqueness_ok"] = identity_status["ok"]
+            result["identity_duplicate_groups"] = identity_status["duplicate_groups"]
+            result["identity_unique_indexes_ok"] = identity_unique_indexes_present(conn)
         existing_tables = {row["name"] for row in rows}
         missing_tables = [table for table in REQUIRED_HEALTH_TABLES if table not in existing_tables]
         content_training_cards = load_content_json("training_cards.json").get("cards", [])
@@ -362,6 +368,8 @@ def check_database_health() -> dict:
             and result["schema_version_ok"]
             and result["training_cards_sync_ok"]
             and result["worksheets_sync_ok"]
+            and result["identity_uniqueness_ok"]
+            and result["identity_unique_indexes_ok"]
         )
     except (sqlite3.Error, OSError, json.JSONDecodeError, RuntimeError, Exception) as exc:
         result["error"] = str(exc)
@@ -380,6 +388,46 @@ def list_database_tables(conn) -> list[dict]:
     return conn.execute(
         "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
     ).fetchall()
+
+
+def check_identity_uniqueness(conn) -> dict:
+    """Return duplicate group counts without exposing identity values."""
+
+    duplicate_groups: dict[str, int] = {}
+    for field in IDENTITY_FIELDS:
+        row = conn.execute(
+            f"""
+            SELECT COUNT(*) AS count
+            FROM (
+                SELECT {field}
+                FROM users
+                WHERE {field} IS NOT NULL AND {field} <> ''
+                GROUP BY {field}
+                HAVING COUNT(*) > 1
+            ) duplicate_values
+            """
+        ).fetchone()
+        duplicate_groups[field] = int(row["count"] if row else 0)
+    return {"ok": not any(duplicate_groups.values()), "duplicate_groups": duplicate_groups}
+
+
+def identity_unique_indexes_present(conn) -> bool:
+    expected = {
+        "idx_users_username_unique",
+        "idx_users_wechat_openid_unique",
+        "idx_users_phone_hash_unique",
+    }
+    if _connection_provider(conn) == "mysql":
+        rows = conn.execute(
+            """
+            SELECT DISTINCT index_name AS name
+            FROM information_schema.statistics
+            WHERE table_schema = DATABASE() AND table_name = 'users' AND non_unique = 0
+            """
+        ).fetchall()
+    else:
+        rows = conn.execute("PRAGMA index_list('users')").fetchall()
+    return expected.issubset({str(row["name"]) for row in rows})
 
 
 def create_index(conn, statement: str) -> None:

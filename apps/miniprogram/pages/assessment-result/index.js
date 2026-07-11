@@ -153,6 +153,18 @@ function compactFeatureLabel(label) {
   return text.slice(0, 4);
 }
 
+function matchingClarityText(position, interpretation) {
+  const status = interpretation.status || position.interpretation_status;
+  if (status === "outlier") return "样本范围外";
+  if (status === "low_confidence") return "较低，暂不归纳";
+  if (status === "pending_approval") return "待研究者审核";
+  const posterior = Number(position.posterior ?? position.confidence);
+  if (!Number.isFinite(posterior)) return "仅作参考";
+  if (posterior >= 0.8) return "较高";
+  if (posterior >= 0.6) return "中等";
+  return "较低";
+}
+
 function buildRadarFeatures(payload) {
   const features = Array.isArray(payload.feature_profile) ? payload.feature_profile : [];
   return features
@@ -210,7 +222,7 @@ function buildProfilePositionSummary(payload) {
       researchDir: payload.research_dir || "",
       nCasesText: payload.n_cases ? `${payload.n_cases} 份既往样本` : "",
       profileName: position.display_name || position.profile_name || "阶段性画像位置",
-      confidenceText: position.confidence !== undefined && position.confidence !== null ? `${Math.round(Number(position.confidence) * 100)}%` : "仅作参考",
+      confidenceText: matchingClarityText(position, interpretation),
       canUseInterpretation,
       visualizationState: interpretation.status && interpretation.status !== "usable" ? interpretation.status : "data",
       reliabilityText: canUseInterpretation ? "" : interpretation.message || "本次结果只作为位置参考，不做明确画像解释。",
@@ -255,7 +267,7 @@ function buildProfilePositionSummary(payload) {
     researchDir: payload.research_dir || "",
     nCasesText: payload.n_cases ? `${payload.n_cases} 份既往样本` : "",
     profileName: position.display_name || position.profile_name || "阶段性画像位置",
-    confidenceText: position.confidence !== undefined && position.confidence !== null ? `${Math.round(Number(position.confidence) * 100)}%` : "仅作参考",
+    confidenceText: matchingClarityText(position, interpretation),
     canUseInterpretation,
     visualizationState: interpretation.status && interpretation.status !== "usable" ? interpretation.status : "data",
     reliabilityText: canUseInterpretation ? "" : interpretation.message || "本次结果只作为位置参考，不做明确画像解释。",

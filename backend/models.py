@@ -573,6 +573,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_risk_review_status_created ON risk_review_records(review_status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_audit_logs_action_created ON audit_logs(action, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_records_module_created ON records(module_type, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_records_user_module_source_created ON records(user_id, module_type, source_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_privacy_requests_user_created ON privacy_requests(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_family_links_code_status ON family_links(bind_code, status)",
     "CREATE INDEX IF NOT EXISTS idx_assessment_worksheets_audience_enabled ON assessment_worksheets(audience_class, enabled_for_user)",
@@ -582,4 +583,10 @@ INDEX_SQL = [
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_task_idempotency_unique ON relationship_pilot_tasks(user_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_longitudinal_idempotency_unique ON relationship_longitudinal_entries(user_id, idempotency_key)",
+]
+
+IDENTITY_UNIQUE_INDEX_SQL = [
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_unique ON users(username)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_wechat_openid_unique ON users(wechat_openid)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone_hash_unique ON users(phone_hash)",
 ]

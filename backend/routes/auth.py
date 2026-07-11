@@ -4,6 +4,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import time
 from pathlib import Path
 from urllib.parse import urlencode
@@ -21,6 +22,7 @@ from routes.utils import fail, ok, require_admin_token
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 CLOUDBASE_ACCESS_TOKEN_PATH = "/.tencentcloudbase/wx/cloudbase_access_token"
 _WECHAT_ACCESS_TOKEN_CACHE: dict[str, float | str] = {"appid": "", "token": "", "expires_at": 0.0}
+_CLOUDBASE_OPENID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{6,128}$")
 
 
 class WechatAuthError(ValueError):
@@ -45,16 +47,16 @@ def _public_user(row: dict) -> dict:
 def _trusted_cloudbase_openid() -> str | None:
     """Read the identity header injected by WeChat CloudBase callContainer.
 
-    Production requests must also carry X-WX-SOURCE so a direct public HTTP
-    request cannot opt into this path by supplying only an openid-shaped value.
-    CloudBase owns and injects these headers on the callContainer route.
+    This path is disabled by default. Deployments behind CloudBase callContainer
+    must opt in explicitly after confirming that public traffic cannot bypass
+    the trusted gateway.
     """
 
+    if not current_app.config.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", False):
+        return None
     openid = str(request.headers.get("X-WX-OPENID") or "").strip()
     source = str(request.headers.get("X-WX-SOURCE") or "").strip()
-    if not openid:
-        return None
-    if str(Config.APP_ENV).lower() == "production" and not source:
+    if source != "wx-cloudbase" or not _CLOUDBASE_OPENID_PATTERN.fullmatch(openid):
         return None
     return openid
 
@@ -227,7 +229,7 @@ def register():
     with get_connection() as conn:
         existing = conn.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone()
         if existing:
-            return fail("username_exists", "该用户名已被使用", status=400)
+            return fail("username_exists", "该用户名已被使用", status=409)
         ensure_user(conn, user_id, nickname)
         conn.execute(
             """
@@ -472,7 +474,7 @@ def admin_create_account():
     with get_connection() as conn:
         existing = conn.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone()
         if existing:
-            return fail("username_exists", "该用户名已被使用", status=400)
+            return fail("username_exists", "该用户名已被使用", status=409)
         ensure_user(conn, user_id, nickname)
         conn.execute(
             """

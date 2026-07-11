@@ -5,22 +5,25 @@ from flask import Blueprint, current_app, request
 from database import get_connection, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from routes.consent import DEFAULT_CONSENT_VERSION, get_latest_consent
 from routes.auth_utils import AuthError, auth_error_response, get_current_actor
-from routes.utils import fail, ok, require_user_id
+from routes.utils import fail, ok
 
 bp = Blueprint("privacy", __name__, url_prefix="/api/privacy")
 
 RESEARCH_CONSENT_TYPES = {"anonymous_research", "research_authorization"}
 
 
-def require_privacy_owner(user_id: str) -> dict:
+def resolve_privacy_owner(requested_user_id: str | None) -> tuple[str, dict]:
+    user_id = str(requested_user_id or "").strip()
     actor = get_current_actor(allow_legacy_admin=False)
     if actor is not None:
-        if actor["id"] != user_id:
+        if user_id and actor["id"] != user_id:
             raise AuthError("只能操作自己的隐私数据", status=403)
-        return actor
+        return str(actor["id"]), actor
     if str(current_app.config.get("APP_ENV", "development")).lower() == "production":
         raise AuthError("隐私中心需要先登录", status=401)
-    return {"id": user_id, "role": "anonymous", "source": "anonymous_trial"}
+    if not user_id:
+        raise ValueError("请提供匿名 user_id")
+    return user_id, {"id": user_id, "role": "anonymous", "source": "anonymous_trial"}
 
 
 def _latest_consent_status(conn, user_id: str, consent_type: str) -> dict:
@@ -65,8 +68,7 @@ def research_revoked_filter(conn, column: str = "user_id") -> tuple[str, list[st
 @bp.get("/consent-status")
 def consent_status():
     try:
-        user_id = require_user_id({"user_id": request.args.get("user_id")})
-        require_privacy_owner(user_id)
+        user_id, _actor = resolve_privacy_owner(request.args.get("user_id"))
     except AuthError as exc:
         return auth_error_response(exc)
     except ValueError as exc:
@@ -84,8 +86,7 @@ def consent_status():
 def revoke_consent():
     payload = request.get_json(silent=True) or {}
     try:
-        user_id = require_user_id(payload)
-        actor = require_privacy_owner(user_id)
+        user_id, actor = resolve_privacy_owner(payload.get("user_id"))
     except AuthError as exc:
         return auth_error_response(exc)
     except ValueError as exc:
@@ -133,8 +134,7 @@ def revoke_consent():
 def delete_my_data():
     payload = request.get_json(silent=True) or {}
     try:
-        user_id = require_user_id(payload)
-        actor = require_privacy_owner(user_id)
+        user_id, actor = resolve_privacy_owner(payload.get("user_id"))
     except AuthError as exc:
         return auth_error_response(exc)
     except ValueError as exc:
@@ -175,8 +175,7 @@ def _count_for_user(conn, table: str, user_id: str) -> int:
 @bp.get("/export-my-data")
 def export_my_data():
     try:
-        user_id = require_user_id({"user_id": request.args.get("user_id")})
-        require_privacy_owner(user_id)
+        user_id, _actor = resolve_privacy_owner(request.args.get("user_id"))
     except AuthError as exc:
         return auth_error_response(exc)
     except ValueError as exc:

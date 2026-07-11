@@ -239,7 +239,12 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
         )
 
     if programs:
-        errors.extend(validate_programs(programs, card_ids))
+        worksheet_ids = {
+            worksheet.get("id")
+            for worksheet in (assessment_worksheets or {}).get("worksheets", [])
+            if isinstance(worksheet, dict) and worksheet.get("id")
+        }
+        errors.extend(validate_programs(programs, card_ids, worksheet_ids))
 
     for rule in risk_keywords.get("handling_rules", []):
         if not isinstance(rule, dict):
@@ -263,7 +268,7 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
     return errors
 
 
-def validate_programs(payload: dict, card_ids: set[str]) -> list[str]:
+def validate_programs(payload: dict, card_ids: set[str], worksheet_ids: set[str]) -> list[str]:
     errors: list[str] = []
     root_boundary = str(payload.get("boundary_notice", ""))
     if not any(term in root_boundary for term in BOUNDARY_TERMS):
@@ -281,6 +286,34 @@ def validate_programs(payload: dict, card_ids: set[str]) -> list[str]:
         for card_id in program.get("recommended_card_ids", []):
             if card_id not in card_ids:
                 errors.append(f"programs.json.programs[{program_id}].recommended_card_ids 包含不存在的训练卡：{card_id}")
+        measurement_plan = program.get("measurement_plan")
+        if not isinstance(measurement_plan, dict):
+            errors.append(f"programs.json.programs[{program_id}].measurement_plan 缺失或不是 object")
+        else:
+            if measurement_plan.get("status") not in {"draft_requires_research_review", "pilot_approved"}:
+                errors.append(f"programs.json.programs[{program_id}].measurement_plan.status 不在允许枚举中")
+            for field in ["baseline_worksheet_ids", "post_worksheet_ids"]:
+                references = measurement_plan.get(field)
+                if not isinstance(references, list) or not references:
+                    errors.append(f"programs.json.programs[{program_id}].measurement_plan.{field} 不能为空")
+                    continue
+                for worksheet_id in references:
+                    if worksheet_id not in worksheet_ids:
+                        errors.append(
+                            f"programs.json.programs[{program_id}].measurement_plan.{field} 包含不存在的 worksheet：{worksheet_id}"
+                        )
+            points = measurement_plan.get("measurement_points")
+            if not isinstance(points, list) or len(points) < 2:
+                errors.append(f"programs.json.programs[{program_id}].measurement_plan.measurement_points 至少需要 2 个时间点")
+            elif any(not isinstance(point, dict) or is_empty(point.get("label")) or is_empty(point.get("description")) for point in points):
+                errors.append(f"programs.json.programs[{program_id}].measurement_plan.measurement_points 缺少 label 或 description")
+            if not isinstance(measurement_plan.get("primary_outcomes"), list) or not measurement_plan.get("primary_outcomes"):
+                errors.append(f"programs.json.programs[{program_id}].measurement_plan.primary_outcomes 不能为空")
+            if measurement_plan.get("status") != "pilot_approved" and not measurement_plan.get("manual_review_items"):
+                errors.append(f"programs.json.programs[{program_id}].measurement_plan 草案必须列出 manual_review_items")
+            measurement_boundary = str(measurement_plan.get("boundary_notice", ""))
+            if not any(term in measurement_boundary for term in BOUNDARY_TERMS):
+                errors.append(f"programs.json.programs[{program_id}].measurement_plan.boundary_notice 需包含非诊断或不替代边界")
         sessions = program.get("sessions", [])
         if not isinstance(sessions, list) or not sessions:
             errors.append(f"programs.json.programs[{program_id}].sessions 不能为空")

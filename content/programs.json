@@ -10,6 +10,19 @@
       "audience": "学生与家长陪伴练习",
       "enabled": true,
       "review_status": "pilot_draft",
+      "measurement_plan": {
+        "status": "draft_requires_research_review",
+        "baseline_worksheet_ids": ["student_profile_v1", "emotion_regulation_erq", "self_compassion_scs_cn"],
+        "post_worksheet_ids": ["student_profile_v1", "emotion_regulation_erq", "self_compassion_scs_cn"],
+        "measurement_points": [
+          {"key": "baseline", "label": "开始前", "description": "完成支持性测评，记录当前情绪调节、不确定性和自我关怀线索。"},
+          {"key": "practice", "label": "练习中", "description": "每节只记录完成情况、主观帮助度和一条具体反思。"},
+          {"key": "post", "label": "完成后", "description": "重复相同测评并结合练习记录进行阶段性复盘。"}
+        ],
+        "primary_outcomes": ["情绪调节线索", "不确定性耐受线索", "自我关怀练习体验"],
+        "manual_review_items": ["研究负责人确认主要指标和时间窗", "量表负责人确认题项、计分和开放边界"],
+        "boundary_notice": "测量计划为试点草案，不构成诊断；人工确认前不用于疗效判断或正式研究结论。"
+      },
       "recommended_card_ids": ["scs_self_kindness", "scs_mindful_moment", "exam_micro_start"],
       "boundary_notice": "本项目用于考试压力场景下的自我支持练习，不构成诊断、筛查或治疗方案。",
       "sessions": [
@@ -59,6 +72,19 @@
       "audience": "学生与青年自我观察练习",
       "enabled": true,
       "review_status": "pilot_draft",
+      "measurement_plan": {
+        "status": "draft_requires_research_review",
+        "baseline_worksheet_ids": ["regulatory_focus_relationship_18", "micro_ysq_relationship_18", "relationship_initiation_intention_action"],
+        "post_worksheet_ids": ["regulatory_focus_relationship_18", "micro_ysq_relationship_18", "relationship_initiation_intention_action"],
+        "measurement_points": [
+          {"key": "baseline", "label": "开始前", "description": "完成关系探索测评并核对阶段性画像与评估问题。"},
+          {"key": "practice", "label": "练习中", "description": "记录关系事件、开放叙事和微行动，不自动解释深层原因。"},
+          {"key": "post", "label": "阶段结束", "description": "重复测评并由用户与研究者共同核对变化叙事。"}
+        ],
+        "primary_outcomes": ["关系行动意愿与尝试", "担心与期待线索", "真实表达与边界练习"],
+        "manual_review_items": ["研究负责人确认重复测量时间点", "统计负责人确认画像和变化解释边界"],
+        "boundary_notice": "测量计划只用于阶段性探索，不构成诊断；人工共同核对前不形成关系能力或疗效结论。"
+      },
       "recommended_card_ids": ["scs_common_humanity", "one_open_question", "validation_before_advice"],
       "boundary_notice": "本项目用于关系场景中的自我观察与沟通练习，不构成诊断、筛查或关系结论。",
       "sessions": [
@@ -108,6 +134,20 @@
       "audience": "学生与家长支持性练习",
       "enabled": true,
       "review_status": "pilot_draft",
+      "measurement_plan": {
+        "status": "draft_requires_research_review",
+        "baseline_worksheet_ids": ["academic_buoyancy_4"],
+        "post_worksheet_ids": ["academic_buoyancy_4"],
+        "pending_manual_measure_ids": ["sleep_isi_psqi"],
+        "measurement_points": [
+          {"key": "baseline", "label": "开始前", "description": "记录学业压力、当前睡眠习惯和学业浮力线索。"},
+          {"key": "practice", "label": "练习中", "description": "记录收尾练习、睡前行为和主观帮助度。"},
+          {"key": "post", "label": "完成后", "description": "复测已审核量表；睡眠量表需人工确认后才可加入。"}
+        ],
+        "primary_outcomes": ["学业压力应对", "学习任务收尾", "睡眠健康行为线索"],
+        "manual_review_items": ["ISI/PSQI 版本、题项、授权和计分尚未确认", "研究负责人确认睡眠主要指标和排除标准"],
+        "boundary_notice": "当前仅为健康促进练习草案，不构成筛查或诊断，也不替代医疗建议。"
+      },
       "recommended_card_ids": ["body_scan_before_study", "exam_micro_start", "parent_body_grounding"],
       "boundary_notice": "本项目用于学习压力与睡眠习惯的支持性练习，不构成诊断、筛查或医疗建议。",
       "sessions": [

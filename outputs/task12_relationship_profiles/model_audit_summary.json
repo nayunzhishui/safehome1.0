@@ -55,7 +55,7 @@
       "duplicate_profile_names": [],
       "mean_item_floor_ratio": 0.033,
       "mean_item_ceiling_ratio": 0.199,
-      "model_artifact_sha256": "e6ecf9489f50df7167e25ca91c39e0c5bd5a1cc6dcc895643da9a8123bc9fd38"
+      "model_artifact_sha256": "9bc850553be082583e3292ac4081e42478d831335cd1731ccb8cd7b660b53569"
     },
     {
       "scale_id": "micro_ysq_relationship_18",
@@ -87,12 +87,10 @@
         "p10": 0.427,
         "minimum": 0.314
       },
-      "duplicate_profile_names": [
-        "关系担心线索相对较少的观察阶段"
-      ],
+      "duplicate_profile_names": [],
       "mean_item_floor_ratio": 0.15,
       "mean_item_ceiling_ratio": 0.061,
-      "model_artifact_sha256": "46e25b538f79780e8c2f1751a831c085ba29d38e254316d09118f3e58a4e1112"
+      "model_artifact_sha256": "fc155aaaed04629bae169ce382a3c78a44727caf4530cb12dc5cc8fd16fe0b92"
     },
     {
       "scale_id": "relationship_initiation_intention_action",
@@ -130,7 +128,7 @@
       "duplicate_profile_names": [],
       "mean_item_floor_ratio": 0.04,
       "mean_item_ceiling_ratio": 0.12,
-      "model_artifact_sha256": "6084ed17e10ef505ae4abe3e1d88ffc6ad6dc2534b4a5021c75898709b209377"
+      "model_artifact_sha256": "508383ef631399c60928771aba5d4884a4d7612d03a1e78de07fb7185886d910"
     }
   ],
   "interpretation_notes": [

@@ -263,9 +263,24 @@ export interface TrainingPlanItem {
   boundary_notice: string;
 }
 
+export interface TrainingPlanAssignment {
+  id: ID;
+  user_id: ID;
+  phase: "start" | "practice" | "consolidate";
+  cadence: "daily" | "every_other_day" | "three_per_week" | "weekly";
+  status: "active" | "paused" | "completed";
+  start_date: ISODate;
+  goal_text: string;
+  agreement_status: "self_selected" | "pending_researcher_review" | "researcher_confirmed";
+  boundary_notice: string;
+  created_at?: ISODateTime;
+  updated_at?: ISODateTime;
+}
+
 export interface TrainingPlan {
   user_id: ID;
   has_assessment: boolean;
+  assignment?: TrainingPlanAssignment | null;
   has_recent_checkin?: boolean;
   last_completed_card_ids?: ID[];
   latest_result?: Record<string, unknown> | null;
@@ -398,6 +413,8 @@ export interface TextAnalysisOutputStatus {
   available: boolean;
   filename: string;
   raw_text_included: false;
+  quality_status?: "valid" | "empty" | "insufficient_data" | "stale" | "validation_failed" | "privacy_blocked";
+  privacy_gate_passed?: boolean;
   reason?: string;
   record_count?: number;
   analysis_version?: string;
@@ -408,7 +425,8 @@ export interface TextAnalysisOutputStatus {
 export interface TextAnalysisSummaryResponse {
   items: {
     features: TextAnalysisOutputStatus;
-    network: TextAnalysisOutputStatus;
+    semantic_network: TextAnalysisOutputStatus;
+    family_topology: TextAnalysisOutputStatus;
     summary: TextAnalysisOutputStatus;
   };
   actor_id: ID;
@@ -427,6 +445,29 @@ export interface ProgramSession {
   disclaimer: string;
 }
 
+export interface ProgramMeasurementPoint {
+  key: string;
+  label: string;
+  description: string;
+}
+
+export interface ProgramMeasurementPlanSummary {
+  status: "draft_requires_research_review" | "pilot_approved";
+  measurement_point_labels: string[];
+  requires_manual_review: boolean;
+}
+
+export interface ProgramMeasurementPlan {
+  status: "draft_requires_research_review" | "pilot_approved";
+  baseline_worksheet_ids: ID[];
+  post_worksheet_ids: ID[];
+  pending_manual_measure_ids?: ID[];
+  measurement_points: ProgramMeasurementPoint[];
+  primary_outcomes: string[];
+  manual_review_items: string[];
+  boundary_notice: string;
+}
+
 export interface ProgramSummary {
   id: ID;
   title: string;
@@ -437,6 +478,7 @@ export interface ProgramSummary {
   boundary_notice: string;
   session_count: number;
   first_session_title?: string;
+  measurement_plan?: ProgramMeasurementPlanSummary | ProgramMeasurementPlan;
 }
 
 export interface Program extends ProgramSummary {
@@ -634,19 +676,26 @@ export interface AssessmentProfilePosition {
     pc2?: number | null;
     cluster_id?: number | null;
     profile_id?: string | null;
-    profile_name?: string;
-    display_name?: string;
+    profile_name?: string | null;
+    display_name?: string | null;
     nearest_distance?: number | null;
     second_distance?: number | null;
     confidence?: number;
-    interpretation_status?: "usable" | "low_confidence" | "outlier";
+    posterior?: number;
+    normalized_entropy?: number | null;
+    mahalanobis_distance?: number;
+    assignment_version?: string;
+    interpretation_status?: "usable" | "low_confidence" | "outlier" | "pending_approval";
     can_use_interpretation?: boolean;
   };
   interpretation?: {
-    status: "usable" | "low_confidence" | "outlier";
+    status: "usable" | "low_confidence" | "outlier" | "pending_approval";
     can_use_interpretation: boolean;
     message: string;
     distance_threshold?: number | null;
+    min_posterior?: number;
+    max_entropy?: number;
+    max_mahalanobis?: number;
   };
   clusters?: AssessmentProfileCluster[];
   radar_support?: {

@@ -14,6 +14,19 @@ function markActiveSessions(sessions, selectedSession) {
   }));
 }
 
+function formatProgram(program) {
+  const measurementPlan = program.measurement_plan || null;
+  return {
+    ...program,
+    measurementPlan: measurementPlan
+      ? {
+          ...measurementPlan,
+          statusLabel: measurementPlan.status === "pilot_approved" ? "试点已确认" : "待研究负责人确认",
+        }
+      : null,
+  };
+}
+
 Page({
   data: {
     programId: "",
@@ -43,7 +56,7 @@ Page({
     api
       .getProgram(programId)
       .then((data) => {
-        const program = data.program;
+        const program = formatProgram(data.program);
         const rawSessions = program.sessions || [];
         const selectedSession = rawSessions[0] || null;
         const sessions = markActiveSessions(rawSessions, selectedSession);

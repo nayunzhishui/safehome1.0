@@ -43,6 +43,11 @@ export const VISUALIZATION_STATES = {
     "tone": "warning",
     "description": "本次位置与参考样本差异较大，暂不作明确归类。"
   },
+  "pending_approval": {
+    "label": "待人工批准",
+    "tone": "warning",
+    "description": "模型或解释尚未完成人工批准，暂不展示明确画像结论。"
+  },
   "error": {
     "label": "加载失败",
     "tone": "danger",

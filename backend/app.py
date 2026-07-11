@@ -4,8 +4,11 @@ import json
 import logging
 from logging.config import dictConfig
 import os
+import re
+import time
+import uuid
 
-from flask import Flask, jsonify, request
+from flask import Flask, g, jsonify, request
 from flask.json.provider import DefaultJSONProvider
 from werkzeug.exceptions import HTTPException
 
@@ -38,6 +41,7 @@ from routes.supervision import bp as supervision_bp
 from routes.text_analysis import bp as text_analysis_bp
 from routes.training_plan import bp as training_plan_bp
 from services.runtime_metrics import record_response, snapshot as runtime_metrics_snapshot
+from services.assessment_profile_service import model_artifact_hash_is_valid
 
 
 SERVICE_VERSION = os.environ.get("SERVICE_VERSION", "safehome-2026-07-10-task12-login").strip() or "safehome-2026-07-10-task12-login"
@@ -50,6 +54,7 @@ REQUIRED_CONTENT_FILES = [
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
+REQUEST_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]{8,64}$")
 
 
 class SafeHomeJSONProvider(DefaultJSONProvider):
@@ -75,21 +80,33 @@ def check_content_health(content_dir) -> dict:
         except (OSError, json.JSONDecodeError):
             versions[filename] = "unreadable"
     model_versions = {}
+    invalid_profile_artifacts = []
+    ungoverned_profile_models = []
     profiles_dir = content_dir / "profiles"
     if profiles_dir.exists():
-        for path in profiles_dir.glob("task12_*_profile_model.json"):
+        for path in profiles_dir.glob("*.json"):
             try:
                 payload = json.loads(path.read_text(encoding="utf-8"))
-                model_versions[path.stem] = payload.get("model_version") or payload.get("version") or payload.get("model_id") or "unknown"
+                if path.name.startswith("task12_"):
+                    model_versions[path.stem] = payload.get("model_version") or payload.get("version") or payload.get("model_id") or "unknown"
+                if payload.get("admission_status") not in {"internal_only", "pilot_approved", "production_approved", "deprecated"}:
+                    ungoverned_profile_models.append(path.name)
+                if not model_artifact_hash_is_valid(payload):
+                    invalid_profile_artifacts.append(path.name)
             except (OSError, json.JSONDecodeError):
-                model_versions[path.stem] = "unreadable"
+                if path.name.startswith("task12_"):
+                    model_versions[path.stem] = "unreadable"
+                invalid_profile_artifacts.append(path.name)
+    models_ok = not invalid_profile_artifacts and not ungoverned_profile_models
     return {
-        "ok": not missing_files,
-        "content_dir": str(content_dir),
+        "ok": not missing_files and models_ok,
         "required_files_ok": not missing_files,
         "missing_files": missing_files,
         "content_versions": versions,
         "relationship_profile_model_versions": model_versions,
+        "profile_models_ok": models_ok,
+        "invalid_profile_artifacts": sorted(set(invalid_profile_artifacts)),
+        "ungoverned_profile_models": sorted(set(ungoverned_profile_models)),
     }
 
 
@@ -193,13 +210,30 @@ def create_app(
     app.register_blueprint(training_plan_bp)
     app.register_blueprint(admin_bp)
 
+    @app.before_request
+    def begin_request_trace():
+        incoming = str(request.headers.get("X-Request-ID") or "").strip()
+        g.request_id = incoming if REQUEST_ID_PATTERN.fullmatch(incoming) else uuid.uuid4().hex
+        g.request_started_at = time.perf_counter()
+
     @app.after_request
     def add_cors_headers(response):
         record_response(response.status_code)
+        request_id = getattr(g, "request_id", uuid.uuid4().hex)
+        duration_ms = round((time.perf_counter() - getattr(g, "request_started_at", time.perf_counter())) * 1000, 2)
+        response.headers["X-Request-ID"] = request_id
+        app.logger.info(
+            "request_completed request_id=%s method=%s path=%s status=%s duration_ms=%.2f",
+            request_id,
+            request.method,
+            request.path,
+            response.status_code,
+            duration_ms,
+        )
         origin = request.headers.get("Origin")
         if origin in app.config.get("ALLOWED_ORIGINS", []):
             response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token, Authorization, Idempotency-Key"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token, Authorization, Idempotency-Key, X-Request-ID"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
         return response
 
@@ -216,10 +250,10 @@ def create_app(
                 request.method,
                 request.path,
             )
-            return jsonify({"ok": False, "error": {"code": code, "message": message}}), status
+            return jsonify({"ok": False, "error": {"code": code, "message": message}, "request_id": getattr(g, "request_id", None)}), status
 
         app.logger.exception("unhandled_exception method=%s path=%s", request.method, request.path)
-        return jsonify({"ok": False, "error": {"code": "internal_error", "message": "服务暂时没有响应，请稍后再试。"}}), 500
+        return jsonify({"ok": False, "error": {"code": "internal_error", "message": "服务暂时没有响应，请稍后再试。"}, "request_id": getattr(g, "request_id", None)}), 500
 
     @app.get("/healthz")
     def healthz():

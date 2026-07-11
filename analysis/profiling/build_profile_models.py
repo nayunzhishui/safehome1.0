@@ -432,8 +432,10 @@ def main() -> int:
     CONTENT_PROFILE_DIR.mkdir(parents=True, exist_ok=True)
     # Preserve manually curated display_names before clearing old files
     existing_display_names: dict[str, dict[int, str]] = {}
+    existing_governance: dict[str, dict] = {}
     if not args.limit:
-        for path in CONTENT_PROFILE_DIR.glob("*.json"):
+        # 仅重建本脚本负责的 profile_*.json；任务十二模型由独立脚本维护。
+        for path in CONTENT_PROFILE_DIR.glob("profile_*.json"):
             try:
                 payload = json.loads(path.read_text(encoding="utf-8"))
             except json.JSONDecodeError:
@@ -445,6 +447,15 @@ def main() -> int:
                         c["cluster_id"]: c["display_name"]
                         for c in payload.get("clusters", [])
                         if c.get("display_name")
+                    }
+                    existing_governance[mid] = {
+                        key: payload[key]
+                        for key in (
+                            "admission_status",
+                            "interpretation_approval_status",
+                            "model_governance_version",
+                        )
+                        if key in payload
                     }
                 path.unlink()
     crosswalk = load_crosswalk()
@@ -473,6 +484,18 @@ def main() -> int:
                     dn = existing_display_names[mid].get(cluster["cluster_id"])
                     if dn:
                         cluster["display_name"] = dn
+            model.update(
+                existing_governance.get(
+                    mid,
+                    {
+                        "admission_status": "internal_only",
+                        "interpretation_approval_status": "pending_researcher_review",
+                        "model_governance_version": "profile_model_governance_v1",
+                    },
+                )
+            )
+            material = json.dumps(model, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            model["artifact_hash"] = hashlib.sha256(material).hexdigest()
             out_path = CONTENT_PROFILE_DIR / model_filename(model["model_id"], len(models))
             out_path.write_text(json.dumps(model, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 

@@ -48,6 +48,7 @@ const API_ENDPOINTS = {
   cards: "/api/cards",
   cardsRecommend: "/api/cards/recommend",
   trainingPlan: "/api/training-plan",
+  trainingPlanAssignment: "/api/training-plan/assignment",
   courses: "/api/courses",
   courseDetailBase: "/api/courses/:id",
   programs: "/api/programs",
@@ -582,6 +583,14 @@ function createSafeHomeApi(options = {}) {
 
     getTrainingPlan(params = {}) {
       return request(`${API_ENDPOINTS.trainingPlan}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    saveTrainingPlanAssignment(data) {
+      return request(API_ENDPOINTS.trainingPlanAssignment, {
+        method: "POST",
+        data: withDefaultUser(data),
+        requiresAuth: true,
+      });
     },
 
     listCourses() {

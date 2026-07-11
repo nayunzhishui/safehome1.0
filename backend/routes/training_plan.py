@@ -2,16 +2,33 @@
 
 import json
 from pathlib import Path
+import re
 
 from flask import Blueprint, current_app, request
 
-from database import get_connection, json_loads, load_content_json, row_to_dict, rows_to_dicts
+from database import (
+    get_connection,
+    json_dumps,
+    json_loads,
+    load_content_json,
+    new_id,
+    now_iso,
+    row_to_dict,
+    rows_to_dicts,
+    write_audit_log,
+)
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import fail, ok
 from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
 
 
 bp = Blueprint("training_plan", __name__, url_prefix="/api/training-plan")
+ASSIGNMENT_MODULE_TYPE = "training_plan_assignment"
+ASSIGNMENT_SOURCE_ID = "current"
+ASSIGNMENT_PHASES = {"start", "practice", "consolidate"}
+ASSIGNMENT_CADENCES = {"daily", "every_other_day", "three_per_week", "weekly"}
+ASSIGNMENT_STATUSES = {"active", "paused", "completed"}
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 def _worksheet_map() -> dict[str, dict]:
@@ -70,6 +87,52 @@ def _recent_checkin_state(user_id: str) -> dict:
         "has_recent_checkin": bool(checkins),
         "last_completed_card_ids": list(dict.fromkeys(completed))[:5],
     }
+
+
+def _latest_assignment(user_id: str) -> dict | None:
+    with get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT id, user_id, data_json, created_at, updated_at
+            FROM records
+            WHERE user_id = ? AND module_type = ? AND source_id = ?
+            ORDER BY updated_at DESC
+            LIMIT 1
+            """,
+            (user_id, ASSIGNMENT_MODULE_TYPE, ASSIGNMENT_SOURCE_ID),
+        ).fetchone()
+    if row is None:
+        return None
+    item = row_to_dict(row)
+    data = json_loads(item.pop("data_json", None), {})
+    return {**item, **data}
+
+
+def _normalize_assignment(payload: dict) -> tuple[dict | None, tuple[str, str] | None]:
+    phase = str(payload.get("phase") or "").strip()
+    cadence = str(payload.get("cadence") or "").strip()
+    status = str(payload.get("status") or "active").strip()
+    start_date = str(payload.get("start_date") or "").strip()
+    goal_text = str(payload.get("goal_text") or "").strip()
+    if phase not in ASSIGNMENT_PHASES:
+        return None, ("invalid_training_phase", "训练阶段不在允许范围内")
+    if cadence not in ASSIGNMENT_CADENCES:
+        return None, ("invalid_training_cadence", "练习频率不在允许范围内")
+    if status not in ASSIGNMENT_STATUSES:
+        return None, ("invalid_training_status", "训练计划状态不在允许范围内")
+    if not DATE_RE.match(start_date):
+        return None, ("invalid_start_date", "开始日期必须使用 YYYY-MM-DD 格式")
+    if len(goal_text) > 200:
+        return None, ("training_goal_too_long", "训练目标不能超过 200 字")
+    return {
+        "phase": phase,
+        "cadence": cadence,
+        "status": status,
+        "start_date": start_date,
+        "goal_text": goal_text,
+        "agreement_status": "self_selected",
+        "boundary_notice": "练习节奏由用户自行设置，研究者共同确认前不代表正式干预安排。",
+    }, None
 
 
 def _load_profile_models() -> dict[str, dict]:
@@ -236,6 +299,7 @@ def get_training_plan():
             "has_assessment": bool(results),
             "has_recent_checkin": checkin_state["has_recent_checkin"],
             "last_completed_card_ids": checkin_state["last_completed_card_ids"],
+            "assignment": _latest_assignment(user_id),
             "latest_result": row_to_dict(results[0]) if results else None,
             "plan_items": plan_items,
             "empty_state": empty_state,
@@ -243,3 +307,69 @@ def get_training_plan():
             "boundary_notice": "个性化训练计划只用于阶段性练习建议，不构成诊断、筛查或治疗方案。",
         }
     )
+
+
+@bp.post("/assignment")
+def save_training_plan_assignment():
+    payload = request.get_json(silent=True) or {}
+    try:
+        user_id = resolve_actor_user_id(payload=payload)
+    except AuthError as exc:
+        return auth_error_response(exc)
+
+    assignment, error = _normalize_assignment(payload)
+    if error:
+        return fail(error[0], error[1], status=400)
+
+    timestamp = now_iso()
+    with get_connection() as conn:
+        existing = conn.execute(
+            """
+            SELECT id FROM records
+            WHERE user_id = ? AND module_type = ? AND source_id = ?
+            ORDER BY updated_at DESC
+            LIMIT 1
+            """,
+            (user_id, ASSIGNMENT_MODULE_TYPE, ASSIGNMENT_SOURCE_ID),
+        ).fetchone()
+        if existing:
+            record_id = existing["id"]
+            conn.execute(
+                "UPDATE records SET data_json = ?, updated_at = ?, export_allowed = 0 WHERE id = ?",
+                (json_dumps(assignment), timestamp, record_id),
+            )
+        else:
+            record_id = new_id("record")
+            conn.execute(
+                """
+                INSERT INTO records (
+                    id, user_id, module_type, source_id, data_json,
+                    created_at, updated_at, export_allowed
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+                """,
+                (
+                    record_id,
+                    user_id,
+                    ASSIGNMENT_MODULE_TYPE,
+                    ASSIGNMENT_SOURCE_ID,
+                    json_dumps(assignment),
+                    timestamp,
+                    timestamp,
+                ),
+            )
+        write_audit_log(
+            conn,
+            action="training_plan_assignment_saved",
+            actor_id=user_id,
+            target_type=ASSIGNMENT_MODULE_TYPE,
+            target_id=record_id,
+            metadata={
+                "phase": assignment["phase"],
+                "cadence": assignment["cadence"],
+                "status": assignment["status"],
+                "has_goal_text": bool(assignment["goal_text"]),
+            },
+        )
+        conn.commit()
+
+    return ok({"id": record_id, "user_id": user_id, **assignment, "updated_at": timestamp})

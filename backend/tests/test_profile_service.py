@@ -91,3 +91,14 @@ def test_profile_service_low_confidence_is_visible_for_manual_review_queue():
     assert result["risk_level"] == "low"
     assert result["confidence"] < 0.5
     assert result["profile_code"]
+
+
+def test_profile_visuals_do_not_export_row_level_training_points():
+    service = _profile_service()
+    visuals = service.build_student_visuals(
+        {"features": {"iu_total": 3, "erf_evaluation": 3, "erf_expression": 3, "erf_strategy_flex": 3, "self_compassion": 3, "test_anxiety": 3}},
+        {"pc1": 0, "pc2": 0, "cluster_id": 1, "profile_code": "middle_uncertain", "confidence": 0.5},
+    )
+
+    assert visuals["pca"]["points"] == []
+    assert visuals["pca"]["aggregate_centroids"]

@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   cards: "/api/cards",
   cardsRecommend: "/api/cards/recommend",
   trainingPlan: "/api/training-plan",
+  trainingPlanAssignment: "/api/training-plan/assignment",
   courses: "/api/courses",
   courseDetailBase: "/api/courses/:id",
   programs: "/api/programs",

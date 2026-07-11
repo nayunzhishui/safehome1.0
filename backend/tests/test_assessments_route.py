@@ -29,6 +29,16 @@ def _wechat_login(client, code: str):
     return data["user"]["id"], data["token"]
 
 
+def _student_profile_answers(value: str = "1", free_text: str | None = None):
+    answers = [
+        {"question_id": question_id, "value": value}
+        for question_id in ["test_anxiety", "iu_score", "fear_score", "self_compassion"]
+    ]
+    if free_text is not None:
+        answers.append({"question_id": "free_text", "value": free_text})
+    return answers
+
+
 def test_legacy_self_built_assessment_is_removed_from_api(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
@@ -72,7 +82,7 @@ def test_legacy_assessment_results_are_hidden_from_user_history(tmp_path):
         headers={"Authorization": f"Bearer {token}"},
         json={
             "worksheet_id": "student_profile_v1",
-            "answers": [{"question_id": "test_anxiety", "prompt": "测试题", "value": "2", "score": 2}],
+            "answers": _student_profile_answers("2"),
         },
     )
     assert active_response.status_code == 201
@@ -122,14 +132,105 @@ def test_enabled_student_profile_assessment_result_still_saves(tmp_path):
         headers={"Authorization": f"Bearer {token}"},
         json={
             "worksheet_id": "student_profile_v1",
-            "answers": [{"question_id": "test_anxiety", "prompt": "测试题", "value": "3", "score": 3}],
+            "answers": _student_profile_answers("3"),
         },
     )
 
     assert response.status_code == 201
     data = response.get_json()["data"]
     assert data["worksheet_id"] == "student_profile_v1"
-    assert data["total_score"] == 3
+    assert data["total_score"] == 12
+
+
+def test_assessment_submission_rejects_unknown_question_id(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "assessment-unknown-question")
+
+    response = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "worksheet_id": "student_profile_v1",
+            "answers": [{"question_id": "unknown", "value": "1", "score": 1}],
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"]["code"] == "unknown_question_id"
+
+
+def test_assessment_submission_rejects_duplicate_question_id(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "assessment-duplicate-question")
+    answer = {"question_id": "test_anxiety", "value": "2"}
+
+    response = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"worksheet_id": "student_profile_v1", "answers": [answer, answer]},
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"]["code"] == "duplicate_question_id"
+
+
+def test_assessment_submission_rejects_value_outside_question_options(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "assessment-invalid-option")
+
+    response = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "worksheet_id": "student_profile_v1",
+            "answers": [{"question_id": "test_anxiety", "value": "99"}],
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"]["code"] == "invalid_option_value"
+
+
+def test_assessment_submission_rejects_missing_required_questions(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "assessment-missing-required")
+
+    response = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "worksheet_id": "emotion_regulation_erq",
+            "answers": [{"question_id": "ERQ01", "value": "4"}],
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"]["code"] == "missing_required_answers"
+
+
+def test_assessment_submission_ignores_client_score_and_recalculates_from_options(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "assessment-server-score")
+    answers = [
+        {"question_id": f"ERQ{i:02d}", "value": "4", "score": 99}
+        for i in range(1, 11)
+    ]
+
+    response = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"worksheet_id": "emotion_regulation_erq", "answers": answers},
+    )
+
+    assert response.status_code == 201
+    data = response.get_json()["data"]
+    assert data["total_score"] == 40
+    assert {answer["score"] for answer in data["answers"]} == {4}
 
 
 def test_assessment_detail_includes_training_recommendation_rules(tmp_path):
@@ -295,7 +396,7 @@ def test_prfq_submission_uses_reverse_scoring_and_dimension_mean(tmp_path):
 
 def test_declarative_relationship_scoring_supports_products_and_no_total(tmp_path):
     _fresh_app(tmp_path)
-    from routes.assessments import _score_answers
+    from services.assessment_execution_service import execute_assessment
 
     options = [{"value": str(value), "score": value} for value in range(1, 6)]
     worksheet = {
@@ -351,7 +452,8 @@ def test_declarative_relationship_scoring_supports_products_and_no_total(tmp_pat
     raw = {"a1": 2, "b1": 3, "a2": 4, "b2": 5, "a4": 3, "b4": 4, "a5": 2, "b5": 5}
     answers = [{"question_id": key, "value": str(value)} for key, value in raw.items()]
 
-    scores, total = _score_answers(worksheet, answers)
+    execution = execute_assessment(worksheet, answers)
+    scores, total = execution.scores, execution.total_score
 
     dimensions = {item["key"]: item for item in scores["dimensions"]}
     assert dimensions["BENEFIT"]["score"] == 13
@@ -492,7 +594,7 @@ def test_assessment_text_answer_high_risk_creates_review_and_blocks_cards(tmp_pa
         headers={"Authorization": f"Bearer {token}"},
         json={
             "worksheet_id": "student_profile_v1",
-            "answers": [{"question_id": "free_text", "prompt": "压力事件", "value": "我最近不想活"}],
+            "answers": _student_profile_answers(free_text="我最近不想活"),
         },
     )
 
@@ -542,7 +644,7 @@ def test_assessment_profile_position_returns_cluster_for_modeled_scale(tmp_path)
     data = response.get_json()["data"]
     assert data["available"] is True
     assert data["worksheet_id"] == "emotional_resilience_11"
-    assert data["position"]["profile_name"]
+    assert data["position"]["profile_name"] is None
     assert data["position"]["pc1"] is not None
     assert data["feature_summary"]["answered_features"] == 11
     assert len(data["feature_profile"]) == 11
@@ -550,6 +652,8 @@ def test_assessment_profile_position_returns_cluster_for_modeled_scale(tmp_path)
     assert "不构成诊断" in data["boundary_notice"]
     assert data["interpretation"]["status"] in {"usable", "low_confidence", "outlier"}
     assert data["position"]["can_use_interpretation"] is False
+    assert data["suggested_assessment_questions"] == []
+    assert data["recommended_project_tasks"] == []
     assert "不做明确画像" in data["explanation"]
 
     from database import get_connection
@@ -566,7 +670,7 @@ def test_assessment_profile_position_returns_cluster_for_modeled_scale(tmp_path)
     assert row["profile_confidence"] is not None
 
 
-def test_assessment_profile_position_marks_outlier_without_strong_interpretation(tmp_path):
+def test_modeled_assessment_rejects_out_of_range_values_before_profile_position(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
     user_id, token = _wechat_login(client, "profile-position-outlier")
@@ -583,21 +687,8 @@ def test_assessment_profile_position_marks_outlier_without_strong_interpretation
             "answers": answers,
         },
     )
-    assert submit_response.status_code == 201
-    result_id = submit_response.get_json()["data"]["id"]
-
-    response = client.get(
-        f"/api/assessment-results/{result_id}/profile-position?user_id={user_id}",
-        headers={"Authorization": f"Bearer {token}"},
-    )
-
-    assert response.status_code == 200
-    data = response.get_json()["data"]
-    assert data["available"] is True
-    assert data["interpretation"]["status"] == "outlier"
-    assert data["interpretation"]["can_use_interpretation"] is False
-    assert data["position"]["can_use_interpretation"] is False
-    assert "不做明确画像解释" in data["explanation"]
+    assert submit_response.status_code == 400
+    assert submit_response.get_json()["error"]["code"] == "invalid_option_value"
 
 
 def test_assessment_profile_position_is_optional_for_unmodeled_scale(tmp_path):
@@ -606,8 +697,8 @@ def test_assessment_profile_position_is_optional_for_unmodeled_scale(tmp_path):
     user_id, token = _wechat_login(client, "profile-position-unavailable")
 
     answers = [
-        {"question_id": "ERQ01", "prompt": "ERQ01", "value": "4", "score": 4},
-        {"question_id": "ERQ02", "prompt": "ERQ02", "value": "3", "score": 3},
+        {"question_id": f"ERQ{i:02d}", "value": "4"}
+        for i in range(1, 11)
     ]
     submit_response = client.post(
         "/api/assessment-results",

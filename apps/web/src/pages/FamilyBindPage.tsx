@@ -173,40 +173,40 @@ export function FamilyBindPage() {
       </section>
 
       {isParent ? (
-        <section className="guidanceBox" style={{ marginTop: 16 }}>
+        <section className="guidanceBox familySection">
           <h2>生成绑定码</h2>
           <p>点击下方按钮生成一个新的 6 位绑定码，分享给学生完成绑定。</p>
-          <button className="pill" onClick={() => { void createBindCode(); }} disabled={codeStatus === "loading"}>
+          <button className="primaryButton" onClick={() => { void createBindCode(); }} disabled={codeStatus === "loading"}>
             生成绑定码
           </button>
           {bindCode ? (
-            <div className="metricCard" style={{ marginTop: 12 }}>
+            <div className="metricCard bindCodeCard">
               <span>绑定码</span>
-              <strong style={{ fontSize: "2rem", letterSpacing: "0.3em", fontFamily: "monospace" }}>{bindCode}</strong>
+              <strong className="bindCodeValue">{bindCode}</strong>
               <small>有效期：24 小时，超过 5 次尝试后失效</small>
             </div>
           ) : null}
-          <div className={`status compact ${codeStatus}`}>{codeMessage}</div>
+          {codeMessage ? <div className={`status compact ${codeStatus}`} role={codeStatus === "error" ? "alert" : "status"} aria-live="polite">{codeMessage}</div> : null}
         </section>
       ) : null}
 
       {isStudent ? (
-        <section className="guidanceBox" style={{ marginTop: 16 }}>
+        <section className="guidanceBox familySection">
           <h2>输入绑定码</h2>
           <label className="tokenField">
             绑定码
             <input value={inputCode} onChange={(e) => setInputCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="6 位数字" maxLength={6} />
           </label>
-          <button className="pill" onClick={() => { void bindWithCode(); }} disabled={bindStatus === "loading"}>
+          <button className="primaryButton" onClick={() => { void bindWithCode(); }} disabled={bindStatus === "loading"}>
             确认绑定
           </button>
-          <div className={`status compact ${bindStatus}`}>{bindMessage}</div>
+          {bindMessage ? <div className={`status compact ${bindStatus}`} role={bindStatus === "error" ? "alert" : "status"} aria-live="polite">{bindMessage}</div> : null}
         </section>
       ) : null}
 
-      <section style={{ marginTop: 24 }}>
+      <section className="familyRelations">
         <h2>当前绑定关系</h2>
-        <div className={`status compact ${membersStatus}`}>{membersMessage}</div>
+        {membersMessage ? <div className={`status compact ${membersStatus}`} role={membersStatus === "error" ? "alert" : "status"} aria-live="polite">{membersMessage}</div> : null}
         {members.length === 0 && membersStatus === "success" ? (
           <p className="muted">暂无绑定关系。</p>
         ) : (
@@ -218,7 +218,7 @@ export function FamilyBindPage() {
                 {m.student_user_id ? <small>学生 ID：{m.student_user_id.slice(0, 12)}...</small> : null}
                 {m.confirmed_at ? <small>确认时间：{m.confirmed_at.slice(0, 10)}</small> : null}
                 {m.status === "active" || m.status === "pending" ? (
-                  <button className="pill muted" style={{ marginTop: 8 }} onClick={() => { void unbind(m.id); }}>
+                  <button className="secondaryButton familyUnbind" onClick={() => { void unbind(m.id); }}>
                     撤销绑定
                   </button>
                 ) : null}

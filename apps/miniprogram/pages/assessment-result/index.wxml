@@ -17,7 +17,7 @@
     <view wx:if="{{profilePosition}}" class="safe-section">
       <view class="profile-card">
         <text class="profile-display-name">{{profilePosition.profileName}}</text>
-        <text class="profile-confidence">与既往样本的接近度 {{profilePosition.confidenceText}}</text>
+        <text class="profile-confidence">匹配清晰度：{{profilePosition.confidenceText}}</text>
         <text wx:if="{{!profilePosition.canUseInterpretation}}" class="profile-warning">{{profilePosition.reliabilityText}}</text>
         <text wx:if="{{profilePosition.nCasesText}}" class="profile-meta">参照 {{profilePosition.nCasesText}}</text>
         <text wx:if="{{profilePosition.featureText}}" class="profile-meta">{{profilePosition.featureText}}</text>

@@ -6,6 +6,12 @@
   "scale_id": "micro_ysq_relationship_18",
   "worksheet_id": "micro_ysq_relationship_18",
   "worksheet_link_status": "connected_pilot_review_required",
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
+  "production_approval_status": "pending_researcher_review",
+  "model_governance_version": "profile_model_governance_v1",
+  "scoring_version": "worksheet_server_score_v1",
+  "assignment_version": "gmm_diag_posterior_v1",
   "research_dir": "数据1",
   "source_dataset": "数据1/全部数据1.0.xlsx（逐行数据未入仓）",
   "n_cases": 425,
@@ -340,12 +346,107 @@
   "selected_method": "gaussian_mixture",
   "selection_reason": "GMM同时满足最小簇比例、稳定性和最低分离度门槛，并在合格候选中BIC最低；保留KMeans作对照。",
   "chosen_k": 4,
+  "mixture_weights": [
+    0.21358874,
+    0.20475604,
+    0.36367661,
+    0.21797861
+  ],
+  "diag_covariances": [
+    {
+      "YSQ1": 0.49377335,
+      "YSQ2": 0.6359114,
+      "YSQ3": 0.9215862,
+      "YSQ4": 0.11407458,
+      "YSQ5": 0.36979654,
+      "YSQ6": 0.36493353,
+      "YSQ7": 0.28915875,
+      "YSQ8": 0.16837721,
+      "YSQ9": 0.17438972,
+      "YSQ10": 1.04500765,
+      "YSQ11": 1.1964733,
+      "YSQ12": 0.78095858,
+      "YSQ13": 0.58900698,
+      "YSQ14": 1.0689294,
+      "YSQ15": 1.14047135,
+      "YSQ16": 1.05015415,
+      "YSQ17": 0.63150791,
+      "YSQ18": 0.3924828
+    },
+    {
+      "YSQ1": 0.3158998,
+      "YSQ2": 0.79354127,
+      "YSQ3": 0.56938351,
+      "YSQ4": 0.1896717,
+      "YSQ5": 0.23541872,
+      "YSQ6": 0.57121852,
+      "YSQ7": 0.50192299,
+      "YSQ8": 0.82449509,
+      "YSQ9": 0.83886472,
+      "YSQ10": 0.62869459,
+      "YSQ11": 1.0052481,
+      "YSQ12": 0.51663343,
+      "YSQ13": 0.7290406,
+      "YSQ14": 0.69785214,
+      "YSQ15": 0.97884132,
+      "YSQ16": 1.25510271,
+      "YSQ17": 1.0302171,
+      "YSQ18": 0.73789282
+    },
+    {
+      "YSQ1": 0.61546002,
+      "YSQ2": 0.47647315,
+      "YSQ3": 0.49383744,
+      "YSQ4": 0.47692141,
+      "YSQ5": 0.57803216,
+      "YSQ6": 0.62691883,
+      "YSQ7": 0.64439666,
+      "YSQ8": 0.36268782,
+      "YSQ9": 0.40959154,
+      "YSQ10": 0.79488659,
+      "YSQ11": 0.58016426,
+      "YSQ12": 0.44413226,
+      "YSQ13": 0.4487918,
+      "YSQ14": 0.60956739,
+      "YSQ15": 0.72721388,
+      "YSQ16": 0.80529986,
+      "YSQ17": 0.60535314,
+      "YSQ18": 0.37807315
+    },
+    {
+      "YSQ1": 0.85452983,
+      "YSQ2": 0.46073062,
+      "YSQ3": 0.97971345,
+      "YSQ4": 0.58524543,
+      "YSQ5": 0.64293697,
+      "YSQ6": 1.24600992,
+      "YSQ7": 1.06172336,
+      "YSQ8": 0.46066989,
+      "YSQ9": 0.51888029,
+      "YSQ10": 1.10782595,
+      "YSQ11": 0.88169518,
+      "YSQ12": 0.58984118,
+      "YSQ13": 0.39088168,
+      "YSQ14": 0.52776471,
+      "YSQ15": 0.67507281,
+      "YSQ16": 0.84545205,
+      "YSQ17": 0.78269381,
+      "YSQ18": 0.45964416
+    }
+  ],
+  "assignment_thresholds": {
+    "calibration_source": "training_empirical_exploratory",
+    "min_posterior": 0.831533,
+    "max_entropy": 0.332795,
+    "max_mahalanobis": 7.249273,
+    "note": "阈值来自训练样本经验分布，只用于受控试点；待留出样本或独立样本后重新冻结。"
+  },
   "clusters": [
     {
       "cluster_id": 0,
       "profile_id": "task12_micro_ysq_0",
-      "profile_name": "关系担心线索相对较少的观察阶段",
-      "display_name": "关系担心线索相对较少的观察阶段",
+      "profile_name": "关系担心线索较低的阶段性观察位置",
+      "display_name": "关系担心线索较低的阶段性观察位置",
       "n": 93,
       "percent": 21.9,
       "center_z": {
@@ -398,13 +499,13 @@
         "pc1": -3.4705,
         "pc2": -0.4915
       },
-      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“关系担心线索相对较少的观察阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
-      "product_explanation": "你当前的题项组合与“关系担心线索相对较少的观察阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "supportive_explanation": "这一聚合位置表示本组样本的关系担心线索处于较低位置。它是可变化的连续观察线索，不代表固定类型，也不构成诊断。",
+      "product_explanation": "你当前的题项组合更接近“关系担心线索较低的阶段性观察位置”，可结合本人维度和具体情境共同核对。",
       "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
-        "这些担心通常在什么关系场景里出现？",
-        "哪一次例外经验让你感到更安全或被理解？"
+        "关系担心较少出现时，哪些情境或支持可能在发挥作用？",
+        "你想保留哪一种已经有帮助的应对方式？"
       ],
       "recommended_card_ids": [
         "self_support_statement",
@@ -422,8 +523,8 @@
     {
       "cluster_id": 1,
       "profile_id": "task12_micro_ysq_1",
-      "profile_name": "关系担心线索相对较少的观察阶段",
-      "display_name": "关系担心线索相对较少的观察阶段",
+      "profile_name": "关系担心线索中低的阶段性观察位置",
+      "display_name": "关系担心线索中低的阶段性观察位置",
       "n": 84,
       "percent": 19.8,
       "center_z": {
@@ -476,13 +577,13 @@
         "pc1": -1.1756,
         "pc2": 1.564
       },
-      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“关系担心线索相对较少的观察阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
-      "product_explanation": "你当前的题项组合与“关系担心线索相对较少的观察阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "supportive_explanation": "这一聚合位置表示本组样本的关系担心线索处于中低位置。它是可变化的连续观察线索，不代表固定类型，也不构成诊断。",
+      "product_explanation": "你当前的题项组合更接近“关系担心线索中低的阶段性观察位置”，可结合本人维度和具体情境共同核对。",
       "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
-        "这些担心通常在什么关系场景里出现？",
-        "哪一次例外经验让你感到更安全或被理解？"
+        "关系担心较少出现时，哪些情境或支持可能在发挥作用？",
+        "你想保留哪一种已经有帮助的应对方式？"
       ],
       "recommended_card_ids": [
         "self_support_statement",
@@ -500,8 +601,8 @@
     {
       "cluster_id": 2,
       "profile_id": "task12_micro_ysq_2",
-      "profile_name": "部分关系担心正在浮现的观察阶段",
-      "display_name": "部分关系担心正在浮现的观察阶段",
+      "profile_name": "关系担心线索中高的阶段性观察位置",
+      "display_name": "关系担心线索中高的阶段性观察位置",
       "n": 155,
       "percent": 36.5,
       "center_z": {
@@ -554,13 +655,13 @@
         "pc1": 0.6148,
         "pc2": -0.6656
       },
-      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“部分关系担心正在浮现的观察阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
-      "product_explanation": "你当前的题项组合与“部分关系担心正在浮现的观察阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "supportive_explanation": "这一聚合位置表示本组样本的关系担心线索处于中高位置。它是可变化的连续观察线索，不代表固定类型，也不构成诊断。",
+      "product_explanation": "你当前的题项组合更接近“关系担心线索中高的阶段性观察位置”，可结合本人维度和具体情境共同核对。",
       "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
-        "这些担心通常在什么关系场景里出现？",
-        "哪一次例外经验让你感到更安全或被理解？"
+        "关系担心较少出现时，哪些情境或支持可能在发挥作用？",
+        "你想保留哪一种已经有帮助的应对方式？"
       ],
       "recommended_card_ids": [
         "self_support_statement",
@@ -578,8 +679,8 @@
     {
       "cluster_id": 3,
       "profile_id": "task12_micro_ysq_3",
-      "profile_name": "多项关系担心值得温和梳理的阶段",
-      "display_name": "多项关系担心值得温和梳理的阶段",
+      "profile_name": "关系担心线索较高的阶段性观察位置",
+      "display_name": "关系担心线索较高的阶段性观察位置",
       "n": 93,
       "percent": 21.9,
       "center_z": {
@@ -632,12 +733,12 @@
         "pc1": 3.5077,
         "pc2": 0.1882
       },
-      "supportive_explanation": "这一聚合画像表示本组样本在题项组合上更接近“多项关系担心值得温和梳理的阶段”。它是可变化的阶段性观察线索，不代表固定标签，也不构成诊断。",
-      "product_explanation": "你当前的题项组合与“多项关系担心值得温和梳理的阶段”的聚合中心更接近，可把它当作选择下一步练习和访谈问题的线索。",
+      "supportive_explanation": "这一聚合位置表示本组样本的关系担心线索处于较高位置。它是可变化的连续观察线索，不代表固定类型，也不构成诊断。",
+      "product_explanation": "你当前的题项组合更接近“关系担心线索较高的阶段性观察位置”，可结合本人维度和具体情境共同核对。",
       "strength_note": "你已经通过具体作答呈现了当下的关注点，这本身就是进一步理解自己的一步。",
       "small_step": "从建议问题中选一个，写下一次不超过十分钟的小观察或小行动。",
       "suggested_assessment_questions": [
-        "这些担心通常在什么关系场景里出现？",
+        "多项担心同时出现时，哪一项最影响你当下的选择？",
         "哪一次例外经验让你感到更安全或被理解？"
       ],
       "recommended_card_ids": [
@@ -713,5 +814,10 @@
     "value_source": "clusters[].dimension_z"
   },
   "cross_validation_status": "exploratory_pending_researcher_review",
-  "boundary_notice": "画像只表示本次题项组合与既往样本聚合中心的相对接近程度，不构成诊断、筛查、人格标签、关系能力评价或疗效证明。"
+  "boundary_notice": "画像只表示本次题项组合与既往样本聚合中心的相对接近程度，不构成诊断、筛查、人格标签、关系能力评价或疗效证明。",
+  "training_source_hashes": {
+    "item_matrices.npz": "ba13b7a94c813f0a1361935eb16372f7103fe466c15bafccba88f1fbdb4eba68",
+    "item_mapping_preview.csv": "f24cc3e9c3602e850b5ec3b1878295c99ca5ceacfacd4046e4efa373b6ff1e02"
+  },
+  "artifact_hash": "31da8eef943c31910c50fea304fe9b58db8e78e0b9c503759235d3a80821fa64"
 }

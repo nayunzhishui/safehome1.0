@@ -45,8 +45,8 @@ def test_deep_healthz_checks_database_and_content(tmp_path, monkeypatch):
     data = response.get_json()
     assert data["ok"] is True
     assert data["database"]["ok"] is True
-    assert data["database"]["expected_schema_version"] == "2026_07_10_003"
-    assert data["database"]["current_schema_version"] == "2026_07_10_003"
+    assert data["database"]["expected_schema_version"] == "2026_07_11_004"
+    assert data["database"]["current_schema_version"] == "2026_07_11_004"
     assert data["database"]["schema_version_ok"] is True
     assert data["database"]["required_tables_ok"] is True
     assert data["database"]["missing_tables"] == []
@@ -58,11 +58,17 @@ def test_deep_healthz_checks_database_and_content(tmp_path, monkeypatch):
     assert data["database"]["assessment_worksheets_count"] > 0
     assert data["database"]["assessment_worksheets_count"] >= data["database"]["content_assessment_worksheets_count"]
     assert data["database"]["worksheets_sync_ok"] is True
+    assert data["database"]["identity_uniqueness_ok"] is True
+    assert data["database"]["identity_duplicate_groups"] == {"phone_hash": 0, "username": 0, "wechat_openid": 0}
+    assert data["database"]["identity_unique_indexes_ok"] is True
     assert data["content"]["ok"] is True
     assert data["content"]["required_files_ok"] is True
     assert data["content"]["missing_files"] == []
     assert data["content"]["content_versions"]["assessment_worksheets.json"]
     assert len(data["content"]["relationship_profile_model_versions"]) == 3
+    assert data["content"]["profile_models_ok"] is True
+    assert data["content"]["invalid_profile_artifacts"] == []
+    assert data["content"]["ungoverned_profile_models"] == []
     assert data["runtime_metrics"]["api_responses_total"] >= 0
     assert data["runtime_metrics"]["api_error_rate"] >= 0
     assert "请求正文" in data["runtime_metrics"]["privacy"]
@@ -116,7 +122,9 @@ def test_unknown_route_returns_stable_json_error(tmp_path, monkeypatch):
     body = response.get_json()
 
     assert response.status_code == 404
-    assert body == {"ok": False, "error": {"code": "not_found", "message": "没有找到对应接口。"}}
+    assert body["ok"] is False
+    assert body["error"] == {"code": "not_found", "message": "没有找到对应接口。"}
+    assert body["request_id"] == response.headers["X-Request-ID"]
 
 
 def test_unhandled_exception_returns_stable_json_error(tmp_path, monkeypatch):
@@ -130,5 +138,32 @@ def test_unhandled_exception_returns_stable_json_error(tmp_path, monkeypatch):
     body = response.get_json()
 
     assert response.status_code == 500
-    assert body == {"ok": False, "error": {"code": "internal_error", "message": "服务暂时没有响应，请稍后再试。"}}
+    assert body["ok"] is False
+    assert body["error"] == {"code": "internal_error", "message": "服务暂时没有响应，请稍后再试。"}
+    assert body["request_id"] == response.headers["X-Request-ID"]
     assert "database password" not in response.get_data(as_text=True)
+
+
+def test_request_id_is_forwarded_or_replaced_and_added_to_errors(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    forwarded = client.get("/healthz", headers={"X-Request-ID": "client-request-123"})
+    replaced = client.get("/healthz", headers={"X-Request-ID": "bad request id with spaces"})
+    failed = client.get("/missing-route", headers={"X-Request-ID": "client-error-123"})
+
+    assert forwarded.headers["X-Request-ID"] == "client-request-123"
+    assert replaced.headers["X-Request-ID"] != "bad request id with spaces"
+    assert len(replaced.headers["X-Request-ID"]) == 32
+    assert failed.get_json()["request_id"] == "client-error-123"
+
+
+def test_readiness_does_not_expose_filesystem_or_mysql_connection_details(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    response = app.test_client().get("/readyz")
+    body = response.get_json()
+
+    assert "path" not in body["database"]
+    assert "mysql" not in body["database"]
+    assert "content_dir" not in body["content"]
+    assert str(tmp_path) not in response.get_data(as_text=True)

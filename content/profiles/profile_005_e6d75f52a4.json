@@ -5,6 +5,10 @@
   "standard_scale_name": "健康促进生活方式量表（HPLP）",
   "scale_id": "hplp_c_health_promoting_lifestyle",
   "worksheet_id": null,
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
+  "model_governance_version": "profile_model_governance_v1",
+  "artifact_hash": "94f2c47976e0879f9c738d119b25ab0c2d5b29b1cd746d56e7a6da867817ae4a",
   "research_dir": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】",
   "source_dataset": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】\\数据和问卷\\数据\\209份最终数据.sav",
   "n_cases": 209,
@@ -529,7 +533,7 @@
         "pc2": 0.093
       },
       "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：24、与专业人士讨论健康问题、13、向健康专业人员提问，以理解专业人员的指导较低。它只用于群体参照和支持性解释，不代表固定标签。",
-      "display_name": "健康被动型",
+      "display_name": "健康行动仍在起步的阶段性位置",
       "product_explanation": "你较少主动寻求专业健康建议或做自我健康检查，可能觉得没有必要，或者不太清楚怎么开始。",
       "strength_note": "有意识到健康管理的重要性，本身就是第一步。",
       "small_step": "选一件最小的事开始：比如查一下附近医院的位置，或者记录一天的作息。",
@@ -610,7 +614,7 @@
         "pc2": -0.147
       },
       "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：24、与专业人士讨论健康问题、13、向健康专业人员提问，以理解专业人员的指导较高。它只用于群体参照和支持性解释，不代表固定标签。",
-      "display_name": "健康主动型",
+      "display_name": "健康行动较积极的阶段性位置",
       "product_explanation": "你有主动管理健康的习惯，能定期进行自我检查并寻求专业建议。这种主动性对长期健康维护很有价值。",
       "strength_note": "健康自我管理能力是高资源状态，有助于在压力下保持稳定。",
       "small_step": "把你现在坚持的一个健康习惯，分享给一个你关心的人。",

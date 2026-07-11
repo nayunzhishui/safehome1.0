@@ -56,7 +56,7 @@ try {
   Invoke-Step "web typecheck" {
     Push-Location "apps\web"
     try {
-      Invoke-Native "npx" @("tsc", "--noEmit")
+      Invoke-Native "npm" @("run", "typecheck")
     } finally {
       Pop-Location
     }
@@ -66,21 +66,8 @@ try {
     Invoke-Native "python" @("backend\scripts\audit_miniprogram_frontend.py")
   }
 
-  Invoke-Step "miniprogram JS syntax" {
-    Get-ChildItem -Path "apps\miniprogram" -Recurse -Filter "*.js" | ForEach-Object {
-      Invoke-Native "node" @("--check", $_.FullName)
-    }
-  }
-
-  Invoke-Step "miniprogram JSON parse" {
-    Get-ChildItem -Path "apps\miniprogram" -Recurse -Filter "*.json" | ForEach-Object {
-      $jsonPath = $_.FullName
-      try {
-        Get-Content -Raw -Encoding UTF8 -LiteralPath $jsonPath | ConvertFrom-Json | Out-Null
-      } catch {
-        throw "Invalid JSON: $jsonPath`n$($_.Exception.Message)"
-      }
-    }
+  Invoke-Step "miniprogram JS and JSON assets" {
+    Invoke-Native "python" @("backend\scripts\validate_miniprogram_assets.py")
   }
 } finally {
   Pop-Location

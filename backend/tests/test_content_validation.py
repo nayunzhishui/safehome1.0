@@ -111,6 +111,20 @@ def test_unknown_recommended_card_id_reports_error(tmp_path):
     assert any("feedback_rules.json.rules[judgmental_language].recommended_card_ids 包含不存在的训练卡：missing_card_id" in error for error in errors)
 
 
+def test_program_measurement_plan_rejects_unknown_worksheet(tmp_path):
+    validator = _validator()
+    content_dir = tmp_path / "content"
+    _copy_required_content(content_dir)
+    path = content_dir / "programs.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["programs"][0]["measurement_plan"]["baseline_worksheet_ids"] = ["missing_worksheet"]
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    errors = validator.validate_content(content_dir, SCHEMA_ROOT)
+
+    assert any("measurement_plan.baseline_worksheet_ids 包含不存在的 worksheet：missing_worksheet" in error for error in errors)
+
+
 def _write_profile_model(content_dir: Path, **overrides) -> None:
     profile_dir = content_dir / "profiles"
     profile_dir.mkdir(exist_ok=True)

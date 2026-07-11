@@ -1,0 +1,366 @@
+"""Validate and score one assessment submission through a single interface."""
+
+from dataclasses import dataclass
+
+from database import ensure_user, get_connection, json_dumps, new_id, now_iso, row_to_dict
+from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
+from services.risk_review_service import create_risk_review_record
+from services.risk_service import check_text_risk
+from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
+
+
+class AssessmentSubmissionError(ValueError):
+    """A client-visible assessment answer validation failure."""
+
+    def __init__(self, code: str, message: str):
+        super().__init__(message)
+        self.code = code
+        self.message = message
+
+
+@dataclass(frozen=True)
+class AssessmentExecutionResult:
+    answers: list[dict]
+    scores: dict
+    total_score: int | float | None
+    text_values: list[str]
+
+
+def submit_assessment(
+    worksheet: dict,
+    submitted_answers: list[dict],
+    *,
+    user_id: str,
+    nickname: str | None = None,
+    result_summary: str | None = None,
+) -> dict:
+    """Validate, score, risk-check, save, profile, and recommend in one module."""
+
+    execution = execute_assessment(worksheet, submitted_answers)
+    answers = execution.answers
+    scores = execution.scores
+    risk_result = check_text_risk(execution.text_values, source="assessment") if execution.text_values else None
+    if risk_result:
+        scores["risk"] = {
+            "risk_level": risk_result.get("risk_level"),
+            "requires_review": risk_result.get("requires_review"),
+            "allow_recommended_training_cards": risk_result.get("allow_recommended_training_cards"),
+        }
+
+    result_id = new_id("assessment")
+    summary = result_summary or worksheet.get("result_disclaimer") or "本次内容已保存。结果仅用于自我观察和练习记录，不构成诊断。"
+    if risk_result and not risk_result.get("allow_auto_feedback", True):
+        summary = risk_result.get("safe_response") or summary
+
+    with get_connection() as conn:
+        ensure_user(conn, user_id, nickname)
+        conn.execute(
+            """
+            INSERT INTO assessment_results (
+                id, user_id, worksheet_id, worksheet_title, category,
+                answers_json, scores_json, total_score, result_summary, created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                result_id,
+                user_id,
+                worksheet["id"],
+                worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
+                worksheet.get("category"),
+                json_dumps(answers),
+                json_dumps(scores),
+                execution.total_score,
+                summary,
+                now_iso(),
+            ),
+        )
+        create_risk_review_record(conn, user_id, "assessment_result", result_id, risk_result)
+        row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
+        result_row = row_to_dict(row)
+        if result_row:
+            result_row["answers"] = answers
+            try:
+                position = build_assessment_profile_position(result_row, worksheet)
+                _backfill_profile_position(conn, result_id, position)
+                row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
+            except ProfilePositionUnavailable:
+                pass
+        conn.commit()
+
+    result = row_to_dict(row)
+    result["answers"] = answers
+    result["scores"] = scores
+    training_rules = evaluate_training_rules(
+        worksheet["id"],
+        scores,
+        worksheet=worksheet,
+        risk_result=risk_result,
+        user_id=user_id,
+    )
+    recommended_card_ids = flatten_card_ids(training_rules) or worksheet.get("recommended_card_ids", [])
+    if risk_result and not risk_result.get("allow_recommended_training_cards", True):
+        recommended_card_ids = []
+        training_rules = []
+    result["recommended_card_ids"] = recommended_card_ids
+    result["training_recommendation_rules"] = training_rules
+    result["risk"] = risk_result
+    result["boundary_notice"] = worksheet.get("boundary_notice")
+    result["result_disclaimer"] = worksheet.get("result_disclaimer")
+    return result
+
+
+def execute_assessment(worksheet: dict, submitted_answers: list[dict]) -> AssessmentExecutionResult:
+    """Return canonical answers and server-calculated scores for a worksheet."""
+
+    if not isinstance(submitted_answers, list):
+        raise AssessmentSubmissionError("invalid_answers", "answers 必须是数组")
+
+    questions = worksheet.get("questions") or []
+    question_map = {question.get("id"): question for question in questions if question.get("id")}
+    seen: set[str] = set()
+    answers: list[dict] = []
+
+    for submitted in submitted_answers:
+        if not isinstance(submitted, dict):
+            raise AssessmentSubmissionError("invalid_answer", "每一项回答都必须是对象")
+        question_id = submitted.get("question_id")
+        if not isinstance(question_id, str):
+            raise AssessmentSubmissionError("unknown_question_id", f"题号不存在：{question_id}")
+        if question_id not in question_map:
+            raise AssessmentSubmissionError("unknown_question_id", f"题号不存在：{question_id}")
+        if question_id in seen:
+            raise AssessmentSubmissionError("duplicate_question_id", f"题号重复：{question_id}")
+        seen.add(question_id)
+
+        question = question_map[question_id]
+        value = submitted.get("value")
+        options = question.get("options") or []
+        canonical = {
+            "question_id": question_id,
+            "prompt": question.get("prompt") or submitted.get("prompt"),
+        }
+        if options:
+            option = next(
+                (candidate for candidate in options if str(candidate.get("value")) == str(value)),
+                None,
+            )
+            if option is None:
+                raise AssessmentSubmissionError("invalid_option_value", f"题目 {question_id} 的选项无效")
+            canonical["value"] = option.get("value")
+            score = option.get("score")
+            if isinstance(score, (int, float)) and not isinstance(score, bool):
+                canonical["score"] = score
+        else:
+            if question.get("required") and not str(value or "").strip():
+                raise AssessmentSubmissionError("missing_required_answers", f"必答题未填写：{question_id}")
+            canonical["value"] = value
+        answers.append(canonical)
+
+    missing_ids = [
+        question["id"]
+        for question in questions
+        if question.get("required") and question.get("id") not in seen
+    ]
+    if missing_ids:
+        raise AssessmentSubmissionError(
+            "missing_required_answers",
+            f"缺少必答题：{', '.join(missing_ids)}",
+        )
+
+    scores, total_score = score_answers(worksheet, answers)
+    text_values = [
+        str(answer.get("value", "")).strip()
+        for answer in answers
+        if str(answer.get("value", "")).strip() and "score" not in answer
+    ]
+    return AssessmentExecutionResult(answers, scores, total_score, text_values)
+
+
+def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | float | None]:
+    question_map = {question.get("id"): question for question in worksheet.get("questions", [])}
+    score_method = worksheet.get("dimension_score_method", "sum")
+    total_score_method = worksheet.get("total_score_method") or (worksheet.get("_meta") or {}).get("total_score_method", "sum")
+    total: int | float = 0
+    has_score = False
+    dimension_totals: dict[str, dict] = {}
+    item_scores: dict[str, int | float] = {}
+
+    for answer in answers:
+        question = question_map.get(answer.get("question_id"))
+        score = answer.get("score")
+        if isinstance(score, (int, float)) and not isinstance(score, bool):
+            effective = _effective_score(question, score)
+            item_scores[answer.get("question_id")] = effective
+            total += effective
+            has_score = True
+            dimension = question.get("dimension") if question else None
+            if dimension:
+                bucket = dimension_totals.setdefault(dimension, {"score": 0, "item_count": 0})
+                bucket["score"] += effective
+                bucket["item_count"] += 1
+
+    dimension_labels = _dimension_labels(worksheet)
+    dimension_specs = {
+        item.get("code") or item.get("key"): item
+        for item in worksheet.get("dimensions", [])
+        if isinstance(item, dict) and (item.get("code") or item.get("key"))
+    }
+    dimensions = []
+    dimension_scores: dict[str, int | float] = {}
+    ordered_dimension_codes = list(dimension_specs) or list(dimension_totals)
+    for dimension in ordered_dimension_codes:
+        bucket = dimension_totals.get(dimension, {"score": 0, "item_count": 0})
+        item_count = bucket["item_count"]
+        calculation = dimension_specs.get(dimension, {}).get("calculation")
+        calculated = _calculate_dimension(calculation, item_scores, dimension_scores)
+        if calculated is not None:
+            value = calculated
+            calculation_method = calculation.get("type", score_method)
+        elif score_method == "mean" and item_count:
+            value = round(bucket["score"] / item_count, 2)
+            calculation_method = score_method
+        else:
+            value = bucket["score"]
+            calculation_method = score_method
+        dimension_scores[dimension] = value
+        dimensions.append(
+            {
+                "key": dimension,
+                "label": dimension_labels.get(dimension, dimension),
+                "score": value,
+                "item_count": item_count,
+                "score_method": calculation_method,
+            }
+        )
+
+    derived_dimensions = worksheet.get("derived_dimensions") or (worksheet.get("_meta") or {}).get("derived_dimensions", [])
+    for spec in derived_dimensions:
+        if not isinstance(spec, dict) or not spec.get("code"):
+            continue
+        calculation = spec.get("calculation") or {}
+        value = _calculate_dimension(calculation, item_scores, dimension_scores)
+        if value is None:
+            continue
+        dimension_scores[spec["code"]] = value
+        dimensions.append(
+            {
+                "key": spec["code"],
+                "label": spec.get("label", spec["code"]),
+                "score": value,
+                "item_count": len(calculation.get("dimensions", [])),
+                "score_method": calculation.get("type", "derived"),
+            }
+        )
+
+    persisted_total = total if has_score and total_score_method != "none" else None
+    scores: dict = {"total_score": persisted_total}
+    if dimensions:
+        scores["dimensions"] = dimensions
+    return scores, persisted_total
+
+
+def _option_score_bounds(question: dict) -> tuple[int | float, int | float] | None:
+    scores = [
+        option.get("score")
+        for option in question.get("options", [])
+        if isinstance(option.get("score"), (int, float)) and not isinstance(option.get("score"), bool)
+    ]
+    return (min(scores), max(scores)) if scores else None
+
+
+def _effective_score(question: dict | None, score: int | float) -> int | float:
+    if question and question.get("reverse_scored"):
+        bounds = _option_score_bounds(question)
+        if bounds:
+            low, high = bounds
+            return low + high - score
+    return score
+
+
+def _rounded(value: float) -> int | float:
+    rounded = round(value, 2)
+    return int(rounded) if rounded.is_integer() else rounded
+
+
+def _calculate_dimension(calculation: dict | None, item_scores: dict, dimension_scores: dict) -> int | float | None:
+    if not calculation:
+        return None
+    calculation_type = calculation.get("type")
+    if calculation_type == "product":
+        values = [item_scores.get(item) for item in calculation.get("items", [])]
+        if not values or any(value is None for value in values):
+            return None
+        product = 1
+        for value in values:
+            product *= value
+        return _rounded(float(product))
+    if calculation_type == "mean_of_products":
+        products = []
+        for pair in calculation.get("pairs", []):
+            values = [item_scores.get(item) for item in pair]
+            if values and all(value is not None for value in values):
+                product = 1
+                for value in values:
+                    product *= value
+                products.append(product)
+        return _rounded(sum(products) / len(products)) if products else None
+    if calculation_type == "mean_terms":
+        values = []
+        for term in calculation.get("terms", []):
+            value = item_scores.get(term.get("item"))
+            if value is None:
+                continue
+            if term.get("reverse_min") is not None and term.get("reverse_max") is not None:
+                value = term["reverse_min"] + term["reverse_max"] - value
+            values.append(value)
+        return _rounded(sum(values) / len(values)) if values else None
+    if calculation_type == "mean_dimensions":
+        values = [dimension_scores.get(code) for code in calculation.get("dimensions", [])]
+        values = [value for value in values if value is not None]
+        return _rounded(sum(values) / len(values)) if values else None
+    return None
+
+
+def _dimension_labels(worksheet: dict) -> dict[str, str]:
+    labels: dict[str, str] = {}
+    for dimension in worksheet.get("dimensions", []) or []:
+        if isinstance(dimension, dict):
+            code = dimension.get("code") or dimension.get("key")
+            label = dimension.get("label")
+            if code and label:
+                labels[code] = label
+    return labels
+
+
+def _profile_cluster_value(position: dict | None) -> int | None:
+    cluster_id = (position or {}).get("cluster_id")
+    if cluster_id is None or cluster_id == "":
+        return None
+    try:
+        return int(cluster_id)
+    except (TypeError, ValueError):
+        return None
+
+
+def _backfill_profile_position(conn, result_id: str, position: dict) -> None:
+    position_data = position.get("position") or {}
+    conn.execute(
+        """
+        UPDATE assessment_results SET
+            profile_model_id = ?,
+            profile_cluster_id = ?,
+            profile_pc1 = ?,
+            profile_pc2 = ?,
+            profile_confidence = ?
+        WHERE id = ?
+        """,
+        (
+            position.get("model_id"),
+            _profile_cluster_value(position_data),
+            position_data.get("pc1"),
+            position_data.get("pc2"),
+            position_data.get("confidence"),
+            result_id,
+        ),
+    )

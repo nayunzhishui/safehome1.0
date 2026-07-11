@@ -166,6 +166,78 @@
   background: var(--safe-primary-pale);
 }
 
+.measurement-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.measurement-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.measurement-status {
+  flex: 0 0 auto;
+  padding: 6rpx 14rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-orange-soft);
+  color: var(--safe-orange);
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.measurement-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.measurement-point {
+  display: grid;
+  grid-template-columns: 116rpx minmax(0, 1fr);
+  gap: 16rpx;
+  padding: 18rpx;
+  border-left: 6rpx solid var(--safe-primary);
+  background: var(--safe-bg-leaf);
+}
+
+.measurement-label {
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 850;
+}
+
+.measurement-description,
+.measurement-boundary {
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.outcome-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.outcome-chip {
+  padding: 6rpx 14rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-blue-soft);
+  color: var(--safe-blue);
+  font-size: 22rpx;
+  font-weight: 750;
+}
+
+.measurement-boundary {
+  padding: 18rpx;
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-primary-pale);
+}
+
 .submit-block {
   display: flex;
   flex-direction: column;

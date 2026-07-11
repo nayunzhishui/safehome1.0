@@ -1,117 +1,42 @@
-"""Offline social-network prototype for SafeHome family-link data.
-
-Outputs hashed nodes and aggregate graph metrics only.
-"""
+"""Legacy CLI for the family topology audit; no longer exports hashed nodes."""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import sqlite3
-from collections import Counter, defaultdict, deque
+import os
+import sys
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DB = PROJECT_ROOT / "backend" / "safehome.sqlite3"
-DEFAULT_OUTPUT_DIR = Path(r"D:\codex\workspace\safehome1.0其他内容\画像系统设计_Claude_20260628\07_情感计算与SNA雏形_20260701")
+TEXT_ANALYSIS_DIR = PROJECT_ROOT / "analysis" / "text_analysis"
+if str(TEXT_ANALYSIS_DIR) not in sys.path:
+    sys.path.insert(0, str(TEXT_ANALYSIS_DIR))
 
-
-def hash_id(value: str) -> str:
-    return hashlib.sha256(str(value).encode("utf-8")).hexdigest()[:12]
-
-
-def table_exists(conn: sqlite3.Connection, table: str) -> bool:
-    row = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone()
-    return bool(row)
-
-
-def collect_edges(db_path: Path) -> list[dict]:
-    if not db_path.exists():
-        return []
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    if not table_exists(conn, "family_links"):
-        conn.close()
-        return []
-    rows = conn.execute(
-        """
-        SELECT parent_user_id, student_user_id, relation_label, status, created_at, confirmed_at, revoked_at
-        FROM family_links
-        WHERE parent_user_id IS NOT NULL AND student_user_id IS NOT NULL
-        """
-    ).fetchall()
-    conn.close()
-    return [dict(row) for row in rows]
-
-
-def connected_components(graph: dict[str, set[str]]) -> list[list[str]]:
-    seen = set()
-    components = []
-    for node in graph:
-        if node in seen:
-            continue
-        queue = deque([node])
-        seen.add(node)
-        component = []
-        while queue:
-            current = queue.popleft()
-            component.append(current)
-            for neighbor in graph[current]:
-                if neighbor not in seen:
-                    seen.add(neighbor)
-                    queue.append(neighbor)
-        components.append(sorted(component))
-    return components
-
-
-def build_summary(edges: list[dict]) -> dict:
-    graph: dict[str, set[str]] = defaultdict(set)
-    status_counts = Counter()
-    relation_counts = Counter()
-    edge_rows = []
-    for edge in edges:
-        parent = hash_id(edge.get("parent_user_id"))
-        student = hash_id(edge.get("student_user_id"))
-        graph[parent].add(student)
-        graph[student].add(parent)
-        status_counts[edge.get("status") or "unknown"] += 1
-        relation_counts[edge.get("relation_label") or "unknown"] += 1
-        edge_rows.append(
-            {
-                "source": parent,
-                "target": student,
-                "status": edge.get("status"),
-                "relation_label": edge.get("relation_label"),
-            }
-        )
-
-    degree = [{"node": node, "degree": len(neighbors)} for node, neighbors in sorted(graph.items())]
-    components = connected_components(graph)
-    return {
-        "schema_version": "2026-07-01-sna-prototype-v1",
-        "privacy_note": "节点已哈希化，仅输出关系结构摘要，不包含真实身份、联系方式或原始文本。",
-        "node_count": len(graph),
-        "edge_count": len(edge_rows),
-        "status_counts": dict(status_counts),
-        "relation_counts": dict(relation_counts),
-        "degree": degree,
-        "components": [{"size": len(component), "nodes": component} for component in components],
-        "edges": edge_rows,
-    }
+from analyze_text_sources import DEFAULT_DB  # noqa: E402
+from build_family_topology_audit import build_topology_summary, collect_edges  # noqa: E402
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="兼容入口：原社会网络原型已明确为家庭关系拓扑审计。")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB)
-    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--output-dir", type=Path, default=PROJECT_ROOT / "outputs" / "text_analysis")
+    parser.add_argument("--minimum-group-size", type=int, default=5)
     args = parser.parse_args()
+    secret = os.environ.get("SAFEHOME_ANALYSIS_HMAC_KEY", "")
+    if not secret:
+        raise SystemExit("请通过 SAFEHOME_ANALYSIS_HMAC_KEY 提供运行级 HMAC 密钥。")
+    payload = build_topology_summary(
+        collect_edges(args.db),
+        secret=secret.encode("utf-8"),
+        minimum_group_size=max(2, args.minimum_group_size),
+    )
+    payload["legacy_entrypoint"] = "analysis/profiling/social_network_prototype.py"
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    payload = build_summary(collect_edges(args.db))
-    output_path = args.output_dir / "社会网络脱敏摘要.json"
-    output_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(output_path)
+    output = args.output_dir / "family_topology_audit_summary.json"
+    output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(output)
     return 0
 
 

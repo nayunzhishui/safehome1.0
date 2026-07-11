@@ -137,7 +137,10 @@ def test_assessment_export_only_includes_active_assessment_ids(tmp_path):
         json={
             "user_id": user_id,
             "worksheet_id": "student_profile_v1",
-            "answers": [{"question_id": "test_anxiety", "prompt": "测试题", "value": "2", "score": 2}],
+            "answers": [
+                {"question_id": question_id, "value": "2"}
+                for question_id in ["test_anxiety", "iu_score", "fear_score", "self_compassion"]
+            ],
         },
     )
     assert active_response.status_code == 201

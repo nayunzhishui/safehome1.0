@@ -82,4 +82,10 @@ def test_generated_models_do_not_contain_row_level_training_points(tmp_path):
         assert payload["features"]
         assert payload["clusters"]
         assert payload["radar_support"]["dimensions"]
+        assert payload["admission_status"] == "pilot_approved"
+        assert payload["assignment_version"] == "gmm_diag_posterior_v1"
+        assert len(payload["mixture_weights"]) == payload["chosen_k"]
+        assert len(payload["diag_covariances"]) == payload["chosen_k"]
+        assert payload["assignment_thresholds"]["calibration_source"] == "training_empirical_exploratory"
+        assert len({cluster["profile_name"] for cluster in payload["clusters"]}) == payload["chosen_k"]
         assert all(cluster["suggested_assessment_questions"] for cluster in payload["clusters"])

@@ -91,3 +91,25 @@ def test_production_rejects_missing_user_id_for_query_endpoints(tmp_path, monkey
         assert response.status_code in {400, 401}, path
         assert body["error"]["code"] in {"validation_error", "unauthorized"}, path
         assert "匿名 user_id" in body["error"]["message"] or "登录" in body["error"]["message"] or "需要先登录" in body["error"]["message"], path
+
+
+def test_production_rejects_body_and_query_user_id_without_signed_actor(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch, "production")
+    client = app.test_client()
+
+    responses = [
+        client.post(
+            "/api/goals",
+            json={"user_id": "spoofed-user", "scene": "作业拖延", "smart_goal": "先记录一次"},
+        ),
+        client.get("/api/goals?user_id=spoofed-user"),
+        client.post(
+            "/api/consent",
+            json={"user_id": "spoofed-user", "consent_type": "privacy_policy", "agreed": True},
+        ),
+    ]
+
+    for response in responses:
+        assert response.status_code in {400, 401}
+        assert response.get_json()["error"]["code"] in {"validation_error", "unauthorized"}
+        assert "登录" in response.get_json()["error"]["message"]

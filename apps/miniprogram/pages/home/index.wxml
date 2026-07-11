@@ -55,6 +55,13 @@
   <view class="safe-section">
     <section-title title="更多" subtitle="" />
     <view class="quick-list">
+      <button class="quick-list-row" data-key="feedback" bindtap="openCoreEntry">
+        <view class="quick-list-copy">
+          <text class="quick-list-title">支持性反馈</text>
+          <text class="quick-list-sub">查看上次记录的互动线索</text>
+        </view>
+        <text class="quick-list-arrow">›</text>
+      </button>
       <button class="quick-list-row" data-key="training" bindtap="openCoreEntry">
         <view class="quick-list-copy">
           <text class="quick-list-title">训练中心</text>
@@ -62,10 +69,10 @@
         </view>
         <text class="quick-list-arrow">›</text>
       </button>
-      <button class="quick-list-row" data-key="feedback" bindtap="openCoreEntry">
+      <button class="quick-list-row" data-key="supervision" bindtap="openCoreEntry">
         <view class="quick-list-copy">
-          <text class="quick-list-title">支持性反馈</text>
-          <text class="quick-list-sub">查看上次记录的互动线索</text>
+          <text class="quick-list-title">人工支持</text>
+          <text class="quick-list-sub">提交补充反馈请求，非实时危机服务</text>
         </view>
         <text class="quick-list-arrow">›</text>
       </button>

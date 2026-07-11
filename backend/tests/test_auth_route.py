@@ -158,6 +158,7 @@ def test_admin_create_account_rejects_unknown_role(tmp_path, monkeypatch):
 
 
 def test_production_wechat_login_uses_cloudbase_identity_headers_without_secret(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")
     client = app.test_client()
 
@@ -174,7 +175,36 @@ def test_production_wechat_login_uses_cloudbase_identity_headers_without_secret(
     assert body["data"]["identity_source"] == "cloudbase_header"
 
 
+def test_cloudbase_identity_headers_are_ignored_without_explicit_trust(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    client = app.test_client()
+
+    response = client.post(
+        "/api/auth/wechat-login",
+        headers={"X-WX-OPENID": "spoofed-openid", "X-WX-SOURCE": "wx-cloudbase"},
+        json={"nickname": "伪造请求"},
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"]["code"] == "validation_error"
+
+
+def test_cloudbase_identity_requires_exact_source_and_valid_openid(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    client = app.test_client()
+
+    for headers in [
+        {"X-WX-OPENID": "valid-openid-1", "X-WX-SOURCE": "public-http"},
+        {"X-WX-OPENID": "bad openid", "X-WX-SOURCE": "wx-cloudbase"},
+    ]:
+        response = client.post("/api/auth/wechat-login", headers=headers, json={})
+        assert response.status_code == 400
+        assert response.get_json()["error"]["code"] == "validation_error"
+
+
 def test_phone_login_creates_and_reuses_verified_phone_without_storing_raw(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
     auth_module = importlib.import_module("routes.auth")

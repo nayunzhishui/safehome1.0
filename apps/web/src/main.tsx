@@ -1,7 +1,8 @@
 import React, { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 
-import { getStoredAuthUser } from "./services/authState";
+import { clearAuthSession, getStoredAuthToken, saveAuthSession, type AuthUser } from "./services/authState";
+import { safeHomeApi, SafeHomeApiError } from "./services/safehomeApi";
 import "./styles.css";
 
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard").then((module) => ({ default: module.AdminDashboard })));
@@ -68,8 +69,7 @@ const publicLinks: AdminLink[] = [
   { href: "/register", label: "注册", match: (p) => p === "/register" },
 ];
 
-function visibleLinks(): AdminLink[] {
-  const user = getStoredAuthUser();
+function visibleLinks(user: AuthUser | null): AdminLink[] {
   if (!user || !user.role) return publicLinks;
   return allAdminLinks.filter((link) => !link.roles || link.roles.includes(user.role));
 }
@@ -78,9 +78,8 @@ function findAdminLink(path: string): AdminLink | undefined {
   return allAdminLinks.find((link) => link.match(path));
 }
 
-function canAccessPath(link?: AdminLink): boolean {
+function canAccessPath(link: AdminLink | undefined, user: AuthUser | null): boolean {
   if (!link || !link.roles) return true;
-  const user = getStoredAuthUser();
   return Boolean(user?.role && link.roles.includes(user.role));
 }
 
@@ -89,7 +88,7 @@ function AccessDeniedPage({ path, allowedRoles }: { path: string; allowedRoles: 
     <section className="dashboardShell" aria-label="权限不足">
       <div className="dashboardHeader">
         <div>
-          <p className="eyebrow">Access Control</p>
+          <p className="eyebrow">访问权限</p>
           <h1>当前账号不能访问此页面</h1>
           <p className="summary">内容审核后台只向对应后台角色开放。家长和学生账号不可访问内容审核、规则审核或量表审核页面。</p>
         </div>
@@ -103,7 +102,7 @@ function AccessDeniedPage({ path, allowedRoles }: { path: string; allowedRoles: 
         </div>
       </div>
 
-      <div className="status error">当前路径：{path}</div>
+      <div className="status error" role="alert">此页面未向当前账号开放。</div>
 
       <section className="guidanceBox" aria-label="权限说明">
         <h2>权限说明</h2>
@@ -122,7 +121,7 @@ function RouteFallback() {
   );
 }
 
-function App() {
+function App({ authUser }: { authUser: AuthUser | null }) {
   const path = window.location.pathname;
   const isLandingPath = path === "/";
   const isAboutStudyPath = path === "/about-study";
@@ -167,7 +166,7 @@ function App() {
     "/family",
   ].some((route) => path === route || path.startsWith(`${route}/`));
   const matchedAdminLink = findAdminLink(path);
-  const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink);
+  const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink, authUser);
   const shouldRenderDeferredAdmin =
     isKnownAdminPath &&
     !isDashboardPath &&
@@ -178,6 +177,7 @@ function App() {
     !isReportsPath &&
     !isProfilesPath &&
     !isReviewsPath &&
+    !isFamilyPath &&
     !isSupervisionPath &&
     !isContentReviewPath &&
     !isScalesPath &&
@@ -225,11 +225,18 @@ function App() {
   const suspendedPageContent = <Suspense fallback={<RouteFallback />}>{pageContent}</Suspense>;
 
   if (!isKnownAdminPath) {
-    return <main className="page landingMode">{suspendedPageContent}</main>;
+    return (
+      <>
+        <a className="skipLink" href="#main-content">跳到主要内容</a>
+        <main className="page landingMode" id="main-content">{suspendedPageContent}</main>
+      </>
+    );
   }
 
   return (
-    <main className="adminWorkspace">
+    <>
+      <a className="skipLink" href="#main-content">跳到主要内容</a>
+      <main className="adminWorkspace" id="main-content">
       <aside className="adminSidebar" aria-label="后台导航">
         <a className="adminBrand" href="/dashboard" aria-label="安心陪伴管理后台">
           <span className="adminBrandMark" aria-hidden="true" />
@@ -239,7 +246,7 @@ function App() {
           </span>
         </a>
         <nav className="adminNav" aria-label="后台功能导航">
-          {visibleLinks().map((link) => (
+          {visibleLinks(authUser).map((link) => (
             <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
               <span className="navDot" aria-hidden="true" />
               {link.label}
@@ -267,12 +274,38 @@ function App() {
         </header>
         {suspendedPageContent}
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 
-createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+const root = createRoot(document.getElementById("root") as HTMLElement);
+
+function renderApp(authUser: AuthUser | null) {
+  root.render(
+    <React.StrictMode>
+      <App authUser={authUser} />
+    </React.StrictMode>,
+  );
+}
+
+async function bootstrapAuth() {
+  const token = getStoredAuthToken();
+  if (!token) {
+    renderApp(null);
+    return;
+  }
+
+  try {
+    const user = await safeHomeApi.getCurrentUser();
+    saveAuthSession(token, user);
+    renderApp(user);
+  } catch (error) {
+    if (error instanceof SafeHomeApiError && error.status === 401) {
+      clearAuthSession();
+    }
+    renderApp(null);
+  }
+}
+
+void bootstrapAuth();

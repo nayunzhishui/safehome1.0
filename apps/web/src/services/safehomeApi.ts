@@ -109,6 +109,11 @@ export class SafeHomeApiClient {
     return data;
   }
 
+  async getCurrentUser(): Promise<AuthUser> {
+    const data = await this.requestData<{ user: AuthUser }>(API_ENDPOINTS.authMe);
+    return data.user;
+  }
+
   createGoal(input: GoalInput): Promise<Goal> {
     return this.requestData<Goal>(API_ENDPOINTS.goals, {
       method: "POST",

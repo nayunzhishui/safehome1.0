@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,7 @@ from database import json_loads
 
 LOW_CONFIDENCE_THRESHOLD = 0.15
 OUTLIER_DISTANCE_FACTOR = 1.75
+ALLOWED_ADMISSION_STATUSES = {"pilot_approved", "production_approved"}
 
 
 class ProfilePositionUnavailable(ValueError):
@@ -41,8 +43,28 @@ def _load_models() -> list[dict[str, Any]]:
     return models
 
 
-def _is_connectable_model(model: dict[str, Any]) -> bool:
-    return model.get("worksheet_link_status") != "manual_review_required"
+def compute_model_artifact_hash(model: dict[str, Any]) -> str:
+    material = {key: value for key, value in model.items() if key != "artifact_hash"}
+    canonical = json.dumps(material, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def model_artifact_hash_is_valid(model: dict[str, Any]) -> bool:
+    expected = model.get("artifact_hash")
+    return isinstance(expected, str) and len(expected) == 64 and expected == compute_model_artifact_hash(model)
+
+
+def model_is_connectable(model: dict[str, Any]) -> bool:
+    """Return whether a governed model may be used for automatic matching."""
+
+    return (
+        model.get("admission_status") in ALLOWED_ADMISSION_STATUSES
+        and model.get("worksheet_link_status") != "manual_review_required"
+        and model_artifact_hash_is_valid(model)
+    )
+
+
+_is_connectable_model = model_is_connectable
 
 
 def _choose_model(worksheet: dict[str, Any], requested_model_id: str | None = None) -> dict[str, Any] | None:
@@ -181,27 +203,120 @@ def _confidence(nearest: float, second: float | None) -> float:
     return round(max(0.0, min(1.0, (second - nearest) / denominator)), 3)
 
 
-def _interpretation_guard(nearest: float, confidence: float, feature_count: int) -> dict[str, Any]:
-    distance_threshold = math.sqrt(max(feature_count, 1)) * OUTLIER_DISTANCE_FACTOR
-    if nearest > distance_threshold:
+def _normalized_entropy(probabilities: list[float]) -> float:
+    if len(probabilities) <= 1:
+        return 0.0
+    entropy = -sum(value * math.log(value) for value in probabilities if value > 0)
+    return round(max(0.0, min(1.0, entropy / math.log(len(probabilities)))), 4)
+
+
+def assign_profile_cluster(model: dict[str, Any], feature_ids: list[str], z_lookup: dict[str, float]) -> dict[str, Any]:
+    """Assign one standardized vector using the artifact's declared algorithm."""
+
+    clusters = [cluster for cluster in model.get("clusters", []) if isinstance(cluster, dict)]
+    if not clusters:
+        raise ProfilePositionUnavailable("画像模型缺少可比较的聚类中心。")
+
+    method = model.get("selected_method")
+    weights = model.get("mixture_weights") or []
+    covariances = model.get("diag_covariances") or []
+    if method == "gaussian_mixture" and len(weights) == len(clusters) == len(covariances):
+        log_probabilities = []
+        mahalanobis_distances = []
+        for index, cluster in enumerate(clusters):
+            center = cluster.get("center_z") or {}
+            covariance = covariances[index]
+            if isinstance(covariance, list):
+                covariance = dict(zip(feature_ids, covariance))
+            mahalanobis_squared = 0.0
+            log_determinant = 0.0
+            used = 0
+            for feature_id in feature_ids:
+                if feature_id not in center or feature_id not in covariance:
+                    continue
+                variance = max(float(covariance[feature_id]), 1e-9)
+                difference = float(z_lookup[feature_id]) - float(center[feature_id])
+                mahalanobis_squared += difference * difference / variance
+                log_determinant += math.log(variance)
+                used += 1
+            if not used:
+                log_probabilities.append(-math.inf)
+                mahalanobis_distances.append(math.inf)
+                continue
+            log_probability = math.log(max(float(weights[index]), 1e-12)) - 0.5 * (
+                used * math.log(2 * math.pi) + log_determinant + mahalanobis_squared
+            )
+            log_probabilities.append(log_probability)
+            mahalanobis_distances.append(math.sqrt(mahalanobis_squared))
+        maximum = max(log_probabilities)
+        exponentials = [math.exp(value - maximum) if math.isfinite(value) else 0.0 for value in log_probabilities]
+        total = sum(exponentials)
+        probabilities = [value / total for value in exponentials] if total else [1 / len(clusters)] * len(clusters)
+        order = sorted(range(len(clusters)), key=lambda index: probabilities[index], reverse=True)
+        selected = order[0]
+        return {
+            "cluster": clusters[selected],
+            "posterior": round(probabilities[selected], 6),
+            "normalized_entropy": _normalized_entropy(probabilities),
+            "mahalanobis_distance": round(mahalanobis_distances[selected], 6),
+            "nearest_distance": round(_distance_to_center(clusters[selected], feature_ids, z_lookup), 6),
+            "second_distance": round(_distance_to_center(clusters[order[1]], feature_ids, z_lookup), 6) if len(order) > 1 else None,
+            "probabilities": [round(value, 6) for value in probabilities],
+            "assignment_version": model.get("assignment_version") or "gmm_diag_posterior_v1",
+        }
+
+    distances = [(_distance_to_center(cluster, feature_ids, z_lookup), cluster) for cluster in clusters]
+    distances.sort(key=lambda item: item[0])
+    nearest, cluster = distances[0]
+    second = distances[1][0] if len(distances) > 1 else None
+    confidence = _confidence(nearest, second)
+    return {
+        "cluster": cluster,
+        "posterior": confidence,
+        "normalized_entropy": None,
+        "mahalanobis_distance": nearest,
+        "nearest_distance": nearest,
+        "second_distance": second,
+        "probabilities": [],
+        "assignment_version": model.get("assignment_version") or "euclidean_center_v1",
+    }
+
+
+def interpretation_guard(model: dict[str, Any], assignment: dict[str, Any]) -> dict[str, Any]:
+    approval = model.get("interpretation_approval_status", "pending_researcher_review")
+    if approval not in {"pilot_approved", "production_approved"}:
+        return {
+            "status": "pending_approval",
+            "can_use_interpretation": False,
+            "message": "该画像解释仍在研究者审核中，本次只显示本人维度位置，不显示画像名称或自动任务建议。",
+        }
+    thresholds = model.get("assignment_thresholds") or {}
+    max_mahalanobis = float(thresholds.get("max_mahalanobis", math.sqrt(max(int(model.get("n_features") or 1), 1)) * OUTLIER_DISTANCE_FACTOR))
+    min_posterior = float(thresholds.get("min_posterior", LOW_CONFIDENCE_THRESHOLD))
+    max_entropy = float(thresholds.get("max_entropy", 1.0))
+    if float(assignment.get("mahalanobis_distance") or 0) > max_mahalanobis:
         return {
             "status": "outlier",
             "can_use_interpretation": False,
-            "message": "本次填写结果距离既往样本的主要画像中心较远，因此不做明确画像解释，只保留位置参考。",
-            "distance_threshold": round(float(distance_threshold), 4),
+            "message": "本次结果与建模样本的常见范围距离较远，因此只保留维度位置，不做画像解释。",
+            "max_mahalanobis": max_mahalanobis,
         }
-    if confidence < LOW_CONFIDENCE_THRESHOLD:
+    entropy = assignment.get("normalized_entropy")
+    if float(assignment.get("posterior") or 0) < min_posterior or (entropy is not None and float(entropy) > max_entropy):
         return {
             "status": "low_confidence",
             "can_use_interpretation": False,
-            "message": "本次填写结果和多个画像中心的距离接近，因此不做明确画像判断，只作为阶段性观察线索。",
-            "distance_threshold": round(float(distance_threshold), 4),
+            "message": "本次结果与多个聚合位置接近，因此只保留维度位置，不做明确画像判断。",
+            "min_posterior": min_posterior,
+            "max_entropy": max_entropy,
         }
     return {
         "status": "usable",
         "can_use_interpretation": True,
-        "message": "本次画像匹配达到最低解释条件。",
-        "distance_threshold": round(float(distance_threshold), 4),
+        "message": "本次画像匹配达到当前试点的最低解释条件。",
+        "min_posterior": min_posterior,
+        "max_entropy": max_entropy,
+        "max_mahalanobis": max_mahalanobis,
     }
 
 
@@ -243,28 +358,22 @@ def build_assessment_profile_position(
 
     feature_ids = [str(feature.get("feature_id")) for feature in features]
     z_values = [z_lookup[feature_id] for feature_id in feature_ids]
-    cluster_distances = [
-        (_distance_to_center(cluster, feature_ids, z_lookup), cluster)
-        for cluster in model.get("clusters", [])
-        if isinstance(cluster, dict)
-    ]
-    cluster_distances = sorted(cluster_distances, key=lambda item: item[0])
-    if not cluster_distances:
-        raise ProfilePositionUnavailable("画像模型缺少可比较的聚类中心。")
-
-    nearest_distance, nearest_cluster = cluster_distances[0]
-    second_distance = cluster_distances[1][0] if len(cluster_distances) > 1 else None
+    assignment = assign_profile_cluster(model, feature_ids, z_lookup)
+    nearest_cluster = assignment["cluster"]
+    nearest_distance = assignment["nearest_distance"]
+    second_distance = assignment["second_distance"]
     pca = _pca_position(model, z_values)
-    confidence = _confidence(nearest_distance, second_distance)
-    interpretation_guard = _interpretation_guard(nearest_distance, confidence, len(features))
+    confidence = assignment["posterior"]
+    guard = interpretation_guard(model, assignment)
     profile_name = nearest_cluster.get("profile_name") or f"画像{nearest_cluster.get('cluster_id', '')}"
-    if interpretation_guard["can_use_interpretation"]:
+    if guard["can_use_interpretation"]:
         explanation = (
             f"您当前的填写结果在本研究组中更接近「{profile_name}」。"
             "这个位置表示与既往样本题项组合的相对接近程度，只用于支持性理解和后续练习参考，不代表诊断或固定标签。"
         )
     else:
-        explanation = interpretation_guard["message"]
+        explanation = guard["message"]
+    visible_profile_name = profile_name if guard["can_use_interpretation"] else None
 
     return {
         "available": True,
@@ -283,34 +392,38 @@ def build_assessment_profile_position(
             "pc2": pca["pc2"],
             "cluster_id": nearest_cluster.get("cluster_id"),
             "profile_id": nearest_cluster.get("profile_id"),
-            "profile_name": profile_name,
-            "display_name": nearest_cluster.get("display_name"),
+            "profile_name": visible_profile_name,
+            "display_name": nearest_cluster.get("display_name") if guard["can_use_interpretation"] else None,
             "nearest_distance": round(float(nearest_distance), 4),
             "second_distance": round(float(second_distance), 4) if second_distance is not None else None,
             "confidence": confidence,
-            "interpretation_status": interpretation_guard["status"],
-            "can_use_interpretation": interpretation_guard["can_use_interpretation"],
+            "posterior": assignment["posterior"],
+            "normalized_entropy": assignment["normalized_entropy"],
+            "mahalanobis_distance": assignment["mahalanobis_distance"],
+            "assignment_version": assignment["assignment_version"],
+            "interpretation_status": guard["status"],
+            "can_use_interpretation": guard["can_use_interpretation"],
         },
-        "interpretation": interpretation_guard,
+        "interpretation": guard,
         "radar_support": model.get("radar_support", {}),
-        "suggested_assessment_questions": nearest_cluster.get("suggested_assessment_questions", []),
-        "recommended_project_tasks": nearest_cluster.get("recommended_project_tasks", []),
+        "suggested_assessment_questions": nearest_cluster.get("suggested_assessment_questions", []) if guard["can_use_interpretation"] else [],
+        "recommended_project_tasks": nearest_cluster.get("recommended_project_tasks", []) if guard["can_use_interpretation"] else [],
         "clusters": [
             {
                 "cluster_id": cluster.get("cluster_id"),
                 "profile_id": cluster.get("profile_id"),
-                "profile_name": cluster.get("profile_name"),
-                "display_name": cluster.get("display_name"),
+                "profile_name": cluster.get("profile_name") if guard["can_use_interpretation"] else None,
+                "display_name": cluster.get("display_name") if guard["can_use_interpretation"] else None,
                 "n": cluster.get("n"),
                 "percent": cluster.get("percent"),
                 "pca_centroid": cluster.get("pca_centroid"),
-                "supportive_explanation": cluster.get("supportive_explanation"),
+                "supportive_explanation": cluster.get("supportive_explanation") if guard["can_use_interpretation"] else None,
                 "dimension_means": cluster.get("dimension_means", {}),
                 "dimension_z": cluster.get("dimension_z", {}),
-                "suggested_assessment_questions": cluster.get("suggested_assessment_questions", []),
-                "recommended_project_tasks": cluster.get("recommended_project_tasks", []),
-                "recommended_card_ids": cluster.get("recommended_card_ids", []),
-                "card_reason": cluster.get("card_reason", ""),
+                "suggested_assessment_questions": cluster.get("suggested_assessment_questions", []) if guard["can_use_interpretation"] else [],
+                "recommended_project_tasks": cluster.get("recommended_project_tasks", []) if guard["can_use_interpretation"] else [],
+                "recommended_card_ids": cluster.get("recommended_card_ids", []) if guard["can_use_interpretation"] else [],
+                "card_reason": cluster.get("card_reason", "") if guard["can_use_interpretation"] else "",
             }
             for cluster in model.get("clusters", [])
             if isinstance(cluster, dict)
@@ -337,10 +450,10 @@ def build_assessment_profile_position(
             if str(feature.get("feature_id")) in z_lookup
         ],
         "explanation": (nearest_cluster.get("product_explanation") or explanation)
-        if interpretation_guard["can_use_interpretation"]
+        if guard["can_use_interpretation"]
         else explanation,
-        "strength_note": (nearest_cluster.get("strength_note") or "") if interpretation_guard["can_use_interpretation"] else "",
-        "small_step": (nearest_cluster.get("small_step") or "") if interpretation_guard["can_use_interpretation"] else "",
+        "strength_note": (nearest_cluster.get("strength_note") or "") if guard["can_use_interpretation"] else "",
+        "small_step": (nearest_cluster.get("small_step") or "") if guard["can_use_interpretation"] else "",
         "boundary_notice": model.get("boundary_notice")
         or "画像位置只用于群体参照和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
     }

@@ -8,6 +8,26 @@
     </view>
   </view>
 
+  <view wx:if="{{program.measurementPlan}}" class="safe-card measurement-card">
+    <view class="measurement-head">
+      <view>
+        <text class="safe-h3">项目记录节奏</text>
+        <text class="safe-caption">用于安排开始前、练习中和完成后的阶段记录。</text>
+      </view>
+      <text class="measurement-status">{{program.measurementPlan.statusLabel}}</text>
+    </view>
+    <view class="measurement-timeline">
+      <view wx:for="{{program.measurementPlan.measurement_points}}" wx:key="key" class="measurement-point">
+        <text class="measurement-label">{{item.label}}</text>
+        <text class="measurement-description">{{item.description}}</text>
+      </view>
+    </view>
+    <view class="outcome-row">
+      <text wx:for="{{program.measurementPlan.primary_outcomes}}" wx:key="*this" class="outcome-chip">{{item}}</text>
+    </view>
+    <text class="measurement-boundary">{{program.measurementPlan.boundary_notice}}</text>
+  </view>
+
   <scroll-view class="session-tabs" scroll-x="true">
     <button
       wx:for="{{sessions}}"

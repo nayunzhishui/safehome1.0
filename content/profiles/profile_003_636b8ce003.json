@@ -5,6 +5,10 @@
   "standard_scale_name": "反思功能问卷8题（RFQ-8）",
   "scale_id": "rfq8_reflective_functioning",
   "worksheet_id": null,
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
+  "model_governance_version": "profile_model_governance_v1",
+  "artifact_hash": "b22990b492af1fbbab4f5147fad6c0bb29166cc0aa4bdeb5ebb060c5027c4d33",
   "research_dir": "2 李霞庆【父母反思功能对初中生情绪智力的影响】论文数据",
   "source_dataset": "2 李霞庆【父母反思功能对初中生情绪智力的影响】论文数据\\研究一数据合集\\父母调查数据--问卷星.sav",
   "n_cases": 336,
@@ -161,7 +165,7 @@
         "pc2": 0.0098
       },
       "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：有时我会做一些不确切知道为什么要去做的事、当我生气时会说出一些气话，而我却不知道为什么会这么说较高。它只用于群体参照和支持性解释，不代表固定标签。",
-      "display_name": "行为驱动型",
+      "display_name": "行动先于理解的阶段性位置",
       "product_explanation": "你的行为和情绪有时对自己也不太透明——做了某件事、说了某句话，事后才发现说不清为什么。这很常见，尤其是在关系中压力大的时候。",
       "strength_note": "你能注意到自己的行为和情绪，这是觉察的起点。",
       "small_step": "下次做了一件事后感到后悔，不是批评自己，而是好奇地问：我当时在担心什么？",
@@ -196,7 +200,7 @@
         "pc2": -0.0194
       },
       "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：我总是知道我的感受较高，有时我会做一些不确切知道为什么要去做的事、当我生气时会说出一些气话，而我却不知道为什么会这么说较低。它只用于群体参照和支持性解释，不代表固定标签。",
-      "display_name": "内省清晰型",
+      "display_name": "自我感受线索较清晰的阶段性位置",
       "product_explanation": "你对自己的感受和行为动机有较清晰的觉察，能相对清楚地知道自己为什么这么做或这么感受。这种清晰感是情绪调节的重要资源。",
       "strength_note": "自我觉察是你的稳定器，在关系中也能给对方带来更多安全感。",
       "small_step": "把这种觉察用到一次对话里：当你感到不舒服时，试着说出来，而不是等待对方猜。",

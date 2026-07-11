@@ -165,11 +165,11 @@
 
 ### `GET /api/programs`
 
-用途：返回三个项目测试练习包摘要。内容来自 `content/programs.json`。
+用途：返回三个项目测试练习包摘要。内容来自 `content/programs.json`。每项同时返回 `measurement_plan.status`、测量时间点中文标签和是否仍需人工审核；列表不暴露 worksheet 内部 ID。
 
 ### `GET /api/programs/<id>`
 
-用途：返回单个项目测试练习包详情，包括 sessions、书写提示、反思问题和非诊断边界。小程序端书写草稿只本地缓存，不上传后端。
+用途：返回单个项目测试练习包详情，包括 sessions、书写提示、反思问题、非诊断边界和结构化 `measurement_plan`。测量计划包含前测/后测 worksheet 引用、时间点、主要观察维度和人工审核项；`draft_requires_research_review` 不代表方案已批准。小程序端书写草稿只本地缓存，不上传后端。
 
 ### 共享错误码
 
@@ -559,7 +559,7 @@
 
 用途：保存用户一次测一测填写结果。
 
-说明：如果对应测评不存在或已下线，接口返回 `not_found`，不保存结果。如果对应测评仍存在但 `enabled_for_user=false`，接口返回 `assessment_not_enabled`，不保存结果。
+说明：如果对应测评不存在或已下线，接口返回 `not_found`，不保存结果。如果对应测评仍存在但 `enabled_for_user=false`，接口返回 `assessment_not_enabled`，不保存结果。服务端以 worksheet 为唯一题目和计分真相：拒绝未知题号、重复题号、非法选项和缺少必答题，不使用客户端提交的 `score` 参与计分。
 
 请求字段：
 
@@ -576,9 +576,20 @@
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `question_id` | string | 题目或填写项 ID |
-| `prompt` | string | 题目或填写项原文/提示 |
+| `prompt` | string | 可省略；保存时以 worksheet 中的题目原文为准 |
 | `value` | string | 用户填写内容 |
-| `score` | number | 可选分值 |
+| `score` | number | 兼容旧客户端，可省略；服务端忽略该值并按 worksheet 选项重新计分 |
+
+答案校验失败时返回 `400`，主要错误码：
+
+| 错误码 | 含义 |
+|---|---|
+| `invalid_answers` | `answers` 不是数组 |
+| `invalid_answer` | 某项回答不是对象 |
+| `unknown_question_id` | `question_id` 不属于当前 worksheet |
+| `duplicate_question_id` | 同一题号重复提交 |
+| `invalid_option_value` | `value` 不属于题目选项 |
+| `missing_required_answers` | 缺少 worksheet 标记的必答题 |
 
 响应字段：
 
@@ -648,7 +659,7 @@
 | `n_cases` | integer | 模型样本量 |
 | `n_features` | integer | 模型题项数 |
 | `chosen_k` | integer | 聚类数量 |
-| `position` | object | 用户 PCA 坐标、最近簇、接近度和距离 |
+| `position` | object | 用户 PCA 坐标、簇位置、后验概率、归一化熵、马氏距离和解释状态 |
 | `clusters` | array | 聚类中心、人数、占比和支持性解释 |
 | `feature_summary` | object | 本次题项覆盖情况 |
 | `feature_profile` | array | 本次题项相对 z 分数，用于结果页雷达图 |
@@ -656,6 +667,13 @@
 | `z_scores` | object | 本次题项标准分 |
 | `explanation` | string | 支持性位置解释 |
 | `boundary_notice` | string | 非诊断、非筛查边界 |
+
+模型治理补充（2026-07-11）：
+
+- 运行时只自动加载 `admission_status=pilot_approved/production_approved` 且 `artifact_hash` 校验通过的模型；`internal_only`、缺少准入字段或 hash 不一致的模型不参与自动匹配。
+- 任务十二对角协方差 GMM 使用模型内 `mixture_weights`、`center_z` 和 `diag_covariances` 计算 posterior responsibility；`position.posterior`、`normalized_entropy`、`mahalanobis_distance` 和 `assignment_version` 可供研究端审计。
+- `interpretation_status` 为 `low_confidence`、`outlier` 或 `pending_approval` 时，`profile_name`、训练问题和项目任务不返回普通自动解释。
+- `confidence` 暂保留为兼容字段；前端应展示“匹配清晰度”低/中/较高，不得表述为模型准确率。
 
 ### `POST /api/checkins`
 
@@ -1300,7 +1318,7 @@ Invoke-WebRequest `
 
 ### `POST /api/auth/wechat-login`
 
-用途：微信小程序登录或绑定用户。通过 `wx.cloud.callContainer` 调用时，后端优先读取云托管注入的 `X-WX-OPENID` 和 `X-WX-SOURCE`；非云托管环境才使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。开发环境在两者都不可用时保留稳定兜底 openid。
+用途：微信小程序登录或绑定用户。仅当云托管部署显式设置 `TRUST_CLOUDBASE_IDENTITY_HEADERS=1` 时，后端读取 `wx.cloud.callContainer` 注入的 `X-WX-OPENID` 和固定值 `X-WX-SOURCE=wx-cloudbase`；默认关闭该信任路径，防止普通公网请求伪造身份头。非云托管环境使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。开发环境在两者都不可用时保留稳定兜底 openid。
 
 请求字段：
 
@@ -1481,6 +1499,7 @@ Invoke-WebRequest `
 |---|---|
 | `has_recent_checkin` | 用户近期是否有训练打卡 |
 | `last_completed_card_ids` | 近期已完成训练卡 ID |
+| `assignment` | 用户当前训练阶段、频率、开始日期、状态和短目标；未设置时为 `null` |
 | `empty_state` | 没有推荐时的用户端空状态 |
 | `plan_items[].source_worksheet_id` | 推荐来源测评 ID |
 | `plan_items[].source_worksheet_title` | 推荐来源测评名称 |
@@ -1491,6 +1510,20 @@ Invoke-WebRequest `
 | `plan_items[].evidence_summary` | 来源证据摘要 |
 
 边界：推荐只表示“更适合先尝试的练习线索”，不表示用户属于某种固定类型。
+
+### `POST /api/training-plan/assignment`
+
+用途：保存当前登录用户自行设置的训练阶段和练习频率。该设置复用 `records`，不代表研究者已确认的正式干预安排。
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `phase` | string | 是 | `start`、`practice`、`consolidate` |
+| `cadence` | string | 是 | `daily`、`every_other_day`、`three_per_week`、`weekly` |
+| `start_date` | string | 是 | `YYYY-MM-DD` |
+| `status` | string | 否 | `active`、`paused`、`completed`，默认 `active` |
+| `goal_text` | string | 否 | 200 字内阶段目标 |
+
+保存位置：`records.module_type=training_plan_assignment`、`source_id=current`、`export_allowed=0`。同一用户重复保存会更新当前记录；审计日志只记录枚举和是否填写目标，不保存目标原文。
 
 ### `GET /api/progress-summary`
 
@@ -1575,15 +1608,18 @@ Invoke-WebRequest `
 ```text
 outputs/text_analysis/text_analysis_summary.json
 outputs/text_analysis/text_features_summary.json
-outputs/text_analysis/social_network_summary.json
+outputs/text_analysis/semantic_network_summary.json
+outputs/text_analysis/family_topology_audit_summary.json
 ```
 
 返回包含：
 
 | 字段 | 说明 |
 |---|---|
-| `outputs` | 各输出文件是否存在、更新时间、记录数和是否包含原文 |
-| `summary` | 已存在输出文件的聚合摘要 |
+| `items.features` | 按用户/系统/督导写作者分层的情感计算聚合摘要 |
+| `items.semantic_network` | 句子级语义共现网络；不是现实社会关系网络 |
+| `items.family_topology` | 已生效且未撤回家庭绑定的聚合拓扑审计 |
+| `items.summary` | 三类分析的离线总摘要和 manifest |
 | `boundary_notice` | 文本分析边界说明 |
 
 边界：
@@ -1592,6 +1628,8 @@ outputs/text_analysis/social_network_summary.json
 - 不直接读取用户原始记录；
 - 不返回 `event_description`、`raw_text`、`message`、`reflection` 等原文；
 - 文本分析只用于脱敏研究摘要和内容质量观察，不用于诊断、个体画像定性或危机判断。
+- 输出同时返回 `quality_status` 和 `privacy_gate_passed`；空数据、数据不足、隐私门禁失败的文件均为 `available=false`。
+- 离线脚本使用 SQLite 只读连接，不调用 `init_db()`；默认最小支持度为 5，低频节点、边和小分组不输出。
 
 补充约定（2026-07-09）：离线文本分析脚本读取人工督导回复时使用数据库真实字段 `supervision_requests.supervisor_reply`，只参与脱敏聚合输出，不向接口返回原文。
 
@@ -1656,6 +1694,13 @@ relationship_initiation_intention_action
 产品事件允许：`relationship_entry_clicked`、`relationship_step_completed`、`relationship_report_downloaded`、`relationship_task_save_failed`。报告确认继续复用服务端既有 `relationship_report_confirmed` 审计，不重复采集。元数据仅允许 `action`、`stage`、`status`、`source` 和布尔值 `retryable`，且字符串值必须命中服务端枚举。
 
 登录补充：`POST /api/auth/wechat-login`优先使用CloudBase注入的可信`X-WX-OPENID`/`X-WX-SOURCE`；`POST /api/auth/phone-login`用微信`getPhoneNumber`凭证换取手机号并仅保存HMAC摘要。生产环境需配置CloudBase开放接口 `/wxa/business/getuserphonenumber`，否则手机号快捷登录不会可用。
+
+## 统一请求追踪（2026-07-11）
+
+1. 客户端可发送 8—64 位、仅含字母、数字、点、下划线或短横线的 `X-Request-ID`；非法值由服务端替换。
+2. 所有响应返回 `X-Request-ID`。错误响应体同时返回顶层 `request_id`，可用于联调报障。
+3. 服务端只记录 request ID、method、path、status 和 duration_ms，不记录 Authorization、请求正文、自由文本或联系方式。
+4. `/readyz` 不返回数据库路径、MySQL 主机/库名或内容目录；详细部署信息由受控运维环境维护。
 
 `GET /readyz`现同时返回数据库schema版本、内容版本、任务十二画像模型版本、风险复核积压和不含请求正文的进程内聚合指标。指标仅记录请求总量、错误量及指定操作失败次数。
 

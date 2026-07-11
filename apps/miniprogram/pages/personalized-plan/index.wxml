@@ -4,6 +4,72 @@
     <text class="safe-subtitle">根据最近测评和阶段性画像，推荐更适合先练的小动作。</text>
   </view>
 
+  <view class="safe-card assignment-panel">
+    <view class="assignment-head">
+      <view>
+        <text class="safe-h3">安排练习节奏</text>
+        <text class="safe-caption">先选一个当前可承受的频率，之后可以随时调整。</text>
+      </view>
+      <text class="assignment-state">{{assignment.agreement_status === 'researcher_confirmed' ? '已共同确认' : '本人设置'}}</text>
+    </view>
+
+    <text class="assignment-label">当前阶段</text>
+    <view class="segmented-control">
+      <button
+        wx:for="{{phaseOptions}}"
+        wx:key="value"
+        class="segment-button {{assignment.phase === item.value ? 'segment-button--active' : ''}}"
+        data-field="phase"
+        data-value="{{item.value}}"
+        bindtap="selectAssignmentOption"
+      >{{item.label}}</button>
+    </view>
+
+    <text class="assignment-label">练习频率</text>
+    <view class="segmented-control segmented-control--wrap">
+      <button
+        wx:for="{{cadenceOptions}}"
+        wx:key="value"
+        class="segment-button {{assignment.cadence === item.value ? 'segment-button--active' : ''}}"
+        data-field="cadence"
+        data-value="{{item.value}}"
+        bindtap="selectAssignmentOption"
+      >{{item.label}}</button>
+    </view>
+
+    <view class="assignment-grid">
+      <view class="assignment-field">
+        <text class="assignment-label">开始日期</text>
+        <picker mode="date" value="{{assignment.start_date}}" bindchange="onStartDateChange">
+          <view class="picker-value">{{assignment.start_date}}</view>
+        </picker>
+      </view>
+      <view class="assignment-field">
+        <text class="assignment-label">计划状态</text>
+        <view class="segmented-control segmented-control--compact">
+          <button
+            wx:for="{{statusOptions}}"
+            wx:key="value"
+            class="segment-button {{assignment.status === item.value ? 'segment-button--active' : ''}}"
+            data-field="status"
+            data-value="{{item.value}}"
+            bindtap="selectAssignmentOption"
+          >{{item.label}}</button>
+        </view>
+      </view>
+    </view>
+
+    <textarea
+      class="goal-input"
+      value="{{assignment.goal_text}}"
+      maxlength="200"
+      placeholder="可选：写下这一阶段最想练习的一小步"
+      bindinput="onGoalInput"
+    />
+    <button class="safe-primary-button" loading="{{savingAssignment}}" bindtap="saveAssignment">保存练习节奏</button>
+    <text class="item-boundary">{{assignment.boundary_notice || '练习节奏由用户自行设置，研究者共同确认前不代表正式干预安排。'}}</text>
+  </view>
+
   <view wx:if="{{!loading && plan && !plan.has_assessment}}" class="safe-card empty-card">
     <text class="safe-h3">{{plan.next_action.title}}</text>
     <text class="safe-body">{{plan.next_action.description}}</text>

@@ -5,6 +5,10 @@
   "standard_scale_name": "青少年心理韧性量表（RSCA）",
   "scale_id": "rsca_adolescent_resilience",
   "worksheet_id": "rsca_adolescent_resilience",
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
+  "model_governance_version": "profile_model_governance_v1",
+  "artifact_hash": "cbe582750f1fcd317ae74c2fbeb004710e1a147c7f9ab7edf28a3cc2d1e41661",
   "research_dir": "3 夏媛媛 2024年9月初测【初中生自我关怀】",
   "source_dataset": "3 夏媛媛 2024年9月初测【初中生自我关怀】\\高一数据10.14.sav",
   "n_cases": 652,
@@ -472,7 +476,7 @@
         "pc2": -0.0615
       },
       "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：当我遇到困难需要帮助时，我不知道该去找谁。、当我遇到不愉快的事情时，总找不到合适的倾诉对象。较高。它只用于群体参照和支持性解释，不代表固定标签。",
-      "display_name": "独立应对型",
+      "display_name": "较多独立应对的阶段性位置",
       "product_explanation": "遇到困难或心情不好时，你更倾向于独自消化，找不到或不去找合适的倾诉对象。这不是弱点，有时是习惯，有时是还没找到合适的人。",
       "strength_note": "独立面对压力是有韧性的，你有自己的方式撑过去。",
       "small_step": "找一个你觉得还算安全的人，下次遇到麻烦只说一件事，不需要说全部。",
@@ -543,7 +547,7 @@
         "pc2": 0.06
       },
       "supportive_explanation": "该画像表示本组样本在这些题项组合上的相对位置：当我遇到困难需要帮助时，我不知道该去找谁。、当我遇到不愉快的事情时，总找不到合适的倾诉对象。较低。它只用于群体参照和支持性解释，不代表固定标签。",
-      "display_name": "社会联结型",
+      "display_name": "支持联结较可用的阶段性位置",
       "product_explanation": "遇到困难时，你能找到可以求助或倾诉的人。这种能力在压力大的时候是真正的资源，说明你在关系里有一定的安全感。",
       "strength_note": "你能使用身边的支持，这是保护性资源中很重要的一项。",
       "small_step": "想想上次帮助过你的那个人，用一种方式让他们知道你感激他们的存在。",

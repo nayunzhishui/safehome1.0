@@ -25,5 +25,8 @@ export default defineConfig({
       env: { VITE_SAFEHOME_API_BASE_URL: "http://127.0.0.1:5050" },
     },
   ],
-  projects: [{ name: "chrome", use: { ...devices["Desktop Chrome"], channel: "chrome" } }],
+  projects: [
+    { name: "desktop-chrome", use: { ...devices["Desktop Chrome"], channel: "chrome" } },
+    { name: "mobile-chrome", use: { ...devices["Pixel 7"], channel: "chrome" } },
+  ],
 });

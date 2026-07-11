@@ -17,6 +17,7 @@ def _load_programs_payload() -> dict:
 
 
 def _program_summary(program: dict) -> dict:
+    measurement_plan = program.get("measurement_plan") or {}
     return {
         "id": program.get("id"),
         "title": program.get("title"),
@@ -27,6 +28,15 @@ def _program_summary(program: dict) -> dict:
         "boundary_notice": program.get("boundary_notice"),
         "session_count": len(program.get("sessions", [])),
         "first_session_title": (program.get("sessions") or [{}])[0].get("title"),
+        "measurement_plan": {
+            "status": measurement_plan.get("status"),
+            "measurement_point_labels": [
+                point.get("label")
+                for point in measurement_plan.get("measurement_points", [])
+                if isinstance(point, dict) and point.get("label")
+            ],
+            "requires_manual_review": bool(measurement_plan.get("manual_review_items")),
+        },
     }
 
 

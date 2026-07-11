@@ -44,7 +44,7 @@ export function LoginPage() {
         <p className="subtitle">使用已注册的账号登录。匿名试用请直接访问首页。</p>
       </div>
 
-      <form onSubmit={(e) => { void handleSubmit(e); }} style={{ maxWidth: 400 }}>
+      <form className="authForm" onSubmit={(e) => { void handleSubmit(e); }}>
         <label className="tokenField">
           用户名
           <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="请输入用户名" autoComplete="username" />
@@ -53,13 +53,13 @@ export function LoginPage() {
           密码
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="请输入密码" autoComplete="current-password" />
         </label>
-        <div className={`status compact ${status}`}>{message}</div>
-        <button className="pill" type="submit" disabled={status === "loading"} style={{ marginTop: 12 }}>
+        {message ? <div className={`status compact ${status}`} role={status === "error" ? "alert" : "status"} aria-live="polite">{message}</div> : null}
+        <button className="primaryButton authSubmit" type="submit" disabled={status === "loading"}>
           登录
         </button>
       </form>
 
-      <p style={{ marginTop: 16 }}>
+      <p className="authLinks">
         还没有账号？<a href="/register">注册新账号</a> ｜ <a href="/privacy">隐私中心</a>
       </p>
     </section>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SafeHome 架构审查</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+  </script>
+  <style>
+    body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; }
+    .deep { background: linear-gradient(135deg, #17392f, #2f5b4d); }
+    .seam { border: 1px dashed #94a3b8; }
+    .leak { color: #b91c1c; }
+    .mass-interface { height: 42%; background: #fee2e2; }
+    .mass-implementation { height: 58%; background: #f8fafc; }
+    .mass-interface-deep { height: 16%; background: #d1fae5; }
+    .mass-implementation-deep { height: 84%; background: #17392f; color: white; }
+  </style>
+</head>
+<body class="bg-stone-50 text-slate-900">
+<main class="mx-auto max-w-6xl space-y-12 px-6 py-12">
+  <header class="flex flex-wrap items-end justify-between gap-5 border-b border-slate-200 pb-6">
+    <div><p class="text-xs uppercase tracking-[0.22em] text-emerald-700">SafeHome · 2026-07-10</p><h1 class="mt-2 text-4xl font-black">架构深度审查</h1></div>
+    <div class="grid gap-1 text-xs text-slate-500"><span>实线框 = module</span><span>虚线 = seam</span><span class="text-red-700">红色 = 泄漏</span><span>深色厚框 = deep module</span></div>
+  </header>
+
+  <section id="candidates" class="space-y-10">
+    <article id="assessment" class="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+      <div class="flex flex-wrap items-center gap-3"><h2 class="text-2xl font-bold">1. 深化测评执行 module</h2><span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">已落实 · 2026-07-11</span><span class="rounded-full bg-slate-100 px-3 py-1 text-xs">local-substitutable</span></div>
+      <p class="mt-3 font-mono text-xs text-slate-500">backend/routes/assessments.py · backend/routes/admin.py · backend/database.py · backend/services/training_recommendation_service.py</p>
+      <div class="mt-6 grid gap-5 lg:grid-cols-2">
+        <div class="rounded-xl border border-red-200 bg-red-50/40 p-4"><p class="mb-3 text-xs font-bold uppercase tracking-widest text-red-700">Before</p><pre class="mermaid">flowchart TD
+R[HTTP route] --> C[目录选择]
+R --> S[客户端 score]
+R --> K[风险检查]
+R --> D[(写库)]
+R --> P[画像]
+R --> T[训练推荐]
+A[admin] -.另一套映射.-> C
+J[content JSON] --> C
+B[(database)] --> C</pre></div>
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4"><p class="mb-3 text-xs font-bold uppercase tracking-widest text-emerald-800">After</p><pre class="mermaid">flowchart TD
+R[HTTP adapter] --> M[测评执行 deep module]
+M --> V[服务端答案校验与计分]
+M --> K[风险 + 画像 + 推荐]
+M --> D[(事务)]
+J[content adapter] -.目录 seam.-> M
+B[database adapter] -.目录 seam.-> M</pre></div>
+      </div>
+      <div class="mt-5 grid gap-3 md:grid-cols-3"><p><b>Problem</b><br><span class="text-sm text-slate-600">route interface 几乎泄露全部实现，且 score 可由客户端控制。</span></p><p><b>Solution</b><br><span class="text-sm text-slate-600">一个外部 seam 吸收目录、规范化、计分、风险、事务和后续触发。</span></p><div><b>Wins</b><ul class="mt-1 text-sm text-slate-600"><li>locality：计分只改一处</li><li>leverage：两端共用真相</li><li>测试命中一个 interface</li></ul></div></div>
+    </article>
+
+    <article id="profile" class="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+      <div class="flex flex-wrap items-center gap-3"><h2 class="text-2xl font-bold">2. 建立画像模型运行时 module</h2><span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">Strong</span><span class="rounded-full bg-slate-100 px-3 py-1 text-xs">ports &amp; adapters</span></div>
+      <p class="mt-3 font-mono text-xs text-slate-500">assessment_profile_service.py · student_profile_model_service.py · profile.py · content/profiles/*.json</p>
+      <div class="mt-6 grid gap-5 lg:grid-cols-2">
+        <div class="relative h-80 rounded-xl border border-red-200 bg-red-50/40 p-4"><p class="text-xs font-bold uppercase tracking-widest text-red-700">Before · shallow</p><div class="mx-auto mt-5 h-56 max-w-sm overflow-hidden rounded-lg border-2 border-red-300"><div class="mass-interface flex items-center justify-center text-center text-sm font-bold text-red-800">模型发现 + 准入 + KMeans/GMM差异<br>都泄漏到 interface</div><div class="mass-implementation flex items-center justify-center text-center text-sm">线上统一欧氏距离<br>离线 GMM 逻辑缺失</div></div></div>
+        <div class="relative h-80 rounded-xl border border-emerald-200 bg-emerald-50/40 p-4"><p class="text-xs font-bold uppercase tracking-widest text-emerald-800">After · deep</p><div class="mx-auto mt-5 h-56 max-w-sm overflow-hidden rounded-lg border-4 border-emerald-900"><div class="mass-interface-deep flex items-center justify-center text-sm font-bold text-emerald-900">小 interface：assign / explain</div><div class="mass-implementation-deep flex items-center justify-center px-6 text-center text-sm">artifact hash · admission · version<br>KMeans adapter · GMM adapter · rule adapter<br>低确定性/离群解释阻断</div></div></div>
+      </div>
+      <div class="mt-5 grid gap-3 md:grid-cols-3"><p><b>Problem</b><br><span class="text-sm text-slate-600">真实的多 adapter seam 已存在，却没有统一准入、版本和推断 interface。</span></p><p><b>Solution</b><br><span class="text-sm text-slate-600">模型注册、artifact 校验、推断和解释阻断集中在一个 deep module。</span></p><div><b>Wins</b><ul class="mt-1 text-sm text-slate-600"><li>离线/线上 100% 一致</li><li>未批准模型无法运行</li><li>删除逐行训练点</li></ul></div></div>
+    </article>
+
+    <article id="privacy" class="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+      <div class="flex flex-wrap items-center gap-3"><h2 class="text-2xl font-bold">3. 深化研究数据治理 module</h2><span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">Strong</span><span class="rounded-full bg-slate-100 px-3 py-1 text-xs">in-process</span></div>
+      <p class="mt-3 font-mono text-xs text-slate-500">backend/routes/admin.py · backend/routes/privacy.py · relationship_growth_service.py</p>
+      <div class="mt-6 grid gap-5 lg:grid-cols-2">
+        <div class="rounded-xl border border-red-200 bg-red-50/40 p-4"><p class="mb-3 text-xs font-bold uppercase tracking-widest text-red-700">Before</p><pre class="mermaid">flowchart LR
+C[consent] --> E[CSV export]
+C -.未复用.-> X[关系 dashboard]
+C -.遗漏.-> P[个人数据摘要]
+E --> A[audit]
+X --> A
+P -.范围另写.-> D[(多张表)]</pre></div>
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4"><p class="mb-3 text-xs font-bold uppercase tracking-widest text-emerald-800">After</p><pre class="mermaid">flowchart LR
+E[CSV adapter] --> G[研究数据治理 deep module]
+X[dashboard adapter] --> G
+P[个人摘要 adapter] --> G
+G --> C[资格/撤回]
+G --> M[脱敏投影]
+G --> A[审计]
+G --> D[(数据清单)]</pre></div>
+      </div>
+      <div class="mt-5 grid gap-3 md:grid-cols-3"><p><b>Problem</b><br><span class="text-sm text-slate-600">撤回、脱敏、确认和审计跨三个调用者重复，关系表已经漏出治理范围。</span></p><p><b>Solution</b><br><span class="text-sm text-slate-600">用一份数据清单和一个决策 interface 统一个人摘要、研究可见性和导出。</span></p><div><b>Wins</b><ul class="mt-1 text-sm text-slate-600"><li>撤回一次，全处生效</li><li>新增表自动进入清单</li><li>审计保持 locality</li></ul></div></div>
+    </article>
+
+    <article id="persistence" class="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+      <div class="flex flex-wrap items-center gap-3"><h2 class="text-2xl font-bold">4. 按切片深化持久化与迁移 module</h2><span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">Strong</span><span class="rounded-full bg-slate-100 px-3 py-1 text-xs">ports &amp; adapters</span></div>
+      <p class="mt-3 font-mono text-xs text-slate-500">backend/database.py · backend/models.py · 85 个 get_connection 调用点</p>
+      <div class="mt-6 grid gap-5 lg:grid-cols-2">
+        <div class="rounded-xl border border-red-200 bg-red-50/40 p-4"><p class="mb-3 text-xs font-bold uppercase tracking-widest text-red-700">Before · 方言穿透</p><pre class="mermaid">flowchart TD
+R1[route] --> SQL1[裸 SQL]
+R2[module] --> SQL2[裸 SQL]
+SQL1 --> Q[正则 mysqlize]
+SQL2 --> Q
+Q --> S[(SQLite)]
+Q --> M[(MySQL)]
+DDL[启动补列] -.-> Q</pre></div>
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4"><p class="mb-3 text-xs font-bold uppercase tracking-widest text-emerald-800">After · 逐切片替换</p><pre class="mermaid">flowchart TD
+A[测评 module] --> P[持久化 seam]
+G[画像 module] --> P
+I[身份 module] --> P
+P --> S[SQLite adapter]
+P --> M[MySQL adapter]
+R[顺序迁移 runner] --> S
+R --> M</pre></div>
+      </div>
+      <div class="mt-5 grid gap-3 md:grid-cols-3"><p><b>Problem</b><br><span class="text-sm text-slate-600">两种数据库是真 seam，但裸 SQL interface 让方言和事务泄漏到 85 个调用点。</span></p><p><b>Solution</b><br><span class="text-sm text-slate-600">先替换测评、画像、身份三条切片；迁移从启动时补列改为顺序 runner。</span></p><div><b>Wins</b><ul class="mt-1 text-sm text-slate-600"><li>不做大爆炸重写</li><li>真实 MySQL 可集成测</li><li>迁移可回放审计</li></ul></div></div>
+    </article>
+
+    <article id="contract" class="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+      <div class="flex flex-wrap items-center gap-3"><h2 class="text-2xl font-bold">5. 推广跨端契约 module</h2><span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">Worth exploring</span><span class="rounded-full bg-slate-100 px-3 py-1 text-xs">local-substitutable</span></div>
+      <p class="mt-3 font-mono text-xs text-slate-500">shared/types/api.ts · shared/constants/api.ts · safehomeApi.ts · miniprogram/services/api.js</p>
+      <div class="mt-6 grid gap-5 lg:grid-cols-2">
+        <div class="rounded-xl border border-red-200 bg-red-50/40 p-4"><p class="mb-3 text-xs font-bold uppercase tracking-widest text-red-700">Before</p><pre class="mermaid">flowchart LR
+B[94 routes] --> T[shared TS]
+B --> W[Web client]
+B --> M[小程序 client]
+T -.人工同步.-> W
+T -.不能约束.-> M
+R[关系试点 schema] --> G[generated types]</pre></div>
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4"><p class="mb-3 text-xs font-bold uppercase tracking-widest text-emerald-800">After</p><pre class="mermaid">flowchart LR
+C[规范契约 module] --> W[Web TS adapter]
+C --> M[小程序 JS + validator adapter]
+C --> B[后端契约测试]
+S[测评/画像/认证/关系] --> C</pre></div>
+      </div>
+      <div class="mt-5 grid gap-3 md:grid-cols-3"><p><b>Problem</b><br><span class="text-sm text-slate-600">shared 目前只真正约束 Web；小程序 endpoint、错误码和结构仍靠人工维护。</span></p><p><b>Solution</b><br><span class="text-sm text-slate-600">复用关系试点生成模式，先覆盖四条高风险链路。</span></p><div><b>Wins</b><ul class="mt-1 text-sm text-slate-600"><li>跨端 interface 同源</li><li>漂移在 CI 阶段失败</li><li>减少 1700 行手写面</li></ul></div></div>
+    </article>
+  </section>
+
+  <section id="top-recommendation" class="deep rounded-2xl border-4 border-emerald-950 p-8 text-white">
+    <p class="text-xs uppercase tracking-[0.24em] text-emerald-200">Completed top recommendation</p>
+    <h2 class="mt-2 text-3xl font-black"><a href="#assessment">测评执行 module 已深化</a></h2>
+    <p class="mt-2 text-emerald-50">客户端计分、非法题项和巨型 route 三个高风险缺口已关闭；下一步进入画像模型运行时准入与推断一致性。</p>
+  </section>
+</main>
+</body>
+</html>
