@@ -13,7 +13,11 @@ def list_cards(enabled_only: bool = True) -> list[dict]:
 
 def recommend_cards(tags: list[str] | None = None, limit: int = 3) -> list[dict]:
     tags = [tag for tag in (tags or []) if tag]
-    cards = list_cards(enabled_only=True)
+    cards = [
+        card
+        for card in list_cards(enabled_only=True)
+        if card.get("release_policy", "shared_choice_candidate") == "shared_choice_candidate"
+    ]
     if not tags:
         return cards[:limit]
 

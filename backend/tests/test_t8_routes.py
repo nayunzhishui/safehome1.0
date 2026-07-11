@@ -82,7 +82,79 @@ def test_programs_endpoints_return_pilot_programs(tmp_path, monkeypatch):
     assert program["measurement_plan"]["baseline_worksheet_ids"]
     assert program["measurement_plan"]["post_worksheet_ids"]
     assert program["measurement_plan"]["status"] == "draft_requires_research_review"
+    assert program["protocol_version"] == "2026.07-task17-v1"
+    assert len(program["measurement_plan"]["measurement_points"]) == 4
+    assert all(item["status"] == "pending" for item in program["approval"].values())
     assert "不构成诊断" in program["boundary_notice"]
+
+
+def test_courses_return_structured_units_and_pathway(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    list_response = client.get("/api/courses")
+    assert list_response.status_code == 200
+    data = list_response.get_json()["data"]
+    assert len(data["items"]) == 5
+    assert len(data["pathways"][0]["nodes"]) == 7
+    assert all(item["learning_objectives"] for item in data["items"])
+
+    detail_response = client.get("/api/courses/understand_child_emotion")
+    assert detail_response.status_code == 200
+    course = detail_response.get_json()["data"]["course"]
+    assert course["review_status"] == "draft_requires_psychology_review"
+    assert course["knowledge_checks"]
+    assert course["guided_practice"]["card_id"] == "emotion_naming"
+
+    pathway_response = client.get("/api/courses/pathways")
+    assert pathway_response.status_code == 200
+    assert pathway_response.get_json()["data"]["items"][0]["excluded_from_automatic_release"]
+
+
+def test_course_progress_binds_content_version_and_requires_real_attempt(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "course-progress-user")
+
+    response = client.post(
+        "/api/courses/understand_child_emotion/progress",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "status": "completed",
+            "completed_section_count": 3,
+            "knowledge_check_completed_ids": ["emotion_fact_check"],
+            "transfer_task_status": "planned",
+            "linked_card_id": "emotion_naming",
+        },
+    )
+    assert response.status_code == 201
+    progress = response.get_json()["data"]["progress"]
+    assert progress["course_version"] == "2026.07-task17-course-v2"
+    assert progress["status"] == "completed"
+    assert "不代表掌握" in progress["completion_note"]
+
+    restored = client.get(
+        "/api/courses/understand_child_emotion/progress",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert restored.status_code == 200
+    assert restored.get_json()["data"]["progress"]["linked_card_id"] == "emotion_naming"
+
+    invalid = client.post(
+        "/api/courses/understand_child_emotion/progress",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"status": "completed", "completed_section_count": 3, "knowledge_check_completed_ids": ["missing"]},
+    )
+    assert invalid.status_code == 400
+    assert invalid.get_json()["error"]["code"] == "invalid_knowledge_check"
+
+    malformed = client.post(
+        "/api/courses/understand_child_emotion/progress",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"status": "completed", "completed_section_count": "not-a-number", "knowledge_check_completed_ids": []},
+    )
+    assert malformed.status_code == 400
+    assert malformed.get_json()["error"]["code"] == "invalid_completed_section_count"
 
 
 def test_training_plan_prompts_when_no_assessment(tmp_path, monkeypatch):

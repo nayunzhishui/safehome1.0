@@ -15,7 +15,13 @@
         "long_term_suggestion",
         "not_suitable_when",
         "boundary_notice",
-        "review_status"
+        "review_status",
+        "rule_version",
+        "recommendation_mode",
+        "selection_policy",
+        "recommendation_source",
+        "approval_status",
+        "max_candidates"
       ],
       "item_list_min_lengths": {
         "theme": 1,

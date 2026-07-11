@@ -166,6 +166,39 @@
   background: var(--safe-primary-pale);
 }
 
+.protocol-status,
+.protocol-line,
+.protocol-label,
+.protocol-warning {
+  display: block;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.protocol-status {
+  color: var(--safe-orange);
+  font-weight: 850;
+}
+
+.protocol-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.protocol-label {
+  margin-top: 8rpx;
+  color: var(--safe-title);
+  font-weight: 850;
+}
+
+.protocol-warning {
+  padding: 18rpx;
+  border-left: 6rpx solid var(--safe-orange);
+  background: var(--safe-orange-soft);
+}
+
 .measurement-card {
   display: flex;
   flex-direction: column;

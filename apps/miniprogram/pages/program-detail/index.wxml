@@ -3,9 +3,24 @@
     <text class="program-kicker">项目测试</text>
     <text class="program-title">{{program.title}}</text>
     <text class="program-summary">{{program.boundary_notice}}</text>
+    <text class="protocol-status">{{program.previewLabel}} · 方案 {{program.protocol_version}}</text>
     <view class="construct-row">
       <text wx:for="{{program.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
     </view>
+  </view>
+
+  <view class="safe-card protocol-card">
+    <text class="safe-h3">参与前先了解</text>
+    <text class="protocol-line">{{program.doseText}}</text>
+    <text class="protocol-line">{{program.completion_definition}}</text>
+    <text class="protocol-label">适合参加的基本条件</text>
+    <text wx:for="{{program.inclusion_criteria}}" wx:key="*this" class="protocol-line">• {{item}}</text>
+    <text class="protocol-label">这些情况先不要继续</text>
+    <text wx:for="{{program.exclusion_criteria}}" wx:key="*this" class="protocol-line">• {{item}}</text>
+    <text class="protocol-warning">{{program.safety_gate}}</text>
+    <text wx:if="{{program.neutral_alternative}}" class="protocol-line">可选替代：{{program.neutral_alternative}}</text>
+    <text wx:if="{{program.interpretation_boundary}}" class="protocol-line">{{program.interpretation_boundary}}</text>
+    <text wx:if="{{program.clinical_boundary}}" class="protocol-line">{{program.clinical_boundary}}</text>
   </view>
 
   <view wx:if="{{program.measurementPlan}}" class="safe-card measurement-card">
@@ -66,8 +81,20 @@
     </view>
 
     <view class="session-disclaimer">{{selectedSession.disclaimer}}</view>
+    <view class="session-disclaimer">完成标准：{{selectedSession.completion_criteria}}</view>
+    <view class="session-disclaimer">停止提示：{{selectedSession.stop_rule}}</view>
 
     <view class="submit-block">
+      <text class="protocol-label">练习前不适程度：{{distressBefore}} / 10</text>
+      <slider min="0" max="10" step="1" value="{{distressBefore}}" bindchange="onDistressBeforeChange" activeColor="#4E7C6B" />
+      <text class="protocol-label">练习后不适程度：{{distressAfter}} / 10</text>
+      <slider min="0" max="10" step="1" value="{{distressAfter}}" bindchange="onDistressAfterChange" activeColor="#4E7C6B" />
+      <checkbox-group bindchange="onAdverseResponseChange">
+        <label class="consent-row">
+          <checkbox value="yes" checked="{{adverseResponse}}" color="#4E7C6B" />
+          <text>这次练习出现了明显不适或负面体验，需要后续关注。</text>
+        </label>
+      </checkbox-group>
       <checkbox-group bindchange="onAnalysisConsentChange">
         <label class="consent-row">
           <checkbox value="yes" checked="{{analysisConsent}}" color="#4E7C6B" />

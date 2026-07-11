@@ -224,6 +224,9 @@ def test_program_entry_creates_private_record(tmp_path, monkeypatch):
             "answers": {"练习前": "我先停一下"},
             "reflection": "今天先做一个小步骤",
             "analysis_consent": True,
+            "distress_before": 7,
+            "distress_after": 4,
+            "recommendation_source": "user_choice",
         },
     )
     assert response.status_code == 201
@@ -231,6 +234,33 @@ def test_program_entry_creates_private_record(tmp_path, monkeypatch):
     assert created["user_id"] == user_id
     assert created["module_type"] == "program_entry"
     assert created["source_id"] == "self_compassion_exam_anxiety"
+    data = json.loads(created["data_json"])
+    assert data["protocol_version"] == "2026.07-task17-v1"
+    assert data["distress_before"] == 7
+    assert data["distress_after"] == 4
+    assert data["recommendation_source"] == "user_choice"
+
+
+def test_program_entry_rejects_invalid_session_and_distress(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "program-invalid-code")
+
+    invalid_session = client.post(
+        "/api/programs/self_compassion_exam_anxiety/entries",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"session_no": 99, "reflection": "测试"},
+    )
+    assert invalid_session.status_code == 400
+    assert invalid_session.get_json()["error"]["code"] == "invalid_session"
+
+    invalid_distress = client.post(
+        "/api/programs/self_compassion_exam_anxiety/entries",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"session_no": 1, "reflection": "测试", "distress_before": 11},
+    )
+    assert invalid_distress.status_code == 400
+    assert invalid_distress.get_json()["error"]["code"] == "invalid_distress_score"
 
 
 def test_checkin_effectiveness_and_progress_endpoints(tmp_path, monkeypatch):

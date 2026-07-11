@@ -23,7 +23,7 @@ FORBIDDEN_TERMS = [
 
 BOUNDARY_TERMS = ["不构成诊断", "不构成临床诊断", "不构成筛查", "非诊断", "不替代心理咨询", "不替代危机干预"]
 HIGH_RISK_BLOCK_TERMS = ["高风险", "危机", "安全", "现实支持"]
-REVIEW_STATUSES = {"draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled", "pilot_draft"}
+REVIEW_STATUSES = {"draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled", "pilot_draft", "pilot_approved", "paused", "completed"}
 LEGACY_ASSESSMENT_ID_PREFIXES = ("worksheet_", "appendix_b_examples_")
 SENSITIVE_SCALE_KEYWORDS = (
     "gad",
@@ -202,6 +202,11 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
         if not isinstance(card, dict):
             continue
         card_id = card.get("id", "unknown")
+        tags = card.get("tags", [])
+        if len(tags) != len(set(tags)):
+            errors.append(f"training_cards.json.cards[{card_id}].tags 不得包含重复值")
+        if "..." in json.dumps(card, ensure_ascii=False):
+            errors.append(f"training_cards.json.cards[{card_id}] 包含残缺的三个英文句点文本")
         unsuitable_text = " ".join(str(item) for item in card.get("not_suitable_for", []))
         if not any(term in unsuitable_text for term in HIGH_RISK_BLOCK_TERMS):
             errors.append(f"training_cards.json.cards[{card_id}].not_suitable_for 缺少高风险/危机/安全/现实支持边界")
@@ -283,6 +288,22 @@ def validate_programs(payload: dict, card_ids: set[str], worksheet_ids: set[str]
         boundary_text = str(program.get("boundary_notice", ""))
         if not any(term in boundary_text for term in BOUNDARY_TERMS):
             errors.append(f"programs.json.programs[{program_id}].boundary_notice 需包含非诊断或不替代边界")
+        approval = program.get("approval") or {}
+        approval_complete = all(
+            isinstance(approval.get(role), dict)
+            and approval[role].get("status") == "approved"
+            and approval[role].get("reviewer")
+            and approval[role].get("reviewed_at")
+            and approval[role].get("evidence_path")
+            for role in ("research", "psychology", "ethics")
+        )
+        if program.get("review_status") == "pilot_approved" and not approval_complete:
+            errors.append(f"programs.json.programs[{program_id}] 三方签字不完整，不得标记 pilot_approved")
+        if program.get("review_status") == "pilot_draft" and approval_complete:
+            errors.append(f"programs.json.programs[{program_id}] 三方签字已完整，需由负责人明确决定是否迁移状态")
+        for field in ["inclusion_criteria", "exclusion_criteria", "pause_criteria", "exit_criteria", "recommendation_sources"]:
+            if not isinstance(program.get(field), list) or not program.get(field):
+                errors.append(f"programs.json.programs[{program_id}].{field} 不能为空")
         for card_id in program.get("recommended_card_ids", []):
             if card_id not in card_ids:
                 errors.append(f"programs.json.programs[{program_id}].recommended_card_ids 包含不存在的训练卡：{card_id}")
@@ -351,6 +372,16 @@ def validate_training_map_rules(
         recommended_card_ids = rule.get("recommended_card_ids", [])
         condition = rule.get("trigger_condition", {})
         risk_condition = str(condition.get("risk_level", "")).lower() if isinstance(condition, dict) else ""
+
+        if filename == "assessment_training_map.json":
+            if rule.get("recommendation_mode") != "candidate_set":
+                errors.append(f"{filename}.rules[{rule_id}].recommendation_mode 必须为 candidate_set")
+            if rule.get("selection_policy") != "shared_choice":
+                errors.append(f"{filename}.rules[{rule_id}].selection_policy 必须为 shared_choice")
+            if rule.get("approval_status") != "draft_requires_psychology_review":
+                errors.append(f"{filename}.rules[{rule_id}].approval_status 不得自动标记为已批准")
+            if int(rule.get("max_candidates") or 0) not in {2, 3}:
+                errors.append(f"{filename}.rules[{rule_id}].max_candidates 只允许 2 或 3")
 
         if len(recommended_card_ids) > 3:
             errors.append(f"{filename}.rules[{rule_id}].recommended_card_ids 不得超过 3 张训练卡")

@@ -9,7 +9,13 @@ from routes.utils import admin_token_error_response, fail, ok, require_admin_tok
 
 bp = Blueprint("content_review", __name__, url_prefix="/api/content-review")
 
-REVIEW_STATUSES = {"draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled", "metadata_only", "pilot_ready"}
+REVIEW_STATUSES = {"draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled", "metadata_only", "pilot_ready", "draft_requires_psychology_review", "pilot_draft", "pilot_approved", "paused", "completed"}
+PROGRAM_TRANSITIONS = {
+    "pilot_draft": {"pilot_approved"},
+    "pilot_approved": {"paused", "completed"},
+    "paused": {"pilot_approved", "completed"},
+    "completed": set(),
+}
 
 CONTENT_TARGETS = {
     "scale": {
@@ -47,6 +53,18 @@ CONTENT_TARGETS = {
         "list_field": "rules",
         "id_field": "rule_id",
         "enabled_field": None,
+    },
+    "program": {
+        "filename": "programs.json",
+        "list_field": "programs",
+        "id_field": "id",
+        "enabled_field": "enabled",
+    },
+    "course": {
+        "filename": "courses.json",
+        "list_field": "courses",
+        "id_field": "id",
+        "enabled_field": "enabled",
     },
 }
 
@@ -94,6 +112,22 @@ def update_content_review():
         return fail("not_found", "未找到对应内容项", status=404)
 
     if review_status:
+        if content_type == "program" and review_status != matched_item.get("review_status"):
+            current_status = str(matched_item.get("review_status") or "")
+            if review_status not in PROGRAM_TRANSITIONS.get(current_status, set()):
+                return fail("invalid_program_transition", "项目状态迁移不符合治理顺序。", status=409)
+            if review_status == "pilot_approved":
+                approval = matched_item.get("approval") or {}
+                approval_complete = all(
+                    isinstance(approval.get(role), dict)
+                    and approval[role].get("status") == "approved"
+                    and approval[role].get("reviewer")
+                    and approval[role].get("reviewed_at")
+                    and approval[role].get("evidence_path")
+                    for role in ("research", "psychology", "ethics")
+                )
+                if not approval_complete:
+                    return fail("program_approval_incomplete", "研究、心理和伦理三方签字不完整。", status=409)
         matched_item["review_status"] = review_status
     enabled_field = target.get("enabled_field")
     if enabled_field and isinstance(enabled_for_user, bool):

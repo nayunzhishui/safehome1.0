@@ -51,6 +51,7 @@ const API_ENDPOINTS = {
   trainingPlanAssignment: "/api/training-plan/assignment",
   courses: "/api/courses",
   courseDetailBase: "/api/courses/:id",
+  courseProgressBase: "/api/courses/:id/progress",
   programs: "/api/programs",
   programDetailBase: "/api/programs/:id",
   programEntriesBase: "/api/programs/:id/entries",
@@ -599,6 +600,18 @@ function createSafeHomeApi(options = {}) {
 
     getCourse(id) {
       return request(endpointWithId(API_ENDPOINTS.courseDetailBase, id));
+    },
+
+    getCourseProgress(id) {
+      return request(endpointWithId(API_ENDPOINTS.courseProgressBase, id), { requiresAuth: true });
+    },
+
+    saveCourseProgress(id, data) {
+      return request(endpointWithId(API_ENDPOINTS.courseProgressBase, id), {
+        method: "POST",
+        data: withDefaultUser(data),
+        requiresAuth: true,
+      });
     },
 
     listPrograms() {

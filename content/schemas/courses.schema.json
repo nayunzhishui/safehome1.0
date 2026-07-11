@@ -1,0 +1,47 @@
+{
+  "file": "courses.json",
+  "root_required": ["version", "boundary_notice", "courses", "pathways"],
+  "lists": [
+    {
+      "field": "courses",
+      "item_required": [
+        "id",
+        "title",
+        "theme",
+        "scene",
+        "sections",
+        "relation_to_cards_or_programs",
+        "learning_objectives",
+        "core_concept",
+        "common_misconceptions",
+        "worked_example",
+        "counter_example",
+        "knowledge_checks",
+        "guided_practice",
+        "transfer_task",
+        "reflection_prompts",
+        "booster_plan",
+        "audience_adaptation",
+        "curriculum_node",
+        "review_status",
+        "boundary_notice"
+      ],
+      "item_list_min_lengths": {
+        "sections": 3,
+        "relation_to_cards_or_programs": 1,
+        "learning_objectives": 2,
+        "common_misconceptions": 1,
+        "knowledge_checks": 1,
+        "reflection_prompts": 2
+      }
+    },
+    {
+      "field": "pathways",
+      "item_required": ["id", "title", "audiences", "review_status", "boundary_notice", "nodes"],
+      "item_list_min_lengths": {
+        "audiences": 1,
+        "nodes": 7
+      }
+    }
+  ]
+}

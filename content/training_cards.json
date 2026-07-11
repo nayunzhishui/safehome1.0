@@ -1,5 +1,5 @@
 {
-  "version": "2026.07-training-cards-v3",
+  "version": "2026.07-task17-governance-v1",
   "cards": [
     {
       "id": "emotion_naming",
@@ -48,7 +48,48 @@
       "emotion_word_prompt": "做《情绪识别卡：先命名情绪》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《情绪识别卡：先命名情绪》，写下一个今天能尝试的新回应：帮助家长在回应孩子前，先识别自己和孩子的情绪。",
       "post_practice_prompt": "练完《情绪识别卡：先命名情绪》后，记录这张卡在“亲子冲突后”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《情绪识别卡：先命名情绪》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《情绪识别卡：先命名情绪》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "情绪识别卡：先命名情绪",
+      "mechanism_code": "emotion_awareness",
+      "target_constructs": [
+        "emotion_awareness"
+      ],
+      "indications": [
+        "亲子冲突后",
+        "情绪强度中等",
+        "家长愿意先暂停观察"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要立即线下支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 3,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要立即线下支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "暂停 3 秒，先不急着讲道理。",
+        "在心里说出自己的情绪：我现在是着急、失望，还是害怕？"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "three_second_pause",
@@ -97,7 +138,48 @@
       "emotion_word_prompt": "做《3 秒暂停卡：开口前先停一下》前，标出让你想立刻行动的情绪，例如着急、生气或担心。",
       "new_response_prompt": "结合《3 秒暂停卡：开口前先停一下》，写下一个今天能尝试的新回应：降低自动催促、吼叫或指责的概率。",
       "post_practice_prompt": "练完《3 秒暂停卡：开口前先停一下》后，记录这张卡在“家长想催促或批评前”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《3 秒暂停卡：开口前先停一下》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《3 秒暂停卡：开口前先停一下》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "3 秒暂停卡：开口前先停一下",
+      "mechanism_code": "behavior_change",
+      "target_constructs": [
+        "pause_before_response"
+      ],
+      "indications": [
+        "家长想催促或批评前",
+        "情绪刚升高时",
+        "低风险日常冲突"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "孩子或家长现实安全受威胁",
+        "需要立即离开现场的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 1,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "孩子或家长现实安全受威胁",
+        "需要立即离开现场的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "发现自己想立刻批评时，先闭嘴 3 秒。",
+        "做一次慢呼吸，让语速降下来。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "cognitive_flexibility",
@@ -146,7 +228,48 @@
       "emotion_word_prompt": "做《认知灵活化卡：换一种解释》时，先写出此刻最影响你的一个想法，再给它配一个情绪名字。",
       "new_response_prompt": "结合《认知灵活化卡：换一种解释》，写下一个今天能尝试的新回应：帮助家长从单一负性归因转向更灵活的理解。",
       "post_practice_prompt": "练完《认知灵活化卡：换一种解释》后，记录这张卡在“家长出现单一负性解释时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《认知灵活化卡：换一种解释》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《认知灵活化卡：换一种解释》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "认知灵活化卡：换一种解释",
+      "mechanism_code": "cognitive_flexibility",
+      "target_constructs": [
+        "cognitive_flexibility"
+      ],
+      "indications": [
+        "家长出现单一负性解释时",
+        "亲子问题反复出现后",
+        "低到中等压力场景"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要先处理基本安全的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要先处理基本安全的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下脑中第一个解释，例如：他就是故意拖。",
+        "问自己：还有没有第二种可能？"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "nonjudgmental_response",
@@ -195,7 +318,48 @@
       "emotion_word_prompt": "做《非评判回应卡：把批评改成确认》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《非评判回应卡：把批评改成确认》，写下一个今天能尝试的新回应：训练家长把评判性语言转换成支持性表达。",
       "post_practice_prompt": "练完《非评判回应卡：把批评改成确认》后，记录这张卡在“出现评判性语言后”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《非评判回应卡：把批评改成确认》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《非评判回应卡：把批评改成确认》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "非评判回应卡：把批评改成确认",
+      "mechanism_code": "relationship_validation",
+      "target_constructs": [
+        "nonjudgmental_response"
+      ],
+      "indications": [
+        "出现评判性语言后",
+        "亲子冲突复盘时",
+        "家长愿意改写一句话时"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要专业介入的持续伤害情境"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 4,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要专业介入的持续伤害情境",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "找到自己想说的批评句。",
+        "删掉“又、总是、必须、怎么这么”等高压词。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "alternative_behavior",
@@ -245,7 +409,48 @@
       "emotion_word_prompt": "做《替代行为卡：用具体请求替代威胁》前，标出让你想立刻行动的情绪，例如着急、生气或担心。",
       "new_response_prompt": "结合《替代行为卡：用具体请求替代威胁》，写下一个今天能尝试的新回应：把短期有效但长期成本高的威胁、催促，换成可执行请求。",
       "post_practice_prompt": "练完《替代行为卡：用具体请求替代威胁》后，记录这张卡在“反复催促后”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《替代行为卡：用具体请求替代威胁》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《替代行为卡：用具体请求替代威胁》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "替代行为卡：用具体请求替代威胁",
+      "mechanism_code": "behavior_change",
+      "target_constructs": [
+        "behavior_substitution"
+      ],
+      "indications": [
+        "反复催促后",
+        "想把要求缩小成一步时",
+        "低风险日常任务冲突"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "暴力或安全威胁",
+        "需要立即保护人身安全的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "暴力或安全威胁",
+        "需要立即保护人身安全的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "识别原本想做的情绪性行为，例如威胁、催促、冷处理。",
+        "把要求缩小成一个 10 分钟内能完成的小动作。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "cbt_auto_thought_student",
@@ -289,14 +494,55 @@
       "suitable_scene": "学生能安全书写压力想法时",
       "today_goal": "帮助学生把压力场景中的自动想法写清楚，再尝试寻找更平衡的解释。",
       "example_phrase": "把“我肯定会考砸”改成“我现在很担心考试，但我可以先复习最容易开始的一小块”。",
-      "before_note_prompt": "开始前写一句：今天我想用这张卡练“帮助学生把压力场景中的自动想法写清楚，再尝试寻找更平衡的...”。",
+      "before_note_prompt": "开始前写一句：今天我想用这张卡练“把压力场景中的自动想法写清楚，再尝试寻找更平衡的解释”。",
       "after_note_prompt": "结束后写一句：这张卡帮我多看见了什么，或下次要把哪一步再变小。",
       "boundary_notice": "这张训练卡只提供支持性练习和自我观察建议，不构成诊断、治疗方案或危机干预。",
       "pre_practice_prompt": "开始前看一眼：这张卡先围绕“把担心写成一句话”，只完成“写下刚才最让你担心的一件事。”也可以。",
       "emotion_word_prompt": "做《自动想法卡：把担心写成一句话》时，先写出此刻最影响你的一个想法，再给它配一个情绪名字。",
-      "new_response_prompt": "结合《自动想法卡：把担心写成一句话》，写下一个今天能尝试的新回应：帮助学生把压力场景中的自动想法写清楚，再尝试寻找更平衡的...",
+      "new_response_prompt": "结合《自动想法卡：把担心写成一句话》，写下一个今天能尝试的新回应：先写清自动想法，再尝试寻找更平衡的解释。",
       "post_practice_prompt": "练完《自动想法卡：把担心写成一句话》后，记录这张卡在“学生能安全书写压力想法时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《自动想法卡：把担心写成一句话》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《自动想法卡：把担心写成一句话》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "自动想法卡：把担心写成一句话",
+      "mechanism_code": "cognitive_flexibility",
+      "target_constructs": [
+        "automatic_thought_awareness"
+      ],
+      "indications": [
+        "学生能安全书写压力想法时",
+        "考试担心或评价压力后",
+        "低到中等压力场景"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "自伤自杀或暴力风险文本",
+        "需要立即现实支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "自伤自杀或暴力风险文本",
+        "需要立即现实支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下刚才最让你担心的一件事。",
+        "把脑中最强烈的一句话写下来，例如：如果考不好，大家会失望。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "student_emotion_naming",
@@ -346,7 +592,48 @@
       "emotion_word_prompt": "做《情绪命名卡：说出现在最明显的感受》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《情绪命名卡：说出现在最明显的感受》，写下一个今天能尝试的新回应：帮助学生在压力升高时先识别情绪，降低被情绪推着走的感觉。",
       "post_practice_prompt": "练完《情绪命名卡：说出现在最明显的感受》后，记录这张卡在“学生压力升高但仍可自我观察时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《情绪命名卡：说出现在最明显的感受》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《情绪命名卡：说出现在最明显的感受》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "情绪命名卡：说出现在最明显的感受",
+      "mechanism_code": "emotion_awareness",
+      "target_constructs": [
+        "emotion_naming"
+      ],
+      "indications": [
+        "学生压力升高但仍可自我观察时",
+        "考试或学习压力后",
+        "低到中等情绪强度"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "急性失控或需要线下支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 3,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "急性失控或需要线下支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "停下来，感受身体最明显的位置。",
+        "从紧张、担心、委屈、生气、害怕、难过中选一个最接近的词。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "self_support_statement",
@@ -396,7 +683,48 @@
       "emotion_word_prompt": "做《自我支持卡：把责备换成支持句》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《自我支持卡：把责备换成支持句》，写下一个今天能尝试的新回应：帮助学生把强烈自责改写成更具体、更能支持行动的话。",
       "post_practice_prompt": "练完《自我支持卡：把责备换成支持句》后，记录这张卡在“学生出现自责但无高风险表达时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《自我支持卡：把责备换成支持句》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《自我支持卡：把责备换成支持句》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "自我支持卡：把责备换成支持句",
+      "mechanism_code": "self_compassion",
+      "target_constructs": [
+        "self_support_statement"
+      ],
+      "indications": [
+        "学生出现自责但无高风险表达时",
+        "考试失利后",
+        "愿意尝试改写一句话时"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "自伤自杀或暴力风险文本",
+        "需要立即现实支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "自伤自杀或暴力风险文本",
+        "需要立即现实支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下一句正在责备自己的话。",
+        "想象朋友遇到同样情况，你会怎么对他说？"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "sandplay_expression_01",
@@ -440,14 +768,55 @@
       "suitable_scene": "学生愿意用图像或物品表达压力时",
       "today_goal": "帮助学生用表达任务呈现压力感受，作为后续交流和自我理解的线索。",
       "example_phrase": "这个石头像考试压力，放在中间很重。旁边的小灯像提醒我可以先照亮一小块地方。",
-      "before_note_prompt": "开始前写一句：今天我想用这张卡练“帮助学生用表达任务呈现压力感受，作为后续交流和自我理解的...”。",
+      "before_note_prompt": "开始前写一句：今天我想用这张卡练“用象征物呈现压力感受，为后续交流提供线索”。",
       "after_note_prompt": "结束后写一句：这张卡帮我多看见了什么，或下次要把哪一步再变小。",
       "boundary_notice": "这张训练卡只提供支持性练习和自我观察建议，不构成诊断、治疗方案或危机干预。",
       "pre_practice_prompt": "开始前看一眼：这张卡先围绕“给压力选一个象征物”，只完成“从身边物品或想象图像中，选一个最像当前压力的象征物。”也可以。",
       "emotion_word_prompt": "做《沙盘表达卡：给压力选一个象征物》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《沙盘表达卡：给压力选一个象征物》，写一句低风险表达：先说感受，再说一个很小的请求。",
       "post_practice_prompt": "练完《沙盘表达卡：给压力选一个象征物》后，记录这张卡在“学生愿意用图像或物品表达压力时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《沙盘表达卡：给压力选一个象征物》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《沙盘表达卡：给压力选一个象征物》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "沙盘表达卡：给压力选一个象征物",
+      "mechanism_code": "supportive_practice",
+      "target_constructs": [
+        "symbolic_expression"
+      ],
+      "indications": [
+        "学生愿意用图像或物品表达压力时",
+        "语言表达困难但愿意描述象征物时",
+        "低风险支持性访谈前"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要解释潜意识或做诊断的场景"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 8,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要解释潜意识或做诊断的场景",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "从身边物品或想象图像中，选一个最像当前压力的象征物。",
+        "描述它的位置、大小、颜色或状态。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "controlled",
+      "release_policy": "manual_context_required",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "parent_after_conflict_repair",
@@ -496,7 +865,47 @@
       "emotion_word_prompt": "做《冲突后一句修复》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《冲突后一句修复》，写一句修复开场，先承认刚才的困难，再邀请继续说。",
       "post_practice_prompt": "练完《冲突后一句修复》后，记录这张卡在“低风险亲子冲突后”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《冲突后一句修复》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《冲突后一句修复》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "冲突后一句修复",
+      "mechanism_code": "relationship_repair",
+      "target_constructs": [
+        "after_conflict_repair"
+      ],
+      "indications": [
+        "低风险亲子冲突后",
+        "家长愿意先修复一句话时"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 3,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "等情绪下降后再说。",
+        "承认刚才有些着急。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "controlled",
+      "release_policy": "manual_context_required",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "parent_repair_question",
@@ -545,7 +954,47 @@
       "emotion_word_prompt": "做《一个修复问题》前，先写下你准备带着哪一种情绪去问这个问题。",
       "new_response_prompt": "结合《一个修复问题》，写下一个开放问题，只问一件事，不连续追问。",
       "post_practice_prompt": "练完《一个修复问题》后，记录这张卡在“亲子冲突复盘”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《一个修复问题》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《一个修复问题》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "一个修复问题",
+      "mechanism_code": "relationship_repair",
+      "target_constructs": [
+        "repair_question"
+      ],
+      "indications": [
+        "亲子冲突复盘",
+        "家长愿意先倾听时"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 4,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "问：刚才哪句话让你最难受？",
+        "只听不解释。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "parent_body_signal_check",
@@ -595,7 +1044,49 @@
       "emotion_word_prompt": "做《身体信号小检查》时，写下身体最明显的一个信号，例如胸口紧、肩膀硬或胃不舒服。",
       "new_response_prompt": "结合《身体信号小检查》，写下一个今天能尝试的新回应：帮助家长在压力升高时先识别身体信号，再进入沟通。",
       "post_practice_prompt": "练完《身体信号小检查》后，记录这张卡在“家长身体紧张升高时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《身体信号小检查》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《身体信号小检查》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "身体信号小检查",
+      "mechanism_code": "body_regulation",
+      "target_constructs": [
+        "body_signal_awareness"
+      ],
+      "indications": [
+        "家长身体紧张升高时",
+        "开口前需要先暂停时"
+      ],
+      "contraindications": [
+        "急性身体危险",
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实医疗支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 3,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "急性身体危险",
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实医疗支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "观察肩膀、呼吸和胃部感受。",
+        "给紧张程度打 0-10 分。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "student_exam_body_map",
@@ -644,7 +1135,47 @@
       "emotion_word_prompt": "做《考试前身体地图》时，写下身体最明显的一个信号，例如胸口紧、肩膀硬或胃不舒服。",
       "new_response_prompt": "结合《考试前身体地图》，写下一个今天能尝试的新回应：帮助学生把考试前的紧张落到具体身体感受和一个小动作上。",
       "post_practice_prompt": "练完《考试前身体地图》后，记录这张卡在“考试前紧张但仍能自我观察时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《考试前身体地图》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《考试前身体地图》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "考试前身体地图",
+      "mechanism_code": "body_regulation",
+      "target_constructs": [
+        "exam_body_awareness"
+      ],
+      "indications": [
+        "考试前紧张但仍能自我观察时",
+        "低到中等压力场景"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 4,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "标出身体最紧的位置。",
+        "给紧张打 0-10 分。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "student_two_thoughts",
@@ -693,16 +1224,55 @@
       "emotion_word_prompt": "做《给想法找第二种说法》时，先写出此刻最影响你的一个想法，再给它配一个情绪名字。",
       "new_response_prompt": "结合《给想法找第二种说法》，写下一个今天能尝试的新回应：帮助学生把压力想法改写成更温和、可行动的第二种说法。",
       "post_practice_prompt": "练完《给想法找第二种说法》后，记录这张卡在“学生能安全书写压力想法时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《给想法找第二种说法》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《给想法找第二种说法》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "给想法找第二种说法",
+      "mechanism_code": "behavior_change",
+      "target_constructs": [
+        "second_thought_reframe"
+      ],
+      "indications": [
+        "学生能安全书写压力想法时",
+        "低到中等考试压力场景"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "现实安全威胁",
+        "需要现实支持或专业支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下最重的想法。",
+        "写一个温和一点的说法。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "prfq_pm_awareness",
       "type": "parent_reflection",
-      "title": "PRFQ 前心智化觉察卡",
+      "title": "把判断换成观察",
       "purpose": "识别自动反应怎样把孩子行为快速定性，并把回应拉回可观察事实。",
       "tags": [
         "parent_reflection",
-        "prfq_pm_awareness",
         "prfq_pm_awareness"
       ],
       "steps": [
@@ -734,23 +1304,60 @@
       "suitable_scene": "家长很快把孩子行为解释成故意或针对自己",
       "today_goal": "识别自动反应怎样把孩子行为快速定性，并把回应拉回可观察事实。",
       "example_phrase": "孩子摔门后，我脑中冒出「他就是故意气我」。停下来，写下事实：他说完那句话就快步离开房间，关门时声音很响。我把判断放一边，只描述看到的：他说完话就离开了，门关得很响。过了5分钟，我敲门问：需要我现在进来，还是你想再待一会儿？他说：再等一下。",
-      "before_note_prompt": "开始前写一句：今天我想用这张卡练“识别自动反应怎样把孩子行为快速定性，并把回应拉回可观察事...”。",
+      "before_note_prompt": "开始前写一句：今天我想练习识别快速判断，并把回应拉回可观察事实。",
       "after_note_prompt": "结束后写一句：这张卡帮我多看见了什么，或下次要把哪一步再变小。",
       "boundary_notice": "这张训练卡只提供支持性练习和自我观察建议，不构成诊断、治疗方案或危机干预。",
-      "pre_practice_prompt": "开始前看一眼：这张卡先围绕“PRFQ 前心智化觉察卡”，只完成“注意到脑中冒出的第一句判断，不急着说出口。”也可以。",
-      "emotion_word_prompt": "做《PRFQ 前心智化觉察卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
-      "new_response_prompt": "结合《PRFQ 前心智化觉察卡》，写下一个今天能尝试的新回应：识别自动反应怎样把孩子行为快速定性，并把回应拉回可观察事...",
-      "post_practice_prompt": "练完《PRFQ 前心智化觉察卡》后，记录这张卡在“家长很快把孩子行为解释成故意或针对自...”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《PRFQ 前心智化觉察卡》今天留下的一个小观察，不需要总结成结论。"
+      "pre_practice_prompt": "开始前看一眼：这张卡先围绕“把判断换成观察”，只完成“注意到脑中冒出的第一句判断，不急着说出口”也可以。",
+      "emotion_word_prompt": "做《把判断换成观察》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
+      "new_response_prompt": "结合《把判断换成观察》，写下一个今天能尝试的新回应：把快速判断改写为可观察事实。",
+      "post_practice_prompt": "练完《把判断换成观察》后，记录在容易把孩子行为解释成故意或针对自己时，哪一步最容易、哪一步要放轻。",
+      "one_sentence_note_prompt": "用一句话写下《把判断换成观察》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "把判断换成观察",
+      "mechanism_code": "supportive_practice",
+      "target_constructs": [
+        "prfq_pm_awareness"
+      ],
+      "indications": [
+        "家长很快把孩子行为解释成故意或针对自己",
+        "亲子冲突后仍能短暂停顿"
+      ],
+      "contraindications": [
+        "正在发生暴力或现实安全风险",
+        "需要立即保护人身安全的情境"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "正在发生暴力或现实安全风险",
+        "需要立即保护人身安全的情境",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "注意到脑中冒出的第一句判断，不急着说出口。",
+        "写下当时看到的一个事实（只描述动作，不加解释）。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "prfq_cm_tolerance",
       "type": "parent_reflection",
-      "title": "PRFQ 不确定容忍卡",
+      "title": "给不知道留一点空间",
       "purpose": "练习承认孩子内心状态不总是可读，减少过早下结论。",
       "tags": [
         "parent_reflection",
-        "prfq_cm_tolerance",
         "prfq_cm_tolerance"
       ],
       "steps": [
@@ -785,24 +1392,61 @@
       "before_note_prompt": "开始前写一句：今天我想用这张卡练“练习承认孩子内心状态不总是可读，减少过早下结论。”。",
       "after_note_prompt": "结束后写一句：这张卡帮我多看见了什么，或下次要把哪一步再变小。",
       "boundary_notice": "这张训练卡只提供支持性练习和自我观察建议，不构成诊断、治疗方案或危机干预。",
-      "pre_practice_prompt": "开始前看一眼：这张卡先围绕“PRFQ 不确定容忍卡”，只完成“说出一个「我还不知道」的部分。”也可以。",
-      "emotion_word_prompt": "做《PRFQ 不确定容忍卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
-      "new_response_prompt": "结合《PRFQ 不确定容忍卡》，写下一个今天能尝试的新回应：练习承认孩子内心状态不总是可读，减少过早下结论。",
-      "post_practice_prompt": "练完《PRFQ 不确定容忍卡》后，记录这张卡在“家长急着判断孩子真实想法”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《PRFQ 不确定容忍卡》今天留下的一个小观察，不需要总结成结论。"
+      "pre_practice_prompt": "开始前看一眼：这张卡先围绕“给不知道留一点空间”，只完成“说出一个我还不知道的部分”也可以。",
+      "emotion_word_prompt": "做《给不知道留一点空间》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
+      "new_response_prompt": "结合《给不知道留一点空间》，写下一个今天能尝试的新回应：承认还不知道，减少过早下结论。",
+      "post_practice_prompt": "练完《给不知道留一点空间》后，记录在急着判断孩子真实想法时，哪一步最容易、哪一步要放轻。",
+      "one_sentence_note_prompt": "用一句话写下《给不知道留一点空间》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "给不知道留一点空间",
+      "mechanism_code": "supportive_practice",
+      "target_constructs": [
+        "prfq_cm_tolerance"
+      ],
+      "indications": [
+        "家长急着判断孩子真实想法",
+        "孩子沉默或回避时"
+      ],
+      "contraindications": [
+        "高风险危机场景",
+        "孩子明确拒绝交流且需要先降压"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机场景",
+        "孩子明确拒绝交流且需要先降压",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "说出一个「我还不知道」的部分。",
+        "列出两种可能的解释。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "prfq_ic_curiosity",
       "type": "parent_reflection",
-      "title": "PRFQ 好奇提问卡",
+      "title": "只问一个开放问题",
       "purpose": "把解释孩子换成询问孩子，用开放问题收集更多线索。",
       "tags": [
         "parent_reflection",
-        "prfq_ic_curiosity",
         "prfq_ic_curiosity"
       ],
       "steps": [
-        "注意到一个「为什么又...」的句子，暂时不说出口。",
+        "注意到一个“为什么又……”的句子，暂时不说出口。",
         "只保留一个开放问题。",
         "听完后复述一个关键词。",
         "再问孩子是否需要建议。"
@@ -833,11 +1477,49 @@
       "before_note_prompt": "开始前写一句：今天我想用这张卡练“把解释孩子换成询问孩子，用开放问题收集更多线索。”。",
       "after_note_prompt": "结束后写一句：这张卡帮我多看见了什么，或下次要把哪一步再变小。",
       "boundary_notice": "这张训练卡只提供支持性练习和自我观察建议，不构成诊断、治疗方案或危机干预。",
-      "pre_practice_prompt": "开始前看一眼：这张卡先围绕“PRFQ 好奇提问卡”，只完成“注意到一个「为什么又...」的句子，暂时不说出口。”也可以。",
-      "emotion_word_prompt": "做《PRFQ 好奇提问卡》前，先写下你准备带着哪一种情绪去问这个问题。",
-      "new_response_prompt": "结合《PRFQ 好奇提问卡》，写下一个开放问题，只问一件事，不连续追问。",
-      "post_practice_prompt": "练完《PRFQ 好奇提问卡》后，记录这张卡在“家长想了解孩子行为背后的具体困难”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《PRFQ 好奇提问卡》今天留下的一个小观察，不需要总结成结论。"
+      "pre_practice_prompt": "开始前看一眼：这张卡先围绕“只问一个开放问题”，只完成“注意到一个为什么又……的句子，暂时不说出口”也可以。",
+      "emotion_word_prompt": "做《只问一个开放问题》前，先写下你准备带着哪一种情绪去问这个问题。",
+      "new_response_prompt": "结合《只问一个开放问题》，写下一个开放问题，只问一件事，不连续追问。",
+      "post_practice_prompt": "练完《只问一个开放问题》后，记录在想了解孩子具体困难时，哪一步最容易、哪一步要放轻。",
+      "one_sentence_note_prompt": "用一句话写下《只问一个开放问题》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "只问一个开放问题",
+      "mechanism_code": "relationship_validation",
+      "target_constructs": [
+        "prfq_ic_curiosity"
+      ],
+      "indications": [
+        "家长想了解孩子行为背后的具体困难",
+        "孩子还能进行简短对话"
+      ],
+      "contraindications": [
+        "孩子处于强烈失控或安全风险中",
+        "对话会升级冲突的当下"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "孩子处于强烈失控或安全风险中",
+        "对话会升级冲突的当下",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "注意到一个“为什么又……”的句子，暂时不说出口。",
+        "只保留一个开放问题。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "erq_reappraisal_parent",
@@ -846,7 +1528,6 @@
       "purpose": "为同一情境寻找第二种解释，减少单一路径带来的高压回应。",
       "tags": [
         "cognitive_flexibility",
-        "erq_reappraisal_parent",
         "erq_reappraisal_parent"
       ],
       "steps": [
@@ -885,7 +1566,45 @@
       "emotion_word_prompt": "做《家长认知重评卡》时，先写出此刻最影响你的一个想法，再给它配一个情绪名字。",
       "new_response_prompt": "结合《家长认知重评卡》，写下一个今天能尝试的新回应：为同一情境寻找第二种解释，减少单一路径带来的高压回应。",
       "post_practice_prompt": "练完《家长认知重评卡》后，记录这张卡在“家长出现灾难化或固定归因”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《家长认知重评卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《家长认知重评卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "家长认知重评卡",
+      "mechanism_code": "cognitive_flexibility",
+      "target_constructs": [
+        "erq_reappraisal_parent"
+      ],
+      "indications": [
+        "家长出现灾难化或固定归因",
+        "问题尚可通过一个小动作开始"
+      ],
+      "contraindications": [
+        "现实安全风险",
+        "需要专业人员立即处理的危机场景"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "现实安全风险",
+        "需要专业人员立即处理的危机场景",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下最先出现的解释。",
+        "寻找一个不评价人格的解释。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "erq_suppression_release",
@@ -894,7 +1613,6 @@
       "purpose": "识别压抑信号，并用一句低强度表达替代继续憋住或突然爆发。",
       "tags": [
         "emotion_expression",
-        "erq_suppression_release",
         "erq_suppression_release"
       ],
       "steps": [
@@ -933,7 +1651,45 @@
       "emotion_word_prompt": "做《家长低风险表达卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《家长低风险表达卡》，写一句低风险表达：先说感受，再说一个很小的请求。",
       "post_practice_prompt": "练完《家长低风险表达卡》后，记录这张卡在“家长习惯压住情绪直到爆发”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《家长低风险表达卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《家长低风险表达卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "家长低风险表达卡",
+      "mechanism_code": "emotion_awareness",
+      "target_constructs": [
+        "erq_suppression_release"
+      ],
+      "indications": [
+        "家长习惯压住情绪直到爆发",
+        "低风险日常沟通"
+      ],
+      "contraindications": [
+        "情绪表达会带来伤害或威胁",
+        "需要离开现场保障安全"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "情绪表达会带来伤害或威胁",
+        "需要离开现场保障安全",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "找到一个身体压抑信号。",
+        "用我句式说一个感受。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "repair_after_rupture",
@@ -942,7 +1698,6 @@
       "purpose": "用简短、具体、不过度解释的话重建连接。",
       "tags": [
         "relationship_repair",
-        "repair_after_rupture",
         "repair_after_rupture"
       ],
       "steps": [
@@ -981,7 +1736,45 @@
       "emotion_word_prompt": "做《冲突后修复卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《冲突后修复卡》，写一句修复开场，先承认刚才的困难，再邀请继续说。",
       "post_practice_prompt": "练完《冲突后修复卡》后，记录这张卡在“冲突已经降温后”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《冲突后修复卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《冲突后修复卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "冲突后修复卡",
+      "mechanism_code": "relationship_repair",
+      "target_constructs": [
+        "repair_after_rupture"
+      ],
+      "indications": [
+        "冲突已经降温后",
+        "家长愿意承担自己的一小部分"
+      ],
+      "contraindications": [
+        "仍在激烈冲突中",
+        "存在暴力、威胁或高风险表达"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "仍在激烈冲突中",
+        "存在暴力、威胁或高风险表达",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "指出刚才自己的一句话或动作。",
+        "承认它可能带来的影响。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "controlled",
+      "release_policy": "manual_context_required",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "validation_before_advice",
@@ -990,7 +1783,6 @@
       "purpose": "在给建议前先确认孩子的感受或处境，降低防御。",
       "tags": [
         "nonjudgmental_response",
-        "validation_before_advice",
         "validation_before_advice"
       ],
       "steps": [
@@ -1029,7 +1821,45 @@
       "emotion_word_prompt": "做《先确认再建议卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《先确认再建议卡》，写下一个今天能尝试的新回应：在给建议前先确认孩子的感受或处境，降低防御。",
       "post_practice_prompt": "练完《先确认再建议卡》后，记录这张卡在“孩子抗拒建议时”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《先确认再建议卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《先确认再建议卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "先确认再建议卡",
+      "mechanism_code": "relationship_validation",
+      "target_constructs": [
+        "validation_before_advice"
+      ],
+      "indications": [
+        "孩子抗拒建议时",
+        "家长习惯立刻讲道理"
+      ],
+      "contraindications": [
+        "孩子需要立即安全保护",
+        "建议会替代必要求助的情境"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "孩子需要立即安全保护",
+        "建议会替代必要求助的情境",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "先说一句看到的事实。",
+        "确认一个可能的感受。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "parent_body_grounding",
@@ -1038,7 +1868,6 @@
       "purpose": "把身体感觉当作压力信号，先稳住身体再进入沟通。",
       "tags": [
         "body_awareness",
-        "parent_body_grounding",
         "parent_body_grounding"
       ],
       "steps": [
@@ -1047,7 +1876,7 @@
         "做三次慢呼气。",
         "用更低音量说第一句话。"
       ],
-      "example": "孩子说「我不想做了」时，我感觉肩膀突然紧了，胸口也憋着一口气，想立刻说「你必须做完」。我停下来：双脚踩稳地面，注意到肩膀的紧绷。慢慢呼气三次，1...2...3。感觉肩膀松了一点。用比刚才更低的音量说：我们先停一下，休息2分钟再说。孩子看着我，点了点头。",
+      "example": "孩子说「我不想做了」时，我感觉肩膀突然紧了，胸口也憋着一口气，想立刻说「你必须做完」。我停下来：双脚踩稳地面，注意到肩膀的紧绷。慢慢呼气三次。感觉肩膀松了一点。用比刚才更低的音量说：我们先停一下，休息2分钟再说。孩子看着我，点了点头。",
       "duration_minutes": 5,
       "theory_source": "UP",
       "target_skill": "parent_body_grounding",
@@ -1069,7 +1898,7 @@
       "enabled": true,
       "suitable_scene": "身体紧张明显但没有医疗紧急情况",
       "today_goal": "把身体感觉当作压力信号，先稳住身体再进入沟通。",
-      "example_phrase": "孩子说「我不想做了」时，我感觉肩膀突然紧了，胸口也憋着一口气，想立刻说「你必须做完」。我停下来：双脚踩稳地面，注意到肩膀的紧绷。慢慢呼气三次，1...2...3。感觉肩膀松了一点。用比刚才更低的音量说：我们先停一下，休息2分钟再说。孩子看着我，点了点头。",
+      "example_phrase": "孩子说「我不想做了」时，我感觉肩膀突然紧了，胸口也憋着一口气，想立刻说「你必须做完」。我停下来：双脚踩稳地面，注意到肩膀的紧绷。慢慢呼气三次。感觉肩膀松了一点。用比刚才更低的音量说：我们先停一下，休息2分钟再说。孩子看着我，点了点头。",
       "before_note_prompt": "开始前写一句：今天我想用这张卡练“把身体感觉当作压力信号，先稳住身体再进入沟通。”。",
       "after_note_prompt": "结束后写一句：这张卡帮我多看见了什么，或下次要把哪一步再变小。",
       "boundary_notice": "这张训练卡只提供家长陪伴练习建议，不评价家长或孩子，也不替代心理咨询、医学诊断或紧急帮助。",
@@ -1077,7 +1906,45 @@
       "emotion_word_prompt": "做《家长身体落地卡》时，写下身体最明显的一个信号，例如胸口紧、肩膀硬或胃不舒服。",
       "new_response_prompt": "结合《家长身体落地卡》，写下一个今天能尝试的新回应：把身体感觉当作压力信号，先稳住身体再进入沟通。",
       "post_practice_prompt": "练完《家长身体落地卡》后，记录这张卡在“身体紧张明显但没有医疗紧急情况”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《家长身体落地卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《家长身体落地卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "家长身体落地卡",
+      "mechanism_code": "body_regulation",
+      "target_constructs": [
+        "parent_body_grounding"
+      ],
+      "indications": [
+        "身体紧张明显但没有医疗紧急情况",
+        "沟通前需要降速"
+      ],
+      "contraindications": [
+        "胸痛、晕厥等明显身体危险",
+        "现实安全受到威胁"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "胸痛、晕厥等明显身体危险",
+        "现实安全受到威胁",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "双脚踩稳地面。",
+        "命名一个身体感觉。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "specific_request_replace_threat",
@@ -1086,7 +1953,6 @@
       "purpose": "把威胁、催促或翻旧账改成一个 5 分钟内能开始的小请求。",
       "tags": [
         "behavior_substitution",
-        "specific_request_replace_threat",
         "specific_request_replace_threat"
       ],
       "steps": [
@@ -1125,7 +1991,45 @@
       "emotion_word_prompt": "做《具体请求替代威胁卡》前，标出让你想立刻行动的情绪，例如着急、生气或担心。",
       "new_response_prompt": "结合《具体请求替代威胁卡》，写下一个今天能尝试的新回应：把威胁、催促或翻旧账改成一个 5 分钟内能开始的小请求。",
       "post_practice_prompt": "练完《具体请求替代威胁卡》后，记录这张卡在“作业、整理、出门等日常任务冲突”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《具体请求替代威胁卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《具体请求替代威胁卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "具体请求替代威胁卡",
+      "mechanism_code": "behavior_change",
+      "target_constructs": [
+        "specific_request_replace_threat"
+      ],
+      "indications": [
+        "作业、整理、出门等日常任务冲突",
+        "家长想减少威胁表达"
+      ],
+      "contraindications": [
+        "有高风险危机或现实安全风险",
+        "需要立即制止伤害行为的情境"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "有高风险危机或现实安全风险",
+        "需要立即制止伤害行为的情境",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "圈出原句里的威胁或催促。",
+        "删掉翻旧账内容。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "one_open_question",
@@ -1134,7 +2038,6 @@
       "purpose": "一次只问一个问题，降低叠问带来的压力。",
       "tags": [
         "parent_child_communication",
-        "one_open_question",
         "one_open_question"
       ],
       "steps": [
@@ -1173,7 +2076,45 @@
       "emotion_word_prompt": "做《一个开放问题卡》前，先写下你准备带着哪一种情绪去问这个问题。",
       "new_response_prompt": "结合《一个开放问题卡》，写下一个开放问题，只问一件事，不连续追问。",
       "post_practice_prompt": "练完《一个开放问题卡》后，记录这张卡在“家长提问过多导致孩子防御”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《一个开放问题卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《一个开放问题卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "一个开放问题卡",
+      "mechanism_code": "supportive_practice",
+      "target_constructs": [
+        "one_open_question"
+      ],
+      "indications": [
+        "家长提问过多导致孩子防御",
+        "孩子能进行简短回答"
+      ],
+      "contraindications": [
+        "有高风险危机或现实安全风险",
+        "孩子强烈失控且需要先暂停"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "有高风险危机或现实安全风险",
+        "孩子强烈失控且需要先暂停",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下想问的所有问题。",
+        "只保留最重要的一个。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "scs_self_kindness",
@@ -1182,7 +2123,6 @@
       "purpose": "把自责改写成像对朋友说的话，减少压力下的二次打击。",
       "tags": [
         "student_self_support",
-        "scs_self_kindness",
         "scs_self_kindness"
       ],
       "steps": [
@@ -1221,7 +2161,45 @@
       "emotion_word_prompt": "做《自我善意句卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《自我善意句卡》，写下一个今天能尝试的新回应：把自责改写成像对朋友说的话，减少压力下的二次打击。",
       "post_practice_prompt": "练完《自我善意句卡》后，记录这张卡在“学生出现自我责备但没有高风险表达”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《自我善意句卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《自我善意句卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "自我善意句卡",
+      "mechanism_code": "self_compassion",
+      "target_constructs": [
+        "scs_self_kindness"
+      ],
+      "indications": [
+        "学生出现自我责备但没有高风险表达",
+        "能进行简短书写"
+      ],
+      "contraindications": [
+        "出现自伤、自杀或其他高风险危机表达",
+        "需要立即联系现实支持的情境"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 4,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "出现自伤、自杀或其他高风险危机表达",
+        "需要立即联系现实支持的情境",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下最刺耳的自责句。",
+        "想象朋友说了同样的话：如果朋友遇到同样困难，你会对TA说什么温暖的话？"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "scs_common_humanity",
@@ -1230,7 +2208,6 @@
       "purpose": "把困难从只有我这样改成许多人都会遇到的压力经历。",
       "tags": [
         "student_self_support",
-        "scs_common_humanity",
         "scs_common_humanity"
       ],
       "steps": [
@@ -1269,7 +2246,45 @@
       "emotion_word_prompt": "做《共同人性卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《共同人性卡》，写下一个今天能尝试的新回应：把困难从只有我这样改成许多人都会遇到的压力经历。",
       "post_practice_prompt": "练完《共同人性卡》后，记录这张卡在“学生感到孤立或羞耻”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《共同人性卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《共同人性卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "共同人性卡",
+      "mechanism_code": "self_compassion",
+      "target_constructs": [
+        "scs_common_humanity"
+      ],
+      "indications": [
+        "学生感到孤立或羞耻",
+        "困难适合用普通化方式减压"
+      ],
+      "contraindications": [
+        "高风险或被伤害情境",
+        "现实支持不可替代的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 4,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险或被伤害情境",
+        "现实支持不可替代的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下我以为只有我的一句话。",
+        "列出一个别人也可能遇到的相似困难。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "scs_mindful_moment",
@@ -1278,7 +2293,6 @@
       "purpose": "不放大也不压住情绪，只观察它在一分钟里的变化。",
       "tags": [
         "mindfulness",
-        "scs_mindful_moment",
         "scs_mindful_moment"
       ],
       "steps": [
@@ -1317,7 +2331,45 @@
       "emotion_word_prompt": "做《一分钟情绪观察卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《一分钟情绪观察卡》，写下一个今天能尝试的新回应：不放大也不压住情绪，只观察它在一分钟里的变化。",
       "post_practice_prompt": "练完《一分钟情绪观察卡》后，记录这张卡在“学生愿意短暂停留在感受旁边”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《一分钟情绪观察卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《一分钟情绪观察卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "一分钟情绪观察卡",
+      "mechanism_code": "self_compassion",
+      "target_constructs": [
+        "scs_mindful_moment"
+      ],
+      "indications": [
+        "学生愿意短暂停留在感受旁边",
+        "低到中等压力"
+      ],
+      "contraindications": [
+        "情绪观察会明显加重痛苦",
+        "有急性安全风险"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 4,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "情绪观察会明显加重痛苦",
+        "有急性安全风险",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "设定一分钟计时。",
+        "给情绪取一个名字。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "erq_reappraisal_student",
@@ -1326,7 +2378,6 @@
       "purpose": "为压力情境找到第二种解读，让行动空间变大。",
       "tags": [
         "cognitive_flexibility",
-        "erq_reappraisal_student",
         "erq_reappraisal_student"
       ],
       "steps": [
@@ -1365,7 +2416,45 @@
       "emotion_word_prompt": "做《学生第二种解读卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《学生第二种解读卡》，写下一个今天能尝试的新回应：为压力情境找到第二种解读，让行动空间变大。",
       "post_practice_prompt": "练完《学生第二种解读卡》后，记录这张卡在“考试、评价或同伴压力”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《学生第二种解读卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《学生第二种解读卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "学生第二种解读卡",
+      "mechanism_code": "behavior_change",
+      "target_constructs": [
+        "erq_reappraisal_student"
+      ],
+      "indications": [
+        "考试、评价或同伴压力",
+        "学生能区分想法和事实"
+      ],
+      "contraindications": [
+        "高风险表达",
+        "需要成人陪同处理的危机场景"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险表达",
+        "需要成人陪同处理的危机场景",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下最担心的解读。",
+        "找一个证据支持它。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "erq_expression_gentle",
@@ -1374,7 +2463,6 @@
       "purpose": "写下一个还没说出口的感受，并选择低风险表达对象。",
       "tags": [
         "emotion_expression",
-        "erq_expression_gentle",
         "erq_expression_gentle"
       ],
       "steps": [
@@ -1413,7 +2501,45 @@
       "emotion_word_prompt": "做《温和表达卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《温和表达卡》，写一句低风险表达：先说感受，再说一个很小的请求。",
       "post_practice_prompt": "练完《温和表达卡》后，记录这张卡在“学生压住感受但愿意表达一点”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《温和表达卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《温和表达卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "温和表达卡",
+      "mechanism_code": "emotion_awareness",
+      "target_constructs": [
+        "erq_expression_gentle"
+      ],
+      "indications": [
+        "学生压住感受但愿意表达一点",
+        "有可信成人或同伴"
+      ],
+      "contraindications": [
+        "表达后可能遭受伤害",
+        "涉及现实安全风险"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "表达后可能遭受伤害",
+        "涉及现实安全风险",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下没说出口的感受。",
+        "选择一个安全对象。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "rsca_emotion_regulation",
@@ -1422,7 +2548,6 @@
       "purpose": "用命名、呼吸和小动作把情绪强度降到可行动范围。",
       "tags": [
         "emotion_regulation",
-        "rsca_emotion_regulation",
         "rsca_emotion_regulation"
       ],
       "steps": [
@@ -1431,7 +2556,7 @@
         "选择一个两分钟动作。",
         "完成后给强度重新打分。"
       ],
-      "example": "做作业前感觉很慌，强度8分。命名：我现在是慌。做三次慢呼气：1...2...3。选择一个2分钟动作：把数学书打开到要看的那一页，找到第一题，用笔圈出题号。做完后重新打分：慌的感觉降到5分，可以开始看题了。",
+      "example": "做作业前感觉很慌，强度8分。命名：我现在是慌。做三次慢呼气。选择一个2分钟动作：把数学书打开到要看的那一页，找到第一题，用笔圈出题号。做完后重新打分：慌的感觉降到5分，可以开始看题了。",
       "duration_minutes": 4,
       "theory_source": "UP",
       "target_skill": "rsca_emotion_regulation",
@@ -1453,7 +2578,7 @@
       "enabled": true,
       "suitable_scene": "学生情绪升高但仍能按步骤行动",
       "today_goal": "用命名、呼吸和小动作把情绪强度降到可行动范围。",
-      "example_phrase": "做作业前感觉很慌，强度8分。命名：我现在是慌。做三次慢呼气：1...2...3。选择一个2分钟动作：把数学书打开到要看的那一页，找到第一题，用笔圈出题号。做完后重新打分：慌的感觉降到5分，可以开始看题了。",
+      "example_phrase": "做作业前感觉很慌，强度8分。命名：我现在是慌。做三次慢呼气。选择一个2分钟动作：把数学书打开到要看的那一页，找到第一题，用笔圈出题号。做完后重新打分：慌的感觉降到5分，可以开始看题了。",
       "before_note_prompt": "开始前写一句：今天我想用这张卡练“用命名、呼吸和小动作把情绪强度降到可行动范围。”。",
       "after_note_prompt": "结束后写一句：这张卡帮我多看见了什么，或下次要把哪一步再变小。",
       "boundary_notice": "这张训练卡只提供支持性练习和自我观察建议，不构成诊断、治疗方案或危机干预。",
@@ -1461,7 +2586,45 @@
       "emotion_word_prompt": "做《三步稳定情绪卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《三步稳定情绪卡》，写下一个今天能尝试的新回应：用命名、呼吸和小动作把情绪强度降到可行动范围。",
       "post_practice_prompt": "练完《三步稳定情绪卡》后，记录这张卡在“学生情绪升高但仍能按步骤行动”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《三步稳定情绪卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《三步稳定情绪卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "三步稳定情绪卡",
+      "mechanism_code": "behavior_change",
+      "target_constructs": [
+        "rsca_emotion_regulation"
+      ],
+      "indications": [
+        "学生情绪升高但仍能按步骤行动",
+        "学习或沟通前需要稳定"
+      ],
+      "contraindications": [
+        "高风险危机",
+        "无法保证基本安全的状态"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 4,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "高风险危机",
+        "无法保证基本安全的状态",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "命名当前最明显的情绪。",
+        "做三次慢呼气。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "rsca_positive_cognition",
@@ -1470,7 +2633,6 @@
       "purpose": "从今天做到了的一个小事实中恢复行动感。",
       "tags": [
         "positive_cognition",
-        "rsca_positive_cognition",
         "rsca_positive_cognition"
       ],
       "steps": [
@@ -1509,7 +2671,45 @@
       "emotion_word_prompt": "做《小事实记录卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《小事实记录卡》，写下一个今天能尝试的新回应：从今天做到了的一个小事实中恢复行动感。",
       "post_practice_prompt": "练完《小事实记录卡》后，记录这张卡在“学生觉得自己完全没做到”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《小事实记录卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《小事实记录卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "小事实记录卡",
+      "mechanism_code": "behavior_change",
+      "target_constructs": [
+        "rsca_positive_cognition"
+      ],
+      "indications": [
+        "学生觉得自己完全没做到",
+        "需要恢复一点行动感"
+      ],
+      "contraindications": [
+        "用小事实否认严重风险",
+        "需要现实支持的情况"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 4,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "用小事实否认严重风险",
+        "需要现实支持的情况",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "找一个今天已经做过的小动作。",
+        "写下它发生的时间。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "exam_micro_start",
@@ -1518,7 +2718,6 @@
       "purpose": "把复习任务拆到 10 分钟能开始的颗粒度。",
       "tags": [
         "behavior_activation",
-        "exam_micro_start",
         "exam_micro_start"
       ],
       "steps": [
@@ -1557,7 +2756,45 @@
       "emotion_word_prompt": "做《考试 10 分钟启动卡》前，给此刻情绪起一个具体名字，越贴近日常语言越好。",
       "new_response_prompt": "结合《考试 10 分钟启动卡》，写下今天能开始的最小动作，最好 10 分钟内能完成。",
       "post_practice_prompt": "练完《考试 10 分钟启动卡》后，记录这张卡在“考试压力下难以启动”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《考试 10 分钟启动卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《考试 10 分钟启动卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "考试 10 分钟启动卡",
+      "mechanism_code": "behavior_change",
+      "target_constructs": [
+        "exam_micro_start"
+      ],
+      "indications": [
+        "考试压力下难以启动",
+        "任务可以拆成小步"
+      ],
+      "contraindications": [
+        "疲惫或身体不适需要休息",
+        "高风险危机场景"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "疲惫或身体不适需要休息",
+        "高风险危机场景",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下完整任务名称。",
+        "把它拆成 10 分钟动作。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "auto_thought_rewrite",
@@ -1566,7 +2803,6 @@
       "purpose": "写下自动想法，找证据，再改写一句更平衡的话。",
       "tags": [
         "cbt",
-        "auto_thought_rewrite",
         "auto_thought_rewrite"
       ],
       "steps": [
@@ -1605,7 +2841,45 @@
       "emotion_word_prompt": "做《自动想法改写卡》时，先写出此刻最影响你的一个想法，再给它配一个情绪名字。",
       "new_response_prompt": "结合《自动想法改写卡》，写下一个今天能尝试的新回应：写下自动想法，找证据，再改写一句更平衡的话。",
       "post_practice_prompt": "练完《自动想法改写卡》后，记录这张卡在“学生能书写压力想法”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《自动想法改写卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《自动想法改写卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "自动想法改写卡",
+      "mechanism_code": "cognitive_flexibility",
+      "target_constructs": [
+        "auto_thought_rewrite"
+      ],
+      "indications": [
+        "学生能书写压力想法",
+        "考试或评价压力"
+      ],
+      "contraindications": [
+        "自伤、自杀或严重绝望表达",
+        "需要即时现实支持"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "自伤、自杀或严重绝望表达",
+        "需要即时现实支持",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下此刻最让你难受或最想逃避的一句想法。",
+        "找一个说明你曾做到过类似任务的小证据。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     },
     {
       "id": "body_scan_before_study",
@@ -1614,7 +2888,6 @@
       "purpose": "开始学习前用 60 秒扫描身体，找到最先需要照顾的压力信号。",
       "tags": [
         "body_awareness",
-        "body_scan_before_study",
         "body_scan_before_study"
       ],
       "steps": [
@@ -1623,7 +2896,7 @@
         "给紧张打 0 到 10 分。",
         "做一个照顾身体的小动作后开始。"
       ],
-      "example": "准备做作业，但坐不住。用60秒从头到脚扫一遍：头部还好，脖子有点僵，胸口正常，肩膀很紧，腿想动。圈出最明显的：肩膀。给紧张打分：7分。做一个照顾身体的小动作：耸肩放松三次，1...2...3。感觉肩膀松了一点，降到5分。现在打开练习册，从第一题开始。",
+      "example": "准备做作业，但坐不住。用60秒从头到脚扫一遍：头部还好，脖子有点僵，胸口正常，肩膀很紧，腿想动。圈出最明显的：肩膀。给紧张打分：7分。做一个照顾身体的小动作：耸肩放松三次。感觉肩膀松了一点，降到5分。现在打开练习册，从第一题开始。",
       "duration_minutes": 5,
       "theory_source": "UP",
       "target_skill": "body_scan_before_study",
@@ -1645,16 +2918,55 @@
       "enabled": true,
       "suitable_scene": "学习前紧张或坐不住",
       "today_goal": "开始学习前用 60 秒扫描身体，找到最先需要照顾的压力信号。",
-      "example_phrase": "准备做作业，但坐不住。用60秒从头到脚扫一遍：头部还好，脖子有点僵，胸口正常，肩膀很紧，腿想动。圈出最明显的：肩膀。给紧张打分：7分。做一个照顾身体的小动作：耸肩放松三次，1...2...3。感觉肩膀松了一点，降到5分。现在打开练习册，从第一题开始。",
-      "before_note_prompt": "开始前写一句：今天我想用这张卡练“开始学习前用 60 秒扫描身体，找到最先需要照顾的压力信...”。",
+      "example_phrase": "准备做作业，但坐不住。用60秒从头到脚扫一遍：头部还好，脖子有点僵，胸口正常，肩膀很紧，腿想动。圈出最明显的：肩膀。给紧张打分：7分。做一个照顾身体的小动作：耸肩放松三次。感觉肩膀松了一点，降到5分。现在打开练习册，从第一题开始。",
+      "before_note_prompt": "开始前写一句：今天我想用这张卡练“用60秒扫描身体，找到最先需要照顾的压力信号”。",
       "after_note_prompt": "结束后写一句：这张卡帮我多看见了什么，或下次要把哪一步再变小。",
       "boundary_notice": "这张训练卡只提供学生自我观察和轻量练习建议，不构成诊断、治疗方案或危机干预；有安全风险时应优先联系现实支持。",
       "pre_practice_prompt": "开始前看一眼：这张卡先围绕“学习前身体扫描卡”，只完成“从头到脚扫一遍身体。”也可以。",
       "emotion_word_prompt": "做《学习前身体扫描卡》时，写下身体最明显的一个信号，例如胸口紧、肩膀硬或胃不舒服。",
       "new_response_prompt": "结合《学习前身体扫描卡》，写下今天能开始的最小动作，最好 10 分钟内能完成。",
       "post_practice_prompt": "练完《学习前身体扫描卡》后，记录这张卡在“学习前紧张或坐不住”里哪一步最容易、哪一步要放轻。",
-      "one_sentence_note_prompt": "用一句话写下《学习前身体扫描卡》今天留下的一个小观察，不需要总结成结论。"
+      "one_sentence_note_prompt": "用一句话写下《学习前身体扫描卡》今天留下的一个小观察，不需要总结成结论。",
+      "user_facing_title": "学习前身体扫描卡",
+      "mechanism_code": "body_regulation",
+      "target_constructs": [
+        "body_scan_before_study"
+      ],
+      "indications": [
+        "学习前紧张或坐不住",
+        "需要一个进入状态的仪式"
+      ],
+      "contraindications": [
+        "明显身体疾病或急性不适",
+        "高风险危机场景"
+      ],
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "每周2至3次，可按个人节奏调整",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤，并记录一句练习后的观察；页面浏览不计为完成。",
+      "progression_criteria": "能够在低风险真实场景中重复完成后，再自主选择继续、巩固或更换练习；不适增加时降低难度或暂停。",
+      "stop_rules": [
+        "明显身体疾病或急性不适",
+        "高风险危机场景",
+        "练习中不适明显增加、无法保持基本安全或出现自伤、他伤、暴力线索时立即停止并寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "从头到脚扫一遍身体。",
+        "圈出最明显的位置。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     }
   ],
-  "updated_at": "2026-07-05T00:00:00+08:00"
+  "updated_at": "2026-07-05T00:00:00+08:00",
+  "governance_notice": "新增机制、剂量和安全字段为项目草案，正式试点前仍需心理负责人逐卡审核。"
 }

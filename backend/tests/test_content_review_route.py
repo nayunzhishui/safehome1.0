@@ -79,3 +79,31 @@ def test_content_review_update_blocks_enable_true_without_manual_confirmation(tm
     body = response.get_json()
     assert body["error"]["code"] == "manual_confirmation_required"
     assert after == before
+
+
+def test_program_cannot_be_approved_without_three_signed_reviews(tmp_path, monkeypatch):
+    app, _content_dir = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    response = client.post(
+        "/api/content-review/update",
+        json={"content_type": "program", "item_id": "self_compassion_exam_anxiety", "review_status": "pilot_approved"},
+        headers=ADMIN_HEADERS,
+    )
+
+    assert response.status_code == 409
+    assert response.get_json()["error"]["code"] == "program_approval_incomplete"
+
+
+def test_program_cannot_skip_governed_state_transition(tmp_path, monkeypatch):
+    app, _content_dir = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    response = client.post(
+        "/api/content-review/update",
+        json={"content_type": "program", "item_id": "self_compassion_exam_anxiety", "review_status": "completed"},
+        headers=ADMIN_HEADERS,
+    )
+
+    assert response.status_code == 409
+    assert response.get_json()["error"]["code"] == "invalid_program_transition"

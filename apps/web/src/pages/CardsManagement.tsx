@@ -128,13 +128,25 @@ export function CardsManagement() {
               <DetailRow label="启用状态" value={selectedCard.enabled} />
               <DetailRow label="审核状态" value={selectedCard.review_status} />
               <DetailRow label="审核备注" value={selectedCard.reviewer_note} />
+              <DetailRow label="治理审核" value={selectedCard.governance_review_status} />
+              <DetailRow label="证据等级" value={selectedCard.evidence_level} />
+              <DetailRow label="主要机制" value={selectedCard.mechanism_code} />
+              <DetailRow label="安全级别" value={selectedCard.safety_level} />
+              <DetailRow label="释放方式" value={selectedCard.release_policy} />
               <DetailRow label="预计时长" value={`${selectedCard.duration_minutes} 分钟`} />
+              <DetailRow label="建议频率" value={selectedCard.minimum_dose?.suggested_frequency} />
+              <DetailRow label="初始周期" value={selectedCard.minimum_dose ? `${selectedCard.minimum_dose.initial_cycle_days} 天` : undefined} />
               <DetailRow label="练习目的" value={selectedCard.purpose} />
               <DetailRow label="理论来源" value={selectedCard.theory_source} />
               <DetailRow label="目标技能" value={selectedCard.target_skill} />
               <DetailRow label="标签" value={selectedCard.tags.join("、")} />
               <DetailRow label="适合场景" value={(selectedCard.suitable_for || []).join("、")} />
               <DetailRow label="不适合场景" value={(selectedCard.not_suitable_for || []).join("、")} />
+              <DetailRow label="完成标准" value={selectedCard.completion_criteria} />
+              <DetailRow label="进阶条件" value={selectedCard.progression_criteria} />
+              <DetailRow label="停止规则" value={(selectedCard.stop_rules || []).join("\n")} />
+              <DetailRow label="执行核对" value={(selectedCard.fidelity_check || []).join("\n")} />
+              <DetailRow label="结果关联" value={(selectedCard.outcome_links || []).join("、")} />
               <DetailRow label="练习步骤" value={selectedCard.steps.map((step, index) => `${index + 1}. ${step}`).join("\n")} />
               <DetailRow label="复盘问题" value={(selectedCard.reflection_questions || []).map((question, index) => `${index + 1}. ${question}`).join("\n")} />
               <DetailRow label="示例" value={selectedCard.example} />

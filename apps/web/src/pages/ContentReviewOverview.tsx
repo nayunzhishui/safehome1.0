@@ -3,6 +3,8 @@ import { useMemo, useState } from "react";
 import assessmentTrainingMap from "../../../../content/assessment_training_map.json";
 import diaryTrainingMap from "../../../../content/diary_training_map.json";
 import feedbackRules from "../../../../content/feedback_rules.json";
+import coursesContent from "../../../../content/courses.json";
+import programsContent from "../../../../content/programs.json";
 import scalesCatalog from "../../../../content/scales_catalog.json";
 import trainingCards from "../../../../content/training_cards.json";
 import { safeHomeApi } from "../services/safehomeApi";
@@ -18,7 +20,7 @@ interface ReviewItem {
   note: string;
 }
 
-const REVIEW_STATUS_OPTIONS = ["draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled", "metadata_only", "pilot_ready"];
+const REVIEW_STATUS_OPTIONS = ["draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled", "metadata_only", "pilot_ready", "draft_requires_psychology_review", "pilot_draft", "pilot_approved", "paused", "completed"];
 
 function statusText(value?: string) {
   const labels: Record<string, string> = {
@@ -30,6 +32,11 @@ function statusText(value?: string) {
     disabled: "已停用",
     metadata_only: "仅元数据",
     pilot_ready: "试点可用",
+    draft_requires_psychology_review: "待心理审核",
+    pilot_draft: "试点草案",
+    pilot_approved: "试点已批准",
+    paused: "已暂停",
+    completed: "已结束",
   };
   return labels[value || ""] || value || "未标记";
 }
@@ -89,13 +96,33 @@ function buildReviewItems(): ReviewItem[] {
     note: rule.reason || rule.boundary_notice || "待补充审核说明",
   }));
 
-  return [...scaleItems, ...cardItems, ...feedbackRuleItems, ...assessmentMapItems, ...diaryMapItems];
+  const courseItems = (coursesContent.courses || []).map((course) => ({
+    id: course.id,
+    title: course.title,
+    type: "结构化课程",
+    contentType: "course",
+    reviewStatus: course.review_status || "未标记",
+    enabled: Boolean(course.enabled),
+    note: `${course.core_concept} · ${course.curriculum_node}`,
+  }));
+
+  const programItems = (programsContent.programs || []).map((program) => ({
+    id: program.id,
+    title: program.title,
+    type: "项目方案",
+    contentType: "program",
+    reviewStatus: program.review_status || "未标记",
+    enabled: Boolean(program.enabled),
+    note: `${program.protocol_version} · 三方签字状态：${Object.values(program.approval || {}).map((item) => item.status).join("/")}`,
+  }));
+
+  return [...scaleItems, ...cardItems, ...courseItems, ...programItems, ...feedbackRuleItems, ...assessmentMapItems, ...diaryMapItems];
 }
 
 export function ContentReviewOverview() {
   const [items, setItems] = useState<ReviewItem[]>(() => buildReviewItems());
   const [selectedKey, setSelectedKey] = useState<string>(() => {
-    const firstDraft = buildReviewItems().find((item) => ["draft", "metadata_only"].includes(item.reviewStatus));
+    const firstDraft = buildReviewItems().find((item) => ["draft", "metadata_only", "draft_requires_psychology_review", "pilot_draft"].includes(item.reviewStatus));
     return firstDraft ? `${firstDraft.contentType}:${firstDraft.id}` : "";
   });
   const [reviewStatus, setReviewStatus] = useState("");
@@ -106,7 +133,7 @@ export function ContentReviewOverview() {
   const canEdit = currentUser?.role === "admin";
   const selectedItem = useMemo(() => items.find((item) => `${item.contentType}:${item.id}` === selectedKey) || items[0], [items, selectedKey]);
   const openItems = items.filter((item) => item.enabled);
-  const draftItems = items.filter((item) => ["draft", "metadata_only"].includes(item.reviewStatus));
+  const draftItems = items.filter((item) => ["draft", "metadata_only", "draft_requires_psychology_review", "pilot_draft"].includes(item.reviewStatus));
   const scaleItems = items.filter((item) => item.type === "量表目录");
   const ruleItems = items.filter((item) => item.type.includes("规则"));
 
@@ -119,7 +146,7 @@ export function ContentReviewOverview() {
         content_type: selectedItem.contentType,
         item_id: selectedItem.id,
         review_status: reviewStatus || selectedItem.reviewStatus,
-        enabled_for_user: enabledForUser,
+        enabled_for_user: enabledForUser ? true : undefined,
       });
       setItems((current) =>
         current.map((item) =>
@@ -147,7 +174,7 @@ export function ContentReviewOverview() {
           <p className="eyebrow">Content Review</p>
           <h1>内容审核总览</h1>
           <p className="summary">
-            第一版用于汇总量表、训练卡和规则的审核状态。当前仍以本地 content JSON 为事实源，正式发布前所有内容开放都需要人工复核。
+            汇总量表、训练卡、结构化课程、项目方案和规则的审核状态。当前仍以本地 content JSON 为事实源，正式发布前所有内容开放都需要人工复核。
           </p>
         </div>
         <div className="dashboardActions">
@@ -176,7 +203,7 @@ export function ContentReviewOverview() {
             <span className="countBadge">{draftItems.length} 项</span>
           </div>
           <div className="recordList">
-            {draftItems.slice(0, 12).map((item) => (
+            {draftItems.map((item) => (
               <button
                 className={`recordItem ${selectedItem?.contentType === item.contentType && selectedItem?.id === item.id ? "active" : ""}`}
                 key={`${item.type}-${item.id}`}

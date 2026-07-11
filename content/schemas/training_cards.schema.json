@@ -14,11 +14,32 @@
         "target_skill",
         "not_suitable_for",
         "reflection_questions",
-        "review_status"
+        "review_status",
+        "user_facing_title",
+        "mechanism_code",
+        "target_constructs",
+        "indications",
+        "contraindications",
+        "minimum_dose",
+        "completion_criteria",
+        "progression_criteria",
+        "stop_rules",
+        "fidelity_check",
+        "outcome_links",
+        "evidence_level",
+        "safety_level",
+        "release_policy",
+        "governance_review_status"
       ],
       "item_list_min_lengths": {
         "reflection_questions": 2,
-        "not_suitable_for": 1
+        "not_suitable_for": 1,
+        "target_constructs": 1,
+        "indications": 1,
+        "contraindications": 1,
+        "stop_rules": 1,
+        "fidelity_check": 1,
+        "outcome_links": 1
       }
     }
   ]

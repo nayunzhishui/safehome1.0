@@ -18,6 +18,10 @@ function formatProgram(program) {
   const measurementPlan = program.measurement_plan || null;
   return {
     ...program,
+    previewLabel: program.review_status === "pilot_approved" ? "已批准试点" : "开发预览，尚未正式开放",
+    doseText: program.minimum_dose
+      ? `计划 ${program.minimum_dose.planned_sessions} 节，至少完成 ${program.minimum_dose.minimum_completed_sessions} 节；建议间隔 ${program.minimum_dose.session_interval_days}`
+      : "",
     measurementPlan: measurementPlan
       ? {
           ...measurementPlan,
@@ -35,6 +39,9 @@ Page({
     selectedSession: null,
     draftText: "",
     analysisConsent: false,
+    distressBefore: 5,
+    distressAfter: 5,
+    adverseResponse: false,
     submitting: false,
     successMessage: "",
     loading: true,
@@ -110,6 +117,18 @@ Page({
     this.setData({ analysisConsent: !!event.detail.value.length });
   },
 
+  onDistressBeforeChange(event) {
+    this.setData({ distressBefore: Number(event.detail.value) });
+  },
+
+  onDistressAfterChange(event) {
+    this.setData({ distressAfter: Number(event.detail.value) });
+  },
+
+  onAdverseResponseChange(event) {
+    this.setData({ adverseResponse: !!event.detail.value.length });
+  },
+
   saveDraft() {
     const session = this.data.selectedSession;
     if (!this.data.programId || !session) {
@@ -140,6 +159,11 @@ Page({
         },
         reflection: draftText,
         analysis_consent: this.data.analysisConsent,
+        participation_status: "completed",
+        recommendation_source: "user_choice",
+        distress_before: this.data.distressBefore,
+        distress_after: this.data.distressAfter,
+        adverse_response: this.data.adverseResponse,
         boundary_notice: this.data.program ? this.data.program.boundary_notice : "",
       });
       wx.removeStorageSync(draftKey(this.data.programId, session.session_no));

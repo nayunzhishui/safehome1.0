@@ -47,10 +47,20 @@ def evaluate_training_rules(
 
 
 def flatten_card_ids(rules: list[dict]) -> list[str]:
+    try:
+        cards = {
+            card.get("id"): card
+            for card in load_content_json("training_cards.json").get("cards", [])
+            if isinstance(card, dict) and card.get("id")
+        }
+    except FileNotFoundError:
+        cards = {}
     ids: list[str] = []
     for rule in rules:
         for card_id in rule.get("recommended_card_ids", []):
-            if card_id and card_id not in ids:
+            card = cards.get(card_id, {})
+            is_allowed = card.get("release_policy", "shared_choice_candidate") == "shared_choice_candidate"
+            if card_id and is_allowed and card_id not in ids:
                 ids.append(card_id)
     return ids
 

@@ -51,6 +51,9 @@ def _compact_cards(card_ids: list[str], cards_by_id: dict[str, dict]) -> list[di
                 "title": card.get("title", card_id) if card else card_id,
                 "type": card.get("type") if card else None,
                 "duration_minutes": card.get("duration_minutes") if card else None,
+                "mechanism_code": card.get("mechanism_code") if card else None,
+                "safety_level": card.get("safety_level") if card else None,
+                "release_policy": card.get("release_policy") if card else None,
             }
         )
     return cards

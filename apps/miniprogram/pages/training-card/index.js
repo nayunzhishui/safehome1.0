@@ -64,7 +64,7 @@ Page({
       });
       const selectedCards = cardIds.length ? cardIds.map((cardId) => cardMap[cardId]).filter(Boolean) : allCards.slice(0, 3);
       this.setData({
-        cards: selectedCards.map((card, index) => this.formatCard(card, index)),
+        cards: selectedCards.map((card, index) => this.formatCard(card, index, cardIds.length ? "assessment_rule" : "tag_match")),
         loading: false,
       });
     } catch (error) {
@@ -76,7 +76,8 @@ Page({
     }
   },
 
-  formatCard(card, index) {
+  formatCard(card, index, recommendationSource) {
+    const dose = card.minimum_dose || {};
     return {
       ...card,
       orderText: `0${index + 1}`,
@@ -89,6 +90,11 @@ Page({
       beforePrompt: card.before_note_prompt || card.pre_practice_prompt || "",
       afterPrompt: card.after_note_prompt || card.post_practice_prompt || "",
       boundaryNotice: card.boundary_notice || "这张卡只是陪伴练习建议，不替代专业咨询或紧急帮助。",
+      doseText: dose.suggested_frequency || (card.duration_minutes ? `单次约 ${card.duration_minutes} 分钟` : "按个人节奏练习"),
+      completionText: card.completion_criteria || "完成一个核心步骤，并记录一句练习后的观察。",
+      stopText: (card.stop_rules || card.not_suitable_for || []).join("；"),
+      recommendationSource,
+      sourceRecommendationId: `${recommendationSource}:${card.id}`,
       stepsList: (card.steps || []).map((step, stepIndex) => ({
         text: step,
         numberText: `${stepIndex + 1}`,

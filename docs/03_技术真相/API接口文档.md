@@ -1486,10 +1486,15 @@ Invoke-WebRequest `
 | `answers` | object | 否 | 页面草稿字段 |
 | `reflection` | string | 否 | 练习后反思 |
 | `analysis_consent` | boolean | 否 | 是否允许进入后续脱敏聚合分析 |
+| `participation_status` | string | 否 | `completed/skipped/paused/withdrawn`，默认 `completed` |
+| `recommendation_source` | string | 否 | `program_default/user_choice/researcher_adjusted` |
+| `distress_before` | number | 否 | 练习前不适，0至10 |
+| `distress_after` | number | 否 | 练习后不适，0至10 |
+| `adverse_response` | boolean | 否 | 是否出现明显不适或负面体验 |
 
-返回：`record` 和 `boundary_notice`。
+服务端校验 session 属于当前方案版本，并对反思文本执行透明风险分流。生产环境只允许 `pilot_approved` 项目提交；开发环境可预览草案。返回 `record`、`protocol_version`、`requires_review`、必要时的 `risk_safe_response` 和 `boundary_notice`。
 
-保存位置：`records`，其中 `module_type=program_entry`，`source_id=<program_id>`。
+保存位置：`records`，其中 `module_type=program_entry`，`source_id=<program_id>`；`data_json`绑定当前 `protocol_version`，不随之后内容升级漂移。
 
 ### `GET /api/training-plan`
 
@@ -1578,9 +1583,14 @@ Invoke-WebRequest `
 | 字段 | 说明 |
 |---|---|
 | `items` | 课程摘要列表 |
+| `pathways` | UP支持性课程路径、内容缺口和禁止自动释放模块 |
 | `boundary_notice` | 非诊断边界说明 |
 
-课程摘要包含 `id`、`title`、`subtitle`、`summary`、`tags`、`duration_minutes`、`level`、`section_count`、`recommended_card_ids` 和 `boundary_notice`。
+课程摘要包含 `id`、`title`、`theme`、`scene`、`duration_minutes`、`section_count`、`curriculum_node`、`learning_objectives`、`review_status`、关联训练卡和边界。
+
+### `GET /api/courses/pathways`
+
+用途：返回7节点支持性课程路径。当前“巩固与复发预防”保持内容缺口；暴露、内感性暴露和睡眠限制不得由该路径自动开放。
 
 ### `GET /api/courses/<course_id>`
 
@@ -1595,7 +1605,29 @@ Invoke-WebRequest `
 | `course` | 课程详情 |
 | `boundary_notice` | 非诊断边界说明 |
 
-课程详情包含课程摘要字段、`sections`、`practice_steps` 和 `next_action`。当前课程只作为支持性练习材料，不构成诊断、治疗或危机干预。
+课程详情包含课程摘要字段，以及学习目标、核心概念、误区、正反例、理解检查、引导练习、迁移任务、复盘、巩固和分众文案。当前课程只作为支持性练习材料，不构成诊断、治疗或危机干预。
+
+### `GET /api/courses/<course_id>/progress`
+
+用途：读取当前用户该课程最新进度。无记录时 `progress=null`。
+
+### `GET /api/courses/progress`
+
+用途：读取当前用户每门课程的最新进度；研究者跨用户读取仍受 actor 权限控制。
+
+### `POST /api/courses/<course_id>/progress`
+
+用途：保存课程版本、完成章节、已尝试理解检查、迁移任务状态和关联训练卡。页面浏览不会自动写成完成。
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `status` | string | `in_progress/completed/skipped` |
+| `completed_section_count` | number | 不得超过当前课程章节数 |
+| `knowledge_check_completed_ids` | string[] | 必须属于当前课程版本 |
+| `transfer_task_status` | string | `not_started/planned/attempted/skipped` |
+| `linked_card_id` | string | 可选，必须是课程关联训练卡 |
+
+保存位置：`records.module_type=course_progress`、`source_id=<course_id>`、`export_allowed=0`。完成只表示已学习和尝试，不代表掌握或改善。
 
 ### `GET /api/text-analysis/summary`
 

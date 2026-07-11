@@ -11,12 +11,29 @@
         "theory_source",
         "audience",
         "review_status",
+        "protocol_version",
+        "inclusion_criteria",
+        "exclusion_criteria",
+        "pause_criteria",
+        "exit_criteria",
+        "minimum_dose",
+        "completion_definition",
+        "adverse_response_plan",
+        "protocol_deviation_rule",
+        "recommendation_sources",
+        "safety_gate",
+        "approval",
         "boundary_notice",
         "sessions"
       ],
       "item_list_min_lengths": {
         "target_constructs": 1,
-        "sessions": 1
+        "sessions": 1,
+        "inclusion_criteria": 1,
+        "exclusion_criteria": 1,
+        "pause_criteria": 1,
+        "exit_criteria": 1,
+        "recommendation_sources": 3
       }
     }
   ]

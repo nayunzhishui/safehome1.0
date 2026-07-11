@@ -8,6 +8,7 @@ Page({
     cardId: "",
     diaryId: "",
     cardTitle: "这张训练卡",
+    sourceRecommendationId: "",
     emotionBefore: 5,
     emotionAfter: 5,
     helpfulnessOptions: [
@@ -32,6 +33,7 @@ Page({
     const cardId = decodeURIComponent(options.card_id || "");
     const diaryId = decodeURIComponent(options.diary_id || "");
     const cardTitle = decodeURIComponent(options.card_title || "这张训练卡");
+    const selectedCard = wx.getStorageSync("safehome:selectedTrainingCard");
     if (!requireLogin({
       redirectUrl: `/pages/checkin/index?card_id=${encodeURIComponent(cardId)}&diary_id=${encodeURIComponent(diaryId)}&card_title=${encodeURIComponent(cardTitle)}`,
       message: "请先登录后再记录练习。",
@@ -42,6 +44,7 @@ Page({
       cardId,
       diaryId,
       cardTitle,
+      sourceRecommendationId: selectedCard && selectedCard.id === cardId ? selectedCard.sourceRecommendationId || "" : "",
     });
   },
 
@@ -87,6 +90,7 @@ Page({
         reflection: this.data.reflection.trim(),
         helpfulness_rating: this.data.helpfulnessRating || undefined,
         skip_reason: this.data.skipReason.trim() || undefined,
+        source_recommendation_id: this.data.sourceRecommendationId || undefined,
       });
 
       this.setData({

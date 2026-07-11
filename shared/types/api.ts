@@ -231,6 +231,25 @@ export interface TrainingCard {
   review_status?: string;
   reviewer_note?: string;
   enabled: boolean;
+  user_facing_title?: string;
+  mechanism_code?: string;
+  target_constructs?: string[];
+  indications?: string[];
+  contraindications?: string[];
+  minimum_dose?: {
+    single_session_minutes: number;
+    suggested_frequency: string;
+    initial_cycle_days: number;
+  };
+  completion_criteria?: string;
+  progression_criteria?: string;
+  stop_rules?: string[];
+  fidelity_check?: string[];
+  outcome_links?: string[];
+  evidence_level?: string;
+  safety_level?: "standard" | "controlled";
+  release_policy?: "shared_choice_candidate" | "manual_context_required";
+  governance_review_status?: string;
 }
 
 export interface TrainingPlanCard {
@@ -238,6 +257,9 @@ export interface TrainingPlanCard {
   title: string;
   type?: string | null;
   duration_minutes?: number | null;
+  mechanism_code?: string | null;
+  safety_level?: "standard" | "controlled" | null;
+  release_policy?: "shared_choice_candidate" | "manual_context_required" | null;
 }
 
 export interface TrainingPlanItem {
@@ -389,6 +411,9 @@ export interface CourseSummary {
   duration_minutes: number;
   section_count: number;
   first_section_title?: string;
+  curriculum_node?: string;
+  learning_objectives?: string[];
+  review_status?: string;
   relation_to_cards_or_programs: ID[];
   boundary_notice: string;
 }
@@ -396,12 +421,37 @@ export interface CourseSummary {
 export interface Course extends CourseSummary {
   enabled?: boolean;
   sections: CourseSection[];
+  core_concept?: string;
+  common_misconceptions?: Array<{ statement: string; correction: string }>;
+  worked_example?: string;
+  counter_example?: string;
+  knowledge_checks?: Array<{
+    id: ID;
+    prompt: string;
+    options: Array<{ value: string; label: string }>;
+    correct_value: string;
+    feedback_correct: string;
+    feedback_incorrect: string;
+  }>;
+  guided_practice?: { card_id: ID; instruction: string };
+  transfer_task?: string;
+  reflection_prompts?: string[];
+  booster_plan?: { review_after_days: number; prompt: string; next_course_id?: ID | null };
+  audience_adaptation?: Record<string, string>;
 }
 
 export interface CourseListResponse {
   version: string;
   boundary_notice: string;
   items: CourseSummary[];
+  pathways?: Array<{
+    id: ID;
+    title: string;
+    audiences: string[];
+    review_status: string;
+    boundary_notice: string;
+    nodes: Array<{ code: string; title: string; course_ids: ID[]; status: string }>;
+  }>;
 }
 
 export interface CourseDetailResponse {
@@ -443,6 +493,8 @@ export interface ProgramSession {
   writing_prompt?: string;
   reflection_questions: string[];
   disclaimer: string;
+  completion_criteria?: string;
+  stop_rule?: string;
 }
 
 export interface ProgramMeasurementPoint {
@@ -475,6 +527,10 @@ export interface ProgramSummary {
   audience: string;
   theory_source: string;
   review_status: string;
+  protocol_version?: string;
+  preview_only?: boolean;
+  minimum_dose?: { planned_sessions: number; minimum_completed_sessions: number; session_interval_days: string };
+  completion_definition?: string;
   boundary_notice: string;
   session_count: number;
   first_session_title?: string;
@@ -485,6 +541,18 @@ export interface Program extends ProgramSummary {
   enabled?: boolean;
   recommended_card_ids?: ID[];
   sessions: ProgramSession[];
+  inclusion_criteria?: string[];
+  exclusion_criteria?: string[];
+  pause_criteria?: string[];
+  exit_criteria?: string[];
+  safety_gate?: string;
+  adverse_response_plan?: string;
+  protocol_deviation_rule?: string;
+  neutral_alternative?: string;
+  interpretation_boundary?: string;
+  clinical_boundary?: string;
+  recommendation_sources?: Array<"program_default" | "user_choice" | "researcher_adjusted">;
+  approval?: Record<string, { status: string; reviewer: string; reviewed_at: string; evidence_path: string }>;
 }
 
 export interface ProgramListResponse {

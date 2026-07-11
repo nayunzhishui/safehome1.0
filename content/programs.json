@@ -1,29 +1,80 @@
 {
-  "version": "2026-07-01-t8-programs-v1",
+  "version": "2026.07-task17-program-protocol-v1",
   "boundary_notice": "项目测试内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。",
   "programs": [
     {
       "id": "self_compassion_exam_anxiety",
       "title": "考试焦虑下的自我关怀书写",
-      "target_constructs": ["情绪调节", "考试压力", "自我关怀"],
+      "target_constructs": [
+        "情绪调节",
+        "考试压力",
+        "自我关怀"
+      ],
       "theory_source": "以自我关怀书写与UP跨诊断情绪调节框架为基础的试点草案",
       "audience": "学生与家长陪伴练习",
       "enabled": true,
       "review_status": "pilot_draft",
       "measurement_plan": {
         "status": "draft_requires_research_review",
-        "baseline_worksheet_ids": ["student_profile_v1", "emotion_regulation_erq", "self_compassion_scs_cn"],
-        "post_worksheet_ids": ["student_profile_v1", "emotion_regulation_erq", "self_compassion_scs_cn"],
-        "measurement_points": [
-          {"key": "baseline", "label": "开始前", "description": "完成支持性测评，记录当前情绪调节、不确定性和自我关怀线索。"},
-          {"key": "practice", "label": "练习中", "description": "每节只记录完成情况、主观帮助度和一条具体反思。"},
-          {"key": "post", "label": "完成后", "description": "重复相同测评并结合练习记录进行阶段性复盘。"}
+        "baseline_worksheet_ids": [
+          "student_profile_v1",
+          "emotion_regulation_erq",
+          "self_compassion_scs_cn"
         ],
-        "primary_outcomes": ["情绪调节线索", "不确定性耐受线索", "自我关怀练习体验"],
-        "manual_review_items": ["研究负责人确认主要指标和时间窗", "量表负责人确认题项、计分和开放边界"],
-        "boundary_notice": "测量计划为试点草案，不构成诊断；人工确认前不用于疗效判断或正式研究结论。"
+        "post_worksheet_ids": [
+          "student_profile_v1",
+          "emotion_regulation_erq",
+          "self_compassion_scs_cn"
+        ],
+        "measurement_points": [
+          {
+            "key": "baseline",
+            "label": "开始前",
+            "description": "完成支持性测评，记录当前情绪调节、不确定性和自我关怀线索。"
+          },
+          {
+            "key": "practice",
+            "label": "练习中",
+            "description": "每节只记录完成情况、主观帮助度和一条具体反思。"
+          },
+          {
+            "key": "post",
+            "label": "完成后",
+            "description": "重复相同测评并结合练习记录进行阶段性复盘。"
+          },
+          {
+            "key": "follow_up",
+            "label": "后续回看",
+            "description": "项目结束14至28天后进行可选回看；时间窗和指标仍需研究负责人确认。"
+          }
+        ],
+        "primary_outcomes": [
+          "情绪调节线索",
+          "不确定性耐受线索",
+          "自我关怀练习体验"
+        ],
+        "manual_review_items": [
+          "研究负责人确认主要指标和时间窗",
+          "量表负责人确认题项、计分和开放边界"
+        ],
+        "boundary_notice": "测量计划为试点草案，不构成诊断；人工确认前不用于疗效判断或正式研究结论。",
+        "secondary_outcomes": [
+          "压力线索具体化",
+          "情绪调节练习体验"
+        ],
+        "measurement_windows": {
+          "baseline": "首次练习前7天内",
+          "practice": "每节练习完成或跳过时",
+          "post": "最后一节后7天内",
+          "follow_up": "项目结束后14至28天，是否执行由研究负责人确认"
+        },
+        "missing_data_rule": "保留缺失和退出原因，不用自动填补冒充真实回答；统计处理由冻结分析方案决定。"
       },
-      "recommended_card_ids": ["scs_self_kindness", "scs_mindful_moment", "exam_micro_start"],
+      "recommended_card_ids": [
+        "scs_self_kindness",
+        "scs_mindful_moment",
+        "exam_micro_start"
+      ],
       "boundary_notice": "本项目用于考试压力场景下的自我支持练习，不构成诊断、筛查或治疗方案。",
       "sessions": [
         {
@@ -42,50 +93,183 @@
             "这次书写后，压力有没有从一团感觉变成更具体的线索？",
             "哪一句支持自己的话最容易在今天重复使用？"
           ],
-          "disclaimer": "本节只用于自我观察和陪伴练习，不构成诊断或治疗建议。"
+          "disclaimer": "本节只用于自我观察和陪伴练习，不构成诊断或治疗建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         },
         {
           "session_no": 2,
           "title": "区分事实、预测和自我评价",
           "objective": "练习把事实、担心的预测和对自己的评价分开放。",
           "duration_minutes": 8,
-          "steps": ["写事实", "写预测", "写评价", "补一个更灵活的解释"],
-          "reflection_questions": ["哪一类句子最容易让压力升高？", "有没有一个更温和但仍然真实的说法？"],
-          "disclaimer": "本节只用于练习参考，不构成诊断或治疗建议。"
+          "steps": [
+            "写事实",
+            "写预测",
+            "写评价",
+            "补一个更灵活的解释"
+          ],
+          "reflection_questions": [
+            "哪一类句子最容易让压力升高？",
+            "有没有一个更温和但仍然真实的说法？"
+          ],
+          "disclaimer": "本节只用于练习参考，不构成诊断或治疗建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         },
         {
           "session_no": 3,
           "title": "给下一次考试前的自己留一张支持卡",
           "objective": "形成一张短句式的考前支持卡。",
           "duration_minutes": 6,
-          "steps": ["写一个常见压力信号", "写一句提醒", "写一个具体行动"],
-          "reflection_questions": ["这张卡适合在什么时刻拿出来？", "哪一步最容易先做？"],
-          "disclaimer": "本节只用于练习参考，不构成诊断或治疗建议。"
+          "steps": [
+            "写一个常见压力信号",
+            "写一句提醒",
+            "写一个具体行动"
+          ],
+          "reflection_questions": [
+            "这张卡适合在什么时刻拿出来？",
+            "哪一步最容易先做？"
+          ],
+          "disclaimer": "本节只用于练习参考，不构成诊断或治疗建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         }
-      ]
+      ],
+      "protocol_version": "2026.07-task17-v1",
+      "pause_criteria": [
+        "用户主动选择暂停",
+        "练习中不适明显增加",
+        "出现需要人工核对的风险或安全线索"
+      ],
+      "exit_criteria": [
+        "用户随时主动退出",
+        "现实安全无法保证",
+        "研究负责人依据已批准方案决定停止"
+      ],
+      "minimum_dose": {
+        "planned_sessions": 3,
+        "minimum_completed_sessions": 2,
+        "session_interval_days": "1至3天"
+      },
+      "completion_definition": "完成至少2节练习、留下每节完成状态，并完成一次阶段复盘；仅浏览页面不计完成。",
+      "adverse_response_plan": "记录练习前后0至10分不适、负面体验和暂停原因；高风险或现实安全线索停止普通建议并进入人工复核。",
+      "protocol_deviation_rule": "记录跳过、延迟、内容调整和研究者调整原因；不覆盖原版本，不把偏离样本自动写成疗效证据。",
+      "recommendation_sources": [
+        "program_default",
+        "user_choice",
+        "researcher_adjusted"
+      ],
+      "approval": {
+        "research": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        },
+        "psychology": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        },
+        "ethics": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        }
+      },
+      "inclusion_criteria": [
+        "用户自主选择参加考试压力支持性练习",
+        "能够阅读并完成短时书写",
+        "当前能够保持基本安全"
+      ],
+      "exclusion_criteria": [
+        "需要立即危机干预或医疗处理",
+        "书写会明显增加无法承受的不适",
+        "无法理解知情说明或不能自主同意"
+      ],
+      "neutral_alternative": "用户可跳过负性经历书写，改为记录一次普通学习任务和一个中性支持动作。",
+      "primary_process_outcome": "自我支持练习完成与主观帮助度",
+      "secondary_outcomes": [
+        "压力线索具体化",
+        "情绪调节练习体验"
+      ],
+      "safety_gate": "每节允许跳过、改用中性主题或暂停；不要求披露高强度经历。"
     },
     {
       "id": "self_compassion_relationship_growth",
       "title": "亲密关系中的自我成长书写",
-      "target_constructs": ["情绪调节", "关系沟通", "自我关怀"],
+      "target_constructs": [
+        "情绪调节",
+        "关系沟通",
+        "自我关怀"
+      ],
       "theory_source": "以亲密关系自我成长主题和自我关怀书写为基础的试点草案",
       "audience": "学生与青年自我观察练习",
       "enabled": true,
       "review_status": "pilot_draft",
       "measurement_plan": {
         "status": "draft_requires_research_review",
-        "baseline_worksheet_ids": ["regulatory_focus_relationship_18", "micro_ysq_relationship_18", "relationship_initiation_intention_action"],
-        "post_worksheet_ids": ["regulatory_focus_relationship_18", "micro_ysq_relationship_18", "relationship_initiation_intention_action"],
-        "measurement_points": [
-          {"key": "baseline", "label": "开始前", "description": "完成关系探索测评并核对阶段性画像与评估问题。"},
-          {"key": "practice", "label": "练习中", "description": "记录关系事件、开放叙事和微行动，不自动解释深层原因。"},
-          {"key": "post", "label": "阶段结束", "description": "重复测评并由用户与研究者共同核对变化叙事。"}
+        "baseline_worksheet_ids": [
+          "regulatory_focus_relationship_18",
+          "micro_ysq_relationship_18",
+          "relationship_initiation_intention_action"
         ],
-        "primary_outcomes": ["关系行动意愿与尝试", "担心与期待线索", "真实表达与边界练习"],
-        "manual_review_items": ["研究负责人确认重复测量时间点", "统计负责人确认画像和变化解释边界"],
-        "boundary_notice": "测量计划只用于阶段性探索，不构成诊断；人工共同核对前不形成关系能力或疗效结论。"
+        "post_worksheet_ids": [
+          "regulatory_focus_relationship_18",
+          "micro_ysq_relationship_18",
+          "relationship_initiation_intention_action"
+        ],
+        "measurement_points": [
+          {
+            "key": "baseline",
+            "label": "开始前",
+            "description": "完成关系探索测评并核对阶段性画像与评估问题。"
+          },
+          {
+            "key": "practice",
+            "label": "练习中",
+            "description": "记录关系事件、开放叙事和微行动，不自动解释深层原因。"
+          },
+          {
+            "key": "post",
+            "label": "阶段结束",
+            "description": "重复测评并由用户与研究者共同核对变化叙事。"
+          },
+          {
+            "key": "follow_up",
+            "label": "后续回看",
+            "description": "项目结束14至28天后进行可选回看；时间窗和指标仍需研究负责人确认。"
+          }
+        ],
+        "primary_outcomes": [
+          "关系行动意愿与尝试",
+          "担心与期待线索",
+          "真实表达与边界练习"
+        ],
+        "manual_review_items": [
+          "研究负责人确认重复测量时间点",
+          "统计负责人确认画像和变化解释边界"
+        ],
+        "boundary_notice": "测量计划只用于阶段性探索，不构成诊断；人工共同核对前不形成关系能力或疗效结论。",
+        "secondary_outcomes": [
+          "关系事件觉察",
+          "行动意愿与实际尝试"
+        ],
+        "measurement_windows": {
+          "baseline": "首次练习前7天内",
+          "practice": "每节练习完成或跳过时",
+          "post": "最后一节后7天内",
+          "follow_up": "项目结束后14至28天，是否执行由研究负责人确认"
+        },
+        "missing_data_rule": "保留缺失和退出原因，不用自动填补冒充真实回答；统计处理由冻结分析方案决定。"
       },
-      "recommended_card_ids": ["scs_common_humanity", "one_open_question", "validation_before_advice"],
+      "recommended_card_ids": [
+        "scs_common_humanity",
+        "one_open_question",
+        "validation_before_advice"
+      ],
       "boundary_notice": "本项目用于关系场景中的自我观察与沟通练习，不构成诊断、筛查或关系结论。",
       "sessions": [
         {
@@ -104,51 +288,182 @@
             "这次书写帮我看见了哪个需要？",
             "如果下一次再出现类似片段，我可以先做哪一个小动作？"
           ],
-          "disclaimer": "本节只用于自我观察和沟通练习，不构成诊断、筛查或关系建议。"
+          "disclaimer": "本节只用于自我观察和沟通练习，不构成诊断、筛查或关系建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         },
         {
           "session_no": 2,
           "title": "把责备句改成需要句",
           "objective": "练习从责备和猜测转向表达具体需要。",
           "duration_minutes": 7,
-          "steps": ["写一句责备句", "标出其中的担心", "改写成一个具体需要", "准备一句开放问题"],
-          "reflection_questions": ["改写后语气有什么变化？", "哪一句更容易被对方听见？"],
-          "disclaimer": "本节只用于练习参考，不构成诊断、筛查或关系建议。"
+          "steps": [
+            "写一句责备句",
+            "标出其中的担心",
+            "改写成一个具体需要",
+            "准备一句开放问题"
+          ],
+          "reflection_questions": [
+            "改写后语气有什么变化？",
+            "哪一句更容易被对方听见？"
+          ],
+          "disclaimer": "本节只用于练习参考，不构成诊断、筛查或关系建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         },
         {
           "session_no": 3,
           "title": "给自己一段关系中的温和回应",
           "objective": "形成一段稳定自己的短回应。",
           "duration_minutes": 6,
-          "steps": ["命名情绪", "承认需要", "选择一个边界或请求"],
-          "reflection_questions": ["这段回应中最稳定自己的部分是什么？", "是否需要现实支持或人工反馈？"],
-          "disclaimer": "本节只用于练习参考，不构成诊断、筛查或关系建议。"
+          "steps": [
+            "命名情绪",
+            "承认需要",
+            "选择一个边界或请求"
+          ],
+          "reflection_questions": [
+            "这段回应中最稳定自己的部分是什么？",
+            "是否需要现实支持或人工反馈？"
+          ],
+          "disclaimer": "本节只用于练习参考，不构成诊断、筛查或关系建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         }
-      ]
+      ],
+      "protocol_version": "2026.07-task17-v1",
+      "pause_criteria": [
+        "用户主动选择暂停",
+        "练习中不适明显增加",
+        "出现需要人工核对的风险或安全线索"
+      ],
+      "exit_criteria": [
+        "用户随时主动退出",
+        "现实安全无法保证",
+        "研究负责人依据已批准方案决定停止"
+      ],
+      "minimum_dose": {
+        "planned_sessions": 3,
+        "minimum_completed_sessions": 2,
+        "session_interval_days": "1至3天"
+      },
+      "completion_definition": "完成至少2节练习、留下每节完成状态，并完成一次阶段复盘；仅浏览页面不计完成。",
+      "adverse_response_plan": "记录练习前后0至10分不适、负面体验和暂停原因；高风险或现实安全线索停止普通建议并进入人工复核。",
+      "protocol_deviation_rule": "记录跳过、延迟、内容调整和研究者调整原因；不覆盖原版本，不把偏离样本自动写成疗效证据。",
+      "recommendation_sources": [
+        "program_default",
+        "user_choice",
+        "researcher_adjusted"
+      ],
+      "approval": {
+        "research": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        },
+        "psychology": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        },
+        "ethics": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        }
+      },
+      "inclusion_criteria": [
+        "用户自主选择关系成长自我观察",
+        "练习可由个人独立完成",
+        "当前关系情境具备基本现实安全"
+      ],
+      "exclusion_criteria": [
+        "存在暴力、胁迫、跟踪、威胁、明显恐惧或报复风险",
+        "练习可能迫使用户向伴侣披露内容",
+        "需要立即现实保护或危机支持"
+      ],
+      "primary_process_outcome": "安全前提下的个人表达与边界练习",
+      "secondary_outcomes": [
+        "关系事件觉察",
+        "行动意愿与实际尝试"
+      ],
+      "safety_gate": "命中暴力、胁迫、跟踪、威胁、恐惧或报复线索时停止共同沟通和修复建议，优先现实支持与人工复核。",
+      "interpretation_boundary": "关系绘画、隐喻和句子补全只作为用户自述与访谈线索，不自动解释潜意识、关系类型或关系成败。"
     },
     {
       "id": "academic_pressure_sleep_health",
       "title": "学业压力与睡眠健康促进",
-      "target_constructs": ["学业压力", "睡眠管理", "健康促进"],
+      "target_constructs": [
+        "学业压力",
+        "睡眠管理",
+        "健康促进"
+      ],
       "theory_source": "以学业压力、健康促进生活方式和睡眠管理主题为基础的试点草案",
       "audience": "学生与家长支持性练习",
       "enabled": true,
       "review_status": "pilot_draft",
       "measurement_plan": {
         "status": "draft_requires_research_review",
-        "baseline_worksheet_ids": ["academic_buoyancy_4"],
-        "post_worksheet_ids": ["academic_buoyancy_4"],
-        "pending_manual_measure_ids": ["sleep_isi_psqi"],
-        "measurement_points": [
-          {"key": "baseline", "label": "开始前", "description": "记录学业压力、当前睡眠习惯和学业浮力线索。"},
-          {"key": "practice", "label": "练习中", "description": "记录收尾练习、睡前行为和主观帮助度。"},
-          {"key": "post", "label": "完成后", "description": "复测已审核量表；睡眠量表需人工确认后才可加入。"}
+        "baseline_worksheet_ids": [
+          "academic_buoyancy_4"
         ],
-        "primary_outcomes": ["学业压力应对", "学习任务收尾", "睡眠健康行为线索"],
-        "manual_review_items": ["ISI/PSQI 版本、题项、授权和计分尚未确认", "研究负责人确认睡眠主要指标和排除标准"],
-        "boundary_notice": "当前仅为健康促进练习草案，不构成筛查或诊断，也不替代医疗建议。"
+        "post_worksheet_ids": [
+          "academic_buoyancy_4"
+        ],
+        "pending_manual_measure_ids": [
+          "sleep_isi_psqi"
+        ],
+        "measurement_points": [
+          {
+            "key": "baseline",
+            "label": "开始前",
+            "description": "记录学业压力、当前睡眠习惯和学业浮力线索。"
+          },
+          {
+            "key": "practice",
+            "label": "练习中",
+            "description": "记录收尾练习、睡前行为和主观帮助度。"
+          },
+          {
+            "key": "post",
+            "label": "完成后",
+            "description": "复测已审核量表；睡眠量表需人工确认后才可加入。"
+          },
+          {
+            "key": "follow_up",
+            "label": "后续回看",
+            "description": "项目结束14至28天后进行可选回看；时间窗和指标仍需研究负责人确认。"
+          }
+        ],
+        "primary_outcomes": [
+          "学业压力应对",
+          "学习任务收尾",
+          "睡眠健康行为线索"
+        ],
+        "manual_review_items": [
+          "ISI/PSQI 版本、题项、授权和计分尚未确认",
+          "研究负责人确认睡眠主要指标和排除标准"
+        ],
+        "boundary_notice": "当前仅为健康促进练习草案，不构成筛查或诊断，也不替代医疗建议。",
+        "secondary_outcomes": [
+          "学业压力应对",
+          "主观睡眠健康行为线索"
+        ],
+        "measurement_windows": {
+          "baseline": "首次练习前7天内",
+          "practice": "每节练习完成或跳过时",
+          "post": "最后一节后7天内",
+          "follow_up": "项目结束后14至28天，是否执行由研究负责人确认"
+        },
+        "missing_data_rule": "保留缺失和退出原因，不用自动填补冒充真实回答；统计处理由冻结分析方案决定。"
       },
-      "recommended_card_ids": ["body_scan_before_study", "exam_micro_start", "parent_body_grounding"],
+      "recommended_card_ids": [
+        "body_scan_before_study",
+        "exam_micro_start",
+        "parent_body_grounding"
+      ],
       "boundary_notice": "本项目用于学习压力与睡眠习惯的支持性练习，不构成诊断、筛查或医疗建议。",
       "sessions": [
         {
@@ -167,27 +482,110 @@
             "这个调整点是否足够小，今天就能做？",
             "如果做不到，下一步可以再缩小到什么程度？"
           ],
-          "disclaimer": "本节只用于习惯观察和练习提示，不构成诊断、筛查或医疗建议。"
+          "disclaimer": "本节只用于习惯观察和练习提示，不构成诊断、筛查或医疗建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         },
         {
           "session_no": 2,
           "title": "学习任务收尾仪式",
           "objective": "练习用固定小步骤帮助自己从学习状态过渡到休息状态。",
           "duration_minutes": 6,
-          "steps": ["列出未完成事项", "写下明天第一步", "整理桌面", "做一次身体扫描"],
-          "reflection_questions": ["哪一步最能降低睡前反复想？", "这个收尾仪式需要几分钟？"],
-          "disclaimer": "本节只用于习惯练习参考，不构成诊断、筛查或医疗建议。"
+          "steps": [
+            "列出未完成事项",
+            "写下明天第一步",
+            "整理桌面",
+            "做一次身体扫描"
+          ],
+          "reflection_questions": [
+            "哪一步最能降低睡前反复想？",
+            "这个收尾仪式需要几分钟？"
+          ],
+          "disclaimer": "本节只用于习惯练习参考，不构成诊断、筛查或医疗建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         },
         {
           "session_no": 3,
           "title": "把睡前担心改成明天行动",
           "objective": "把睡前担心转成明天可以开始的一小步。",
           "duration_minutes": 6,
-          "steps": ["写一个睡前担心", "标出能控制的部分", "写明天第一步", "放入提醒"],
-          "reflection_questions": ["哪些担心可以留到明天处理？", "明天第一步是否足够具体？"],
-          "disclaimer": "本节只用于习惯练习参考，不构成诊断、筛查或医疗建议。"
+          "steps": [
+            "写一个睡前担心",
+            "标出能控制的部分",
+            "写明天第一步",
+            "放入提醒"
+          ],
+          "reflection_questions": [
+            "哪些担心可以留到明天处理？",
+            "明天第一步是否足够具体？"
+          ],
+          "disclaimer": "本节只用于习惯练习参考，不构成诊断、筛查或医疗建议。",
+          "completion_criteria": "完成至少一个核心步骤，并提交完成、跳过或暂停状态。",
+          "stop_rule": "不适明显增加、无法保持基本安全或出现现实风险时停止练习并寻求现实支持。"
         }
-      ]
+      ],
+      "protocol_version": "2026.07-task17-v1",
+      "pause_criteria": [
+        "用户主动选择暂停",
+        "练习中不适明显增加",
+        "出现需要人工核对的风险或安全线索"
+      ],
+      "exit_criteria": [
+        "用户随时主动退出",
+        "现实安全无法保证",
+        "研究负责人依据已批准方案决定停止"
+      ],
+      "minimum_dose": {
+        "planned_sessions": 3,
+        "minimum_completed_sessions": 2,
+        "session_interval_days": "1至3天"
+      },
+      "completion_definition": "完成至少2节练习、留下每节完成状态，并完成一次阶段复盘；仅浏览页面不计完成。",
+      "adverse_response_plan": "记录练习前后0至10分不适、负面体验和暂停原因；高风险或现实安全线索停止普通建议并进入人工复核。",
+      "protocol_deviation_rule": "记录跳过、延迟、内容调整和研究者调整原因；不覆盖原版本，不把偏离样本自动写成疗效证据。",
+      "recommendation_sources": [
+        "program_default",
+        "user_choice",
+        "researcher_adjusted"
+      ],
+      "approval": {
+        "research": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        },
+        "psychology": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        },
+        "ethics": {
+          "status": "pending",
+          "reviewer": "",
+          "reviewed_at": "",
+          "evidence_path": ""
+        }
+      },
+      "inclusion_criteria": [
+        "用户自主选择学习压力与睡眠习惯支持性练习",
+        "愿意记录低风险作息和学习收尾行为",
+        "当前不存在需要立即医学处理的明显异常"
+      ],
+      "exclusion_criteria": [
+        "持续严重睡眠困难并伴明显日间功能受损",
+        "疑似呼吸暂停、急性躯体问题或其他需医疗评估情形",
+        "需要立即危机干预或医疗处理"
+      ],
+      "primary_process_outcome": "学习任务收尾与低风险睡前行为记录",
+      "secondary_outcomes": [
+        "学业压力应对",
+        "主观睡眠健康行为线索"
+      ],
+      "safety_gate": "当前不开放睡眠限制、刺激控制或医学解释；明显健康风险提示咨询合格医疗专业人员。",
+      "clinical_boundary": "项目名称固定为睡眠健康促进，不称为CBT-I、失眠治疗或医疗方案；ISI/PSQI未审核前不输出筛查结论。"
     }
   ]
 }

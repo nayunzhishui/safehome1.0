@@ -55,6 +55,21 @@
         <text class="today-text">{{item.scenarioText}}</text>
       </view>
 
+      <view class="today-step">
+        <text class="today-label">建议节奏</text>
+        <text class="today-text">{{item.doseText}}</text>
+      </view>
+
+      <view class="today-step">
+        <text class="today-label">怎样算完成</text>
+        <text class="today-text">{{item.completionText}}</text>
+      </view>
+
+      <view wx:if="{{item.stopText}}" class="tip-box">
+        <text class="tip-title">什么时候先停下来</text>
+        <text class="tip-text">{{item.stopText}}</text>
+      </view>
+
       <view wx:if="{{item.examplePhrase}}" class="example-box">
         <text class="today-label">示例话术</text>
         <text class="today-text">“{{item.examplePhrase}}”</text>

@@ -63,3 +63,10 @@ def test_high_risk_returns_no_training_rules(tmp_path):
     rules = service.evaluate_training_rules("parent_reflective_functioning_prfq", database.json_dumps(scores))
 
     assert rules == []
+
+
+def test_controlled_card_is_not_released_by_automatic_mapping(tmp_path):
+    service, _database = _fresh_modules(tmp_path)
+    rules = [{"recommended_card_ids": ["sandplay_expression_01", "student_emotion_naming"]}]
+
+    assert service.flatten_card_ids(rules) == ["student_emotion_naming"]

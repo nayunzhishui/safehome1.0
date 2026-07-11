@@ -1,5 +1,5 @@
 {
-  "version": "2026.07-assessment-training-map-v2",
+  "version": "2026.07-task17-candidate-map-v1",
   "updated_at": "2026-07-10",
   "boundary_notice": "测评结果到训练卡的映射只作为支持性练习建议，不构成诊断、治疗方案、危机干预或固定评价。真实量表、草稿量表和试用内容正式开放前必须经过人工复核。",
   "rules": [
@@ -40,7 +40,14 @@
       "long_term_suggestion": "接下来 3 天可以按情绪命名、自动想法记录、自我支持句三个步骤轻量练习。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、明显现实安全风险或无法保持基本安全，应优先寻求现实支持和人工支持。",
       "boundary_notice": "训练推荐只作为支持性练习建议，不构成诊断或治疗方案。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "parent_reflective_functioning_supportive_pause",
@@ -79,7 +86,14 @@
       "long_term_suggestion": "接下来 3 天可以从命名情绪、非评判回应、一个修复问题三个步骤开始。",
       "not_suitable_when": "如果正在发生现实安全风险、严重冲突或明显危机，应优先寻求现实支持和人工支持。",
       "boundary_notice": "该映射只用于草稿阶段的练习方向设计，不评价家长好坏，也不构成诊断。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "erq_expressive_suppression_gentle_expression",
@@ -118,7 +132,14 @@
       "long_term_suggestion": "接下来 3 天可以从命名情绪、换一种解释、开口前暂停三个步骤开始。",
       "not_suitable_when": "如果情绪表达涉及现实安全风险、暴力、自伤或他伤线索，应优先寻求现实支持和人工支持。",
       "boundary_notice": "训练推荐只提供练习方向，不说明某种情绪调节方式好坏，也不构成治疗方案。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "prfq_pm_needs_awareness",
@@ -152,7 +173,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "prfq_pm_high_awareness",
@@ -186,7 +214,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "prfq_cm_needs_tolerance",
@@ -220,7 +255,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "prfq_cm_high_tolerance",
@@ -254,7 +296,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "prfq_ic_needs_curiosity",
@@ -288,7 +337,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "prfq_ic_high_curiosity",
@@ -322,7 +378,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "erq_cr_needs_reappraisal_parent",
@@ -356,7 +419,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "erq_cr_high_reappraisal_parent",
@@ -390,7 +460,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "erq_es_high_release_parent",
@@ -424,7 +501,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "erq_es_needs_release_parent",
@@ -458,7 +542,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "scs_sk_needs_kindness",
@@ -492,7 +583,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "scs_ch_needs_common_humanity",
@@ -526,7 +624,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "scs_mind_needs_moment",
@@ -560,7 +665,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "rsca_total_needs_regulation",
@@ -594,7 +706,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "rsca_total_high_positive",
@@ -628,7 +747,14 @@
       "long_term_suggestion": "接下来 3 天可按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "mindful_attention_awareness_maas_supportive_default",
@@ -661,7 +787,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "study_engagement_uwes_s_17_supportive_default",
@@ -694,7 +827,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "cd_risc10_brief_resilience_supportive_default",
@@ -727,7 +867,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "perceived_social_support_psss_supportive_default",
@@ -760,7 +907,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "gad7_anxiety_supportive_default",
@@ -793,7 +947,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "phq9_cesd10_depression_supportive_default",
@@ -826,7 +987,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "big_five_bfi_60_supportive_default",
@@ -859,7 +1027,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "attribution_style_student_36_supportive_default",
@@ -892,7 +1067,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "ghq12_general_health_supportive_default",
@@ -925,7 +1107,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "epq_emotional_stability_24_supportive_default",
@@ -958,7 +1147,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "emotional_intelligence_eis_33_supportive_default",
@@ -991,7 +1187,14 @@
       "long_term_suggestion": "接下来 3 天可以按今日练习、备用练习、复盘记录的顺序轻量推进。",
       "not_suitable_when": "如果出现自伤、自杀、暴力、严重失控或现实安全风险，应优先寻求现实支持和人工支持。",
       "boundary_notice": "测评到训练卡的映射只提供支持性练习方向，不构成诊断、治疗方案或固定评价。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "task12_regulatory_focus_relationship_18_support",
@@ -1028,7 +1231,14 @@
       "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
       "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
       "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "task12_micro_ysq_relationship_18_support",
@@ -1065,7 +1275,14 @@
       "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
       "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
       "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     },
     {
       "rule_id": "task12_relationship_initiation_intention_action_support",
@@ -1102,7 +1319,15 @@
       "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
       "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
       "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
-      "review_status": "draft"
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
     }
-  ]
+  ],
+  "selection_policy": "每条规则只生成候选练习，用户可自主选择、稍后决定或由研究者受控调整。"
 }
