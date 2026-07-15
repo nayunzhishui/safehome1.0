@@ -315,6 +315,14 @@ def _calculate_dimension(calculation: dict | None, item_scores: dict, dimension_
                 value = term["reverse_min"] + term["reverse_max"] - value
             values.append(value)
         return _rounded(sum(values) / len(values)) if values else None
+    if calculation_type == "mapped_mean_terms":
+        values = []
+        for term in calculation.get("terms", []):
+            value = item_scores.get(term.get("item"))
+            mapped = (term.get("map") or {}).get(str(value))
+            if isinstance(mapped, (int, float)) and not isinstance(mapped, bool):
+                values.append(mapped)
+        return _rounded(sum(values) / len(values)) if values else None
     if calculation_type == "mean_dimensions":
         values = [dimension_scores.get(code) for code in calculation.get("dimensions", [])]
         values = [value for value in values if value is not None]

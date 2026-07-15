@@ -4,11 +4,11 @@
   "group_id": "7_研究一_孙天娇_不健康体重控制行为__7_研究一_孙天娇_不健康体重控制行为_研究一数据分析_孙天娇0902_n_745_另一个745_sav__regulatory_focus_general_18",
   "standard_scale_name": "一般调节聚焦问卷",
   "scale_id": "regulatory_focus_general_18",
-  "worksheet_id": null,
+  "worksheet_id": "regulatory_focus_general_18",
   "admission_status": "pilot_approved",
   "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "e16563738c90a9987c9fb8997bd81931063eab5f0240abbf6b814a8cbba5d4c3",
+  "artifact_hash": "9183e16d84824a1d9025619d61843d043f46b9d59f0b44a37a0b7e6c0ba9c071",
   "research_dir": "7 研究一-孙天娇【不健康体重控制行为】",
   "source_dataset": "7 研究一-孙天娇【不健康体重控制行为】\\研究一数据分析-孙天娇0902【n=745]\\另一个745.sav",
   "n_cases": 706,
@@ -447,6 +447,13 @@
   ],
   "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
   "created_at": "2026-06-29",
-  "worksheet_link_status": "manual_review_required",
-  "worksheet_link_note": "当前 worksheet 抽取出的前 3 项为标题/说明，缺少 18 个真实题项的完整一一对应，暂不允许自动画像接入。"
+  "worksheet_link_status": "confirmed",
+  "worksheet_link_note": "当前 worksheet 抽取出的前 3 项为标题/说明，缺少 18 个真实题项的完整一一对应，暂不允许自动画像接入。",
+  "approval": {
+    "reviewer": "项目负责人（用户明确批准）",
+    "reviewed_at": "2026-07-12",
+    "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+    "scope": "pilot_release"
+  },
+  "approval_note": "项目负责人于2026-07-12批准进入试点；低置信度、离群、数据不足和高风险状态仍保持阻断。"
 }

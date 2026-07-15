@@ -64,6 +64,17 @@
   line-height: 1.55;
 }
 
+.capability-note {
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  border-left: 4rpx solid var(--safe-warning);
+  border-radius: var(--safe-radius-xs);
+  color: var(--safe-text);
+  background: var(--safe-orange-soft);
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
 .divider {
   display: flex;
   align-items: center;

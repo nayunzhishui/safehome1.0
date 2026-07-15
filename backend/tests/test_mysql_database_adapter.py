@@ -64,6 +64,48 @@ def test_mysql_schema_conversion_makes_records_module_type_indexable():
     assert "module_type VARCHAR(255) NOT NULL" in converted
 
 
+def test_mysql_schema_conversion_keeps_assessment_source_file_as_text():
+    database = importlib.import_module("database")
+
+    converted = database.mysqlize_schema_statement(
+        """
+        CREATE TABLE IF NOT EXISTS assessment_worksheets (
+            id TEXT PRIMARY KEY,
+            source_file TEXT
+        )
+        """
+    )
+
+    assert "source_file TEXT" in converted
+    assert "source_file VARCHAR(255)" not in converted
+
+
+def test_mysql_legacy_assessment_source_file_is_widened_before_sync():
+    database = importlib.import_module("database")
+
+    class Cursor:
+        def fetchone(self):
+            return {"data_type": "varchar", "is_nullable": "YES"}
+
+    class Connection:
+        provider = "mysql"
+
+        def __init__(self):
+            self.statements = []
+
+        def execute(self, sql, params=None):
+            self.statements.append((" ".join(sql.split()), params))
+            return Cursor()
+
+    conn = Connection()
+    database.ensure_mysql_content_text_capacity(conn)
+
+    assert any(
+        sql == "ALTER TABLE assessment_worksheets MODIFY COLUMN source_file TEXT NULL"
+        for sql, _ in conn.statements
+    )
+
+
 def test_mysql_index_target_parser_reads_table_and_columns():
     database = importlib.import_module("database")
 

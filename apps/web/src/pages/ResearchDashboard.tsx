@@ -35,6 +35,7 @@ interface OverviewState {
   relationshipEnrollments: RelationshipPilotEnrollment[];
   selectedRelationshipEnrollment: RelationshipPilotEnrollment | null;
   relationshipReport: RelationshipScreeningReport | null;
+  textAnalysis: Record<string, Record<string, unknown>>;
 }
 
 interface TodoItem {
@@ -147,6 +148,7 @@ export function ResearchDashboard() {
     relationshipEnrollments: [],
     selectedRelationshipEnrollment: null,
     relationshipReport: null,
+    textAnalysis: {},
   });
 
   const latestDiary = state.diaries[0];
@@ -211,7 +213,7 @@ export function ResearchDashboard() {
     }));
 
     try {
-      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults, relationshipPilot] = await Promise.all([
+      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults, relationshipPilot, textAnalysis] = await Promise.all([
         api.listGoals(),
         api.listDiaries({ limit: 50 }),
         api.listCheckins({ limit: 50 }),
@@ -220,6 +222,7 @@ export function ResearchDashboard() {
         api.listProfileResults({ limit: 50 }, getStoredAdminToken().trim()),
         api.listAdminAssessmentResults({ limit: 50 }, getStoredAdminToken().trim()),
         api.getRelationshipResearchDashboard(getStoredAdminToken().trim()),
+        api.getTextAnalysisSummary().catch(() => ({ items: {}, raw_text_included: false, boundary_notice: "离线分析摘要暂不可用。" })),
       ]);
       const firstAssessment = assessmentResults.items[0];
       const profilePosition = firstAssessment
@@ -249,6 +252,7 @@ export function ResearchDashboard() {
         relationshipEnrollments: relationshipPilot.items,
         selectedRelationshipEnrollment,
         relationshipReport,
+        textAnalysis: textAnalysis.items || {},
       });
     } catch (error) {
       setState((current) => ({
@@ -386,6 +390,22 @@ export function ResearchDashboard() {
         <MetricCard label="已关联目标记录" value={state.diaries.filter((diary) => diary.goal_id).length} />
         <MetricCard label="测评结果" value={state.assessmentResults.length} />
       </div>
+
+      <section className="researchAnalysisDeck" aria-label="离线研究分析">
+        <div className="analysisDeckHeader">
+          <div>
+            <p className="eyebrow">Offline Research Lens</p>
+            <h2>情绪线索、语义网络与家庭拓扑</h2>
+          </div>
+          <span>只读聚合 · 不含原文</span>
+        </div>
+        <div className="analysisTrack">
+          <AnalysisCard title="情感计算" code="AFFECT" artifact={state.textAnalysis.features || state.textAnalysis.summary} description="观察文本中的情绪类别、效价、唤醒与强度线索。" />
+          <AnalysisCard title="语义共现网络" code="SEMANTIC" artifact={state.textAnalysis.semantic_network} description="观察人物、场景、情绪和行为概念在记录中的共同出现。" />
+          <AnalysisCard title="家庭关系拓扑" code="TOPOLOGY" artifact={state.textAnalysis.family_topology} description="仅审计经授权、已确认且未撤回的结构化家庭绑定。" />
+        </div>
+        <p className="analysisBoundary">这些结果属于离线、脱敏、聚合研究线索；数据不足或质量门禁未通过时只显示状态，不生成个人或家庭结论。</p>
+      </section>
 
       <section className="guidanceBox" aria-label="亲密关系项目试点档案">
         <div className="sectionTitleRow">
@@ -610,6 +630,35 @@ function MetricCard({ label, value }: { label: string; value: number }) {
     <article className="metricCard">
       <span>{label}</span>
       <strong>{value}</strong>
+    </article>
+  );
+}
+
+function AnalysisCard({
+  title,
+  code,
+  artifact,
+  description,
+}: {
+  title: string;
+  code: string;
+  artifact?: Record<string, unknown>;
+  description: string;
+}) {
+  const status = String(artifact?.quality_status || artifact?.reason || "offline_output_missing");
+  const count = Number(artifact?.record_count ?? artifact?.input_edge_count ?? 0);
+  const privacyPassed = artifact?.privacy_gate_passed === true;
+  const available = artifact?.available === true;
+  return (
+    <article className={`analysisCard ${available ? "isReady" : "isWaiting"}`}>
+      <div className="analysisCode"><span>{code}</span><strong>{available ? "可查看" : "待数据"}</strong></div>
+      <h3>{title}</h3>
+      <p>{description}</p>
+      <dl>
+        <div><dt>质量状态</dt><dd>{status}</dd></div>
+        <div><dt>有效记录</dt><dd>{Number.isFinite(count) ? count : 0}</dd></div>
+        <div><dt>隐私门禁</dt><dd>{privacyPassed ? "通过" : "待验证"}</dd></div>
+      </dl>
     </article>
   );
 }

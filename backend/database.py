@@ -33,8 +33,8 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_11_004"
-CURRENT_SCHEMA_NAME = "identity_uniqueness_and_records_index"
+CURRENT_SCHEMA_VERSION = "2026_07_15_006"
+CURRENT_SCHEMA_NAME = "researcher_message_delivery_fields"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -78,7 +78,6 @@ MYSQL_VARCHAR_COLUMNS = {
     "profile_model_id",
     "dimension_score_method",
     "display_title",
-    "source_file",
     "source_title",
     "sensitive_category",
     "source_version",
@@ -139,6 +138,8 @@ MYSQL_VARCHAR_COLUMNS = {
     "week_end",
     "replied_at",
     "message_type",
+    "sender_id",
+    "sender_role",
     "read_at",
 }
 
@@ -303,6 +304,7 @@ def init_db() -> None:
             conn.execute(mysqlize_schema_statement(statement) if _connection_provider(conn) == "mysql" else statement)
         if _connection_provider(conn) == "mysql":
             ensure_mysql_index_columns(conn)
+            ensure_mysql_content_text_capacity(conn)
         ensure_schema_columns(conn)
         for statement in INDEX_SQL:
             create_index(conn, statement)
@@ -492,12 +494,31 @@ def ensure_mysql_index_columns(conn) -> None:
             conn.execute(f"ALTER TABLE {table} MODIFY COLUMN {column} VARCHAR(255) {null_clause}")
 
 
+def ensure_mysql_content_text_capacity(conn) -> None:
+    """Widen legacy provenance fields before content synchronization."""
+    row = conn.execute(
+        """
+        SELECT data_type AS data_type, is_nullable AS is_nullable
+        FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+          AND table_name = ?
+          AND column_name = ?
+        LIMIT 1
+        """,
+        ("assessment_worksheets", "source_file"),
+    ).fetchone()
+    if not row or str(row["data_type"]).lower() in {"text", "mediumtext", "longtext"}:
+        return
+    null_clause = "NOT NULL" if row["is_nullable"] == "NO" else "NULL"
+    conn.execute(f"ALTER TABLE assessment_worksheets MODIFY COLUMN source_file TEXT {null_clause}")
+
+
 def get_latest_schema_version(conn) -> str | None:
     try:
         row = conn.execute(
             """
             SELECT version FROM schema_migrations
-            ORDER BY applied_at DESC
+            ORDER BY version DESC
             LIMIT 1
             """
         ).fetchone()
@@ -676,6 +697,14 @@ def ensure_schema_columns(conn) -> None:
     for column, definition in relationship_task_columns.items():
         ensure_column(conn, "relationship_pilot_tasks", column, definition)
         ensure_column(conn, "relationship_longitudinal_entries", column, definition)
+
+    message_columns = {
+        "sender_id": "TEXT",
+        "sender_role": "TEXT",
+        "idempotency_key": "TEXT",
+    }
+    for column, definition in message_columns.items():
+        ensure_column(conn, "messages", column, definition)
 
 
 def _normalize_assessment_profile_cluster(conn) -> None:

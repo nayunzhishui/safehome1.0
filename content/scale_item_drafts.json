@@ -1,6 +1,6 @@
 {
   "version": "2026.06-scale-item-drafts-v1",
-  "updated_at": "2026-07-10",
+  "updated_at": "2026-07-15",
   "boundary_notice": "本文件仅保存量表题项录入草稿，用于人工核对、计分复核和伦理边界审查。所有草稿默认不开放给用户填写，不输出诊断结论，不评价家长、学生或家庭人格。",
   "drafts": [
     {
@@ -14,8 +14,8 @@
       "source_citation": "Luyten, P., Mayes, L. C., Nijssens, L., & Fonagy, P. (2017). The parental reflective functioning questionnaire: Development and preliminary validation. PLOS ONE, 12(5), e0176218.",
       "audience": "parent",
       "theme": "parent_child_communication",
-      "enabled": false,
-      "review_status": "item_draft_pending_human_review",
+      "enabled": true,
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "draft_from_syntax_pending_review",
       "instructions": "下面所列的是一系列关于您对孩子行为的感受和反应的陈述。请根据同意程度作答。本草稿仅用于人工核对，未开放给用户填写。",
@@ -238,7 +238,13 @@
       "recommended_card_ids": [
         "emotion_naming",
         "nonjudgmental_response"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "emotion_regulation_erq_gross",
@@ -420,10 +426,10 @@
       ],
       "audience": "parent",
       "theme": "parenting_stress",
-      "enabled": false,
-      "review_status": "item_draft_pending_human_review",
+      "enabled": true,
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_dimension_review",
+      "scoring_status": "verified_local_four_dimension_sum",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
       "likert": [
         {
@@ -457,34 +463,55 @@
       ],
       "dimensions": [
         {
-          "code": "TOTAL",
-          "label": "总分",
+          "code": "EXHAUSTION",
+          "label": "养育角色耗竭",
           "item_codes": [
-            "PBA01",
-            "PBA02",
             "PBA03",
-            "PBA04",
-            "PBA05",
-            "PBA06",
-            "PBA07",
-            "PBA08",
             "PBA09",
+            "PBA01",
             "PBA10",
-            "PBA11",
-            "PBA12",
-            "PBA13",
-            "PBA14",
+            "PBA21",
+            "PBA04",
             "PBA15",
-            "PBA16",
+            "PBA08",
+            "PBA23"
+          ],
+          "note": "9题求和"
+        },
+        {
+          "code": "CONTRAST",
+          "label": "与过去养育自我的反差",
+          "item_codes": [
+            "PBA05",
+            "PBA13",
             "PBA17",
             "PBA18",
             "PBA19",
-            "PBA20",
-            "PBA21",
-            "PBA22",
-            "PBA23"
+            "PBA02"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "note": "6题求和"
+        },
+        {
+          "code": "SATURATION",
+          "label": "养育厌倦感",
+          "item_codes": [
+            "PBA06",
+            "PBA16",
+            "PBA07",
+            "PBA12",
+            "PBA11"
+          ],
+          "note": "5题求和"
+        },
+        {
+          "code": "DISTANCING",
+          "label": "与孩子的情感疏离",
+          "item_codes": [
+            "PBA14",
+            "PBA22",
+            "PBA20"
+          ],
+          "note": "3题求和"
         }
       ],
       "items": [
@@ -492,172 +519,180 @@
           "item_code": "PBA01",
           "display_order": 1,
           "text": "我做父母的时候实在是太累了，以至于我没有充足的睡眠",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA02",
           "display_order": 2,
           "text": "我感觉我已经失去了作为一个父亲/母亲的方向",
-          "dimension": "TOTAL",
+          "dimension": "CONTRAST",
           "reverse_scored": false
         },
         {
           "item_code": "PBA03",
           "display_order": 3,
           "text": "我觉得我作为一个家长的角色彻底失败了",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA04",
           "display_order": 4,
           "text": "我一丁点照顾孩子的力气都没有了",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA05",
           "display_order": 5,
           "text": "我觉得对我的孩子来说我不再像以前一样是一个好家长了",
-          "dimension": "TOTAL",
+          "dimension": "CONTRAST",
           "reverse_scored": false
         },
         {
           "item_code": "PBA06",
           "display_order": 6,
           "text": "我再也忍受不了家长这个身份了",
-          "dimension": "TOTAL",
+          "dimension": "SATURATION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA07",
           "display_order": 7,
           "text": "我觉得我再也不能当一个家长了",
-          "dimension": "TOTAL",
+          "dimension": "SATURATION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA08",
           "display_order": 8,
           "text": "我有时会感觉我是在流水线上养孩子",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA09",
           "display_order": 9,
           "text": "我感觉我当家长的时候实在是精疲力尽了",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA10",
           "display_order": 10,
           "text": "早上醒来，一想到又要和我的孩子度过一整天，我就感到累极了（即使我还没有面对我的孩子）",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA11",
           "display_order": 11,
           "text": "和我的孩子在一起时，我并不享受",
-          "dimension": "TOTAL",
+          "dimension": "SATURATION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA12",
           "display_order": 12,
           "text": "我感觉我没法胜任家长的角色",
-          "dimension": "TOTAL",
+          "dimension": "SATURATION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA13",
           "display_order": 13,
           "text": "我告诉我自己，我不再是以前的那个爸爸/妈妈了",
-          "dimension": "TOTAL",
+          "dimension": "CONTRAST",
           "reverse_scored": false
         },
         {
           "item_code": "PBA14",
           "display_order": 14,
           "text": "我只做“应该”为孩子做的事，但不会做更多了",
-          "dimension": "TOTAL",
+          "dimension": "DISTANCING",
           "reverse_scored": false
         },
         {
           "item_code": "PBA15",
           "display_order": 15,
           "text": "当家长这件事耗尽了我的资源",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA16",
           "display_order": 16,
           "text": "我再也不能当一个家长了",
-          "dimension": "TOTAL",
+          "dimension": "SATURATION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA17",
           "display_order": 17,
           "text": "我觉得我是一个不称职的家长，并为此感到羞愧",
-          "dimension": "TOTAL",
+          "dimension": "CONTRAST",
           "reverse_scored": false
         },
         {
           "item_code": "PBA18",
           "display_order": 18,
           "text": "我再也不为自己是孩子的家长而感到自豪了",
-          "dimension": "TOTAL",
+          "dimension": "CONTRAST",
           "reverse_scored": false
         },
         {
           "item_code": "PBA19",
           "display_order": 19,
           "text": "我感觉和孩子在一起时，我就不再是我自己了",
-          "dimension": "TOTAL",
+          "dimension": "CONTRAST",
           "reverse_scored": false
         },
         {
           "item_code": "PBA20",
           "display_order": 20,
           "text": "我不再有能力向孩子表示我有多爱他（们）了",
-          "dimension": "TOTAL",
+          "dimension": "DISTANCING",
           "reverse_scored": false
         },
         {
           "item_code": "PBA21",
           "display_order": 21,
           "text": "一想到我需要为孩子做的那些事我就很头疼",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         },
         {
           "item_code": "PBA22",
           "display_order": 22,
           "text": "除了平常的例行公事（开车接送，就寝，吃饭）之外，我再也无法为我的孩子做出努力了",
-          "dimension": "TOTAL",
+          "dimension": "DISTANCING",
           "reverse_scored": false
         },
         {
           "item_code": "PBA23",
           "display_order": 23,
           "text": "家长这个角色对我来说就好像游戏中的“生存模式”一样",
-          "dimension": "TOTAL",
+          "dimension": "EXHAUSTION",
           "reverse_scored": false
         }
       ],
       "scoring_notes": [
-        "本地文件可读到 0-6 频率选项和题项；维度、阈值和正式解释需人工复核。"
+        "23题均按0-6频率计分，无反向题；总分为23题之和，范围0-138；四个维度分别求和。",
+        "结果仅用于观察养育压力相关体验，不使用诊断阈值，不评价家长好坏。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
         "three_second_pause",
-        "nonjudgmental_response"
-      ]
+        "parent_body_grounding",
+        "parent_repair_question"
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "rsca_adolescent_resilience",
@@ -668,10 +703,10 @@
       ],
       "audience": "student",
       "theme": "resilience",
-      "enabled": false,
-      "review_status": "item_draft_pending_human_review",
+      "enabled": true,
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_dimension_mapping",
+      "scoring_status": "verified_27_item_five_dimension_rule",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
       "likert": [
         {
@@ -697,38 +732,66 @@
       ],
       "dimensions": [
         {
-          "code": "TOTAL",
-          "label": "总分",
+          "code": "GOAL_FOCUS",
+          "label": "目标专注",
+          "item_codes": [
+            "RSCA03",
+            "RSCA04",
+            "RSCA11",
+            "RSCA20",
+            "RSCA24"
+          ],
+          "note": "5题求和"
+        },
+        {
+          "code": "EMOTION_CONTROL",
+          "label": "情绪控制",
           "item_codes": [
             "RSCA01",
             "RSCA02",
-            "RSCA03",
-            "RSCA04",
             "RSCA05",
-            "RSCA06",
-            "RSCA07",
-            "RSCA08",
-            "RSCA09",
+            "RSCA21",
+            "RSCA23",
+            "RSCA27"
+          ],
+          "note": "6题求和"
+        },
+        {
+          "code": "POSITIVE_COGNITION",
+          "label": "积极认知",
+          "item_codes": [
             "RSCA10",
-            "RSCA11",
-            "RSCA12",
             "RSCA13",
             "RSCA14",
+            "RSCA25"
+          ],
+          "note": "4题求和"
+        },
+        {
+          "code": "FAMILY_SUPPORT",
+          "label": "家庭支持",
+          "item_codes": [
+            "RSCA08",
             "RSCA15",
             "RSCA16",
             "RSCA17",
-            "RSCA18",
             "RSCA19",
-            "RSCA20",
-            "RSCA21",
-            "RSCA22",
-            "RSCA23",
-            "RSCA24",
-            "RSCA25",
-            "RSCA26",
-            "RSCA27"
+            "RSCA22"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "note": "6题求和"
+        },
+        {
+          "code": "INTERPERSONAL_ASSISTANCE",
+          "label": "人际协助",
+          "item_codes": [
+            "RSCA06",
+            "RSCA07",
+            "RSCA09",
+            "RSCA12",
+            "RSCA18",
+            "RSCA26"
+          ],
+          "note": "6题求和"
         }
       ],
       "items": [
@@ -736,197 +799,208 @@
           "item_code": "RSCA01",
           "display_order": 1,
           "text": "失败总是让我感到气馁。",
-          "dimension": "TOTAL",
+          "dimension": "EMOTION_CONTROL",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA02",
           "display_order": 2,
           "text": "我很难控制自己的不愉快情绪。",
-          "dimension": "TOTAL",
+          "dimension": "EMOTION_CONTROL",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA03",
           "display_order": 3,
           "text": "我的生活有明确的目标。",
-          "dimension": "TOTAL",
+          "dimension": "GOAL_FOCUS",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA04",
           "display_order": 4,
           "text": "经历挫折后我一般会更加成熟有经验。",
-          "dimension": "TOTAL",
+          "dimension": "GOAL_FOCUS",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA05",
           "display_order": 5,
           "text": "失败和挫折会让我怀疑自己的能力。",
-          "dimension": "TOTAL",
+          "dimension": "EMOTION_CONTROL",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA06",
           "display_order": 6,
           "text": "当我遇到不愉快的事情时，总找不到合适的倾诉对象。",
-          "dimension": "TOTAL",
+          "dimension": "INTERPERSONAL_ASSISTANCE",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA07",
           "display_order": 7,
           "text": "我有一个同龄朋友，我可以把我的困难说给他(她)听。",
-          "dimension": "TOTAL",
+          "dimension": "INTERPERSONAL_ASSISTANCE",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA08",
           "display_order": 8,
           "text": "父母很尊重我的意见。",
-          "dimension": "TOTAL",
+          "dimension": "FAMILY_SUPPORT",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA09",
           "display_order": 9,
           "text": "当我遇到困难需要帮助时，我不知道该去找谁。",
-          "dimension": "TOTAL",
+          "dimension": "INTERPERSONAL_ASSISTANCE",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA10",
           "display_order": 10,
           "text": "我觉得与结果相比，事情的过程更能够帮助人成长。",
-          "dimension": "TOTAL",
+          "dimension": "POSITIVE_COGNITION",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA11",
           "display_order": 11,
           "text": "面临困难，我一般会定一个计划和解决方案。",
-          "dimension": "TOTAL",
+          "dimension": "GOAL_FOCUS",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA12",
           "display_order": 12,
           "text": "我习惯把事情憋在心里而不是向人倾诉。",
-          "dimension": "TOTAL",
+          "dimension": "INTERPERSONAL_ASSISTANCE",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA13",
           "display_order": 13,
           "text": "我认为逆境对人有激励作用。",
-          "dimension": "TOTAL",
+          "dimension": "POSITIVE_COGNITION",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA14",
           "display_order": 14,
           "text": "逆境有时候是对成长的一种帮助。",
-          "dimension": "TOTAL",
+          "dimension": "POSITIVE_COGNITION",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA15",
           "display_order": 15,
           "text": "父母总是喜欢干涉我的想法。",
-          "dimension": "TOTAL",
+          "dimension": "FAMILY_SUPPORT",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA16",
           "display_order": 16,
           "text": "在家里，我说什么总是没人听。",
-          "dimension": "TOTAL",
+          "dimension": "FAMILY_SUPPORT",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA17",
           "display_order": 17,
           "text": "父母对我缺乏信心和精神上的支持。",
-          "dimension": "TOTAL",
+          "dimension": "FAMILY_SUPPORT",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA18",
           "display_order": 18,
           "text": "我有困难的时候会主动找别人倾诉。",
-          "dimension": "TOTAL",
+          "dimension": "INTERPERSONAL_ASSISTANCE",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA19",
           "display_order": 19,
           "text": "父母从来不苛责我。",
-          "dimension": "TOTAL",
+          "dimension": "FAMILY_SUPPORT",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA20",
           "display_order": 20,
           "text": "面对困难时，我会集中自己的全部精力。",
-          "dimension": "TOTAL",
+          "dimension": "GOAL_FOCUS",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA21",
           "display_order": 21,
           "text": "我一般要过很久才能忘记不愉快的事情。",
-          "dimension": "TOTAL",
+          "dimension": "EMOTION_CONTROL",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA22",
           "display_order": 22,
           "text": "父母总是鼓励我全力以赴。",
-          "dimension": "TOTAL",
+          "dimension": "FAMILY_SUPPORT",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA23",
           "display_order": 23,
           "text": "我能够很好的在短时间内调整情绪。",
-          "dimension": "TOTAL",
+          "dimension": "EMOTION_CONTROL",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA24",
           "display_order": 24,
           "text": "我会为自己设定目标，以推动自己前进。",
-          "dimension": "TOTAL",
+          "dimension": "GOAL_FOCUS",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA25",
           "display_order": 25,
           "text": "我觉得任何事情都有积极的一面。",
-          "dimension": "TOTAL",
+          "dimension": "POSITIVE_COGNITION",
           "reverse_scored": false
         },
         {
           "item_code": "RSCA26",
           "display_order": 26,
           "text": "心情不好也不愿意跟别人说。",
-          "dimension": "TOTAL",
+          "dimension": "INTERPERSONAL_ASSISTANCE",
           "reverse_scored": true
         },
         {
           "item_code": "RSCA27",
           "display_order": 27,
           "text": "我情绪波动很大，容易大起大落。",
-          "dimension": "TOTAL",
+          "dimension": "EMOTION_CONTROL",
           "reverse_scored": true
         }
       ],
       "scoring_notes": [
-        "源文件写明 27 题、1-5 分，1、2、5、6、9、12、15、16、17、21、26、27 为反向计分；精确维度题项映射仍需人工复核。"
+        "27题按1-5分计分；1、2、5、6、9、12、15、16、17、21、26、27题反向计分。",
+        "五个维度分别求和；前三个维度构成个人力，后两个维度构成支持力；总分为27题校正后得分之和。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [
+        "rsca_emotion_regulation",
+        "rsca_positive_cognition",
+        "self_support_statement"
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "academic_buoyancy_4",
@@ -938,7 +1012,7 @@
       "audience": "student",
       "theme": "academic_resilience",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
@@ -1011,7 +1085,13 @@
         "源文件写明 4 题、1-5 分，分数用于观察日常学业压力下的应对能力。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "afq_y8_avoidance_fusion",
@@ -1023,7 +1103,7 @@
       "audience": "student",
       "theme": "psychological_flexibility",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
@@ -1128,7 +1208,13 @@
         "源文件写明 8 题、1-5 分，分数越高心理僵化程度越高、心理灵活性越低；结果解释必须支持性改写。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "cfi2_cognitive_flexibility",
@@ -1140,7 +1226,7 @@
       "audience": "student",
       "theme": "cognitive_flexibility",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
@@ -1297,7 +1383,13 @@
       "recommended_card_ids": [
         "cognitive_flexibility",
         "alternative_behavior"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "emotional_resilience_11",
@@ -1310,7 +1402,7 @@
       "audience": "student",
       "theme": "emotion_resilience",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
@@ -1451,7 +1543,13 @@
       "recommended_card_ids": [
         "student_emotion_naming",
         "self_support_statement"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "study_engagement_uwes_s_17",
@@ -1463,7 +1561,7 @@
       "audience": "student",
       "theme": "study_engagement",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
@@ -1662,7 +1760,13 @@
       "recommended_card_ids": [
         "student_emotion_naming",
         "cbt_auto_thought_student"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "cd_risc10_brief_resilience",
@@ -1674,7 +1778,7 @@
       "audience": "adult",
       "theme": "resilience",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
@@ -1798,7 +1902,13 @@
       "recommended_card_ids": [
         "cognitive_flexibility",
         "self_support_statement"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "acceptance_action_aaq2",
@@ -1810,7 +1920,7 @@
       "audience": "adult",
       "theme": "psychological_flexibility",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
@@ -1918,7 +2028,13 @@
       "recommended_card_ids": [
         "cognitive_flexibility",
         "alternative_behavior"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "regulatory_focus_general_18",
@@ -1929,10 +2045,10 @@
       ],
       "audience": "adult",
       "theme": "regulatory_focus",
-      "enabled": false,
-      "review_status": "item_draft_pending_human_review",
+      "enabled": true,
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
-      "scoring_status": "pending_dimension_mapping",
+      "scoring_status": "verified_lockwood_two_dimension_mean",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
       "likert": [
         {
@@ -1966,164 +2082,184 @@
       ],
       "dimensions": [
         {
-          "code": "TOTAL",
-          "label": "总分",
+          "code": "PROMOTION",
+          "label": "促进聚焦",
           "item_codes": [
-            "RFQG01",
-            "RFQG02",
-            "RFQG01",
-            "RFQG04",
+            "RFQG03",
             "RFQG05",
             "RFQG06",
-            "RFQG07",
             "RFQG08",
-            "RFQG09",
-            "RFQG10",
-            "RFQG11",
             "RFQG12",
-            "RFQG13",
             "RFQG14",
-            "RFQG15",
             "RFQG16",
             "RFQG17",
             "RFQG18"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "note": "9题均值"
+        },
+        {
+          "code": "PREVENTION",
+          "label": "预防聚焦",
+          "item_codes": [
+            "RFQG01",
+            "RFQG02",
+            "RFQG04",
+            "RFQG07",
+            "RFQG09",
+            "RFQG10",
+            "RFQG11",
+            "RFQG13",
+            "RFQG15"
+          ],
+          "note": "9题均值"
         }
       ],
       "items": [
         {
           "item_code": "RFQG01",
           "display_order": 1,
-          "text": "一般调节聚焦问卷",
-          "dimension": "TOTAL",
+          "text": "在生活中，我通常会注意防范消极的事件发生。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG02",
           "display_order": 2,
-          "text": "请根据自我感觉，判断以下题项和你的符合程度，其中：",
-          "dimension": "TOTAL",
+          "text": "我很担心自己不能尽到该有的责任和义务。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
-          "item_code": "RFQG01",
-          "display_order": 1,
-          "text": "非常不符合 2比较不符合 3有些不符合 4 一般 5 有些符合 6 比较符合 7非常符合。",
-          "dimension": "TOTAL",
+          "item_code": "RFQG03",
+          "display_order": 3,
+          "text": "我时常思考如何去实现自己的愿望和抱负。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG04",
           "display_order": 4,
-          "text": "在生活中，我通常会注意防范消极的事件发生。",
-          "dimension": "TOTAL",
+          "text": "我时常害怕自己将来会变成现在所讨厌的那种人。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG05",
           "display_order": 5,
-          "text": "我很担心自己不能尽到该有的责任和义务。",
-          "dimension": "TOTAL",
+          "text": "我时常会想象未来理想中的自己是什么样子。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG06",
           "display_order": 6,
-          "text": "我时常思考如何去实现自己的愿望和抱负。",
-          "dimension": "TOTAL",
+          "text": "在有助于未来成功的事情上，我会很看重。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG07",
           "display_order": 7,
-          "text": "我时常害怕自己将来会变成现在所讨厌的那种人。",
-          "dimension": "TOTAL",
+          "text": "我经常担心自己不能完成学业目标。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG08",
           "display_order": 8,
-          "text": "我时常会想象未来理想中的自己是什么样子。",
-          "dimension": "TOTAL",
+          "text": "我经常想怎样能让学业成功。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG09",
           "display_order": 9,
-          "text": "在有助于未来成功的事情上，我会很看重。",
-          "dimension": "TOTAL",
+          "text": "我经常会假想一些可怕的坏事情发生在自己身上。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG10",
           "display_order": 10,
-          "text": "我经常担心自己不能完成学业目标。",
-          "dimension": "TOTAL",
+          "text": "我经常想如何去预防生活中的失败。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG11",
           "display_order": 11,
-          "text": "我经常想怎样能让学业成功。",
-          "dimension": "TOTAL",
+          "text": "相比于获得收益，我更在意避免损失。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG12",
           "display_order": 12,
-          "text": "我经常会假想一些可怕的坏事情发生自己身上。",
-          "dimension": "TOTAL",
+          "text": "我当前在校的主要目标是达成学业抱负。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG13",
           "display_order": 13,
-          "text": "我经常想如何去预防生活中的失败。",
-          "dimension": "TOTAL",
+          "text": "我当前在校的主要目标是避免学业失败。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG14",
           "display_order": 14,
-          "text": "相比于获得收益，我更在意避免损失。",
-          "dimension": "TOTAL",
+          "text": "我是个追求‘理想自我’的人，即实现自己的希望、愿望和抱负。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG15",
           "display_order": 15,
-          "text": "我当前在校的主要目标是达成学业抱负。",
-          "dimension": "TOTAL",
+          "text": "我是个寻求‘应当自我’的人，即履行自己的职责、责任和义务。",
+          "dimension": "PREVENTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG16",
           "display_order": 16,
-          "text": "我当前在校的主要目标是避免学业失败。",
-          "dimension": "TOTAL",
+          "text": "通常我更注重在生活中获得积极结果。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG17",
           "display_order": 17,
-          "text": "我是个追求“理想自我”的人——即实现自己的希望.愿望和抱负。",
-          "dimension": "TOTAL",
+          "text": "我经常会假想一些期望中的好事会发生在自己身上。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         },
         {
           "item_code": "RFQG18",
           "display_order": 18,
-          "text": "我是个寻求“应当自我”的人——即履行自己的职责.责任和义务。",
-          "dimension": "TOTAL",
+          "text": "总体来说，我更倾向于取得成功而不是避免失败。",
+          "dimension": "PROMOTION",
           "reverse_scored": false
         }
       ],
       "scoring_notes": [
-        "本地文件可读到 18 个题项和 1-7 选项；促进/预防维度题项映射需人工复核。"
+        "18题采用1-7分；促进聚焦与预防聚焦各9题，分别取均值，不计算诊断性总分。",
+        "两个维度可以同时较高或较低，不把差值解释为固定人格类型。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [
+        "exam_micro_start",
+        "cognitive_flexibility",
+        "self_support_statement"
+      ],
+      "dimension_score_method": "mean",
+      "total_score_method": "none",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "self_compassion_scs_cn",
@@ -2135,10 +2271,28 @@
       "audience": "adult",
       "theme": "self_compassion",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "review_status": "pilot_approved",
+      "item_status": "verified_against_local_pdf",
+      "scoring_status": "verified_local_six_dimension_mean_rule",
+      "instructions": "请根据最近一段时间里各陈述与你实际行为频率的符合程度作答，从1（从不如此）到5（总是如此）中选择一项。",
+      "total_score_method": "none",
+      "derived_dimensions": [
+        {
+          "code": "SCS_TOTAL",
+          "label": "自我关怀综合观察",
+          "calculation": {
+            "type": "mean_dimensions",
+            "dimensions": [
+              "SCS_SK",
+              "SCS_SJ",
+              "SCS_CH",
+              "SCS_ISO",
+              "SCS_MIND",
+              "SCS_OVER"
+            ]
+          }
+        }
+      ],
       "likert": [
         {
           "value": 1,
@@ -2262,7 +2416,7 @@
         {
           "item_code": "SCS03",
           "display_order": 3,
-          "text": "4 = 2, 5 = 1）后再与三个正向维度（善待自己.共同人性.静观当下）相加计算平均分。 在痛苦的时刻，我通常怎样对待自己 请仔细阅读以下各题的陈述，根据自己最近与陈述相符的行为频度，将得分填写在每题左侧的空格中： 从不如此 总是如此",
+          "text": "遇到困难时，我会把困难看成是生活的一部分，是每个人都会经历的。",
           "dimension": "SCS_CH",
           "reverse_scored": false
         },
@@ -2429,13 +2583,20 @@
         }
       ],
       "scoring_notes": [
-        "PDF 写明六个维度题项，负向维度自我批评、自我隔离、过度沉迷先 1-5 反向后再参与总自我关怀均分。"
+        "六个维度分别取所属题项均值；自我批评、自我隔离、过度沉迷的题项先按1↔5、2↔4反向计分。",
+        "自我关怀综合观察为六个校正后维度均值的平均值，不输出诊断、人格类型或优劣判断。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
         "self_support_statement",
         "three_second_pause"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "mindful_attention_awareness_maas",
@@ -2447,7 +2608,7 @@
       "audience": "adult",
       "theme": "mindfulness",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
@@ -2615,7 +2776,13 @@
       "recommended_card_ids": [
         "emotion_naming",
         "three_second_pause"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "fmi_12_mindfulness",
@@ -2627,10 +2794,10 @@
       "audience": "adult",
       "theme": "mindfulness",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
-      "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
+      "review_status": "pilot_approved",
+      "item_status": "verified_against_local_pdf",
+      "scoring_status": "verified_local_total_score_rule",
+      "instructions": "请根据最近一周内（包括今天）的实际情况，判断每个描述与你的符合程度。答案没有对错，请从1（很少）到4（总是）中选择一项。",
       "likert": [
         {
           "value": 1,
@@ -2667,21 +2834,21 @@
             "FMI11",
             "FMI12"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "note": "12题均按1-4分正向计分，总分为各题得分之和。"
         }
       ],
       "items": [
         {
           "item_code": "FMI01",
           "display_order": 1,
-          "text": "弗赖堡正念调查量表（Freiburg Mindfulness Inventory）编者：周仁来 陈思佚编制时间：2011年北京师范大学心理学院应用认知心理学研究所http://rlrw.bnu.edu.cn/",
+          "text": "我对当前的体验是开放的。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "FMI02",
           "display_order": 2,
-          "text": "弗赖堡正念调查量表职业 工作年限 填写日期以前是否练习过以下冥想形式？在相应的方框内划“√”。A是 B 否□瑜伽 □太极 □气功 □内观如果选 A“是”，那么练习过多长时间？请具体写出___________________________。如果选B“否”，此项不作答。请您仔细阅读下列各项，指出最近一周内（包括当天）各个条目的描述符合自己实际情况的程度，在相应的数字上划“○”。答案没有对错之分。",
+          "text": "无论吃饭、做饭、洗衣服或者说话时，我都会感受我的身体。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
@@ -2757,28 +2924,35 @@
         }
       ],
       "scoring_notes": [
-        "PDF 使用手册写明 12 题、1-4 分，总分为各题相加；觉知/接受精确题项映射需人工复核。"
+        "本地 PDF 第2页明确列出12题和1-4分选项，总分为12题得分之和；不拆分未经来源确认的觉知/接受子维度。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
         "emotion_naming",
         "three_second_pause"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "hplp_c_health_promoting_lifestyle",
-      "display_name": "健康促进生活方式量表（HPLP-C）",
-      "source_folder": "基于情绪反射弧的分类/健康促进生活方式量表",
+      "display_name": "健康促进生活方式量表（HPLP，40题）",
+      "source_folder": "既往调研数据/5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】/数据和问卷/问卷",
       "source_files": [
-        "健康促进生活方式量表(HPLP-C).docx"
+        "四个量表文字版.docx",
+        "健康促进生活方式量表-HPLP-R-II-40题.docx"
       ],
       "audience": "adult",
       "theme": "health_lifestyle",
-      "enabled": false,
-      "review_status": "item_draft_pending_human_review",
-      "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_dimension_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "enabled": true,
+      "review_status": "pilot_approved",
+      "item_status": "verified_40_items",
+      "scoring_status": "six_dimensions_verified",
+      "instructions": "请按最近一段时间的实际频率选择。共40题，所有题项按1-4分正向计分。",
       "likert": [
         {
           "value": 1,
@@ -2799,356 +2973,382 @@
       ],
       "dimensions": [
         {
-          "code": "TOTAL",
-          "label": "总分",
+          "code": "NUTRITION",
+          "label": "营养",
           "item_codes": [
             "HPLP01",
-            "HPLP02",
-            "HPLP03",
-            "HPLP04",
-            "HPLP05",
             "HPLP06",
-            "HPLP07",
-            "HPLP08",
-            "HPLP09",
-            "HPLP10",
-            "HPLP11",
             "HPLP12",
-            "HPLP13",
-            "HPLP14",
-            "HPLP15",
-            "HPLP16",
-            "HPLP17",
             "HPLP18",
-            "HPLP19",
-            "HPLP20",
-            "HPLP21",
-            "HPLP22",
             "HPLP23",
-            "HPLP24",
-            "HPLP25",
-            "HPLP26",
-            "HPLP27",
-            "HPLP28",
-            "HPLP29",
             "HPLP30",
-            "HPLP31",
-            "HPLP32",
-            "HPLP33",
-            "HPLP34",
             "HPLP35",
-            "HPLP36",
-            "HPLP37",
-            "HPLP38",
-            "HPLP39",
-            "HPLP40",
-            "HPLP41",
-            "HPLP42"
+            "HPLP39"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "note": "所属题项取均值，保留原量尺1-4分。"
+        },
+        {
+          "code": "HEALTH_RESPONSIBILITY",
+          "label": "健康责任",
+          "item_codes": [
+            "HPLP02",
+            "HPLP07",
+            "HPLP13",
+            "HPLP19",
+            "HPLP24",
+            "HPLP28",
+            "HPLP31",
+            "HPLP36",
+            "HPLP40"
+          ],
+          "note": "所属题项取均值，保留原量尺1-4分。"
+        },
+        {
+          "code": "PHYSICAL_ACTIVITY",
+          "label": "身体活动",
+          "item_codes": [
+            "HPLP03",
+            "HPLP08",
+            "HPLP14",
+            "HPLP20",
+            "HPLP25",
+            "HPLP29",
+            "HPLP32",
+            "HPLP37"
+          ],
+          "note": "所属题项取均值，保留原量尺1-4分。"
+        },
+        {
+          "code": "SPIRITUAL_GROWTH",
+          "label": "精神成长",
+          "item_codes": [
+            "HPLP04",
+            "HPLP10",
+            "HPLP16",
+            "HPLP27",
+            "HPLP33"
+          ],
+          "note": "所属题项取均值，保留原量尺1-4分。"
+        },
+        {
+          "code": "INTERPERSONAL_RELATIONS",
+          "label": "人际关系",
+          "item_codes": [
+            "HPLP05",
+            "HPLP11",
+            "HPLP17",
+            "HPLP22",
+            "HPLP34"
+          ],
+          "note": "所属题项取均值，保留原量尺1-4分。"
+        },
+        {
+          "code": "STRESS_MANAGEMENT",
+          "label": "压力管理",
+          "item_codes": [
+            "HPLP09",
+            "HPLP15",
+            "HPLP21",
+            "HPLP26",
+            "HPLP38"
+          ],
+          "note": "所属题项取均值，保留原量尺1-4分。"
         }
       ],
       "items": [
         {
           "item_code": "HPLP01",
           "display_order": 1,
-          "text": "吃早餐",
-          "dimension": "TOTAL",
+          "text": "选择低脂肪、低饱和脂肪和低胆固醇的食物",
+          "dimension": "NUTRITION",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP02",
           "display_order": 2,
-          "text": "喜欢自己",
-          "dimension": "TOTAL",
+          "text": "有任何不正常的症状和体征时，向卫生专业人员咨询",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP03",
           "display_order": 3,
-          "text": "每周做伸展运动至少三次（如扩胸运动.弯腰.踢腿等）",
-          "dimension": "TOTAL",
+          "text": "遵循一个制定好的运动计划",
+          "dimension": "PHYSICAL_ACTIVITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP04",
           "display_order": 4,
-          "text": "每天花些时间放松自己",
-          "dimension": "TOTAL",
+          "text": "感觉自己在积极地成长和变化",
+          "dimension": "SPIRITUAL_GROWTH",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP05",
           "display_order": 5,
-          "text": "做身体检查或检验，并知道结果",
-          "dimension": "TOTAL",
+          "text": "很乐意称赞别人的成功",
+          "dimension": "INTERPERSONAL_RELATIONS",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP06",
           "display_order": 6,
-          "text": "对生命乐观.热诚",
-          "dimension": "TOTAL",
+          "text": "限制糖和含糖食物的使用",
+          "dimension": "NUTRITION",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP07",
           "display_order": 7,
-          "text": "感觉自己正以积极的方式成长与变化中",
-          "dimension": "TOTAL",
+          "text": "阅读或观看有关健康促进的杂志或电视内容",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP08",
           "display_order": 8,
-          "text": "与亲近的人讨论自己的问题及关心的事情",
-          "dimension": "TOTAL",
+          "text": "每周最少参加三次剧烈运动（如快步走、骑自行车、有氧舞蹈、爬楼梯，每次20分钟或以上）",
+          "dimension": "PHYSICAL_ACTIVITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP09",
           "display_order": 9,
-          "text": "知道生活中压力的来源",
-          "dimension": "TOTAL",
+          "text": "每天找一些时间放松自己",
+          "dimension": "STRESS_MANAGEMENT",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP10",
           "display_order": 10,
-          "text": "感觉幸福.满足",
-          "dimension": "TOTAL",
+          "text": "相信自己的人生是有目标的",
+          "dimension": "SPIRITUAL_GROWTH",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP11",
           "display_order": 11,
-          "text": "每周激烈运动至少3次，每次持续20至30分钟（如爬楼梯.跳健身舞.快走等）",
-          "dimension": "TOTAL",
+          "text": "维持有意义的人际关系",
+          "dimension": "INTERPERSONAL_RELATIONS",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP12",
           "display_order": 12,
-          "text": "每日三餐规律",
-          "dimension": "TOTAL",
+          "text": "每天吃面包、米饭、面食和谷类食物",
+          "dimension": "NUTRITION",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP13",
           "display_order": 13,
-          "text": "阅读有关促进健康的文章或书籍",
-          "dimension": "TOTAL",
+          "text": "向健康专业人员提问，以理解专业人员的指导",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP14",
           "display_order": 14,
-          "text": "知道自己的长处和缺点",
-          "dimension": "TOTAL",
+          "text": "参加一些轻度至中度的身体活动（如散步30-40分钟，每周5次或以上）",
+          "dimension": "PHYSICAL_ACTIVITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP15",
           "display_order": 15,
-          "text": "朝生命中长远的目标努力",
-          "dimension": "TOTAL",
+          "text": "接受生活中自己不能改变的事情",
+          "dimension": "STRESS_MANAGEMENT",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP16",
           "display_order": 16,
-          "text": "赞赏他人的成就",
-          "dimension": "TOTAL",
+          "text": "对未来充满期待",
+          "dimension": "SPIRITUAL_GROWTH",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP17",
           "display_order": 17,
-          "text": "当不同意医生的建议时，我会向他提出疑问，或征询另一位医生的看法",
-          "dimension": "TOTAL",
+          "text": "乐于和好朋友在一起",
+          "dimension": "INTERPERSONAL_RELATIONS",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP18",
           "display_order": 18,
-          "text": "对未来充满期望",
-          "dimension": "TOTAL",
+          "text": "每天吃水果",
+          "dimension": "NUTRITION",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP19",
           "display_order": 19,
-          "text": "与亲近的人相互有身体的碰触（如搭背.牵手或更亲密的行为等）",
-          "dimension": "TOTAL",
+          "text": "当不信任卫生专业人士的建议时，寻求另一位专业人士的建议",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP20",
           "display_order": 20,
-          "text": "维持有意义的人际关系（指深层，非泛泛之交）",
-          "dimension": "TOTAL",
+          "text": "参加一些娱乐活动（如游泳、跳舞、骑自行车）",
+          "dimension": "PHYSICAL_ACTIVITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP21",
           "display_order": 21,
-          "text": "食用富含纤维素的食物（如新鲜水果.蔬菜）",
-          "dimension": "TOTAL",
+          "text": "睡前想一些开心的事情",
+          "dimension": "STRESS_MANAGEMENT",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP22",
           "display_order": 22,
-          "text": "每天花 15 至 20min 放松或冥想（静坐）",
-          "dimension": "TOTAL",
+          "text": "自愿给别人关心、爱和温暖",
+          "dimension": "INTERPERSONAL_RELATIONS",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP23",
           "display_order": 23,
-          "text": "与合格的专业人员讨论有关自己健康保健方面的事情",
-          "dimension": "TOTAL",
+          "text": "每天吃蔬菜",
+          "dimension": "NUTRITION",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP24",
           "display_order": 24,
-          "text": "重视自己的成就",
-          "dimension": "TOTAL",
+          "text": "与专业人士讨论健康问题",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP25",
           "display_order": 25,
-          "text": "运动时测量自己的脉搏",
-          "dimension": "TOTAL",
+          "text": "每周至少做三次伸展运动",
+          "dimension": "PHYSICAL_ACTIVITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP26",
           "display_order": 26,
-          "text": "花时间与亲密的朋友相处",
-          "dimension": "TOTAL",
+          "text": "用适合自己的方式缓解压力",
+          "dimension": "STRESS_MANAGEMENT",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP27",
           "display_order": 27,
-          "text": "测量血压，并知道自己的血压",
-          "dimension": "TOTAL",
+          "text": "向人生的长期目标努力",
+          "dimension": "SPIRITUAL_GROWTH",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP28",
           "display_order": 28,
-          "text": "参加有关改进我们居住环境的教育课程或活动",
-          "dimension": "TOTAL",
+          "text": "每月至少一次自检自己的身体",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP29",
           "display_order": 29,
-          "text": "发觉每天都是充满乐趣及挑战的",
-          "dimension": "TOTAL",
+          "text": "从日常生活中得到身体锻炼（如饭后散步、尽量走楼梯而不坐电梯、少坐车多走路）",
+          "dimension": "PHYSICAL_ACTIVITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP30",
           "display_order": 30,
-          "text": "每日吃含有五大类营养素的食物（包括蛋白质.脂肪.糖类.维生素及矿物质）",
-          "dimension": "TOTAL",
+          "text": "每天吃肉、家禽、鱼、干豆类、鸡蛋和坚果类食物",
+          "dimension": "NUTRITION",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP31",
           "display_order": 31,
-          "text": "睡觉前使自己全身肌肉放松",
-          "dimension": "TOTAL",
+          "text": "向卫生专业人员咨询如何自我保健",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP32",
           "display_order": 32,
-          "text": "觉得自己的生活环境是舒适且令人满意的",
-          "dimension": "TOTAL",
+          "text": "运动时会测量自己的脉搏",
+          "dimension": "PHYSICAL_ACTIVITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP33",
           "display_order": 33,
-          "text": "从事休闲性的体能活动(如游泳.散步.踢足球.骑单车)",
-          "dimension": "TOTAL",
+          "text": "知道生命中什么对自己重要",
+          "dimension": "SPIRITUAL_GROWTH",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP34",
           "display_order": 34,
-          "text": "就寝时，让自己想愉快的事情",
-          "dimension": "TOTAL",
+          "text": "从人际网络中得到人际支持",
+          "dimension": "INTERPERSONAL_RELATIONS",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP35",
           "display_order": 35,
-          "text": "以建设性的方式来表达自己的感受（指非批评.谩骂性，能提出具体建议）",
-          "dimension": "TOTAL",
+          "text": "阅读包装食品的标签",
+          "dimension": "NUTRITION",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP36",
           "display_order": 36,
-          "text": "向健康专业人员咨询如何照顾好自己",
-          "dimension": "TOTAL",
+          "text": "参加健康保健的教育活动",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP37",
           "display_order": 37,
-          "text": "每个月至少一次观察自己的身体有无异常症状或病征",
-          "dimension": "TOTAL",
+          "text": "运动时达到自己的心率目标",
+          "dimension": "PHYSICAL_ACTIVITY",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP38",
           "display_order": 38,
-          "text": "我所设定的目标都是实际可行的",
-          "dimension": "TOTAL",
+          "text": "让自己安静下来，避免过度疲劳",
+          "dimension": "STRESS_MANAGEMENT",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP39",
           "display_order": 39,
-          "text": "采用某些方法来减轻自己所面临的压力",
-          "dimension": "TOTAL",
+          "text": "每天吃早餐",
+          "dimension": "NUTRITION",
           "reverse_scored": false
         },
         {
           "item_code": "HPLP40",
           "display_order": 40,
-          "text": "参加有关个人健康保健方面的教育课程或活动",
-          "dimension": "TOTAL",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "HPLP41",
-          "display_order": 41,
-          "text": "和我关心的人相互有身体的碰触（如搭背.牵手或更亲密的行为等）",
-          "dimension": "TOTAL",
-          "reverse_scored": false
-        },
-        {
-          "item_code": "HPLP42",
-          "display_order": 42,
-          "text": "确信我的生命是有目的的",
-          "dimension": "TOTAL",
+          "text": "必要时寻求指导和咨询",
+          "dimension": "HEALTH_RESPONSIBILITY",
           "reverse_scored": false
         }
       ],
       "scoring_notes": [
-        "本地文件可读到 42 个题项和 1-4 选项；维度归属、是否适合用户端开放和健康建议边界需人工复核。"
+        "六个维度分别取所属题项均值；综合观察为六维均值的平均值。",
+        "采用牛至旭资料中的40题版本，原42题草稿退出运行口径。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "swls_life_satisfaction",
@@ -3160,22 +3360,22 @@
       "audience": "adult",
       "theme": "wellbeing",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
-      "instructions": "请根据最近一段时间的真实情况填写。本量表处于试点开放阶段，结果仅用于自我观察和练习参考，不构成诊断、筛查结论或人格判断；计分与解释仍由项目团队持续人工复核。",
+      "review_status": "pilot_approved",
+      "item_status": "verified_against_local_docx",
+      "scoring_status": "verified_local_total_score_rule",
+      "instructions": "以下5种说法描述你对生活的整体感受。请根据实际情况，从1（强烈反对）到7（非常同意）中选择最符合的一项。",
       "likert": [
         {
           "value": 1,
-          "label": "非常同意"
+          "label": "强烈反对"
         },
         {
           "value": 2,
-          "label": "同意"
+          "label": "不同意"
         },
         {
           "value": 3,
-          "label": "有些同意"
+          "label": "基本不同意"
         },
         {
           "value": 4,
@@ -3183,15 +3383,15 @@
         },
         {
           "value": 5,
-          "label": "有些不同意"
+          "label": "基本同意"
         },
         {
           "value": 6,
-          "label": "不同意"
+          "label": "同意"
         },
         {
           "value": 7,
-          "label": "强烈反对"
+          "label": "非常同意"
         }
       ],
       "dimensions": [
@@ -3205,51 +3405,58 @@
             "SWLS04",
             "SWLS05"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "note": "5题均按1-7分正向计分，总分为5题得分之和。"
         }
       ],
       "items": [
         {
           "item_code": "SWLS01",
           "display_order": 1,
-          "text": "测试你的生活满意度 Measuring Your Satisfaction With Life",
+          "text": "大多数情况下，我的生活接近理想状态。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "SWLS02",
           "display_order": 2,
-          "text": "以下5种说法你可以选择同意或不同意。请根据下列几种标准进行回答，并将正确的数字编号填写在各项前面的横线上。请确保你的答案真实可靠。",
+          "text": "我的生活状态很好。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "SWLS03",
           "display_order": 3,
-          "text": "非常同意 同意 基本同意 中立 基本不同意 不同意 强烈反对 ７ ６ ５ ４ ３ ２ １",
+          "text": "我对自己的生活感到满意。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "SWLS04",
           "display_order": 4,
-          "text": "大多数情况下，我的生活接近理想状态。",
+          "text": "到目前为止，我已经得到了我认为生活中最重要的事物。",
           "dimension": "TOTAL",
           "reverse_scored": false
         },
         {
           "item_code": "SWLS05",
           "display_order": 5,
-          "text": "我的生活状态很好。",
+          "text": "如果我可以再活一次，我不想改变任何事情。",
           "dimension": "TOTAL",
           "reverse_scored": false
         }
       ],
       "scoring_notes": [
-        "本地文件可读到 5 个题项和 1-7 选项；源文件包含等级解释，用户端必须改写为非诊断、非标签化表达。"
+        "本地 Word 明确列出5题；选项方向为1（强烈反对）至7（非常同意），总分为5题得分之和。",
+        "源文件中的等级标签不作为诊断、人格标签或固定结论，仅保留阶段性自我观察。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "big_five_bfi_60",
@@ -3261,10 +3468,11 @@
       "audience": "adult",
       "theme": "personality_observation",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "partial_rule_pending_dimension_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "instructions": "请认真阅读每个句子，判断描述符合你的程度，从1（十分不赞同）到5（十分赞同）中选择一项。答案没有对错，请按真实情况作答。",
+      "total_score_method": "none",
       "likert": [
         {
           "value": 1,
@@ -3830,16 +4038,23 @@
         {
           "item_code": "BFI60",
           "display_order": 60,
-          "text": "我要花很多时间才能安顿下来工",
+          "text": "我要花很多时间才能安顿下来工作。",
           "dimension": "BFI_CONSCIENTIOUSNESS",
           "reverse_scored": true
         }
       ],
       "scoring_notes": [
-        "源文件含 60 个中文题项和五个维度计分键；维度归属和反向题已按源文件文字初录，仍需人工逐项核对。用户端结果不得输出人格定性标签。"
+        "本地 Word 含60个中文题项和五个维度计分键；第60题由源文件明显截断的‘安顿下来工’校正为‘安顿下来工作’。",
+        "五个维度分别求和，不计算人格总分，不输出人格类型或优劣标签；版权和心理解释待审核。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "attribution_style_student_36",
@@ -3851,10 +4066,10 @@
       "audience": "student",
       "theme": "attribution_style",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
-      "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_open_reason_support",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "review_status": "pilot_approved",
+      "item_status": "verified_against_local_doc_with_open_reason",
+      "scoring_status": "partial_rule_pending_composite_review",
+      "instructions": "12个情境均需先填写一个主要原因，再分别回答内外归因、稳定性和整体性三个1-7问题；worksheet 已实现48个交互项。",
       "likert": [
         {
           "value": 1,
@@ -4196,10 +4411,17 @@
         }
       ],
       "scoring_notes": [
-        "源文件为 12 个情境，每个情境包含一个开放式主要原因和 3 个 1-7 归因判断。本轮将 3 个判断题拆为 36 个可填写题项；开放式主要原因暂未进入现有单选题库。"
+        "本地旧版 Word 明确规定12个情境均先填写主要原因，再回答三个1-7归因判断；worksheet 已实现12个文本原因和36个评分项。",
+        "当前仅保存内外归因、稳定性、整体性原始均值；积极/消极情境组合与综合解释待心理专业复核。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "ghq12_general_health",
@@ -4211,10 +4433,10 @@
       "audience": "adult",
       "theme": "mental_health_observation",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_sensitive_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "review_status": "pilot_approved",
+      "item_status": "verified_against_local_docx",
+      "scoring_status": "verified_local_rule_pending_sensitive_review",
+      "instructions": "请根据从两三周前到现在的实际状况回答全部问题，并在每题的四个选项中选择最符合的一项。结果仅用于阶段性自我观察，不构成诊断或筛查结论。",
       "likert": [
         {
           "value": 1,
@@ -4251,7 +4473,7 @@
             "GHQ11",
             "GHQ12"
           ],
-          "note": "当前只记录题项集合；维度解释和计分方向需人工复核。"
+          "note": "12题校正后求和；积极性题项1、3、4、7、8、12反向计分。"
         }
       ],
       "items": [
@@ -4335,16 +4557,23 @@
         {
           "item_code": "GHQ12",
           "display_order": 12,
-          "text": "总的来看，感到适度的愉快吗？该问卷共包括12个项目，采用4级记分，从“从不”计1分到“经常”4分，得分范围在12～48分之间，分数越高，表示心理健康水平越低，总分超过27为心理状况不佳。其中有6项为积极性项目，回答“很少”或“从不”者视为异常；6项为消极性项目，回答“经常”或“有时”者视为异常。",
+          "text": "总的来看，感到适度的愉快吗？",
           "dimension": "TOTAL",
           "reverse_scored": true
         }
       ],
       "scoring_notes": [
-        "源文件写明 12 题、1-4 分和积极项目 1、3、4、7、8、12；用户端不得给出心理健康筛查结论。"
+        "本地 Word 明确写明12题、1-4分；积极性项目1、3、4、7、8、12反向计分后求和。",
+        "原文件中的阈值和异常判断不进入用户端；结果只作阶段性观察，等待心理与伦理审核后再决定是否开放。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "epq_emotional_stability_24",
@@ -4356,7 +4585,7 @@
       "audience": "adult",
       "theme": "emotion_stability",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "pending_sensitive_review",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
@@ -4577,7 +4806,13 @@
         "源文件可读到 24 个是/否题项；计分方向、常模和解释边界必须人工复核，用户端不得输出人格定性。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "gad7_anxiety",
@@ -4589,7 +4824,7 @@
       "audience": "adult",
       "theme": "anxiety_observation",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_sensitive_review",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
@@ -4682,7 +4917,13 @@
         "源文件可读到 7 题和 0-3 计分；源文件含诊断分级文字，用户端必须改为非诊断、非筛查说明。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "phq9_cesd10_depression",
@@ -4695,7 +4936,7 @@
       "audience": "adult",
       "theme": "depression_observation",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_sensitive_review",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
@@ -4804,7 +5045,13 @@
         "本轮只录入 PHQ-9 主版本；CES-D10 来源为图片，需人工/OCR 复核后另行录入。源文件含诊断分级文字，用户端必须改为非诊断说明。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "perceived_social_support_psss",
@@ -4816,10 +5063,10 @@
       "audience": "adult",
       "theme": "social_support",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
-      "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
+      "review_status": "pilot_approved",
+      "item_status": "verified_against_local_doc",
+      "scoring_status": "verified_local_three_dimension_rule",
+      "instructions": "以下12个句子描述你感受到的社会支持。请根据自己的实际情况，从1（极不同意）到7（极同意）中选择最符合的一项；4表示中间状态。",
       "likert": [
         {
           "value": 1,
@@ -4886,93 +5133,100 @@
         {
           "item_code": "PSSS01",
           "display_order": 1,
-          "text": "您有多少关系密切，可以得到支持和帮助的朋友（只选一项）？（1）一个也没有；（2）1—2个；（3）3—5个；（4）6个或6个以上",
+          "text": "在我遇到问题时，有些人（领导、亲戚、同事）会出现在我的身旁。",
           "dimension": "PSSS_OTHER",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS02",
           "display_order": 2,
-          "text": "近一年来您（只选一项）：（1）远离家人，且独居一室；（2）住处经常变动，多数时间和陌生人住在一起；（3）和同学.同事或朋友住在一起；（4）和家人住在一起",
+          "text": "我能够与有些人（领导、亲戚、同事）共享快乐与忧伤。",
           "dimension": "PSSS_OTHER",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS03",
           "display_order": 3,
-          "text": "您与邻居（只选一项）：（1）相互不交往，只是点头之交；（2）遇到困难可能稍微关心；（3）有些邻居很关心您；（4）大多数邻居都很关心您",
+          "text": "我的家庭能够切实具体地给我帮助。",
           "dimension": "PSSS_FAMILY",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS04",
           "display_order": 4,
-          "text": "您与同事（只选一项）：（1）相互不交往，只是点头之交；（2）遇到困难可能稍微关心；（3）有些同事很关心您；（4）大多数同事都很关心您",
+          "text": "在需要时，我能够从家庭获得感情上的帮助和支持。",
           "dimension": "PSSS_FAMILY",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS05",
           "display_order": 5,
-          "text": "从家庭成员得到的支持和照顾（在合适的框内划“√”）全力支持A.夫妻（恋人）B.父母C.儿女D.兄弟姊妹E.其他成员（如嫂子）",
+          "text": "当我有困难时，有些人（领导、亲戚、同事）是安慰我的真正源泉。",
           "dimension": "PSSS_OTHER",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS06",
           "display_order": 6,
-          "text": "过去，在您遇到急难情况时，曾经得到的经济支持或解决实际问题的帮助的来源有：（1）无任何来源；（2）下列来源（可选多项）：A.配偶；B.其他家人；C.朋友；D.亲戚；E.同事；F.工作单位；G.党团工会等官方或半官方组织；H.宗教.社会团体等非官方组织；I.其他（请列出）",
+          "text": "我的朋友们能真正地帮助我。",
           "dimension": "PSSS_FRIEND",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS07",
           "display_order": 7,
-          "text": "过去，在您遇到急难情况时，曾经得到的安慰和关心的来源有：（1）无任何来源；（2）下列来源（可选多项）：A.配偶；B.其他家人；C.朋友；D.亲戚；E.同事；F.工作单位；G.党团工会等官方或半官方组织；H.宗教.社会团体等非官方组织；I.其他（请列出）",
+          "text": "在发生困难时，我可以依靠我的朋友们。",
           "dimension": "PSSS_FRIEND",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS08",
           "display_order": 8,
-          "text": "您遇到烦恼时的倾诉方式（只选一项）：（1）从不向任何人诉述；（2）只向关系极为密切的几个人诉述；（3）如果朋友主动询问您会说出来；（4）主动诉述自己的烦恼，以获得支持和理解",
+          "text": "我能与自己的家庭谈论我的难题。",
           "dimension": "PSSS_FAMILY",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS09",
           "display_order": 9,
-          "text": "您遇到烦恼时的求助方式（只选一项）：（1）只靠自己，不接受别人帮助；（2）很少请求别人帮助；（3）有时请求别人帮助；（4）有困难时经常向家人.亲友.组织求援",
+          "text": "我的朋友们能与我分享快乐与忧伤。",
           "dimension": "PSSS_FRIEND",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS10",
           "display_order": 10,
-          "text": "对于团体（如党团组织.宗教组织.工会.学生会等）组织活动，您（只选一项）：（1）从不参加；（2）偶尔参加；（3）经常参加；（4）主动参加并积极活动",
+          "text": "在我的生活中，有些人（领导、亲戚、同事）关心着我的感情。",
           "dimension": "PSSS_OTHER",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS11",
           "display_order": 11,
-          "text": "我的家庭能心甘情愿协助我作出各种决定①极不同意 ②很不同意 ③稍不同意 ④中立 ⑤稍同意 ⑥很同意 ⑦极同意",
+          "text": "我的家庭能心甘情愿地协助我作出各种决定。",
           "dimension": "PSSS_FAMILY",
           "reverse_scored": false
         },
         {
           "item_code": "PSSS12",
           "display_order": 12,
-          "text": "我能与朋友们讨论自己的难题①极不同意 ②很不同意 ③稍不同意 ④中立 ⑤稍同意 ⑥很同意 ⑦极同意",
+          "text": "我能与朋友们讨论自己的难题。",
           "dimension": "PSSS_FRIEND",
           "reverse_scored": false
         }
       ],
       "scoring_notes": [
-        "源文件可读到 PSSS 12 题和 1-7 选项；同文件中的 SSRS 不与 PSSS 混合录入。"
+        "本地旧版 Word 后半部分明确列出 PSSS 12题和1-7分选项；已排除前半部分 SSRS 的10题。",
+        "其他支持为1、2、5、10题，家庭支持为3、4、8、11题，朋友支持为6、7、9、12题；各维度与总分均为题项得分之和。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "scale_id": "emotional_intelligence_eis_33",
@@ -4985,7 +5239,7 @@
       "audience": "student",
       "theme": "emotional_intelligence",
       "enabled": true,
-      "review_status": "item_draft_pending_human_review",
+      "review_status": "pilot_approved",
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_review",
       "instructions": "本草稿由本地量表源文件抽取，正式开放前必须人工核对题项原文、计分规则、授权范围和结果解释边界。",
@@ -5314,13 +5568,19 @@
         "题项来自 EIS .sav 变量标签；维度和反向题来自同目录 SPSS 计分脚本。"
       ],
       "supportive_interpretation_draft": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "recommended_card_ids": []
+      "recommended_card_ids": [],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "audience": "student",
       "theme": "relationship_exploration",
       "enabled": true,
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "item_status": "audited_local_source",
       "scoring_status": "frozen_task12_formula",
       "source_folder": "数据1",
@@ -5339,26 +5599,34 @@
         },
         {
           "value": 2,
-          "label": "不同意"
+          "label": "很不同意"
         },
         {
           "value": 3,
-          "label": "比较不同意"
+          "label": "不同意"
         },
         {
           "value": 4,
-          "label": "不确定"
+          "label": "比较不同意"
         },
         {
           "value": 5,
-          "label": "比较同意"
+          "label": "不确定"
         },
         {
           "value": 6,
-          "label": "同意"
+          "label": "比较同意"
         },
         {
           "value": 7,
+          "label": "同意"
+        },
+        {
+          "value": 8,
+          "label": "很同意"
+        },
+        {
+          "value": 9,
           "label": "非常同意"
         }
       ],
@@ -5416,26 +5684,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5453,26 +5729,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5490,26 +5774,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5527,26 +5819,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5564,26 +5864,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5601,26 +5909,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5638,26 +5954,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5675,26 +5999,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5712,26 +6044,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5749,26 +6089,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5786,26 +6134,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5823,26 +6179,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5860,26 +6224,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5897,26 +6269,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5934,26 +6314,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -5971,26 +6359,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -6008,26 +6404,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -6045,26 +6449,34 @@
             },
             {
               "value": 2,
-              "label": "不同意"
+              "label": "很不同意"
             },
             {
               "value": 3,
-              "label": "比较不同意"
+              "label": "不同意"
             },
             {
               "value": 4,
-              "label": "不确定"
+              "label": "比较不同意"
             },
             {
               "value": 5,
-              "label": "比较同意"
+              "label": "不确定"
             },
             {
               "value": 6,
-              "label": "同意"
+              "label": "比较同意"
             },
             {
               "value": 7,
+              "label": "同意"
+            },
+            {
+              "value": 8,
+              "label": "很同意"
+            },
+            {
+              "value": 9,
               "label": "非常同意"
             }
           ]
@@ -6073,22 +6485,28 @@
       "scoring_notes": [
         "PROM 与 PREV 分别取题项均值",
         "RFD=PROM-PREV 仅供研究画像定位",
-        "数据1实测为1-5，新问卷为1-7，模型接入时必须按元数据换算"
+        "数据1实测为1-5，新问卷为1-9，模型接入时必须按元数据换算"
       ],
       "supportive_interpretation_draft": "分别观察成长目标与安全顾虑的关注方式，不把高低解释为好坏。",
       "recommended_card_ids": [
         "student_emotion_naming",
         "cbt_auto_thought_student",
         "self_support_statement"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "audience": "student",
       "theme": "relationship_exploration",
       "enabled": true,
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "item_status": "audited_local_source",
-      "scoring_status": "frozen_task12_formula",
+      "scoring_status": "verified_item_level_dimensions_pending_interpretation_review",
       "source_folder": "数据1",
       "source_files": [
         "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx",
@@ -6097,7 +6515,7 @@
       ],
       "scale_id": "micro_ysq_relationship_18",
       "display_name": "关系中的常见担心与期待",
-      "instructions": "请根据这些描述与你近期关系体验的符合程度作答。结果用于识别可练习的主题，不用于给人格下结论。",
+      "instructions": "请根据这些描述与你近期关系体验的符合程度作答。每题对应一个可观察主题，结果用于寻找可练习线索，不用于诊断、人格判断或图式标签。",
       "likert": [
         {
           "value": 1,
@@ -6128,26 +6546,179 @@
       "total_score_method": "none",
       "dimensions": [
         {
-          "code": "EMS_M",
-          "label": "关系担心线索均值",
+          "code": "YSQ_THEME01",
+          "label": "被理解与关心担心",
           "item_codes": [
-            "YSQ1",
-            "YSQ2",
-            "YSQ3",
-            "YSQ4",
-            "YSQ5",
-            "YSQ6",
-            "YSQ7",
-            "YSQ8",
-            "YSQ9",
-            "YSQ10",
-            "YSQ11",
-            "YSQ12",
-            "YSQ13",
-            "YSQ14",
-            "YSQ15",
-            "YSQ16",
-            "YSQ17",
+            "YSQ1"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME02",
+          "label": "离开与失去担心",
+          "item_codes": [
+            "YSQ2"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME03",
+          "label": "受伤与被利用担心",
+          "item_codes": [
+            "YSQ3"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME04",
+          "label": "自我价值担心",
+          "item_codes": [
+            "YSQ4"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME05",
+          "label": "归属与融入担心",
+          "item_codes": [
+            "YSQ5"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME06",
+          "label": "独立应对担心",
+          "item_codes": [
+            "YSQ6"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME07",
+          "label": "安全与灾难担心",
+          "item_codes": [
+            "YSQ7"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME08",
+          "label": "取悦与自我忽略",
+          "item_codes": [
+            "YSQ8"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME09",
+          "label": "情绪需求压抑",
+          "item_codes": [
+            "YSQ9"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME10",
+          "label": "特殊待遇期待",
+          "item_codes": [
+            "YSQ10"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME11",
+          "label": "坚持与自我管理",
+          "item_codes": [
+            "YSQ11"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME12",
+          "label": "过度照顾他人",
+          "item_codes": [
+            "YSQ12"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME13",
+          "label": "他人评价关注",
+          "item_codes": [
+            "YSQ13"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME14",
+          "label": "情绪表达抑制",
+          "item_codes": [
+            "YSQ14"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME15",
+          "label": "高标准压力",
+          "item_codes": [
+            "YSQ15"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME16",
+          "label": "严厉惩罚倾向",
+          "item_codes": [
+            "YSQ16"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME17",
+          "label": "理想化依赖期待",
+          "item_codes": [
+            "YSQ17"
+          ],
+          "calculation": {
+            "type": "mean"
+          }
+        },
+        {
+          "code": "YSQ_THEME18",
+          "label": "冲突回避与屈从",
+          "item_codes": [
             "YSQ18"
           ],
           "calculation": {
@@ -6160,7 +6731,7 @@
           "item_code": "YSQ1",
           "display_order": 1,
           "text": "1.我总觉得没人会真正关心我、爱我或理解我。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME01",
           "reverse_scored": false,
           "likert": [
             {
@@ -6193,7 +6764,7 @@
           "item_code": "YSQ2",
           "display_order": 2,
           "text": "2.我担心重要的人最终都会离开我。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME02",
           "reverse_scored": false,
           "likert": [
             {
@@ -6226,7 +6797,7 @@
           "item_code": "YSQ3",
           "display_order": 3,
           "text": "3.我觉得别人如果有机会，就会伤害、欺骗或利用我。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME03",
           "reverse_scored": false,
           "likert": [
             {
@@ -6259,7 +6830,7 @@
           "item_code": "YSQ4",
           "display_order": 4,
           "text": "4.我内心深处觉得自己有严重缺陷，不值得被爱。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME04",
           "reverse_scored": false,
           "likert": [
             {
@@ -6292,7 +6863,7 @@
           "item_code": "YSQ5",
           "display_order": 5,
           "text": "5.我觉得自己和别人不一样，无法真正融入任何群体。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME05",
           "reverse_scored": false,
           "likert": [
             {
@@ -6325,7 +6896,7 @@
           "item_code": "YSQ6",
           "display_order": 6,
           "text": "6.没有别人的帮助，我自己很难应对生活中的挑战。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME06",
           "reverse_scored": false,
           "likert": [
             {
@@ -6358,7 +6929,7 @@
           "item_code": "YSQ7",
           "display_order": 7,
           "text": "7.我总觉得一场大灾难，比如事故、疾病，随时可能发生在我身上。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME07",
           "reverse_scored": false,
           "likert": [
             {
@@ -6391,7 +6962,7 @@
           "item_code": "YSQ8",
           "display_order": 8,
           "text": "8.我常常为了取悦别人而忽略自己的想法和感受。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME08",
           "reverse_scored": false,
           "likert": [
             {
@@ -6424,7 +6995,7 @@
           "item_code": "YSQ9",
           "display_order": 9,
           "text": "9.我必须压抑自己的情绪和欲望，否则会惹麻烦或被人讨厌。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME09",
           "reverse_scored": false,
           "likert": [
             {
@@ -6457,7 +7028,7 @@
           "item_code": "YSQ10",
           "display_order": 10,
           "text": "10.我应该得到特殊待遇，规则不该限制我。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME10",
           "reverse_scored": false,
           "likert": [
             {
@@ -6490,7 +7061,7 @@
           "item_code": "YSQ11",
           "display_order": 11,
           "text": "11.我很难坚持完成需要长期努力的事情，例如学习、锻炼。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME11",
           "reverse_scored": false,
           "likert": [
             {
@@ -6523,7 +7094,7 @@
           "item_code": "YSQ12",
           "display_order": 12,
           "text": "12.即使让自己很累，我也忍不住要去照顾别人的需要。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME12",
           "reverse_scored": false,
           "likert": [
             {
@@ -6556,7 +7127,7 @@
           "item_code": "YSQ13",
           "display_order": 13,
           "text": "13.我非常在意别人怎么看我，总想让他们喜欢我。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME13",
           "reverse_scored": false,
           "likert": [
             {
@@ -6589,7 +7160,7 @@
           "item_code": "YSQ14",
           "display_order": 14,
           "text": "14.我习惯把情绪藏在心里，不让人看出我的真实感受。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME14",
           "reverse_scored": false,
           "likert": [
             {
@@ -6622,7 +7193,7 @@
           "item_code": "YSQ15",
           "display_order": 15,
           "text": "15.我对自己要求很高，总觉得必须做到最好才算合格。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME15",
           "reverse_scored": false,
           "likert": [
             {
@@ -6655,7 +7226,7 @@
           "item_code": "YSQ16",
           "display_order": 16,
           "text": "16.我认为犯错的人就应该受到严厉惩罚。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME16",
           "reverse_scored": false,
           "likert": [
             {
@@ -6688,7 +7259,7 @@
           "item_code": "YSQ17",
           "display_order": 17,
           "text": "17.我容易把某些人看得特别优秀或强大，幻想他们能解决我的一切问题。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME17",
           "reverse_scored": false,
           "likert": [
             {
@@ -6721,7 +7292,7 @@
           "item_code": "YSQ18",
           "display_order": 18,
           "text": "18.为了避免冲突或被抛弃，我常常被迫去做自己不愿意的事。",
-          "dimension": "EMS_M",
+          "dimension": "YSQ_THEME18",
           "reverse_scored": false,
           "likert": [
             {
@@ -6752,21 +7323,26 @@
         }
       ],
       "scoring_notes": [
-        "18题取均值和原始和分供研究复核",
-        "不按阈值输出人格或图式标签"
+        "18题各自保留为一个支持性主题维度，分值为该题1-6原始得分；聚类继续使用18个题项级特征。不计算诊断性总分，不把单题高分解释为固定特征。"
       ],
       "supportive_interpretation_draft": "观察哪些关系担心近期较常出现，并寻找可支持的小练习，不输出人格标签。",
       "recommended_card_ids": [
         "self_support_statement",
         "scs_mindful_moment",
         "student_two_thoughts"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "audience": "student",
       "theme": "relationship_exploration",
       "enabled": true,
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "item_status": "audited_local_source",
       "scoring_status": "frozen_task12_formula",
       "source_folder": "数据1",
@@ -7403,7 +7979,13 @@
         "one_open_question",
         "erq_expression_gentle",
         "self_support_statement"
-      ]
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     }
   ]
 }

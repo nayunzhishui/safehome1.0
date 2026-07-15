@@ -137,6 +137,36 @@ def test_admin_created_backend_account_can_login_with_role(tmp_path, monkeypatch
     assert body["data"]["user"]["role"] == "supervisor"
 
 
+def test_admin_can_rotate_existing_researcher_credentials_explicitly(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    headers = {"X-Admin-Token": "safehome-local-admin-token"}
+    original = {
+        "username": "safehome_researcher_01",
+        "password": "initial-password-123",
+        "role": "researcher",
+        "nickname": "正式研究者",
+    }
+
+    created = client.post("/api/auth/admin-create-account", json=original, headers=headers)
+    conflict = client.post("/api/auth/admin-create-account", json=original, headers=headers)
+    rotated = client.post(
+        "/api/auth/admin-create-account",
+        json={**original, "password": "rotated-password-456", "rotate_existing": True},
+        headers=headers,
+    )
+    old_login = client.post("/api/auth/login", json={"username": original["username"], "password": original["password"]})
+    new_login = client.post("/api/auth/login", json={"username": original["username"], "password": "rotated-password-456"})
+
+    assert created.status_code == 201
+    assert conflict.status_code == 409
+    assert rotated.status_code == 200
+    assert rotated.get_json()["data"]["credentials_rotated"] is True
+    assert old_login.status_code == 401
+    assert new_login.status_code == 200
+    assert new_login.get_json()["data"]["user"]["role"] == "researcher"
+
+
 def test_admin_create_account_rejects_unknown_role(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
@@ -248,6 +278,51 @@ def test_phone_login_returns_safe_configuration_error_without_token_source(tmp_p
     body = response.get_json()
     assert body["error"]["code"] == "wechat_phone_config_missing"
     assert "WECHAT_SECRET" not in body["error"]["message"]
+
+
+def test_auth_capabilities_report_missing_external_configuration_without_secrets(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    client = app.test_client()
+
+    response = client.get("/api/auth/capabilities")
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["account_password"]["available"] is True
+    assert data["wechat_login"] == {"available": False, "mode": "not_configured"}
+    assert data["phone_login"] == {"available": False, "mode": "not_configured"}
+    assert "WECHAT_SECRET" not in str(data)
+    assert "phone_number" not in data
+    assert "access_token" not in data
+
+
+def test_auth_capabilities_detect_cloudbase_identity_for_current_request(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    client = app.test_client()
+
+    response = client.get(
+        "/api/auth/capabilities",
+        headers={"X-WX-OPENID": "cloudbase-capability-openid", "X-WX-SOURCE": "wx-cloudbase"},
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["wechat_login"] == {"available": True, "mode": "cloudbase_identity"}
+
+
+def test_auth_capabilities_detect_cloudbase_phone_token_file(tmp_path, monkeypatch):
+    token_path = tmp_path / "cloudbase_access_token"
+    token_path.write_text("test-token", encoding="utf-8")
+    monkeypatch.setenv("CLOUDBASE_ACCESS_TOKEN_PATH", str(token_path))
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    client = app.test_client()
+
+    response = client.get("/api/auth/capabilities")
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["phone_login"] == {"available": True, "mode": "cloudbase_access_token"}
 
 
 def test_wechat_phone_exchange_uses_cloudbase_token_file(tmp_path, monkeypatch):

@@ -37,25 +37,23 @@
       >{{item.label}}</button>
     </view>
 
-    <view class="assignment-grid">
-      <view class="assignment-field">
-        <text class="assignment-label">开始日期</text>
-        <picker mode="date" value="{{assignment.start_date}}" bindchange="onStartDateChange">
-          <view class="picker-value">{{assignment.start_date}}</view>
-        </picker>
-      </view>
-      <view class="assignment-field">
-        <text class="assignment-label">计划状态</text>
-        <view class="segmented-control segmented-control--compact">
-          <button
-            wx:for="{{statusOptions}}"
-            wx:key="value"
-            class="segment-button {{assignment.status === item.value ? 'segment-button--active' : ''}}"
-            data-field="status"
-            data-value="{{item.value}}"
-            bindtap="selectAssignmentOption"
-          >{{item.label}}</button>
-        </view>
+    <view class="assignment-field">
+      <text class="assignment-label">开始日期</text>
+      <picker mode="date" value="{{assignment.start_date}}" bindchange="onStartDateChange">
+        <view class="picker-value">{{assignment.start_date}}</view>
+      </picker>
+    </view>
+    <view class="assignment-field">
+      <text class="assignment-label">计划状态</text>
+      <view class="segmented-control">
+        <button
+          wx:for="{{statusOptions}}"
+          wx:key="value"
+          class="segment-button {{assignment.status === item.value ? 'segment-button--active' : ''}}"
+          data-field="status"
+          data-value="{{item.value}}"
+          bindtap="selectAssignmentOption"
+        >{{item.label}}</button>
       </view>
     </view>
 
@@ -84,12 +82,14 @@
     <text wx:if="{{item.cluster_name}}" class="item-title">{{item.cluster_name}}</text>
     <text class="item-reason">{{item.reason}}</text>
     <view class="card-list">
-      <view wx:for="{{item.cards}}" wx:for-item="card" wx:key="id" class="card-chip">
-        <text class="chip-title">{{card.title}}</text>
-        <text wx:if="{{card.duration_minutes}}" class="chip-meta">{{card.duration_minutes}} 分钟</text>
-      </view>
+      <button wx:for="{{item.cards}}" wx:for-item="card" wx:key="id" class="card-chip" data-card-id="{{card.id}}" bindtap="openSingleCard">
+        <view class="chip-copy">
+          <text class="chip-title">{{card.title}}</text>
+          <text wx:if="{{card.duration_minutes}}" class="chip-meta">{{card.duration_minutes}} 分钟</text>
+        </view>
+        <text class="chip-action">开始</text>
+      </button>
     </view>
-    <button class="safe-primary-button" data-card-ids="{{item.cardIdsText}}" bindtap="openCard">打开训练卡</button>
     <text class="item-boundary">{{item.boundary_notice}}</text>
   </view>
 

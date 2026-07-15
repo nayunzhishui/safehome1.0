@@ -103,6 +103,27 @@
   margin-top: 18rpx;
 }
 
+.option-row--nine {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.option-row--nine .option-button {
+  min-width: 0;
+  min-height: 112rpx;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 12rpx 8rpx;
+}
+
+.option-row--nine .option-label {
+  flex: 0 1 auto;
+  font-size: 21rpx;
+  line-height: 1.35;
+  text-align: center;
+}
+
 .option-button {
   width: 100%;
   min-height: 76rpx;

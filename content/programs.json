@@ -266,9 +266,14 @@
         "missing_data_rule": "保留缺失和退出原因，不用自动填补冒充真实回答；统计处理由冻结分析方案决定。"
       },
       "recommended_card_ids": [
-        "scs_common_humanity",
-        "one_open_question",
-        "validation_before_advice"
+        "relationship_self_support",
+        "relationship_emotion_observation",
+        "relationship_emotion_naming",
+        "relationship_auto_thought",
+        "relationship_second_explanation",
+        "relationship_gentle_expression",
+        "relationship_open_question",
+        "relationship_bounded_micro_action"
       ],
       "boundary_notice": "本项目用于关系场景中的自我观察与沟通练习，不构成诊断、筛查或关系结论。",
       "sessions": [
@@ -587,5 +592,6 @@
       "safety_gate": "当前不开放睡眠限制、刺激控制或医学解释；明显健康风险提示咨询合格医疗专业人员。",
       "clinical_boundary": "项目名称固定为睡眠健康促进，不称为CBT-I、失眠治疗或医疗方案；ISI/PSQI未审核前不输出筛查结论。"
     }
-  ]
+  ],
+  "updated_at": "2026-07-15"
 }

@@ -1,6 +1,6 @@
 {
-  "version": "2026.06-scales-catalog-v1",
-  "updated_at": "2026-07-10",
+  "version": "2026.07-task18-reviewed-scales-v1",
+  "updated_at": "2026-07-15",
   "source_root": "D:\\codex\\workspace\\safehome1.0其他内容\\夏老师文件\\2026年6月18日发给董俊杰的(1)\\测评问卷-量表",
   "boundary_notice": "量表目录只用于内容盘点、人工审核和后续支持性测评接入规划。未完成授权、题项、计分和伦理复核的量表不得面向用户开放；结果只作自我观察和练习推荐线索，不构成诊断。",
   "review_policy": {
@@ -25,16 +25,16 @@
         "Parental Burnout Assessment with scoring.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
+      "review_status": "pilot_approved",
+      "enabled": true,
       "first_batch_candidate": false,
-      "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_dimension_review",
+      "item_status": "audited_source",
+      "scoring_status": "verified_local_four_dimension_sum",
       "recommended_card_ids": [
         "three_second_pause",
         "nonjudgmental_response"
       ],
-      "notes": "已由抽取脚本从本地源文件读取 23/23 个题项；正式开放前仍需人工复核。",
+      "notes": "本地中文版Word含23题、四维SPSS公式和0-6计分；按负责人决定开放受控试点。",
       "audience_class": "parent",
       "category": "家长自助",
       "reflex_node": "reaction",
@@ -47,9 +47,15 @@
       "sensitive_category": "parenting_stress",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "excluded_from_user_flow": false,
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "parental_autonomy_support",
@@ -83,8 +89,15 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": true,
-      "not_open_reason": "题项原文未确认，暂不开放填写。",
-      "exclusion_reason": "题项原文未确认，暂不开放填写。"
+      "not_open_reason": "公开POPS候选版本与本地9题来源未完成母亲/父亲版及中文译本对应，暂不开放。",
+      "exclusion_reason": "公开POPS候选版本与本地9题来源未完成母亲/父亲版及中文译本对应，暂不开放。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      },
+      "approval_status": "project_owner_approved_waiting_technical_chain"
     },
     {
       "id": "parent_reflective_functioning_prfq",
@@ -98,7 +111,7 @@
         "反思功能问卷_家长反思功能问卷-网址链接.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -119,7 +132,16 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "family_cohesion_adaptability",
@@ -153,8 +175,15 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": true,
-      "not_open_reason": "题项原文未确认，暂不开放填写。",
-      "exclusion_reason": "题项原文未确认，暂不开放填写。"
+      "not_open_reason": "FACES II-CV分类阈值已找到，但完整中文题项和权利链路未闭环，暂不开放。",
+      "exclusion_reason": "FACES II-CV分类阈值已找到，但完整中文题项和权利链路未闭环，暂不开放。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      },
+      "approval_status": "project_owner_approved_waiting_technical_chain"
     },
     {
       "id": "emotion_regulation_erq_gross",
@@ -188,7 +217,14 @@
       ],
       "sensitive_category": "none",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。"
+      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      },
+      "approval_status": "project_owner_approved_waiting_technical_chain"
     },
     {
       "id": "self_compassion_scs_cn",
@@ -200,16 +236,16 @@
         "ChineseSCS-26题自我关怀量表.pdf"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
+      "item_status": "verified_against_local_pdf",
+      "scoring_status": "verified_local_six_dimension_mean_rule",
       "recommended_card_ids": [
         "self_support_statement",
         "three_second_pause"
       ],
-      "notes": "已由抽取脚本从本地源文件读取 26/26 个题项；正式开放前仍需人工复核。",
+      "notes": "2026-07-11 已与本地 PDF 逐项核对26题、六维题号、负向题反向规则和综合均值。",
       "audience_class": "adult",
       "category": "成人自助",
       "reflex_node": "acceptance",
@@ -222,10 +258,16 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
-      "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "instruction_status": "verified_against_local_pdf",
+      "review_note": "内容修复完成；待版权和心理审核后再决定普通用户开放。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "perceived_social_support_psss",
@@ -237,13 +279,13 @@
         "肖水源的社会支持评定量表与姜乾金的领悟社会支持量表.doc"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
+      "item_status": "verified_against_local_doc",
+      "scoring_status": "verified_local_three_dimension_rule",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
+      "notes": "已与本地旧版 Word 后半部分的 PSSS 逐项核对，排除前半部分 SSRS 串表。",
       "audience_class": "adult",
       "category": "成人自助",
       "reflex_node": "resource",
@@ -256,10 +298,16 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
-      "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "instruction_status": "verified_against_local_doc",
+      "review_note": "内容修复完成；待版权和心理审核后再决定普通用户开放。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "acceptance_action_aaq2",
@@ -271,7 +319,7 @@
         "2-1-接纳与行动问卷第二版AAQII.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -293,8 +341,14 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": ""
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "mindful_attention_awareness_maas",
@@ -306,7 +360,7 @@
         "正念注意觉知量表 答题纸.pdf"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -328,10 +382,16 @@
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "sleep_isi_psqi",
@@ -351,8 +411,8 @@
       "excluded_from_user_flow": true,
       "item_status": "missing_item_text",
       "scoring_status": "partial_rule_without_item_text",
-      "not_open_reason": "题项原文未确认，暂不开放填写。",
-      "exclusion_reason": "题项原文未确认，暂不开放填写。",
+      "not_open_reason": "ISI与PSQI必须拆表，PSQI边界公式和中文电子化授权未闭环，暂不开放。",
+      "exclusion_reason": "ISI与PSQI必须拆表，PSQI边界公式和中文电子化授权未闭环，暂不开放。",
       "recommended_card_ids": [],
       "notes": "本轮仅确认 ISI 7 个评价领域和总分范围，未确认逐题原文；PSQI 需按复杂计分表人工复核。",
       "audience_class": "adult",
@@ -366,7 +426,14 @@
       ],
       "sensitive_category": "screening_or_health",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
-      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。"
+      "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      },
+      "approval_status": "project_owner_approved_waiting_technical_chain"
     },
     {
       "id": "gad7_anxiety",
@@ -378,14 +445,14 @@
         "(完整版)广泛性焦虑障碍量表(GAD-7).doc"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "excluded_from_user_flow": false,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_sensitive_review",
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "recommended_card_ids": [],
       "notes": "已由抽取脚本从本地源文件读取 7/7 个题项；正式开放前仍需人工复核。",
       "audience_class": "adult",
@@ -400,7 +467,13 @@
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "phq9_cesd10_depression",
@@ -413,14 +486,14 @@
         "cesd-10-流调中心抑郁水平评定.jpg"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "excluded_from_user_flow": false,
       "item_status": "draft_extracted",
       "scoring_status": "rule_available_pending_sensitive_review",
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "recommended_card_ids": [],
       "notes": "已由抽取脚本从本地源文件读取 9/9 个题项；正式开放前仍需人工复核。",
       "audience_class": "adult",
@@ -436,7 +509,13 @@
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "rsca_adolescent_resilience",
@@ -457,18 +536,24 @@
         "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
+      "review_status": "pilot_approved",
+      "enabled": true,
       "first_batch_candidate": false,
-      "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_dimension_mapping",
+      "item_status": "audited_source",
+      "scoring_status": "verified_27_item_five_dimension_rule",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 27/27 个题项；正式开放前仍需人工复核。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "notes": "本地27题与公开原始论文口径交叉核对；修正来源说明中的维度漏项后开放受控试点。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "academic_buoyancy_4",
@@ -489,7 +574,7 @@
         "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -499,8 +584,14 @@
       "recommended_card_ids": [],
       "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 4/4 个题项，计分解释仍需在试点期持续人工复核。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": ""
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "afq_y8_avoidance_fusion",
@@ -521,7 +612,7 @@
         "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -531,8 +622,14 @@
       "recommended_card_ids": [],
       "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 8/8 个题项，支持性解释仍需在试点期持续人工复核。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": ""
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "cfi2_cognitive_flexibility",
@@ -554,7 +651,7 @@
         "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -567,8 +664,14 @@
       ],
       "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 12/12 个题项，维度与反向计分解释仍需在试点期持续人工复核。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": ""
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "emotional_resilience_11",
@@ -590,7 +693,7 @@
         "青少年情绪弹性问卷.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -603,10 +706,16 @@
       ],
       "notes": "已由抽取脚本从本地源文件读取 11/11 个题项；正式开放前仍需人工复核。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "study_engagement_uwes_s_17",
@@ -629,7 +738,7 @@
         "学习投入量表.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -642,10 +751,16 @@
       ],
       "notes": "已由抽取脚本从本地源文件读取 17/17 个题项；正式开放前仍需人工复核。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "cd_risc10_brief_resilience",
@@ -666,7 +781,7 @@
         "简式心理韧性量表-10题.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
@@ -679,10 +794,16 @@
       ],
       "notes": "已由抽取脚本从本地源文件读取 10/10 个题项；正式开放前仍需人工复核。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "regulatory_focus_general_18",
@@ -703,18 +824,24 @@
         "一般调节聚焦问卷-孙天娇要来的.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
+      "review_status": "pilot_approved",
+      "enabled": true,
       "first_batch_candidate": false,
-      "item_status": "draft_extracted",
-      "scoring_status": "pending_dimension_mapping",
+      "item_status": "audited_source",
+      "scoring_status": "verified_lockwood_two_dimension_mean",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 18/18 个题项；正式开放前仍需人工复核。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "notes": "已移除抽取时误录的标题/指导语，恢复18个正式题项和促进/预防各9题结构。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "fmi_12_mindfulness",
@@ -736,53 +863,67 @@
         "弗赖堡正念调查量表FMI.pdf"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
+      "item_status": "verified_against_local_pdf",
+      "scoring_status": "verified_local_total_score_rule",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [
         "emotion_naming",
         "three_second_pause"
       ],
-      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 12/12 个题项，觉知与接受维度解释仍需在试点期持续人工复核。",
+      "notes": "2026-07-11 已与本地 PDF 第2页逐项核对12题、作答时间和计分；不拆分未经来源确认的子维度。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": ""
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "hplp_c_health_promoting_lifestyle",
-      "display_name": "健康促进生活方式量表（HPLP-C）",
+      "display_name": "健康促进生活方式量表（HPLP，40题）",
       "audience": "adult",
       "audience_class": "adult",
       "category": "成人自助",
       "theme": "health_lifestyle",
       "reflex_node": "behavior",
       "search_keywords": [
-        "HPLP-C",
+        "HPLP",
+        "HPLP-II",
         "健康促进生活方式",
         "生活习惯"
       ],
       "sensitive_category": "health_lifestyle",
-      "source_folder": "基于情绪反射弧的分类/健康促进生活方式量表",
+      "source_folder": "既往调研数据/5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】/数据和问卷/问卷",
       "source_files": [
-        "健康促进生活方式量表(HPLP-C).docx"
+        "四个量表文字版.docx",
+        "健康促进生活方式量表-HPLP-R-II-40题.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
+      "review_status": "pilot_approved",
+      "enabled": true,
       "first_batch_candidate": false,
-      "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_dimension_review",
+      "item_status": "verified_40_items",
+      "scoring_status": "six_dimensions_verified",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 42/42 个题项；正式开放前仍需人工复核。",
-      "excluded_from_user_flow": true,
-      "not_open_reason": "题项或计分规则未完成复核，暂不开放填写。",
-      "exclusion_reason": "题项或计分规则未完成复核，暂不开放填写。"
+      "notes": "采用用户指定的牛至旭40题版本；六维题号按HPLP-II官方计分说明映射，原42题草稿不再用于运行。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "swls_life_satisfaction",
@@ -803,18 +944,24 @@
         "生活满意度量表(SWLS).docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
+      "item_status": "verified_against_local_docx",
+      "scoring_status": "verified_local_total_score_rule",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
-      "notes": "2026-07-10 已按项目负责人确认开放试用；已读取 5/5 个题项，用户端仅提供非诊断解释并继续试点期人工复核。",
+      "notes": "2026-07-11 已与本地 Word 逐项核对5题、1-7选项方向和总分规则。",
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": ""
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "big_five_bfi_60",
@@ -837,20 +984,26 @@
         "大五人格问卷(简版)记分+纬度解释.doc"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "first_batch_candidate": true,
-      "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_dimension_review",
+      "item_status": "verified_against_local_doc",
+      "scoring_status": "verified_local_five_dimension_rule",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 60/60 个题项；正式开放前仍需人工复核。",
-      "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "notes": "2026-07-12 已核对60题、五维题号和反向题，并修复第60题源文件截断。",
+      "instruction_status": "verified_against_local_doc",
+      "review_note": "内容修复完成；待版权和心理解释审核后再开放。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "attribution_style_student_36",
@@ -871,20 +1024,26 @@
         "归因方式问卷(学生用).doc"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "first_batch_candidate": true,
-      "item_status": "draft_extracted",
-      "scoring_status": "partial_rule_pending_open_reason_support",
+      "item_status": "verified_against_local_doc_with_open_reason",
+      "scoring_status": "partial_rule_pending_composite_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 36/36 个题项；正式开放前仍需人工复核。",
-      "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "notes": "已与本地旧版 Word 核对12个情境、12个主要原因输入和36个专属评分项。",
+      "instruction_status": "verified_against_local_doc",
+      "review_note": "交互内容修复完成；待综合计分、版权和心理审核后再开放。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "ghq12_general_health",
@@ -905,20 +1064,26 @@
         "一般健康问卷GHQ-12.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "first_batch_candidate": true,
-      "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_sensitive_review",
+      "item_status": "verified_against_local_docx",
+      "scoring_status": "verified_local_rule_pending_sensitive_review",
       "boundary_notice": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "result_disclaimer": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
       "recommended_card_ids": [],
-      "notes": "已由抽取脚本从本地源文件读取 12/12 个题项；正式开放前仍需人工复核。",
-      "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "notes": "2026-07-11 已与本地 Word 逐项核对12题、四级选项和反向题；原文件阈值和异常判断不进入用户端。",
+      "instruction_status": "verified_against_local_docx",
+      "review_note": "内容核对完成；待心理与伦理审核后再决定普通用户开放。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "epq_emotional_stability_24",
@@ -939,11 +1104,11 @@
         "EPQ 情绪稳定性量表.docx"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
       "scoring_status": "pending_sensitive_review",
@@ -952,7 +1117,13 @@
       "recommended_card_ids": [],
       "notes": "已由抽取脚本从本地源文件读取 24/24 个题项；正式开放前仍需人工复核。",
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "emotional_intelligence_eis_33",
@@ -974,51 +1145,68 @@
         "指标值计算-中学生情绪智力量表（EIS）.sps"
       ],
       "source_type": "authorized_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "excluded_from_user_flow": false,
-      "not_open_reason": "",
-      "exclusion_reason": "",
+      "not_open_reason": null,
+      "exclusion_reason": null,
       "first_batch_candidate": true,
       "item_status": "draft_extracted",
-      "scoring_status": "rule_available_pending_review",
+      "scoring_status": "partial_rule_pending_dimension_review",
       "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
       "recommended_card_ids": [],
       "notes": "已由抽取脚本从本地源文件读取 33/33 个题项；正式开放前仍需人工复核。",
       "instruction_status": "type_specific_draft",
-      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。"
+      "review_note": "任务十一已按量表主题补充差异化指导语；正式试点前仍需人工复核来源、计分和边界。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "cognitive_curiosity_student",
-      "display_name": "认知好奇量表-自评（题项待人工补录）",
+      "display_name": "认知好奇量表（中文初中生版ECS-C）",
       "audience": "student",
       "audience_class": "student",
       "category": "学生自助",
       "theme": "cognitive_curiosity",
-      "reflex_node": "motivation",
+      "reflex_node": "state_observation",
       "search_keywords": [
-        "认知好奇",
-        "兴趣型认知好奇",
-        "剥夺型认知好奇"
+        "认知好奇量表（中文初中生版ECS-C）",
+        "cognitive_curiosity_student"
       ],
       "sensitive_category": "none",
-      "source_folder": "学生自助量表/认知好奇量表-自评",
+      "source_folder": "公开来源与项目人工复核",
       "source_files": [
-        "指标值计算-学生自评认知好奇总分与因子分 - 初中.sps",
-        "指标值计算-学生自评认知好奇总分与因子分-高中.sps"
+        "本地认知好奇SPSS计分脚本",
+        "https://rlrw.nju.edu.cn/_upload/article/files/a1/c0/bd0ca56c40be8a8e5fa98241b588/fbbad131-99dd-4acf-98f1-bc8d298df3f6.pdf"
       ],
-      "source_type": "authorized_resource",
-      "review_status": "metadata_only",
-      "enabled": false,
-      "excluded_from_user_flow": true,
-      "item_status": "missing_item_text",
-      "scoring_status": "partial_rule_without_item_text",
-      "boundary_notice": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "result_disclaimer": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
-      "notes": "SPSS 脚本可确认 10 题总分与兴趣型/剥夺型维度，但未包含题项原文。",
-      "not_open_reason": "题项原文未确认，暂不开放填写。",
-      "exclusion_reason": "题项原文未确认，暂不开放填写。"
+      "source_type": "public_research_education_resource",
+      "review_status": "pilot_approved",
+      "enabled": true,
+      "excluded_from_user_flow": false,
+      "item_status": "audited_public_source",
+      "scoring_status": "verified_public_scoring_rule",
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "notes": "题项和计分已与公开来源核对；当前仅按支持性、非诊断方式用于受控试点。",
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "first_batch_candidate": true,
+      "recommended_card_ids": [
+        "exam_micro_start",
+        "student_two_thoughts",
+        "self_support_statement"
+      ],
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "regulatory_focus_relationship_18",
@@ -1041,21 +1229,34 @@
         "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx"
       ],
       "source_type": "authorized_local_research_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "audited_local_source",
       "scoring_status": "frozen_task12_formula",
       "recommended_card_ids": [
-        "student_emotion_naming",
-        "cbt_auto_thought_student",
-        "self_support_statement"
+        "relationship_emotion_observation",
+        "relationship_gentle_expression",
+        "relationship_bounded_micro_action"
       ],
       "profile_model_id": "task12_regulatory_focus_relationship_18_profile_v1",
       "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
       "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
       "excluded_from_user_flow": false,
-      "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。"
+      "notes": "任务十二本地研究试点内容；按项目负责人要求使用1-9计分；画像匹配前线性换算到既往1-5训练范围，不改写历史答卷。",
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      },
+      "response_scale": {
+        "min": 1,
+        "max": 9,
+        "points": 9
+      }
     },
     {
       "id": "micro_ysq_relationship_18",
@@ -1078,21 +1279,29 @@
         "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx"
       ],
       "source_type": "authorized_local_research_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
-      "item_status": "audited_local_source",
-      "scoring_status": "frozen_task12_formula",
+      "item_status": "verified_item_level_dimensions",
+      "scoring_status": "verified_item_level_dimensions_pending_interpretation_review",
       "recommended_card_ids": [
-        "self_support_statement",
-        "scs_mindful_moment",
-        "student_two_thoughts"
+        "relationship_auto_thought",
+        "relationship_second_explanation",
+        "relationship_self_support"
       ],
       "profile_model_id": "task12_micro_ysq_relationship_18_profile_v1",
       "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
       "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
       "excluded_from_user_flow": false,
-      "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。"
+      "notes": "聚类和结果统一使用18个题项级支持性主题，不再压缩为单一均值维度。",
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     },
     {
       "id": "relationship_initiation_intention_action",
@@ -1115,21 +1324,153 @@
         "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx"
       ],
       "source_type": "authorized_local_research_resource",
-      "review_status": "pilot_review_required",
+      "review_status": "pilot_approved",
       "enabled": true,
       "first_batch_candidate": true,
       "item_status": "audited_local_source",
       "scoring_status": "frozen_task12_formula",
       "recommended_card_ids": [
-        "one_open_question",
-        "erq_expression_gentle",
-        "self_support_statement"
+        "relationship_open_question",
+        "relationship_gentle_expression",
+        "relationship_bounded_micro_action"
       ],
       "profile_model_id": "task12_relationship_initiation_intention_action_profile_v1",
       "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
       "result_disclaimer": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
       "excluded_from_user_flow": false,
-      "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。"
+      "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。",
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
+    },
+    {
+      "id": "rfq8_reflective_functioning",
+      "display_name": "反思功能问卷8题（RFQ-8）",
+      "audience": "parent",
+      "audience_class": "parent",
+      "theme": "reflective_functioning",
+      "category": "家长自助",
+      "reflex_node": "state_observation",
+      "search_keywords": [
+        "反思功能问卷8题（RFQ-8）",
+        "rfq8_reflective_functioning"
+      ],
+      "sensitive_category": "none",
+      "source_folder": "公开来源与项目人工复核",
+      "source_files": [
+        "家长自主量表/反思功能测评/反思功能量表-8题项.docx",
+        "https://peerj.com/articles/5756/"
+      ],
+      "source_type": "authorized_local_resource_with_public_scoring_reference",
+      "review_status": "pilot_approved",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "audited_source",
+      "scoring_status": "verified_original_two_subscale_recoding",
+      "recommended_card_ids": [
+        "emotion_naming",
+        "nonjudgmental_response",
+        "one_open_question"
+      ],
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "excluded_from_user_flow": false,
+      "notes": "本地中文8题与公开RFQ-8计分表交叉核对；使用RFQc/RFQu非线性重编码均值。",
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
+    },
+    {
+      "id": "who5_wellbeing",
+      "display_name": "WHO-5身心健康指标",
+      "audience": "student",
+      "audience_class": "student",
+      "theme": "wellbeing",
+      "category": "学生自助",
+      "reflex_node": "state_observation",
+      "search_keywords": [
+        "WHO-5身心健康指标",
+        "who5_wellbeing"
+      ],
+      "sensitive_category": "screening_or_health",
+      "source_folder": "公开来源与项目人工复核",
+      "source_files": [
+        "本地主观幸福感-生活满意度/(完整版)心理领域--WHO-5量表.doc",
+        "https://www.who.int/publications/m/item/WHO-UCN-MSD-MHE-2024.01"
+      ],
+      "source_type": "WHO_CC_BY_NC_SA_3_0",
+      "review_status": "pilot_approved",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "audited_public_source",
+      "scoring_status": "verified_public_scoring_rule",
+      "recommended_card_ids": [
+        "emotion_naming",
+        "self_support_statement",
+        "cognitive_flexibility"
+      ],
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "excluded_from_user_flow": false,
+      "notes": "题项和计分已与公开来源核对；当前仅按支持性、非诊断方式用于受控试点。",
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
+    },
+    {
+      "id": "big_five_tipi_10",
+      "display_name": "10项目大五人格量表（TIPI）",
+      "audience": "adult",
+      "audience_class": "adult",
+      "theme": "personality",
+      "category": "成人自助",
+      "reflex_node": "state_observation",
+      "search_keywords": [
+        "10项目大五人格量表（TIPI）",
+        "big_five_tipi_10"
+      ],
+      "sensitive_category": "personality",
+      "source_folder": "公开来源与项目人工复核",
+      "source_files": [
+        "本地10项目大五人格量表的题目-英文.docx",
+        "https://gosling.psy.utexas.edu/scales-weve-developed/ten-item-personality-measure-tipi/"
+      ],
+      "source_type": "author_public_use",
+      "review_status": "pilot_approved",
+      "enabled": true,
+      "first_batch_candidate": true,
+      "item_status": "audited_public_source",
+      "scoring_status": "verified_public_scoring_rule",
+      "recommended_card_ids": [
+        "self_support_statement"
+      ],
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "result_disclaimer": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "excluded_from_user_flow": false,
+      "not_open_reason": null,
+      "exclusion_reason": null,
+      "notes": "英文原版题项和五维计分已核对；中文翻译待心理专业复核后再开放。",
+      "approval": {
+        "reviewer": "项目负责人（用户明确批准）",
+        "reviewed_at": "2026-07-12",
+        "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+        "scope": "pilot_release"
+      }
     }
   ]
 }

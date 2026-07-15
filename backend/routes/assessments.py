@@ -2,15 +2,47 @@
 
 import json
 
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 
 from database import get_connection, json_loads, load_content_json, row_to_dict, rows_to_dicts
-from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
-from routes.utils import fail, ok, parse_int, require_fields
+from routes.auth_utils import AuthError, auth_error_response, get_current_actor, resolve_actor_user_id
+from routes.utils import fail, ok, parse_bool, parse_int, require_fields
 from services.assessment_execution_service import AssessmentSubmissionError, submit_assessment
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
+
+APPROVED_REVIEW_STATUSES = {
+    "approved",
+    "pilot_ready",
+    "pilot_approved",
+    "production_approved",
+    "enabled",
+    "trial_enabled",
+}
+REVIEWER_ROLES = {"admin", "researcher", "supervisor"}
+
+
+def _governance_enforced() -> bool:
+    return bool(current_app.config.get("CONTENT_GOVERNANCE_ENFORCED"))
+
+
+def _is_governed_for_user(worksheet: dict) -> bool:
+    if not worksheet.get("enabled_for_user", True):
+        return False
+    if not _governance_enforced():
+        return True
+    return str(worksheet.get("review_status") or "") in APPROVED_REVIEW_STATUSES
+
+
+def _reviewer_preview_requested() -> bool:
+    if not parse_bool(request.args.get("include_unapproved"), False):
+        return False
+    try:
+        actor = get_current_actor(allow_legacy_admin=True)
+    except AuthError:
+        return False
+    return bool(actor and actor.get("role") in REVIEWER_ROLES)
 
 
 def _load_payload() -> dict:
@@ -89,7 +121,11 @@ def _db_row_to_worksheet(row: dict) -> dict:
 
 
 def _active_worksheet_ids() -> list[str]:
-    return [worksheet["id"] for worksheet in _worksheets() if worksheet.get("id") and worksheet.get("enabled_for_user", True)]
+    return [worksheet["id"] for worksheet in _worksheets() if worksheet.get("id") and _is_governed_for_user(worksheet)]
+
+
+def _known_worksheet_ids() -> list[str]:
+    return [worksheet["id"] for worksheet in _worksheets() if worksheet.get("id")]
 
 
 def _profile_cluster_value(position: dict | None) -> int | None:
@@ -132,10 +168,10 @@ def _backfill_profile_position(conn, result_id: str, position: dict) -> None:
     )
 
 
-def _find_worksheet(worksheet_id: str, include_disabled: bool = False) -> dict | None:
+def _find_worksheet(worksheet_id: str, include_disabled: bool = False, include_unapproved: bool = False) -> dict | None:
     for worksheet in _worksheets():
         if worksheet.get("id") == worksheet_id:
-            if not include_disabled and not worksheet.get("enabled_for_user", True):
+            if not include_disabled and not include_unapproved and not _is_governed_for_user(worksheet):
                 return None
             return worksheet
     return None
@@ -192,14 +228,18 @@ def list_assessments():
     reflex_node = request.args.get("reflex_node")
     enabled = request.args.get("enabled")
     query = (request.args.get("q") or request.args.get("query") or "").strip().lower()
-    items = [_summarize_worksheet(item) for item in _worksheets()]
+    include_unapproved = _reviewer_preview_requested()
+    items = [
+        _summarize_worksheet(item)
+        for item in _worksheets()
+        if include_unapproved or _is_governed_for_user(item)
+    ]
     if category:
         items = [item for item in items if item.get("category") == category]
     if audience_class:
         items = [item for item in items if item.get("audience_class") == audience_class]
     if reflex_node:
         items = [item for item in items if item.get("reflex_node") == reflex_node]
-    items = [item for item in items if bool(item.get("enabled_for_user", True))]
     if query:
         items = [
             item
@@ -242,7 +282,7 @@ def list_assessments():
 
 @bp.get("/assessments/<worksheet_id>")
 def get_assessment(worksheet_id: str):
-    worksheet = _find_worksheet(worksheet_id)
+    worksheet = _find_worksheet(worksheet_id, include_unapproved=_reviewer_preview_requested())
     if worksheet is None:
         return fail("not_found", "没有找到对应的测一测内容", status=404)
     payload = _load_payload()
@@ -263,18 +303,18 @@ def create_assessment_result():
     if missing:
         return fail("missing_fields", f"缺少必填字段：{', '.join(missing)}")
 
-    worksheet = _find_worksheet(payload["worksheet_id"])
-    if worksheet is None:
-        return fail("not_found", "没有找到对应的测一测内容", status=404)
-    if worksheet.get("enabled_for_user") is False:
-        return fail("assessment_not_enabled", "这份测一测内容仍在人工审核中，暂不开放填写。", status=400)
-
-    submitted_answers = payload.get("answers")
-
     try:
         user_id = resolve_actor_user_id(payload=payload)
     except AuthError as exc:
         return auth_error_response(exc)
+
+    worksheet = _find_worksheet(payload["worksheet_id"], include_disabled=True)
+    if worksheet is None:
+        return fail("not_found", "没有找到对应的测一测内容", status=404)
+    if not _is_governed_for_user(worksheet):
+        return fail("assessment_not_enabled", "这份测一测内容仍在人工审核中，暂不开放填写。", status=400)
+
+    submitted_answers = payload.get("answers")
     try:
         result = submit_assessment(
             worksheet,
@@ -294,25 +334,62 @@ def list_assessment_results():
         user_id = resolve_actor_user_id(request.args.get("user_id"))
     except AuthError as exc:
         return auth_error_response(exc)
-    limit = parse_int(request.args.get("limit"), 50)
-    active_worksheet_ids = _active_worksheet_ids()
-    if not active_worksheet_ids:
-        return ok({"items": []})
-    placeholders = ", ".join("?" for _ in active_worksheet_ids)
+    page = max(1, parse_int(request.args.get("page"), 1) or 1)
+    page_size = parse_int(request.args.get("page_size"), None)
+    if page_size is None:
+        page_size = parse_int(request.args.get("limit"), 50)
+    page_size = max(1, min(page_size or 50, 100))
+    offset = (page - 1) * page_size
+    worksheet_ids = _known_worksheet_ids()
+    if not worksheet_ids:
+        return ok({"items": [], "page": page, "page_size": page_size, "total": 0, "has_more": False})
+    placeholders = ", ".join("?" for _ in worksheet_ids)
 
     with get_connection() as conn:
+        total = conn.execute(
+            f"""
+            SELECT COUNT(*) AS count FROM assessment_results
+            WHERE user_id = ? AND worksheet_id IN ({placeholders})
+            """,
+            (user_id, *worksheet_ids),
+        ).fetchone()[0]
         rows = conn.execute(
             f"""
             SELECT * FROM assessment_results
             WHERE user_id = ?
               AND worksheet_id IN ({placeholders})
             ORDER BY created_at DESC
-            LIMIT ?
+            LIMIT ? OFFSET ?
             """,
-            (user_id, *active_worksheet_ids, limit),
+            (user_id, *worksheet_ids, page_size, offset),
         ).fetchall()
 
-    return ok({"items": [_expand_result_row(row) for row in rows_to_dicts(rows)]})
+    return ok(
+        {
+            "items": [_expand_result_row(row) for row in rows_to_dicts(rows)],
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+            "has_more": offset + len(rows) < total,
+        }
+    )
+
+
+@bp.get("/assessment-results/<result_id>")
+def get_assessment_result(result_id: str):
+    try:
+        user_id = resolve_actor_user_id(request.args.get("user_id"))
+    except AuthError as exc:
+        return auth_error_response(exc)
+
+    with get_connection() as conn:
+        row = conn.execute(
+            "SELECT * FROM assessment_results WHERE id = ? AND user_id = ?",
+            (result_id, user_id),
+        ).fetchone()
+    if row is None:
+        return fail("not_found", "没有找到对应的测一测结果", status=404)
+    return ok(_expand_result_row(row_to_dict(row)))
 
 
 @bp.get("/assessment-results/<result_id>/profile-position")

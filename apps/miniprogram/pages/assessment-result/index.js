@@ -150,7 +150,7 @@ function compactFeatureLabel(label) {
   if (numberMatch) {
     return `题${numberMatch[1]}`;
   }
-  return text.slice(0, 4);
+  return text.replace(/^\d+[.、，,]?\s*/, "").slice(0, 10);
 }
 
 function matchingClarityText(position, interpretation) {
@@ -171,11 +171,12 @@ function buildRadarFeatures(payload) {
     .filter((item) => item && typeof item.z_score === "number")
     .sort((a, b) => Math.abs(b.z_score) - Math.abs(a.z_score))
     .slice(0, 6)
-    .map((item) => {
+    .map((item, index) => {
       const value = Math.max(0.08, Math.min(1, (Number(item.z_score) + 2) / 4));
       return {
         id: item.feature_id,
         label: compactFeatureLabel(item.label || item.feature_id),
+        axisLabel: String(index + 1),
         zScore: Number(item.z_score),
         value,
       };
@@ -190,12 +191,14 @@ function buildDimensionRadarFeatures(payload, position, clusters) {
   if (!selected || !selected.dimension_z || dimensionRows.length < 3) return [];
   return dimensionRows
     .filter((dimension) => typeof selected.dimension_z[dimension.code] === "number")
-    .slice(0, 8)
-    .map((dimension) => {
+    .sort((a, b) => Math.abs(selected.dimension_z[b.code]) - Math.abs(selected.dimension_z[a.code]))
+    .slice(0, 6)
+    .map((dimension, index) => {
       const zScore = Number(selected.dimension_z[dimension.code]);
       return {
         id: dimension.code,
-        label: dimension.code,
+        label: compactFeatureLabel(dimension.label || dimension.code),
+        axisLabel: String(index + 1),
         zScore,
         value: Math.max(0.08, Math.min(1, (zScore + 2) / 4)),
       };
@@ -249,12 +252,13 @@ function buildProfilePositionSummary(payload) {
   const maxY = Math.max(...ys);
   const clusterPoints = clusters
     .filter((cluster) => cluster.pca_centroid && typeof cluster.pca_centroid.pc1 === "number" && typeof cluster.pca_centroid.pc2 === "number")
-    .map((cluster) => {
+    .map((cluster, index) => {
       const left = normalizePlotPosition(cluster.pca_centroid.pc1, minX, maxX);
       const top = normalizePlotPosition(cluster.pca_centroid.pc2, minY, maxY, true);
       return {
         ...cluster,
         label: cluster.display_name || `画像${Number(cluster.cluster_id) + 1}`,
+        axisLabel: String(index + 1),
         xPercent: left,
         yPercent: top,
         style: `left:${left}%;top:${top}%;`,
@@ -435,12 +439,11 @@ Page({
   async loadResult() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const [results, worksheet, cards] = await Promise.all([
-        api.listAssessmentResults({ limit: 20 }),
-        this.data.worksheetId ? api.getAssessment(this.data.worksheetId) : Promise.resolve(null),
+      const [result, worksheet, cards] = await Promise.all([
+        api.getAssessmentResult(this.data.resultId),
+        this.data.worksheetId ? api.getAssessment(this.data.worksheetId).catch(() => null) : Promise.resolve(null),
         api.listCards().catch(() => ({ items: [] })),
       ]);
-      const result = (results.items || []).find((item) => item.id === this.data.resultId) || (results.items || [])[0];
       const profileSummary = buildProfileSummary(result);
       let profilePosition = null;
       if (result && !profileSummary) {
@@ -525,7 +528,8 @@ Page({
         ctx.fill();
         ctx.setFillStyle("#5d725f");
         ctx.setFontSize(10);
-        ctx.fillText(point.label || "画像", x + 10, y + 4);
+        ctx.setTextAlign("center");
+        ctx.fillText(point.axisLabel || "", x, y + 3);
       });
 
       const ux = (Number(profilePosition.userPoint.xPercent) / 100) * width;
@@ -536,7 +540,8 @@ Page({
       ctx.fill();
       ctx.setFillStyle("#202622");
       ctx.setFontSize(11);
-      ctx.fillText("当前位置", Math.min(ux + 12, width - 62), Math.max(uy - 12, 18));
+      ctx.setTextAlign(ux > width * 0.7 ? "right" : "left");
+      ctx.fillText("当前位置", ux > width * 0.7 ? ux - 14 : ux + 14, Math.max(uy - 12, 18));
       ctx.draw();
     });
   },
@@ -544,11 +549,11 @@ Page({
   drawRadarCanvas(profilePosition) {
     const features = profilePosition.radarFeatures || [];
     if (features.length < 3) return;
-    this.withCanvasSize(".radar-canvas", { width: 320, height: 220 }, ({ width, height }) => {
+    this.withCanvasSize(".radar-canvas", { width: 320, height: 240 }, ({ width, height }) => {
       const ctx = wx.createCanvasContext("profileRadarCanvas", this);
       const centerX = width / 2;
-      const centerY = height / 2 + 6;
-      const radius = Math.min(width, height) * 0.34;
+      const centerY = height / 2;
+      const radius = Math.min(width, height) * 0.31;
       ctx.clearRect(0, 0, width, height);
       ctx.setFillStyle("#ffffff");
       ctx.fillRect(0, 0, width, height);
@@ -583,11 +588,12 @@ Page({
 
       ctx.setFillStyle("#596a5b");
       ctx.setFontSize(10);
+      ctx.setTextAlign("center");
       features.forEach((item, index) => {
         const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
         const x = centerX + Math.cos(angle) * (radius + 18);
         const y = centerY + Math.sin(angle) * (radius + 18);
-        ctx.fillText(item.label, Math.max(4, Math.min(x - 18, width - 46)), Math.max(12, Math.min(y + 4, height - 8)));
+        ctx.fillText(item.axisLabel || String(index + 1), Math.max(12, Math.min(x, width - 12)), Math.max(12, Math.min(y + 4, height - 8)));
       });
       ctx.draw();
     });

@@ -5,10 +5,10 @@
   "standard_scale_name": "父母反思功能问卷（PRFQ）",
   "scale_id": "parent_reflective_functioning_prfq",
   "worksheet_id": "parent_reflective_functioning_prfq",
-  "admission_status": "internal_only",
-  "interpretation_approval_status": "pending_researcher_review",
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "ddd9791ca050d95002861a1c08c67f6d1806face400b0c02ea9457bece0df009",
+  "artifact_hash": "affe4d6761c9ab88a2fac2011b346e4515d9793624c957bd559c1beeff05aa1a",
   "research_dir": "2 李霞庆【父母反思功能对初中生情绪智力的影响】论文数据",
   "source_dataset": "2 李霞庆【父母反思功能对初中生情绪智力的影响】论文数据\\研究一数据合集\\父母调查数据--问卷星.sav",
   "n_cases": 336,
@@ -507,5 +507,13 @@
     }
   ],
   "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
-  "created_at": "2026-06-29"
+  "created_at": "2026-06-29",
+  "approval": {
+    "reviewer": "项目负责人（用户明确批准）",
+    "reviewed_at": "2026-07-12",
+    "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+    "scope": "pilot_release"
+  },
+  "worksheet_link_status": "confirmed",
+  "approval_note": "项目负责人于2026-07-12批准进入试点；低置信度、离群、数据不足和高风险状态仍保持阻断。"
 }

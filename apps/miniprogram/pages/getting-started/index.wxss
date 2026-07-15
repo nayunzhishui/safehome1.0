@@ -2,6 +2,10 @@
   display: grid;
   gap: 24rpx;
   padding-bottom: 48rpx;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .intro-card,
@@ -61,6 +65,10 @@
 
 .section-card {
   padding: 26rpx;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .section-kicker {
@@ -116,6 +124,9 @@
   margin-top: 20rpx;
   width: 100%;
   white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .arc-chain {
@@ -203,6 +214,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18rpx;
+}
+
+@media (max-width: 360px) {
+  .action-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .primary-action,

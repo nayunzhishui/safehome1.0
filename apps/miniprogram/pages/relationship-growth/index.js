@@ -21,7 +21,7 @@ const TIMELINE_FILTERS = [
   { key: "project_task", label: "任务" },
   { key: "event", label: "记录" },
   { key: "report", label: "报告" },
-  { key: "researcher_feedback", label: "研究者反馈" },
+  { key: "researcher_feedback", label: "阶段性反馈" },
 ];
 
 function formatDate(value) {
@@ -51,7 +51,7 @@ function timelineTypeLabel(type) {
     weekly_supplement: "每周记录",
     key_event: "关键事件",
     report: "报告",
-    researcher_feedback: "研究者反馈",
+    researcher_feedback: "阶段性反馈",
   };
   return labels[type] || "记录";
 }
@@ -84,6 +84,7 @@ Page({
   eventSubmissionKey: "",
   data: {
     enrollmentId: "",
+    canRecord: false,
     loading: true,
     savingWeekly: false,
     savingEvent: false,
@@ -127,11 +128,7 @@ Page({
     this.setData({ loading: true, errorMessage: "" });
     try {
       const growth = await api.getRelationshipGrowth();
-      let enrollmentId = this.data.enrollmentId;
-      if (!enrollmentId) {
-        const enrollments = await api.listRelationshipEnrollments();
-        enrollmentId = (enrollments.items || [])[0]?.id || "";
-      }
+      const enrollmentId = this.data.enrollmentId || growth.latest_enrollment_id || "";
       const curveGroups = buildCurveGroups(growth.curves);
       const selectedGroup = curveGroups[0]?.key || "";
       const selectedMetric = curveGroups[0]?.metrics[0]?.key || "";
@@ -143,6 +140,7 @@ Page({
       this.setData({
         loading: false,
         enrollmentId,
+        canRecord: !!(enrollmentId && growth.can_record),
         growth,
         curves: growth.curves || {},
         curveGroups,
@@ -288,8 +286,20 @@ Page({
     this.setData({ [`form.${event.currentTarget.dataset.key}`]: event.detail.value });
   },
 
+  requireEnrollment() {
+    if (this.data.enrollmentId && this.data.canRecord) return true;
+    this.setData({
+      errorMessage: "需要先完成一份关系测评并报名参加关系探索，之后才能保存成长记录。",
+    });
+    return false;
+  },
+
+  goRelationshipPilot() {
+    wx.navigateTo({ url: "/pages/relationship-pilot/index" });
+  },
+
   async saveWeekly() {
-    if (!this.data.enrollmentId || this.data.savingWeekly) return;
+    if (this.data.savingWeekly || !this.requireEnrollment()) return;
     const form = this.data.form;
     if (!this.weeklySubmissionKey) this.weeklySubmissionKey = createIdempotencyKey("relationship-weekly");
     this.setData({ savingWeekly: true, errorMessage: "" });
@@ -319,6 +329,7 @@ Page({
 
   async saveEvent() {
     if (this.data.savingEvent) return;
+    if (!this.requireEnrollment()) return;
     if (!this.data.form.event_summary.trim()) {
       wx.showToast({ title: "请先写下关键事件", icon: "none" });
       return;

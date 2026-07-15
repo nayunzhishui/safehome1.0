@@ -5,7 +5,7 @@
   "standard_scale_name": "关系情境中的行动关注方式",
   "scale_id": "regulatory_focus_relationship_18",
   "worksheet_id": "regulatory_focus_relationship_18",
-  "worksheet_link_status": "connected_pilot_review_required",
+  "worksheet_link_status": "confirmed",
   "admission_status": "pilot_approved",
   "interpretation_approval_status": "pilot_approved",
   "production_approval_status": "pending_researcher_review",
@@ -31,7 +31,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -50,7 +50,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -69,7 +69,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -88,7 +88,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -107,7 +107,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -126,7 +126,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -145,7 +145,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -164,7 +164,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -183,7 +183,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -202,7 +202,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -221,7 +221,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -240,7 +240,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -259,7 +259,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -278,7 +278,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -297,7 +297,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -316,7 +316,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -335,7 +335,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -354,7 +354,7 @@
       "input_transform": {
         "type": "linear_range",
         "input_min": 1,
-        "input_max": 7,
+        "input_max": 9,
         "output_min": 1,
         "output_max": 5
       }
@@ -868,5 +868,20 @@
     "item_matrices.npz": "ba13b7a94c813f0a1361935eb16372f7103fe466c15bafccba88f1fbdb4eba68",
     "item_mapping_preview.csv": "f24cc3e9c3602e850b5ec3b1878295c99ca5ceacfacd4046e4efa373b6ff1e02"
   },
-  "artifact_hash": "33d4a5ae70198e5eb5e7f2aef827b7267cc4d315b478a63974e010f13fc0dd47"
+  "artifact_hash": "48943f5b6cc918d0d80189f58fc7063f666c98877bb14b8137a8d9063d203b11",
+  "approval": {
+    "reviewer": "项目负责人（用户明确批准）",
+    "reviewed_at": "2026-07-12",
+    "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+    "scope": "pilot_release"
+  },
+  "approval_note": "项目负责人于2026-07-12批准进入试点；低置信度、离群、数据不足和高风险状态仍保持阻断。",
+  "worksheet_response_range": [
+    1,
+    9
+  ],
+  "training_response_range": [
+    1,
+    5
+  ]
 }

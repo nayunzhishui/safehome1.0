@@ -18,7 +18,7 @@ function formatProgram(program) {
   const measurementPlan = program.measurement_plan || null;
   return {
     ...program,
-    previewLabel: program.review_status === "pilot_approved" ? "已批准试点" : "开发预览，尚未正式开放",
+    previewLabel: program.showcase_open ? "临时展示开放" : program.review_status === "pilot_approved" ? "已批准试点" : "开发预览，尚未正式开放",
     doseText: program.minimum_dose
       ? `计划 ${program.minimum_dose.planned_sessions} 节，至少完成 ${program.minimum_dose.minimum_completed_sessions} 节；建议间隔 ${program.minimum_dose.session_interval_days}`
       : "",
@@ -34,6 +34,7 @@ function formatProgram(program) {
 Page({
   data: {
     programId: "",
+    previewMode: false,
     program: null,
     sessions: [],
     selectedSession: null,
@@ -50,7 +51,8 @@ Page({
 
   onLoad(query) {
     const programId = decodeURIComponent(query.id || "");
-    this.setData({ programId });
+    const previewMode = query.preview === "1";
+    this.setData({ programId, previewMode });
     this.loadProgram(programId);
   },
 
@@ -61,7 +63,7 @@ Page({
     }
     this.setData({ loading: true, errorMessage: "" });
     api
-      .getProgram(programId)
+      .getProgram(programId, this.data.previewMode ? { include_drafts: true } : {})
       .then((data) => {
         const program = formatProgram(data.program);
         const rawSessions = program.sessions || [];

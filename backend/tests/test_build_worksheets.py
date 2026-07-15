@@ -47,33 +47,39 @@ def test_build_worksheets_preserves_student_profile_and_is_idempotent(tmp_path):
     scs = next(item for item in second["worksheets"] if item["id"] == "self_compassion_scs_cn")
     assert len(scs["questions"]) == 26
     assert scs["enabled_for_user"] is True
+    assert scs["review_status"] == "pilot_approved"
     assert "不构成诊断" in scs["result_disclaimer"]
 
 
-def test_confirmed_pilot_expansion_is_enabled_in_catalog_and_worksheets(tmp_path):
+def test_project_owner_approval_preserves_open_worksheets_and_metadata_only_entries(tmp_path):
     builder = _builder()
     content_dir = tmp_path / "content"
     _copy_content(content_dir)
 
-    pilot_ids = {
+    enabled_ids = {
         "acceptance_action_aaq2",
         "academic_buoyancy_4",
         "afq_y8_avoidance_fusion",
         "cfi2_cognitive_flexibility",
-        "fmi_12_mindfulness",
-        "swls_life_satisfaction",
     }
+    metadata_only_ids = {"sleep_isi_psqi", "parental_autonomy_support", "family_cohesion_adaptability"}
     catalog = json.loads((content_dir / "scales_catalog.json").read_text(encoding="utf-8"))
     catalog_by_id = {item["id"]: item for item in catalog["scales"]}
     payload = builder.build_worksheets(content_dir)["payload"]
     worksheets_by_id = {item["id"]: item for item in payload["worksheets"]}
 
-    for scale_id in pilot_ids:
+    for scale_id in enabled_ids:
         assert catalog_by_id[scale_id]["enabled"] is True
         assert catalog_by_id[scale_id]["excluded_from_user_flow"] is False
-        assert catalog_by_id[scale_id]["review_status"] == "pilot_review_required"
+        assert catalog_by_id[scale_id]["review_status"] == "pilot_approved"
         assert worksheets_by_id[scale_id]["enabled_for_user"] is True
-        assert worksheets_by_id[scale_id]["review_status"] == "pilot_review_required"
+        assert worksheets_by_id[scale_id]["review_status"] == "pilot_approved"
+
+    for scale_id in metadata_only_ids:
+        assert catalog_by_id[scale_id]["enabled"] is False
+        assert catalog_by_id[scale_id]["excluded_from_user_flow"] is True
+        assert catalog_by_id[scale_id]["approval_status"] == "project_owner_approved_waiting_technical_chain"
+        assert scale_id not in worksheets_by_id
 
 
 def test_build_worksheets_includes_all_scale_item_drafts(tmp_path):

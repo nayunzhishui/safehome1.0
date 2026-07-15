@@ -90,15 +90,15 @@ Page({
   },
 
   onValenceChange(event) {
-    this.setData({ valenceLevel: Number(event.detail.value) });
+    this.setData({ valenceLevel: this.clampIntensity(event.detail.value) });
   },
 
   onArousalChange(event) {
-    this.setData({ arousalLevel: Number(event.detail.value) });
+    this.setData({ arousalLevel: this.clampIntensity(event.detail.value) });
   },
 
   onControlChange(event) {
-    this.setData({ controlLevel: Number(event.detail.value) });
+    this.setData({ controlLevel: this.clampIntensity(event.detail.value) });
   },
 
   onEmotionLabelInput(event) {

@@ -75,10 +75,13 @@
       <view class="review-card">
         <text wx:if="{{assessmentNamesText}}" class="row-desc">{{assessmentNamesText}}</text>
         <text wx:else class="muted">本周还没有测评记录。</text>
-        <view wx:if="{{dimensionSummaries.length}}" class="dimension-change-list">
-          <view wx:for="{{dimensionSummaries}}" wx:key="label" class="dimension-change-row">
-            <text class="row-name">{{item.label}}</text>
-            <text class="row-count">{{item.direction}} {{item.deltaText}}</text>
+        <view wx:if="{{dimensionGroups.length}}" class="dimension-group-list">
+          <view wx:for="{{dimensionGroups}}" wx:key="worksheetId" wx:for-item="group" class="dimension-group">
+            <text class="dimension-group-title">{{group.worksheetTitle}}</text>
+            <view wx:for="{{group.dimensions}}" wx:key="key" class="dimension-change-row">
+              <text class="row-name">{{item.label}}</text>
+              <text class="row-count">{{item.direction}} {{item.deltaText}}</text>
+            </view>
           </view>
         </view>
         <text wx:if="{{recommendedCardsText}}" class="row-desc">推荐训练：{{recommendedCardsText}}</text>

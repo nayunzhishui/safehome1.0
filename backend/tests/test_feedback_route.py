@@ -76,6 +76,9 @@ def test_feedback_low_risk_keeps_existing_rule_flow(tmp_path):
         json={
             "user_id": "parent-low",
             "event_description": "孩子写作业拖延，我说你怎么又这样。",
+            "scene": "作业拖延",
+            "parent_emotion": "着急",
+            "parent_emotion_intensity": 8,
             "automatic_thought": "他是不是不上心",
             "behavior": "忍不住催了很多次",
         },
@@ -95,6 +98,48 @@ def test_feedback_low_risk_keeps_existing_rule_flow(tmp_path):
     assert rule["long_term_suggestion"] == ""
     assert len(rule["recommended_card_ids"]) <= 3
     assert data["supportive_feedback"]
+    assert data["emotion_overview"]["primary_emotion"] == "着急"
+    assert data["emotion_overview"]["intensity_text"] == "较强"
+    assert "作业拖延" in data["trigger_summary"]
+    assert "忍不住催了很多次" in data["pattern_summary"]
+
+
+def test_feedback_fields_change_with_the_current_diary_instead_of_using_placeholders(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+
+    worried = client.post(
+        "/api/feedback/generate",
+        json={
+            "user_id": "feedback-difference",
+            "scene": "睡前冲突",
+            "event_description": "孩子一直没有准备睡觉。",
+            "parent_emotion": "担心",
+            "parent_emotion_intensity": 7,
+            "automatic_thought": "明天会不会起不来",
+            "behavior": "反复提醒时间",
+        },
+    ).get_json()["data"]
+    guilty = client.post(
+        "/api/feedback/generate",
+        json={
+            "user_id": "feedback-difference",
+            "scene": "亲子沟通",
+            "event_description": "刚才说话声音太大。",
+            "parent_emotion": "内疚",
+            "parent_emotion_intensity": 3,
+            "automatic_thought": "我可以重新说明",
+            "behavior": "停下来道歉",
+        },
+    ).get_json()["data"]
+
+    assert worried["emotion_overview"]["primary_emotion"] == "担心"
+    assert guilty["emotion_overview"]["primary_emotion"] == "内疚"
+    assert worried["emotion_overview"]["intensity_text"] == "中等"
+    assert guilty["emotion_overview"]["intensity_text"] == "较轻"
+    assert worried["trigger_summary"] != guilty["trigger_summary"]
+    assert worried["pattern_summary"] != guilty["pattern_summary"]
+    assert "一般情绪记录" not in worried["emotion_overview"]["primary_emotion"]
 
 
 def test_feedback_diary_id_requires_matching_owner_or_admin(tmp_path):

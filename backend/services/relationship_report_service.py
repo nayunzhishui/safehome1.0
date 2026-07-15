@@ -219,7 +219,19 @@ def send_report(actor: dict, report_id: str) -> ServiceResult:
             return ServiceResult(item)
         if row["status"] not in {"confirmed", "updated"}:
             raise RelationshipPilotError("report_not_confirmed", "报告需人工确认后才能发送。", 409)
-        message = create_message(conn, row["user_id"], "关系健康初筛报告已送达", f"报告版本 {row['version']} 已由研究者确认。请在小程序内查看报告摘要、评估问题和边界说明。", "relationship_report", "relationship_screening_report", report_id)
+        is_stage_feedback = row["status"] == "updated"
+        message = create_message(
+            conn,
+            row["user_id"],
+            "阶段性反馈已送达" if is_stage_feedback else "关系健康初筛报告已送达",
+            (f"报告版本 {row['version']} 已补充研究者阶段性反馈，请在小程序内查看。" if is_stage_feedback else f"报告版本 {row['version']} 已由研究者确认。请在小程序内查看报告摘要、评估问题和边界说明。"),
+            "relationship_stage_feedback" if is_stage_feedback else "relationship_report",
+            "relationship_screening_report",
+            report_id,
+            sender_id=str(actor["id"]),
+            sender_role=str(actor.get("role") or "researcher"),
+            idempotency_key=f"relationship-report:{report_id}:{row['version']}",
+        )
         conn.execute("UPDATE relationship_screening_reports SET status = 'sent', updated_at = ? WHERE id = ?", (now_iso(), report_id))
         write_audit_log(conn, "relationship_report_sent", actor["id"], "relationship_screening_report", report_id, {"recipient_user_id": row["user_id"], "message_id": message["id"]})
         conn.commit()

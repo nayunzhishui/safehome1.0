@@ -546,11 +546,14 @@ SCHEMA_SQL = [
     CREATE TABLE IF NOT EXISTS messages (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
+        sender_id TEXT,
+        sender_role TEXT,
         message_type TEXT NOT NULL,
         title TEXT NOT NULL,
         body TEXT,
         source_type TEXT,
         source_id TEXT,
+        idempotency_key TEXT,
         status TEXT NOT NULL DEFAULT 'unread',
         created_at TEXT NOT NULL,
         read_at TEXT
@@ -578,6 +581,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_family_links_code_status ON family_links(bind_code, status)",
     "CREATE INDEX IF NOT EXISTS idx_assessment_worksheets_audience_enabled ON assessment_worksheets(audience_class, enabled_for_user)",
     "CREATE INDEX IF NOT EXISTS idx_messages_user_status_created ON messages(user_id, status, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_messages_sender_idempotency ON messages(sender_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_hypothesis_report ON relationship_hypothesis_feedback(report_id, hypothesis_index)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",

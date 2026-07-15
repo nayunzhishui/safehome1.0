@@ -8,7 +8,7 @@
   "admission_status": "pilot_approved",
   "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "cbe582750f1fcd317ae74c2fbeb004710e1a147c7f9ab7edf28a3cc2d1e41661",
+  "artifact_hash": "3bb2f8192ee5793e99431b875b7c038d46597d2d8d86dbc033ae76f562e8224f",
   "research_dir": "3 夏媛媛 2024年9月初测【初中生自我关怀】",
   "source_dataset": "3 夏媛媛 2024年9月初测【初中生自我关怀】\\高一数据10.14.sav",
   "n_cases": 652,
@@ -561,5 +561,12 @@
   "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
   "created_at": "2026-06-29",
   "worksheet_link_status": "confirmed",
-  "worksheet_link_note": "已按题目原文和题序将既往数据 RSCA40-RSCA66 映射到 worksheet RSCA01-RSCA27 的 23 个实际题项。"
+  "worksheet_link_note": "已按题目原文和题序将既往数据 RSCA40-RSCA66 映射到 worksheet RSCA01-RSCA27 的 23 个实际题项。",
+  "approval": {
+    "reviewer": "项目负责人（用户明确批准）",
+    "reviewed_at": "2026-07-12",
+    "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+    "scope": "pilot_release"
+  },
+  "approval_note": "项目负责人于2026-07-12批准进入试点；低置信度、离群、数据不足和高风险状态仍保持阻断。"
 }

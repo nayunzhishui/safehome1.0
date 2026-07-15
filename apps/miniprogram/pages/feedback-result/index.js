@@ -76,10 +76,6 @@ Page({
 
     return [
       {
-        title: "这次的触发点",
-        text: feedback.trigger_summary || "这次记录中可以先从具体场景开始观察。",
-      },
-      {
         title: "可能出现的互动线索",
         text: feedback.pattern_summary || labelsText || "暂时没有明显线索，可以先观察情绪强度和当时回应。",
       },
@@ -110,9 +106,7 @@ Page({
   },
 
   buildEmotionOverview(feedback, isHighRisk) {
-    const labels = feedback.labels || [];
-    const tags = feedback.tags || [];
-    const labelsText = labels.length ? labels.join(" / ") : "";
+    const overview = feedback.emotion_overview || {};
 
     if (isHighRisk) {
       return {
@@ -123,9 +117,9 @@ Page({
     }
 
     return {
-      mainEmotion: labelsText || feedback.trigger_summary || "这次记录中的情绪线索",
-      intensity: tags.includes("high_emotion_intensity") ? "中等偏高" : "中等",
-      trigger: feedback.trigger_summary || labelsText || "一次具体亲子互动事件",
+      mainEmotion: overview.primary_emotion || "这次记录中的感受",
+      intensity: overview.intensity_text || "未记录",
+      trigger: feedback.trigger_summary || "这次记录发生在“" + (overview.scene || "具体互动") + "”场景。",
     };
   },
 

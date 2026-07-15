@@ -1,6 +1,9 @@
 const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
 const THREE_DAY_LIGHT_PLAN_KEY = "safehome:threeDayLightPlan";
+const { createSafeHomeApi } = require("../../services/api");
 const { getAuthUser } = require("../../utils/authGuard");
+
+const api = createSafeHomeApi();
 
 Page({
   data: {
@@ -139,11 +142,35 @@ Page({
     ],
   },
 
-  onShow() {
+  async onShow() {
     const user = getAuthUser();
-    this.setData({ relationshipPilotAvailable: !!(user && user.role === "student") });
+    const showcase = await api.getShowcaseAccess().catch(() => ({ enabled: false }));
+    this.setData({ relationshipPilotAvailable: !!showcase.enabled || !!(user && user.role === "student") });
     this.loadLatestRecommendation();
     this.loadThreeDayPlan();
+    this.filterCompletedRecommendations(user);
+  },
+
+  async filterCompletedRecommendations(user) {
+    if (!user) return;
+    try {
+      const plan = await api.getTrainingPlan();
+      const completed = new Set(plan.completed_card_ids || []);
+      if (!completed.size) return;
+      const recommendation = this.data.latestRecommendation;
+      const lightPlan = this.data.threeDayPlan;
+      const cardIds = recommendation ? recommendation.cardIds.filter((id) => !completed.has(id)) : [];
+      const cards = recommendation ? recommendation.cards.filter((card) => !completed.has(card.id)) : [];
+      const days = lightPlan ? lightPlan.days.filter((day) => !completed.has(day.cardId)) : [];
+      this.setData({
+        latestRecommendation: recommendation && cardIds.length
+          ? { ...recommendation, cardIds, cards, cardIdsText: cardIds.slice(0, 3).join(",") }
+          : null,
+        threeDayPlan: lightPlan && days.length ? { ...lightPlan, days } : null,
+      });
+    } catch (error) {
+      // Keep the training center usable when completion state is temporarily unavailable.
+    }
   },
 
   loadLatestRecommendation() {

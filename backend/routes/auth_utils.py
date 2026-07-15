@@ -13,6 +13,13 @@ from routes.utils import fail, require_admin_token
 AUTH_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7
 ALLOWED_ROLES = {"parent", "student", "researcher", "supervisor", "admin"}
 PUBLIC_REGISTER_ROLES = {"parent", "student"}
+SHOWCASE_READ_PATH_PREFIXES = (
+    "/api/relationship-pilot/researcher/dashboard",
+    "/api/relationship-pilot/enrollments",
+    "/api/relationship-pilot/reports/",
+    "/api/relationship-pilot/narratives/",
+    "/api/text-analysis/summary",
+)
 
 
 class AuthError(ValueError):
@@ -76,6 +83,14 @@ def require_login(allow_legacy_admin: bool = True) -> dict:
 def require_role(*roles: str, allow_legacy_admin: bool = True) -> dict:
     actor = require_login(allow_legacy_admin=allow_legacy_admin)
     if actor["role"] not in roles:
+        from services.showcase_access_service import allow_showcase_read_bypass
+
+        if (
+            request.method in {"GET", "HEAD", "OPTIONS"}
+            and allow_showcase_read_bypass()
+            and request.path.startswith(SHOWCASE_READ_PATH_PREFIXES)
+        ):
+            return {**actor, "showcase_access": True}
         raise AuthError("当前角色没有权限访问该接口", status=403)
     return actor
 

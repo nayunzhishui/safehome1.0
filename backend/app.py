@@ -36,6 +36,7 @@ from routes.progress_summary import bp as progress_summary_bp
 from routes.risk_review import bp as risk_review_bp
 from routes.programs import bp as programs_bp
 from routes.reports import bp as reports_bp
+from routes.showcase_access import bp as showcase_access_bp
 from routes.relationship_pilot_routes import bp as relationship_pilot_bp
 from routes.supervision import bp as supervision_bp
 from routes.text_analysis import bp as text_analysis_bp
@@ -51,6 +52,7 @@ REQUIRED_CONTENT_FILES = [
     "risk_keywords.json",
     "programs.json",
     "courses.json",
+    "showcase_access.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -204,6 +206,7 @@ def create_app(
     app.register_blueprint(risk_review_bp)
     app.register_blueprint(programs_bp)
     app.register_blueprint(reports_bp)
+    app.register_blueprint(showcase_access_bp)
     app.register_blueprint(relationship_pilot_bp)
     app.register_blueprint(supervision_bp)
     app.register_blueprint(text_analysis_bp)

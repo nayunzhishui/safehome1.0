@@ -95,6 +95,40 @@ def test_program_cannot_be_approved_without_three_signed_reviews(tmp_path, monke
     assert response.get_json()["error"]["code"] == "program_approval_incomplete"
 
 
+def test_card_course_and_scale_release_status_requires_review_evidence(tmp_path, monkeypatch):
+    app, _content_dir = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    for content_type, item_id in [
+        ("training_card", "emotion_naming"),
+        ("course", "understand_child_emotion"),
+        ("scale", "parent_reflective_functioning_prfq"),
+    ]:
+        missing = client.post(
+            "/api/content-review/update",
+            json={"content_type": content_type, "item_id": item_id, "review_status": "pilot_approved"},
+            headers=ADMIN_HEADERS,
+        )
+        assert missing.status_code == 409
+        assert missing.get_json()["error"]["code"] == "content_approval_evidence_incomplete"
+
+        approved = client.post(
+            "/api/content-review/update",
+            json={
+                "content_type": content_type,
+                "item_id": item_id,
+                "review_status": "pilot_approved",
+                "approval": {
+                    "reviewer": "test-reviewer",
+                    "reviewed_at": "2026-07-12",
+                    "evidence_path": "docs/test-evidence.md",
+                },
+            },
+            headers=ADMIN_HEADERS,
+        )
+        assert approved.status_code == 200
+
+
 def test_program_cannot_skip_governed_state_transition(tmp_path, monkeypatch):
     app, _content_dir = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()

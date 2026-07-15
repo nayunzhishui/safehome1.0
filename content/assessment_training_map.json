@@ -1,6 +1,6 @@
 {
-  "version": "2026.07-task17-candidate-map-v1",
-  "updated_at": "2026-07-10",
+  "version": "2026.07-task18-reviewed-scales-v1",
+  "updated_at": "2026-07-15",
   "boundary_notice": "测评结果到训练卡的映射只作为支持性练习建议，不构成诊断、治疗方案、危机干预或固定评价。真实量表、草稿量表和试用内容正式开放前必须经过人工复核。",
   "rules": [
     {
@@ -1208,25 +1208,25 @@
         "student_support"
       ],
       "recommended_card_ids": [
-        "student_emotion_naming",
-        "cbt_auto_thought_student",
-        "self_support_statement"
+        "relationship_emotion_observation",
+        "relationship_gentle_expression",
+        "relationship_bounded_micro_action"
       ],
       "card_roles": [
         {
-          "card_id": "student_emotion_naming",
+          "card_id": "relationship_emotion_observation",
           "role": "今日练习"
         },
         {
-          "card_id": "cbt_auto_thought_student",
+          "card_id": "relationship_gentle_expression",
           "role": "备用练习"
         },
         {
-          "card_id": "self_support_statement",
+          "card_id": "relationship_bounded_micro_action",
           "role": "长期练习"
         }
       ],
-      "reason": "根据本次关系体验记录，推荐从觉察、表达和自我支持中选择一个轻量动作。",
+      "reason": "根据本次关系情境回答，可从情绪觉察、想法弹性、温和表达或带边界的小行动中选择一个低负担练习。",
       "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
       "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
       "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
@@ -1252,25 +1252,25 @@
         "student_support"
       ],
       "recommended_card_ids": [
-        "self_support_statement",
-        "scs_mindful_moment",
-        "student_two_thoughts"
+        "relationship_auto_thought",
+        "relationship_second_explanation",
+        "relationship_self_support"
       ],
       "card_roles": [
         {
-          "card_id": "self_support_statement",
+          "card_id": "relationship_auto_thought",
           "role": "今日练习"
         },
         {
-          "card_id": "scs_mindful_moment",
+          "card_id": "relationship_second_explanation",
           "role": "备用练习"
         },
         {
-          "card_id": "student_two_thoughts",
+          "card_id": "relationship_self_support",
           "role": "长期练习"
         }
       ],
-      "reason": "根据本次关系体验记录，推荐从觉察、表达和自我支持中选择一个轻量动作。",
+      "reason": "根据本次关系情境回答，可从情绪觉察、想法弹性、温和表达或带边界的小行动中选择一个低负担练习。",
       "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
       "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
       "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
@@ -1296,17 +1296,105 @@
         "student_support"
       ],
       "recommended_card_ids": [
-        "one_open_question",
-        "erq_expression_gentle",
+        "relationship_open_question",
+        "relationship_gentle_expression",
+        "relationship_bounded_micro_action"
+      ],
+      "card_roles": [
+        {
+          "card_id": "relationship_open_question",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "relationship_gentle_expression",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "relationship_bounded_micro_action",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "根据本次关系情境回答，可从情绪觉察、想法弹性、温和表达或带边界的小行动中选择一个低负担练习。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "review_status": "draft",
+      "rule_version": "2026.07-task17-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "task18_pba_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "parental_burnout_pba",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "supportive_assessment",
+        "parental_burnout_pba"
+      ],
+      "recommended_card_ids": [
+        "three_second_pause",
+        "parent_body_grounding",
+        "parent_repair_question"
+      ],
+      "card_roles": [
+        {
+          "card_id": "three_second_pause",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "parent_body_grounding",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "parent_repair_question",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "从暂停、身体落地和修复问题中提供家长可选择的轻量支持。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "review_status": "draft",
+      "rule_version": "2026.07-task18-reviewed-scales-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "task18_rsca_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rsca_adolescent_resilience",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "supportive_assessment",
+        "rsca_adolescent_resilience"
+      ],
+      "recommended_card_ids": [
+        "rsca_emotion_regulation",
+        "rsca_positive_cognition",
         "self_support_statement"
       ],
       "card_roles": [
         {
-          "card_id": "one_open_question",
+          "card_id": "rsca_emotion_regulation",
           "role": "今日练习"
         },
         {
-          "card_id": "erq_expression_gentle",
+          "card_id": "rsca_positive_cognition",
           "role": "备用练习"
         },
         {
@@ -1314,13 +1402,189 @@
           "role": "长期练习"
         }
       ],
-      "reason": "根据本次关系体验记录，推荐从觉察、表达和自我支持中选择一个轻量动作。",
+      "reason": "围绕情绪调节、积极认知与自我支持提供候选练习。",
       "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
-      "long_term_suggestion": "后续可结合复测趋势观察变化，不用追求一次完成或固定标签。",
+      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
       "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
-      "boundary_notice": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
       "review_status": "draft",
-      "rule_version": "2026.07-task17-v1",
+      "rule_version": "2026.07-task18-reviewed-scales-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "task18_general_regulatory_focus_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "regulatory_focus_general_18",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "supportive_assessment",
+        "regulatory_focus_general_18"
+      ],
+      "recommended_card_ids": [
+        "exam_micro_start",
+        "cognitive_flexibility",
+        "self_support_statement"
+      ],
+      "card_roles": [
+        {
+          "card_id": "exam_micro_start",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "cognitive_flexibility",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "self_support_statement",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "不按促进/预防高低贴标签，只提供目标拆分和灵活行动练习。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "review_status": "draft",
+      "rule_version": "2026.07-task18-reviewed-scales-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "task18_rfq8_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "rfq8_reflective_functioning",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "supportive_assessment",
+        "rfq8_reflective_functioning"
+      ],
+      "recommended_card_ids": [
+        "emotion_naming",
+        "nonjudgmental_response",
+        "one_open_question"
+      ],
+      "card_roles": [
+        {
+          "card_id": "emotion_naming",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "nonjudgmental_response",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "one_open_question",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "用情绪命名、减少判断和开放式提问支持反思，不推断他人内心。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "review_status": "draft",
+      "rule_version": "2026.07-task18-reviewed-scales-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "task18_who5_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "who5_wellbeing",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "supportive_assessment",
+        "who5_wellbeing"
+      ],
+      "recommended_card_ids": [
+        "emotion_naming",
+        "self_support_statement",
+        "cognitive_flexibility"
+      ],
+      "card_roles": [
+        {
+          "card_id": "emotion_naming",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "self_support_statement",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "cognitive_flexibility",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "根据近期身心感受提供低负担练习，不用分数替代专业评估。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "review_status": "draft",
+      "rule_version": "2026.07-task18-reviewed-scales-v1",
+      "recommendation_mode": "candidate_set",
+      "selection_policy": "shared_choice",
+      "recommendation_source": "assessment_rule",
+      "approval_status": "draft_requires_psychology_review",
+      "allow_controlled_cards": false,
+      "max_candidates": 3
+    },
+    {
+      "rule_id": "task18_ecs_support",
+      "source_type": "assessment",
+      "trigger_condition": {
+        "worksheet_id": "cognitive_curiosity_student",
+        "risk_level": "low_or_medium"
+      },
+      "theme": [
+        "supportive_assessment",
+        "cognitive_curiosity_student"
+      ],
+      "recommended_card_ids": [
+        "exam_micro_start",
+        "student_two_thoughts",
+        "self_support_statement"
+      ],
+      "card_roles": [
+        {
+          "card_id": "exam_micro_start",
+          "role": "今日练习"
+        },
+        {
+          "card_id": "student_two_thoughts",
+          "role": "备用练习"
+        },
+        {
+          "card_id": "self_support_statement",
+          "role": "长期练习"
+        }
+      ],
+      "reason": "把好奇和问题投入转化为可停下、可拆分的小任务。",
+      "today_suggestion": "今天只选择一张卡，完成一个不超过十分钟的小练习。",
+      "long_term_suggestion": "后续结合记录与复测趋势观察变化，不追求一次完成或固定标签。",
+      "not_suitable_when": "若出现自伤、自杀、暴力、胁迫或其他现实安全风险，应优先寻求现实支持和人工帮助。",
+      "boundary_notice": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "review_status": "draft",
+      "rule_version": "2026.07-task18-reviewed-scales-v1",
       "recommendation_mode": "candidate_set",
       "selection_policy": "shared_choice",
       "recommendation_source": "assessment_rule",

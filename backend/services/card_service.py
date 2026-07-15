@@ -1,13 +1,25 @@
 """Training card loading and recommendation service."""
 
+from flask import current_app, has_app_context
+
 from database import load_content_json
+from services.showcase_access_service import showcase_training_cards_open
 
 
-def list_cards(enabled_only: bool = True) -> list[dict]:
+APPROVED_REVIEW_STATUSES = {"pilot_approved", "production_approved", "enabled", "trial_enabled"}
+
+
+def _is_production() -> bool:
+    return has_app_context() and str(current_app.config.get("APP_ENV", "development")).lower() == "production"
+
+
+def list_cards(enabled_only: bool = True, include_unapproved: bool = False) -> list[dict]:
     payload = load_content_json("training_cards.json")
     cards = payload.get("cards", [])
     if enabled_only:
         cards = [card for card in cards if card.get("enabled", True)]
+    if _is_production() and not include_unapproved and not showcase_training_cards_open():
+        cards = [card for card in cards if card.get("review_status") in APPROVED_REVIEW_STATUSES]
     return cards
 
 

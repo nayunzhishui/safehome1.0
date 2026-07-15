@@ -57,10 +57,6 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.segmented-control--compact {
-  grid-template-columns: 1fr;
-}
-
 .segment-button {
   min-height: var(--safe-touch);
   padding: 0 14rpx;
@@ -76,12 +72,6 @@
   border-color: var(--safe-primary);
   background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
-}
-
-.assignment-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 18rpx;
 }
 
 .assignment-field {
@@ -168,6 +158,17 @@
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-sm);
   background: var(--safe-bg-leaf);
+  text-align: left;
+  line-height: 1.45;
+}
+
+.card-chip::after {
+  border: 0;
+}
+
+.chip-copy {
+  min-width: 0;
+  flex: 1;
 }
 
 .chip-title {
@@ -177,8 +178,17 @@
 }
 
 .chip-meta {
+  display: block;
+  margin-top: 6rpx;
   color: var(--safe-muted);
   font-size: 23rpx;
+}
+
+.chip-action {
+  flex: 0 0 auto;
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 850;
 }
 
 .boundary-note {

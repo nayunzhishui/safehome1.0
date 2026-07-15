@@ -7,7 +7,7 @@ const STAGES = [
   { key: "assessment", number: 1, title: "起点测评", description: "看见本次关系体验的位置" },
   { key: "report", number: 2, title: "阶段性报告", description: "阅读维度、边界与待讨论问题" },
   { key: "exploration", number: 3, title: "线上探索", description: "用绘画或句子留下愿意表达的部分" },
-  { key: "feedback", number: 4, title: "研究者反馈", description: "等待人工复核、确认与发送" },
+  { key: "feedback", number: 4, title: "阶段性反馈", description: "线上探索后接收研究者的人工补充" },
   { key: "growth", number: 5, title: "连续记录", description: "用多次记录观察变化，不急于下结论" },
 ];
 
@@ -26,9 +26,9 @@ function buildJourney(enrollment, growth) {
   if (["confirmed", "sent", "updated"].includes(reportStatus)) {
     currentIndex = tasksCount > 0 ? 3 : 2;
     primaryAction = tasksCount > 0 ? "report" : "drawing";
-    primaryLabel = tasksCount > 0 ? "查看研究者反馈进度" : "开始一次线上探索";
+    primaryLabel = tasksCount > 0 ? "查看阶段性反馈进度" : "开始一次线上探索";
   }
-  if (hasResearcherFeedback || reportStatus === "sent") {
+  if (hasResearcherFeedback) {
     currentIndex = 4;
     primaryAction = "growth";
     primaryLabel = "继续记录变化";
@@ -61,10 +61,11 @@ Page({
     secondaryActions: [],
   },
 
-  onShow() {
+  async onShow() {
     if (!requireLogin({ redirectUrl: "/pages/relationship-pilot/index" })) return;
     const user = getAuthUser();
-    if (!user || !["student", "admin"].includes(user.role)) {
+    const showcase = await api.getShowcaseAccess().catch(() => ({ enabled: false }));
+    if (!showcase.enabled && (!user || !["student", "admin"].includes(user.role))) {
       this.setData({ loading: false, roleBlocked: true, errorMessage: "" });
       return;
     }

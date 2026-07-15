@@ -34,3 +34,17 @@ def test_init_db_records_current_schema_migration_once(tmp_path, monkeypatch):
     assert len(rows) == 1
     assert rows[0]["version"] == database.CURRENT_SCHEMA_VERSION
     assert rows[0]["name"] == database.CURRENT_SCHEMA_NAME
+
+
+def test_latest_schema_version_uses_version_order_not_mixed_timestamp_formats(tmp_path, monkeypatch):
+    database = _fresh_database(tmp_path, monkeypatch)
+    database.init_db()
+
+    with database.get_connection() as conn:
+        conn.execute(
+            "INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)",
+            ("2026_07_11_004", "older_schema", "9999-12-31T23:59:59+08:00"),
+        )
+        latest = database.get_latest_schema_version(conn)
+
+    assert latest == database.CURRENT_SCHEMA_VERSION

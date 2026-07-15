@@ -23,7 +23,23 @@
         <text wx:if="{{profilePosition.featureText}}" class="profile-meta">{{profilePosition.featureText}}</text>
         <visualization-state wx:if="{{profilePosition.visualizationState !== 'data'}}" state="{{profilePosition.visualizationState}}" message="{{profilePosition.reliabilityText}}"></visualization-state>
         <canvas wx:if="{{profilePosition.userPoint}}" canvas-id="profilePlotCanvas" class="position-canvas" aria-label="本次画像在参考样本中的相对位置图，具体数值见下方文字说明"></canvas>
+        <view wx:if="{{profilePosition.clusterPoints.length}}" class="chart-legend cluster-legend">
+          <view wx:for="{{profilePosition.clusterPoints}}" wx:key="cluster_id" class="legend-row">
+            <text class="legend-index">{{item.axisLabel}}</text>
+            <text class="legend-label">{{item.label}}</text>
+          </view>
+          <view class="legend-row current-row">
+            <text class="legend-current-dot"></text>
+            <text class="legend-label">当前位置</text>
+          </view>
+        </view>
         <canvas wx:if="{{profilePosition.radarFeatures.length >= 3}}" canvas-id="profileRadarCanvas" class="radar-canvas" aria-label="本次画像维度轮廓图，具体维度见下方文字说明"></canvas>
+        <view wx:if="{{profilePosition.radarFeatures.length >= 3}}" class="chart-legend radar-legend">
+          <view wx:for="{{profilePosition.radarFeatures}}" wx:key="id" class="legend-row">
+            <text class="legend-index">{{item.axisLabel}}</text>
+            <text class="legend-label">{{item.label}}</text>
+          </view>
+        </view>
         <visualization-state wx:if="{{profilePosition.radarFeatures.length < 3}}" state="insufficient" message="当前维度不足，暂不绘制雷达图。"></visualization-state>
         <text wx:if="{{profilePosition.explanation}}" class="profile-explanation">{{profilePosition.explanation}}</text>
         <view wx:if="{{profilePosition.strengthNote || profilePosition.smallStep}}" class="profile-steps">

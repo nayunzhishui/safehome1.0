@@ -176,12 +176,17 @@ def test_hidden_admin_worksheet_is_not_visible_or_submittable_to_users(tmp_path,
     detail_response = client.get("/api/assessments/hidden_test_scale")
     assert detail_response.status_code == 404
 
+    login_response = client.post("/api/auth/wechat-login", json={"code": "hidden-submit-user"})
+    token = login_response.get_json()["data"]["token"]
+
     submit_response = client.post(
         "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
         json={
             "user_id": "hidden-submit-user",
             "worksheet_id": "hidden_test_scale",
             "answers": [{"question_id": "q1", "prompt": "测试题", "value": "1", "score": 1}],
         },
     )
-    assert submit_response.status_code == 404
+    assert submit_response.status_code == 400
+    assert submit_response.get_json()["error"]["code"] == "assessment_not_enabled"

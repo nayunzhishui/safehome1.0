@@ -38,18 +38,18 @@
       <text class="micro-title">补充观察（可保持默认）</text>
       <view class="micro-row">
         <text class="micro-label">愉悦度</text>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{valenceLevel}}" activeColor="#7aa78f" backgroundColor="#dfe5dc" bindchange="onValenceChange" bindchanging="onValenceChange" />
-        <text class="micro-value">{{valenceLevel}}</text>
+        <text class="micro-value" aria-label="愉悦度 {{valenceLevel}} 分">{{valenceLevel}} / 10</text>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{valenceLevel}}" activeColor="#7aa78f" backgroundColor="#dfe5dc" bindchange="onValenceChange" bindchanging="onValenceChange" aria-label="调整愉悦度" />
       </view>
       <view class="micro-row">
         <text class="micro-label">身体唤起</text>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{arousalLevel}}" activeColor="#d18a55" backgroundColor="#eadfd0" bindchange="onArousalChange" bindchanging="onArousalChange" />
-        <text class="micro-value">{{arousalLevel}}</text>
+        <text class="micro-value" aria-label="身体唤起 {{arousalLevel}} 分">{{arousalLevel}} / 10</text>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{arousalLevel}}" activeColor="#d18a55" backgroundColor="#eadfd0" bindchange="onArousalChange" bindchanging="onArousalChange" aria-label="调整身体唤起" />
       </view>
       <view class="micro-row">
         <text class="micro-label">可控感</text>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{controlLevel}}" activeColor="#6a86b4" backgroundColor="#dfe5dc" bindchange="onControlChange" bindchanging="onControlChange" />
-        <text class="micro-value">{{controlLevel}}</text>
+        <text class="micro-value" aria-label="可控感 {{controlLevel}} 分">{{controlLevel}} / 10</text>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{controlLevel}}" activeColor="#6a86b4" backgroundColor="#dfe5dc" bindchange="onControlChange" bindchanging="onControlChange" aria-label="调整可控感" />
       </view>
       <input
         class="emotion-input"
@@ -66,7 +66,7 @@
       placeholder="可选：用一句话写下刚才发生了什么。"
       bindinput="onBriefInput"
     />
-    <button class="safe-primary-button" loading="{{saving}}" bindtap="saveRecord">记录一次</button>
+    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="saveRecord">记录一次</button>
   </view>
 
   <view class="safe-card curve-panel">

@@ -11,11 +11,26 @@ function formatPairs(items = []) {
 }
 
 function formatDimensionSummaries(items = []) {
-  return items.map((item) => ({
-    label: item.label || item.key,
-    direction: item.direction || "暂无变化",
-    deltaText: item.score_delta === null || item.score_delta === undefined ? "暂无复测" : `${item.score_delta > 0 ? "+" : ""}${item.score_delta}`,
-  }));
+  const groups = [];
+  const groupMap = {};
+  items.forEach((item) => {
+    const worksheetId = item.worksheet_id || "unknown";
+    if (!groupMap[worksheetId]) {
+      groupMap[worksheetId] = {
+        worksheetId,
+        worksheetTitle: item.worksheet_title || "支持性测评",
+        dimensions: [],
+      };
+      groups.push(groupMap[worksheetId]);
+    }
+    groupMap[worksheetId].dimensions.push({
+      key: item.key || item.label,
+      label: item.label || item.key,
+      direction: item.direction || "暂无变化",
+      deltaText: item.score_delta === null || item.score_delta === undefined ? "暂无复测" : `${item.score_delta > 0 ? "+" : ""}${item.score_delta}`,
+    });
+  });
+  return groups;
 }
 
 Page({
@@ -29,7 +44,7 @@ Page({
     completedCardsText: "",
     profileTrendNamesText: "",
     assessmentNamesText: "",
-    dimensionSummaries: [],
+    dimensionGroups: [],
     recommendedCardsText: "",
     thermometerDetailText: "",
     trainingEffectivenessText: "",
@@ -63,7 +78,7 @@ Page({
         assessmentNamesText: ((report.assessment_summary && report.assessment_summary.worksheet_names) || (report.assessment_trend && report.assessment_trend.worksheet_names) || [])
           .map((item) => `${item[0]} ${item[1]} 次`)
           .join("、"),
-        dimensionSummaries: formatDimensionSummaries((report.assessment_summary && report.assessment_summary.dimension_summaries) || []),
+        dimensionGroups: formatDimensionSummaries((report.assessment_summary && report.assessment_summary.dimension_summaries) || []),
         recommendedCardsText: ((report.assessment_summary && report.assessment_summary.recommended_card_ids) || []).join("、"),
         thermometerDetailText: this.formatThermometerDetail(report.thermometer_summary || report.thermometer_trend),
         trainingEffectivenessText: this.formatTrainingEffectiveness(report.training_effectiveness_summary),

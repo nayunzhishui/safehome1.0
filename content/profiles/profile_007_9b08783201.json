@@ -5,10 +5,10 @@
   "standard_scale_name": "健康促进生活方式量表（HPLP）",
   "scale_id": "hplp_c_health_promoting_lifestyle",
   "worksheet_id": null,
-  "admission_status": "pilot_approved",
+  "admission_status": "deprecated",
   "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "503927482afe5a51bd678e37e83f3ce65a4972c013d3eb6176171846c4800da7",
+  "artifact_hash": "b8ebdde24c9dd6953a04a8bcaa3bf7f071ca1340c0ae4f4cdfe07587f1f0fea4",
   "research_dir": "6 高鸣聪【目标感对大学生健康促进行为的影响-自我关怀的中介作用】",
   "source_dataset": "6 高鸣聪【目标感对大学生健康促进行为的影响-自我关怀的中介作用】\\309原始数据240325.sav",
   "n_cases": 309,
@@ -698,5 +698,14 @@
     }
   ],
   "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
-  "created_at": "2026-06-29"
+  "created_at": "2026-06-29",
+  "approval": {
+    "reviewer": "项目负责人（用户明确批准）",
+    "reviewed_at": "2026-07-12",
+    "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+    "scope": "pilot_release"
+  },
+  "worksheet_link_status": "replaced_by_canonical_model",
+  "replacement_model_id": "5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响__5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响_数据和问卷_数据_209份最终数据_sav__hplp_c_health_promoting_lifestyle",
+  "approval_note": "已审核并保留作历史对照；运行时统一采用用户指定的牛至旭HPLP模型。"
 }

@@ -65,6 +65,7 @@ const API_ENDPOINTS = {
   profileTrend: "/api/profile-trend",
   trainingEffectiveness: "/api/training-effectiveness",
   textAnalysisSummary: "/api/text-analysis/summary",
+  showcaseAccess: "/api/showcase-access",
   profileResults: "/api/profile-results",
   messages: "/api/messages",
   riskCheck: "/api/risk/check",
@@ -72,6 +73,7 @@ const API_ENDPOINTS = {
   modelInfo: "/api/model/info",
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
+  authCapabilities: "/api/auth/capabilities",
   authWechatLogin: "/api/auth/wechat-login",
   authPhoneLogin: "/api/auth/phone-login",
   authBindPhone: "/api/auth/bind-phone",
@@ -340,6 +342,10 @@ function createSafeHomeApi(options = {}) {
       return request(API_ENDPOINTS.readyz);
     },
 
+    getShowcaseAccess() {
+      return request(API_ENDPOINTS.showcaseAccess);
+    },
+
     login(data) {
       return request(API_ENDPOINTS.authLogin, {
         method: "POST",
@@ -352,6 +358,10 @@ function createSafeHomeApi(options = {}) {
         }
         return result;
       });
+    },
+
+    getAuthCapabilities() {
+      return request(API_ENDPOINTS.authCapabilities);
     },
 
     wechatLogin(data) {
@@ -523,6 +533,26 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    markAllMessagesRead(data = {}) {
+      return request(`${API_ENDPOINTS.messages}/read-all`, {
+        method: "POST",
+        data: withDefaultUser(data),
+        requiresAuth: true,
+      });
+    },
+
+    sendResearcherMessage(data) {
+      const payload = { ...data };
+      const idempotencyKey = payload.idempotency_key || "";
+      delete payload.idempotency_key;
+      return request(API_ENDPOINTS.messages, {
+        method: "POST",
+        data: payload,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
     listProfileFollowups(id, params = {}) {
       return request(`${API_ENDPOINTS.profileResults}/${encodeURIComponent(id)}/followups${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
@@ -614,12 +644,12 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
-    listPrograms() {
-      return request(API_ENDPOINTS.programs);
+    listPrograms(params = {}) {
+      return request(`${API_ENDPOINTS.programs}${queryString(params)}`, { requiresAuth: Boolean(params.include_drafts) });
     },
 
-    getProgram(id) {
-      return request(endpointWithId(API_ENDPOINTS.programDetailBase, id));
+    getProgram(id, params = {}) {
+      return request(`${endpointWithId(API_ENDPOINTS.programDetailBase, id)}${queryString(params)}`, { requiresAuth: Boolean(params.include_drafts) });
     },
 
     createProgramEntry(programId, data) {
@@ -648,6 +678,10 @@ function createSafeHomeApi(options = {}) {
 
     listAssessmentResults(params = {}) {
       return request(`${API_ENDPOINTS.assessmentResults}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    getAssessmentResult(id, params = {}) {
+      return request(`${API_ENDPOINTS.assessmentResults}/${encodeURIComponent(id)}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     getAssessmentProfilePosition(id, params = {}) {
@@ -692,6 +726,14 @@ function createSafeHomeApi(options = {}) {
     confirmRelationshipReport(id) {
       return request(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}/confirm`, {
         method: "POST",
+        requiresAuth: true,
+      });
+    },
+
+    updateRelationshipReport(id, data) {
+      return request(`${API_ENDPOINTS.relationshipPilot}/reports/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        data,
         requiresAuth: true,
       });
     },

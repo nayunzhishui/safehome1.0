@@ -5,7 +5,7 @@
   "standard_scale_name": "关系中的常见担心与期待",
   "scale_id": "micro_ysq_relationship_18",
   "worksheet_id": "micro_ysq_relationship_18",
-  "worksheet_link_status": "connected_pilot_review_required",
+  "worksheet_link_status": "confirmed",
   "admission_status": "pilot_approved",
   "interpretation_approval_status": "pilot_approved",
   "production_approval_status": "pending_researcher_review",
@@ -819,5 +819,12 @@
     "item_matrices.npz": "ba13b7a94c813f0a1361935eb16372f7103fe466c15bafccba88f1fbdb4eba68",
     "item_mapping_preview.csv": "f24cc3e9c3602e850b5ec3b1878295c99ca5ceacfacd4046e4efa373b6ff1e02"
   },
-  "artifact_hash": "31da8eef943c31910c50fea304fe9b58db8e78e0b9c503759235d3a80821fa64"
+  "artifact_hash": "3765f3b81ffcd0c315755f1cbce3e504908c62ae2f6f20bed5504ef06c1cd3a6",
+  "approval": {
+    "reviewer": "项目负责人（用户明确批准）",
+    "reviewed_at": "2026-07-12",
+    "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+    "scope": "pilot_release"
+  },
+  "approval_note": "项目负责人于2026-07-12批准进入试点；低置信度、离群、数据不足和高风险状态仍保持阻断。"
 }

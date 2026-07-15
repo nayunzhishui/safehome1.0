@@ -24,7 +24,7 @@
           <text class="question-title">{{item.prompt}}<text wx:if="{{item.required}}" class="required"> *</text></text>
         </view>
 
-        <view wx:if="{{item.type === 'scale'}}" class="option-row">
+        <view wx:if="{{item.type === 'scale'}}" class="option-row {{item.options.length === 9 ? 'option-row--nine' : ''}}">
           <view
             wx:for="{{item.options}}"
             wx:for-item="opt"

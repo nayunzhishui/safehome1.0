@@ -149,6 +149,19 @@ def test_weekly_report_includes_assessment_and_thermometer_summary(tmp_path, mon
     client = app.test_client()
     user_id, token = _wechat_login(client, "weekly-code")
 
+    from database import get_connection
+
+    with get_connection() as conn:
+        conn.execute(
+            """
+            UPDATE assessment_worksheets
+            SET enabled_for_user = 1, review_status = 'pilot_approved'
+            WHERE id = ?
+            """,
+            ("self_compassion_scs_cn",),
+        )
+        conn.commit()
+
     assessment_response = client.post(
         "/api/assessment-results",
         headers={"Authorization": f"Bearer {token}"},

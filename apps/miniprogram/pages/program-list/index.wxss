@@ -18,6 +18,21 @@
   gap: 16rpx;
 }
 
+.program-card--preview {
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.preview-notice {
+  padding: 20rpx 22rpx;
+  border: 1rpx solid rgba(244, 127, 69, 0.24);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-orange-soft);
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
 .program-head {
   display: flex;
   align-items: center;
@@ -43,6 +58,13 @@
 .boundary-note {
   color: var(--safe-text);
   font-size: 25rpx;
+  line-height: 1.6;
+}
+
+.pending-count {
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 800;
   line-height: 1.6;
 }
 

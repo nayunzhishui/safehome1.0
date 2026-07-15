@@ -59,7 +59,8 @@
     </view>
 
     <view class="safe-section safe-card">
-      <text class="section-title">怎样理解这份结果</text>
+      <text class="section-eyebrow">{{isStageFeedback ? '人工补充' : '支持性解释'}}</text>
+      <text class="section-title">{{isStageFeedback ? '研究者阶段性反馈' : '怎样理解这份结果'}}</text>
       <text class="report-copy">{{report.personalized_interpretation}}</text>
     </view>
 

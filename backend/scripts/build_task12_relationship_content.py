@@ -42,12 +42,19 @@ def _likert(low: str, high: str, count: int) -> list[dict]:
         5: ["比较不符合", "不确定", "比较符合"],
         6: ["大多不符合", "有些不符合", "有些符合", "大多符合"],
         7: ["不同意", "比较不同意", "不确定", "比较同意", "同意"],
+        9: ["很不同意", "不同意", "比较不同意", "不确定", "比较同意", "同意", "很同意"],
     }[count]
     return [{"value": index + 1, "label": label} for index, label in enumerate([low, *middle, high])]
 
 
-REG_LIKERT = _likert("非常不同意", "非常同意", 7)
+REG_LIKERT = _likert("非常不同意", "非常同意", 9)
 YSQ_LIKERT = _likert("完全不符合", "完全符合", 6)
+YSQ_THEME_LABELS = [
+    "被理解与关心担心", "离开与失去担心", "受伤与被利用担心", "自我价值担心", "归属与融入担心",
+    "独立应对担心", "安全与灾难担心", "取悦与自我忽略", "情绪需求压抑", "特殊待遇期待",
+    "坚持与自我管理", "过度照顾他人", "他人评价关注", "情绪表达抑制", "高标准压力",
+    "严厉惩罚倾向", "理想化依赖期待", "冲突回避与屈从",
+]
 AGREE_LIKERT = _likert("非常不同意", "非常同意", 5)
 PROBABILITY_LIKERT = _likert("非常不可能", "非常可能", 5)
 FREQUENCY_LIKERT = _likert("从未", "总是", 5)
@@ -128,9 +135,9 @@ def _drafts(grouped: dict[str, list[dict]]) -> list[dict]:
                 {"code": "PREV", "label": "安全与避免损失关注", "item_codes": sorted(prevention, key=lambda x: int(x[1:])), "calculation": {"type": "mean"}},
             ],
             "items": _items(grouped["regulatory_focus_relationship_18"], regulatory_dimension, REG_LIKERT),
-            "scoring_notes": ["PROM 与 PREV 分别取题项均值", "RFD=PROM-PREV 仅供研究画像定位", "数据1实测为1-5，新问卷为1-7，模型接入时必须按元数据换算"],
+            "scoring_notes": ["PROM 与 PREV 分别取题项均值", "RFD=PROM-PREV 仅供研究画像定位", "数据1实测为1-5，新问卷为1-9，模型接入时必须按元数据换算"],
             "supportive_interpretation_draft": "分别观察成长目标与安全顾虑的关注方式，不把高低解释为好坏。",
-            "recommended_card_ids": ["student_emotion_naming", "cbt_auto_thought_student", "self_support_statement"],
+            "recommended_card_ids": ["relationship_emotion_observation", "relationship_gentle_expression", "relationship_bounded_micro_action"],
         },
         {
             **common,
@@ -140,11 +147,14 @@ def _drafts(grouped: dict[str, list[dict]]) -> list[dict]:
             "likert": YSQ_LIKERT,
             "dimension_score_method": "mean",
             "total_score_method": "none",
-            "dimensions": [{"code": "EMS_M", "label": "关系担心线索均值", "item_codes": [f"YSQ{i}" for i in range(1, 19)], "calculation": {"type": "mean"}}],
-            "items": _items(grouped["micro_ysq_relationship_18"], lambda _code: "EMS_M", YSQ_LIKERT),
-            "scoring_notes": ["18题取均值和原始和分供研究复核", "不按阈值输出人格或图式标签"],
+            "dimensions": [
+                {"code": f"YSQ_THEME{i:02d}", "label": label, "item_codes": [f"YSQ{i}"], "calculation": {"type": "mean"}}
+                for i, label in enumerate(YSQ_THEME_LABELS, 1)
+            ],
+            "items": _items(grouped["micro_ysq_relationship_18"], lambda code: f"YSQ_THEME{int(code[3:]):02d}", YSQ_LIKERT),
+            "scoring_notes": ["18题分别保留为18个支持性主题维度", "不按阈值输出人格或图式标签"],
             "supportive_interpretation_draft": "观察哪些关系担心近期较常出现，并寻找可支持的小练习，不输出人格标签。",
-            "recommended_card_ids": ["self_support_statement", "scs_mindful_moment", "student_two_thoughts"],
+            "recommended_card_ids": ["relationship_auto_thought", "relationship_second_explanation", "relationship_self_support"],
         },
         {
             **common,
@@ -165,7 +175,7 @@ def _drafts(grouped: dict[str, list[dict]]) -> list[dict]:
             "items": _items(grouped["relationship_initiation_intention_action"], relationship_dimension, AGREE_LIKERT),
             "scoring_notes": ["获益、威胁与真实自我保护按冻结乘积公式计算", "SN/PBC/BI/RAP分别取均值", "不计算诊断性总分"],
             "supportive_interpretation_draft": "观察关系获益、担心、支持感、可控感、意愿与行动之间的阶段性组合。",
-            "recommended_card_ids": ["one_open_question", "erq_expression_gentle", "self_support_statement"],
+            "recommended_card_ids": ["relationship_open_question", "relationship_gentle_expression", "relationship_bounded_micro_action"],
         },
     ]
 
@@ -195,7 +205,7 @@ def _catalog(drafts: list[dict]) -> list[dict]:
             "boundary_notice": BOUNDARY,
             "result_disclaimer": BOUNDARY,
             "excluded_from_user_flow": False,
-            "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对，生产开放前仍需量表负责人确认版本、授权和1-5/1-7差异。",
+            "notes": "任务十二本地研究试点内容；已完成程序化题项与公式核对；关系情境行动关注方式按负责人要求使用1-9计分，并在画像匹配前线性换算至既往1-5训练范围。",
         }
         for draft in drafts
     ]

@@ -207,6 +207,43 @@ def _wechat_error_response(exc: WechatAuthError):
     return fail(exc.code, str(exc), status=exc.status)
 
 
+@bp.get("/capabilities")
+def auth_capabilities():
+    """Expose login readiness without returning credentials or identity values."""
+    standard_wechat_configured = bool(
+        os.environ.get("WECHAT_APPID", "").strip()
+        and os.environ.get("WECHAT_SECRET", "").strip()
+    )
+    cloudbase_identity_available = _trusted_cloudbase_openid() is not None
+    cloudbase_phone_token_available = _cloudbase_access_token() is not None
+    return ok(
+        {
+            "account_password": {"available": True},
+            "wechat_login": {
+                "available": bool(cloudbase_identity_available or standard_wechat_configured),
+                "mode": (
+                    "cloudbase_identity"
+                    if cloudbase_identity_available
+                    else "jscode2session"
+                    if standard_wechat_configured
+                    else "not_configured"
+                ),
+            },
+            "phone_login": {
+                "available": bool(cloudbase_phone_token_available or standard_wechat_configured),
+                "mode": (
+                    "cloudbase_access_token"
+                    if cloudbase_phone_token_available
+                    else "wechat_access_token"
+                    if standard_wechat_configured
+                    else "not_configured"
+                ),
+            },
+            "privacy_notice": "能力检查不返回 openid、手机号、令牌或密钥。",
+        }
+    )
+
+
 @bp.post("/register")
 def register():
     payload = request.get_json(silent=True) or {}
@@ -461,6 +498,7 @@ def admin_create_account():
     role = str(payload.get("role") or "researcher").strip()
     nickname = str(payload.get("nickname") or "").strip() or None
     anonymous_id = str(payload.get("anonymous_id") or "").strip() or None
+    rotate_existing = payload.get("rotate_existing") is True
 
     if len(username) < 3:
         return fail("validation_error", "用户名至少需要 3 个字符", status=400)
@@ -474,8 +512,11 @@ def admin_create_account():
     with get_connection() as conn:
         existing = conn.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone()
         if existing:
-            return fail("username_exists", "该用户名已被使用", status=409)
-        ensure_user(conn, user_id, nickname)
+            if not rotate_existing:
+                return fail("username_exists", "该用户名已被使用", status=409)
+            user_id = existing["id"]
+        else:
+            ensure_user(conn, user_id, nickname)
         conn.execute(
             """
             UPDATE users
@@ -490,7 +531,7 @@ def admin_create_account():
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
     user = _public_user(row_to_dict(row))
-    return ok({"user": user}, status=201)
+    return ok({"user": user, "created": existing is None, "credentials_rotated": existing is not None}, status=201 if existing is None else 200)
 
 
 @bp.post("/logout")

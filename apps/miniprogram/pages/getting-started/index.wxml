@@ -21,7 +21,7 @@
 
   <view class="section-card">
     <text class="section-kicker">视觉链路</text>
-    <text class="section-title">诱因/应激源 → 反应（想法·身体感觉·行为） → 觉察 → 接纳 → 转化 → 应对（适应性策略与行为） → 结果（适应与发展）</text>
+    <text class="section-title">从触发到回应：把反应链条分步看清</text>
     <scroll-view class="arc-scroll" scroll-x="true">
       <view class="arc-chain">
         <block wx:for="{{arcNodes}}" wx:key="*this">

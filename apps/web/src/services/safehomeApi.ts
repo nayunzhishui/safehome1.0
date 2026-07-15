@@ -86,6 +86,24 @@ export class SafeHomeApiClient {
     return this.requestRaw(API_ENDPOINTS.healthz);
   }
 
+  getShowcaseAccess(): Promise<{
+    enabled: boolean;
+    read_only_role_bypass: boolean;
+    open_programs: boolean;
+    open_training_cards: boolean;
+    notice: string;
+  }> {
+    return this.requestData(API_ENDPOINTS.showcaseAccess);
+  }
+
+  getTextAnalysisSummary(): Promise<{
+    items: Record<string, Record<string, unknown>>;
+    raw_text_included: boolean;
+    boundary_notice: string;
+  }> {
+    return this.requestData(API_ENDPOINTS.textAnalysisSummary);
+  }
+
   async login(creds: { username: string; password: string }): Promise<{ token: string; user: AuthUser }> {
     const data = await this.requestData<{ token: string; user: AuthUser }>(API_ENDPOINTS.authLogin, {
       method: "POST",
@@ -291,7 +309,7 @@ export class SafeHomeApiClient {
     );
   }
 
-  listAssessmentResults(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<AssessmentResult>> {
+  listAssessmentResults(params: { user_id?: string; page?: number; page_size?: number; limit?: number } = {}): Promise<ListResponse<AssessmentResult>> {
     return this.requestData<ListResponse<AssessmentResult>>(this.withQuery(API_ENDPOINTS.assessmentResults, this.withDefaultUserParam(params)));
   }
 
@@ -391,7 +409,7 @@ export class SafeHomeApiClient {
     });
   }
 
-  listCheckins(params: { user_id?: string; limit?: number } = {}): Promise<ListResponse<Checkin>> {
+  listCheckins(params: { user_id?: string; completed?: boolean; page?: number; page_size?: number; limit?: number } = {}): Promise<ListResponse<Checkin>> {
     return this.requestData<ListResponse<Checkin>>(this.withQuery(API_ENDPOINTS.checkins, this.withDefaultUserParam(params)));
   }
 

@@ -121,4 +121,10 @@ Page({
     }
     wx.navigateTo({ url: `/pages/training-card/index?card_ids=${encodeURIComponent(ids)}` });
   },
+
+  openSingleCard(event) {
+    const cardId = event.currentTarget.dataset.cardId || "";
+    if (!cardId) return;
+    wx.navigateTo({ url: `/pages/training-card/index?card_ids=${encodeURIComponent(cardId)}` });
+  },
 });

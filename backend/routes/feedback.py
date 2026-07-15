@@ -40,6 +40,12 @@ def _high_risk_feedback_result(risk_result: dict) -> dict:
         "alternative_response": risk_result["boundary_notice"],
         "recommended_card_ids": [],
         "training_recommendation_rules": [],
+        "emotion_overview": {
+            "primary_emotion": "需要优先关注安全",
+            "intensity_level": None,
+            "intensity_text": "建议人工关注",
+            "scene": "本次记录",
+        },
         "risk_level": risk_result["risk_level"],
         "risk": risk_result,
     }

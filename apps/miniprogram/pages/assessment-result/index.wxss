@@ -110,15 +110,67 @@
 
 .position-canvas {
   width: 100%;
-  height: 180rpx;
+  height: 300rpx;
   margin-top: 16rpx;
   border-radius: var(--safe-radius-sm);
 }
 
 .radar-canvas {
   width: 100%;
-  height: 220rpx;
-  margin-top: 8rpx;
+  height: 360rpx;
+  margin-top: 20rpx;
+}
+
+.chart-legend {
+  display: grid;
+  gap: 8rpx 18rpx;
+  margin-top: 12rpx;
+  padding: 14rpx 16rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-bg);
+}
+
+.cluster-legend,
+.radar-legend {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.legend-row {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  gap: 8rpx;
+}
+
+.legend-index {
+  display: flex;
+  flex: 0 0 30rpx;
+  align-items: center;
+  justify-content: center;
+  height: 30rpx;
+  border-radius: 50%;
+  background: #e8f0ea;
+  color: var(--safe-primary-deep);
+  font-size: 18rpx;
+  font-weight: 800;
+}
+
+.legend-current-dot {
+  flex: 0 0 20rpx;
+  width: 20rpx;
+  height: 20rpx;
+  margin: 5rpx;
+  border-radius: 50%;
+  background: var(--safe-primary);
+}
+
+.legend-label {
+  min-width: 0;
+  color: var(--safe-text);
+  font-size: 21rpx;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .profile-steps {
@@ -190,12 +242,18 @@
 .dimension-row:last-child { border-bottom: none; }
 
 .dimension-label {
+  flex: 1;
+  min-width: 0;
+  padding-right: 18rpx;
   color: var(--safe-title);
   font-size: 26rpx;
   font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .dimension-score {
+  flex: 0 0 auto;
   color: var(--safe-primary-deep);
   font-size: 26rpx;
   font-weight: 800;

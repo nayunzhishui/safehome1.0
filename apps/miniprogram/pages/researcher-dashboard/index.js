@@ -19,12 +19,25 @@ function normalizeDetail(detail) {
 }
 
 Page({
-  data: { loading: true, errorMessage: "", items: [], selected: null, note: "", narrative: null },
+  data: {
+    loading: true,
+    errorMessage: "",
+    items: [],
+    selected: null,
+    note: "",
+    narrative: null,
+    stageFeedback: "",
+    messageTitle: "研究者补充消息",
+    messageBody: "",
+    sendingMessage: false,
+    sendingFeedback: false,
+  },
 
-  onLoad() {
+  async onLoad() {
     if (!requireLogin({ redirectUrl: "/pages/researcher-dashboard/index" })) return;
     const user = getAuthUser();
-    if (!user || !["researcher", "admin", "supervisor"].includes(user.role)) {
+    const showcase = await api.getShowcaseAccess().catch(() => ({ enabled: false }));
+    if (!showcase.enabled && (!user || !["researcher", "admin", "supervisor"].includes(user.role))) {
       this.setData({ loading: false, errorMessage: "当前账号没有研究者权限。" });
       return;
     }
@@ -79,6 +92,9 @@ Page({
   },
 
   onNoteInput(event) { this.setData({ note: event.detail.value }); },
+  onStageFeedbackInput(event) { this.setData({ stageFeedback: event.detail.value }); },
+  onMessageTitleInput(event) { this.setData({ messageTitle: event.detail.value }); },
+  onMessageBodyInput(event) { this.setData({ messageBody: event.detail.value }); },
 
   async saveNote() {
     if (!this.data.note.trim()) return;
@@ -110,6 +126,61 @@ Page({
       wx.showToast({ title: "已发送到用户消息", icon: "success" });
     } catch (error) {
       wx.showToast({ title: error.message || "发送失败", icon: "none" });
+    }
+  },
+
+  async saveAndSendStageFeedback() {
+    const text = this.data.stageFeedback.trim();
+    const selected = this.data.selected;
+    if (!text || !selected) {
+      wx.showToast({ title: "请先填写阶段性反馈", icon: "none" });
+      return;
+    }
+    this.setData({ sendingFeedback: true });
+    try {
+      let report = selected.latestReport;
+      if (!report) report = await api.createRelationshipReport(selected.id);
+      if (!["confirmed", "sent", "updated"].includes(report.status)) {
+        report = await api.confirmRelationshipReport(report.id);
+      }
+      await api.updateRelationshipReport(report.id, {
+        version: `2026.07-stage-feedback-${Date.now()}`,
+        personalized_interpretation: text,
+      });
+      await api.sendRelationshipReport(report.id);
+      this.setData({ stageFeedback: "" });
+      await this.selectEnrollmentById(selected.id);
+      wx.showToast({ title: "阶段性反馈已发送", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: error.message || "阶段性反馈发送失败", icon: "none" });
+    } finally {
+      this.setData({ sendingFeedback: false });
+    }
+  },
+
+  async sendParticipantMessage() {
+    const title = this.data.messageTitle.trim();
+    const body = this.data.messageBody.trim();
+    const selected = this.data.selected;
+    if (!selected || !title || !body) {
+      wx.showToast({ title: "请填写消息标题和正文", icon: "none" });
+      return;
+    }
+    this.setData({ sendingMessage: true });
+    try {
+      await api.sendResearcherMessage({
+        enrollment_id: selected.id,
+        title,
+        body,
+        message_type: "researcher_message",
+        idempotency_key: `researcher-message-${selected.id}-${Date.now()}`,
+      });
+      this.setData({ messageBody: "" });
+      wx.showToast({ title: "已发送到参与者消息", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: error.message || "消息发送失败", icon: "none" });
+    } finally {
+      this.setData({ sendingMessage: false });
     }
   },
 

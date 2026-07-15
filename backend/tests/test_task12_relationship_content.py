@@ -32,11 +32,19 @@ def test_builds_three_relationship_scale_drafts_and_training_rules(tmp_path):
     drafts = json.loads((content_dir / "scale_item_drafts.json").read_text(encoding="utf-8"))["drafts"]
     by_id = {item["scale_id"]: item for item in drafts}
     assert len(by_id["regulatory_focus_relationship_18"]["items"]) == 18
+    regulatory = by_id["regulatory_focus_relationship_18"]
+    assert [item["value"] for item in regulatory["likert"]] == list(range(1, 10))
+    assert all([item["value"] for item in question["likert"]] == list(range(1, 10)) for question in regulatory["items"])
     assert len(by_id["micro_ysq_relationship_18"]["items"]) == 18
     relationship = by_id["relationship_initiation_intention_action"]
     assert len(relationship["items"]) == 31
     assert not {"@11", "@12"} & {item["item_code"] for item in relationship["items"]}
     assert relationship["total_score_method"] == "none"
+    assert relationship["recommended_card_ids"] == [
+        "relationship_open_question",
+        "relationship_gentle_expression",
+        "relationship_bounded_micro_action",
+    ]
     benefit = next(item for item in relationship["dimensions"] if item["code"] == "BENEFIT")
     assert benefit["calculation"]["type"] == "mean_of_products"
 

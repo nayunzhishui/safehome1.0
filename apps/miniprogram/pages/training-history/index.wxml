@@ -1,0 +1,48 @@
+<view class="safe-page history-page">
+  <view class="history-head">
+    <view>
+      <text class="page-kicker">训练记录</text>
+      <text class="page-title">看见已经完成的小练习</text>
+      <text class="page-summary">这里只记录真实打卡。已完成的训练卡不会继续出现在默认推荐中，但你仍可主动再次练习。</text>
+    </view>
+    <view class="total-badge">
+      <text class="total-value">{{total}}</text>
+      <text class="total-label">次记录</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-card state-card">
+    <text class="state-title">正在读取训练记录</text>
+  </view>
+
+  <view wx:elif="{{errorMessage && !items.length}}" class="safe-card state-card state-card--error">
+    <text class="state-title">记录暂时没有加载成功</text>
+    <text class="state-text">{{errorMessage}}</text>
+    <button class="safe-outline-button state-action" bindtap="retry">重新加载</button>
+  </view>
+
+  <view wx:elif="{{items.length}}" class="record-list">
+    <view wx:for="{{items}}" wx:key="id" class="record-card">
+      <view class="record-head">
+        <text class="record-status">{{item.statusText}}</text>
+        <text class="record-time">{{item.createdAtText}}</text>
+      </view>
+      <text class="record-title">{{item.cardTitle}}</text>
+      <text class="record-change">{{item.changeText}}</text>
+      <text wx:if="{{item.helpfulnessText}}" class="record-meta">{{item.helpfulnessText}}</text>
+      <text wx:if="{{item.reflection}}" class="record-reflection">“{{item.reflection}}”</text>
+      <button class="repeat-action" data-card-id="{{item.card_id}}" bindtap="openCard">再次练习</button>
+    </view>
+    <view class="load-more-area">
+      <button wx:if="{{hasMore}}" class="safe-outline-button load-more" loading="{{loadingMore}}" disabled="{{loadingMore}}" bindtap="loadMore">{{loadingMore ? '加载中' : '加载更多'}}</button>
+      <text wx:else class="list-end">已显示全部 {{total}} 次记录</text>
+      <text wx:if="{{errorMessage}}" class="load-error">{{errorMessage}}</text>
+    </view>
+  </view>
+
+  <view wx:else class="safe-card state-card">
+    <text class="state-title">还没有训练记录</text>
+    <text class="state-text">完成一张训练卡并打卡后，记录会出现在这里。</text>
+    <button class="safe-primary-button state-action" bindtap="goTraining">去训练中心</button>
+  </view>
+</view>

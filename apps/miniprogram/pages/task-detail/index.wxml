@@ -30,7 +30,7 @@
   </view>
 
   <view class="safe-section">
-    <section-title title="三步练习" subtitle="按顺序完成三个小动作" />
+    <section-title title="练习步骤" subtitle="按顺序完成下面的小动作" />
     <view class="step-list">
       <view wx:for="{{task.steps}}" wx:key="*this" class="step-card">
         <text class="step-index">{{index + 1}}</text>

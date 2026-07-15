@@ -70,7 +70,7 @@ def _worksheet_ref(row: dict, worksheet: dict) -> dict:
 
 def _recent_checkin_state(user_id: str) -> dict:
     with get_connection() as conn:
-        rows = conn.execute(
+        recent_rows = conn.execute(
             """
             SELECT card_id, completed, created_at
             FROM checkins
@@ -80,16 +80,37 @@ def _recent_checkin_state(user_id: str) -> dict:
             """,
             (user_id,),
         ).fetchall()
-    checkins = rows_to_dicts(rows)
-    completed = [
-        row.get("card_id")
-        for row in checkins
-        if row.get("completed") and row.get("card_id")
-    ]
+        completed_rows = conn.execute(
+            """
+            SELECT card_id, MAX(created_at) AS latest_completed_at
+            FROM checkins
+            WHERE user_id = ? AND completed = 1 AND card_id IS NOT NULL
+            GROUP BY card_id
+            ORDER BY latest_completed_at DESC
+            """,
+            (user_id,),
+        ).fetchall()
+    checkins = rows_to_dicts(recent_rows)
+    completed = [row.get("card_id") for row in rows_to_dicts(completed_rows) if row.get("card_id")]
     return {
         "has_recent_checkin": bool(checkins),
         "last_completed_card_ids": list(dict.fromkeys(completed))[:5],
+        "completed_card_ids": list(dict.fromkeys(completed)),
     }
+
+
+def _exclude_completed_cards(plan_items: list[dict], completed_card_ids: list[str]) -> list[dict]:
+    completed = set(completed_card_ids)
+    if not completed:
+        return plan_items
+    available_items = []
+    for item in plan_items:
+        card_ids = [card_id for card_id in item.get("card_ids", []) if card_id not in completed]
+        if not card_ids:
+            continue
+        cards = [card for card in item.get("cards", []) if card.get("id") in card_ids]
+        available_items.append({**item, "card_ids": card_ids, "cards": cards})
+    return available_items
 
 
 def _latest_assignment(user_id: str) -> dict | None:
@@ -281,8 +302,8 @@ def get_training_plan():
         if cluster_item:
             plan_items.append(cluster_item)
 
-    plan_items = _dedupe_plan_items(plan_items)
     checkin_state = _recent_checkin_state(user_id)
+    plan_items = _exclude_completed_cards(_dedupe_plan_items(plan_items), checkin_state["completed_card_ids"])
     empty_state = None
     if not results:
         empty_state = {
@@ -302,6 +323,7 @@ def get_training_plan():
             "has_assessment": bool(results),
             "has_recent_checkin": checkin_state["has_recent_checkin"],
             "last_completed_card_ids": checkin_state["last_completed_card_ids"],
+            "completed_card_ids": checkin_state["completed_card_ids"],
             "assignment": _latest_assignment(user_id),
             "latest_result": row_to_dict(results[0]) if results else None,
             "plan_items": plan_items,

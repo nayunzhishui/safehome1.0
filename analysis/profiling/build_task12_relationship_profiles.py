@@ -31,7 +31,7 @@ SPECS = {
         "name": "关系情境中的行动关注方式",
         "cards": ["student_emotion_naming", "cbt_auto_thought_student", "self_support_statement"],
         "training_range": [1, 5],
-        "worksheet_range": [1, 7],
+        "worksheet_range": [1, 9],
     },
     "micro_ysq": {
         "scale_id": "micro_ysq_relationship_18",

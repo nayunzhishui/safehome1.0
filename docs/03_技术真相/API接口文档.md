@@ -163,13 +163,15 @@
 
 用途：根据最近测评结果、测评训练规则和画像簇推荐卡，生成最小个性化训练计划。没有测评记录时只返回“先完成一次测一测”的下一步提示。
 
+生产环境训练卡和课程均执行服务端治理门禁：普通用户只读取 `pilot_approved/production_approved/enabled/trial_enabled` 且启用的内容；研究者、督导或管理员可携带身份并传 `include_unapproved=true` 只读预览。训练推荐同样经过训练卡治理过滤，不能靠测评映射绕过卡片审核状态。
+
 ### `GET /api/programs`
 
-用途：返回三个项目测试练习包摘要。内容来自 `content/programs.json`。每项同时返回 `measurement_plan.status`、测量时间点中文标签和是否仍需人工审核；列表不暴露 worksheet 内部 ID。
+用途：返回满足治理状态的项目测试练习包摘要。内容来自 `content/programs.json`。生产环境普通用户只看到 `pilot_approved`；没有批准项目时 `items=[]`，并通过 `availability.approved_count/pending_review_count/status/message` 说明真实状态。研究者、督导或管理员可携带身份令牌并传 `include_drafts=true` 受控预览草案；预览不改变治理状态，也不能绕过提交门禁。每项同时返回 `measurement_plan.status`、测量时间点中文标签和是否仍需人工审核；列表不暴露 worksheet 内部 ID。
 
 ### `GET /api/programs/<id>`
 
-用途：返回单个项目测试练习包详情，包括 sessions、书写提示、反思问题、非诊断边界和结构化 `measurement_plan`。测量计划包含前测/后测 worksheet 引用、时间点、主要观察维度和人工审核项；`draft_requires_research_review` 不代表方案已批准。小程序端书写草稿只本地缓存，不上传后端。
+用途：返回单个项目测试练习包详情，包括 sessions、书写提示、反思问题、非诊断边界和结构化 `measurement_plan`。生产环境草案详情仅允许研究者、督导或管理员携带身份并传 `include_drafts=true` 预览。测量计划包含前测/后测 worksheet 引用、时间点、主要观察维度和人工审核项；`draft_requires_research_review` 不代表方案已批准。小程序端书写草稿只本地缓存，不上传后端。
 
 ### 共享错误码
 
@@ -373,7 +375,9 @@
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `user_id` | string | 否 | 用户 ID，缺省为 `demo-parent` |
-| `limit` | integer | 否 | 默认 50 |
+| `page` | integer | 否 | 页码，从 1 开始，默认 1 |
+| `page_size` | integer | 否 | 每页条数，默认 50，最大 100 |
+| `limit` | integer | 否 | 兼容旧客户端；未传 `page_size` 时作为每页条数 |
 
 响应字段：
 
@@ -625,13 +629,19 @@
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `user_id` | string | 否 | 用户 ID，缺省为 `demo-parent` |
-| `limit` | integer | 否 | 默认 50 |
+| `page` | integer | 否 | 页码，从 1 开始，默认 1 |
+| `page_size` | integer | 否 | 每页条数，默认 50，最大 100 |
+| `limit` | integer | 否 | 兼容旧客户端；未传 `page_size` 时作为每页条数 |
 
 响应字段：
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `items` | array | 测一测结果列表 |
+| `page` | integer | 当前页码 |
+| `page_size` | integer | 当前每页条数 |
+| `total` | integer | 当前用户符合条件的历史记录总数 |
+| `has_more` | boolean | 是否还有下一页 |
 
 ### `GET /api/assessment-results/<result_id>/profile-position`
 
@@ -717,13 +727,22 @@
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `user_id` | string | 否 | 用户 ID，缺省为 `demo-parent` |
-| `limit` | integer | 否 | 默认 50 |
+| `completed` | boolean | 否 | 仅返回已完成或未完成记录；不传则返回全部 |
+| `page` | integer | 否 | 页码，从 1 开始，默认 1 |
+| `page_size` | integer | 否 | 每页条数，默认 50，最大 100 |
+| `limit` | integer | 否 | 兼容旧客户端；未传 `page_size` 时作为每页条数 |
 
 响应字段：
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `items` | array | 打卡记录列表 |
+| `page` | integer | 当前页码 |
+| `page_size` | integer | 当前每页条数 |
+| `total` | integer | 当前用户符合筛选条件的记录总数 |
+| `has_more` | boolean | 是否还有下一页 |
+
+列表项在原始打卡字段外增加 `card_title`、`card_duration_minutes` 和 `card_safety_level`，用于历史页稳定展示；未知或已移除训练卡仍保留原 `card_id`。
 
 ## 6. 周度报告
 
@@ -1316,6 +1335,21 @@ Invoke-WebRequest `
 
 ## 2026-07-01：任务六/任务七新增接口
 
+### `GET /api/auth/capabilities`
+
+用途：登录页在发起授权前读取账号密码、微信一键登录和手机号快捷登录的当前可用状态。接口只返回 `available` 和脱敏 `mode`，不返回 AppID、Secret、openid、手机号、令牌或其他身份值。
+
+返回字段：
+
+| 字段 | 说明 |
+|---|---|
+| `account_password.available` | 账号密码登录是否可用，当前固定为 `true` |
+| `wechat_login.available/mode` | 当前 callContainer 请求是否带可信 CloudBase 身份，或是否配置标准 `jscode2session` |
+| `phone_login.available/mode` | 容器微信令牌文件或标准微信 access token 配置是否可用 |
+| `privacy_notice` | 能力探测的隐私边界 |
+
+该接口用于区分“按钮代码故障”和“CloudBase 外部能力未配置”。即使快捷登录不可用，账号密码登录也必须继续可用。
+
 ### `POST /api/auth/wechat-login`
 
 用途：微信小程序登录或绑定用户。仅当云托管部署显式设置 `TRUST_CLOUDBASE_IDENTITY_HEADERS=1` 时，后端读取 `wx.cloud.callContainer` 注入的 `X-WX-OPENID` 和固定值 `X-WX-SOURCE=wx-cloudbase`；默认关闭该信任路径，防止普通公网请求伪造身份头。非云托管环境使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。开发环境在两者都不可用时保留稳定兜底 openid。
@@ -1332,6 +1366,12 @@ Invoke-WebRequest `
 返回：`token`、`user`、`dev_fallback`、`identity_source`。`identity_source` 可为 `cloudbase_header`、`jscode2session` 或 `development_fallback`。
 
 生产边界：接口不会把 `WECHAT_APPID`、`WECHAT_SECRET` 或微信服务端原始错误暴露给用户；停用账号不能通过微信重新登录。
+
+### `POST /api/auth/admin-create-account`
+
+用途：由持有 `X-Admin-Token` 的负责人创建研究者、督导或管理员等后台角色账号。任务十八后可传 `rotate_existing=true` 幂等轮换同名账号的密码和角色；未显式传该字段时，同名账号仍返回 `409 username_exists`。
+
+生产研究者用户名固定为 `safehome_researcher_01`。一次性密码由 `backend/scripts/bootstrap_researcher.py prepare` 生成到 `.codex_tmp`，再由 `apply` 子命令调用本接口；密码不得写入 Git、API 文档或普通运行日志。
 
 ### `GET /api/profile/stats`
 
@@ -1357,9 +1397,27 @@ Invoke-WebRequest `
 |---|---|---|
 | `user_id` | string | 用户 ID |
 | `status` | string | 可选 `unread` 或 `read` |
-| `limit` | number | 最大 100 |
+| `message_type` | string | 可选，按消息类型筛选 |
+| `page` | number | 页码，从 1 开始 |
+| `page_size` | number | 每页数量，1 至 100；`limit` 继续作为兼容别名 |
 
-返回：`items`、`count`、`unread_count`。
+返回：`items`、`count`、`total`、`page`、`page_size`、`has_more`、`unread_count`。
+
+### `POST /api/messages`
+
+用途：研究者、督导或管理员向关系探索试点参与者发送站内消息。收件人由 `enrollment_id` 对应的报名记录确定，客户端不能直接指定任意 `user_id`。
+
+请求字段：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `enrollment_id` | string | 是 | 关系试点报名 ID |
+| `title` | string | 是 | 1 至 60 个字符 |
+| `body` | string | 是 | 1 至 2000 个字符 |
+| `message_type` | string | 否 | `researcher_message` 或 `relationship_stage_feedback`，默认前者 |
+| `idempotency_key` | string | 否 | 防止重复发送；也可使用 `Idempotency-Key` 请求头 |
+
+约束：发送前执行文本风险预检；研究者消息命中高风险表述时返回 `409 message_requires_supervisor_review`。成功写入 `messages` 后，参与者通过 `GET /api/messages` 读取。
 
 ### `GET /api/messages/<message_id>`
 
@@ -1376,6 +1434,12 @@ Invoke-WebRequest `
 请求字段：`user_id`。
 
 权限：同 `GET /api/messages`。
+
+### `POST /api/messages/read-all`
+
+用途：将当前登录用户的全部未读消息标记为已读。普通用户只能更新自己的消息；管理员或督导可按权限传 `user_id`。
+
+返回：`updated_count`、`status=read`。
 
 ### `POST /api/supervision/<request_id>/reply`
 
@@ -1691,7 +1755,8 @@ outputs/text_analysis/family_topology_audit_summary.json
 | `POST /enrollments/<id>/report` | 本人/研究者 | 生成同源关系健康初筛报告；未复核时为 `pending_review` |
 | `GET /reports/<id>` | 本人/研究者 | 查看报告；`download=1` 下载脱敏结构化 JSON |
 | `POST /reports/<id>/confirm` | 研究者/督导/管理员 | 人工确认报告 |
-| `POST /reports/<id>/send` | 研究者/督导/管理员 | 仅发送已确认报告；消息只含摘要与报告 ID |
+| `PATCH /reports/<id>` | 研究者/督导/管理员 | 为已确认或已发送报告创建新版本，可写入 `personalized_interpretation` 等支持性阶段反馈字段 |
+| `POST /reports/<id>/send` | 研究者/督导/管理员 | 发送已确认报告或更新版本；更新版本以 `relationship_stage_feedback` 写入参与者消息列表 |
 | `POST /enrollments/<id>/tasks` | 本人 | 保存关系绘画笔画数据或句子补全；需材料授权并执行风险预检 |
 | `GET /researcher/dashboard` | 研究者/督导/管理员 | 查看报名、画像、报告、任务数、备注数和复核状态 |
 | `POST /enrollments/<id>/notes` | 研究者/督导/管理员 | 新增不覆盖用户原报告的人工备注 |

@@ -5,9 +5,10 @@ import json
 from flask import Blueprint, current_app, request
 
 from database import ensure_user, get_connection, load_content_json, new_id, now_iso, row_to_dict
-from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
+from routes.auth_utils import AuthError, auth_error_response, require_role, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int
 from services.risk_service import check_text_risk
+from services.showcase_access_service import showcase_programs_open
 
 
 bp = Blueprint("programs", __name__, url_prefix="/api/programs")
@@ -20,8 +21,20 @@ def _load_programs_payload() -> dict:
 def _is_program_available(program: dict) -> bool:
     if not program.get("enabled", True):
         return False
+    if showcase_programs_open():
+        return True
     is_production = str(current_app.config.get("APP_ENV", "development")).lower() == "production"
     return not is_production or program.get("review_status") == "pilot_approved"
+
+
+def _reviewer_preview_requested() -> tuple[bool, object | None]:
+    if not parse_bool(request.args.get("include_drafts"), False):
+        return False, None
+    try:
+        require_role("researcher", "supervisor", "admin")
+    except AuthError as exc:
+        return False, auth_error_response(exc)
+    return True, None
 
 
 def _program_summary(program: dict) -> dict:
@@ -34,7 +47,8 @@ def _program_summary(program: dict) -> dict:
         "theory_source": program.get("theory_source"),
         "review_status": program.get("review_status"),
         "protocol_version": program.get("protocol_version"),
-        "preview_only": program.get("review_status") != "pilot_approved",
+        "preview_only": program.get("review_status") != "pilot_approved" and not showcase_programs_open(),
+        "showcase_open": showcase_programs_open(),
         "minimum_dose": program.get("minimum_dose"),
         "completion_definition": program.get("completion_definition"),
         "boundary_notice": program.get("boundary_notice"),
@@ -56,11 +70,32 @@ def _program_summary(program: dict) -> dict:
 def list_programs():
     payload = _load_programs_payload()
     programs = payload.get("programs", [])
+    include_drafts, error_response = _reviewer_preview_requested()
+    if error_response is not None:
+        return error_response
+    available = [program for program in programs if include_drafts or _is_program_available(program)]
+    pending_count = sum(1 for program in programs if program.get("review_status") == "pilot_draft")
+    approved_count = sum(1 for program in programs if program.get("review_status") == "pilot_approved")
+    showcase_mode = showcase_programs_open()
     return ok(
         {
             "version": payload.get("version"),
             "boundary_notice": payload.get("boundary_notice"),
-            "items": [_program_summary(program) for program in programs if _is_program_available(program)],
+            "items": [_program_summary(program) for program in available],
+            "availability": {
+                "approved_count": approved_count,
+                "pending_review_count": pending_count,
+                "preview_mode": include_drafts,
+                "showcase_mode": showcase_mode,
+                "status": "showcase_open" if showcase_mode else "available" if approved_count else "pending_review",
+                "message": (
+                    "临时展示模式已开启，三个项目方案均可查看和试用；正式发布前仍需恢复审核门禁。"
+                    if showcase_mode
+                    else "当前项目方案仍在研究、心理和伦理审核中，审核完成后开放。"
+                    if not approved_count and pending_count
+                    else "仅显示已完成治理审核的项目方案。"
+                ),
+            },
         }
     )
 
@@ -68,9 +103,18 @@ def list_programs():
 @bp.get("/<program_id>")
 def get_program(program_id: str):
     payload = _load_programs_payload()
+    include_drafts, error_response = _reviewer_preview_requested()
+    if error_response is not None:
+        return error_response
     for program in payload.get("programs", []):
-        if program.get("id") == program_id and _is_program_available(program):
-            return ok({"version": payload.get("version"), "program": program})
+        if program.get("id") == program_id and (include_drafts or _is_program_available(program)):
+            return ok(
+                {
+                    "version": payload.get("version"),
+                    "program": {**program, "showcase_open": showcase_programs_open()},
+                    "preview_mode": include_drafts,
+                }
+            )
     return fail("not_found", "未找到对应的项目测试内容", status=404)
 
 
@@ -93,7 +137,7 @@ def create_program_entry(program_id: str):
     )
     if not program:
         return fail("not_found", "未找到对应的项目测试内容", status=404)
-    if str(current_app.config.get("APP_ENV", "development")).lower() == "production" and program.get("review_status") != "pilot_approved":
+    if str(current_app.config.get("APP_ENV", "development")).lower() == "production" and program.get("review_status") != "pilot_approved" and not showcase_programs_open():
         return fail("program_not_approved", "该项目尚未完成研究、心理和伦理审核。", status=409)
 
     session_no = parse_int(payload.get("session_no"), None)

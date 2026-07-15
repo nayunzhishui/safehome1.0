@@ -16,10 +16,11 @@ from services.relationship_pilot_common import (
     own_or_researcher,
     worksheet,
 )
+from services.showcase_access_service import allow_showcase_program_participation
 
 
 def create_enrollment(actor: dict, payload: dict) -> ServiceResult:
-    if actor.get("role") not in {"student", "admin"}:
+    if actor.get("role") not in {"student", "admin"} and not allow_showcase_program_participation():
         raise RelationshipPilotError("forbidden", "关系探索试点当前仅向已授权的学生试点账号开放。", 403)
     if payload.get("research_consent") is not True:
         raise RelationshipPilotError("consent_required", "参加第二阶段前需要明确同意研究用途说明。")

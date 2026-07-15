@@ -9,6 +9,7 @@
       <button class="phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="handlePhoneLogin">手机号快捷登录</button>
     </view>
     <view class="auth-note">手机号仅用于识别你的账号，系统只保存不可逆摘要，不保存完整号码。</view>
+    <view wx:if="{{capabilityMessage}}" class="capability-note" aria-live="polite">{{capabilityMessage}}</view>
     <view class="divider"><text>或使用账号密码</text></view>
 
     <view class="field">

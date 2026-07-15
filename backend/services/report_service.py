@@ -24,7 +24,7 @@ def _direction(delta: float | None) -> str:
 
 def _build_assessment_summary(assessments: list[dict]) -> dict:
     worksheet_counts = Counter(item.get("worksheet_title") for item in assessments if item.get("worksheet_title"))
-    dimension_history: dict[str, list[dict]] = {}
+    dimension_history: dict[tuple[str, str], list[dict]] = {}
     recommended_card_ids: list[str] = []
     requires_review_count = 0
     for item in assessments:
@@ -44,15 +44,18 @@ def _build_assessment_summary(assessments: list[dict]) -> dict:
             score = dimension.get("score")
             if not key or not isinstance(score, (int, float)):
                 continue
-            dimension_history.setdefault(str(key), []).append(
+            worksheet_id = str(item.get("worksheet_id") or "unknown")
+            dimension_history.setdefault((worksheet_id, str(key)), []).append(
                 {
                     "label": dimension.get("label") or key,
+                    "worksheet_id": worksheet_id,
+                    "worksheet_title": item.get("worksheet_title") or worksheet_id,
                     "score": float(score),
                     "created_at": item.get("created_at"),
                 }
             )
     dimension_summaries = []
-    for key, items in dimension_history.items():
+    for (worksheet_id, key), items in dimension_history.items():
         newest = items[0]
         oldest = items[-1]
         delta = round(newest["score"] - oldest["score"], 2) if len(items) >= 2 else None
@@ -60,6 +63,8 @@ def _build_assessment_summary(assessments: list[dict]) -> dict:
             {
                 "key": key,
                 "label": newest["label"],
+                "worksheet_id": worksheet_id,
+                "worksheet_title": newest["worksheet_title"],
                 "count": len(items),
                 "latest_score": newest["score"],
                 "previous_score": oldest["score"] if len(items) >= 2 else None,
@@ -67,10 +72,11 @@ def _build_assessment_summary(assessments: list[dict]) -> dict:
                 "direction": _direction(delta),
             }
         )
+    dimension_summaries.sort(key=lambda item: (item["worksheet_title"], item["label"]))
     return {
         "count": len(assessments),
-        "worksheet_names": worksheet_counts.most_common(5),
-        "dimension_summaries": dimension_summaries[:8],
+        "worksheet_names": worksheet_counts.most_common(),
+        "dimension_summaries": dimension_summaries,
         "profile_position_count": sum(1 for item in assessments if item.get("profile_cluster_id") is not None),
         "requires_review_count": requires_review_count,
         "recommended_card_ids": recommended_card_ids[:8],

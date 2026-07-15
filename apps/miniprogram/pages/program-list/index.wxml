@@ -4,9 +4,11 @@
     <text class="safe-subtitle">先选一个主题，按小节慢慢练习。</text>
   </view>
 
-  <view wx:for="{{programs}}" wx:key="id" class="safe-card program-card" data-id="{{item.id}}" bindtap="openProgram">
+  <view wx:if="{{previewMode}}" class="preview-notice">研究者预览：草案仅供审核，不可作为正式项目提交。</view>
+
+  <view wx:for="{{programs}}" wx:key="id" class="safe-card program-card {{item.preview_only ? 'program-card--preview' : ''}}" data-id="{{item.id}}" data-preview="{{item.preview_only}}" bindtap="openProgram">
     <view class="program-head">
-      <text class="program-status">{{item.review_status}}</text>
+    <text class="program-status">{{item.showcase_open ? '展示开放' : item.preview_only ? '待三方审核' : '已批准试点'}}</text>
       <text class="program-count">{{item.session_count}} 小节</text>
     </view>
     <text class="program-title">{{item.title}}</text>
@@ -28,7 +30,9 @@
   </view>
 
   <view wx:if="{{!loading && !errorMessage && !programs.length}}" class="safe-card empty-card">
-    <text class="safe-body">当前还没有可显示的项目测试内容。</text>
+    <text class="safe-h3">项目方案正在审核</text>
+    <text class="safe-body">{{availability && availability.message ? availability.message : '当前还没有已完成治理审核的项目测试内容。'}}</text>
+    <text wx:if="{{availability && availability.pending_review_count}}" class="pending-count">已有 {{availability.pending_review_count}} 个方案完成开发，待研究、心理和伦理审核。</text>
   </view>
 
   <view class="boundary-note">{{boundaryNotice}}</view>

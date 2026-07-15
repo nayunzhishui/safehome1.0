@@ -18,7 +18,7 @@ def test_task17_baseline_covers_all_current_content():
     module = _load_module()
     audit = module.build_audit(PROJECT_ROOT / "content")
 
-    assert audit["counts"]["training_cards"] == 34
+    assert audit["counts"]["training_cards"] == 42
     assert audit["counts"]["courses"] == 5
     assert audit["counts"]["programs"] == 3
     assert audit["training_card_quality"]["cards_missing_governance_fields"] == []

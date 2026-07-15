@@ -274,11 +274,27 @@
   padding-bottom: 0;
 }
 
-.dimension-change-list {
+.dimension-group-list {
   display: flex;
   flex-direction: column;
-  gap: 10rpx;
+  gap: 18rpx;
   margin-top: 14rpx;
+}
+
+.dimension-group {
+  padding: 18rpx 20rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-bg-leaf);
+}
+
+.dimension-group-title {
+  display: block;
+  color: var(--safe-title);
+  font-size: 26rpx;
+  font-weight: 850;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
 .dimension-change-row {
@@ -288,6 +304,10 @@
   gap: 18rpx;
   padding: 14rpx 0;
   border-top: 1rpx solid var(--safe-border);
+}
+
+.dimension-change-row:first-of-type {
+  margin-top: 10rpx;
 }
 
 .row-name {

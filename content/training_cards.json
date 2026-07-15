@@ -2965,8 +2965,703 @@
       "safety_level": "standard",
       "release_policy": "shared_choice_candidate",
       "governance_review_status": "manual_review_required"
+    },
+    {
+      "id": "relationship_self_support",
+      "type": "relationship_growth",
+      "title": "自我支持卡：把责备换成支持句",
+      "user_facing_title": "自我支持卡：把责备换成支持句",
+      "purpose": "把责备改写成具体、能支持下一步行动的话。",
+      "today_goal": "把责备改写成具体、能支持下一步行动的话。",
+      "tags": [
+        "relationship_growth",
+        "self_support",
+        "self_blame"
+      ],
+      "steps": [
+        "写下脑中真实出现的责备句。",
+        "区分实际发生的事实、当前感受和真正担心。",
+        "用“我感到……因为……这不代表……接下来我可以……”改写，并补一个小行动。"
+      ],
+      "example": "我现在有些失望，因为刚才没把想法说清楚。这不代表我不擅长与人交往。接下来我先写下一句真正想表达的话。",
+      "example_phrase": "我现在有些失望，因为刚才没把想法说清楚。这不代表我不擅长与人交往。接下来我先写下一句真正想表达的话。",
+      "duration_minutes": 5,
+      "theory_source": "支持性认知行为练习与情绪调节",
+      "target_skill": "relationship_self_support",
+      "mechanism_code": "relationship_growth_practice",
+      "target_constructs": [
+        "self_support",
+        "self_blame"
+      ],
+      "suitable_for": [
+        "表现不如预期",
+        "主动后觉得尴尬",
+        "不断责备自己"
+      ],
+      "suitable_scene": "表现不如预期；主动后觉得尴尬；不断责备自己",
+      "indications": [
+        "表现不如预期",
+        "主动后觉得尴尬",
+        "不断责备自己"
+      ],
+      "not_suitable_for": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "contraindications": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "reflection_questions": [
+        "练习前后自责或难受程度是多少？",
+        "这次练习有帮助、一般、暂时没帮助，还是没有完成？",
+        "下一步准备做哪件小事？"
+      ],
+      "review_status": "pilot_ready",
+      "reviewer_note": "来源于项目负责人提供的关系成长训练卡文档。支持自己不等于否认问题，而是为处理问题保留力量。",
+      "enabled": true,
+      "before_note_prompt": "开始前先给当前感受或困难程度评分；不要默认选择。",
+      "after_note_prompt": "结束后记录完成、部分完成、没有完成，以及这次练习留下的一点观察。",
+      "boundary_notice": "这张训练卡只提供关系情境中的支持性练习和自我观察，不构成诊断、治疗、危机干预或关系成败判断。",
+      "pre_practice_prompt": "今天只练一个小步：写下脑中真实出现的责备句。",
+      "emotion_word_prompt": "开始前给此刻感受起一个日常、具体的名字；说不准也可以。",
+      "new_response_prompt": "把责备改写成具体、能支持下一步行动的话。",
+      "post_practice_prompt": "支持自己不等于否认问题，而是为处理问题保留力量。",
+      "one_sentence_note_prompt": "用一句话写下这次练习留下的观察，不急着总结成结论。",
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "按需要练习，可重复3至7次观察变化",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤并主动保存记录；部分完成或没有完成也是有效记录，页面浏览不计完成。",
+      "progression_criteria": "能在低压力场景重复完成后，再自主选择继续、替换或提高一点难度。",
+      "stop_rules": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下脑中真实出现的责备句。",
+        "区分实际发生的事实、当前感受和真正担心。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
+    },
+    {
+      "id": "relationship_emotion_observation",
+      "type": "relationship_growth",
+      "title": "一分钟情绪观察卡",
+      "user_facing_title": "一分钟情绪观察卡",
+      "purpose": "不急着解决情绪，观察它一分钟发生了什么变化。",
+      "today_goal": "不急着解决情绪，观察它一分钟发生了什么变化。",
+      "tags": [
+        "relationship_growth",
+        "emotion_observation",
+        "pause"
+      ],
+      "steps": [
+        "前20秒观察胸口、胃部、肩膀、喉咙或手心的感觉。",
+        "中间20秒给感受起一个名字，说不准也可以。",
+        "最后20秒允许它暂时存在，再决定是否行动。"
+      ],
+      "example": "我注意到胸口有点紧，可能是紧张，也有一点期待。我先等一分钟，再决定要不要回复。",
+      "example_phrase": "我注意到胸口有点紧，可能是紧张，也有一点期待。我先等一分钟，再决定要不要回复。",
+      "duration_minutes": 1,
+      "theory_source": "支持性认知行为练习与情绪调节",
+      "target_skill": "relationship_emotion_observation",
+      "mechanism_code": "relationship_growth_practice",
+      "target_constructs": [
+        "emotion_observation",
+        "pause"
+      ],
+      "suitable_for": [
+        "情绪突然升高",
+        "脑子很乱",
+        "等待回复时冲动"
+      ],
+      "suitable_scene": "情绪突然升高；脑子很乱；等待回复时冲动",
+      "indications": [
+        "情绪突然升高",
+        "脑子很乱",
+        "等待回复时冲动"
+      ],
+      "not_suitable_for": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "contraindications": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "reflection_questions": [
+        "最明显的身体位置在哪里？",
+        "最接近的情绪词是什么？",
+        "一分钟后强度升高、差不多还是降低？"
+      ],
+      "review_status": "pilot_ready",
+      "reviewer_note": "来源于项目负责人提供的关系成长训练卡文档。观察不是为了马上消除情绪，而是留出选择行动的空间。",
+      "enabled": true,
+      "before_note_prompt": "开始前先给当前感受或困难程度评分；不要默认选择。",
+      "after_note_prompt": "结束后记录完成、部分完成、没有完成，以及这次练习留下的一点观察。",
+      "boundary_notice": "这张训练卡只提供关系情境中的支持性练习和自我观察，不构成诊断、治疗、危机干预或关系成败判断。",
+      "pre_practice_prompt": "今天只练一个小步：前20秒观察胸口、胃部、肩膀、喉咙或手心的感觉。",
+      "emotion_word_prompt": "开始前给此刻感受起一个日常、具体的名字；说不准也可以。",
+      "new_response_prompt": "不急着解决情绪，观察它一分钟发生了什么变化。",
+      "post_practice_prompt": "观察不是为了马上消除情绪，而是留出选择行动的空间。",
+      "one_sentence_note_prompt": "用一句话写下这次练习留下的观察，不急着总结成结论。",
+      "minimum_dose": {
+        "single_session_minutes": 1,
+        "suggested_frequency": "按需要练习，可重复3至7次观察变化",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤并主动保存记录；部分完成或没有完成也是有效记录，页面浏览不计完成。",
+      "progression_criteria": "能在低压力场景重复完成后，再自主选择继续、替换或提高一点难度。",
+      "stop_rules": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "前20秒观察胸口、胃部、肩膀、喉咙或手心的感觉。",
+        "中间20秒给感受起一个名字，说不准也可以。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
+    },
+    {
+      "id": "relationship_emotion_naming",
+      "type": "relationship_growth",
+      "title": "情绪命名卡：说出现在最明显的感受",
+      "user_facing_title": "情绪命名卡：说出现在最明显的感受",
+      "purpose": "把“很难受”拆成一至两个更具体的情绪词。",
+      "today_goal": "把“很难受”拆成一至两个更具体的情绪词。",
+      "tags": [
+        "relationship_growth",
+        "emotion_naming",
+        "relationship_trigger"
+      ],
+      "steps": [
+        "只写具体发生的事实，不解释对方动机。",
+        "选择一至两个最接近的情绪词。",
+        "用“我感到……可能是因为我在意……”写下线索。"
+      ],
+      "example": "我感到焦虑和失落，可能是因为我很在意自己有没有被认真回应。",
+      "example_phrase": "我感到焦虑和失落，可能是因为我很在意自己有没有被认真回应。",
+      "duration_minutes": 3,
+      "theory_source": "支持性认知行为练习与情绪调节",
+      "target_skill": "relationship_emotion_naming",
+      "mechanism_code": "relationship_growth_practice",
+      "target_constructs": [
+        "emotion_naming",
+        "relationship_trigger"
+      ],
+      "suitable_for": [
+        "情绪混乱",
+        "想靠近又想退缩",
+        "冲突后说不清感受"
+      ],
+      "suitable_scene": "情绪混乱；想靠近又想退缩；冲突后说不清感受",
+      "indications": [
+        "情绪混乱",
+        "想靠近又想退缩",
+        "冲突后说不清感受"
+      ],
+      "not_suitable_for": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "contraindications": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "reflection_questions": [
+        "事件事实是什么？",
+        "最明显的一至两个情绪是什么？",
+        "这份情绪可能在提醒我在意什么？"
+      ],
+      "review_status": "pilot_ready",
+      "reviewer_note": "来源于项目负责人提供的关系成长训练卡文档。情绪是一种线索，不是对事实的最终判断。",
+      "enabled": true,
+      "before_note_prompt": "开始前先给当前感受或困难程度评分；不要默认选择。",
+      "after_note_prompt": "结束后记录完成、部分完成、没有完成，以及这次练习留下的一点观察。",
+      "boundary_notice": "这张训练卡只提供关系情境中的支持性练习和自我观察，不构成诊断、治疗、危机干预或关系成败判断。",
+      "pre_practice_prompt": "今天只练一个小步：只写具体发生的事实，不解释对方动机。",
+      "emotion_word_prompt": "开始前给此刻感受起一个日常、具体的名字；说不准也可以。",
+      "new_response_prompt": "把“很难受”拆成一至两个更具体的情绪词。",
+      "post_practice_prompt": "情绪是一种线索，不是对事实的最终判断。",
+      "one_sentence_note_prompt": "用一句话写下这次练习留下的观察，不急着总结成结论。",
+      "minimum_dose": {
+        "single_session_minutes": 3,
+        "suggested_frequency": "按需要练习，可重复3至7次观察变化",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤并主动保存记录；部分完成或没有完成也是有效记录，页面浏览不计完成。",
+      "progression_criteria": "能在低压力场景重复完成后，再自主选择继续、替换或提高一点难度。",
+      "stop_rules": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "只写具体发生的事实，不解释对方动机。",
+        "选择一至两个最接近的情绪词。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
+    },
+    {
+      "id": "relationship_auto_thought",
+      "type": "relationship_growth",
+      "title": "自动想法卡：把担心写成一句话",
+      "user_facing_title": "自动想法卡：把担心写成一句话",
+      "purpose": "看见关系情境中一闪而过、会推动行动或回避的那句话。",
+      "today_goal": "看见关系情境中一闪而过、会推动行动或回避的那句话。",
+      "tags": [
+        "relationship_growth",
+        "automatic_thought",
+        "rejection_expectation"
+      ],
+      "steps": [
+        "写下刚才发生的具体情境。",
+        "写下脑海最先跳出的第一反应原句。",
+        "记录这句话带来的身体感受和行动冲动。"
+      ],
+      "example": "情境：对方没有及时回复。自动想法：我是不是表现得太主动了。行动冲动：想撤回消息。",
+      "example_phrase": "情境：对方没有及时回复。自动想法：我是不是表现得太主动了。行动冲动：想撤回消息。",
+      "duration_minutes": 5,
+      "theory_source": "支持性认知行为练习与情绪调节",
+      "target_skill": "relationship_auto_thought",
+      "mechanism_code": "relationship_growth_practice",
+      "target_constructs": [
+        "automatic_thought",
+        "rejection_expectation"
+      ],
+      "suitable_for": [
+        "反复脑补",
+        "突然想逃",
+        "想删除消息或连续追问"
+      ],
+      "suitable_scene": "反复脑补；突然想逃；想删除消息或连续追问",
+      "indications": [
+        "反复脑补",
+        "突然想逃",
+        "想删除消息或连续追问"
+      ],
+      "not_suitable_for": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "contraindications": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "reflection_questions": [
+        "具体情境是什么？",
+        "自动想法原句是什么？",
+        "我最后做了什么？"
+      ],
+      "review_status": "pilot_ready",
+      "reviewer_note": "来源于项目负责人提供的关系成长训练卡文档。这张卡只负责看见自动想法，暂时不要求判断它对不对。",
+      "enabled": true,
+      "before_note_prompt": "开始前先给当前感受或困难程度评分；不要默认选择。",
+      "after_note_prompt": "结束后记录完成、部分完成、没有完成，以及这次练习留下的一点观察。",
+      "boundary_notice": "这张训练卡只提供关系情境中的支持性练习和自我观察，不构成诊断、治疗、危机干预或关系成败判断。",
+      "pre_practice_prompt": "今天只练一个小步：写下刚才发生的具体情境。",
+      "emotion_word_prompt": "开始前给此刻感受起一个日常、具体的名字；说不准也可以。",
+      "new_response_prompt": "看见关系情境中一闪而过、会推动行动或回避的那句话。",
+      "post_practice_prompt": "这张卡只负责看见自动想法，暂时不要求判断它对不对。",
+      "one_sentence_note_prompt": "用一句话写下这次练习留下的观察，不急着总结成结论。",
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "按需要练习，可重复3至7次观察变化",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤并主动保存记录；部分完成或没有完成也是有效记录，页面浏览不计完成。",
+      "progression_criteria": "能在低压力场景重复完成后，再自主选择继续、替换或提高一点难度。",
+      "stop_rules": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下刚才发生的具体情境。",
+        "写下脑海最先跳出的第一反应原句。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
+    },
+    {
+      "id": "relationship_second_explanation",
+      "type": "relationship_growth",
+      "title": "给想法找第二种说法",
+      "user_facing_title": "给想法找第二种说法",
+      "purpose": "不强迫乐观，只为同一件事保留另一种可能解释。",
+      "today_goal": "不强迫乐观，只为同一件事保留另一种可能解释。",
+      "tags": [
+        "relationship_growth",
+        "cognitive_flexibility",
+        "second_explanation"
+      ],
+      "steps": [
+        "写下可以确认的事实。",
+        "写下原来的解释。",
+        "再写一种同样可能、但更温和的解释。",
+        "在仍不确定时，选择一个不过度反应的小行动。"
+      ],
+      "example": "这次交流没有达到我的期待，但一次交流还不足以说明整段关系会怎样。",
+      "example_phrase": "这次交流没有达到我的期待，但一次交流还不足以说明整段关系会怎样。",
+      "duration_minutes": 5,
+      "theory_source": "支持性认知行为练习与情绪调节",
+      "target_skill": "relationship_second_explanation",
+      "mechanism_code": "relationship_growth_practice",
+      "target_constructs": [
+        "cognitive_flexibility",
+        "second_explanation"
+      ],
+      "suitable_for": [
+        "认定自己被讨厌",
+        "把一次失误理解成关系彻底结束"
+      ],
+      "suitable_scene": "认定自己被讨厌；把一次失误理解成关系彻底结束",
+      "indications": [
+        "认定自己被讨厌",
+        "把一次失误理解成关系彻底结束"
+      ],
+      "not_suitable_for": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "contraindications": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "reflection_questions": [
+        "事实是什么？",
+        "原来的解释是什么？",
+        "第二种可能解释和小行动是什么？"
+      ],
+      "review_status": "pilot_ready",
+      "reviewer_note": "来源于项目负责人提供的关系成长训练卡文档。第二种说法不是证明原想法一定错，而是增加解释弹性。",
+      "enabled": true,
+      "before_note_prompt": "开始前先给当前感受或困难程度评分；不要默认选择。",
+      "after_note_prompt": "结束后记录完成、部分完成、没有完成，以及这次练习留下的一点观察。",
+      "boundary_notice": "这张训练卡只提供关系情境中的支持性练习和自我观察，不构成诊断、治疗、危机干预或关系成败判断。",
+      "pre_practice_prompt": "今天只练一个小步：写下可以确认的事实。",
+      "emotion_word_prompt": "开始前给此刻感受起一个日常、具体的名字；说不准也可以。",
+      "new_response_prompt": "不强迫乐观，只为同一件事保留另一种可能解释。",
+      "post_practice_prompt": "第二种说法不是证明原想法一定错，而是增加解释弹性。",
+      "one_sentence_note_prompt": "用一句话写下这次练习留下的观察，不急着总结成结论。",
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "按需要练习，可重复3至7次观察变化",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤并主动保存记录；部分完成或没有完成也是有效记录，页面浏览不计完成。",
+      "progression_criteria": "能在低压力场景重复完成后，再自主选择继续、替换或提高一点难度。",
+      "stop_rules": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下可以确认的事实。",
+        "写下原来的解释。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
+    },
+    {
+      "id": "relationship_gentle_expression",
+      "type": "relationship_growth",
+      "title": "温和表达卡：说出感受和需要",
+      "user_facing_title": "温和表达卡：说出感受和需要",
+      "purpose": "用一句不攻击、不讨好也不隐藏自己的话表达感受或需要。",
+      "today_goal": "用一句不攻击、不讨好也不隐藏自己的话表达感受或需要。",
+      "tags": [
+        "relationship_growth",
+        "boundary_expression",
+        "gentle_communication"
+      ],
+      "steps": [
+        "描述具体情境，避免“总是”“从来不”。",
+        "说出自己的感受或状态。",
+        "提出一个具体、可协商的请求。"
+      ],
+      "example": "当临时改变见面时间时，我会有一点着急，也需要重新安排时间。下次可以提前告诉我吗？",
+      "example_phrase": "当临时改变见面时间时，我会有一点着急，也需要重新安排时间。下次可以提前告诉我吗？",
+      "duration_minutes": 5,
+      "theory_source": "支持性认知行为练习与情绪调节",
+      "target_skill": "relationship_gentle_expression",
+      "mechanism_code": "relationship_growth_practice",
+      "target_constructs": [
+        "boundary_expression",
+        "gentle_communication"
+      ],
+      "suitable_for": [
+        "不敢拒绝",
+        "总是附和",
+        "担心表达后破坏关系"
+      ],
+      "suitable_scene": "不敢拒绝；总是附和；担心表达后破坏关系",
+      "indications": [
+        "不敢拒绝",
+        "总是附和",
+        "担心表达后破坏关系"
+      ],
+      "not_suitable_for": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "contraindications": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "reflection_questions": [
+        "我想表达的情境是什么？",
+        "我的感受或状态是什么？",
+        "我的需要或请求是什么？"
+      ],
+      "review_status": "pilot_ready",
+      "reviewer_note": "来源于项目负责人提供的关系成长训练卡文档。表达不等于要求对方同意；双方都可以表达自己的情况。",
+      "enabled": true,
+      "before_note_prompt": "开始前先给当前感受或困难程度评分；不要默认选择。",
+      "after_note_prompt": "结束后记录完成、部分完成、没有完成，以及这次练习留下的一点观察。",
+      "boundary_notice": "这张训练卡只提供关系情境中的支持性练习和自我观察，不构成诊断、治疗、危机干预或关系成败判断。",
+      "pre_practice_prompt": "今天只练一个小步：描述具体情境，避免“总是”“从来不”。",
+      "emotion_word_prompt": "开始前给此刻感受起一个日常、具体的名字；说不准也可以。",
+      "new_response_prompt": "用一句不攻击、不讨好也不隐藏自己的话表达感受或需要。",
+      "post_practice_prompt": "表达不等于要求对方同意；双方都可以表达自己的情况。",
+      "one_sentence_note_prompt": "用一句话写下这次练习留下的观察，不急着总结成结论。",
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "按需要练习，可重复3至7次观察变化",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤并主动保存记录；部分完成或没有完成也是有效记录，页面浏览不计完成。",
+      "progression_criteria": "能在低压力场景重复完成后，再自主选择继续、替换或提高一点难度。",
+      "stop_rules": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "描述具体情境，避免“总是”“从来不”。",
+        "说出自己的感受或状态。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
+    },
+    {
+      "id": "relationship_open_question",
+      "type": "relationship_growth",
+      "title": "一个开放问题卡",
+      "user_facing_title": "一个开放问题卡",
+      "purpose": "一次只问一个不能只用“是/不是”回答的问题，让交流自然展开。",
+      "today_goal": "一次只问一个不能只用“是/不是”回答的问题，让交流自然展开。",
+      "tags": [
+        "relationship_growth",
+        "open_question",
+        "low_pressure_connection"
+      ],
+      "steps": [
+        "从共同课程、活动、兴趣或最近经历中选一个主题。",
+        "问一个开放问题。",
+        "根据回答追问一次，然后认真听完。"
+      ],
+      "example": "你最近最期待的一件事是什么？原来是这样，你最喜欢其中哪一点？",
+      "example_phrase": "你最近最期待的一件事是什么？原来是这样，你最喜欢其中哪一点？",
+      "duration_minutes": 5,
+      "theory_source": "支持性认知行为练习与情绪调节",
+      "target_skill": "relationship_open_question",
+      "mechanism_code": "relationship_growth_practice",
+      "target_constructs": [
+        "open_question",
+        "low_pressure_connection"
+      ],
+      "suitable_for": [
+        "想认识对方但不知道说什么",
+        "聊天容易停在表面"
+      ],
+      "suitable_scene": "想认识对方但不知道说什么；聊天容易停在表面",
+      "indications": [
+        "想认识对方但不知道说什么",
+        "聊天容易停在表面"
+      ],
+      "not_suitable_for": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "contraindications": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "reflection_questions": [
+        "我选择的共同主题是什么？",
+        "我问出的开放问题是什么？",
+        "对方回答中哪一点让我印象最深？"
+      ],
+      "review_status": "pilot_ready",
+      "reviewer_note": "来源于项目负责人提供的关系成长训练卡文档。开放问题不是套取信息；问出一个并听完回答就算完成。",
+      "enabled": true,
+      "before_note_prompt": "开始前先给当前感受或困难程度评分；不要默认选择。",
+      "after_note_prompt": "结束后记录完成、部分完成、没有完成，以及这次练习留下的一点观察。",
+      "boundary_notice": "这张训练卡只提供关系情境中的支持性练习和自我观察，不构成诊断、治疗、危机干预或关系成败判断。",
+      "pre_practice_prompt": "今天只练一个小步：从共同课程、活动、兴趣或最近经历中选一个主题。",
+      "emotion_word_prompt": "开始前给此刻感受起一个日常、具体的名字；说不准也可以。",
+      "new_response_prompt": "一次只问一个不能只用“是/不是”回答的问题，让交流自然展开。",
+      "post_practice_prompt": "开放问题不是套取信息；问出一个并听完回答就算完成。",
+      "one_sentence_note_prompt": "用一句话写下这次练习留下的观察，不急着总结成结论。",
+      "minimum_dose": {
+        "single_session_minutes": 5,
+        "suggested_frequency": "按需要练习，可重复3至7次观察变化",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤并主动保存记录；部分完成或没有完成也是有效记录，页面浏览不计完成。",
+      "progression_criteria": "能在低压力场景重复完成后，再自主选择继续、替换或提高一点难度。",
+      "stop_rules": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "从共同课程、活动、兴趣或最近经历中选一个主题。",
+        "问一个开放问题。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
+    },
+    {
+      "id": "relationship_bounded_micro_action",
+      "type": "relationship_growth",
+      "title": "带边界的微行动卡",
+      "user_facing_title": "带边界的微行动卡",
+      "purpose": "选一个足够小的关系行动，并提前写清节奏和停止条件。",
+      "today_goal": "选一个足够小的关系行动，并提前写清节奏和停止条件。",
+      "tags": [
+        "relationship_growth",
+        "micro_action",
+        "boundary"
+      ],
+      "steps": [
+        "写下自己想靠近的方向。",
+        "把行动缩小到大概可以试试的一步。",
+        "写下边界或停止条件。",
+        "写下具体完成时间和情境。"
+      ],
+      "example": "方向：增加自然交流。微行动：回复一次共同活动动态。边界：只发一条，不连续追问。",
+      "example_phrase": "方向：增加自然交流。微行动：回复一次共同活动动态。边界：只发一条，不连续追问。",
+      "duration_minutes": 10,
+      "theory_source": "支持性认知行为练习与情绪调节",
+      "target_skill": "relationship_bounded_micro_action",
+      "mechanism_code": "relationship_growth_practice",
+      "target_constructs": [
+        "micro_action",
+        "boundary"
+      ],
+      "suitable_for": [
+        "有意愿但一直没有行动",
+        "目标太大",
+        "担心靠近后失去自己"
+      ],
+      "suitable_scene": "有意愿但一直没有行动；目标太大；担心靠近后失去自己",
+      "indications": [
+        "有意愿但一直没有行动",
+        "目标太大",
+        "担心靠近后失去自己"
+      ],
+      "not_suitable_for": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "contraindications": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "reflection_questions": [
+        "本次微行动是什么？",
+        "边界或停止条件是什么？",
+        "我完成、部分完成还是没有完成？",
+        "我从这次尝试中发现了什么？"
+      ],
+      "review_status": "pilot_ready",
+      "reviewer_note": "来源于项目负责人提供的关系成长训练卡文档。成功标准是完成自己选择的小步，不以对方是否回应判断。",
+      "enabled": true,
+      "before_note_prompt": "开始前先给当前感受或困难程度评分；不要默认选择。",
+      "after_note_prompt": "结束后记录完成、部分完成、没有完成，以及这次练习留下的一点观察。",
+      "boundary_notice": "这张训练卡只提供关系情境中的支持性练习和自我观察，不构成诊断、治疗、危机干预或关系成败判断。",
+      "pre_practice_prompt": "今天只练一个小步：写下自己想靠近的方向。",
+      "emotion_word_prompt": "开始前给此刻感受起一个日常、具体的名字；说不准也可以。",
+      "new_response_prompt": "选一个足够小的关系行动，并提前写清节奏和停止条件。",
+      "post_practice_prompt": "成功标准是完成自己选择的小步，不以对方是否回应判断。",
+      "one_sentence_note_prompt": "用一句话写下这次练习留下的观察，不急着总结成结论。",
+      "minimum_dose": {
+        "single_session_minutes": 10,
+        "suggested_frequency": "按需要练习，可重复3至7次观察变化",
+        "initial_cycle_days": 7
+      },
+      "completion_criteria": "完成至少一个核心步骤并主动保存记录；部分完成或没有完成也是有效记录，页面浏览不计完成。",
+      "progression_criteria": "能在低压力场景重复完成后，再自主选择继续、替换或提高一点难度。",
+      "stop_rules": [
+        "练习中不适明显增加时暂停或降低难度。",
+        "出现自伤、他伤、暴力、胁迫或现实安全风险时停止练习并优先寻求现实支持。"
+      ],
+      "fidelity_check": [
+        "写下自己想靠近的方向。",
+        "把行动缩小到大概可以试试的一步。"
+      ],
+      "outcome_links": [
+        "practice_completion",
+        "self_rated_helpfulness",
+        "post_practice_note"
+      ],
+      "evidence_level": "project_draft",
+      "safety_level": "standard",
+      "release_policy": "shared_choice_candidate",
+      "governance_review_status": "manual_review_required"
     }
   ],
-  "updated_at": "2026-07-05T00:00:00+08:00",
+  "updated_at": "2026-07-15",
   "governance_notice": "新增机制、剂量和安全字段为项目草案，正式试点前仍需心理负责人逐卡审核。"
 }

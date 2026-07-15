@@ -1,0 +1,49 @@
+<view class="safe-page history-page">
+  <view class="history-head">
+    <text class="page-kicker">测评记录</text>
+    <text class="page-title">回看每一次阶段性观察</text>
+    <text class="page-summary">这里保留该账号完成过的全部支持性测评。结果用于自我了解，不构成诊断或固定判断。</text>
+    <view class="history-total">
+      <text class="total-value">{{total}}</text>
+      <text class="total-label">份已保存记录</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-card state-card">
+    <text class="state-title">正在读取测评记录</text>
+    <text class="state-text">请稍等一下。</text>
+  </view>
+
+  <view wx:elif="{{errorMessage && !items.length}}" class="safe-card state-card state-card--error">
+    <text class="state-title">记录暂时没有加载成功</text>
+    <text class="state-text">{{errorMessage}}</text>
+    <button class="safe-outline-button state-action" bindtap="retry">重新加载</button>
+  </view>
+
+  <view wx:elif="{{items.length}}" class="history-list">
+    <button wx:for="{{items}}" wx:key="id" class="history-row" data-id="{{item.id}}" data-worksheet-id="{{item.worksheet_id}}" bindtap="openResult">
+      <view class="record-index">{{index + 1}}</view>
+      <view class="record-copy">
+        <text class="record-title">{{item.worksheetTitle}}</text>
+        <text class="record-summary">{{item.summaryText}}</text>
+        <view class="record-meta">
+          <text>{{item.createdAtText}}</text>
+          <text>{{item.dimensionText}}</text>
+        </view>
+      </view>
+      <text class="record-arrow">›</text>
+    </button>
+
+    <view class="load-more-area">
+      <button wx:if="{{hasMore}}" class="safe-outline-button load-more" loading="{{loadingMore}}" disabled="{{loadingMore}}" bindtap="loadMore">{{loadingMore ? '加载中' : '加载更多'}}</button>
+      <text wx:else class="list-end">已显示全部 {{total}} 份记录</text>
+      <text wx:if="{{errorMessage}}" class="load-error">{{errorMessage}}</text>
+    </view>
+  </view>
+
+  <view wx:else class="safe-card state-card">
+    <text class="state-title">还没有测评记录</text>
+    <text class="state-text">完成一份支持性测评后，记录会保存在这里。</text>
+    <button class="safe-primary-button state-action" bindtap="goAssessment">去测一测</button>
+  </view>
+</view>

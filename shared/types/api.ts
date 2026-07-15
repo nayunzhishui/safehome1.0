@@ -165,6 +165,18 @@ export interface AuthSession {
   phone_masked?: string;
 }
 
+export interface AuthCapabilityStatus {
+  available: boolean;
+  mode?: "cloudbase_identity" | "jscode2session" | "cloudbase_access_token" | "wechat_access_token" | "not_configured" | string;
+}
+
+export interface AuthCapabilities {
+  account_password: AuthCapabilityStatus;
+  wechat_login: AuthCapabilityStatus;
+  phone_login: AuthCapabilityStatus;
+  privacy_notice: string;
+}
+
 export interface EmotionThermometerInput {
   user_id?: ID;
   nickname?: string;
@@ -810,10 +822,31 @@ export interface UserMessage {
   body?: string | null;
   source_type?: string | null;
   source_id?: string | null;
+  sender_id?: ID | null;
+  sender_role?: "researcher" | "supervisor" | "admin" | string | null;
+  idempotency_key?: string | null;
   status: "unread" | "read" | string;
   is_unread?: boolean;
   created_at: ISODateTime;
   read_at?: ISODateTime | null;
+}
+
+export interface UserMessageList {
+  items: UserMessage[];
+  count: number;
+  total: number;
+  page: number;
+  page_size: number;
+  has_more: boolean;
+  unread_count: number;
+}
+
+export interface ResearcherMessageInput {
+  enrollment_id: ID;
+  title: string;
+  body: string;
+  message_type?: "researcher_message" | "relationship_stage_feedback";
+  idempotency_key?: string;
 }
 
 export type {
@@ -1132,6 +1165,12 @@ export interface Checkin {
   emotion_before?: number | null;
   emotion_after?: number | null;
   reflection?: string | null;
+  helpfulness_rating?: string | number | null;
+  skip_reason?: string | null;
+  source_recommendation_id?: ID | null;
+  card_title?: string;
+  card_duration_minutes?: number | null;
+  card_safety_level?: string | null;
   created_at: ISODateTime;
 }
 
@@ -1229,6 +1268,10 @@ export interface SupervisionInput {
 
 export interface ListResponse<T> {
   items: T[];
+  page?: number;
+  page_size?: number;
+  total?: number;
+  has_more?: boolean;
 }
 
 export interface CardRecommendResponse {

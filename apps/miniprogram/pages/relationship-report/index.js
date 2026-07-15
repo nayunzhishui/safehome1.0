@@ -92,6 +92,7 @@ Page({
         loading: false,
         record,
         report,
+        isStageFeedback: String(report.version || "").includes("stage-feedback"),
         radarRows: radarRows(report),
         statusText: reportStatusLabel(record.status),
         statusSteps: statusSteps(record.status),
@@ -126,7 +127,7 @@ Page({
     const report = this.data.report;
     const blocks = [
       { title: "阶段性位置", lines: wrapText(report.visible_profile_name, 24) },
-      { title: "怎样理解", lines: wrapText(report.profile_description, 28).concat(wrapText(report.personalized_interpretation, 28)) },
+      { title: this.data.isStageFeedback ? "研究者阶段性反馈" : "怎样理解", lines: wrapText(report.profile_description, 28).concat(wrapText(report.personalized_interpretation, 28)) },
       { title: "可以带去讨论的问题", lines: (report.suggested_assessment_questions || []).flatMap((item, index) => wrapText(`${index + 1}. ${item}`, 28)) },
       { title: "建议的探索任务", lines: (report.recommended_project_tasks || []).flatMap((item) => wrapText(`• ${item}`, 28)) },
       { title: "边界说明", lines: wrapText(report.boundary_notice, 28) },

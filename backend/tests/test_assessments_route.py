@@ -72,6 +72,67 @@ def test_legacy_self_built_assessment_is_removed_from_api(tmp_path):
     assert saved_count == 0
 
 
+def test_production_governance_gate_only_opens_approved_scales_and_allows_reviewer_preview(tmp_path):
+    app = _fresh_app(tmp_path)
+    app.config["CONTENT_GOVERNANCE_ENFORCED"] = True
+    client = app.test_client()
+
+    public_before = client.get("/api/assessments")
+    assert public_before.status_code == 200
+    visible_before = {item["id"] for item in public_before.get_json()["data"]["items"]}
+    assert "student_profile_v1" in visible_before
+    assert "big_five_bfi_60" in visible_before
+
+    from database import get_connection
+
+    with get_connection() as conn:
+        conn.execute(
+            "UPDATE assessment_worksheets SET review_status = 'pending_review' WHERE id = ?",
+            ("big_five_bfi_60",),
+        )
+        conn.commit()
+
+    public_after = client.get("/api/assessments")
+    visible_ids = {item["id"] for item in public_after.get_json()["data"]["items"]}
+    assert "student_profile_v1" in visible_ids
+    assert "big_five_bfi_60" not in visible_ids
+
+    hidden_detail = client.get("/api/assessments/big_five_bfi_60")
+    assert hidden_detail.status_code == 404
+
+    preview_detail = client.get(
+        "/api/assessments/big_five_bfi_60?include_unapproved=true",
+        headers={"X-Admin-Token": "safehome-local-admin-token"},
+    )
+    assert preview_detail.status_code == 200
+    assert preview_detail.get_json()["data"]["review_status"] == "pending_review"
+
+
+def test_production_governance_gate_rejects_submission_to_unapproved_scale(tmp_path):
+    app = _fresh_app(tmp_path)
+    app.config["CONTENT_GOVERNANCE_ENFORCED"] = True
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "governance-submit")
+
+    from database import get_connection
+
+    with get_connection() as conn:
+        conn.execute(
+            "UPDATE assessment_worksheets SET review_status = 'pending_review' WHERE id = ?",
+            ("big_five_bfi_60",),
+        )
+        conn.commit()
+
+    response = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"worksheet_id": "big_five_bfi_60", "answers": []},
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"]["code"] == "assessment_not_enabled"
+
+
 def test_legacy_assessment_results_are_hidden_from_user_history(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
@@ -267,21 +328,21 @@ def test_confirmed_pilot_expansion_appears_and_accepts_submission(tmp_path):
         "academic_buoyancy_4",
         "afq_y8_avoidance_fusion",
         "cfi2_cognitive_flexibility",
-        "fmi_12_mindfulness",
-        "swls_life_satisfaction",
     }
 
     list_response = client.get("/api/assessments")
     assert list_response.status_code == 200
     visible_ids = {item["id"] for item in list_response.get_json()["data"]["items"]}
     assert pilot_ids.issubset(visible_ids)
+    assert "fmi_12_mindfulness" in visible_ids
+    assert "swls_life_satisfaction" in visible_ids
 
     for worksheet_id in pilot_ids:
         detail_response = client.get(f"/api/assessments/{worksheet_id}")
         assert detail_response.status_code == 200
         worksheet = detail_response.get_json()["data"]
         assert worksheet["enabled_for_user"] is True
-        assert worksheet["review_status"] == "pilot_review_required"
+        assert worksheet["review_status"] == "pilot_approved"
         answers = [
             {
                 "question_id": question["id"],
@@ -475,6 +536,14 @@ def test_declarative_relationship_scoring_supports_products_and_no_total(tmp_pat
 def test_task12_relationship_assessments_are_available_and_save(tmp_path, worksheet_id, question_count):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    from database import get_connection
+
+    with get_connection() as conn:
+        conn.execute(
+            "UPDATE assessment_worksheets SET enabled_for_user = 1, review_status = 'pilot_approved' WHERE id = ?",
+            (worksheet_id,),
+        )
+        conn.commit()
     _user_id, token = _wechat_login(client, f"task12-{worksheet_id}")
 
     detail = client.get(f"/api/assessments/{worksheet_id}")
@@ -482,6 +551,8 @@ def test_task12_relationship_assessments_are_available_and_save(tmp_path, worksh
     worksheet = detail.get_json()["data"]
     assert len(worksheet["questions"]) == question_count
     assert "不构成诊断" in worksheet["result_disclaimer"]
+    if worksheet_id == "regulatory_focus_relationship_18":
+        assert [option["score"] for option in worksheet["questions"][0]["options"]] == list(range(1, 10))
 
     answers = [
         {
@@ -514,23 +585,43 @@ def test_profile_feature_can_transform_worksheet_range_to_training_range(tmp_pat
         "input_transform": {
             "type": "linear_range",
             "input_min": 1,
-            "input_max": 7,
+            "input_max": 9,
             "output_min": 1,
             "output_max": 5,
         },
     }
-    answers = {"Q1": {"question_id": "Q1", "value": "7", "score": 7}}
-    questions = {"Q1": {"id": "Q1", "options": [{"value": str(i), "score": i} for i in range(1, 8)]}}
+    answers = {"Q1": {"question_id": "Q1", "value": "9", "score": 9}}
+    questions = {"Q1": {"id": "Q1", "options": [{"value": str(i), "score": i} for i in range(1, 10)]}}
 
     value, missing = _feature_value(feature, answers, questions)
 
     assert missing is False
     assert value == 5
 
+    middle, missing = _feature_value(feature, {"Q1": {"question_id": "Q1", "value": "5", "score": 5}}, questions)
+    assert missing is False
+    assert middle == 3
+
 
 def test_task12_three_scales_return_aggregate_profile_positions(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    from database import get_connection
+
+    with get_connection() as conn:
+        conn.execute(
+            """
+            UPDATE assessment_worksheets
+            SET enabled_for_user = 1, review_status = 'pilot_approved'
+            WHERE id IN (?, ?, ?)
+            """,
+            (
+                "regulatory_focus_relationship_18",
+                "micro_ysq_relationship_18",
+                "relationship_initiation_intention_action",
+            ),
+        )
+        conn.commit()
     user_id, token = _wechat_login(client, "task12-profile-chain")
 
     for worksheet_id in [

@@ -30,10 +30,26 @@
         <text class="section-title">初筛报告</text>
         <view wx:if="{{selected.latestReport}}" class="action-row">
           <button class="small-action" bindtap="openReport">查看</button>
-          <button wx:if="{{selected.latestReport.status !== 'confirmed'}}" class="small-action" bindtap="confirmReport">人工确认</button>
-          <button wx:if="{{selected.latestReport.status === 'confirmed'}}" class="small-action primary" bindtap="sendReport">发送用户</button>
+          <button wx:if="{{selected.latestReport.status === 'pending_review' || selected.latestReport.status === 'ready'}}" class="small-action" bindtap="confirmReport">人工确认</button>
+          <button wx:if="{{selected.latestReport.status === 'confirmed' || selected.latestReport.status === 'updated'}}" class="small-action primary" bindtap="sendReport">发送用户</button>
+          <text wx:if="{{selected.latestReport.status === 'sent'}}" class="detail-line">当前版本已发送</text>
         </view>
         <button wx:else class="safe-primary-button" bindtap="createReport">生成报告</button>
+      </view>
+
+      <view class="safe-card dossier-card">
+        <text class="section-title">阶段性报告中的研究者反馈</text>
+        <text class="detail-line">填写后会生成新报告版本，并同步发送到参与者消息列表。</text>
+        <textarea class="note-input" maxlength="2000" value="{{stageFeedback}}" bindinput="onStageFeedbackInput" placeholder="写下支持性、可核对的阶段性反馈，不做诊断或关系结论"></textarea>
+        <button class="safe-primary-button" loading="{{sendingFeedback}}" disabled="{{sendingFeedback}}" bindtap="saveAndSendStageFeedback">保存并发送阶段性反馈</button>
+      </view>
+
+      <view class="safe-card dossier-card">
+        <text class="section-title">发送参与者消息</text>
+        <text class="detail-line">路径：参与者“我的” → “消息”即可收到。</text>
+        <input class="note-input" maxlength="60" value="{{messageTitle}}" bindinput="onMessageTitleInput" placeholder="消息标题" />
+        <textarea class="note-input" maxlength="2000" value="{{messageBody}}" bindinput="onMessageBodyInput" placeholder="消息正文"></textarea>
+        <button class="safe-outline-button" loading="{{sendingMessage}}" disabled="{{sendingMessage}}" bindtap="sendParticipantMessage">发送消息</button>
       </view>
 
       <view class="safe-card dossier-card">

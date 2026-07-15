@@ -96,7 +96,7 @@ def test_courses_return_structured_units_and_pathway(tmp_path, monkeypatch):
     assert list_response.status_code == 200
     data = list_response.get_json()["data"]
     assert len(data["items"]) == 5
-    assert len(data["pathways"][0]["nodes"]) == 7
+    assert len(data["pathways"][0]["nodes"]) == 6
     assert all(item["learning_objectives"] for item in data["items"])
 
     detail_response = client.get("/api/courses/understand_child_emotion")

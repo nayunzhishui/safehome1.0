@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request
 
-from database import ensure_user, get_connection, new_id, now_iso, row_to_dict, rows_to_dicts
+from database import ensure_user, get_connection, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int, require_fields
 
@@ -64,17 +64,58 @@ def list_checkins():
         user_id = resolve_actor_user_id(request.args.get("user_id"))
     except AuthError as exc:
         return auth_error_response(exc)
-    limit = parse_int(request.args.get("limit"), 50)
+    page = max(1, parse_int(request.args.get("page"), 1) or 1)
+    page_size = parse_int(request.args.get("page_size"), None)
+    if page_size is None:
+        page_size = parse_int(request.args.get("limit"), 50)
+    page_size = max(1, min(page_size or 50, 100))
+    offset = (page - 1) * page_size
+    completed_arg = request.args.get("completed")
+    completed_filter = None if completed_arg is None else (1 if parse_bool(completed_arg, False) else 0)
+    where_sql = "user_id = ?"
+    query_params: list = [user_id]
+    if completed_filter is not None:
+        where_sql += " AND completed = ?"
+        query_params.append(completed_filter)
 
     with get_connection() as conn:
+        total = conn.execute(
+            f"SELECT COUNT(*) FROM checkins WHERE {where_sql}",
+            tuple(query_params),
+        ).fetchone()[0]
         rows = conn.execute(
-            """
+            f"""
             SELECT * FROM checkins
-            WHERE user_id = ?
+            WHERE {where_sql}
             ORDER BY created_at DESC
-            LIMIT ?
+            LIMIT ? OFFSET ?
             """,
-            (user_id, limit),
+            (*query_params, page_size, offset),
         ).fetchall()
 
-    return ok({"items": rows_to_dicts(rows)})
+    cards = {
+        card.get("id"): card
+        for card in load_content_json("training_cards.json").get("cards", [])
+        if card.get("id")
+    }
+    items = []
+    for row in rows_to_dicts(rows):
+        card = cards.get(row.get("card_id"), {})
+        items.append(
+            {
+                **row,
+                "card_title": card.get("title") or row.get("card_id"),
+                "card_duration_minutes": card.get("duration_minutes"),
+                "card_safety_level": card.get("safety_level"),
+            }
+        )
+
+    return ok(
+        {
+            "items": items,
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+            "has_more": offset + len(items) < total,
+        }
+    )

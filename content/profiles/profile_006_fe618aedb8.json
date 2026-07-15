@@ -5,10 +5,10 @@
   "standard_scale_name": "自我关怀量表（SCS）",
   "scale_id": "self_compassion_scs_cn",
   "worksheet_id": "self_compassion_scs_cn",
-  "admission_status": "internal_only",
-  "interpretation_approval_status": "pending_researcher_review",
+  "admission_status": "pilot_approved",
+  "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "343c8cc6c77dde888996e8e969d7ad01faa86036c07ff99918fb954883f2c25a",
+  "artifact_hash": "cc32e39459f2697764d706ce315ca11f2dc7d2fdc8fdcbf6d6c5a0f0b4f9b1e6",
   "research_dir": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】",
   "source_dataset": "5 牛至旭【中年女性自我关怀现状及其对主观幸福感的影响】\\数据和问卷\\数据\\209份最终数据.sav",
   "n_cases": 209,
@@ -248,5 +248,13 @@
     }
   ],
   "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
-  "created_at": "2026-06-29"
+  "created_at": "2026-06-29",
+  "approval": {
+    "reviewer": "项目负责人（用户明确批准）",
+    "reviewed_at": "2026-07-12",
+    "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+    "scope": "pilot_release"
+  },
+  "worksheet_link_status": "confirmed",
+  "approval_note": "项目负责人于2026-07-12批准进入试点；低置信度、离群、数据不足和高风险状态仍保持阻断。"
 }

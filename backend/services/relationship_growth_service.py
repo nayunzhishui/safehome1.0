@@ -103,7 +103,7 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
         task_rows = rows_to_dicts(conn.execute("SELECT id, enrollment_id, task_type, risk_level, review_status, created_at FROM relationship_pilot_tasks WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
         report_rows = rows_to_dicts(conn.execute("SELECT id, enrollment_id, status, version, created_at FROM relationship_screening_reports WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
         long_rows = rows_to_dicts(conn.execute("SELECT * FROM relationship_longitudinal_entries WHERE user_id = ? ORDER BY event_at, created_at", (user_id,)).fetchall())
-        message_rows = rows_to_dicts(conn.execute("SELECT id, source_id, title, created_at FROM messages WHERE user_id = ? AND source_type = 'relationship_screening_report' ORDER BY created_at", (user_id,)).fetchall())
+        message_rows = rows_to_dicts(conn.execute("SELECT id, source_id, title, body, message_type, created_at FROM messages WHERE user_id = ? AND message_type = 'relationship_stage_feedback' ORDER BY created_at", (user_id,)).fetchall())
         if enrollment_rows:
             write_audit_log(conn, "relationship_growth_viewed", actor["id"], "relationship_growth", user_id, {"rounds": len(enrollment_rows)})
             conn.commit()
@@ -132,7 +132,7 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
             if isinstance(measures.get(key), (int, float)):
                 curves.setdefault(key, []).append({"round": len(curves.get(key, [])) + 1, "value": measures[key], "created_at": row.get("event_at") or row["created_at"]})
     for message in message_rows:
-        timeline.append({"id": message["id"], "type": "researcher_feedback", "title": message["title"], "created_at": message["created_at"], "summary": "研究者已发送报告消息"})
+        timeline.append({"id": message["id"], "type": "researcher_feedback", "title": message["title"], "created_at": message["created_at"], "summary": message.get("body") or "研究者已发送阶段性反馈"})
     timeline.sort(key=lambda row: row.get("created_at") or "")
     changes = []
     for key, points in curves.items():
@@ -151,7 +151,17 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
         "four_layer_profile": four_layer,
         "boundary_notice": "成长报告只记录变化和探索线索，不构成诊断或关系能力评价，也不构成疗效证明。",
     }
-    return ServiceResult({"user_id": user_id, "curves": curves, "timeline": timeline, "growth_report": growth_report})
+    latest_enrollment_id = enrollment_rows[-1]["id"] if enrollment_rows else None
+    return ServiceResult(
+        {
+            "user_id": user_id,
+            "latest_enrollment_id": latest_enrollment_id,
+            "can_record": latest_enrollment_id is not None,
+            "curves": curves,
+            "timeline": timeline,
+            "growth_report": growth_report,
+        }
+    )
 
 
 def researcher_dashboard(actor: dict) -> ServiceResult:

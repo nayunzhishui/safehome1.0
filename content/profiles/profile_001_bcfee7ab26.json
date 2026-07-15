@@ -8,7 +8,7 @@
   "admission_status": "pilot_approved",
   "interpretation_approval_status": "pilot_approved",
   "model_governance_version": "profile_model_governance_v1",
-  "artifact_hash": "290c1d07e90daf0e117d3326ffc228f15c89c1a5290bb590e238df84ee4ab766",
+  "artifact_hash": "c2b7dc20bd93ae1b55c4b50fc2968c487f42c85518d48d1bab8518c63da0cfe0",
   "research_dir": "1 王季璇 数据及数据分析结果【亲子沟通 学业浮力 情绪弹性】",
   "source_dataset": "1 王季璇 数据及数据分析结果【亲子沟通 学业浮力 情绪弹性】\\总数据-王季璇230720.sav",
   "n_cases": 634,
@@ -320,5 +320,13 @@
     }
   ],
   "boundary_notice": "画像模型只用于群体位置参考和支持性解释，不构成诊断、筛查、治疗建议或人格标签。",
-  "created_at": "2026-06-29"
+  "created_at": "2026-06-29",
+  "approval": {
+    "reviewer": "项目负责人（用户明确批准）",
+    "reviewed_at": "2026-07-12",
+    "evidence_path": "docs/02_专项进度与验收/任务十八项目负责人量表与画像试点批准记录_20260712.md",
+    "scope": "pilot_release"
+  },
+  "worksheet_link_status": "confirmed",
+  "approval_note": "项目负责人于2026-07-12批准进入试点；低置信度、离群、数据不足和高风险状态仍保持阻断。"
 }

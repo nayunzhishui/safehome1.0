@@ -69,8 +69,9 @@ const publicLinks: AdminLink[] = [
   { href: "/register", label: "注册", match: (p) => p === "/register" },
 ];
 
-function visibleLinks(user: AuthUser | null): AdminLink[] {
+function visibleLinks(user: AuthUser | null, showcaseEnabled = false): AdminLink[] {
   if (!user || !user.role) return publicLinks;
+  if (showcaseEnabled) return allAdminLinks;
   return allAdminLinks.filter((link) => !link.roles || link.roles.includes(user.role));
 }
 
@@ -78,8 +79,9 @@ function findAdminLink(path: string): AdminLink | undefined {
   return allAdminLinks.find((link) => link.match(path));
 }
 
-function canAccessPath(link: AdminLink | undefined, user: AuthUser | null): boolean {
+function canAccessPath(link: AdminLink | undefined, user: AuthUser | null, showcaseEnabled = false): boolean {
   if (!link || !link.roles) return true;
+  if (showcaseEnabled && user) return true;
   return Boolean(user?.role && link.roles.includes(user.role));
 }
 
@@ -121,7 +123,7 @@ function RouteFallback() {
   );
 }
 
-function App({ authUser }: { authUser: AuthUser | null }) {
+function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcaseEnabled: boolean }) {
   const path = window.location.pathname;
   const isLandingPath = path === "/";
   const isAboutStudyPath = path === "/about-study";
@@ -166,7 +168,7 @@ function App({ authUser }: { authUser: AuthUser | null }) {
     "/family",
   ].some((route) => path === route || path.startsWith(`${route}/`));
   const matchedAdminLink = findAdminLink(path);
-  const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink, authUser);
+  const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink, authUser, showcaseEnabled);
   const shouldRenderDeferredAdmin =
     isKnownAdminPath &&
     !isDashboardPath &&
@@ -246,7 +248,7 @@ function App({ authUser }: { authUser: AuthUser | null }) {
           </span>
         </a>
         <nav className="adminNav" aria-label="后台功能导航">
-          {visibleLinks(authUser).map((link) => (
+          {visibleLinks(authUser, showcaseEnabled).map((link) => (
             <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
               <span className="navDot" aria-hidden="true" />
               {link.label}
@@ -281,30 +283,31 @@ function App({ authUser }: { authUser: AuthUser | null }) {
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-function renderApp(authUser: AuthUser | null) {
+function renderApp(authUser: AuthUser | null, showcaseEnabled = false) {
   root.render(
     <React.StrictMode>
-      <App authUser={authUser} />
+      <App authUser={authUser} showcaseEnabled={showcaseEnabled} />
     </React.StrictMode>,
   );
 }
 
 async function bootstrapAuth() {
+  const showcase = await safeHomeApi.getShowcaseAccess().catch(() => ({ enabled: false }));
   const token = getStoredAuthToken();
   if (!token) {
-    renderApp(null);
+    renderApp(null, showcase.enabled);
     return;
   }
 
   try {
     const user = await safeHomeApi.getCurrentUser();
     saveAuthSession(token, user);
-    renderApp(user);
+    renderApp(user, showcase.enabled);
   } catch (error) {
     if (error instanceof SafeHomeApiError && error.status === 401) {
       clearAuthSession();
     }
-    renderApp(null);
+    renderApp(null, showcase.enabled);
   }
 }
 

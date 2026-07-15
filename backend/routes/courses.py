@@ -2,14 +2,16 @@
 
 import json
 
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 
 from database import ensure_user, get_connection, json_loads, load_content_json, new_id, now_iso, row_to_dict
-from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
-from routes.utils import fail, ok, parse_int
+from routes.auth_utils import AuthError, auth_error_response, require_role, resolve_actor_user_id
+from routes.utils import fail, ok, parse_bool, parse_int
+from services.showcase_access_service import showcase_courses_open
 
 
 bp = Blueprint("courses", __name__, url_prefix="/api/courses")
+APPROVED_REVIEW_STATUSES = {"pilot_approved", "production_approved", "enabled", "trial_enabled"}
 
 
 def _load_courses_payload() -> dict:
@@ -34,16 +36,60 @@ def _course_summary(course: dict) -> dict:
     }
 
 
+def _is_course_available(course: dict) -> bool:
+    if not course.get("enabled", True):
+        return False
+    if showcase_courses_open():
+        return True
+    if str(current_app.config.get("APP_ENV", "development")).lower() != "production":
+        return True
+    return course.get("review_status") in APPROVED_REVIEW_STATUSES
+
+
+def _reviewer_preview_requested() -> tuple[bool, object | None]:
+    if not parse_bool(request.args.get("include_unapproved"), False):
+        return False, None
+    try:
+        require_role("researcher", "supervisor", "admin")
+    except AuthError as exc:
+        return False, auth_error_response(exc)
+    return True, None
+
+
+def _available_pathways(payload: dict, include_unapproved: bool = False) -> list[dict]:
+    available_ids = {
+        item.get("id")
+        for item in payload.get("courses", [])
+        if include_unapproved or _is_course_available(item)
+    }
+    pathways = []
+    for pathway in payload.get("pathways", []):
+        nodes = []
+        for node in pathway.get("nodes", []):
+            course_ids = [course_id for course_id in node.get("course_ids", []) if course_id in available_ids]
+            if course_ids:
+                nodes.append({**node, "course_ids": course_ids})
+        if nodes:
+            pathways.append({**pathway, "nodes": nodes})
+    return pathways
+
+
 @bp.get("")
 def list_courses():
     payload = _load_courses_payload()
-    courses = [item for item in payload.get("courses", []) if item.get("enabled", True)]
+    include_unapproved, error_response = _reviewer_preview_requested()
+    if error_response is not None:
+        return error_response
+    all_courses = payload.get("courses", [])
+    courses = [item for item in all_courses if include_unapproved or _is_course_available(item)]
     return ok(
         {
             "version": payload.get("version"),
             "boundary_notice": payload.get("boundary_notice"),
-            "pathways": payload.get("pathways", []),
+            "pathways": _available_pathways(payload, include_unapproved),
             "items": [_course_summary(course) for course in courses],
+            "preview_mode": include_unapproved,
+            "pending_review_count": sum(1 for item in all_courses if item.get("review_status") not in APPROVED_REVIEW_STATUSES),
         }
     )
 
@@ -55,7 +101,7 @@ def list_course_pathways():
         {
             "version": payload.get("version"),
             "boundary_notice": payload.get("boundary_notice"),
-            "items": payload.get("pathways", []),
+            "items": _available_pathways(payload),
         }
     )
 
@@ -115,7 +161,7 @@ def save_course_progress(course_id: str):
     except AuthError as exc:
         return auth_error_response(exc)
     courses_payload = _load_courses_payload()
-    course = next((item for item in courses_payload.get("courses", []) if item.get("id") == course_id and item.get("enabled", True)), None)
+    course = next((item for item in courses_payload.get("courses", []) if item.get("id") == course_id and _is_course_available(item)), None)
     if not course:
         return fail("not_found", "未找到对应课程内容。", status=404)
     status = str(body.get("status") or "in_progress")
@@ -171,7 +217,10 @@ def save_course_progress(course_id: str):
 @bp.get("/<course_id>")
 def get_course(course_id: str):
     payload = _load_courses_payload()
+    include_unapproved, error_response = _reviewer_preview_requested()
+    if error_response is not None:
+        return error_response
     for course in payload.get("courses", []):
-        if course.get("id") == course_id and course.get("enabled", True):
-            return ok({"version": payload.get("version"), "course": course})
+        if course.get("id") == course_id and (include_unapproved or _is_course_available(course)):
+            return ok({"version": payload.get("version"), "course": course, "preview_mode": include_unapproved})
     return fail("not_found", "未找到对应课程内容。", status=404)

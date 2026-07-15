@@ -73,6 +73,26 @@ def test_enrollment_requires_consent_and_completed_relationship_assessment(tmp_p
     assert no_assessment.get_json()["error"]["code"] == "assessment_required"
 
 
+def test_showcase_mode_allows_logged_in_parent_to_enter_relationship_pilot(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    response = client.post(
+        "/api/auth/register",
+        json={"username": "showcase-parent", "password": "password123", "role": "parent", "nickname": "showcase-parent"},
+    )
+    assert response.status_code == 201
+    token = response.get_json()["data"]["token"]
+
+    enrollment = client.post(
+        "/api/relationship-pilot/enrollments",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"research_consent": True},
+    )
+
+    assert enrollment.status_code == 409
+    assert enrollment.get_json()["error"]["code"] == "assessment_required"
+
+
 def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
@@ -179,6 +199,8 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     growth = client.get("/api/relationship-pilot/growth", headers=student_headers)
     assert growth.status_code == 200
     growth_data = growth.get_json()["data"]
+    assert growth_data["can_record"] is True
+    assert growth_data["latest_enrollment_id"] == enrollment["id"]
     assert any(item["type"] == "weekly_supplement" for item in growth_data["timeline"])
     weekly_timeline = next(item for item in growth_data["timeline"] if item["type"] == "weekly_supplement")
     assert weekly_timeline["summary"] == "已完成本周补充记录"
@@ -188,7 +210,6 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     forbidden_growth = client.get("/api/relationship-pilot/growth", headers=other_headers)
     assert forbidden_growth.status_code == 200
     assert forbidden_growth.get_json()["data"]["timeline"] == []
-
     dashboard = client.get("/api/relationship-pilot/researcher/dashboard", headers=researcher_headers)
     assert dashboard.status_code == 200
     dossier = dashboard.get_json()["data"]["items"][0]
@@ -265,6 +286,31 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     assert sent_update_again.status_code == 200
     updated_messages = client.get("/api/messages", headers=student_headers).get_json()["data"]["items"]
     assert len([item for item in updated_messages if item["source_id"] == report["id"]]) == 2
+    stage_feedback_messages = [item for item in updated_messages if item["message_type"] == "relationship_stage_feedback"]
+    assert len(stage_feedback_messages) == 1
+    assert stage_feedback_messages[0]["sender_role"] == "researcher"
+    growth_after_feedback = client.get("/api/relationship-pilot/growth", headers=student_headers).get_json()["data"]
+    assert any(item["type"] == "researcher_feedback" for item in growth_after_feedback["timeline"])
+
+    direct_message_headers = {**researcher_headers, "Idempotency-Key": "pilot-message-001"}
+    direct_message_payload = {
+        "enrollment_id": enrollment["id"],
+        "title": "研究者提醒",
+        "body": "新的阶段安排已更新，请在方便时查看。",
+    }
+    direct_message = client.post("/api/messages", headers=direct_message_headers, json=direct_message_payload)
+    repeated_direct_message = client.post("/api/messages", headers=direct_message_headers, json=direct_message_payload)
+    assert direct_message.status_code == 201
+    assert repeated_direct_message.status_code == 200
+    assert repeated_direct_message.get_json()["data"]["already_sent"] is True
+    participant_messages = client.get("/api/messages?page=1&page_size=1", headers=student_headers).get_json()["data"]
+    assert participant_messages["total"] == 4
+    assert participant_messages["has_more"] is True
+    assert participant_messages["items"][0]["title"] == "研究者提醒"
+    assert participant_messages["items"][0]["sender_id"] == researcher["user"]["id"]
+    read_all = client.post("/api/messages/read-all", headers=student_headers, json={})
+    assert read_all.status_code == 200
+    assert read_all.get_json()["data"]["updated_count"] >= 1
 
     with app.app_context():
         from database import get_connection
@@ -272,6 +318,20 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
         with get_connection() as conn:
             actions = {row[0] for row in conn.execute("SELECT action FROM audit_logs").fetchall()}
     assert {"relationship_enrollment_created", "relationship_report_generated", "relationship_report_updated", "relationship_report_sent"} <= actions
+
+
+def test_relationship_growth_without_enrollment_explicitly_blocks_recording(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    student = _register(client, "growth-no-enrollment")
+
+    response = client.get("/api/relationship-pilot/growth", headers={"Authorization": f"Bearer {student['token']}"})
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["can_record"] is False
+    assert data["latest_enrollment_id"] is None
+    assert data["timeline"] == []
 
 
 def test_sensitive_relationship_text_enters_risk_review_queue(tmp_path):

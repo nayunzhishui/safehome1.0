@@ -281,6 +281,16 @@
   background: rgba(248, 251, 245, 0.86);
 }
 
+.preview-readonly {
+  padding: 18rpx 20rpx;
+  border: 1rpx dashed rgba(244, 127, 69, 0.34);
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-orange-soft);
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
 .consent-row {
   display: flex;
   align-items: flex-start;

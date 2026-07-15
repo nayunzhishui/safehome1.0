@@ -31,10 +31,32 @@ Page({
     phoneLoading: false,
     status: "idle",
     message: "",
+    capabilityMessage: "",
   },
 
   onLoad(options = {}) {
     this.setData({ redirectUrl: normalizeRedirect(options.redirect) });
+    this.loadAuthCapabilities();
+  },
+
+  loadAuthCapabilities() {
+    api.getAuthCapabilities()
+      .then((capabilities) => {
+        const wechatAvailable = !!(capabilities.wechat_login && capabilities.wechat_login.available);
+        const phoneAvailable = !!(capabilities.phone_login && capabilities.phone_login.available);
+        let capabilityMessage = "";
+        if (!wechatAvailable && !phoneAvailable) {
+          capabilityMessage = "微信与手机号快捷登录尚未完成云端配置，请先使用账号密码登录。";
+        } else if (!wechatAvailable) {
+          capabilityMessage = "微信一键登录尚未完成云端配置，可使用手机号或账号密码登录。";
+        } else if (!phoneAvailable) {
+          capabilityMessage = "手机号快捷登录尚未完成云端配置，可使用微信或账号密码登录。";
+        }
+        this.setData({ capabilityMessage });
+      })
+      .catch(() => {
+        // Older deployments may not expose capability probing yet; login buttons remain usable.
+      });
   },
 
   onUsernameInput(event) {
@@ -111,11 +133,14 @@ Page({
             this.setData({ wechatLoading: false });
           });
       },
-      fail: () => {
+      fail: (error) => {
+        const canceled = String((error && error.errMsg) || "").includes("cancel");
         this.setData({
           wechatLoading: false,
-          status: "error",
-          message: "微信登录凭证获取失败，请使用账号密码登录。",
+          status: canceled ? "idle" : "error",
+          message: canceled
+            ? "你已取消微信登录，可以继续选择其他登录方式。"
+            : "微信登录凭证获取失败，请重新尝试或使用账号密码登录。",
         });
       },
     });
@@ -125,9 +150,13 @@ Page({
     const detail = event.detail || {};
     const code = detail.code || "";
     if (!code) {
+      const detailMessage = String(detail.errMsg || "");
+      const canceled = detailMessage.includes("deny") || detailMessage.includes("cancel");
       this.setData({
-        status: "idle",
-        message: "你已取消手机号授权，可以继续选择其他登录方式。",
+        status: canceled ? "idle" : "error",
+        message: canceled
+          ? "你已取消手机号授权，可以继续选择其他登录方式。"
+          : "没有取得新的手机号授权凭证，请重新点击或使用账号密码登录。",
       });
       return;
     }

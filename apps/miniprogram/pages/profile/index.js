@@ -28,14 +28,14 @@ Page({
       },
       {
         title: "训练记录",
-        subtitle: "回到训练中心继续练习",
-        url: "/pages/training/index",
-        tab: true,
+        subtitle: "查看已完成的训练卡记录",
+        url: "/pages/training-history/index",
+        private: true,
       },
       {
         title: "测评记录",
-        subtitle: "回顾支持性测评",
-        url: "/pages/assessment/index",
+        subtitle: "查看全部支持性测评记录",
+        url: "/pages/assessment-history/index",
         private: true,
       },
       {
@@ -89,6 +89,7 @@ Page({
     ],
     stats: null,
     isResearcher: false,
+    showcaseAccess: false,
   },
 
   onShow() {
@@ -98,6 +99,7 @@ Page({
   async loadProfile() {
     const storedUser = getAuthUser();
     const loggedIn = isLoggedIn();
+    const showcase = await api.getShowcaseAccess().catch(() => ({ enabled: false }));
     try {
       const stats = await api.getProfileStats();
       this.setData({
@@ -110,7 +112,8 @@ Page({
           growthLevel: stats.weekly_record_count > 0 ? "本周有记录" : "本周待记录",
           roleText: storedUser && storedUser.role ? this.formatRole(storedUser.role) : "",
         },
-        isResearcher: !!(storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)),
+        isResearcher: !!showcase.enabled || !!(storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)),
+        showcaseAccess: !!showcase.enabled,
       });
     } catch (error) {
       this.setData({
@@ -172,7 +175,7 @@ Page({
 
   goResearcher() {
     const storedUser = getAuthUser();
-    if (storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)) {
+    if (storedUser && (this.data.showcaseAccess || ["researcher", "admin", "supervisor"].includes(storedUser.role))) {
       wx.navigateTo({ url: "/pages/researcher-dashboard/index" });
       return;
     }

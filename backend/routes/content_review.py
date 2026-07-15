@@ -10,6 +10,8 @@ from routes.utils import admin_token_error_response, fail, ok, require_admin_tok
 bp = Blueprint("content_review", __name__, url_prefix="/api/content-review")
 
 REVIEW_STATUSES = {"draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled", "metadata_only", "pilot_ready", "draft_requires_psychology_review", "pilot_draft", "pilot_approved", "paused", "completed"}
+RELEASE_STATUSES = {"trial_enabled", "enabled", "pilot_approved"}
+EVIDENCE_GOVERNED_TYPES = {"scale", "training_card", "course"}
 PROGRAM_TRANSITIONS = {
     "pilot_draft": {"pilot_approved"},
     "pilot_approved": {"paused", "completed"},
@@ -128,6 +130,21 @@ def update_content_review():
                 )
                 if not approval_complete:
                     return fail("program_approval_incomplete", "研究、心理和伦理三方签字不完整。", status=409)
+        if content_type in EVIDENCE_GOVERNED_TYPES and review_status in RELEASE_STATUSES:
+            approval = payload.get("approval") or {}
+            approval_complete = all(str(approval.get(field) or "").strip() for field in ("reviewer", "reviewed_at", "evidence_path"))
+            if not approval_complete:
+                return fail(
+                    "content_approval_evidence_incomplete",
+                    "最终批准需要审核人、日期和证据路径。",
+                    status=409,
+                )
+            matched_item["approval"] = {
+                "reviewer": str(approval["reviewer"]).strip(),
+                "reviewed_at": str(approval["reviewed_at"]).strip(),
+                "evidence_path": str(approval["evidence_path"]).strip(),
+                "scope": str(approval.get("scope") or "pilot_release").strip(),
+            }
         matched_item["review_status"] = review_status
     enabled_field = target.get("enabled_field")
     if enabled_field and isinstance(enabled_for_user, bool):
