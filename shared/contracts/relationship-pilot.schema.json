@@ -52,6 +52,7 @@
         "worksheet_id": { "type": "string" },
         "profile_model_id": { "type": ["string", "null"] },
         "profile_cluster_id": { "type": ["integer", "null"] },
+        "assigned_researcher_id": { "type": ["string", "null"] },
         "status": { "type": "string" },
         "review_status": { "type": "string" },
         "dimensions": { "type": "array", "items": { "$ref": "#/$defs/RelationshipDimension" } },

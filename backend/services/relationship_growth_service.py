@@ -9,6 +9,7 @@ from services.relationship_pilot_common import (
     dimension_lookup,
     enrollment_by_id,
     expand_enrollment,
+    ensure_researcher_access,
     four_layer_profile,
 )
 from services.risk_review_service import create_risk_review_record
@@ -100,6 +101,8 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
         user_id = str(actor["id"])
     with get_connection() as conn:
         enrollment_rows = rows_to_dicts(conn.execute("SELECT * FROM relationship_pilot_enrollments WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
+        for enrollment in enrollment_rows:
+            ensure_researcher_access(actor, enrollment)
         task_rows = rows_to_dicts(conn.execute("SELECT id, enrollment_id, task_type, risk_level, review_status, created_at FROM relationship_pilot_tasks WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
         report_rows = rows_to_dicts(conn.execute("SELECT id, enrollment_id, status, version, created_at FROM relationship_screening_reports WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
         long_rows = rows_to_dicts(conn.execute("SELECT * FROM relationship_longitudinal_entries WHERE user_id = ? ORDER BY event_at, created_at", (user_id,)).fetchall())
@@ -166,8 +169,13 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
 
 def researcher_dashboard(actor: dict) -> ServiceResult:
     with get_connection() as conn:
+        where_clause = ""
+        params: tuple = ()
+        if actor.get("role") == "researcher":
+            where_clause = "WHERE e.assigned_researcher_id IS NULL OR e.assigned_researcher_id = ?"
+            params = (str(actor["id"]),)
         rows = conn.execute(
-            """
+            f"""
             SELECT e.*, u.nickname,
                    (SELECT COUNT(*) FROM relationship_pilot_tasks t WHERE t.enrollment_id = e.id) AS tasks_count,
                    (SELECT id FROM relationship_screening_reports r WHERE r.enrollment_id = e.id ORDER BY created_at DESC LIMIT 1) AS report_id,
@@ -176,8 +184,10 @@ def researcher_dashboard(actor: dict) -> ServiceResult:
                    (SELECT MAX(CASE WHEN t.risk_level IN ('medium', 'high') THEN 1 ELSE 0 END) FROM relationship_pilot_tasks t WHERE t.enrollment_id = e.id) AS has_priority_risk
             FROM relationship_pilot_enrollments e
             LEFT JOIN users u ON u.id = e.user_id
+            {where_clause}
             ORDER BY e.created_at DESC
-            """
+            """,
+            params,
         ).fetchall()
         write_audit_log(conn, "relationship_research_dashboard_viewed", actor["id"], "relationship_pilot_dashboard", "all", {"records_count": len(rows)})
         conn.commit()

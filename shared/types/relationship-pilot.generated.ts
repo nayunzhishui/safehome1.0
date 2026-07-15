@@ -42,6 +42,7 @@ export type RelationshipPilotEnrollment = {
   worksheet_id: string;
   profile_model_id?: string | null;
   profile_cluster_id?: number | null;
+  assigned_researcher_id?: string | null;
   status: string;
   review_status: string;
   dimensions: Array<RelationshipDimension>;

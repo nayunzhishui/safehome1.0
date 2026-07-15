@@ -10,6 +10,8 @@ from services.relationship_pilot_common import (
     RelationshipPilotError,
     ServiceResult,
     enrollment_by_id,
+    ensure_researcher_assignment,
+    ensure_researcher_access,
     expand_enrollment,
     expand_task,
 )
@@ -88,8 +90,10 @@ def create_note(actor: dict, enrollment_id: str, note: str) -> ServiceResult:
     if any(term in note for term in ["依恋创伤已确定", "人格缺陷", "病理模式"]):
         raise RelationshipPilotError("validation_error", "研究备注不得使用诊断化、人格化或病理化定性。")
     with get_connection() as conn:
-        if not enrollment_by_id(conn, enrollment_id):
+        enrollment = enrollment_by_id(conn, enrollment_id)
+        if not enrollment:
             raise RelationshipPilotError("not_found", "没有找到报名记录。", 404)
+        ensure_researcher_assignment(conn, actor, enrollment)
         note_id = new_id("rel_note")
         timestamp = now_iso()
         conn.execute("INSERT INTO relationship_research_notes (id, enrollment_id, researcher_id, note, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)", (note_id, enrollment_id, actor["id"], note, timestamp, timestamp))
@@ -104,6 +108,7 @@ def create_narrative(actor: dict, enrollment_id: str, payload: dict) -> ServiceR
         enrollment = enrollment_by_id(conn, enrollment_id)
         if not enrollment:
             raise RelationshipPilotError("not_found", "没有找到报名记录。", 404)
+        enrollment = ensure_researcher_assignment(conn, actor, enrollment)
         expanded = expand_enrollment(enrollment)
         tasks = rows_to_dicts(conn.execute("SELECT * FROM relationship_pilot_tasks WHERE enrollment_id = ? ORDER BY created_at", (enrollment_id,)).fetchall())
         notes = rows_to_dicts(conn.execute("SELECT * FROM relationship_research_notes WHERE enrollment_id = ? ORDER BY created_at", (enrollment_id,)).fetchall())
@@ -134,6 +139,8 @@ def confirm_narrative(actor: dict, narrative_id: str) -> ServiceResult:
         row = conn.execute("SELECT * FROM relationship_narratives WHERE id = ?", (narrative_id,)).fetchone()
         if not row:
             raise RelationshipPilotError("not_found", "没有找到探索手记。", 404)
+        enrollment = enrollment_by_id(conn, row["enrollment_id"])
+        ensure_researcher_assignment(conn, actor, enrollment)
         conn.execute("UPDATE relationship_narratives SET status = 'confirmed', confirmed_by = ?, confirmed_at = ?, updated_at = ? WHERE id = ?", (actor["id"], timestamp, timestamp, narrative_id))
         existing_message = conn.execute("SELECT id FROM messages WHERE user_id = ? AND source_type = 'relationship_narrative' AND source_id = ? LIMIT 1", (row["user_id"], narrative_id)).fetchone()
         if not existing_message:
@@ -153,6 +160,8 @@ def get_narrative(actor: dict, narrative_id: str) -> ServiceResult:
             raise RelationshipPilotError("not_found", "没有找到探索手记。", 404)
         item = row_to_dict(row)
         is_researcher = actor.get("role") in RESEARCH_ROLES
+        enrollment = enrollment_by_id(conn, item["enrollment_id"])
+        ensure_researcher_access(actor, enrollment)
         if not is_researcher and (str(actor["id"]) != str(item["user_id"]) or item["status"] != "confirmed"):
             raise RelationshipPilotError("not_found", "探索手记尚未确认或不存在。", 404)
         write_audit_log(conn, "relationship_narrative_viewed", actor["id"], "relationship_narrative", narrative_id, {"role": actor.get("role")})

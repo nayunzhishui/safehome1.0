@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from database import json_loads, load_content_json, row_to_dict
+from database import json_loads, load_content_json, now_iso, row_to_dict, write_audit_log
 
 
 RELATIONSHIP_WORKSHEET_IDS = {
@@ -65,6 +65,42 @@ def own_or_researcher(actor: dict, user_id: str) -> bool:
 def enrollment_by_id(conn, enrollment_id: str) -> dict | None:
     row = conn.execute("SELECT * FROM relationship_pilot_enrollments WHERE id = ?", (enrollment_id,)).fetchone()
     return row_to_dict(row)
+
+
+def ensure_researcher_assignment(conn, actor: dict, enrollment: dict) -> dict:
+    """Claim an unassigned enrollment for a researcher and reject cross-researcher writes."""
+
+    if actor.get("role") != "researcher":
+        return enrollment
+    actor_id = str(actor.get("id") or "")
+    ensure_researcher_access(actor, enrollment)
+    assigned_id = str(enrollment.get("assigned_researcher_id") or "")
+    if not assigned_id:
+        conn.execute(
+            "UPDATE relationship_pilot_enrollments SET assigned_researcher_id = ?, updated_at = ? WHERE id = ? AND assigned_researcher_id IS NULL",
+            (actor_id, now_iso(), enrollment["id"]),
+        )
+        refreshed = enrollment_by_id(conn, enrollment["id"])
+        if not refreshed or str(refreshed.get("assigned_researcher_id") or "") != actor_id:
+            raise RelationshipPilotError("researcher_assignment_conflict", "该参与者已分配给其他研究者。", 403)
+        write_audit_log(
+            conn,
+            "relationship_researcher_assigned",
+            actor_id,
+            "relationship_pilot_enrollment",
+            enrollment["id"],
+            {"assigned_researcher_id": actor_id},
+        )
+        return refreshed
+    return enrollment
+
+
+def ensure_researcher_access(actor: dict, enrollment: dict) -> None:
+    if actor.get("role") != "researcher":
+        return
+    assigned_id = str(enrollment.get("assigned_researcher_id") or "")
+    if assigned_id and assigned_id != str(actor.get("id") or ""):
+        raise RelationshipPilotError("researcher_assignment_conflict", "该参与者已分配给其他研究者。", 403)
 
 
 def dimension_lookup(dimensions: list[dict]) -> dict[str, float]:

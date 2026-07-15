@@ -6,14 +6,31 @@ from database import get_connection, now_iso, row_to_dict, rows_to_dicts, write_
 from routes.auth_utils import AuthError, auth_error_response, require_login, require_role
 from routes.utils import fail, ok, parse_int, resolve_user_id_for_query
 from services.message_service import create_message
+from services.relationship_pilot_common import RelationshipPilotError, ensure_researcher_assignment
 from services.risk_service import check_text_risk
 
 bp = Blueprint("messages", __name__, url_prefix="/api/messages")
 
 
 def _expand_message(item: dict) -> dict:
-    item["is_unread"] = item.get("status") == "unread"
-    return item
+    public_fields = {
+        "id",
+        "user_id",
+        "message_type",
+        "title",
+        "body",
+        "source_type",
+        "source_id",
+        "sender_role",
+        "status",
+        "created_at",
+        "read_at",
+    }
+    result = {key: value for key, value in item.items() if key in public_fields}
+    result["is_unread"] = result.get("status") == "unread"
+    if item.get("already_sent"):
+        result["already_sent"] = True
+    return result
 
 
 def _resolve_message_user_id(requested_user_id: str | None = None) -> tuple[str | None, tuple | None]:
@@ -101,15 +118,33 @@ def send_researcher_message():
     if risk.get("risk_level") == "high" and actor.get("role") == "researcher":
         return fail("message_requires_supervisor_review", "消息包含需要督导复核的高风险表述，请先由督导确认。", status=409)
     with get_connection() as conn:
-        enrollment = conn.execute("SELECT id, user_id FROM relationship_pilot_enrollments WHERE id = ?", (enrollment_id,)).fetchone()
+        enrollment = conn.execute("SELECT * FROM relationship_pilot_enrollments WHERE id = ?", (enrollment_id,)).fetchone()
         if not enrollment:
             return fail("not_found", "没有找到对应参与者档案。", status=404)
+        enrollment = row_to_dict(enrollment)
+        if enrollment.get("status") != "enrolled":
+            return fail("enrollment_not_active", "该参与者当前不在项目中，不能继续发送消息。", status=409)
+        try:
+            enrollment = ensure_researcher_assignment(conn, actor, enrollment)
+        except RelationshipPilotError as exc:
+            return fail(exc.code, exc.message, status=exc.status)
         if idempotency_key:
             existing = conn.execute("SELECT * FROM messages WHERE sender_id = ? AND idempotency_key = ?", (actor["id"], idempotency_key)).fetchone()
             if existing:
-                item = _expand_message(row_to_dict(existing))
+                item = row_to_dict(existing)
+                expected = {
+                    "user_id": enrollment["user_id"],
+                    "source_type": "relationship_pilot_enrollment",
+                    "source_id": enrollment_id,
+                    "title": title,
+                    "body": body,
+                    "message_type": message_type,
+                }
+                if any(str(item.get(key) or "") != str(value or "") for key, value in expected.items()):
+                    return fail("idempotency_conflict", "该幂等键已用于另一条消息，请更换后重试。", status=409)
                 item["already_sent"] = True
-                return ok(item)
+                conn.commit()
+                return ok(_expand_message(item))
         message = create_message(
             conn,
             enrollment["user_id"],

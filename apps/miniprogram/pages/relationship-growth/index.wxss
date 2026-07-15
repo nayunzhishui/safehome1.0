@@ -19,7 +19,7 @@
 .filter-chip--active, .metric-chip--active { border-color: var(--safe-primary); background: var(--safe-primary-soft); color: var(--safe-primary-deep); font-weight: 800; }
 .metric-scroll { margin-top: -6rpx; }
 .chart-title { color: var(--safe-title); font-size: 24rpx; font-weight: 800; }
-.chart-canvas { width: 620rpx; max-width: 100%; height: 300rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-sm); background: #fbfcfb; }
+.chart-canvas { box-sizing: border-box; display: block; width: 100%; height: 300rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-sm); background: #fbfcfb; }
 .chart-state, .trend-copy { color: var(--safe-muted); font-size: 21rpx; line-height: 1.55; }
 .trend-copy { color: var(--safe-primary-deep); }
 .empty-state { padding: 24rpx 0; color: var(--safe-muted); font-size: 22rpx; line-height: 1.6; text-align: center; }

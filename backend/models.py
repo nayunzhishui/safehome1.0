@@ -68,6 +68,7 @@ SCHEMA_SQL = [
         radar_features_json TEXT NOT NULL DEFAULT '[]',
         profile_json TEXT NOT NULL DEFAULT '{}',
         consent_scope TEXT NOT NULL,
+        assigned_researcher_id TEXT,
         status TEXT NOT NULL DEFAULT 'enrolled',
         review_status TEXT NOT NULL DEFAULT 'pending_review',
         created_at TEXT NOT NULL,
@@ -585,6 +586,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_relationship_hypothesis_report ON relationship_hypothesis_feedback(report_id, hypothesis_index)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
+    "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_task_idempotency_unique ON relationship_pilot_tasks(user_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_longitudinal_idempotency_unique ON relationship_longitudinal_entries(user_id, idempotency_key)",
 ]

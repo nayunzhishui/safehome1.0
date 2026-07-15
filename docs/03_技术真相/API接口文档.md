@@ -1403,6 +1403,8 @@ Invoke-WebRequest `
 
 返回：`items`、`count`、`total`、`page`、`page_size`、`has_more`、`unread_count`。
 
+消息对象只返回参与者展示所需字段：`id`、`user_id`、`message_type`、`title`、`body`、`source_type`、`source_id`、`sender_role`、`status`、`is_unread`、`created_at`、`read_at`。内部 `sender_id` 与 `idempotency_key` 不返回给消息列表或详情接口。
+
 ### `POST /api/messages`
 
 用途：研究者、督导或管理员向关系探索试点参与者发送站内消息。收件人由 `enrollment_id` 对应的报名记录确定，客户端不能直接指定任意 `user_id`。
@@ -1417,7 +1419,7 @@ Invoke-WebRequest `
 | `message_type` | string | 否 | `researcher_message` 或 `relationship_stage_feedback`，默认前者 |
 | `idempotency_key` | string | 否 | 防止重复发送；也可使用 `Idempotency-Key` 请求头 |
 
-约束：发送前执行文本风险预检；研究者消息命中高风险表述时返回 `409 message_requires_supervisor_review`。成功写入 `messages` 后，参与者通过 `GET /api/messages` 读取。
+约束：发送前执行文本风险预检；研究者消息命中高风险表述时返回 `409 message_requires_supervisor_review`。仅 `status=enrolled` 的报名记录可接收消息；研究者第一次写操作会认领未分配报名，之后其他研究者返回 `403 researcher_assignment_conflict`，督导和管理员不受该分配限制。同一发送者重复使用幂等键时，请求内容必须完全一致，否则返回 `409 idempotency_conflict`。成功写入 `messages` 后，参与者通过 `GET /api/messages` 读取。
 
 ### `GET /api/messages/<message_id>`
 
@@ -1755,7 +1757,7 @@ outputs/text_analysis/family_topology_audit_summary.json
 | `POST /enrollments/<id>/report` | 本人/研究者 | 生成同源关系健康初筛报告；未复核时为 `pending_review` |
 | `GET /reports/<id>` | 本人/研究者 | 查看报告；`download=1` 下载脱敏结构化 JSON |
 | `POST /reports/<id>/confirm` | 研究者/督导/管理员 | 人工确认报告 |
-| `PATCH /reports/<id>` | 研究者/督导/管理员 | 为已确认或已发送报告创建新版本，可写入 `personalized_interpretation` 等支持性阶段反馈字段 |
+| `PATCH /reports/<id>` | 研究者/督导/管理员 | 为已确认或已发送报告新增不可变版本，可写入 `personalized_interpretation` 等支持性阶段反馈字段；原报告不覆盖 |
 | `POST /reports/<id>/send` | 研究者/督导/管理员 | 发送已确认报告或更新版本；更新版本以 `relationship_stage_feedback` 写入参与者消息列表 |
 | `POST /enrollments/<id>/tasks` | 本人 | 保存关系绘画笔画数据或句子补全；需材料授权并执行风险预检 |
 | `GET /researcher/dashboard` | 研究者/督导/管理员 | 查看报名、画像、报告、任务数、备注数和复核状态 |
@@ -1782,7 +1784,7 @@ relationship_initiation_intention_action
 |---|---|---|
 | `GET /reports/<id>?download=1` | 本人/研究者 | 返回仅含用户可见字段的下载JSON；小程序据同源报告生成长图，不含模型中心、研究备注和内部ID |
 | `PUT /reports/<id>/hypotheses/<index>` | 本人 | `response`仅允许`matches`、`does_not_match`、`uncertain`，用于共同核对机制假设 |
-| `PATCH /reports/<id>` | 研究者/督导/管理员 | 更新白名单内的用户可见文案并提供新`version`，报告状态变为`updated` |
+| `PATCH /reports/<id>` | 研究者/督导/管理员 | 新增一条白名单用户可见报告版本并提供新`version`，原版本保持不变；研究者高风险文字返回`409 report_requires_supervisor_review` |
 | `POST /reports/<id>/send` | 研究者/督导/管理员 | `confirmed`或`updated`可发送；同一版本重复调用返回既有消息，不重复创建 |
 | `POST /enrollments/<id>/tasks` | 本人 | 支持`Idempotency-Key`请求头，弱网重试不重复保存 |
 | `POST /enrollments/<id>/longitudinal` | 本人 | 支持`Idempotency-Key`请求头，周记录/关键事件重试不重复保存 |

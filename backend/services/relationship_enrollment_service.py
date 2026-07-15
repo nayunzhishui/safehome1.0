@@ -13,6 +13,7 @@ from services.relationship_pilot_common import (
     enrollment_by_id,
     expand_enrollment,
     expand_task,
+    ensure_researcher_access,
     own_or_researcher,
     worksheet,
 )
@@ -47,7 +48,9 @@ def create_enrollment(actor: dict, payload: dict) -> ServiceResult:
             existing_item = row_to_dict(existing)
             if str(existing_item["user_id"]) != user_id:
                 raise RelationshipPilotError("association_conflict", "该测评结果已关联其他报名记录。", 409)
-            return ServiceResult(expand_enrollment(existing_item))
+            expanded_existing = expand_enrollment(existing_item)
+            expanded_existing.pop("assigned_researcher_id", None)
+            return ServiceResult(expanded_existing)
 
         worksheet_item = worksheet(result["worksheet_id"])
         if not worksheet_item:
@@ -103,17 +106,28 @@ def create_enrollment(actor: dict, payload: dict) -> ServiceResult:
                 (result["id"],),
             ).fetchone()
             if existing:
-                return ServiceResult(expand_enrollment(row_to_dict(existing)))
+                expanded_existing = expand_enrollment(row_to_dict(existing))
+                expanded_existing.pop("assigned_researcher_id", None)
+                return ServiceResult(expanded_existing)
             raise
         write_audit_log(conn, "relationship_enrollment_created", user_id, "relationship_pilot_enrollment", enrollment_id, {"assessment_result_id": result["id"], "consent_scope": "relationship_pilot_stage2_v1"})
         conn.commit()
         created = conn.execute("SELECT * FROM relationship_pilot_enrollments WHERE id = ?", (enrollment_id,)).fetchone()
-    return ServiceResult(expand_enrollment(row_to_dict(created)), 201)
+    created_item = expand_enrollment(row_to_dict(created))
+    created_item.pop("assigned_researcher_id", None)
+    return ServiceResult(created_item, 201)
 
 
 def list_enrollments(actor: dict) -> ServiceResult:
-    where = "" if actor.get("role") in RESEARCH_ROLES else "WHERE user_id = ?"
-    params = [] if not where else [actor["id"]]
+    if actor.get("role") == "researcher":
+        where = "WHERE assigned_researcher_id IS NULL OR assigned_researcher_id = ?"
+        params = [actor["id"]]
+    elif actor.get("role") in {"admin", "supervisor"}:
+        where = ""
+        params = []
+    else:
+        where = "WHERE user_id = ?"
+        params = [actor["id"]]
     with get_connection() as conn:
         rows = conn.execute(
             f"""
@@ -127,6 +141,9 @@ def list_enrollments(actor: dict) -> ServiceResult:
             params,
         ).fetchall()
     items = [expand_enrollment(item) for item in rows_to_dicts(rows)]
+    if actor.get("role") not in RESEARCH_ROLES:
+        for item in items:
+            item.pop("assigned_researcher_id", None)
     return ServiceResult({"items": items, "count": len(items)})
 
 
@@ -137,6 +154,7 @@ def get_enrollment(actor: dict, enrollment_id: str) -> ServiceResult:
             raise RelationshipPilotError("not_found", "没有找到报名记录。", 404)
         if not own_or_researcher(actor, item["user_id"]):
             raise RelationshipPilotError("forbidden", "无权查看该报名记录。", 403)
+        ensure_researcher_access(actor, item)
         tasks = rows_to_dicts(conn.execute("SELECT * FROM relationship_pilot_tasks WHERE enrollment_id = ? ORDER BY created_at", (enrollment_id,)).fetchall())
         reports = rows_to_dicts(conn.execute("SELECT id, status, version, created_at, confirmed_at FROM relationship_screening_reports WHERE enrollment_id = ? ORDER BY created_at DESC", (enrollment_id,)).fetchall())
         notes = []
@@ -145,6 +163,8 @@ def get_enrollment(actor: dict, enrollment_id: str) -> ServiceResult:
         write_audit_log(conn, "relationship_enrollment_viewed", actor["id"], "relationship_pilot_enrollment", enrollment_id, {"role": actor.get("role"), "contains_sensitive_material": bool(tasks)})
         conn.commit()
     expanded = expand_enrollment(item)
+    if actor.get("role") not in RESEARCH_ROLES:
+        expanded.pop("assigned_researcher_id", None)
     expanded["tasks"] = [expand_task(task) for task in tasks]
     expanded["reports"] = reports
     expanded["research_notes"] = notes

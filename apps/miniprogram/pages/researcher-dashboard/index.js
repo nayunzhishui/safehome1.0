@@ -143,7 +143,7 @@ Page({
       if (!["confirmed", "sent", "updated"].includes(report.status)) {
         report = await api.confirmRelationshipReport(report.id);
       }
-      await api.updateRelationshipReport(report.id, {
+      report = await api.updateRelationshipReport(report.id, {
         version: `2026.07-stage-feedback-${Date.now()}`,
         personalized_interpretation: text,
       });

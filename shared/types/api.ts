@@ -822,9 +822,7 @@ export interface UserMessage {
   body?: string | null;
   source_type?: string | null;
   source_id?: string | null;
-  sender_id?: ID | null;
   sender_role?: "researcher" | "supervisor" | "admin" | string | null;
-  idempotency_key?: string | null;
   status: "unread" | "read" | string;
   is_unread?: boolean;
   created_at: ISODateTime;

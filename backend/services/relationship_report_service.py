@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from database import get_connection, json_dumps, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from services.message_service import create_message
+from services.risk_service import check_text_risk
 from services.relationship_pilot_common import (
     BOUNDARY,
     REPORT_VERSION,
     RelationshipPilotError,
     ServiceResult,
     enrollment_by_id,
+    ensure_researcher_assignment,
+    ensure_researcher_access,
     expand_enrollment,
     expand_report,
     four_layer_profile,
@@ -30,7 +33,10 @@ def create_report(actor: dict, enrollment_id: str) -> ServiceResult:
             (enrollment_id, REPORT_VERSION),
         ).fetchone()
         if existing:
+            ensure_researcher_access(actor, enrollment)
             return ServiceResult(expand_report(row_to_dict(existing)))
+        if actor.get("role") == "researcher":
+            enrollment = ensure_researcher_assignment(conn, actor, enrollment)
         expanded = expand_enrollment(enrollment)
         profile = expanded["profile"]
         report_payload = {
@@ -85,6 +91,8 @@ def get_report(actor: dict, report_id: str, download: bool = False) -> ServiceRe
         item = expand_report(row_to_dict(row))
         if not own_or_researcher(actor, item["user_id"]):
             raise RelationshipPilotError("forbidden", "无权查看该报告。", 403)
+        enrollment = enrollment_by_id(conn, item["enrollment_id"])
+        ensure_researcher_access(actor, enrollment)
         sent_row = conn.execute(
             "SELECT created_at FROM messages WHERE user_id = ? AND source_type = 'relationship_screening_report' AND source_id = ? ORDER BY created_at DESC LIMIT 1",
             (item["user_id"], report_id),
@@ -149,7 +157,10 @@ def confirm_report(actor: dict, report_id: str) -> ServiceResult:
         row = conn.execute("SELECT * FROM relationship_screening_reports WHERE id = ?", (report_id,)).fetchone()
         if not row:
             raise RelationshipPilotError("not_found", "没有找到报告。", 404)
-        if row["status"] == "sent":
+        enrollment = enrollment_by_id(conn, row["enrollment_id"])
+        ensure_researcher_assignment(conn, actor, enrollment)
+        if row["status"] in {"sent", "updated"}:
+            conn.commit()
             return ServiceResult(expand_report(row_to_dict(row)))
         conn.execute("UPDATE relationship_screening_reports SET status = 'confirmed', confirmed_by = ?, confirmed_at = ?, updated_at = ? WHERE id = ?", (actor["id"], timestamp, timestamp, report_id))
         write_audit_log(conn, "relationship_report_confirmed", actor["id"], "relationship_screening_report", report_id)
@@ -164,7 +175,6 @@ def update_report(actor: dict, report_id: str, payload: dict) -> ServiceResult:
         "personalized_interpretation",
         "suggested_assessment_questions",
         "recommended_project_tasks",
-        "boundary_notice",
     }
     version = str(payload.get("version") or "").strip()
     changes = {key: payload[key] for key in allowed_fields if key in payload}
@@ -172,32 +182,75 @@ def update_report(actor: dict, report_id: str, payload: dict) -> ServiceResult:
         raise RelationshipPilotError("validation_error", "更新报告时需要提供新的版本号。")
     if not changes:
         raise RelationshipPilotError("validation_error", "没有可更新的用户可见报告内容。")
+    for key in {"profile_description", "personalized_interpretation"} & changes.keys():
+        value = changes[key]
+        if not isinstance(value, str) or not value.strip() or len(value.strip()) > 2000:
+            raise RelationshipPilotError("validation_error", "报告文字内容需为1至2000个字符。")
+        changes[key] = value.strip()
     for key in {"suggested_assessment_questions", "recommended_project_tasks"} & changes.keys():
-        if not isinstance(changes[key], list) or any(not isinstance(item, str) for item in changes[key]):
+        value = changes[key]
+        if (
+            not isinstance(value, list)
+            or len(value) > 20
+            or any(not isinstance(item, str) or not item.strip() or len(item.strip()) > 500 for item in value)
+        ):
             raise RelationshipPilotError("validation_error", "报告问题和任务必须使用文字列表。")
+        changes[key] = [item.strip() for item in value]
+    risk = check_text_risk(
+        [value for value in changes.values() if isinstance(value, str)]
+        + [item for value in changes.values() if isinstance(value, list) for item in value],
+        source="relationship_stage_feedback",
+    )
+    if risk.get("risk_level") == "high" and actor.get("role") == "researcher":
+        raise RelationshipPilotError("report_requires_supervisor_review", "阶段性反馈包含需要督导复核的高风险表述。", 409)
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM relationship_screening_reports WHERE id = ?", (report_id,)).fetchone()
         if not row:
             raise RelationshipPilotError("not_found", "没有找到报告。", 404)
         if row["status"] not in {"confirmed", "sent", "updated"}:
             raise RelationshipPilotError("report_not_confirmed", "报告需先完成人工确认才能更新。", 409)
+        enrollment = enrollment_by_id(conn, row["enrollment_id"])
+        ensure_researcher_assignment(conn, actor, enrollment)
         if version == row["version"]:
             raise RelationshipPilotError("version_conflict", "请使用新的报告版本号。", 409)
         report = expand_report(row_to_dict(row))["report"]
         report.update(changes)
         report["version"] = version
         timestamp = now_iso()
+        updated_report_id = new_id("rel_report")
         try:
             conn.execute(
-                "UPDATE relationship_screening_reports SET status = 'updated', version = ?, report_json = ?, confirmed_by = ?, confirmed_at = ?, updated_at = ? WHERE id = ?",
-                (version, json_dumps(report), actor["id"], timestamp, timestamp, report_id),
+                """
+                INSERT INTO relationship_screening_reports (
+                    id, enrollment_id, user_id, assessment_result_id, status, version, report_json,
+                    confirmed_by, confirmed_at, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, 'updated', ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    updated_report_id,
+                    row["enrollment_id"],
+                    row["user_id"],
+                    row["assessment_result_id"],
+                    version,
+                    json_dumps(report),
+                    actor["id"],
+                    timestamp,
+                    timestamp,
+                    timestamp,
+                ),
             )
-            conn.commit()
         except Exception as exc:
             raise RelationshipPilotError("version_conflict", "同一报名记录下的报告版本不能重复。", 409) from exc
-        write_audit_log(conn, "relationship_report_updated", actor["id"], "relationship_screening_report", report_id, {"version": version, "updated_fields": sorted(changes)})
+        write_audit_log(
+            conn,
+            "relationship_report_updated",
+            actor["id"],
+            "relationship_screening_report",
+            updated_report_id,
+            {"base_report_id": report_id, "version": version, "updated_fields": sorted(changes), "risk_level": risk.get("risk_level")},
+        )
         conn.commit()
-        updated = conn.execute("SELECT * FROM relationship_screening_reports WHERE id = ?", (report_id,)).fetchone()
+        updated = conn.execute("SELECT * FROM relationship_screening_reports WHERE id = ?", (updated_report_id,)).fetchone()
     return ServiceResult(expand_report(row_to_dict(updated)))
 
 
@@ -206,6 +259,8 @@ def send_report(actor: dict, report_id: str) -> ServiceResult:
         row = conn.execute("SELECT * FROM relationship_screening_reports WHERE id = ?", (report_id,)).fetchone()
         if not row:
             raise RelationshipPilotError("not_found", "没有找到报告。", 404)
+        enrollment = enrollment_by_id(conn, row["enrollment_id"])
+        ensure_researcher_assignment(conn, actor, enrollment)
         existing = conn.execute(
             "SELECT * FROM messages WHERE user_id = ? AND source_type = 'relationship_screening_report' AND source_id = ? ORDER BY created_at DESC LIMIT 1",
             (row["user_id"], report_id),
@@ -216,6 +271,7 @@ def send_report(actor: dict, report_id: str) -> ServiceResult:
                 conn.commit()
             item = row_to_dict(existing)
             item["already_sent"] = True
+            conn.commit()
             return ServiceResult(item)
         if row["status"] not in {"confirmed", "updated"}:
             raise RelationshipPilotError("report_not_confirmed", "报告需人工确认后才能发送。", 409)

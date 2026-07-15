@@ -185,6 +185,13 @@ def test_weekly_report_includes_assessment_and_thermometer_summary(tmp_path, mon
         },
     )
     assert assessment_response.status_code == 201
+    assessment_id = assessment_response.get_json()["data"]["id"]
+    with get_connection() as conn:
+        conn.execute(
+            "UPDATE assessment_results SET created_at = ? WHERE id = ?",
+            ("2026-07-06T08:00:00+00:00", assessment_id),
+        )
+        conn.commit()
 
     for level, created_at in [(8, "2026-07-06T09:00:00+00:00"), (5, "2026-07-06T10:00:00+00:00")]:
         response = client.post(

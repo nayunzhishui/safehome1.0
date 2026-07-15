@@ -33,8 +33,8 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_15_006"
-CURRENT_SCHEMA_NAME = "researcher_message_delivery_fields"
+CURRENT_SCHEMA_VERSION = "2026_07_15_007"
+CURRENT_SCHEMA_NAME = "relationship_researcher_assignment"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -47,6 +47,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "phone_or_email",
     "phone_hash",
     "enrollment_id",
+    "assigned_researcher_id",
     "report_id",
     "response",
     "assessment_result_id",
@@ -697,6 +698,8 @@ def ensure_schema_columns(conn) -> None:
     for column, definition in relationship_task_columns.items():
         ensure_column(conn, "relationship_pilot_tasks", column, definition)
         ensure_column(conn, "relationship_longitudinal_entries", column, definition)
+
+    ensure_column(conn, "relationship_pilot_enrollments", "assigned_researcher_id", "TEXT")
 
     message_columns = {
         "sender_id": "TEXT",

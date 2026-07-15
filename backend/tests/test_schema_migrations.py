@@ -29,11 +29,15 @@ def test_init_db_records_current_schema_migration_once(tmp_path, monkeypatch):
             "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'schema_migrations'"
         ).fetchone()
         rows = conn.execute("SELECT * FROM schema_migrations").fetchall()
+        enrollment_columns = {
+            row["name"] for row in conn.execute("PRAGMA table_info(relationship_pilot_enrollments)").fetchall()
+        }
 
     assert table is not None
     assert len(rows) == 1
     assert rows[0]["version"] == database.CURRENT_SCHEMA_VERSION
     assert rows[0]["name"] == database.CURRENT_SCHEMA_NAME
+    assert "assigned_researcher_id" in enrollment_columns
 
 
 def test_latest_schema_version_uses_version_order_not_mixed_timestamp_formats(tmp_path, monkeypatch):

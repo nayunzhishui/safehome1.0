@@ -29,14 +29,14 @@ def _register(client, username):
     return response.get_json()["data"]
 
 
-def _researcher(client):
+def _researcher(client, username="pilot-researcher"):
     response = client.post(
         "/api/auth/admin-create-account",
         headers={"X-Admin-Token": "safehome-local-admin-token"},
-        json={"username": "pilot-researcher", "password": "password123", "role": "researcher"},
+        json={"username": username, "password": "password123", "role": "researcher"},
     )
     assert response.status_code == 201
-    login = client.post("/api/auth/login", json={"username": "pilot-researcher", "password": "password123"})
+    login = client.post("/api/auth/login", json={"username": username, "password": "password123"})
     return login.get_json()["data"]
 
 
@@ -99,8 +99,10 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     student = _register(client, "pilot-student")
     other = _register(client, "other-student")
     researcher = _researcher(client)
+    other_researcher = _researcher(client, "pilot-researcher-2")
     student_headers = {"Authorization": f"Bearer {student['token']}"}
     researcher_headers = {"Authorization": f"Bearer {researcher['token']}"}
+    other_researcher_headers = {"Authorization": f"Bearer {other_researcher['token']}"}
     other_headers = {"Authorization": f"Bearer {other['token']}"}
     assessment = _submit_relationship_assessment(client, student["token"])
 
@@ -245,6 +247,22 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
         headers=researcher_headers,
     )
     assert report_confirmed.status_code == 200
+    assignment_conflict = client.post(
+        "/api/messages",
+        headers={**other_researcher_headers, "Idempotency-Key": "other-researcher-message"},
+        json={"enrollment_id": enrollment["id"], "title": "越权消息", "body": "不应发送成功。"},
+    )
+    assert assignment_conflict.status_code == 403
+    other_researcher_detail = client.get(
+        f"/api/relationship-pilot/enrollments/{enrollment['id']}",
+        headers=other_researcher_headers,
+    )
+    assert other_researcher_detail.status_code == 403
+    other_researcher_growth = client.get(
+        f"/api/relationship-pilot/growth?user_id={student['user']['id']}",
+        headers=other_researcher_headers,
+    )
+    assert other_researcher_growth.status_code == 403
     sent = client.post(
         f"/api/relationship-pilot/reports/{report['id']}/send",
         headers=researcher_headers,
@@ -267,6 +285,17 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     assert delivered_report["status"] == "sent"
     assert delivered_report["sent_at"]
 
+    high_risk_update = client.patch(
+        f"/api/relationship-pilot/reports/{report['id']}",
+        headers=researcher_headers,
+        json={
+            "version": "2026.07-relationship-screening-risk",
+            "personalized_interpretation": "你应该自杀",
+        },
+    )
+    assert high_risk_update.status_code == 409
+    assert high_risk_update.get_json()["error"]["code"] == "report_requires_supervisor_review"
+
     updated = client.patch(
         f"/api/relationship-pilot/reports/{report['id']}",
         headers=researcher_headers,
@@ -276,19 +305,29 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
         },
     )
     assert updated.status_code == 200
-    assert updated.get_json()["data"]["status"] == "updated"
-    updated_for_student = client.get(f"/api/relationship-pilot/reports/{report['id']}", headers=student_headers).get_json()["data"]
+    updated_report = updated.get_json()["data"]
+    assert updated_report["id"] != report["id"]
+    assert updated_report["status"] == "updated"
+    original_for_student = client.get(f"/api/relationship-pilot/reports/{report['id']}", headers=student_headers).get_json()["data"]
+    assert original_for_student["version"] == report["version"]
+    assert original_for_student["report"]["personalized_interpretation"] != "这份更新仍只作为共同讨论线索。"
+    updated_for_student = client.get(f"/api/relationship-pilot/reports/{updated_report['id']}", headers=student_headers).get_json()["data"]
     assert updated_for_student["version"] == "2026.07-relationship-screening-v2"
     assert updated_for_student["report"]["personalized_interpretation"] == "这份更新仍只作为共同讨论线索。"
-    sent_update = client.post(f"/api/relationship-pilot/reports/{report['id']}/send", headers=researcher_headers)
+    sent_update = client.post(f"/api/relationship-pilot/reports/{updated_report['id']}/send", headers=researcher_headers)
     assert sent_update.status_code == 201
-    sent_update_again = client.post(f"/api/relationship-pilot/reports/{report['id']}/send", headers=researcher_headers)
+    sent_update_again = client.post(f"/api/relationship-pilot/reports/{updated_report['id']}/send", headers=researcher_headers)
     assert sent_update_again.status_code == 200
     updated_messages = client.get("/api/messages", headers=student_headers).get_json()["data"]["items"]
-    assert len([item for item in updated_messages if item["source_id"] == report["id"]]) == 2
+    assert {report["id"], updated_report["id"]} <= {
+        item["source_id"] for item in updated_messages if item["source_type"] == "relationship_screening_report"
+    }
     stage_feedback_messages = [item for item in updated_messages if item["message_type"] == "relationship_stage_feedback"]
     assert len(stage_feedback_messages) == 1
     assert stage_feedback_messages[0]["sender_role"] == "researcher"
+    assert stage_feedback_messages[0]["source_id"] == updated_report["id"]
+    assert "sender_id" not in stage_feedback_messages[0]
+    assert "idempotency_key" not in stage_feedback_messages[0]
     growth_after_feedback = client.get("/api/relationship-pilot/growth", headers=student_headers).get_json()["data"]
     assert any(item["type"] == "researcher_feedback" for item in growth_after_feedback["timeline"])
 
@@ -303,11 +342,19 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     assert direct_message.status_code == 201
     assert repeated_direct_message.status_code == 200
     assert repeated_direct_message.get_json()["data"]["already_sent"] is True
+    idempotency_conflict = client.post(
+        "/api/messages",
+        headers=direct_message_headers,
+        json={**direct_message_payload, "body": "相同幂等键不能改成另一条正文。"},
+    )
+    assert idempotency_conflict.status_code == 409
+    assert idempotency_conflict.get_json()["error"]["code"] == "idempotency_conflict"
     participant_messages = client.get("/api/messages?page=1&page_size=1", headers=student_headers).get_json()["data"]
     assert participant_messages["total"] == 4
     assert participant_messages["has_more"] is True
     assert participant_messages["items"][0]["title"] == "研究者提醒"
-    assert participant_messages["items"][0]["sender_id"] == researcher["user"]["id"]
+    assert "sender_id" not in participant_messages["items"][0]
+    assert "idempotency_key" not in participant_messages["items"][0]
     read_all = client.post("/api/messages/read-all", headers=student_headers, json={})
     assert read_all.status_code == 200
     assert read_all.get_json()["data"]["updated_count"] >= 1
@@ -317,7 +364,22 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
 
         with get_connection() as conn:
             actions = {row[0] for row in conn.execute("SELECT action FROM audit_logs").fetchall()}
-    assert {"relationship_enrollment_created", "relationship_report_generated", "relationship_report_updated", "relationship_report_sent"} <= actions
+            conn.execute("UPDATE relationship_pilot_enrollments SET status = 'withdrawn' WHERE id = ?", (enrollment["id"],))
+            conn.commit()
+    assert {
+        "relationship_enrollment_created",
+        "relationship_report_generated",
+        "relationship_report_updated",
+        "relationship_report_sent",
+        "relationship_researcher_assigned",
+    } <= actions
+    inactive_message = client.post(
+        "/api/messages",
+        headers={**researcher_headers, "Idempotency-Key": "inactive-enrollment-message"},
+        json={"enrollment_id": enrollment["id"], "title": "不应发送", "body": "退出后不应继续收到研究者消息。"},
+    )
+    assert inactive_message.status_code == 409
+    assert inactive_message.get_json()["error"]["code"] == "enrollment_not_active"
 
 
 def test_relationship_growth_without_enrollment_explicitly_blocks_recording(tmp_path):
