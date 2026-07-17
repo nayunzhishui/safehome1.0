@@ -44,12 +44,32 @@ Page({
       goal_text: "",
     },
     savingAssignment: false,
+    requestingReminder: false,
+    notification: {
+      available: false,
+      template_id: "",
+      subscription_mode: "once",
+      preference: { consent_status: "unknown" },
+    },
     errorMessage: "",
     boundaryNotice: "个性化训练计划只用于阶段性练习建议，不构成诊断、筛查或治疗方案。",
   },
 
   onShow() {
     this.loadPlan();
+    this.loadNotificationConfig();
+  },
+
+  loadNotificationConfig() {
+    api
+      .getNotificationConfig()
+      .then((notification) => this.setData({
+        notification: {
+          ...notification,
+          preference: notification.preference || { consent_status: "unknown" },
+        },
+      }))
+      .catch(() => this.setData({ "notification.available": false }));
   },
 
   loadPlan() {
@@ -107,11 +127,49 @@ Page({
         this.setData({ assignment, savingAssignment: false });
         wx.showToast({ title: "练习节奏已保存", icon: "success" });
         this.loadPlan();
+        this.loadNotificationConfig();
       })
       .catch((error) => {
         this.setData({ savingAssignment: false });
         wx.showToast({ title: error.message || "保存失败", icon: "none" });
       });
+  },
+
+  requestTrainingReminder() {
+    const notification = this.data.notification || {};
+    if (!notification.available || !notification.template_id) {
+      wx.showToast({ title: "微信提醒模板尚未配置", icon: "none" });
+      return;
+    }
+    if (this.data.requestingReminder || typeof wx.requestSubscribeMessage !== "function") return;
+    this.setData({ requestingReminder: true });
+    wx.requestSubscribeMessage({
+      tmplIds: [notification.template_id],
+      success: (result) => {
+        const decision = result[notification.template_id] || "reject";
+        api
+          .saveNotificationConsent({ template_id: notification.template_id, decision })
+          .then(({ preference }) => {
+            this.setData({ "notification.preference": preference, requestingReminder: false });
+            wx.showToast({
+              title: decision === "accept" ? "已开启一次提醒" : "未开启提醒",
+              icon: "none",
+            });
+          })
+          .catch((error) => {
+            this.setData({ requestingReminder: false });
+            wx.showToast({ title: error.message || "授权状态保存失败", icon: "none" });
+          });
+      },
+      fail: () => {
+        this.setData({ requestingReminder: false });
+        wx.showToast({ title: "未开启提醒，可稍后再试", icon: "none" });
+      },
+    });
+  },
+
+  openNotificationSettings() {
+    if (typeof wx.openSetting === "function") wx.openSetting({ withSubscriptions: true });
   },
 
   openAssessment() {

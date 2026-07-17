@@ -500,3 +500,29 @@
   gap: 14rpx;
   border-left: 6rpx solid var(--safe-primary);
 }
+
+.plan-toggle,
+.library-toggle {
+  min-height: var(--safe-touch);
+  margin-top: 18rpx;
+  border: 1rpx solid var(--safe-primary);
+  border-radius: var(--safe-radius-pill);
+  background: #ffffff;
+  color: var(--safe-primary-deep);
+  font-size: 25rpx;
+  font-weight: 850;
+  line-height: var(--safe-touch);
+}
+
+.plan-toggle::after,
+.library-toggle::after {
+  border: 0;
+}
+
+.repeat-hint {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--safe-muted);
+  font-size: 22rpx;
+  line-height: 1.5;
+}

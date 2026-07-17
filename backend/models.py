@@ -24,6 +24,8 @@ MVP_TABLES = [
     "weekly_reports",
     "supervision_requests",
     "messages",
+    "notification_preferences",
+    "notification_deliveries",
     "relationship_pilot_enrollments",
     "relationship_screening_reports",
     "relationship_pilot_tasks",
@@ -563,6 +565,43 @@ SCHEMA_SQL = [
         read_at TEXT
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS notification_preferences (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        channel TEXT NOT NULL,
+        notification_type TEXT NOT NULL,
+        template_id TEXT NOT NULL,
+        subscription_mode TEXT NOT NULL DEFAULT 'once',
+        consent_status TEXT NOT NULL DEFAULT 'unknown',
+        consent_source TEXT,
+        consented_at TEXT,
+        last_prompted_at TEXT,
+        revoked_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS notification_deliveries (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        preference_id TEXT,
+        notification_type TEXT NOT NULL,
+        template_id TEXT NOT NULL,
+        schedule_key TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        attempt_count INTEGER NOT NULL DEFAULT 0,
+        scheduled_for TEXT NOT NULL,
+        sent_at TEXT,
+        provider_message_id TEXT,
+        error_code TEXT,
+        error_message TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
 ]
 
 
@@ -586,6 +625,10 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_assessment_worksheets_audience_enabled ON assessment_worksheets(audience_class, enabled_for_user)",
     "CREATE INDEX IF NOT EXISTS idx_messages_user_status_created ON messages(user_id, status, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_messages_sender_idempotency ON messages(sender_id, idempotency_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_notification_preference_unique ON notification_preferences(user_id, notification_type, template_id)",
+    "CREATE INDEX IF NOT EXISTS idx_notification_preference_status ON notification_preferences(consent_status, notification_type)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_notification_delivery_idempotency ON notification_deliveries(idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_notification_delivery_user_created ON notification_deliveries(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_hypothesis_report ON relationship_hypothesis_feedback(report_id, hypothesis_index)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",

@@ -311,12 +311,40 @@ export interface TrainingPlanAssignment {
   updated_at?: ISODateTime;
 }
 
+export type NotificationConsentStatus = "unknown" | "accepted" | "rejected" | "banned" | "consumed";
+
+export interface NotificationPreference {
+  id: ID;
+  channel: "wechat_subscribe";
+  notification_type: "training_due" | string;
+  template_id: string;
+  subscription_mode: "once" | "long_term";
+  consent_status: NotificationConsentStatus;
+  consented_at?: ISODateTime | null;
+  last_prompted_at?: ISODateTime | null;
+  revoked_at?: ISODateTime | null;
+  updated_at: ISODateTime;
+}
+
+export interface NotificationCapability {
+  available: boolean;
+  notification_type: "training_due" | string;
+  template_id?: string | null;
+  subscription_mode: "once" | "long_term";
+  send_enabled: boolean;
+  prompt_timing: "after_cadence_saved" | string;
+  notice: string;
+  preference?: NotificationPreference | null;
+}
+
 export interface TrainingPlan {
   user_id: ID;
   has_assessment: boolean;
   assignment?: TrainingPlanAssignment | null;
   has_recent_checkin?: boolean;
   last_completed_card_ids?: ID[];
+  completed_card_ids?: ID[];
+  recently_completed_card_ids?: ID[];
   latest_result?: Record<string, unknown> | null;
   plan_items: TrainingPlanItem[];
   empty_state?: {

@@ -1,7 +1,7 @@
 """Personalized training plan endpoints built from assessments and profile clusters."""
 
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from pathlib import Path
 import re
 
@@ -21,6 +21,7 @@ from database import (
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import fail, ok
 from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
+from services.training_schedule_service import assignment_schedule, current_local_day, parse_day
 
 
 bp = Blueprint("training_plan", __name__, url_prefix="/api/training-plan")
@@ -29,13 +30,8 @@ ASSIGNMENT_SOURCE_ID = "current"
 ASSIGNMENT_PHASES = {"start", "practice", "consolidate"}
 ASSIGNMENT_CADENCES = {"daily", "every_other_day", "three_per_week", "weekly"}
 ASSIGNMENT_STATUSES = {"active", "paused", "completed"}
-CADENCE_LABELS = {
-    "daily": "每日",
-    "every_other_day": "隔日",
-    "three_per_week": "每周3次",
-    "weekly": "每周1次",
-}
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+RECOMMENDATION_COOLDOWN_DAYS = 7
 
 
 def _worksheet_map() -> dict[str, dict]:
@@ -98,27 +94,71 @@ def _recent_checkin_state(user_id: str) -> dict:
             (user_id,),
         ).fetchall()
     checkins = rows_to_dicts(recent_rows)
-    completed = [row.get("card_id") for row in rows_to_dicts(completed_rows) if row.get("card_id")]
+    completed_items = rows_to_dicts(completed_rows)
+    completed = [row.get("card_id") for row in completed_items if row.get("card_id")]
     return {
         "has_recent_checkin": bool(checkins),
         "last_completed_card_ids": list(dict.fromkeys(completed))[:5],
         "completed_card_ids": list(dict.fromkeys(completed)),
+        "completed_at_by_card": {
+            row["card_id"]: row.get("latest_completed_at")
+            for row in completed_items
+            if row.get("card_id")
+        },
         "latest_completed_at": next((row.get("created_at") for row in checkins if row.get("completed")), None),
     }
 
 
-def _exclude_completed_cards(plan_items: list[dict], completed_card_ids: list[str]) -> list[dict]:
-    completed = set(completed_card_ids)
-    if not completed:
+def _deprioritize_recent_cards(
+    plan_items: list[dict],
+    completed_at_by_card: dict[str, str | None],
+    *,
+    today: date | None = None,
+    cooldown_days: int = RECOMMENDATION_COOLDOWN_DAYS,
+) -> list[dict]:
+    """Keep repeat practice possible while moving recently completed cards behind fresh options."""
+
+    current_day = today or current_local_day()
+    cooldown_start = current_day - timedelta(days=cooldown_days)
+    recent = {
+        card_id
+        for card_id, completed_at in completed_at_by_card.items()
+        if (parse_day(completed_at) or date.min) >= cooldown_start
+    }
+    if not recent:
         return plan_items
-    available_items = []
+    fresh_items = []
+    repeat_only_items = []
     for item in plan_items:
-        card_ids = [card_id for card_id in item.get("card_ids", []) if card_id not in completed]
-        if not card_ids:
-            continue
-        cards = [card for card in item.get("cards", []) if card.get("id") in card_ids]
-        available_items.append({**item, "card_ids": card_ids, "cards": cards})
-    return available_items
+        original_ids = item.get("card_ids", [])
+        card_ids = [card_id for card_id in original_ids if card_id not in recent] + [
+            card_id for card_id in original_ids if card_id in recent
+        ]
+        cards_by_id = {card.get("id"): card for card in item.get("cards", [])}
+        cards = [
+            {**cards_by_id[card_id], "recently_completed": card_id in recent}
+            for card_id in card_ids
+            if card_id in cards_by_id
+        ]
+        normalized = {
+            **item,
+            "card_ids": card_ids,
+            "cards": cards,
+            "has_fresh_card": any(card_id not in recent for card_id in card_ids),
+            "repeat_note": "近期练过的卡已后移；需要巩固时仍可再次练习。" if any(card_id in recent for card_id in card_ids) else None,
+        }
+        (fresh_items if normalized["has_fresh_card"] else repeat_only_items).append(normalized)
+    return fresh_items + repeat_only_items
+
+
+def _recent_completed_card_ids(completed_at_by_card: dict[str, str | None], *, today: date | None = None) -> list[str]:
+    current_day = today or current_local_day()
+    cooldown_start = current_day - timedelta(days=RECOMMENDATION_COOLDOWN_DAYS)
+    return [
+        card_id
+        for card_id, completed_at in completed_at_by_card.items()
+        if (parse_day(completed_at) or date.min) >= cooldown_start
+    ]
 
 
 def _latest_assignment(user_id: str) -> dict | None:
@@ -138,60 +178,6 @@ def _latest_assignment(user_id: str) -> dict | None:
     item = row_to_dict(row)
     data = json_loads(item.pop("data_json", None), {})
     return {**item, **data}
-
-
-def _parse_day(value: str | None) -> date | None:
-    try:
-        return datetime.strptime(str(value or "")[:10], "%Y-%m-%d").date()
-    except (TypeError, ValueError):
-        return None
-
-
-def _next_three_per_week(base: date) -> date:
-    for day_offset in range(1, 8):
-        candidate = base + timedelta(days=day_offset)
-        if candidate.weekday() in {0, 2, 4}:
-            return candidate
-    return base + timedelta(days=2)
-
-
-def _assignment_schedule(assignment: dict | None, latest_completed_at: str | None = None) -> dict | None:
-    if not assignment:
-        return None
-    today = date.today()
-    start_day = _parse_day(assignment.get("start_date")) or today
-    completed_day = _parse_day(latest_completed_at)
-    cadence = str(assignment.get("cadence") or "daily")
-    status = str(assignment.get("status") or "active")
-    if completed_day and completed_day >= start_day:
-        if cadence == "every_other_day":
-            next_day = completed_day + timedelta(days=2)
-        elif cadence == "weekly":
-            next_day = completed_day + timedelta(days=7)
-        elif cadence == "three_per_week":
-            next_day = _next_three_per_week(completed_day)
-        else:
-            next_day = completed_day + timedelta(days=1)
-    else:
-        next_day = start_day
-        if cadence == "three_per_week" and next_day.weekday() not in {0, 2, 4}:
-            next_day = _next_three_per_week(next_day - timedelta(days=1))
-    is_due = status == "active" and today >= next_day
-    if status == "paused":
-        reason = "计划已暂缓，恢复后再安排下一次练习。"
-    elif status == "completed":
-        reason = "这一阶段已完成，可以回看记录或重新设置节奏。"
-    elif is_due:
-        reason = "今天已到练习时间，先选一张最容易完成的卡。"
-    else:
-        reason = f"下一次练习安排在 {next_day.isoformat()}。"
-    return {
-        **assignment,
-        "cadence_label": CADENCE_LABELS.get(cadence, "自定节奏"),
-        "is_due_today": is_due,
-        "next_practice_date": next_day.isoformat() if status == "active" else None,
-        "due_reason": reason,
-    }
 
 
 def _normalize_assignment(payload: dict) -> tuple[dict | None, tuple[str, str] | None]:
@@ -365,7 +351,7 @@ def get_training_plan():
             plan_items.append(cluster_item)
 
     checkin_state = _recent_checkin_state(user_id)
-    plan_items = _exclude_completed_cards(_dedupe_plan_items(plan_items), checkin_state["completed_card_ids"])
+    plan_items = _deprioritize_recent_cards(_dedupe_plan_items(plan_items), checkin_state["completed_at_by_card"])
     empty_state = None
     if not results:
         empty_state = {
@@ -379,7 +365,7 @@ def get_training_plan():
             "description": "可以先从训练中心选择一张容易完成的训练卡，后续测评记录更多后再生成推荐。",
             "url": "/pages/training/index",
         }
-    assignment = _assignment_schedule(_latest_assignment(user_id), checkin_state["latest_completed_at"])
+    assignment = assignment_schedule(_latest_assignment(user_id), checkin_state["latest_completed_at"])
     today_plan_items = plan_items[:2] if assignment and assignment.get("is_due_today") else []
     return ok(
         {
@@ -388,6 +374,7 @@ def get_training_plan():
             "has_recent_checkin": checkin_state["has_recent_checkin"],
             "last_completed_card_ids": checkin_state["last_completed_card_ids"],
             "completed_card_ids": checkin_state["completed_card_ids"],
+            "recently_completed_card_ids": _recent_completed_card_ids(checkin_state["completed_at_by_card"]),
             "assignment": assignment,
             "latest_result": row_to_dict(results[0]) if results else None,
             "plan_items": plan_items,
@@ -466,7 +453,7 @@ def save_training_plan_assignment():
         {
             "id": record_id,
             "user_id": user_id,
-            **(_assignment_schedule(assignment) or assignment),
+            **(assignment_schedule(assignment) or assignment),
             "updated_at": timestamp,
         }
     )

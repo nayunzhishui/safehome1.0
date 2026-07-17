@@ -48,12 +48,13 @@
     <text wx:if="{{latestRecommendation.reason}}" class="recommendation-text">{{latestRecommendation.reason}}</text>
     <text wx:if="{{latestRecommendation.todaySuggestion}}" class="recommendation-label">今日建议</text>
     <text wx:if="{{latestRecommendation.todaySuggestion}}" class="recommendation-text">{{latestRecommendation.todaySuggestion}}</text>
-    <view class="recommendation-list">
-      <view wx:for="{{latestRecommendation.cards}}" wx:key="id" class="recommendation-item">
-        <text class="recommendation-role">{{item.role}}</text>
+    <view wx:if="{{latestRecommendation.primaryCard}}" class="recommendation-list">
+      <view class="recommendation-item recommendation-item--primary">
+        <text class="recommendation-role">优先</text>
         <view class="recommendation-item-copy">
-          <text class="recommendation-card-title">{{item.title}}</text>
-          <text wx:if="{{item.purpose}}" class="recommendation-purpose">{{item.purpose}}</text>
+          <text class="recommendation-card-title">{{latestRecommendation.primaryCard.title}}</text>
+          <text wx:if="{{latestRecommendation.primaryCard.purpose}}" class="recommendation-purpose">{{latestRecommendation.primaryCard.purpose}}</text>
+          <text wx:if="{{latestRecommendation.primaryCard.recentlyCompleted}}" class="repeat-hint">近期练过，需要巩固时可以再练。</text>
         </view>
       </view>
     </view>
@@ -66,7 +67,8 @@
       <text class="plan-title">3 天轻量练习</text>
       <text class="plan-summary">{{threeDayPlan.longTermSuggestion}}</text>
     </view>
-    <view class="plan-days">
+    <button class="plan-toggle" bindtap="toggleLightPlan">{{lightPlanExpanded ? '收起 3 天安排' : '展开 3 天安排'}}</button>
+    <view wx:if="{{lightPlanExpanded}}" class="plan-days">
       <button
         wx:for="{{threeDayPlan.days}}"
         wx:key="day"
@@ -87,8 +89,8 @@
     <view class="starter-head">
       <text class="starter-icon">先</text>
       <view class="starter-copy">
-        <text class="starter-title">新手推荐路径</text>
-        <text class="starter-text">如果不知道从哪张卡开始，先按这三个小练习走一遍。</text>
+        <text class="starter-title">不知道从哪里开始？</text>
+        <text class="starter-text">先按“觉察—稳定—回应”的顺序选一张；不需要一次完成全部阶段。</text>
       </view>
     </view>
     <view class="starter-steps">
@@ -105,26 +107,10 @@
         <text class="step-desc">再回应孩子</text>
       </view>
     </view>
+    <button class="library-toggle" bindtap="toggleLibrary">{{libraryExpanded ? '收起全部训练' : '浏览全部训练'}}</button>
   </view>
 
-  <view class="path-card">
-    <view class="path-item">
-        <text class="path-index">1</text>
-      <text class="path-text">认识和稳定情绪</text>
-    </view>
-    <view class="path-line"></view>
-    <view class="path-item">
-        <text class="path-index">2</text>
-      <text class="path-text">改变想法和行为</text>
-    </view>
-    <view class="path-line"></view>
-    <view class="path-item">
-        <text class="path-index">3</text>
-      <text class="path-text">改善亲子关系</text>
-    </view>
-  </view>
-
-  <view wx:for="{{trainingStages}}" wx:key="title" class="safe-section stage-section">
+  <view wx:if="{{libraryExpanded}}" wx:for="{{trainingStages}}" wx:key="title" class="safe-section stage-section">
     <section-title title="{{item.title}}" subtitle="{{item.subtitle}}" />
     <view class="task-list">
       <view wx:for="{{item.tasks}}" wx:for-item="task" wx:key="id">

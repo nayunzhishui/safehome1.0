@@ -28,16 +28,13 @@
       <text class="match-text">{{tagsText}}</text>
     </view>
 
-    <view class="list-note">
-      <text>先选最容易完成的一张。点开后再看详细步骤和示例话术。</text>
-    </view>
+    <view class="list-note"><text>先看第一张；不合适时，再从下面两张里换一张。</text></view>
 
-    <view wx:for="{{cards}}" wx:key="id" class="task-card">
+    <view wx:for="{{cards}}" wx:key="id" class="task-card {{item.isPrimary ? 'task-card--primary' : 'task-card--alternative'}}">
       <view class="task-head">
-        <text class="task-number">{{item.orderText}}</text>
         <view class="task-title-wrap">
           <view class="task-title-line">
-            <text class="card-type">{{item.typeLabel}}</text>
+            <text class="card-type">{{item.isPrimary ? '优先推荐 · ' : ''}}{{item.typeLabel}}</text>
             <text class="duration-pill">{{item.durationText}}</text>
           </view>
           <text class="card-title">{{item.title}}</text>
@@ -45,53 +42,26 @@
         </view>
       </view>
 
-      <view class="today-step">
+      <view wx:if="{{item.isPrimary}}" class="today-step today-step--primary">
         <text class="today-label">今天的小目标</text>
         <text class="today-text">{{item.todayGoal}}</text>
       </view>
 
-      <view class="today-step">
-        <text class="today-label">适用情境</text>
-        <text class="today-text">{{item.scenarioText}}</text>
+      <button wx:if="{{item.isPrimary}}" class="detail-toggle" data-id="{{item.id}}" bindtap="toggleCardDetails">
+        <text>{{expandedCardId === item.id ? '收起适用与安全说明' : '查看适用与安全说明'}}</text>
+        <text class="detail-toggle-icon">{{expandedCardId === item.id ? '−' : '+'}}</text>
+      </button>
+
+      <view wx:if="{{item.isPrimary && expandedCardId === item.id}}" class="details-panel">
+        <view class="detail-row"><text class="detail-label">适合</text><text class="detail-text">{{item.scenarioText}}</text></view>
+        <view class="detail-row"><text class="detail-label">节奏</text><text class="detail-text">{{item.doseText}}</text></view>
+        <view class="detail-row"><text class="detail-label">完成</text><text class="detail-text">{{item.completionText}}</text></view>
+        <view wx:if="{{item.examplePhrase}}" class="example-box"><text class="today-label">可以这样说</text><text class="today-text">“{{item.examplePhrase}}”</text></view>
+        <view wx:if="{{item.stopText}}" class="tip-box"><text class="tip-title">这些情况先停下来</text><text class="tip-text">{{item.stopText}}</text></view>
+        <text class="boundary-text">{{item.boundaryNotice}}</text>
       </view>
 
-      <view class="today-step">
-        <text class="today-label">建议节奏</text>
-        <text class="today-text">{{item.doseText}}</text>
-      </view>
-
-      <view class="today-step">
-        <text class="today-label">怎样算完成</text>
-        <text class="today-text">{{item.completionText}}</text>
-      </view>
-
-      <view wx:if="{{item.stopText}}" class="tip-box">
-        <text class="tip-title">什么时候先停下来</text>
-        <text class="tip-text">{{item.stopText}}</text>
-      </view>
-
-      <view wx:if="{{item.examplePhrase}}" class="example-box">
-        <text class="today-label">示例话术</text>
-        <text class="today-text">“{{item.examplePhrase}}”</text>
-      </view>
-
-      <view wx:if="{{item.tagsText}}" class="tag-row">
-        <text class="tag-pill">{{item.tagsText}}</text>
-      </view>
-
-      <view class="tip-box">
-        <text class="tip-title">开始前看一眼</text>
-        <text class="tip-text">{{item.beforePrompt || '这张卡只是帮助你练一个更小的回应动作，不需要一次做得很完整。'}}</text>
-      </view>
-
-      <view class="tip-box">
-        <text class="tip-title">练习后可以记一句</text>
-        <text class="tip-text">{{item.afterPrompt}}</text>
-      </view>
-
-      <text class="boundary-text">{{item.boundaryNotice}}</text>
-
-      <button class="primary-button" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">查看练习步骤</button>
+      <button class="primary-button {{item.isPrimary ? '' : 'primary-button--secondary'}}" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">{{item.isPrimary ? '开始这张练习' : '改练这张'}}</button>
     </view>
 
     <view wx:if="{{cards.length === 0}}" class="state-card safe-card">

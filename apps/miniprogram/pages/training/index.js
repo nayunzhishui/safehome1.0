@@ -10,6 +10,8 @@ Page({
     relationshipPilotAvailable: false,
     latestRecommendation: null,
     threeDayPlan: null,
+    lightPlanExpanded: false,
+    libraryExpanded: false,
     trainingStages: [
       {
         title: "阶段一：认识和稳定情绪",
@@ -155,18 +157,24 @@ Page({
     if (!user) return;
     try {
       const plan = await api.getTrainingPlan();
-      const completed = new Set(plan.completed_card_ids || []);
+      const completed = new Set(plan.recently_completed_card_ids || []);
       if (!completed.size) return;
       const recommendation = this.data.latestRecommendation;
       const lightPlan = this.data.threeDayPlan;
-      const cardIds = recommendation ? recommendation.cardIds.filter((id) => !completed.has(id)) : [];
-      const cards = recommendation ? recommendation.cards.filter((card) => !completed.has(card.id)) : [];
-      const days = lightPlan ? lightPlan.days.filter((day) => !completed.has(day.cardId)) : [];
+      const cardIds = recommendation
+        ? [...recommendation.cardIds.filter((id) => !completed.has(id)), ...recommendation.cardIds.filter((id) => completed.has(id))]
+        : [];
+      const cardById = {};
+      if (recommendation) recommendation.cards.forEach((card) => { cardById[card.id] = card; });
+      const cards = cardIds.map((id) => ({ ...cardById[id], recentlyCompleted: completed.has(id) })).filter((card) => card.id);
+      const days = lightPlan
+        ? [...lightPlan.days.filter((day) => !completed.has(day.cardId)), ...lightPlan.days.filter((day) => completed.has(day.cardId))]
+        : [];
       this.setData({
-        latestRecommendation: recommendation && cardIds.length
-          ? { ...recommendation, cardIds, cards, cardIdsText: cardIds.slice(0, 3).join(",") }
+        latestRecommendation: recommendation
+          ? { ...recommendation, cardIds, cards, primaryCard: cards[0] || null, cardIdsText: cardIds.slice(0, 3).join(",") }
           : null,
-        threeDayPlan: lightPlan && days.length ? { ...lightPlan, days } : null,
+        threeDayPlan: lightPlan ? { ...lightPlan, days } : null,
       });
     } catch (error) {
       // Keep the training center usable when completion state is temporarily unavailable.
@@ -184,6 +192,7 @@ Page({
       latestRecommendation: {
         ...recommendation,
         cards: Array.isArray(recommendation.cards) ? recommendation.cards.slice(0, 3) : [],
+        primaryCard: Array.isArray(recommendation.cards) ? recommendation.cards[0] || null : null,
         cardIdsText: recommendation.cardIds.slice(0, 3).join(","),
         sourceLabel: recommendation.sourceTitle || "最近推荐",
       },
@@ -241,6 +250,14 @@ Page({
 
   openProgramList() {
     wx.navigateTo({ url: "/pages/program-list/index" });
+  },
+
+  toggleLightPlan() {
+    this.setData({ lightPlanExpanded: !this.data.lightPlanExpanded });
+  },
+
+  toggleLibrary() {
+    this.setData({ libraryExpanded: !this.data.libraryExpanded });
   },
 
   openRelationshipPilot() {

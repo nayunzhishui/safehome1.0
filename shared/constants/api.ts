@@ -14,6 +14,8 @@ export const API_ENDPOINTS = {
   cardsRecommend: "/api/cards/recommend",
   trainingPlan: "/api/training-plan",
   trainingPlanAssignment: "/api/training-plan/assignment",
+  notificationConfig: "/api/notifications/config",
+  notificationConsent: "/api/notifications/consent",
   courses: "/api/courses",
   courseDetailBase: "/api/courses/:id",
   programs: "/api/programs",

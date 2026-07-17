@@ -43,6 +43,20 @@ class Config:
     ]
     JSON_AS_ASCII = False
     DEFAULT_PAGE_SIZE = 50
+    WECHAT_APPID = os.environ.get("WECHAT_APPID", "").strip()
+    WECHAT_SECRET = os.environ.get("WECHAT_SECRET", "").strip()
+    WECHAT_TRAINING_DUE_TEMPLATE_ID = os.environ.get("WECHAT_TRAINING_DUE_TEMPLATE_ID", "").strip()
+    WECHAT_TRAINING_DUE_TEMPLATE_FIELDS = os.environ.get("WECHAT_TRAINING_DUE_TEMPLATE_FIELDS", "").strip()
+    WECHAT_TRAINING_DUE_PAGE = os.environ.get(
+        "WECHAT_TRAINING_DUE_PAGE", "pages/personalized-plan/index"
+    ).strip()
+    WECHAT_SUBSCRIBE_MODE = os.environ.get("WECHAT_SUBSCRIBE_MODE", "once").strip().lower()
+    WECHAT_SUBSCRIBE_SEND_ENABLED = os.environ.get("WECHAT_SUBSCRIBE_SEND_ENABLED", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+    NOTIFICATION_SCHEDULER_TOKEN = os.environ.get("NOTIFICATION_SCHEDULER_TOKEN", "").strip()
 
     @classmethod
     def validate(cls) -> None:
@@ -56,6 +70,22 @@ class Config:
             ]
             if missing:
                 raise RuntimeError(f"MySQL 模式缺少环境变量：{', '.join(missing)}")
+        if cls.WECHAT_SUBSCRIBE_MODE not in {"once", "long_term"}:
+            raise RuntimeError("WECHAT_SUBSCRIBE_MODE 只能是 once 或 long_term")
+        if cls.WECHAT_SUBSCRIBE_SEND_ENABLED:
+            missing = [
+                name
+                for name in [
+                    "WECHAT_APPID",
+                    "WECHAT_SECRET",
+                    "WECHAT_TRAINING_DUE_TEMPLATE_ID",
+                    "WECHAT_TRAINING_DUE_TEMPLATE_FIELDS",
+                    "NOTIFICATION_SCHEDULER_TOKEN",
+                ]
+                if not getattr(cls, name)
+            ]
+            if missing:
+                raise RuntimeError(f"启用微信订阅发送前必须配置：{', '.join(missing)}")
         if str(cls.APP_ENV).lower() == "production":
             if not DB_PROVIDER_ENV_VALUE:
                 raise RuntimeError("生产环境必须显式配置 DB_PROVIDER")

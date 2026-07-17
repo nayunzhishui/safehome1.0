@@ -36,6 +36,7 @@ Page({
     cardIds: [],
     cards: [],
     practiceMessage: "",
+    expandedCardId: "",
   },
 
   onLoad(options) {
@@ -78,14 +79,15 @@ Page({
 
   formatCard(card, index, recommendationSource) {
     const dose = card.minimum_dose || {};
+    const firstStep = (card.steps || [])[0] || "完成一个最容易开始的小动作。";
     return {
       ...card,
-      orderText: `0${index + 1}`,
+      isPrimary: index === 0,
       typeLabel: this.getTypeLabel(card.type),
       tagsText: (card.tags || []).filter(isUserFacingTag).slice(0, 3).join("、"),
       durationText: card.duration_minutes ? `${card.duration_minutes} 分钟` : "1 次小练习",
       scenarioText: card.suitable_scene || (card.suitable_for || [])[0] || "适合这次记录中的互动线索",
-      todayGoal: card.today_goal || card.purpose || "今天先完成一个能做到的小回应动作。",
+      todayGoal: `今天只做这一步：${firstStep}`,
       examplePhrase: card.example_phrase || card.example || "",
       beforePrompt: card.before_note_prompt || card.pre_practice_prompt || "",
       afterPrompt: card.after_note_prompt || card.post_practice_prompt || "",
@@ -123,6 +125,11 @@ Page({
     wx.navigateTo({
       url: `/pages/task-detail/index?card_id=${encodeURIComponent(cardId)}&card_title=${encodeURIComponent(title)}&diary_id=${encodeURIComponent(this.data.diaryId)}`,
     });
+  },
+
+  toggleCardDetails(event) {
+    const cardId = event.currentTarget.dataset.id || "";
+    this.setData({ expandedCardId: this.data.expandedCardId === cardId ? "" : cardId });
   },
 
   retryLoadCards() {

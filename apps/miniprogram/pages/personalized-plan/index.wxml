@@ -72,6 +72,47 @@
     <text class="item-boundary">{{assignment.boundary_notice || '练习节奏由用户自行设置，研究者共同确认前不代表正式干预安排。'}}</text>
   </view>
 
+  <view wx:if="{{plan && plan.assignment}}" class="safe-card reminder-panel">
+    <view class="reminder-head">
+      <view class="reminder-icon"><text>提醒</text></view>
+      <view class="reminder-copy">
+        <text class="safe-h3">微信练习提醒</text>
+        <text class="safe-caption">只在你主动授权后发送；关闭提醒不影响训练。</text>
+      </view>
+    </view>
+    <view wx:if="{{!notification.available}}" class="reminder-state reminder-state--muted">
+      <text class="reminder-state-title">暂未开放</text>
+      <text class="reminder-state-text">管理员完成微信模板审核后，这里可以开启。</text>
+    </view>
+    <view wx:elif="{{notification.preference && notification.preference.consent_status === 'accepted'}}" class="reminder-state reminder-state--active">
+      <text class="reminder-state-title">已同意本次提醒</text>
+      <text class="reminder-state-text">到达下一次练习日期后发送；一次性授权使用后需要重新开启。</text>
+    </view>
+    <view wx:elif="{{notification.preference && notification.preference.consent_status === 'consumed'}}" class="reminder-state">
+      <text class="reminder-state-title">上次授权已使用</text>
+      <text class="reminder-state-text">如需下一次提醒，请再次主动开启。</text>
+    </view>
+    <view wx:elif="{{notification.preference && notification.preference.consent_status === 'banned'}}" class="reminder-state reminder-state--muted">
+      <text class="reminder-state-title">微信设置中已关闭</text>
+      <text class="reminder-state-text">如需恢复，请前往小程序设置调整订阅消息权限。</text>
+    </view>
+    <view wx:else class="reminder-state">
+      <text class="reminder-state-title">需要时再开启</text>
+      <text class="reminder-state-text">建议在保存好练习节奏后，开启一次微信提醒。</text>
+    </view>
+    <button
+      wx:if="{{notification.available && (!notification.preference || notification.preference.consent_status !== 'accepted') && notification.preference.consent_status !== 'banned'}}"
+      class="reminder-button"
+      loading="{{requestingReminder}}"
+      bindtap="requestTrainingReminder"
+    >开启一次微信提醒</button>
+    <button
+      wx:if="{{notification.available && notification.preference && notification.preference.consent_status === 'banned'}}"
+      class="reminder-button reminder-button--secondary"
+      bindtap="openNotificationSettings"
+    >前往微信设置</button>
+  </view>
+
   <view wx:if="{{!loading && plan && !plan.has_assessment}}" class="safe-card empty-card">
     <text class="safe-h3">{{plan.next_action.title}}</text>
     <text class="safe-body">{{plan.next_action.description}}</text>

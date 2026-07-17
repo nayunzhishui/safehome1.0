@@ -25,6 +25,8 @@ REQUIRED_HEALTH_TABLES = [
     "consent_records",
     "records",
     "messages",
+    "notification_preferences",
+    "notification_deliveries",
     "relationship_pilot_enrollments",
     "relationship_screening_reports",
     "relationship_pilot_tasks",
@@ -33,8 +35,8 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_17_008"
-CURRENT_SCHEMA_NAME = "supervision_source_link"
+CURRENT_SCHEMA_VERSION = "2026_07_17_009"
+CURRENT_SCHEMA_NAME = "wechat_subscription_notifications"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -142,6 +144,19 @@ MYSQL_VARCHAR_COLUMNS = {
     "sender_id",
     "sender_role",
     "read_at",
+    "channel",
+    "notification_type",
+    "template_id",
+    "subscription_mode",
+    "consent_status",
+    "consent_source",
+    "consented_at",
+    "last_prompted_at",
+    "schedule_key",
+    "scheduled_for",
+    "sent_at",
+    "provider_message_id",
+    "error_code",
 }
 
 
@@ -670,6 +685,8 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in checkin_columns.items():
         ensure_column(conn, "checkins", column, definition)
+
+    ensure_column(conn, "notification_deliveries", "attempt_count", "INTEGER NOT NULL DEFAULT 0")
 
     weekly_report_columns = {
         "assessment_summary_json": "TEXT NOT NULL DEFAULT '{}'",

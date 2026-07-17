@@ -29,6 +29,7 @@ from routes.family import bp as family_bp
 from routes.general_growth import bp as general_growth_bp
 from routes.goals import bp as goals_bp
 from routes.messages import bp as messages_bp
+from routes.notifications import bp as notifications_bp
 from routes.parent_assessments import bp as parent_assessments_bp
 from routes.privacy import bp as privacy_bp
 from routes.product_events import bp as product_events_bp
@@ -195,6 +196,7 @@ def create_app(
     app.register_blueprint(family_bp)
     app.register_blueprint(general_growth_bp)
     app.register_blueprint(messages_bp)
+    app.register_blueprint(notifications_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(progress_summary_bp)
     app.register_blueprint(parent_assessments_bp)

@@ -42,7 +42,7 @@ def _create_student_assessment(client, token):
     assert response.status_code == 201
 
 
-def test_completed_card_is_removed_from_default_training_plan(tmp_path):
+def test_recently_completed_card_is_deprioritized_but_can_be_repeated(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
     _user_id, token = _wechat_login(client, "task18-training-filter")
@@ -59,13 +59,11 @@ def test_completed_card_is_removed_from_default_training_plan(tmp_path):
     assert saved.status_code == 201
 
     after = client.get("/api/training-plan", headers={"Authorization": f"Bearer {token}"}).get_json()["data"]
-    remaining_ids = {
-        item_card_id
-        for item in after["plan_items"]
-        for item_card_id in item.get("card_ids", [])
-    }
+    remaining_cards = [card for item in after["plan_items"] for card in item.get("cards", [])]
     assert card_id in after["completed_card_ids"]
-    assert card_id not in remaining_ids
+    repeated = next(card for card in remaining_cards if card["id"] == card_id)
+    assert repeated["recently_completed"] is True
+    assert any(not card.get("recently_completed") for card in remaining_cards)
 
 
 def test_completed_checkin_history_is_private_paginated_and_enriched(tmp_path):

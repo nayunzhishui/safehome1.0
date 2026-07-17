@@ -1869,3 +1869,26 @@ relationship_initiation_intention_action
 - `training_recommendation_rules` 最多返回 1 条主规则，该规则内为 1 张主练习和最多 2 张备用练习；
 - 高风险仍返回空训练卡和空普通规则，优先进入人工与现实支持路径。
 
+## 2026-07-18：微信订阅练习提醒
+
+### `GET /api/notifications/config`
+
+权限：当前登录参与者本人。返回模板是否可用、订阅模式、真实发送开关和本人的授权状态；不返回 AppSecret、调度令牌、OpenID 或 access token。
+
+### `POST /api/notifications/consent`
+
+权限：当前登录参与者本人。
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `template_id` | string | 必须与后端当前审核通过的模板 ID 一致 |
+| `decision` | string | `accept`、`reject` 或 `ban`，来自 `wx.requestSubscribeMessage` 结果 |
+
+拒绝或禁止授权只更新提醒偏好，不影响练习节奏、训练卡或站内消息。默认 `subscription_mode=once`；成功投递后状态改为 `consumed`，参与者需要再次主动授权。
+
+### `POST /api/notifications/run-due`
+
+权限：`admin`，或请求头提供有效 `X-Scheduler-Token`。请求体 `{ "dry_run": true }` 默认为演练，不调用微信发送接口。
+
+真实发送需同时满足：模板已配置、参与者已授权、用户有微信 OpenID、计划状态为进行中、北京时间已到练习日、`WECHAT_SUBSCRIBE_SEND_ENABLED=1`。投递使用 `training_due:user_id:日期:template_id` 幂等键；成功或发送中的同一投递不重复发送，普通失败最多重试 3 次，微信返回未授权时停止并更新授权状态。
+
