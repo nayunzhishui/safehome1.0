@@ -5,6 +5,7 @@ from flask import Blueprint, request
 from database import get_connection, json_dumps, load_content_json, new_id, now_iso, row_to_dict
 from routes.utils import auth_error_response, fail, ok, require_admin_or_owner, require_user_id
 from services.feedback_service import generate_feedback
+from services.card_service import list_cards
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
 
@@ -72,12 +73,29 @@ def _match_diary_training_rules(feedback_result: dict) -> list[dict]:
         return []
 
     rules_payload = load_content_json("diary_training_map.json")
+    eligible_card_ids = {
+        card["id"]
+        for card in list_cards(enabled_only=True)
+        if card.get("release_policy", "shared_choice_candidate") == "shared_choice_candidate"
+    }
     matched_rules = []
     for rule in rules_payload.get("rules", []):
         if _matches_diary_training_rule(rule, feedback_result):
-            matched_rules.append(rule)
+            normalized = dict(rule)
+            normalized["recommended_card_ids"] = [
+                card_id
+                for card_id in dict.fromkeys(rule.get("recommended_card_ids") or [])
+                if card_id in eligible_card_ids
+            ][:3]
+            normalized["card_roles"] = [
+                role
+                for role in (rule.get("card_roles") or [])
+                if role.get("card_id") in normalized["recommended_card_ids"]
+            ]
+            if normalized["recommended_card_ids"]:
+                matched_rules.append(normalized)
 
-    return matched_rules[:2]
+    return matched_rules[:1]
 
 
 @bp.post("/generate")

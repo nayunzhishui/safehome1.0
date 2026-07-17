@@ -3,15 +3,37 @@ const { getAuthUser, requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
+const STATUS_LABELS = {
+  active: "进行中",
+  completed: "已完成",
+  paused: "已暂停",
+  withdrawn: "已退出",
+  pending_review: "待人工复核",
+  priority_review: "优先复核",
+  recorded: "已记录",
+  ready: "可确认",
+  confirmed: "已确认",
+  sent: "已发送",
+  updated: "有新版本",
+};
+
+function statusLabel(value) {
+  const key = String(value || "");
+  return STATUS_LABELS[key] || "待核对";
+}
+
 function normalizeDetail(detail) {
   const tasks = (detail.tasks || []).map((task) => ({
     ...task,
     typeText: task.task_type === "relationship_drawing" ? "关系绘画" : "句子补全",
+    reviewStatusText: statusLabel(task.review_status),
     answerRows: Object.entries(task.answers || {}).map(([context, answer]) => ({ context, answer })),
     strokeCount: task.drawing_data && Array.isArray(task.drawing_data.strokes) ? task.drawing_data.strokes.length : 0,
   }));
   return {
     ...detail,
+    statusText: statusLabel(detail.status),
+    reviewStatusText: statusLabel(detail.review_status),
     tasks,
     drawingTask: tasks.find((task) => task.task_type === "relationship_drawing") || null,
     latestReport: (detail.reports || [])[0] || null,
@@ -26,7 +48,12 @@ Page({
     selected: null,
     note: "",
     narrative: null,
-    stageFeedback: "",
+    stageFeedbackForm: {
+      observation: "",
+      evidence: "",
+      nextStep: "",
+      openQuestion: "",
+    },
     messageTitle: "研究者补充消息",
     messageBody: "",
     sendingMessage: false,
@@ -47,7 +74,11 @@ Page({
   async loadDashboard() {
     try {
       const payload = await api.getRelationshipResearchDashboard();
-      const items = payload.items || [];
+      const items = (payload.items || []).map((item) => ({
+        ...item,
+        statusText: statusLabel(item.status),
+        reviewStatusText: statusLabel(item.review_status),
+      }));
       this.setData({ loading: false, items });
       if (items[0]) await this.selectEnrollmentById(items[0].id);
     } catch (error) {
@@ -92,7 +123,11 @@ Page({
   },
 
   onNoteInput(event) { this.setData({ note: event.detail.value }); },
-  onStageFeedbackInput(event) { this.setData({ stageFeedback: event.detail.value }); },
+  onStageFeedbackInput(event) {
+    const key = event.currentTarget.dataset.key;
+    if (!["observation", "evidence", "nextStep", "openQuestion"].includes(key)) return;
+    this.setData({ [`stageFeedbackForm.${key}`]: event.detail.value });
+  },
   onMessageTitleInput(event) { this.setData({ messageTitle: event.detail.value }); },
   onMessageBodyInput(event) { this.setData({ messageBody: event.detail.value }); },
 
@@ -130,12 +165,23 @@ Page({
   },
 
   async saveAndSendStageFeedback() {
-    const text = this.data.stageFeedback.trim();
+    const form = this.data.stageFeedbackForm;
+    const observation = form.observation.trim();
+    const evidence = form.evidence.trim();
+    const nextStep = form.nextStep.trim();
+    const openQuestion = form.openQuestion.trim();
     const selected = this.data.selected;
-    if (!text || !selected) {
-      wx.showToast({ title: "请先填写阶段性反馈", icon: "none" });
+    if (!selected || !observation || !nextStep) {
+      wx.showToast({ title: "请填写观察与下一小步", icon: "none" });
       return;
     }
+    const sections = [
+      `近期可观察到的变化：${observation}`,
+      evidence ? `可供共同核对的依据：${evidence}` : "",
+      `可以先尝试的一小步：${nextStep}`,
+      openQuestion ? `后续可继续讨论：${openQuestion}` : "",
+    ].filter(Boolean);
+    const text = sections.join("\n\n");
     this.setData({ sendingFeedback: true });
     try {
       let report = selected.latestReport;
@@ -148,7 +194,14 @@ Page({
         personalized_interpretation: text,
       });
       await api.sendRelationshipReport(report.id);
-      this.setData({ stageFeedback: "" });
+      this.setData({
+        stageFeedbackForm: {
+          observation: "",
+          evidence: "",
+          nextStep: "",
+          openQuestion: "",
+        },
+      });
       await this.selectEnrollmentById(selected.id);
       wx.showToast({ title: "阶段性反馈已发送", icon: "success" });
     } catch (error) {

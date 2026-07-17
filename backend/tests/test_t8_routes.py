@@ -1,5 +1,6 @@
 import importlib
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 
@@ -243,6 +244,39 @@ def test_training_plan_assignment_persists_and_is_private(tmp_path, monkeypatch)
         metadata = json_loads(row["metadata_json"], {})
         assert metadata["has_goal_text"] is True
         assert "先稳定" not in row["metadata_json"]
+
+
+def test_training_plan_assignment_drives_due_state_and_next_date(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "training-cadence-due")
+    today = date.today()
+    saved = client.post(
+        "/api/training-plan/assignment",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "phase": "practice",
+            "cadence": "daily",
+            "status": "active",
+            "start_date": today.isoformat(),
+            "goal_text": "",
+        },
+    )
+    assert saved.status_code == 200
+    assert saved.get_json()["data"]["is_due_today"] is True
+
+    checkin = client.post(
+        "/api/checkins",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"card_id": "three_second_pause", "status": "completed"},
+    )
+    assert checkin.status_code == 201
+
+    plan = client.get("/api/training-plan", headers={"Authorization": f"Bearer {token}"})
+    assert plan.status_code == 200
+    assignment = plan.get_json()["data"]["assignment"]
+    assert assignment["is_due_today"] is False
+    assert assignment["next_practice_date"] == (today + timedelta(days=1)).isoformat()
 
 
 def test_training_plan_assignment_rejects_invalid_values_without_writing(tmp_path, monkeypatch):

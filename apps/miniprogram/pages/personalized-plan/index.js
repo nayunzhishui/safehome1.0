@@ -62,7 +62,11 @@ Page({
           loading: false,
           plan,
           assignment,
-          planItems: (plan.plan_items || []).map((item) => ({
+          planItems: (
+            plan.assignment
+              ? (plan.assignment.is_due_today ? plan.today_plan_items || [] : [])
+              : plan.plan_items || []
+          ).map((item) => ({
             ...item,
             sourceLabel: item.source_type === "profile_cluster" ? "画像推荐" : "测评推荐",
             cardIdsText: Array.isArray(item.card_ids) ? item.card_ids.join(",") : "",
@@ -102,6 +106,7 @@ Page({
       .then((assignment) => {
         this.setData({ assignment, savingAssignment: false });
         wx.showToast({ title: "练习节奏已保存", icon: "success" });
+        this.loadPlan();
       })
       .catch((error) => {
         this.setData({ savingAssignment: false });

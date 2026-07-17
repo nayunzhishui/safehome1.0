@@ -39,6 +39,8 @@ Page({
     sessions: [],
     selectedSession: null,
     draftText: "",
+    reflectionAnswers: {},
+    submittedEntries: [],
     analysisConsent: false,
     distressBefore: 5,
     distressAfter: 5,
@@ -76,7 +78,10 @@ Page({
             selectedSession,
             loading: false,
           },
-          () => this.loadDraft(),
+          () => {
+            this.loadDraft();
+            if (!this.data.previewMode) this.loadSubmittedEntries();
+          },
         );
       })
       .catch((error) => {
@@ -98,7 +103,7 @@ Page({
     if (!selectedSession) {
       return;
     }
-    this.setData({ selectedSession, sessions: markActiveSessions(this.data.sessions, selectedSession), draftText: "" }, () => this.loadDraft());
+    this.setData({ selectedSession, sessions: markActiveSessions(this.data.sessions, selectedSession), draftText: "", reflectionAnswers: {} }, () => this.loadDraft());
   },
 
   loadDraft() {
@@ -106,13 +111,28 @@ Page({
     if (!this.data.programId || !session) {
       return;
     }
-    this.setData({
-      draftText: wx.getStorageSync(draftKey(this.data.programId, session.session_no)) || "",
-    });
+    const stored = wx.getStorageSync(draftKey(this.data.programId, session.session_no));
+    if (stored && typeof stored === "object") {
+      this.setData({
+        draftText: stored.draftText || "",
+        reflectionAnswers: stored.reflectionAnswers || {},
+      });
+      return;
+    }
+    this.setData({ draftText: stored || "", reflectionAnswers: {} });
   },
 
   onDraftInput(event) {
     this.setData({ draftText: event.detail.value, successMessage: "", errorMessage: "" });
+  },
+
+  onReflectionInput(event) {
+    const index = Number(event.currentTarget.dataset.index);
+    this.setData({
+      [`reflectionAnswers.${index}`]: event.detail.value,
+      successMessage: "",
+      errorMessage: "",
+    });
   },
 
   onAnalysisConsentChange(event) {
@@ -136,19 +156,42 @@ Page({
     if (!this.data.programId || !session) {
       return;
     }
-    wx.setStorageSync(draftKey(this.data.programId, session.session_no), this.data.draftText || "");
+    wx.setStorageSync(draftKey(this.data.programId, session.session_no), {
+      draftText: this.data.draftText || "",
+      reflectionAnswers: this.data.reflectionAnswers || {},
+    });
     wx.showToast({ title: "已保存在本机", icon: "success" });
+  },
+
+  async loadSubmittedEntries() {
+    try {
+      const payload = await api.listProgramEntries(this.data.programId);
+      this.setData({
+        submittedEntries: (payload.items || []).map((item) => ({
+          ...item,
+          createdAtText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+          sessionText: `第 ${item.session_no} 节`,
+        })),
+      });
+    } catch (error) {
+      if (error.code !== "auth_required") console.warn("[program entries]", error);
+    }
   },
 
   async submitEntry() {
     const session = this.data.selectedSession;
     const draftText = (this.data.draftText || "").trim();
+    const reflectionAnswers = (session.reflection_questions || []).map((question, index) => ({
+      question,
+      answer: String((this.data.reflectionAnswers || {})[index] || "").trim(),
+    }));
+    const answeredReflections = reflectionAnswers.filter((item) => item.answer);
     if (!this.data.programId || !session) {
       this.setData({ errorMessage: "缺少项目信息，请返回重新打开。" });
       return;
     }
-    if (!draftText) {
-      this.setData({ errorMessage: "请先写一点草稿或反思，再提交。" });
+    if (!draftText && !answeredReflections.length) {
+      this.setData({ errorMessage: "请先填写书写内容或至少一个反思问题。" });
       return;
     }
     this.setData({ submitting: true, successMessage: "", errorMessage: "" });
@@ -158,8 +201,9 @@ Page({
         answers: {
           writing_prompt: session.writing_prompt || "",
           draft_text: draftText,
+          reflection_answers: reflectionAnswers,
         },
-        reflection: draftText,
+        reflection: draftText || answeredReflections.map((item) => `${item.question}：${item.answer}`).join("\n"),
         analysis_consent: this.data.analysisConsent,
         participation_status: "completed",
         recommendation_source: "user_choice",
@@ -171,8 +215,10 @@ Page({
       wx.removeStorageSync(draftKey(this.data.programId, session.session_no));
       this.setData({
         draftText: "",
+        reflectionAnswers: {},
         successMessage: "已提交。它只用于本工具内复盘、训练建议和必要的人工补充反馈。",
       });
+      await this.loadSubmittedEntries();
     } catch (error) {
       this.setData({
         errorMessage: error.message || "暂时没能提交，请登录后再试一次。",

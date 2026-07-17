@@ -5,6 +5,11 @@
 .growth-copy { margin-top: 8rpx; color: var(--safe-text); font-size: 24rpx; line-height: 1.65; }
 .section-card { display: grid; gap: 16rpx; margin-top: 20rpx; }
 .section-title { color: var(--safe-title); font-size: 29rpx; font-weight: 850; }
+.growth-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12rpx; margin-top: 20rpx; }
+.growth-summary-item { min-width: 0; padding: 18rpx 10rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-sm); background: var(--safe-card); text-align: center; box-shadow: var(--safe-shadow-card); }
+.growth-summary-value, .growth-summary-label { display: block; text-align: center; }
+.growth-summary-value { color: var(--safe-primary-deep); font-size: 32rpx; font-weight: 900; }
+.growth-summary-label { margin-top: 6rpx; color: var(--safe-muted); font-size: 20rpx; line-height: 1.4; }
 .record-gate { display: grid; gap: 16rpx; margin-top: 20rpx; padding: 28rpx; border: 1rpx solid var(--safe-border-strong); border-radius: var(--safe-radius-sm); background: var(--safe-primary-pale); }
 .record-gate__title, .record-gate__copy { display: block; }
 .record-gate__title { color: var(--safe-title); font-size: 28rpx; font-weight: 800; }
@@ -32,7 +37,7 @@
 .timeline-title { color: var(--safe-title); font-size: 24rpx; font-weight: 750; }
 .timeline-type { flex: none; color: var(--safe-primary-deep); font-size: 19rpx; }
 .timeline-meta { margin-top: 4rpx; color: var(--safe-muted); font-size: 21rpx; line-height: 1.5; }
-.source-block { padding: 18rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-sm); }
+.source-block { padding: 20rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-sm); }
 .source-block--system { background: #fbfcfb; }
 .source-label { color: var(--safe-primary-deep); font-size: 21rpx; font-weight: 850; }
 .source-line, .source-empty { margin-top: 8rpx; color: var(--safe-text); font-size: 22rpx; line-height: 1.6; }

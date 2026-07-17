@@ -82,6 +82,7 @@ const API_ENDPOINTS = {
   parentAssessments: "/api/parent-assessments",
   checkins: "/api/checkins",
   weeklyReport: "/api/weekly-report",
+  growthOverview: "/api/growth/overview",
   supervision: "/api/supervision",
   adminExport: "/api/admin/export",
   relationshipPilot: "/api/relationship-pilot",
@@ -652,6 +653,12 @@ function createSafeHomeApi(options = {}) {
       return request(`${endpointWithId(API_ENDPOINTS.programDetailBase, id)}${queryString(params)}`, { requiresAuth: Boolean(params.include_drafts) });
     },
 
+    listProgramEntries(programId, params = {}) {
+      return request(`${endpointWithId(API_ENDPOINTS.programEntriesBase, programId)}${queryString(withDefaultUser(params))}`, {
+        requiresAuth: true,
+      });
+    },
+
     createProgramEntry(programId, data) {
       return request(endpointWithId(API_ENDPOINTS.programEntriesBase, programId), {
         method: "POST",
@@ -826,6 +833,10 @@ function createSafeHomeApi(options = {}) {
 
     getWeeklyReport(params = {}) {
       return request(`${API_ENDPOINTS.weeklyReport}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    getGrowthOverview(params = {}) {
+      return request(`${API_ENDPOINTS.growthOverview}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
     createSupervision(data) {

@@ -9,6 +9,7 @@ import scalesCatalog from "../../../../content/scales_catalog.json";
 import trainingCards from "../../../../content/training_cards.json";
 import { safeHomeApi } from "../services/safehomeApi";
 import { getStoredAuthUser } from "../services/authState";
+import { displayStatus } from "../utils/displayLabels";
 
 interface ReviewItem {
   id: string;
@@ -22,24 +23,7 @@ interface ReviewItem {
 
 const REVIEW_STATUS_OPTIONS = ["draft", "pending_review", "reviewed", "trial_enabled", "enabled", "disabled", "metadata_only", "pilot_ready", "draft_requires_psychology_review", "pilot_draft", "pilot_approved", "paused", "completed"];
 
-function statusText(value?: string) {
-  const labels: Record<string, string> = {
-    draft: "草稿",
-    pending_review: "待审核",
-    reviewed: "已审核",
-    trial_enabled: "试用开放",
-    enabled: "正式开放",
-    disabled: "已停用",
-    metadata_only: "仅元数据",
-    pilot_ready: "试点可用",
-    draft_requires_psychology_review: "待心理审核",
-    pilot_draft: "试点草案",
-    pilot_approved: "试点已批准",
-    paused: "已暂停",
-    completed: "已结束",
-  };
-  return labels[value || ""] || value || "未标记";
-}
+const statusText = displayStatus;
 
 function enabledText(value: boolean) {
   return value ? "用户端可见" : "暂不开放";
@@ -78,7 +62,7 @@ function buildReviewItems(): ReviewItem[] {
 
   const assessmentMapItems = (assessmentTrainingMap.rules || []).map((rule) => ({
     id: rule.rule_id,
-    title: rule.rule_id,
+    title: rule.theme?.join(" · ") || "测评练习推荐",
     type: "测评推荐规则",
     contentType: "assessment_training_rule",
     reviewStatus: rule.review_status || "未标记",
@@ -88,7 +72,7 @@ function buildReviewItems(): ReviewItem[] {
 
   const diaryMapItems = (diaryTrainingMap.rules || []).map((rule) => ({
     id: rule.rule_id,
-    title: rule.rule_id,
+    title: rule.theme?.join(" · ") || "日记练习推荐",
     type: "日记推荐规则",
     contentType: "diary_training_rule",
     reviewStatus: rule.review_status || "未标记",
@@ -103,7 +87,7 @@ function buildReviewItems(): ReviewItem[] {
     contentType: "course",
     reviewStatus: course.review_status || "未标记",
     enabled: Boolean(course.enabled),
-    note: `${course.core_concept} · ${course.curriculum_node}`,
+    note: course.core_concept || "待补充课程说明",
   }));
 
   const programItems = (programsContent.programs || []).map((program) => ({
@@ -113,7 +97,7 @@ function buildReviewItems(): ReviewItem[] {
     contentType: "program",
     reviewStatus: program.review_status || "未标记",
     enabled: Boolean(program.enabled),
-    note: `${program.protocol_version} · 三方签字状态：${Object.values(program.approval || {}).map((item) => item.status).join("/")}`,
+    note: `三方复核：${Object.values(program.approval || {}).map((item) => displayStatus(item.status)).join(" / ")}`,
   }));
 
   return [...scaleItems, ...cardItems, ...courseItems, ...programItems, ...feedbackRuleItems, ...assessmentMapItems, ...diaryMapItems];
@@ -127,7 +111,7 @@ export function ContentReviewOverview() {
   });
   const [reviewStatus, setReviewStatus] = useState("");
   const [enabledForUser, setEnabledForUser] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("admin 可保存审核状态；开启用户端开放状态会被拦截并要求人工确认。");
+  const [saveMessage, setSaveMessage] = useState("管理员可保存审核状态；开启用户端内容仍需人工确认。");
   const [saveStatus, setSaveStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const currentUser = getStoredAuthUser();
   const canEdit = currentUser?.role === "admin";
@@ -230,15 +214,15 @@ export function ContentReviewOverview() {
             <span className="countBadge">只读</span>
           </div>
           <div className="detailContent">
-            <DetailRow label="admin" value="可本地受控修改 review_status 和关闭开放状态；开启用户端开放状态仍需人工单独确认。" />
-            <DetailRow label="researcher" value="只读查看内容状态，不直接开放用户端内容。" />
-            <DetailRow label="supervisor" value="只读查看风险相关内容，后续细化权限。" />
-            <DetailRow label="parent/student" value="不可访问内容审核后台。" />
+            <DetailRow label="管理员" value="可受控修改审核状态并关闭用户端内容；如需开启用户端内容，仍需单独人工确认。" />
+            <DetailRow label="研究者" value="只读查看内容状态，不能直接开放用户端内容。" />
+            <DetailRow label="督导人员" value="只读查看风险相关内容。" />
+            <DetailRow label="参与者" value="不能访问内容审核后台。" />
 
             <section className="guidanceBox" aria-label="发布边界">
               <h3>发布边界</h3>
               <p>当前是本地开发阶段，可直接修改 content JSON；正式发布前所有 content JSON 修改必须经过人工复核。</p>
-              <p>后续进入正式环境后，应改为后端接口加 audit_logs，不允许绕过审核直接开放真实量表。</p>
+              <p>进入正式环境后，所有修改应通过受控接口并保留审计记录，不允许绕过审核直接开放真实量表。</p>
             </section>
 
             {canEdit ? (
@@ -268,7 +252,7 @@ export function ContentReviewOverview() {
             ) : (
               <section className="guidanceBox" aria-label="只读说明">
                 <h3>只读说明</h3>
-                <p>当前角色只能查看内容审核状态，不能修改 `review_status` 或开放状态。</p>
+                <p>当前角色只能查看内容审核状态，不能修改审核结果或开放状态。</p>
               </section>
             )}
           </div>

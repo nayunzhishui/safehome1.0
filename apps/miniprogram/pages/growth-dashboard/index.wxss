@@ -1,0 +1,41 @@
+.growth-dashboard-page { display: grid; gap: 22rpx; padding-bottom: 56rpx; }
+.growth-kicker, .growth-title, .growth-copy, .section-eyebrow, .next-step-copy, .section-title, .section-copy, .summary-value, .summary-label, .assessment-title, .assessment-value, .timeline-title, .timeline-summary, .timeline-date, .empty-copy { display: block; }
+.growth-kicker { color: var(--safe-primary-deep); font-size: 22rpx; font-weight: 800; }
+.growth-title { margin-top: 8rpx; color: var(--safe-title); font-size: 38rpx; font-weight: 900; }
+.growth-copy { margin-top: 10rpx; color: var(--safe-text); font-size: 24rpx; line-height: 1.65; }
+.growth-content { display: grid; gap: 20rpx; }
+.summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12rpx; }
+.summary-item { min-width: 0; padding: 22rpx 8rpx; border: 1rpx solid var(--safe-border); border-radius: 22rpx; background: #fff; text-align: center; box-shadow: var(--safe-shadow-card); }
+.summary-value { color: var(--safe-primary-deep); font-size: 38rpx; font-weight: 900; text-align: center; }
+.summary-label { margin-top: 6rpx; color: var(--safe-muted); font-size: 20rpx; text-align: center; }
+.next-step-card { border-color: rgba(78, 124, 107, 0.25); background: linear-gradient(135deg, #f4faf6, #fffdf9); }
+.section-eyebrow { color: var(--safe-primary-deep); font-size: 21rpx; font-weight: 800; }
+.next-step-copy { margin-top: 10rpx; color: var(--safe-title); font-size: 25rpx; line-height: 1.7; }
+.dashboard-section { display: grid; gap: 18rpx; }
+.section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16rpx; }
+.section-title { color: var(--safe-title); font-size: 29rpx; font-weight: 850; }
+.section-copy { margin-top: 5rpx; color: var(--safe-muted); font-size: 21rpx; line-height: 1.5; }
+.count-pill { flex: none; padding: 7rpx 14rpx; border-radius: 999rpx; background: var(--safe-primary-soft); color: var(--safe-primary-deep); font-size: 20rpx; }
+.thermometer-list, .assessment-list, .timeline-list { display: grid; gap: 14rpx; }
+.thermometer-row { display: grid; gap: 8rpx; }
+.thermometer-meta { display: flex; justify-content: space-between; gap: 14rpx; color: var(--safe-text); font-size: 21rpx; }
+.bar-track { height: 14rpx; overflow: hidden; border-radius: 999rpx; background: #edf1ed; }
+.bar-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #8db6a5, var(--safe-primary)); }
+.assessment-group { padding: 18rpx; border: 1rpx solid var(--safe-border); border-radius: 18rpx; background: var(--safe-bg); }
+.assessment-title { color: var(--safe-title); font-size: 23rpx; font-weight: 800; line-height: 1.5; }
+.assessment-values { display: flex; flex-wrap: wrap; gap: 8rpx; margin-top: 12rpx; }
+.assessment-value { padding: 7rpx 12rpx; border-radius: 999rpx; background: #fff; color: var(--safe-text); font-size: 20rpx; }
+.timeline-item { position: relative; display: grid; grid-template-columns: 22rpx minmax(0, 1fr); gap: 12rpx; }
+.timeline-item:not(:last-child)::after { content: ""; position: absolute; top: 22rpx; bottom: -16rpx; left: 9rpx; width: 2rpx; background: var(--safe-border); }
+.timeline-dot { z-index: 1; width: 18rpx; height: 18rpx; margin-top: 7rpx; border: 4rpx solid #e6f0eb; border-radius: 50%; background: var(--safe-primary); }
+.timeline-body { min-width: 0; padding-bottom: 8rpx; }
+.timeline-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12rpx; }
+.timeline-title { color: var(--safe-title); font-size: 23rpx; font-weight: 800; line-height: 1.5; }
+.timeline-type { flex: none; color: var(--safe-primary-deep); font-size: 19rpx; }
+.timeline-summary { margin-top: 4rpx; color: var(--safe-text); font-size: 21rpx; line-height: 1.55; }
+.timeline-date { margin-top: 4rpx; color: var(--safe-muted); font-size: 19rpx; }
+.empty-copy { padding: 18rpx; border-radius: 16rpx; background: var(--safe-bg); color: var(--safe-muted); font-size: 22rpx; line-height: 1.6; }
+.boundary-card { padding: 20rpx; border: 1rpx solid rgba(184, 127, 45, 0.22); border-radius: 18rpx; background: var(--safe-orange-soft); color: var(--safe-text); font-size: 21rpx; line-height: 1.65; }
+.state-card { display: grid; gap: 16rpx; color: var(--safe-text); font-size: 24rpx; }
+.error-text { color: var(--safe-danger); }
+.retry-button { width: 220rpx; margin: 0; }

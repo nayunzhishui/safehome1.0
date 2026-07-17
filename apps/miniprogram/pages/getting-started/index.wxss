@@ -120,44 +120,44 @@
   line-height: 1.65;
 }
 
-.arc-scroll {
-  margin-top: 20rpx;
-  width: 100%;
-  white-space: nowrap;
-  min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
 .arc-chain {
-  display: inline-flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12rpx;
-  padding-bottom: 4rpx;
+  margin-top: 20rpx;
 }
 
-.arc-node {
-  max-width: 280rpx;
-  min-height: 66rpx;
+.arc-step {
+  min-width: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0 20rpx;
+  gap: 10rpx;
+  padding: 14rpx;
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-sm);
   background: var(--safe-bg-leaf);
-  color: var(--safe-primary-deep);
-  font-size: 23rpx;
-  font-weight: 800;
-  white-space: normal;
-  text-align: center;
-  line-height: 1.35;
 }
 
-.arc-arrow {
-  color: var(--safe-muted);
-  font-size: 28rpx;
+.arc-index {
+  width: 36rpx;
+  height: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36rpx;
+  border-radius: 50%;
+  background: var(--safe-card);
+  color: var(--safe-primary-deep);
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.arc-node {
+  min-width: 0;
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
   font-weight: 800;
+  line-height: 1.45;
 }
 
 .step-card {
@@ -216,6 +216,32 @@
   gap: 18rpx;
 }
 
+.step-action-guide {
+  display: grid;
+  gap: 10rpx;
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-primary-pale);
+}
+
+.step-action-guide text {
+  position: relative;
+  display: block;
+  padding-left: 30rpx;
+  color: var(--safe-primary-deep);
+  font-size: 23rpx;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.step-action-guide text::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
 @media (max-width: 360px) {
   .action-row {
     grid-template-columns: 1fr;
@@ -225,9 +251,13 @@
 .primary-action,
 .secondary-action {
   min-height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 999rpx;
   font-size: 28rpx;
   font-weight: 850;
+  line-height: 1;
 }
 
 .primary-action {

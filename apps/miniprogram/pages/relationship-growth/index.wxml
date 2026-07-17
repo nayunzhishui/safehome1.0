@@ -7,6 +7,21 @@
 
   <view wx:if="{{loading}}" class="safe-card">正在读取...</view>
   <view wx:elif="{{growth}}">
+    <view class="growth-summary-grid">
+      <view class="growth-summary-item">
+        <text class="growth-summary-value">{{growth.timeline.length}}</text>
+        <text class="growth-summary-label">累计记录</text>
+      </view>
+      <view class="growth-summary-item">
+        <text class="growth-summary-value">{{curveGroups.length}}</text>
+        <text class="growth-summary-label">可看指标组</text>
+      </view>
+      <view class="growth-summary-item">
+        <text class="growth-summary-value">{{researcherConfirmations.length}}</text>
+        <text class="growth-summary-label">阶段性反馈</text>
+      </view>
+    </view>
+
     <view class="safe-card section-card chart-card">
       <text class="section-title">变化曲线</text>
       <view wx:if="{{curveGroups.length}}">

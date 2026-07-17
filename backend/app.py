@@ -26,6 +26,7 @@ from routes.diaries import bp as diaries_bp
 from routes.emotion_thermometer import bp as emotion_thermometer_bp
 from routes.feedback import bp as feedback_bp
 from routes.family import bp as family_bp
+from routes.general_growth import bp as general_growth_bp
 from routes.goals import bp as goals_bp
 from routes.messages import bp as messages_bp
 from routes.parent_assessments import bp as parent_assessments_bp
@@ -38,6 +39,7 @@ from routes.programs import bp as programs_bp
 from routes.reports import bp as reports_bp
 from routes.showcase_access import bp as showcase_access_bp
 from routes.relationship_pilot_routes import bp as relationship_pilot_bp
+from routes.research_workspace import bp as research_workspace_bp
 from routes.supervision import bp as supervision_bp
 from routes.text_analysis import bp as text_analysis_bp
 from routes.training_plan import bp as training_plan_bp
@@ -191,6 +193,7 @@ def create_app(
     app.register_blueprint(emotion_thermometer_bp)
     app.register_blueprint(feedback_bp)
     app.register_blueprint(family_bp)
+    app.register_blueprint(general_growth_bp)
     app.register_blueprint(messages_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(progress_summary_bp)
@@ -208,6 +211,7 @@ def create_app(
     app.register_blueprint(reports_bp)
     app.register_blueprint(showcase_access_bp)
     app.register_blueprint(relationship_pilot_bp)
+    app.register_blueprint(research_workspace_bp)
     app.register_blueprint(supervision_bp)
     app.register_blueprint(text_analysis_bp)
     app.register_blueprint(training_plan_bp)

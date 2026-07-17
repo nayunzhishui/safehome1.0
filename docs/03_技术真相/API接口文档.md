@@ -1562,6 +1562,16 @@ Invoke-WebRequest `
 
 保存位置：`records`，其中 `module_type=program_entry`，`source_id=<program_id>`；`data_json`绑定当前 `protocol_version`，不随之后内容升级漂移。
 
+`answers.reflection_answers`可保存当前节每个反思问题的独立回答，结构为`[{question, answer}]`；旧版`reflection`摘要继续保留兼容。
+
+### `GET /api/programs/<program_id>/entries`
+
+用途：当前登录参与者回看本人在指定项目中已提交的各节记录。
+
+权限：必须登录；Bearer token 所属用户优先于查询参数，不能读取其他参与者记录。
+
+返回：`items[]`包含节次、逐题答案、反思摘要、练习前后不适、负面体验标记、参与状态和提交时间；不返回其他用户数据。
+
 ### `GET /api/training-plan`
 
 任务十补强字段：
@@ -1571,6 +1581,11 @@ Invoke-WebRequest `
 | `has_recent_checkin` | 用户近期是否有训练打卡 |
 | `last_completed_card_ids` | 近期已完成训练卡 ID |
 | `assignment` | 用户当前训练阶段、频率、开始日期、状态和短目标；未设置时为 `null` |
+| `assignment.is_due_today` | 按开始日期、频率、状态和最近完成记录计算今天是否到期 |
+| `assignment.next_practice_date` | 下一次建议练习日期；暂停/完成时为 `null` |
+| `assignment.cadence_label` | 用户可读的节奏名称 |
+| `assignment.due_reason` | 今日到期、下次日期、暂停或完成的用户说明 |
+| `today_plan_items` | 今天到期时优先展示的最多2组推荐；未到期时为空 |
 | `empty_state` | 没有推荐时的用户端空状态 |
 | `plan_items[].source_worksheet_id` | 推荐来源测评 ID |
 | `plan_items[].source_worksheet_title` | 推荐来源测评名称 |
@@ -1595,6 +1610,8 @@ Invoke-WebRequest `
 | `goal_text` | string | 否 | 200 字内阶段目标 |
 
 保存位置：`records.module_type=training_plan_assignment`、`source_id=current`、`export_allowed=0`。同一用户重复保存会更新当前记录；审计日志只记录枚举和是否填写目标，不保存目标原文。
+
+返回会附带`is_due_today`、`next_practice_date`、`cadence_label`和`due_reason`，小程序据此安排今日训练，不只保存静态选项。
 
 ### `GET /api/progress-summary`
 
@@ -1802,4 +1819,53 @@ relationship_initiation_intention_action
 4. `/readyz` 不返回数据库路径、MySQL 主机/库名或内容目录；详细部署信息由受控运维环境维护。
 
 `GET /readyz`现同时返回数据库schema版本、内容版本、任务十二画像模型版本、风险复核积压和不含请求正文的进程内聚合指标。指标仅记录请求总量、错误量及指定操作失败次数。
+
+## 2026-07-17：任务二十研究工作台与通用成长仪表盘
+
+### `GET /api/research/participants`
+
+用途：研究工作台参与者矩阵，支持 `q` 按用户 ID/昵称检索，`limit` 最大 100。
+
+权限：
+
+- `researcher` 只返回 `relationship_pilot_enrollments.assigned_researcher_id` 分配给自己的参与者；
+- `supervisor`、`admin` 返回全部有业务记录的参与者；
+- Web 后台兼容受控 `X-Admin-Token`；
+- 每次查询写入 `audit_logs`，不向参与者端开放。
+
+返回每位参与者的测评、情绪日记、训练打卡、项目练习、关系试点、人工支持和未读消息数量。矩阵不返回开放文本。
+
+### `GET /api/research/participants/<user_id>`
+
+用途：在同一只读档案中查看获授权参与者的测评、情绪日记、训练打卡、项目练习、关系试点报名/任务/报告、人工支持、消息和审计摘要。
+
+边界：
+
+- 单模块最多返回最近 100 条；
+- 原始填写只读，研究者反馈与备注另存；
+- 敏感详情访问写入 `audit_logs`；
+- 内部状态由前端映射为中文，不直接展示数据库枚举。
+
+### `GET /api/growth/overview`
+
+用途：当前登录用户查看跨模块成长仪表盘。
+
+返回：
+
+| 字段 | 说明 |
+|---|---|
+| `summary` | 观察与练习总数、完成练习数、人工反馈数和下一小步 |
+| `thermometer` | 最近 30 次 1—10 分情绪温度，按时间返回 |
+| `assessment_groups` | 按 `worksheet_id` 分组的最近测评记录，不混合不同量尺 |
+| `timeline` | 最近 50 条日记、训练、测评、项目、本周复盘和人工反馈事件 |
+| `boundary_notice` | 非诊断、非疗效证明边界 |
+
+该接口不生成跨量尺总分，也不因单次记录判断改善或恶化。
+
+### `POST /api/feedback/generate` 任务二十补充
+
+- 普通反馈按“确认当下感受—描述可观察线索—给一个可选择的小动作—说明边界”组织；
+- `recommended_card_ids` 去重后最多返回 3 张，且只包含已启用、允许共享选择的训练卡；
+- `training_recommendation_rules` 最多返回 1 条主规则，该规则内为 1 张主练习和最多 2 张备用练习；
+- 高风险仍返回空训练卡和空普通规则，优先进入人工与现实支持路径。
 

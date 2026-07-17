@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import { clearAuthSession, getStoredAuthToken, saveAuthSession, type AuthUser } from "./services/authState";
@@ -124,6 +124,7 @@ function RouteFallback() {
 }
 
 function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcaseEnabled: boolean }) {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const path = window.location.pathname;
   const isLandingPath = path === "/";
   const isAboutStudyPath = path === "/about-study";
@@ -247,7 +248,17 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
             <small>ReadFeedback Admin</small>
           </span>
         </a>
-        <nav className="adminNav" aria-label="后台功能导航">
+        <button
+          className="adminNavToggle"
+          type="button"
+          aria-expanded={mobileNavOpen}
+          aria-controls="admin-function-nav"
+          onClick={() => setMobileNavOpen((current) => !current)}
+        >
+          <span>{mobileNavOpen ? "收起导航" : "打开导航"}</span>
+          <span aria-hidden="true">{mobileNavOpen ? "−" : "+"}</span>
+        </button>
+        <nav className={`adminNav ${mobileNavOpen ? "isOpen" : ""}`} id="admin-function-nav" aria-label="后台功能导航">
           {visibleLinks(authUser, showcaseEnabled).map((link) => (
             <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
               <span className="navDot" aria-hidden="true" />

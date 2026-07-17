@@ -6,6 +6,9 @@ const api = createSafeHomeApi();
 Page({
   data: {
     diaryId: "",
+    sourceOptions: [{ type: "", id: "", title: "不关联具体记录", meta: "单独提交一条人工支持请求", selected: true }],
+    selectedSource: { type: "", id: "", title: "不关联具体记录" },
+    loadingSources: true,
     message: "",
     contact: "",
     riskHint: "",
@@ -14,7 +17,7 @@ Page({
     errorMessage: "",
   },
 
-  onLoad(options) {
+  async onLoad(options) {
     const diaryId = decodeURIComponent(options.diary_id || "");
     if (!requireLogin({
       redirectUrl: `/pages/supervision/index?diary_id=${encodeURIComponent(diaryId)}`,
@@ -24,6 +27,54 @@ Page({
     }
     this.setData({
       diaryId,
+    });
+    await this.loadSourceOptions(diaryId);
+  },
+
+  async loadSourceOptions(diaryId) {
+    try {
+      const [diariesPayload, assessmentsPayload] = await Promise.all([
+        api.listDiaries({ limit: 8 }),
+        api.listAssessmentResults({ limit: 8 }),
+      ]);
+      const diaryOptions = (diariesPayload.items || []).map((item) => ({
+        type: "diary",
+        id: item.id,
+        title: `情绪日记 · ${item.scene || item.parent_emotion || "具体事件"}`,
+        meta: String(item.event_description || "").slice(0, 42) || String(item.created_at || "").slice(0, 10),
+      }));
+      const assessmentOptions = (assessmentsPayload.items || []).map((item) => ({
+        type: "assessment",
+        id: item.id,
+        title: `测一测 · ${item.worksheet_title || "支持性测评"}`,
+        meta: String(item.created_at || "").slice(0, 10),
+      }));
+      const options = [
+        { type: "", id: "", title: "不关联具体记录", meta: "单独提交一条人工支持请求" },
+        ...diaryOptions,
+        ...assessmentOptions,
+      ];
+      const selected = options.find((item) => item.type === "diary" && item.id === diaryId) || options[0];
+      this.setData({
+        sourceOptions: options.map((item) => ({ ...item, selected: item.type === selected.type && item.id === selected.id })),
+        selectedSource: selected,
+        loadingSources: false,
+      });
+    } catch (error) {
+      this.setData({ loadingSources: false });
+    }
+  },
+
+  selectSource(event) {
+    const type = event.currentTarget.dataset.type || "";
+    const id = event.currentTarget.dataset.id || "";
+    const selected = this.data.sourceOptions.find((item) => item.type === type && item.id === id) || this.data.sourceOptions[0];
+    this.setData({
+      selectedSource: selected,
+      sourceOptions: this.data.sourceOptions.map((item) => ({
+        ...item,
+        selected: item.type === selected.type && item.id === selected.id,
+      })),
     });
   },
 
@@ -44,7 +95,9 @@ Page({
 
     try {
       await api.createSupervision({
-        diary_id: this.data.diaryId || undefined,
+        source_type: this.data.selectedSource.type || undefined,
+        source_id: this.data.selectedSource.id || undefined,
+        source_title: this.data.selectedSource.title || undefined,
         message,
         contact: this.data.contact.trim(),
         risk_hint: this.data.riskHint.trim(),

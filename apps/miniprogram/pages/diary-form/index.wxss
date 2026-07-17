@@ -6,15 +6,17 @@
 
 .diary-hero {
   position: relative;
-  min-height: 250rpx;
+  min-height: 230rpx;
   overflow: hidden;
   border-radius: 28rpx;
+  border-left: 8rpx solid var(--safe-primary);
+  background: linear-gradient(135deg, rgba(244, 249, 240, 0.98), rgba(255, 253, 248, 0.98));
 }
 
 .hero-copy {
   position: relative;
   z-index: 1;
-  max-width: 500rpx;
+  max-width: 100%;
 }
 
 .hero-title {
@@ -68,26 +70,12 @@
   font-weight: 750;
 }
 
-.hero-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 10rpx;
+.privacy-note {
+  display: block;
   margin-top: 18rpx;
   color: var(--safe-muted);
-  font-size: 23rpx;
+  font-size: 22rpx;
   line-height: 1.55;
-}
-
-.privacy-note {
-  max-width: none;
-}
-
-.note-dot {
-  width: 12rpx;
-  height: 12rpx;
-  flex: 0 0 12rpx;
-  border-radius: 50%;
-  background: var(--safe-yellow);
 }
 
 .diary-form {

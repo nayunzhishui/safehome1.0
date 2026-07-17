@@ -29,9 +29,11 @@
         <view class="thermometer-bulb"></view>
       </view>
       <view class="thermometer-actions">
-        <button class="step-button" bindtap="increaseIntensity">+</button>
-        <text class="step-label">点按或拖动温度计</text>
-        <button class="step-button" bindtap="decreaseIntensity">-</button>
+        <text class="step-label">也可以点按调节</text>
+        <view class="step-button-row">
+          <button class="step-button" aria-label="情绪强度减一" bindtap="decreaseIntensity">−</button>
+          <button class="step-button step-button--increase" aria-label="情绪强度加一" bindtap="increaseIntensity">＋</button>
+        </view>
       </view>
     </view>
     <view class="micro-panel">

@@ -4,7 +4,7 @@ import json
 
 from flask import Blueprint, current_app, request
 
-from database import ensure_user, get_connection, load_content_json, new_id, now_iso, row_to_dict
+from database import ensure_user, get_connection, json_loads, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts
 from routes.auth_utils import AuthError, auth_error_response, require_role, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int
 from services.risk_service import check_text_risk
@@ -116,6 +116,43 @@ def get_program(program_id: str):
                 }
             )
     return fail("not_found", "未找到对应的项目测试内容", status=404)
+
+
+@bp.get("/<program_id>/entries")
+def list_program_entries(program_id: str):
+    try:
+        user_id = resolve_actor_user_id(request.args.get("user_id"))
+    except AuthError as exc:
+        return auth_error_response(exc)
+    with get_connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT id, user_id, source_id, data_json, created_at, updated_at
+            FROM records
+            WHERE user_id = ? AND module_type = 'program_entry' AND source_id = ?
+            ORDER BY created_at DESC
+            """,
+            (user_id, program_id),
+        ).fetchall()
+    items = []
+    for row in rows_to_dicts(rows):
+        data = json_loads(row.pop("data_json", None), {})
+        items.append(
+            {
+                **row,
+                "program_id": data.get("program_id"),
+                "program_title": data.get("program_title"),
+                "session_no": data.get("session_no"),
+                "answers": data.get("answers") or {},
+                "reflection": data.get("reflection") or "",
+                "participation_status": data.get("participation_status"),
+                "distress_before": data.get("distress_before"),
+                "distress_after": data.get("distress_after"),
+                "adverse_response": bool(data.get("adverse_response")),
+                "boundary_notice": data.get("boundary_notice"),
+            }
+        )
+    return ok({"items": items, "count": len(items)})
 
 
 @bp.post("/<program_id>/entries")

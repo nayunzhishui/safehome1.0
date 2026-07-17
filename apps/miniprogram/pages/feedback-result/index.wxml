@@ -23,20 +23,8 @@
 
   <view wx:else class="feedback-content">
     <view class="support-card safe-card">
-      <text class="support-label">我看到了什么</text>
+      <text class="support-label">先接住这次感受</text>
       <text class="support-text">{{feedback.supportive_feedback}}</text>
-    </view>
-
-    <view class="boundary-card">
-      <text class="boundary-title">温和说明</text>
-      <text class="boundary-text">这不是诊断报告，也不是评分。它只是把这次记录拆成几个可以观察的位置，帮助你找到下一次能练的小动作。</text>
-    </view>
-
-    <view class="safe-section">
-      <section-title title="这不代表什么" subtitle="反馈只看这一次记录，不给人贴标签" />
-      <view class="not-diagnosis-card safe-card">
-        <text>这不代表孩子、家长或家庭关系有固定问题，也不是诊断、评分或治疗建议。</text>
-      </view>
     </view>
 
     <view class="safe-section">
@@ -70,16 +58,6 @@
       </view>
     </view>
 
-    <view class="safe-section">
-      <section-title title="你可以先尝试什么" subtitle="先做一个很小的动作" />
-      <view class="practice-card safe-card">
-        <text class="practice-title">{{nextAction.title}}</text>
-        <text class="practice-text">{{nextAction.text}}</text>
-        <button wx:if="{{canShowTraining}}" class="practice-main-button" bindtap="openTrainingCard">开始练习</button>
-        <button wx:if="{{isHighRisk}}" class="practice-main-button" bindtap="openSupervision">提交人工关注</button>
-      </view>
-    </view>
-
     <view wx:if="{{isHighRisk}}" class="safe-section">
       <view class="risk-support-card">
         <text class="risk-support-title">优先联系现实支持</text>
@@ -89,22 +67,23 @@
     </view>
 
     <view wx:if="{{canShowTraining}}" class="safe-section">
-      <section-title title="今日建议" subtitle="来自这次情绪日记的轻量练习推荐" />
+      <section-title title="今天先做哪一步" subtitle="一个主练习，最多两个备用选择" />
       <view wx:if="{{trainingRecommendation}}" class="today-suggestion-card safe-card">
-        <text class="today-suggestion-label">今天先做</text>
+        <text class="today-suggestion-label">主练习 · {{recommendedTrainings[0].title || "一个轻量练习"}}</text>
         <text class="today-suggestion-text">{{trainingRecommendation.today_suggestion}}</text>
         <text class="today-suggestion-reason">推荐理由：{{trainingRecommendation.reason}}</text>
-        <text class="today-suggestion-boundary">{{trainingRecommendation.boundary_notice}}</text>
+        <button class="practice-main-button" bindtap="openTrainingCard">开始这个练习</button>
       </view>
       <view wx:else class="today-suggestion-card safe-card">
         <text class="today-suggestion-label">今天先做</text>
-        <text class="today-suggestion-text">这次记录暂时没有匹配到具体训练卡，可以先做一次暂停和情绪命名。</text>
+        <text class="today-suggestion-text">这次记录暂时没有匹配到具体训练卡，可以先暂停几秒，再说出一个最明显的感受。</text>
         <text class="today-suggestion-boundary">今日建议只作为支持性练习参考，不构成诊断或治疗方案。</text>
       </view>
-      <view class="training-list">
+      <view wx:if="{{recommendedTrainings.length > 1}}" class="training-list">
+        <text class="training-backup-title">也可以选择</text>
         <view wx:for="{{recommendedTrainings}}" wx:for-index="trainingIndex" wx:key="title">
           <training-task-card
-            wx:if="{{trainingIndex < 2}}"
+            wx:if="{{trainingIndex > 0 && trainingIndex < 3}}"
             title="{{item.title}}"
             subtitle="{{item.subtitle}}"
             stage="{{item.stage}}"
@@ -115,16 +94,11 @@
             bind:tapcard="openTrainingCard"
           />
         </view>
-        <!--
-          Keep the page calm by showing only two cards before the full recommendation page.
-        -->
-        <view wx:if="{{recommendedTrainings.length > 2}}" class="training-more-row">
-          <button class="more-training-button" bindtap="openTrainingCard">查看全部推荐</button>
-        </view>
       </view>
+      <text wx:if="{{trainingRecommendation}}" class="today-suggestion-boundary">{{trainingRecommendation.boundary_notice}}</text>
     </view>
 
-    <view class="supervision-entry">
+    <view wx:if="{{!isHighRisk}}" class="supervision-entry">
       <view class="supervision-copy">
         <text class="supervision-title">需要多一个人帮你看一看？</text>
         <text class="supervision-text">如果这类情况反复出现，或你担心自己撑不住，可以提交给人工督导补充反馈。</text>
@@ -133,11 +107,14 @@
     </view>
 
     <view class="action-grid">
-      <button wx:if="{{isHighRisk}}" class="safe-primary-button action-button" bindtap="openSupervision">提交人工关注</button>
-      <button class="safe-outline-button action-button" bindtap="saveFeedback">保存本次反馈</button>
+      <button class="safe-outline-button action-button" bindtap="saveFeedback">收藏这次反馈</button>
     </view>
 
     <view class="safe-section">
+      <view class="boundary-card">
+        <text class="boundary-title">怎样理解这份反馈</text>
+        <text class="boundary-text">它只整理这一次记录中可观察的情绪、互动和练习位置，不代表固定问题，也不构成诊断、评分或治疗建议。</text>
+      </view>
       <bottom-tip-card text="先观察，再练习；一次小调整也有意义。" />
     </view>
   </view>

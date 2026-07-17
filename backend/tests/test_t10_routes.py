@@ -261,6 +261,89 @@ def test_program_entry_creates_private_record(tmp_path, monkeypatch):
     assert data["recommendation_source"] == "user_choice"
 
 
+def test_program_entries_can_be_read_back_only_by_owner(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    owner_id, owner_token = _wechat_login(client, "program-history-owner")
+    _other_id, other_token = _wechat_login(client, "program-history-other")
+    response = client.post(
+        "/api/programs/self_compassion_exam_anxiety/entries",
+        headers={"Authorization": f"Bearer {owner_token}"},
+        json={
+            "session_no": 2,
+            "answers": {
+                "reflection_answers": [
+                    {"question": "这一步带来了什么变化？", "answer": "我把任务拆小后更愿意开始。"}
+                ]
+            },
+            "reflection": "我把任务拆小后更愿意开始。",
+            "recommendation_source": "user_choice",
+        },
+    )
+    assert response.status_code == 201
+
+    owner_list = client.get(
+        "/api/programs/self_compassion_exam_anxiety/entries",
+        headers={"Authorization": f"Bearer {owner_token}"},
+    )
+    assert owner_list.status_code == 200
+    owner_data = owner_list.get_json()["data"]
+    assert owner_data["count"] == 1
+    assert owner_data["items"][0]["user_id"] == owner_id
+    assert owner_data["items"][0]["session_no"] == 2
+    assert owner_data["items"][0]["answers"]["reflection_answers"][0]["answer"]
+
+    other_list = client.get(
+        "/api/programs/self_compassion_exam_anxiety/entries",
+        headers={"Authorization": f"Bearer {other_token}"},
+    )
+    assert other_list.status_code == 200
+    assert other_list.get_json()["data"]["items"] == []
+
+
+def test_supervision_source_link_validates_record_owner(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    owner_id, owner_token = _wechat_login(client, "supervision-source-owner")
+    _other_id, other_token = _wechat_login(client, "supervision-source-other")
+    diary = client.post(
+        "/api/diaries",
+        headers={"Authorization": f"Bearer {owner_token}"},
+        json={
+            "scene": "亲子沟通",
+            "event_description": "我提醒了一次，后来停下来听孩子说。",
+            "parent_emotion": "着急",
+        },
+    ).get_json()["data"]
+
+    denied = client.post(
+        "/api/supervision",
+        headers={"Authorization": f"Bearer {other_token}"},
+        json={
+            "source_type": "diary",
+            "source_id": diary["id"],
+            "message": "想请老师一起看看。",
+        },
+    )
+    assert denied.status_code == 404
+
+    created = client.post(
+        "/api/supervision",
+        headers={"Authorization": f"Bearer {owner_token}"},
+        json={
+            "source_type": "diary",
+            "source_id": diary["id"],
+            "message": "想请老师一起看看。",
+        },
+    )
+    assert created.status_code == 201
+    data = created.get_json()["data"]
+    assert data["user_id"] == owner_id
+    assert data["source_type"] == "diary"
+    assert data["source_id"] == diary["id"]
+    assert data["source_title"].startswith("情绪日记")
+
+
 def test_program_entry_rejects_invalid_session_and_distress(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()

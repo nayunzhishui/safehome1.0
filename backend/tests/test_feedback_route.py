@@ -97,6 +97,8 @@ def test_feedback_low_risk_keeps_existing_rule_flow(tmp_path):
     assert rule["today_suggestion"]
     assert rule["long_term_suggestion"] == ""
     assert len(rule["recommended_card_ids"]) <= 3
+    assert len(data["training_recommendation_rules"]) == 1
+    assert len(data["recommended_card_ids"]) <= 3
     assert data["supportive_feedback"]
     assert data["emotion_overview"]["primary_emotion"] == "着急"
     assert data["emotion_overview"]["intensity_text"] == "较强"

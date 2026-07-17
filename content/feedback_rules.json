@@ -1,5 +1,5 @@
 {
-  "version": "2026.06-feedback-rules-v2",
+  "version": "2026.07-feedback-rules-v3",
   "rules": [
     {
       "id": "judgmental_language",
@@ -11,9 +11,9 @@
         "真不懂事",
         "太懒了"
       ],
-      "explanation": "记录中出现了较多对孩子整体评价的表达。这类表达通常能快速释放家长压力，但可能让孩子更防御或退缩。",
-      "supportive_feedback": "你不是不关心孩子，而是当压力升高时，大脑会自动寻找一个明确原因。现在可以先把评价换成对事实和感受的描述。",
-      "alternative_response": "把“你怎么又这样”换成“我看到这件事又卡住了，我们先看看发生了什么”。",
+      "explanation": "这次记录里出现了对孩子整体评价的表达。它可能让双方更难继续说明当时具体发生了什么。",
+      "supportive_feedback": "压力升高时，用一句整体评价表达不满很常见。你已经把这一刻记录下来；下次可以先说事实和自己的感受，为对话留出一点空间。",
+      "alternative_response": "可以试着说：“我看到这件事又卡住了，我有些着急。我们先看看第一步卡在哪里。”",
       "recommended_card_ids": [
         "nonjudgmental_response",
         "emotion_naming"
@@ -60,9 +60,9 @@
         "一定要",
         "你给我"
       ],
-      "explanation": "记录中出现了较强的命令式或高要求表达。它可能短期推动行动，但也容易让亲子互动进入对抗。",
-      "supportive_feedback": "你希望孩子行动起来，这个愿望很真实。下一步可以把高压命令缩小成一个具体、可完成的小请求。",
-      "alternative_response": "把“你必须马上写”换成“我们先从 10 分钟开始，你想先做哪一项？”。",
+      "explanation": "这次记录里出现了较强的命令式表达。可以继续观察：要求变强后，对话是否更难推进。",
+      "supportive_feedback": "你希望事情尽快往前走。下一次可以把要求缩小成一个具体、可选择的小步骤，看看双方的反应是否有所不同。",
+      "alternative_response": "可以试着说：“我们先用 10 分钟做第一步。你想先整理题目，还是先做一道？”",
       "recommended_card_ids": [
         "three_second_pause",
         "alternative_behavior"
@@ -109,9 +109,9 @@
         "没救了",
         "不上心"
       ],
-      "explanation": "记录中出现了把孩子行为归因为稳定缺点的倾向。单一归因会让家长更难看见其他可能原因。",
-      "supportive_feedback": "当同一类问题反复出现时，家长很容易得出一个固定解释。现在可以先增加一个备选解释，为新的回应方式留出空间。",
-      "alternative_response": "把“他就是故意拖”换成“他可能不知道从哪里开始，我们先找一个最小入口”。",
+      "explanation": "这次记录里出现了对孩子动机或特点的固定解释。仅凭一次记录，还不能确定行为背后的原因。",
+      "supportive_feedback": "同一类情况反复出现时，形成一个固定解释很容易。可以先保留“不确定”，再增加一个可核对的备选解释。",
+      "alternative_response": "可以把“他就是故意拖”改成：“我还不确定原因，也许是不知道从哪里开始。我们先找一个最小入口。”",
       "recommended_card_ids": [
         "cognitive_flexibility",
         "nonjudgmental_response"
@@ -158,9 +158,9 @@
         "反复提醒",
         "忍不住催"
       ],
-      "explanation": "记录中出现了反复催促。催促通常说明家长很想让事情变好，但当催促次数增加，孩子可能更容易麻木或反抗。",
-      "supportive_feedback": "你已经做了很多努力，只是当前方式可能进入了短期有效、长期成本较高的循环。可以尝试把催促改成一次明确请求。",
-      "alternative_response": "把“我说多少遍了”换成“现在只做第一步：把作业本打开”。",
+      "explanation": "这次记录里出现了多次催促。可以观察：提醒增加后，行动是否真的更容易开始。",
+      "supportive_feedback": "反复提醒往往来自着急和责任感。下一次可以减少重复，只保留一次明确请求和一个可回看的时间点。",
+      "alternative_response": "可以试着说：“现在先做第一步：把作业本打开。10 分钟后我们再一起看。”",
       "recommended_card_ids": [
         "alternative_behavior",
         "three_second_pause"
@@ -207,9 +207,9 @@
         "全都毁了",
         "没有希望"
       ],
-      "explanation": "记录中出现了把当前事件推向严重未来后果的表达。这常见于高压力场景，不代表事实一定会如此。",
-      "supportive_feedback": "你担心的是孩子的未来，这份担心背后有爱和责任。现在可以先把注意力拉回当前可处理的一小步。",
-      "alternative_response": "把“以后肯定完了”换成“这次结果让我们担心，我们先看今天能补上的一个点”。",
+      "explanation": "这次记录里出现了从当前事件直接推到严重未来后果的想法。这个想法反映了当时的担心，不等于未来一定如此。",
+      "supportive_feedback": "当担心一下子延伸到很远，眼前的问题会显得更重。可以先把“现在知道的事实”和“担心的预测”分开，再选今天能处理的一小步。",
+      "alternative_response": "可以试着说：“这次结果让我担心。先不判断以后，我们看看今天能补上的一个点。”",
       "recommended_card_ids": [
         "cognitive_flexibility",
         "emotion_naming"

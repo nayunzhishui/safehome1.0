@@ -1,6 +1,7 @@
 """Personalized training plan endpoints built from assessments and profile clusters."""
 
 import json
+from datetime import date, datetime, timedelta
 from pathlib import Path
 import re
 
@@ -28,6 +29,12 @@ ASSIGNMENT_SOURCE_ID = "current"
 ASSIGNMENT_PHASES = {"start", "practice", "consolidate"}
 ASSIGNMENT_CADENCES = {"daily", "every_other_day", "three_per_week", "weekly"}
 ASSIGNMENT_STATUSES = {"active", "paused", "completed"}
+CADENCE_LABELS = {
+    "daily": "每日",
+    "every_other_day": "隔日",
+    "three_per_week": "每周3次",
+    "weekly": "每周1次",
+}
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
@@ -96,6 +103,7 @@ def _recent_checkin_state(user_id: str) -> dict:
         "has_recent_checkin": bool(checkins),
         "last_completed_card_ids": list(dict.fromkeys(completed))[:5],
         "completed_card_ids": list(dict.fromkeys(completed)),
+        "latest_completed_at": next((row.get("created_at") for row in checkins if row.get("completed")), None),
     }
 
 
@@ -130,6 +138,60 @@ def _latest_assignment(user_id: str) -> dict | None:
     item = row_to_dict(row)
     data = json_loads(item.pop("data_json", None), {})
     return {**item, **data}
+
+
+def _parse_day(value: str | None) -> date | None:
+    try:
+        return datetime.strptime(str(value or "")[:10], "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return None
+
+
+def _next_three_per_week(base: date) -> date:
+    for day_offset in range(1, 8):
+        candidate = base + timedelta(days=day_offset)
+        if candidate.weekday() in {0, 2, 4}:
+            return candidate
+    return base + timedelta(days=2)
+
+
+def _assignment_schedule(assignment: dict | None, latest_completed_at: str | None = None) -> dict | None:
+    if not assignment:
+        return None
+    today = date.today()
+    start_day = _parse_day(assignment.get("start_date")) or today
+    completed_day = _parse_day(latest_completed_at)
+    cadence = str(assignment.get("cadence") or "daily")
+    status = str(assignment.get("status") or "active")
+    if completed_day and completed_day >= start_day:
+        if cadence == "every_other_day":
+            next_day = completed_day + timedelta(days=2)
+        elif cadence == "weekly":
+            next_day = completed_day + timedelta(days=7)
+        elif cadence == "three_per_week":
+            next_day = _next_three_per_week(completed_day)
+        else:
+            next_day = completed_day + timedelta(days=1)
+    else:
+        next_day = start_day
+        if cadence == "three_per_week" and next_day.weekday() not in {0, 2, 4}:
+            next_day = _next_three_per_week(next_day - timedelta(days=1))
+    is_due = status == "active" and today >= next_day
+    if status == "paused":
+        reason = "计划已暂缓，恢复后再安排下一次练习。"
+    elif status == "completed":
+        reason = "这一阶段已完成，可以回看记录或重新设置节奏。"
+    elif is_due:
+        reason = "今天已到练习时间，先选一张最容易完成的卡。"
+    else:
+        reason = f"下一次练习安排在 {next_day.isoformat()}。"
+    return {
+        **assignment,
+        "cadence_label": CADENCE_LABELS.get(cadence, "自定节奏"),
+        "is_due_today": is_due,
+        "next_practice_date": next_day.isoformat() if status == "active" else None,
+        "due_reason": reason,
+    }
 
 
 def _normalize_assignment(payload: dict) -> tuple[dict | None, tuple[str, str] | None]:
@@ -317,6 +379,8 @@ def get_training_plan():
             "description": "可以先从训练中心选择一张容易完成的训练卡，后续测评记录更多后再生成推荐。",
             "url": "/pages/training/index",
         }
+    assignment = _assignment_schedule(_latest_assignment(user_id), checkin_state["latest_completed_at"])
+    today_plan_items = plan_items[:2] if assignment and assignment.get("is_due_today") else []
     return ok(
         {
             "user_id": user_id,
@@ -324,9 +388,10 @@ def get_training_plan():
             "has_recent_checkin": checkin_state["has_recent_checkin"],
             "last_completed_card_ids": checkin_state["last_completed_card_ids"],
             "completed_card_ids": checkin_state["completed_card_ids"],
-            "assignment": _latest_assignment(user_id),
+            "assignment": assignment,
             "latest_result": row_to_dict(results[0]) if results else None,
             "plan_items": plan_items,
+            "today_plan_items": today_plan_items,
             "empty_state": empty_state,
             "next_action": empty_state,
             "boundary_notice": "个性化训练计划只用于阶段性练习建议，不构成诊断、筛查或治疗方案。",
@@ -397,4 +462,11 @@ def save_training_plan_assignment():
         )
         conn.commit()
 
-    return ok({"id": record_id, "user_id": user_id, **assignment, "updated_at": timestamp})
+    return ok(
+        {
+            "id": record_id,
+            "user_id": user_id,
+            **(_assignment_schedule(assignment) or assignment),
+            "updated_at": timestamp,
+        }
+    )

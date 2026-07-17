@@ -3,8 +3,14 @@ import { useEffect, useMemo, useState } from "react";
 import { ProfileRadarChart } from "../components/ProfileRadarChart";
 import { RelationshipStatusBadge } from "../components/RelationshipStatusBadge";
 import { ProfileScatterChart } from "../components/ProfileScatterChart";
-import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
+import {
+  formatSafeHomeError,
+  SafeHomeApiClient,
+  type ResearchParticipantDossier,
+  type ResearchParticipantSummary,
+} from "../services/safehomeApi";
 import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
+import { displayQualityStatus, displayStatus } from "../utils/displayLabels";
 import type {
   AssessmentProfilePosition,
   AssessmentResult,
@@ -133,6 +139,9 @@ function isOpenProfileReview(item: StudentProfileRecord) {
 
 export function ResearchDashboard() {
   const [adminToken, setAdminToken] = useState(getStoredAdminToken);
+  const [participantSearch, setParticipantSearch] = useState("");
+  const [participantMatrix, setParticipantMatrix] = useState<ResearchParticipantSummary[]>([]);
+  const [participantDossier, setParticipantDossier] = useState<ResearchParticipantDossier | null>(null);
   const [state, setState] = useState<OverviewState>({
     status: "idle",
     message: "正在准备研究者平台总览。",
@@ -195,7 +204,7 @@ export function ResearchDashboard() {
     {
       title: "最近导出记录",
       value: "待接入",
-      note: "导出审计已写入 audit_logs，当前还没有前端列表接口。",
+      note: "导出操作已保留审计记录，当前还没有前端列表入口。",
       href: "/export",
     },
     {
@@ -213,7 +222,7 @@ export function ResearchDashboard() {
     }));
 
     try {
-      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults, relationshipPilot, textAnalysis] = await Promise.all([
+      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults, relationshipPilot, textAnalysis, researchParticipants] = await Promise.all([
         api.listGoals(),
         api.listDiaries({ limit: 50 }),
         api.listCheckins({ limit: 50 }),
@@ -223,7 +232,14 @@ export function ResearchDashboard() {
         api.listAdminAssessmentResults({ limit: 50 }, getStoredAdminToken().trim()),
         api.getRelationshipResearchDashboard(getStoredAdminToken().trim()),
         api.getTextAnalysisSummary().catch(() => ({ items: {}, raw_text_included: false, boundary_notice: "离线分析摘要暂不可用。" })),
+        api.listResearchParticipants({ limit: 100 }, getStoredAdminToken().trim()),
       ]);
+      const firstParticipant = researchParticipants.items[0];
+      const firstDossier = firstParticipant
+        ? await api.getResearchParticipant(firstParticipant.user_id, getStoredAdminToken().trim())
+        : null;
+      setParticipantMatrix(researchParticipants.items);
+      setParticipantDossier(firstDossier);
       const firstAssessment = assessmentResults.items[0];
       const profilePosition = firstAssessment
         ? await api.getAssessmentProfilePosition(firstAssessment.id, { user_id: firstAssessment.user_id })
@@ -318,6 +334,38 @@ export function ResearchDashboard() {
     await selectRelationshipEnrollment(state.selectedRelationshipEnrollment.id);
   }
 
+  async function searchParticipants() {
+    try {
+      const payload = await api.listResearchParticipants(
+        { q: participantSearch.trim(), limit: 100 },
+        getStoredAdminToken().trim(),
+      );
+      setParticipantMatrix(payload.items);
+      const selected = payload.items[0]
+        ? await api.getResearchParticipant(payload.items[0].user_id, getStoredAdminToken().trim())
+        : null;
+      setParticipantDossier(selected);
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        status: "error",
+        message: formatSafeHomeError(error, "参与者档案暂时无法读取。"),
+      }));
+    }
+  }
+
+  async function selectParticipant(userId: string) {
+    try {
+      setParticipantDossier(await api.getResearchParticipant(userId, getStoredAdminToken().trim()));
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        status: "error",
+        message: formatSafeHomeError(error, "参与者档案暂时无法读取。"),
+      }));
+    }
+  }
+
   return (
     <section className="dashboardShell" aria-label="研究者平台总览">
       <div className="dashboardHeader">
@@ -407,6 +455,86 @@ export function ResearchDashboard() {
         <p className="analysisBoundary">这些结果属于离线、脱敏、聚合研究线索；数据不足或质量门禁未通过时只显示状态，不生成个人或家庭结论。</p>
       </section>
 
+      <section className="participantWorkspace" aria-label="参与者矩阵与单人档案">
+        <div className="participantWorkspaceHeader">
+          <div>
+            <p className="eyebrow">Participant Matrix</p>
+            <h2>参与者矩阵与单人全模块档案</h2>
+            <p>按用户ID检索，在同一处查看测评、情绪日记、训练、项目、关系试点、人工支持和消息。</p>
+          </div>
+          <form
+            className="participantSearch"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void searchParticipants();
+            }}
+          >
+            <label>
+              <span>用户ID或昵称</span>
+              <input value={participantSearch} onChange={(event) => setParticipantSearch(event.target.value)} placeholder="输入用户ID" />
+            </label>
+            <button className="primaryButton" type="submit">查找</button>
+          </form>
+        </div>
+        <div className="participantWorkspaceGrid">
+          <div className="participantMatrixList">
+            {participantMatrix.map((item) => (
+              <button
+                type="button"
+                key={item.user_id}
+                className={`participantMatrixRow ${participantDossier?.participant.user_id === item.user_id ? "active" : ""}`}
+                onClick={() => void selectParticipant(item.user_id)}
+              >
+                <span className="participantIdentity">
+                  <strong>{item.nickname || "未设置昵称"}</strong>
+                  <small>{item.user_id}</small>
+                </span>
+                <span className="participantCounts">
+                  测评 {item.assessment_count} · 日记 {item.diary_count} · 训练 {item.checkin_count} · 项目 {item.program_count}
+                </span>
+                <span className="participantAttention">
+                  {item.supervision_count ? `人工支持 ${item.supervision_count}` : "暂无人工支持"}
+                </span>
+              </button>
+            ))}
+            {!participantMatrix.length ? <div className="emptyState">当前授权范围内没有匹配的参与者。</div> : null}
+          </div>
+          <div className="participantDossier">
+            {participantDossier ? (
+              <>
+                <div className="participantDossierHead">
+                  <div>
+                    <h3>{participantDossier.participant.nickname || "参与者档案"}</h3>
+                    <p>{participantDossier.participant.user_id}</p>
+                  </div>
+                  <span className="countBadge">审计事件 {participantDossier.audit_summary.related_event_count}</span>
+                </div>
+                <div className="dossierMetricGrid">
+                  <DossierMetric label="测评" value={participantDossier.modules.assessments?.length || 0} />
+                  <DossierMetric label="情绪日记" value={participantDossier.modules.diaries?.length || 0} />
+                  <DossierMetric label="训练" value={participantDossier.modules.checkins?.length || 0} />
+                  <DossierMetric label="项目练习" value={participantDossier.modules.program_entries?.length || 0} />
+                  <DossierMetric label="关系试点" value={participantDossier.modules.relationship_enrollments?.length || 0} />
+                  <DossierMetric label="人工支持" value={participantDossier.modules.supervision_requests?.length || 0} />
+                </div>
+                <DossierModuleSection title="测评记录" items={participantDossier.modules.assessments} primaryKeys={["worksheet_title", "total_score", "created_at"]} />
+                <DossierModuleSection title="情绪日记" items={participantDossier.modules.diaries} primaryKeys={["scene", "event_description", "parent_emotion", "created_at"]} />
+                <DossierModuleSection title="训练打卡" items={participantDossier.modules.checkins} primaryKeys={["card_id", "completed", "emotion_before", "emotion_after", "helpfulness_rating", "created_at"]} />
+                <DossierModuleSection title="项目练习" items={participantDossier.modules.program_entries} primaryKeys={["program_title", "session_no", "reflection", "created_at"]} />
+                <DossierModuleSection title="关系试点报名" items={participantDossier.modules.relationship_enrollments} primaryKeys={["status", "review_status", "created_at"]} />
+                <DossierModuleSection title="关系试点任务" items={participantDossier.modules.relationship_tasks} primaryKeys={["task_type", "narration", "risk_level", "review_status", "created_at"]} />
+                <DossierModuleSection title="关系阶段报告" items={participantDossier.modules.relationship_reports} primaryKeys={["version", "status", "confirmed_at", "created_at"]} />
+                <DossierModuleSection title="人工支持" items={participantDossier.modules.supervision_requests} primaryKeys={["source_title", "message", "supervisor_reply", "status", "created_at"]} />
+                <DossierModuleSection title="消息与阶段反馈" items={participantDossier.modules.messages} primaryKeys={["title", "body", "status", "created_at"]} />
+                <p className="analysisBoundary">{participantDossier.boundary_notice}</p>
+              </>
+            ) : (
+              <div className="emptyState">从左侧选择一位参与者查看档案。</div>
+            )}
+          </div>
+        </div>
+      </section>
+
       <section className="guidanceBox" aria-label="亲密关系项目试点档案">
         <div className="sectionTitleRow">
           <h2>亲密关系项目试点</h2>
@@ -421,7 +549,7 @@ export function ResearchDashboard() {
                 onChange={(event) => void selectRelationshipEnrollment(event.target.value)}
               >
                 {state.relationshipEnrollments.map((item) => (
-                  <option key={item.id} value={item.id}>{item.nickname || item.user_id} · {item.review_status}</option>
+                  <option key={item.id} value={item.id}>{item.nickname || item.user_id} · {displayStatus(item.review_status)}</option>
                 ))}
               </select>
             </label>
@@ -566,7 +694,7 @@ export function ResearchDashboard() {
           </div>
           {latestGoal ? (
             <div className="overviewBlock">
-              <span className="recordMeta">{formatTime(latestGoal.created_at)} · {latestGoal.status}</span>
+              <span className="recordMeta">{formatTime(latestGoal.created_at)} · {displayStatus(latestGoal.status)}</span>
               <h3>{latestGoal.scene}</h3>
               <p>{latestGoal.smart_goal}</p>
               <p className="muted">{latestGoal.motivation || "未填写练习动机"}</p>
@@ -625,6 +753,112 @@ export function ResearchDashboard() {
   );
 }
 
+function DossierMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="dossierMetric">
+      <strong>{value}</strong>
+      <span>{label}</span>
+    </div>
+  );
+}
+
+const DOSSIER_FIELD_LABELS: Record<string, string> = {
+  worksheet_title: "测评",
+  total_score: "记录值",
+  card_id: "训练卡",
+  completed: "是否完成",
+  emotion_before: "练习前感受",
+  emotion_after: "练习后感受",
+  helpfulness_rating: "帮助程度",
+  scene: "场景",
+  event_description: "事件",
+  parent_emotion: "主要情绪",
+  program_title: "项目",
+  session_no: "节次",
+  reflection: "反思",
+  review_status: "复核进度",
+  task_type: "任务类型",
+  narration: "参与者补充",
+  risk_level: "风险提示",
+  version: "报告版本",
+  confirmed_at: "确认时间",
+  source_title: "关联记录",
+  message: "参与者说明",
+  supervisor_reply: "人工反馈",
+  title: "标题",
+  body: "内容",
+  status: "状态",
+  created_at: "时间",
+};
+
+const DOSSIER_VALUE_LABELS: Record<string, string> = {
+  pending: "待处理",
+  replied: "已回复",
+  closed: "已关闭",
+  unread: "未读",
+  read: "已读",
+  completed: "已完成",
+  paused: "已暂停",
+  active: "进行中",
+  pending_review: "待人工复核",
+  priority_review: "优先复核",
+  recorded: "已记录",
+  ready: "可确认",
+  confirmed: "已确认",
+  sent: "已发送",
+  updated: "有新版本",
+  relationship_drawing: "关系绘画",
+  sentence_completion: "情境句子补全",
+  low: "常规关注",
+  medium: "建议人工关注",
+  high: "优先人工处理",
+  true: "已完成",
+  false: "未完成",
+};
+
+function dossierValue(value: unknown) {
+  if (value === null || value === undefined || value === "") return "未填写";
+  const raw = String(value);
+  return DOSSIER_VALUE_LABELS[raw] || raw;
+}
+
+function DossierModuleSection({
+  title,
+  items = [],
+  primaryKeys,
+}: {
+  title: string;
+  items?: Array<Record<string, unknown>>;
+  primaryKeys: string[];
+}) {
+  return (
+    <section className="dossierModule">
+      <div className="sectionTitleRow">
+        <h4>{title}</h4>
+        <span className="countBadge">{items.length} 条</span>
+      </div>
+      {items.length ? (
+        <div className="dossierModuleList">
+          {items.slice(0, 20).map((item, index) => (
+            <article className="dossierRecord" key={String(item.id || index)}>
+              {primaryKeys.map((key) =>
+                item[key] !== undefined && item[key] !== null && item[key] !== "" ? (
+                  <div className="dossierField" key={key}>
+                    <span>{DOSSIER_FIELD_LABELS[key] || key}</span>
+                    <p>{dossierValue(item[key])}</p>
+                  </div>
+                ) : null,
+              )}
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="emptyState">暂无{title}。</p>
+      )}
+    </section>
+  );
+}
+
 function MetricCard({ label, value }: { label: string; value: number }) {
   return (
     <article className="metricCard">
@@ -655,7 +889,7 @@ function AnalysisCard({
       <h3>{title}</h3>
       <p>{description}</p>
       <dl>
-        <div><dt>质量状态</dt><dd>{status}</dd></div>
+        <div><dt>质量状态</dt><dd>{displayQualityStatus(status)}</dd></div>
         <div><dt>有效记录</dt><dd>{Number.isFinite(count) ? count : 0}</dd></div>
         <div><dt>隐私门禁</dt><dd>{privacyPassed ? "通过" : "待验证"}</dd></div>
       </dl>

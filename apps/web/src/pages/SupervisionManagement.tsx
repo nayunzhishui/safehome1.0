@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
 import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
+import { displayRisk, displayStatus } from "../utils/displayLabels";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
 
@@ -207,7 +208,7 @@ export function SupervisionManagement() {
                   type="button"
                   onClick={() => setState((current) => ({ ...current, selectedId: request.id }))}
                 >
-                  <span className="recordScene">{request.status || "pending"}</span>
+                  <span className="recordScene">{displayStatus(request.status)}</span>
                   <span className="recordDescription">{request.message || "未填写内容"}</span>
                   <span className="recordMeta">
                     {request.user_id || "未知用户"} · {formatDateTime(request.created_at)}
@@ -231,8 +232,8 @@ export function SupervisionManagement() {
               <DetailRow label="提交内容" value={selectedRequest.message} />
               <DetailRow label="联系方式" value={selectedRequest.contact} />
               <DetailRow label="风险提示" value={selectedRequest.risk_hint} />
-              <DetailRow label="风险等级" value={selectedRequest.risk_level} />
-              <DetailRow label="当前状态" value={selectedRequest.status} />
+              <DetailRow label="风险等级" value={displayRisk(selectedRequest.risk_level)} />
+              <DetailRow label="当前状态" value={displayStatus(selectedRequest.status)} />
               <DetailRow label="人工回复" value={selectedRequest.supervisor_reply} />
               <DetailRow label="提交时间" value={formatDateTime(selectedRequest.created_at)} />
               <DetailRow label="回复时间" value={formatDateTime(selectedRequest.replied_at)} />

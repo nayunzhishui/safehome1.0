@@ -25,6 +25,11 @@ def create_supervision_request():
         return auth_error_response(exc)
     timestamp = now_iso()
     request_id = new_id("supervision")
+    source_type = str(payload.get("source_type") or "").strip()
+    source_id = str(payload.get("source_id") or payload.get("diary_id") or "").strip()
+    source_title = str(payload.get("source_title") or "").strip()[:120]
+    if source_type not in {"", "diary", "assessment"}:
+        return fail("invalid_source_type", "关联记录类型不受支持。", status=400)
     risk_result = check_text_risk([payload.get("message"), payload.get("risk_hint")], source="supervision")
     stored_risk_level = risk_result.get("risk_level", "low")
     if stored_risk_level == "low":
@@ -32,18 +37,37 @@ def create_supervision_request():
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
+        if source_type == "diary":
+            source_row = conn.execute(
+                "SELECT id, scene FROM emotion_diaries WHERE id = ? AND user_id = ?",
+                (source_id, user_id),
+            ).fetchone()
+            if source_row is None:
+                return fail("source_not_found", "没有找到可关联的情绪日记。", status=404)
+            source_title = source_title or f"情绪日记 · {source_row['scene'] or '具体事件'}"
+        elif source_type == "assessment":
+            source_row = conn.execute(
+                "SELECT id, worksheet_title FROM assessment_results WHERE id = ? AND user_id = ?",
+                (source_id, user_id),
+            ).fetchone()
+            if source_row is None:
+                return fail("source_not_found", "没有找到可关联的测评记录。", status=404)
+            source_title = source_title or f"测一测 · {source_row['worksheet_title'] or '支持性测评'}"
         conn.execute(
             """
             INSERT INTO supervision_requests (
-                id, user_id, diary_id, message, contact, risk_hint,
-                risk_level, status, created_at
+                id, user_id, diary_id, source_type, source_id, source_title,
+                message, contact, risk_hint, risk_level, status, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
             """,
             (
                 request_id,
                 user_id,
-                payload.get("diary_id"),
+                source_id if source_type == "diary" else None,
+                source_type or None,
+                source_id or None,
+                source_title or None,
                 payload["message"],
                 payload.get("contact"),
                 payload.get("risk_hint"),

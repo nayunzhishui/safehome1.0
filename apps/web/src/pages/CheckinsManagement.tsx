@@ -169,8 +169,8 @@ export function CheckinsManagement() {
             <div className="detailContent">
               <DetailRow label="家长用户" value={selectedCheckin.user_id} />
               <DetailRow label="训练卡" value={cardTitleById.get(selectedCheckin.card_id) ?? selectedCheckin.card_id} />
-              <DetailRow label="训练卡 ID" value={selectedCheckin.card_id} />
-              <DetailRow label="关联记录 ID" value={selectedCheckin.diary_id} />
+              <DetailRow label="训练卡技术标识（仅研究）" value={selectedCheckin.card_id} />
+              <DetailRow label="关联记录技术标识（仅研究）" value={selectedCheckin.diary_id} />
               <DetailRow label="记录状态" value={selectedCheckin.completed === 1 ? "已记录尝试" : "这次还没有完整记录"} />
               <DetailRow label="练习前情绪强度" value={selectedCheckin.emotion_before} />
               <DetailRow label="练习后情绪强度" value={selectedCheckin.emotion_after} />

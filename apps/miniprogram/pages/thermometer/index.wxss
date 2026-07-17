@@ -109,31 +109,53 @@
 .thermometer-actions {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
-  gap: 18rpx;
+  gap: 14rpx;
+}
+
+.step-button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
 }
 
 .step-button {
-  width: 76rpx;
-  height: 76rpx;
+  width: 100%;
+  min-width: 68rpx;
+  height: 72rpx;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1rpx solid var(--safe-border-strong);
-  border-radius: 50%;
-  background: var(--safe-primary-soft);
+  border-radius: 24rpx;
+  background: var(--safe-card);
   color: var(--safe-primary-deep);
-  font-size: 38rpx;
+  font-size: 36rpx;
   font-weight: 900;
-  line-height: 76rpx;
+  line-height: 1;
+  box-shadow: 0 6rpx 14rpx rgba(52, 66, 58, 0.07);
+}
+
+.step-button--increase {
+  border-color: var(--safe-primary);
+  background: var(--safe-primary-soft);
+}
+
+.step-button::after {
+  border: 0;
+}
+
+.step-button:active {
+  transform: scale(0.96);
 }
 
 .step-label {
-  color: var(--safe-text);
-  font-size: 24rpx;
+  color: var(--safe-muted);
+  font-size: 22rpx;
   line-height: 1.5;
+  text-align: center;
 }
 
 .brief-input {
@@ -214,12 +236,23 @@
 }
 
 .refresh-button {
-  padding: 12rpx 24rpx;
+  min-width: 112rpx;
+  min-height: 64rpx;
+  padding: 0 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1rpx solid var(--safe-border-strong);
   border-radius: var(--safe-radius-pill);
+  background: var(--safe-card);
   color: var(--safe-primary-deep);
   font-size: 24rpx;
   font-weight: 800;
+  line-height: 1;
+}
+
+.refresh-button::after {
+  border: 0;
 }
 
 .curve-canvas {

@@ -4,6 +4,8 @@ import assessmentTrainingMap from "../../../../content/assessment_training_map.j
 import diaryTrainingMap from "../../../../content/diary_training_map.json";
 import feedbackRules from "../../../../content/feedback_rules.json";
 import studentProfileRules from "../../../../content/student_profile_rules.json";
+import trainingCardsContent from "../../../../content/training_cards.json";
+import { displayRisk, displaySourceType, displayStatus } from "../utils/displayLabels";
 
 type RiskLevel = "low" | "medium" | "high";
 type RuleTab = "feedback" | "profile" | "assessmentTraining" | "diaryTraining";
@@ -90,6 +92,13 @@ const rulesContent = feedbackRules as FeedbackRulesContent;
 const profileRulesContent = studentProfileRules as StudentProfileRulesContent;
 const assessmentTrainingContent = assessmentTrainingMap as TrainingMapContent;
 const diaryTrainingContent = diaryTrainingMap as TrainingMapContent;
+const trainingCardTitles = new Map(
+  trainingCardsContent.cards.map((card) => [card.id, card.title]),
+);
+
+function trainingCardNames(ids: string[]) {
+  return ids.map((id) => trainingCardTitles.get(id) || "待核对的训练卡").join("、");
+}
 
 function displayText(value?: string | number | null) {
   if (value === undefined || value === null || value === "") {
@@ -193,7 +202,7 @@ export function RulesManagement() {
             <MetricCard label="画像规则" value={profileRulesContent.rules.length} />
             <MetricCard label="启用规则" value={enabledProfileRules.length} />
             <MetricCard label="推荐卡片" value={profileRecommendedCardIds.size} />
-            <MetricCard label="规则状态" value={profileRulesContent.review_status} />
+            <MetricCard label="规则状态" value={displayStatus(profileRulesContent.review_status)} />
           </>
         ) : null}
         {activeTab === "assessmentTraining" ? (
@@ -269,7 +278,7 @@ function FeedbackRulesView({
                   <span className="recordScene">{rule.label}</span>
                   <span className="recordDescription">{rule.explanation}</span>
                 <span className="recordMeta">
-                    风险提示 {riskLabel(rule.risk_level)} · {rule.review_status || "未标记"} · 推荐 {rule.recommended_card_ids.length} 张训练卡
+                    {displayRisk(rule.risk_level)} · {displayStatus(rule.review_status)} · 推荐 {rule.recommended_card_ids.length} 张训练卡
                   </span>
                 </button>
               ))}
@@ -289,12 +298,12 @@ function FeedbackRulesView({
               <DetailRow label="风险提示" value={riskLabel(selectedRule.risk_level)} />
               <DetailRow label="内容版本" value={selectedRule.version} />
               <DetailRow label="理论来源" value={selectedRule.theory_source} />
-              <DetailRow label="审核状态" value={selectedRule.review_status} />
+              <DetailRow label="审核状态" value={displayStatus(selectedRule.review_status)} />
               <DetailRow label="启用状态" value={selectedRule.enabled === false ? "停用" : "启用"} />
               <DetailRow label="规则解释" value={selectedRule.explanation} />
               <DetailRow label="支持性反馈" value={selectedRule.supportive_feedback} />
               <DetailRow label="边界说明" value={selectedRule.boundary_notice} />
-              <DetailRow label="推荐训练卡" value={selectedRule.recommended_card_ids.join("、")} />
+              <DetailRow label="推荐训练卡" value={trainingCardNames(selectedRule.recommended_card_ids)} />
 
               <section className="guidanceBox" aria-label="展示边界提示">
                 <h3>展示边界</h3>
@@ -350,10 +359,10 @@ function TrainingMapRulesView({
                 type="button"
                 onClick={() => setSelectedRuleId(rule.rule_id)}
               >
-                <span className="recordScene">{rule.rule_id}</span>
+                <span className="recordScene">{rule.theme.join(" · ") || "推荐规则"}</span>
                 <span className="recordDescription">{rule.reason}</span>
                 <span className="recordMeta">
-                  {rule.source_type} · {rule.review_status} · 推荐 {rule.recommended_card_ids.length} 张训练卡
+                  {displaySourceType(rule.source_type)} · {displayStatus(rule.review_status)} · 推荐 {rule.recommended_card_ids.length} 张训练卡
                 </span>
               </button>
             ))}
@@ -369,11 +378,11 @@ function TrainingMapRulesView({
 
         {selectedRule ? (
           <div className="detailContent">
-            <DetailRow label="规则来源" value={selectedRule.source_type} />
-            <DetailRow label="审核状态" value={selectedRule.review_status} />
+            <DetailRow label="规则来源" value={displaySourceType(selectedRule.source_type)} />
+            <DetailRow label="审核状态" value={displayStatus(selectedRule.review_status)} />
             <DetailRow label="触发条件" value={JSON.stringify(selectedRule.trigger_condition)} />
             <DetailRow label="主题" value={selectedRule.theme.join("、")} />
-            <DetailRow label="推荐训练卡" value={selectedRule.recommended_card_ids.join("、")} />
+            <DetailRow label="推荐训练卡" value={trainingCardNames(selectedRule.recommended_card_ids)} />
             <DetailRow label="推荐理由" value={selectedRule.reason} />
             <DetailRow label="今日建议" value={selectedRule.today_suggestion} />
             <DetailRow label="长期建议" value={selectedRule.long_term_suggestion || "情绪日记规则不生成长期建议"} />
@@ -425,7 +434,7 @@ function ProfileRulesView({
                 <span className="recordScene">{rule.profile_name}</span>
                 <span className="recordDescription">{rule.content?.explanation || "暂无解释摘要"}</span>
                 <span className="recordMeta">
-                  {rule.profile_code} · {rule.enabled ? "已启用" : "停用"} · 推荐 {rule.recommended_card_ids.length} 张训练卡
+                  {rule.enabled ? "已启用" : "停用"} · 推荐 {rule.recommended_card_ids.length} 张训练卡
                 </span>
               </button>
             ))}
@@ -442,12 +451,12 @@ function ProfileRulesView({
         {selectedProfileRule ? (
           <div className="detailContent">
             <DetailRow label="画像名称" value={selectedProfileRule.profile_name} />
-            <DetailRow label="画像编码" value={selectedProfileRule.profile_code} />
+            <DetailRow label="技术标识（仅研究）" value={selectedProfileRule.profile_code} />
             <DetailRow label="启用状态" value={selectedProfileRule.enabled ? "已启用" : "停用"} />
             <DetailRow label="风险提示" value={riskLabel(selectedProfileRule.risk_level)} />
             <DetailRow label="人工关注" value={selectedProfileRule.requires_review ? "需要" : "暂不需要"} />
             <DetailRow label="触发摘要" value={triggerSummary(selectedProfileRule)} />
-            <DetailRow label="推荐训练卡" value={selectedProfileRule.recommended_card_ids.join("、")} />
+            <DetailRow label="推荐训练卡" value={trainingCardNames(selectedProfileRule.recommended_card_ids)} />
 
             <section className="guidanceBox" aria-label="画像维度">
               <h3>维度摘要</h3>

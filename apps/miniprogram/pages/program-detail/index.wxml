@@ -78,7 +78,17 @@
 
     <view class="section-block">
       <text class="section-title">反思问题</text>
-      <view wx:for="{{selectedSession.reflection_questions}}" wx:key="*this" class="question-row">{{item}}</view>
+      <view wx:for="{{selectedSession.reflection_questions}}" wx:key="*this" class="reflection-field">
+        <text class="question-row">{{index + 1}}. {{item}}</text>
+        <textarea
+          wx:if="{{!previewMode}}"
+          class="reflection-input"
+          value="{{reflectionAnswers[index]}}"
+          data-index="{{index}}"
+          placeholder="可以写一句真实感受，也可以先留空，稍后再补。"
+          bindinput="onReflectionInput"
+        />
+      </view>
     </view>
 
     <view class="session-disclaimer">{{selectedSession.disclaimer}}</view>
@@ -105,6 +115,18 @@
       <view wx:if="{{successMessage}}" class="status success">{{successMessage}}</view>
       <view wx:if="{{errorMessage}}" class="status error">{{errorMessage}}</view>
       <button class="safe-primary-button" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitEntry">登录后正式提交</button>
+    </view>
+  </view>
+
+  <view wx:if="{{!previewMode && submittedEntries.length}}" class="safe-card history-card">
+    <text class="safe-h3">我已提交的项目记录</text>
+    <text class="safe-caption">提交内容会保留在本人记录中，并按授权范围供研究者只读查看。</text>
+    <view wx:for="{{submittedEntries}}" wx:key="id" class="history-row">
+      <view class="history-copy">
+        <text class="history-title">{{item.sessionText}} · {{item.createdAtText}}</text>
+        <text class="history-text">{{item.reflection || '已完成本节填写'}}</text>
+      </view>
+      <text class="history-status">已提交</text>
     </view>
   </view>
 </view>

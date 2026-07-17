@@ -1,0 +1,62 @@
+<view class="safe-page growth-dashboard-page">
+  <view class="safe-card safe-card--hero growth-hero">
+    <text class="growth-kicker">把变化留在时间里</text>
+    <text class="growth-title">我的成长仪表盘</text>
+    <text class="growth-copy">记录、练习、测评和人工反馈分开呈现，让每个数字保留自己的含义。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-card state-card">正在整理你的记录...</view>
+  <view wx:elif="{{errorMessage}}" class="safe-card state-card error-text">
+    <text>{{errorMessage}}</text>
+    <button class="safe-outline-button retry-button" bindtap="loadGrowth">重新读取</button>
+  </view>
+  <view wx:elif="{{growth}}" class="growth-content">
+    <view class="summary-grid">
+      <view class="summary-item"><text class="summary-value">{{growth.summary.record_count}}</text><text class="summary-label">观察与练习</text></view>
+      <view class="summary-item"><text class="summary-value">{{growth.summary.practice_count}}</text><text class="summary-label">完成练习</text></view>
+      <view class="summary-item"><text class="summary-value">{{growth.summary.feedback_count}}</text><text class="summary-label">人工反馈</text></view>
+    </view>
+
+    <view class="safe-card next-step-card">
+      <text class="section-eyebrow">现在可以做什么</text>
+      <text class="next-step-copy">{{growth.summary.next_step}}</text>
+    </view>
+
+    <view class="safe-card dashboard-section">
+      <view class="section-heading"><view><text class="section-title">情绪温度</text><text class="section-copy">1—10分，只与同一量尺的记录比较</text></view><text class="count-pill">{{thermometer.length}} 次</text></view>
+      <view wx:if="{{thermometer.length}}" class="thermometer-list">
+        <view wx:for="{{thermometer}}" wx:key="id" class="thermometer-row">
+          <view class="thermometer-meta"><text>{{item.dateText}}</text><text>{{item.emotion_label || "一次温度记录"}} · {{item.intensity_level}}</text></view>
+          <view class="bar-track"><view class="bar-fill" style="width: {{item.width}};"></view></view>
+        </view>
+      </view>
+      <text wx:else class="empty-copy">还没有情绪温度记录。第一次记录只作为起点，不判断趋势。</text>
+    </view>
+
+    <view class="safe-card dashboard-section">
+      <view class="section-heading"><view><text class="section-title">支持性测评</text><text class="section-copy">每份量表独立查看，不把不同分值放在同一条曲线上</text></view></view>
+      <view wx:if="{{assessmentGroups.length}}" class="assessment-list">
+        <view wx:for="{{assessmentGroups}}" wx:key="worksheet_id" class="assessment-group">
+          <text class="assessment-title">{{item.title}}</text>
+          <view class="assessment-values">
+            <text wx:for="{{item.items}}" wx:for-item="score" wx:key="id" class="assessment-value">{{score.dateText}} · 记录值 {{score.value}}</text>
+          </view>
+        </view>
+      </view>
+      <text wx:else class="empty-copy">还没有可汇总的支持性测评。</text>
+    </view>
+
+    <view class="safe-card dashboard-section">
+      <view class="section-heading"><view><text class="section-title">成长时间线</text><text class="section-copy">按时间回看自己做过的记录、练习与收到的反馈</text></view></view>
+      <view wx:if="{{timeline.length}}" class="timeline-list">
+        <view wx:for="{{timeline}}" wx:key="id" class="timeline-item">
+          <view class="timeline-dot"></view>
+          <view class="timeline-body"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.type_label}}</text></view><text class="timeline-summary">{{item.summary}}</text><text class="timeline-date">{{item.dateText}}</text></view>
+        </view>
+      </view>
+      <text wx:else class="empty-copy">完成一次记录后，这里会形成你的第一条时间线。</text>
+    </view>
+
+    <view class="boundary-card"><text>{{growth.boundary_notice}}</text></view>
+  </view>
+</view>

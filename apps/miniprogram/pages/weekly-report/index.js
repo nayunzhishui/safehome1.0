@@ -3,9 +3,27 @@ const { requireLogin } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
 
+const DISPLAY_LABELS = {
+  general_support: "一般支持线索",
+  high_demand_language: "要求较密集",
+  repeated_prompting: "重复提醒",
+  one_open_question: "一次只问一个开放问题",
+  validation_before_advice: "先回应感受，再讨论办法",
+  emotion_naming: "给情绪起一个名字",
+  nonjudgmental_response: "减少判断，先描述事实",
+};
+
+function userLabel(value, fallback = "可继续观察的线索") {
+  const key = String(value || "").trim();
+  if (!key) return fallback;
+  if (DISPLAY_LABELS[key]) return DISPLAY_LABELS[key];
+  if (/^[a-z0-9_:-]+$/i.test(key)) return fallback;
+  return key;
+}
+
 function formatPairs(items = []) {
   return items.map((item) => ({
-    name: item[0],
+    name: userLabel(item[0]),
     count: item[1],
   }));
 }
@@ -71,7 +89,7 @@ Page({
         frequentScenes: formatPairs(report.frequent_scenes || []),
         frequentEmotions: formatPairs(report.frequent_emotions || []),
         commonPatterns: formatPairs(report.common_patterns || []),
-        completedCardsText: (report.completed_cards || []).join("、"),
+        completedCardsText: (report.completed_cards || []).map((item) => userLabel(item, "已完成一项练习")).join("、"),
         profileTrendNamesText: ((report.profile_trend && report.profile_trend.profile_names) || [])
           .map((item) => `${item[0]} ${item[1]} 次`)
           .join("、"),
@@ -79,7 +97,9 @@ Page({
           .map((item) => `${item[0]} ${item[1]} 次`)
           .join("、"),
         dimensionGroups: formatDimensionSummaries((report.assessment_summary && report.assessment_summary.dimension_summaries) || []),
-        recommendedCardsText: ((report.assessment_summary && report.assessment_summary.recommended_card_ids) || []).join("、"),
+        recommendedCardsText: ((report.assessment_summary && report.assessment_summary.recommended_card_ids) || [])
+          .map((item) => userLabel(item, "适合当前阶段的小练习"))
+          .join("、"),
         thermometerDetailText: this.formatThermometerDetail(report.thermometer_summary || report.thermometer_trend),
         trainingEffectivenessText: this.formatTrainingEffectiveness(report.training_effectiveness_summary),
         loading: false,
@@ -115,7 +135,7 @@ Page({
     const first = perCard[0];
     const delta = first.average_intensity_delta;
     const deltaText = delta < 0 ? `平均下降 ${Math.abs(delta)} 分` : delta > 0 ? `平均上升 ${delta} 分` : "平均变化不大";
-    return `${first.card_id}：${deltaText}，${first.sample_note}`;
+    return `${userLabel(first.card_id, "本次练习")}：${deltaText}，${first.sample_note}`;
   },
 
   goHome() {

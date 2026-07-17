@@ -33,8 +33,8 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_15_007"
-CURRENT_SCHEMA_NAME = "relationship_researcher_assignment"
+CURRENT_SCHEMA_VERSION = "2026_07_17_008"
+CURRENT_SCHEMA_NAME = "supervision_source_link"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -708,6 +708,14 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in message_columns.items():
         ensure_column(conn, "messages", column, definition)
+
+    supervision_columns = {
+        "source_type": "TEXT",
+        "source_id": "TEXT",
+        "source_title": "TEXT",
+    }
+    for column, definition in supervision_columns.items():
+        ensure_column(conn, "supervision_requests", column, definition)
 
 
 def _normalize_assessment_profile_cluster(conn) -> None:

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
 import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
+import { displayRisk } from "../utils/displayLabels";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
 
@@ -246,7 +247,7 @@ export function FeedbackManagement() {
                   type="button"
                   onClick={() => setState((current) => ({ ...current, selectedId: item.id }))}
                 >
-                  <span className="recordScene">{item.risk_level || "low"}</span>
+                  <span className="recordScene">{displayRisk(item.risk_level)}</span>
                   <span className="recordDescription">{item.pattern_summary || item.supportive_feedback || "未填写反馈内容"}</span>
                   <span className="recordMeta">
                     {item.user_id || "未知用户"} · {formatDateTime(item.created_at)}
@@ -273,7 +274,7 @@ export function FeedbackManagement() {
               <DetailRow label="支持性反馈" value={selectedFeedback.supportive_feedback} />
               <DetailRow label="替代回应" value={selectedFeedback.alternative_response} />
               <DetailRow label="推荐训练卡" value={feedbackRecommendedCardsText(selectedFeedback)} />
-              <DetailRow label="风险提示" value={selectedFeedback.risk_level} />
+              <DetailRow label="风险提示" value={displayRisk(selectedFeedback.risk_level)} />
               <DetailRow label="创建时间" value={formatDateTime(selectedFeedback.created_at)} />
 
               <section className="guidanceBox" aria-label="下一步行动">

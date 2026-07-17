@@ -15,8 +15,24 @@
 
   <view class="form-card">
     <view class="field linked-record">
-      <text class="label">关联记录</text>
-      <text class="meta-text">{{diaryId || '未关联具体记录，可单独提交'}}</text>
+      <text class="label">选择想请老师一起看的记录</text>
+      <text class="meta-text">可选一条自己的情绪日记或测一测记录；不选择也可以提交。</text>
+      <scroll-view scroll-y class="source-list">
+        <button
+          wx:for="{{sourceOptions}}"
+          wx:key="id"
+          class="source-option {{item.selected ? 'source-option--active' : ''}}"
+          data-type="{{item.type}}"
+          data-id="{{item.id}}"
+          bindtap="selectSource"
+        >
+          <view class="source-copy">
+            <text class="source-title">{{item.title}}</text>
+            <text class="source-meta">{{item.meta}}</text>
+          </view>
+          <text class="source-check">{{item.selected ? '已选择' : '选择'}}</text>
+        </button>
+      </scroll-view>
     </view>
 
     <view class="field">

@@ -40,6 +40,7 @@ export const API_ENDPOINTS = {
   modelInfo: "/api/model/info",
   checkins: "/api/checkins",
   weeklyReport: "/api/weekly-report",
+  growthOverview: "/api/growth/overview",
   supervision: "/api/supervision",
   adminExport: "/api/admin/export",
   privacyConsentStatus: "/api/privacy/consent-status",
@@ -62,6 +63,7 @@ export const API_ENDPOINTS = {
   familyMembers: "/api/family/members",
   familyUnbind: "/api/family/unbind",
   relationshipPilot: "/api/relationship-pilot",
+  researchParticipants: "/api/research/participants",
   productEvents: "/api/product-events",
 } as const;
 

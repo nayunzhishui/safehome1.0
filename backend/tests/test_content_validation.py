@@ -41,6 +41,20 @@ def test_current_content_validation_passes():
     assert errors == []
 
 
+def test_training_cards_keep_low_load_and_safety_contract():
+    payload = json.loads((CONTENT_ROOT / "training_cards.json").read_text(encoding="utf-8"))
+
+    assert len(payload["cards"]) == 42
+    for card in payload["cards"]:
+        assert 1 <= card["duration_minutes"] <= 10, card["id"]
+        assert 2 <= len(card["steps"]) <= 4, card["id"]
+        assert card["boundary_notice"], card["id"]
+        assert card["completion_criteria"], card["id"]
+        assert card["stop_rules"], card["id"]
+        assert card["release_policy"] in {"shared_choice_candidate", "manual_context_required"}, card["id"]
+        assert card["governance_review_status"] == "manual_review_required", card["id"]
+
+
 def test_missing_training_card_title_reports_specific_field(tmp_path):
     validator = _validator()
     content_dir = tmp_path / "content"

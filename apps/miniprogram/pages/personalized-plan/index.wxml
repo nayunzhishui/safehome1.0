@@ -65,6 +65,10 @@
       bindinput="onGoalInput"
     />
     <button class="safe-primary-button" loading="{{savingAssignment}}" bindtap="saveAssignment">保存练习节奏</button>
+    <view wx:if="{{assignment.due_reason}}" class="cadence-summary {{assignment.is_due_today ? 'cadence-summary--due' : ''}}">
+      <text class="cadence-summary-title">{{assignment.is_due_today ? '今天可以练一次' : assignment.cadence_label}}</text>
+      <text class="cadence-summary-text">{{assignment.due_reason}}</text>
+    </view>
     <text class="item-boundary">{{assignment.boundary_notice || '练习节奏由用户自行设置，研究者共同确认前不代表正式干预安排。'}}</text>
   </view>
 
@@ -104,8 +108,8 @@
   </view>
 
   <view wx:if="{{!loading && plan && plan.has_assessment && !planItems.length}}" class="safe-card empty-card">
-    <text class="safe-h3">暂未匹配到训练卡</text>
-    <text class="safe-body">可以先从通用训练里选择一张最容易完成的卡。</text>
+    <text class="safe-h3">{{plan.assignment && !plan.assignment.is_due_today ? '今天不用赶进度' : '暂未匹配到训练卡'}}</text>
+    <text class="safe-body">{{plan.assignment && !plan.assignment.is_due_today ? plan.assignment.due_reason : '可以先从通用训练里选择一张最容易完成的卡。'}}</text>
   </view>
 
   <view class="boundary-note">{{boundaryNotice}}</view>

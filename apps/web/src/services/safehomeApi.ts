@@ -54,6 +54,33 @@ export interface SafeHomeApiClientOptions {
   defaultUserId?: string;
 }
 
+export interface ResearchParticipantSummary {
+  user_id: string;
+  nickname?: string | null;
+  role: string;
+  last_activity_at?: string | null;
+  assessment_count: number;
+  diary_count: number;
+  checkin_count: number;
+  program_count: number;
+  relationship_count: number;
+  supervision_count: number;
+  unread_message_count: number;
+}
+
+export interface ResearchParticipantDossier {
+  participant: {
+    user_id: string;
+    nickname?: string | null;
+    role: string;
+    created_at?: string;
+    updated_at?: string;
+  };
+  modules: Record<string, Array<Record<string, unknown>>>;
+  audit_summary: { related_event_count: number };
+  boundary_notice: string;
+}
+
 export class SafeHomeApiError extends Error {
   code: string;
   status: number;
@@ -345,6 +372,21 @@ export class SafeHomeApiClient {
 
   getRelationshipResearchDashboard(adminToken?: string): Promise<ListResponse<RelationshipPilotEnrollment> & { boundary_notice?: string }> {
     return this.requestData(`${API_ENDPOINTS.relationshipPilot}/researcher/dashboard`, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  listResearchParticipants(
+    params: { q?: string; limit?: number } = {},
+    adminToken?: string,
+  ): Promise<ListResponse<ResearchParticipantSummary> & { scope: string; boundary_notice: string }> {
+    return this.requestData(this.withQuery(API_ENDPOINTS.researchParticipants, params), {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  getResearchParticipant(userId: string, adminToken?: string): Promise<ResearchParticipantDossier> {
+    return this.requestData(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}`, {
       headers: this.adminHeaders(adminToken),
     });
   }

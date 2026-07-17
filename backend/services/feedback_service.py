@@ -1,7 +1,7 @@
 """Rule-based non-diagnostic feedback generation."""
 
 from database import load_content_json
-from services.card_service import get_card_ids, recommend_cards
+from services.card_service import get_card_ids, list_cards, recommend_cards
 
 RISK_ORDER = {"low": 0, "medium": 1, "high": 2}
 
@@ -94,9 +94,9 @@ def generate_feedback(payload: dict) -> dict:
             {
                 "id": "general_support",
                 "label": "一般情绪记录",
-                "explanation": "这次记录提供了一个观察亲子互动的入口。第一步不是判断谁对谁错，而是看见当时的情绪、想法和行为。",
-                "supportive_feedback": "你愿意把这个场景记录下来，已经是在为关系创造新的可能。可以先从命名情绪和暂停 3 秒开始。",
-                "alternative_response": "先说出一个观察句，例如：我看到这件事让我们都有些着急，我们先把第一步找出来。",
+                "explanation": "这次记录提供了一个回看具体事件的入口。可以先分开看当时的情绪、想法和行为。",
+                "supportive_feedback": "你已经把这次发生的片段写了下来。现在不需要马上得出结论，可以先确认自己的感受，再选一个低负担动作。",
+                "alternative_response": "可以先说一句观察：“我看到这件事让我们都有些着急。我们先把第一步找出来。”",
                 "recommended_card_ids": ["emotion_naming", "three_second_pause"],
                 "risk_level": "low",
             }
@@ -110,7 +110,15 @@ def generate_feedback(payload: dict) -> dict:
     if not recommended_ids:
         recommended_ids = get_card_ids(recommend_cards(tags))
 
-    recommended_ids = list(dict.fromkeys(recommended_ids))
+    eligible_ids = {
+        card["id"]
+        for card in list_cards(enabled_only=True)
+        if card.get("release_policy", "shared_choice_candidate") == "shared_choice_candidate"
+    }
+    recommended_ids = [card_id for card_id in dict.fromkeys(recommended_ids) if card_id in eligible_ids]
+    if not recommended_ids:
+        recommended_ids = get_card_ids(recommend_cards(tags))
+    recommended_ids = recommended_ids[:3]
     overview = _emotion_overview(payload)
 
     return {

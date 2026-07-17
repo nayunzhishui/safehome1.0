@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import trainingCardsContent from "../../../../content/training_cards.json";
 import type { TrainingCard } from "../../../../shared/types/api";
+import { displayGovernance, displayReleasePolicy, displayStatus } from "../utils/displayLabels";
 
 type LoadStatus = "idle" | "loading" | "success" | "error";
 
@@ -107,7 +108,7 @@ export function CardsManagement() {
                   <span className="recordScene">{card.title}</span>
                   <span className="recordDescription">{card.purpose}</span>
                   <span className="recordMeta">
-                    {card.enabled ? "启用" : "停用"} · {card.review_status || "未标记"} · {card.duration_minutes} 分钟
+                    {card.enabled ? "启用" : "停用"} · {displayStatus(card.review_status)} · {card.duration_minutes} 分钟
                   </span>
                 </button>
               ))}
@@ -126,13 +127,13 @@ export function CardsManagement() {
               <DetailRow label="卡片标题" value={selectedCard.title} />
               <DetailRow label="卡片类型" value={selectedCard.type} />
               <DetailRow label="启用状态" value={selectedCard.enabled} />
-              <DetailRow label="审核状态" value={selectedCard.review_status} />
+              <DetailRow label="审核状态" value={displayStatus(selectedCard.review_status)} />
               <DetailRow label="审核备注" value={selectedCard.reviewer_note} />
-              <DetailRow label="治理审核" value={selectedCard.governance_review_status} />
+              <DetailRow label="治理审核" value={displayGovernance(selectedCard.governance_review_status)} />
               <DetailRow label="证据等级" value={selectedCard.evidence_level} />
               <DetailRow label="主要机制" value={selectedCard.mechanism_code} />
               <DetailRow label="安全级别" value={selectedCard.safety_level} />
-              <DetailRow label="释放方式" value={selectedCard.release_policy} />
+              <DetailRow label="使用方式" value={displayReleasePolicy(selectedCard.release_policy)} />
               <DetailRow label="预计时长" value={`${selectedCard.duration_minutes} 分钟`} />
               <DetailRow label="建议频率" value={selectedCard.minimum_dose?.suggested_frequency} />
               <DetailRow label="初始周期" value={selectedCard.minimum_dose ? `${selectedCard.minimum_dose.initial_cycle_days} 天` : undefined} />

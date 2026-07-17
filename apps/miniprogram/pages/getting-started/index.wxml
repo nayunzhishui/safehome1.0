@@ -22,20 +22,23 @@
   <view class="section-card">
     <text class="section-kicker">视觉链路</text>
     <text class="section-title">从触发到回应：把反应链条分步看清</text>
-    <scroll-view class="arc-scroll" scroll-x="true">
-      <view class="arc-chain">
-        <block wx:for="{{arcNodes}}" wx:key="*this">
-          <view class="arc-node">{{item}}</view>
-          <text wx:if="{{index < arcNodes.length - 1}}" class="arc-arrow">→</text>
-        </block>
+    <view class="arc-chain">
+      <view wx:for="{{arcNodes}}" wx:key="*this" class="arc-step">
+        <text class="arc-index">{{index + 1}}</text>
+        <text class="arc-node">{{item}}</text>
       </view>
-    </scroll-view>
+    </view>
   </view>
 
   <view class="step-list">
     <view wx:for="{{exerciseSteps}}" wx:key="title" class="step-card">
       <text class="step-title">{{item.title}}</text>
       <text class="step-text">{{item.text}}</text>
+      <view wx:if="{{index === 1}}" class="step-action-guide">
+        <text>在反馈里找到一个位置</text>
+        <text>记录一次</text>
+        <text>去训练中心练一个小动作</text>
+      </view>
     </view>
   </view>
 

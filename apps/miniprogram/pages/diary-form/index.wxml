@@ -2,17 +2,14 @@
   <view class="diary-hero safe-card safe-card--hero">
     <view class="hero-copy">
       <text class="hero-title">记录刚才发生的一小段</text>
-      <text class="hero-summary">先写一个具体片段。句子可以短，事情不用一次讲完整。</text>
+      <text class="hero-summary">先从一个具体片段开始，写清当时发生了什么、有什么感受。</text>
       <text wx:if="{{goalId}}" class="goal-hint">已关联本周小目标</text>
       <view class="hero-steps">
         <text>1 分钟写事件</text>
         <text>选一个情绪</text>
         <text>保存后看反馈</text>
       </view>
-      <view class="hero-note privacy-note">
-        <view class="note-dot" aria-hidden="true"></view>
-        <text>用于生成支持性反馈，不评价谁对谁错；请不要填写姓名、学校、电话等强身份信息。</text>
-      </view>
+      <text class="privacy-note">请不要填写姓名、学校、电话等可识别身份的信息。</text>
     </view>
   </view>
 
@@ -97,11 +94,15 @@
       </view>
     </view>
 
-    <view class="diary-section">
+    <button class="more-toggle" bindtap="toggleMoreFields">
+      {{showMoreFields ? '收起可选内容' : '还有什么想记录的？（可选）'}}
+    </button>
+
+    <view wx:if="{{showMoreFields}}" class="diary-section more-section">
       <view class="section-head">
         <view class="section-copy">
-          <text class="section-title">我当时想到什么、做了什么</text>
-          <text class="section-hint">记录当时脑中闪过的话，以及能看到的动作。</text>
+          <text class="section-title">想法与做法（可选）</text>
+          <text class="section-hint">如果愿意，可以补充当时脑中闪过的话和能看到的动作。</text>
         </view>
       </view>
       <view class="field-group">
@@ -109,7 +110,7 @@
         <textarea
           class="textarea"
           value="{{automaticThought}}"
-          placeholder="当时脑子里冒出的一句话是什么？例如：再这样下去会不会更难收拾。"
+          placeholder="例如：再这样下去会不会更难收拾。"
           bindinput="onTextInput"
           data-key="automaticThought"
         />
@@ -119,21 +120,17 @@
         <textarea
           class="textarea"
           value="{{behavior}}"
-          placeholder="例如：我连续提醒了几次，后来声音提高了一些。"
+          placeholder="例如：我提醒了几次，后来声音提高了一些。"
           bindinput="onTextInput"
           data-key="behavior"
         />
       </view>
     </view>
 
-    <button class="more-toggle" bindtap="toggleMoreFields">
-      {{showMoreFields ? '收起可选内容' : '还有什么想记录的？（可选）'}}
-    </button>
-
     <view wx:if="{{showMoreFields}}" class="diary-section more-section">
       <view class="section-head">
         <view class="section-copy">
-          <text class="section-title">更多线索（可选）</text>
+          <text class="section-title">身体与后续（可选）</text>
           <text class="section-hint">身体感受、后续结果和担心可以帮助复盘；不填也能提交。</text>
         </view>
       </view>

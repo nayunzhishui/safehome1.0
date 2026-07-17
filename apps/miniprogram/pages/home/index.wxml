@@ -6,7 +6,12 @@
       <text class="home-greeting">安心陪伴</text>
       <text class="home-subtitle">选择今天的一小步</text>
     </view>
-    <button class="notice-button" aria-label="查看提醒" bindtap="openMessages">
+    <button class="notice-button" aria-label="打开消息中心{{unreadMessageCount > 0 ? '，有未读消息' : ''}}" bindtap="openMessages">
+      <view class="notice-icon" aria-hidden="true">
+        <view class="notice-icon-dome"></view>
+        <view class="notice-icon-base"></view>
+        <view class="notice-icon-clapper"></view>
+      </view>
       <view wx:if="{{unreadMessageCount > 0}}" class="notice-dot"></view>
     </button>
   </view>

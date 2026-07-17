@@ -194,6 +194,14 @@
   margin-top: 20rpx;
 }
 
+.training-backup-title {
+  display: block;
+  color: var(--safe-title);
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
 .pattern-card {
   padding: 26rpx 28rpx;
   border: 1rpx solid var(--safe-border);
