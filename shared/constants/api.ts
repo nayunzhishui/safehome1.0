@@ -57,6 +57,8 @@ export const API_ENDPOINTS = {
   authBindPhone: "/api/auth/bind-phone",
   authLogout: "/api/auth/logout",
   authMe: "/api/auth/me",
+  authDataClaimPreview: "/api/auth/data-claim-preview",
+  authDataClaim: "/api/auth/data-claim",
   contentReviewUpdate: "/api/content-review/update",
   adminWorksheets: "/api/admin/worksheets",
   adminAssessmentResults: "/api/admin/assessment-results",
@@ -66,6 +68,7 @@ export const API_ENDPOINTS = {
   familyUnbind: "/api/family/unbind",
   relationshipPilot: "/api/relationship-pilot",
   researchParticipants: "/api/research/participants",
+  researchOperations: "/api/research/operations",
   productEvents: "/api/product-events",
 } as const;
 

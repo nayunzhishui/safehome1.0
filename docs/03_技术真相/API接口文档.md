@@ -1892,3 +1892,21 @@ relationship_initiation_intention_action
 
 真实发送需同时满足：模板已配置、参与者已授权、用户有微信 OpenID、计划状态为进行中、北京时间已到练习日、`WECHAT_SUBSCRIBE_SEND_ENABLED=1`。投递使用 `training_due:user_id:日期:template_id` 幂等键；成功或发送中的同一投递不重复发送，普通失败最多重试 3 次，微信返回未授权时停止并更新授权状态。
 
+## 2026-07-18：匿名试用记录认领
+
+### `GET /api/auth/data-claim-preview`
+
+权限：已登录的 `parent/student/user` 本人。返回是否存在待认领记录、不可猜测的 `claim_id`、总数和按模块汇总的数量，不返回匿名 ID 或填写原文。研究者、督导和管理员不能使用。
+
+### `POST /api/auth/data-claim`
+
+权限：已登录的 `parent/student/user` 本人。请求体必须为 `{ "claim_id": "...", "confirm": true }`。服务只处理绑定到当前账号的候选；事务成功后更新参与者归属、流水和审计。重复提交返回既有结果，不重复迁移。
+
+登录/注册/微信/手机号登录会把当前设备匿名 ID 登记为候选，但不会自动迁移。没有可认领记录时不创建候选。
+
+## 2026-07-18：研究运营监控
+
+### `GET /api/research/operations`
+
+权限：`researcher/supervisor/admin` 或有效后台令牌。研究者只统计分配给自己的参与者；督导和管理员统计全量。返回提醒授权状态、投递状态、重试/过期数量、失败错误代码聚合、待阶段反馈、待人工支持和待风险复核数量。接口不返回 OpenID、模板密钥、联系方式、失败原文或参与者填写原文，并写入审计日志。
+

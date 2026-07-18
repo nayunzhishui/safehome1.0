@@ -1981,6 +1981,143 @@ ul {
   box-shadow: 0 18px 44px rgba(48, 77, 65, 0.08);
 }
 
+.dataClaimPanel {
+  display: grid;
+  gap: 14px;
+  max-width: 660px;
+  padding: 26px;
+  border: 1px solid #bfd3c8;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #f4f8f3, #fffdf8);
+  box-shadow: 0 18px 44px rgba(48, 77, 65, 0.08);
+}
+
+.dataClaimPanel h2,
+.dataClaimPanel p {
+  margin: 0;
+}
+
+.dataClaimMarker {
+  width: fit-content;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: var(--safe-mist);
+  color: var(--safe-green-deep);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dataClaimModules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dataClaimModules span {
+  padding: 7px 11px;
+  border: 1px solid var(--safe-line);
+  border-radius: 999px;
+  background: #fffefa;
+  color: var(--safe-green-deep);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.operationsPanel {
+  display: grid;
+  gap: 18px;
+  padding: 26px;
+  border: 1px solid #c7d8cf;
+  border-radius: 14px;
+  background: #f8fbf8;
+}
+
+.operationsHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.operationsHeader h2,
+.operationsHeader p {
+  margin: 0;
+}
+
+.operationsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.operationsMetric {
+  display: grid;
+  gap: 6px;
+  min-height: 96px;
+  padding: 16px;
+  border: 1px solid #d5e1da;
+  border-radius: 10px;
+  background: #fffefa;
+}
+
+.operationsMetric span {
+  color: var(--safe-muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.operationsMetric strong {
+  align-self: end;
+  color: var(--safe-green-deep);
+  font-size: 28px;
+}
+
+.operationsMetric--attention {
+  border-color: #e7c89f;
+  background: #fff8ee;
+}
+
+.operationsMetric--attention strong {
+  color: #8a5b28;
+}
+
+.operationsDetails,
+.operationsFailures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.operationsDetails span,
+.operationsFailures span {
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #edf3ef;
+  color: var(--safe-green-deep);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.operationsFailures strong {
+  padding: 7px 0;
+  color: var(--safe-ink);
+  font-size: 13px;
+}
+
+.dossierModule {
+  content-visibility: auto;
+  contain-intrinsic-size: 220px;
+}
+
+@media (max-width: 760px) {
+  .operationsHeader {
+    flex-direction: column;
+  }
+  .operationsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .participantWorkspaceHeader {
   display: flex;
   align-items: end;

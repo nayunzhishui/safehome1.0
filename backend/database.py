@@ -27,6 +27,7 @@ REQUIRED_HEALTH_TABLES = [
     "messages",
     "notification_preferences",
     "notification_deliveries",
+    "data_claims",
     "relationship_pilot_enrollments",
     "relationship_screening_reports",
     "relationship_pilot_tasks",
@@ -35,14 +36,15 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_17_009"
-CURRENT_SCHEMA_NAME = "wechat_subscription_notifications"
+CURRENT_SCHEMA_VERSION = "2026_07_18_010"
+CURRENT_SCHEMA_NAME = "anonymous_data_claims"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
     "version",
     "name",
     "user_id",
+    "target_user_id",
     "nickname",
     "role",
     "username",

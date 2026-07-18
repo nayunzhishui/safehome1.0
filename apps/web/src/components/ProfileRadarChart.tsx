@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
-import * as echarts from "echarts";
+import { echarts } from "../lib/echarts";
 
 import type { AssessmentProfilePosition } from "../../../../shared/types/api";
 import { VisualizationState } from "./VisualizationState";

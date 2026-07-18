@@ -20,6 +20,7 @@ import type {
   RiskReviewRecord,
   RelationshipPilotEnrollment,
   RelationshipScreeningReport,
+  ResearchOperationsSnapshot,
   StudentProfileRecord,
   TrainingCard,
 } from "../../../../shared/types/api";
@@ -42,6 +43,7 @@ interface OverviewState {
   selectedRelationshipEnrollment: RelationshipPilotEnrollment | null;
   relationshipReport: RelationshipScreeningReport | null;
   textAnalysis: Record<string, Record<string, unknown>>;
+  operations: ResearchOperationsSnapshot | null;
 }
 
 interface TodoItem {
@@ -158,6 +160,7 @@ export function ResearchDashboard() {
     selectedRelationshipEnrollment: null,
     relationshipReport: null,
     textAnalysis: {},
+    operations: null,
   });
 
   const latestDiary = state.diaries[0];
@@ -222,7 +225,7 @@ export function ResearchDashboard() {
     }));
 
     try {
-      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults, relationshipPilot, textAnalysis, researchParticipants] = await Promise.all([
+      const [goals, diaries, checkins, cards, riskReviews, profiles, assessmentResults, relationshipPilot, textAnalysis, researchParticipants, operations] = await Promise.all([
         api.listGoals(),
         api.listDiaries({ limit: 50 }),
         api.listCheckins({ limit: 50 }),
@@ -233,21 +236,18 @@ export function ResearchDashboard() {
         api.getRelationshipResearchDashboard(getStoredAdminToken().trim()),
         api.getTextAnalysisSummary().catch(() => ({ items: {}, raw_text_included: false, boundary_notice: "离线分析摘要暂不可用。" })),
         api.listResearchParticipants({ limit: 100 }, getStoredAdminToken().trim()),
+        api.getResearchOperations(getStoredAdminToken().trim()),
       ]);
       const firstParticipant = researchParticipants.items[0];
-      const firstDossier = firstParticipant
-        ? await api.getResearchParticipant(firstParticipant.user_id, getStoredAdminToken().trim())
-        : null;
+      const firstAssessment = assessmentResults.items[0];
+      const firstRelationship = relationshipPilot.items[0];
+      const [firstDossier, profilePosition, selectedRelationshipEnrollment] = await Promise.all([
+        firstParticipant ? api.getResearchParticipant(firstParticipant.user_id, getStoredAdminToken().trim()) : Promise.resolve(null),
+        firstAssessment ? api.getAssessmentProfilePosition(firstAssessment.id, { user_id: firstAssessment.user_id }) : Promise.resolve(null),
+        firstRelationship ? api.getRelationshipEnrollment(firstRelationship.id, getStoredAdminToken().trim()) : Promise.resolve(null),
+      ]);
       setParticipantMatrix(researchParticipants.items);
       setParticipantDossier(firstDossier);
-      const firstAssessment = assessmentResults.items[0];
-      const profilePosition = firstAssessment
-        ? await api.getAssessmentProfilePosition(firstAssessment.id, { user_id: firstAssessment.user_id })
-        : null;
-      const firstRelationship = relationshipPilot.items[0];
-      const selectedRelationshipEnrollment = firstRelationship
-        ? await api.getRelationshipEnrollment(firstRelationship.id, getStoredAdminToken().trim())
-        : null;
       const firstRelationshipReportId = selectedRelationshipEnrollment?.reports?.[0]?.id;
       const relationshipReport = firstRelationshipReportId
         ? await api.getRelationshipReport(firstRelationshipReportId, getStoredAdminToken().trim())
@@ -269,6 +269,7 @@ export function ResearchDashboard() {
         selectedRelationshipEnrollment,
         relationshipReport,
         textAnalysis: textAnalysis.items || {},
+        operations,
       });
     } catch (error) {
       setState((current) => ({
@@ -454,6 +455,40 @@ export function ResearchDashboard() {
         </div>
         <p className="analysisBoundary">这些结果属于离线、脱敏、聚合研究线索；数据不足或质量门禁未通过时只显示状态，不生成个人或家庭结论。</p>
       </section>
+
+      {state.operations ? (
+        <section className="operationsPanel" aria-label="研究运营与通知监控">
+          <div className="operationsHeader">
+            <div>
+              <p className="eyebrow">Operations pulse</p>
+              <h2>提醒与人工工作水位</h2>
+              <p>先看需要处理的数量，再进入对应页面；这里不展示参与者原文或微信身份信息。</p>
+            </div>
+            <span className="countBadge">{state.operations.scope === "assigned_participants" ? "我的参与者" : "全部参与者"}</span>
+          </div>
+          <div className="operationsGrid">
+            <OperationsMetric label="已授权提醒" value={state.operations.notification_preferences.accepted} tone="stable" />
+            <OperationsMetric label="发送失败" value={state.operations.notification_deliveries.failed} tone={state.operations.notification_deliveries.failed ? "attention" : "stable"} />
+            <OperationsMetric label="待阶段反馈" value={state.operations.backlog.stage_feedback} tone={state.operations.backlog.stage_feedback ? "attention" : "stable"} />
+            <OperationsMetric label="待人工支持" value={state.operations.backlog.supervision} tone={state.operations.backlog.supervision ? "attention" : "stable"} />
+          </div>
+          <div className="operationsDetails">
+            <span>已发送 {state.operations.notification_deliveries.sent}</span>
+            <span>待发送 {state.operations.notification_deliveries.pending + state.operations.notification_deliveries.sending}</span>
+            <span>可重试 {state.operations.notification_deliveries.retry_queue}</span>
+            <span>重试已用尽 {state.operations.notification_deliveries.exhausted}</span>
+            <span>已过期未发 {state.operations.notification_deliveries.overdue}</span>
+            <span>待风险复核 {state.operations.backlog.risk_review}</span>
+          </div>
+          {state.operations.failure_reasons.length ? (
+            <div className="operationsFailures" aria-label="发送失败原因代码">
+              <strong>失败原因</strong>
+              {state.operations.failure_reasons.map((item) => <span key={item.error_code}>{item.error_code} · {item.count}</span>)}
+            </div>
+          ) : null}
+          <p className="analysisBoundary">{state.operations.boundary_notice}</p>
+        </section>
+      ) : null}
 
       <section className="participantWorkspace" aria-label="参与者矩阵与单人档案">
         <div className="participantWorkspaceHeader">
@@ -758,6 +793,15 @@ function DossierMetric({ label, value }: { label: string; value: number }) {
     <div className="dossierMetric">
       <strong>{value}</strong>
       <span>{label}</span>
+    </div>
+  );
+}
+
+function OperationsMetric({ label, value, tone }: { label: string; value: number; tone: "stable" | "attention" }) {
+  return (
+    <div className={`operationsMetric operationsMetric--${tone}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }

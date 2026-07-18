@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from flask import Blueprint, request
 
-from database import get_connection, json_loads, rows_to_dicts, write_audit_log
+from database import get_connection, json_loads, now_iso, rows_to_dicts, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.utils import fail, ok, parse_int
 
@@ -29,6 +29,23 @@ def _allowed_user_clause(actor: dict, alias: str = "u") -> tuple[str, list[str]]
         )""",
         [str(actor["id"])],
     )
+
+
+def _scoped_user_column(actor: dict, column: str) -> tuple[str, list[str]]:
+    if actor.get("role") != "researcher":
+        return "1 = 1", []
+    return (
+        f"{column} IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)",
+        [str(actor["id"])],
+    )
+
+
+def _status_counts(conn, table: str, scope_clause: str, params: list[str]) -> dict[str, int]:
+    rows = conn.execute(
+        f"SELECT status, COUNT(*) AS count FROM {table} WHERE {scope_clause} GROUP BY status",
+        tuple(params),
+    ).fetchall()
+    return {str(row["status"]): int(row["count"]) for row in rows}
 
 
 @bp.get("/participants")
@@ -200,5 +217,105 @@ def get_participant_dossier(user_id: str):
             },
             "audit_summary": {"related_event_count": audit_count},
             "boundary_notice": "原始填写仅供授权研究审阅，不得直接改写；研究者备注与反馈应另存并保留审计。",
+        }
+    )
+
+
+@bp.get("/operations")
+def get_research_operations():
+    """Return role-scoped operational counts without participant secrets or raw text."""
+
+    actor, error = _actor()
+    if error:
+        return error
+    scope_clause, params = _scoped_user_column(actor, "user_id")
+    timestamp = now_iso()
+    with get_connection() as conn:
+        preference_rows = conn.execute(
+            f"SELECT consent_status, COUNT(*) AS count FROM notification_preferences WHERE {scope_clause} GROUP BY consent_status",
+            tuple(params),
+        ).fetchall()
+        preference_counts = {str(row["consent_status"]): int(row["count"]) for row in preference_rows}
+        delivery_counts = _status_counts(conn, "notification_deliveries", scope_clause, params)
+        retry_count = conn.execute(
+            f"SELECT COUNT(*) AS count FROM notification_deliveries WHERE {scope_clause} AND status = 'failed' AND attempt_count BETWEEN 1 AND 2",
+            tuple(params),
+        ).fetchone()["count"]
+        exhausted_count = conn.execute(
+            f"SELECT COUNT(*) AS count FROM notification_deliveries WHERE {scope_clause} AND status = 'failed' AND attempt_count >= 3",
+            tuple(params),
+        ).fetchone()["count"]
+        overdue_count = conn.execute(
+            f"SELECT COUNT(*) AS count FROM notification_deliveries WHERE {scope_clause} AND status = 'pending' AND scheduled_for <= ?",
+            tuple([*params, timestamp]),
+        ).fetchone()["count"]
+        failure_rows = conn.execute(
+            f"""
+            SELECT COALESCE(error_code, 'unknown') AS error_code, COUNT(*) AS count
+            FROM notification_deliveries
+            WHERE {scope_clause} AND status = 'failed'
+            GROUP BY COALESCE(error_code, 'unknown')
+            ORDER BY count DESC, error_code ASC
+            LIMIT 8
+            """,
+            tuple(params),
+        ).fetchall()
+        stage_feedback_count = conn.execute(
+            f"""
+            SELECT COUNT(*) AS count FROM relationship_screening_reports
+            WHERE {scope_clause} AND status IN ('pending_review', 'ready', 'confirmed', 'updated')
+            """,
+            tuple(params),
+        ).fetchone()["count"]
+        supervision_count = conn.execute(
+            f"SELECT COUNT(*) AS count FROM supervision_requests WHERE {scope_clause} AND status = 'pending'",
+            tuple(params),
+        ).fetchone()["count"]
+        risk_review_count = conn.execute(
+            f"SELECT COUNT(*) AS count FROM risk_review_records WHERE {scope_clause} AND review_status IN ('pending', 'priority_review')",
+            tuple(params),
+        ).fetchone()["count"]
+        write_audit_log(
+            conn,
+            "research_operations_viewed",
+            actor["id"],
+            "research_operations",
+            "assigned" if actor.get("role") == "researcher" else "all",
+            {
+                "notification_failed": delivery_counts.get("failed", 0),
+                "stage_feedback_pending": int(stage_feedback_count),
+                "supervision_pending": int(supervision_count),
+            },
+        )
+        conn.commit()
+
+    return ok(
+        {
+            "scope": "assigned_participants" if actor.get("role") == "researcher" else "all_participants",
+            "generated_at": timestamp,
+            "notification_preferences": {
+                "accepted": preference_counts.get("accepted", 0),
+                "rejected": preference_counts.get("rejected", 0),
+                "consumed": preference_counts.get("consumed", 0),
+                "unknown": preference_counts.get("unknown", 0),
+            },
+            "notification_deliveries": {
+                "pending": delivery_counts.get("pending", 0),
+                "sending": delivery_counts.get("sending", 0),
+                "sent": delivery_counts.get("sent", 0),
+                "failed": delivery_counts.get("failed", 0),
+                "retry_queue": int(retry_count),
+                "exhausted": int(exhausted_count),
+                "overdue": int(overdue_count),
+            },
+            "failure_reasons": [
+                {"error_code": str(row["error_code"]), "count": int(row["count"])} for row in failure_rows
+            ],
+            "backlog": {
+                "stage_feedback": int(stage_feedback_count),
+                "supervision": int(supervision_count),
+                "risk_review": int(risk_review_count),
+            },
+            "boundary_notice": "仅展示脱敏数量和错误代码，不返回 OpenID、模板密钥、联系方式或填写原文。",
         }
     )

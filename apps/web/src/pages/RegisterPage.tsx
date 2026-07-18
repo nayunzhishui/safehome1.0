@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { saveAuthSession } from "../services/authState";
 import { formatSafeHomeError, safeHomeApi } from "../services/safehomeApi";
+import { DataClaimPrompt } from "../components/DataClaimPrompt";
+import type { DataClaimPreview } from "../../../../shared/types/api";
 
 function destinationForRole(role: string): string {
   return role === "student" ? "/student" : "/";
@@ -19,6 +21,8 @@ export function RegisterPage() {
   const [nickname, setNickname] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [claimPreview, setClaimPreview] = useState<DataClaimPreview | null>(null);
+  const [destination, setDestination] = useState("/");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,10 +46,33 @@ export function RegisterPage() {
         nickname: nickname.trim() || undefined,
       });
       saveAuthSession(data.token, data.user);
-      window.location.href = destinationForRole(data.user.role);
+      const nextDestination = destinationForRole(data.user.role);
+      const preview = await safeHomeApi.getDataClaimPreview().catch(() => null);
+      if (preview?.available) {
+        setClaimPreview(preview);
+        setDestination(nextDestination);
+        setStatus("idle");
+        setMessage("注册成功。你可以先决定是否合并本机试用记录。");
+        return;
+      }
+      window.location.href = nextDestination;
     } catch (error) {
       setStatus("error");
       setMessage(formatSafeHomeError(error, "注册失败，请稍后重试。"));
+    }
+  }
+
+  async function confirmClaim() {
+    if (!claimPreview?.claim_id) return;
+    setStatus("loading");
+    setMessage("正在合并本机试用记录...");
+    try {
+      const result = await safeHomeApi.claimAnonymousData(claimPreview.claim_id);
+      setMessage(`已合并 ${result.total_records} 条记录。`);
+      window.location.href = destination;
+    } catch (error) {
+      setStatus("error");
+      setMessage(formatSafeHomeError(error, "合并失败，请稍后重新登录处理。"));
     }
   }
 
@@ -61,7 +88,15 @@ export function RegisterPage() {
         </p>
       </div>
 
-      <form className="authForm" onSubmit={(e) => { void handleSubmit(e); }}>
+      {claimPreview ? (
+        <DataClaimPrompt
+          preview={claimPreview}
+          status={status}
+          message={message}
+          onConfirm={() => { void confirmClaim(); }}
+          onSkip={() => { window.location.href = destination; }}
+        />
+      ) : <form className="authForm" onSubmit={(e) => { void handleSubmit(e); }}>
         <label className="tokenField">
           用户名
           <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="至少3个字符" autoComplete="username" />
@@ -89,7 +124,7 @@ export function RegisterPage() {
         <button className="primaryButton authSubmit" type="submit" disabled={status === "loading"}>
           注册
         </button>
-      </form>
+      </form>}
 
       <p className="authLinks">
         已有账号？<a href="/login">登录</a> ｜ <a href="/privacy">隐私中心</a>

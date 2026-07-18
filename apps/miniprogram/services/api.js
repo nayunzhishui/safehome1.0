@@ -81,6 +81,8 @@ const API_ENDPOINTS = {
   authBindPhone: "/api/auth/bind-phone",
   authLogout: "/api/auth/logout",
   authMe: "/api/auth/me",
+  authDataClaimPreview: "/api/auth/data-claim-preview",
+  authDataClaim: "/api/auth/data-claim",
   parentAssessments: "/api/parent-assessments",
   checkins: "/api/checkins",
   weeklyReport: "/api/weekly-report",
@@ -352,7 +354,10 @@ function createSafeHomeApi(options = {}) {
     login(data) {
       return request(API_ENDPOINTS.authLogin, {
         method: "POST",
-        data,
+        data: {
+          ...data,
+          anonymous_id: defaultUserId,
+        },
       }).then((result) => {
         if (result && result.token) {
           wx.setStorageSync("auth_token", result.token);
@@ -365,6 +370,18 @@ function createSafeHomeApi(options = {}) {
 
     getAuthCapabilities() {
       return request(API_ENDPOINTS.authCapabilities);
+    },
+
+    getDataClaimPreview() {
+      return request(API_ENDPOINTS.authDataClaimPreview, { requiresAuth: true });
+    },
+
+    claimAnonymousData(claimId) {
+      return request(API_ENDPOINTS.authDataClaim, {
+        method: "POST",
+        data: { claim_id: claimId, confirm: true },
+        requiresAuth: true,
+      });
     },
 
     wechatLogin(data) {

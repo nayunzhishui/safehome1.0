@@ -22,6 +22,20 @@
     </view>
   </view>
 
+  <view wx:if="{{dataClaim}}" class="claim-card safe-card" aria-label="找回本机试用记录">
+    <view class="claim-marker">可找回</view>
+    <text class="claim-title">把本机试用记录放进当前账号</text>
+    <text class="claim-text">找到 {{dataClaim.total_records}} 条本机试用记录。确认后，测评、日记和练习记录会归到当前账号；暂不处理也不会删除。</text>
+    <view class="claim-modules">
+      <text wx:for="{{dataClaim.modules}}" wx:key="module" class="claim-module">{{item.label}} {{item.count}}</text>
+    </view>
+    <text class="claim-boundary">{{dataClaim.boundary_notice}}</text>
+    <view class="claim-actions">
+      <button class="auth-primary" bindtap="confirmDataClaim" loading="{{claimBusy}}" disabled="{{claimBusy}}">确认合并</button>
+      <button class="auth-secondary" bindtap="dismissDataClaim" disabled="{{claimBusy}}">暂不处理</button>
+    </view>
+  </view>
+
   <view class="profile-note">
     <text>这里用于查看记录、复盘和支持入口。当前不做诊断，也不替代专业咨询或紧急帮助。</text>
   </view>

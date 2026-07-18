@@ -26,6 +26,7 @@ MVP_TABLES = [
     "messages",
     "notification_preferences",
     "notification_deliveries",
+    "data_claims",
     "relationship_pilot_enrollments",
     "relationship_screening_reports",
     "relationship_pilot_tasks",
@@ -602,6 +603,18 @@ SCHEMA_SQL = [
         updated_at TEXT NOT NULL
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS data_claims (
+        id TEXT PRIMARY KEY,
+        anonymous_id TEXT NOT NULL,
+        target_user_id TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'available',
+        counts_json TEXT NOT NULL DEFAULT '{}',
+        claimed_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
 ]
 
 
@@ -629,6 +642,8 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_notification_preference_status ON notification_preferences(consent_status, notification_type)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_notification_delivery_idempotency ON notification_deliveries(idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_notification_delivery_user_created ON notification_deliveries(user_id, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_data_claim_anonymous_unique ON data_claims(anonymous_id)",
+    "CREATE INDEX IF NOT EXISTS idx_data_claim_target_status ON data_claims(target_user_id, status, updated_at)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_hypothesis_report ON relationship_hypothesis_feedback(report_id, hypothesis_index)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",

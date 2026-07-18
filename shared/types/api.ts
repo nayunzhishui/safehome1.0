@@ -23,6 +23,39 @@ export interface ApiError {
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError;
 
+export interface DataClaimModuleCount {
+  module: string;
+  label: string;
+  count: number;
+}
+
+export interface DataClaimPreview {
+  available: boolean;
+  claim_id: string | null;
+  total_records: number;
+  modules: DataClaimModuleCount[];
+  boundary_notice: string;
+}
+
+export interface DataClaimResult {
+  claim_id: string;
+  status: "claimed";
+  total_records: number;
+  modules: DataClaimModuleCount[];
+  claimed_at?: string | null;
+  already_completed: boolean;
+}
+
+export interface ResearchOperationsSnapshot {
+  scope: "assigned_participants" | "all_participants";
+  generated_at: string;
+  notification_preferences: { accepted: number; rejected: number; consumed: number; unknown: number };
+  notification_deliveries: { pending: number; sending: number; sent: number; failed: number; retry_queue: number; exhausted: number; overdue: number };
+  failure_reasons: Array<{ error_code: string; count: number }>;
+  backlog: { stage_feedback: number; supervision: number; risk_review: number };
+  boundary_notice: string;
+}
+
 export interface User {
   id: ID;
   username?: string | null;

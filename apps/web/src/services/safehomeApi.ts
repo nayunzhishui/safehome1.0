@@ -15,6 +15,8 @@ import type {
   ConsentRecord,
   ContentReviewUpdateInput,
   ContentReviewUpdateResult,
+  DataClaimPreview,
+  DataClaimResult,
   EmotionDiary,
   EmotionDiaryInput,
   FeedbackGenerateInput,
@@ -29,6 +31,7 @@ import type {
   ProfileVisuals,
   RelationshipPilotEnrollment,
   RelationshipScreeningReport,
+  ResearchOperationsSnapshot,
   ProfileReview,
   ProfileReviewInput,
   RiskCheckResult,
@@ -134,7 +137,7 @@ export class SafeHomeApiClient {
   async login(creds: { username: string; password: string }): Promise<{ token: string; user: AuthUser }> {
     const data = await this.requestData<{ token: string; user: AuthUser }>(API_ENDPOINTS.authLogin, {
       method: "POST",
-      body: creds,
+      body: { ...creds, anonymous_id: this.defaultUserId },
     });
     clearAnonymousUserId();
     return data;
@@ -157,6 +160,17 @@ export class SafeHomeApiClient {
   async getCurrentUser(): Promise<AuthUser> {
     const data = await this.requestData<{ user: AuthUser }>(API_ENDPOINTS.authMe);
     return data.user;
+  }
+
+  getDataClaimPreview(): Promise<DataClaimPreview> {
+    return this.requestData<DataClaimPreview>(API_ENDPOINTS.authDataClaimPreview);
+  }
+
+  claimAnonymousData(claimId: string): Promise<DataClaimResult> {
+    return this.requestData<DataClaimResult>(API_ENDPOINTS.authDataClaim, {
+      method: "POST",
+      body: { claim_id: claimId, confirm: true },
+    });
   }
 
   createGoal(input: GoalInput): Promise<Goal> {
@@ -387,6 +401,12 @@ export class SafeHomeApiClient {
 
   getResearchParticipant(userId: string, adminToken?: string): Promise<ResearchParticipantDossier> {
     return this.requestData(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}`, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  getResearchOperations(adminToken?: string): Promise<ResearchOperationsSnapshot> {
+    return this.requestData(API_ENDPOINTS.researchOperations, {
       headers: this.adminHeaders(adminToken),
     });
   }

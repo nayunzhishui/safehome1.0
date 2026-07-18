@@ -96,6 +96,8 @@ Page({
     stats: null,
     isResearcher: false,
     showcaseAccess: false,
+    dataClaim: null,
+    claimBusy: false,
   },
 
   onShow() {
@@ -105,7 +107,15 @@ Page({
   async loadProfile() {
     const storedUser = getAuthUser();
     const loggedIn = isLoggedIn();
-    const showcase = await api.getShowcaseAccess().catch(() => ({ enabled: false }));
+    const canClaim = loggedIn && storedUser && ["parent", "student", "user"].includes(storedUser.role);
+    const [showcase, claimPreview] = await Promise.all([
+      api.getShowcaseAccess().catch(() => ({ enabled: false })),
+      canClaim ? api.getDataClaimPreview().catch(() => null) : Promise.resolve(null),
+    ]);
+    const dismissedClaimId = wx.getStorageSync("safehome_dismissed_data_claim_id") || "";
+    const dataClaim = claimPreview && claimPreview.available && claimPreview.claim_id !== dismissedClaimId
+      ? claimPreview
+      : null;
     try {
       const stats = await api.getProfileStats();
       this.setData({
@@ -120,6 +130,7 @@ Page({
         },
         isResearcher: !!showcase.enabled || !!(storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)),
         showcaseAccess: !!showcase.enabled,
+        dataClaim,
       });
     } catch (error) {
       this.setData({
@@ -130,6 +141,7 @@ Page({
           loginState: storedUser ? "已登录，本次暂时离线" : "未登录，先登录后查看记录",
           roleText: storedUser && storedUser.role ? this.formatRole(storedUser.role) : "",
         },
+        dataClaim,
       });
     }
   },
@@ -186,6 +198,29 @@ Page({
       return;
     }
     wx.navigateTo({ url: "/pages/login/index?redirect=%2Fpages%2Fresearcher-dashboard%2Findex" });
+  },
+
+  dismissDataClaim() {
+    if (this.data.dataClaim && this.data.dataClaim.claim_id) {
+      wx.setStorageSync("safehome_dismissed_data_claim_id", this.data.dataClaim.claim_id);
+    }
+    this.setData({ dataClaim: null });
+  },
+
+  async confirmDataClaim() {
+    const claim = this.data.dataClaim;
+    if (!claim || !claim.claim_id || this.data.claimBusy) return;
+    this.setData({ claimBusy: true });
+    try {
+      const result = await api.claimAnonymousData(claim.claim_id);
+      wx.removeStorageSync("safehome_dismissed_data_claim_id");
+      this.setData({ dataClaim: null, claimBusy: false });
+      wx.showToast({ title: `已合并 ${result.total_records || 0} 条记录`, icon: "success" });
+      await this.loadProfile();
+    } catch (error) {
+      this.setData({ claimBusy: false });
+      wx.showToast({ title: error.message || "暂时未能合并，请稍后再试", icon: "none" });
+    }
   },
 
   doLogout() {

@@ -18,6 +18,7 @@ from config import Config
 from database import ensure_user, get_connection, new_id, now_iso, row_to_dict
 from routes.auth_utils import PUBLIC_REGISTER_ROLES, AuthError, auth_error_response, generate_auth_token, require_login
 from routes.utils import fail, ok, require_admin_token
+from services.data_claim_service import claim_preview, claim_records, register_claim_candidate
 
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 CLOUDBASE_ACCESS_TOKEN_PATH = "/.tencentcloudbase/wx/cloudbase_access_token"
@@ -278,6 +279,7 @@ def register():
             """,
             (username, phone_or_email, generate_password_hash(password), anonymous_id, role, timestamp, user_id),
         )
+        register_claim_candidate(conn, user_id, anonymous_id)
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
@@ -290,6 +292,7 @@ def login():
     payload = request.get_json(silent=True) or {}
     username = str(payload.get("username") or "").strip()
     password = str(payload.get("password") or "")
+    anonymous_id = str(payload.get("anonymous_id") or "").strip() or None
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
         if row is None or not row["password_hash"] or not check_password_hash(row["password_hash"], password):
@@ -297,7 +300,11 @@ def login():
         if row["status"] and row["status"] != "active":
             return fail("account_inactive", "账号暂不可用", status=403)
         timestamp = now_iso()
-        conn.execute("UPDATE users SET last_login_at = ?, updated_at = ? WHERE id = ?", (timestamp, timestamp, row["id"]))
+        conn.execute(
+            "UPDATE users SET anonymous_id = COALESCE(?, anonymous_id), last_login_at = ?, updated_at = ? WHERE id = ?",
+            (anonymous_id, timestamp, timestamp, row["id"]),
+        )
+        register_claim_candidate(conn, row["id"], anonymous_id)
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE id = ?", (row["id"],)).fetchone()
 
@@ -359,6 +366,7 @@ def wechat_login():
                 """,
                 (nickname, avatar_url, anonymous_id, timestamp, timestamp, user_id),
             )
+        register_claim_candidate(conn, user_id, anonymous_id)
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
@@ -422,6 +430,7 @@ def phone_login():
             """,
             (phone_hash, timestamp, cloudbase_openid, anonymous_id, timestamp, timestamp, user_id),
         )
+        register_claim_candidate(conn, user_id, anonymous_id)
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
@@ -546,3 +555,44 @@ def me():
     except AuthError as exc:
         return auth_error_response(exc)
     return ok({"user": _public_user(actor["user"])})
+
+
+@bp.get("/data-claim-preview")
+def data_claim_preview():
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    if actor.get("role") not in {"parent", "student", "user"}:
+        return fail("forbidden", "研究与管理账号不参与试用记录合并", status=403)
+
+    with get_connection() as conn:
+        # Backfill accounts that recorded an anonymous ID before this feature existed.
+        register_claim_candidate(conn, actor["id"], actor["user"].get("anonymous_id"))
+        preview = claim_preview(conn, actor["id"])
+        conn.commit()
+    return ok(preview)
+
+
+@bp.post("/data-claim")
+def data_claim():
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    if actor.get("role") not in {"parent", "student", "user"}:
+        return fail("forbidden", "研究与管理账号不参与试用记录合并", status=403)
+
+    payload = request.get_json(silent=True) or {}
+    claim_id = str(payload.get("claim_id") or "").strip()
+    if not claim_id or payload.get("confirm") is not True:
+        return fail("validation_error", "需要明确确认后才能合并试用记录", status=400)
+    try:
+        with get_connection() as conn:
+            result = claim_records(conn, actor["id"], claim_id)
+            conn.commit()
+    except LookupError as exc:
+        return fail("not_found", str(exc), status=404)
+    except ValueError as exc:
+        return fail("claim_unavailable", str(exc), status=409)
+    return ok(result)
