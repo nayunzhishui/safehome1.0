@@ -1,0 +1,15 @@
+<view class="feedback-rating {{compact ? 'feedback-rating--compact' : ''}}">
+  <text class="feedback-rating-prompt">{{prompt}}</text>
+  <view class="feedback-rating-options">
+    <button
+      wx:for="{{options}}"
+      wx:key="value"
+      class="feedback-rating-option {{value === item.value ? 'feedback-rating-option--active' : ''}} {{item.value === 'uncomfortable' ? 'feedback-rating-option--care' : ''}}"
+      data-value="{{item.value}}"
+      disabled="{{disabled}}"
+      aria-label="评价为{{item.label}}"
+      bindtap="select"
+    >{{item.label}}</button>
+  </view>
+  <text wx:if="{{value === 'uncomfortable'}}" class="feedback-rating-note">已记录为需要人工复核的体验信号，不会据此推断风险或诊断。</text>
+</view>

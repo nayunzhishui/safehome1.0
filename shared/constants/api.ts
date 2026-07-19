@@ -13,6 +13,9 @@ export const API_ENDPOINTS = {
   cards: "/api/cards",
   cardsRecommend: "/api/cards/recommend",
   trainingPlan: "/api/training-plan",
+  journeyToday: "/api/journey/today",
+  feedbackLedger: "/api/feedback-ledger",
+  feedbackLedgerSummary: "/api/feedback-ledger/summary",
   trainingPlanAssignment: "/api/training-plan/assignment",
   notificationConfig: "/api/notifications/config",
   notificationConsent: "/api/notifications/consent",
@@ -48,6 +51,7 @@ export const API_ENDPOINTS = {
   privacyConsentStatus: "/api/privacy/consent-status",
   privacyRevokeConsent: "/api/privacy/revoke-consent",
   privacyDeleteMyData: "/api/privacy/delete-my-data",
+  privacyRequests: "/api/privacy/requests",
   privacyExportMyData: "/api/privacy/export-my-data",
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
@@ -69,6 +73,7 @@ export const API_ENDPOINTS = {
   relationshipPilot: "/api/relationship-pilot",
   researchParticipants: "/api/research/participants",
   researchOperations: "/api/research/operations",
+  researchQueues: "/api/research/queues",
   productEvents: "/api/product-events",
 } as const;
 

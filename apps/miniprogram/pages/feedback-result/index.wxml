@@ -28,6 +28,10 @@
     </view>
 
     <view class="safe-section">
+      <feedback-rating value="{{feedbackEvaluation}}" disabled="{{feedbackEvaluationSaving}}" bind:select="submitFeedbackEvaluation" />
+    </view>
+
+    <view class="safe-section">
       <section-title title="本次情绪概览" subtitle="先看见主要感受和强度，不急着下结论" />
       <view class="overview-grid">
         <view class="overview-item">

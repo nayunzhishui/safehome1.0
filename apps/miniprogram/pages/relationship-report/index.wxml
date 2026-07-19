@@ -14,6 +14,10 @@
       <text class="report-copy">{{report.profile_description}}</text>
     </view>
 
+    <view class="safe-section">
+      <feedback-rating value="{{reportEvaluation}}" disabled="{{reportEvaluationSaving}}" prompt="这份阶段性报告与你的实际情况相符吗？" bind:select="submitReportEvaluation" />
+    </view>
+
     <view wx:if="{{radarRows.length}}" class="safe-section safe-card">
       <text class="section-eyebrow">基础画像</text>
       <text class="section-title">本次维度轮廓</text>

@@ -48,6 +48,9 @@ const API_ENDPOINTS = {
   cards: "/api/cards",
   cardsRecommend: "/api/cards/recommend",
   trainingPlan: "/api/training-plan",
+  journeyToday: "/api/journey/today",
+  feedbackLedger: "/api/feedback-ledger",
+  feedbackLedgerSummary: "/api/feedback-ledger/summary",
   trainingPlanAssignment: "/api/training-plan/assignment",
   notificationConfig: "/api/notifications/config",
   notificationConsent: "/api/notifications/consent",
@@ -91,6 +94,8 @@ const API_ENDPOINTS = {
   adminExport: "/api/admin/export",
   relationshipPilot: "/api/relationship-pilot",
   productEvents: "/api/product-events",
+  privacyRequests: "/api/privacy/requests",
+  researchQueues: "/api/research/queues",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -634,6 +639,37 @@ function createSafeHomeApi(options = {}) {
 
     getTrainingPlan(params = {}) {
       return request(`${API_ENDPOINTS.trainingPlan}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    getTodayJourney(params = {}) {
+      return request(`${API_ENDPOINTS.journeyToday}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
+    createFeedbackLedgerEntry(data) {
+      const payload = { ...data };
+      const idempotencyKey = payload.idempotency_key || "";
+      return request(API_ENDPOINTS.feedbackLedger, {
+        method: "POST",
+        data: payload,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
+    listFeedbackLedgerEntries(params = {}) {
+      return request(`${API_ENDPOINTS.feedbackLedger}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    getFeedbackLedgerSummary(params = {}) {
+      return request(`${API_ENDPOINTS.feedbackLedgerSummary}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    listPrivacyRequests(params = {}) {
+      return request(`${API_ENDPOINTS.privacyRequests}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    getResearchQueue(params = {}) {
+      return request(`${API_ENDPOINTS.researchQueues}${queryString(params)}`, { requiresAuth: true });
     },
 
     saveTrainingPlanAssignment(data) {

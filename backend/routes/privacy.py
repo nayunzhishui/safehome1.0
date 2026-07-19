@@ -5,7 +5,7 @@ from flask import Blueprint, current_app, request
 from database import get_connection, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from routes.consent import DEFAULT_CONSENT_VERSION, get_latest_consent
 from routes.auth_utils import AuthError, auth_error_response, get_current_actor
-from routes.utils import fail, ok
+from routes.utils import fail, ok, parse_int
 
 bp = Blueprint("privacy", __name__, url_prefix="/api/privacy")
 
@@ -144,6 +144,21 @@ def delete_my_data():
     request_id = new_id("privacy")
     reason = str(payload.get("reason") or "").strip()[:500]
     with get_connection() as conn:
+        existing = conn.execute(
+            """
+            SELECT id, user_id, request_type, status, created_at, updated_at
+            FROM privacy_requests
+            WHERE user_id = ? AND request_type = 'delete_my_data'
+              AND status IN ('pending', 'processing')
+            ORDER BY created_at DESC
+            LIMIT 1
+            """,
+            (user_id,),
+        ).fetchone()
+        if existing is not None:
+            item = row_to_dict(existing)
+            item["already_active"] = True
+            return ok(item)
         conn.execute(
             """
             INSERT INTO privacy_requests (
@@ -165,6 +180,46 @@ def delete_my_data():
         conn.commit()
         row = conn.execute("SELECT * FROM privacy_requests WHERE id = ?", (request_id,)).fetchone()
     return ok(row_to_dict(row), status=201)
+
+
+@bp.get("/requests")
+def list_privacy_requests():
+    try:
+        user_id, _actor = resolve_privacy_owner(request.args.get("user_id"))
+    except AuthError as exc:
+        return auth_error_response(exc)
+    except ValueError as exc:
+        return fail("validation_error", str(exc), status=400)
+
+    page = max(1, parse_int(request.args.get("page"), 1) or 1)
+    page_size = max(1, min(parse_int(request.args.get("page_size"), 20) or 20, 100))
+    offset = (page - 1) * page_size
+    with get_connection() as conn:
+        total_row = conn.execute(
+            "SELECT COUNT(*) AS count FROM privacy_requests WHERE user_id = ?",
+            (user_id,),
+        ).fetchone()
+        rows = conn.execute(
+            """
+            SELECT id, user_id, request_type, status, created_at, updated_at
+            FROM privacy_requests
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT ? OFFSET ?
+            """,
+            (user_id, page_size, offset),
+        ).fetchall()
+    total = int(total_row["count"] if total_row else 0)
+    items = rows_to_dicts(rows)
+    return ok(
+        {
+            "items": items,
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+            "has_more": offset + len(items) < total,
+        }
+    )
 
 
 def _count_for_user(conn, table: str, user_id: str) -> int:

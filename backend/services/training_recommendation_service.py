@@ -10,6 +10,9 @@ from config import Config
 from database import get_connection, json_loads, load_content_json
 
 
+EVALUATIONS_FOR_RECOMMENDATION = {"matches", "partly_matches", "does_not_match", "uncomfortable"}
+
+
 def evaluate_training_rules(
     worksheet_id: str,
     scores_json: str | dict,
@@ -81,6 +84,10 @@ def _apply_user_feedback(rules: list[dict], user_id: str) -> list[dict]:
             score += int(stats.get("neutral", 0)) * 1
             score -= int(stats.get("not_helpful_yet", 0)) * 10
             score -= int(stats.get("skipped", 0)) * 6
+            score += int(stats.get("matches", 0)) * 8
+            score += int(stats.get("partly_matches", 0))
+            score -= int(stats.get("does_not_match", 0)) * 20
+            score -= int(stats.get("uncomfortable", 0)) * 100
             score += min(int(stats.get("completed", 0)), 5)
             scored_cards.append((score, card_id, stats))
         scored_cards.sort(key=lambda item: item[0], reverse=True)
@@ -96,7 +103,10 @@ def _feedback_reason(scored_cards: list[tuple[float, str, dict]]) -> str:
     not_helpful = [
         card_id
         for _score, card_id, stats in scored_cards
-        if int(stats.get("not_helpful_yet", 0)) > 0 or int(stats.get("skipped", 0)) > 0
+        if int(stats.get("not_helpful_yet", 0)) > 0
+        or int(stats.get("skipped", 0)) > 0
+        or int(stats.get("does_not_match", 0)) > 0
+        or int(stats.get("uncomfortable", 0)) > 0
     ]
     if helpful:
         return "已结合你之前标记为有帮助的训练卡，优先保留更容易执行的小练习。"
@@ -117,12 +127,22 @@ def _load_card_feedback(user_id: str) -> dict[str, dict[str, int]]:
             """,
             (user_id,),
         ).fetchall()
+        ledger_rows = conn.execute(
+            """
+            SELECT source_id AS card_id, evaluation
+            FROM feedback_ledger
+            WHERE user_id = ? AND source_type = 'training_recommendation' AND status = 'active'
+            ORDER BY created_at DESC
+            LIMIT 50
+            """,
+            (user_id,),
+        ).fetchall()
     feedback: dict[str, dict[str, int]] = {}
     for row in rows:
         card_id = row["card_id"]
         if not card_id:
             continue
-        stats = feedback.setdefault(card_id, {"completed": 0, "helpful": 0, "neutral": 0, "not_helpful_yet": 0, "skipped": 0})
+        stats = feedback.setdefault(card_id, {"completed": 0, "helpful": 0, "neutral": 0, "not_helpful_yet": 0, "skipped": 0, "matches": 0, "partly_matches": 0, "does_not_match": 0, "uncomfortable": 0})
         if row["completed"]:
             stats["completed"] += 1
         helpfulness = row["helpfulness_rating"]
@@ -130,6 +150,13 @@ def _load_card_feedback(user_id: str) -> dict[str, dict[str, int]]:
             stats[helpfulness] += 1
         if row["skip_reason"]:
             stats["skipped"] += 1
+    for row in ledger_rows:
+        card_id = row["card_id"]
+        evaluation = row["evaluation"]
+        if not card_id or evaluation not in EVALUATIONS_FOR_RECOMMENDATION:
+            continue
+        stats = feedback.setdefault(card_id, {"completed": 0, "helpful": 0, "neutral": 0, "not_helpful_yet": 0, "skipped": 0, "matches": 0, "partly_matches": 0, "does_not_match": 0, "uncomfortable": 0})
+        stats[evaluation] += 1
     return feedback
 
 

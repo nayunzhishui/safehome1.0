@@ -56,6 +56,41 @@ export interface ResearchOperationsSnapshot {
   boundary_notice: string;
 }
 
+export type PrivacyRequestStatus = "pending" | "processing" | "completed" | "rejected" | "cancelled";
+
+export interface PrivacyRequest {
+  id: ID;
+  user_id: ID;
+  request_type: "delete_my_data" | string;
+  status: PrivacyRequestStatus;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+  already_active?: boolean;
+}
+
+export type ResearchQueueType = "notification_failed" | "stage_feedback" | "supervision" | "risk_review" | "feedback_review";
+
+export interface ResearchQueueItem {
+  id: ID;
+  user_id: ID;
+  title: string;
+  status: string;
+  created_at: ISODateTime;
+  wait_minutes: number;
+  source_type?: string | null;
+  source_id?: string | null;
+  enrollment_id?: string | null;
+  error_code?: string | null;
+  attempt_count?: number;
+  evaluation?: FeedbackEvaluation;
+}
+
+export interface ResearchQueuePage extends ListResponse<ResearchQueueItem> {
+  queue: ResearchQueueType;
+  scope: "assigned_participants" | "all_participants";
+  boundary_notice: string;
+}
+
 export interface User {
   id: ID;
   username?: string | null;
@@ -390,6 +425,73 @@ export interface TrainingPlan {
     description: string;
     url: string;
   } | null;
+  boundary_notice: string;
+}
+
+export type TodayJourneyState = "ready" | "paused" | "completed" | "not_due";
+
+export interface TodayJourneyAction {
+  type:
+    | "read_feedback"
+    | "read_message"
+    | "training_paused"
+    | "training_stage_completed"
+    | "today_completed"
+    | "practice_due"
+    | "start_assessment"
+    | "start_diary"
+    | "set_training_cadence"
+    | "training_not_due"
+    | string;
+  title: string;
+  description: string;
+  button_label: string;
+  url: string;
+  source_type: string;
+  source_id?: ID | null;
+  estimated_minutes?: number | null;
+}
+
+export interface TodayJourney {
+  user_id: ID;
+  state: TodayJourneyState;
+  primary_action: TodayJourneyAction;
+  secondary_action?: TodayJourneyAction | null;
+  generated_at: ISODateTime;
+  boundary_notice: string;
+}
+
+export type FeedbackEvaluation = "matches" | "partly_matches" | "does_not_match" | "uncomfortable";
+export type FeedbackSourceType = "instant_feedback" | "stage_report" | "training_recommendation" | "message";
+
+export interface FeedbackLedgerInput {
+  source_type: FeedbackSourceType;
+  source_id: ID;
+  content_version: string;
+  evaluation: FeedbackEvaluation;
+  reason_code?: string;
+  reason_text?: string;
+  idempotency_key?: string;
+}
+
+export interface FeedbackLedgerEntry extends FeedbackLedgerInput {
+  id: ID;
+  user_id: ID;
+  review_status: "recorded" | "pending_review" | string;
+  status: "active" | "superseded";
+  requires_human_review: boolean;
+  stop_reinforcement: boolean;
+  already_recorded?: boolean;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface FeedbackLedgerSummary {
+  user_id: ID;
+  evaluation_counts: Record<FeedbackEvaluation, number>;
+  source_counts: Record<string, number>;
+  pending_review_count: number;
+  legacy_sources: Record<string, Array<{ evaluation: string; count: number }>>;
   boundary_notice: string;
 }
 

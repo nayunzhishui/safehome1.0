@@ -37,6 +37,7 @@ Page({
     cards: [],
     practiceMessage: "",
     expandedCardId: "",
+    feedbackEvaluationSaving: false,
   },
 
   onLoad(options) {
@@ -102,6 +103,7 @@ Page({
         numberText: `${stepIndex + 1}`,
       })),
       reflectionPrompt: (card.reflection_questions || [])[0] || "练习后可以简单记一句：这次我先做了什么，情绪有没有一点变化？",
+      feedbackEvaluation: "",
     };
   },
 
@@ -134,5 +136,38 @@ Page({
 
   retryLoadCards() {
     this.loadCards(this.data.tags, this.data.cardIds);
+  },
+
+  async submitTrainingFeedback(event) {
+    const cardId = event.currentTarget.dataset.id || "";
+    const evaluation = event.detail.evaluation;
+    const card = this.data.cards.find((item) => item.id === cardId);
+    if (!card || this.data.feedbackEvaluationSaving) return;
+    this.setData({ feedbackEvaluationSaving: true });
+    try {
+      await api.createFeedbackLedgerEntry({
+        source_type: "training_recommendation",
+        source_id: cardId,
+        content_version: card.version || card.sourceRecommendationId || cardId,
+        evaluation,
+        idempotency_key: `training:${cardId}:${Date.now()}`,
+      });
+      let cards = this.data.cards.map((item) => ({
+        ...item,
+        feedbackEvaluation: item.id === cardId ? evaluation : item.feedbackEvaluation,
+      }));
+      if (["does_not_match", "uncomfortable"].includes(evaluation) && cards.length > 1 && cards[0].id === cardId) {
+        cards = [...cards.slice(1), cards[0]].map((item, index) => ({ ...item, isPrimary: index === 0 }));
+      }
+      this.setData({ cards });
+      wx.showToast({
+        title: evaluation === "uncomfortable" ? "已停止优先推荐并等待人工复核" : "已记录你的核对",
+        icon: "none",
+      });
+    } catch (error) {
+      wx.showToast({ title: error.message || "暂时没能保存", icon: "none" });
+    } finally {
+      this.setData({ feedbackEvaluationSaving: false });
+    }
   },
 });

@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "推荐训练卡"
+  "navigationBarTitleText": "推荐训练卡",
+  "usingComponents": {
+    "feedback-rating": "/components/feedback-rating/index"
+  }
 }

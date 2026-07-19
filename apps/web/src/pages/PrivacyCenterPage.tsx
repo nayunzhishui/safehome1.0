@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "../../../../shared/constants/api";
 import { getStoredAuthToken, getStoredAuthUser } from "../services/authState";
 import { getAnonymousUserId } from "../services/userIdentity";
+import type { PrivacyRequest } from "../../../../shared/types/api";
 
 type ConsentItem = {
   user_id: string;
@@ -28,12 +29,21 @@ const CONSENT_LABELS: Record<string, string> = {
   research_authorization: "研究授权",
 };
 
+const REQUEST_STATUS_LABELS: Record<string, string> = {
+  pending: "待处理",
+  processing: "处理中",
+  completed: "已完成",
+  rejected: "未通过",
+  cancelled: "已取消",
+};
+
 export function PrivacyCenterPage() {
   const [status, setStatus] = useState<LoadStatus>("idle");
   const [message, setMessage] = useState("");
   const [data, setData] = useState<ConsentStatus | null>(null);
   const [revokeStatus, setRevokeStatus] = useState<LoadStatus>("idle");
   const [revokeMessage, setRevokeMessage] = useState("");
+  const [privacyRequests, setPrivacyRequests] = useState<PrivacyRequest[]>([]);
 
   const authToken = getStoredAuthToken();
   const authUser = getStoredAuthUser();
@@ -42,7 +52,21 @@ export function PrivacyCenterPage() {
 
   useEffect(() => {
     loadStatus();
+    loadPrivacyRequests();
   }, []);
+
+  async function loadPrivacyRequests() {
+    try {
+      const base = import.meta.env.VITE_SAFEHOME_API_BASE_URL ?? "";
+      const resp = await fetch(`${base}${API_ENDPOINTS.privacyRequests}?page=1&page_size=20&user_id=${encodeURIComponent(userId)}`, {
+        headers: authHeaders,
+      });
+      const body = await resp.json();
+      if (body.ok) setPrivacyRequests(body.data.items ?? []);
+    } catch {
+      setRevokeMessage("删除申请状态暂时没有读取成功，请稍后重试。");
+    }
+  }
 
   async function loadStatus() {
     setStatus("loading");
@@ -209,7 +233,8 @@ export function PrivacyCenterPage() {
                 });
                 const body = await resp.json();
                 if (body.ok) {
-                  alert("删除请求已提交，项目负责人将后续处理。");
+                  alert(body.data.already_active ? "已有一条删除申请正在处理中。" : "删除请求已提交，项目负责人将后续处理。");
+                  await loadPrivacyRequests();
                 } else {
                   alert(body.error?.message ?? "提交失败");
                 }
@@ -221,6 +246,22 @@ export function PrivacyCenterPage() {
             提交删除请求
           </button>
         </div>
+      </section>
+
+      <section className="guidanceBox" aria-label="删除申请状态" style={{ marginTop: 24 }}>
+        <h2>删除申请进度</h2>
+        {privacyRequests.length ? (
+          <ul>
+            {privacyRequests.map((item) => (
+              <li key={item.id}>
+                <strong>{REQUEST_STATUS_LABELS[item.status] ?? item.status}</strong>
+                {` · 提交于 ${item.created_at.slice(0, 10)} · 更新于 ${item.updated_at.slice(0, 10)}`}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>当前没有删除申请。</p>
+        )}
       </section>
 
       <section className="guidanceBox" aria-label="边界说明" style={{ marginTop: 24 }}>

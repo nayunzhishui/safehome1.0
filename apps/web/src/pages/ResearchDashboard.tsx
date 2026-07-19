@@ -21,6 +21,8 @@ import type {
   RelationshipPilotEnrollment,
   RelationshipScreeningReport,
   ResearchOperationsSnapshot,
+  ResearchQueuePage,
+  ResearchQueueType,
   StudentProfileRecord,
   TrainingCard,
 } from "../../../../shared/types/api";
@@ -144,6 +146,8 @@ export function ResearchDashboard() {
   const [participantSearch, setParticipantSearch] = useState("");
   const [participantMatrix, setParticipantMatrix] = useState<ResearchParticipantSummary[]>([]);
   const [participantDossier, setParticipantDossier] = useState<ResearchParticipantDossier | null>(null);
+  const [operationsQueue, setOperationsQueue] = useState<ResearchQueuePage | null>(null);
+  const [operationsQueueStatus, setOperationsQueueStatus] = useState<LoadStatus>("idle");
   const [state, setState] = useState<OverviewState>({
     status: "idle",
     message: "正在准备研究者平台总览。",
@@ -283,6 +287,19 @@ export function ResearchDashboard() {
   useEffect(() => {
     void loadOverview();
   }, []);
+
+  async function loadOperationsQueue(queue: ResearchQueueType) {
+    setOperationsQueueStatus("loading");
+    try {
+      const result = await api.getResearchQueue(queue, { page: 1, page_size: 20 }, getStoredAdminToken().trim());
+      setOperationsQueue(result);
+      setOperationsQueueStatus("success");
+    } catch (error) {
+      setOperationsQueue(null);
+      setOperationsQueueStatus("error");
+      setState((current) => ({ ...current, message: formatSafeHomeError(error, "队列暂时无法读取。") }));
+    }
+  }
 
   async function selectAssessmentResult(resultId: string) {
     const selected = state.assessmentResults.find((item) => item.id === resultId);
@@ -480,6 +497,23 @@ export function ResearchDashboard() {
             <span>已过期未发 {state.operations.notification_deliveries.overdue}</span>
             <span>待风险复核 {state.operations.backlog.risk_review}</span>
           </div>
+          <div className="operationsDetails" aria-label="队列下钻">
+            <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("notification_failed")}>查看发送失败</button>
+            <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("stage_feedback")}>查看阶段反馈</button>
+            <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("supervision")}>查看人工支持</button>
+            <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("risk_review")}>查看风险复核</button>
+            <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("feedback_review")}>查看不适反馈</button>
+          </div>
+          {operationsQueueStatus === "loading" ? <div className="status compact loading">正在读取队列...</div> : null}
+          {operationsQueue ? (
+            <div className="operationsFailures" aria-label="运营队列记录">
+              <strong>{operationsQueue.queue} · {operationsQueue.total ?? operationsQueue.items.length} 条</strong>
+              {operationsQueue.items.length ? operationsQueue.items.map((item) => (
+                <span key={item.id}>{item.title} · {item.user_id} · {displayStatus(item.status)} · 已等待 {item.wait_minutes} 分钟 · {formatTime(item.created_at)}</span>
+              )) : <span>当前队列为空</span>}
+              <small>{operationsQueue.boundary_notice}</small>
+            </div>
+          ) : null}
           {state.operations.failure_reasons.length ? (
             <div className="operationsFailures" aria-label="发送失败原因代码">
               <strong>失败原因</strong>

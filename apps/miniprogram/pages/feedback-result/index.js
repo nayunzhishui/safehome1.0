@@ -19,6 +19,8 @@ Page({
     trainingRecommendation: null,
     recommendedTrainings: [],
     riskSupportText: "",
+    feedbackEvaluation: "",
+    feedbackEvaluationSaving: false,
   },
 
   onLoad(options) {
@@ -196,6 +198,28 @@ Page({
       title: "本次反馈已保留在当前记录中",
       icon: "none",
     });
+  },
+
+  async submitFeedbackEvaluation(event) {
+    const evaluation = event.detail.evaluation;
+    const feedback = this.data.feedback;
+    if (!feedback || !feedback.id || this.data.feedbackEvaluationSaving) return;
+    this.setData({ feedbackEvaluationSaving: true });
+    try {
+      await api.createFeedbackLedgerEntry({
+        source_type: "instant_feedback",
+        source_id: feedback.id,
+        content_version: feedback.rules_version || feedback.id,
+        evaluation,
+        idempotency_key: `instant:${feedback.id}:${Date.now()}`,
+      });
+      this.setData({ feedbackEvaluation: evaluation });
+      wx.showToast({ title: evaluation === "uncomfortable" ? "已记录并等待人工复核" : "已记录你的核对", icon: "none" });
+    } catch (error) {
+      wx.showToast({ title: error.message || "暂时没能保存", icon: "none" });
+    } finally {
+      this.setData({ feedbackEvaluationSaving: false });
+    }
   },
 
   goToDiaryForm() {

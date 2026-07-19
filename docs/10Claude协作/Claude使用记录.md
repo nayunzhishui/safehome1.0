@@ -239,3 +239,40 @@
 - 修改文件：`docs/02_专项进度与验收/任务九外部人工验收证据表_20260703.md`、`scripts/write_task9_audit_snapshot.ps1`、`docs/02_专项进度与验收/task9_completion_audit_snapshot_20260703.md`、`docs/02_专项进度与验收/task9_completion_audit_snapshot_20260703.json`、事实基准文档和本记录。
 - 验证情况：`scripts/run_task9_external_checks.ps1 -SkipSqliteBackupRestore` 通过；`scripts/write_task9_audit_snapshot.ps1` 通过；`scripts/audit_task9_completion.ps1` 未通过，原因是 `verify_task9_external_evidence.ps1` 提示外部证据表仍有未勾选项。
 - 后续事项：按任务九外部人工验收证据表完成微信开发者工具和真机验收，全部勾选后再把 `allow_complete` 改为 `yes` 并运行严格完成审计。
+
+### 2026-07-18：Codex 维护 Claude计划模式并深化任务二十三至三十四
+
+- 使用工具：Codex；使用 `to-issues`、`psych-evidence-search`、产品设计审计、心理研究方法和 deep module 架构复核；未启动 Claude Code 会话。
+- /RESUME 地址：无 Claude `/RESUME` 地址；恢复入口为 `docs/01_当前执行入口/任务二十三至三十四全量深化优化总蓝图_20260718.md`。
+- 对话摘要：先把参与者主旅程、协作式反馈、隐私生命周期、研究运营、API契约、内容治理、受控AI问答和离线分析拆成纵向切片；再补心理测量与研究方法冻结、安全/隐私/AI威胁模型、可靠性与发布工程、可访问性和内容/数据/模型运营治理。架构复核提出六个稳定业务 deep module 候选，避免按大文件机械拆分。
+- 修改文件：`docs/00_当前事实基准/Claude计划模式.md`、任务二十三至三十四总蓝图、任务二十三至二十九逐步清单、任务三十研究方法准备、受控AI自由问答方案、公开数据适配报告、`design/context.md`、`design/audit.md`及事实文档。
+- 验证情况：检查新增文档可读取，运行 `git diff --check`；没有代码、接口、数据库或内容库变化，因此未运行后端/Web/小程序测试。
+- 后续事项：先执行波次A事实门禁，业务切片从 T23-00 开始；研究方案未冻结前不做验证性效果分析；AI只做合成安全集、批准知识库和 fake provider；外部数据先取得明确授权，不使用参与者原文训练。
+
+### 2026-07-19：Codex 写入T23-01首页布局冻结决策
+
+- 使用工具：Codex；未启动 Claude Code 会话。
+- /RESUME 地址：无 Claude `/RESUME` 地址；恢复入口为 `docs/01_当前执行入口/任务二十三至二十九逐步开发任务清单.md` 的T23-01。
+- 对话摘要：负责人决定保持现有小程序首页，仅在“测一测/情绪日记”之后、“三步开始”之前新增“今天的一小步”横向卡片；现有区块不删除、不移动。
+- 修改文件：Claude计划模式、任务二十三至二十九逐步清单、全量深化总蓝图、`design/context.md`、统一口径及三份事实文档。
+- 验证情况：仅文档变更，检查Markdown可读性和`git diff --check`；未运行代码测试。
+- 后续事项：先完成T23-00；T23-01必须复用现有状态源并覆盖加载、无任务、继续记录、训练、新反馈、暂停、完成和失败状态。
+
+### 2026-07-19：Codex 将治疗性评估纳入任务二十三至三十四
+
+- 使用工具：Codex；使用`to-issues`纵向切片规则，未启动Claude Code会话。
+- /RESUME 地址：无Claude `/RESUME`地址；恢复入口为 `docs/01_当前执行入口/任务二十三至三十四治疗性评估受控接入子线_20260719.md`。
+- 对话摘要：把既有治疗性评估v2.0方案拆为TA-00至TA-08，映射到现有T23—T34，不新增任务三十五、不建立平行系统；当前仅允许合成数据L0内部原型。
+- 修改文件：治疗性评估受控接入子线、Claude计划模式、全量深化总蓝图、任务二十三至二十九清单、设计上下文、统一口径及三份事实文档。
+- 验证情况：仅文档变化，检查可读性并运行`git diff --check`；未运行代码测试。
+- 后续事项：完成当前T23切片后先执行TA-00/TA-01；D01—D26和真实责任链未完成前不得进入真实参与者试点。
+
+### 2026-07-19：Codex按Claude计划模式执行任务二十三首波
+
+- 使用时间：2026-07-19 00:30—02:10（Asia/Shanghai）。
+- 使用工具：Codex；使用`implement`、`frontend-design`和`playwright`技能；未启动Claude Code会话。
+- /RESUME地址：无Claude `/RESUME`地址；恢复入口为`docs/02_专项进度与验收/任务二十三至三十四自动执行记录_20260719.md`。
+- 对话摘要：自动完成Journey首页行动、协作式反馈账本、推荐降权、隐私申请状态、研究队列、T30—T34事实门禁和TA合成L0浏览器验收；失败后自动定位并回归，冲突单独留证。
+- 修改文件：backend Journey/feedback ledger/privacy/research routes和services、数据库schema、shared契约、小程序首页/四类反馈页面/共享组件、Web隐私中心/研究工作台、API/数据库/计划/验收及事实文档。
+- 验证情况：内容校验通过；修复后专项24项、后端全量325项、Web typecheck/build、小程序57 JS/53 JSON、Playwright七步与双视口通过。
+- 后续事项：T23-04或T24-02；D01—D26和临时展示越权未处理前，TA-03以后、真实参与者和AI用户输出保持关闭。

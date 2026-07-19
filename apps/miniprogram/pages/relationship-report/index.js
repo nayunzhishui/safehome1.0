@@ -65,6 +65,8 @@ Page({
     feedbackSavingIndex: -1,
     shareCanvasHeight: 1800,
     exporting: false,
+    reportEvaluation: "",
+    reportEvaluationSaving: false,
   },
 
   onLoad(options) {
@@ -120,6 +122,27 @@ Page({
       wx.showToast({ title: error.message || "暂时没能保存", icon: "none" });
     } finally {
       this.setData({ feedbackSavingIndex: -1 });
+    }
+  },
+
+  async submitReportEvaluation(event) {
+    const evaluation = event.detail.evaluation;
+    if (!this.data.record || this.data.reportEvaluationSaving) return;
+    this.setData({ reportEvaluationSaving: true });
+    try {
+      await api.createFeedbackLedgerEntry({
+        source_type: "stage_report",
+        source_id: this.data.record.id,
+        content_version: (this.data.report && this.data.report.version) || this.data.record.id,
+        evaluation,
+        idempotency_key: `stage-report:${this.data.record.id}:${Date.now()}`,
+      });
+      this.setData({ reportEvaluation: evaluation });
+      wx.showToast({ title: evaluation === "uncomfortable" ? "已记录并等待人工复核" : "已记录你的核对", icon: "none" });
+    } catch (error) {
+      wx.showToast({ title: error.message || "暂时没能保存", icon: "none" });
+    } finally {
+      this.setData({ reportEvaluationSaving: false });
     }
   },
 

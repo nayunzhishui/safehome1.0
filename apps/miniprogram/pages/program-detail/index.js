@@ -34,6 +34,7 @@ function formatProgram(program) {
 Page({
   data: {
     programId: "",
+    requestedSessionNo: null,
     previewMode: false,
     program: null,
     sessions: [],
@@ -54,7 +55,8 @@ Page({
   onLoad(query) {
     const programId = decodeURIComponent(query.id || "");
     const previewMode = query.preview === "1";
-    this.setData({ programId, previewMode });
+    const requestedSessionNo = query.session ? Number(query.session) : null;
+    this.setData({ programId, previewMode, requestedSessionNo });
     this.loadProgram(programId);
   },
 
@@ -69,7 +71,9 @@ Page({
       .then((data) => {
         const program = formatProgram(data.program);
         const rawSessions = program.sessions || [];
-        const selectedSession = rawSessions[0] || null;
+        const selectedSession = rawSessions.find(
+          (item) => Number(item.session_no) === Number(this.data.requestedSessionNo),
+        ) || rawSessions[0] || null;
         const sessions = markActiveSessions(rawSessions, selectedSession);
         this.setData(
           {

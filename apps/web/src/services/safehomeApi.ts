@@ -20,6 +20,9 @@ import type {
   EmotionDiary,
   EmotionDiaryInput,
   FeedbackGenerateInput,
+  FeedbackLedgerEntry,
+  FeedbackLedgerInput,
+  FeedbackLedgerSummary,
   FeedbackResult,
   Goal,
   GoalInput,
@@ -28,10 +31,13 @@ import type {
   ParentAssessmentInput,
   ParentAssessmentPayload,
   ParentAssessmentResult,
+  PrivacyRequest,
   ProfileVisuals,
   RelationshipPilotEnrollment,
   RelationshipScreeningReport,
   ResearchOperationsSnapshot,
+  ResearchQueuePage,
+  ResearchQueueType,
   ProfileReview,
   ProfileReviewInput,
   RiskCheckResult,
@@ -44,6 +50,7 @@ import type {
   SupervisionInput,
   SupervisionRequest,
   TrainingCard,
+  TodayJourney,
   UserMessage,
   WeeklyReport,
 } from "../../../../shared/types/api";
@@ -164,6 +171,25 @@ export class SafeHomeApiClient {
 
   getDataClaimPreview(): Promise<DataClaimPreview> {
     return this.requestData<DataClaimPreview>(API_ENDPOINTS.authDataClaimPreview);
+  }
+
+  getTodayJourney(params: { user_id?: string } = {}): Promise<TodayJourney> {
+    return this.requestData<TodayJourney>(this.withQuery(API_ENDPOINTS.journeyToday, this.withDefaultUserParam(params)));
+  }
+
+  createFeedbackLedgerEntry(input: FeedbackLedgerInput): Promise<FeedbackLedgerEntry> {
+    return this.requestData<FeedbackLedgerEntry>(API_ENDPOINTS.feedbackLedger, {
+      method: "POST",
+      body: input,
+    });
+  }
+
+  listFeedbackLedgerEntries(params: { source_type?: string; source_id?: string } = {}): Promise<ListResponse<FeedbackLedgerEntry>> {
+    return this.requestData<ListResponse<FeedbackLedgerEntry>>(this.withQuery(API_ENDPOINTS.feedbackLedger, params));
+  }
+
+  getFeedbackLedgerSummary(userId: string): Promise<FeedbackLedgerSummary> {
+    return this.requestData<FeedbackLedgerSummary>(this.withQuery(API_ENDPOINTS.feedbackLedgerSummary, { user_id: userId }));
   }
 
   claimAnonymousData(claimId: string): Promise<DataClaimResult> {
@@ -409,6 +435,20 @@ export class SafeHomeApiClient {
     return this.requestData(API_ENDPOINTS.researchOperations, {
       headers: this.adminHeaders(adminToken),
     });
+  }
+
+  getResearchQueue(
+    queue: ResearchQueueType,
+    params: { page?: number; page_size?: number } = {},
+    adminToken?: string,
+  ): Promise<ResearchQueuePage> {
+    return this.requestData(this.withQuery(API_ENDPOINTS.researchQueues, { queue, ...params }), {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  listPrivacyRequests(params: { page?: number; page_size?: number; user_id?: string } = {}): Promise<ListResponse<PrivacyRequest>> {
+    return this.requestData(this.withQuery(API_ENDPOINTS.privacyRequests, params));
   }
 
   getRelationshipEnrollment(id: string, adminToken?: string): Promise<RelationshipPilotEnrollment> {

@@ -35,9 +35,10 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_narratives",
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
+    "feedback_ledger",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_18_010"
-CURRENT_SCHEMA_NAME = "anonymous_data_claims"
+CURRENT_SCHEMA_VERSION = "2026_07_19_011"
+CURRENT_SCHEMA_NAME = "participant_feedback_ledger"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -159,6 +160,9 @@ MYSQL_VARCHAR_COLUMNS = {
     "sent_at",
     "provider_message_id",
     "error_code",
+    "content_version",
+    "evaluation",
+    "reason_code",
 }
 
 

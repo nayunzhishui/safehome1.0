@@ -11,6 +11,10 @@
   <button wx:if="{{message.source_type === 'relationship_screening_report'}}" class="safe-primary-button bottom-action" bindtap="openSource">查看关系健康初筛报告</button>
   <button wx:if="{{message.source_type === 'relationship_narrative'}}" class="safe-primary-button bottom-action" bindtap="openSource">查看已确认探索手记</button>
 
+  <view wx:if="{{canEvaluate}}" class="safe-section">
+    <feedback-rating value="{{feedbackEvaluation}}" disabled="{{feedbackEvaluationSaving}}" prompt="这条反馈与你的实际情况相符吗？" bind:select="submitFeedbackEvaluation" />
+  </view>
+
   <view class="safe-section">
     <view class="boundary-card">
       <text class="boundary-title">先确认边界</text>

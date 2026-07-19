@@ -62,6 +62,15 @@
       </view>
 
       <button class="primary-button {{item.isPrimary ? '' : 'primary-button--secondary'}}" data-id="{{item.id}}" data-title="{{item.title}}" bindtap="choosePractice">{{item.isPrimary ? '开始这张练习' : '改练这张'}}</button>
+      <feedback-rating
+        wx:if="{{item.isPrimary}}"
+        value="{{item.feedbackEvaluation}}"
+        disabled="{{feedbackEvaluationSaving}}"
+        prompt="这张建议适合你吗？"
+        compact="{{true}}"
+        data-id="{{item.id}}"
+        bind:select="submitTrainingFeedback"
+      />
     </view>
 
     <view wx:if="{{cards.length === 0}}" class="state-card safe-card">

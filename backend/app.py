@@ -25,9 +25,11 @@ from routes.courses import bp as courses_bp
 from routes.diaries import bp as diaries_bp
 from routes.emotion_thermometer import bp as emotion_thermometer_bp
 from routes.feedback import bp as feedback_bp
+from routes.feedback_ledger import bp as feedback_ledger_bp
 from routes.family import bp as family_bp
 from routes.general_growth import bp as general_growth_bp
 from routes.goals import bp as goals_bp
+from routes.journey import bp as journey_bp
 from routes.messages import bp as messages_bp
 from routes.notifications import bp as notifications_bp
 from routes.parent_assessments import bp as parent_assessments_bp
@@ -190,9 +192,11 @@ def create_app(
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(goals_bp)
+    app.register_blueprint(journey_bp)
     app.register_blueprint(diaries_bp)
     app.register_blueprint(emotion_thermometer_bp)
     app.register_blueprint(feedback_bp)
+    app.register_blueprint(feedback_ledger_bp)
     app.register_blueprint(family_bp)
     app.register_blueprint(general_growth_bp)
     app.register_blueprint(messages_bp)

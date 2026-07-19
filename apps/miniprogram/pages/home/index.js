@@ -57,6 +57,101 @@ function formatProgressSummary(summary) {
   };
 }
 
+const JOURNEY_STATE_LABELS = {
+  ready: "可以继续",
+  paused: "已暂停",
+  completed: "今日完成",
+  not_due: "按节奏进行",
+};
+
+function formatTodayJourney(payload) {
+  const action = payload && payload.primary_action ? payload.primary_action : null;
+  if (!action) {
+    return null;
+  }
+  const state = payload.state || "ready";
+  return {
+    state,
+    stateLabel: JOURNEY_STATE_LABELS[state] || "可以继续",
+    type: action.type || "continue",
+    title: action.title || "继续今天的一小步",
+    description: action.description || "选择一个现在容易完成的小动作。",
+    buttonLabel: action.button_label || "继续",
+    url: action.url || "",
+    sourceType: action.source_type || "",
+    sourceId: action.source_id || "",
+    estimatedMinutes: action.estimated_minutes || null,
+    metaText: action.estimated_minutes ? `约 ${action.estimated_minutes} 分钟` : "按自己的节奏",
+    actionAriaLabel: `${action.button_label || "继续"}：${action.title || "今天的一小步"}`,
+    boundaryNotice: payload.boundary_notice || "这只是一个可选建议，可按自己的节奏决定是否继续。",
+  };
+}
+
+function hasDraftContent(stored) {
+  if (!stored) return false;
+  if (typeof stored === "string") return !!stored.trim();
+  if (typeof stored !== "object") return false;
+  if (String(stored.draftText || "").trim()) return true;
+  return Object.values(stored.reflectionAnswers || {}).some((value) => String(value || "").trim());
+}
+
+function findLocalDraftAction() {
+  let keys = [];
+  try {
+    const storageInfo = wx.getStorageInfoSync();
+    keys = Array.isArray(storageInfo.keys) ? storageInfo.keys : [];
+  } catch (error) {
+    return null;
+  }
+
+  for (const key of keys) {
+    if (!key.startsWith("relationship_task_draft:")) continue;
+    const stored = wx.getStorageSync(key);
+    if (!hasDraftContent(stored)) continue;
+    const [, enrollmentId, type] = key.split(":");
+    if (!enrollmentId || !type) continue;
+    return {
+      state: "ready",
+      primary_action: {
+        type: "continue_relationship_draft",
+        title: "继续未完成的关系探索记录",
+        description: "本机还有一份未提交的草稿，可以从上次停下的位置继续。",
+        button_label: "继续填写",
+        url: `/pages/relationship-task/index?enrollment_id=${encodeURIComponent(enrollmentId)}&type=${encodeURIComponent(type)}`,
+        source_type: "local_draft",
+        source_id: key,
+        estimated_minutes: 3,
+      },
+      boundary_notice: "草稿只保存在本机，提交前不会发送其中的文字。",
+    };
+  }
+
+  for (const key of keys) {
+    if (!key.startsWith("safehome:programDraft:")) continue;
+    const stored = wx.getStorageSync(key);
+    if (!hasDraftContent(stored)) continue;
+    const parts = key.split(":");
+    const programId = parts[2];
+    const sessionNo = parts[3];
+    if (!programId || !sessionNo) continue;
+    return {
+      state: "ready",
+      primary_action: {
+        type: "continue_program_draft",
+        title: "继续未完成的项目记录",
+        description: "本机还有一份未提交的项目草稿，可以接着填写。",
+        button_label: "继续填写",
+        url: `/pages/program-detail/index?id=${encodeURIComponent(programId)}&session=${encodeURIComponent(sessionNo)}`,
+        source_type: "local_draft",
+        source_id: key,
+        estimated_minutes: 3,
+      },
+      boundary_notice: "草稿只保存在本机，提交前不会发送其中的文字。",
+    };
+  }
+  return null;
+}
+
 Page({
   data: {
     todayRecordCount: 0,
@@ -68,6 +163,9 @@ Page({
     progressSummary: null,
     progressSummaryReady: false,
     progressSummaryError: "",
+    todayJourney: null,
+    todayJourneyLoading: true,
+    todayJourneyError: "",
     hotTopics: [
       {
         id: "exam-setback",
@@ -152,6 +250,7 @@ Page({
   },
 
   async refreshHomeData() {
+    this.loadTodayJourney();
     try {
       const todayKey = formatLocalDate(new Date());
       const [result, stats, thermometerDay, progressSummary] = await Promise.all([
@@ -211,6 +310,71 @@ Page({
 
   openWeeklyReport() {
     wx.navigateTo({ url: "/pages/weekly-report/index" });
+  },
+
+  async loadTodayJourney() {
+    this.setData({ todayJourneyLoading: true, todayJourneyError: "" });
+    try {
+      const payload = await api.getTodayJourney();
+      const protectedTypes = new Set([
+        "read_feedback",
+        "read_message",
+        "training_paused",
+        "training_stage_completed",
+        "today_completed",
+      ]);
+      const localDraft = findLocalDraftAction();
+      const serverType = payload && payload.primary_action ? payload.primary_action.type : "";
+      const selectedPayload = localDraft && !protectedTypes.has(serverType) ? localDraft : payload;
+      this.setData({
+        todayJourney: formatTodayJourney(selectedPayload),
+        todayJourneyLoading: false,
+        todayJourneyError: "",
+      });
+    } catch (error) {
+      if (error && error.code === "auth_required") {
+        this.setData({
+          todayJourney: formatTodayJourney({
+            state: "not_due",
+            primary_action: {
+              type: "login_required",
+              title: "登录后查看今天的一小步",
+              description: "登录后才能根据你的记录和练习节奏整理下一步。",
+              button_label: "去登录",
+              url: "/pages/login/index",
+              source_type: "auth",
+            },
+            boundary_notice: "登录前不会读取或上传本机草稿内容。",
+          }),
+          todayJourneyLoading: false,
+          todayJourneyError: "",
+        });
+        return;
+      }
+      this.setData({
+        todayJourney: null,
+        todayJourneyLoading: false,
+        todayJourneyError: error && error.message ? error.message : "暂时没能整理今天的一小步。",
+      });
+    }
+  },
+
+  retryTodayJourney() {
+    this.loadTodayJourney();
+  },
+
+  openTodayAction() {
+    if (this.data.todayJourneyError) {
+      this.retryTodayJourney();
+      return;
+    }
+    const url = this.data.todayJourney ? this.data.todayJourney.url : "";
+    if (!url) return;
+    if (url.startsWith("/pages/training/index")) {
+      wx.switchTab({ url: "/pages/training/index" });
+      return;
+    }
+    wx.navigateTo({ url });
   },
 
   openAssessment() {

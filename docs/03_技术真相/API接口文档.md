@@ -1910,3 +1910,31 @@ relationship_initiation_intention_action
 
 权限：`researcher/supervisor/admin` 或有效后台令牌。研究者只统计分配给自己的参与者；督导和管理员统计全量。返回提醒授权状态、投递状态、重试/过期数量、失败错误代码聚合、待阶段反馈、待人工支持和待风险复核数量。接口不返回 OpenID、模板密钥、联系方式、失败原文或参与者填写原文，并写入审计日志。
 
+## 2026-07-19：参与者主旅程与协作式反馈
+
+### `GET /api/journey/today`
+
+权限：当前登录参与者本人；管理员、研究者和督导不能代查，查询其他`user_id`返回403。返回唯一`primary_action`及可选`secondary_action`，状态优先级为未读人工反馈、暂停/阶段完成、到期训练、今日完成、首次测评、首次记录、节奏设置和未到期等待。接口不返回消息正文、日记原文、量表答案或推荐权重。
+
+### `POST /api/feedback-ledger`
+
+权限：当前登录参与者本人。请求字段：`source_type`、`source_id`、`content_version`、`evaluation`、可选`reason_code/reason_text`和`idempotency_key`。`evaluation`只允许`matches/partly_matches/does_not_match/uncomfortable`。同一幂等键重复提交返回原记录；同一来源的新版本会把旧有效评价标为`superseded`。选择`uncomfortable`只进入人工复核并停止正向强化，不推断风险或诊断。
+
+### `GET /api/feedback-ledger`
+
+权限：当前登录参与者本人。可按`source_type/source_id`读取本人历史评价，响应以`status=active/superseded`区分当前版本和历史版本；不得跨用户读取。
+
+### `GET /api/feedback-ledger/summary`
+
+权限：`researcher/supervisor/admin`。研究者只看分配给自己的参与者。只返回评价/来源/复核状态的聚合数量，不返回原因文本和参与者原文。
+
+## 2026-07-19：隐私状态与研究处置队列
+
+### `GET /api/privacy/requests`
+
+权限：当前登录参与者本人。分页返回本人的隐私申请ID、类型、状态和时间，不返回申请原因或内部处理备注。状态包含`pending/processing/completed/rejected/cancelled`。重复提交仍在处理中的删除申请时，`POST /api/privacy/delete-my-data`复用现有申请并返回`already_active=true`。
+
+### `GET /api/research/queues`
+
+权限：`researcher/supervisor/admin`。参数：`queue`、`page`、`page_size`；队列类型为`notification_failed/stage_feedback/supervision/risk_review/feedback_review`。研究者仅看到已分配参与者，督导和管理员可看全量。每项只返回必要ID、状态、来源标识、创建时间和`wait_minutes`，不返回填写原文、消息正文或内部复核备注，并写入审计日志。
+

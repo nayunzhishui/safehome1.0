@@ -34,6 +34,7 @@ MVP_TABLES = [
     "relationship_narratives",
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
+    "feedback_ledger",
 ]
 
 
@@ -160,6 +161,23 @@ SCHEMA_SQL = [
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         UNIQUE(report_id, user_id, hypothesis_index)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS feedback_ledger (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        source_type TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        content_version TEXT NOT NULL,
+        evaluation TEXT NOT NULL,
+        reason_code TEXT,
+        reason_text TEXT,
+        review_status TEXT NOT NULL DEFAULT 'recorded',
+        status TEXT NOT NULL DEFAULT 'active',
+        idempotency_key TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
     )
     """,
     """
@@ -645,6 +663,9 @@ INDEX_SQL = [
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_data_claim_anonymous_unique ON data_claims(anonymous_id)",
     "CREATE INDEX IF NOT EXISTS idx_data_claim_target_status ON data_claims(target_user_id, status, updated_at)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_hypothesis_report ON relationship_hypothesis_feedback(report_id, hypothesis_index)",
+    "CREATE INDEX IF NOT EXISTS idx_feedback_ledger_user_created ON feedback_ledger(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_feedback_ledger_source ON feedback_ledger(source_type, source_id, content_version)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_feedback_ledger_user_idempotency ON feedback_ledger(user_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",

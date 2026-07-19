@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from flask import Blueprint, request
 
 from database import get_connection, json_loads, now_iso, rows_to_dicts, write_audit_log
@@ -10,6 +12,18 @@ from routes.utils import fail, ok, parse_int
 
 
 bp = Blueprint("research_workspace", __name__, url_prefix="/api/research")
+
+
+def _wait_minutes(created_at: object) -> int:
+    """Return a stable non-negative queue age for the researcher UI."""
+
+    try:
+        created = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        return max(0, int((datetime.now(timezone.utc) - created).total_seconds() // 60))
+    except (TypeError, ValueError):
+        return 0
 
 
 def _actor():
@@ -46,6 +60,45 @@ def _status_counts(conn, table: str, scope_clause: str, params: list[str]) -> di
         tuple(params),
     ).fetchall()
     return {str(row["status"]): int(row["count"]) for row in rows}
+
+
+QUEUE_CONFIG = {
+    "notification_failed": {
+        "table": "notification_deliveries",
+        "where": "status = 'failed'",
+        "status_column": "status",
+        "title": "订阅消息发送失败",
+        "extra": "error_code, attempt_count",
+    },
+    "stage_feedback": {
+        "table": "relationship_screening_reports",
+        "where": "status IN ('pending_review', 'ready', 'confirmed', 'updated')",
+        "status_column": "status",
+        "title": "阶段性反馈待处理",
+        "extra": "enrollment_id",
+    },
+    "supervision": {
+        "table": "supervision_requests",
+        "where": "status = 'pending'",
+        "status_column": "status",
+        "title": "人工支持待处理",
+        "extra": "source_type, source_id",
+    },
+    "risk_review": {
+        "table": "risk_review_records",
+        "where": "review_status IN ('pending', 'priority_review')",
+        "status_column": "review_status",
+        "title": "风险信号待复核",
+        "extra": "source_type, source_id",
+    },
+    "feedback_review": {
+        "table": "feedback_ledger",
+        "where": "review_status = 'pending_review' AND status = 'active'",
+        "status_column": "review_status",
+        "title": "参与者不适反馈待复核",
+        "extra": "source_type, source_id, evaluation",
+    },
+}
 
 
 @bp.get("/participants")
@@ -317,5 +370,70 @@ def get_research_operations():
                 "risk_review": int(risk_review_count),
             },
             "boundary_notice": "仅展示脱敏数量和错误代码，不返回 OpenID、模板密钥、联系方式或填写原文。",
+        }
+    )
+
+
+@bp.get("/queues")
+def get_research_queue():
+    """Return one paginated, role-scoped queue without participant raw text."""
+
+    actor, error = _actor()
+    if error:
+        return error
+    queue_name = str(request.args.get("queue") or "").strip()
+    config = QUEUE_CONFIG.get(queue_name)
+    if config is None:
+        return fail("validation_error", "不支持的队列类型。", status=400)
+    raw_page = parse_int(request.args.get("page"), 1) or 1
+    raw_page_size = parse_int(request.args.get("page_size"), 20) or 20
+    if raw_page < 1 or raw_page_size < 1 or raw_page_size > 100:
+        return fail("validation_error", "page 需大于等于1，page_size 需为1至100。", status=400)
+    page = raw_page
+    page_size = raw_page_size
+    offset = (page - 1) * page_size
+    scope_clause, params = _scoped_user_column(actor, "user_id")
+    table = config["table"]
+    status_column = config["status_column"]
+    where = f"({scope_clause}) AND ({config['where']})"
+    select_extra = config["extra"]
+    with get_connection() as conn:
+        total_row = conn.execute(
+            f"SELECT COUNT(*) AS count FROM {table} WHERE {where}",
+            tuple(params),
+        ).fetchone()
+        rows = conn.execute(
+            f"""
+            SELECT id, user_id, {status_column} AS status, created_at, {select_extra}
+            FROM {table}
+            WHERE {where}
+            ORDER BY created_at ASC, id ASC
+            LIMIT ? OFFSET ?
+            """,
+            tuple([*params, page_size, offset]),
+        ).fetchall()
+        write_audit_log(
+            conn,
+            "research_queue_viewed",
+            actor["id"],
+            "research_queue",
+            queue_name,
+            {"page": page, "page_size": page_size},
+        )
+        conn.commit()
+    items = []
+    for row in rows_to_dicts(rows):
+        items.append({**row, "title": config["title"], "wait_minutes": _wait_minutes(row.get("created_at"))})
+    total = int(total_row["count"] if total_row else 0)
+    return ok(
+        {
+            "queue": queue_name,
+            "items": items,
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+            "has_more": offset + len(items) < total,
+            "scope": "assigned_participants" if actor.get("role") == "researcher" else "all_participants",
+            "boundary_notice": "队列只返回必要状态和来源标识，不返回填写原文、消息正文或内部复核备注。",
         }
     )
