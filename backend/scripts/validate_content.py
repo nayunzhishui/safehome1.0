@@ -175,6 +175,10 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
     errors.extend(load_errors)
     programs, load_errors = load_content_or_error(content_dir, "programs.json")
     errors.extend(load_errors)
+    governance_manifest, load_errors = load_content_or_error(content_dir, "content_governance_manifest.json")
+    errors.extend(load_errors)
+    replay_cases, load_errors = load_content_or_error(content_dir, "synthetic_content_replay_cases.json")
+    errors.extend(load_errors)
 
     for filename, payload in [
         ("training_cards.json", training_cards),
@@ -187,12 +191,32 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
         ("assessment_training_map.json", assessment_training_map),
         ("diary_training_map.json", diary_training_map),
         ("programs.json", programs),
+        ("content_governance_manifest.json", governance_manifest),
+        ("synthetic_content_replay_cases.json", replay_cases),
     ]:
         if payload:
             errors.extend(validate_forbidden_terms(filename, payload))
 
     if not training_cards or not feedback_rules or not risk_keywords:
         return errors
+
+    if governance_manifest:
+        required = {"filename", "content_types", "source", "source_version", "copyright_status", "age_scope", "audience", "change_summary", "governance_status"}
+        for index, source in enumerate(governance_manifest.get("sources", [])):
+            missing = sorted(required - set(source))
+            if missing:
+                errors.append(f"content_governance_manifest.json.sources[{index}] 缺少字段：{','.join(missing)}")
+            filename = source.get("filename")
+            if filename != "faq.json" and filename and not (content_dir / filename).exists():
+                errors.append(f"content_governance_manifest.json.sources[{index}] 指向不存在文件：{filename}")
+        if governance_manifest.get("import_policy") != "register_only_never_auto_approve":
+            errors.append("content_governance_manifest.json.import_policy 必须禁止导入自动批准")
+
+    if replay_cases:
+        if replay_cases.get("contains_real_data") is not False:
+            errors.append("synthetic_content_replay_cases.json 必须明确 contains_real_data=false")
+        if not replay_cases.get("cases"):
+            errors.append("synthetic_content_replay_cases.json.cases 不能为空")
 
     card_ids = {card.get("id") for card in training_cards.get("cards", []) if isinstance(card, dict)}
     errors.extend(validate_assessment_worksheets(assessment_worksheets))

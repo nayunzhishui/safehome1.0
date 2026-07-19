@@ -1827,6 +1827,279 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "content_review.content_active_descriptor.get",
+    "method": "GET",
+    "path": "/api/content-review/active/<content_type>/<item_id>",
+    "handler": "content_review.content_active_descriptor",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "content_type",
+        "item_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_active_descriptor.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_inventory.get",
+    "method": "GET",
+    "path": "/api/content-review/inventory",
+    "handler": "content_review.content_inventory",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_inventory.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_inventory_register.post",
+    "method": "POST",
+    "path": "/api/content-review/inventory/register",
+    "handler": "content_review.content_inventory_register",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_inventory_register.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_release_action.post",
+    "method": "POST",
+    "path": "/api/content-review/releases/<release_id>/<action>",
+    "handler": "content_review.content_release_action",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "action",
+        "release_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_release_action.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_synthetic_replay.post",
+    "method": "POST",
+    "path": "/api/content-review/replay",
+    "handler": "content_review.content_synthetic_replay",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "cases"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_synthetic_replay.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "content_review.update_content_review.post",
     "method": "POST",
     "path": "/api/content-review/update",
@@ -1880,11 +2153,396 @@ export const GENERATED_API_ENDPOINTS = [
       "http_error",
       "internal_error",
       "invalid_program_transition",
+      "legacy_content_update_disabled",
       "manual_confirmation_required",
       "not_found",
       "program_approval_incomplete",
       "unauthorized",
       "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_versions.get",
+    "method": "GET",
+    "path": "/api/content-review/versions",
+    "handler": "content_review.content_versions",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [
+        "content_type",
+        "item_id"
+      ],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_versions.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_version_create.post",
+    "method": "POST",
+    "path": "/api/content-review/versions",
+    "handler": "content_review.content_version_create",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_version_create.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_version_detail.get",
+    "method": "GET",
+    "path": "/api/content-review/versions/<version_id>",
+    "handler": "content_review.content_version_detail",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "version_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_version_detail.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_version_diff.get",
+    "method": "GET",
+    "path": "/api/content-review/versions/<version_id>/diff",
+    "handler": "content_review.content_version_diff",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "version_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_version_diff.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_version_publish.post",
+    "method": "POST",
+    "path": "/api/content-review/versions/<version_id>/publish",
+    "handler": "content_review.content_version_publish",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "version_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_version_publish.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_version_review.post",
+    "method": "POST",
+    "path": "/api/content-review/versions/<version_id>/reviews",
+    "handler": "content_review.content_version_review",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "version_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_version_review.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "content_review.content_version_submit.post",
+    "method": "POST",
+    "path": "/api/content-review/versions/<version_id>/submit",
+    "handler": "content_review.content_version_submit",
+    "module": "routes.content_review",
+    "access": {
+      "mode": "public",
+      "roles": [
+        "public"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "not_applicable_or_development_legacy",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "version_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.content_review.content_version_submit.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "http_error",
+      "internal_error"
     ],
     "enum_refs": [],
     "deprecation": {

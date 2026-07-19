@@ -5,7 +5,24 @@ from pathlib import Path
 
 from flask import Blueprint, current_app, request
 
+from database import get_connection, write_audit_log
+from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.utils import admin_token_error_response, fail, ok, require_admin_token
+from services.content_governance_service import (
+    GovernanceError,
+    change_release_state,
+    create_draft,
+    diff_version,
+    get_active_descriptor,
+    get_version,
+    list_inventory,
+    list_versions,
+    publish_version,
+    register_inventory,
+    review_version,
+    run_synthetic_replay,
+    submit_version,
+)
 
 bp = Blueprint("content_review", __name__, url_prefix="/api/content-review")
 
@@ -86,6 +103,9 @@ def update_content_review():
     except ValueError as exc:
         return admin_token_error_response(exc)
 
+    if current_app.config.get("CONTENT_GOVERNANCE_ENFORCED", False):
+        return fail("legacy_content_update_disabled", "当前环境已启用完整内容治理，请通过版本、审核和发布接口操作。", status=409)
+
     payload = request.get_json(silent=True) or {}
     content_type = str(payload.get("content_type") or "").strip()
     item_id = str(payload.get("item_id") or "").strip()
@@ -153,6 +173,9 @@ def update_content_review():
         matched_item["enabled_for_user"] = False
 
     _write_content(path, content)
+    with get_connection() as conn:
+        write_audit_log(conn, "legacy_content_review_updated", "admin-token", content_type, item_id, {"review_status": review_status, "enabled_for_user": enabled_for_user, "governance_bypassed": True})
+        conn.commit()
 
     return ok(
         {
@@ -163,3 +186,115 @@ def update_content_review():
             "filename": target["filename"],
         }
     )
+
+
+def _actor(*roles: str):
+    try:
+        return require_role(*roles, allow_legacy_admin=True), None
+    except AuthError as exc:
+        return None, auth_error_response(exc)
+
+
+def _governance_response(callback):
+    try:
+        return ok(callback())
+    except GovernanceError as exc:
+        return fail(exc.code, str(exc), details=exc.details or None, status=exc.status)
+
+
+@bp.get("/inventory")
+def content_inventory():
+    _current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _governance_response(list_inventory)
+
+
+@bp.get("/active/<content_type>/<item_id>")
+def content_active_descriptor(content_type: str, item_id: str):
+    return _governance_response(lambda: get_active_descriptor(content_type, item_id))
+
+
+@bp.post("/inventory/register")
+def content_inventory_register():
+    current_actor, error = _actor("admin")
+    if error:
+        return error
+    return _governance_response(lambda: register_inventory(current_actor))
+
+
+@bp.get("/versions")
+def content_versions():
+    _current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _governance_response(lambda: {"items": list_versions(request.args.get("content_type"), request.args.get("item_id"))})
+
+
+@bp.post("/versions")
+def content_version_create():
+    current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _governance_response(lambda: create_draft(current_actor, payload))
+
+
+@bp.get("/versions/<version_id>")
+def content_version_detail(version_id: str):
+    _current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _governance_response(lambda: get_version(version_id))
+
+
+@bp.get("/versions/<version_id>/diff")
+def content_version_diff(version_id: str):
+    _current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _governance_response(lambda: diff_version(version_id))
+
+
+@bp.post("/versions/<version_id>/submit")
+def content_version_submit(version_id: str):
+    current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _governance_response(lambda: submit_version(current_actor, version_id))
+
+
+@bp.post("/versions/<version_id>/reviews")
+def content_version_review(version_id: str):
+    current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _governance_response(lambda: review_version(current_actor, version_id, payload))
+
+
+@bp.post("/versions/<version_id>/publish")
+def content_version_publish(version_id: str):
+    current_actor, error = _actor("admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _governance_response(lambda: publish_version(current_actor, version_id, payload))
+
+
+@bp.post("/releases/<release_id>/<action>")
+def content_release_action(release_id: str, action: str):
+    current_actor, error = _actor("admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _governance_response(lambda: change_release_state(current_actor, release_id, action, payload))
+
+
+@bp.post("/replay")
+def content_synthetic_replay():
+    current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _governance_response(lambda: run_synthetic_replay(current_actor, payload.get("cases")))

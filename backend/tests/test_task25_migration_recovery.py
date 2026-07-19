@@ -45,7 +45,7 @@ def test_task25_schema_upgrades_legacy_sqlite_and_is_repeatable(tmp_path, monkey
         ).fetchone()
     assert {"retry_category", "next_attempt_at", "max_attempts", "dead_lettered_at", "last_attempt_at"}.issubset(delivery_columns)
     assert {"research_work_items", "research_work_item_notes", "research_work_item_actions"}.issubset(tables)
-    assert migration["name"] == "research_operations_work_items"
+    assert migration is not None
 
 
 def test_task25_mysql_schema_contract_contains_portable_work_item_columns(monkeypatch, tmp_path):

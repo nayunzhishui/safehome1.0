@@ -6,7 +6,29 @@
 
 进度口径：真实可调用接口以前文已实现章节为准；第 10 节”0版网页评估画像整合”已有基础画像、风险检查、模型信息、画像历史、人工复核、周报画像趋势、`type=profile` 脱敏导出、`type=records` 统一研究导出和高风险导出二次确认。当前总进度见 `docs/00_当前事实基准/项目进度统一口径.md`。
 
-阅读方式：先看”通用约定”和对应接口章节；全部136个公开操作的机器登记见`API机器契约.md`和`shared/contracts/api-contract.json`。若与历史日志冲突，以机器契约、本文开头进度口径和`docs/00_当前事实基准/项目进度统一口径.md`为准。
+阅读方式：先看”通用约定”和对应接口章节；公开操作的机器登记见`API机器契约.md`和`shared/contracts/api-contract.json`。若与历史日志冲突，以机器契约、本文开头进度口径和`docs/00_当前事实基准/项目进度统一口径.md`为准。
+
+## 任务二十七：完整内容治理接口
+
+内容治理使用`content_governance_versions/reviews/releases`，运行内容仍由`content`目录提供。草稿不会覆盖运行内容；导入登记固定为`registered`，不会自动批准。研究者、督导和管理员可查看，发布、暂停、退役和恢复仅管理员可执行，并受`CONTENT_GOVERNANCE_PUBLISH_ENABLED`与独立确认保护。
+
+| 方法 | 路径 | 用途 |
+|---|---|---|
+| GET | `/api/content-review/inventory` | 查看运行内容、受控版本及缺失内容源 |
+| POST | `/api/content-review/inventory/register` | 仅登记旧内容，绝不自动批准 |
+| GET/POST | `/api/content-review/versions` | 查询版本/建立完整元数据草稿 |
+| GET | `/api/content-review/versions/<id>` | 查看校验、审核、发布与依赖影响 |
+| GET | `/api/content-review/versions/<id>/diff` | 查看相对父版本或运行内容的统一 diff |
+| POST | `/api/content-review/versions/<id>/submit` | 校验通过后送审 |
+| POST | `/api/content-review/versions/<id>/reviews` | 按研究、心理、伦理、内容责任保存审核证据 |
+| POST | `/api/content-review/versions/<id>/publish` | 核对哈希、依赖和人工确认后原子切换 |
+| POST | `/api/content-review/releases/<id>/<pause\|retire\|restore>` | 暂停、退役或按不可变包恢复 |
+| POST | `/api/content-review/replay` | 批量运行不含真实数据的固定合成案例 |
+| GET | `/api/content-review/active/<type>/<item_id>` | 小程序等客户端读取运行内容哈希与治理状态 |
+
+草稿元数据必填：`source`、`source_version`、`copyright_status`、`age_scope`、`audience`、`change_summary`。版权未核验、适龄未核验、诊断化或疗效承诺文案、哈希变化、专业审核或证据路径缺失均阻断发布。错误响应可在`error.details`返回结构化阻断证据。
+
+`POST /api/content-review/update`仅保留历史兼容；正式内容治理不得依赖该接口直接修改JSON。生产发布开关默认关闭，测试通过不代表研究、心理、伦理或生产发布批准。
 
 ## 地址说明
 

@@ -15,6 +15,13 @@ import type {
   ConsentRecord,
   ContentReviewUpdateInput,
   ContentReviewUpdateResult,
+  ContentGovernanceDiff,
+  ContentGovernanceDraftInput,
+  ContentGovernanceInventoryItem,
+  ContentGovernanceVersion,
+  ContentReplayCase,
+  ContentReplayResult,
+  ContentReviewDiscipline,
   DataClaimPreview,
   DataClaimResult,
   EmotionDiary,
@@ -714,6 +721,50 @@ export class SafeHomeApiClient {
   private withDefaultUser<T extends object>(input: T): T & { user_id: string } {
     const userId = "user_id" in input ? (input as { user_id?: string }).user_id : undefined;
     return { ...input, user_id: userId ?? this.currentDefaultUserId() };
+  }
+
+  getContentGovernanceInventory(adminToken?: string): Promise<{ items: ContentGovernanceInventoryItem[]; missing_sources: string[]; import_policy: string }> {
+    return this.requestData(API_ENDPOINTS.contentGovernanceInventory, { headers: this.adminHeaders(adminToken) });
+  }
+
+  registerContentGovernanceInventory(adminToken?: string): Promise<{ created: number; skipped: number; auto_approved: false }> {
+    return this.requestData(`${API_ENDPOINTS.contentGovernanceInventory}/register`, { method: "POST", headers: this.adminHeaders(adminToken) });
+  }
+
+  listContentGovernanceVersions(params: { content_type?: string; item_id?: string } = {}, adminToken?: string): Promise<{ items: ContentGovernanceVersion[] }> {
+    return this.requestData(this.withQuery(API_ENDPOINTS.contentGovernanceVersions, params), { headers: this.adminHeaders(adminToken) });
+  }
+
+  createContentGovernanceDraft(input: ContentGovernanceDraftInput, adminToken?: string): Promise<ContentGovernanceVersion> {
+    return this.requestData(API_ENDPOINTS.contentGovernanceVersions, { method: "POST", body: input, headers: this.adminHeaders(adminToken) });
+  }
+
+  getContentGovernanceVersion(id: string, adminToken?: string): Promise<ContentGovernanceVersion> {
+    return this.requestData(`${API_ENDPOINTS.contentGovernanceVersions}/${encodeURIComponent(id)}`, { headers: this.adminHeaders(adminToken) });
+  }
+
+  getContentGovernanceDiff(id: string, adminToken?: string): Promise<ContentGovernanceDiff> {
+    return this.requestData(`${API_ENDPOINTS.contentGovernanceVersions}/${encodeURIComponent(id)}/diff`, { headers: this.adminHeaders(adminToken) });
+  }
+
+  submitContentGovernanceVersion(id: string, adminToken?: string): Promise<ContentGovernanceVersion> {
+    return this.requestData(`${API_ENDPOINTS.contentGovernanceVersions}/${encodeURIComponent(id)}/submit`, { method: "POST", headers: this.adminHeaders(adminToken) });
+  }
+
+  reviewContentGovernanceVersion(id: string, input: { discipline: ContentReviewDiscipline; decision: "approved" | "rejected"; evidence_path: string; note?: string }, adminToken?: string): Promise<ContentGovernanceVersion> {
+    return this.requestData(`${API_ENDPOINTS.contentGovernanceVersions}/${encodeURIComponent(id)}/reviews`, { method: "POST", body: input, headers: this.adminHeaders(adminToken) });
+  }
+
+  publishContentGovernanceVersion(id: string, input: { confirm_publish: true; expected_hash: string; dependency_impact_confirmed?: boolean; release_reason: string }, adminToken?: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.contentGovernanceVersions}/${encodeURIComponent(id)}/publish`, { method: "POST", body: input, headers: this.adminHeaders(adminToken) });
+  }
+
+  changeContentGovernanceRelease(releaseId: string, action: "pause" | "retire" | "restore", input: { confirm_action: true; dependency_impact_confirmed?: boolean; reason?: string }, adminToken?: string): Promise<Record<string, unknown>> {
+    return this.requestData(`/api/content-review/releases/${encodeURIComponent(releaseId)}/${action}`, { method: "POST", body: input, headers: this.adminHeaders(adminToken) });
+  }
+
+  replayContentGovernance(cases: ContentReplayCase[], adminToken?: string): Promise<ContentReplayResult> {
+    return this.requestData(API_ENDPOINTS.contentGovernanceReplay, { method: "POST", body: { cases }, headers: this.adminHeaders(adminToken) });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {

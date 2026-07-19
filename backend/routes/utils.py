@@ -7,9 +7,12 @@ def ok(data=None, status: int = 200):
     return jsonify({"ok": True, "data": data if data is not None else {}, "request_id": request_id}), status
 
 
-def fail(code: str, message: str, status: int = 400):
+def fail(code: str, message: str, status: int = 400, details: dict | list | None = None):
     request_id = getattr(g, "request_id", None) if has_request_context() else None
-    return jsonify({"ok": False, "error": {"code": code, "message": message}, "request_id": request_id}), status
+    error = {"code": code, "message": message}
+    if details is not None:
+        error["details"] = details
+    return jsonify({"ok": False, "error": error, "request_id": request_id}), status
 
 
 def require_admin_token() -> str:

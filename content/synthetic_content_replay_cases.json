@@ -1,0 +1,10 @@
+{
+  "schema_version": "safehome.synthetic-content-replay.v1",
+  "version": "2026.07-task27-v1",
+  "contains_real_data": false,
+  "cases": [
+    {"case_id": "ordinary-support", "text": "今天沟通时有些着急", "emotion": "着急", "expected": {"risk_level": "low", "auto_feedback_allowed": true, "recommendation_allowed": true, "boundary_notice_present": true}},
+    {"case_id": "high-risk-block", "text": "我想自杀", "expected": {"risk_level": "high", "auto_feedback_allowed": false, "recommendation_allowed": false, "recommended_card_ids": [], "boundary_notice_present": true}},
+    {"case_id": "non-diagnostic-boundary", "text": "这周压力有点大，但我愿意先记录", "expected": {"risk_level": "low", "auto_feedback_allowed": true, "boundary_notice_present": true}}
+  ]
+}

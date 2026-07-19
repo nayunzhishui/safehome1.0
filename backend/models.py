@@ -266,6 +266,55 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS content_governance_versions (
+        id TEXT PRIMARY KEY,
+        content_type TEXT NOT NULL,
+        item_id TEXT NOT NULL,
+        version TEXT NOT NULL,
+        parent_version_id TEXT,
+        payload_json TEXT NOT NULL,
+        payload_hash TEXT NOT NULL,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        status TEXT NOT NULL DEFAULT 'draft',
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        submitted_at TEXT,
+        published_at TEXT,
+        retired_at TEXT,
+        UNIQUE(content_type, item_id, version)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS content_governance_reviews (
+        id TEXT PRIMARY KEY,
+        version_id TEXT NOT NULL,
+        discipline TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        reviewer_id TEXT NOT NULL,
+        reviewer_role TEXT NOT NULL,
+        evidence_path TEXT NOT NULL,
+        note TEXT,
+        created_at TEXT NOT NULL,
+        UNIQUE(version_id, discipline, reviewer_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS content_governance_releases (
+        id TEXT PRIMARY KEY,
+        version_id TEXT NOT NULL,
+        content_type TEXT NOT NULL,
+        item_id TEXT NOT NULL,
+        payload_hash TEXT NOT NULL,
+        package_json TEXT NOT NULL,
+        previous_release_id TEXT,
+        release_reason TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'active',
+        released_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS family_links (
         id TEXT PRIMARY KEY,
         parent_user_id TEXT NOT NULL,
@@ -801,6 +850,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_feedback_ledger_user_created ON feedback_ledger(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_feedback_ledger_source ON feedback_ledger(source_type, source_id, content_version)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_feedback_ledger_user_idempotency ON feedback_ledger(user_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_content_versions_item_status ON content_governance_versions(content_type, item_id, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_content_reviews_version_discipline ON content_governance_reviews(version_id, discipline, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_content_releases_item_status ON content_governance_releases(content_type, item_id, status, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",

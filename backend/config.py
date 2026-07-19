@@ -36,6 +36,10 @@ class Config:
         "true",
         "yes",
     } or str(APP_ENV).lower() == "production"
+    CONTENT_GOVERNANCE_PUBLISH_ENABLED = os.environ.get(
+        "CONTENT_GOVERNANCE_PUBLISH_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
     ALLOWED_ORIGINS = [
         origin.strip()
         for origin in os.environ.get("ALLOWED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173").split(",")

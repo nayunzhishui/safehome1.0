@@ -99,6 +99,7 @@ const API_ENDPOINTS = {
   researchQueues: "/api/research/queues",
   researchWorkItems: "/api/research/work-items",
   researchWorkItemMetrics: "/api/research/work-items/metrics",
+  contentGovernanceActive: "/api/content-review/active",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -963,6 +964,10 @@ function createSafeHomeApi(options = {}) {
 
     getResearchWorkItemMetrics(params = {}) {
       return request(`${API_ENDPOINTS.researchWorkItemMetrics}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    getActiveContentDescriptor(contentType, itemId) {
+      return request(`${API_ENDPOINTS.contentGovernanceActive}/${encodeURIComponent(contentType)}/${encodeURIComponent(itemId)}`);
     },
 
     getParentAssessmentResult(id, params = {}) {

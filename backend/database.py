@@ -43,9 +43,12 @@ REQUIRED_HEALTH_TABLES = [
     "privacy_request_approvals",
     "privacy_request_executions",
     "privacy_deletion_tombstones",
+    "content_governance_versions",
+    "content_governance_reviews",
+    "content_governance_releases",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_014"
-CURRENT_SCHEMA_NAME = "research_operations_work_items"
+CURRENT_SCHEMA_VERSION = "2026_07_20_015"
+CURRENT_SCHEMA_NAME = "content_governance_lifecycle"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -192,6 +195,21 @@ MYSQL_VARCHAR_COLUMNS = {
     "proof_hash",
     "replacement_user_id",
     "subject_hash",
+    "content_type",
+    "item_id",
+    "parent_version_id",
+    "payload_hash",
+    "created_by",
+    "submitted_at",
+    "published_at",
+    "retired_at",
+    "version_id",
+    "discipline",
+    "reviewer_role",
+    "evidence_path",
+    "previous_release_id",
+    "release_reason",
+    "released_by",
 }
 
 

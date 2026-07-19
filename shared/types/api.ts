@@ -1224,6 +1224,99 @@ export interface AssessmentProfilePosition {
   boundary_notice?: string;
 }
 
+export type ContentGovernanceStatus = "registered" | "draft" | "pending_review" | "rejected" | "approved" | "published" | "paused" | "retired";
+export type ContentReviewDiscipline = "research" | "psychology" | "ethics" | "content";
+
+export interface ContentGovernanceMetadata {
+  source: string;
+  source_version: string;
+  copyright_status: "owned" | "licensed" | "public_domain" | "permission_recorded" | "unverified";
+  age_scope: string;
+  audience: string;
+  change_summary: string;
+  governance_status?: string;
+}
+
+export interface ContentGovernanceReview {
+  id: ID;
+  version_id: ID;
+  discipline: ContentReviewDiscipline;
+  decision: "approved" | "rejected";
+  reviewer_id: ID;
+  reviewer_role: string;
+  evidence_path: string;
+  note?: string;
+  created_at: string;
+}
+
+export interface ContentGovernanceValidation {
+  ok: boolean;
+  errors: Array<Record<string, unknown>>;
+  warnings: Array<Record<string, unknown>>;
+  payload_hash_valid: boolean;
+}
+
+export interface ContentGovernanceVersion {
+  id: ID;
+  content_type: string;
+  item_id: ID;
+  version: string;
+  parent_version_id?: ID | null;
+  payload_hash: string;
+  payload: Record<string, unknown> | string;
+  metadata: ContentGovernanceMetadata;
+  status: ContentGovernanceStatus;
+  created_by: ID;
+  created_at: string;
+  updated_at: string;
+  reviews?: ContentGovernanceReview[];
+  releases?: Array<Record<string, unknown>>;
+  validation?: ContentGovernanceValidation;
+  dependency_impact?: { has_dependencies: boolean; impacts: Array<Record<string, unknown>> };
+}
+
+export interface ContentGovernanceInventoryItem {
+  content_type: string;
+  item_id: ID;
+  source_file: string;
+  source_version: string;
+  active_hash: string;
+  governed_version?: { id: ID; version: string; status: string; payload_hash: string } | null;
+}
+
+export interface ContentGovernanceDraftInput {
+  content_type: string;
+  item_id: ID;
+  version: string;
+  parent_version_id?: ID;
+  payload: Record<string, unknown> | string;
+  metadata: ContentGovernanceMetadata;
+}
+
+export interface ContentGovernanceDiff {
+  version_id: ID;
+  baseline: string;
+  changed: boolean;
+  diff: string[];
+  truncated: boolean;
+}
+
+export interface ContentReplayCase {
+  case_id: string;
+  text: string;
+  emotion?: string;
+  behavior?: string;
+  expected?: Record<string, unknown>;
+}
+
+export interface ContentReplayResult {
+  summary: { total: number; passed: number; failed: number };
+  replay_hash: string;
+  evidence_level: "synthetic_only";
+  contains_real_data: false;
+  results: Array<Record<string, unknown>>;
+}
+
 export interface AdminWorksheet extends AssessmentWorksheet {
   created_at?: ISODateTime;
   updated_at?: ISODateTime;

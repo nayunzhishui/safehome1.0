@@ -2106,6 +2106,129 @@ ul {
   }
 }
 
+.formInput,
+.formTextarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--safe-line);
+  border-radius: 8px;
+  background: #fffdfa;
+  color: var(--safe-ink);
+  font: inherit;
+}
+
+.formInput {
+  min-height: 42px;
+}
+
+.formTextarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.contentWorkbench {
+  gap: 20px;
+}
+
+.governanceGrid {
+  grid-template-columns: minmax(300px, 0.78fr) minmax(500px, 1.22fr);
+}
+
+.governanceForm {
+  display: grid;
+  gap: 12px;
+}
+
+.governanceFieldGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 14px;
+}
+
+.governancePayload {
+  min-height: 260px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  line-height: 1.55;
+}
+
+.governanceList {
+  max-height: 840px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.governanceHash {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--safe-mist);
+  color: var(--safe-green-deep);
+}
+
+.governanceHash code {
+  overflow-wrap: anywhere;
+  color: var(--safe-ink);
+}
+
+.governanceDiff {
+  max-height: 360px;
+  overflow: auto;
+  margin: 12px 0 0;
+  padding: 14px;
+  border: 1px solid var(--safe-line);
+  border-radius: 8px;
+  background: #f8f6f1;
+  color: #39433d;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.governanceIssue {
+  display: block;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+}
+
+.governanceReviewTrack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.governanceReviewTrack > div {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--safe-line);
+  border-radius: 8px;
+  background: #fffdfa;
+}
+
+.governanceReviewTrack span {
+  color: var(--safe-muted);
+  font-size: 13px;
+}
+
+.warningBox {
+  border-color: #e8c79d;
+  background: #fff8ee;
+}
+
+@media (max-width: 900px) {
+  .governanceGrid,
+  .governanceFieldGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .governanceReviewTrack {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 520px) {
   .landingMode {
     padding: 12px;
