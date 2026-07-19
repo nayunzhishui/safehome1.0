@@ -74,10 +74,76 @@ def get_growth_overview():
         feedback_rows = rows_to_dicts(
             conn.execute(
                 """
-                SELECT id, title, body, message_type, created_at
+                SELECT id, title, body, message_type, status, created_at
                 FROM messages
                 WHERE user_id = ?
                   AND message_type IN ('relationship_stage_feedback', 'researcher_message', 'relationship_report')
+                ORDER BY created_at DESC
+                LIMIT 20
+                """,
+                (user_id,),
+            ).fetchall()
+        )
+        feedback_stats = conn.execute(
+            """
+            SELECT COUNT(*) AS count,
+                   SUM(CASE WHEN status = 'unread' THEN 1 ELSE 0 END) AS unread_count
+            FROM messages
+            WHERE user_id = ?
+              AND message_type IN ('relationship_stage_feedback', 'researcher_message', 'relationship_report')
+            """,
+            (user_id,),
+        ).fetchone()
+        latest_enrollment = conn.execute(
+            """
+            SELECT id, status, review_status, created_at
+            FROM relationship_pilot_enrollments
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+            """,
+            (user_id,),
+        ).fetchone()
+        relationship_counts = conn.execute(
+            """
+            SELECT
+              (SELECT COUNT(*) FROM relationship_pilot_enrollments WHERE user_id = ?) AS enrollment_count,
+              (SELECT COUNT(*) FROM relationship_pilot_tasks WHERE user_id = ?) AS task_count,
+              (SELECT COUNT(*) FROM relationship_longitudinal_entries WHERE user_id = ?) AS longitudinal_count,
+              (SELECT COUNT(*) FROM relationship_screening_reports WHERE user_id = ?) AS report_count
+            """,
+            (user_id, user_id, user_id, user_id),
+        ).fetchone()
+        relationship_tasks = rows_to_dicts(
+            conn.execute(
+                """
+                SELECT id, task_type, review_status, created_at
+                FROM relationship_pilot_tasks
+                WHERE user_id = ?
+                ORDER BY created_at DESC
+                LIMIT 20
+                """,
+                (user_id,),
+            ).fetchall()
+        )
+        relationship_entries = rows_to_dicts(
+            conn.execute(
+                """
+                SELECT id, entry_type, review_status, created_at
+                FROM relationship_longitudinal_entries
+                WHERE user_id = ?
+                ORDER BY created_at DESC
+                LIMIT 20
+                """,
+                (user_id,),
+            ).fetchall()
+        )
+        relationship_reports = rows_to_dicts(
+            conn.execute(
+                """
+                SELECT id, version, status, created_at
+                FROM relationship_screening_reports
+                WHERE user_id = ?
                 ORDER BY created_at DESC
                 LIMIT 20
                 """,
@@ -168,9 +234,56 @@ def get_growth_overview():
         }
         for item in feedback_rows
     )
+    timeline.extend(
+        {
+            "id": item["id"],
+            "type": "relationship_task",
+            "type_label": "关系探索",
+            "title": "完成了一次关系探索任务",
+            "summary": "任务状态已记录，具体内容仍在原记录中查看。",
+            "created_at": item["created_at"],
+        }
+        for item in relationship_tasks
+    )
+    timeline.extend(
+        {
+            "id": item["id"],
+            "type": "relationship_record",
+            "type_label": "关系连续记录",
+            "title": "留下了一次关系探索记录",
+            "summary": "本次只汇总记录事实，不自动解释关系变化。",
+            "created_at": item["created_at"],
+        }
+        for item in relationship_entries
+    )
+    timeline.extend(
+        {
+            "id": item["id"],
+            "type": "relationship_report",
+            "type_label": "关系阶段报告",
+            "title": f"关系阶段报告 · {item['version']}",
+            "summary": "报告与测评量尺分开呈现，需要时可回到关系探索中查看。",
+            "created_at": item["created_at"],
+        }
+        for item in relationship_reports
+    )
     timeline.sort(key=lambda item: item["created_at"] or "", reverse=True)
 
     activity_count = len(diaries) + len(checkins) + len(assessments) + len(programs)
+    record_count = len(diaries) + len(programs) + len(weekly_reports)
+    completed_practice_count = sum(1 for item in checkins if item["completed"])
+    assessment_group_rows = [
+        {"worksheet_id": worksheet_id, "title": rows[0]["title"], "items": list(reversed(rows))}
+        for worksheet_id, rows in assessment_groups.items()
+    ]
+    relationship_count_data = {
+        "enrollment_count": int(relationship_counts["enrollment_count"] or 0),
+        "task_count": int(relationship_counts["task_count"] or 0),
+        "longitudinal_count": int(relationship_counts["longitudinal_count"] or 0),
+        "report_count": int(relationship_counts["report_count"] or 0),
+    }
+    feedback_count = int(feedback_stats["count"] or 0)
+    feedback_unread_count = int(feedback_stats["unread_count"] or 0)
     if activity_count == 0:
         next_step = "可以先完成一次情绪温度记录、情绪日记或支持性测评，给自己留下一个起点。"
     elif not checkins:
@@ -182,15 +295,44 @@ def get_growth_overview():
         {
             "summary": {
                 "record_count": activity_count,
-                "practice_count": sum(1 for item in checkins if item["completed"]),
-                "feedback_count": len(feedback_rows),
+                "practice_count": completed_practice_count,
+                "feedback_count": feedback_count,
                 "next_step": next_step,
             },
+            "sections": {
+                "activity": {
+                    "available": bool(record_count or checkins),
+                    "record_count": record_count,
+                    "practice_count": completed_practice_count,
+                },
+                "assessments": {
+                    "available": bool(assessment_group_rows),
+                    "record_count": len(assessments),
+                    "group_count": len(assessment_group_rows),
+                    "repeat_group_count": sum(1 for group in assessment_group_rows if len(group["items"]) >= 2),
+                },
+                "relationship": {
+                    "available": relationship_count_data["enrollment_count"] > 0,
+                    **relationship_count_data,
+                    "latest_enrollment_id": latest_enrollment["id"] if latest_enrollment else None,
+                    "status": latest_enrollment["status"] if latest_enrollment else None,
+                    "review_status": latest_enrollment["review_status"] if latest_enrollment else None,
+                },
+                "researcher_feedback": {
+                    "available": feedback_count > 0,
+                    "count": feedback_count,
+                    "unread_count": feedback_unread_count,
+                    "latest": {
+                        "id": feedback_rows[0]["id"],
+                        "title": feedback_rows[0]["title"],
+                        "created_at": feedback_rows[0]["created_at"],
+                    }
+                    if feedback_rows
+                    else None,
+                },
+            },
             "thermometer": list(reversed(thermometer)),
-            "assessment_groups": [
-                {"worksheet_id": worksheet_id, "title": rows[0]["title"], "items": list(reversed(rows))}
-                for worksheet_id, rows in assessment_groups.items()
-            ],
+            "assessment_groups": assessment_group_rows,
             "timeline": timeline[:50],
             "boundary_notice": "本页只汇总你已保存的记录。不同量尺分开呈现；记录变化不等于诊断、能力评价或疗效证明。",
         }

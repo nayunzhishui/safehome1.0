@@ -117,10 +117,19 @@ Page({
   },
 
   onLoad(options) {
+    const isDetail = options.detail === "1";
+    if (!isDetail) {
+      this.redirectingToUnified = true;
+      const enrollmentId = decodeURIComponent(options.enrollment_id || "");
+      const suffix = enrollmentId ? `&enrollment_id=${encodeURIComponent(enrollmentId)}` : "";
+      wx.redirectTo({ url: `/pages/growth-dashboard/index?section=relationship${suffix}` });
+      return;
+    }
     this.setData({ enrollmentId: decodeURIComponent(options.enrollment_id || "") });
   },
 
   onShow() {
+    if (this.redirectingToUnified) return;
     this.loadGrowth();
   },
 

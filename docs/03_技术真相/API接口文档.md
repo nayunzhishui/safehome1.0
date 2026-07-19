@@ -1855,12 +1855,16 @@ relationship_initiation_intention_action
 | 字段 | 说明 |
 |---|---|
 | `summary` | 观察与练习总数、完成练习数、人工反馈数和下一小步 |
+| `sections.activity` | 记录数、完成练习数和是否有数据；不包含测评分值 |
+| `sections.assessments` | 测评记录数、量表组数和可比较的重复量表组数 |
+| `sections.relationship` | 关系探索报名、任务、连续记录和阶段报告数量，以及最近报名ID |
+| `sections.researcher_feedback` | 研究者反馈总数、未读数和最近一条最小摘要 |
 | `thermometer` | 最近 30 次 1—10 分情绪温度，按时间返回 |
 | `assessment_groups` | 按 `worksheet_id` 分组的最近测评记录，不混合不同量尺 |
-| `timeline` | 最近 50 条日记、训练、测评、项目、本周复盘和人工反馈事件 |
+| `timeline` | 最近 50 条日记、训练、测评、项目、本周复盘、关系探索和人工反馈事件 |
 | `boundary_notice` | 非诊断、非疗效证明边界 |
 
-该接口不生成跨量尺总分，也不因单次记录判断改善或恶化。
+该接口不生成跨量尺总分或单一成长分数，也不因单次记录判断改善或恶化。原`summary/thermometer/assessment_groups/timeline`字段继续兼容；`sections`为T23-04新增的统一成长入口分区事实。
 
 ### `POST /api/feedback/generate` 任务二十补充
 

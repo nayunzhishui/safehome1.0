@@ -182,6 +182,8 @@ Page({
   },
 
   openGrowth() {
-    wx.navigateTo({ url: `/pages/relationship-growth/index?enrollment_id=${encodeURIComponent(this.data.enrollment.id)}` });
+    wx.navigateTo({
+      url: `/pages/growth-dashboard/index?section=relationship&enrollment_id=${encodeURIComponent(this.data.enrollment.id)}`,
+    });
   },
 });

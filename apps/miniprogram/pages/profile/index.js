@@ -40,14 +40,8 @@ Page({
       },
       {
         title: "我的成长仪表盘",
-        subtitle: "分开查看记录、练习、测评与人工反馈",
+        subtitle: "分开查看记录、测评、关系探索与人工反馈",
         url: "/pages/growth-dashboard/index",
-        private: true,
-      },
-      {
-        title: "关系探索成长仪表盘",
-        subtitle: "查看多次测评、任务、事件和变化记录",
-        url: "/pages/relationship-growth/index",
         private: true,
       },
     ],

@@ -276,3 +276,13 @@
 - 修改文件：backend Journey/feedback ledger/privacy/research routes和services、数据库schema、shared契约、小程序首页/四类反馈页面/共享组件、Web隐私中心/研究工作台、API/数据库/计划/验收及事实文档。
 - 验证情况：内容校验通过；修复后专项24项、后端全量325项、Web typecheck/build、小程序57 JS/53 JSON、Playwright七步与双视口通过。
 - 后续事项：T23-04或T24-02；D01—D26和临时展示越权未处理前，TA-03以后、真实参与者和AI用户输出保持关闭。
+
+### 2026-07-19：Codex执行T23-04统一成长入口
+
+- 使用时间：2026-07-19（Asia/Shanghai）。
+- 使用工具：Codex；使用 `implement` 和 `frontend-design` 技能；未启动Claude Code会话。
+- /RESUME地址：无Claude `/RESUME`地址；恢复入口为 `docs/02_专项进度与验收/任务二十三T23-04统一成长入口执行记录_20260719.md`。
+- 对话摘要：先推送上一轮提交，再将参与者成长信息收口为四条相互独立的证据线；保留旧接口字段和关系成长详情兼容路径，不引入总分或诊断化判断。
+- 修改文件：成长总览后端、shared/Web契约、小程序统一成长页及关系试点跳转、T23-04测试、API与任务/事实文档。
+- 验证情况：T23-04新增3项、相关15项通过；内容校验、后端全量328项、Web typecheck/build、小程序57个JS/53个JSON和 `git diff --check`通过；后端仅有既有jieba/pkg_resources弃用警告。
+- 后续事项：执行T23-05；微信开发者工具、真机和CloudBase真实数据验收仍属于外部步骤，临时展示越权继续保留。

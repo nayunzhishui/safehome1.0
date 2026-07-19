@@ -495,6 +495,66 @@ export interface FeedbackLedgerSummary {
   boundary_notice: string;
 }
 
+export interface GrowthOverviewSections {
+  activity: {
+    available: boolean;
+    record_count: number;
+    practice_count: number;
+  };
+  assessments: {
+    available: boolean;
+    record_count: number;
+    group_count: number;
+    repeat_group_count: number;
+  };
+  relationship: {
+    available: boolean;
+    enrollment_count: number;
+    task_count: number;
+    longitudinal_count: number;
+    report_count: number;
+    latest_enrollment_id?: ID | null;
+    status?: string | null;
+    review_status?: string | null;
+  };
+  researcher_feedback: {
+    available: boolean;
+    count: number;
+    unread_count: number;
+    latest?: { id: ID; title?: string | null; created_at: ISODateTime } | null;
+  };
+}
+
+export interface GrowthOverview {
+  summary: {
+    record_count: number;
+    practice_count: number;
+    feedback_count: number;
+    next_step: string;
+  };
+  sections: GrowthOverviewSections;
+  thermometer: Array<{
+    id: ID;
+    intensity_level: number;
+    emotion_label?: string | null;
+    created_at: ISODateTime;
+  }>;
+  assessment_groups: Array<{
+    worksheet_id: ID;
+    title: string;
+    items: Array<{ id: ID; title: string; value?: number | null; created_at: ISODateTime }>;
+  }>;
+  timeline: Array<{
+    id: ID;
+    type: string;
+    type_label: string;
+    title: string;
+    summary: string;
+    created_at: ISODateTime;
+  }>;
+  boundary_notice: string;
+}
+
 export interface ProgressSummary {
   user_id: ID;
   range: "7d" | "14d" | "30d" | string;

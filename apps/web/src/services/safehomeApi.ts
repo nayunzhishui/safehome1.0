@@ -26,6 +26,7 @@ import type {
   FeedbackResult,
   Goal,
   GoalInput,
+  GrowthOverview,
   ListResponse,
   ModelInfo,
   ParentAssessmentInput,
@@ -175,6 +176,10 @@ export class SafeHomeApiClient {
 
   getTodayJourney(params: { user_id?: string } = {}): Promise<TodayJourney> {
     return this.requestData<TodayJourney>(this.withQuery(API_ENDPOINTS.journeyToday, this.withDefaultUserParam(params)));
+  }
+
+  getGrowthOverview(params: { user_id?: string } = {}): Promise<GrowthOverview> {
+    return this.requestData<GrowthOverview>(this.withQuery(API_ENDPOINTS.growthOverview, this.withDefaultUserParam(params)));
   }
 
   createFeedbackLedgerEntry(input: FeedbackLedgerInput): Promise<FeedbackLedgerEntry> {
