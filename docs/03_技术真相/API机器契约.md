@@ -12,6 +12,17 @@
 | POST | `/api/admin/worksheets` | admin:admin | role_scoped | — | — | active |
 | DELETE | `/api/admin/worksheets/<worksheet_id>` | admin:admin | role_scoped | — | — | active |
 | PUT | `/api/admin/worksheets/<worksheet_id>` | admin:admin | role_scoped | — | — | active |
+| GET | `/api/ai-qa/config` | public:public | not_applicable_or_development_legacy | — | — | active |
+| POST | `/api/ai-qa/evaluation/<run_id>/reviews` | role:supervisor,admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| POST | `/api/ai-qa/evaluation/run` | role:researcher,supervisor,admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| POST | `/api/ai-qa/kill-switch` | role:admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| POST | `/api/ai-qa/messages/<message_id>/feedback` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
+| GET | `/api/ai-qa/review/evidence` | role:researcher,supervisor,admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| GET | `/api/ai-qa/sessions` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
+| POST | `/api/ai-qa/sessions` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
+| DELETE | `/api/ai-qa/sessions/<session_id>` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
+| GET | `/api/ai-qa/sessions/<session_id>` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
+| POST | `/api/ai-qa/sessions/<session_id>/messages` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
 | GET | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | page/page_size | — | active |
 | POST | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/assessment-results/<result_id>` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |

@@ -37,6 +37,16 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path.startswith("/api/ai-qa/"):
+        if path == "/api/ai-qa/config":
+            return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
+        if path == "/api/ai-qa/kill-switch":
+            return {"mode": "role", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        if path.endswith("/reviews"):
+            return {"mode": "role", "roles": ["supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        if path in {"/api/ai-qa/evaluation/run", "/api/ai-qa/review/evidence"}:
+            return {"mode": "role", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        return {"mode": "role", "roles": ["researcher", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if module.endswith("routes.admin"):
         return {"mode": "admin", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path.startswith("/api/research/"):
@@ -70,6 +80,10 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+    if path.startswith("/api/ai-qa/sessions") or path.startswith("/api/ai-qa/messages"):
+        return "own_synthetic_research_sessions_only"
+    if path.startswith("/api/ai-qa/") and access["mode"] != "public":
+        return "internal_synthetic_evidence_role_scoped"
     if path.startswith("/api/research/"):
         return "assigned_participants_for_researcher_full_for_supervisor_admin"
     if path.startswith("/api/privacy/admin/"):
@@ -107,6 +121,14 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
     body_fields = set(re.findall(r"payload\.get\(\s*['\"]([^'\"]+)['\"]", source))
     body_fields.update(re.findall(r"payload\[\s*['\"]([^'\"]+)['\"]\s*\]", source))
     headers = sorted(set(re.findall(r"request\.headers\.get\(\s*['\"]([^'\"]+)['\"]", source)))
+    ai_body_fields = {
+        ("/api/ai-qa/sessions", "POST"): ["synthetic_data", "research_use_allowed"],
+        ("/api/ai-qa/sessions/<session_id>/messages", "POST"): ["text", "synthetic_data", "fake_mode", "tools"],
+        ("/api/ai-qa/messages/<message_id>/feedback", "POST"): ["evaluation", "note", "research_use_allowed"],
+        ("/api/ai-qa/evaluation/<run_id>/reviews", "POST"): ["decision", "evidence_path", "note"],
+        ("/api/ai-qa/kill-switch", "POST"): ["killed", "reason"],
+    }
+    body_fields.update(ai_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),
@@ -118,10 +140,16 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
     }
 
 
-def _error_codes(source: str, access: dict[str, Any]) -> list[str]:
+def _error_codes(path: str, source: str, access: dict[str, Any]) -> list[str]:
     codes = set(re.findall(r"fail\(\s*['\"]([a-z0-9_]+)['\"]", source))
     if access["mode"] != "public":
         codes.update(["unauthorized", "forbidden"])
+    if path.startswith("/api/ai-qa/"):
+        codes.update(["ai_qa_sandbox_disabled", "ai_qa_killed", "validation_error"])
+        if "/sessions" in path or "/messages" in path:
+            codes.update(["not_found", "synthetic_data_required", "research_use_not_authorized", "ai_qa_rate_limited", "ai_qa_budget_exhausted", "ai_qa_tools_forbidden"])
+        if path == "/api/ai-qa/kill-switch":
+            codes.add("human_gate_required")
     codes.update(["internal_error", "http_error"])
     return sorted(codes)
 
@@ -136,6 +164,7 @@ def _enum_refs(path: str) -> list[str]:
         ("/messages", "message_status"),
         ("/supervision", "supervision_status"),
         ("/relationship-pilot", "relationship_pilot_status"),
+        ("/ai-qa/", "ai_qa_route"),
     ]
     for token, ref in mapping:
         if token in path:
@@ -171,7 +200,7 @@ def build_contract(flask_app) -> dict[str, Any]:
                         "data_contract": f"{module}.{getattr(view_func, '__name__', rule.endpoint)}.data",
                     },
                     "error_envelope": {"ok": False, "error": {"code": "string", "message": "string"}, "request_id": "string"},
-                    "error_codes": _error_codes(source, access),
+                    "error_codes": _error_codes(path, source, access),
                     "enum_refs": _enum_refs(path),
                     "deprecation": {"status": "active", "remove_after": None, "replacement": None},
                 }

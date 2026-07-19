@@ -2005,3 +2005,20 @@ relationship_initiation_intention_action
 
 参数`window_days`为1至90。返回角色范围内各状态数量、超时、租约过期、关闭原因、动作量和每日新增/关闭趋势。接口明确声明这些数据只用于排班和可靠性观察，不用于评价心理支持质量或参与者好坏。
 
+## 2026-07-20：受控AI合成研究沙盒
+
+`GET /api/ai-qa/config`公开返回“参与者未开放”、fake provider、沙盒是否停用和未决治理状态，不返回停用原因、操作者、密钥或内部提示。小程序只接入这一状态接口，没有参与者问答、创建会话或发送消息方法。
+
+| 接口 | 权限与用途 |
+|---|---|
+| `GET/POST /api/ai-qa/sessions` | researcher/admin只列出或新建自己的明确合成会话 |
+| `GET/DELETE /api/ai-qa/sessions/<id>` | 会话本人读取；删除移除消息与评价原文，重复删除幂等 |
+| `POST /api/ai-qa/sessions/<id>/messages` | 会话本人提交合成文本；前检、批准内容检索、fake provider、后检和安全降级 |
+| `POST /api/ai-qa/messages/<id>/feedback` | 回答所属研究者纠错；不能通过评价取得研究/训练授权 |
+| `POST /api/ai-qa/evaluation/run` | researcher/supervisor/admin运行固定合成安全集 |
+| `GET /api/ai-qa/review/evidence` | researcher只看自己的证据，supervisor/admin看内部全量；不返回原始提示词 |
+| `POST /api/ai-qa/evaluation/<id>/reviews` | supervisor/admin登记内部复核证据，不改变参与者开关 |
+| `POST /api/ai-qa/kill-switch` | admin只允许停用；接口拒绝重新开启 |
+
+回答只检索T27中`published`且存在`active`发布包的训练卡、课程、FAQ和边界文本，并携带内容ID、版本ID、发布ID、哈希和治理状态。高风险、诊断/药物/治疗越界、隐私索取、提示注入和写工具请求不调用普通生成；来源不足明确“不知道”。限流、预算、超时、三次失败熔断、HMAC审计和`AI_QA_ENABLED=0`由服务端控制。临时展示越权不改变这些API角色或对象权限，也不能作为正式验收证据。
+

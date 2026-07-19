@@ -34,7 +34,11 @@ SCOPE_TABLES = {
     "feedback_and_training": (
         "feedback_results", "feedback_ledger", "checkins", "weekly_reports", "supervision_requests",
     ),
-    "messages_and_notifications": ("messages", "notification_preferences", "notification_deliveries"),
+    "messages_and_notifications": (
+        "messages", "notification_preferences", "notification_deliveries",
+        "ai_qa_feedback", "ai_qa_messages", "ai_qa_safety_events",
+        "ai_qa_provider_events", "ai_qa_sessions",
+    ),
     "relationship_pilot": (
         "relationship_pilot_enrollments", "relationship_screening_reports", "relationship_pilot_tasks",
         "relationship_research_notes", "relationship_narratives", "relationship_longitudinal_entries",
@@ -50,7 +54,8 @@ DIRECT_USER_TABLES = {
     "checkins", "weekly_reports", "supervision_requests", "messages", "notification_preferences",
     "notification_deliveries", "relationship_pilot_enrollments", "relationship_screening_reports",
     "relationship_pilot_tasks", "relationship_narratives", "relationship_longitudinal_entries",
-    "relationship_hypothesis_feedback", "records",
+    "relationship_hypothesis_feedback", "records", "ai_qa_feedback", "ai_qa_messages",
+    "ai_qa_safety_events", "ai_qa_provider_events", "ai_qa_sessions",
 }
 
 
@@ -147,7 +152,7 @@ def export_participant_privacy_summary(user_id: str) -> dict:
         privacy_rows = conn.execute("SELECT id, request_type, status, created_at, updated_at FROM privacy_requests WHERE user_id = ? ORDER BY created_at DESC", (user_id,)).fetchall()
         return {
             "user_id": user_id,
-            "counts": {"goals": count_for_user(conn, "goals"), "diaries": count_for_user(conn, "emotion_diaries"), "feedback": count_for_user(conn, "feedback_results"), "checkins": count_for_user(conn, "checkins"), "profiles": count_for_user(conn, "student_profiles"), "parent_assessments": count_for_user(conn, "parent_assessment_submissions"), "supervision": count_for_user(conn, "supervision_requests")},
+            "counts": {"goals": count_for_user(conn, "goals"), "diaries": count_for_user(conn, "emotion_diaries"), "feedback": count_for_user(conn, "feedback_results"), "checkins": count_for_user(conn, "checkins"), "profiles": count_for_user(conn, "student_profiles"), "parent_assessments": count_for_user(conn, "parent_assessment_submissions"), "supervision": count_for_user(conn, "supervision_requests"), "ai_qa_sessions": count_for_user(conn, "ai_qa_sessions")},
             "consent_status": [_latest_consent_status(conn, user_id, consent_type) for consent_type in CONSENT_TYPES_FOR_STATUS],
             "privacy_requests": rows_to_dicts(privacy_rows),
             "boundary_notice": "该摘要不包含自由文本原文、联系方式、后台审计 metadata 或风险处置私密备注。",

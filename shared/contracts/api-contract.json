@@ -370,6 +370,743 @@
       }
     },
     {
+      "operation_id": "ai_qa.ai_qa_config.get",
+      "method": "GET",
+      "path": "/api/ai-qa/config",
+      "handler": "ai_qa.ai_qa_config",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "public",
+        "roles": [
+          "public"
+        ],
+        "legacy_admin_token": false,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "not_applicable_or_development_legacy",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_config.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_killed",
+        "ai_qa_sandbox_disabled",
+        "http_error",
+        "internal_error",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_evaluation_review.post",
+      "method": "POST",
+      "path": "/api/ai-qa/evaluation/<run_id>/reviews",
+      "handler": "ai_qa.ai_qa_evaluation_review",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_synthetic_evidence_role_scoped",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "run_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [
+          "decision",
+          "evidence_path",
+          "note"
+        ],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_evaluation_review.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_killed",
+        "ai_qa_sandbox_disabled",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_evaluation_run.post",
+      "method": "POST",
+      "path": "/api/ai-qa/evaluation/run",
+      "handler": "ai_qa.ai_qa_evaluation_run",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_synthetic_evidence_role_scoped",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_evaluation_run.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_killed",
+        "ai_qa_sandbox_disabled",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_kill_switch.post",
+      "method": "POST",
+      "path": "/api/ai-qa/kill-switch",
+      "handler": "ai_qa.ai_qa_kill_switch",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_synthetic_evidence_role_scoped",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [
+          "killed",
+          "reason"
+        ],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_kill_switch.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_killed",
+        "ai_qa_sandbox_disabled",
+        "forbidden",
+        "http_error",
+        "human_gate_required",
+        "internal_error",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_message_feedback.post",
+      "method": "POST",
+      "path": "/api/ai-qa/messages/<message_id>/feedback",
+      "handler": "ai_qa.ai_qa_message_feedback",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "own_synthetic_research_sessions_only",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "message_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [
+          "evaluation",
+          "note",
+          "research_use_allowed"
+        ],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_message_feedback.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_budget_exhausted",
+        "ai_qa_killed",
+        "ai_qa_rate_limited",
+        "ai_qa_sandbox_disabled",
+        "ai_qa_tools_forbidden",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "research_use_not_authorized",
+        "synthetic_data_required",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "message_status",
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_review_evidence.get",
+      "method": "GET",
+      "path": "/api/ai-qa/review/evidence",
+      "handler": "ai_qa.ai_qa_review_evidence",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_synthetic_evidence_role_scoped",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_review_evidence.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_killed",
+        "ai_qa_sandbox_disabled",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_sessions.get",
+      "method": "GET",
+      "path": "/api/ai-qa/sessions",
+      "handler": "ai_qa.ai_qa_sessions",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "own_synthetic_research_sessions_only",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_sessions.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_budget_exhausted",
+        "ai_qa_killed",
+        "ai_qa_rate_limited",
+        "ai_qa_sandbox_disabled",
+        "ai_qa_tools_forbidden",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "research_use_not_authorized",
+        "synthetic_data_required",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_session_create.post",
+      "method": "POST",
+      "path": "/api/ai-qa/sessions",
+      "handler": "ai_qa.ai_qa_session_create",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "own_synthetic_research_sessions_only",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [
+          "research_use_allowed",
+          "synthetic_data"
+        ],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_session_create.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_budget_exhausted",
+        "ai_qa_killed",
+        "ai_qa_rate_limited",
+        "ai_qa_sandbox_disabled",
+        "ai_qa_tools_forbidden",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "research_use_not_authorized",
+        "synthetic_data_required",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_session_delete.delete",
+      "method": "DELETE",
+      "path": "/api/ai-qa/sessions/<session_id>",
+      "handler": "ai_qa.ai_qa_session_delete",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "own_synthetic_research_sessions_only",
+      "request": {
+        "content_type": null,
+        "path_parameters": [
+          "session_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_session_delete.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_budget_exhausted",
+        "ai_qa_killed",
+        "ai_qa_rate_limited",
+        "ai_qa_sandbox_disabled",
+        "ai_qa_tools_forbidden",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "research_use_not_authorized",
+        "synthetic_data_required",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_session_detail.get",
+      "method": "GET",
+      "path": "/api/ai-qa/sessions/<session_id>",
+      "handler": "ai_qa.ai_qa_session_detail",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "own_synthetic_research_sessions_only",
+      "request": {
+        "content_type": null,
+        "path_parameters": [
+          "session_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_session_detail.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_budget_exhausted",
+        "ai_qa_killed",
+        "ai_qa_rate_limited",
+        "ai_qa_sandbox_disabled",
+        "ai_qa_tools_forbidden",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "research_use_not_authorized",
+        "synthetic_data_required",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_message_create.post",
+      "method": "POST",
+      "path": "/api/ai-qa/sessions/<session_id>/messages",
+      "handler": "ai_qa.ai_qa_message_create",
+      "module": "routes.ai_qa",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "own_synthetic_research_sessions_only",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "session_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [
+          "fake_mode",
+          "synthetic_data",
+          "text",
+          "tools"
+        ],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ai_qa.ai_qa_message_create.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "ai_qa_budget_exhausted",
+        "ai_qa_killed",
+        "ai_qa_rate_limited",
+        "ai_qa_sandbox_disabled",
+        "ai_qa_tools_forbidden",
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "research_use_not_authorized",
+        "synthetic_data_required",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "message_status",
+        "ai_qa_route"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
       "operation_id": "assessments.list_assessment_results.get",
       "method": "GET",
       "path": "/api/assessment-results",

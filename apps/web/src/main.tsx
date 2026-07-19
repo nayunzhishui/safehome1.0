@@ -35,6 +35,7 @@ const RulesManagement = lazy(() => import("./pages/RulesManagement").then((modul
 const ScalesReview = lazy(() => import("./pages/ScalesReview").then((module) => ({ default: module.ScalesReview })));
 const SupervisionManagement = lazy(() => import("./pages/SupervisionManagement").then((module) => ({ default: module.SupervisionManagement })));
 const WorksheetsManagement = lazy(() => import("./pages/WorksheetsManagement").then((module) => ({ default: module.WorksheetsManagement })));
+const AiQaSandboxPage = lazy(() => import("./pages/AiQaSandboxPage").then((module) => ({ default: module.AiQaSandboxPage })));
 
 interface AdminLink {
   href: string;
@@ -59,6 +60,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/privacy-requests", label: "隐私申请", match: (p) => p === "/privacy-requests", roles: ["admin", "supervisor"] },
   { href: "/goals", label: "目标管理", match: (p) => p === "/goals", roles: ["admin", "researcher"] },
   { href: "/content/rules", label: "反馈规则", match: (p) => p === "/content/rules", roles: ["admin", "researcher"] },
+  { href: "/ai-sandbox", label: "AI 合成沙盒", match: (p) => p === "/ai-sandbox", roles: ["admin", "researcher", "supervisor"] },
   { href: "/export", label: "数据导出", match: (p) => p === "/export", roles: ["admin", "researcher"] },
   { href: "/integration-test", label: "联调测试", match: (p) => p === "/integration-test", roles: ["admin"] },
   { href: "/privacy", label: "隐私中心", match: (p) => p === "/privacy" },
@@ -152,6 +154,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isFeedbackPath = path === "/feedback";
   const isPrivacyRequestsPath = path === "/privacy-requests";
   const isFamilyPath = path === "/family" || path.startsWith("/family/");
+  const isAiQaSandboxPath = path === "/ai-sandbox";
   const isKnownAdminPath = [
     "/dashboard",
     "/goals",
@@ -171,6 +174,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/export",
     "/integration-test",
     "/family",
+    "/ai-sandbox",
   ].some((route) => path === route || path.startsWith(`${route}/`));
   const matchedAdminLink = findAdminLink(path);
   const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink, authUser, showcaseEnabled);
@@ -186,6 +190,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isReviewsPath &&
     !isPrivacyRequestsPath &&
     !isFamilyPath &&
+    !isAiQaSandboxPath &&
     !isSupervisionPath &&
     !isContentReviewPath &&
     !isScalesPath &&
@@ -226,6 +231,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isReviewsPath ? <ReviewManagement /> : null}
       {isPrivacyRequestsPath ? <PrivacyRequestsManagement /> : null}
       {isFamilyPath ? <FamilyBindPage /> : null}
+      {isAiQaSandboxPath ? <AiQaSandboxPage /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}

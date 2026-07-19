@@ -1,6 +1,12 @@
 import { API_ENDPOINTS } from "../../../../shared/constants/api";
 import type {
   ApiResponse,
+  AiQaAnswer,
+  AiQaConfig,
+  AiQaEvaluationReview,
+  AiQaEvaluationRun,
+  AiQaReviewEvidence,
+  AiQaSession,
   AdminWorksheet,
   AdminWorksheetInput,
   AssessmentProfilePosition,
@@ -765,6 +771,50 @@ export class SafeHomeApiClient {
 
   replayContentGovernance(cases: ContentReplayCase[], adminToken?: string): Promise<ContentReplayResult> {
     return this.requestData(API_ENDPOINTS.contentGovernanceReplay, { method: "POST", body: { cases }, headers: this.adminHeaders(adminToken) });
+  }
+
+  getAiQaConfig(): Promise<AiQaConfig> {
+    return this.requestData(API_ENDPOINTS.aiQaConfig);
+  }
+
+  listAiQaSessions(): Promise<ListResponse<AiQaSession>> {
+    return this.requestData(API_ENDPOINTS.aiQaSessions);
+  }
+
+  createAiQaSession(): Promise<AiQaSession> {
+    return this.requestData(API_ENDPOINTS.aiQaSessions, { method: "POST", body: { synthetic_data: true, research_use_allowed: false } });
+  }
+
+  getAiQaSession(id: string): Promise<AiQaSession> {
+    return this.requestData(`${API_ENDPOINTS.aiQaSessions}/${encodeURIComponent(id)}`);
+  }
+
+  deleteAiQaSession(id: string): Promise<{ id: string; status: "deleted"; idempotent: boolean }> {
+    return this.requestData(`${API_ENDPOINTS.aiQaSessions}/${encodeURIComponent(id)}`, { method: "DELETE" });
+  }
+
+  sendAiQaMessage(sessionId: string, text: string, fakeMode = "normal"): Promise<AiQaAnswer> {
+    return this.requestData(`${API_ENDPOINTS.aiQaSessions}/${encodeURIComponent(sessionId)}/messages`, { method: "POST", body: { text, synthetic_data: true, fake_mode: fakeMode } });
+  }
+
+  saveAiQaFeedback(messageId: string, evaluation: "helpful" | "neutral" | "does_not_match" | "uncomfortable", note?: string): Promise<Record<string, unknown>> {
+    return this.requestData(`/api/ai-qa/messages/${encodeURIComponent(messageId)}/feedback`, { method: "POST", body: { evaluation, note, research_use_allowed: false } });
+  }
+
+  runAiQaEvaluation(): Promise<AiQaEvaluationRun> {
+    return this.requestData(`${API_ENDPOINTS.aiQaEvaluation}/run`, { method: "POST" });
+  }
+
+  getAiQaReviewEvidence(): Promise<AiQaReviewEvidence> {
+    return this.requestData(API_ENDPOINTS.aiQaReviewEvidence);
+  }
+
+  reviewAiQaEvaluation(runId: string, input: { decision: AiQaEvaluationReview["decision"]; evidence_path: string; note?: string }): Promise<AiQaEvaluationReview> {
+    return this.requestData(`${API_ENDPOINTS.aiQaEvaluation}/${encodeURIComponent(runId)}/reviews`, { method: "POST", body: input });
+  }
+
+  activateAiQaKillSwitch(reason: string): Promise<Record<string, unknown>> {
+    return this.requestData(API_ENDPOINTS.aiQaKillSwitch, { method: "POST", body: { killed: true, reason } });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {

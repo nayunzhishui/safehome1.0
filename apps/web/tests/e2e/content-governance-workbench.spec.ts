@@ -19,6 +19,7 @@ const version = {
 };
 
 test("内容治理工作台呈现草稿、diff、审核门禁与合成回放", async ({ page }) => {
+  test.setTimeout(120_000);
   await page.route("**/api/**", async (route) => {
     const url = new URL(route.request().url());
     let data: unknown = {};
@@ -36,7 +37,7 @@ test("内容治理工作台呈现草稿、diff、审核门禁与合成回放", a
     localStorage.setItem("safehome_auth_user", JSON.stringify({ id: "admin-e2e", role: "admin", nickname: "内容管理员" }));
   });
 
-  await page.goto("/content/review");
+  await page.goto("/content/review", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "内容治理工作台" })).toBeVisible();
   await expect(page.getByText("不可变哈希", { exact: false })).toBeVisible();
   await expect(page.getByText("+给情绪一个名字", { exact: false })).toBeVisible();

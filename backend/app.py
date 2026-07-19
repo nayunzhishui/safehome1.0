@@ -15,6 +15,7 @@ from werkzeug.exceptions import HTTPException
 from config import Config
 from database import check_database_health, get_connection, init_db
 from routes.admin import bp as admin_bp
+from routes.ai_qa import bp as ai_qa_bp
 from routes.assessments import bp as assessments_bp
 from routes.auth import bp as auth_bp
 from routes.cards import bp as cards_bp
@@ -60,6 +61,9 @@ REQUIRED_CONTENT_FILES = [
     "showcase_access.json",
     "privacy_retention_policy.json",
     "content_governance_manifest.json",
+    "ai_qa_governance.json",
+    "ai_qa_safety_responses.json",
+    "ai_qa_synthetic_safety_suite.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -194,6 +198,7 @@ def create_app(
         init_db()
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(ai_qa_bp)
     app.register_blueprint(goals_bp)
     app.register_blueprint(journey_bp)
     app.register_blueprint(diaries_bp)

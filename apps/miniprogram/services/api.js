@@ -100,6 +100,7 @@ const API_ENDPOINTS = {
   researchWorkItems: "/api/research/work-items",
   researchWorkItemMetrics: "/api/research/work-items/metrics",
   contentGovernanceActive: "/api/content-review/active",
+  aiQaConfig: "/api/ai-qa/config",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -968,6 +969,10 @@ function createSafeHomeApi(options = {}) {
 
     getActiveContentDescriptor(contentType, itemId) {
       return request(`${API_ENDPOINTS.contentGovernanceActive}/${encodeURIComponent(contentType)}/${encodeURIComponent(itemId)}`);
+    },
+
+    getAiQaConfig() {
+      return request(API_ENDPOINTS.aiQaConfig);
     },
 
     getParentAssessmentResult(id, params = {}) {

@@ -13,6 +13,7 @@ async function expectNoHorizontalOverflow(page: import("@playwright/test").Page)
 test("login and register expose keyboard focus, status and stable mobile width", async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/login");
+  await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "跳到主要内容" })).toBeFocused();
@@ -29,6 +30,7 @@ test("login and register expose keyboard focus, status and stable mobile width",
 
 
 test("family and access denied pages keep actions and explanations readable", async ({ page }, testInfo) => {
+  await page.route("**/api/showcase-access", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, data: { enabled: false, read_only_role_bypass: false } }) }));
   await page.route("**/api/auth/me", async (route) => {
     await route.fulfill({
       status: 200,
@@ -57,6 +59,7 @@ test("family and access denied pages keep actions and explanations readable", as
 
 
 test("server identity overrides a forged researcher role", async ({ page }) => {
+  await page.route("**/api/showcase-access", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, data: { enabled: false, read_only_role_bypass: false } }) }));
   await page.route("**/api/auth/me", async (route) => {
     await route.fulfill({
       status: 200,

@@ -1,0 +1,19 @@
+{
+  "schema_version": "safehome.ai-qa-governance.v1",
+  "version": "2026.07-task28-gate-v1",
+  "status": "blocked_human_review",
+  "participant_feature_enabled": false,
+  "sandbox_scope": "synthetic_only",
+  "decisions": {
+    "service_name": {"proposed": "支持性内容助手", "status": "owner_confirmation_required"},
+    "target_population": {"proposed": "完成独立批准后的低风险成年参与者或监护人", "status": "owner_confirmation_required"},
+    "allowed_scope": {"proposed": ["产品使用", "批准训练内容说明", "一般心理教育", "记录具体化", "人工与隐私入口导航"], "status": "joint_review_required"},
+    "provider": {"proposed": "undecided; local fake provider only", "status": "owner_security_review_required"},
+    "data_retention_and_region": {"proposed": "undecided", "status": "privacy_legal_review_required"},
+    "human_on_call": {"proposed": "undecided", "status": "operations_owner_required"},
+    "crisis_referral": {"proposed": "local reality support and emergency route to be confirmed", "status": "psychology_ethics_review_required"},
+    "shutdown_owner": {"proposed": "undecided", "status": "owner_required"}
+  },
+  "required_external_gates": ["T24隐私", "T31安全", "T32可靠性", "T34发布治理", "心理审核", "伦理/法律审核", "生产值守"],
+  "boundary_notice": "本文件只登记待决策项，不构成负责人、心理、伦理、法律、隐私、安全或生产批准。"
+}

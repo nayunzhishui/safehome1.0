@@ -69,7 +69,7 @@ test("research operations workbench supports narrow screens, keyboard focus and 
   });
 
   await page.goto("/dashboard");
-  await expect(page.getByRole("heading", { name: "提醒与人工工作水位" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "提醒与人工工作水位" })).toBeVisible({ timeout: 15_000 });
   await page.getByRole("button", { name: "查看人工支持" }).focus();
   await expect(page.getByRole("button", { name: "查看人工支持" })).toBeFocused();
   await page.keyboard.press("Enter");

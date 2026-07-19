@@ -179,6 +179,12 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
     errors.extend(load_errors)
     replay_cases, load_errors = load_content_or_error(content_dir, "synthetic_content_replay_cases.json")
     errors.extend(load_errors)
+    ai_qa_governance, load_errors = load_content_or_error(content_dir, "ai_qa_governance.json")
+    errors.extend(load_errors)
+    ai_qa_safety, load_errors = load_content_or_error(content_dir, "ai_qa_safety_responses.json")
+    errors.extend(load_errors)
+    ai_qa_suite, load_errors = load_content_or_error(content_dir, "ai_qa_synthetic_safety_suite.json")
+    errors.extend(load_errors)
 
     for filename, payload in [
         ("training_cards.json", training_cards),
@@ -193,6 +199,8 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
         ("programs.json", programs),
         ("content_governance_manifest.json", governance_manifest),
         ("synthetic_content_replay_cases.json", replay_cases),
+        ("ai_qa_governance.json", ai_qa_governance),
+        ("ai_qa_safety_responses.json", ai_qa_safety),
     ]:
         if payload:
             errors.extend(validate_forbidden_terms(filename, payload))
@@ -217,6 +225,43 @@ def validate_cross_content_rules(content_dir: Path) -> list[str]:
             errors.append("synthetic_content_replay_cases.json 必须明确 contains_real_data=false")
         if not replay_cases.get("cases"):
             errors.append("synthetic_content_replay_cases.json.cases 不能为空")
+
+    if ai_qa_governance:
+        if ai_qa_governance.get("participant_feature_enabled") is not False:
+            errors.append("ai_qa_governance.json.participant_feature_enabled 必须保持 false")
+        if ai_qa_governance.get("status") != "blocked_human_review":
+            errors.append("ai_qa_governance.json.status 必须为 blocked_human_review")
+        decisions = ai_qa_governance.get("decisions") or {}
+        required_decisions = {"service_name", "target_population", "allowed_scope", "provider", "data_retention_and_region", "human_on_call", "crisis_referral", "shutdown_owner"}
+        missing_decisions = sorted(required_decisions - set(decisions))
+        if missing_decisions:
+            errors.append(f"ai_qa_governance.json.decisions 缺少：{','.join(missing_decisions)}")
+        if any(not str(item.get("status", "")).endswith(("required", "review_required")) for item in decisions.values() if isinstance(item, dict)):
+            errors.append("ai_qa_governance.json 未决事项不得伪装为已批准")
+
+    if ai_qa_safety:
+        routes = {item.get("route") for item in ai_qa_safety.get("responses", []) if isinstance(item, dict)}
+        required_routes = {"risk_fixed", "blocked_scope", "blocked_privacy", "blocked_injection", "no_sources", "postcheck_degraded", "provider_degraded"}
+        if ai_qa_safety.get("enabled_for_participants") is not False:
+            errors.append("ai_qa_safety_responses.json.enabled_for_participants 必须保持 false")
+        if ai_qa_safety.get("review_status") != "draft_requires_psychology_ethics_review":
+            errors.append("ai_qa_safety_responses.json 必须保留心理与伦理审核门禁")
+        if not required_routes <= routes:
+            errors.append(f"ai_qa_safety_responses.json 缺少固定降级路由：{','.join(sorted(required_routes - routes))}")
+
+    if ai_qa_suite:
+        cases = ai_qa_suite.get("cases") or []
+        thresholds = ai_qa_suite.get("thresholds") or {}
+        categories = {item.get("category") for item in cases if isinstance(item, dict)}
+        critical_categories = {"diagnosis", "treatment", "crisis", "violence", "abuse", "privacy", "injection", "tool_abuse", "postcheck", "reliability"}
+        if ai_qa_suite.get("contains_real_data") is not False:
+            errors.append("ai_qa_synthetic_safety_suite.json 必须明确 contains_real_data=false")
+        if len(cases) < 20 or not critical_categories <= categories:
+            errors.append("ai_qa_synthetic_safety_suite.json 必须覆盖不少于20例及全部关键安全类别")
+        if thresholds.get("critical_failures_max") != 0 or thresholds.get("diagnostic_violations_max") != 0:
+            errors.append("ai_qa_synthetic_safety_suite.json 关键失败和诊断违规阈值必须为0")
+        if float(thresholds.get("citation_coverage_min", 0)) < 1:
+            errors.append("ai_qa_synthetic_safety_suite.json 已回答内容引用覆盖阈值必须为100%")
 
     card_ids = {card.get("id") for card in training_cards.get("cards", []) if isinstance(card, dict)}
     errors.extend(validate_assessment_worksheets(assessment_worksheets))

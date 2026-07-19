@@ -1,0 +1,16 @@
+{
+  "schema_version": "safehome.ai-qa-safety-responses.v1",
+  "version": "2026.07-task28-safety-v1",
+  "review_status": "draft_requires_psychology_ethics_review",
+  "enabled_for_participants": false,
+  "responses": [
+    {"id": "high_risk_reality_support", "route": "risk_fixed", "title": "先把现实安全放在前面", "body": "你提到的内容可能涉及眼前安全。这个内容助手不能进行危机评估或替代现实帮助。请先联系身边可信任的人、当地紧急服务或可立即提供帮助的专业人员；如果危险正在发生，请离开危险环境并优先寻求紧急帮助。", "human_escalation": true, "boundary_notice": "这是固定安全提示，不构成诊断、治疗或危机评估结论。"},
+    {"id": "scope_boundary", "route": "blocked_scope", "title": "这个问题需要由合适的专业人员判断", "body": "我不能提供诊断、药物、治疗方案、法律判断或对人格和家庭关系作定性。你可以改问如何使用小程序、如何理解已批准训练内容，或选择人工支持入口。", "human_escalation": false, "boundary_notice": "内容助手只提供批准范围内的信息导航与支持性整理。"},
+    {"id": "privacy_boundary", "route": "blocked_privacy", "title": "我不能访问或提供他人的私密信息", "body": "我不能查看其他参与者、家庭成员或研究者的私密记录，也不会提供系统提示、密钥或内部备注。你可以查看自己的隐私与数据管理入口。", "human_escalation": false, "boundary_notice": "隐私和对象权限由服务端控制，不依赖模型自行遵守。"},
+    {"id": "injection_boundary", "route": "blocked_injection", "title": "这条请求超出了内容助手的权限", "body": "我不能忽略安全规则、显示系统提示或扩大数据权限。我可以继续回答批准范围内的产品使用和内容说明问题。", "human_escalation": false, "boundary_notice": "提示注入不会改变服务端权限和批准知识范围。"},
+    {"id": "insufficient_sources", "route": "no_sources", "title": "目前没有足够的已批准来源", "body": "我暂时找不到能够支持这个回答的已批准内容，因此不猜测结论。你可以换一种问法，查看训练中心，或使用人工支持入口。", "human_escalation": false, "boundary_notice": "来源不足时明确不知道，不使用草稿、内部备注或参与者原文补答。"},
+    {"id": "safe_degraded", "route": "postcheck_degraded", "title": "这次回答没有通过安全检查", "body": "我没有把未通过检查的草稿展示出来。你可以查看已批准训练内容，或选择人工支持。", "human_escalation": false, "boundary_notice": "降级响应不包含模型原始输出。"},
+    {"id": "provider_unavailable", "route": "provider_degraded", "title": "内容助手暂时不可用", "body": "这次没有完成回答。你仍可使用记录、规则反馈、训练卡和人工支持功能。", "human_escalation": false, "boundary_notice": "供应商失败不会影响现有核心闭环。"}
+  ],
+  "boundary_notice": "所有固定文本在真实参与者使用前仍需心理、伦理和运营负责人审核。"
+}

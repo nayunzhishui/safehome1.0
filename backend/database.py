@@ -46,9 +46,17 @@ REQUIRED_HEALTH_TABLES = [
     "content_governance_versions",
     "content_governance_reviews",
     "content_governance_releases",
+    "ai_qa_sessions",
+    "ai_qa_messages",
+    "ai_qa_feedback",
+    "ai_qa_safety_events",
+    "ai_qa_provider_events",
+    "ai_qa_evaluation_runs",
+    "ai_qa_evaluation_reviews",
+    "ai_qa_runtime_control",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_015"
-CURRENT_SCHEMA_NAME = "content_governance_lifecycle"
+CURRENT_SCHEMA_VERSION = "2026_07_20_016"
+CURRENT_SCHEMA_NAME = "controlled_ai_qa_sandbox"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -210,6 +218,24 @@ MYSQL_VARCHAR_COLUMNS = {
     "previous_release_id",
     "release_reason",
     "released_by",
+    "context_policy",
+    "deleted_at",
+    "session_id",
+    "prompt_version",
+    "knowledge_version",
+    "message_id",
+    "request_hash",
+    "severity",
+    "outcome",
+    "provider",
+    "model_version",
+    "error_code",
+    "suite_version",
+    "provider_version",
+    "knowledge_snapshot_hash",
+    "run_id",
+    "changed_by",
+    "changed_at",
 }
 
 

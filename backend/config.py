@@ -73,6 +73,15 @@ class Config:
         "true",
         "yes",
     }
+    AI_QA_ENABLED = os.environ.get("AI_QA_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+    AI_QA_SANDBOX_ENABLED = os.environ.get(
+        "AI_QA_SANDBOX_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
+    AI_QA_PROVIDER = os.environ.get("AI_QA_PROVIDER", "fake").strip().lower()
+    AI_QA_REQUESTS_PER_HOUR = int(os.environ.get("AI_QA_REQUESTS_PER_HOUR", "30"))
+    AI_QA_DAILY_BUDGET_MICROS = int(os.environ.get("AI_QA_DAILY_BUDGET_MICROS", "0"))
+    AI_QA_TIMEOUT_MS = int(os.environ.get("AI_QA_TIMEOUT_MS", "3000"))
 
     @classmethod
     def validate(cls) -> None:
@@ -88,6 +97,10 @@ class Config:
                 raise RuntimeError(f"MySQL 模式缺少环境变量：{', '.join(missing)}")
         if cls.WECHAT_SUBSCRIBE_MODE not in {"once", "long_term"}:
             raise RuntimeError("WECHAT_SUBSCRIBE_MODE 只能是 once 或 long_term")
+        if cls.AI_QA_PROVIDER != "fake":
+            raise RuntimeError("当前工程阶段 AI_QA_PROVIDER 只允许 fake；真实供应商需独立批准和适配")
+        if cls.AI_QA_ENABLED:
+            raise RuntimeError("参与者AI问答门禁尚未批准，AI_QA_ENABLED 必须保持关闭")
         if cls.WECHAT_SUBSCRIBE_SEND_ENABLED:
             missing = [
                 name

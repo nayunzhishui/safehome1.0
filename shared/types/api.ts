@@ -1790,6 +1790,122 @@ export interface CardRecommendResponse {
   matched_tags: string[];
 }
 
+export type AiQaRoute =
+  | "answered"
+  | "risk_fixed"
+  | "blocked_scope"
+  | "blocked_privacy"
+  | "blocked_injection"
+  | "no_sources"
+  | "postcheck_degraded"
+  | "provider_degraded";
+
+export interface AiQaCitation {
+  content_type: string;
+  content_id: string;
+  title: string;
+  version_id: ID;
+  content_version: string;
+  release_id: ID;
+  payload_hash: string;
+  excerpt: string;
+  governance_status: "published";
+  package_hash?: string | null;
+}
+
+export interface AiQaMessage {
+  id: ID;
+  session_id: ID;
+  user_id: ID;
+  role: "user" | "assistant";
+  content: string;
+  citations: AiQaCitation[];
+  model: Record<string, unknown>;
+  safety: { route?: AiQaRoute; human_escalation?: boolean; [key: string]: unknown };
+  prompt_version: string;
+  knowledge_version: string;
+  token_estimate: number;
+  cost_micros: number;
+  created_at: ISODateTime;
+}
+
+export interface AiQaSession {
+  id: ID;
+  user_id: ID;
+  mode: "research_sandbox";
+  status: "active" | "deleted";
+  synthetic_data: boolean | 0 | 1;
+  context_policy: "current_session_only";
+  research_use_allowed: false | 0;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+  deleted_at?: ISODateTime | null;
+  messages?: AiQaMessage[];
+}
+
+export interface AiQaConfig {
+  service_name: string;
+  participant_enabled: false;
+  sandbox_enabled: boolean;
+  provider: "fake";
+  stage: "synthetic_research_sandbox";
+  governance_status: "blocked_human_review";
+  participant_eligible: false;
+  gate_decisions: Record<string, { proposed: unknown; status: string }>;
+  runtime_control: { killed: 0 | 1; changed_at?: ISODateTime | null };
+  data_policy: { cross_session_memory: false; provider_training: false; real_participant_data: false; write_tools: false };
+  boundary_notice: string;
+}
+
+export interface AiQaAnswer {
+  message: AiQaMessage;
+  route: AiQaRoute;
+  fixed_response: boolean;
+  human_escalation: boolean;
+  boundary_notice: string;
+}
+
+export interface AiQaEvaluationRun {
+  id: ID;
+  suite_version: string;
+  provider_version: string;
+  knowledge_snapshot_hash: string;
+  metrics: {
+    total: number;
+    passed: number;
+    failed: number;
+    route_accuracy: number;
+    critical_failures: number;
+    citation_coverage: number;
+    diagnostic_violations: number;
+    human_escalation_rate: number;
+  };
+  thresholds: Record<string, number>;
+  results: Array<{ case_id: string; category: string; expected_route: AiQaRoute; actual_route: AiQaRoute; passed: boolean; provider_called?: boolean; citation_present?: boolean }>;
+  status: "engineering_threshold_passed" | "engineering_threshold_failed";
+  created_by: ID;
+  created_at: ISODateTime;
+}
+
+export interface AiQaEvaluationReview {
+  id: ID;
+  run_id: ID;
+  reviewer_id: ID;
+  decision: "approved_for_next_internal_stage" | "changes_required" | "stop";
+  evidence_path: string;
+  note?: string | null;
+  created_at: ISODateTime;
+}
+
+export interface AiQaReviewEvidence {
+  runs: Array<Omit<AiQaEvaluationRun, "results" | "created_at"> & { created_at?: ISODateTime }>;
+  reviews: AiQaEvaluationReview[];
+  safety_events: Array<Record<string, unknown>>;
+  provider_events: Array<Record<string, unknown>>;
+  raw_prompts_included: false;
+  actor_scope: "own" | "all_internal";
+}
+
 export interface AssessmentListResponse {
   version: string;
   boundary_notice: string;

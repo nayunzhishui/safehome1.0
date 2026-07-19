@@ -169,8 +169,9 @@ export function PrivacyRequestsManagement() {
         { dry_run: dryRun, expected_version: preview.request_version, idempotency_key: idempotencyKey(selectedRequest.id, dryRun ? "dry-run" : "execute") },
         getStoredAdminToken().trim(),
       );
-      setMessage(dryRun ? `Dry-run完成：预计影响${result.result.would_affect ?? preview.total_affected}条，未修改数据。` : `执行完成，证明哈希：${result.execution.proof_hash || "未返回"}`);
+      const completionMessage = dryRun ? `Dry-run完成：预计影响${result.result.would_affect ?? preview.total_affected}条，未修改数据。` : `执行完成，证明哈希：${result.execution.proof_hash || "未返回"}`;
       await loadList(selectedRequest.id);
+      setMessage(completionMessage);
     } catch (error) {
       setMessage(formatSafeHomeError(error, dryRun ? "Dry-run失败，数据未修改。" : "正式执行被阻止或失败，事务已回滚。"));
     } finally {

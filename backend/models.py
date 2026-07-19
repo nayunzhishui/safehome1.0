@@ -315,6 +315,113 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS ai_qa_sessions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        mode TEXT NOT NULL DEFAULT 'research_sandbox',
+        status TEXT NOT NULL DEFAULT 'active',
+        synthetic_data INTEGER NOT NULL DEFAULT 1,
+        context_policy TEXT NOT NULL DEFAULT 'current_session_only',
+        research_use_allowed INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        deleted_at TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_messages (
+        id TEXT PRIMARY KEY,
+        session_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        role TEXT NOT NULL,
+        content TEXT NOT NULL,
+        citations_json TEXT NOT NULL DEFAULT '[]',
+        model_json TEXT NOT NULL DEFAULT '{}',
+        safety_json TEXT NOT NULL DEFAULT '{}',
+        prompt_version TEXT NOT NULL,
+        knowledge_version TEXT NOT NULL,
+        token_estimate INTEGER NOT NULL DEFAULT 0,
+        cost_micros INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_feedback (
+        id TEXT PRIMARY KEY,
+        message_id TEXT NOT NULL,
+        session_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        evaluation TEXT NOT NULL,
+        note TEXT,
+        research_use_allowed INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        UNIQUE(message_id, user_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_safety_events (
+        id TEXT PRIMARY KEY,
+        session_id TEXT,
+        user_id TEXT NOT NULL,
+        request_hash TEXT NOT NULL,
+        category TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        outcome TEXT NOT NULL,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_provider_events (
+        id TEXT PRIMARY KEY,
+        session_id TEXT,
+        user_id TEXT NOT NULL,
+        provider TEXT NOT NULL,
+        model_version TEXT NOT NULL,
+        status TEXT NOT NULL,
+        latency_ms INTEGER NOT NULL DEFAULT 0,
+        token_estimate INTEGER NOT NULL DEFAULT 0,
+        cost_micros INTEGER NOT NULL DEFAULT 0,
+        error_code TEXT,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_evaluation_runs (
+        id TEXT PRIMARY KEY,
+        suite_version TEXT NOT NULL,
+        provider_version TEXT NOT NULL,
+        knowledge_snapshot_hash TEXT NOT NULL,
+        metrics_json TEXT NOT NULL,
+        thresholds_json TEXT NOT NULL,
+        result_json TEXT NOT NULL,
+        status TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_evaluation_reviews (
+        id TEXT PRIMARY KEY,
+        run_id TEXT NOT NULL,
+        reviewer_id TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        evidence_path TEXT NOT NULL,
+        note TEXT,
+        created_at TEXT NOT NULL,
+        UNIQUE(run_id, reviewer_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_runtime_control (
+        id TEXT PRIMARY KEY,
+        killed INTEGER NOT NULL DEFAULT 0,
+        reason TEXT,
+        changed_by TEXT,
+        changed_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS family_links (
         id TEXT PRIMARY KEY,
         parent_user_id TEXT NOT NULL,
@@ -853,6 +960,11 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_content_versions_item_status ON content_governance_versions(content_type, item_id, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_content_reviews_version_discipline ON content_governance_reviews(version_id, discipline, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_content_releases_item_status ON content_governance_releases(content_type, item_id, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_sessions_user_status ON ai_qa_sessions(user_id, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_messages_session_created ON ai_qa_messages(session_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_safety_created ON ai_qa_safety_events(category, severity, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_provider_created ON ai_qa_provider_events(provider, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_evaluation_status_created ON ai_qa_evaluation_runs(status, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",
