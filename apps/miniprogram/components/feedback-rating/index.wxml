@@ -8,8 +8,10 @@
       data-value="{{item.value}}"
       disabled="{{disabled}}"
       aria-label="评价为{{item.label}}"
+      aria-pressed="{{value === item.value}}"
       bindtap="select"
     >{{item.label}}</button>
   </view>
-  <text wx:if="{{value === 'uncomfortable'}}" class="feedback-rating-note">已记录为需要人工复核的体验信号，不会据此推断风险或诊断。</text>
+  <text wx:if="{{value === 'uncomfortable'}}" class="feedback-rating-note feedback-rating-note--care" role="status" aria-live="polite">已记录为需要人工复核的体验信号，不会据此推断风险或诊断。</text>
+  <text wx:elif="{{value}}" class="feedback-rating-note" role="status" aria-live="polite">已记录你的核对，可以随时调整。</text>
 </view>

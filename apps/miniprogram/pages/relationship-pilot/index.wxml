@@ -24,17 +24,19 @@
   </view>
 
   <view wx:else>
-    <view class="safe-card current-action-card">
-      <view class="current-action-head">
-        <view>
-          <text class="stage-eyebrow">当前步骤</text>
-          <text class="current-stage-title">{{currentStageTitle}}</text>
-        </view>
-        <relationship-status status="{{enrollment.report_status}}"></relationship-status>
-      </view>
-      <text class="pilot-text">{{enrollment.profile.profile_description}}</text>
-      <button class="safe-primary-button primary-journey-action" bindtap="runPrimaryAction">{{primaryLabel}}</button>
-    </view>
+    <journey-action-card
+      class="current-action-entry"
+      eyebrow="当前步骤"
+      marker="{{currentStepNumber}}"
+      region-aria-label="关系探索当前步骤"
+      state="{{currentActionState}}"
+      state-label="{{reportStatusText}}"
+      title="{{currentStageTitle}}"
+      description="{{enrollment.profile.profile_description}}"
+      button-label="{{primaryLabel}}"
+      action-aria-label="{{primaryLabel}}：{{currentStageTitle}}"
+      bind:action="runPrimaryAction"
+    />
 
     <view class="safe-card journey-card">
       <text class="section-heading">五阶段探索路径</text>

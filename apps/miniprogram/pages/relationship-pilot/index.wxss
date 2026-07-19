@@ -3,16 +3,15 @@
 .pilot-kicker, .stage-eyebrow { color: var(--safe-primary-deep); font-size: 22rpx; font-weight: 800; letter-spacing: 1rpx; }
 .pilot-title { margin-top: 10rpx; color: var(--safe-title); font-size: 38rpx; font-weight: 900; line-height: 1.3; }
 .pilot-text { margin-top: 10rpx; color: var(--safe-text); font-size: 25rpx; line-height: 1.65; }
-.loading-card, .unavailable-card, .enrollment-card, .current-action-card, .journey-card, .secondary-card { display: grid; gap: 18rpx; }
+.loading-card, .unavailable-card, .enrollment-card, .journey-card, .secondary-card { display: grid; gap: 18rpx; }
 .section-heading { color: var(--safe-title); font-size: 30rpx; font-weight: 850; }
 .consent-row { display: flex; gap: 12rpx; min-height: 88rpx; align-items: flex-start; color: var(--safe-text); font-size: 24rpx; line-height: 1.6; }
 .text-action { min-height: 88rpx; padding: 16rpx 0; border: 0; background: transparent; color: var(--safe-primary-deep); font-size: 24rpx; }
 .text-action::after, .secondary-row::after { border: 0; }
-.current-action-card { border-color: rgba(79, 124, 107, 0.38); background: #fbfdfb; }
-.current-action-head, .journey-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 18rpx; }
+.current-action-entry { display: block; }
+.journey-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 18rpx; }
 .current-stage-title { margin-top: 6rpx; color: var(--safe-title); font-size: 34rpx; font-weight: 900; }
 .status-chip { flex: none; padding: 8rpx 16rpx; border-radius: 999rpx; background: var(--safe-orange-soft); color: #72552f; font-size: 21rpx; }
-.primary-journey-action { margin-top: 8rpx; }
 .journey-list { display: grid; }
 .journey-step { position: relative; display: flex; gap: 18rpx; min-height: 108rpx; }
 .journey-step:not(:last-child)::after { position: absolute; top: 48rpx; bottom: 0; left: 23rpx; width: 2rpx; background: var(--safe-border); content: ""; }

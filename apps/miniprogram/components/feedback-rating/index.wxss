@@ -39,6 +39,7 @@
 }
 
 .feedback-rating-option::after { border: 0; }
+.feedback-rating-option:focus-visible { outline: 4rpx solid var(--safe-blue); outline-offset: 3rpx; }
 .feedback-rating-option--active {
   border-color: var(--safe-primary);
   background: var(--safe-primary-soft);
@@ -58,3 +59,5 @@
   font-size: 20rpx;
   line-height: 1.5;
 }
+
+.feedback-rating-note--care { color: #7b452e; }

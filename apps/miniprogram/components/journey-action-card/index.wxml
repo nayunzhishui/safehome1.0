@@ -1,0 +1,27 @@
+<view class="journey-action journey-action--{{errorMessage ? 'error' : state}}" role="region" aria-label="{{regionAriaLabel}}">
+  <view class="journey-action__head">
+    <view class="journey-action__marker" aria-hidden="true">{{marker}}</view>
+    <text class="journey-action__kicker">{{eyebrow}}</text>
+    <status-pill wx:if="{{!loading && !errorMessage}}" label="{{stateLabel}}" tone="{{statusTone}}" />
+  </view>
+
+  <view wx:if="{{loading}}" class="journey-action__loading" role="status" aria-live="polite">
+    <view class="journey-action__skeleton journey-action__skeleton--title"></view>
+    <view class="journey-action__skeleton journey-action__skeleton--copy"></view>
+    <text>正在整理可继续的操作</text>
+  </view>
+
+  <view wx:elif="{{errorMessage}}" class="journey-action__content" role="status" aria-live="polite">
+    <text class="journey-action__title">暂时没有读取到下一步</text>
+    <text class="journey-action__description">{{errorMessage}}</text>
+    <button class="journey-action__button journey-action__button--secondary" aria-label="重新读取今天的一小步" bindtap="handleRetry">重新读取</button>
+  </view>
+
+  <view wx:else class="journey-action__content">
+    <text class="journey-action__title">{{title}}</text>
+    <text wx:if="{{description}}" class="journey-action__description">{{description}}</text>
+    <text wx:if="{{metaText}}" class="journey-action__meta">{{metaText}}</text>
+    <button class="journey-action__button" aria-label="{{actionAriaLabel}}" bindtap="handleAction">{{buttonLabel}}</button>
+    <text wx:if="{{boundaryNotice}}" class="journey-action__boundary">{{boundaryNotice}}</text>
+  </view>
+</view>

@@ -138,6 +138,10 @@ Page({
     this.loadCards(this.data.tags, this.data.cardIds);
   },
 
+  goDiary() {
+    wx.navigateTo({ url: "/pages/diary-form/index" });
+  },
+
   async submitTrainingFeedback(event) {
     const cardId = event.currentTarget.dataset.id || "";
     const evaluation = event.detail.evaluation;

@@ -10,17 +10,9 @@
     </view>
   </view>
 
-  <view wx:if="{{loading}}" class="state-card safe-card">
-    <view class="loading-dot"></view>
-    <text class="state-title">正在整理适合今天的小练习</text>
-    <text class="state-text">请稍等一下。</text>
-  </view>
+  <page-state wx:if="{{loading}}" kind="loading" title="正在整理适合今天的小练习" description="每次只优先呈现一张卡。" />
 
-  <view wx:elif="{{errorMessage}}" class="state-card error-card">
-    <text class="state-title">{{errorMessage}}</text>
-    <text class="state-text">{{errorDetail}}</text>
-    <button class="outline-button" bindtap="retryLoadCards">重新加载</button>
-  </view>
+  <page-state wx:elif="{{errorMessage}}" kind="error" title="训练建议暂时没有读取成功" description="{{errorMessage}} {{errorDetail}}" action-label="重新加载" bind:action="retryLoadCards" />
 
   <view wx:else class="card-content">
     <view wx:if="{{tagsText}}" class="match-card">
@@ -73,9 +65,6 @@
       />
     </view>
 
-    <view wx:if="{{cards.length === 0}}" class="state-card safe-card">
-      <text class="state-title">暂时没有匹配到训练卡</text>
-      <text class="state-text">可以先回到记录页，补充更具体的事件细节。</text>
-    </view>
+    <page-state wx:if="{{cards.length === 0}}" kind="empty" title="暂时没有匹配到训练卡" description="可以先回到记录页，补充一件具体事件。" action-label="去记录一件事" bind:action="goDiary" />
   </view>
 </view>

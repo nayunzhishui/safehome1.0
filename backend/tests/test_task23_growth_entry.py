@@ -148,4 +148,4 @@ def test_growth_entry_keeps_historical_urls_and_one_profile_entry():
     for label in ["记录与练习", "测评变化", "关系探索", "研究者反馈"]:
         assert label in unified_source or label in unified_markup
     assert "不生成单一成长分数" in unified_markup
-    assert 'bindtap="loadGrowth"' in unified_markup
+    assert 'bind:action="loadGrowth"' in unified_markup

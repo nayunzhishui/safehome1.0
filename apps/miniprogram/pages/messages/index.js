@@ -45,6 +45,14 @@ Page({
     wx.navigateTo({ url: `/pages/message-detail/index?id=${encodeURIComponent(id)}` });
   },
 
+  handleStateAction() {
+    if (this.data.needsLogin) {
+      this.goLogin();
+      return;
+    }
+    this.loadMessages();
+  },
+
   goHome() {
     wx.reLaunch({ url: "/pages/home/index" });
   },

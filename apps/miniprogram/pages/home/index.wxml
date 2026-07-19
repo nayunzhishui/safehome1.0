@@ -39,30 +39,21 @@
   </view>
 
   <!-- 今日唯一动态建议：保留原首页结构，只在核心入口与三步开始之间补充 -->
-  <view class="today-step-card today-step-card--{{todayJourneyLoading ? 'loading' : todayJourneyError ? 'error' : (todayJourney ? todayJourney.state : 'not_due')}}">
-    <view class="today-step-head">
-      <view class="today-step-marker" aria-hidden="true">1</view>
-      <text class="today-step-kicker">今天的一小步</text>
-      <text wx:if="{{todayJourney}}" class="today-step-status">{{todayJourney.stateLabel}}</text>
-    </view>
-    <view wx:if="{{todayJourneyLoading}}" class="today-step-loading">
-      <view class="today-step-skeleton today-step-skeleton--title"></view>
-      <view class="today-step-skeleton today-step-skeleton--copy"></view>
-      <text class="today-step-loading-text">正在整理可继续的操作</text>
-    </view>
-    <view wx:elif="{{todayJourneyError}}" class="today-step-content">
-      <text class="today-step-title">暂时没有读取到下一步</text>
-      <text class="today-step-description">{{todayJourneyError}}</text>
-      <button class="today-step-action today-step-action--secondary" aria-label="重新读取今天的一小步" bindtap="retryTodayJourney">重新读取</button>
-    </view>
-    <view wx:elif="{{todayJourney}}" class="today-step-content">
-      <text class="today-step-title">{{todayJourney.title}}</text>
-      <text class="today-step-description">{{todayJourney.description}}</text>
-      <text class="today-step-meta">{{todayJourney.metaText}}</text>
-      <button class="today-step-action" aria-label="{{todayJourney.actionAriaLabel}}" bindtap="openTodayAction">{{todayJourney.buttonLabel}}</button>
-      <text class="today-step-boundary">{{todayJourney.boundaryNotice}}</text>
-    </view>
-  </view>
+  <journey-action-card
+    class="today-step-entry"
+    loading="{{todayJourneyLoading}}"
+    error-message="{{todayJourneyError}}"
+    state="{{todayJourney ? todayJourney.state : 'not_due'}}"
+    state-label="{{todayJourney ? todayJourney.stateLabel : '按节奏进行'}}"
+    title="{{todayJourney ? todayJourney.title : '继续今天的一小步'}}"
+    description="{{todayJourney ? todayJourney.description : ''}}"
+    meta-text="{{todayJourney ? todayJourney.metaText : ''}}"
+    button-label="{{todayJourney ? todayJourney.buttonLabel : '继续'}}"
+    action-aria-label="{{todayJourney ? todayJourney.actionAriaLabel : '继续今天的一小步'}}"
+    boundary-notice="{{todayJourney ? todayJourney.boundaryNotice : ''}}"
+    bind:action="openTodayAction"
+    bind:retry="retryTodayJourney"
+  />
 
   <!-- 三步开始：横向步骤条 -->
   <view class="safe-section">

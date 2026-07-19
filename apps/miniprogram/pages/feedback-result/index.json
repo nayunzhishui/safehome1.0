@@ -3,8 +3,8 @@
   "usingComponents": {
     "section-title": "/components/section-title/index",
     "training-task-card": "/components/training-task-card/index",
-    "alert-card": "/components/alert-card/index",
     "bottom-tip-card": "/components/bottom-tip-card/index",
-    "feedback-rating": "/components/feedback-rating/index"
+    "feedback-rating": "/components/feedback-rating/index",
+    "page-state": "/components/page-state/index"
   }
 }

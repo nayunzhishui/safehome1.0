@@ -1,5 +1,5 @@
 .message-detail-page {
-  padding-bottom: 72rpx;
+  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
 }
 
 .detail-kicker,
@@ -36,11 +36,6 @@
   color: var(--safe-text);
   font-size: 27rpx;
   line-height: 1.8;
-}
-
-.state-card {
-  color: var(--safe-text);
-  font-size: 26rpx;
 }
 
 .boundary-card {

@@ -8,6 +8,8 @@ Page({
     loading: true,
     errorMessage: "",
     message: null,
+    canOpenSource: false,
+    sourceButtonLabel: "",
     canEvaluate: false,
     feedbackEvaluation: "",
     feedbackEvaluationSaving: false,
@@ -30,6 +32,8 @@ Page({
       this.setData({
         loading: false,
         message,
+        canOpenSource: ["relationship_screening_report", "relationship_narrative"].includes(message.source_type) && !!message.source_id,
+        sourceButtonLabel: message.source_type === "relationship_screening_report" ? "查看关系探索报告" : "查看已确认探索手记",
         canEvaluate: ["researcher_message", "relationship_stage_feedback", "supervision_feedback", "relationship_report"].includes(message.message_type),
       });
     } catch (error) {
@@ -42,6 +46,14 @@ Page({
 
   goMessages() {
     wx.navigateBack();
+  },
+
+  handleStateAction() {
+    if (!this.data.id) {
+      this.goMessages();
+      return;
+    }
+    this.loadMessage(this.data.id);
   },
 
   openSource() {

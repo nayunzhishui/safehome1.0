@@ -11,15 +11,9 @@
     </view>
   </view>
 
-  <view wx:if="{{loading}}" class="loading-card safe-card">
-    <view class="loading-dot"></view>
-    <text>正在生成反馈...</text>
-  </view>
+  <page-state wx:if="{{loading}}" kind="loading" title="正在整理这次反馈" description="先保留事实，再给出一个可选择的小练习。" />
 
-  <view wx:elif="{{errorMessage}}" class="error-state">
-    <alert-card type="warning" title="反馈生成遇到问题" content="{{errorMessage}}" />
-    <button wx:if="{{missingDiaryId}}" class="error-action-button" bindtap="goToDiaryForm">去记录一次事件</button>
-  </view>
+  <page-state wx:elif="{{errorMessage}}" kind="error" title="反馈暂时没有生成" description="{{errorMessage}}" action-label="{{missingDiaryId ? '去记录一次事件' : '重新生成'}}" bind:action="handleFeedbackStateAction" />
 
   <view wx:else class="feedback-content">
     <view class="support-card safe-card">

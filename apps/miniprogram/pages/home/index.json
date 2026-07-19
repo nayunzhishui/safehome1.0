@@ -5,6 +5,7 @@
     "section-title": "/components/section-title/index",
     "function-entry-card": "/components/function-entry-card/index",
     "training-task-card": "/components/training-task-card/index",
-    "bottom-tip-card": "/components/bottom-tip-card/index"
+    "bottom-tip-card": "/components/bottom-tip-card/index",
+    "journey-action-card": "/components/journey-action-card/index"
   }
 }

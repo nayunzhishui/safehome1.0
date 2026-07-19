@@ -5,14 +5,8 @@
     <text class="growth-copy">记录与练习、测评、关系探索和研究者反馈分开查看。这里不生成单一成长分数。</text>
   </view>
 
-  <view wx:if="{{loading}}" class="safe-card state-card" aria-live="polite">
-    <view class="state-pulse" aria-hidden="true"></view>
-    <text>正在整理已保存的线索...</text>
-  </view>
-  <view wx:elif="{{errorMessage}}" class="safe-card state-card error-text">
-    <text>{{errorMessage}}</text>
-    <button class="safe-outline-button retry-button" bindtap="loadGrowth">重新读取</button>
-  </view>
+  <page-state wx:if="{{loading}}" kind="loading" title="正在整理已保存的线索" description="四类信息会分别读取，不会合并成总分。" />
+  <page-state wx:elif="{{errorMessage}}" kind="error" title="成长线索暂时没有读取成功" description="{{errorMessage}}" action-label="重新读取" action-aria-label="重新读取成长线索" bind:action="loadGrowth" />
 
   <view wx:elif="{{growth}}" class="growth-content">
     <view class="growth-rail" aria-label="成长线索分类">
@@ -43,7 +37,7 @@
       <view class="safe-card dashboard-section">
         <view class="section-heading">
           <view><text class="section-title">情绪温度</text><text class="section-copy">1—10分，只与同一量尺的记录比较</text></view>
-          <text class="count-pill">{{thermometer.length}} 次</text>
+          <status-pill label="{{thermometer.length}} 次" tone="info" aria-label="情绪温度记录{{thermometer.length}}次" />
         </view>
         <view wx:if="{{thermometer.length}}" class="thermometer-list">
           <view wx:for="{{thermometer}}" wx:key="id" class="thermometer-row">
@@ -51,7 +45,7 @@
             <view class="bar-track"><view class="bar-fill" style="width: {{item.width}};"></view></view>
           </view>
         </view>
-        <view wx:else class="empty-state"><text class="empty-title">还没有温度记录</text><text class="empty-copy">第一次记录只作为起点，不判断趋势。</text></view>
+        <page-state wx:else kind="empty" title="还没有温度记录" description="第一次记录只作为起点，不判断趋势。" />
       </view>
 
       <view class="safe-card dashboard-section">
@@ -62,7 +56,7 @@
             <view class="timeline-body"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.type_label}}</text></view><text class="timeline-summary">{{item.summary}}</text><text class="timeline-date">{{item.dateText}}</text></view>
           </view>
         </view>
-        <view wx:else class="empty-state"><text class="empty-title">还没有记录或练习</text><text class="empty-copy">可以先留下一件具体小事，形成第一条时间线。</text><button class="empty-action" bindtap="startDiary">开始记录</button></view>
+        <page-state wx:else kind="empty" title="还没有记录或练习" description="可以先留下一件具体小事，形成第一条时间线。" action-label="开始记录" bind:action="startDiary" />
       </view>
     </view>
 
@@ -78,7 +72,7 @@
             <text class="assessment-note">只在同一量尺再次填写后观察变化，不自动解释好坏。</text>
           </view>
         </view>
-        <view wx:else class="empty-state"><text class="empty-title">还没有支持性测评</text><text class="empty-copy">完成一次测评后，这里会按量表分别保留结果。</text><button class="empty-action" bindtap="openAssessment">去测一测</button></view>
+        <page-state wx:else kind="empty" title="还没有支持性测评" description="完成一次测评后，这里会按量表分别保留结果。" action-label="去测一测" bind:action="openAssessment" />
       </view>
     </view>
 
@@ -101,14 +95,14 @@
             <view class="timeline-body"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.type_label}}</text></view><text class="timeline-summary">{{item.summary}}</text><text class="timeline-date">{{item.dateText}}</text></view>
           </view>
         </view>
-        <view wx:else class="empty-state"><text class="empty-title">还没有关系探索记录</text><text class="empty-copy">是否参与由你决定；没有记录时不生成关系结论。</text></view>
+        <page-state wx:else kind="empty" title="还没有关系探索记录" description="是否参与由你决定；没有记录时不生成关系结论。" />
       </view>
     </view>
 
     <view wx:else class="section-stack">
       <view class="safe-card feedback-summary-card">
         <view><text class="section-eyebrow">共同核对</text><text class="relationship-title">研究者反馈 {{feedbackSummary.count || 0}} 条</text></view>
-        <text class="unread-badge">{{feedbackSummary.unread_count || 0}} 条未读</text>
+        <status-pill label="{{feedbackSummary.unread_count || 0}} 条未读" tone="warning" aria-label="研究者反馈未读{{feedbackSummary.unread_count || 0}}条" />
       </view>
       <view class="safe-card dashboard-section">
         <view wx:if="{{feedbackTimeline.length}}" class="timeline-list">
@@ -117,7 +111,7 @@
             <view class="timeline-body"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.type_label}}</text></view><text class="timeline-summary">{{item.summary}}</text><text class="timeline-date">{{item.dateText}}</text></view>
           </view>
         </view>
-        <view wx:else class="empty-state"><text class="empty-title">暂时没有研究者反馈</text><text class="empty-copy">没有反馈不代表好或不好；需要人工支持时可从消息或人工支持入口联系。</text></view>
+        <page-state wx:else kind="empty" title="暂时没有研究者反馈" description="没有反馈不代表好或不好；需要人工支持时可从消息或人工支持入口联系。" />
         <button class="section-action feedback-action" bindtap="openMessages">打开消息列表</button>
       </view>
     </view>

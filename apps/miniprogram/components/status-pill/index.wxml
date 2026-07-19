@@ -1,0 +1,1 @@
+<text class="status-pill status-pill--{{tone}}" role="status" aria-label="{{ariaLabel || label}}">{{label}}</text>

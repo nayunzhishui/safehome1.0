@@ -1,0 +1,36 @@
+.journey-action {
+  position: relative;
+  overflow: hidden;
+  padding: 22rpx;
+  border: 1rpx solid var(--safe-border);
+  border-left: 6rpx solid var(--safe-primary);
+  border-radius: var(--safe-radius-lg);
+  background: var(--safe-card);
+  box-shadow: var(--safe-shadow-card);
+}
+.journey-action--paused,
+.journey-action--not_due { border-left-color: #b79761; background: #fffaf1; }
+.journey-action--completed { border-left-color: var(--safe-primary-deep); background: var(--safe-primary-pale); }
+.journey-action--error { border-left-color: var(--safe-danger); }
+.journey-action__head { display: flex; align-items: center; gap: 10rpx; }
+.journey-action__marker { width: 38rpx; height: 38rpx; display: flex; align-items: center; justify-content: center; flex: none; border-radius: 50%; background: var(--safe-primary); color: #fff; font-size: 20rpx; font-weight: 900; }
+.journey-action__kicker { flex: 1; color: var(--safe-primary-deep); font-size: 23rpx; font-weight: 850; }
+.journey-action__content,
+.journey-action__loading { margin-top: 16rpx; }
+.journey-action__title,
+.journey-action__description,
+.journey-action__meta,
+.journey-action__boundary,
+.journey-action__loading text { display: block; }
+.journey-action__title { color: var(--safe-title); font-size: 30rpx; font-weight: 850; line-height: 1.4; }
+.journey-action__description { margin-top: 8rpx; color: var(--safe-text); font-size: 23rpx; line-height: 1.6; }
+.journey-action__meta { margin-top: 8rpx; color: var(--safe-muted); font-size: 21rpx; }
+.journey-action__button { width: 100%; min-height: 88rpx; margin-top: 18rpx; display: flex; align-items: center; justify-content: center; border: 0; border-radius: var(--safe-radius-pill); background: var(--safe-primary); color: #fff; font-size: 26rpx; font-weight: 850; }
+.journey-action__button::after { border: 0; }
+.journey-action__button--secondary { border: 1rpx solid var(--safe-primary); background: var(--safe-card); color: var(--safe-primary-deep); }
+.journey-action__button:focus-visible { outline: 4rpx solid var(--safe-blue); outline-offset: 4rpx; }
+.journey-action__boundary { margin-top: 12rpx; color: var(--safe-muted); font-size: 19rpx; line-height: 1.5; }
+.journey-action__skeleton { border-radius: var(--safe-radius-pill); background: var(--safe-bg-soft); }
+.journey-action__skeleton--title { width: 58%; height: 32rpx; }
+.journey-action__skeleton--copy { width: 88%; height: 22rpx; margin-top: 14rpx; }
+.journey-action__loading text { margin-top: 14rpx; color: var(--safe-muted); font-size: 21rpx; }

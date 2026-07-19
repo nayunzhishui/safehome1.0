@@ -226,6 +226,14 @@ Page({
     wx.navigateTo({ url: "/pages/diary-form/index" });
   },
 
+  handleFeedbackStateAction() {
+    if (this.data.missingDiaryId) {
+      this.goToDiaryForm();
+      return;
+    }
+    this.loadFeedback(this.data.diaryId);
+  },
+
   openTrainingCard() {
     if (!this.data.canShowTraining) {
       wx.showToast({
