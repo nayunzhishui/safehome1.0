@@ -3,7 +3,8 @@
 from flask import current_app, g, has_request_context, jsonify, request
 
 def ok(data=None, status: int = 200):
-    return jsonify({"ok": True, "data": data if data is not None else {}}), status
+    request_id = getattr(g, "request_id", None) if has_request_context() else None
+    return jsonify({"ok": True, "data": data if data is not None else {}, "request_id": request_id}), status
 
 
 def fail(code: str, message: str, status: int = 400):

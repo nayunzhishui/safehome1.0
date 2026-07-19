@@ -1,12 +1,12 @@
 # API 接口文档
 
-最后更新时间：2026-07-02
+最后更新时间：2026-07-20
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
 进度口径：真实可调用接口以前文已实现章节为准；第 10 节”0版网页评估画像整合”已有基础画像、风险检查、模型信息、画像历史、人工复核、周报画像趋势、`type=profile` 脱敏导出、`type=records` 统一研究导出和高风险导出二次确认。当前总进度见 `docs/00_当前事实基准/项目进度统一口径.md`。
 
-阅读方式：先看”通用约定”和对应接口章节；若与历史日志冲突，以本文开头进度口径和 `docs/00_当前事实基准/项目进度统一口径.md` 为准。
+阅读方式：先看”通用约定”和对应接口章节；全部136个公开操作的机器登记见`API机器契约.md`和`shared/contracts/api-contract.json`。若与历史日志冲突，以机器契约、本文开头进度口径和`docs/00_当前事实基准/项目进度统一口径.md`为准。
 
 ## 地址说明
 
@@ -28,11 +28,11 @@
 - 后端地址：本地开发默认 `http://127.0.0.1:5050`
 - API 基础路径：`/api`
 - 请求格式：`application/json`
-- JSON 响应格式：统一包裹在 `ok` 和 `data` 中。
+- JSON成功响应统一包裹在`ok`、`data`和`request_id`中；错误响应统一为`ok:false/error.code/error.message/request_id`。
 - CSV 导出接口返回 `text/csv; charset=utf-8`。
 - 时间字段：后端当前使用 ISO 8601 字符串。
 - CORS 来源白名单由 `ALLOWED_ORIGINS` 环境变量配置；开发默认允许 `http://127.0.0.1:5173` 和 `http://localhost:5173`。
-- 当前没有完整登录鉴权；开发环境未传 `user_id` 时，写入和查询接口可使用默认测试用户 `demo-parent`。
+- 当前已有签名登录、角色权限和对象范围校验；仅部分兼容接口在开发环境允许匿名`user_id`或默认测试用户，生产环境禁止依赖该兼容行为。
 - 当 `APP_ENV=production` 时，目标、情绪记录、反馈、画像、打卡、督导、测评结果等写入接口必须传匿名 `user_id`，例如 `parent_xxx`、`student_xxx`、`tester_xxx`，否则返回 `validation_error`。
 - 当 `APP_ENV=production` 时，目标、情绪记录、打卡、周报和测评结果等用户查询接口也必须传匿名 `user_id`，否则返回 `validation_error`。
 - 后台敏感接口必须带 `X-Admin-Token`：`/api/admin/export`、`/api/risk-review`、`/api/profile-results` 列表、`/api/profile-results/<id>/reviews`、`/api/profile-results/<id>/review`、`/api/content-review/update`。
@@ -43,7 +43,8 @@
 ```json
 {
   "ok": true,
-  "data": {}
+  "data": {},
+  "request_id": "01H..."
 }
 ```
 
@@ -55,9 +56,12 @@
   "error": {
     "code": "missing_fields",
     "message": "缺少必填字段：scene"
-  }
+  },
+  "request_id": "01H..."
 }
 ```
+
+响应头始终返回`X-Request-ID`。`GET /api/assessment-results`、`GET /api/checkins`和`GET /api/messages`暂时兼容旧`limit`参数；使用旧参数时返回`Deprecation:true`和`Sunset: 2026-10-31`，新调用应使用`page/page_size`。契约生成、漂移、兼容快照和API边界扫描已加入CI。
 
 补充约定（2026-07-09）：鉴权辅助层会按状态码返回稳定错误码：`400 -> validation_error`、`401 -> unauthorized`、`403 -> forbidden`。参数缺失或后台查询缺少必要 `user_id` 时，不应返回 `unauthorized`，避免前端误提示登录过期。
 

@@ -63,6 +63,7 @@ REQUIRED_CONTENT_FILES = [
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
 REQUEST_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]{8,64}$")
+LEGACY_LIMIT_PATHS = {"/api/assessment-results", "/api/checkins", "/api/messages"}
 
 
 class SafeHomeJSONProvider(DefaultJSONProvider):
@@ -249,6 +250,10 @@ def create_app(
             response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token, Authorization, Idempotency-Key, X-Request-ID"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        if request.method == "GET" and request.path in LEGACY_LIMIT_PATHS and "limit" in request.args:
+            response.headers["Deprecation"] = "true"
+            response.headers["Sunset"] = "Sat, 31 Oct 2026 00:00:00 GMT"
+            response.headers["Link"] = '</docs/03_技术真相/API机器契约.md>; rel="deprecation"'
         return response
 
     @app.errorhandler(Exception)

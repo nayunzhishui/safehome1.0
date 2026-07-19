@@ -2,29 +2,16 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
 from flask import Blueprint, current_app, request
 
 from database import get_connection, json_loads, now_iso, rows_to_dicts, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.utils import fail, ok, parse_int
-from services.research_work_item_service import WORK_ITEM_STATUSES, WorkItemError, ensure_work_item, get_work_item_detail, get_work_item_metrics, perform_work_item_action, reconcile_resolved_work_items
+from services.research_queue_service import list_research_queue, sync_all_work_item_sources
+from services.research_work_item_service import WorkItemError, get_work_item_detail, get_work_item_metrics, perform_work_item_action
 
 
 bp = Blueprint("research_workspace", __name__, url_prefix="/api/research")
-
-
-def _wait_minutes(created_at: object) -> int:
-    """Return a stable non-negative queue age for the researcher UI."""
-
-    try:
-        created = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
-        if created.tzinfo is None:
-            created = created.replace(tzinfo=timezone.utc)
-        return max(0, int((datetime.now(timezone.utc) - created).total_seconds() // 60))
-    except (TypeError, ValueError):
-        return 0
 
 
 def _actor():
@@ -86,85 +73,6 @@ def _status_counts(conn, table: str, scope_clause: str, params: list[str]) -> di
         tuple(params),
     ).fetchall()
     return {str(row["status"]): int(row["count"]) for row in rows}
-
-
-QUEUE_CONFIG = {
-    "notification_failed": {
-        "table": "notification_deliveries",
-        "where": "status = 'failed'",
-        "status_column": "status",
-        "title": "订阅消息发送失败",
-        "extra": "error_code, attempt_count, retry_category, next_attempt_at, max_attempts, dead_lettered_at",
-    },
-    "stage_feedback": {
-        "table": "relationship_screening_reports",
-        "where": "status IN ('pending_review', 'ready', 'confirmed', 'updated')",
-        "status_column": "status",
-        "title": "阶段性反馈待处理",
-        "extra": "enrollment_id",
-        "requires_research_authorization": True,
-    },
-    "supervision": {
-        "table": "supervision_requests",
-        "where": "status = 'pending'",
-        "status_column": "status",
-        "title": "人工支持待处理",
-        "extra": "source_type, source_id, risk_level",
-    },
-    "risk_review": {
-        "table": "risk_review_records",
-        "where": "review_status IN ('pending', 'priority_review')",
-        "status_column": "review_status",
-        "title": "风险信号待复核",
-        "extra": "source_type, source_id, risk_level",
-    },
-    "feedback_review": {
-        "table": "feedback_ledger",
-        "where": "review_status = 'pending_review' AND status = 'active'",
-        "status_column": "review_status",
-        "title": "参与者不适反馈待复核",
-        "extra": "source_type, source_id, evaluation",
-        "requires_research_authorization": True,
-    },
-    "privacy_request": {
-        "table": "privacy_requests",
-        "where": "status IN ('pending', 'processing')",
-        "status_column": "status",
-        "title": "隐私申请待处理",
-        "extra": "request_type, version",
-        "roles": {"supervisor", "admin"},
-    },
-}
-
-ACTIVE_WORK_ITEM_STATUSES = {"open", "claimed", "processing", "waiting", "dead_letter"}
-
-
-def _sync_all_work_item_sources(conn, actor: dict) -> dict[str, bool]:
-    """Bounded source-adapter sync so metrics include queues not yet opened in the UI."""
-
-    truncation: dict[str, bool] = {}
-    for queue_name, config in QUEUE_CONFIG.items():
-        if config.get("roles") and actor.get("role") not in config["roles"]:
-            continue
-        scope_clause, params = _scoped_user_column(actor, "user_id")
-        where = f"({scope_clause}) AND ({config['where']})"
-        if config.get("requires_research_authorization"):
-            where += f" AND ({_research_authorized_column('user_id')})"
-        rows = conn.execute(
-            f"""
-            SELECT id, user_id, {config['status_column']} AS status, created_at, {config['extra']}
-            FROM {config['table']} WHERE {where}
-            ORDER BY created_at ASC, id ASC LIMIT 5001
-            """,
-            tuple(params),
-        ).fetchall()
-        sources = rows_to_dicts(rows[:5000])
-        truncation[queue_name] = len(rows) > 5000
-        for source in sources:
-            ensure_work_item(conn, queue_name, config["table"], source)
-        if not truncation[queue_name]:
-            reconcile_resolved_work_items(conn, queue_name, actor, [str(source["id"]) for source in sources])
-    return truncation
 
 
 @bp.get("/participants")
@@ -461,136 +369,27 @@ def get_research_operations():
 
 @bp.get("/queues")
 def get_research_queue():
-    """Return one paginated, role-scoped queue without participant raw text."""
+    """Thin adapter for the role-scoped queue domain service."""
 
     actor, error = _actor()
     if error:
         return error
-    queue_name = str(request.args.get("queue") or "").strip()
-    config = QUEUE_CONFIG.get(queue_name)
-    if config is None:
-        return fail("validation_error", "不支持的队列类型。", status=400)
-    if config.get("roles") and actor.get("role") not in config["roles"]:
-        return fail("forbidden", "当前角色不能查看该队列。", status=403)
-    raw_page = parse_int(request.args.get("page"), 1) or 1
-    raw_page_size = parse_int(request.args.get("page_size"), 20) or 20
-    if raw_page < 1 or raw_page_size < 1 or raw_page_size > 100:
+    page = parse_int(request.args.get("page"), 1) or 1
+    page_size = parse_int(request.args.get("page_size"), 20) or 20
+    if page < 1 or page_size < 1 or page_size > 100:
         return fail("validation_error", "page 需大于等于1，page_size 需为1至100。", status=400)
-    page = raw_page
-    page_size = raw_page_size
-    offset = (page - 1) * page_size
-    scope_clause, params = _scoped_user_column(actor, "user_id")
-    table = config["table"]
-    status_column = config["status_column"]
-    where = f"({scope_clause}) AND ({config['where']})"
-    if config.get("requires_research_authorization"):
-        where += f" AND ({_research_authorized_column('user_id')})"
-    select_extra = config["extra"]
-    with get_connection() as conn:
-        source_rows = conn.execute(
-            f"""
-            SELECT id, user_id, {status_column} AS status, created_at, {select_extra}
-            FROM {table}
-            WHERE {where}
-            ORDER BY created_at ASC, id ASC
-            LIMIT 5001
-            """,
-            tuple(params),
-        ).fetchall()
-        sync_truncated = len(source_rows) > 5000
-        sources = rows_to_dicts(source_rows[:5000])
-        source_by_id = {str(source["id"]): source for source in sources}
-        work_item_ids = []
-        for source in sources:
-            work_item_ids.append(ensure_work_item(conn, queue_name, table, source)["id"])
-        if not sync_truncated:
-            reconcile_resolved_work_items(conn, queue_name, actor, list(source_by_id))
-        item_where = ["queue_type = ?"]
-        item_params: list = [queue_name]
-        if actor.get("role") == "researcher":
-            item_where.append("user_id IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)")
-            item_params.append(str(actor["id"]))
-        requested_status = str(request.args.get("status") or "active").strip()
-        if requested_status == "active":
-            placeholders = ",".join("?" for _ in ACTIVE_WORK_ITEM_STATUSES)
-            item_where.append(f"status IN ({placeholders})")
-            item_params.extend(sorted(ACTIVE_WORK_ITEM_STATUSES))
-        elif requested_status != "all":
-            if requested_status not in WORK_ITEM_STATUSES:
-                return fail("validation_error", "工作项状态不在允许范围内。", status=400)
-            item_where.append("status = ?")
-            item_params.append(requested_status)
-        if work_item_ids:
-            placeholders = ",".join("?" for _ in work_item_ids)
-            item_where.append(f"id IN ({placeholders})")
-            item_params.extend(work_item_ids)
-        else:
-            item_where.append("1 = 0")
-        total_row = conn.execute(
-            f"SELECT COUNT(*) AS count FROM research_work_items WHERE {' AND '.join(item_where)}",
-            tuple(item_params),
-        ).fetchone()
-        work_rows = conn.execute(
-            f"""
-            SELECT * FROM research_work_items
-            WHERE {' AND '.join(item_where)}
-            ORDER BY CASE priority WHEN 'urgent' THEN 0 WHEN 'attention' THEN 1 ELSE 2 END,
-                     created_at ASC, id ASC
-            LIMIT ? OFFSET ?
-            """,
-            tuple([*item_params, page_size, offset]),
-        ).fetchall()
-        items = []
-        for work_item in rows_to_dicts(work_rows):
-            source = source_by_id.get(str(work_item["source_id"]), {})
-            safe_source = {
-                key: value
-                for key, value in source.items()
-                if key not in {"id", "user_id", "status", "created_at", "error_message"}
-            }
-            items.append(
-                {
-                    **safe_source,
-                    "id": work_item["id"],
-                    "work_item_id": work_item["id"],
-                    "user_id": work_item["user_id"],
-                    "source_record_id": work_item["source_id"],
-                    "source_type": work_item["source_type"],
-                    "source_id": work_item["source_id"],
-                    "priority": work_item["priority"],
-                    "status": work_item["status"],
-                    "assignee_id": work_item.get("assignee_id"),
-                    "lease_expires_at": work_item.get("lease_expires_at"),
-                    "due_at": work_item.get("due_at"),
-                    "version": int(work_item.get("version") or 0),
-                    "resolution_code": work_item.get("resolution_code"),
-                    "created_at": work_item["created_at"],
-                }
+    try:
+        return ok(
+            list_research_queue(
+                actor,
+                queue_name=str(request.args.get("queue") or "").strip(),
+                page=page,
+                page_size=page_size,
+                requested_status=str(request.args.get("status") or "active").strip(),
             )
-        write_audit_log(
-            conn,
-            "research_queue_viewed",
-            actor["id"],
-            "research_queue",
-            queue_name,
-            {"page": page, "page_size": page_size},
         )
-        conn.commit()
-    items = [{**item, "title": config["title"], "wait_minutes": _wait_minutes(item.get("created_at"))} for item in items]
-    total = int(total_row["count"] if total_row else 0)
-    return ok(
-        {
-            "queue": queue_name,
-            "items": items,
-            "page": page,
-            "page_size": page_size,
-            "total": total,
-            "has_more": offset + len(items) < total,
-            "sync_truncated": sync_truncated,
-            "scope": "assigned_participants" if actor.get("role") == "researcher" else "all_participants",
-            "boundary_notice": "队列只返回必要状态和来源标识，不返回填写原文、消息正文或内部复核备注。",
-        }
-    )
+    except WorkItemError as exc:
+        return fail(exc.code, str(exc), status=exc.status)
 
 
 @bp.post("/work-items/<work_item_id>/actions")
@@ -654,7 +453,7 @@ def get_research_work_item_metric_snapshot():
     if window_days < 1 or window_days > 90:
         return fail("validation_error", "window_days 需为1至90。", status=400)
     with get_connection() as conn:
-        sync_truncation = _sync_all_work_item_sources(conn, actor)
+        sync_truncation = sync_all_work_item_sources(conn, actor)
         metrics = get_work_item_metrics(conn, actor, window_days)
         metrics["sync_truncation"] = sync_truncation
         write_audit_log(

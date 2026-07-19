@@ -74,6 +74,16 @@ http://127.0.0.1:5000/healthz
 
 ## 快速测试
 
+提交前检查API契约、边界和兼容快照：
+
+```powershell
+python backend/scripts/build_api_contract.py --check
+python backend/scripts/audit_api_boundaries.py --check
+python backend/scripts/check_api_compatibility.py
+```
+
+机器契约位于`shared/contracts/api-contract.json`。不要手工编辑生成的TypeScript、小程序注册表或`API机器契约.md`。
+
 创建一条情绪事件记录：
 
 ```powershell

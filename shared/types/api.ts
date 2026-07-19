@@ -11,6 +11,7 @@ export type ProfileReviewStatus = "pending" | "in_progress" | "reviewed" | "esca
 export interface ApiSuccess<T> {
   ok: true;
   data: T;
+  request_id: ID;
 }
 
 export interface ApiError {
@@ -19,6 +20,7 @@ export interface ApiError {
     code: string;
     message: string;
   };
+  request_id: ID;
 }
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError;

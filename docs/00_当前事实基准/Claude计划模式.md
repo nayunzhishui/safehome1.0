@@ -10593,7 +10593,7 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 | 任务二十三 | completed_local / external_pending | T23-00至T23-05本地验证完成；微信开发者工具和真机待验收 |
 | 任务二十四 | engineering_complete_local / release_approval_pending | T24-F01至F10本地工程与证据包完成；外部门禁未签字 |
 | 任务二十五 | engineering_complete_local / release_approval_pending | T25-F01至F08本地工程完成；外部门禁未签字 |
-| 任务二十六 | in_progress | T26-01新增接口兼容契约已验证；历史接口仍待统一 |
+| 任务二十六 | engineering_complete_local / release_approval_pending | T26-F01至F07本地契约、模块、漂移与回滚闭环完成；外部验收待执行 |
 | 任务二十七 | planned | T27-01 内容版本登记 |
 | 任务二十八 | planned / human-gated | T28-01 合成安全评测；T28-00 未确认前不得开放真实用户 |
 | 任务二十九 | planned | T29-01 数据集登记与授权门禁 |
@@ -10725,3 +10725,29 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 - 未自动签字：测试云MySQL迁移/恢复、真实两名处理人并发、微信开发者工具、Android/iOS、弱网中断、生产值守与升级责任人。
 - 生产环境`RESEARCH_OPERATIONS_WRITE_ENABLED`默认关闭；负责人完成外部证据后才能开启。
 - 下一工程任务：任务二十六F01全公开端点契约登记与历史错误包络复核；不得把T26已有最小契约当作完整完成。
+
+### 2026-07-20任务二十六完整实现执行结果
+
+状态：`engineering_complete_local / release_approval_pending`。本段即任务二十六执行记录，不另建独立执行记录文件。
+
+#### T26-F01—F04：机器契约、兼容层与CI
+
+- 从Flask真实路由生成`shared/contracts/api-contract.json`，登记136个公开操作的路径、方法、角色、对象范围、请求路径/查询/正文/请求头、分页、幂等、错误码、枚举引用、响应契约与弃用状态。
+- 成功响应统一补`request_id`，错误继续使用`ok:false/error.code/error.message/request_id`，响应头保留`X-Request-ID`；JSON下载维持原格式并由响应头追踪。
+- `assessment-results/checkins/messages`继续兼容`limit`，同时使用`page/page_size`；旧参数返回`Deprecation`和`Sunset: 2026-10-31`，没有一次性删除旧调用。
+- 同一契约生成shared TypeScript注册表、小程序JavaScript注册表和`API机器契约.md`；测试检查shared/Web/小程序全部`/api`字面路径均存在于真实路由或合法路径前缀。
+- GitHub Actions新增契约生成漂移、API边界审计和冻结快照兼容回放，缺失端点、访问范围扩大、公开URL/对象范围/响应包络变化和幂等要求放松会失败。
+
+#### T26-F05—F07：深模块、静态扫描和回滚
+
+- 关系试点继续使用enrollment/report/growth/task独立服务；消息的列表、发送、幂等、已读和脱敏投影迁入`message_service`；隐私同意、撤回、申请列表/创建和安全摘要迁入`privacy_request_service`；研究队列来源同步、分页和工作项投影迁入`research_queue_service`。公开URL不变。
+- 静态扫描覆盖N+1、无界列表、HTTP适配器`SELECT *`和跨用户参数。最终0 blocker、57个legacy review warning；这些警告是后续逐模块收敛线索，不评价参与者或研究人员，也未被误写成已修复。
+- 冻结136操作兼容快照；回滚按上一提交恢复契约快照和对应服务适配器，不回退数据库。T26没有新增表或字段，数据库版本保持`2026_07_20_014`，因此迁移为`not_applicable`。
+
+#### 自动验收、冲突与发布门禁
+
+- T26新增契约8项通过；敏感模块专项33项通过；后端全量367项通过（9条第三方弃用警告，无失败）。
+- Web typecheck/build通过；小程序61个JS、56个JSON、40页、57个组件引用和7个Canvas静态检查通过；内容校验、4份生成物漂移、136操作兼容回放和Python编译通过。
+- 兼容冲突：历史列表并非全部使用相同分页形状，本任务保留旧响应并在契约逐项登记；只对已有等价`page_size`的三个`limit`别名发弃用头，避免破坏当前页面。
+- 未自动签字：测试云历史客户端回放、CloudBase包、微信开发者工具、Android/iOS、真实弱网、生产日志观察和发布负责人批准。临时展示越权继续保留，未据此通过正式权限验收。
+- 下一工程任务：任务二十七F01内容版本元数据与不可变内容包；不得把现有内容文件或只读规则页当作完整内容治理工作台。

@@ -21,6 +21,8 @@ PRIVACY_HANDLING_SCOPES = {
     "research_outputs",
 }
 REVIEW_ACTIONS = {"start_processing", "reject", "return_to_pending"}
+RESEARCH_CONSENT_TYPES = {"anonymous_research", "research_authorization"}
+CONSENT_TYPES_FOR_STATUS = ["user_agreement", "privacy_policy", "non_diagnostic_notice", "anonymous_research", "research_authorization"]
 
 SCOPE_TABLES = {
     "account_identity": ("consent_records", "family_links", "data_claims"),
@@ -57,6 +59,99 @@ class PrivacyRequestError(ValueError):
         super().__init__(message)
         self.code = code
         self.status = status
+
+
+def _latest_consent_status(conn, user_id: str, consent_type: str) -> dict:
+    row = conn.execute(
+        "SELECT * FROM consent_records WHERE user_id = ? AND consent_type = ? ORDER BY created_at DESC LIMIT 1",
+        (user_id, consent_type),
+    ).fetchone()
+    latest = row_to_dict(row)
+    return {"user_id": user_id, "consent_type": consent_type, "agreed": bool(latest and latest.get("agreed")), "consent_version": latest.get("consent_version") if latest else None, "agreed_at": latest.get("agreed_at") if latest and latest.get("agreed") else None, "revoked_at": latest.get("revoked_at") if latest else None, "created_at": latest.get("created_at") if latest else None}
+
+
+def get_participant_consent_status(user_id: str) -> dict:
+    with get_connection() as conn:
+        items = [_latest_consent_status(conn, user_id, consent_type) for consent_type in CONSENT_TYPES_FOR_STATUS]
+    return {"user_id": user_id, "items": items}
+
+
+def revoke_research_consent(user_id: str, actor: dict, payload: dict, *, default_version: str) -> dict:
+    consent_type = str(payload.get("consent_type") or "anonymous_research").strip()
+    if consent_type not in RESEARCH_CONSENT_TYPES:
+        raise PrivacyRequestError("validation_error", "当前仅支持撤回匿名研究授权", 400)
+    timestamp = now_iso()
+    record_id = new_id("consent")
+    reason = str(payload.get("reason") or "用户主动撤回").strip()[:300]
+    with get_connection() as conn:
+        conn.execute(
+            "INSERT INTO consent_records (id, user_id, consent_type, consent_version, agreed, agreed_at, revoked_at, created_at) VALUES (?, ?, ?, ?, 0, ?, ?, ?)",
+            (record_id, user_id, consent_type, payload.get("consent_version") or default_version, timestamp, timestamp, timestamp),
+        )
+        for table in ["student_profiles", "student_profile_followups", "student_sandplay_entries", "parent_assessment_submissions", "records"]:
+            conn.execute(f"UPDATE {table} SET export_allowed = 0 WHERE user_id = ?", (user_id,))
+        write_audit_log(conn, "privacy_revoke_consent", actor["id"], "consent", consent_type, {"route": "/api/privacy/revoke-consent", "reason_length": len(reason), "new_research_processing_blocked": True})
+        conn.commit()
+    return {"user_id": user_id, "consent_type": consent_type, "agreed": False, "revoked_at": timestamp}
+
+
+def create_participant_delete_request(user_id: str, actor: dict, reason: str) -> tuple[dict, int]:
+    timestamp = now_iso()
+    with get_connection() as conn:
+        existing = conn.execute("SELECT id, user_id, request_type, status, created_at, updated_at FROM privacy_requests WHERE user_id = ? AND request_type = 'delete_my_data' AND status IN ('pending', 'processing') ORDER BY created_at DESC LIMIT 1", (user_id,)).fetchone()
+        if existing is not None:
+            item = row_to_dict(existing)
+            item["already_active"] = True
+            return item, 200
+        request_id = new_id("privacy")
+        conn.execute("INSERT INTO privacy_requests (id, user_id, request_type, reason, status, handled_by, handled_note, created_at, updated_at) VALUES (?, ?, 'delete_my_data', ?, 'pending', NULL, NULL, ?, ?)", (request_id, user_id, reason or None, timestamp, timestamp))
+        write_audit_log(conn, "privacy_delete_request", actor["id"], "privacy_request", request_id, {"route": "/api/privacy/delete-my-data", "reason_length": len(reason)})
+        conn.commit()
+        row = conn.execute("SELECT * FROM privacy_requests WHERE id = ?", (request_id,)).fetchone()
+    return row_to_dict(row), 201
+
+
+def list_participant_requests(user_id: str, *, page: int, page_size: int) -> dict:
+    offset = (page - 1) * page_size
+    with get_connection() as conn:
+        total_row = conn.execute("SELECT COUNT(*) AS count FROM privacy_requests WHERE user_id = ?", (user_id,)).fetchone()
+        rows = conn.execute("SELECT id, user_id, request_type, status, participant_notice, execution_proof_hash, created_at, updated_at FROM privacy_requests WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?", (user_id, page_size, offset)).fetchall()
+    total = int(total_row["count"] if total_row else 0)
+    items = rows_to_dicts(rows)
+    return {"items": items, "page": page, "page_size": page_size, "total": total, "has_more": offset + len(items) < total}
+
+
+def revoked_research_user_ids(conn) -> set[str]:
+    rows = conn.execute("SELECT * FROM consent_records WHERE consent_type IN (?, ?) ORDER BY user_id ASC, consent_type ASC, created_at DESC", ("anonymous_research", "research_authorization")).fetchall()
+    latest_by_key: dict[tuple[str, str], dict] = {}
+    for row in rows:
+        item = row_to_dict(row)
+        latest_by_key.setdefault((item["user_id"], item["consent_type"]), item)
+    return {user_id for (user_id, _), item in latest_by_key.items() if not item.get("agreed")}
+
+
+def research_revoked_filter(conn, column: str = "user_id") -> tuple[str, list[str]]:
+    revoked_ids = sorted(revoked_research_user_ids(conn))
+    if not revoked_ids:
+        return "", []
+    placeholders = ",".join("?" for _ in revoked_ids)
+    return f"{column} NOT IN ({placeholders})", revoked_ids
+
+
+def export_participant_privacy_summary(user_id: str) -> dict:
+    def count_for_user(conn, table: str) -> int:
+        row = conn.execute(f"SELECT COUNT(*) AS count FROM {table} WHERE user_id = ?", (user_id,)).fetchone()
+        return int(row["count"]) if row else 0
+
+    with get_connection() as conn:
+        privacy_rows = conn.execute("SELECT id, request_type, status, created_at, updated_at FROM privacy_requests WHERE user_id = ? ORDER BY created_at DESC", (user_id,)).fetchall()
+        return {
+            "user_id": user_id,
+            "counts": {"goals": count_for_user(conn, "goals"), "diaries": count_for_user(conn, "emotion_diaries"), "feedback": count_for_user(conn, "feedback_results"), "checkins": count_for_user(conn, "checkins"), "profiles": count_for_user(conn, "student_profiles"), "parent_assessments": count_for_user(conn, "parent_assessment_submissions"), "supervision": count_for_user(conn, "supervision_requests")},
+            "consent_status": [_latest_consent_status(conn, user_id, consent_type) for consent_type in CONSENT_TYPES_FOR_STATUS],
+            "privacy_requests": rows_to_dicts(privacy_rows),
+            "boundary_notice": "该摘要不包含自由文本原文、联系方式、后台审计 metadata 或风险处置私密备注。",
+        }
 
 
 def participant_view(item: dict, *, already_processed: bool = False) -> dict:

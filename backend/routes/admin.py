@@ -9,7 +9,7 @@ from flask import Blueprint, Response, request
 
 from database import get_connection, json_dumps, json_loads, load_content_json, now_iso, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_role
-from routes.privacy import research_revoked_filter
+from services.privacy_request_service import research_revoked_filter
 from routes.utils import fail, ok, parse_bool, parse_int
 from services.content_loader import ContentLoadError, load_parent_scales, load_student_scales
 

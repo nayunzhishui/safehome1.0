@@ -26,6 +26,15 @@ jobs:
       - name: Validate content
         run: python backend/scripts/validate_content.py
 
+      - name: Check API contract drift
+        run: python backend/scripts/build_api_contract.py --check
+
+      - name: Check API query boundaries
+        run: python backend/scripts/audit_api_boundaries.py --check
+
+      - name: Replay API compatibility snapshot
+        run: python backend/scripts/check_api_compatibility.py
+
       - name: Run backend tests
         run: |
           cd backend
