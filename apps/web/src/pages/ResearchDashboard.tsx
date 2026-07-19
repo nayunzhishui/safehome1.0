@@ -10,7 +10,8 @@ import {
   type ResearchParticipantSummary,
 } from "../services/safehomeApi";
 import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
-import { displayQualityStatus, displayStatus } from "../utils/displayLabels";
+import { getStoredAuthUser } from "../services/authState";
+import { displayActorRole, displayNotificationRetry, displayQualityStatus, displayStatus, displayWorkAction, displayWorkPriority, displayWorkQueue } from "../utils/displayLabels";
 import type {
   AssessmentProfilePosition,
   AssessmentResult,
@@ -23,6 +24,9 @@ import type {
   ResearchOperationsSnapshot,
   ResearchQueuePage,
   ResearchQueueType,
+  ResearchWorkItemAction,
+  ResearchWorkItemDetail,
+  ResearchWorkItemMetrics,
   StudentProfileRecord,
   TrainingCard,
 } from "../../../../shared/types/api";
@@ -148,6 +152,14 @@ export function ResearchDashboard() {
   const [participantDossier, setParticipantDossier] = useState<ResearchParticipantDossier | null>(null);
   const [operationsQueue, setOperationsQueue] = useState<ResearchQueuePage | null>(null);
   const [operationsQueueStatus, setOperationsQueueStatus] = useState<LoadStatus>("idle");
+  const [selectedWorkItem, setSelectedWorkItem] = useState<ResearchWorkItemDetail | null>(null);
+  const [workItemStatus, setWorkItemStatus] = useState<LoadStatus>("idle");
+  const [workItemNote, setWorkItemNote] = useState("");
+  const [participantMessageTitle, setParticipantMessageTitle] = useState("人工支持进度");
+  const [participantMessageBody, setParticipantMessageBody] = useState("");
+  const [resolutionCode, setResolutionCode] = useState("handled");
+  const [transferAssigneeId, setTransferAssigneeId] = useState("");
+  const [operationsMetrics, setOperationsMetrics] = useState<ResearchWorkItemMetrics | null>(null);
   const [state, setState] = useState<OverviewState>({
     status: "idle",
     message: "正在准备研究者平台总览。",
@@ -168,6 +180,7 @@ export function ResearchDashboard() {
   });
 
   const latestDiary = state.diaries[0];
+  const canManageSensitiveWorkItems = Boolean(adminToken.trim()) || ["admin", "supervisor"].includes(getStoredAuthUser()?.role || "");
   const latestGoal = state.goals[0];
   const activeGoals = useMemo(() => state.goals.filter((goal) => goal.status === "active"), [state.goals]);
   const completedCheckins = useMemo(() => state.checkins.filter((checkin) => checkin.completed === 1), [state.checkins]);
@@ -293,11 +306,56 @@ export function ResearchDashboard() {
     try {
       const result = await api.getResearchQueue(queue, { page: 1, page_size: 20 }, getStoredAdminToken().trim());
       setOperationsQueue(result);
+      setSelectedWorkItem(null);
+      setOperationsMetrics(await api.getResearchWorkItemMetrics(7, getStoredAdminToken().trim()));
       setOperationsQueueStatus("success");
     } catch (error) {
       setOperationsQueue(null);
       setOperationsQueueStatus("error");
       setState((current) => ({ ...current, message: formatSafeHomeError(error, "队列暂时无法读取。") }));
+    }
+  }
+
+  async function openWorkItem(workItemId: string) {
+    setWorkItemStatus("loading");
+    try {
+      setSelectedWorkItem(await api.getResearchWorkItem(workItemId, getStoredAdminToken().trim()));
+      setWorkItemStatus("success");
+    } catch (error) {
+      setWorkItemStatus("error");
+      setState((current) => ({ ...current, message: formatSafeHomeError(error, "工作项暂时无法读取。") }));
+    }
+  }
+
+  async function runWorkItemAction(action: ResearchWorkItemAction, extra: Record<string, string> = {}) {
+    if (!selectedWorkItem || !operationsQueue) return;
+    setWorkItemStatus("loading");
+    const idempotencyKey = `work-item:${selectedWorkItem.work_item.id}:${action}:${Date.now()}`;
+    try {
+      await api.actOnResearchWorkItem(
+        selectedWorkItem.work_item.id,
+        {
+          action,
+          expected_version: selectedWorkItem.work_item.version,
+          idempotency_key: idempotencyKey,
+          ...extra,
+        },
+        getStoredAdminToken().trim(),
+      );
+      setSelectedWorkItem(await api.getResearchWorkItem(selectedWorkItem.work_item.id, getStoredAdminToken().trim()));
+      const refreshedQueue = await api.getResearchQueue(
+        operationsQueue.queue,
+        { page: operationsQueue.page, page_size: operationsQueue.page_size },
+        getStoredAdminToken().trim(),
+      );
+      setOperationsQueue(refreshedQueue);
+      setOperationsMetrics(await api.getResearchWorkItemMetrics(7, getStoredAdminToken().trim()));
+      setWorkItemNote("");
+      if (action === "send_participant_message") setParticipantMessageBody("");
+      setWorkItemStatus("success");
+    } catch (error) {
+      setWorkItemStatus("error");
+      setState((current) => ({ ...current, message: formatSafeHomeError(error, "工作项更新失败，请刷新后重试。") }));
     }
   }
 
@@ -505,15 +563,123 @@ export function ResearchDashboard() {
             <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("supervision")}>查看人工支持</button>
             <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("risk_review")}>查看风险复核</button>
             <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("feedback_review")}>查看不适反馈</button>
+            {state.operations.privacy_management_available ? <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("privacy_request")}>查看隐私申请</button> : null}
           </div>
           {operationsQueueStatus === "loading" ? <div className="status compact loading">正在读取队列...</div> : null}
           {operationsQueue ? (
-            <div className="operationsFailures" aria-label="运营队列记录">
-              <strong>{operationsQueue.queue} · {operationsQueue.total ?? operationsQueue.items.length} 条</strong>
-              {operationsQueue.items.length ? operationsQueue.items.map((item) => (
-                <span key={item.id}>{item.title} · {item.user_id} · {displayStatus(item.status)} · 已等待 {item.wait_minutes} 分钟 · {formatTime(item.created_at)}</span>
-              )) : <span>当前队列为空</span>}
-              <small>{operationsQueue.boundary_notice}</small>
+            <div className="operationsWorkbench" aria-label="运营队列记录">
+              <div className="operationsQueueColumn">
+                <div className="operationsQueueTitle">
+                  <strong>{operationsQueue.queue} · {operationsQueue.total ?? operationsQueue.items.length} 条</strong>
+                  <span>按紧急程度与等待时间排序</span>
+                </div>
+                {operationsQueue.items.length ? operationsQueue.items.map((item) => (
+                  <button
+                    className={`workItemRow workItemRow--${item.priority}`}
+                    key={item.work_item_id}
+                    type="button"
+                    aria-pressed={selectedWorkItem?.work_item.id === item.work_item_id}
+                    onClick={() => void openWorkItem(item.work_item_id)}
+                  >
+                    <span className="workItemRowMain">
+                      <strong>{item.title}</strong>
+                      <small>{item.user_id} · 已等待 {item.wait_minutes} 分钟</small>
+                      {item.retry_category ? <small>{displayNotificationRetry(item.retry_category)}{item.next_attempt_at ? ` · 下次 ${formatTime(item.next_attempt_at)}` : ""}</small> : null}
+                    </span>
+                    <span className="workItemRowState">{displayStatus(item.status)}</span>
+                  </button>
+                )) : <div className="operationsEmpty">当前队列为空，无需额外操作。</div>}
+                <small className="operationsBoundary">{operationsQueue.boundary_notice}</small>
+              </div>
+
+              <div className="workItemDetail" aria-live="polite">
+                {workItemStatus === "loading" ? <div className="status compact loading">正在同步工作项...</div> : null}
+                {workItemStatus === "error" ? <div className="status compact error">工作项更新失败。{selectedWorkItem ? <button type="button" onClick={() => void openWorkItem(selectedWorkItem.work_item.id)}>重新读取</button> : null}</div> : null}
+                {selectedWorkItem ? (
+                  <>
+                    <div className="workItemDetailHeader">
+                      <div>
+                        <span className="eyebrow">处置账本</span>
+                        <h3>{displayWorkQueue(selectedWorkItem.work_item.queue_type)}</h3>
+                      </div>
+                      <span className="countBadge">{displayStatus(selectedWorkItem.work_item.status)}</span>
+                    </div>
+                    <dl className="workItemFacts">
+                      <div><dt>参与者</dt><dd>{selectedWorkItem.work_item.user_id}</dd></div>
+                      <div><dt>负责人</dt><dd>{selectedWorkItem.work_item.assignee_id || "尚未领取"}</dd></div>
+                      <div><dt>优先级</dt><dd>{displayWorkPriority(selectedWorkItem.work_item.priority)}</dd></div>
+                      <div><dt>版本</dt><dd>v{selectedWorkItem.work_item.version}</dd></div>
+                    </dl>
+                    <div className="workItemActions" aria-label="工作项状态操作">
+                      {selectedWorkItem.work_item.status === "open" ? <button type="button" onClick={() => void runWorkItemAction("claim")}>领取</button> : null}
+                      {["claimed", "processing", "waiting"].includes(selectedWorkItem.work_item.status) ? <>
+                        <button type="button" onClick={() => void runWorkItemAction("renew")}>续租</button>
+                        <button type="button" onClick={() => void runWorkItemAction("start_processing")}>处理中</button>
+                        <button type="button" onClick={() => void runWorkItemAction("wait")}>等待补充</button>
+                        <button type="button" onClick={() => void runWorkItemAction("return")}>退回队列</button>
+                      </> : null}
+                      {canManageSensitiveWorkItems && selectedWorkItem.work_item.status === "completed" ? <button type="button" onClick={() => void runWorkItemAction("close", { resolution_code: resolutionCode, note: workItemNote })}>关闭</button> : null}
+                      {canManageSensitiveWorkItems && ["completed", "closed"].includes(selectedWorkItem.work_item.status) ? <button type="button" onClick={() => void runWorkItemAction("reopen", { note: workItemNote || "收到新情况，重新进入处理队列。" })}>重新打开</button> : null}
+                      {selectedWorkItem.work_item.queue_type === "notification_failed" ? <>
+                        <button type="button" onClick={() => void runWorkItemAction("retry_notification")}>安排重试</button>
+                        {canManageSensitiveWorkItems && selectedWorkItem.work_item.status === "dead_letter" ? <button type="button" onClick={() => void runWorkItemAction("recover_notification", { note: workItemNote || "已人工核对后恢复。" })}>恢复死信</button> : null}
+                      </> : null}
+                    </div>
+                    <label className="workItemField">
+                      <span>内部处理说明</span>
+                      <textarea value={workItemNote} maxLength={2000} onChange={(event) => setWorkItemNote(event.target.value)} placeholder="只记录必要的处理信息，不复制参与者原文。" />
+                    </label>
+                    {canManageSensitiveWorkItems ? (
+                      <div className="workItemTransfer">
+                        <label className="workItemField">
+                          <span>转交给</span>
+                          <input value={transferAssigneeId} onChange={(event) => setTransferAssigneeId(event.target.value)} placeholder="输入已获授权的研究者或督导ID" />
+                        </label>
+                        <button type="button" disabled={!transferAssigneeId.trim()} onClick={() => void runWorkItemAction("transfer", { assignee_id: transferAssigneeId.trim() })}>确认转交</button>
+                      </div>
+                    ) : null}
+                    <label className="workItemField">
+                      <span>处理结果</span>
+                      <select value={resolutionCode} onChange={(event) => setResolutionCode(event.target.value)}>
+                        <option value="handled">已完成当前处理</option>
+                        <option value="participant_updated">已向参与者反馈进度</option>
+                        <option value="transferred">已转交合适人员</option>
+                        <option value="no_response">等待期内未收到补充</option>
+                        <option value="duplicate">重复工作项已合并</option>
+                      </select>
+                    </label>
+                    <div className="workItemFormActions">
+                      <button type="button" disabled={!workItemNote.trim()} onClick={() => void runWorkItemAction("add_note", { note: workItemNote })}>保存内部说明</button>
+                      {["claimed", "processing", "waiting"].includes(selectedWorkItem.work_item.status) ? <button type="button" disabled={!resolutionCode.trim()} onClick={() => void runWorkItemAction("complete", { resolution_code: resolutionCode, note: workItemNote })}>标记完成</button> : null}
+                    </div>
+                    {["stage_feedback", "supervision", "feedback_review"].includes(selectedWorkItem.work_item.queue_type) ? (
+                      <fieldset className="participantMessageBox">
+                        <legend>发送参与者可见消息</legend>
+                        <label><span>标题</span><input value={participantMessageTitle} maxLength={60} onChange={(event) => setParticipantMessageTitle(event.target.value)} /></label>
+                        <label><span>正文</span><textarea value={participantMessageBody} maxLength={2000} onChange={(event) => setParticipantMessageBody(event.target.value)} /></label>
+                        <button type="button" disabled={!participantMessageTitle.trim() || !participantMessageBody.trim()} onClick={() => void runWorkItemAction("send_participant_message", { title: participantMessageTitle, body: participantMessageBody })}>发送到消息中心</button>
+                      </fieldset>
+                    ) : null}
+                    <div className="workItemLedger">
+                      <h4>处理轨迹</h4>
+                      {selectedWorkItem.actions.length ? selectedWorkItem.actions.map((action) => <span key={action.id}>{formatTime(action.created_at)} · {displayActorRole(action.actor_role)} · {displayWorkAction(action.action)} · {displayStatus(action.to_status)}</span>) : <span>尚无处理动作</span>}
+                      {selectedWorkItem.notes.map((note) => <span key={note.id}>{formatTime(note.created_at)} · {note.note_type === "internal" ? "内部说明" : "处理说明"} · {note.content}</span>)}
+                    </div>
+                    <p className="analysisBoundary">{selectedWorkItem.boundary_notice}</p>
+                  </>
+                ) : <div className="operationsEmpty">从左侧选择一条工作项查看处置轨迹。</div>}
+              </div>
+            </div>
+          ) : null}
+          {operationsMetrics ? (
+            <div className="operationsMetrics" aria-label="近七天运营指标">
+              <span>待处理 {operationsMetrics.totals.open}</span>
+              <span>处理中 {operationsMetrics.totals.claimed + operationsMetrics.totals.processing + operationsMetrics.totals.waiting}</span>
+              <span>已超时 {operationsMetrics.sla.overdue}</span>
+              <span>租约过期 {operationsMetrics.sla.expired_leases}</span>
+              <span>近7天新增 {operationsMetrics.trend.reduce((sum, item) => sum + item.opened, 0)}</span>
+              <span>近7天关闭 {operationsMetrics.trend.reduce((sum, item) => sum + item.closed, 0)}</span>
+              <small>{operationsMetrics.quality_boundary}</small>
             </div>
           ) : null}
           {state.operations.failure_reasons.length ? (

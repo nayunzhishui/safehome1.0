@@ -1894,7 +1894,7 @@ relationship_initiation_intention_action
 
 权限：`admin`，或请求头提供有效 `X-Scheduler-Token`。请求体 `{ "dry_run": true }` 默认为演练，不调用微信发送接口。
 
-真实发送需同时满足：模板已配置、参与者已授权、用户有微信 OpenID、计划状态为进行中、北京时间已到练习日、`WECHAT_SUBSCRIBE_SEND_ENABLED=1`。投递使用 `training_due:user_id:日期:template_id` 幂等键；成功或发送中的同一投递不重复发送，普通失败最多重试 3 次，微信返回未授权时停止并更新授权状态。
+真实发送需同时满足：模板已配置、参与者已授权、用户有微信 OpenID、计划状态为进行中、北京时间已到练习日、`WECHAT_SUBSCRIBE_SEND_ENABLED=1`。投递使用 `training_due:user_id:日期:template_id` 幂等键；成功或发送中的同一投递不重复发送。可恢复失败按5、10、20分钟指数退避，达到最大次数进入死信；拒绝授权、模板配置错误和永久失败停止自动重试并进入对应人工状态。
 
 ## 2026-07-18：匿名试用记录认领
 
@@ -1959,5 +1959,23 @@ relationship_initiation_intention_action
 
 ### `GET /api/research/queues`
 
-权限：`researcher/supervisor/admin`。参数：`queue`、`page`、`page_size`；队列类型为`notification_failed/stage_feedback/supervision/risk_review/feedback_review`。研究者仅看到已分配参与者，督导和管理员可看全量。每项只返回必要ID、状态、来源标识、创建时间和`wait_minutes`，不返回填写原文、消息正文或内部复核备注，并写入审计日志。
+权限：`researcher/supervisor/admin`。参数：`queue`、`page`、`page_size`和可选`status=active/all/具体状态`；队列类型为`notification_failed/stage_feedback/supervision/risk_review/feedback_review/privacy_request`。研究者仅看到已分配参与者，督导和管理员可看全量；隐私申请仅督导/管理员可见。每项返回工作项ID、优先级、状态、负责人、租约、等待/到期时间、版本和必要来源标识。通知失败另返回错误代码分类、重试次数和下次时间；不返回填写原文、消息正文、提供方错误原文或内部复核备注。
+
+## 2026-07-20：研究运营处置工作项
+
+### `GET /api/research/work-items/<id>`
+
+权限与对象范围同研究队列。返回统一工作项、只读来源标识、内部/处理备注和动作轨迹；不复制原始参与者内容。风险复核和隐私申请继续受各自督导/管理员权限约束。
+
+### `POST /api/research/work-items/<id>/actions`
+
+需要`Idempotency-Key`、`action`和`expected_version`。状态动作包括`claim/renew/return/transfer/start_processing/wait/complete/close/reopen`，说明和消息动作为`add_note/send_participant_message`，通知动作为`retry_notification/recover_notification`。领取与更新使用乐观锁；版本过期返回`work_item_conflict`，有效租约被他人占用返回`work_item_claimed`，重复幂等请求不重复写备注或消息。
+
+研究者只能处理获授权且已分配参与者；风险复核、隐私申请、转交、关闭、重新打开和通知恢复需要督导/管理员。参与者消息写入`messages`，内部备注写入`research_work_item_notes`，原始来源表保持只读。高风险消息由普通研究者发送时返回`message_requires_supervisor_review`。
+
+生产环境写操作由`RESEARCH_OPERATIONS_WRITE_ENABLED=0`默认阻断；本地/测试默认开启，也可显式设为0回滚到只读队列。临时展示越权只覆盖既有展示读取，不覆盖本接口写操作，也不能作为权限验收依据。
+
+### `GET /api/research/work-items/metrics`
+
+参数`window_days`为1至90。返回角色范围内各状态数量、超时、租约过期、关闭原因、动作量和每日新增/关闭趋势。接口明确声明这些数据只用于排班和可靠性观察，不用于评价心理支持质量或参与者好坏。
 

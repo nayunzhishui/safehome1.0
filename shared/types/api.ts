@@ -51,7 +51,7 @@ export interface ResearchOperationsSnapshot {
   generated_at: string;
   notification_preferences: { accepted: number; rejected: number; consumed: number; unknown: number };
   notification_deliveries: { pending: number; sending: number; sent: number; failed: number; retry_queue: number; exhausted: number; overdue: number };
-  failure_reasons: Array<{ error_code: string; count: number }>;
+  failure_reasons: Array<{ error_code: string; retry_category?: string; count: number }>;
   backlog: { stage_feedback: number; supervision: number; risk_review: number; privacy_requests: number };
   privacy_management_available: boolean;
   boundary_notice: string;
@@ -159,20 +159,47 @@ export interface PrivacyReviewDetail {
   boundary_notice: string;
 }
 
-export type ResearchQueueType = "notification_failed" | "stage_feedback" | "supervision" | "risk_review" | "feedback_review";
+export type ResearchQueueType = "notification_failed" | "stage_feedback" | "supervision" | "risk_review" | "feedback_review" | "privacy_request";
+export type ResearchWorkItemPriority = "routine" | "attention" | "urgent";
+export type ResearchWorkItemStatus = "open" | "claimed" | "processing" | "waiting" | "completed" | "closed" | "dead_letter";
+export type ResearchWorkItemAction =
+  | "claim"
+  | "renew"
+  | "return"
+  | "transfer"
+  | "start_processing"
+  | "wait"
+  | "add_note"
+  | "send_participant_message"
+  | "complete"
+  | "close"
+  | "reopen"
+  | "retry_notification"
+  | "recover_notification";
 
 export interface ResearchQueueItem {
   id: ID;
+  work_item_id: ID;
   user_id: ID;
   title: string;
   status: string;
   created_at: ISODateTime;
   wait_minutes: number;
+  priority: ResearchWorkItemPriority;
+  assignee_id?: ID | null;
+  lease_expires_at?: ISODateTime | null;
+  due_at?: ISODateTime | null;
+  version: number;
+  resolution_code?: string | null;
   source_type?: string | null;
   source_id?: string | null;
   enrollment_id?: string | null;
   error_code?: string | null;
   attempt_count?: number;
+  retry_category?: "retryable" | "reauthorization_required" | "template_error" | "permanent_failure" | null;
+  next_attempt_at?: ISODateTime | null;
+  max_attempts?: number;
+  dead_lettered_at?: ISODateTime | null;
   evaluation?: FeedbackEvaluation;
 }
 
@@ -180,6 +207,83 @@ export interface ResearchQueuePage extends ListResponse<ResearchQueueItem> {
   queue: ResearchQueueType;
   scope: "assigned_participants" | "all_participants";
   boundary_notice: string;
+  sync_truncated?: boolean;
+}
+
+export interface ResearchWorkItem {
+  id: ID;
+  queue_type: ResearchQueueType;
+  source_type: string;
+  source_id: ID;
+  user_id: ID;
+  priority: ResearchWorkItemPriority;
+  status: ResearchWorkItemStatus;
+  assignee_id?: ID | null;
+  lease_expires_at?: ISODateTime | null;
+  due_at?: ISODateTime | null;
+  version: number;
+  resolution_code?: string | null;
+  closed_at?: ISODateTime | null;
+  last_action_at?: ISODateTime | null;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface ResearchWorkItemNote {
+  id: ID;
+  actor_id: ID;
+  actor_role: UserRole;
+  note_type: "internal" | "handling";
+  content: string;
+  created_at: ISODateTime;
+}
+
+export interface ResearchWorkItemActionRecord {
+  id: ID;
+  actor_id: ID;
+  actor_role: UserRole | "system";
+  action: ResearchWorkItemAction;
+  from_status: ResearchWorkItemStatus;
+  to_status: ResearchWorkItemStatus;
+  created_at: ISODateTime;
+}
+
+export interface ResearchWorkItemDetail {
+  work_item: ResearchWorkItem;
+  source: { source_type: string; source_id: ID; user_id: ID; read_only: true };
+  notes: ResearchWorkItemNote[];
+  actions: ResearchWorkItemActionRecord[];
+  boundary_notice: string;
+}
+
+export interface ResearchWorkItemActionInput {
+  action: ResearchWorkItemAction;
+  expected_version: number;
+  idempotency_key: string;
+  note?: string;
+  assignee_id?: ID;
+  title?: string;
+  body?: string;
+  resolution_code?: string;
+}
+
+export interface ResearchWorkItemActionResult {
+  work_item: ResearchWorkItem;
+  already_processed: boolean;
+  message_id?: ID;
+}
+
+export interface ResearchWorkItemMetrics {
+  scope: "assigned_participants" | "all_participants";
+  generated_at: ISODateTime;
+  window_days: number;
+  totals: Record<ResearchWorkItemStatus, number>;
+  sla: { overdue: number; expired_leases: number };
+  close_reasons: Array<{ resolution_code: string; count: number }>;
+  workload: Array<{ actor_id: ID; actor_role: UserRole | "system"; action: ResearchWorkItemAction; count: number }>;
+  trend: Array<{ day: ISODate; opened: number; closed: number }>;
+  sync_truncation?: Partial<Record<ResearchQueueType, boolean>>;
+  quality_boundary: string;
 }
 
 export interface User {

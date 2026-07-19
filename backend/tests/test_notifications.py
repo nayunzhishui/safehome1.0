@@ -190,12 +190,26 @@ def test_transient_provider_failure_retries_without_consuming_consent(tmp_path, 
         headers={"X-Scheduler-Token": "scheduler-test-token"},
         json={"dry_run": False},
     ).get_json()["data"]
-    assert second["sent"] == 1
-    assert len(attempts) == 2
+    assert second["sent"] == 0
+    assert second["deferred"] == 1
+    assert len(attempts) == 1
     database = importlib.import_module("database")
     with database.get_connection() as conn:
+        conn.execute(
+            "UPDATE notification_deliveries SET next_attempt_at = '2000-01-01T00:00:00+00:00' WHERE user_id = ?",
+            (user_id,),
+        )
+        conn.commit()
+    third = client.post(
+        "/api/notifications/run-due",
+        headers={"X-Scheduler-Token": "scheduler-test-token"},
+        json={"dry_run": False},
+    ).get_json()["data"]
+    assert third["sent"] == 1
+    assert len(attempts) == 2
+    with database.get_connection() as conn:
         delivery = conn.execute(
-            "SELECT status, attempt_count FROM notification_deliveries WHERE user_id = ?",
+            "SELECT status, attempt_count, next_attempt_at, retry_category FROM notification_deliveries WHERE user_id = ?",
             (user_id,),
         ).fetchone()
     assert delivery["status"] == "sent"

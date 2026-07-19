@@ -2475,6 +2475,222 @@ ul {
   font-size: 13px;
 }
 
+.operationsWorkbench {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.78fr) minmax(360px, 1.22fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.operationsQueueColumn,
+.workItemDetail {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #d5e1da;
+  border-radius: 12px;
+  background: #fffefa;
+}
+
+.operationsQueueTitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.operationsQueueTitle span,
+.operationsBoundary {
+  color: var(--safe-muted);
+  font-size: 12px;
+}
+
+.workItemRow {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px 11px 16px;
+  border: 1px solid #dbe5df;
+  border-left: 4px solid #91aa9d;
+  border-radius: 9px;
+  background: #fbfdfb;
+  color: var(--safe-ink);
+  text-align: left;
+}
+
+.workItemRow:hover,
+.workItemRow[aria-pressed="true"] {
+  border-color: #6f9581;
+  background: #f1f7f3;
+}
+
+.workItemRow--attention { border-left-color: #d39a52; }
+.workItemRow--urgent { border-left-color: #b76155; }
+
+.workItemRowMain {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.workItemRowMain strong,
+.workItemRowMain small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workItemRowMain small { color: var(--safe-muted); }
+
+.workItemRowState {
+  flex: none;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #e7f0ea;
+  color: var(--safe-green-deep);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.workItemDetailHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.workItemDetailHeader h3 { margin: 2px 0 0; }
+
+.workItemFacts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.workItemFacts div {
+  min-width: 0;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f2f6f3;
+}
+
+.workItemFacts dt { color: var(--safe-muted); font-size: 12px; }
+.workItemFacts dd { margin: 3px 0 0; overflow-wrap: anywhere; font-weight: 750; }
+
+.workItemActions,
+.workItemFormActions,
+.workItemTransfer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.workItemTransfer { align-items: end; }
+.workItemTransfer .workItemField { flex: 1 1 240px; }
+.workItemTransfer button { min-height: 44px; }
+
+.workItemActions button,
+.workItemFormActions button,
+.participantMessageBox button {
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 1px solid #7c9e8b;
+  border-radius: 9px;
+  background: #f7fbf8;
+  color: var(--safe-green-deep);
+  font-weight: 750;
+}
+
+.workItemActions button:first-child,
+.workItemFormActions button:last-child,
+.participantMessageBox button {
+  background: var(--safe-green-deep);
+  color: #fff;
+}
+
+.workItemField,
+.participantMessageBox label {
+  display: grid;
+  gap: 6px;
+  color: var(--safe-green-deep);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.workItemField textarea,
+.workItemField input,
+.workItemField select,
+.participantMessageBox textarea,
+.participantMessageBox input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #cbd9d1;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--safe-ink);
+  font: inherit;
+  font-weight: 500;
+  resize: vertical;
+}
+
+.workItemField textarea,
+.participantMessageBox textarea { min-height: 92px; }
+
+.participantMessageBox {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid #d7e2db;
+  border-radius: 10px;
+}
+
+.participantMessageBox legend { padding: 0 6px; color: var(--safe-green-deep); font-weight: 800; }
+
+.workItemLedger {
+  display: grid;
+  gap: 7px;
+  padding-top: 12px;
+  border-top: 1px solid #dfe7e2;
+}
+
+.workItemLedger h4 { margin: 0; }
+.workItemLedger span { color: var(--safe-muted); font-size: 12px; line-height: 1.55; }
+
+.operationsEmpty {
+  padding: 22px 14px;
+  border: 1px dashed #c9d8d0;
+  border-radius: 9px;
+  color: var(--safe-muted);
+  text-align: center;
+}
+
+.operationsMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.operationsMetrics span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #edf3ef;
+  color: var(--safe-green-deep);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.operationsMetrics small {
+  flex-basis: 100%;
+  color: var(--safe-muted);
+}
+
 .dossierModule {
   content-visibility: auto;
   contain-intrinsic-size: 220px;
@@ -2487,6 +2703,8 @@ ul {
   .operationsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .operationsWorkbench { grid-template-columns: minmax(0, 1fr); }
+  .workItemFacts { grid-template-columns: minmax(0, 1fr); }
 }
 
 .participantWorkspaceHeader {

@@ -61,6 +61,14 @@ class Config:
     PRIVACY_RETENTION_POLICY_APPROVED = os.environ.get("PRIVACY_RETENTION_POLICY_APPROVED", "").strip().lower() in {"1", "true", "yes"}
     PRIVACY_PRODUCTION_EXECUTION_ENABLED = os.environ.get("PRIVACY_PRODUCTION_EXECUTION_ENABLED", "").strip().lower() in {"1", "true", "yes"}
     PRIVACY_TOMBSTONE_SECRET = os.environ.get("PRIVACY_TOMBSTONE_SECRET", SECRET_KEY)
+    RESEARCH_OPERATIONS_WRITE_ENABLED = os.environ.get(
+        "RESEARCH_OPERATIONS_WRITE_ENABLED",
+        "1" if str(APP_ENV).lower() != "production" else "0",
+    ).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
 
     @classmethod
     def validate(cls) -> None:

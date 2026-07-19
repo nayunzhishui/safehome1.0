@@ -1,7 +1,7 @@
 """Consent-aware, idempotent WeChat subscription notification service."""
 
 import json
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -16,6 +16,26 @@ CHANNEL = "wechat_subscribe"
 TRAINING_DUE = "training_due"
 ALLOWED_DECISIONS = {"accept": "accepted", "reject": "rejected", "ban": "banned"}
 _TOKEN_CACHE = {"appid": "", "value": "", "expires_at": 0.0}
+
+REAUTHORIZATION_ERROR_CODES = {"43101", "user_refuse", "subscription_refused"}
+TEMPLATE_ERROR_CODES = {"40037", "template_invalid", "subscription_fields_invalid", "subscription_fields_missing"}
+PERMANENT_ERROR_CODES = {"40003", "invalid_openid", "invalid_recipient"}
+
+
+def classify_notification_error(error_code: str) -> str:
+    code = str(error_code or "").strip().lower()
+    if code in REAUTHORIZATION_ERROR_CODES:
+        return "reauthorization_required"
+    if code in TEMPLATE_ERROR_CODES:
+        return "template_error"
+    if code in PERMANENT_ERROR_CODES:
+        return "permanent_failure"
+    return "retryable"
+
+
+def _next_retry_at(attempt_count: int) -> str:
+    delay_minutes = min(5 * (2 ** max(attempt_count - 1, 0)), 24 * 60)
+    return (datetime.now(timezone.utc) + timedelta(minutes=delay_minutes)).isoformat()
 
 
 class NotificationError(RuntimeError):
@@ -248,30 +268,51 @@ def send_wechat_subscription(candidate: dict) -> dict:
 def run_due_notifications(*, dry_run: bool = True, run_day: date | None = None) -> dict:
     candidates = due_candidates(run_day)
     if dry_run:
-        return {"dry_run": True, "candidate_count": len(candidates), "sent": 0, "skipped_duplicate": 0, "failed": 0}
+        return {"dry_run": True, "candidate_count": len(candidates), "sent": 0, "skipped_duplicate": 0, "failed": 0, "deferred": 0, "dead_lettered": 0, "requires_action": 0}
     if not bool(_config("WECHAT_SUBSCRIBE_SEND_ENABLED", False)):
         raise NotificationError("subscription_send_disabled", "微信订阅消息真实发送开关尚未开启", 503)
-    sent = skipped = failed = 0
+    sent = skipped = failed = deferred = dead_lettered = requires_action = 0
     for candidate in candidates:
         timestamp = now_iso()
         with get_connection() as conn:
             existing = conn.execute(
-                "SELECT id, status, attempt_count FROM notification_deliveries WHERE idempotency_key = ? LIMIT 1",
+                """
+                SELECT id, status, attempt_count, retry_category, next_attempt_at,
+                       max_attempts, dead_lettered_at, error_code
+                FROM notification_deliveries WHERE idempotency_key = ? LIMIT 1
+                """,
                 (candidate["idempotency_key"],),
             ).fetchone()
             if existing:
-                if existing["status"] != "failed" or int(existing["attempt_count"] or 0) >= 3:
+                if existing["status"] != "failed":
                     skipped += 1
+                    continue
+                category = str(existing["retry_category"] or classify_notification_error(str(existing["error_code"] or "")))
+                if category != "retryable":
+                    requires_action += 1
+                    continue
+                max_attempts = int(existing["max_attempts"] or 3)
+                if existing["dead_lettered_at"] or int(existing["attempt_count"] or 0) >= max_attempts:
+                    if not existing["dead_lettered_at"]:
+                        conn.execute(
+                            "UPDATE notification_deliveries SET dead_lettered_at = ?, next_attempt_at = NULL, updated_at = ? WHERE id = ?",
+                            (timestamp, timestamp, existing["id"]),
+                        )
+                        conn.commit()
+                    dead_lettered += 1
+                    continue
+                if existing["next_attempt_at"] and str(existing["next_attempt_at"]) > timestamp:
+                    deferred += 1
                     continue
                 delivery_id = existing["id"]
                 conn.execute(
                     """
                     UPDATE notification_deliveries
                     SET status = 'sending', attempt_count = attempt_count + 1,
-                        error_code = NULL, error_message = NULL, updated_at = ?
+                        last_attempt_at = ?, error_code = NULL, error_message = NULL, updated_at = ?
                     WHERE id = ?
                     """,
-                    (timestamp, delivery_id),
+                    (timestamp, timestamp, delivery_id),
                 )
             else:
                 delivery_id = new_id("notify_delivery")
@@ -296,7 +337,13 @@ def run_due_notifications(*, dry_run: bool = True, run_day: date | None = None) 
                 raise NotificationError(str(errcode), str(result.get("errmsg") or "微信发送失败"), 502)
             with get_connection() as conn:
                 conn.execute(
-                    "UPDATE notification_deliveries SET status = 'sent', sent_at = ?, provider_message_id = ?, updated_at = ? WHERE id = ?",
+                    """
+                    UPDATE notification_deliveries
+                    SET status = 'sent', sent_at = ?, provider_message_id = ?, error_code = NULL,
+                        error_message = NULL, retry_category = NULL, next_attempt_at = NULL,
+                        dead_lettered_at = NULL, updated_at = ?
+                    WHERE id = ?
+                    """,
                     (now_iso(), str(result.get("msgid") or "") or None, now_iso(), delivery_id),
                 )
                 if candidate["subscription_mode"] == "once":
@@ -308,15 +355,45 @@ def run_due_notifications(*, dry_run: bool = True, run_day: date | None = None) 
             sent += 1
         except NotificationError as exc:
             with get_connection() as conn:
+                delivery = conn.execute(
+                    "SELECT attempt_count, max_attempts FROM notification_deliveries WHERE id = ?",
+                    (delivery_id,),
+                ).fetchone()
+                attempt_count = int(delivery["attempt_count"] or 1)
+                max_attempts = int(delivery["max_attempts"] or 3)
+                category = classify_notification_error(exc.code)
+                exhausted = category == "retryable" and attempt_count >= max_attempts
                 conn.execute(
-                    "UPDATE notification_deliveries SET status = 'failed', error_code = ?, error_message = ?, updated_at = ? WHERE id = ?",
-                    (exc.code, str(exc)[:200], now_iso(), delivery_id),
+                    """
+                    UPDATE notification_deliveries
+                    SET status = 'failed', error_code = ?, error_message = ?, retry_category = ?,
+                        next_attempt_at = ?, dead_lettered_at = ?, updated_at = ?
+                    WHERE id = ?
+                    """,
+                    (
+                        exc.code,
+                        str(exc)[:200],
+                        category,
+                        _next_retry_at(attempt_count) if category == "retryable" and not exhausted else None,
+                        now_iso() if exhausted else None,
+                        now_iso(),
+                        delivery_id,
+                    ),
                 )
-                if exc.code in {"43101", "user_refuse"}:
+                if category == "reauthorization_required":
                     conn.execute(
                         "UPDATE notification_preferences SET consent_status = 'rejected', revoked_at = ?, updated_at = ? WHERE id = ?",
                         (now_iso(), now_iso(), candidate["preference_id"]),
                     )
                 conn.commit()
             failed += 1
-    return {"dry_run": False, "candidate_count": len(candidates), "sent": sent, "skipped_duplicate": skipped, "failed": failed}
+    return {
+        "dry_run": False,
+        "candidate_count": len(candidates),
+        "sent": sent,
+        "skipped_duplicate": skipped,
+        "failed": failed,
+        "deferred": deferred,
+        "dead_lettered": dead_lettered,
+        "requires_action": requires_action,
+    }

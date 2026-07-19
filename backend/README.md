@@ -67,6 +67,10 @@ http://127.0.0.1:5000/healthz
 | GET | `/api/weekly-report` | 生成周度报告 |
 | POST | `/api/supervision` | 提交人工督导请求 |
 | GET | `/api/admin/export` | 导出 CSV |
+| GET | `/api/research/operations/queues` | 获取受权限约束的研究运营工作队列 |
+| GET | `/api/research/work-items/<id>` | 查看工作项详情与处置轨迹 |
+| POST | `/api/research/work-items/<id>/actions` | 执行领取、备注、消息、完成等幂等动作 |
+| GET | `/api/research/work-items/metrics` | 获取积压、时效与动作趋势，不评价支持质量 |
 
 ## 快速测试
 
@@ -118,5 +122,5 @@ Invoke-WebRequest `
 - 即时反馈是非诊断、支持性、非评判表达。
 - 训练卡来自 `content/training_cards.json`。
 - 反馈规则来自 `content/feedback_rules.json`。
-- 当前版本没有登录鉴权，默认测试用户为 `demo-parent`。
-- 进入正式试点前，需要补充用户身份、权限、日志审计、隐私删除流程和风险转介流程。
+- 研究运营接口使用现有角色与对象范围鉴权，并写入审计日志；生产环境写操作默认由 `RESEARCH_OPERATIONS_WRITE_ENABLED=0` 关闭。
+- 演示环境可使用测试身份；生产环境禁止缺省 `demo-parent`，正式权限验收不得使用临时展示越权作为证据。

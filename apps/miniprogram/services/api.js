@@ -97,6 +97,8 @@ const API_ENDPOINTS = {
   privacyRequests: "/api/privacy/requests",
   privacyDeleteMyData: "/api/privacy/delete-my-data",
   researchQueues: "/api/research/queues",
+  researchWorkItems: "/api/research/work-items",
+  researchWorkItemMetrics: "/api/research/work-items/metrics",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -939,6 +941,28 @@ function createSafeHomeApi(options = {}) {
         data: withDefaultUser(data),
         requiresAuth: true,
       });
+    },
+
+    getResearchQueue(params = {}) {
+      return request(`${API_ENDPOINTS.researchQueues}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    getResearchWorkItem(id) {
+      return request(`${API_ENDPOINTS.researchWorkItems}/${encodeURIComponent(id)}`, { requiresAuth: true });
+    },
+
+    actOnResearchWorkItem(id, data) {
+      const idempotencyKey = data.idempotency_key || "";
+      return request(`${API_ENDPOINTS.researchWorkItems}/${encodeURIComponent(id)}/actions`, {
+        method: "POST",
+        data,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
+    getResearchWorkItemMetrics(params = {}) {
+      return request(`${API_ENDPOINTS.researchWorkItemMetrics}${queryString(params)}`, { requiresAuth: true });
     },
 
     getParentAssessmentResult(id, params = {}) {

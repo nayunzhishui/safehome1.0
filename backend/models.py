@@ -27,6 +27,9 @@ MVP_TABLES = [
     "messages",
     "notification_preferences",
     "notification_deliveries",
+    "research_work_items",
+    "research_work_item_notes",
+    "research_work_item_actions",
     "data_claims",
     "relationship_pilot_enrollments",
     "relationship_screening_reports",
@@ -686,8 +689,59 @@ SCHEMA_SQL = [
         provider_message_id TEXT,
         error_code TEXT,
         error_message TEXT,
+        retry_category TEXT,
+        next_attempt_at TEXT,
+        max_attempts INTEGER NOT NULL DEFAULT 3,
+        dead_lettered_at TEXT,
+        last_attempt_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_work_items (
+        id TEXT PRIMARY KEY,
+        queue_type TEXT NOT NULL,
+        source_type TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        priority TEXT NOT NULL DEFAULT 'routine',
+        status TEXT NOT NULL DEFAULT 'open',
+        assignee_id TEXT,
+        lease_expires_at TEXT,
+        due_at TEXT,
+        version INTEGER NOT NULL DEFAULT 0,
+        resolution_code TEXT,
+        closed_at TEXT,
+        last_action_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(queue_type, source_type, source_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_work_item_notes (
+        id TEXT PRIMARY KEY,
+        work_item_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        actor_role TEXT NOT NULL,
+        note_type TEXT NOT NULL,
+        content TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_work_item_actions (
+        id TEXT PRIMARY KEY,
+        work_item_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        actor_role TEXT NOT NULL,
+        action TEXT NOT NULL,
+        from_status TEXT NOT NULL,
+        to_status TEXT NOT NULL,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL
     )
     """,
     """
@@ -735,6 +789,12 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_notification_preference_status ON notification_preferences(consent_status, notification_type)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_notification_delivery_idempotency ON notification_deliveries(idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_notification_delivery_user_created ON notification_deliveries(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_notification_delivery_retry_due ON notification_deliveries(status, retry_category, next_attempt_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_work_items_queue_status_due ON research_work_items(queue_type, status, due_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_work_items_assignee_lease ON research_work_items(assignee_id, lease_expires_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_work_items_user_created ON research_work_items(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_work_item_notes_item_created ON research_work_item_notes(work_item_id, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_work_item_action_actor_idempotency ON research_work_item_actions(actor_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_data_claim_anonymous_unique ON data_claims(anonymous_id)",
     "CREATE INDEX IF NOT EXISTS idx_data_claim_target_status ON data_claims(target_user_id, status, updated_at)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_hypothesis_report ON relationship_hypothesis_feedback(report_id, hypothesis_index)",

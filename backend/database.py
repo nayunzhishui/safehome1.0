@@ -27,6 +27,9 @@ REQUIRED_HEALTH_TABLES = [
     "messages",
     "notification_preferences",
     "notification_deliveries",
+    "research_work_items",
+    "research_work_item_notes",
+    "research_work_item_actions",
     "data_claims",
     "relationship_pilot_enrollments",
     "relationship_screening_reports",
@@ -41,8 +44,8 @@ REQUIRED_HEALTH_TABLES = [
     "privacy_request_executions",
     "privacy_deletion_tombstones",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_013"
-CURRENT_SCHEMA_NAME = "privacy_lifecycle_execution"
+CURRENT_SCHEMA_VERSION = "2026_07_20_014"
+CURRENT_SCHEMA_NAME = "research_operations_work_items"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -164,6 +167,20 @@ MYSQL_VARCHAR_COLUMNS = {
     "sent_at",
     "provider_message_id",
     "error_code",
+    "retry_category",
+    "next_attempt_at",
+    "dead_lettered_at",
+    "last_attempt_at",
+    "queue_type",
+    "assignee_id",
+    "lease_expires_at",
+    "due_at",
+    "resolution_code",
+    "closed_at",
+    "last_action_at",
+    "work_item_id",
+    "actor_role",
+    "note_type",
     "content_version",
     "evaluation",
     "reason_code",
@@ -704,7 +721,16 @@ def ensure_schema_columns(conn) -> None:
     for column, definition in checkin_columns.items():
         ensure_column(conn, "checkins", column, definition)
 
-    ensure_column(conn, "notification_deliveries", "attempt_count", "INTEGER NOT NULL DEFAULT 0")
+    notification_delivery_columns = {
+        "attempt_count": "INTEGER NOT NULL DEFAULT 0",
+        "retry_category": "TEXT",
+        "next_attempt_at": "TEXT",
+        "max_attempts": "INTEGER NOT NULL DEFAULT 3",
+        "dead_lettered_at": "TEXT",
+        "last_attempt_at": "TEXT",
+    }
+    for column, definition in notification_delivery_columns.items():
+        ensure_column(conn, "notification_deliveries", column, definition)
 
     weekly_report_columns = {
         "assessment_summary_json": "TEXT NOT NULL DEFAULT '{}'",

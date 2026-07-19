@@ -45,6 +45,10 @@ import type {
   ResearchOperationsSnapshot,
   ResearchQueuePage,
   ResearchQueueType,
+  ResearchWorkItemActionInput,
+  ResearchWorkItemActionResult,
+  ResearchWorkItemDetail,
+  ResearchWorkItemMetrics,
   ProfileReview,
   ProfileReviewInput,
   RiskCheckResult,
@@ -454,6 +458,30 @@ export class SafeHomeApiClient {
     adminToken?: string,
   ): Promise<ResearchQueuePage> {
     return this.requestData(this.withQuery(API_ENDPOINTS.researchQueues, { queue, ...params }), {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  getResearchWorkItem(workItemId: string, adminToken?: string): Promise<ResearchWorkItemDetail> {
+    return this.requestData(`${API_ENDPOINTS.researchWorkItems}/${encodeURIComponent(workItemId)}`, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  actOnResearchWorkItem(
+    workItemId: string,
+    input: ResearchWorkItemActionInput,
+    adminToken?: string,
+  ): Promise<ResearchWorkItemActionResult> {
+    return this.requestData(`${API_ENDPOINTS.researchWorkItems}/${encodeURIComponent(workItemId)}/actions`, {
+      method: "POST",
+      headers: { ...this.adminHeaders(adminToken), "Idempotency-Key": input.idempotency_key },
+      body: input,
+    });
+  }
+
+  getResearchWorkItemMetrics(windowDays = 7, adminToken?: string): Promise<ResearchWorkItemMetrics> {
+    return this.requestData(this.withQuery(API_ENDPOINTS.researchWorkItemMetrics, { window_days: windowDays }), {
       headers: this.adminHeaders(adminToken),
     });
   }

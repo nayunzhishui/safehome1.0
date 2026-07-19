@@ -1,5 +1,10 @@
 const STATUS_LABELS: Record<string, string> = {
   active: "进行中",
+  open: "待领取",
+  claimed: "已领取",
+  processing: "处理中",
+  waiting: "等待补充",
+  dead_letter: "需人工恢复",
   closed: "已关闭",
   completed: "已完成",
   confirmed: "已确认",
@@ -27,6 +32,51 @@ const STATUS_LABELS: Record<string, string> = {
   trial_enabled: "试点开放",
   unread: "未读",
   updated: "有新版本",
+};
+
+const WORK_QUEUE_LABELS: Record<string, string> = {
+  notification_failed: "通知失败",
+  stage_feedback: "阶段性反馈",
+  supervision: "人工支持",
+  risk_review: "风险复核",
+  feedback_review: "不适反馈",
+  privacy_request: "隐私申请",
+};
+
+const WORK_PRIORITY_LABELS: Record<string, string> = {
+  routine: "常规",
+  attention: "需要关注",
+  urgent: "优先处理",
+};
+
+const WORK_ACTION_LABELS: Record<string, string> = {
+  claim: "领取",
+  renew: "续租",
+  return: "退回",
+  transfer: "转交",
+  start_processing: "开始处理",
+  wait: "等待补充",
+  add_note: "补充内部说明",
+  send_participant_message: "发送参与者消息",
+  complete: "标记完成",
+  close: "关闭",
+  reopen: "重新打开",
+  retry_notification: "安排通知重试",
+  recover_notification: "恢复死信通知",
+};
+
+const ACTOR_ROLE_LABELS: Record<string, string> = {
+  researcher: "研究者",
+  supervisor: "督导",
+  admin: "管理员",
+  system: "系统同步",
+};
+
+const NOTIFICATION_RETRY_LABELS: Record<string, string> = {
+  retryable: "可按计划重试",
+  reauthorization_required: "需要参与者重新授权",
+  template_error: "需要修复模板配置",
+  permanent_failure: "不可自动重试",
 };
 
 const RISK_LABELS: Record<string, string> = {
@@ -87,4 +137,24 @@ export function displaySourceType(value?: string | null) {
 
 export function displayQualityStatus(value?: string | null) {
   return readableLabel(QUALITY_STATUS_LABELS, value, "待核对");
+}
+
+export function displayWorkQueue(value?: string | null) {
+  return readableLabel(WORK_QUEUE_LABELS, value, "运营工作项");
+}
+
+export function displayWorkPriority(value?: string | null) {
+  return readableLabel(WORK_PRIORITY_LABELS, value, "常规");
+}
+
+export function displayWorkAction(value?: string | null) {
+  return readableLabel(WORK_ACTION_LABELS, value, "状态更新");
+}
+
+export function displayActorRole(value?: string | null) {
+  return readableLabel(ACTOR_ROLE_LABELS, value, "处理人员");
+}
+
+export function displayNotificationRetry(value?: string | null) {
+  return readableLabel(NOTIFICATION_RETRY_LABELS, value, "待核对失败原因");
 }
