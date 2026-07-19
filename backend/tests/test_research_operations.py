@@ -112,7 +112,8 @@ def test_research_operations_are_role_scoped_and_redacted(tmp_path):
     assert data["scope"] == "assigned_participants"
     assert data["notification_preferences"]["accepted"] == 1
     assert data["notification_deliveries"]["failed"] == 1
-    assert data["backlog"] == {"stage_feedback": 1, "supervision": 1, "risk_review": 1}
+    assert data["backlog"] == {"stage_feedback": 1, "supervision": 1, "risk_review": 1, "privacy_requests": 0}
+    assert data["privacy_management_available"] is False
     serialized = str(data)
     assert "PRIVATE_" not in serialized
     assert "template-private" not in serialized

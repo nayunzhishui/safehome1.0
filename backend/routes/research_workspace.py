@@ -34,13 +34,24 @@ def _actor():
 
 
 def _allowed_user_clause(actor: dict, alias: str = "u") -> tuple[str, list[str]]:
+    consent_clause = f"""NOT EXISTS (
+        SELECT 1 FROM consent_records consent_latest
+        WHERE consent_latest.user_id = {alias}.id
+          AND consent_latest.consent_type IN ('anonymous_research', 'research_authorization')
+          AND consent_latest.created_at = (
+              SELECT MAX(consent_inner.created_at) FROM consent_records consent_inner
+              WHERE consent_inner.user_id = consent_latest.user_id
+                AND consent_inner.consent_type = consent_latest.consent_type
+          )
+          AND consent_latest.agreed = 0
+    )"""
     if actor.get("role") != "researcher":
-        return "1 = 1", []
+        return consent_clause, []
     return (
         f"""EXISTS (
             SELECT 1 FROM relationship_pilot_enrollments access_e
             WHERE access_e.user_id = {alias}.id AND access_e.assigned_researcher_id = ?
-        )""",
+        ) AND ({consent_clause})""",
         [str(actor["id"])],
     )
 
@@ -52,6 +63,20 @@ def _scoped_user_column(actor: dict, column: str) -> tuple[str, list[str]]:
         f"{column} IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)",
         [str(actor["id"])],
     )
+
+
+def _research_authorized_column(column: str) -> str:
+    return f"""NOT EXISTS (
+        SELECT 1 FROM consent_records consent_latest
+        WHERE consent_latest.user_id = {column}
+          AND consent_latest.consent_type IN ('anonymous_research', 'research_authorization')
+          AND consent_latest.created_at = (
+              SELECT MAX(consent_inner.created_at) FROM consent_records consent_inner
+              WHERE consent_inner.user_id = consent_latest.user_id
+                AND consent_inner.consent_type = consent_latest.consent_type
+          )
+          AND consent_latest.agreed = 0
+    )"""
 
 
 def _status_counts(conn, table: str, scope_clause: str, params: list[str]) -> dict[str, int]:
@@ -76,6 +101,7 @@ QUEUE_CONFIG = {
         "status_column": "status",
         "title": "阶段性反馈待处理",
         "extra": "enrollment_id",
+        "requires_research_authorization": True,
     },
     "supervision": {
         "table": "supervision_requests",
@@ -97,6 +123,7 @@ QUEUE_CONFIG = {
         "status_column": "review_status",
         "title": "参与者不适反馈待复核",
         "extra": "source_type, source_id, evaluation",
+        "requires_research_authorization": True,
     },
 }
 
@@ -316,7 +343,8 @@ def get_research_operations():
         stage_feedback_count = conn.execute(
             f"""
             SELECT COUNT(*) AS count FROM relationship_screening_reports
-            WHERE {scope_clause} AND status IN ('pending_review', 'ready', 'confirmed', 'updated')
+            WHERE {scope_clause} AND ({_research_authorized_column('user_id')})
+              AND status IN ('pending_review', 'ready', 'confirmed', 'updated')
             """,
             tuple(params),
         ).fetchone()["count"]
@@ -328,6 +356,11 @@ def get_research_operations():
             f"SELECT COUNT(*) AS count FROM risk_review_records WHERE {scope_clause} AND review_status IN ('pending', 'priority_review')",
             tuple(params),
         ).fetchone()["count"]
+        privacy_request_count = 0
+        if actor.get("role") in {"admin", "supervisor"}:
+            privacy_request_count = conn.execute(
+                "SELECT COUNT(*) AS count FROM privacy_requests WHERE status IN ('pending', 'processing')"
+            ).fetchone()["count"]
         write_audit_log(
             conn,
             "research_operations_viewed",
@@ -368,7 +401,9 @@ def get_research_operations():
                 "stage_feedback": int(stage_feedback_count),
                 "supervision": int(supervision_count),
                 "risk_review": int(risk_review_count),
+                "privacy_requests": int(privacy_request_count),
             },
+            "privacy_management_available": actor.get("role") in {"admin", "supervisor"},
             "boundary_notice": "仅展示脱敏数量和错误代码，不返回 OpenID、模板密钥、联系方式或填写原文。",
         }
     )
@@ -396,6 +431,8 @@ def get_research_queue():
     table = config["table"]
     status_column = config["status_column"]
     where = f"({scope_clause}) AND ({config['where']})"
+    if config.get("requires_research_authorization"):
+        where += f" AND ({_research_authorized_column('user_id')})"
     select_extra = config["extra"]
     with get_connection() as conn:
         total_row = conn.execute(

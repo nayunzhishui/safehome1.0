@@ -147,6 +147,21 @@ def _iter_text_records(conn: sqlite3.Connection, user_id: str | None, days: int 
         if user_id and "user_id" in columns:
             where.append("user_id = ?")
             params.append(user_id)
+        consent_columns = _table_columns(conn, "consent_records")
+        if "user_id" in columns and {"user_id", "consent_type", "agreed", "created_at"} <= consent_columns:
+            where.append(
+                f"""NOT EXISTS (
+                    SELECT 1 FROM consent_records consent_latest
+                    WHERE consent_latest.user_id = {table}.user_id
+                      AND consent_latest.consent_type IN ('anonymous_research', 'research_authorization')
+                      AND consent_latest.created_at = (
+                          SELECT MAX(consent_inner.created_at) FROM consent_records consent_inner
+                          WHERE consent_inner.user_id = consent_latest.user_id
+                            AND consent_inner.consent_type = consent_latest.consent_type
+                      )
+                      AND consent_latest.agreed = 0
+                )"""
+            )
         if start_date and "created_at" in columns:
             where.append("substr(created_at, 1, 10) >= ?")
             params.append(start_date)

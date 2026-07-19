@@ -33,6 +33,12 @@ import type {
   ParentAssessmentPayload,
   ParentAssessmentResult,
   PrivacyRequest,
+  PrivacyExecutionResult,
+  PrivacyScopePreview,
+  PrivacyHandlingScope,
+  PrivacyReviewAction,
+  PrivacyReviewDetail,
+  PrivacyReviewRequest,
   ProfileVisuals,
   RelationshipPilotEnrollment,
   RelationshipScreeningReport,
@@ -454,6 +460,71 @@ export class SafeHomeApiClient {
 
   listPrivacyRequests(params: { page?: number; page_size?: number; user_id?: string } = {}): Promise<ListResponse<PrivacyRequest>> {
     return this.requestData(this.withQuery(API_ENDPOINTS.privacyRequests, params));
+  }
+
+  cancelPrivacyRequest(requestId: string, reason: string, idempotencyKey: string): Promise<PrivacyRequest> {
+    return this.requestData(`${API_ENDPOINTS.privacyRequests}/${encodeURIComponent(requestId)}/cancel`, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: { reason },
+    });
+  }
+
+  appealPrivacyRequest(requestId: string, reason: string, idempotencyKey: string): Promise<PrivacyRequest> {
+    return this.requestData(`${API_ENDPOINTS.privacyRequests}/${encodeURIComponent(requestId)}/appeal`, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: { reason },
+    });
+  }
+
+  listPrivacyRequestsForReview(
+    params: { status?: string; page?: number; page_size?: number } = {},
+    adminToken?: string,
+  ): Promise<ListResponse<PrivacyReviewRequest> & { boundary_notice: string }> {
+    return this.requestData(this.withQuery(API_ENDPOINTS.privacyAdminRequests, params), {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  getPrivacyRequestForReview(requestId: string, adminToken?: string): Promise<PrivacyReviewDetail> {
+    return this.requestData(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}`, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  transitionPrivacyRequest(
+    requestId: string,
+    input: { action: PrivacyReviewAction; scope: PrivacyHandlingScope[]; note: string; idempotency_key: string },
+    adminToken?: string,
+  ): Promise<PrivacyReviewDetail> {
+    return this.requestData(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}/transition`, {
+      method: "POST",
+      headers: { ...this.adminHeaders(adminToken), "Idempotency-Key": input.idempotency_key },
+      body: input,
+    });
+  }
+
+  previewPrivacyRequest(requestId: string, adminToken?: string): Promise<PrivacyScopePreview> {
+    return this.requestData(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}/preview`, {
+      headers: this.adminHeaders(adminToken),
+    });
+  }
+
+  approvePrivacyExecution(requestId: string, input: { scope_hash: string; policy_version: string; idempotency_key: string }, adminToken?: string) {
+    return this.requestData(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}/approvals`, {
+      method: "POST",
+      headers: { ...this.adminHeaders(adminToken), "Idempotency-Key": input.idempotency_key },
+      body: input,
+    });
+  }
+
+  executePrivacyRequest(requestId: string, input: { dry_run: boolean; expected_version: number; idempotency_key: string }, adminToken?: string): Promise<PrivacyExecutionResult> {
+    return this.requestData(`${API_ENDPOINTS.privacyAdminRequests}/${encodeURIComponent(requestId)}/execute`, {
+      method: "POST",
+      headers: { ...this.adminHeaders(adminToken), "Idempotency-Key": input.idempotency_key },
+      body: input,
+    });
   }
 
   getRelationshipEnrollment(id: string, adminToken?: string): Promise<RelationshipPilotEnrollment> {

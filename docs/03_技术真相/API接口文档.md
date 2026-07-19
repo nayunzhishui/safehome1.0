@@ -1938,6 +1938,25 @@ relationship_initiation_intention_action
 
 权限：当前登录参与者本人。分页返回本人的隐私申请ID、类型、状态和时间，不返回申请原因或内部处理备注。状态包含`pending/processing/completed/rejected/cancelled`。重复提交仍在处理中的删除申请时，`POST /api/privacy/delete-my-data`复用现有申请并返回`already_active=true`。
 
+参与者响应可包含固定安全说明`participant_notice`和完成证明`execution_proof_hash`，但不返回`handled_note`。`POST /api/privacy/requests/<id>/cancel`仅允许本人取消`pending`申请；`POST /api/privacy/requests/<id>/appeal`仅允许本人将`rejected`申请补充说明后恢复为`pending`。两者均要求`Idempotency-Key`。
+
+### 隐私申请后台处理与执行
+
+以下接口仅允许`supervisor/admin`；`researcher`无权读取详情、批准或执行。所有查看、迁移、预览、批准、dry-run与正式执行均写入审计。
+
+| 接口 | 用途与关键门禁 |
+|---|---|
+| `GET /api/privacy/admin/requests` | 分页队列；不返回申请原因和内部备注 |
+| `GET /api/privacy/admin/requests/<id>` | 受控详情、处理轨迹、批准和执行摘要 |
+| `POST /api/privacy/admin/requests/<id>/transition` | `start_processing/reject/return_to_pending`；不能人工写`completed` |
+| `GET /api/privacy/admin/requests/<id>/preview` | 按白名单返回模块/表计数、保存类别、外部数据面和范围哈希 |
+| `POST /api/privacy/admin/requests/<id>/approvals` | 绑定策略版本和范围哈希保存批准；同一人员不能充当两名批准人 |
+| `POST /api/privacy/admin/requests/<id>/execute` | `dry_run=true`不改业务数据；`false`执行事务化删除/匿名化 |
+
+正式执行默认由`PRIVACY_EXECUTION_ENABLED=0`阻断；数据保存矩阵未确认时由`PRIVACY_RETENTION_POLICY_APPROVED=0`阻断。生产还要求`PRIVACY_PRODUCTION_EXECUTION_ENABLED=1`、两名不同人员批准且至少一名管理员。执行失败整笔回滚；成功写入策略版本、范围哈希、结果计数、证明哈希和恢复墓碑。临时展示越权不参与这些权限判断，也不能作为正式权限验收证据。
+
+撤回`anonymous_research/research_authorization`后，后端立即把可导出衍生记录设为不可导出，并从研究参与者矩阵、研究型队列、管理员导出和离线文本/家庭拓扑输入中排除；人工支持与风险支持数据不因此删除。
+
 ### `GET /api/research/queues`
 
 权限：`researcher/supervisor/admin`。参数：`queue`、`page`、`page_size`；队列类型为`notification_failed/stage_feedback/supervision/risk_review/feedback_review`。研究者仅看到已分配参与者，督导和管理员可看全量。每项只返回必要ID、状态、来源标识、创建时间和`wait_minutes`，不返回填写原文、消息正文或内部复核备注，并写入审计日志。

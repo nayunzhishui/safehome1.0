@@ -25,6 +25,7 @@ const StudentReportPage = lazy(() => import("./pages/ReadFeedbackIntegrationPage
 const FamilyBindPage = lazy(() => import("./pages/FamilyBindPage").then((module) => ({ default: module.FamilyBindPage })));
 const LoginPage = lazy(() => import("./pages/LoginPage").then((module) => ({ default: module.LoginPage })));
 const PrivacyCenterPage = lazy(() => import("./pages/PrivacyCenterPage").then((module) => ({ default: module.PrivacyCenterPage })));
+const PrivacyRequestsManagement = lazy(() => import("./pages/PrivacyRequestsManagement").then((module) => ({ default: module.PrivacyRequestsManagement })));
 const RegisterPage = lazy(() => import("./pages/RegisterPage").then((module) => ({ default: module.RegisterPage })));
 const ResearchDashboard = lazy(() => import("./pages/ResearchDashboard").then((module) => ({ default: module.ResearchDashboard })));
 const RelationshipAssessmentPage = lazy(() => import("./pages/RelationshipAssessmentPage").then((module) => ({ default: module.RelationshipAssessmentPage })));
@@ -55,6 +56,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/reports", label: "周度报告", match: (p) => p === "/reports", roles: ["admin", "researcher"] },
   { href: "/profiles", label: "学生画像", match: (p) => p === "/profiles" || p.startsWith("/profiles/"), roles: ["admin", "researcher", "supervisor"] },
   { href: "/reviews", label: "人工复核", match: (p) => p === "/reviews", roles: ["admin", "supervisor"] },
+  { href: "/privacy-requests", label: "隐私申请", match: (p) => p === "/privacy-requests", roles: ["admin", "supervisor"] },
   { href: "/goals", label: "目标管理", match: (p) => p === "/goals", roles: ["admin", "researcher"] },
   { href: "/content/rules", label: "反馈规则", match: (p) => p === "/content/rules", roles: ["admin", "researcher"] },
   { href: "/export", label: "数据导出", match: (p) => p === "/export", roles: ["admin", "researcher"] },
@@ -148,6 +150,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isProfilesPath = path === "/profiles" || path.startsWith("/profiles/");
   const isReviewsPath = path === "/reviews";
   const isFeedbackPath = path === "/feedback";
+  const isPrivacyRequestsPath = path === "/privacy-requests";
   const isFamilyPath = path === "/family" || path.startsWith("/family/");
   const isKnownAdminPath = [
     "/dashboard",
@@ -158,6 +161,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/reports",
     "/profiles",
     "/reviews",
+    "/privacy-requests",
     "/supervision",
     "/content/review",
     "/content/scales",
@@ -180,6 +184,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isReportsPath &&
     !isProfilesPath &&
     !isReviewsPath &&
+    !isPrivacyRequestsPath &&
     !isFamilyPath &&
     !isSupervisionPath &&
     !isContentReviewPath &&
@@ -219,6 +224,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isReportsPath ? <ReportsManagement /> : null}
       {isProfilesPath ? <ProfilesManagement /> : null}
       {isReviewsPath ? <ReviewManagement /> : null}
+      {isPrivacyRequestsPath ? <PrivacyRequestsManagement /> : null}
       {isFamilyPath ? <FamilyBindPage /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}

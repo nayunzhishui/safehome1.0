@@ -488,6 +488,7 @@ export function ResearchDashboard() {
             <OperationsMetric label="发送失败" value={state.operations.notification_deliveries.failed} tone={state.operations.notification_deliveries.failed ? "attention" : "stable"} />
             <OperationsMetric label="待阶段反馈" value={state.operations.backlog.stage_feedback} tone={state.operations.backlog.stage_feedback ? "attention" : "stable"} />
             <OperationsMetric label="待人工支持" value={state.operations.backlog.supervision} tone={state.operations.backlog.supervision ? "attention" : "stable"} />
+            {state.operations.privacy_management_available ? <OperationsMetric label="待隐私处理" value={state.operations.backlog.privacy_requests} tone={state.operations.backlog.privacy_requests ? "attention" : "stable"} /> : null}
           </div>
           <div className="operationsDetails">
             <span>已发送 {state.operations.notification_deliveries.sent}</span>
@@ -496,6 +497,7 @@ export function ResearchDashboard() {
             <span>重试已用尽 {state.operations.notification_deliveries.exhausted}</span>
             <span>已过期未发 {state.operations.notification_deliveries.overdue}</span>
             <span>待风险复核 {state.operations.backlog.risk_review}</span>
+            {state.operations.privacy_management_available ? <a href="/privacy-requests">处理隐私申请 {state.operations.backlog.privacy_requests}</a> : null}
           </div>
           <div className="operationsDetails" aria-label="队列下钻">
             <button className="pill muted" type="button" onClick={() => void loadOperationsQueue("notification_failed")}>查看发送失败</button>

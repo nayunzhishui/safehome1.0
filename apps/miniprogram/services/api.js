@@ -95,6 +95,7 @@ const API_ENDPOINTS = {
   relationshipPilot: "/api/relationship-pilot",
   productEvents: "/api/product-events",
   privacyRequests: "/api/privacy/requests",
+  privacyDeleteMyData: "/api/privacy/delete-my-data",
   researchQueues: "/api/research/queues",
 };
 
@@ -666,6 +667,32 @@ function createSafeHomeApi(options = {}) {
 
     listPrivacyRequests(params = {}) {
       return request(`${API_ENDPOINTS.privacyRequests}${queryString(params)}`, { requiresAuth: true });
+    },
+
+    createPrivacyDeleteRequest(data = {}) {
+      return request(API_ENDPOINTS.privacyDeleteMyData, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      });
+    },
+
+    cancelPrivacyRequest(requestId, data = {}, idempotencyKey = "") {
+      return request(`${API_ENDPOINTS.privacyRequests}/${encodeURIComponent(requestId)}/cancel`, {
+        method: "POST",
+        data,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
+    appealPrivacyRequest(requestId, data = {}, idempotencyKey = "") {
+      return request(`${API_ENDPOINTS.privacyRequests}/${encodeURIComponent(requestId)}/appeal`, {
+        method: "POST",
+        data,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
     },
 
     getResearchQueue(params = {}) {

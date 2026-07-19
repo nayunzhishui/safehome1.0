@@ -1,3 +1,7 @@
+const { createSafeHomeApi } = require("../../services/api");
+
+const api = createSafeHomeApi();
+
 const NOTICE_MAP = {
   consent: {
     kicker: "知情与边界",
@@ -91,16 +95,146 @@ const NOTICE_MAP = {
   },
 };
 
+const PRIVACY_STATUS_LABELS = {
+  pending: "待处理",
+  processing: "处理中",
+  completed: "已完成",
+  rejected: "未执行",
+  cancelled: "已取消",
+};
+
 Page({
   data: {
     notice: NOTICE_MAP.boundary,
+    noticeType: "boundary",
+    privacyLoading: false,
+    privacyError: "",
+    privacyNeedsLogin: false,
+    privacyRequests: [],
+    privacySubmitting: false,
   },
 
   onLoad(options = {}) {
     const type = options.type || "boundary";
     this.setData({
       notice: NOTICE_MAP[type] || NOTICE_MAP.boundary,
+      noticeType: type,
     });
+  },
+
+  onShow() {
+    if (this.data.noticeType === "privacy") {
+      this.loadPrivacyRequests();
+    }
+  },
+
+  async loadPrivacyRequests() {
+    this.setData({ privacyLoading: true, privacyError: "", privacyNeedsLogin: false });
+    try {
+      const result = await api.listPrivacyRequests({ page: 1, page_size: 50 });
+      const items = (result.items || []).map((item) => ({
+        ...item,
+        statusLabel: PRIVACY_STATUS_LABELS[item.status] || item.status,
+        canCancel: item.status === "pending",
+        canAppeal: item.status === "rejected",
+        createdDate: String(item.created_at || "").slice(0, 10),
+        updatedDate: String(item.updated_at || "").slice(0, 10),
+      }));
+      this.setData({ privacyLoading: false, privacyRequests: items });
+    } catch (error) {
+      const privacyNeedsLogin = Boolean(error && (error.statusCode === 401 || error.status === 401 || error.code === "unauthorized" || error.code === "auth_required"));
+      this.setData({
+        privacyLoading: false,
+        privacyNeedsLogin,
+        privacyError: privacyNeedsLogin ? "登录后才能查看和管理自己的删除申请。" : (error.message || "删除申请暂时没有读取成功。"),
+      });
+    }
+  },
+
+  submitPrivacyDeleteRequest() {
+    if (this.data.privacySubmitting) return;
+    wx.showModal({
+      title: "提交删除申请",
+      content: "申请提交后不会立即删除数据，管理员或督导会先核对范围与保存规则。",
+      editable: true,
+      placeholderText: "可选：简要说明原因",
+      confirmText: "提交申请",
+      success: async (result) => {
+        if (!result.confirm) return;
+        this.setData({ privacySubmitting: true, privacyError: "" });
+        try {
+          const response = await api.createPrivacyDeleteRequest({ reason: String(result.content || "").trim() });
+          wx.showToast({ title: response.already_active ? "已有申请处理中" : "申请已提交", icon: "none" });
+          await this.loadPrivacyRequests();
+        } catch (error) {
+          this.setData({ privacyError: error.message || "申请没有提交成功，请稍后重试。" });
+        } finally {
+          this.setData({ privacySubmitting: false });
+        }
+      },
+    });
+  },
+
+  cancelPrivacyRequest(event) {
+    const requestId = event.currentTarget.dataset.id;
+    if (!requestId || this.data.privacySubmitting) return;
+    wx.showModal({
+      title: "取消删除申请",
+      content: "只可取消尚未开始处理的申请。",
+      confirmText: "确认取消",
+      success: async (result) => {
+        if (!result.confirm) return;
+        const idempotencyKey = `privacy-cancel-${requestId}-${Date.now()}`;
+        this.setData({ privacySubmitting: true, privacyError: "" });
+        try {
+          await api.cancelPrivacyRequest(requestId, { reason: "参与者主动取消" }, idempotencyKey);
+          wx.showToast({ title: "申请已取消", icon: "success" });
+          await this.loadPrivacyRequests();
+        } catch (error) {
+          this.setData({ privacyError: error.message || "申请状态没有改变，请刷新后重试。" });
+        } finally {
+          this.setData({ privacySubmitting: false });
+        }
+      },
+    });
+  },
+
+  appealPrivacyRequest(event) {
+    const requestId = event.currentTarget.dataset.id;
+    if (!requestId || this.data.privacySubmitting) return;
+    wx.showModal({
+      title: "补充说明后重新提交",
+      content: "请说明希望继续核对的内容。内部处理备注不会在这里展示。",
+      editable: true,
+      placeholderText: "必填，不超过500字",
+      confirmText: "重新提交",
+      success: async (result) => {
+        if (!result.confirm) return;
+        const reason = String(result.content || "").trim();
+        if (!reason) {
+          this.setData({ privacyError: "请先填写补充说明。" });
+          return;
+        }
+        this.setData({ privacySubmitting: true, privacyError: "" });
+        try {
+          await api.appealPrivacyRequest(requestId, { reason }, `privacy-appeal-${requestId}-${Date.now()}`);
+          wx.showToast({ title: "已重新提交", icon: "success" });
+          await this.loadPrivacyRequests();
+        } catch (error) {
+          this.setData({ privacyError: error.message || "暂时无法重新提交，请刷新后重试。" });
+        } finally {
+          this.setData({ privacySubmitting: false });
+        }
+      },
+    });
+  },
+
+  handlePrivacyStateAction() {
+    if (this.data.privacyNeedsLogin) {
+      wx.navigateTo({ url: "/pages/login/index?redirect=%2Fpages%2Fsettings-detail%2Findex%3Ftype%3Dprivacy" });
+      return;
+    }
+    this.loadPrivacyRequests();
   },
 
   goBack() {

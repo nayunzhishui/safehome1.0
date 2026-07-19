@@ -58,6 +58,7 @@ REQUIRED_CONTENT_FILES = [
     "programs.json",
     "courses.json",
     "showcase_access.json",
+    "privacy_retention_policy.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"

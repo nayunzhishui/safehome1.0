@@ -57,6 +57,10 @@ class Config:
         "yes",
     }
     NOTIFICATION_SCHEDULER_TOKEN = os.environ.get("NOTIFICATION_SCHEDULER_TOKEN", "").strip()
+    PRIVACY_EXECUTION_ENABLED = os.environ.get("PRIVACY_EXECUTION_ENABLED", "").strip().lower() in {"1", "true", "yes"}
+    PRIVACY_RETENTION_POLICY_APPROVED = os.environ.get("PRIVACY_RETENTION_POLICY_APPROVED", "").strip().lower() in {"1", "true", "yes"}
+    PRIVACY_PRODUCTION_EXECUTION_ENABLED = os.environ.get("PRIVACY_PRODUCTION_EXECUTION_ENABLED", "").strip().lower() in {"1", "true", "yes"}
+    PRIVACY_TOMBSTONE_SECRET = os.environ.get("PRIVACY_TOMBSTONE_SECRET", SECRET_KEY)
 
     @classmethod
     def validate(cls) -> None:
@@ -87,6 +91,12 @@ class Config:
             if missing:
                 raise RuntimeError(f"启用微信订阅发送前必须配置：{', '.join(missing)}")
         if str(cls.APP_ENV).lower() == "production":
+            if cls.PRIVACY_PRODUCTION_EXECUTION_ENABLED and not cls.PRIVACY_EXECUTION_ENABLED:
+                raise RuntimeError("启用生产隐私执行前必须同时开启 PRIVACY_EXECUTION_ENABLED")
+            if cls.PRIVACY_PRODUCTION_EXECUTION_ENABLED and not cls.PRIVACY_RETENTION_POLICY_APPROVED:
+                raise RuntimeError("启用生产隐私执行前必须确认数据保存矩阵")
+            if cls.PRIVACY_PRODUCTION_EXECUTION_ENABLED and len(str(cls.PRIVACY_TOMBSTONE_SECRET)) < 32:
+                raise RuntimeError("启用生产隐私执行前墓碑密钥长度不能少于32个字符")
             if not DB_PROVIDER_ENV_VALUE:
                 raise RuntimeError("生产环境必须显式配置 DB_PROVIDER")
             if cls.DB_PROVIDER == "sqlite" and not cls.ALLOW_PRODUCTION_SQLITE:

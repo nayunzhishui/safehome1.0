@@ -68,3 +68,84 @@
 .back-button {
   margin-top: 24rpx;
 }
+
+.privacy-control-section {
+  display: grid;
+  gap: 20rpx;
+}
+
+.privacy-request-list {
+  display: grid;
+  gap: 16rpx;
+}
+
+.privacy-request-card {
+  display: grid;
+  gap: 8rpx;
+  padding: 24rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  box-shadow: var(--safe-shadow-card);
+}
+
+.privacy-request-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.privacy-request-title {
+  color: var(--safe-title);
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.privacy-request-meta,
+.privacy-boundary {
+  display: block;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.privacy-request-notice,
+.privacy-request-proof {
+  display: block;
+  margin-top: 12rpx;
+  color: #49685e;
+  font-size: 24rpx;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.privacy-request-proof {
+  color: #6c7772;
+  font-size: 22rpx;
+}
+
+.privacy-appeal-button {
+  margin-left: 12rpx;
+  color: #2f6e5b;
+  border-color: #9fc7b9;
+}
+
+.privacy-cancel-button {
+  min-height: 88rpx;
+  margin-top: 8rpx;
+  border: 1rpx solid var(--safe-border-strong);
+  border-radius: 999rpx;
+  background: var(--safe-card);
+  color: var(--safe-primary-deep);
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.privacy-submit-button {
+  margin-top: 0;
+}
+
+.privacy-boundary {
+  padding: 0 8rpx;
+}

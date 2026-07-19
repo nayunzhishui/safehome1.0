@@ -52,6 +52,7 @@ export const API_ENDPOINTS = {
   privacyRevokeConsent: "/api/privacy/revoke-consent",
   privacyDeleteMyData: "/api/privacy/delete-my-data",
   privacyRequests: "/api/privacy/requests",
+  privacyAdminRequests: "/api/privacy/admin/requests",
   privacyExportMyData: "/api/privacy/export-my-data",
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
@@ -122,6 +123,17 @@ export const ASSESSMENT_SENSITIVE_CATEGORIES = [
 ] as const;
 
 export const SUPERVISION_STATUSES = ["pending", "replied", "closed"] as const;
+
+export const PRIVACY_REQUEST_STATUSES = ["pending", "processing", "completed", "rejected", "cancelled"] as const;
+
+export const PRIVACY_HANDLING_SCOPES = [
+  "account_identity",
+  "participant_records",
+  "feedback_and_training",
+  "messages_and_notifications",
+  "relationship_pilot",
+  "research_outputs",
+] as const;
 
 export const FEEDBACK_TAGS = [
   "judgmental_language",

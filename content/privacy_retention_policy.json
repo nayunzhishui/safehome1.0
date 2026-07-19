@@ -1,0 +1,39 @@
+{
+  "policy_version": "privacy-lifecycle-v1-draft-20260720",
+  "approval_status": "owner_confirmation_required",
+  "release_status": "not_approved",
+  "scope_labels": {
+    "account_identity": "账号与身份标识",
+    "participant_records": "参与者记录与支持性测评",
+    "feedback_and_training": "反馈、训练与成长记录",
+    "messages_and_notifications": "站内消息与通知记录",
+    "relationship_pilot": "关系探索试点资料",
+    "research_outputs": "研究视图与可导出衍生记录"
+  },
+  "retained_categories": [
+    {
+      "key": "audit_minimum",
+      "label": "最小审计证据",
+      "method": "保留事件、时间与证明哈希；移除参与者原文并替换参与者标识",
+      "legal_basis": "待负责人、伦理与法律确认"
+    },
+    {
+      "key": "deletion_proof",
+      "label": "删除执行证明与恢复墓碑",
+      "method": "保留不可逆哈希、策略版本、范围与计数，不保留申请原因或业务原文",
+      "legal_basis": "待负责人、伦理与法律确认"
+    }
+  ],
+  "backup_policy": {
+    "status": "evidence_only_not_approved",
+    "rule": "正式执行前必须确认备份保留期；恢复后必须运行墓碑复核并禁止被删除数据重新进入服务或研究视图。"
+  },
+  "production_gate": {
+    "feature_flag_default": false,
+    "requires_distinct_approvals": 2,
+    "requires_admin_approval": true,
+    "requires_owner_confirmation": true,
+    "requires_test_cloud_evidence": true
+  },
+  "boundary_notice": "本文件是工程策略草案，不代表负责人、伦理、法律或生产发布批准。"
+}

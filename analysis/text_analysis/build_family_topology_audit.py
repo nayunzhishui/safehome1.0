@@ -31,6 +31,17 @@ def collect_edges(database_path: Path) -> list[dict]:
                    created_at, confirmed_at, revoked_at
             FROM family_links
             WHERE parent_user_id IS NOT NULL AND student_user_id IS NOT NULL
+              AND NOT EXISTS (
+                  SELECT 1 FROM consent_records consent_latest
+                  WHERE consent_latest.user_id IN (parent_user_id, student_user_id)
+                    AND consent_latest.consent_type IN ('anonymous_research', 'research_authorization')
+                    AND consent_latest.created_at = (
+                        SELECT MAX(consent_inner.created_at) FROM consent_records consent_inner
+                        WHERE consent_inner.user_id = consent_latest.user_id
+                          AND consent_inner.consent_type = consent_latest.consent_type
+                    )
+                    AND consent_latest.agreed = 0
+              )
             """
         ).fetchall()
         return [dict(row) for row in rows]

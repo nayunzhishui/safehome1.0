@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "../../../../shared/constants/api";
 import { getStoredAuthToken, getStoredAuthUser } from "../services/authState";
 import { getAnonymousUserId } from "../services/userIdentity";
+import { safeHomeApi } from "../services/safehomeApi";
 import type { PrivacyRequest } from "../../../../shared/types/api";
 
 type ConsentItem = {
@@ -119,6 +120,45 @@ export function PrivacyCenterPage() {
     }
   }
 
+  async function cancelPrivacyRequest(item: PrivacyRequest) {
+    if (!window.confirm("确认取消这条待处理的删除申请？")) return;
+    try {
+      const base = import.meta.env.VITE_SAFEHOME_API_BASE_URL ?? "";
+      const key = `privacy-cancel-${item.id}-${Date.now()}`;
+      const resp = await fetch(`${base}${API_ENDPOINTS.privacyRequests}/${encodeURIComponent(item.id)}/cancel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Idempotency-Key": key, ...authHeaders },
+        body: JSON.stringify({ reason: "参与者主动取消" }),
+      });
+      const body = await resp.json();
+      if (!body.ok) {
+        setRevokeStatus("error");
+        setRevokeMessage(body.error?.message ?? "取消失败");
+        return;
+      }
+      setRevokeStatus("success");
+      setRevokeMessage("删除申请已取消。");
+      await loadPrivacyRequests();
+    } catch {
+      setRevokeStatus("error");
+      setRevokeMessage("网络请求失败，申请状态没有改变。");
+    }
+  }
+
+  async function appealPrivacyRequest(item: PrivacyRequest) {
+    const reason = window.prompt("请补充希望继续核对的内容（必填，不超过500字）：");
+    if (!reason?.trim()) return;
+    try {
+      await safeHomeApi.appealPrivacyRequest(item.id, reason.trim(), `privacy-appeal-${item.id}-${Date.now()}`);
+      setRevokeStatus("success");
+      setRevokeMessage("申请已重新提交。 ");
+      await loadPrivacyRequests();
+    } catch {
+      setRevokeStatus("error");
+      setRevokeMessage("暂时无法重新提交，请刷新后重试。 ");
+    }
+  }
+
   function consentLabel(consentType: string): string {
     return CONSENT_LABELS[consentType] ?? consentType;
   }
@@ -215,8 +255,8 @@ export function PrivacyCenterPage() {
 
         <div className="metricCard">
           <span>提交删除请求</span>
-          <strong>不硬删数据</strong>
-          <small>请求进入后台队列，由项目负责人处理</small>
+          <strong>受控处理</strong>
+          <small>先预览范围；正式执行必须满足保存策略、权限和审计门禁</small>
           <button
             className="pill muted"
             style={{ marginTop: 8 }}
@@ -256,6 +296,18 @@ export function PrivacyCenterPage() {
               <li key={item.id}>
                 <strong>{REQUEST_STATUS_LABELS[item.status] ?? item.status}</strong>
                 {` · 提交于 ${item.created_at.slice(0, 10)} · 更新于 ${item.updated_at.slice(0, 10)}`}
+                {item.status === "pending" ? (
+                  <button className="pill muted" type="button" onClick={() => void cancelPrivacyRequest(item)} style={{ marginLeft: 10 }}>
+                    取消申请
+                  </button>
+                ) : null}
+                {item.status === "rejected" ? (
+                  <button className="pill muted" type="button" onClick={() => void appealPrivacyRequest(item)} style={{ marginLeft: 10 }}>
+                    补充说明并重新提交
+                  </button>
+                ) : null}
+                {item.participant_notice ? <p>{item.participant_notice}</p> : null}
+                {item.execution_proof_hash ? <small className="privacyProof">执行证明：{item.execution_proof_hash}</small> : null}
               </li>
             ))}
           </ul>
@@ -268,7 +320,7 @@ export function PrivacyCenterPage() {
         <h2>边界说明</h2>
         <ul>
           <li>撤回授权不影响你已经保存的数据，仅停止未来研究导出。</li>
-          <li>删除请求不会立即删除数据，需由项目负责人审核后处理。</li>
+          <li>删除请求不会立即执行；负责人确认保存矩阵后，系统按白名单删除或匿名化并生成证明。</li>
           <li>导出摘要不含自由文本原文、联系方式、后台审计或风险处置私密备注。</li>
           <li>如有安全风险或紧急情况，请优先联系线下专业支持。</li>
         </ul>

@@ -36,9 +36,13 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
     "feedback_ledger",
+    "privacy_request_actions",
+    "privacy_request_approvals",
+    "privacy_request_executions",
+    "privacy_deletion_tombstones",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_19_011"
-CURRENT_SCHEMA_NAME = "participant_feedback_ledger"
+CURRENT_SCHEMA_VERSION = "2026_07_20_013"
+CURRENT_SCHEMA_NAME = "privacy_lifecycle_execution"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -163,6 +167,14 @@ MYSQL_VARCHAR_COLUMNS = {
     "content_version",
     "evaluation",
     "reason_code",
+    "scope_hash",
+    "policy_version",
+    "decision",
+    "environment",
+    "mode",
+    "proof_hash",
+    "replacement_user_id",
+    "subject_hash",
 }
 
 
@@ -739,6 +751,20 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in supervision_columns.items():
         ensure_column(conn, "supervision_requests", column, definition)
+
+    privacy_request_columns = {
+        "handling_scope_json": "TEXT NOT NULL DEFAULT '[]'",
+        "decision": "TEXT",
+        "processing_started_at": "TEXT",
+        "handled_at": "TEXT",
+        "participant_notice": "TEXT",
+        "policy_version": "TEXT",
+        "execution_proof_hash": "TEXT",
+        "version": "INTEGER NOT NULL DEFAULT 0",
+    }
+    for column, definition in privacy_request_columns.items():
+        ensure_column(conn, "privacy_requests", column, definition)
+    ensure_column(conn, "privacy_deletion_tombstones", "scope_json", "TEXT NOT NULL DEFAULT '[]'")
 
 
 def _normalize_assessment_profile_cluster(conn) -> None:

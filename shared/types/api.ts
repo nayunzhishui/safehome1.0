@@ -52,7 +52,8 @@ export interface ResearchOperationsSnapshot {
   notification_preferences: { accepted: number; rejected: number; consumed: number; unknown: number };
   notification_deliveries: { pending: number; sending: number; sent: number; failed: number; retry_queue: number; exhausted: number; overdue: number };
   failure_reasons: Array<{ error_code: string; count: number }>;
-  backlog: { stage_feedback: number; supervision: number; risk_review: number };
+  backlog: { stage_feedback: number; supervision: number; risk_review: number; privacy_requests: number };
+  privacy_management_available: boolean;
   boundary_notice: string;
 }
 
@@ -66,6 +67,96 @@ export interface PrivacyRequest {
   created_at: ISODateTime;
   updated_at: ISODateTime;
   already_active?: boolean;
+  already_processed?: boolean;
+  participant_notice?: string | null;
+  execution_proof_hash?: string | null;
+}
+
+export type PrivacyHandlingScope =
+  | "account_identity"
+  | "participant_records"
+  | "feedback_and_training"
+  | "messages_and_notifications"
+  | "relationship_pilot"
+  | "research_outputs";
+
+export type PrivacyReviewAction = "start_processing" | "reject" | "return_to_pending";
+
+export interface PrivacyReviewRequest extends PrivacyRequest {
+  handled_by?: ID | null;
+  handled_note?: string | null;
+  handling_scope?: PrivacyHandlingScope[];
+  reason?: string | null;
+  decision?: string | null;
+  processing_started_at?: ISODateTime | null;
+  handled_at?: ISODateTime | null;
+  version: number;
+  policy_version?: string | null;
+}
+
+export interface PrivacyScopeTableCount { table: string; count: number }
+export interface PrivacyScopePreview {
+  request_id: ID;
+  request_version: number;
+  policy_version: string;
+  policy_approval_status: string;
+  scope_hash: string;
+  scope: PrivacyHandlingScope[];
+  modules: Array<{ scope: PrivacyHandlingScope; label: string; method: string; count: number; tables: PrivacyScopeTableCount[] }>;
+  total_affected: number;
+  retained_categories: Array<{ key: string; label: string; method: string; legal_basis: string }>;
+  external_surfaces: Array<{ surface: string; status: string; rule?: string }>;
+  irreversible_notice: string;
+}
+
+export interface PrivacyExecutionRecord {
+  id: ID;
+  actor_id: ID;
+  environment: string;
+  mode: "dry_run" | "execute";
+  policy_version: string;
+  scope_hash: string;
+  status: string;
+  proof_hash?: string | null;
+  started_at: ISODateTime;
+  completed_at?: ISODateTime | null;
+}
+
+export interface PrivacyApprovalRecord {
+  actor_id: ID;
+  actor_role: UserRole;
+  scope_hash: string;
+  policy_version: string;
+  decision: string;
+  created_at: ISODateTime;
+}
+
+export interface PrivacyExecutionResult {
+  execution: PrivacyExecutionRecord;
+  result: { mode: string; deleted: Record<string, number>; total_deleted: number; would_affect?: number; external_surfaces: Array<{ surface: string; status: string; rule?: string }> };
+  already_processed: boolean;
+}
+
+export interface PrivacyRequestAction {
+  id: ID;
+  actor_id: ID;
+  actor_role: UserRole;
+  action: "participant_cancel" | PrivacyReviewAction | string;
+  from_status: PrivacyRequestStatus;
+  to_status: PrivacyRequestStatus;
+  scope: PrivacyHandlingScope[];
+  note?: string | null;
+  created_at: ISODateTime;
+}
+
+export interface PrivacyReviewDetail {
+  request: PrivacyReviewRequest;
+  actions: PrivacyRequestAction[];
+  approvals: PrivacyApprovalRecord[];
+  executions: PrivacyExecutionRecord[];
+  allowed_scopes: PrivacyHandlingScope[];
+  already_processed?: boolean;
+  boundary_notice: string;
 }
 
 export type ResearchQueueType = "notification_failed" | "stage_feedback" | "supervision" | "risk_review" | "feedback_review";

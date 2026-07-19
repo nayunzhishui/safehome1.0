@@ -20,6 +20,7 @@ MVP_TABLES = [
     "records",
     "audit_logs",
     "privacy_requests",
+    "privacy_request_actions",
     "family_links",
     "weekly_reports",
     "supervision_requests",
@@ -189,8 +190,76 @@ SCHEMA_SQL = [
         status TEXT NOT NULL DEFAULT 'pending',
         handled_by TEXT,
         handled_note TEXT,
+        handling_scope_json TEXT NOT NULL DEFAULT '[]',
+        decision TEXT,
+        processing_started_at TEXT,
+        handled_at TEXT,
+        participant_notice TEXT,
+        policy_version TEXT,
+        execution_proof_hash TEXT,
+        version INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS privacy_request_actions (
+        id TEXT PRIMARY KEY,
+        request_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        actor_role TEXT NOT NULL,
+        action TEXT NOT NULL,
+        from_status TEXT NOT NULL,
+        to_status TEXT NOT NULL,
+        scope_json TEXT NOT NULL DEFAULT '[]',
+        note TEXT,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS privacy_request_approvals (
+        id TEXT PRIMARY KEY,
+        request_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        actor_role TEXT NOT NULL,
+        scope_hash TEXT NOT NULL,
+        policy_version TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(request_id, actor_id, scope_hash, policy_version)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS privacy_request_executions (
+        id TEXT PRIMARY KEY,
+        request_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        environment TEXT NOT NULL,
+        mode TEXT NOT NULL,
+        policy_version TEXT NOT NULL,
+        scope_hash TEXT NOT NULL,
+        preview_json TEXT NOT NULL DEFAULT '{}',
+        result_json TEXT NOT NULL DEFAULT '{}',
+        proof_hash TEXT,
+        status TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        started_at TEXT NOT NULL,
+        completed_at TEXT,
+        UNIQUE(actor_id, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS privacy_deletion_tombstones (
+        id TEXT PRIMARY KEY,
+        request_id TEXT NOT NULL UNIQUE,
+        subject_hash TEXT NOT NULL,
+        replacement_user_id TEXT NOT NULL,
+        policy_version TEXT NOT NULL,
+        scope_json TEXT NOT NULL DEFAULT '[]',
+        proof_hash TEXT NOT NULL,
+        created_at TEXT NOT NULL
     )
     """,
     """
@@ -652,6 +721,12 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_records_module_created ON records(module_type, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_records_user_module_source_created ON records(user_id, module_type, source_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_privacy_requests_user_created ON privacy_requests(user_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_privacy_requests_status_updated ON privacy_requests(status, updated_at)",
+    "CREATE INDEX IF NOT EXISTS idx_privacy_request_actions_request_created ON privacy_request_actions(request_id, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_privacy_request_actions_actor_idempotency ON privacy_request_actions(actor_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_privacy_request_approvals_request_created ON privacy_request_approvals(request_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_privacy_request_executions_request_started ON privacy_request_executions(request_id, started_at)",
+    "CREATE INDEX IF NOT EXISTS idx_privacy_tombstones_subject_hash ON privacy_deletion_tombstones(subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_family_links_code_status ON family_links(bind_code, status)",
     "CREATE INDEX IF NOT EXISTS idx_assessment_worksheets_audience_enabled ON assessment_worksheets(audience_class, enabled_for_user)",
     "CREATE INDEX IF NOT EXISTS idx_messages_user_status_created ON messages(user_id, status, created_at)",

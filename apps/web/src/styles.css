@@ -2,6 +2,377 @@
   box-sizing: border-box;
 }
 
+.privacyReviewShell {
+  --privacy-ink: #24352d;
+  --privacy-muted: #63726a;
+  --privacy-line: rgba(46, 92, 70, 0.18);
+  --privacy-soft: #f1f7f3;
+}
+
+.privacyReviewHeader {
+  align-items: flex-start;
+}
+
+.privacyReviewGuard {
+  display: grid;
+  gap: 3px;
+  min-width: 180px;
+  border: 1px solid var(--privacy-line);
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: var(--privacy-soft);
+  color: var(--privacy-ink);
+}
+
+.privacyReviewGuard span,
+.privacyCaseHeading p,
+.privacyRequestRow small {
+  color: var(--privacy-muted);
+}
+
+.privacyReviewToolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.privacyReviewToolbar label,
+.privacyNoteField {
+  display: grid;
+  gap: 7px;
+  color: var(--privacy-ink);
+  font-weight: 700;
+}
+
+.privacyReviewToolbar select {
+  min-width: 180px;
+  min-height: 44px;
+  border: 1px solid var(--privacy-line);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #fff;
+  color: var(--privacy-ink);
+}
+
+.privacyReviewWorkspace {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.78fr) minmax(0, 1.62fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.privacyRequestList,
+.privacyCaseFile {
+  border: 1px solid var(--privacy-line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 30px rgba(43, 76, 60, 0.06);
+}
+
+.privacyRequestList {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.privacyRequestRow {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+  min-height: 112px;
+  border: 0;
+  border-left: 4px solid transparent;
+  border-bottom: 1px solid var(--privacy-line);
+  padding: 16px;
+  background: #fff;
+  color: var(--privacy-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.privacyRequestRow:last-child {
+  border-bottom: 0;
+}
+
+.privacyRequestRow:hover,
+.privacyRequestRow.active {
+  border-left-color: #39745a;
+  background: var(--privacy-soft);
+}
+
+.privacyRequestRow:focus-visible,
+.privacyScopeGrid label:focus-within {
+  outline: 3px solid rgba(38, 105, 73, 0.3);
+  outline-offset: -3px;
+}
+
+.privacyStatus {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #edf1ef;
+  color: #4d5b54;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.privacyStatus--pending,
+.privacyStatus--processing {
+  background: #fff2d9;
+  color: #815d16;
+}
+
+.privacyStatus--completed {
+  background: #e6f4ea;
+  color: #236142;
+}
+
+.privacyStatus--rejected,
+.privacyStatus--cancelled {
+  background: #edf0ef;
+  color: #5d6862;
+}
+
+.privacyCaseFile {
+  min-height: 440px;
+  padding: 24px;
+}
+
+.privacyCaseHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.privacyCaseHeading h2 {
+  margin: 10px 0 4px;
+  color: var(--privacy-ink);
+  overflow-wrap: anywhere;
+}
+
+.privacyReasonBox,
+.privacyExecutionBoundary {
+  margin-top: 18px;
+  border-left: 4px solid #39745a;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--privacy-soft);
+  color: var(--privacy-ink);
+}
+
+.privacyExecutionPanel {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #c7d9d2;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #fbfdfc, #f1f7f4);
+}
+
+.privacyExecutionPanel__heading,
+.privacyPreviewSummary,
+.privacyPreviewModules article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.privacyExecutionPanel__heading h3,
+.privacyExecutionPanel__heading p,
+.privacyRetainedBox p {
+  margin: 0;
+}
+
+.privacyExecutionPanel__heading p {
+  margin-top: 6px;
+  color: #5b6f67;
+  line-height: 1.6;
+}
+
+.privacyPreviewSummary {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.privacyPreviewSummary strong {
+  color: #2f6e5b;
+  font-size: 28px;
+}
+
+.privacyPreviewSummary small {
+  margin-left: auto;
+  color: #6a7772;
+}
+
+.privacyPreviewModules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.privacyPreviewModules article {
+  flex-wrap: wrap;
+  padding: 14px;
+  border: 1px solid #dce8e3;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.privacyPreviewModules small {
+  width: 100%;
+  color: #718078;
+  overflow-wrap: anywhere;
+}
+
+.privacyRetainedBox {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-left: 4px solid #b98949;
+  border-radius: 12px;
+  background: #fff8ed;
+  color: #5d5141;
+}
+
+.privacyScopeHash,
+.privacyProof {
+  display: block;
+  margin-top: 12px;
+  color: #66756f;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .privacyExecutionPanel__heading,
+  .privacyPreviewSummary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .privacyPreviewSummary small {
+    margin-left: 0;
+  }
+
+  .privacyPreviewModules {
+    grid-template-columns: 1fr;
+  }
+}
+
+.privacyScopeFieldset {
+  margin: 20px 0;
+  border: 1px solid var(--privacy-line);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.privacyScopeFieldset legend {
+  padding: 0 6px;
+  color: var(--privacy-ink);
+  font-weight: 800;
+}
+
+.privacyScopeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.privacyScopeGrid label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  border: 1px solid var(--privacy-line);
+  border-radius: 10px;
+  padding: 9px 11px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.privacyScopeGrid label.selected {
+  border-color: #39745a;
+  background: var(--privacy-soft);
+}
+
+.privacyNoteField textarea {
+  width: 100%;
+  min-height: 112px;
+  resize: vertical;
+  border: 1px solid var(--privacy-line);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--privacy-ink);
+  font: inherit;
+}
+
+.privacyActionBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.dangerButton {
+  min-height: 44px;
+  border: 1px solid #ad4d4d;
+  border-radius: 10px;
+  padding: 0 16px;
+  background: #fff;
+  color: #8f3434;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.privacyAuditTrail {
+  margin-top: 24px;
+}
+
+.privacyAuditTrail article {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 12px;
+  padding: 0 0 18px;
+}
+
+.privacyAuditTrail article > span {
+  width: 12px;
+  height: 12px;
+  margin-top: 5px;
+  border: 3px solid #39745a;
+  border-radius: 50%;
+  box-shadow: 0 18px 0 -5px #8eb5a2;
+}
+
+.privacyAuditTrail p {
+  margin: 4px 0 0;
+  color: var(--privacy-muted);
+}
+
+.privacyEmpty {
+  padding: 36px 22px;
+  color: var(--privacy-muted);
+  text-align: center;
+}
+
+@media (max-width: 820px) {
+  .privacyReviewWorkspace,
+  .privacyScopeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .privacyReviewToolbar,
+  .privacyCaseHeading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 .view-toggle,
 .progress-wrap,
 .flow-footer {
