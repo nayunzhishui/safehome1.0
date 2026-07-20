@@ -42,6 +42,13 @@ MVP_TABLES = [
     "security_control_runs",
     "security_events",
     "privacy_deletion_verifications",
+    "observability_events",
+    "reliable_jobs",
+    "reliable_job_actions",
+    "feature_flag_versions",
+    "reliability_slo_snapshots",
+    "reliability_drill_runs",
+    "reliability_evidence_packages",
 ]
 
 
@@ -1104,6 +1111,112 @@ SCHEMA_SQL = [
         verified_at TEXT NOT NULL
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS observability_events (
+        id TEXT PRIMARY KEY,
+        request_id TEXT NOT NULL,
+        method TEXT NOT NULL,
+        path TEXT NOT NULL,
+        actor_scope TEXT NOT NULL,
+        module TEXT NOT NULL,
+        journey TEXT NOT NULL,
+        outcome TEXT NOT NULL,
+        error_code TEXT,
+        status_code INTEGER NOT NULL,
+        latency_ms REAL NOT NULL,
+        retry_count INTEGER NOT NULL DEFAULT 0,
+        recovered INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS reliable_jobs (
+        id TEXT PRIMARY KEY,
+        job_type TEXT NOT NULL,
+        source_type TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        attempt_count INTEGER NOT NULL DEFAULT 0,
+        max_attempts INTEGER NOT NULL DEFAULT 3,
+        available_at TEXT NOT NULL,
+        lease_owner TEXT,
+        lease_expires_at TEXT,
+        last_error_code TEXT,
+        payload_hash TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        completed_at TEXT,
+        dead_lettered_at TEXT,
+        UNIQUE(job_type, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS reliable_job_actions (
+        id TEXT PRIMARY KEY,
+        job_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        from_status TEXT NOT NULL,
+        to_status TEXT NOT NULL,
+        error_code TEXT,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS feature_flag_versions (
+        id TEXT PRIMARY KEY,
+        flag_name TEXT NOT NULL,
+        version INTEGER NOT NULL,
+        enabled INTEGER NOT NULL,
+        role_scope_json TEXT NOT NULL DEFAULT '[]',
+        rollout_percent INTEGER NOT NULL DEFAULT 100,
+        reason_code TEXT NOT NULL,
+        previous_version INTEGER,
+        changed_by TEXT NOT NULL,
+        changed_at TEXT NOT NULL,
+        UNIQUE(flag_name, version)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS reliability_slo_snapshots (
+        id TEXT PRIMARY KEY,
+        environment TEXT NOT NULL,
+        window_minutes INTEGER NOT NULL,
+        metrics_json TEXT NOT NULL DEFAULT '{}',
+        status TEXT NOT NULL,
+        contains_real_participant_text INTEGER NOT NULL DEFAULT 0,
+        production_slo_frozen INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS reliability_drill_runs (
+        id TEXT PRIMARY KEY,
+        scenario TEXT NOT NULL,
+        status TEXT NOT NULL,
+        result_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        contains_real_participant_data INTEGER NOT NULL DEFAULT 0,
+        production_approval_inferred INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS reliability_evidence_packages (
+        id TEXT PRIMARY KEY,
+        status TEXT NOT NULL,
+        package_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        production_release_approved INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
 ]
 
 
@@ -1167,6 +1280,14 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_security_runs_created ON security_control_runs(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_security_events_status_created ON security_events(status, severity, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_privacy_verifications_request ON privacy_deletion_verifications(request_id, verified_at)",
+    "CREATE INDEX IF NOT EXISTS idx_observability_journey_created ON observability_events(journey, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_observability_request ON observability_events(request_id, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_reliable_jobs_idempotency ON reliable_jobs(job_type, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_reliable_jobs_due ON reliable_jobs(status, available_at, lease_expires_at)",
+    "CREATE INDEX IF NOT EXISTS idx_reliable_job_actions_job ON reliable_job_actions(job_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_feature_flag_versions_name ON feature_flag_versions(flag_name, version)",
+    "CREATE INDEX IF NOT EXISTS idx_reliability_slo_created ON reliability_slo_snapshots(environment, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_reliability_drills_created ON reliability_drill_runs(scenario, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",

@@ -3501,3 +3501,77 @@ ul {
     grid-template-columns: 1fr;
   }
 }
+/* T32 reliability evidence: a restrained signal rail keeps release state readable. */
+.releaseSignalRail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border, #dfe6df);
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.releaseSignalRail li {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  min-height: 112px;
+  padding: 22px 20px;
+}
+
+.releaseSignalRail li + li { border-left: 1px solid var(--border, #dfe6df); }
+.releaseSignalRail li > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-weight: 750;
+  background: #eef4ef;
+  color: #316b57;
+}
+.releaseSignalRail li.isPending > span { background: #fff3d7; color: #8b641a; }
+.releaseSignalRail li.isBlocked > span { background: #f6e9e5; color: #8a493d; }
+.releaseSignalRail strong, .releaseSignalRail small { display: block; }
+.releaseSignalRail small { margin-top: 8px; color: var(--muted, #66746c); line-height: 1.55; }
+
+.reliabilityColumns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+  gap: 20px;
+}
+.reliabilityColumns > .panel { min-width: 0; }
+.journeyMetricList, .reliableJobList, .featureFlagList { display: grid; gap: 10px; }
+.journeyMetricList article, .reliableJobList article, .featureFlagList article {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border, #e4e9e4);
+}
+.journeyMetricList article:last-child, .reliableJobList article:last-child, .featureFlagList article:last-child { border-bottom: 0; }
+.journeyMetricList article > div, .reliableJobList article > div, .featureFlagList article > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+.journeyMetricList dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 0; }
+.journeyMetricList dl div { padding: 9px 10px; border-radius: 12px; background: #f5f8f5; }
+.journeyMetricList dt { color: var(--muted, #66746c); font-size: .76rem; }
+.journeyMetricList dd { margin: 3px 0 0; font-weight: 700; }
+.reliableJobList p, .featureFlagList p { margin: 6px 0 0; color: var(--muted, #66746c); }
+.jobState { padding: 3px 9px; border-radius: 999px; background: #eef4ef; font-size: .78rem; }
+.jobState-dead_letter { background: #f6e9e5; color: #8a493d; }
+.jobState-retrying { background: #fff3d7; color: #8b641a; }
+.reliabilitySelect { display: grid; gap: 8px; margin: 18px 0; }
+.reliabilitySelect span { font-size: .85rem; color: var(--muted, #66746c); }
+.reliabilitySelect select { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--border, #dfe6df); border-radius: 12px; background: #fff; }
+
+@media (max-width: 760px) {
+  .releaseSignalRail, .reliabilityColumns { grid-template-columns: 1fr; }
+  .releaseSignalRail li + li { border-left: 0; border-top: 1px solid var(--border, #dfe6df); }
+  .releaseSignalRail li { min-height: auto; }
+}

@@ -98,6 +98,23 @@ class Config:
         "SECURITY_SCAN_EXECUTION_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
     ).strip().lower() in {"1", "true", "yes"}
+    RELIABILITY_WORKBENCH_ENABLED = os.environ.get(
+        "RELIABILITY_WORKBENCH_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
+    RELIABILITY_JOB_EXECUTION_ENABLED = os.environ.get(
+        "RELIABILITY_JOB_EXECUTION_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
+    RELIABILITY_FAULT_INJECTION_ENABLED = os.environ.get(
+        "RELIABILITY_FAULT_INJECTION_ENABLED", "0"
+    ).strip().lower() in {"1", "true", "yes"}
+    RELIABILITY_GRADUAL_RELEASE_ENABLED = os.environ.get(
+        "RELIABILITY_GRADUAL_RELEASE_ENABLED", "0"
+    ).strip().lower() in {"1", "true", "yes"}
+    RELIABILITY_PRODUCTION_SLO_FROZEN = os.environ.get(
+        "RELIABILITY_PRODUCTION_SLO_FROZEN", "0"
+    ).strip().lower() in {"1", "true", "yes"}
 
     @classmethod
     def validate(cls) -> None:
@@ -125,6 +142,12 @@ class Config:
             raise RuntimeError("T30人工签字尚未完成，RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED 必须保持关闭")
         if cls.RESEARCH_OUTCOME_ANALYSIS_ALLOWED:
             raise RuntimeError("T30方法尚未正式冻结，RESEARCH_OUTCOME_ANALYSIS_ALLOWED 必须保持关闭")
+        if str(cls.APP_ENV).lower() == "production" and cls.RELIABILITY_FAULT_INJECTION_ENABLED:
+            raise RuntimeError("生产环境禁止启用 RELIABILITY_FAULT_INJECTION_ENABLED")
+        if cls.RELIABILITY_GRADUAL_RELEASE_ENABLED:
+            raise RuntimeError("T32测试云观察和人工发布批准尚未完成，RELIABILITY_GRADUAL_RELEASE_ENABLED 必须保持关闭")
+        if cls.RELIABILITY_PRODUCTION_SLO_FROZEN:
+            raise RuntimeError("T32测试云观察期尚未完成，RELIABILITY_PRODUCTION_SLO_FROZEN 必须保持关闭")
         if cls.WECHAT_SUBSCRIBE_SEND_ENABLED:
             missing = [
                 name

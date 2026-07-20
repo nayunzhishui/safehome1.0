@@ -39,6 +39,7 @@ const AiQaSandboxPage = lazy(() => import("./pages/AiQaSandboxPage").then((modul
 const OfflineBenchmarkWorkbench = lazy(() => import("./pages/OfflineBenchmarkWorkbench").then((module) => ({ default: module.OfflineBenchmarkWorkbench })));
 const ResearchMethodologyWorkbench = lazy(() => import("./pages/ResearchMethodologyWorkbench").then((module) => ({ default: module.ResearchMethodologyWorkbench })));
 const SecurityPrivacyWorkbench = lazy(() => import("./pages/SecurityPrivacyWorkbench").then((module) => ({ default: module.SecurityPrivacyWorkbench })));
+const ReliabilityReleaseWorkbench = lazy(() => import("./pages/ReliabilityReleaseWorkbench").then((module) => ({ default: module.ReliabilityReleaseWorkbench })));
 
 interface AdminLink {
   href: string;
@@ -67,6 +68,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/research/benchmarks", label: "离线算法基准", match: (p) => p === "/research/benchmarks", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/methodology", label: "研究方法冻结准备", match: (p) => p === "/research/methodology", roles: ["admin", "researcher", "supervisor"] },
   { href: "/security/privacy", label: "安全与隐私防护", match: (p) => p === "/security/privacy", roles: ["admin", "researcher", "supervisor"] },
+  { href: "/reliability/release", label: "可靠性与发布证据", match: (p) => p === "/reliability/release", roles: ["admin", "researcher", "supervisor"] },
   { href: "/export", label: "数据导出", match: (p) => p === "/export", roles: ["admin", "researcher"] },
   { href: "/integration-test", label: "联调测试", match: (p) => p === "/integration-test", roles: ["admin"] },
   { href: "/privacy", label: "隐私中心", match: (p) => p === "/privacy" },
@@ -164,6 +166,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isOfflineBenchmarkPath = path === "/research/benchmarks";
   const isResearchMethodologyPath = path === "/research/methodology";
   const isSecurityPrivacyPath = path === "/security/privacy";
+  const isReliabilityReleasePath = path === "/reliability/release";
   const isKnownAdminPath = [
     "/dashboard",
     "/goals",
@@ -187,6 +190,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/research/benchmarks",
     "/research/methodology",
     "/security/privacy",
+    "/reliability/release",
   ].some((route) => path === route || path.startsWith(`${route}/`));
   const matchedAdminLink = findAdminLink(path);
   const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink, authUser, showcaseEnabled);
@@ -206,6 +210,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isOfflineBenchmarkPath &&
     !isResearchMethodologyPath &&
     !isSecurityPrivacyPath &&
+    !isReliabilityReleasePath &&
     !isSupervisionPath &&
     !isContentReviewPath &&
     !isScalesPath &&
@@ -250,6 +255,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isOfflineBenchmarkPath ? <OfflineBenchmarkWorkbench /> : null}
       {isResearchMethodologyPath ? <ResearchMethodologyWorkbench /> : null}
       {isSecurityPrivacyPath ? <SecurityPrivacyWorkbench /> : null}
+      {isReliabilityReleasePath ? <ReliabilityReleaseWorkbench /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}

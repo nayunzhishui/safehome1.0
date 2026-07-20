@@ -799,6 +799,32 @@ def validate_security_registry_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_reliability_registry_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        registry = load_json(content_dir / "reliability_release_registry.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"reliability_release_registry.json 不可读取：{exc}"]
+    if len(registry.get("journeys", [])) != 7:
+        errors.append("可靠性注册表必须覆盖七条核心旅程")
+    required_trace = {"request_id", "actor_scope", "module", "journey", "outcome", "error_code", "latency_ms", "retry_count", "recovered"}
+    if set(registry.get("trace_fields", [])) != required_trace:
+        errors.append("可靠性追踪字段必须使用脱敏白名单")
+    forbidden = {"authorization", "cookie", "password", "token", "request_body", "response_body", "participant_text"}
+    if not forbidden.issubset(set(registry.get("sensitive_fields_forbidden", []))):
+        errors.append("可靠性注册表未完整禁止秘密值和参与者正文")
+    if {item.get("job_type") for item in registry.get("job_adapters", [])} != {"notification_delivery", "privacy_execution", "ai_evaluation", "offline_benchmark"}:
+        errors.append("可靠任务适配器必须覆盖通知、隐私、AI评估和离线基准")
+    if len(registry.get("fault_scenarios", [])) != 6:
+        errors.append("可靠性固定合成故障场景必须为六类")
+    if registry.get("production_slo", {}).get("status") != "pending_test_cloud_observation" or registry.get("production_slo", {}).get("thresholds") is not None:
+        errors.append("没有测试云连续观察前不得冻结正式SLO阈值")
+    release = registry.get("production_release", {})
+    if release.get("approved") is not False or release.get("automatic_signature_allowed") is not False or release.get("temporary_showcase_exception_accepted") is not False:
+        errors.append("可靠性注册表不得推断上线决定或接受临时展示越权")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -814,6 +840,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_offline_benchmark_content(content_dir))
     errors.extend(validate_research_methodology_content(content_dir))
     errors.extend(validate_security_registry_content(content_dir))
+    errors.extend(validate_reliability_registry_content(content_dir))
     return errors
 
 

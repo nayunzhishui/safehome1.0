@@ -104,6 +104,7 @@ const API_ENDPOINTS = {
   offlineBenchmarks: "/api/research/benchmarks",
   researchMethodology: "/api/research/methodology",
   securityControls: "/api/security",
+  reliability: "/api/reliability",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -988,6 +989,10 @@ function createSafeHomeApi(options = {}) {
 
     getSecurityPublicStatus() {
       return request(`${API_ENDPOINTS.securityControls}/public-status`);
+    },
+
+    getReliabilityPublicStatus() {
+      return request(`${API_ENDPOINTS.reliability}/public-status`);
     },
 
     getParentAssessmentResult(id, params = {}) {

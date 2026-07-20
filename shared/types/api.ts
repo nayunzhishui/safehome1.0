@@ -2133,6 +2133,82 @@ export interface SecurityPublicStatus {
   boundary_notice: string;
 }
 
+export interface ReliabilityPublicStatus {
+  status: string;
+  workbench_enabled: boolean;
+  production_slo_frozen: false;
+  gradual_release_enabled: false;
+  fault_injection_enabled: boolean;
+  boundary_notice: string;
+}
+
+export interface ReliabilityJourney {
+  journey_id: string;
+  label: string;
+  paths: string[];
+}
+
+export interface ReliabilityRegistry {
+  version: string;
+  status: string;
+  journeys: ReliabilityJourney[];
+  trace_fields: string[];
+  sensitive_fields_forbidden: string[];
+  job_adapters: Array<{ job_type: string; [key: string]: unknown }>;
+  feature_flags: Array<{ name: string; default_enabled: boolean; role_scope: string[] }>;
+  fault_scenarios: Array<{ scenario: string; expected: string }>;
+  production_slo: { status: "pending_test_cloud_observation"; thresholds: null };
+  external_gates: string[];
+  production_release: { approved: false; automatic_signature_allowed: false; temporary_showcase_exception_accepted: false };
+}
+
+export interface ReliabilityJob {
+  id: ID;
+  job_type: string;
+  source_type: string;
+  source_id: string;
+  idempotency_key: string;
+  status: "pending" | "leased" | "retrying" | "completed" | "dead_letter";
+  attempt_count: number;
+  max_attempts: number;
+  available_at: ISODateTime;
+  last_error_code?: string | null;
+  updated_at: ISODateTime;
+}
+
+export interface ReliabilityFeatureFlag {
+  id: ID;
+  flag_name: string;
+  version: number;
+  enabled: boolean;
+  role_scope: string[];
+  rollout_percent: number;
+  reason_code: string;
+  changed_at: ISODateTime;
+}
+
+export interface ReliabilitySloSnapshot {
+  id: ID;
+  environment: "local_synthetic" | "test_cloud_evidence_pending";
+  window_minutes: number;
+  metrics: Record<string, { requests: number; success_rate: number; error_rate: number; retry_rate: number; recovery_rate: number; latency_p50_ms: number; latency_p95_ms: number }>;
+  status: "local_evidence_only";
+  production_slo_frozen: false;
+  created_at: ISODateTime;
+}
+
+export interface ReliabilityWorkbench {
+  registry: ReliabilityRegistry;
+  recent_events: Array<Record<string, unknown>>;
+  jobs: ReliabilityJob[];
+  feature_flags: ReliabilityFeatureFlag[];
+  slo_snapshots: ReliabilitySloSnapshot[];
+  drill_runs: Array<Record<string, unknown>>;
+  evidence_packages: Array<Record<string, unknown>>;
+  production_slo_frozen: false;
+  gradual_release_enabled: false;
+}
+
 export interface AssessmentListResponse {
   version: string;
   boundary_notice: string;

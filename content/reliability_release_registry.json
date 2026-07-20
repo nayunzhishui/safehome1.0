@@ -1,0 +1,304 @@
+{
+  "alerts": [
+    {
+      "human_owner": "pending",
+      "level": "P0",
+      "meaning": "safety/privacy/data integrity or total outage"
+    },
+    {
+      "human_owner": "pending",
+      "level": "P1",
+      "meaning": "critical journey degradation without immediate safety impact"
+    },
+    {
+      "human_owner": "pending",
+      "level": "P2",
+      "meaning": "partial degradation or recoverable backlog"
+    }
+  ],
+  "external_gates": [
+    "test_cloud_observation",
+    "cloudbase_gateway_trace",
+    "mysql_backup_restore",
+    "wechat_devtools",
+    "android_ios_real_device",
+    "on_call_owner",
+    "security_privacy_ethics_review",
+    "production_release_approval"
+  ],
+  "fault_scenarios": [
+    {
+      "expected": "readiness_blocked_and_recoverable_message",
+      "scenario": "content_missing"
+    },
+    {
+      "expected": "transaction_rollback_and_retryable_error",
+      "scenario": "database_timeout"
+    },
+    {
+      "expected": "backoff_or_safe_degradation",
+      "scenario": "provider_failure"
+    },
+    {
+      "expected": "401_and_relogin_path",
+      "scenario": "token_invalidated"
+    },
+    {
+      "expected": "idempotent_single_delivery",
+      "scenario": "duplicate_message"
+    },
+    {
+      "expected": "hash_rejection_and_runtime_block",
+      "scenario": "artifact_corrupted"
+    }
+  ],
+  "feature_flags": [
+    {
+      "default_enabled": true,
+      "name": "participant_journey",
+      "role_scope": [
+        "parent",
+        "student"
+      ],
+      "rollback_default": true
+    },
+    {
+      "default_enabled": false,
+      "name": "research_operations_write",
+      "role_scope": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "rollback_default": false
+    },
+    {
+      "default_enabled": false,
+      "name": "content_governance_publish",
+      "role_scope": [
+        "admin"
+      ],
+      "rollback_default": false
+    },
+    {
+      "default_enabled": false,
+      "name": "ai_qa_sandbox",
+      "role_scope": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "rollback_default": false
+    },
+    {
+      "default_enabled": false,
+      "name": "offline_benchmark",
+      "role_scope": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "rollback_default": false
+    }
+  ],
+  "job_adapters": [
+    {
+      "backoff": "exponential_60s_cap_3600s",
+      "dead_letter": true,
+      "idempotency": true,
+      "job_type": "notification_delivery",
+      "lease": true,
+      "manual_recovery": true,
+      "source_table": "notification_deliveries"
+    },
+    {
+      "backoff": "manual_after_transaction_failure",
+      "dead_letter": true,
+      "idempotency": true,
+      "job_type": "privacy_execution",
+      "lease": true,
+      "manual_recovery": true,
+      "source_table": "privacy_request_executions"
+    },
+    {
+      "backoff": "exponential_60s_cap_3600s",
+      "dead_letter": true,
+      "idempotency": true,
+      "job_type": "ai_evaluation",
+      "lease": true,
+      "manual_recovery": true,
+      "source_table": "ai_qa_evaluation_runs"
+    },
+    {
+      "backoff": "manual_after_artifact_check",
+      "dead_letter": true,
+      "idempotency": true,
+      "job_type": "offline_benchmark",
+      "lease": true,
+      "manual_recovery": true,
+      "source_table": "offline_benchmark_runs"
+    }
+  ],
+  "journeys": [
+    {
+      "journey_id": "authentication",
+      "label": "登录",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "retry_rate",
+        "recovery_rate"
+      ],
+      "paths": [
+        "/api/auth/login",
+        "/api/auth/wechat-login",
+        "/api/auth/phone-login"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    },
+    {
+      "journey_id": "diary_submission",
+      "label": "记录提交",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "retry_rate",
+        "recovery_rate"
+      ],
+      "paths": [
+        "/api/diaries"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    },
+    {
+      "journey_id": "feedback_generation",
+      "label": "反馈生成",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "retry_rate",
+        "recovery_rate"
+      ],
+      "paths": [
+        "/api/feedback/generate"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    },
+    {
+      "journey_id": "training_plan",
+      "label": "训练计划",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "retry_rate",
+        "recovery_rate"
+      ],
+      "paths": [
+        "/api/training-plan",
+        "/api/journey/today"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    },
+    {
+      "journey_id": "messages",
+      "label": "消息",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "retry_rate",
+        "recovery_rate"
+      ],
+      "paths": [
+        "/api/messages",
+        "/api/notifications"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    },
+    {
+      "journey_id": "research_queue",
+      "label": "研究队列",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "retry_rate",
+        "recovery_rate"
+      ],
+      "paths": [
+        "/api/research/work-items",
+        "/api/research/queues"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    },
+    {
+      "journey_id": "ai_sandbox",
+      "label": "AI合成沙盒",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "retry_rate",
+        "recovery_rate"
+      ],
+      "paths": [
+        "/api/ai-qa"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    }
+  ],
+  "production_release": {
+    "approved": false,
+    "automatic_signature_allowed": false,
+    "temporary_showcase_exception_accepted": false
+  },
+  "production_slo": {
+    "local_results_acceptable_as_production_commitment": false,
+    "observation_days": null,
+    "status": "pending_test_cloud_observation",
+    "thresholds": null
+  },
+  "sensitive_fields_forbidden": [
+    "authorization",
+    "cookie",
+    "password",
+    "token",
+    "phone",
+    "openid",
+    "request_body",
+    "response_body",
+    "participant_text",
+    "stack_trace"
+  ],
+  "status": "engineering_controls_ready_external_release_gates_pending",
+  "trace_fields": [
+    "request_id",
+    "actor_scope",
+    "module",
+    "journey",
+    "outcome",
+    "error_code",
+    "latency_ms",
+    "retry_count",
+    "recovered"
+  ],
+  "version": "2026-07-20-t32-reliability-v1"
+}

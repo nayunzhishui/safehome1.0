@@ -1,6 +1,6 @@
 # API机器契约
 
-契约版本：`2026-07-20.3`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
+契约版本：`2026-07-20.4`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
 
 统一成功包络为`{ok:true,data,request_id}`，统一错误包络为`{ok:false,error:{code,message},request_id}`；下载接口除外，但响应头仍含`X-Request-ID`。
 
@@ -144,6 +144,20 @@
 | PUT | `/api/relationship-pilot/reports/<report_id>/hypotheses/<int:hypothesis_index>` | authenticated:parent,student,researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | POST | `/api/relationship-pilot/reports/<report_id>/send` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | GET | `/api/relationship-pilot/researcher/dashboard` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
+| POST | `/api/reliability/drills` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/evidence-packages` | role:supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| GET | `/api/reliability/feature-flags` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| PATCH | `/api/reliability/feature-flags/<flag_name>` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/feature-flags/<flag_name>/rollback` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| GET | `/api/reliability/jobs` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/jobs` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/jobs/<job_id>/claim` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/jobs/<job_id>/complete` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/jobs/<job_id>/fail` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/jobs/<job_id>/recover` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| GET | `/api/reliability/public-status` | public:public | non_sensitive_reliability_gate_status_only | — | — | active |
+| POST | `/api/reliability/slo-snapshots` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| GET | `/api/reliability/workbench` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
 | GET | `/api/research/benchmarks/agreement` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/cases` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/cases/<case_id>/annotations` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |

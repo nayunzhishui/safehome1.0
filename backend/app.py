@@ -35,6 +35,7 @@ from routes.messages import bp as messages_bp
 from routes.notifications import bp as notifications_bp
 from routes.offline_benchmarks import bp as offline_benchmarks_bp
 from routes.research_methodology import bp as research_methodology_bp
+from routes.reliability import bp as reliability_bp
 from routes.security_controls import bp as security_controls_bp
 from routes.parent_assessments import bp as parent_assessments_bp
 from routes.privacy import bp as privacy_bp
@@ -51,6 +52,8 @@ from routes.supervision import bp as supervision_bp
 from routes.text_analysis import bp as text_analysis_bp
 from routes.training_plan import bp as training_plan_bp
 from services.runtime_metrics import record_response, snapshot as runtime_metrics_snapshot
+from services.reliability_service import record_request_event
+from routes.auth_utils import AuthError, get_current_actor
 from services.assessment_profile_service import model_artifact_hash_is_valid
 
 
@@ -73,6 +76,7 @@ REQUIRED_CONTENT_FILES = [
     "synthetic_affect_benchmark_240.json",
     "research_methodology_registry.json",
     "security_privacy_abuse_registry.json",
+    "reliability_release_registry.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -220,6 +224,7 @@ def create_app(
     app.register_blueprint(notifications_bp)
     app.register_blueprint(offline_benchmarks_bp)
     app.register_blueprint(research_methodology_bp)
+    app.register_blueprint(reliability_bp)
     app.register_blueprint(security_controls_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(progress_summary_bp)
@@ -263,10 +268,35 @@ def create_app(
             response.status_code,
             duration_ms,
         )
+        actor_scope = "anonymous"
+        try:
+            actor = get_current_actor(allow_legacy_admin=True)
+            actor_scope = str(actor.get("role") or "anonymous") if actor else "anonymous"
+        except AuthError:
+            pass
+        error_code = None
+        body = response.get_json(silent=True)
+        if isinstance(body, dict) and isinstance(body.get("error"), dict):
+            error_code = str(body["error"].get("code") or "") or None
+        try:
+            retry_count = max(0, min(int(request.headers.get("X-Retry-Count") or 0), 100))
+        except (TypeError, ValueError):
+            retry_count = 0
+        record_request_event(
+            request_id=request_id,
+            method=request.method,
+            path=request.path,
+            actor_scope=actor_scope,
+            status_code=response.status_code,
+            latency_ms=duration_ms,
+            error_code=error_code,
+            retry_count=retry_count,
+            recovered=str(request.headers.get("X-Recovered") or "").lower() in {"1", "true", "yes"},
+        )
         origin = request.headers.get("Origin")
         if origin in app.config.get("ALLOWED_ORIGINS", []):
             response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token, Authorization, Idempotency-Key, X-Request-ID"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token, Authorization, Idempotency-Key, X-Request-ID, X-Retry-Count, X-Recovered"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("X-Frame-Options", "DENY")

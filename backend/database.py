@@ -67,9 +67,16 @@ REQUIRED_HEALTH_TABLES = [
     "security_control_runs",
     "security_events",
     "privacy_deletion_verifications",
+    "observability_events",
+    "reliable_jobs",
+    "reliable_job_actions",
+    "feature_flag_versions",
+    "reliability_slo_snapshots",
+    "reliability_drill_runs",
+    "reliability_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_019"
-CURRENT_SCHEMA_NAME = "security_privacy_abuse_controls"
+CURRENT_SCHEMA_VERSION = "2026_07_20_020"
+CURRENT_SCHEMA_NAME = "reliability_observability_release_engineering"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -88,6 +95,11 @@ MYSQL_VARCHAR_COLUMNS = {
     "response",
     "assessment_result_id",
     "idempotency_key",
+    "job_type",
+    "flag_name",
+    "journey",
+    "scenario",
+    "environment",
     "password_hash",
     "wechat_openid",
     "avatar_url",

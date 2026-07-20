@@ -1,4 +1,5 @@
 import importlib
+import json
 import sys
 from pathlib import Path
 
@@ -79,8 +80,9 @@ def test_registry_covers_every_operation_and_keeps_showcase_as_blocker(tmp_path,
     data = app.test_client().get("/api/security/workbench", headers=headers["admin-a"]).get_json()["data"]
     registry = data["registry"]
     matrix = registry["authorization_matrix"]
-    assert len(matrix) == registry["authorization_summary"]["operation_count"] == 186
-    assert len({item["operation_id"] for item in matrix}) == 186
+    contract_count = len(json.loads((ROOT / "shared/contracts/api-contract.json").read_text(encoding="utf-8"))["endpoints"])
+    assert len(matrix) == registry["authorization_summary"]["operation_count"] == contract_count
+    assert len({item["operation_id"] for item in matrix}) == contract_count
     assert all(set(item["allowed_roles"]).isdisjoint(item["denied_roles"]) for item in matrix)
     assert registry["authorization_summary"]["formal_permission_acceptance_passed"] is False
     assert registry["temporary_showcase_exception"]["accepted_for_formal_permission_testing"] is False

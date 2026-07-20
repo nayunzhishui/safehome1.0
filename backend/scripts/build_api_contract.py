@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-07-20.3"
+CONTRACT_VERSION = "2026-07-20.4"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 
@@ -37,6 +37,16 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path == "/api/reliability/public-status":
+        return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
+    if path.startswith("/api/reliability"):
+        if path == "/api/reliability/evidence-packages":
+            roles = ["supervisor", "admin"]
+        elif method in {"POST", "PATCH"} and path not in {"/api/reliability/slo-snapshots"}:
+            roles = ["admin"]
+        else:
+            roles = ["researcher", "supervisor", "admin"]
+        return {"mode": "role", "roles": roles, "legacy_admin_token": True, "showcase_read_bypass": False}
     if path == "/api/security/public-status":
         return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
     if path.startswith("/api/security"):
@@ -101,6 +111,10 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+    if path == "/api/reliability/public-status":
+        return "non_sensitive_reliability_gate_status_only"
+    if path.startswith("/api/reliability"):
+        return "internal_redacted_reliability_metadata_no_participant_payload"
     if path == "/api/security/public-status":
         return "non_sensitive_security_gate_status_only"
     if path.startswith("/api/security/accounts/"):
@@ -179,6 +193,17 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ("/api/security/accounts/<user_id>/status", "PATCH"): ["status", "reason_code", "expected_auth_epoch"],
     }
     body_fields.update(security_body_fields.get((path, method), []))
+    reliability_body_fields = {
+        ("/api/reliability/slo-snapshots", "POST"): ["environment", "window_minutes"],
+        ("/api/reliability/jobs", "POST"): ["job_type", "source_type", "source_id", "idempotency_key", "max_attempts"],
+        ("/api/reliability/jobs/<job_id>/claim", "POST"): ["lease_seconds", "force_due"],
+        ("/api/reliability/jobs/<job_id>/fail", "POST"): ["error_code"],
+        ("/api/reliability/jobs/<job_id>/recover", "POST"): ["reason_code"],
+        ("/api/reliability/feature-flags/<flag_name>", "PATCH"): ["enabled", "role_scope", "rollout_percent", "reason_code"],
+        ("/api/reliability/feature-flags/<flag_name>/rollback", "POST"): ["target_version", "reason_code"],
+        ("/api/reliability/drills", "POST"): ["scenario"],
+    }
+    body_fields.update(reliability_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),
@@ -219,6 +244,8 @@ def _error_codes(path: str, source: str, access: dict[str, Any]) -> list[str]:
         ])
     if path.startswith("/api/security"):
         codes.update(["security_scan_disabled", "state_conflict", "self_disable_forbidden", "not_found", "validation_error"])
+    if path.startswith("/api/reliability"):
+        codes.update(["reliability_workbench_disabled", "reliability_job_execution_disabled", "job_state_conflict", "job_lease_conflict", "job_not_due", "not_found", "validation_error"])
     codes.update(["internal_error", "http_error"])
     return sorted(codes)
 
@@ -237,6 +264,7 @@ def _enum_refs(path: str) -> list[str]:
         ("/research/benchmarks", "offline_benchmark_status"),
         ("/research/methodology", "research_methodology_status"),
         ("/security", "security_control_status"),
+        ("/reliability", "reliability_control_status"),
     ]
     for token, ref in mapping:
         if token in path:

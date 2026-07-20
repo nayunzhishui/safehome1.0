@@ -57,6 +57,11 @@ import type {
   SecurityPublicStatus,
   SecurityScanResult,
   SecurityWorkbench,
+  ReliabilityFeatureFlag,
+  ReliabilityJob,
+  ReliabilityPublicStatus,
+  ReliabilitySloSnapshot,
+  ReliabilityWorkbench,
   ParentAssessmentInput,
   ParentAssessmentPayload,
   ParentAssessmentResult,
@@ -930,6 +935,38 @@ export class SafeHomeApiClient {
 
   resolveSecurityEvent(eventId: string): Promise<Record<string, unknown>> {
     return this.requestData(`${API_ENDPOINTS.securityControls}/events/${encodeURIComponent(eventId)}/resolve`, { method: "POST" });
+  }
+
+  getReliabilityPublicStatus(): Promise<ReliabilityPublicStatus> {
+    return this.requestData(`${API_ENDPOINTS.reliability}/public-status`);
+  }
+
+  getReliabilityWorkbench(): Promise<ReliabilityWorkbench> {
+    return this.requestData(`${API_ENDPOINTS.reliability}/workbench`);
+  }
+
+  createReliabilitySloSnapshot(windowMinutes = 60): Promise<ReliabilitySloSnapshot> {
+    return this.requestData(`${API_ENDPOINTS.reliability}/slo-snapshots`, { method: "POST", body: { environment: "local_synthetic", window_minutes: windowMinutes } });
+  }
+
+  listReliabilityJobs(): Promise<ListResponse<ReliabilityJob>> {
+    return this.requestData(`${API_ENDPOINTS.reliability}/jobs`);
+  }
+
+  recoverReliabilityJob(jobId: string): Promise<ReliabilityJob> {
+    return this.requestData(`${API_ENDPOINTS.reliability}/jobs/${encodeURIComponent(jobId)}/recover`, { method: "POST", body: { reason_code: "manual_dependency_recovered" } });
+  }
+
+  updateReliabilityFlag(flagName: string, input: { enabled: boolean; role_scope: string[]; rollout_percent: number; reason_code: string }): Promise<ReliabilityFeatureFlag> {
+    return this.requestData(`${API_ENDPOINTS.reliability}/feature-flags/${encodeURIComponent(flagName)}`, { method: "PATCH", body: input });
+  }
+
+  runReliabilityDrill(scenario: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.reliability}/drills`, { method: "POST", body: { scenario } });
+  }
+
+  createReliabilityEvidencePackage(): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.reliability}/evidence-packages`, { method: "POST" });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {
