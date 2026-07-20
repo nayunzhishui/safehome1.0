@@ -29,6 +29,7 @@ EXPORT_TABLES = {
 PROFILE_EXPORT_TYPES = {"profile", "student_profiles"}
 DEFAULT_EXPORT_LIMIT = 1000
 MAX_EXPORT_LIMIT = 5000
+CSV_FORMULA_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
 
 WORKSHEET_WRITABLE_FIELDS = {
     "display_title",
@@ -60,6 +61,16 @@ WORKSHEET_WRITABLE_FIELDS = {
     "pages",
     "_meta",
 }
+
+
+def _csv_safe_cell(value):
+    """Prevent spreadsheet formula execution without changing non-string values."""
+    if not isinstance(value, str):
+        return value
+    candidate = value.lstrip(" ")
+    if candidate.startswith(CSV_FORMULA_PREFIXES):
+        return "'" + value
+    return value
 
 
 def _worksheet_json(value: str | None, fallback):
@@ -1032,7 +1043,9 @@ def export_csv():
         first_row = rows[0]
         writer = csv.DictWriter(output, fieldnames=first_row.keys())
         writer.writeheader()
-        writer.writerows([dict(row) for row in rows])
+        writer.writerows(
+            [{key: _csv_safe_cell(value) for key, value in dict(row).items()} for row in rows]
+        )
     else:
         output.write("empty\n")
 
@@ -1040,5 +1053,9 @@ def export_csv():
     return Response(
         csv_text,
         mimetype="text/csv; charset=utf-8",
-        headers={"Content-Disposition": f"attachment; filename=safehome_{export_type}.csv"},
+        headers={
+            "Content-Disposition": f"attachment; filename=safehome_{export_type}.csv",
+            "X-Content-Type-Options": "nosniff",
+            "Cache-Control": "no-store",
+        },
     )

@@ -35,6 +35,7 @@ from routes.messages import bp as messages_bp
 from routes.notifications import bp as notifications_bp
 from routes.offline_benchmarks import bp as offline_benchmarks_bp
 from routes.research_methodology import bp as research_methodology_bp
+from routes.security_controls import bp as security_controls_bp
 from routes.parent_assessments import bp as parent_assessments_bp
 from routes.privacy import bp as privacy_bp
 from routes.product_events import bp as product_events_bp
@@ -71,6 +72,7 @@ REQUIRED_CONTENT_FILES = [
     "offline_benchmark_annotation_manual.json",
     "synthetic_affect_benchmark_240.json",
     "research_methodology_registry.json",
+    "security_privacy_abuse_registry.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -218,6 +220,7 @@ def create_app(
     app.register_blueprint(notifications_bp)
     app.register_blueprint(offline_benchmarks_bp)
     app.register_blueprint(research_methodology_bp)
+    app.register_blueprint(security_controls_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(progress_summary_bp)
     app.register_blueprint(parent_assessments_bp)
@@ -265,6 +268,12 @@ def create_app(
             response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Admin-Token, Authorization, Idempotency-Key, X-Request-ID"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        if request.path.startswith("/api/"):
+            response.headers.setdefault("Cache-Control", "no-store")
         if request.method == "GET" and request.path in LEGACY_LIMIT_PATHS and "limit" in request.args:
             response.headers["Deprecation"] = "true"
             response.headers["Sunset"] = "Sat, 31 Oct 2026 00:00:00 GMT"

@@ -1,6 +1,6 @@
 # API机器契约
 
-契约版本：`2026-07-20.2`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
+契约版本：`2026-07-20.3`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
 
 统一成功包络为`{ok:true,data,request_id}`，统一错误包络为`{ok:false,error:{code,message},request_id}`；下载接口除外，但响应头仍含`X-Request-ID`。
 
@@ -101,6 +101,7 @@
 | POST | `/api/privacy/admin/requests/<request_id>/execute` | role:supervisor,admin | full_for_supervisor_admin | — | required | active |
 | GET | `/api/privacy/admin/requests/<request_id>/preview` | role:supervisor,admin | full_for_supervisor_admin | — | — | active |
 | POST | `/api/privacy/admin/requests/<request_id>/transition` | role:supervisor,admin | full_for_supervisor_admin | — | supported | active |
+| GET | `/api/privacy/admin/requests/<request_id>/verification` | role:supervisor,admin | full_for_supervisor_admin | — | — | active |
 | GET | `/api/privacy/consent-status` | owner_or_authorized:parent,student,researcher,supervisor,admin | self | — | — | active |
 | POST | `/api/privacy/delete-my-data` | owner_or_authorized:parent,student,researcher,supervisor,admin | self | — | — | active |
 | GET | `/api/privacy/export-my-data` | owner_or_authorized:parent,student,researcher,supervisor,admin | self | — | — | active |
@@ -174,6 +175,11 @@
 | GET | `/api/risk-review` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/risk-review/<review_id>/review` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/risk/check` | public:public | not_applicable_or_development_legacy | — | — | active |
+| PATCH | `/api/security/accounts/<user_id>/status` | role:admin | admin_only_account_state_without_credentials | — | — | active |
+| POST | `/api/security/events/<event_id>/resolve` | role:admin | internal_redacted_security_evidence_no_secret_values | — | — | active |
+| GET | `/api/security/public-status` | public:public | non_sensitive_security_gate_status_only | — | — | active |
+| POST | `/api/security/scans` | role:admin | internal_redacted_security_evidence_no_secret_values | — | — | active |
+| GET | `/api/security/workbench` | role:researcher,supervisor,admin | internal_redacted_security_evidence_no_secret_values | — | — | active |
 | GET | `/api/showcase-access` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/student-assessment` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/supervision` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |

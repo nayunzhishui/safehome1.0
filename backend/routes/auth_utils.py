@@ -33,7 +33,14 @@ def _serializer() -> URLSafeTimedSerializer:
 
 
 def generate_auth_token(user: dict) -> str:
-    return _serializer().dumps({"user_id": user["id"], "role": user["role"]})
+    auth_epoch = user.get("auth_epoch")
+    if auth_epoch is None:
+        with get_connection() as conn:
+            row = conn.execute("SELECT auth_epoch FROM users WHERE id = ?", (user["id"],)).fetchone()
+        auth_epoch = int(row["auth_epoch"] or 0) if row is not None else 0
+    return _serializer().dumps(
+        {"user_id": user["id"], "role": user["role"], "auth_epoch": int(auth_epoch or 0)}
+    )
 
 
 def verify_auth_token(token: str) -> dict:
@@ -53,6 +60,8 @@ def verify_auth_token(token: str) -> dict:
     user = row_to_dict(row)
     if user.get("status") and user.get("status") != "active":
         raise AuthError("账号暂不可用", status=403)
+    if int(payload.get("auth_epoch") or 0) != int(user.get("auth_epoch") or 0):
+        raise AuthError("登录状态已更新，请重新登录", status=401)
     return user
 
 

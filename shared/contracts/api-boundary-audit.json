@@ -15,37 +15,37 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/admin.py:603",
+      "location": "backend/routes/admin.py:614",
       "handler": "list_admin_worksheets"
     },
     {
       "severity": "warning",
       "rule": "possible_unbounded_list",
-      "location": "backend/routes/admin.py:603",
+      "location": "backend/routes/admin.py:614",
       "handler": "list_admin_worksheets"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/admin.py:647",
+      "location": "backend/routes/admin.py:658",
       "handler": "update_admin_worksheet"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/admin.py:681",
+      "location": "backend/routes/admin.py:692",
       "handler": "disable_admin_worksheet"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/admin.py:727",
+      "location": "backend/routes/admin.py:738",
       "handler": "list_admin_assessment_results"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/admin.py:805",
+      "location": "backend/routes/admin.py:816",
       "handler": "export_csv"
     },
     {
@@ -69,37 +69,37 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:249",
+      "location": "backend/routes/auth.py:250",
       "handler": "register"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:291",
+      "location": "backend/routes/auth.py:292",
       "handler": "login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:316",
+      "location": "backend/routes/auth.py:331",
       "handler": "wechat_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:385",
+      "location": "backend/routes/auth.py:400",
       "handler": "phone_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:449",
+      "location": "backend/routes/auth.py:464",
       "handler": "bind_phone"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:497",
+      "location": "backend/routes/auth.py:512",
       "handler": "admin_create_account"
     },
     {

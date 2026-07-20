@@ -642,6 +642,51 @@ def _delete_table_rows(conn, table: str, user_id: str) -> int:
     return 0
 
 
+def _verify_deleted_scope(conn, user_id: str, scopes: list[str], preview: dict, deleted: dict) -> dict:
+    expected = {
+        entry["table"]: int(entry["count"])
+        for module in preview.get("modules", [])
+        for entry in module.get("tables", [])
+        if entry.get("table") != "users"
+    }
+    checks = []
+    for table in dict.fromkeys(table for scope in scopes for table in SCOPE_TABLES[scope]):
+        post_count = _table_count(conn, table, user_id)
+        expected_count = expected.get(table, 0)
+        deleted_count = int(deleted.get(table, 0))
+        checks.append(
+            {
+                "table": table,
+                "expected_count": expected_count,
+                "deleted_count": deleted_count,
+                "post_count": post_count,
+                "passed": post_count == 0 and deleted_count == expected_count,
+            }
+        )
+    if "account_identity" in scopes:
+        user = conn.execute(
+            "SELECT status, username, phone_or_email, password_hash, wechat_openid, phone_hash, avatar_url FROM users WHERE id = ?",
+            (user_id,),
+        ).fetchone()
+        checks.append(
+            {
+                "table": "users_identity",
+                "expected_count": 1,
+                "deleted_count": int(deleted.get("users_anonymized", 0)),
+                "post_count": 0 if user and user["status"] == "deleted" and not any(user[key] for key in ("username", "phone_or_email", "password_hash", "wechat_openid", "phone_hash", "avatar_url")) else 1,
+                "passed": bool(user and user["status"] == "deleted" and not any(user[key] for key in ("username", "phone_or_email", "password_hash", "wechat_openid", "phone_hash", "avatar_url"))),
+            }
+        )
+    return {
+        "status": "verified" if all(item["passed"] for item in checks) else "failed",
+        "checks": checks,
+        "all_queries_zero_or_anonymized": all(item["passed"] for item in checks),
+        "new_export_blocked": True,
+        "offline_and_ai_participant_text_allowed": False,
+        "backup_erasure_status": "human_policy_pending",
+    }
+
+
 def _execution_gate(conn, request_id: str, preview: dict) -> None:
     if not current_app.config.get("PRIVACY_EXECUTION_ENABLED", False):
         raise PrivacyRequestError("execution_disabled", "真实执行开关未开启；当前只允许预览和 dry-run。", 503)
@@ -715,7 +760,18 @@ def execute_privacy_request(request_id: str, actor: dict, *, dry_run: bool, idem
                 conn.execute("UPDATE audit_logs SET target_id = ?, metadata_json = '{\"privacy_redacted\":true}' WHERE target_id = ?", (replacement, user_id))
                 conn.execute("UPDATE privacy_request_actions SET actor_id = ?, note = NULL WHERE request_id = ? AND actor_id = ?", (replacement, request_id, user_id))
             subject_hash = hmac.new(str(current_app.config.get("PRIVACY_TOMBSTONE_SECRET", "")).encode(), user_id.encode(), hashlib.sha256).hexdigest()
-            result = {"mode": mode, "deleted": deleted, "total_deleted": sum(deleted.values()), "replacement_user_id": replacement, "external_surfaces": preview["external_surfaces"]}
+            verification = _verify_deleted_scope(conn, user_id, scopes, preview, deleted)
+            if verification["status"] != "verified":
+                raise PrivacyRequestError("deletion_verification_failed", "删除后核验未通过，本次事务已回滚。", 409)
+            verification_id = new_id("privacy_verification")
+            conn.execute(
+                """INSERT INTO privacy_deletion_verifications
+                   (id, request_id, execution_id, subject_hash, scope_hash,
+                    verification_json, status, verified_at)
+                   VALUES (?, ?, ?, ?, ?, ?, 'verified', ?)""",
+                (verification_id, request_id, execution_id, subject_hash, preview["scope_hash"], json_dumps(verification), timestamp),
+            )
+            result = {"mode": mode, "deleted": deleted, "total_deleted": sum(deleted.values()), "replacement_user_id": replacement, "verification_id": verification_id, "verification_status": "verified", "external_surfaces": preview["external_surfaces"]}
             proof_hash = _stable_hash({"request_id": request_id, "policy_version": preview["policy_version"], "scope_hash": preview["scope_hash"], "result": result, "completed_at": timestamp})
             conn.execute("INSERT INTO privacy_deletion_tombstones (id, request_id, subject_hash, replacement_user_id, policy_version, scope_json, proof_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (new_id("privacy_tombstone"), request_id, subject_hash, replacement, preview["policy_version"], json_dumps(scopes), proof_hash, timestamp))
             request_user_id = replacement if "account_identity" in scopes else user_id
@@ -732,3 +788,22 @@ def execute_privacy_request(request_id: str, actor: dict, *, dry_run: bool, idem
     item.pop("preview_json", None)
     item.pop("result_json", None)
     return {"execution": item, "result": result, "already_processed": False}
+
+
+def get_deletion_verification(request_id: str, actor: dict) -> dict:
+    with get_connection() as conn:
+        request_row = conn.execute("SELECT id, handled_by, status FROM privacy_requests WHERE id = ?", (request_id,)).fetchone()
+        if request_row is None:
+            raise PrivacyRequestError("not_found", "没有找到该隐私申请。", 404)
+        if actor.get("role") != "admin" and request_row["handled_by"] != actor.get("id"):
+            raise PrivacyRequestError("forbidden", "只能核对自己负责的隐私申请。", 403)
+        row = conn.execute(
+            "SELECT * FROM privacy_deletion_verifications WHERE request_id = ? ORDER BY verified_at DESC LIMIT 1",
+            (request_id,),
+        ).fetchone()
+    if row is None:
+        raise PrivacyRequestError("not_found", "该申请尚无删除核验证据。", 404)
+    item = row_to_dict(row)
+    item["verification"] = json_loads(item.pop("verification_json", None), {})
+    item.pop("subject_hash", None)
+    return item

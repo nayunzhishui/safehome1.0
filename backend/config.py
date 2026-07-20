@@ -94,6 +94,10 @@ class Config:
     ).strip().lower() in {"1", "true", "yes"}
     RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED = os.environ.get("RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED", "0").strip().lower() in {"1", "true", "yes"}
     RESEARCH_OUTCOME_ANALYSIS_ALLOWED = os.environ.get("RESEARCH_OUTCOME_ANALYSIS_ALLOWED", "0").strip().lower() in {"1", "true", "yes"}
+    SECURITY_SCAN_EXECUTION_ENABLED = os.environ.get(
+        "SECURITY_SCAN_EXECUTION_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
 
     @classmethod
     def validate(cls) -> None:
@@ -136,6 +140,8 @@ class Config:
             if missing:
                 raise RuntimeError(f"启用微信订阅发送前必须配置：{', '.join(missing)}")
         if str(cls.APP_ENV).lower() == "production":
+            if "*" in cls.ALLOWED_ORIGINS:
+                raise RuntimeError("生产环境 ALLOWED_ORIGINS 禁止使用通配符")
             if cls.PRIVACY_PRODUCTION_EXECUTION_ENABLED and not cls.PRIVACY_EXECUTION_ENABLED:
                 raise RuntimeError("启用生产隐私执行前必须同时开启 PRIVACY_EXECUTION_ENABLED")
             if cls.PRIVACY_PRODUCTION_EXECUTION_ENABLED and not cls.PRIVACY_RETENTION_POLICY_APPROVED:

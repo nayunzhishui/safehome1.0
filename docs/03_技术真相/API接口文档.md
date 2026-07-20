@@ -2061,3 +2061,18 @@ relationship_initiation_intention_action
 
 稳定错误包括`methodology_content_invalid`、`methodology_workbench_disabled/killed`、`methodology_version_missing/immutable`、`methodology_evidence_incomplete/failed`和`disable_reason_invalid`。小程序只调用`public-status`；内部能力只在Web研究后台提供。临时展示越权不改变后端角色矩阵。
 
+## 2026-07-20：安全、隐私与滥用防护接口
+
+机器契约版本为`2026-07-20.3`，当前共186个操作；`content/security_privacy_abuse_registry.json`必须由该契约生成，不允许手工维护第二套权限矩阵。
+
+| 接口 | 权限与用途 |
+|---|---|
+| `GET /api/security/public-status` | 公开返回工程状态、正式权限是否通过及展示例外是否阻断；不返回资产、威胁、事件或扫描详情 |
+| `GET /api/security/workbench` | researcher/supervisor/admin读取脱敏注册表、扫描摘要、安全事件和删除证明 |
+| `POST /api/security/scans` | admin运行本地静态脱敏扫描；不返回密钥值，不推断生产批准 |
+| `PATCH /api/security/accounts/<user_id>/status` | admin停用/恢复账号；禁止自停用，支持`expected_auth_epoch`并使旧令牌失效 |
+| `POST /api/security/events/<event_id>/resolve` | admin处置安全事件；仅保存结构化状态和最小元数据 |
+| `GET /api/privacy/admin/requests/<request_id>/verification` | 已有隐私管理角色读取事务删除核验证明；不返回主体HMAC |
+
+所有API响应增加`X-Content-Type-Options: nosniff`、`X-Frame-Options: DENY`、`Referrer-Policy`和`Permissions-Policy`；`/api/*`增加`Cache-Control: no-store`。CSV字符串若在可选空白后以`= + - @ TAB CR`开头，服务端以前置单引号阻止表格公式执行。临时展示越权不适用于正式权限验收，也不放宽上述写接口。
+

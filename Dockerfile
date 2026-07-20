@@ -15,8 +15,13 @@ COPY backend /app/backend
 COPY content /app/content
 COPY shared /app/shared
 
-RUN mkdir -p /app/data
+RUN addgroup --system safehome \
+    && adduser --system --ingroup safehome safehome \
+    && mkdir -p /app/data \
+    && chown -R safehome:safehome /app/data
 
 WORKDIR /app/backend
+
+USER safehome
 
 CMD ["sh", "-c", "gunicorn -w ${WEB_CONCURRENCY:-2} -b 0.0.0.0:${PORT:-5050} app:app"]

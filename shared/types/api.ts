@@ -2072,6 +2072,67 @@ export interface ResearchMethodologyEvidence {
   packages: Array<Record<string, unknown>>;
 }
 
+export interface SecurityAuthorizationOperation {
+  operation_id: string;
+  method: string;
+  path: string;
+  object_type: string;
+  action: "create" | "read" | "update" | "send" | "export" | "delete";
+  object_scope: string;
+  allowed_roles: string[];
+  denied_roles: string[];
+  legacy_admin_token: boolean;
+  showcase_read_bypass: boolean;
+  idempotency: { supported?: boolean; required?: boolean; header?: string | null };
+}
+
+export interface SecurityRegistry {
+  version: string;
+  status: "engineering_controls_ready_formal_acceptance_blocked";
+  asset_inventory: Array<Record<string, string>>;
+  authorization_matrix: SecurityAuthorizationOperation[];
+  authorization_summary: { operation_count: number; showcase_bypass_operation_count: number; formal_permission_acceptance_passed: false; reason: string };
+  web_miniprogram_threats: Array<Record<string, string>>;
+  ai_threats: Array<Record<string, string>>;
+  identity_controls: Record<string, unknown>;
+  privacy_deletion_proof: Record<string, unknown>;
+  temporary_showcase_exception: { enabled: true; risk_id: string; scope: string[]; stop_condition: string; accepted_for_formal_permission_testing: false };
+  automated_scans: string[];
+  external_gates: string[];
+}
+
+export interface SecurityScanResult {
+  id?: ID;
+  mode: "local_static_redacted";
+  hard_checks_passed: boolean;
+  blockers: string[];
+  warnings: string[];
+  checks: Array<Record<string, unknown> & { id: string; status: string; severity: string }>;
+  artifact_hash: string;
+  secret_values_returned: false;
+  production_approval_inferred: false;
+}
+
+export interface SecurityWorkbench {
+  registry: SecurityRegistry;
+  registry_hash: string;
+  runs: Array<Record<string, unknown>>;
+  events: Array<Record<string, unknown>>;
+  deletion_verifications: Array<Record<string, unknown>>;
+  scan_execution_enabled: boolean;
+  formal_permission_acceptance_passed: false;
+}
+
+export interface SecurityPublicStatus {
+  status: string;
+  engineering_controls_ready: true;
+  formal_permission_acceptance_passed: false;
+  temporary_showcase_exception_enabled: boolean;
+  operation_count: number;
+  participant_ai_enabled: false;
+  boundary_notice: string;
+}
+
 export interface AssessmentListResponse {
   version: string;
   boundary_notice: string;

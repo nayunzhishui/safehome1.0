@@ -54,6 +54,9 @@ import type {
   ResearchMethodologyRegistry,
   ResearchMethodologySimulation,
   ResearchMethodologyVersion,
+  SecurityPublicStatus,
+  SecurityScanResult,
+  SecurityWorkbench,
   ParentAssessmentInput,
   ParentAssessmentPayload,
   ParentAssessmentResult,
@@ -907,6 +910,26 @@ export class SafeHomeApiClient {
 
   disableResearchMethodology(reason: string): Promise<Record<string, unknown>> {
     return this.requestData(`${API_ENDPOINTS.researchMethodology}/disable`, { method: "POST", body: { reason } });
+  }
+
+  getSecurityPublicStatus(): Promise<SecurityPublicStatus> {
+    return this.requestData(`${API_ENDPOINTS.securityControls}/public-status`);
+  }
+
+  getSecurityWorkbench(): Promise<SecurityWorkbench> {
+    return this.requestData(`${API_ENDPOINTS.securityControls}/workbench`);
+  }
+
+  runSecurityScan(): Promise<SecurityScanResult> {
+    return this.requestData(`${API_ENDPOINTS.securityControls}/scans`, { method: "POST" });
+  }
+
+  updateAccountStatus(userId: string, input: { status: "active" | "disabled"; reason_code: string; expected_auth_epoch?: number }): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.securityControls}/accounts/${encodeURIComponent(userId)}/status`, { method: "PATCH", body: input });
+  }
+
+  resolveSecurityEvent(eventId: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.securityControls}/events/${encodeURIComponent(eventId)}/resolve`, { method: "POST" });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {

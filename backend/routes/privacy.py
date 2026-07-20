@@ -14,6 +14,7 @@ from services.privacy_request_service import (
     execute_privacy_request,
     export_participant_privacy_summary,
     get_participant_consent_status,
+    get_deletion_verification,
     get_reviewer_request,
     list_reviewer_requests,
     preview_privacy_request,
@@ -242,6 +243,17 @@ def execute_privacy_request_for_review(request_id: str):
     except PrivacyRequestError as exc:
         return fail(exc.code, str(exc), status=exc.status)
     return ok(data)
+
+
+@bp.get("/admin/requests/<request_id>/verification")
+def get_privacy_deletion_verification(request_id: str):
+    actor, error = _privacy_reviewer()
+    if error:
+        return error
+    try:
+        return ok(get_deletion_verification(request_id, actor))
+    except PrivacyRequestError as exc:
+        return fail(exc.code, str(exc), status=exc.status)
 
 
 @bp.get("/export-my-data")

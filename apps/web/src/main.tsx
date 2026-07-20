@@ -38,6 +38,7 @@ const WorksheetsManagement = lazy(() => import("./pages/WorksheetsManagement").t
 const AiQaSandboxPage = lazy(() => import("./pages/AiQaSandboxPage").then((module) => ({ default: module.AiQaSandboxPage })));
 const OfflineBenchmarkWorkbench = lazy(() => import("./pages/OfflineBenchmarkWorkbench").then((module) => ({ default: module.OfflineBenchmarkWorkbench })));
 const ResearchMethodologyWorkbench = lazy(() => import("./pages/ResearchMethodologyWorkbench").then((module) => ({ default: module.ResearchMethodologyWorkbench })));
+const SecurityPrivacyWorkbench = lazy(() => import("./pages/SecurityPrivacyWorkbench").then((module) => ({ default: module.SecurityPrivacyWorkbench })));
 
 interface AdminLink {
   href: string;
@@ -65,6 +66,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/ai-sandbox", label: "AI 合成沙盒", match: (p) => p === "/ai-sandbox", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/benchmarks", label: "离线算法基准", match: (p) => p === "/research/benchmarks", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/methodology", label: "研究方法冻结准备", match: (p) => p === "/research/methodology", roles: ["admin", "researcher", "supervisor"] },
+  { href: "/security/privacy", label: "安全与隐私防护", match: (p) => p === "/security/privacy", roles: ["admin", "researcher", "supervisor"] },
   { href: "/export", label: "数据导出", match: (p) => p === "/export", roles: ["admin", "researcher"] },
   { href: "/integration-test", label: "联调测试", match: (p) => p === "/integration-test", roles: ["admin"] },
   { href: "/privacy", label: "隐私中心", match: (p) => p === "/privacy" },
@@ -161,6 +163,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isAiQaSandboxPath = path === "/ai-sandbox";
   const isOfflineBenchmarkPath = path === "/research/benchmarks";
   const isResearchMethodologyPath = path === "/research/methodology";
+  const isSecurityPrivacyPath = path === "/security/privacy";
   const isKnownAdminPath = [
     "/dashboard",
     "/goals",
@@ -183,6 +186,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/ai-sandbox",
     "/research/benchmarks",
     "/research/methodology",
+    "/security/privacy",
   ].some((route) => path === route || path.startsWith(`${route}/`));
   const matchedAdminLink = findAdminLink(path);
   const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink, authUser, showcaseEnabled);
@@ -201,6 +205,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isAiQaSandboxPath &&
     !isOfflineBenchmarkPath &&
     !isResearchMethodologyPath &&
+    !isSecurityPrivacyPath &&
     !isSupervisionPath &&
     !isContentReviewPath &&
     !isScalesPath &&
@@ -244,6 +249,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isAiQaSandboxPath ? <AiQaSandboxPage /> : null}
       {isOfflineBenchmarkPath ? <OfflineBenchmarkWorkbench /> : null}
       {isResearchMethodologyPath ? <ResearchMethodologyWorkbench /> : null}
+      {isSecurityPrivacyPath ? <SecurityPrivacyWorkbench /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}

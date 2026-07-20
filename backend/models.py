@@ -39,6 +39,9 @@ MVP_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
     "feedback_ledger",
+    "security_control_runs",
+    "security_events",
+    "privacy_deletion_verifications",
 ]
 
 
@@ -57,6 +60,8 @@ SCHEMA_SQL = [
         phone_hash TEXT,
         avatar_url TEXT,
         status TEXT DEFAULT 'active',
+        auth_epoch INTEGER NOT NULL DEFAULT 0,
+        status_reason TEXT,
         last_login_at TEXT,
         phone_verified_at TEXT,
         phone_source TEXT,
@@ -1058,6 +1063,47 @@ SCHEMA_SQL = [
         changed_at TEXT
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS security_control_runs (
+        id TEXT PRIMARY KEY,
+        actor_id TEXT NOT NULL,
+        registry_version TEXT NOT NULL,
+        registry_hash TEXT NOT NULL,
+        mode TEXT NOT NULL,
+        status TEXT NOT NULL,
+        summary_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS security_events (
+        id TEXT PRIMARY KEY,
+        actor_id TEXT,
+        event_type TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        target_type TEXT,
+        target_id TEXT,
+        request_id TEXT,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        status TEXT NOT NULL DEFAULT 'open',
+        resolved_by TEXT,
+        resolved_at TEXT,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS privacy_deletion_verifications (
+        id TEXT PRIMARY KEY,
+        request_id TEXT NOT NULL,
+        execution_id TEXT NOT NULL,
+        subject_hash TEXT NOT NULL,
+        scope_hash TEXT NOT NULL,
+        verification_json TEXT NOT NULL DEFAULT '{}',
+        status TEXT NOT NULL,
+        verified_at TEXT NOT NULL
+    )
+    """,
 ]
 
 
@@ -1118,6 +1164,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_methodology_checks_version_created ON research_methodology_checks(version_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_simulations_version_created ON research_methodology_simulation_runs(version_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_evidence_version_created ON research_methodology_evidence_packages(version_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_security_runs_created ON security_control_runs(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_security_events_status_created ON security_events(status, severity, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_privacy_verifications_request ON privacy_deletion_verifications(request_id, verified_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",

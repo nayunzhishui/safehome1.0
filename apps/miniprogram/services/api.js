@@ -103,6 +103,7 @@ const API_ENDPOINTS = {
   aiQaConfig: "/api/ai-qa/config",
   offlineBenchmarks: "/api/research/benchmarks",
   researchMethodology: "/api/research/methodology",
+  securityControls: "/api/security",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -983,6 +984,10 @@ function createSafeHomeApi(options = {}) {
 
     getResearchMethodologyPublicStatus() {
       return request(`${API_ENDPOINTS.researchMethodology}/public-status`);
+    },
+
+    getSecurityPublicStatus() {
+      return request(`${API_ENDPOINTS.securityControls}/public-status`);
     },
 
     getParentAssessmentResult(id, params = {}) {

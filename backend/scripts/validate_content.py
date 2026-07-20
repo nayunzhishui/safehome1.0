@@ -765,6 +765,40 @@ def validate_research_methodology_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_security_registry_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        registry = load_json(content_dir / "security_privacy_abuse_registry.json")
+        contract = load_json(DEFAULT_SCHEMA_DIR.parent.parent / "shared" / "contracts" / "api-contract.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"security_privacy_abuse_registry.json 不可读取：{exc}"]
+    matrix = registry.get("authorization_matrix", [])
+    endpoint_ids = {item.get("operation_id") for item in contract.get("endpoints", [])}
+    matrix_ids = {item.get("operation_id") for item in matrix}
+    if endpoint_ids != matrix_ids or len(matrix) != len(matrix_ids):
+        errors.append("安全授权矩阵必须逐项覆盖当前机器API契约且不得重复")
+    required = {"method", "path", "object_type", "action", "object_scope", "allowed_roles", "denied_roles", "idempotency"}
+    allowed_actions = {"create", "read", "update", "send", "export", "delete"}
+    for item in matrix:
+        if required - set(item):
+            errors.append(f"安全授权矩阵字段不完整：{item.get('operation_id')}")
+        if item.get("action") not in allowed_actions:
+            errors.append(f"安全授权矩阵动作无效：{item.get('operation_id')}")
+    summary = registry.get("authorization_summary", {})
+    if summary.get("formal_permission_acceptance_passed") is not False:
+        errors.append("临时展示越权保留期间不得标记正式权限验收通过")
+    showcase = registry.get("temporary_showcase_exception", {})
+    if showcase.get("enabled") is not True or showcase.get("accepted_for_formal_permission_testing") is not False:
+        errors.append("临时展示越权必须显式登记且不得用于正式权限验收")
+    if len(registry.get("asset_inventory", [])) < 11:
+        errors.append("安全资产清单未覆盖身份、测评、日记、消息、导出、离线、AI和备份")
+    if len(registry.get("web_miniprogram_threats", [])) < 9 or len(registry.get("ai_threats", [])) < 8:
+        errors.append("Web/小程序或AI威胁模型覆盖不足")
+    if registry.get("identity_controls", {}).get("auth_epoch_rotation") is not True:
+        errors.append("账号令牌轮换必须由服务端auth_epoch支持")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -779,6 +813,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_cross_content_rules(content_dir))
     errors.extend(validate_offline_benchmark_content(content_dir))
     errors.extend(validate_research_methodology_content(content_dir))
+    errors.extend(validate_security_registry_content(content_dir))
     return errors
 
 

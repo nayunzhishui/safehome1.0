@@ -15,10 +15,11 @@ from flask import Blueprint, current_app, request
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import Config
-from database import ensure_user, get_connection, new_id, now_iso, row_to_dict
-from routes.auth_utils import PUBLIC_REGISTER_ROLES, AuthError, auth_error_response, generate_auth_token, require_login
+from database import ensure_user, get_connection, new_id, now_iso, row_to_dict, write_audit_log
+from routes.auth_utils import PUBLIC_REGISTER_ROLES, AuthError, auth_error_response, generate_auth_token, get_current_actor, require_login
 from routes.utils import fail, ok, require_admin_token
 from services.data_claim_service import claim_preview, claim_records, register_claim_candidate
+from services.security_control_service import record_security_event
 
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 CLOUDBASE_ACCESS_TOKEN_PATH = "/.tencentcloudbase/wx/cloudbase_access_token"
@@ -296,8 +297,22 @@ def login():
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
         if row is None or not row["password_hash"] or not check_password_hash(row["password_hash"], password):
+            record_security_event(
+                "login_failed",
+                "medium",
+                target_type="credential_hash",
+                target_id=hashlib.sha256(username.encode("utf-8")).hexdigest()[:16] if username else None,
+                metadata={"source": "password", "failure_count": 1},
+            )
             return fail("invalid_credentials", "用户名或密码不正确", status=401)
         if row["status"] and row["status"] != "active":
+            record_security_event(
+                "inactive_account_login_blocked",
+                "high",
+                target_type="user",
+                target_id=row["id"],
+                metadata={"source": "password", "status": row["status"]},
+            )
             return fail("account_inactive", "账号暂不可用", status=403)
         timestamp = now_iso()
         conn.execute(
@@ -531,10 +546,19 @@ def admin_create_account():
             UPDATE users
             SET username = ?, phone_or_email = ?, password_hash = ?,
                 anonymous_id = ?, role = ?, source = 'admin_created',
-                status = 'active', updated_at = ?
+                status = 'active', status_reason = NULL,
+                auth_epoch = auth_epoch + ?, updated_at = ?
             WHERE id = ?
             """,
-            (username, None, generate_password_hash(password), anonymous_id, role, timestamp, user_id),
+            (username, None, generate_password_hash(password), anonymous_id, role, 1 if existing else 0, timestamp, user_id),
+        )
+        write_audit_log(
+            conn,
+            "account_credentials_rotated" if existing else "account_created",
+            "admin-token",
+            "user",
+            user_id,
+            {"role": role, "existing": bool(existing)},
         )
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
@@ -545,7 +569,21 @@ def admin_create_account():
 
 @bp.post("/logout")
 def logout():
-    return ok({"message": "已退出。请在前端清除本地登录状态。"})
+    try:
+        actor = get_current_actor(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    if actor is None:
+        return ok({"message": "本地登录状态可以清除；当前请求没有可撤销的服务端令牌。", "tokens_revoked": False})
+    timestamp = now_iso()
+    with get_connection() as conn:
+        conn.execute(
+            "UPDATE users SET auth_epoch = auth_epoch + 1, updated_at = ? WHERE id = ?",
+            (timestamp, actor["id"]),
+        )
+        write_audit_log(conn, "auth_sessions_revoked", actor["id"], "user", actor["id"], {"scope": "all_tokens"})
+        conn.commit()
+    return ok({"message": "已安全退出，当前账号的既有登录令牌已失效。"})
 
 
 @bp.get("/me")

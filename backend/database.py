@@ -64,9 +64,12 @@ REQUIRED_HEALTH_TABLES = [
     "research_methodology_simulation_runs",
     "research_methodology_evidence_packages",
     "research_methodology_runtime_control",
+    "security_control_runs",
+    "security_events",
+    "privacy_deletion_verifications",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_018"
-CURRENT_SCHEMA_NAME = "research_methodology_freeze_evidence"
+CURRENT_SCHEMA_VERSION = "2026_07_20_019"
+CURRENT_SCHEMA_NAME = "security_privacy_abuse_controls"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -884,6 +887,8 @@ def ensure_schema_columns(conn) -> None:
     for column, definition in privacy_request_columns.items():
         ensure_column(conn, "privacy_requests", column, definition)
     ensure_column(conn, "privacy_deletion_tombstones", "scope_json", "TEXT NOT NULL DEFAULT '[]'")
+    ensure_column(conn, "users", "auth_epoch", "INTEGER NOT NULL DEFAULT 0")
+    ensure_column(conn, "users", "status_reason", "TEXT")
 
 
 def _normalize_assessment_profile_cluster(conn) -> None:

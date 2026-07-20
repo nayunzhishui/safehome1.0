@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-07-20.2"
+CONTRACT_VERSION = "2026-07-20.3"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 
@@ -37,6 +37,13 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path == "/api/security/public-status":
+        return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
+    if path.startswith("/api/security"):
+        roles = ["admin"] if path != "/api/security/workbench" else ["researcher", "supervisor", "admin"]
+        return {"mode": "role", "roles": roles, "legacy_admin_token": True, "showcase_read_bypass": False}
+    if path == "/api/auth/admin-create-account":
+        return {"mode": "admin", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path == "/api/research/methodology/public-status":
         return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
     if path.startswith("/api/research/methodology"):
@@ -94,6 +101,12 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+    if path == "/api/security/public-status":
+        return "non_sensitive_security_gate_status_only"
+    if path.startswith("/api/security/accounts/"):
+        return "admin_only_account_state_without_credentials"
+    if path.startswith("/api/security"):
+        return "internal_redacted_security_evidence_no_secret_values"
     if path == "/api/research/methodology/public-status":
         return "non_sensitive_gate_status_only"
     if path.startswith("/api/research/methodology"):
@@ -162,6 +175,10 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ("/api/research/methodology/disable", "POST"): ["reason"],
     }
     body_fields.update(methodology_body_fields.get((path, method), []))
+    security_body_fields = {
+        ("/api/security/accounts/<user_id>/status", "PATCH"): ["status", "reason_code", "expected_auth_epoch"],
+    }
+    body_fields.update(security_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),
@@ -200,6 +217,8 @@ def _error_codes(path: str, source: str, access: dict[str, Any]) -> list[str]:
             "methodology_evidence_failed",
             "disable_reason_invalid",
         ])
+    if path.startswith("/api/security"):
+        codes.update(["security_scan_disabled", "state_conflict", "self_disable_forbidden", "not_found", "validation_error"])
     codes.update(["internal_error", "http_error"])
     return sorted(codes)
 
@@ -217,6 +236,7 @@ def _enum_refs(path: str) -> list[str]:
         ("/ai-qa/", "ai_qa_route"),
         ("/research/benchmarks", "offline_benchmark_status"),
         ("/research/methodology", "research_methodology_status"),
+        ("/security", "security_control_status"),
     ]
     for token, ref in mapping:
         if token in path:
