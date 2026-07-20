@@ -1,0 +1,32 @@
+{
+  "version": "2026-07-20-t29-label-map-v1",
+  "project_labels": ["anxiety", "fear", "anger", "irritation", "sadness", "helplessness", "guilt", "shame", "calm", "positive", "unmapped"],
+  "valence_scale": {"min": -1, "max": 1},
+  "arousal_scale": {"min": 0, "max": 1},
+  "mapping_policy": "不做强制等值；无法证明语义等价的来源标签保留unmapped。",
+  "source_mappings": {
+    "safehome_synthetic_affect_240_v1": {
+      "type": "exact_generator_seed_not_human_gold",
+      "labels": {
+        "anxiety": "anxiety", "fear": "fear", "anger": "anger", "irritation": "irritation",
+        "sadness": "sadness", "helplessness": "helplessness", "guilt": "guilt", "shame": "shame",
+        "calm": "calm", "positive": "positive"
+      }
+    },
+    "google_goemotions_1_0": {
+      "type": "provisional_human_review_required",
+      "labels": {
+        "fear": "fear", "anger": "anger", "sadness": "sadness", "remorse": "guilt",
+        "embarrassment": "shame", "joy": "positive", "relief": "calm", "neutral": "unmapped",
+        "admiration": "unmapped", "approval": "unmapped", "caring": "unmapped", "desire": "unmapped"
+      }
+    }
+  },
+  "domain_differences": [
+    "英文社交媒体表达不能直接等同中文日常自我记录。",
+    "平台用户年龄、文化、情境和表达动机未知。",
+    "情绪类别标签不能替代效价、唤醒或具体反射弧节点。",
+    "公开网络的中心性和社区不能解释家庭关系质量。"
+  ],
+  "boundary_notice": "标签映射只服务离线方法比较，不构成参与者情绪诊断、人格标签或家庭评价。"
+}

@@ -74,6 +74,7 @@ export const API_ENDPOINTS = {
   aiQaEvaluation: "/api/ai-qa/evaluation",
   aiQaReviewEvidence: "/api/ai-qa/review/evidence",
   aiQaKillSwitch: "/api/ai-qa/kill-switch",
+  offlineBenchmarks: "/api/research/benchmarks",
   adminWorksheets: "/api/admin/worksheets",
   adminAssessmentResults: "/api/admin/assessment-results",
   familyCreateBindCode: "/api/family/create-bind-code",

@@ -101,6 +101,7 @@ const API_ENDPOINTS = {
   researchWorkItemMetrics: "/api/research/work-items/metrics",
   contentGovernanceActive: "/api/content-review/active",
   aiQaConfig: "/api/ai-qa/config",
+  offlineBenchmarks: "/api/research/benchmarks",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -973,6 +974,10 @@ function createSafeHomeApi(options = {}) {
 
     getAiQaConfig() {
       return request(API_ENDPOINTS.aiQaConfig);
+    },
+
+    getOfflineBenchmarkConfig() {
+      return request(`${API_ENDPOINTS.offlineBenchmarks}/config`, { requiresAuth: true });
     },
 
     getParentAssessmentResult(id, params = {}) {

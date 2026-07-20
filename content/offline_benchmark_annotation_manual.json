@@ -1,0 +1,14 @@
+{
+  "version": "2026-07-20-t29-annotation-v1",
+  "status": "draft_human_annotation_pending",
+  "target_case_count": 240,
+  "minimum_annotators": 2,
+  "blind_policy": "标注者看不到生成标签、另一标注者答案或模型预测。",
+  "fields": ["emotion_label", "valence", "arousal", "context", "reflex_node", "uncertain"],
+  "allowed_emotion_labels": ["anxiety", "fear", "anger", "irritation", "sadness", "helplessness", "guilt", "shame", "calm", "positive", "unmapped"],
+  "allowed_reflex_nodes": ["trigger", "thought", "body_feeling", "emotion", "reaction", "behavior", "outcome", "unmapped"],
+  "agreement_thresholds": {"emotion_cohen_kappa": 0.7, "maximum_mean_valence_gap": 0.25, "maximum_mean_arousal_gap": 0.2, "minimum_complete_cases": 200},
+  "adjudication": "分歧由未参与前两轮标注的督导复核；系统不自动把生成标签当作裁决。",
+  "release_gate": "满足双人完整盲标、阈值、分歧裁决、方法负责人签字后才可发布为human_gold；当前不得自动发布。",
+  "boundary_notice": "合成句子可用于标注流程演练；任何未来真实记录需独立研究授权、脱敏、伦理批准和可删除链路。"
+}

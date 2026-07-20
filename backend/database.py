@@ -54,9 +54,14 @@ REQUIRED_HEALTH_TABLES = [
     "ai_qa_evaluation_runs",
     "ai_qa_evaluation_reviews",
     "ai_qa_runtime_control",
+    "offline_dataset_cards",
+    "offline_benchmark_runs",
+    "offline_benchmark_annotations",
+    "offline_benchmark_reviews",
+    "offline_benchmark_runtime_control",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_016"
-CURRENT_SCHEMA_NAME = "controlled_ai_qa_sandbox"
+CURRENT_SCHEMA_VERSION = "2026_07_20_017"
+CURRENT_SCHEMA_NAME = "offline_benchmark_governance"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -236,6 +241,19 @@ MYSQL_VARCHAR_COLUMNS = {
     "run_id",
     "changed_by",
     "changed_at",
+    "dataset_card_id",
+    "benchmark_type",
+    "evidence_level",
+    "algorithm_version",
+    "artifact_hash",
+    "ingest_status",
+    "registry_version",
+    "annotator_id",
+    "blind_round",
+    "emotion_label",
+    "context_label",
+    "reflex_node",
+    "reviewer_id",
 }
 
 

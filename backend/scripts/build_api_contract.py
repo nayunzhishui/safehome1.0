@@ -37,6 +37,12 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path.startswith("/api/research/benchmarks"):
+        if path in {"/api/research/benchmarks/dataset-cards/sync", "/api/research/benchmarks/disable"}:
+            return {"mode": "role", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        if path == "/api/research/benchmarks/agreement" or path.endswith("/reviews"):
+            return {"mode": "role", "roles": ["supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        return {"mode": "role", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path.startswith("/api/ai-qa/"):
         if path == "/api/ai-qa/config":
             return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
@@ -80,6 +86,8 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+    if path.startswith("/api/research/benchmarks"):
+        return "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher"
     if path.startswith("/api/ai-qa/sessions") or path.startswith("/api/ai-qa/messages"):
         return "own_synthetic_research_sessions_only"
     if path.startswith("/api/ai-qa/") and access["mode"] != "public":
@@ -129,6 +137,12 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ("/api/ai-qa/kill-switch", "POST"): ["killed", "reason"],
     }
     body_fields.update(ai_body_fields.get((path, method), []))
+    benchmark_body_fields = {
+        ("/api/research/benchmarks/cases/<case_id>/annotations", "POST"): ["emotion_label", "valence", "arousal", "context", "reflex_node", "uncertain", "blind_round"],
+        ("/api/research/benchmarks/runs/<run_id>/reviews", "POST"): ["decision", "evidence_path", "notes"],
+        ("/api/research/benchmarks/disable", "POST"): ["reason"],
+    }
+    body_fields.update(benchmark_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),
@@ -150,6 +164,12 @@ def _error_codes(path: str, source: str, access: dict[str, Any]) -> list[str]:
             codes.update(["not_found", "synthetic_data_required", "research_use_not_authorized", "ai_qa_rate_limited", "ai_qa_budget_exhausted", "ai_qa_tools_forbidden"])
         if path == "/api/ai-qa/kill-switch":
             codes.add("human_gate_required")
+    if path.startswith("/api/research/benchmarks"):
+        codes.update(["offline_benchmark_disabled", "offline_benchmark_killed", "benchmark_content_invalid"])
+        if "/cases" in path:
+            codes.update(["case_not_found", "annotation_label_invalid", "annotation_value_invalid", "annotation_value_out_of_range"])
+        if "/runs/" in path:
+            codes.update(["run_not_found", "review_invalid"])
     codes.update(["internal_error", "http_error"])
     return sorted(codes)
 
@@ -165,6 +185,7 @@ def _enum_refs(path: str) -> list[str]:
         ("/supervision", "supervision_status"),
         ("/relationship-pilot", "relationship_pilot_status"),
         ("/ai-qa/", "ai_qa_route"),
+        ("/research/benchmarks", "offline_benchmark_status"),
     ]
     for token, ref in mapping:
         if token in path:

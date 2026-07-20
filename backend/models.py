@@ -912,6 +912,86 @@ SCHEMA_SQL = [
         updated_at TEXT NOT NULL
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_dataset_cards (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        source_url TEXT NOT NULL,
+        source_version TEXT NOT NULL,
+        language TEXT NOT NULL,
+        platform TEXT NOT NULL,
+        population TEXT NOT NULL,
+        context TEXT NOT NULL,
+        license TEXT NOT NULL,
+        content_rights_status TEXT NOT NULL,
+        sensitivity TEXT NOT NULL,
+        allowed_uses_json TEXT NOT NULL DEFAULT '[]',
+        prohibited_uses_json TEXT NOT NULL DEFAULT '[]',
+        artifact_sha256 TEXT,
+        local_path TEXT,
+        ingest_status TEXT NOT NULL,
+        deletion_method TEXT NOT NULL,
+        review_note TEXT,
+        registry_version TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_benchmark_runs (
+        id TEXT PRIMARY KEY,
+        benchmark_type TEXT NOT NULL,
+        dataset_card_id TEXT NOT NULL,
+        evidence_level TEXT NOT NULL,
+        algorithm_version TEXT NOT NULL,
+        parameters_json TEXT NOT NULL DEFAULT '{}',
+        metrics_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        raw_text_included INTEGER NOT NULL DEFAULT 0,
+        production_replacement_allowed INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_benchmark_annotations (
+        id TEXT PRIMARY KEY,
+        dataset_card_id TEXT NOT NULL,
+        case_id TEXT NOT NULL,
+        annotator_id TEXT NOT NULL,
+        blind_round TEXT NOT NULL DEFAULT 'round_1',
+        emotion_label TEXT NOT NULL,
+        valence REAL NOT NULL,
+        arousal REAL NOT NULL,
+        context_label TEXT NOT NULL,
+        reflex_node TEXT NOT NULL,
+        uncertain INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(dataset_card_id, case_id, annotator_id, blind_round)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_benchmark_reviews (
+        id TEXT PRIMARY KEY,
+        run_id TEXT NOT NULL,
+        reviewer_id TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        evidence_path TEXT NOT NULL,
+        notes TEXT,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_benchmark_runtime_control (
+        id TEXT PRIMARY KEY,
+        disabled INTEGER NOT NULL DEFAULT 0,
+        reason TEXT,
+        changed_by TEXT,
+        changed_at TEXT
+    )
+    """,
 ]
 
 
@@ -965,6 +1045,10 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_safety_created ON ai_qa_safety_events(category, severity, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_provider_created ON ai_qa_provider_events(provider, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_evaluation_status_created ON ai_qa_evaluation_runs(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_dataset_ingest_status ON offline_dataset_cards(ingest_status, updated_at)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_runs_type_created ON offline_benchmark_runs(benchmark_type, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_annotations_case ON offline_benchmark_annotations(dataset_card_id, case_id, blind_round)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_reviews_run ON offline_benchmark_reviews(run_id, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",

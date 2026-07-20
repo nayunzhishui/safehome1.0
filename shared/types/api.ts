@@ -1906,6 +1906,83 @@ export interface AiQaReviewEvidence {
   actor_scope: "own" | "all_internal";
 }
 
+export interface OfflineBenchmarkConfig {
+  enabled: boolean;
+  external_ingest_enabled: false;
+  production_replacement_allowed: false;
+  registry_version: string;
+  registry_status: string;
+  annotation_status: string;
+  synthetic_case_count: 240;
+  runtime_control: { disabled: 0 | 1; changed_at?: ISODateTime | null };
+  boundary_notice: string;
+}
+
+export interface OfflineDatasetCard {
+  id: ID;
+  name: string;
+  source_url: string;
+  source_version: string;
+  language: string;
+  platform: string;
+  population: string;
+  context: string;
+  license: string;
+  content_rights_status: string;
+  sensitivity: string;
+  allowed_uses: string[];
+  prohibited_uses: string[];
+  artifact_sha256?: string | null;
+  local_path?: string | null;
+  ingest_status: string;
+  deletion_method: string;
+  review_note?: string | null;
+  registry_version: string;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface OfflineBenchmarkRun {
+  id: ID;
+  benchmark_type: "affect_lexicon" | "network_algorithms";
+  dataset_card_id: ID;
+  evidence_level: "synthetic_engineering_only";
+  algorithm_version: string;
+  parameters: Record<string, unknown>;
+  metrics: Record<string, unknown>;
+  artifact_hash: string;
+  raw_text_included: 0;
+  production_replacement_allowed: 0;
+  status: "engineering_threshold_passed" | "engineering_review_required";
+  created_by: ID;
+  created_at: ISODateTime;
+}
+
+export interface OfflineAgreementSummary {
+  complete_double_annotated_cases: number;
+  required_cases: 200;
+  distinct_annotators: number;
+  emotion_cohen_kappa: number | null;
+  mean_valence_gap: number | null;
+  mean_arousal_gap: number | null;
+  agreement_thresholds: {
+    emotion_cohen_kappa: number;
+    maximum_mean_valence_gap: number;
+    maximum_mean_arousal_gap: number;
+    minimum_complete_cases: number;
+  };
+  human_gold_release_eligible: boolean;
+  human_gold_released: false;
+  boundary_notice: string;
+}
+
+export interface OfflineBlindCase {
+  id: ID;
+  text: string;
+  synthetic: true;
+  already_annotated: boolean;
+}
+
 export interface AssessmentListResponse {
   version: string;
   boundary_notice: string;

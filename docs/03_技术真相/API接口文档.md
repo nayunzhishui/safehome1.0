@@ -2022,3 +2022,23 @@ relationship_initiation_intention_action
 
 回答只检索T27中`published`且存在`active`发布包的训练卡、课程、FAQ和边界文本，并携带内容ID、版本ID、发布ID、哈希和治理状态。高风险、诊断/药物/治疗越界、隐私索取、提示注入和写工具请求不调用普通生成；来源不足明确“不知道”。限流、预算、超时、三次失败熔断、HMAC审计和`AI_QA_ENABLED=0`由服务端控制。临时展示越权不改变这些API角色或对象权限，也不能作为正式验收证据。
 
+## 2026-07-20：离线情感与网络算法基准
+
+全部接口位于`/api/research/benchmarks`，仅供内部离线研究。参与者角色无权访问；小程序只读取配置状态，不提供运行、同步、标注或复核方法。所有运行均固定`production_replacement_allowed=false`和`raw_text_included=false`。
+
+| 接口 | 权限与用途 |
+|---|---|
+| `GET /config` | researcher/supervisor/admin读取运行、外部接入、生产替换和人工标注门禁 |
+| `POST /dataset-cards/sync` | admin将本地登记清单同步到数据库；不下载外部数据 |
+| `GET /dataset-cards` | researcher/supervisor/admin查看来源、版本、许可、内容权利、敏感性、用途、哈希与删除方式 |
+| `GET /cases` | researcher/supervisor/admin分页读取240条合成案例；不返回生成标签 |
+| `POST /cases/<id>/annotations` | 保存本人盲标；效价范围-1至1，唤醒范围0至1 |
+| `GET /agreement` | supervisor/admin查看双人完整案例数、Cohen kappa和连续值差异；不自动发布人工金标准 |
+| `POST /runs/affect` | 运行词典覆盖率、宏F1、混淆矩阵、校准、亚组和失败案例基准 |
+| `POST /runs/network` | 运行合成图边权、中心性、社区阈值、扰动稳定性和复杂度检查 |
+| `GET /runs` | researcher仅看本人运行；supervisor/admin看全量工程证据 |
+| `POST /runs/<id>/reviews` | supervisor/admin登记工程复核决定和证据路径；不构成发布批准 |
+| `POST /disable` | admin只允许停用；不存在远程重新开启接口 |
+
+`GoEmotions`、SNAP目录和NetworkX Zachary当前仅登记公开链接与待人工审查状态，本地路径和工件哈希必须为空；未完成许可、平台条款、内容权利和隐私审查前不得下载或训练。生成标签只用于确定性工程回归，不是双人盲标金标准；真实参与者记录如未来进入研究，必须另行取得授权、脱敏、伦理批准并接入可删除数据链路。
+

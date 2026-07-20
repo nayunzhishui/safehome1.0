@@ -42,6 +42,11 @@ import type {
   GrowthOverview,
   ListResponse,
   ModelInfo,
+  OfflineAgreementSummary,
+  OfflineBlindCase,
+  OfflineBenchmarkConfig,
+  OfflineBenchmarkRun,
+  OfflineDatasetCard,
   ParentAssessmentInput,
   ParentAssessmentPayload,
   ParentAssessmentResult,
@@ -815,6 +820,46 @@ export class SafeHomeApiClient {
 
   activateAiQaKillSwitch(reason: string): Promise<Record<string, unknown>> {
     return this.requestData(API_ENDPOINTS.aiQaKillSwitch, { method: "POST", body: { killed: true, reason } });
+  }
+
+  getOfflineBenchmarkConfig(): Promise<OfflineBenchmarkConfig> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/config`);
+  }
+
+  syncOfflineDatasetCards(): Promise<{ registry_version: string; card_count: number; external_downloaded: false }> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/dataset-cards/sync`, { method: "POST" });
+  }
+
+  listOfflineDatasetCards(): Promise<ListResponse<OfflineDatasetCard>> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/dataset-cards`);
+  }
+
+  listOfflineBenchmarkRuns(): Promise<ListResponse<OfflineBenchmarkRun>> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/runs`);
+  }
+
+  runOfflineBenchmark(type: "affect" | "network"): Promise<OfflineBenchmarkRun> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/runs/${type}`, { method: "POST" });
+  }
+
+  getOfflineAgreement(): Promise<OfflineAgreementSummary> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/agreement`);
+  }
+
+  listOfflineBlindCases(offset = 0, limit = 12): Promise<{ items: OfflineBlindCase[]; offset: number; limit: number; total: 240; blind: true; generator_labels_included: false }> {
+    return this.requestData(this.withQuery(`${API_ENDPOINTS.offlineBenchmarks}/cases`, { offset, limit }));
+  }
+
+  saveOfflineAnnotation(caseId: string, input: { emotion_label: string; valence: number; arousal: number; context: string; reflex_node: string; uncertain?: boolean }): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/cases/${encodeURIComponent(caseId)}/annotations`, { method: "POST", body: input });
+  }
+
+  reviewOfflineBenchmark(runId: string, input: { decision: "engineering_reviewed" | "changes_required" | "stop"; evidence_path: string; notes?: string }): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/runs/${encodeURIComponent(runId)}/reviews`, { method: "POST", body: input });
+  }
+
+  disableOfflineBenchmarks(reason: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/disable`, { method: "POST", body: { reason } });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {

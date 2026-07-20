@@ -679,10 +679,15 @@ button {
   top: 10px;
   left: 10px;
   z-index: 1000;
+  width: 1px;
+  height: 1px;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
   padding: 0 16px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
   border-radius: 8px;
   background: #fff;
   color: #173f31;
@@ -690,7 +695,11 @@ button {
   transform: translateY(-140%);
 }
 
-.skipLink:focus {
+.skipLink:focus-visible {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
   transform: translateY(0);
 }
 
@@ -2329,6 +2338,33 @@ ul {
     grid-template-columns: 1fr;
   }
 }
+
+/* T29 governed offline benchmark workbench */
+.benchmarkWorkbench { --benchmark-ink: #18322d; --benchmark-mint: #eaf4ef; }
+.benchmarkBoundary { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 24px; padding: 26px; border: 1px solid #c9ded4; border-radius: 22px; background: linear-gradient(135deg, #f8fcfa, var(--benchmark-mint)); }
+.benchmarkBoundary h2 { margin: 6px 0 8px; color: var(--benchmark-ink); }
+.benchmarkBoundary p { margin: 0; line-height: 1.7; color: #4f635d; }
+.benchmarkColumns { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: 20px; }
+.datasetCardList { display: grid; gap: 10px; max-height: 540px; overflow: auto; padding-right: 4px; }
+.datasetCardList article { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; padding: 16px; border: 1px solid #dce8e2; border-radius: 16px; background: #fbfdfc; }
+.datasetCardList article div { display: grid; gap: 3px; }
+.datasetCardList article div span,.datasetCardList article small { color: #71817c; }
+.datasetCardList article p,.datasetCardList article small { grid-column: 1 / -1; margin: 0; line-height: 1.55; }
+.benchmarkRunActions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.benchmarkResult { padding: 18px; border: 1px solid #d4e4dc; border-radius: 18px; background: #f8fbf9; }
+.benchmarkResult h3 { margin: 12px 0; }
+.benchmarkResult code { overflow-wrap: anywhere; }
+.blindAnnotationGrid { display: grid; grid-template-columns: minmax(280px, .9fr) minmax(300px, 1.1fr); gap: 18px; align-items: start; }
+.blindCaseList { display: grid; gap: 8px; max-height: 430px; overflow: auto; }
+.blindCaseList button { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; min-height: 52px; padding: 10px 12px; border: 1px solid #dce6e1; border-radius: 14px; background: #fff; color: #243d36; text-align: left; }
+.blindCaseList button:hover,.blindCaseList button.selected { border-color: #4f8b77; background: #edf7f2; }
+.blindCaseList button span,.blindCaseList button em { color: #71817c; font-size: 12px; font-style: normal; }
+.blindCaseList button strong { font-weight: 600; line-height: 1.45; }
+.annotationForm { display: grid; gap: 12px; padding: 20px; border-radius: 18px; background: #f6faf8; }
+.annotationForm h3,.annotationForm p { margin: 0; }
+.annotationForm select { min-height: 46px; border: 1px solid #c9d9d1; border-radius: 12px; padding: 0 12px; background: #fff; }
+@media (max-width: 900px) { .benchmarkBoundary,.benchmarkColumns,.blindAnnotationGrid { grid-template-columns: 1fr; } .benchmarkBoundary .aiQaFacts { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 540px) { .benchmarkBoundary { padding: 20px; } .datasetCardList article { grid-template-columns: 1fr; } .datasetCardList article .gateBadge { justify-self: start; } .benchmarkRunActions > * { width: 100%; } .blindCaseList button { grid-template-columns: 1fr auto; } .blindCaseList button span { grid-column: 1 / -1; } }
 
 /* T28 controlled AI QA research sandbox */
 .aiQaWorkbench {

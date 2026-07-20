@@ -143,6 +143,17 @@
 | PUT | `/api/relationship-pilot/reports/<report_id>/hypotheses/<int:hypothesis_index>` | authenticated:parent,student,researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | POST | `/api/relationship-pilot/reports/<report_id>/send` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | GET | `/api/relationship-pilot/researcher/dashboard` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
+| GET | `/api/research/benchmarks/agreement` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/benchmarks/cases` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/cases/<case_id>/annotations` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/benchmarks/config` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/benchmarks/dataset-cards` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/dataset-cards/sync` | role:admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/disable` | role:admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/benchmarks/runs` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/runs/<run_id>/reviews` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/runs/affect` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/runs/network` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/operations` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | GET | `/api/research/participants` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | GET | `/api/research/participants/<user_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |

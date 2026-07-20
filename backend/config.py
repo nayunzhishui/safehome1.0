@@ -82,6 +82,12 @@ class Config:
     AI_QA_REQUESTS_PER_HOUR = int(os.environ.get("AI_QA_REQUESTS_PER_HOUR", "30"))
     AI_QA_DAILY_BUDGET_MICROS = int(os.environ.get("AI_QA_DAILY_BUDGET_MICROS", "0"))
     AI_QA_TIMEOUT_MS = int(os.environ.get("AI_QA_TIMEOUT_MS", "3000"))
+    OFFLINE_BENCHMARK_ENABLED = os.environ.get(
+        "OFFLINE_BENCHMARK_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
+    OFFLINE_EXTERNAL_INGEST_ENABLED = os.environ.get("OFFLINE_EXTERNAL_INGEST_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+    OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED = os.environ.get("OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED", "0").strip().lower() in {"1", "true", "yes"}
 
     @classmethod
     def validate(cls) -> None:
@@ -101,6 +107,10 @@ class Config:
             raise RuntimeError("当前工程阶段 AI_QA_PROVIDER 只允许 fake；真实供应商需独立批准和适配")
         if cls.AI_QA_ENABLED:
             raise RuntimeError("参与者AI问答门禁尚未批准，AI_QA_ENABLED 必须保持关闭")
+        if cls.OFFLINE_EXTERNAL_INGEST_ENABLED:
+            raise RuntimeError("T29公开数据权利尚未逐项批准，OFFLINE_EXTERNAL_INGEST_ENABLED 必须保持关闭")
+        if cls.OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED:
+            raise RuntimeError("T29离线基准不得替换生产规则，OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED 必须保持关闭")
         if cls.WECHAT_SUBSCRIBE_SEND_ENABLED:
             missing = [
                 name

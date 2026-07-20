@@ -33,6 +33,7 @@ from routes.goals import bp as goals_bp
 from routes.journey import bp as journey_bp
 from routes.messages import bp as messages_bp
 from routes.notifications import bp as notifications_bp
+from routes.offline_benchmarks import bp as offline_benchmarks_bp
 from routes.parent_assessments import bp as parent_assessments_bp
 from routes.privacy import bp as privacy_bp
 from routes.product_events import bp as product_events_bp
@@ -64,6 +65,10 @@ REQUIRED_CONTENT_FILES = [
     "ai_qa_governance.json",
     "ai_qa_safety_responses.json",
     "ai_qa_synthetic_safety_suite.json",
+    "offline_benchmark_registry.json",
+    "offline_benchmark_label_mapping.json",
+    "offline_benchmark_annotation_manual.json",
+    "synthetic_affect_benchmark_240.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -209,6 +214,7 @@ def create_app(
     app.register_blueprint(general_growth_bp)
     app.register_blueprint(messages_bp)
     app.register_blueprint(notifications_bp)
+    app.register_blueprint(offline_benchmarks_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(progress_summary_bp)
     app.register_blueprint(parent_assessments_bp)

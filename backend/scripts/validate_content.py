@@ -661,6 +661,71 @@ def validate_profile_models(
     return errors
 
 
+def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    filenames = ["offline_benchmark_registry.json", "offline_benchmark_label_mapping.json", "offline_benchmark_annotation_manual.json", "synthetic_affect_benchmark_240.json"]
+    payloads = {}
+    for filename in filenames:
+        try:
+            payloads[filename] = load_json(content_dir / filename)
+        except (OSError, json.JSONDecodeError) as exc:
+            errors.append(f"{filename} 不可读取：{exc}")
+    if errors:
+        return errors
+    registry = payloads["offline_benchmark_registry.json"]
+    if registry.get("external_ingest_enabled") is not False or registry.get("production_replacement_allowed") is not False:
+        errors.append("offline_benchmark_registry.json 外部摄取和生产替换必须默认关闭")
+    seen = set()
+    required = {"id", "name", "source_url", "source_version", "language", "platform", "population", "context", "license", "content_rights_status", "sensitivity", "allowed_uses", "prohibited_uses", "ingest_status", "deletion_method"}
+    for card in registry.get("cards", []):
+        missing = required - set(card)
+        if missing:
+            errors.append(f"offline_benchmark_registry.json.cards 缺少字段：{sorted(missing)}")
+        if card.get("id") in seen:
+            errors.append(f"offline_benchmark_registry.json.cards.id 重复：{card.get('id')}")
+        seen.add(card.get("id"))
+        if card.get("ingest_status", "").startswith("blocked_") and (card.get("local_path") or card.get("artifact_sha256")):
+            errors.append(f"{card.get('id')} 权利阻断时不得登记本地工件或哈希")
+        if card.get("ingest_status", "").startswith("blocked_") and card.get("allowed_uses") != ["metadata_review_only"]:
+            errors.append(f"{card.get('id')} 权利阻断时只允许metadata_review_only")
+    synthetic = payloads["synthetic_affect_benchmark_240.json"]
+    cases = synthetic.get("cases", [])
+    canonical = json.dumps(cases, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    import hashlib
+    if synthetic.get("contains_real_data") is not False or len(cases) != 240 or synthetic.get("case_count") != 240:
+        errors.append("synthetic_affect_benchmark_240.json 必须明确无真实数据且恰好240例")
+    if hashlib.sha256(canonical).hexdigest() != synthetic.get("case_hash"):
+        errors.append("synthetic_affect_benchmark_240.json.case_hash 不匹配")
+    if synthetic.get("generator_label_is_human_gold") is not False:
+        errors.append("synthetic_affect_benchmark_240.json 生成标签不得标为人工金标准")
+    manual = payloads["offline_benchmark_annotation_manual.json"]
+    if not 200 <= int(manual.get("target_case_count", 0)) <= 500 or int(manual.get("minimum_annotators", 0)) < 2:
+        errors.append("offline_benchmark_annotation_manual.json 需200至500例且至少两名标注者")
+    if manual.get("status") != "draft_human_annotation_pending":
+        errors.append("offline_benchmark_annotation_manual.json 未经人工完成前必须保持draft_human_annotation_pending")
+    thresholds = manual.get("agreement_thresholds", {})
+    try:
+        kappa_threshold = float(thresholds.get("emotion_cohen_kappa", -1))
+        valence_gap_threshold = float(thresholds.get("maximum_mean_valence_gap", -1))
+        arousal_gap_threshold = float(thresholds.get("maximum_mean_arousal_gap", -1))
+        minimum_complete = int(thresholds.get("minimum_complete_cases", 0))
+    except (TypeError, ValueError):
+        errors.append("offline_benchmark_annotation_manual.json 一致性阈值必须为数值")
+    else:
+        if not 0 <= kappa_threshold <= 1:
+            errors.append("offline_benchmark_annotation_manual.json 情绪kappa阈值必须在0至1")
+        if not 0 <= valence_gap_threshold <= 2:
+            errors.append("offline_benchmark_annotation_manual.json 效价平均差阈值必须在0至2")
+        if not 0 <= arousal_gap_threshold <= 1:
+            errors.append("offline_benchmark_annotation_manual.json 唤醒平均差阈值必须在0至1")
+        if minimum_complete > int(manual.get("target_case_count", 0)):
+            errors.append("offline_benchmark_annotation_manual.json 完整双标案例阈值不得超过目标案例数")
+    mapping = payloads["offline_benchmark_label_mapping.json"]
+    if "unmapped" not in mapping.get("project_labels", []):
+        errors.append("offline_benchmark_label_mapping.json 必须保留unmapped")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -673,6 +738,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     for schema_path in schema_paths:
         errors.extend(validate_file(content_dir, schema_path))
     errors.extend(validate_cross_content_rules(content_dir))
+    errors.extend(validate_offline_benchmark_content(content_dir))
     return errors
 
 
