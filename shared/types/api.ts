@@ -1117,6 +1117,11 @@ export interface AssessmentResult {
   category?: string | null;
   answers_json: string;
   scores_json: string;
+  scoring_version?: string | null;
+  raw_scale_json?: string;
+  raw_scores_json?: string;
+  transformed_scores_json?: string;
+  transformation_version?: string | null;
   total_score?: number | null;
   result_summary?: string | null;
   profile_model_id?: string | null;
@@ -1127,6 +1132,10 @@ export interface AssessmentResult {
   created_at: ISODateTime;
   answers?: AssessmentAnswer[];
   scores?: Record<string, unknown>;
+  raw_scale?: { ranges?: Array<{ min: number; max: number }>; mixed_scales?: boolean; worksheet_id?: ID };
+  raw_scores?: Record<string, unknown>;
+  transformed_scores?: Record<string, unknown>;
+  score_reporting_notice?: string;
   recommended_card_ids?: ID[];
   risk?: RiskCheckResult | null;
   boundary_notice?: string | null;
@@ -1212,9 +1221,13 @@ export interface AssessmentProfilePosition {
     feature_id: string;
     label: string;
     raw_score?: number | null;
+    model_input_score?: number | null;
     z_score: number;
   }>;
   raw_scores?: Record<string, number | null>;
+  worksheet_raw_scores?: Record<string, number | null>;
+  model_input_scores?: Record<string, number | null>;
+  score_spaces_separated?: boolean;
   z_scores?: Record<string, number>;
   explanation?: string;
   strength_note?: string;
@@ -1981,6 +1994,82 @@ export interface OfflineBlindCase {
   text: string;
   synthetic: true;
   already_annotated: boolean;
+}
+
+export interface ResearchMethodologyPublicStatus {
+  status: "draft_before_freeze";
+  formal_freeze_recorded: false;
+  confirmatory_analysis_allowed: false;
+  real_outcome_data_accessed: false;
+  workbench_enabled: boolean;
+  boundary_notice: string;
+}
+
+export interface ResearchMethodologyConfig extends ResearchMethodologyPublicStatus {
+  registry_version: string;
+  measure_count: number;
+  product_line_count: number;
+  unresolved_blocker_count: number;
+  runtime_control: { disabled: 0 | 1; changed_at?: ISODateTime | null };
+}
+
+export interface ResearchMethodologyRegistry {
+  version: string;
+  status: "draft_before_freeze";
+  real_outcome_data_accessed: false;
+  formal_freeze_allowed: false;
+  confirmatory_analysis_allowed: false;
+  product_lines: Array<Record<string, unknown> & { id: string; primary_question: string; prohibited_interpretation: string }>;
+  participant_flow_states: string[];
+  measures: Array<Record<string, unknown> & { measure_id: string; display_name: string; item_count: number; freeze_status: "draft_before_freeze" }>;
+  metrics: Array<Record<string, unknown> & { id: string; numerator_event: string; denominator_event: string; deduplication: string; window: string }>;
+  missingness_plan: Record<string, unknown>;
+  longitudinal_plan: Record<string, unknown>;
+  analysis_sequence: Record<string, unknown>;
+  simulation_plan: Record<string, unknown>;
+  reporting_standards: Array<Record<string, unknown> & { id: string; status: string; official_url: string; accessed_on: string }>;
+  signature_requirements: Array<{ role: string; status: "pending_human_signature"; evidence_required: string }>;
+  unresolved_blockers: string[];
+  boundary_notice: string;
+}
+
+export interface ResearchMethodologyVersion {
+  id: ID;
+  version: string;
+  status: "draft_before_freeze";
+  registry_hash: string;
+  formal_freeze_allowed: 0;
+  real_outcome_data_accessed: 0;
+  registry: ResearchMethodologyRegistry;
+  created_by: ID;
+  created_at: ISODateTime;
+}
+
+export interface ResearchMethodologyCheck {
+  id: ID;
+  version_id: ID;
+  artifact_hash: string;
+  hard_checks: Record<string, boolean>;
+  hard_check_passed: boolean;
+  formal_freeze_ready: false;
+  formal_freeze_recorded: false;
+  real_outcome_rows_read: 0;
+  status: string;
+}
+
+export interface ResearchMethodologySimulation {
+  id: ID;
+  version_id: ID;
+  artifact_hash: string;
+  parameters: Record<string, unknown>;
+  metrics: Record<string, unknown> & { contains_real_data: false; confirmatory_power_claim: false };
+  status: string;
+}
+
+export interface ResearchMethodologyEvidence {
+  checks: Array<Record<string, unknown>>;
+  simulations: Array<Record<string, unknown>>;
+  packages: Array<Record<string, unknown>>;
 }
 
 export interface AssessmentListResponse {

@@ -2042,3 +2042,22 @@ relationship_initiation_intention_action
 
 `GoEmotions`、SNAP目录和NetworkX Zachary当前仅登记公开链接与待人工审查状态，本地路径和工件哈希必须为空；未完成许可、平台条款、内容权利和隐私审查前不得下载或训练。生成标签只用于确定性工程回归，不是双人盲标金标准；真实参与者记录如未来进入研究，必须另行取得授权、脱敏、伦理批准并接入可删除数据链路。
 
+## 2026-07-20：研究方法冻结前证据接口
+
+全部接口位于`/api/research/methodology`。它们不查询参与者真实结局表，不存在签字、正式冻结、验证性分析或重新开启端点。
+
+| 接口 | 权限与用途 |
+|---|---|
+| `GET /public-status` | 公开读取非敏感草案/关闭状态；不返回内部阻断详情或停用原因 |
+| `GET /config` | researcher/supervisor/admin读取版本、测量数、未决项数和运行门禁 |
+| `GET /registry` | researcher/supervisor/admin读取问题、测量、指标、缺失、纵向、分析与报告规范结构 |
+| `GET /versions` | 内部角色读取不可变注册表版本和哈希 |
+| `POST /versions/sync` | admin同步当前内容版本；同版本哈希变化返回409，必须新版本 |
+| `POST /checks/run` | 内部角色运行33项登记、九点/五点分离、指标和冻结门禁检查 |
+| `POST /simulations/run` | 内部角色运行固定种子纯合成可行性/敏感性检查，不报告功效 |
+| `GET /evidence` | 内部角色读取最近机器检查、合成仿真和待签字包 |
+| `POST /evidence-packages` | supervisor/admin在检查和仿真通过后生成`draft_for_human_signature`包 |
+| `POST /disable` | admin只允许停用；不存在API重新开启 |
+
+稳定错误包括`methodology_content_invalid`、`methodology_workbench_disabled/killed`、`methodology_version_missing/immutable`、`methodology_evidence_incomplete/failed`和`disable_reason_invalid`。小程序只调用`public-status`；内部能力只在Web研究后台提供。临时展示越权不改变后端角色矩阵。
+

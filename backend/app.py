@@ -34,6 +34,7 @@ from routes.journey import bp as journey_bp
 from routes.messages import bp as messages_bp
 from routes.notifications import bp as notifications_bp
 from routes.offline_benchmarks import bp as offline_benchmarks_bp
+from routes.research_methodology import bp as research_methodology_bp
 from routes.parent_assessments import bp as parent_assessments_bp
 from routes.privacy import bp as privacy_bp
 from routes.product_events import bp as product_events_bp
@@ -69,6 +70,7 @@ REQUIRED_CONTENT_FILES = [
     "offline_benchmark_label_mapping.json",
     "offline_benchmark_annotation_manual.json",
     "synthetic_affect_benchmark_240.json",
+    "research_methodology_registry.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -215,6 +217,7 @@ def create_app(
     app.register_blueprint(messages_bp)
     app.register_blueprint(notifications_bp)
     app.register_blueprint(offline_benchmarks_bp)
+    app.register_blueprint(research_methodology_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(progress_summary_bp)
     app.register_blueprint(parent_assessments_bp)

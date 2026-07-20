@@ -51,19 +51,19 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:332",
+      "location": "backend/routes/assessments.py:340",
       "handler": "list_assessment_results"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:379",
+      "location": "backend/routes/assessments.py:387",
       "handler": "get_assessment_result"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:396",
+      "location": "backend/routes/assessments.py:404",
       "handler": "get_assessment_profile_position"
     },
     {

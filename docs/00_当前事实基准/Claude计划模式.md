@@ -10597,7 +10597,7 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 | 任务二十七 | engineering_complete_local / release_approval_pending | T27-F01至F08本地完整；真实审稿、版权、云/真机/生产待人工 |
 | 任务二十八 | planned / human-gated | T28-01 合成安全评测；T28-00 未确认前不得开放真实用户 |
 | 任务二十九 | engineering_complete_local_synthetic / public_dataset_ingest_blocked_human_rights_gate | 合成基准完成；公开权利审查、双人标注与发布批准待人工 |
-| 任务三十 | documented / not_frozen | T30-00已登记；负责人冻结待人工 |
+| 任务三十 | engineering_complete_local_pre_freeze / human_gate | F00—F09工程完成；负责人、伦理、数据、方法冻结与真实结果访问仍阻断 |
 | 任务三十一 | in_progress | T31-00已登记，T31-01新增对象矩阵已验证；展示越权保留 |
 | 任务三十二 | documented | T32-00本地SLO已登记；云环境目标未冻结 |
 | 任务三十三 | documented | T33-00页面状态矩阵已登记；真机/辅助技术待人工 |
@@ -10885,3 +10885,44 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 - 未自动签字：GoEmotions/SNAP/Zachary的许可、平台条款、内容权利和隐私审查；两名真实标注者、盲标手册修订、心理/方法/伦理批准；测试云MySQL、CloudBase、微信开发者工具、Android/iOS和生产回滚演练。
 - 本地合成基准通过不表示公开数据已用于测试，不表示形成域内人工金标准，也不表示词典或网络算法具有心理有效性、家庭关系解释能力或生产替换资格。
 - 临时展示越权继续保留且未用于T29正式角色/对象权限验收。下一工程任务：T30-F00心理测量与研究方法冻结；只能生成机器检查和签字证据包，查看主要真实结果前不得伪造冻结或替真人签字。
+
+## 任务三十完整实现执行结果（2026-07-20）
+
+状态：`engineering_complete_local_pre_freeze / human_method_ethics_signature_pending / release_approval_pending`。本段即T30执行记录，不另建执行记录文件。
+
+### F00—F03：问题、测量、量尺与指标
+
+- `content/research_methodology_registry.json`登记主旅程、训练推荐、支持性反馈、关系试点和受控AI五条研究线。主要问题、人群、时间零点、暴露、候选估计量、对照候选、允许/禁止解释均有字段，但唯一主要结局、主要时间点、样本量和停止责任人继续标`pending_freeze`。
+- 生成器从`assessment_worksheets.json`登记全部33份测量的题数、量尺、反向题、计分、缺失、来源/语言、审核、允许/禁止用途和解释边界。内容校验阻止漏项、重复项、伪签字、真实结果读取或冻结开关漂移。
+- `assessment_results`新增`scoring_version/raw_scale_json/raw_scores_json/transformed_scores_json/transformation_version`。关系中的行动方式问卷保留1—9原分，同时以`1 + (raw - 1) * 4 / 8`产生1—5既有画像模型输入；API、shared和画像位置响应明确区分`worksheet_raw_scores`与`model_input_scores`。其他五点量表不生成转换分，既有模型参数/哈希未改变。
+- 流程、安全、推荐和AI指标全部登记分子事件、分母事件、去重键、时间窗、异常和解释边界；离线准确率不能写成实际帮助。
+
+### F04—F08：缺失、纵向、分析与合成仿真
+
+- 缺失状态分为未暴露、未开始、中断、提交失败、主动退出、研究撤回、技术失败和失访；禁止默认填0、默认均值和默认最近值延续。
+- 纵向计划先检查身份、实际日期、量表/版本/量尺一致、间隔与适用的测量不变性；个体间与个体内分开。少于2点不画趋势，至少3点才进入模型候选，横断面聚类不解释为个人轨迹。
+- 分析顺序固定为流程/数据质量、各波计分与可靠性、缺失流失、主要估计量、诊断、预定义敏感性、次要和探索；协变量、交互、亚组、多重比较、异常值及失败备选均保持查看结果前冻结要求。
+- 仿真只用固定随机种子合成数据，覆盖n=20/40/80完成比例精度、0/20/40%流失、三波个体内斜率可恢复性和双簇扰动稳定性；结果固定`contains_real_data=false`、`confirmatory_power_claim=false`和`real_outcome_rows_read=0`。
+- 报告规范核验：JARS-Quant适用定量心理报告；STROBE仅在观察性设计选定时适用；SPIRIT/CONSORT 2025只在随机试验方案/结果时适用；AI扩展需与2025核心协调；DECIDE-AI仅供未来获批的早期现场临床AI评估；PRISMA不适用。未指定目标期刊，不虚构期刊要求。
+
+### F09：冻结证据、权限、迁移、恢复与双端
+
+- 后端`/api/research/methodology`提供1个公开非敏感状态和9个内部端点：注册表/版本、机器检查、合成仿真、证据列表、待真人签字证据包、管理员同步和只允许停用。没有签字、正式冻结、主要结果分析或重新开启端点。
+- 数据库版本`2026_07_20_018 / research_methodology_freeze_evidence`；五表保存不可变版本、机器检查、合成仿真、证据包和停用状态。参与者无内部权限；研究者/督导/管理员运行；仅督导/管理员生成证据包；仅管理员同步/停用。关键写入审计且不保存参与者原文、真实结果、令牌或内部堆栈。
+- `migrate_task30_research_methodology.py --apply`幂等建表并只回填缺失的计分溯源字段；旧记录原分不覆盖、未知量表跳过并计数。空库、旧记录、重复执行和MySQL schema转换有专项覆盖。`--rollback-plan`只关闭工作台/分析开关、隐藏入口并保留原分、证据与审计，不自动删表、不自动签字。
+- Web新增`/research/methodology`响应式工作台，清楚分开结构状态、版本/哈希、机器检查、合成仿真、签字包、五条问题、规范、测量/量尺和未决项；没有“正式冻结”按钮。小程序只新增`getResearchMethodologyPublicStatus`，不复制内部运行、同步或证据包能力。
+- 异常恢复：内容损坏、版本同名哈希漂移、未同步版本、证据缺项、检查失败、功能关闭、运行停用和权限不足均返回稳定错误；停用后仍可保留和读取既有证据，不自动恢复运行。
+
+### 自动验收与问题loop
+
+- T30专项`16 passed`；后端全量按文件顺序拆为`239 passed + 185 passed = 424 passed`；9条仅为jieba/pkg_resources第三方弃用警告。
+- Web typecheck/build通过；Playwright桌面/移动全量`24 passed`，T30专项2项覆盖键盘焦点、无横向溢出、量尺分离、无自动签字按钮和截图视觉核验。小程序61个JS及56个JSON静态检查通过。
+- 33项注册表生成漂移、内容治理、018空库/旧库回填/重复迁移与回滚、180操作机器契约、T26冻结136操作兼容、API边界`0 blocker / 57 legacy review warnings`和`git diff --check`通过。
+- 首轮Web验证命令误在`apps/web`目录调用仓库根Python脚本，脚本未运行但后续typecheck/build通过；已回仓库根生成并检查四份契约。全量后端首轮超时和第二组缺少PYTHONPATH均按上述loop解决，没有把超时或收集错误记为通过。
+
+### 工程完成与发布门禁
+
+- 工程完成不等于正式冻结。机器注册表保持`draft_before_freeze`，证据包保持`draft_for_human_signature`，配置强制`RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED=0`和`RESEARCH_OUTCOME_ANALYSIS_ALLOWED=0`。
+- 未自动签字：唯一主要结局/时间点、样本量依据、最小可解释变化、最终纳排、缺失主方法、停止责任人、测量版权/授权、心理/方法/伦理/数据治理、研究负责人、目标期刊、测试云MySQL、备份恢复、CloudBase、微信开发者工具、真机和生产批准。
+- 本轮未读取真实主要结果、未运行真实结局分析、未下载新公开数据、未训练模型、未改变既有聚类参数。临时展示越权继续保留，但T30正式角色接口以展示旁路关闭的测试身份验证，越权不作为正式权限证据。
+- 下一工程任务：T31-F01—F08安全、隐私与滥用防护完整实现；正式权限验收继续因临时展示越权和外部门禁保持阻断。

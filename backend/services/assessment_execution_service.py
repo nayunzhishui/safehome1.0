@@ -39,6 +39,7 @@ def submit_assessment(
     execution = execute_assessment(worksheet, submitted_answers)
     answers = execution.answers
     scores = execution.scores
+    score_provenance = build_score_provenance(worksheet, answers, scores)
     risk_result = check_text_risk(execution.text_values, source="assessment") if execution.text_values else None
     if risk_result:
         scores["risk"] = {
@@ -58,9 +59,11 @@ def submit_assessment(
             """
             INSERT INTO assessment_results (
                 id, user_id, worksheet_id, worksheet_title, category,
-                answers_json, scores_json, total_score, result_summary, created_at
+                answers_json, scores_json, scoring_version, raw_scale_json,
+                raw_scores_json, transformed_scores_json, transformation_version,
+                total_score, result_summary, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 result_id,
@@ -70,6 +73,11 @@ def submit_assessment(
                 worksheet.get("category"),
                 json_dumps(answers),
                 json_dumps(scores),
+                score_provenance["scoring_version"],
+                json_dumps(score_provenance["raw_scale"]),
+                json_dumps(score_provenance["raw_scores"]),
+                json_dumps(score_provenance["transformed_scores"]),
+                score_provenance["transformation_version"],
                 execution.total_score,
                 summary,
                 now_iso(),
@@ -91,6 +99,12 @@ def submit_assessment(
     result = row_to_dict(row)
     result["answers"] = answers
     result["scores"] = scores
+    result["raw_scale"] = score_provenance["raw_scale"]
+    result["raw_scores"] = score_provenance["raw_scores"]
+    result["transformed_scores"] = score_provenance["transformed_scores"]
+    result["scoring_version"] = score_provenance["scoring_version"]
+    result["transformation_version"] = score_provenance["transformation_version"]
+    result["score_reporting_notice"] = score_provenance["reporting_notice"]
     training_rules = evaluate_training_rules(
         worksheet["id"],
         scores,
@@ -258,6 +272,68 @@ def score_answers(worksheet: dict, answers: list[dict]) -> tuple[dict, int | flo
     if dimensions:
         scores["dimensions"] = dimensions
     return scores, persisted_total
+
+
+def build_score_provenance(worksheet: dict, answers: list[dict], scores: dict | None = None) -> dict:
+    """Keep worksheet-scale scores distinct from model-compatibility transforms."""
+
+    questions = {item.get("id"): item for item in worksheet.get("questions", [])}
+    raw_items = {
+        str(answer.get("question_id")): answer.get("score")
+        for answer in answers
+        if isinstance(answer.get("score"), (int, float)) and not isinstance(answer.get("score"), bool)
+    }
+    bounds = []
+    for question in questions.values():
+        option_bounds = _option_score_bounds(question)
+        if option_bounds:
+            bounds.append(option_bounds)
+    unique_bounds = sorted({(float(low), float(high)) for low, high in bounds})
+    raw_scale = {
+        "ranges": [{"min": low, "max": high} for low, high in unique_bounds],
+        "mixed_scales": len(unique_bounds) > 1,
+        "worksheet_id": worksheet.get("id"),
+    }
+    raw_scores = {
+        "item_scores": raw_items,
+        "dimensions": (scores or {}).get("dimensions", []),
+        "total_score": (scores or {}).get("total_score"),
+        "score_space": "worksheet_raw",
+    }
+    transformed_scores: dict = {}
+    transformation_version = None
+    reporting_notice = "当前结果按问卷原始量尺保存；没有模型兼容转换。"
+    if worksheet.get("id") == "regulatory_focus_relationship_18":
+        transformation_version = "linear_9_to_5_v1"
+        transformed_answers = []
+        transformed_items = {}
+        for answer in answers:
+            copied = dict(answer)
+            score = answer.get("score")
+            if isinstance(score, (int, float)) and not isinstance(score, bool):
+                transformed = round(1 + (float(score) - 1) * 4 / 8, 4)
+                copied["score"] = transformed
+                transformed_items[str(answer.get("question_id"))] = transformed
+            transformed_answers.append(copied)
+        model_scores, _ = score_answers(worksheet, transformed_answers)
+        transformed_scores = {
+            "item_scores": transformed_items,
+            "dimensions": model_scores.get("dimensions", []),
+            "total_score": model_scores.get("total_score"),
+            "score_space": "model_input_1_to_5",
+            "formula": "1 + (raw - 1) * 4 / 8",
+            "input_range": {"min": 1, "max": 9},
+            "output_range": {"min": 1, "max": 5},
+        }
+        reporting_notice = "九点原分与五点模型输入已分字段保存；报告必须标明量尺，不得混写。"
+    return {
+        "scoring_version": f"{worksheet.get('source_version') or 'unversioned'}::worksheet_server_score_v1",
+        "raw_scale": raw_scale,
+        "raw_scores": raw_scores,
+        "transformed_scores": transformed_scores,
+        "transformation_version": transformation_version,
+        "reporting_notice": reporting_notice,
+    }
 
 
 def _option_score_bounds(question: dict) -> tuple[int | float, int | float] | None:

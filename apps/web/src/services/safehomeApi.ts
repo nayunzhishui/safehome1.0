@@ -47,6 +47,13 @@ import type {
   OfflineBenchmarkConfig,
   OfflineBenchmarkRun,
   OfflineDatasetCard,
+  ResearchMethodologyCheck,
+  ResearchMethodologyConfig,
+  ResearchMethodologyEvidence,
+  ResearchMethodologyPublicStatus,
+  ResearchMethodologyRegistry,
+  ResearchMethodologySimulation,
+  ResearchMethodologyVersion,
   ParentAssessmentInput,
   ParentAssessmentPayload,
   ParentAssessmentResult,
@@ -860,6 +867,46 @@ export class SafeHomeApiClient {
 
   disableOfflineBenchmarks(reason: string): Promise<Record<string, unknown>> {
     return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/disable`, { method: "POST", body: { reason } });
+  }
+
+  getResearchMethodologyPublicStatus(): Promise<ResearchMethodologyPublicStatus> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/public-status`);
+  }
+
+  getResearchMethodologyConfig(): Promise<ResearchMethodologyConfig> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/config`);
+  }
+
+  getResearchMethodologyRegistry(): Promise<ResearchMethodologyRegistry> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/registry`);
+  }
+
+  listResearchMethodologyVersions(): Promise<ListResponse<ResearchMethodologyVersion>> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/versions`);
+  }
+
+  syncResearchMethodologyRegistry(): Promise<ResearchMethodologyVersion> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/versions/sync`, { method: "POST" });
+  }
+
+  runResearchMethodologyChecks(versionId?: string): Promise<ResearchMethodologyCheck> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/checks/run`, { method: "POST", body: { version_id: versionId } });
+  }
+
+  runResearchMethodologySimulation(versionId?: string): Promise<ResearchMethodologySimulation> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/simulations/run`, { method: "POST", body: { version_id: versionId } });
+  }
+
+  getResearchMethodologyEvidence(): Promise<ResearchMethodologyEvidence> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/evidence`);
+  }
+
+  createResearchMethodologyEvidencePackage(versionId?: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/evidence-packages`, { method: "POST", body: { version_id: versionId } });
+  }
+
+  disableResearchMethodology(reason: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.researchMethodology}/disable`, { method: "POST", body: { reason } });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {

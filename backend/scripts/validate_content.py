@@ -726,6 +726,45 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_research_methodology_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        registry = load_json(content_dir / "research_methodology_registry.json")
+        worksheets = load_json(content_dir / "assessment_worksheets.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"research_methodology_registry.json 不可读取：{exc}"]
+
+    if registry.get("status") != "draft_before_freeze":
+        errors.append("research_methodology_registry.json 未经真人签字必须保持 draft_before_freeze")
+    if any(registry.get(key) is not False for key in ("real_outcome_data_accessed", "formal_freeze_allowed", "confirmatory_analysis_allowed")):
+        errors.append("研究方法注册表不得标记读取真实结果、正式冻结或允许验证性分析")
+    worksheet_ids = {item.get("id") for item in worksheets.get("worksheets", [])}
+    measures = registry.get("measures", [])
+    measure_ids = {item.get("measure_id") for item in measures}
+    if worksheet_ids != measure_ids or len(measures) != len(measure_ids):
+        errors.append("研究方法注册表必须且只能登记全部测评工作表")
+    nine_point = next((item for item in measures if item.get("measure_id") == "regulatory_focus_relationship_18"), {})
+    separation = nine_point.get("score_separation", {})
+    if separation.get("raw_scale") != {"min": 1, "max": 9, "field": "raw_scores_json"}:
+        errors.append("九点量表必须把1至9原分保存在 raw_scores_json")
+    if separation.get("model_input_scale") != {"min": 1, "max": 5, "field": "transformed_scores_json"}:
+        errors.append("九点量表的1至5模型输入必须与原分分离")
+    if separation.get("raw_values_preserved") is not True or separation.get("transformation_version") != "linear_9_to_5_v1":
+        errors.append("九点量表必须保留原值并登记线性转换版本")
+    for metric in registry.get("metrics", []):
+        if not metric.get("denominator_event") or not metric.get("deduplication") or not metric.get("window"):
+            errors.append(f"研究指标缺少分母、去重或时间窗：{metric.get('id')}")
+    signatures = registry.get("signature_requirements", [])
+    if not signatures or any(item.get("status") != "pending_human_signature" for item in signatures):
+        errors.append("研究方法签字项只能保持 pending_human_signature")
+    for standard in registry.get("reporting_standards", []):
+        if not str(standard.get("official_url", "")).startswith("https://") or standard.get("accessed_on") != "2026-07-20":
+            errors.append(f"报告规范缺少已核验来源或访问日期：{standard.get('id')}")
+    if int(registry.get("generated_from", {}).get("outcome_rows_read", -1)) != 0:
+        errors.append("研究方法注册表生成过程不得读取真实结果行")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -739,6 +778,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
         errors.extend(validate_file(content_dir, schema_path))
     errors.extend(validate_cross_content_rules(content_dir))
     errors.extend(validate_offline_benchmark_content(content_dir))
+    errors.extend(validate_research_methodology_content(content_dir))
     return errors
 
 

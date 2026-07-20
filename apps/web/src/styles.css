@@ -2366,6 +2366,49 @@ ul {
 @media (max-width: 900px) { .benchmarkBoundary,.benchmarkColumns,.blindAnnotationGrid { grid-template-columns: 1fr; } .benchmarkBoundary .aiQaFacts { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 540px) { .benchmarkBoundary { padding: 20px; } .datasetCardList article { grid-template-columns: 1fr; } .datasetCardList article .gateBadge { justify-self: start; } .benchmarkRunActions > * { width: 100%; } .blindCaseList button { grid-template-columns: 1fr auto; } .blindCaseList button span { grid-column: 1 / -1; } }
 
+/* T30 research methodology pre-freeze workbench */
+.methodologyWorkbench { --method-ink: #17332f; --method-green: #3f7569; --method-wash: #eef6f2; }
+.methodologyBoundary { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); gap: 24px; padding: 26px; border: 1px solid #c7ddd4; border-radius: 22px; background: linear-gradient(135deg, #fbfdfc, var(--method-wash)); }
+.methodologyBoundary h2 { margin: 6px 0 8px; color: var(--method-ink); }
+.methodologyBoundary p { margin: 0; line-height: 1.7; color: #50635e; }
+.methodologyColumns { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr); gap: 20px; }
+.methodologyColumns.compact .panel { min-height: 0; }
+.versionPlate { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; padding: 16px; border: 1px solid #d5e3dd; border-radius: 16px; background: #f9fcfa; }
+.versionPlate strong { color: var(--method-ink); }
+.versionPlate code { overflow-wrap: anywhere; color: #517269; }
+.versionPlate span { grid-column: 1 / -1; color: #687872; font-size: .88rem; }
+.methodologyActions { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+.methodologyEvidenceGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.methodologyEvidenceGrid div { display: grid; gap: 4px; min-width: 0; padding: 13px; border-radius: 14px; background: var(--method-wash); text-align: center; }
+.methodologyEvidenceGrid strong { overflow-wrap: anywhere; color: var(--method-ink); font-size: 1rem; }
+.methodologyEvidenceGrid span { color: #65766f; font-size: .78rem; }
+.methodologyQuestionList { display: grid; gap: 10px; margin: 0; padding-left: 24px; }
+.methodologyQuestionList li { padding: 10px 12px; border-left: 3px solid #8fb9ac; border-radius: 0 12px 12px 0; background: #f8fbf9; }
+.methodologyQuestionList strong,.methodologyQuestionList span { display: block; line-height: 1.55; }
+.methodologyQuestionList span { margin-top: 4px; color: #72817c; font-size: .82rem; }
+.sectionSubheading { margin: 22px 0 10px; color: var(--method-ink); }
+.standardChips { display: flex; flex-wrap: wrap; gap: 8px; }
+.standardChips a { display: grid; gap: 2px; min-width: 116px; padding: 10px 12px; border: 1px solid #d5e3dd; border-radius: 13px; color: var(--method-ink); text-decoration: none; background: #fff; }
+.standardChips a:hover,.standardChips a:focus-visible { border-color: var(--method-green); box-shadow: 0 0 0 3px rgba(63,117,105,.14); }
+.standardChips span { color: #6f7d79; font-size: .72rem; overflow-wrap: anywhere; }
+.methodologySearch { display: grid; gap: 5px; min-width: min(240px, 100%); color: #52645e; font-size: .78rem; }
+.methodologySearch input { width: 100%; min-height: 42px; padding: 0 13px; border: 1px solid #cbd9d4; border-radius: 12px; }
+.scoreSeparationNotice { display: grid; grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr); gap: 12px; align-items: center; margin: 4px 0 18px; padding: 16px; border: 1px solid #c7ddd4; border-radius: 16px; background: var(--method-wash); }
+.scoreSeparationNotice div { display: grid; gap: 3px; text-align: center; }
+.scoreSeparationNotice span { color: #5e716a; font-size: .85rem; }
+.scoreSeparationNotice p { grid-column: 1 / -1; margin: 0; text-align: center; color: #51655e; }
+.measureTableWrap { overflow-x: auto; border: 1px solid #dde8e3; border-radius: 16px; }
+.methodologyTable { width: 100%; min-width: 650px; border-collapse: collapse; }
+.methodologyTable th,.methodologyTable td { padding: 13px 15px; border-bottom: 1px solid #e4ece8; text-align: left; vertical-align: middle; }
+.methodologyTable th { color: #51645d; font-size: .78rem; background: #f5f9f7; }
+.methodologyTable td strong,.methodologyTable td code { display: block; }
+.methodologyTable td code { margin-top: 3px; color: #71817b; font-size: .72rem; overflow-wrap: anywhere; }
+.methodologyTable tbody tr:last-child td { border-bottom: 0; }
+.blockerList { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+.blockerList li { padding: 7px 10px; border: 1px solid #ead9c4; border-radius: 999px; color: #775b3d; background: #fff8ef; font-size: .8rem; overflow-wrap: anywhere; }
+@media (max-width: 900px) { .methodologyBoundary,.methodologyColumns { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .methodologyBoundary { padding: 20px; } .methodologyActions > * { width: 100%; } .methodologyEvidenceGrid { grid-template-columns: 1fr; } .scoreSeparationNotice { grid-template-columns: 1fr; } .scoreSeparationNotice > span { transform: rotate(90deg); text-align: center; } .panelHeading:has(.methodologySearch) { align-items: stretch; flex-direction: column; } }
+
 /* T28 controlled AI QA research sandbox */
 .aiQaWorkbench {
   --ai-accent: #356f5b;

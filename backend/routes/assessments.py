@@ -141,6 +141,14 @@ def _profile_cluster_value(position: dict | None) -> int | None:
 def _expand_result_row(row: dict) -> dict:
     row["answers"] = json_loads(row.get("answers_json"), [])
     row["scores"] = json_loads(row.get("scores_json"), {})
+    row["raw_scale"] = json_loads(row.get("raw_scale_json"), {})
+    row["raw_scores"] = json_loads(row.get("raw_scores_json"), {})
+    row["transformed_scores"] = json_loads(row.get("transformed_scores_json"), {})
+    row["score_reporting_notice"] = (
+        "九点原分与五点模型输入已分字段保存；报告必须标明量尺，不得混写。"
+        if row.get("transformation_version")
+        else "当前结果按问卷原始量尺保存；没有模型兼容转换。"
+    )
     row["profile_cluster_id"] = _profile_cluster_value({"cluster_id": row.get("profile_cluster_id")})
     return row
 

@@ -1,6 +1,6 @@
 # API机器契约
 
-契约版本：`2026-07-20.1`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
+契约版本：`2026-07-20.2`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
 
 统一成功包络为`{ok:true,data,request_id}`，统一错误包络为`{ok:false,error:{code,message},request_id}`；下载接口除外，但响应头仍含`X-Request-ID`。
 
@@ -154,6 +154,16 @@
 | POST | `/api/research/benchmarks/runs/<run_id>/reviews` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/affect` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/network` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/methodology/checks/run` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
+| GET | `/api/research/methodology/config` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
+| POST | `/api/research/methodology/disable` | role:admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
+| GET | `/api/research/methodology/evidence` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
+| POST | `/api/research/methodology/evidence-packages` | role:supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
+| GET | `/api/research/methodology/public-status` | public:public | non_sensitive_gate_status_only | — | — | active |
+| GET | `/api/research/methodology/registry` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
+| POST | `/api/research/methodology/simulations/run` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
+| GET | `/api/research/methodology/versions` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
+| POST | `/api/research/methodology/versions/sync` | role:admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
 | GET | `/api/research/operations` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | GET | `/api/research/participants` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | GET | `/api/research/participants/<user_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |

@@ -142,17 +142,27 @@ def _feature_value(
     answers: dict[str, dict[str, Any]],
     questions: dict[str, dict[str, Any]],
 ) -> tuple[float | None, bool]:
+    _source_value, model_value, missing = _feature_values(feature, answers, questions)
+    return model_value, missing
+
+
+def _feature_values(
+    feature: dict[str, Any],
+    answers: dict[str, dict[str, Any]],
+    questions: dict[str, dict[str, Any]],
+) -> tuple[float | None, float | None, bool]:
     question_id = feature.get("worksheet_question_id") or feature.get("feature_id")
     answer = answers.get(str(question_id))
     question = questions.get(str(question_id))
     value = _answer_score(answer, question)
     if value is None:
-        return None, True
+        return None, None, True
     if feature.get("reverse_scored"):
         bounds = _score_bounds(question, feature)
         if bounds:
             low, high = bounds
             value = low + high - value
+    source_value = value
     transform = feature.get("input_transform") or {}
     if transform.get("type") == "linear_range":
         input_min = float(transform.get("input_min"))
@@ -160,9 +170,9 @@ def _feature_value(
         output_min = float(transform.get("output_min"))
         output_max = float(transform.get("output_max"))
         if input_max <= input_min:
-            return None, True
+            return source_value, None, True
         value = output_min + ((value - input_min) / (input_max - input_min)) * (output_max - output_min)
-    return value, False
+    return source_value, value, False
 
 
 def _pca_position(model: dict[str, Any], z_values: list[float]) -> dict[str, float | None]:
@@ -338,16 +348,18 @@ def build_assessment_profile_position(
     answers = _answers_by_question(result)
     questions = _question_map(worksheet)
     z_lookup: dict[str, float] = {}
-    raw_scores: dict[str, float | None] = {}
+    worksheet_raw_scores: dict[str, float | None] = {}
+    model_input_scores: dict[str, float | None] = {}
     missing_features: list[str] = []
 
     for feature in features:
         feature_id = str(feature.get("feature_id"))
-        value, missing = _feature_value(feature, answers, questions)
+        source_value, value, missing = _feature_values(feature, answers, questions)
         if missing:
             missing_features.append(feature_id)
             value = float(feature.get("mean") or 0)
-        raw_scores[feature_id] = value
+        worksheet_raw_scores[feature_id] = source_value
+        model_input_scores[feature_id] = value
         mean = float(feature.get("mean") or 0)
         std = float(feature.get("std") or 1) or 1
         z_lookup[feature_id] = (float(value) - mean) / std
@@ -435,14 +447,20 @@ def build_assessment_profile_position(
             "missing_feature_ids": missing_features[:20],
             "data_quality": "partial" if missing_features else "complete",
         },
-        "raw_scores": {key: round(value, 4) if isinstance(value, (int, float)) else None for key, value in raw_scores.items()},
+        "raw_scores": {key: round(value, 4) if isinstance(value, (int, float)) else None for key, value in worksheet_raw_scores.items()},
+        "worksheet_raw_scores": {key: round(value, 4) if isinstance(value, (int, float)) else None for key, value in worksheet_raw_scores.items()},
+        "model_input_scores": {key: round(value, 4) if isinstance(value, (int, float)) else None for key, value in model_input_scores.items()},
+        "score_spaces_separated": True,
         "z_scores": {key: round(value, 4) for key, value in z_lookup.items()},
         "feature_profile": [
             {
                 "feature_id": str(feature.get("feature_id")),
                 "label": str(feature.get("label") or feature.get("feature_id")),
-                "raw_score": round(raw_scores[str(feature.get("feature_id"))], 4)
-                if isinstance(raw_scores.get(str(feature.get("feature_id"))), (int, float))
+                "raw_score": round(worksheet_raw_scores[str(feature.get("feature_id"))], 4)
+                if isinstance(worksheet_raw_scores.get(str(feature.get("feature_id"))), (int, float))
+                else None,
+                "model_input_score": round(model_input_scores[str(feature.get("feature_id"))], 4)
+                if isinstance(model_input_scores.get(str(feature.get("feature_id"))), (int, float))
                 else None,
                 "z_score": round(z_lookup[str(feature.get("feature_id"))], 4),
             }

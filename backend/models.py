@@ -585,6 +585,11 @@ SCHEMA_SQL = [
         category TEXT,
         answers_json TEXT NOT NULL,
         scores_json TEXT NOT NULL,
+        scoring_version TEXT,
+        raw_scale_json TEXT NOT NULL DEFAULT '{}',
+        raw_scores_json TEXT NOT NULL DEFAULT '{}',
+        transformed_scores_json TEXT NOT NULL DEFAULT '{}',
+        transformation_version TEXT,
         total_score INTEGER,
         result_summary TEXT,
         profile_model_id TEXT,
@@ -992,6 +997,67 @@ SCHEMA_SQL = [
         changed_at TEXT
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS research_methodology_versions (
+        id TEXT PRIMARY KEY,
+        version TEXT NOT NULL UNIQUE,
+        status TEXT NOT NULL,
+        registry_json TEXT NOT NULL,
+        registry_hash TEXT NOT NULL,
+        formal_freeze_allowed INTEGER NOT NULL DEFAULT 0,
+        real_outcome_data_accessed INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_methodology_checks (
+        id TEXT PRIMARY KEY,
+        version_id TEXT NOT NULL,
+        check_type TEXT NOT NULL,
+        status TEXT NOT NULL,
+        results_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_methodology_simulation_runs (
+        id TEXT PRIMARY KEY,
+        version_id TEXT NOT NULL,
+        simulation_version TEXT NOT NULL,
+        parameters_json TEXT NOT NULL DEFAULT '{}',
+        metrics_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        contains_real_data INTEGER NOT NULL DEFAULT 0,
+        confirmatory_power_claim INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_methodology_evidence_packages (
+        id TEXT PRIMARY KEY,
+        version_id TEXT NOT NULL,
+        package_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        status TEXT NOT NULL,
+        formal_freeze_recorded INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_methodology_runtime_control (
+        id TEXT PRIMARY KEY,
+        disabled INTEGER NOT NULL DEFAULT 0,
+        reason TEXT,
+        changed_by TEXT,
+        changed_at TEXT
+    )
+    """,
 ]
 
 
@@ -1049,6 +1115,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_runs_type_created ON offline_benchmark_runs(benchmark_type, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_annotations_case ON offline_benchmark_annotations(dataset_card_id, case_id, blind_round)",
     "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_reviews_run ON offline_benchmark_reviews(run_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_methodology_checks_version_created ON research_methodology_checks(version_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_methodology_simulations_version_created ON research_methodology_simulation_runs(version_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_methodology_evidence_version_created ON research_methodology_evidence_packages(version_id, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",

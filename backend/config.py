@@ -88,6 +88,12 @@ class Config:
     ).strip().lower() in {"1", "true", "yes"}
     OFFLINE_EXTERNAL_INGEST_ENABLED = os.environ.get("OFFLINE_EXTERNAL_INGEST_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
     OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED = os.environ.get("OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED", "0").strip().lower() in {"1", "true", "yes"}
+    RESEARCH_METHODOLOGY_WORKBENCH_ENABLED = os.environ.get(
+        "RESEARCH_METHODOLOGY_WORKBENCH_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
+    RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED = os.environ.get("RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED", "0").strip().lower() in {"1", "true", "yes"}
+    RESEARCH_OUTCOME_ANALYSIS_ALLOWED = os.environ.get("RESEARCH_OUTCOME_ANALYSIS_ALLOWED", "0").strip().lower() in {"1", "true", "yes"}
 
     @classmethod
     def validate(cls) -> None:
@@ -111,6 +117,10 @@ class Config:
             raise RuntimeError("T29公开数据权利尚未逐项批准，OFFLINE_EXTERNAL_INGEST_ENABLED 必须保持关闭")
         if cls.OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED:
             raise RuntimeError("T29离线基准不得替换生产规则，OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED 必须保持关闭")
+        if cls.RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED:
+            raise RuntimeError("T30人工签字尚未完成，RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED 必须保持关闭")
+        if cls.RESEARCH_OUTCOME_ANALYSIS_ALLOWED:
+            raise RuntimeError("T30方法尚未正式冻结，RESEARCH_OUTCOME_ANALYSIS_ALLOWED 必须保持关闭")
         if cls.WECHAT_SUBSCRIBE_SEND_ENABLED:
             missing = [
                 name

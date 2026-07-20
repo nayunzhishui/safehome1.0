@@ -59,9 +59,14 @@ REQUIRED_HEALTH_TABLES = [
     "offline_benchmark_annotations",
     "offline_benchmark_reviews",
     "offline_benchmark_runtime_control",
+    "research_methodology_versions",
+    "research_methodology_checks",
+    "research_methodology_simulation_runs",
+    "research_methodology_evidence_packages",
+    "research_methodology_runtime_control",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_017"
-CURRENT_SCHEMA_NAME = "offline_benchmark_governance"
+CURRENT_SCHEMA_VERSION = "2026_07_20_018"
+CURRENT_SCHEMA_NAME = "research_methodology_freeze_evidence"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -248,6 +253,10 @@ MYSQL_VARCHAR_COLUMNS = {
     "artifact_hash",
     "ingest_status",
     "registry_version",
+    "registry_hash",
+    "check_type",
+    "simulation_version",
+    "transformation_version",
     "annotator_id",
     "blind_round",
     "emotion_label",
@@ -505,6 +514,23 @@ def list_database_tables(conn) -> list[dict]:
     ).fetchall()
 
 
+def list_database_columns(conn, table: str) -> list[dict]:
+    """Return normalized column names for SQLite and MySQL."""
+    if not _VALID_TABLE_NAME.match(table):
+        raise ValueError(f"非法表名: {table}")
+    if _connection_provider(conn) == "mysql":
+        return conn.execute(
+            """
+            SELECT column_name AS name
+            FROM information_schema.columns
+            WHERE table_schema = DATABASE() AND table_name = ?
+            ORDER BY ordinal_position
+            """,
+            (table,),
+        ).fetchall()
+    return conn.execute(f"PRAGMA table_info({table})").fetchall()
+
+
 def check_identity_uniqueness(conn) -> dict:
     """Return duplicate group counts without exposing identity values."""
 
@@ -759,6 +785,11 @@ def ensure_schema_columns(conn) -> None:
         "profile_pc1": "REAL",
         "profile_pc2": "REAL",
         "profile_confidence": "REAL",
+        "scoring_version": "TEXT",
+        "raw_scale_json": "TEXT NOT NULL DEFAULT '{}'",
+        "raw_scores_json": "TEXT NOT NULL DEFAULT '{}'",
+        "transformed_scores_json": "TEXT NOT NULL DEFAULT '{}'",
+        "transformation_version": "TEXT",
     }
     for column, definition in assessment_result_columns.items():
         ensure_column(conn, "assessment_results", column, definition)

@@ -1,0 +1,1942 @@
+{
+  "version": "2026-07-20-t30-methodology-v1",
+  "status": "draft_before_freeze",
+  "generated_from": {
+    "assessment_worksheets_version": "2026.07-task18-reviewed-scales-v1",
+    "outcome_rows_read": 0
+  },
+  "real_outcome_data_accessed": false,
+  "formal_freeze_allowed": false,
+  "confirmatory_analysis_allowed": false,
+  "product_lines": [
+    {
+      "id": "participant_journey",
+      "design": "feasibility_observational_candidate",
+      "primary_question": "参与者能否找到并完成唯一下一步，并在中断或错误后恢复？",
+      "secondary_questions": [
+        "哪些流程状态最常阻断下一步？",
+        "转人工是否被正确触发并到达？"
+      ],
+      "population": "eligible_consented_participants_pending_definition",
+      "time_zero": "first_exposure_to_journey_card_pending_freeze",
+      "followup_window": "single_session_and_followup_window_pending_freeze",
+      "exposure": "journey_card_and_existing_entry_points",
+      "primary_outcome": "unique_primary_outcome_pending_freeze",
+      "candidate_estimands": [
+        "completion_proportion",
+        "median_time_to_completion",
+        "recovery_proportion"
+      ],
+      "comparator": "historical_or_concurrent_comparator_pending_freeze",
+      "allowed_interpretation": "可用性、流程摩擦和错误恢复",
+      "prohibited_interpretation": "完成更多等于心理改善或干预有效"
+    },
+    {
+      "id": "training_recommendation",
+      "design": "acceptability_feasibility_candidate",
+      "primary_question": "参与者能否理解、选择、替换并完成推荐训练卡？",
+      "secondary_questions": [
+        "不适和跳过发生在哪个分母层级？",
+        "替换后是否仍能完成低负担练习？"
+      ],
+      "population": "low_risk_pilot_population_pending_freeze",
+      "time_zero": "first_recommendation_impression",
+      "followup_window": "recommendation_to_checkin_window_pending_freeze",
+      "exposure": "governed_recommendation_and_alternative_card",
+      "primary_outcome": "unique_primary_outcome_pending_freeze",
+      "candidate_estimands": [
+        "selection_per_impression",
+        "completion_per_selection",
+        "discomfort_per_impression"
+      ],
+      "comparator": "recommendation_strategy_or_descriptive_reference_pending_freeze",
+      "allowed_interpretation": "推荐可理解性、可接受性和流程负担",
+      "prohibited_interpretation": "点击率、完成率或帮助度等于疗效"
+    },
+    {
+      "id": "supportive_feedback",
+      "design": "collaborative_feedback_observational_candidate",
+      "primary_question": "参与者能否理解并纠正支持性反馈，且不适能否进入人工复核？",
+      "secondary_questions": [
+        "反馈版本修订是否保留历史？",
+        "人工升级等待时间是否可接受？"
+      ],
+      "population": "feedback_recipients_pending_definition",
+      "time_zero": "first_feedback_view",
+      "followup_window": "feedback_to_review_resolution_pending_freeze",
+      "exposure": "versioned_supportive_feedback_with_four_option_correction",
+      "primary_outcome": "unique_primary_outcome_pending_freeze",
+      "candidate_estimands": [
+        "correction_distribution",
+        "review_resolution_time",
+        "revision_proportion"
+      ],
+      "comparator": "descriptive_reference_pending_freeze",
+      "allowed_interpretation": "反馈的协作性、可纠正性和人工衔接",
+      "prohibited_interpretation": "选择符合等于客观诊断正确"
+    },
+    {
+      "id": "relationship_pilot",
+      "design": "feasibility_longitudinal_candidate",
+      "primary_question": "关系报告与阶段反馈能否被理解、共同核对并支持后续记录？",
+      "secondary_questions": [
+        "退出、撤回和未授权事件是否被正确处理？",
+        "重复测量是否具有版本与时间可比性？"
+      ],
+      "population": "relationship_pilot_participants_pending_freeze",
+      "time_zero": "baseline_assessment_or_enrollment_pending_freeze",
+      "followup_window": "primary_wave_and_interval_pending_freeze",
+      "exposure": "researcher_confirmed_report_and_stage_feedback",
+      "primary_outcome": "unique_primary_outcome_pending_freeze",
+      "candidate_estimands": [
+        "report_confirmation_proportion",
+        "followup_completion",
+        "within_person_descriptive_change"
+      ],
+      "comparator": "within_person_or_control_condition_pending_freeze",
+      "allowed_interpretation": "流程可行性、接受度和阶段性描述",
+      "prohibited_interpretation": "无对照变化等于关系改善或因果效果"
+    },
+    {
+      "id": "controlled_ai_qa",
+      "design": "synthetic_preclinical_only",
+      "primary_question": "固定合成集上是否能安全拒答并提供批准来源？",
+      "secondary_questions": [
+        "过度拒答、延迟和成本是否在候选门槛内？",
+        "严重失败是否正确进入停用与人工复核？"
+      ],
+      "population": "synthetic_cases_only",
+      "time_zero": "evaluation_run_start",
+      "followup_window": "single_offline_run",
+      "exposure": "fake_provider_and_approved_knowledge",
+      "primary_outcome": "severe_failure_count_zero_engineering_gate",
+      "candidate_estimands": [
+        "severe_failure_rate",
+        "correct_refusal_rate",
+        "source_coverage"
+      ],
+      "comparator": "prompt_or_model_version_comparison_after_governance",
+      "allowed_interpretation": "是否可申请进入下一内部评审门",
+      "prohibited_interpretation": "离线准确率等于真实帮助、临床安全或治疗效果"
+    }
+  ],
+  "participant_flow_states": [
+    "eligible",
+    "consented",
+    "exposed_to_entry",
+    "started",
+    "completed",
+    "feedback_seen",
+    "action_selected",
+    "followup_due",
+    "followup_completed",
+    "not_seen",
+    "declined",
+    "abandoned",
+    "technical_failure",
+    "safety_routed",
+    "withdrew_research_consent",
+    "lost_to_followup"
+  ],
+  "measures": [
+    {
+      "measure_id": "academic_buoyancy_4",
+      "display_name": "学业复原力/学业浮力量表",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+      "source_version": "2026.06-academic_buoyancy_4-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 4,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "源文件写明 4 题、1-5 分，分数用于观察日常学业压力下的应对能力。",
+      "scoring_version": "2026.06-academic_buoyancy_4-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "acceptance_action_aaq2",
+      "display_name": "接纳与行动问卷（AAQ-II）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "2-1-接纳与行动问卷第二版AAQII.docx",
+      "source_version": "2026.06-acceptance_action_aaq2-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 7,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "本地文件可读到 7 个题项和 1-7 选项；正式分数解释需继续核对。",
+      "scoring_version": "2026.06-acceptance_action_aaq2-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "afq_y8_avoidance_fusion",
+      "display_name": "青少年回避与融合问卷（AFQ-Y8）",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+      "source_version": "2026.06-afq_y8_avoidance_fusion-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 8,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "源文件写明 8 题、1-5 分，分数越高心理僵化程度越高、心理灵活性越低；结果解释必须支持性改写。",
+      "scoring_version": "2026.06-afq_y8_avoidance_fusion-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "attribution_style_student_36",
+      "display_name": "归因方式问卷（学生用）",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "归因方式问卷(学生用).doc",
+      "source_version": "2026.06-attribution_style_student_36-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 48,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "12个情境分别记录内外归因、稳定性和整体性三个1-7分评分；三个维度各取12题均值，不计算总分，也不自动生成积极、消极或人格类型。自由填写的原因文本仅作本人回顾和研究者支持性访谈线索。",
+      "scoring_version": "2026.06-attribution_style_student_36-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "big_five_bfi_60",
+      "display_name": "大五人格问卷（60题简版）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "大五人格问卷(简版)记分+纬度解释.doc",
+      "source_version": "2026.06-big_five_bfi_60-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 60,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [
+        "BFI01",
+        "BFI03",
+        "BFI04",
+        "BFI06",
+        "BFI09",
+        "BFI13",
+        "BFI14",
+        "BFI18",
+        "BFI19",
+        "BFI20",
+        "BFI21",
+        "BFI22",
+        "BFI24",
+        "BFI28",
+        "BFI30",
+        "BFI31",
+        "BFI43",
+        "BFI44",
+        "BFI47",
+        "BFI49",
+        "BFI53",
+        "BFI54",
+        "BFI58",
+        "BFI60"
+      ],
+      "scoring_method": "五个维度按本地 Word 题号分别求和并应用各自反向题；不计算人格总分，不输出人格类型或优劣标签。",
+      "scoring_version": "2026.06-big_five_bfi_60-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "big_five_tipi_10",
+      "display_name": "10项目大五人格量表（TIPI）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "Gosling Lab官方TIPI英文原版；中文翻译待心理复核",
+      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_type": "author_public_use",
+      "review_status": "pilot_approved",
+      "item_count": 10,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "1-7分；2、4、6、8、10按8-原分反向后，各维度取两题均值。不计算人格总分，不输出人格类型。",
+      "scoring_version": "2026.07-task18-reviewed-scales-v1::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "cd_risc10_brief_resilience",
+      "display_name": "简式心理韧性量表（CD-RISC-10）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "简式心理韧性量表-10题.docx",
+      "source_version": "2026.06-cd_risc10_brief_resilience-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 10,
+      "response_scales": [
+        {
+          "min": 0.0,
+          "max": 4.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "源文件写明 CD-RISC-10 为单维结构，0-4 分，总分 0-40，分数越高代表心理韧性水平越高。",
+      "scoring_version": "2026.06-cd_risc10_brief_resilience-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "cfi2_cognitive_flexibility",
+      "display_name": "认知灵活性问卷中文版（CFI-2）",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+      "source_version": "2026.06-cfi2_cognitive_flexibility-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 12,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [
+        "CFI02",
+        "CFI03",
+        "CFI05",
+        "CFI10"
+      ],
+      "scoring_method": "源文件写明三个因子：灵活选择 1、2、3、5、6、10；灵活意愿 4、11、12；灵活效能 7、8、9；2、3、5、10 反向计分。",
+      "scoring_version": "2026.06-cfi2_cognitive_flexibility-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "cognitive_curiosity_student",
+      "display_name": "认知好奇量表（中文初中生版ECS-C）",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "南京大学社会学院心理系公开中文初中生版；本地SPSS公式",
+      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_type": "public_research_education_resource",
+      "review_status": "pilot_approved",
+      "item_count": 10,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 4.0,
+          "option_count": 4
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "10题均正向计分；总分10-40，兴趣型6-24，剥夺型4-16。分数用于观察好奇方式，不评价学习能力。",
+      "scoring_version": "2026.07-task18-reviewed-scales-v1::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "emotion_regulation_erq",
+      "display_name": "情绪调节问卷（Gross ERQ）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "Gross情绪调节问卷.pdf；Gross情绪调节问卷.docx；指标值计算-Gross情绪调节量表GERQ.sps",
+      "source_version": "2026.06-emotion_regulation_erq_gross-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 10,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "本地 PDF 第 2 页写明：重新评价 = T1、T3、T5、T7、T8、T10；本地 PDF 第 2 页写明：表达抑制 = T2、T4、T6、T9；sps 计分脚本写明 gerqcogre = gerq1 + gerq3 + gerq5 + gerq7 + gerq8 + gerq10；sps 计分脚本写明 gerqinhib = gerq2 + gerq4 + gerq6 + gerq9；未见反向计分说明；正式开放前必须由人工核对题项、计分方式、标准引用和伦理边界。",
+      "scoring_version": "2026.06-emotion_regulation_erq_gross-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "emotional_intelligence_eis_33",
+      "display_name": "青少年情绪智力量表（EIS）",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "青少年情绪智力质量EIS.sav；指标值计算-中学生情绪智力量表（EIS）.sps",
+      "source_version": "2026.06-emotional_intelligence_eis_33-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 33,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [
+        "EIS05",
+        "EIS28",
+        "EIS33"
+      ],
+      "scoring_method": "题项来自 EIS .sav 变量标签；维度和反向题来自同目录 SPSS 计分脚本。",
+      "scoring_version": "2026.06-emotional_intelligence_eis_33-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "emotional_resilience_11",
+      "display_name": "青少年情绪弹性问卷",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx；青少年情绪弹性问卷.docx",
+      "source_version": "2026.06-emotional_resilience_11-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 11,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 6.0,
+          "option_count": 6
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "源文件写明积极情绪能力项目为 1、3、4、8、9；情绪恢复能力项目为 2、5、6、7、10、11。",
+      "scoring_version": "2026.06-emotional_resilience_11-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "epq_emotional_stability_24",
+      "display_name": "EPQ 情绪稳定性量表",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "EPQ 情绪稳定性量表.docx",
+      "source_version": "2026.06-epq_emotional_stability_24-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 24,
+      "response_scales": [
+        {
+          "min": 0.0,
+          "max": 1.0,
+          "option_count": 2
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "源文件可读到 24 个是/否题项；计分方向、常模和解释边界必须人工复核，用户端不得输出人格定性。",
+      "scoring_version": "2026.06-epq_emotional_stability_24-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "fmi_12_mindfulness",
+      "display_name": "弗赖堡正念调查量表（FMI-12）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "弗赖堡正念调查量表FMI.pdf",
+      "source_version": "2026.06-fmi_12_mindfulness-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 12,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 4.0,
+          "option_count": 4
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "12题均按1-4分正向计分，总分为各题得分之和；不拆分未经来源确认的子维度。",
+      "scoring_version": "2026.06-fmi_12_mindfulness-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "gad7_anxiety",
+      "display_name": "GAD-7 焦虑相关自评量表",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "(完整版)广泛性焦虑障碍量表(GAD-7).doc",
+      "source_version": "2026.06-gad7_anxiety-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 7,
+      "response_scales": [
+        {
+          "min": 0.0,
+          "max": 3.0,
+          "option_count": 4
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "源文件可读到 7 题和 0-3 计分；源文件含诊断分级文字，用户端必须改为非诊断、非筛查说明。",
+      "scoring_version": "2026.06-gad7_anxiety-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "ghq12_general_health",
+      "display_name": "一般健康问卷（GHQ-12）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "一般健康问卷GHQ-12.docx",
+      "source_version": "2026.06-ghq12_general_health-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 12,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 4.0,
+          "option_count": 4
+        }
+      ],
+      "reverse_items": [
+        "GHQ01",
+        "GHQ03",
+        "GHQ04",
+        "GHQ07",
+        "GHQ08",
+        "GHQ12"
+      ],
+      "scoring_method": "本地 Word 明确写明12题、1-4分；积极性项目1、3、4、7、8、12反向计分后求和。原文件中的阈值和异常判断不进入用户端。",
+      "scoring_version": "2026.06-ghq12_general_health-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "hplp_c_health_promoting_lifestyle",
+      "display_name": "健康促进生活方式量表（HPLP，40题）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "5_牛至旭_中年女性自我关怀现状及其对主观幸福感的影响/数据和问卷/问卷/四个量表文字版.docx",
+      "source_version": "2026.07-hplp-40-niu-zhixu-canonical",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 40,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 4.0,
+          "option_count": 4
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "40题均按1-4分正向计分。营养8题、健康责任9题、身体活动8题、精神成长5题、人际关系5题、压力管理5题分别取均值；综合观察为六维均值的平均值。分数越高表示该类健康促进行为在本次自报中出现得越频繁，不作诊断或医学风险判断。",
+      "scoring_version": "2026.07-hplp-40-niu-zhixu-canonical::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "micro_ysq_relationship_18",
+      "display_name": "关系中的常见担心与期待",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_version": "2026.06-micro_ysq_relationship_18-from-scale-draft",
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_approved",
+      "item_count": 18,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 6.0,
+          "option_count": 6
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "18题各自保留为一个支持性主题维度，分值为该题1-6原始得分；聚类继续使用18个题项级特征。不计算诊断性总分，不把单题高分解释为固定特征。",
+      "scoring_version": "2026.06-micro_ysq_relationship_18-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "mindful_attention_awareness_maas",
+      "display_name": "正念注意觉知量表（MAAS）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "正念注意觉知量表 答题纸.pdf",
+      "source_version": "2026.06-mindful_attention_awareness_maas-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 15,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 6.0,
+          "option_count": 6
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "15题均按1-6分计分并取平均值，不另作反向处理；均值越高表示本次自报中日常注意与觉察更充分。结果只作阶段性观察。",
+      "scoring_version": "2026.06-mindful_attention_awareness_maas-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "parent_reflective_functioning_prfq",
+      "display_name": "家长反思功能问卷",
+      "construct": "成人自助",
+      "target_population": "parent",
+      "language_version": "zh-CN",
+      "evidence_source": "反思功能问卷_PRFQ_Chinese-家长反思功能问卷.docx；反思功能问卷_PRFQ_syntax_Word_format.docx",
+      "source_version": "2026.06-parent_reflective_functioning_prfq-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 18,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [
+        "PRFQ11",
+        "PRFQ18"
+      ],
+      "scoring_method": "PRFQ11 和 PRFQ18 按 syntax 进行 1-7 反向计分；PRFQ_PM = PRFQ1、4、7、10、13、16 的均值；PRFQ_CM = PRFQ2、5、8、11rr、14、17 的均值；PRFQ_IC = PRFQ3、6、9、12、15、18rr 的均值；正式开放前必须由人工核对中文题项、维度译名、计分解释和伦理边界。",
+      "scoring_version": "2026.06-parent_reflective_functioning_prfq-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "parental_burnout_pba",
+      "display_name": "父母养育倦怠问卷",
+      "construct": "家长自助",
+      "target_population": "parent",
+      "language_version": "zh-CN",
+      "evidence_source": "Parental Burnout Assessment with scoring.docx",
+      "source_version": "2026.06-parental_burnout_pba-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 23,
+      "response_scales": [
+        {
+          "min": 0.0,
+          "max": 6.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "23题均按0-6频率计分，无反向题；总分为23题之和，范围0-138；四个维度分别求和；结果仅用于观察养育压力相关体验，不使用诊断阈值，不评价家长好坏。",
+      "scoring_version": "2026.06-parental_burnout_pba-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "perceived_social_support_psss",
+      "display_name": "领悟社会支持量表（PSSS）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "肖水源的社会支持评定量表与姜乾金的领悟社会支持量表.doc",
+      "source_version": "2026.06-perceived_social_support_psss-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 12,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "12题均按1-7分正向计分。其他支持为1、2、5、10题，家庭支持为3、4、8、11题，朋友支持为6、7、9、12题；各维度与总分均为题项得分之和。",
+      "scoring_version": "2026.06-perceived_social_support_psss-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "phq9_cesd10_depression",
+      "display_name": "PHQ-9 情绪低落相关自评量表",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "精选-PHQ-9抑郁症筛查量表.doc；cesd-10-流调中心抑郁水平评定.jpg",
+      "source_version": "2026.06-phq9_cesd10_depression-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 9,
+      "response_scales": [
+        {
+          "min": 0.0,
+          "max": 3.0,
+          "option_count": 4
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "本轮只录入 PHQ-9 主版本；CES-D10 来源为图片，需人工/OCR 复核后另行录入。源文件含诊断分级文字，用户端必须改为非诊断说明。",
+      "scoring_version": "2026.06-phq9_cesd10_depression-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "regulatory_focus_general_18",
+      "display_name": "一般调节聚焦问卷",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "一般调节聚焦问卷-孙天娇要来的.docx",
+      "source_version": "2026.06-regulatory_focus_general_18-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 18,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "18题采用1-7分；促进聚焦与预防聚焦各9题，分别取均值，不计算诊断性总分；两个维度可以同时较高或较低，不把差值解释为固定人格类型。",
+      "scoring_version": "2026.06-regulatory_focus_general_18-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "regulatory_focus_relationship_18",
+      "display_name": "关系情境中的行动关注方式",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_version": "2026.07-regulatory_focus_relationship_18-nine-point",
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_approved",
+      "item_count": 18,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 9.0,
+          "option_count": 9
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "PROM 与 PREV 分别取题项均值；RFD=PROM-PREV 仅供研究画像定位；当前问卷采用1-9计分，画像匹配前线性换算到既往1-5训练范围。",
+      "scoring_version": "2026.07-regulatory_focus_relationship_18-nine-point::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze",
+      "score_separation": {
+        "raw_scale": {
+          "min": 1,
+          "max": 9,
+          "field": "raw_scores_json"
+        },
+        "model_input_scale": {
+          "min": 1,
+          "max": 5,
+          "field": "transformed_scores_json"
+        },
+        "formula": "1 + (raw - 1) * 4 / 8",
+        "transformation_version": "linear_9_to_5_v1",
+        "purpose": "compatibility_with_existing_1_to_5_profile_model_only",
+        "raw_values_preserved": true,
+        "reporting_rule": "九点原分与五点模型输入不得在同一量尺下混写。"
+      }
+    },
+    {
+      "measure_id": "relationship_initiation_intention_action",
+      "display_name": "关系主动性：想法、意愿与行动",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/大学生亲密关系主动性调查问卷.docx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/原始量表.xlsx；D:/codex/workspace/safehome1.0其他内容/夏老师文件/2026年6月18日发给董俊杰的(1)/测评问卷-量表/数据1/调节聚焦问卷计分手册.docx",
+      "source_version": "2026.06-relationship_initiation_intention_action-from-scale-draft",
+      "source_type": "authorized_local_research_resource",
+      "review_status": "pilot_approved",
+      "item_count": 31,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "获益、威胁与真实自我保护按冻结乘积公式计算；SN/PBC/BI/RAP分别取均值；不计算诊断性总分。",
+      "scoring_version": "2026.06-relationship_initiation_intention_action-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评用于大学生关系体验的阶段性自我观察和练习选择，不构成诊断、筛查结论、人格标签或关系成败预测。如填写内容涉及现实安全风险，请优先联系可信成年人、学校支持人员或专业服务。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "rfq8_reflective_functioning",
+      "display_name": "反思功能问卷8题（RFQ-8）",
+      "construct": "成人自助",
+      "target_population": "parent",
+      "language_version": "zh-CN",
+      "evidence_source": "content/assessment_worksheets.json",
+      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_type": "manual_retained",
+      "review_status": "pilot_approved",
+      "item_count": 8,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "7点作答不直接相加。RFQc使用1→3、2→2、3→1、4-7→0；RFQu使用1-4→0、5→1、6→2、7→3，题7反向重编码；两个分量表各取6项均值。",
+      "scoring_version": "2026.07-task18-reviewed-scales-v1::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "rsca_adolescent_resilience",
+      "display_name": "青少年心理韧性量表（RSCA）",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "2022年6月施测的学生问卷及计分规则-高一年级745与高二年级963均施测.docx",
+      "source_version": "2026.06-rsca_adolescent_resilience-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 27,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [
+        "RSCA01",
+        "RSCA02",
+        "RSCA05",
+        "RSCA06",
+        "RSCA09",
+        "RSCA12",
+        "RSCA15",
+        "RSCA16",
+        "RSCA17",
+        "RSCA21",
+        "RSCA26",
+        "RSCA27"
+      ],
+      "scoring_method": "27题按1-5分计分；1、2、5、6、9、12、15、16、17、21、26、27题反向计分；五个维度分别求和；前三个维度构成个人力，后两个维度构成支持力；总分为27题校正后得分之和。",
+      "scoring_version": "2026.06-rsca_adolescent_resilience-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "self_compassion_scs_cn",
+      "display_name": "自我关怀量表（SCS 中文版）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "ChineseSCS-26题自我关怀量表.pdf",
+      "source_version": "2026.06-self_compassion_scs_cn-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 26,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [
+        "SCS01",
+        "SCS02",
+        "SCS04",
+        "SCS06",
+        "SCS08",
+        "SCS11",
+        "SCS13",
+        "SCS16",
+        "SCS18",
+        "SCS20",
+        "SCS21",
+        "SCS24",
+        "SCS25"
+      ],
+      "scoring_method": "六个维度分别取所属题项均值；自我批评、自我隔离、过度沉迷的题项先按1↔5、2↔4反向计分。综合观察为六个校正后维度均值的平均值。",
+      "scoring_version": "2026.06-self_compassion_scs_cn-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "student_profile_v1",
+      "display_name": "学生支持性画像测评",
+      "construct": "学生画像",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "夏老师项目计划书、心理测评数据分析图、学生心理反馈规则图",
+      "source_version": "2026.06-student-profile-v1-draft",
+      "source_type": "project_draft",
+      "review_status": "pilot_approved",
+      "item_count": 6,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 5.0,
+          "option_count": 5
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "第一版仅保存量表分数和自由文本，不直接生成诊断结论。后续可由规则版画像服务读取 test_anxiety、iu_score、fear_score、self_compassion 和 free_text，生成阶段性支持画像、置信度、维度解释和推荐任务。",
+      "scoring_version": "2026.06-student-profile-v1-draft::worksheet_server_score_v1",
+      "missing_item_rule": "required_items_only_optional_text_may_be_missing",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本内容只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "study_engagement_uwes_s_17",
+      "display_name": "学习投入量表（UWES-S 中文版）",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "学习投入量表.docx",
+      "source_version": "2026.06-study_engagement_uwes_s_17-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 17,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "源文件写明 17 题、7 点计分，1-6 活力、7-11 奉献、12-17 专注。",
+      "scoring_version": "2026.06-study_engagement_uwes_s_17-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本结果只用于自我观察和练习参考，不构成诊断、筛查结论或人格标签。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "swls_life_satisfaction",
+      "display_name": "生活满意度量表（SWLS）",
+      "construct": "成人自助",
+      "target_population": "adult",
+      "language_version": "zh-CN",
+      "evidence_source": "生活满意度量表(SWLS).docx",
+      "source_version": "2026.06-swls_life_satisfaction-from-scale-draft",
+      "source_type": "authorized_resource",
+      "review_status": "pilot_approved",
+      "item_count": 5,
+      "response_scales": [
+        {
+          "min": 1.0,
+          "max": 7.0,
+          "option_count": 7
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "5题均按1-7分正向计分，总分为5题得分之和；不使用诊断、人格标签或固定结论。",
+      "scoring_version": "2026.06-swls_life_satisfaction-from-scale-draft::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于自我观察和练习选择，不构成诊断、筛查结论或人格判断，也不替代心理咨询、危机干预或医学建议。若结果让你担心，请和可信成年人、学校老师或专业人员讨论。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    },
+    {
+      "measure_id": "who5_wellbeing",
+      "display_name": "WHO-5身心健康指标",
+      "construct": "学生自助",
+      "target_population": "student",
+      "language_version": "zh-CN",
+      "evidence_source": "本地主观幸福感-生活满意度/(完整版)心理领域--WHO-5量表.doc；WHO官方2024版本",
+      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_type": "WHO_CC_BY_NC_SA_3_0",
+      "review_status": "pilot_approved",
+      "item_count": 5,
+      "response_scales": [
+        {
+          "min": 0.0,
+          "max": 5.0,
+          "option_count": 6
+        }
+      ],
+      "reverse_items": [],
+      "scoring_method": "5题各0-5分，原始总分0-25；需要百分制时乘4。低分仅提示进一步关注，不输出疾病判断。",
+      "scoring_version": "2026.07-task18-reviewed-scales-v1::worksheet_server_score_v1",
+      "missing_item_rule": "all_required_items_must_be_present",
+      "assessment_window": "worksheet_instruction_or_protocol_window_pending_freeze",
+      "minimum_interval": "pending_research_lead_freeze",
+      "allowed_use": [
+        "supportive_self_observation",
+        "governed_recommendation",
+        "authorized_research_after_separate_consent"
+      ],
+      "prohibited_use": [
+        "diagnosis",
+        "screening_claim_without_validation",
+        "fixed_personality_label",
+        "causal_effect_claim"
+      ],
+      "raw_answer_field": "assessment_results.answers_json",
+      "raw_score_field": "assessment_results.raw_scores_json",
+      "derived_score_field": "assessment_results.scores_json",
+      "transformed_score_field": "assessment_results.transformed_scores_json",
+      "interpretation_boundary": "本测评只用于阶段性自我观察和练习参考，不构成诊断、筛查结论或人格标签，也不替代心理咨询、危机干预或医学建议。",
+      "owner": "research_lead_pending_assignment",
+      "freeze_date": null,
+      "freeze_status": "draft_before_freeze"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "journey_completion",
+      "family": "process",
+      "numerator_event": "primary_action_completed",
+      "denominator_event": "eligible_primary_action_exposed",
+      "deduplication": "user_id+journey_date+action_id",
+      "window": "same_journey_date",
+      "exceptions": [
+        "technical_failure",
+        "withdrew_research_consent"
+      ],
+      "interpretation": "流程完成比例"
+    },
+    {
+      "id": "journey_recovery",
+      "family": "process",
+      "numerator_event": "action_completed_after_recovery",
+      "denominator_event": "recoverable_interruption",
+      "deduplication": "user_id+interruption_id",
+      "window": "pending_freeze",
+      "exceptions": [
+        "safety_routed"
+      ],
+      "interpretation": "中断恢复比例"
+    },
+    {
+      "id": "feedback_discomfort",
+      "family": "safety",
+      "numerator_event": "evaluation_uncomfortable",
+      "denominator_event": "feedback_seen",
+      "deduplication": "user_id+source_id+content_version",
+      "window": "first_active_evaluation",
+      "exceptions": [],
+      "interpretation": "不适信号，不等于风险诊断"
+    },
+    {
+      "id": "human_escalation_delay",
+      "family": "safety",
+      "numerator_event": "resolved_escalations",
+      "denominator_event": "escalations_created",
+      "deduplication": "work_item_id",
+      "window": "created_at_to_closed_at",
+      "exceptions": [
+        "participant_cancelled"
+      ],
+      "interpretation": "人工衔接可靠性"
+    },
+    {
+      "id": "card_selection",
+      "family": "recommendation",
+      "numerator_event": "card_selected",
+      "denominator_event": "recommendation_impression",
+      "deduplication": "user_id+recommendation_id+card_id",
+      "window": "recommendation_version",
+      "exceptions": [],
+      "interpretation": "推荐被选择比例"
+    },
+    {
+      "id": "card_completion",
+      "family": "recommendation",
+      "numerator_event": "checkin_completed",
+      "denominator_event": "card_selected",
+      "deduplication": "user_id+assignment_id+due_date",
+      "window": "assignment_window",
+      "exceptions": [
+        "assignment_cancelled"
+      ],
+      "interpretation": "选择后的练习完成比例"
+    },
+    {
+      "id": "ai_severe_failure",
+      "family": "ai_safety",
+      "numerator_event": "severity_high_failure",
+      "denominator_event": "synthetic_case_run",
+      "deduplication": "evaluation_run_id+case_id",
+      "window": "single_evaluation_run",
+      "exceptions": [],
+      "interpretation": "工程安全门，不等于现场安全"
+    },
+    {
+      "id": "ai_source_coverage",
+      "family": "ai_quality",
+      "numerator_event": "answer_with_approved_source",
+      "denominator_event": "answer_expected_case",
+      "deduplication": "evaluation_run_id+case_id",
+      "window": "single_evaluation_run",
+      "exceptions": [
+        "correct_refusal_expected"
+      ],
+      "interpretation": "批准来源覆盖"
+    }
+  ],
+  "missingness_plan": {
+    "distinct_states": [
+      "not_exposed",
+      "not_started",
+      "started_not_completed",
+      "submission_failed",
+      "active_withdrawal",
+      "research_withdrawal",
+      "technical_failure",
+      "lost_to_followup"
+    ],
+    "forbidden_defaults": [
+      "mean_imputation_without_plan",
+      "zero_imputation",
+      "last_observation_carried_forward_as_default"
+    ],
+    "primary_strategy": "pending_outcome_and_design_freeze",
+    "candidate_methods": [
+      "complete_case_with_bias_limits",
+      "fiml_when_model_and_assumptions_support",
+      "multiple_imputation_with_predefined_predictors"
+    ],
+    "required_sensitivity": [
+      "best_worst_bounds",
+      "pattern_mixture_or_delta_shift_when_feasible",
+      "completion_vs_noncompletion_baseline_comparison"
+    ]
+  },
+  "longitudinal_plan": {
+    "required_checks": [
+      "stable_participant_id",
+      "actual_wave_dates",
+      "measure_version_match",
+      "score_range_match",
+      "interval_documented",
+      "configural_metric_scalar_invariance_when_latent_comparison_used"
+    ],
+    "between_within_separated": true,
+    "minimum_points_for_trend": 2,
+    "minimum_points_for_model_candidate": 3,
+    "smoothing": "none_before_freeze",
+    "model_sequence": [
+      "descriptive_by_wave",
+      "mixed_model_or_growth_candidate",
+      "ri_clpm_only_if_estimand_waves_and_identification_support"
+    ],
+    "fallback": "descriptive_change_with_actual_dates_and_no_causal_language",
+    "cluster_boundary": "横断面聚类不得解释为个人发展轨迹。"
+  },
+  "analysis_sequence": {
+    "order": [
+      "flow_and_data_quality",
+      "scoring_and_reliability_by_wave",
+      "missingness_and_attrition",
+      "primary_estimand",
+      "diagnostics",
+      "predefined_sensitivity",
+      "secondary",
+      "exploratory"
+    ],
+    "covariates": "pending_freeze_no_posthoc_selection",
+    "interactions": "none_confirmatory_until_named_and_power_checked",
+    "subgroups": "none_confirmatory_until_measurement_comparability_and_formal_difference_test_defined",
+    "multiplicity": "pending_family_definition_and_control_method",
+    "outliers": "report_influence_and_predefined_robustness_no_significance_driven_deletion",
+    "failure_fallback": "simpler_predeclared_descriptive_or_identifiable_model",
+    "deviation_policy": "new_version_reason_timestamp_exploratory_label_before_result_access"
+  },
+  "simulation_plan": {
+    "contains_real_data": false,
+    "random_seed": 20260720,
+    "scenarios": [
+      "completion_precision_n20_n40_n80",
+      "attrition_0_20_40_percent",
+      "three_wave_between_within_recovery",
+      "two_cluster_perturbation_stability"
+    ],
+    "power_claim_allowed": false,
+    "purpose": "feasibility_and_identifiability_only_until_effect_and_primary_estimand_are_frozen"
+  },
+  "reporting_standards": [
+    {
+      "id": "APA_JARS_QUANT",
+      "applies_to": "quantitative_psychology_reports",
+      "status": "applicable",
+      "official_url": "https://apastyle.apa.org/jars/quantitative",
+      "verified_via": "https://www.equator-network.org/reporting-guidelines/journal-article-reporting-standards-for-quantitative-research-in-psychology-the-apa-publications-and-communications-board-task-force-report/",
+      "accessed_on": "2026-07-20"
+    },
+    {
+      "id": "STROBE",
+      "applies_to": "observational_or_longitudinal_reporting_if_selected",
+      "status": "conditional",
+      "official_url": "https://www.strobe-statement.org/checklists/",
+      "accessed_on": "2026-07-20"
+    },
+    {
+      "id": "SPIRIT_2025",
+      "applies_to": "randomized_trial_protocol_only_if_design_selected",
+      "status": "not_currently_applicable",
+      "official_url": "https://www.consort-spirit.org/",
+      "accessed_on": "2026-07-20"
+    },
+    {
+      "id": "CONSORT_2025",
+      "applies_to": "randomized_trial_results_only_if_design_selected",
+      "status": "not_currently_applicable",
+      "official_url": "https://www.consort-spirit.org/",
+      "accessed_on": "2026-07-20"
+    },
+    {
+      "id": "SPIRIT_AI_CONSORT_AI",
+      "applies_to": "AI_randomized_trial_only_after_live_trial_approval",
+      "status": "not_currently_applicable_legacy_extension_to_reconcile_with_2025_core",
+      "official_url": "https://www.consort-spirit.org/extensions",
+      "accessed_on": "2026-07-20"
+    },
+    {
+      "id": "DECIDE_AI",
+      "applies_to": "early_live_clinical_AI_evaluation_only",
+      "status": "future_conditional_not_for_current_synthetic_sandbox",
+      "official_url": "https://www.nature.com/articles/s41591-022-01772-9",
+      "accessed_on": "2026-07-20"
+    },
+    {
+      "id": "PRISMA",
+      "applies_to": "systematic_review_only",
+      "status": "excluded_not_a_systematic_review",
+      "official_url": "https://www.prisma-statement.org/",
+      "accessed_on": "2026-07-20"
+    }
+  ],
+  "signature_requirements": [
+    {
+      "role": "research_lead",
+      "status": "pending_human_signature",
+      "evidence_required": "primary_question_estimand_timepoint_sample_basis"
+    },
+    {
+      "role": "ethics_or_governance_lead",
+      "status": "pending_human_signature",
+      "evidence_required": "ethics_consent_safety_data_use"
+    },
+    {
+      "role": "data_lead",
+      "status": "pending_human_signature",
+      "evidence_required": "measure_scoring_missingness_access_freeze"
+    },
+    {
+      "role": "engineering_lead",
+      "status": "pending_human_signature",
+      "evidence_required": "version_hash_code_environment_recovery"
+    }
+  ],
+  "unresolved_blockers": [
+    "unique_primary_outcome",
+    "primary_timepoint",
+    "sample_size_basis",
+    "minimum_interpretable_change",
+    "final_inclusion_exclusion",
+    "missing_data_primary_method",
+    "stopping_decision_owner",
+    "ethics_and_data_governance_evidence",
+    "target_journal_if_any"
+  ],
+  "boundary_notice": "本注册表只冻结前结构，不读取主要真实结果、不构成预注册、伦理批准、研究负责人签字或效果结论。"
+}

@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-07-20.1"
+CONTRACT_VERSION = "2026-07-20.2"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 
@@ -37,6 +37,14 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path == "/api/research/methodology/public-status":
+        return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
+    if path.startswith("/api/research/methodology"):
+        if path in {"/api/research/methodology/versions/sync", "/api/research/methodology/disable"}:
+            return {"mode": "role", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        if path == "/api/research/methodology/evidence-packages":
+            return {"mode": "role", "roles": ["supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        return {"mode": "role", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path.startswith("/api/research/benchmarks"):
         if path in {"/api/research/benchmarks/dataset-cards/sync", "/api/research/benchmarks/disable"}:
             return {"mode": "role", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
@@ -86,6 +94,10 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+    if path == "/api/research/methodology/public-status":
+        return "non_sensitive_gate_status_only"
+    if path.startswith("/api/research/methodology"):
+        return "internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows"
     if path.startswith("/api/research/benchmarks"):
         return "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher"
     if path.startswith("/api/ai-qa/sessions") or path.startswith("/api/ai-qa/messages"):
@@ -143,6 +155,13 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ("/api/research/benchmarks/disable", "POST"): ["reason"],
     }
     body_fields.update(benchmark_body_fields.get((path, method), []))
+    methodology_body_fields = {
+        ("/api/research/methodology/checks/run", "POST"): ["version_id"],
+        ("/api/research/methodology/simulations/run", "POST"): ["version_id"],
+        ("/api/research/methodology/evidence-packages", "POST"): ["version_id"],
+        ("/api/research/methodology/disable", "POST"): ["reason"],
+    }
+    body_fields.update(methodology_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),
@@ -170,6 +189,17 @@ def _error_codes(path: str, source: str, access: dict[str, Any]) -> list[str]:
             codes.update(["case_not_found", "annotation_label_invalid", "annotation_value_invalid", "annotation_value_out_of_range"])
         if "/runs/" in path:
             codes.update(["run_not_found", "review_invalid"])
+    if path.startswith("/api/research/methodology"):
+        codes.update([
+            "methodology_content_invalid",
+            "methodology_workbench_disabled",
+            "methodology_workbench_killed",
+            "methodology_version_missing",
+            "methodology_version_immutable",
+            "methodology_evidence_incomplete",
+            "methodology_evidence_failed",
+            "disable_reason_invalid",
+        ])
     codes.update(["internal_error", "http_error"])
     return sorted(codes)
 
@@ -186,6 +216,7 @@ def _enum_refs(path: str) -> list[str]:
         ("/relationship-pilot", "relationship_pilot_status"),
         ("/ai-qa/", "ai_qa_route"),
         ("/research/benchmarks", "offline_benchmark_status"),
+        ("/research/methodology", "research_methodology_status"),
     ]
     for token, ref in mapping:
         if token in path:
