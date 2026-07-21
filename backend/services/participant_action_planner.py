@@ -213,5 +213,19 @@ def build_today_journey(user_id: str) -> dict:
         "primary_action": primary_action,
         "secondary_action": secondary_action,
         "generated_at": now_iso(),
+        "state_contract": {
+            "reproducible_states": ["ready", "paused", "completed", "not_due", "recoverable_error", "controlled"],
+            "loading": {"client_state": "loading", "preserve_previous_action": True},
+            "failure": {"state": "recoverable_error", "show_retry": True, "never_render_as_empty": True},
+            "weak_network_recovery": {"retry": "manual", "preserve_local_draft": True, "deduplicate_submit": True},
+        },
+        "controlled_capabilities": {
+            "therapeutic_assessment": {
+                "status": "governance_gate_pending",
+                "enabled": False,
+                "entry_url": None,
+                "notice": "治疗性评估仍处于受控准备阶段，人工、伦理与发布门禁通过前不会进入参与者今日任务。",
+            }
+        },
         "boundary_notice": "今天的一小步只用于整理当前可继续的操作，不构成诊断、治疗安排或必须完成的任务。",
     }

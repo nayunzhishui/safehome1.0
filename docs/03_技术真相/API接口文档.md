@@ -1,6 +1,6 @@
 # API 接口文档
 
-最后更新时间：2026-07-20
+最后更新时间：2026-07-21
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
@@ -2107,3 +2107,12 @@ relationship_initiation_intention_action
 
 高风险包要求提出者、独立审核者、研究/心理/安全批准人和发布执行人分离；同一人不得跨领域批准。发布包版本唯一，清单或制品哈希被篡改返回409；高严重度回归阻断送审和发布。生产发布开关当前强制false，临时展示越权不改变这些权限和门禁。
 
+## 2026-07-21 T23完整主旅程补充接口
+
+- `POST /api/feedback-ledger/<entry_id>/actions`：参与者本人撤回或纠错评价；必须提供幂等键，纠错生成新版本，撤回保留历史，跨用户返回403/404边界。
+- `POST /api/training-plan/recommendations/replay`：参与者本人按`feedback_adaptive_v2`或`legacy_rule_order_v1`回放自己的测评推荐并生成快照；必须提供测评结果ID和幂等键。
+- `GET /api/training-plan/recommendation-snapshots/<snapshot_id>`：参与者本人读取自己的推荐回放；不向其他参与者或研究者暴露。
+- `GET /api/journey/today`兼容新增`state_contract`和`controlled_capabilities`，明确加载、失败、弱网恢复及治疗性评估未开放状态。
+- `POST /api/product-events`兼容新增今日行动展示/点击/完成/跳过/恢复、不适和人工升级事件；只接收白名单枚举元数据，可使用`client_event_id`防重复，不接收参与者原文。
+
+以上接口不构成诊断、治疗安排或疗效证明；临时展示越权不能替代服务端对象权限验收。

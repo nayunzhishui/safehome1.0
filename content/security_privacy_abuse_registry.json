@@ -1822,6 +1822,30 @@
       }
     },
     {
+      "operation_id": "feedback_ledger.apply_entry_action.post",
+      "method": "POST",
+      "path": "/api/feedback-ledger/<entry_id>/actions",
+      "object_type": "feedback_ledger",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": true,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
       "operation_id": "feedback_ledger.summary.get",
       "method": "GET",
       "path": "/api/feedback-ledger/summary",
@@ -5383,6 +5407,54 @@
       }
     },
     {
+      "operation_id": "training_plan.get_training_recommendation_snapshot.get",
+      "method": "GET",
+      "path": "/api/training-plan/recommendation-snapshots/<snapshot_id>",
+      "object_type": "training_plan",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "training_plan.replay_training_recommendation.post",
+      "method": "POST",
+      "path": "/api/training-plan/recommendations/replay",
+      "object_type": "training_plan",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
       "operation_id": "ux_governance.post_audit.post",
       "method": "POST",
       "path": "/api/ux-governance/audits",
@@ -5612,7 +5684,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 222,
+    "operation_count": 225,
     "showcase_bypass_operation_count": 6,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

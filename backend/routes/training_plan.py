@@ -18,9 +18,17 @@ from database import (
     rows_to_dicts,
     write_audit_log,
 )
-from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
+from routes.auth_utils import AuthError, auth_error_response, require_login, resolve_actor_user_id
 from routes.utils import fail, ok
-from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
+from services.training_recommendation_service import (
+    ADAPTIVE_STRATEGY_VERSION,
+    LEGACY_STRATEGY_VERSION,
+    RECOMMENDATION_STRATEGIES,
+    create_recommendation_snapshot,
+    evaluate_training_rules,
+    flatten_card_ids,
+    get_recommendation_snapshot,
+)
 from services.training_schedule_service import assignment_schedule, current_local_day, parse_day
 
 
@@ -258,6 +266,14 @@ def _cluster_plan_item(row: dict, worksheet: dict, cards_by_id: dict[str, dict],
         "cards": _compact_cards(card_ids, cards_by_id),
         "reason": reason,
         "recommendation_reason": reason,
+        "recommendation_strategy": "profile_cluster_v1",
+        "fallback_strategy_version": "profile_cluster_v1",
+        "cold_start": False,
+        "replacement_card_ids": [],
+        "ranking_explanation": [
+            {"card_id": card_id, "rank": index + 1, "feedback_applied": False, "participant_controlled": True}
+            for index, card_id in enumerate(card_ids[:3])
+        ],
         "next_step": "先选一张最容易完成的训练卡，做完后简单打卡。",
         "evidence_summary": f"来源于最近一次支持性测评的阶段性画像：{cluster_name or '未命名画像'}。",
         "boundary_notice": "画像推荐只表示当前更接近某类练习线索，不代表固定类型或诊断。",
@@ -289,6 +305,11 @@ def _assessment_plan_items(row: dict, worksheet: dict, cards_by_id: dict[str, di
                 "cards": _compact_cards(card_ids, cards_by_id),
                 "reason": reason,
                 "recommendation_reason": rule.get("recommendation_reason") or reason,
+                "recommendation_strategy": rule.get("recommendation_strategy") or LEGACY_STRATEGY_VERSION,
+                "fallback_strategy_version": rule.get("fallback_strategy_version") or LEGACY_STRATEGY_VERSION,
+                "cold_start": bool(rule.get("cold_start")),
+                "replacement_card_ids": rule.get("replacement_card_ids") or [],
+                "ranking_explanation": rule.get("ranking_explanation") or [],
                 "next_step": rule.get("today_suggestion") or "先完成一个 1 到 5 分钟的小练习，再记录一点感受。",
                 "evidence_summary": f"来源于“{worksheet_ref['title']}”的维度线索：{trigger_dimension or '整体结果'}。",
                 "boundary_notice": rule.get("boundary_notice")
@@ -379,11 +400,86 @@ def get_training_plan():
             "latest_result": row_to_dict(results[0]) if results else None,
             "plan_items": plan_items,
             "today_plan_items": today_plan_items,
+            "recommendation_strategy": next(
+                (item.get("recommendation_strategy") for item in plan_items if item.get("recommendation_strategy")),
+                LEGACY_STRATEGY_VERSION,
+            ),
+            "fallback_strategy_version": LEGACY_STRATEGY_VERSION,
+            "recommendation_controls": {
+                "feedback_can_change_order": True,
+                "participant_can_correct_or_withdraw_feedback": True,
+                "legacy_strategy_replay_available": True,
+                "global_rollback_flag": "training_feedback_adaptive_ranking",
+            },
             "empty_state": empty_state,
             "next_action": empty_state,
             "boundary_notice": "个性化训练计划只用于阶段性练习建议，不构成诊断、筛查或治疗方案。",
         }
     )
+
+
+@bp.post("/recommendations/replay")
+def replay_training_recommendation():
+    payload = request.get_json(silent=True) or {}
+    try:
+        actor = require_login(allow_legacy_admin=False)
+        if actor.get("role") not in {"parent", "student"}:
+            raise AuthError("当前接口只供参与者本人回放自己的推荐。", status=403)
+        user_id = str(actor["id"])
+    except AuthError as exc:
+        return auth_error_response(exc)
+
+    source_result_id = str(payload.get("source_result_id") or "").strip()
+    strategy_version = str(payload.get("strategy_version") or ADAPTIVE_STRATEGY_VERSION).strip()
+    idempotency_key = str(request.headers.get("Idempotency-Key") or payload.get("idempotency_key") or "").strip()
+    if not source_result_id or strategy_version not in RECOMMENDATION_STRATEGIES:
+        return fail("validation_error", "请提供自己的测评结果和允许的推荐策略版本。", status=400)
+    with get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT id, worksheet_id, scores_json
+            FROM assessment_results
+            WHERE id = ? AND user_id = ?
+            """,
+            (source_result_id, user_id),
+        ).fetchone()
+    if row is None:
+        return fail("not_found", "没有找到可回放的测评结果。", status=404)
+    item = row_to_dict(row)
+    worksheet = _worksheet_map().get(item["worksheet_id"], {})
+    rules = evaluate_training_rules(
+        item["worksheet_id"],
+        item.get("scores_json") or "{}",
+        worksheet=worksheet,
+        user_id=user_id,
+        strategy_version=strategy_version,
+    )
+    try:
+        snapshot, status = create_recommendation_snapshot(
+            user_id,
+            source_result_id=source_result_id,
+            strategy_version=strategy_version,
+            rules=rules,
+            idempotency_key=idempotency_key,
+        )
+    except ValueError as exc:
+        code = str(exc)
+        return fail(code, "推荐回放参数无效或幂等键冲突。", status=409 if code == "idempotency_conflict" else 400)
+    return ok(snapshot, status=status)
+
+
+@bp.get("/recommendation-snapshots/<snapshot_id>")
+def get_training_recommendation_snapshot(snapshot_id: str):
+    try:
+        actor = require_login(allow_legacy_admin=False)
+        if actor.get("role") not in {"parent", "student"}:
+            raise AuthError("当前接口只供参与者本人查看自己的推荐回放。", status=403)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    item = get_recommendation_snapshot(str(actor["id"]), snapshot_id)
+    if item is None:
+        return fail("not_found", "没有找到推荐回放记录。", status=404)
+    return ok(item)
 
 
 @bp.post("/assignment")

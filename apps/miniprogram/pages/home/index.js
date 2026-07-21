@@ -2,6 +2,18 @@ const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
 
+function trackJourneyEvent(eventName, journey, status, extra = {}) {
+  if (!journey) return;
+  const clientEventId = [eventName, journey.type || "unknown", journey.sourceId || "none", formatLocalDate(new Date())].join(":");
+  api.trackProductEvent(eventName, {
+    action: journey.type,
+    stage: journey.type === "read_feedback" || journey.type === "read_message" ? "message" : "journey",
+    status,
+    source: "today_journey",
+    ...extra,
+  }, clientEventId).catch(() => {});
+}
+
 function formatLocalDate(date) {
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
@@ -326,11 +338,13 @@ Page({
       const localDraft = findLocalDraftAction();
       const serverType = payload && payload.primary_action ? payload.primary_action.type : "";
       const selectedPayload = localDraft && !protectedTypes.has(serverType) ? localDraft : payload;
+      const todayJourney = formatTodayJourney(selectedPayload);
       this.setData({
-        todayJourney: formatTodayJourney(selectedPayload),
+        todayJourney,
         todayJourneyLoading: false,
         todayJourneyError: "",
       });
+      trackJourneyEvent("journey_action_impression", todayJourney, "shown");
     } catch (error) {
       if (error && error.code === "auth_required") {
         this.setData({
@@ -360,6 +374,10 @@ Page({
   },
 
   retryTodayJourney() {
+    const journey = this.data.todayJourney;
+    if (journey) {
+      trackJourneyEvent("journey_action_recovery", journey, "recovered", { recovery_mode: "manual_retry" });
+    }
     this.loadTodayJourney();
   },
 
@@ -370,6 +388,7 @@ Page({
     }
     const url = this.data.todayJourney ? this.data.todayJourney.url : "";
     if (!url) return;
+    trackJourneyEvent("journey_action_clicked", this.data.todayJourney, "clicked");
     if (url.startsWith("/pages/training/index")) {
       wx.switchTab({ url: "/pages/training/index" });
       return;

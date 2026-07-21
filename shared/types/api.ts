@@ -557,6 +557,16 @@ export interface TrainingPlanItem {
   cards: TrainingPlanCard[];
   reason: string;
   recommendation_reason?: string;
+  recommendation_strategy?: string;
+  fallback_strategy_version?: string;
+  cold_start?: boolean;
+  replacement_card_ids?: ID[];
+  ranking_explanation?: Array<{
+    card_id: ID;
+    rank: number;
+    feedback_applied: boolean;
+    participant_controlled: boolean;
+  }>;
   next_step?: string;
   evidence_summary?: string;
   boundary_notice: string;
@@ -612,6 +622,15 @@ export interface TrainingPlan {
   recently_completed_card_ids?: ID[];
   latest_result?: Record<string, unknown> | null;
   plan_items: TrainingPlanItem[];
+  today_plan_items?: TrainingPlanItem[];
+  recommendation_strategy?: string;
+  fallback_strategy_version?: string;
+  recommendation_controls?: {
+    feedback_can_change_order: boolean;
+    participant_can_correct_or_withdraw_feedback: boolean;
+    legacy_strategy_replay_available: boolean;
+    global_rollback_flag: string;
+  };
   empty_state?: {
     title: string;
     description: string;
@@ -625,7 +644,7 @@ export interface TrainingPlan {
   boundary_notice: string;
 }
 
-export type TodayJourneyState = "ready" | "paused" | "completed" | "not_due";
+export type TodayJourneyState = "ready" | "paused" | "completed" | "not_due" | "recoverable_error" | "controlled";
 
 export interface TodayJourneyAction {
   type:
@@ -654,6 +673,20 @@ export interface TodayJourney {
   state: TodayJourneyState;
   primary_action: TodayJourneyAction;
   secondary_action?: TodayJourneyAction | null;
+  state_contract: {
+    reproducible_states: TodayJourneyState[];
+    loading: { client_state: "loading"; preserve_previous_action: boolean };
+    failure: { state: "recoverable_error"; show_retry: boolean; never_render_as_empty: boolean };
+    weak_network_recovery: { retry: "manual"; preserve_local_draft: boolean; deduplicate_submit: boolean };
+  };
+  controlled_capabilities: {
+    therapeutic_assessment: {
+      status: "governance_gate_pending" | string;
+      enabled: boolean;
+      entry_url?: string | null;
+      notice: string;
+    };
+  };
   generated_at: ISODateTime;
   boundary_notice: string;
 }
@@ -671,16 +704,40 @@ export interface FeedbackLedgerInput {
   idempotency_key?: string;
 }
 
+export interface FeedbackLedgerActionInput {
+  action: "withdraw" | "correct";
+  idempotency_key?: string;
+  replacement?: Omit<FeedbackLedgerInput, "source_type" | "source_id" | "idempotency_key">;
+}
+
 export interface FeedbackLedgerEntry extends FeedbackLedgerInput {
   id: ID;
   user_id: ID;
   review_status: "recorded" | "pending_review" | string;
-  status: "active" | "superseded";
+  status: "active" | "superseded" | "withdrawn";
+  participant_status: "visible" | "corrected" | "withdrawn" | string;
+  supersedes_id?: ID | null;
+  withdrawn_at?: ISODateTime | null;
   requires_human_review: boolean;
   stop_reinforcement: boolean;
   already_recorded?: boolean;
   created_at: ISODateTime;
   updated_at: ISODateTime;
+}
+
+export interface RecommendationSnapshot {
+  id: ID;
+  user_id: ID;
+  source_result_id: ID;
+  strategy_version: "feedback_adaptive_v2" | "legacy_rule_order_v1" | string;
+  previous_strategy_version?: string | null;
+  recommended_card_ids: ID[];
+  reasons: Array<Record<string, unknown>>;
+  status: string;
+  rollback_available: boolean;
+  already_recorded?: boolean;
+  created_at: ISODateTime;
+  boundary_notice: string;
 }
 
 export interface FeedbackLedgerSummary {

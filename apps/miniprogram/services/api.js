@@ -51,6 +51,8 @@ const API_ENDPOINTS = {
   journeyToday: "/api/journey/today",
   feedbackLedger: "/api/feedback-ledger",
   feedbackLedgerSummary: "/api/feedback-ledger/summary",
+  trainingRecommendationReplay: "/api/training-plan/recommendations/replay",
+  trainingRecommendationSnapshots: "/api/training-plan/recommendation-snapshots",
   trainingPlanAssignment: "/api/training-plan/assignment",
   notificationConfig: "/api/notifications/config",
   notificationConsent: "/api/notifications/consent",
@@ -677,6 +679,32 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.feedbackLedger}${queryString(params)}`, { requiresAuth: true });
     },
 
+    applyFeedbackLedgerAction(entryId, data = {}) {
+      const payload = { ...data };
+      const idempotencyKey = payload.idempotency_key || "";
+      return request(`${API_ENDPOINTS.feedbackLedger}/${encodeURIComponent(entryId)}/actions`, {
+        method: "POST",
+        data: payload,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
+    replayTrainingRecommendation(data = {}) {
+      const payload = { ...data };
+      const idempotencyKey = payload.idempotency_key || "";
+      return request(API_ENDPOINTS.trainingRecommendationReplay, {
+        method: "POST",
+        data: payload,
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
+    getTrainingRecommendationSnapshot(snapshotId) {
+      return request(`${API_ENDPOINTS.trainingRecommendationSnapshots}/${encodeURIComponent(snapshotId)}`, { requiresAuth: true });
+    },
+
     getFeedbackLedgerSummary(params = {}) {
       return request(`${API_ENDPOINTS.feedbackLedgerSummary}${queryString(params)}`, { requiresAuth: true });
     },
@@ -923,10 +951,10 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.relationshipPilot}/growth${queryString(params)}`, { requiresAuth: true });
     },
 
-    trackProductEvent(eventName, metadata = {}) {
+    trackProductEvent(eventName, metadata = {}, clientEventId = "") {
       return request(API_ENDPOINTS.productEvents, {
         method: "POST",
-        data: { event_name: eventName, metadata },
+        data: { event_name: eventName, metadata, client_event_id: clientEventId || undefined },
         requiresAuth: true,
       });
     },

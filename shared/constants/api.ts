@@ -16,6 +16,8 @@ export const API_ENDPOINTS = {
   journeyToday: "/api/journey/today",
   feedbackLedger: "/api/feedback-ledger",
   feedbackLedgerSummary: "/api/feedback-ledger/summary",
+  trainingRecommendationReplay: "/api/training-plan/recommendations/replay",
+  trainingRecommendationSnapshots: "/api/training-plan/recommendation-snapshots",
   trainingPlanAssignment: "/api/training-plan/assignment",
   notificationConfig: "/api/notifications/config",
   notificationConsent: "/api/notifications/consent",

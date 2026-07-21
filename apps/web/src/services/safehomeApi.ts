@@ -34,6 +34,7 @@ import type {
   EmotionDiaryInput,
   FeedbackGenerateInput,
   FeedbackLedgerEntry,
+  FeedbackLedgerActionInput,
   FeedbackLedgerInput,
   FeedbackLedgerSummary,
   FeedbackResult,
@@ -101,6 +102,8 @@ import type {
   SupervisionInput,
   SupervisionRequest,
   TrainingCard,
+  TrainingPlan,
+  RecommendationSnapshot,
   TodayJourney,
   UserMessage,
   WeeklyReport,
@@ -228,6 +231,10 @@ export class SafeHomeApiClient {
     return this.requestData<TodayJourney>(this.withQuery(API_ENDPOINTS.journeyToday, this.withDefaultUserParam(params)));
   }
 
+  getTrainingPlan(params: { user_id?: string } = {}): Promise<TrainingPlan> {
+    return this.requestData<TrainingPlan>(this.withQuery(API_ENDPOINTS.trainingPlan, this.withDefaultUserParam(params)));
+  }
+
   getGrowthOverview(params: { user_id?: string } = {}): Promise<GrowthOverview> {
     return this.requestData<GrowthOverview>(this.withQuery(API_ENDPOINTS.growthOverview, this.withDefaultUserParam(params)));
   }
@@ -237,6 +244,26 @@ export class SafeHomeApiClient {
       method: "POST",
       body: input,
     });
+  }
+
+  applyFeedbackLedgerAction(entryId: string, input: FeedbackLedgerActionInput): Promise<FeedbackLedgerEntry> {
+    return this.requestData<FeedbackLedgerEntry>(`${API_ENDPOINTS.feedbackLedger}/${encodeURIComponent(entryId)}/actions`, {
+      method: "POST",
+      body: input,
+      headers: input.idempotency_key ? { "Idempotency-Key": input.idempotency_key } : undefined,
+    });
+  }
+
+  replayTrainingRecommendation(input: { source_result_id: string; strategy_version: string; idempotency_key: string }): Promise<RecommendationSnapshot> {
+    return this.requestData<RecommendationSnapshot>(API_ENDPOINTS.trainingRecommendationReplay, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": input.idempotency_key },
+    });
+  }
+
+  getTrainingRecommendationSnapshot(snapshotId: string): Promise<RecommendationSnapshot> {
+    return this.requestData<RecommendationSnapshot>(`${API_ENDPOINTS.trainingRecommendationSnapshots}/${encodeURIComponent(snapshotId)}`);
   }
 
   listFeedbackLedgerEntries(params: { source_type?: string; source_id?: string } = {}): Promise<ListResponse<FeedbackLedgerEntry>> {

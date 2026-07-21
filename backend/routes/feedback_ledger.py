@@ -6,6 +6,7 @@ from routes.auth_utils import AuthError, auth_error_response, require_login, req
 from routes.utils import fail, ok
 from services.feedback_ledger_service import (
     FeedbackLedgerError,
+    apply_feedback_action,
     create_feedback_entry,
     list_feedback_entries,
     researcher_feedback_summary,
@@ -51,6 +52,25 @@ def list_entries():
     except AuthError as exc:
         return auth_error_response(exc)
     return ok({"items": items, "count": len(items)})
+
+
+@bp.post("/<entry_id>/actions")
+def apply_entry_action(entry_id: str):
+    try:
+        actor = require_login(allow_legacy_admin=False)
+        if actor.get("role") not in {"parent", "student"}:
+            raise AuthError("当前接口只供参与者本人使用", status=403)
+        item, status = apply_feedback_action(
+            str(actor["id"]),
+            entry_id,
+            request.get_json(silent=True) or {},
+            request.headers.get("Idempotency-Key", ""),
+        )
+    except AuthError as exc:
+        return auth_error_response(exc)
+    except FeedbackLedgerError as exc:
+        return _service_error(exc)
+    return ok(item, status=status)
 
 
 @bp.get("/summary")

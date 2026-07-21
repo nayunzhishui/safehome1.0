@@ -14,12 +14,26 @@ ALLOWED_EVENTS = {
     "relationship_step_completed",
     "relationship_report_downloaded",
     "relationship_task_save_failed",
+    "journey_action_impression",
+    "journey_action_clicked",
+    "journey_action_completed",
+    "journey_action_skipped",
+    "journey_action_recovery",
+    "feedback_discomfort_recorded",
+    "human_support_escalated",
 }
 ALLOWED_METADATA_VALUES = {
-    "action": {"assessment", "report", "drawing", "sentences", "growth", "task_submitted", "task_submit", "long_image"},
-    "stage": {"assessment", "report", "exploration", "feedback", "growth"},
-    "status": {"success", "failed"},
-    "source": {"primary_action", "secondary_action", "task_form", "report"},
+    "action": {
+        "assessment", "report", "drawing", "sentences", "growth", "task_submitted", "task_submit", "long_image",
+        "read_feedback", "read_message", "training_paused", "training_stage_completed", "today_completed",
+        "practice_due", "start_assessment", "start_diary", "set_training_cadence", "training_not_due",
+        "continue_relationship_draft", "login_required",
+        "withdraw_feedback", "correct_feedback", "request_human_support",
+    },
+    "stage": {"assessment", "report", "exploration", "feedback", "growth", "journey", "training", "message", "human_support"},
+    "status": {"success", "failed", "shown", "clicked", "completed", "skipped", "recovered", "escalated"},
+    "source": {"primary_action", "secondary_action", "task_form", "report", "today_journey", "feedback_ledger", "human_support"},
+    "recovery_mode": {"manual_retry", "draft_restore", "idempotent_replay"},
 }
 
 
@@ -56,20 +70,32 @@ def create_product_event():
     if not isinstance(payload, dict):
         return fail("validation_error", "请求体必须是JSON对象", status=400)
     event_name = str(payload.get("event_name") or "").strip()
+    client_event_id = str(payload.get("client_event_id") or "").strip()
     if event_name not in ALLOWED_EVENTS:
         return fail("validation_error", "event_name 不是允许的产品事件", status=400)
+    if len(client_event_id) > 120:
+        return fail("validation_error", "client_event_id 过长", status=400)
     metadata, metadata_error = _validate_metadata(payload.get("metadata"))
     if metadata_error:
         return fail("validation_error", metadata_error, status=400)
 
     with get_connection() as conn:
+        target_id = client_event_id or event_name
+        existing = None
+        if client_event_id:
+            existing = conn.execute(
+                "SELECT id FROM audit_logs WHERE actor_id = ? AND action = ? AND target_type = 'product_event' AND target_id = ? LIMIT 1",
+                (actor["id"], f"product_event_{event_name}", target_id),
+            ).fetchone()
+        if existing:
+            return ok({"accepted": True, "duplicate": True, "client_event_id": client_event_id}, status=200)
         write_audit_log(
             conn,
             f"product_event_{event_name}",
             actor["id"],
             "product_event",
-            event_name,
+            target_id,
             metadata,
         )
         conn.commit()
-    return ok({"accepted": True}, status=202)
+    return ok({"accepted": True, "duplicate": False, "client_event_id": client_event_id or None}, status=202)

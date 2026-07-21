@@ -7,10 +7,13 @@ from pathlib import Path
 from typing import Any
 
 from config import Config
-from database import get_connection, json_loads, load_content_json
+from database import get_connection, json_dumps, json_loads, load_content_json, new_id, now_iso, row_to_dict, write_audit_log
 
 
 EVALUATIONS_FOR_RECOMMENDATION = {"matches", "partly_matches", "does_not_match", "uncomfortable"}
+LEGACY_STRATEGY_VERSION = "legacy_rule_order_v1"
+ADAPTIVE_STRATEGY_VERSION = "feedback_adaptive_v2"
+RECOMMENDATION_STRATEGIES = {LEGACY_STRATEGY_VERSION, ADAPTIVE_STRATEGY_VERSION}
 
 
 def evaluate_training_rules(
@@ -19,6 +22,7 @@ def evaluate_training_rules(
     worksheet: dict | None = None,
     risk_result: dict | None = None,
     user_id: str | None = None,
+    strategy_version: str | None = None,
 ) -> list[dict]:
     """Return assessment training rules whose dimension conditions match scores."""
 
@@ -44,9 +48,14 @@ def evaluate_training_rules(
             continue
         if _evaluate_condition(condition, dim_map, model, worksheet, worksheet_id):
             matched.append(rule)
-    if user_id:
-        matched = _apply_user_feedback(matched, user_id)
-    return matched
+    if not user_id:
+        return [_with_strategy_metadata(rule, LEGACY_STRATEGY_VERSION, cold_start=True) for rule in matched]
+    selected_strategy = strategy_version or (ADAPTIVE_STRATEGY_VERSION if _adaptive_strategy_enabled() else LEGACY_STRATEGY_VERSION)
+    if selected_strategy not in RECOMMENDATION_STRATEGIES:
+        selected_strategy = LEGACY_STRATEGY_VERSION
+    if selected_strategy == LEGACY_STRATEGY_VERSION:
+        return [_with_strategy_metadata(rule, LEGACY_STRATEGY_VERSION) for rule in matched]
+    return _apply_user_feedback(matched, user_id)
 
 
 def flatten_card_ids(rules: list[dict]) -> list[str]:
@@ -71,7 +80,7 @@ def flatten_card_ids(rules: list[dict]) -> list[str]:
 def _apply_user_feedback(rules: list[dict], user_id: str) -> list[dict]:
     feedback = _load_card_feedback(user_id)
     if not feedback:
-        return rules
+        return [_with_strategy_metadata(rule, ADAPTIVE_STRATEGY_VERSION, cold_start=True) for rule in rules]
     adjusted = []
     for rule_index, rule in enumerate(rules):
         cloned = dict(rule)
@@ -91,11 +100,151 @@ def _apply_user_feedback(rules: list[dict], user_id: str) -> list[dict]:
             score += min(int(stats.get("completed", 0)), 5)
             scored_cards.append((score, card_id, stats))
         scored_cards.sort(key=lambda item: item[0], reverse=True)
-        cloned["recommended_card_ids"] = [card_id for _score, card_id, _stats in scored_cards]
+        ranked_ids = [card_id for _score, card_id, _stats in scored_cards]
+        cloned["recommended_card_ids"] = ranked_ids
         cloned["recommendation_reason"] = _feedback_reason(scored_cards)
+        cloned["recommendation_strategy"] = ADAPTIVE_STRATEGY_VERSION
+        cloned["fallback_strategy_version"] = LEGACY_STRATEGY_VERSION
+        cloned["cold_start"] = False
+        cloned["replacement_card_ids"] = [card_id for index, card_id in enumerate(ranked_ids) if index < len(card_ids) and card_id != card_ids[index]]
+        cloned["ranking_explanation"] = [
+            {
+                "card_id": card_id,
+                "rank": index + 1,
+                "feedback_applied": any(int(value or 0) for value in stats.values()),
+                "participant_controlled": True,
+            }
+            for index, (_score, card_id, stats) in enumerate(scored_cards)
+        ]
         adjusted.append((sum(score for score, _card_id, _stats in scored_cards), cloned))
     adjusted.sort(key=lambda item: item[0], reverse=True)
     return [rule for _score, rule in adjusted]
+
+
+def _with_strategy_metadata(rule: dict, strategy_version: str, *, cold_start: bool = False) -> dict:
+    cloned = dict(rule)
+    card_ids = list(cloned.get("recommended_card_ids") or [])
+    cloned["recommendation_strategy"] = strategy_version
+    cloned["fallback_strategy_version"] = LEGACY_STRATEGY_VERSION
+    cloned["cold_start"] = cold_start
+    cloned["replacement_card_ids"] = []
+    cloned["ranking_explanation"] = [
+        {"card_id": card_id, "rank": index + 1, "feedback_applied": False, "participant_controlled": True}
+        for index, card_id in enumerate(card_ids)
+    ]
+    if cold_start:
+        cloned["recommendation_reason"] = "当前还没有可用于排序的练习反馈，先按支持性测评规则展示候选训练卡。"
+    else:
+        cloned.setdefault("recommendation_reason", "当前沿用已验证的规则顺序，未使用参与者反馈调整排序。")
+    return cloned
+
+
+def _adaptive_strategy_enabled() -> bool:
+    try:
+        from services.reliability_service import list_feature_flags
+
+        flag = next(
+            (item for item in list_feature_flags() if item.get("flag_name") == "training_feedback_adaptive_ranking"),
+            None,
+        )
+        return bool(flag and flag.get("enabled") and int(flag.get("rollout_percent") or 0) > 0)
+    except Exception:
+        return False
+
+
+def create_recommendation_snapshot(
+    user_id: str,
+    *,
+    source_result_id: str,
+    strategy_version: str,
+    rules: list[dict],
+    idempotency_key: str,
+) -> tuple[dict, int]:
+    if strategy_version not in RECOMMENDATION_STRATEGIES:
+        raise ValueError("invalid_recommendation_strategy")
+    idempotency_key = str(idempotency_key or "").strip()
+    if not idempotency_key or len(idempotency_key) > 120:
+        raise ValueError("invalid_idempotency_key")
+    card_ids = flatten_card_ids(rules)
+    reasons = [
+        {
+            "recommendation_reason": rule.get("recommendation_reason"),
+            "ranking_explanation": rule.get("ranking_explanation") or [],
+            "replacement_card_ids": rule.get("replacement_card_ids") or [],
+        }
+        for rule in rules
+    ]
+    with get_connection() as conn:
+        existing = conn.execute(
+            "SELECT * FROM recommendation_snapshots WHERE user_id = ? AND idempotency_key = ?",
+            (user_id, idempotency_key),
+        ).fetchone()
+        if existing:
+            item = row_to_dict(existing)
+            if item.get("source_result_id") != source_result_id or item.get("strategy_version") != strategy_version:
+                raise ValueError("idempotency_conflict")
+            return _public_snapshot(item, already_recorded=True), 200
+        snapshot_id = new_id("recommendation-snapshot")
+        timestamp = now_iso()
+        previous_strategy = LEGACY_STRATEGY_VERSION if strategy_version == ADAPTIVE_STRATEGY_VERSION else None
+        conn.execute(
+            """
+            INSERT INTO recommendation_snapshots (
+                id, user_id, source_result_id, strategy_version, previous_strategy_version,
+                recommended_card_ids_json, reasons_json, status, idempotency_key, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)
+            """,
+            (
+                snapshot_id,
+                user_id,
+                source_result_id,
+                strategy_version,
+                previous_strategy,
+                json_dumps(card_ids),
+                json_dumps(reasons),
+                idempotency_key,
+                timestamp,
+            ),
+        )
+        write_audit_log(
+            conn,
+            "recommendation_strategy_replayed",
+            user_id,
+            "recommendation_snapshot",
+            snapshot_id,
+            {"strategy_version": strategy_version, "source_result_id": source_result_id, "card_count": len(card_ids)},
+        )
+        conn.commit()
+        item = row_to_dict(conn.execute("SELECT * FROM recommendation_snapshots WHERE id = ?", (snapshot_id,)).fetchone())
+    return _public_snapshot(item), 201
+
+
+def get_recommendation_snapshot(user_id: str, snapshot_id: str) -> dict | None:
+    with get_connection() as conn:
+        row = conn.execute(
+            "SELECT * FROM recommendation_snapshots WHERE id = ? AND user_id = ?",
+            (snapshot_id, user_id),
+        ).fetchone()
+    return _public_snapshot(row_to_dict(row)) if row else None
+
+
+def _public_snapshot(item: dict, *, already_recorded: bool = False) -> dict:
+    result = {
+        "id": item.get("id"),
+        "user_id": item.get("user_id"),
+        "source_result_id": item.get("source_result_id"),
+        "strategy_version": item.get("strategy_version"),
+        "previous_strategy_version": item.get("previous_strategy_version"),
+        "recommended_card_ids": json_loads(item.get("recommended_card_ids_json"), []),
+        "reasons": json_loads(item.get("reasons_json"), []),
+        "status": item.get("status"),
+        "created_at": item.get("created_at"),
+        "rollback_available": item.get("strategy_version") != LEGACY_STRATEGY_VERSION,
+        "boundary_notice": "推荐回放只解释候选训练卡排序，不用于诊断、疗效判断或自动替代人工共同决定。",
+    }
+    if already_recorded:
+        result["already_recorded"] = True
+    return result
 
 
 def _feedback_reason(scored_cards: list[tuple[float, str, dict]]) -> str:

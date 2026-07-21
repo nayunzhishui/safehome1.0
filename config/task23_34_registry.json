@@ -1,6 +1,6 @@
 {
   "schema": "safehome.tasks23_34.registry.v1",
-  "version": "2026-07-21-final-audit-v1",
+  "version": "2026-07-21-t23-full-close-v2",
   "scope": ["T23", "T24", "T25", "T26", "T27", "T28", "T29", "T30", "T31", "T32", "T33", "T34"],
   "policy": {
     "state_path": ".codex_tmp/task23_34_state.json",
@@ -30,11 +30,11 @@
       "id": "T23",
       "title": "参与者主旅程完整收口",
       "dependencies": [],
-      "engineering_complete": false,
-      "status": "external_validation_pending_full_gap_reaudit_required",
+      "engineering_complete": true,
+      "status": "engineering_complete_local_external_cloud_android_ios_large_font_reader_production_gates_pending",
       "commit": "8b3cb24e",
-      "evidence": ["docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
-      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task23_journey.py", "backend/tests/test_task23_feedback_ledger.py", "backend/tests/test_task23_growth_entry.py", "backend/tests/test_task23_visual_system.py", "-q"]]
+      "evidence": ["docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md", "design/t23/README.md", "backend/scripts/migrate_task23_participant_journey.py"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task23_full_implementation.py", "backend/tests/test_task23_journey.py", "backend/tests/test_task23_feedback_ledger.py", "backend/tests/test_task23_growth_entry.py", "backend/tests/test_task23_visual_system.py", "-q"], ["node", "scripts/audit_task23_visual_system.mjs"]]
     },
     {
       "id": "T24",

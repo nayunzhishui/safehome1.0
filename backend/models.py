@@ -39,6 +39,8 @@ MVP_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
     "feedback_ledger",
+    "feedback_ledger_actions",
+    "recommendation_snapshots",
     "security_control_runs",
     "security_events",
     "privacy_deletion_verifications",
@@ -201,9 +203,39 @@ SCHEMA_SQL = [
         reason_text TEXT,
         review_status TEXT NOT NULL DEFAULT 'recorded',
         status TEXT NOT NULL DEFAULT 'active',
+        supersedes_id TEXT,
+        participant_status TEXT NOT NULL DEFAULT 'visible',
+        withdrawn_at TEXT,
         idempotency_key TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS feedback_ledger_actions (
+        id TEXT PRIMARY KEY,
+        entry_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        from_status TEXT NOT NULL,
+        to_status TEXT NOT NULL,
+        replacement_entry_id TEXT,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS recommendation_snapshots (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        source_result_id TEXT,
+        strategy_version TEXT NOT NULL,
+        previous_strategy_version TEXT,
+        recommended_card_ids_json TEXT NOT NULL DEFAULT '[]',
+        reasons_json TEXT NOT NULL DEFAULT '[]',
+        status TEXT NOT NULL DEFAULT 'active',
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL
     )
     """,
     """
@@ -1443,6 +1475,10 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_feedback_ledger_user_created ON feedback_ledger(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_feedback_ledger_source ON feedback_ledger(source_type, source_id, content_version)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_feedback_ledger_user_idempotency ON feedback_ledger(user_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_feedback_actions_entry_created ON feedback_ledger_actions(entry_id, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_feedback_actions_user_idempotency ON feedback_ledger_actions(user_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_recommendation_snapshots_user_created ON recommendation_snapshots(user_id, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_recommendation_snapshots_user_idempotency ON recommendation_snapshots(user_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_content_versions_item_status ON content_governance_versions(content_type, item_id, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_content_reviews_version_discipline ON content_governance_reviews(version_id, discipline, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_content_releases_item_status ON content_governance_releases(content_type, item_id, status, created_at)",

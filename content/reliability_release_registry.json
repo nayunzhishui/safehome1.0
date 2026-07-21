@@ -63,6 +63,15 @@
       "rollback_default": true
     },
     {
+      "default_enabled": true,
+      "name": "training_feedback_adaptive_ranking",
+      "role_scope": [
+        "parent",
+        "student"
+      ],
+      "rollback_default": false
+    },
+    {
       "default_enabled": false,
       "name": "research_operations_write",
       "role_scope": [

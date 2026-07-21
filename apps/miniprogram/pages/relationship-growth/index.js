@@ -24,6 +24,12 @@ const TIMELINE_FILTERS = [
   { key: "report", label: "报告" },
   { key: "researcher_feedback", label: "阶段性反馈" },
 ];
+const SECTION_TABS = [
+  { key: "curve", label: "变化曲线" },
+  { key: "timeline", label: "成长时间线" },
+  { key: "feedback", label: "阶段反馈" },
+  { key: "records", label: "补充记录" },
+];
 
 function formatDate(value) {
   if (!value) return "时间待记录";
@@ -97,15 +103,20 @@ Page({
     selectedMetricLabel: "",
     selectedPoints: [],
     trendText: "",
+    sectionTabs: SECTION_TABS,
+    activeSection: "curve",
     timelineFilters: TIMELINE_FILTERS,
     timelineFilter: "all",
     filteredTimeline: [],
+    recentTimeline: [],
     selfNarratives: [],
     showSelfNarratives: false,
     researcherConfirmations: [],
     saveStatus: "尚未填写",
     draftRestored: false,
     slowSaving: false,
+    showWeeklyForm: false,
+    showEventForm: false,
     weeklySubmissionKey: "",
     eventSubmissionKey: "",
     form: {
@@ -184,6 +195,7 @@ Page({
         selectedGroup,
         selectedMetric,
         filteredTimeline: timeline,
+        recentTimeline: timeline.slice(0, 3),
         selfNarratives: selfNarrativeRows(growth.growth_report?.self_narratives),
         researcherConfirmations: (growth.growth_report?.researcher_confirmations || []).map((item) => ({ ...item, dateText: formatDate(item.created_at) })),
       }, () => this.selectCurve(selectedGroup, selectedMetric));
@@ -224,6 +236,34 @@ Page({
 
   selectMetric(event) {
     this.selectCurve(this.data.selectedGroup, event.currentTarget.dataset.key);
+  },
+
+  selectSection(event) {
+    const activeSection = event.currentTarget.dataset.section;
+    this.setData({ activeSection }, () => {
+      if (activeSection === "curve") this.drawChart(this.data.selectedGroup, this.data.selectedPoints);
+    });
+  },
+
+  showAllTimeline() {
+    this.setData({ activeSection: "timeline" });
+  },
+
+  showFeedbackSection() {
+    this.setData({ activeSection: "feedback" });
+  },
+
+  openRecordSection() {
+    this.setData({ activeSection: "records", showWeeklyForm: this.data.canRecord });
+  },
+
+  toggleRecordPanel(event) {
+    const panel = event.currentTarget.dataset.panel;
+    if (panel === "weekly") {
+      this.setData({ showWeeklyForm: !this.data.showWeeklyForm });
+      return;
+    }
+    if (panel === "event") this.setData({ showEventForm: !this.data.showEventForm });
   },
 
   drawChart(groupKey, points) {

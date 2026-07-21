@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request
 
-from database import ensure_user, get_connection, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts
+from database import ensure_user, get_connection, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int, require_fields
 
@@ -83,6 +83,22 @@ def create_checkin():
                 submission_id or None,
                 timestamp,
             ),
+        )
+        completed = parse_bool(payload.get("completed"), True)
+        event_name = "journey_action_completed" if completed else "journey_action_skipped"
+        write_audit_log(
+            conn,
+            f"product_event_{event_name}",
+            user_id,
+            "product_event",
+            submission_id or checkin_id,
+            {
+                "event_name": event_name,
+                "action": "practice_due",
+                "stage": "training",
+                "status": "completed" if completed else "skipped",
+                "source": "today_journey",
+            },
         )
         conn.commit()
         row = conn.execute("SELECT * FROM checkins WHERE id = ?", (checkin_id,)).fetchone()

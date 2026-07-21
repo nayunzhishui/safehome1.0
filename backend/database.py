@@ -39,6 +39,8 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
     "feedback_ledger",
+    "feedback_ledger_actions",
+    "recommendation_snapshots",
     "privacy_request_actions",
     "privacy_request_approvals",
     "privacy_request_executions",
@@ -85,8 +87,8 @@ REQUIRED_HEALTH_TABLES = [
     "operations_incident_notifications",
     "operations_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_21_022"
-CURRENT_SCHEMA_NAME = "content_data_model_operations_governance"
+CURRENT_SCHEMA_VERSION = "2026_07_21_023"
+CURRENT_SCHEMA_NAME = "participant_journey_feedback_recommendation"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -105,6 +107,13 @@ MYSQL_VARCHAR_COLUMNS = {
     "response",
     "assessment_result_id",
     "idempotency_key",
+    "entry_id",
+    "action",
+    "from_status",
+    "to_status",
+    "replacement_entry_id",
+    "strategy_version",
+    "previous_strategy_version",
     "client_submission_id",
     "job_type",
     "flag_name",
@@ -910,6 +919,14 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in message_columns.items():
         ensure_column(conn, "messages", column, definition)
+
+    feedback_ledger_columns = {
+        "supersedes_id": "TEXT",
+        "participant_status": "TEXT NOT NULL DEFAULT 'visible'",
+        "withdrawn_at": "TEXT",
+    }
+    for column, definition in feedback_ledger_columns.items():
+        ensure_column(conn, "feedback_ledger", column, definition)
 
     supervision_columns = {
         "source_type": "TEXT",

@@ -32,7 +32,8 @@ SCOPE_TABLES = {
         "parent_assessment_submissions", "parent_report_actions", "risk_review_records",
     ),
     "feedback_and_training": (
-        "feedback_results", "feedback_ledger", "checkins", "weekly_reports", "supervision_requests",
+        "feedback_results", "feedback_ledger", "feedback_ledger_actions", "recommendation_snapshots",
+        "checkins", "weekly_reports", "supervision_requests",
     ),
     "messages_and_notifications": (
         "messages", "notification_preferences", "notification_deliveries",
@@ -51,6 +52,7 @@ DIRECT_USER_TABLES = {
     "consent_records", "goals", "emotion_diaries", "emotion_thermometer", "assessment_results",
     "student_profiles", "student_profile_followups", "student_sandplay_entries",
     "parent_assessment_submissions", "risk_review_records", "feedback_results", "feedback_ledger",
+    "feedback_ledger_actions", "recommendation_snapshots",
     "checkins", "weekly_reports", "supervision_requests", "messages", "notification_preferences",
     "notification_deliveries", "relationship_pilot_enrollments", "relationship_screening_reports",
     "relationship_pilot_tasks", "relationship_narratives", "relationship_longitudinal_entries",

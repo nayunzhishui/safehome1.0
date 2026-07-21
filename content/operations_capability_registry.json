@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 222,
+  "operation_count": 225,
   "capability_count": 40,
   "capabilities": [
     {
@@ -648,7 +648,7 @@
       "feature_flags": [],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 3)",
+        "backend/tests (operation coverage: 4)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -656,6 +656,7 @@
       "technical_implementation_complete": true,
       "production_release_approved": false,
       "operation_ids": [
+        "feedback_ledger.apply_entry_action.post",
         "feedback_ledger.create_entry.post",
         "feedback_ledger.list_entries.get",
         "feedback_ledger.summary.get"
@@ -1730,7 +1731,7 @@
       "feature_flags": [],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 2)",
+        "backend/tests (operation coverage: 4)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1739,6 +1740,8 @@
       "production_release_approved": false,
       "operation_ids": [
         "training_plan.get_training_plan.get",
+        "training_plan.get_training_recommendation_snapshot.get",
+        "training_plan.replay_training_recommendation.post",
         "training_plan.save_training_plan_assignment.post"
       ]
     },

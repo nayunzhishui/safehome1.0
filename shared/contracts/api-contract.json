@@ -4315,6 +4315,69 @@
       }
     },
     {
+      "operation_id": "feedback_ledger.apply_entry_action.post",
+      "method": "POST",
+      "path": "/api/feedback-ledger/<entry_id>/actions",
+      "handler": "feedback_ledger.apply_entry_action",
+      "module": "routes.feedback_ledger",
+      "access": {
+        "mode": "authenticated",
+        "roles": [
+          "parent",
+          "student",
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "role_scoped",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "entry_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [
+          "Idempotency-Key"
+        ],
+        "pagination": null,
+        "idempotency": {
+          "supported": true,
+          "required": true,
+          "header": "Idempotency-Key",
+          "max_length": 120
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.feedback_ledger.apply_entry_action.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
       "operation_id": "feedback_ledger.summary.get",
       "method": "GET",
       "path": "/api/feedback-ledger/summary",
@@ -7541,6 +7604,7 @@
         "path_parameters": [],
         "query_parameters": [],
         "body_fields": [
+          "client_event_id",
           "event_name",
           "metadata"
         ],
@@ -13488,6 +13552,135 @@
         "http_error",
         "internal_error",
         "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "training_plan.get_training_recommendation_snapshot.get",
+      "method": "GET",
+      "path": "/api/training-plan/recommendation-snapshots/<snapshot_id>",
+      "handler": "training_plan.get_training_recommendation_snapshot",
+      "module": "routes.training_plan",
+      "access": {
+        "mode": "authenticated",
+        "roles": [
+          "parent",
+          "student",
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "role_scoped",
+      "request": {
+        "content_type": null,
+        "path_parameters": [
+          "snapshot_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.training_plan.get_training_recommendation_snapshot.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "training_plan.replay_training_recommendation.post",
+      "method": "POST",
+      "path": "/api/training-plan/recommendations/replay",
+      "handler": "training_plan.replay_training_recommendation",
+      "module": "routes.training_plan",
+      "access": {
+        "mode": "authenticated",
+        "roles": [
+          "parent",
+          "student",
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "role_scoped",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [
+          "idempotency_key",
+          "source_result_id",
+          "strategy_version"
+        ],
+        "headers": [
+          "Idempotency-Key"
+        ],
+        "pagination": null,
+        "idempotency": {
+          "supported": true,
+          "required": false,
+          "header": "Idempotency-Key",
+          "max_length": 120
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.training_plan.replay_training_recommendation.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "not_found",
+        "unauthorized",
+        "validation_error"
       ],
       "enum_refs": [],
       "deprecation": {

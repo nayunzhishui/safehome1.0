@@ -46,6 +46,7 @@ def build_registry() -> dict:
         ],
         "feature_flags": [
             {"name": "participant_journey", "default_enabled": True, "role_scope": ["parent", "student"], "rollback_default": True},
+            {"name": "training_feedback_adaptive_ranking", "default_enabled": True, "role_scope": ["parent", "student"], "rollback_default": False},
             {"name": "research_operations_write", "default_enabled": False, "role_scope": ["researcher", "supervisor", "admin"], "rollback_default": False},
             {"name": "content_governance_publish", "default_enabled": False, "role_scope": ["admin"], "rollback_default": False},
             {"name": "ai_qa_sandbox", "default_enabled": False, "role_scope": ["researcher", "supervisor", "admin"], "rollback_default": False},

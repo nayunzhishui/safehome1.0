@@ -75,6 +75,7 @@
 | DELETE | `/api/family/unbind` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/feedback-ledger` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/feedback-ledger` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | supported | active |
+| POST | `/api/feedback-ledger/<entry_id>/actions` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | required | active |
 | GET | `/api/feedback-ledger/summary` | role:researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/feedback/generate` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/goals` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
@@ -219,6 +220,8 @@
 | GET | `/api/training-effectiveness` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/training-plan` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | POST | `/api/training-plan/assignment` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
+| GET | `/api/training-plan/recommendation-snapshots/<snapshot_id>` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/training-plan/recommendations/replay` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | supported | active |
 | POST | `/api/ux-governance/audits` | role:admin | internal_page_inventory_and_redacted_machine_evidence_no_participant_text | — | — | active |
 | POST | `/api/ux-governance/evidence-packages` | role:supervisor,admin | internal_page_inventory_and_redacted_machine_evidence_no_participant_text | — | — | active |
 | GET | `/api/ux-governance/public-status` | public:public | non_sensitive_ux_gate_status_only | — | — | active |
