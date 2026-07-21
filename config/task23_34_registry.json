@@ -1,0 +1,160 @@
+{
+  "schema": "safehome.tasks23_34.registry.v1",
+  "version": "2026-07-21-final-audit-v1",
+  "scope": ["T23", "T24", "T25", "T26", "T27", "T28", "T29", "T30", "T31", "T32", "T33", "T34"],
+  "policy": {
+    "state_path": ".codex_tmp/task23_34_state.json",
+    "execution_record_path": "docs/00_当前事实基准/Claude计划模式.md",
+    "release_approval_mutation_allowed": false,
+    "external_gate_execution_allowed": false,
+    "temporary_showcase_bypass_retained": true,
+    "temporary_showcase_bypass_counts_as_permission_evidence": false
+  },
+  "required_layers": [
+    "backend",
+    "database",
+    "shared",
+    "web",
+    "miniprogram",
+    "permissions",
+    "audit",
+    "recovery",
+    "migration",
+    "rollback",
+    "targeted_acceptance",
+    "full_acceptance",
+    "documentation"
+  ],
+  "tasks": [
+    {
+      "id": "T23",
+      "title": "参与者主旅程完整收口",
+      "dependencies": [],
+      "engineering_complete": false,
+      "status": "external_validation_pending_full_gap_reaudit_required",
+      "commit": "8b3cb24e",
+      "evidence": ["docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task23_journey.py", "backend/tests/test_task23_feedback_ledger.py", "backend/tests/test_task23_growth_entry.py", "backend/tests/test_task23_visual_system.py", "-q"]]
+    },
+    {
+      "id": "T24",
+      "title": "同意、授权、隐私与数据生命周期",
+      "dependencies": ["T23"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_release_approval_pending",
+      "commit": "83d2ad21",
+      "evidence": ["docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task24_privacy_processing.py", "backend/tests/test_task24_privacy_lifecycle_complete.py", "-q"]]
+    },
+    {
+      "id": "T25",
+      "title": "研究运营处置工作台完整闭环",
+      "dependencies": ["T24"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_release_approval_pending",
+      "commit": "85a94ada",
+      "evidence": ["docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task25_work_items.py", "backend/tests/test_task25_migration_recovery.py", "-q"]]
+    },
+    {
+      "id": "T26",
+      "title": "API契约与模块完整收敛",
+      "dependencies": ["T24", "T25"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_release_approval_pending",
+      "commit": "1c4e97dd",
+      "evidence": ["shared/contracts/api-contract.json", "docs/03_技术真相/API机器契约.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task26_api_contract.py", "backend/tests/test_task24_26_31_contracts.py", "-q"], ["python", "backend/scripts/build_api_contract.py", "--check"]]
+    },
+    {
+      "id": "T27",
+      "title": "内容治理工作台完整实现",
+      "dependencies": ["T26"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_release_approval_pending",
+      "commit": "b4153cef",
+      "evidence": ["content/content_governance_manifest.json", "docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_content_governance.py", "-q"], ["python", "backend/scripts/validate_content.py"]]
+    },
+    {
+      "id": "T28",
+      "title": "受控AI自由问答完整实现",
+      "dependencies": ["T24", "T27", "T31", "T34"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_synthetic_participant_release_blocked_human_gate",
+      "commit": "23209615",
+      "evidence": ["content/ai_qa_governance.json", "docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_ai_qa_controlled_sandbox.py", "backend/tests/test_task28_ai_qa_contract.py", "-q"]]
+    },
+    {
+      "id": "T29",
+      "title": "情感计算与网络分析公开数据完整基准",
+      "dependencies": ["T27"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_synthetic_public_ingest_blocked_human_rights_gate",
+      "commit": "75208682",
+      "evidence": ["docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task29_offline_benchmarks.py", "backend/tests/test_task29_offline_benchmark_contract.py", "-q"]]
+    },
+    {
+      "id": "T30",
+      "title": "心理测量与研究方法完整冻结",
+      "dependencies": ["T28", "T29"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_pre_freeze_human_method_ethics_signature_pending",
+      "commit": "b056d395",
+      "evidence": ["content/research_methodology_registry.json", "docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task30_research_methodology.py", "backend/tests/test_task30_research_methodology_contract.py", "-q"]]
+    },
+    {
+      "id": "T31",
+      "title": "安全、隐私与滥用防护完整实现",
+      "dependencies": ["T24"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_formal_permission_blocked_by_showcase",
+      "commit": "4e5fd652",
+      "evidence": ["content/security_privacy_abuse_registry.json", "docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task31_security_privacy_abuse.py", "backend/tests/test_task31_security_contract.py", "-q"], ["python", "backend/scripts/scan_task31_security.py", "--json"]]
+    },
+    {
+      "id": "T32",
+      "title": "可靠性、可观测性与发布工程完整实现",
+      "dependencies": ["T25", "T31"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_test_cloud_slo_and_release_gates_pending",
+      "commit": "20907b38",
+      "evidence": ["content/reliability_release_registry.json", "docs/04_部署运维/任务三十二可靠性运行手册_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task32_reliability_release.py", "backend/tests/test_task32_reliability_contract.py", "-q"], ["python", "backend/scripts/generate_task32_reliability_registry.py", "--check"]]
+    },
+    {
+      "id": "T33",
+      "title": "信息架构、可访问性和认知负荷完整实现",
+      "dependencies": ["T26"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_external_human_device_research_gates_pending",
+      "commit": "9e0ec3b7",
+      "evidence": ["content/ux_experience_registry.json", "docs/01_当前执行入口/任务二十三至三十四完整实现主计划_20260720.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task33_ux_governance.py", "backend/tests/test_task33_ux_contract.py", "-q"], ["python", "backend/scripts/generate_task33_ux_registry.py", "--check"]]
+    },
+    {
+      "id": "T34",
+      "title": "内容、数据与模型运营治理完整实现",
+      "dependencies": ["T27", "T31", "T32", "T33"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_external_human_ethics_cloud_device_production_gates_pending",
+      "commit": "12f58eb1",
+      "evidence": ["content/operations_capability_registry.json", "content/operations_release_manifest.json", "docs/04_部署运维/任务三十四运营治理运行手册_20260721.md"],
+      "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task34_operations_governance.py", "backend/tests/test_task34_operations_contract.py", "-q"], ["python", "backend/scripts/generate_task34_operations_registry.py", "--check"], ["python", "backend/scripts/audit_task34_operations.py"]]
+    }
+  ],
+  "full_acceptance_commands": [
+    {"cwd": ".", "command": ["python", "-m", "pytest", "backend/tests", "-q"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/validate_content.py"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/build_api_contract.py", "--check"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/check_api_compatibility.py"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/audit_miniprogram_frontend.py"]},
+    {"cwd": "apps/web", "command": ["npm.cmd", "run", "typecheck"]},
+    {"cwd": "apps/web", "command": ["npm.cmd", "run", "build"]},
+    {"cwd": "apps/web", "command": ["npm.cmd", "run", "test:e2e"]}
+  ]
+}
