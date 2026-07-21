@@ -106,6 +106,7 @@ const API_ENDPOINTS = {
   securityControls: "/api/security",
   reliability: "/api/reliability",
   uxGovernance: "/api/ux-governance",
+  operationsGovernance: "/api/operations-governance",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -1010,6 +1011,10 @@ function createSafeHomeApi(options = {}) {
 
     getUXGovernancePublicStatus() {
       return request(`${API_ENDPOINTS.uxGovernance}/public-status`);
+    },
+
+    getOperationsGovernancePublicStatus() {
+      return request(`${API_ENDPOINTS.operationsGovernance}/public-status`);
     },
 
     getParentAssessmentResult(id, params = {}) {

@@ -51,6 +51,14 @@ MVP_TABLES = [
     "reliability_evidence_packages",
     "ux_audit_runs",
     "ux_evidence_packages",
+    "operations_release_packages",
+    "operations_package_reviews",
+    "operations_replay_runs",
+    "operations_runtime_controls",
+    "operations_monitor_snapshots",
+    "operations_incidents",
+    "operations_incident_notifications",
+    "operations_evidence_packages",
 ]
 
 
@@ -1253,6 +1261,143 @@ SCHEMA_SQL = [
         created_at TEXT NOT NULL
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS operations_release_packages (
+        id TEXT PRIMARY KEY,
+        package_version TEXT NOT NULL UNIQUE,
+        previous_package_id TEXT,
+        risk_level TEXT NOT NULL,
+        target_environment TEXT NOT NULL,
+        capability_ids_json TEXT NOT NULL DEFAULT '[]',
+        manifest_json TEXT NOT NULL,
+        manifest_hash TEXT NOT NULL,
+        artifact_count INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        proposed_by TEXT NOT NULL,
+        submitted_at TEXT,
+        released_by TEXT,
+        released_at TEXT,
+        paused_by TEXT,
+        paused_at TEXT,
+        pause_reason_code TEXT,
+        retired_by TEXT,
+        retired_at TEXT,
+        production_release_approved INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS operations_package_reviews (
+        id TEXT PRIMARY KEY,
+        package_id TEXT NOT NULL,
+        stage TEXT NOT NULL,
+        domain TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        reviewer_id TEXT NOT NULL,
+        reviewer_role TEXT NOT NULL,
+        evidence_ref TEXT NOT NULL,
+        note TEXT,
+        created_at TEXT NOT NULL,
+        UNIQUE(package_id, stage, domain, reviewer_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS operations_replay_runs (
+        id TEXT PRIMARY KEY,
+        package_id TEXT NOT NULL,
+        suite_version TEXT NOT NULL,
+        results_json TEXT NOT NULL DEFAULT '[]',
+        metrics_json TEXT NOT NULL DEFAULT '{}',
+        snapshot_hash TEXT NOT NULL,
+        status TEXT NOT NULL,
+        high_severity_regressions INTEGER NOT NULL DEFAULT 0,
+        wording_diff_count INTEGER NOT NULL DEFAULT 0,
+        contains_real_data INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS operations_runtime_controls (
+        capability_id TEXT PRIMARY KEY,
+        active_package_id TEXT,
+        previous_package_id TEXT,
+        state TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1,
+        reason_code TEXT NOT NULL,
+        changed_by TEXT NOT NULL,
+        changed_at TEXT NOT NULL,
+        production_release_approved INTEGER NOT NULL DEFAULT 0
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS operations_monitor_snapshots (
+        id TEXT PRIMARY KEY,
+        environment TEXT NOT NULL,
+        window_days INTEGER NOT NULL,
+        metrics_json TEXT NOT NULL DEFAULT '{}',
+        thresholds_json TEXT NOT NULL DEFAULT '{}',
+        drift_signals_json TEXT NOT NULL DEFAULT '[]',
+        review_required INTEGER NOT NULL DEFAULT 0,
+        automatic_participant_or_family_judgment INTEGER NOT NULL DEFAULT 0,
+        contains_participant_text INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS operations_incidents (
+        id TEXT PRIMARY KEY,
+        capability_id TEXT NOT NULL,
+        package_id TEXT,
+        incident_type TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        status TEXT NOT NULL,
+        summary_code TEXT NOT NULL,
+        evidence_refs_json TEXT NOT NULL DEFAULT '[]',
+        evidence_hold_hash TEXT NOT NULL,
+        capability_disabled INTEGER NOT NULL DEFAULT 1,
+        notification_required INTEGER NOT NULL DEFAULT 1,
+        postmortem_json TEXT NOT NULL DEFAULT '{}',
+        reported_by TEXT NOT NULL,
+        reported_at TEXT NOT NULL,
+        postmortem_by TEXT,
+        postmortem_at TEXT,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS operations_incident_notifications (
+        id TEXT PRIMARY KEY,
+        incident_id TEXT NOT NULL,
+        recipient_role TEXT NOT NULL,
+        status TEXT NOT NULL,
+        attempt_count INTEGER NOT NULL DEFAULT 0,
+        idempotency_key TEXT NOT NULL UNIQUE,
+        last_error_code TEXT,
+        next_attempt_at TEXT,
+        dispatched_by TEXT,
+        dispatched_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS operations_evidence_packages (
+        id TEXT PRIMARY KEY,
+        status TEXT NOT NULL,
+        package_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        human_approved INTEGER NOT NULL DEFAULT 0,
+        ethics_approved INTEGER NOT NULL DEFAULT 0,
+        cloud_approved INTEGER NOT NULL DEFAULT 0,
+        device_approved INTEGER NOT NULL DEFAULT 0,
+        production_release_approved INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
 ]
 
 
@@ -1326,6 +1471,13 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_reliability_drills_created ON reliability_drill_runs(scenario, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ux_audit_runs_created ON ux_audit_runs(platform, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ux_evidence_created ON ux_evidence_packages(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_operations_packages_status_created ON operations_release_packages(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_operations_reviews_package_stage ON operations_package_reviews(package_id, stage, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_operations_replays_package_created ON operations_replay_runs(package_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_operations_monitor_created ON operations_monitor_snapshots(environment, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_operations_incidents_status_created ON operations_incidents(status, severity, reported_at)",
+    "CREATE INDEX IF NOT EXISTS idx_operations_notifications_due ON operations_incident_notifications(status, next_attempt_at)",
+    "CREATE INDEX IF NOT EXISTS idx_operations_evidence_created ON operations_evidence_packages(status, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_goals_client_submission ON goals(user_id, client_submission_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_diaries_client_submission ON emotion_diaries(user_id, client_submission_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_supervision_client_submission ON supervision_requests(user_id, client_submission_id)",

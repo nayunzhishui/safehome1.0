@@ -2279,6 +2279,141 @@ export interface UXGovernanceWorkbench {
   release_approved: false;
 }
 
+export interface OperationsCapability {
+  id: string;
+  title: string;
+  intended_use: string;
+  owner: { accountable_role: string; named_owner_status: string };
+  dependencies: string[];
+  data: { object_scopes: string[]; sensitivity: string; participant_text_allowed_in_governance_records: false };
+  open_roles: string[];
+  feature_flags: string[];
+  version: string;
+  tests: string[];
+  rollback: string;
+  governance_status: string;
+  technical_implementation_complete: boolean;
+  production_release_approved: false;
+  operation_ids: string[];
+}
+
+export interface OperationsCapabilityRegistry {
+  version: string;
+  status: string;
+  operation_count: number;
+  capability_count: number;
+  capabilities: OperationsCapability[];
+  external_gates: string[];
+  temporary_showcase_exception: { retained: true; formal_permission_acceptance: false; production_release_blocker: true };
+  treatment_assessment: { synthetic_l0_allowed: true; real_participant_release_allowed: false; blocked_by: string[] };
+  production_release_approved: false;
+  boundary_notice: string;
+}
+
+export interface OperationsReplayRun {
+  id: ID;
+  package_id: ID;
+  suite_version: string;
+  metrics: { total: number; passed: number; failed: number; high_severity_regressions: number; behavior_diff_count?: number; wording_diff_count: number };
+  snapshot_hash: string;
+  status: string;
+  high_severity_regressions: number;
+  wording_diff_count: number;
+  contains_real_data: false;
+  created_at: ISODateTime;
+}
+
+export interface OperationsPackageReview {
+  id: ID;
+  stage: "review" | "approval";
+  domain: string;
+  decision: string;
+  reviewer_id: ID;
+  reviewer_role: string;
+  evidence_ref: string;
+  created_at: ISODateTime;
+}
+
+export interface OperationsReleasePackage {
+  id: ID;
+  package_version: string;
+  previous_package_id?: ID | null;
+  risk_level: "low" | "medium" | "high";
+  target_environment: "local_synthetic" | "production_candidate";
+  capability_ids: string[];
+  manifest_hash: string;
+  artifact_count: number;
+  status: string;
+  proposed_by: ID;
+  submitted_at?: ISODateTime | null;
+  released_by?: ID | null;
+  released_at?: ISODateTime | null;
+  production_release_approved: false;
+  reviews?: OperationsPackageReview[];
+  approvals?: OperationsPackageReview[];
+  replay_runs?: OperationsReplayRun[];
+}
+
+export interface OperationsMonitoringSnapshot {
+  id: ID;
+  environment: string;
+  window_days: number;
+  metrics: Record<string, number | null | Record<string, number>>;
+  thresholds: Record<string, number>;
+  drift_signals: Array<{ metric: string; direction: string; value: number; threshold: number; action: "human_review_required" }>;
+  review_required: boolean;
+  automatic_participant_or_family_judgment: false;
+  contains_participant_text: false;
+  interpretation?: string;
+  created_at: ISODateTime;
+}
+
+export interface OperationsIncidentNotification {
+  id: ID;
+  recipient_role: string;
+  status: "queued" | "retry_queued" | "dispatched";
+  attempt_count: number;
+  created_at: ISODateTime;
+}
+
+export interface OperationsIncident {
+  id: ID;
+  capability_id: string;
+  package_id?: ID | null;
+  incident_type: "unauthorized_access" | "data_leak" | "severe_adverse_event" | "ai_safety_failure";
+  severity: "high" | "critical";
+  status: string;
+  summary_code: string;
+  evidence_hold_hash: string;
+  capability_disabled: true;
+  notifications: OperationsIncidentNotification[];
+  postmortem?: Record<string, unknown>;
+  reported_at: ISODateTime;
+}
+
+export interface OperationsPublicStatus {
+  status: string;
+  registry_version: string;
+  capability_count: number;
+  active_package_count: number;
+  open_incident_count: number;
+  temporary_showcase_exception_retained: true;
+  formal_permission_acceptance: false;
+  production_release_approved: false;
+  boundary_notice: string;
+}
+
+export interface OperationsGovernanceWorkbench {
+  registry: OperationsCapabilityRegistry;
+  asset_cards: { cards: Array<{ id: string; card_type: "dataset" | "rule" | "model"; current_status: string }> };
+  packages: OperationsReleasePackage[];
+  runtime_controls: Array<Record<string, unknown>>;
+  monitor_snapshots: OperationsMonitoringSnapshot[];
+  incidents: OperationsIncident[];
+  evidence_packages: Array<Record<string, unknown>>;
+  production_release_approved: false;
+}
+
 export interface AssessmentListResponse {
   version: string;
   boundary_notice: string;

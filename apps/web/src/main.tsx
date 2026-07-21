@@ -41,6 +41,7 @@ const ResearchMethodologyWorkbench = lazy(() => import("./pages/ResearchMethodol
 const SecurityPrivacyWorkbench = lazy(() => import("./pages/SecurityPrivacyWorkbench").then((module) => ({ default: module.SecurityPrivacyWorkbench })));
 const ReliabilityReleaseWorkbench = lazy(() => import("./pages/ReliabilityReleaseWorkbench").then((module) => ({ default: module.ReliabilityReleaseWorkbench })));
 const ExperienceGovernanceWorkbench = lazy(() => import("./pages/ExperienceGovernanceWorkbench").then((module) => ({ default: module.ExperienceGovernanceWorkbench })));
+const OperationsGovernanceWorkbench = lazy(() => import("./pages/OperationsGovernanceWorkbench").then((module) => ({ default: module.OperationsGovernanceWorkbench })));
 
 interface AdminLink {
   href: string;
@@ -71,6 +72,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/security/privacy", label: "安全与隐私防护", match: (p) => p === "/security/privacy", roles: ["admin", "researcher", "supervisor"] },
   { href: "/reliability/release", label: "可靠性与发布证据", match: (p) => p === "/reliability/release", roles: ["admin", "researcher", "supervisor"] },
   { href: "/system/experience", label: "体验与无障碍", match: (p) => p === "/system/experience", roles: ["admin", "researcher", "supervisor"] },
+  { href: "/system/operations-governance", label: "运营治理", match: (p) => p === "/system/operations-governance", roles: ["admin", "researcher", "supervisor"] },
   { href: "/export", label: "数据导出", match: (p) => p === "/export", roles: ["admin", "researcher"] },
   { href: "/integration-test", label: "联调测试", match: (p) => p === "/integration-test", roles: ["admin"] },
   { href: "/privacy", label: "隐私中心", match: (p) => p === "/privacy" },
@@ -88,7 +90,7 @@ const researcherWorkspaces = [
   { label: "参与者", paths: ["/diaries", "/goals", "/checkins", "/reports", "/profiles", "/family", "/privacy"] },
   { label: "内容", paths: ["/content/review", "/content/scales", "/content/worksheets", "/content/cards", "/content/rules"] },
   { label: "研究/导出", paths: ["/ai-sandbox", "/research/benchmarks", "/research/methodology", "/export"] },
-  { label: "系统状态", paths: ["/security/privacy", "/reliability/release", "/system/experience", "/integration-test"] },
+  { label: "系统状态", paths: ["/security/privacy", "/reliability/release", "/system/experience", "/system/operations-governance", "/integration-test"] },
 ];
 
 function groupedVisibleLinks(user: AuthUser | null, showcaseEnabled = false) {
@@ -183,6 +185,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isSecurityPrivacyPath = path === "/security/privacy";
   const isReliabilityReleasePath = path === "/reliability/release";
   const isExperienceGovernancePath = path === "/system/experience";
+  const isOperationsGovernancePath = path === "/system/operations-governance";
   const isKnownAdminPath = [
     "/dashboard",
     "/goals",
@@ -208,6 +211,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/security/privacy",
     "/reliability/release",
     "/system/experience",
+    "/system/operations-governance",
   ].some((route) => path === route || path.startsWith(`${route}/`));
   const matchedAdminLink = findAdminLink(path);
   const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink, authUser, showcaseEnabled);
@@ -229,6 +233,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isSecurityPrivacyPath &&
     !isReliabilityReleasePath &&
     !isExperienceGovernancePath &&
+    !isOperationsGovernancePath &&
     !isSupervisionPath &&
     !isContentReviewPath &&
     !isScalesPath &&
@@ -275,6 +280,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isSecurityPrivacyPath ? <SecurityPrivacyWorkbench /> : null}
       {isReliabilityReleasePath ? <ReliabilityReleaseWorkbench /> : null}
       {isExperienceGovernancePath ? <ExperienceGovernanceWorkbench /> : null}
+      {isOperationsGovernancePath ? <OperationsGovernanceWorkbench /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}

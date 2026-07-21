@@ -2088,3 +2088,22 @@ relationship_initiation_intention_action
 
 目标、情绪日记、人工支持、练习打卡、普通测评、学生画像和家长测评写入支持`Idempotency-Key`或`client_submission_id`。相同内容重试返回200及原记录，不同内容复用同一标识返回`idempotency_conflict`（409）；首次创建仍返回201。小程序只接入公开体验状态，不暴露内部登记接口。
 
+## 2026-07-21：内容、数据与模型运营治理接口
+
+机器契约版本为`2026-07-21.2`，共222个操作。T34新增17个操作，全部位于`/api/operations-governance`。
+
+| 接口 | 权限与用途 |
+|---|---|
+| `GET /public-status` | 公开返回最小工程状态与生产未批准状态，不返回能力清单、制品或事件 |
+| `GET /registry`、`GET /workbench` | researcher/supervisor/admin读取能力、卡片、发布、监控、事件和门禁摘要 |
+| `POST /packages`、`GET /packages/<id>` | 内部角色创建新版本发布包或读取已脱敏详情；API不返回`bundle_b64` |
+| `POST /packages/<id>/replay`、`/submit`、`/reviews`、`/approvals` | 运行固定合成回放并执行独立送审、审核和领域批准 |
+| `POST /packages/<id>/release`、`/<action>` | admin执行本地合成发布或暂停/恢复/停用/退役；生产开关当前硬阻断 |
+| `POST /runtime/rollback` | admin校验旧包哈希后原子恢复旧包和运行指针 |
+| `POST /monitoring/snapshots` | 内部角色保存七类聚合指标；拒绝参与者文本，只触发人工复核 |
+| `POST /incidents`、`/<id>/postmortem` | 内部角色报告结构化严重事件；supervisor/admin登记复盘，不自动恢复能力 |
+| `POST /incidents/<id>/notifications/<notification_id>/<action>` | admin登记通知已投递或失败重试；不自动向外部发送敏感内容 |
+| `POST /evidence-packages` | supervisor/admin生成外部门禁草稿；不存在签字、批准或上线动作 |
+
+高风险包要求提出者、独立审核者、研究/心理/安全批准人和发布执行人分离；同一人不得跨领域批准。发布包版本唯一，清单或制品哈希被篡改返回409；高严重度回归阻断送审和发布。生产发布开关当前强制false，临时展示越权不改变这些权限和门禁。
+

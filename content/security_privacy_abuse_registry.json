@@ -2,7 +2,7 @@
   "schema": "safehome.security_privacy_abuse_registry.v1",
   "version": "2026-07-20-t31-security-v1",
   "status": "engineering_controls_ready_formal_acceptance_blocked",
-  "generated_from_contract_version": "2026-07-21.1",
+  "generated_from_contract_version": "2026-07-21.2",
   "asset_inventory": [
     {
       "asset_id": "identity_and_tokens",
@@ -2178,6 +2178,432 @@
         "supervisor"
       ],
       "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_evidence_package.post",
+      "method": "POST",
+      "path": "/api/operations-governance/evidence-packages",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_incident.post",
+      "method": "POST",
+      "path": "/api/operations-governance/incidents",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_incident_notification.post",
+      "method": "POST",
+      "path": "/api/operations-governance/incidents/<incident_id>/notifications/<notification_id>/<action>",
+      "object_type": "operations_governance",
+      "action": "send",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_incident_postmortem.post",
+      "method": "POST",
+      "path": "/api/operations-governance/incidents/<incident_id>/postmortem",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_monitoring_snapshot.post",
+      "method": "POST",
+      "path": "/api/operations-governance/monitoring/snapshots",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_package.post",
+      "method": "POST",
+      "path": "/api/operations-governance/packages",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.get_package.get",
+      "method": "GET",
+      "path": "/api/operations-governance/packages/<package_id>",
+      "object_type": "operations_governance",
+      "action": "read",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_package_action.post",
+      "method": "POST",
+      "path": "/api/operations-governance/packages/<package_id>/<action>",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_package_approval.post",
+      "method": "POST",
+      "path": "/api/operations-governance/packages/<package_id>/approvals",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_package_release.post",
+      "method": "POST",
+      "path": "/api/operations-governance/packages/<package_id>/release",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_package_replay.post",
+      "method": "POST",
+      "path": "/api/operations-governance/packages/<package_id>/replay",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_package_review.post",
+      "method": "POST",
+      "path": "/api/operations-governance/packages/<package_id>/reviews",
+      "object_type": "operations_governance",
+      "action": "update",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_package_submit.post",
+      "method": "POST",
+      "path": "/api/operations-governance/packages/<package_id>/submit",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.get_public_status.get",
+      "method": "GET",
+      "path": "/api/operations-governance/public-status",
+      "object_type": "operations_governance",
+      "action": "read",
+      "object_scope": "non_sensitive_operations_gate_status_only",
+      "allowed_roles": [
+        "public"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.get_operations_registry.get",
+      "method": "GET",
+      "path": "/api/operations-governance/registry",
+      "object_type": "operations_governance",
+      "action": "read",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.post_runtime_rollback.post",
+      "method": "POST",
+      "path": "/api/operations-governance/runtime/rollback",
+      "object_type": "operations_governance",
+      "action": "create",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "operations_governance.get_operations_workbench.get",
+      "method": "GET",
+      "path": "/api/operations-governance/workbench",
+      "object_type": "operations_governance",
+      "action": "read",
+      "object_scope": "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
         "supported": false,
@@ -5186,7 +5612,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 205,
+    "operation_count": 222,
     "showcase_bypass_operation_count": 6,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

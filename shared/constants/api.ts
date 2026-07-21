@@ -79,6 +79,7 @@ export const API_ENDPOINTS = {
   securityControls: "/api/security",
   reliability: "/api/reliability",
   uxGovernance: "/api/ux-governance",
+  operationsGovernance: "/api/operations-governance",
   adminWorksheets: "/api/admin/worksheets",
   adminAssessmentResults: "/api/admin/assessment-results",
   familyCreateBindCode: "/api/family/create-bind-code",

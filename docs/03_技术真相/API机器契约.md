@@ -1,6 +1,6 @@
 # API机器契约
 
-契约版本：`2026-07-21.1`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
+契约版本：`2026-07-21.2`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
 
 统一成功包络为`{ok:true,data,request_id}`，统一错误包络为`{ok:false,error:{code,message},request_id}`；下载接口除外，但响应头仍含`X-Request-ID`。
 
@@ -90,6 +90,23 @@
 | GET | `/api/notifications/config` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | POST | `/api/notifications/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | POST | `/api/notifications/run-due` | role:admin | role_scoped | — | — | active |
+| POST | `/api/operations-governance/evidence-packages` | role:supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/incidents` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/incidents/<incident_id>/notifications/<notification_id>/<action>` | role:admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/incidents/<incident_id>/postmortem` | role:supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/monitoring/snapshots` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/packages` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| GET | `/api/operations-governance/packages/<package_id>` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/packages/<package_id>/<action>` | role:admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/packages/<package_id>/approvals` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/packages/<package_id>/release` | role:admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/packages/<package_id>/replay` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/packages/<package_id>/reviews` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/packages/<package_id>/submit` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| GET | `/api/operations-governance/public-status` | public:public | non_sensitive_operations_gate_status_only | — | — | active |
+| GET | `/api/operations-governance/registry` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| POST | `/api/operations-governance/runtime/rollback` | role:admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
+| GET | `/api/operations-governance/workbench` | role:researcher,supervisor,admin | internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text | — | — | active |
 | GET | `/api/parent-assessment` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/parent-assessments` | admin:admin | role_scoped | — | — | active |
 | POST | `/api/parent-assessments` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | supported | active |

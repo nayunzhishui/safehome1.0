@@ -1,0 +1,254 @@
+{
+  "schema_version": "safehome.operations-knowledge-index.v1",
+  "version": "2026-07-21-t34-v1",
+  "entries": [
+    {
+      "source_file": "ai_qa_safety_responses.json",
+      "source_version": "2026.07-task28-safety-v1",
+      "source_sha256": "19e278b8be8cb7da89ae4f7bd7fc989ce3c14c86b424317b67e9c3506e319adc",
+      "content_types": [
+        "ai_safety_text"
+      ],
+      "governance_status": "draft_requires_psychology_ethics_review",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "assessment_training_map.json",
+      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_sha256": "cd16910d5e415d6ecec73de214fa99ca824672f110d4c5366fe08bf741bb000d",
+      "content_types": [
+        "assessment_training_rule"
+      ],
+      "governance_status": "legacy_active_pending_registration",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "assessment_worksheets.json",
+      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_sha256": "035880c6dd6e771856d67c6c76604b00edd61d8899b2daff993df2228f0df10c",
+      "content_types": [
+        "worksheet"
+      ],
+      "governance_status": "legacy_active_requires_item_review",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "consent.md",
+      "source_version": "2026.07-task24",
+      "source_sha256": "c300cd05a346d5d456369c3c07143c16e052625545f633b7b7919e64201c846d",
+      "content_types": [
+        "consent_text"
+      ],
+      "governance_status": "legacy_active_requires_ethics_review",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "courses.json",
+      "source_version": "2026.07-task17-course-v2",
+      "source_sha256": "524f4a0ca0eaa6a53c837e98ecdd71c6ca4a75df65f9ed945a573b31d09b86b3",
+      "content_types": [
+        "course"
+      ],
+      "governance_status": "legacy_active_pending_registration",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "diary_training_map.json",
+      "source_version": "2026.07-diary-training-map-v2",
+      "source_sha256": "9c6535e2184fbc54df8b221ce5d6763cadaa94116333fd1d86dbc26c3d74d44b",
+      "content_types": [
+        "diary_training_rule"
+      ],
+      "governance_status": "legacy_active_pending_registration",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "feedback_rules.json",
+      "source_version": "2026.07-feedback-rules-v3",
+      "source_sha256": "fdc285f2ae7d0a6eda1978ed0d103b1ec374fc1ef581f64109000ccae4cd6db0",
+      "content_types": [
+        "feedback_rule"
+      ],
+      "governance_status": "legacy_active_pending_registration",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "offline_benchmark_annotation_manual.json",
+      "source_version": "2026.07-task29-annotation-v1",
+      "source_sha256": "5748abd840de0eb1280f7e5bc63a2b8bea5fc194e31106fdfa2e5ee18fd2d974",
+      "content_types": [
+        "research_annotation_manual"
+      ],
+      "governance_status": "draft_human_annotation_pending",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "offline_benchmark_label_mapping.json",
+      "source_version": "2026.07-task29-label-map-v1",
+      "source_sha256": "26d6c370703262519f994c12e2e2de9b4676d553c6673e417382076840227d22",
+      "content_types": [
+        "research_label_mapping"
+      ],
+      "governance_status": "draft_requires_methods_review",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "offline_benchmark_registry.json",
+      "source_version": "2026.07-task29-v1",
+      "source_sha256": "919e22f0a0c02dd4e1d75356e8605a0fd941a1a936ca856bb7d87d691ba3222e",
+      "content_types": [
+        "research_dataset_registry"
+      ],
+      "governance_status": "internal_registry_external_ingest_blocked",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "operations_asset_cards.json",
+      "source_version": "2026-07-21-t34-v1",
+      "source_sha256": "886146f66ef847d19cc4e6f01ce91d157e97498f4f03a4b052eca1d5c5906e0d",
+      "content_types": [
+        "dataset_card",
+        "rule_card",
+        "model_card"
+      ],
+      "governance_status": "engineering_cards_complete_human_admission_pending",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "operations_capability_registry.json",
+      "source_version": "2026-07-21-t34-v1",
+      "source_sha256": "f5f48b1d6699a15076c11064a74f332f5f290b0ebcb9a5fc92668f846fe004ca",
+      "content_types": [
+        "capability_registry",
+        "release_gate",
+        "treatment_assessment_gate"
+      ],
+      "governance_status": "engineering_registry_complete_release_approval_pending",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "privacy.md",
+      "source_version": "2026.07-task24",
+      "source_sha256": "11927fe33ba3685c4a72ebb59216ed93b5e633aa49a47560ef06d01da24b4e95",
+      "content_types": [
+        "privacy_text"
+      ],
+      "governance_status": "legacy_active_requires_ethics_review",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "programs.json",
+      "source_version": "2026.07-task17-program-protocol-v1",
+      "source_sha256": "916ba6b243aa17efa42885f70c341a040c78c29b4aea479180a6ce0e65877219",
+      "content_types": [
+        "program"
+      ],
+      "governance_status": "legacy_active_requires_human_approval",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "reliability_release_registry.json",
+      "source_version": "2026-07-20-t32-reliability-v1",
+      "source_sha256": "28073ceda752753c544592a0d6dd05ec4cc301ffd9f3767f7589637bcb81c4c3",
+      "content_types": [
+        "reliability_journey",
+        "reliable_job",
+        "release_gate"
+      ],
+      "governance_status": "engineering_controls_ready_external_release_gates_pending",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "research_methodology_registry.json",
+      "source_version": "2026-07-20-t30-methodology-v1",
+      "source_sha256": "2e65547ce77e858480a5b973e2bff5043d8ccc080887aa51a11791905bf6e933",
+      "content_types": [
+        "research_methodology_registry",
+        "measurement_registry",
+        "reporting_standard_mapping"
+      ],
+      "governance_status": "draft_before_freeze_human_signatures_pending",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "scales_catalog.json",
+      "source_version": "2026.07-task18-reviewed-scales-v1",
+      "source_sha256": "6db8fc20a302cd63f3a871ccc67c2310e847a840e4777bf49cd3af648144a7ed",
+      "content_types": [
+        "scale"
+      ],
+      "governance_status": "legacy_active_requires_item_review",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "security_privacy_abuse_registry.json",
+      "source_version": "2026-07-20-t31-security-v1",
+      "source_sha256": "3cc085b5d1762cedcc5d72807550aa366a274e552cdcd84387e38f002f4d6286",
+      "content_types": [
+        "security_asset_inventory",
+        "authorization_matrix",
+        "threat_model"
+      ],
+      "governance_status": "engineering_controls_ready_formal_acceptance_blocked",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "student_profile_rules.json",
+      "source_version": "2026.06-student-profile-rules-v1-draft",
+      "source_sha256": "74be09137331751ed6bb4a010eaaca022129481044b16b4d0286e36b90dea5d8",
+      "content_types": [
+        "student_profile_rule"
+      ],
+      "governance_status": "draft_requires_psychology_review",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "training_cards.json",
+      "source_version": "2026.07-task21-experience-review-v1",
+      "source_sha256": "70e0dbec00e6774a71fbda715f0d11626e320b9b5f43f5f551f9b83ac7629ee1",
+      "content_types": [
+        "training_card"
+      ],
+      "governance_status": "legacy_active_pending_registration",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "ux_experience_registry.json",
+      "source_version": "2026.07-task33-v1",
+      "source_sha256": "ff23c78674bf44ebe3fcc705f92d616680a0f1093ee762f81a2bb0c8367bbfb6",
+      "content_types": [
+        "page_inventory",
+        "information_architecture",
+        "accessibility_gate",
+        "form_resilience"
+      ],
+      "governance_status": "engineering_controls_ready_external_validation_pending",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    }
+  ],
+  "draft_or_internal_notes_indexed": false,
+  "participant_text_indexed": false,
+  "production_release_approved": false,
+  "index_hash": "d65997e2e3684f9e54531d26d791059e471f1e8c540253d24308fd4d48be6ee7"
+}

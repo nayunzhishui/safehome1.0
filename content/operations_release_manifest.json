@@ -1,0 +1,164 @@
+{
+  "schema_version": "safehome.operations-release-manifest.v1",
+  "version": "2026-07-21-t34-v1",
+  "artifacts": [
+    {
+      "artifact_type": "content",
+      "path": "content/training_cards.json",
+      "sha256": "70e0dbec00e6774a71fbda715f0d11626e320b9b5f43f5f551f9b83ac7629ee1",
+      "size_bytes": 206031
+    },
+    {
+      "artifact_type": "content",
+      "path": "content/courses.json",
+      "sha256": "524f4a0ca0eaa6a53c837e98ecdd71c6ca4a75df65f9ed945a573b31d09b86b3",
+      "size_bytes": 21351
+    },
+    {
+      "artifact_type": "content",
+      "path": "content/programs.json",
+      "sha256": "916ba6b243aa17efa42885f70c341a040c78c29b4aea479180a6ce0e65877219",
+      "size_bytes": 26635
+    },
+    {
+      "artifact_type": "content",
+      "path": "content/assessment_worksheets.json",
+      "sha256": "035880c6dd6e771856d67c6c76604b00edd61d8899b2daff993df2228f0df10c",
+      "size_bytes": 706506
+    },
+    {
+      "artifact_type": "content",
+      "path": "content/scales_catalog.json",
+      "sha256": "6db8fc20a302cd63f3a871ccc67c2310e847a840e4777bf49cd3af648144a7ed",
+      "size_bytes": 72911
+    },
+    {
+      "artifact_type": "content",
+      "path": "content/consent.md",
+      "sha256": "c300cd05a346d5d456369c3c07143c16e052625545f633b7b7919e64201c846d",
+      "size_bytes": 1661
+    },
+    {
+      "artifact_type": "content",
+      "path": "content/privacy.md",
+      "sha256": "11927fe33ba3685c4a72ebb59216ed93b5e633aa49a47560ef06d01da24b4e95",
+      "size_bytes": 1390
+    },
+    {
+      "artifact_type": "rule",
+      "path": "content/feedback_rules.json",
+      "sha256": "fdc285f2ae7d0a6eda1978ed0d103b1ec374fc1ef581f64109000ccae4cd6db0",
+      "size_bytes": 14923
+    },
+    {
+      "artifact_type": "rule",
+      "path": "content/assessment_training_map.json",
+      "sha256": "cd16910d5e415d6ecec73de214fa99ca824672f110d4c5366fe08bf741bb000d",
+      "size_bytes": 67495
+    },
+    {
+      "artifact_type": "rule",
+      "path": "content/diary_training_map.json",
+      "sha256": "9c6535e2184fbc54df8b221ce5d6763cadaa94116333fd1d86dbc26c3d74d44b",
+      "size_bytes": 11592
+    },
+    {
+      "artifact_type": "rule",
+      "path": "content/student_profile_rules.json",
+      "sha256": "74be09137331751ed6bb4a010eaaca022129481044b16b4d0286e36b90dea5d8",
+      "size_bytes": 2512
+    },
+    {
+      "artifact_type": "rule",
+      "path": "content/readfeedback/parent_report_rules.json",
+      "sha256": "42748fb62aae4dd6f676c6284949a4ff893ed824394796a45b505134bcd18896",
+      "size_bytes": 3302
+    },
+    {
+      "artifact_type": "dictionary",
+      "path": "content/risk_keywords.json",
+      "sha256": "69d891b9f427bc14c7dc4cbd3c5cdeb832162e52b4896febb0997f6ffbf2d59b",
+      "size_bytes": 2766
+    },
+    {
+      "artifact_type": "dictionary",
+      "path": "content/offline_benchmark_label_mapping.json",
+      "sha256": "26d6c370703262519f994c12e2e2de9b4676d553c6673e417382076840227d22",
+      "size_bytes": 1617
+    },
+    {
+      "artifact_type": "model",
+      "path": "content/readfeedback/student_profile_model.json",
+      "sha256": "7145945dde0124b3e980f9bcca3b4723f5e5e87a065d04dfa5664539cb9ee68c",
+      "size_bytes": 7755
+    },
+    {
+      "artifact_type": "model",
+      "path": "content/readfeedback/student_profile_rules_kmeans.json",
+      "sha256": "64382d88f7d89b5ea002529e349458f1384274d8e33b5f85df88ae6727a87af1",
+      "size_bytes": 5623
+    },
+    {
+      "artifact_type": "model",
+      "path": "content/profiles/task12_micro_ysq_relationship_18_profile_model.json",
+      "sha256": "14a1cd51c2272a21c2e21b94c616565be5194419bca1852bbc32c0f9d368a9b3",
+      "size_bytes": 25832
+    },
+    {
+      "artifact_type": "model",
+      "path": "content/profiles/task12_regulatory_focus_relationship_18_profile_model.json",
+      "sha256": "7b1d79fa02b94950c4bbae08f9e22447717adda711e793a9d07b3c90bae5ead8",
+      "size_bytes": 26106
+    },
+    {
+      "artifact_type": "model",
+      "path": "content/profiles/task12_relationship_initiation_intention_action_profile_model.json",
+      "sha256": "fe948777b81359793148733171867ac205f84552bfe450a14f9f4d0784789eca",
+      "size_bytes": 28934
+    },
+    {
+      "artifact_type": "prompt",
+      "path": "content/ai_qa_safety_responses.json",
+      "sha256": "19e278b8be8cb7da89ae4f7bd7fc989ce3c14c86b424317b67e9c3506e319adc",
+      "size_bytes": 3216
+    },
+    {
+      "artifact_type": "prompt",
+      "path": "content/ai_qa_governance.json",
+      "sha256": "b7706ccfc299ff751008c4a2ebd2b833f3b8fd1b57904d70ab4f6db49048672d",
+      "size_bytes": 1471
+    },
+    {
+      "artifact_type": "knowledge_index",
+      "path": "content/operations_knowledge_index.json",
+      "sha256": "d47c655ba8f2d0dce88798ca6f7f064eada105a3d8485f11fcb248a7a88048cd",
+      "size_bytes": 10459
+    },
+    {
+      "artifact_type": "governance_card",
+      "path": "content/operations_asset_cards.json",
+      "sha256": "886146f66ef847d19cc4e6f01ce91d157e97498f4f03a4b052eca1d5c5906e0d",
+      "size_bytes": 22393
+    },
+    {
+      "artifact_type": "capability_registry",
+      "path": "content/operations_capability_registry.json",
+      "sha256": "f5f48b1d6699a15076c11064a74f332f5f290b0ebcb9a5fc92668f846fe004ca",
+      "size_bytes": 64796
+    }
+  ],
+  "fixed_replay_suites": [
+    {
+      "path": "content/synthetic_content_replay_cases.json",
+      "contains_real_data": false
+    },
+    {
+      "path": "content/ai_qa_synthetic_safety_suite.json",
+      "contains_real_data": false
+    }
+  ],
+  "revision_policy": "never_edit_verified_package_create_new_version",
+  "atomic_runtime_switch": true,
+  "production_release_approved": false,
+  "manifest_hash": "c1430d8333c0cc1d6be0a29a5833265e63ed268165376645727fee5af194a9f9"
+}

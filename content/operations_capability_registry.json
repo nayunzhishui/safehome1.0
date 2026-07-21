@@ -1,0 +1,1818 @@
+{
+  "schema_version": "safehome.operations-capability-registry.v1",
+  "version": "2026-07-21-t34-v1",
+  "status": "engineering_registry_complete_release_approval_pending",
+  "generated_from_contract_version": "2026-07-21.2",
+  "operation_count": 222,
+  "capability_count": 40,
+  "capabilities": [
+    {
+      "id": "capability.app",
+      "title": "运行健康与机器状态",
+      "intended_use": "通过统一机器契约受控提供“运行健康与机器状态”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "public"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 3)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "deep_healthz.get",
+        "healthz.get",
+        "readyz.get"
+      ]
+    },
+    {
+      "id": "capability.admin",
+      "title": "管理员数据总览",
+      "intended_use": "通过统一机器契约受控提供“管理员数据总览”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "security_privacy_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 6)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "admin.create_admin_worksheet.post",
+        "admin.disable_admin_worksheet.delete",
+        "admin.export_csv.get",
+        "admin.list_admin_assessment_results.get",
+        "admin.list_admin_worksheets.get",
+        "admin.update_admin_worksheet.put"
+      ]
+    },
+    {
+      "id": "capability.ai_qa",
+      "title": "受控支持性问答沙盒",
+      "intended_use": "通过统一机器契约受控提供“受控支持性问答沙盒”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "public",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [
+        "AI_QA_ENABLED",
+        "AI_QA_SANDBOX_ENABLED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 11)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "synthetic_sandbox_only_participant_release_blocked",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "ai_qa.ai_qa_config.get",
+        "ai_qa.ai_qa_evaluation_review.post",
+        "ai_qa.ai_qa_evaluation_run.post",
+        "ai_qa.ai_qa_kill_switch.post",
+        "ai_qa.ai_qa_message_create.post",
+        "ai_qa.ai_qa_message_feedback.post",
+        "ai_qa.ai_qa_review_evidence.get",
+        "ai_qa.ai_qa_session_create.post",
+        "ai_qa.ai_qa_session_delete.delete",
+        "ai_qa.ai_qa_session_detail.get",
+        "ai_qa.ai_qa_sessions.get"
+      ]
+    },
+    {
+      "id": "capability.assessments",
+      "title": "支持性测评",
+      "intended_use": "通过统一机器契约受控提供“支持性测评”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "public",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 6)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "assessments.create_assessment_result.post",
+        "assessments.get_assessment.get",
+        "assessments.get_assessment_profile_position.get",
+        "assessments.get_assessment_result.get",
+        "assessments.list_assessment_results.get",
+        "assessments.list_assessments.get"
+      ]
+    },
+    {
+      "id": "capability.auth",
+      "title": "身份与会话",
+      "intended_use": "通过统一机器契约受控提供“身份与会话”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "security_privacy_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "public",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 11)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "auth.admin_create_account.post",
+        "auth.auth_capabilities.get",
+        "auth.bind_phone.post",
+        "auth.data_claim.post",
+        "auth.data_claim_preview.get",
+        "auth.login.post",
+        "auth.logout.post",
+        "auth.me.get",
+        "auth.phone_login.post",
+        "auth.register.post",
+        "auth.wechat_login.post"
+      ]
+    },
+    {
+      "id": "capability.cards",
+      "title": "训练卡推荐与查看",
+      "intended_use": "通过统一机器契约受控提供“训练卡推荐与查看”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "content_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "public",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "cards.get_cards.get",
+        "cards.recommend.get"
+      ]
+    },
+    {
+      "id": "capability.checkins",
+      "title": "练习打卡",
+      "intended_use": "通过统一机器契约受控提供“练习打卡”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "checkins.create_checkin.post",
+        "checkins.list_checkins.get"
+      ]
+    },
+    {
+      "id": "capability.consent",
+      "title": "知情同意",
+      "intended_use": "通过统一机器契约受控提供“知情同意”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "consent.create_consent_record.post",
+        "consent.list_consent_records.get"
+      ]
+    },
+    {
+      "id": "capability.content_review",
+      "title": "内容版本与发布治理",
+      "intended_use": "通过统一机器契约受控提供“内容版本与发布治理”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "content_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "public"
+      ],
+      "feature_flags": [
+        "CONTENT_GOVERNANCE_ENFORCED",
+        "CONTENT_GOVERNANCE_PUBLISH_ENABLED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 13)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "content_review.content_active_descriptor.get",
+        "content_review.content_inventory.get",
+        "content_review.content_inventory_register.post",
+        "content_review.content_release_action.post",
+        "content_review.content_synthetic_replay.post",
+        "content_review.content_version_create.post",
+        "content_review.content_version_detail.get",
+        "content_review.content_version_diff.get",
+        "content_review.content_version_publish.post",
+        "content_review.content_version_review.post",
+        "content_review.content_version_submit.post",
+        "content_review.content_versions.get",
+        "content_review.update_content_review.post"
+      ]
+    },
+    {
+      "id": "capability.courses",
+      "title": "课程与练习节奏",
+      "intended_use": "通过统一机器契约受控提供“课程与练习节奏”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "content_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "public",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 6)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "courses.get_course.get",
+        "courses.get_course_progress.get",
+        "courses.list_course_pathways.get",
+        "courses.list_course_progress.get",
+        "courses.list_courses.get",
+        "courses.save_course_progress.post"
+      ]
+    },
+    {
+      "id": "capability.diaries",
+      "title": "情绪事件记录",
+      "intended_use": "通过统一机器契约受控提供“情绪事件记录”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "diaries.create_diary.post",
+        "diaries.list_diaries.get"
+      ]
+    },
+    {
+      "id": "capability.emotion_thermometer",
+      "title": "情绪温度记录",
+      "intended_use": "通过统一机器契约受控提供“情绪温度记录”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "emotion_thermometer.create_emotion_thermometer_record.post",
+        "emotion_thermometer.get_emotion_thermometer_day.get"
+      ]
+    },
+    {
+      "id": "capability.family",
+      "title": "家庭关联",
+      "intended_use": "通过统一机器契约受控提供“家庭关联”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 4)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "family.bind_student.post",
+        "family.create_bind_code.post",
+        "family.members.get",
+        "family.unbind.delete"
+      ]
+    },
+    {
+      "id": "capability.feedback",
+      "title": "支持性反馈生成",
+      "intended_use": "通过统一机器契约受控提供“支持性反馈生成”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "content_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 1)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "feedback.generate.post"
+      ]
+    },
+    {
+      "id": "capability.feedback_ledger",
+      "title": "反馈共同核对账本",
+      "intended_use": "通过统一机器契约受控提供“反馈共同核对账本”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 3)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "feedback_ledger.create_entry.post",
+        "feedback_ledger.list_entries.get",
+        "feedback_ledger.summary.get"
+      ]
+    },
+    {
+      "id": "capability.general_growth",
+      "title": "通用成长总览",
+      "intended_use": "通过统一机器契约受控提供“通用成长总览”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 1)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "general_growth.get_growth_overview.get"
+      ]
+    },
+    {
+      "id": "capability.goals",
+      "title": "阶段目标",
+      "intended_use": "通过统一机器契约受控提供“阶段目标”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "goals.create_goal.post",
+        "goals.list_goals.get"
+      ]
+    },
+    {
+      "id": "capability.journey",
+      "title": "今天的一小步",
+      "intended_use": "通过统一机器契约受控提供“今天的一小步”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 1)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "journey.get_today_journey.get"
+      ]
+    },
+    {
+      "id": "capability.messages",
+      "title": "站内消息",
+      "intended_use": "通过统一机器契约受控提供“站内消息”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 5)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "messages.get_message.get",
+        "messages.list_messages.get",
+        "messages.mark_all_messages_read.post",
+        "messages.mark_message_read.post",
+        "messages.send_researcher_message.post"
+      ]
+    },
+    {
+      "id": "capability.notifications",
+      "title": "微信订阅通知",
+      "intended_use": "通过统一机器契约受控提供“微信订阅通知”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [
+        "WECHAT_SUBSCRIBE_SEND_ENABLED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 3)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "notifications.get_notification_config.get",
+        "notifications.run_due.post",
+        "notifications.save_notification_consent.post"
+      ]
+    },
+    {
+      "id": "capability.offline_benchmarks",
+      "title": "离线情感与网络基准",
+      "intended_use": "通过统一机器契约受控提供“离线情感与网络基准”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "research_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [
+        "OFFLINE_BENCHMARK_ENABLED",
+        "OFFLINE_EXTERNAL_INGEST_ENABLED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 11)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "synthetic_only_external_ingest_rights_blocked",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "offline_benchmarks.affect_run.post",
+        "offline_benchmarks.agreement.get",
+        "offline_benchmarks.annotation_create.post",
+        "offline_benchmarks.cases.get",
+        "offline_benchmarks.config.get",
+        "offline_benchmarks.dataset_cards.get",
+        "offline_benchmarks.dataset_cards_sync.post",
+        "offline_benchmarks.disable.post",
+        "offline_benchmarks.network_run.post",
+        "offline_benchmarks.run_review.post",
+        "offline_benchmarks.runs.get"
+      ]
+    },
+    {
+      "id": "capability.operations_governance",
+      "title": "内容数据模型运营治理",
+      "intended_use": "通过统一机器契约受控提供“内容数据模型运营治理”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "public",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [
+        "OPERATIONS_GOVERNANCE_WORKBENCH_ENABLED",
+        "OPERATIONS_LOCAL_RELEASE_ENABLED",
+        "OPERATIONS_PRODUCTION_RELEASE_ENABLED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 17)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "operations_governance.get_operations_registry.get",
+        "operations_governance.get_operations_workbench.get",
+        "operations_governance.get_package.get",
+        "operations_governance.get_public_status.get",
+        "operations_governance.post_evidence_package.post",
+        "operations_governance.post_incident.post",
+        "operations_governance.post_incident_notification.post",
+        "operations_governance.post_incident_postmortem.post",
+        "operations_governance.post_monitoring_snapshot.post",
+        "operations_governance.post_package.post",
+        "operations_governance.post_package_action.post",
+        "operations_governance.post_package_approval.post",
+        "operations_governance.post_package_release.post",
+        "operations_governance.post_package_replay.post",
+        "operations_governance.post_package_review.post",
+        "operations_governance.post_package_submit.post",
+        "operations_governance.post_runtime_rollback.post"
+      ]
+    },
+    {
+      "id": "capability.parent_assessments",
+      "title": "家长支持性测评",
+      "intended_use": "通过统一机器契约受控提供“家长支持性测评”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "psychology_supervisor",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "public",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 5)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "parent_assessments.create_parent_assessment.post",
+        "parent_assessments.create_parent_report_action.post",
+        "parent_assessments.get_parent_assessment.get",
+        "parent_assessments.get_parent_assessment_result.get",
+        "parent_assessments.list_parent_assessments.get"
+      ]
+    },
+    {
+      "id": "capability.privacy",
+      "title": "隐私生命周期",
+      "intended_use": "通过统一机器契约受控提供“隐私生命周期”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "security_privacy_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 14)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "privacy.appeal_privacy_request.post",
+        "privacy.approve_privacy_request_execution.post",
+        "privacy.cancel_privacy_request.post",
+        "privacy.consent_status.get",
+        "privacy.delete_my_data.post",
+        "privacy.execute_privacy_request_for_review.post",
+        "privacy.export_my_data.get",
+        "privacy.get_privacy_deletion_verification.get",
+        "privacy.get_privacy_request_for_review.get",
+        "privacy.list_privacy_requests.get",
+        "privacy.list_privacy_requests_for_review.get",
+        "privacy.preview_privacy_request_for_review.get",
+        "privacy.revoke_consent.post",
+        "privacy.transition_privacy_request_for_review.post"
+      ]
+    },
+    {
+      "id": "capability.product_events",
+      "title": "最小化产品事件",
+      "intended_use": "通过统一机器契约受控提供“最小化产品事件”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 1)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "product_events.create_product_event.post"
+      ]
+    },
+    {
+      "id": "capability.profile",
+      "title": "学生支持性画像",
+      "intended_use": "通过统一机器契约受控提供“学生支持性画像”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "psychology_supervisor",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "public",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 14)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "profile.check_risk.post",
+        "profile.create_profile.post",
+        "profile.create_profile_followup.post",
+        "profile.create_profile_review.post",
+        "profile.create_profile_sandplay.post",
+        "profile.get_profile_result.get",
+        "profile.get_profile_stats.get",
+        "profile.get_profile_visuals.get",
+        "profile.get_student_assessment.get",
+        "profile.list_profile_followups.get",
+        "profile.list_profile_results.get",
+        "profile.list_profile_reviews.get",
+        "profile.list_profile_sandplay.get",
+        "profile.model_info.get"
+      ]
+    },
+    {
+      "id": "capability.programs",
+      "title": "项目与课程",
+      "intended_use": "通过统一机器契约受控提供“项目与课程”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "content_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "public",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 4)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "programs.create_program_entry.post",
+        "programs.get_program.get",
+        "programs.list_program_entries.get",
+        "programs.list_programs.get"
+      ]
+    },
+    {
+      "id": "capability.progress_summary",
+      "title": "成长时间线与摘要",
+      "intended_use": "通过统一机器契约受控提供“成长时间线与摘要”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 3)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "progress_summary.get_profile_trend.get",
+        "progress_summary.get_progress_summary.get",
+        "progress_summary.get_training_effectiveness.get"
+      ]
+    },
+    {
+      "id": "capability.relationship_pilot_routes",
+      "title": "关系探索试点",
+      "intended_use": "通过统一机器契约受控提供“关系探索试点”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "psychology_supervisor",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 17)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "relationship_pilot.confirm_narrative_route.post",
+        "relationship_pilot.confirm_report_route.post",
+        "relationship_pilot.create_enrollment_route.post",
+        "relationship_pilot.create_longitudinal_entry_route.post",
+        "relationship_pilot.create_narrative_route.post",
+        "relationship_pilot.create_note_route.post",
+        "relationship_pilot.create_report_route.post",
+        "relationship_pilot.create_task_route.post",
+        "relationship_pilot.get_enrollment_route.get",
+        "relationship_pilot.get_narrative_route.get",
+        "relationship_pilot.get_report_route.get",
+        "relationship_pilot.list_enrollments_route.get",
+        "relationship_pilot.relationship_growth_route.get",
+        "relationship_pilot.researcher_dashboard_route.get",
+        "relationship_pilot.save_hypothesis_feedback_route.put",
+        "relationship_pilot.send_report_route.post",
+        "relationship_pilot.update_report_route.patch"
+      ]
+    },
+    {
+      "id": "capability.reliability",
+      "title": "可靠性与发布工程",
+      "intended_use": "通过统一机器契约受控提供“可靠性与发布工程”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "public",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [
+        "RELIABILITY_WORKBENCH_ENABLED",
+        "RELIABILITY_GRADUAL_RELEASE_ENABLED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 14)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "reliability.get_feature_flags.get",
+        "reliability.get_jobs.get",
+        "reliability.get_public_status.get",
+        "reliability.get_workbench.get",
+        "reliability.patch_feature_flag.patch",
+        "reliability.post_drill.post",
+        "reliability.post_evidence_package.post",
+        "reliability.post_feature_flag_rollback.post",
+        "reliability.post_job.post",
+        "reliability.post_job_claim.post",
+        "reliability.post_job_complete.post",
+        "reliability.post_job_fail.post",
+        "reliability.post_job_recover.post",
+        "reliability.post_slo_snapshot.post"
+      ]
+    },
+    {
+      "id": "capability.reports",
+      "title": "周度报告",
+      "intended_use": "通过统一机器契约受控提供“周度报告”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 1)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "reports.weekly_report.get"
+      ]
+    },
+    {
+      "id": "capability.research_methodology",
+      "title": "研究方法冻结准备",
+      "intended_use": "通过统一机器契约受控提供“研究方法冻结准备”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "research_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "public",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [
+        "RESEARCH_METHODOLOGY_WORKBENCH_ENABLED",
+        "RESEARCH_OUTCOME_ANALYSIS_ALLOWED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 10)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_ready_formal_freeze_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "research_methodology.checks_run.post",
+        "research_methodology.config.get",
+        "research_methodology.disable.post",
+        "research_methodology.evidence.get",
+        "research_methodology.evidence_packages.post",
+        "research_methodology.public_status.get",
+        "research_methodology.registry.get",
+        "research_methodology.simulations_run.post",
+        "research_methodology.versions.get",
+        "research_methodology.versions_sync.post"
+      ]
+    },
+    {
+      "id": "capability.research_workspace",
+      "title": "研究工作台",
+      "intended_use": "通过统一机器契约受控提供“研究工作台”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "research_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 7)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "research_workspace.act_on_research_work_item.post",
+        "research_workspace.get_participant_dossier.get",
+        "research_workspace.get_research_operations.get",
+        "research_workspace.get_research_queue.get",
+        "research_workspace.get_research_work_item.get",
+        "research_workspace.get_research_work_item_metric_snapshot.get",
+        "research_workspace.list_participants.get"
+      ]
+    },
+    {
+      "id": "capability.risk_review",
+      "title": "风险人工复核",
+      "intended_use": "通过统一机器契约受控提供“风险人工复核”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "psychology_supervisor",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "risk_review.list_reviews.get",
+        "risk_review.update_review.post"
+      ]
+    },
+    {
+      "id": "capability.security_controls",
+      "title": "安全隐私与滥用控制",
+      "intended_use": "通过统一机器契约受控提供“安全隐私与滥用控制”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "security_privacy_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "public",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [
+        "SECURITY_CONTROL_WORKBENCH_ENABLED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 5)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "security_controls.create_scan.post",
+        "security_controls.get_public_status.get",
+        "security_controls.get_workbench.get",
+        "security_controls.resolve_event.post",
+        "security_controls.update_account_status.patch"
+      ]
+    },
+    {
+      "id": "capability.showcase_access",
+      "title": "临时展示例外",
+      "intended_use": "通过统一机器契约受控提供“临时展示例外”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "public"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 1)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "temporary_exception_formal_permission_blocked",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "showcase_access.get_showcase_access.get"
+      ]
+    },
+    {
+      "id": "capability.supervision",
+      "title": "人工支持",
+      "intended_use": "通过统一机器契约受控提供“人工支持”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "psychology_supervisor",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "high",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "supervision.create_supervision_request.post",
+        "supervision.reply_supervision_request.post"
+      ]
+    },
+    {
+      "id": "capability.text_analysis",
+      "title": "透明文本线索分析",
+      "intended_use": "通过统一机器契约受控提供“透明文本线索分析”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "researcher"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 1)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "text_analysis.text_analysis_summary.get"
+      ]
+    },
+    {
+      "id": "capability.training_plan",
+      "title": "个性化练习计划",
+      "intended_use": "通过统一机器契约受控提供“个性化练习计划”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 2)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "training_plan.get_training_plan.get",
+        "training_plan.save_training_plan_assignment.post"
+      ]
+    },
+    {
+      "id": "capability.ux_governance",
+      "title": "体验与无障碍治理",
+      "intended_use": "通过统一机器契约受控提供“体验与无障碍治理”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "public",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [
+        "UX_GOVERNANCE_WORKBENCH_ENABLED"
+      ],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 5)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "ux_governance.get_workbench.get",
+        "ux_governance.post_audit.post",
+        "ux_governance.post_evidence_package.post",
+        "ux_governance.public_status.get",
+        "ux_governance.registry.get"
+      ]
+    }
+  ],
+  "temporary_showcase_exception": {
+    "retained": true,
+    "formal_permission_acceptance": false,
+    "production_release_blocker": true
+  },
+  "treatment_assessment": {
+    "synthetic_l0_allowed": true,
+    "real_participant_release_allowed": false,
+    "blocked_by": [
+      "D01-D26",
+      "ethics",
+      "object_authorization",
+      "human_responsibility_chain",
+      "T34_release_approval"
+    ]
+  },
+  "external_gates": [
+    "named_owners",
+    "ethics",
+    "privacy_security",
+    "test_cloud",
+    "wechat_developer_tool",
+    "android_ios",
+    "production_dual_control"
+  ],
+  "production_release_approved": false,
+  "boundary_notice": "工程登记与本地合成回放不等于人工、伦理、云、真机或生产发布批准。"
+}

@@ -64,6 +64,11 @@ import type {
   ReliabilityWorkbench,
   UXGovernancePublicStatus,
   UXGovernanceWorkbench,
+  OperationsGovernanceWorkbench,
+  OperationsIncident,
+  OperationsMonitoringSnapshot,
+  OperationsPublicStatus,
+  OperationsReleasePackage,
   ParentAssessmentInput,
   ParentAssessmentPayload,
   ParentAssessmentResult,
@@ -987,6 +992,62 @@ export class SafeHomeApiClient {
 
   createUXEvidencePackage(): Promise<Record<string, unknown>> {
     return this.requestData(`${API_ENDPOINTS.uxGovernance}/evidence-packages`, { method: "POST" });
+  }
+
+  getOperationsGovernancePublicStatus(): Promise<OperationsPublicStatus> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/public-status`);
+  }
+
+  getOperationsGovernanceWorkbench(): Promise<OperationsGovernanceWorkbench> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/workbench`);
+  }
+
+  createOperationsPackage(input: { package_version: string; risk_level: "low" | "medium" | "high"; target_environment: "local_synthetic" | "production_candidate"; previous_package_id?: string }): Promise<OperationsReleasePackage> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/packages`, { method: "POST", body: input });
+  }
+
+  runOperationsReplay(packageId: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/packages/${encodeURIComponent(packageId)}/replay`, { method: "POST" });
+  }
+
+  submitOperationsPackage(packageId: string): Promise<OperationsReleasePackage> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/packages/${encodeURIComponent(packageId)}/submit`, { method: "POST" });
+  }
+
+  reviewOperationsPackage(packageId: string, input: { decision: "recommended" | "changes_requested"; evidence_ref: string; note?: string }): Promise<OperationsReleasePackage> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/packages/${encodeURIComponent(packageId)}/reviews`, { method: "POST", body: input });
+  }
+
+  approveOperationsPackage(packageId: string, input: { domain: "research" | "psychology" | "security"; decision: "approved" | "rejected"; evidence_ref: string; note?: string }): Promise<OperationsReleasePackage> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/packages/${encodeURIComponent(packageId)}/approvals`, { method: "POST", body: input });
+  }
+
+  releaseOperationsPackage(packageId: string): Promise<OperationsReleasePackage> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/packages/${encodeURIComponent(packageId)}/release`, { method: "POST", body: { confirmation: "LOCAL_SYNTHETIC_RELEASE_ONLY" } });
+  }
+
+  changeOperationsPackageState(packageId: string, action: "pause" | "resume" | "retire", reasonCode: string): Promise<OperationsReleasePackage> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/packages/${encodeURIComponent(packageId)}/${action}`, { method: "POST", body: { reason_code: reasonCode } });
+  }
+
+  rollbackOperationsRuntime(targetPackageId: string): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/runtime/rollback`, { method: "POST", body: { target_package_id: targetPackageId, reason_code: "human_selected_verified_rollback" } });
+  }
+
+  createOperationsMonitorSnapshot(): Promise<OperationsMonitoringSnapshot> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/monitoring/snapshots`, { method: "POST", body: { environment: "local_synthetic", window_days: 30 } });
+  }
+
+  reportOperationsIncident(input: { capability_id: string; incident_type: OperationsIncident["incident_type"]; severity: "high" | "critical"; summary_code: string; evidence_refs: string[]; package_id?: string }): Promise<OperationsIncident> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/incidents`, { method: "POST", body: input });
+  }
+
+  recordOperationsPostmortem(incidentId: string, input: { root_cause_code: string; corrective_actions: string[]; evidence_refs?: string[] }): Promise<OperationsIncident> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/incidents/${encodeURIComponent(incidentId)}/postmortem`, { method: "POST", body: input });
+  }
+
+  createOperationsEvidencePackage(): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.operationsGovernance}/evidence-packages`, { method: "POST" });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {

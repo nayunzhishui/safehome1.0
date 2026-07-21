@@ -1,0 +1,751 @@
+{
+  "schema_version": "safehome.operations-asset-cards.v1",
+  "version": "2026-07-21-t34-v1",
+  "status": "engineering_cards_complete_human_admission_pending",
+  "cards": [
+    {
+      "id": "safehome_synthetic_affect_240_v1",
+      "card_type": "dataset",
+      "source": {
+        "url": "project://content/synthetic_affect_benchmark_240.json",
+        "version": "v1",
+        "population": "synthetic_no_people",
+        "context": "合成日常互动与自我观察句子"
+      },
+      "license": {
+        "name": "project-owned-synthetic",
+        "rights_status": "approved_internal_synthetic"
+      },
+      "metrics": {
+        "status": "not_admitted_for_production_training",
+        "sample_or_artifact": "generated_and_verified_at_runtime"
+      },
+      "bias": [
+        "language=zh-CN",
+        "platform=synthetic",
+        "公开或合成数据不能代表本项目参与者"
+      ],
+      "failure_modes": [
+        "许可或内容权利不足",
+        "标签与本项目语义不一致",
+        "把群体统计误用于个体判断"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "参与者或家庭质量推断",
+        "未授权生产训练"
+      ],
+      "admission_criteria": [
+        "engineering_test",
+        "offline_benchmark"
+      ],
+      "disable_criteria": [
+        "许可撤回",
+        "敏感信息风险",
+        "域错配",
+        "人工权利审查未通过"
+      ],
+      "current_status": "local_synthetic_ready"
+    },
+    {
+      "id": "safehome_synthetic_network_v1",
+      "card_type": "dataset",
+      "source": {
+        "url": "project://generated/synthetic-network-suite-v1",
+        "version": "v1",
+        "population": "synthetic_no_people",
+        "context": "环、星、双社区和加权扰动图"
+      },
+      "license": {
+        "name": "project-owned-synthetic",
+        "rights_status": "approved_internal_synthetic"
+      },
+      "metrics": {
+        "status": "not_admitted_for_production_training",
+        "sample_or_artifact": "generated_in_memory"
+      },
+      "bias": [
+        "language=not_applicable",
+        "platform=synthetic",
+        "公开或合成数据不能代表本项目参与者"
+      ],
+      "failure_modes": [
+        "许可或内容权利不足",
+        "标签与本项目语义不一致",
+        "把群体统计误用于个体判断"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "参与者或家庭质量推断",
+        "未授权生产训练"
+      ],
+      "admission_criteria": [
+        "engineering_test",
+        "offline_benchmark"
+      ],
+      "disable_criteria": [
+        "许可撤回",
+        "敏感信息风险",
+        "域错配",
+        "人工权利审查未通过"
+      ],
+      "current_status": "local_synthetic_ready"
+    },
+    {
+      "id": "google_goemotions_1_0",
+      "card_type": "dataset",
+      "source": {
+        "url": "https://github.com/google-research/google-research/tree/master/goemotions",
+        "version": "repository-reviewed-2026-07-20",
+        "population": "unknown_online_users",
+        "context": "英文社交媒体评论情绪分类"
+      },
+      "license": {
+        "name": "CC-BY-4.0 repository dataset notice",
+        "rights_status": "human_legal_and_platform_review_required"
+      },
+      "metrics": {
+        "status": "not_admitted_for_production_training",
+        "sample_or_artifact": null
+      },
+      "bias": [
+        "language=en",
+        "platform=Reddit-derived",
+        "公开或合成数据不能代表本项目参与者"
+      ],
+      "failure_modes": [
+        "许可或内容权利不足",
+        "标签与本项目语义不一致",
+        "把群体统计误用于个体判断"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "参与者或家庭质量推断",
+        "未授权生产训练"
+      ],
+      "admission_criteria": [
+        "metadata_review_only"
+      ],
+      "disable_criteria": [
+        "许可撤回",
+        "敏感信息风险",
+        "域错配",
+        "人工权利审查未通过"
+      ],
+      "current_status": "blocked_rights_review"
+    },
+    {
+      "id": "snap_public_graph_catalog",
+      "card_type": "dataset",
+      "source": {
+        "url": "https://snap.stanford.edu/data/",
+        "version": "catalog-reviewed-2026-07-20",
+        "population": "unknown_online_users",
+        "context": "公开网络算法数据目录"
+      },
+      "license": {
+        "name": "dataset_specific_or_unclear",
+        "rights_status": "dataset_specific_human_review_required"
+      },
+      "metrics": {
+        "status": "not_admitted_for_production_training",
+        "sample_or_artifact": null
+      },
+      "bias": [
+        "language=mixed",
+        "platform=multiple_online_networks",
+        "公开或合成数据不能代表本项目参与者"
+      ],
+      "failure_modes": [
+        "许可或内容权利不足",
+        "标签与本项目语义不一致",
+        "把群体统计误用于个体判断"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "参与者或家庭质量推断",
+        "未授权生产训练"
+      ],
+      "admission_criteria": [
+        "metadata_review_only"
+      ],
+      "disable_criteria": [
+        "许可撤回",
+        "敏感信息风险",
+        "域错配",
+        "人工权利审查未通过"
+      ],
+      "current_status": "blocked_license_review"
+    },
+    {
+      "id": "networkx_zachary_karate_metadata",
+      "card_type": "dataset",
+      "source": {
+        "url": "https://networkx.org/documentation/stable/reference/generated/networkx.generators.social.karate_club_graph.html",
+        "version": "documentation-reviewed-2026-07-20",
+        "population": "historical_adults",
+        "context": "1977年俱乐部互动图"
+      },
+      "license": {
+        "name": "source_data_rights_not_confirmed_by_project",
+        "rights_status": "human_rights_review_required"
+      },
+      "metrics": {
+        "status": "not_admitted_for_production_training",
+        "sample_or_artifact": null
+      },
+      "bias": [
+        "language=not_applicable",
+        "platform=observational_social_network",
+        "公开或合成数据不能代表本项目参与者"
+      ],
+      "failure_modes": [
+        "许可或内容权利不足",
+        "标签与本项目语义不一致",
+        "把群体统计误用于个体判断"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "参与者或家庭质量推断",
+        "未授权生产训练"
+      ],
+      "admission_criteria": [
+        "metadata_review_only"
+      ],
+      "disable_criteria": [
+        "许可撤回",
+        "敏感信息风险",
+        "域错配",
+        "人工权利审查未通过"
+      ],
+      "current_status": "blocked_rights_review"
+    },
+    {
+      "id": "feedback_rules",
+      "card_type": "rule",
+      "source": {
+        "path": "content/feedback_rules.json",
+        "description": "项目自研支持性反馈规则"
+      },
+      "license": {
+        "name": "project-owned",
+        "rights_status": "internal_use"
+      },
+      "metrics": {
+        "status": "engineering_replay_required",
+        "evidence": [
+          "synthetic_content_replay_cases.json"
+        ]
+      },
+      "bias": [
+        "基于项目规则与有限合成案例",
+        "关键词和映射可能漏掉表达差异"
+      ],
+      "failure_modes": [
+        "未知表达未覆盖",
+        "推荐过度集中",
+        "用户认为反馈不符合或不适"
+      ],
+      "out_of_domain": [
+        "诊断",
+        "治疗决定",
+        "危机评估替代",
+        "家庭关系好坏判断"
+      ],
+      "admission_criteria": [
+        "固定合成回放通过",
+        "无高严重度回归",
+        "专业与伦理证据齐全"
+      ],
+      "disable_criteria": [
+        "高风险阻断失效",
+        "诊断化文案",
+        "严重不适集中",
+        "越权或泄漏事件"
+      ],
+      "current_status": "engineering_registered_human_review_pending"
+    },
+    {
+      "id": "risk_keywords",
+      "card_type": "rule",
+      "source": {
+        "path": "content/risk_keywords.json",
+        "description": "项目自研透明关键词分流"
+      },
+      "license": {
+        "name": "project-owned",
+        "rights_status": "internal_use"
+      },
+      "metrics": {
+        "status": "engineering_replay_required",
+        "evidence": [
+          "ai_qa_synthetic_safety_suite.json"
+        ]
+      },
+      "bias": [
+        "基于项目规则与有限合成案例",
+        "关键词和映射可能漏掉表达差异"
+      ],
+      "failure_modes": [
+        "未知表达未覆盖",
+        "推荐过度集中",
+        "用户认为反馈不符合或不适"
+      ],
+      "out_of_domain": [
+        "诊断",
+        "治疗决定",
+        "危机评估替代",
+        "家庭关系好坏判断"
+      ],
+      "admission_criteria": [
+        "固定合成回放通过",
+        "无高严重度回归",
+        "专业与伦理证据齐全"
+      ],
+      "disable_criteria": [
+        "高风险阻断失效",
+        "诊断化文案",
+        "严重不适集中",
+        "越权或泄漏事件"
+      ],
+      "current_status": "engineering_registered_human_review_pending"
+    },
+    {
+      "id": "assessment_training_map",
+      "card_type": "rule",
+      "source": {
+        "path": "content/assessment_training_map.json",
+        "description": "项目自研测评推荐映射"
+      },
+      "license": {
+        "name": "project-owned",
+        "rights_status": "internal_use"
+      },
+      "metrics": {
+        "status": "engineering_replay_required",
+        "evidence": [
+          "recommendation replay"
+        ]
+      },
+      "bias": [
+        "基于项目规则与有限合成案例",
+        "关键词和映射可能漏掉表达差异"
+      ],
+      "failure_modes": [
+        "未知表达未覆盖",
+        "推荐过度集中",
+        "用户认为反馈不符合或不适"
+      ],
+      "out_of_domain": [
+        "诊断",
+        "治疗决定",
+        "危机评估替代",
+        "家庭关系好坏判断"
+      ],
+      "admission_criteria": [
+        "固定合成回放通过",
+        "无高严重度回归",
+        "专业与伦理证据齐全"
+      ],
+      "disable_criteria": [
+        "高风险阻断失效",
+        "诊断化文案",
+        "严重不适集中",
+        "越权或泄漏事件"
+      ],
+      "current_status": "engineering_registered_human_review_pending"
+    },
+    {
+      "id": "diary_training_map",
+      "card_type": "rule",
+      "source": {
+        "path": "content/diary_training_map.json",
+        "description": "项目自研日记推荐映射"
+      },
+      "license": {
+        "name": "project-owned",
+        "rights_status": "internal_use"
+      },
+      "metrics": {
+        "status": "engineering_replay_required",
+        "evidence": [
+          "recommendation replay"
+        ]
+      },
+      "bias": [
+        "基于项目规则与有限合成案例",
+        "关键词和映射可能漏掉表达差异"
+      ],
+      "failure_modes": [
+        "未知表达未覆盖",
+        "推荐过度集中",
+        "用户认为反馈不符合或不适"
+      ],
+      "out_of_domain": [
+        "诊断",
+        "治疗决定",
+        "危机评估替代",
+        "家庭关系好坏判断"
+      ],
+      "admission_criteria": [
+        "固定合成回放通过",
+        "无高严重度回归",
+        "专业与伦理证据齐全"
+      ],
+      "disable_criteria": [
+        "高风险阻断失效",
+        "诊断化文案",
+        "严重不适集中",
+        "越权或泄漏事件"
+      ],
+      "current_status": "engineering_registered_human_review_pending"
+    },
+    {
+      "id": "student_profile_rules",
+      "card_type": "rule",
+      "source": {
+        "path": "content/student_profile_rules.json",
+        "description": "项目自研学生支持性画像规则"
+      },
+      "license": {
+        "name": "project-owned",
+        "rights_status": "internal_use"
+      },
+      "metrics": {
+        "status": "engineering_replay_required",
+        "evidence": [
+          "profile tests"
+        ]
+      },
+      "bias": [
+        "基于项目规则与有限合成案例",
+        "关键词和映射可能漏掉表达差异"
+      ],
+      "failure_modes": [
+        "未知表达未覆盖",
+        "推荐过度集中",
+        "用户认为反馈不符合或不适"
+      ],
+      "out_of_domain": [
+        "诊断",
+        "治疗决定",
+        "危机评估替代",
+        "家庭关系好坏判断"
+      ],
+      "admission_criteria": [
+        "固定合成回放通过",
+        "无高严重度回归",
+        "专业与伦理证据齐全"
+      ],
+      "disable_criteria": [
+        "高风险阻断失效",
+        "诊断化文案",
+        "严重不适集中",
+        "越权或泄漏事件"
+      ],
+      "current_status": "engineering_registered_human_review_pending"
+    },
+    {
+      "id": "parent_report_rules",
+      "card_type": "rule",
+      "source": {
+        "path": "content/readfeedback/parent_report_rules.json",
+        "description": "项目自研家长报告规则"
+      },
+      "license": {
+        "name": "project-owned",
+        "rights_status": "internal_use"
+      },
+      "metrics": {
+        "status": "engineering_replay_required",
+        "evidence": [
+          "parent report tests"
+        ]
+      },
+      "bias": [
+        "基于项目规则与有限合成案例",
+        "关键词和映射可能漏掉表达差异"
+      ],
+      "failure_modes": [
+        "未知表达未覆盖",
+        "推荐过度集中",
+        "用户认为反馈不符合或不适"
+      ],
+      "out_of_domain": [
+        "诊断",
+        "治疗决定",
+        "危机评估替代",
+        "家庭关系好坏判断"
+      ],
+      "admission_criteria": [
+        "固定合成回放通过",
+        "无高严重度回归",
+        "专业与伦理证据齐全"
+      ],
+      "disable_criteria": [
+        "高风险阻断失效",
+        "诊断化文案",
+        "严重不适集中",
+        "越权或泄漏事件"
+      ],
+      "current_status": "engineering_registered_human_review_pending"
+    },
+    {
+      "id": "student_profile_rules_v1",
+      "card_type": "model",
+      "source": {
+        "path": "content/readfeedback/student_profile_model.json",
+        "description": "学生支持性画像规则模型",
+        "construction_data": "项目规则、量表结构与合成/历史工程工件；非临床训练集"
+      },
+      "license": {
+        "name": "project-owned-model-artifact",
+        "rights_status": "measurement_license_review_still_applies"
+      },
+      "metrics": {
+        "status": "engineering_validation_only",
+        "evidence": [
+          "artifact hash",
+          "fixed tests",
+          "T30 measurement registry"
+        ]
+      },
+      "bias": [
+        "样本代表性未建立",
+        "语言和场景差异",
+        "规则阈值可能产生边界不稳定"
+      ],
+      "failure_modes": [
+        "域外输入",
+        "缺失题项",
+        "量尺变换错误",
+        "把阶段性线索误读为固定人格"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "人格定性",
+        "自动治疗建议",
+        "真实结果验证前的效果宣称"
+      ],
+      "admission_criteria": [
+        "工件哈希通过",
+        "量尺和版本匹配",
+        "固定案例通过",
+        "T30人工方法/授权门禁通过"
+      ],
+      "disable_criteria": [
+        "工件哈希失败",
+        "量尺错配",
+        "严重文案回归",
+        "越权/泄漏/不良事件"
+      ],
+      "current_status": "engineering_validated_formal_admission_pending"
+    },
+    {
+      "id": "student_profile_kmeans_v1",
+      "card_type": "model",
+      "source": {
+        "path": "content/readfeedback/student_profile_rules_kmeans.json",
+        "description": "学生画像KMeans规则工件",
+        "construction_data": "项目规则、量表结构与合成/历史工程工件；非临床训练集"
+      },
+      "license": {
+        "name": "project-owned-model-artifact",
+        "rights_status": "measurement_license_review_still_applies"
+      },
+      "metrics": {
+        "status": "engineering_validation_only",
+        "evidence": [
+          "artifact hash",
+          "fixed tests",
+          "T30 measurement registry"
+        ]
+      },
+      "bias": [
+        "样本代表性未建立",
+        "语言和场景差异",
+        "规则阈值可能产生边界不稳定"
+      ],
+      "failure_modes": [
+        "域外输入",
+        "缺失题项",
+        "量尺变换错误",
+        "把阶段性线索误读为固定人格"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "人格定性",
+        "自动治疗建议",
+        "真实结果验证前的效果宣称"
+      ],
+      "admission_criteria": [
+        "工件哈希通过",
+        "量尺和版本匹配",
+        "固定案例通过",
+        "T30人工方法/授权门禁通过"
+      ],
+      "disable_criteria": [
+        "工件哈希失败",
+        "量尺错配",
+        "严重文案回归",
+        "越权/泄漏/不良事件"
+      ],
+      "current_status": "engineering_validated_formal_admission_pending"
+    },
+    {
+      "id": "task12_micro_ysq_v1",
+      "card_type": "model",
+      "source": {
+        "path": "content/profiles/task12_micro_ysq_relationship_18_profile_model.json",
+        "description": "关系探索微型YSQ画像工件",
+        "construction_data": "项目规则、量表结构与合成/历史工程工件；非临床训练集"
+      },
+      "license": {
+        "name": "project-owned-model-artifact",
+        "rights_status": "measurement_license_review_still_applies"
+      },
+      "metrics": {
+        "status": "engineering_validation_only",
+        "evidence": [
+          "artifact hash",
+          "fixed tests",
+          "T30 measurement registry"
+        ]
+      },
+      "bias": [
+        "样本代表性未建立",
+        "语言和场景差异",
+        "规则阈值可能产生边界不稳定"
+      ],
+      "failure_modes": [
+        "域外输入",
+        "缺失题项",
+        "量尺变换错误",
+        "把阶段性线索误读为固定人格"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "人格定性",
+        "自动治疗建议",
+        "真实结果验证前的效果宣称"
+      ],
+      "admission_criteria": [
+        "工件哈希通过",
+        "量尺和版本匹配",
+        "固定案例通过",
+        "T30人工方法/授权门禁通过"
+      ],
+      "disable_criteria": [
+        "工件哈希失败",
+        "量尺错配",
+        "严重文案回归",
+        "越权/泄漏/不良事件"
+      ],
+      "current_status": "engineering_validated_formal_admission_pending"
+    },
+    {
+      "id": "task12_regulatory_focus_v1",
+      "card_type": "model",
+      "source": {
+        "path": "content/profiles/task12_regulatory_focus_relationship_18_profile_model.json",
+        "description": "关系调节焦点画像工件",
+        "construction_data": "项目规则、量表结构与合成/历史工程工件；非临床训练集"
+      },
+      "license": {
+        "name": "project-owned-model-artifact",
+        "rights_status": "measurement_license_review_still_applies"
+      },
+      "metrics": {
+        "status": "engineering_validation_only",
+        "evidence": [
+          "artifact hash",
+          "fixed tests",
+          "T30 measurement registry"
+        ]
+      },
+      "bias": [
+        "样本代表性未建立",
+        "语言和场景差异",
+        "规则阈值可能产生边界不稳定"
+      ],
+      "failure_modes": [
+        "域外输入",
+        "缺失题项",
+        "量尺变换错误",
+        "把阶段性线索误读为固定人格"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "人格定性",
+        "自动治疗建议",
+        "真实结果验证前的效果宣称"
+      ],
+      "admission_criteria": [
+        "工件哈希通过",
+        "量尺和版本匹配",
+        "固定案例通过",
+        "T30人工方法/授权门禁通过"
+      ],
+      "disable_criteria": [
+        "工件哈希失败",
+        "量尺错配",
+        "严重文案回归",
+        "越权/泄漏/不良事件"
+      ],
+      "current_status": "engineering_validated_formal_admission_pending"
+    },
+    {
+      "id": "task12_intention_action_v1",
+      "card_type": "model",
+      "source": {
+        "path": "content/profiles/task12_relationship_initiation_intention_action_profile_model.json",
+        "description": "关系行动意向画像工件",
+        "construction_data": "项目规则、量表结构与合成/历史工程工件；非临床训练集"
+      },
+      "license": {
+        "name": "project-owned-model-artifact",
+        "rights_status": "measurement_license_review_still_applies"
+      },
+      "metrics": {
+        "status": "engineering_validation_only",
+        "evidence": [
+          "artifact hash",
+          "fixed tests",
+          "T30 measurement registry"
+        ]
+      },
+      "bias": [
+        "样本代表性未建立",
+        "语言和场景差异",
+        "规则阈值可能产生边界不稳定"
+      ],
+      "failure_modes": [
+        "域外输入",
+        "缺失题项",
+        "量尺变换错误",
+        "把阶段性线索误读为固定人格"
+      ],
+      "out_of_domain": [
+        "临床诊断",
+        "人格定性",
+        "自动治疗建议",
+        "真实结果验证前的效果宣称"
+      ],
+      "admission_criteria": [
+        "工件哈希通过",
+        "量尺和版本匹配",
+        "固定案例通过",
+        "T30人工方法/授权门禁通过"
+      ],
+      "disable_criteria": [
+        "工件哈希失败",
+        "量尺错配",
+        "严重文案回归",
+        "越权/泄漏/不良事件"
+      ],
+      "current_status": "engineering_validated_formal_admission_pending"
+    }
+  ],
+  "production_admission_approved": false,
+  "boundary_notice": "卡片记录工程证据、偏差和停用条件，不证明现实有效性，也不用于个体诊断。"
+}

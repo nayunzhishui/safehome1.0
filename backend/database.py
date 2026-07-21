@@ -76,9 +76,17 @@ REQUIRED_HEALTH_TABLES = [
     "reliability_evidence_packages",
     "ux_audit_runs",
     "ux_evidence_packages",
+    "operations_release_packages",
+    "operations_package_reviews",
+    "operations_replay_runs",
+    "operations_runtime_controls",
+    "operations_monitor_snapshots",
+    "operations_incidents",
+    "operations_incident_notifications",
+    "operations_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_021"
-CURRENT_SCHEMA_NAME = "ux_accessibility_resilience_governance"
+CURRENT_SCHEMA_VERSION = "2026_07_21_022"
+CURRENT_SCHEMA_NAME = "content_data_model_operations_governance"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -106,6 +114,25 @@ MYSQL_VARCHAR_COLUMNS = {
     "platform",
     "viewport",
     "registry_version",
+    "package_version",
+    "package_id",
+    "previous_package_id",
+    "target_environment",
+    "capability_id",
+    "stage",
+    "domain",
+    "decision",
+    "evidence_ref",
+    "snapshot_hash",
+    "state",
+    "reason_code",
+    "incident_type",
+    "severity",
+    "summary_code",
+    "recipient_role",
+    "reported_at",
+    "postmortem_at",
+    "dispatched_at",
     "password_hash",
     "wechat_openid",
     "avatar_url",

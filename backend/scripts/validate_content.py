@@ -1,6 +1,7 @@
 """Validate content JSON files against lightweight local schema files."""
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -853,6 +854,49 @@ def validate_ux_experience_registry_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_operations_governance_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        registry = load_json(content_dir / "operations_capability_registry.json")
+        cards = load_json(content_dir / "operations_asset_cards.json")
+        manifest = load_json(content_dir / "operations_release_manifest.json")
+        contract = load_json(DEFAULT_SCHEMA_DIR.parent.parent / "shared" / "contracts" / "api-contract.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"任务三十四运营治理制品不可读取：{exc}"]
+    endpoint_ids = {item.get("operation_id") for item in contract.get("endpoints", [])}
+    covered_ids = {operation_id for item in registry.get("capabilities", []) for operation_id in item.get("operation_ids", [])}
+    if endpoint_ids != covered_ids:
+        errors.append("运营能力注册表必须逐项覆盖当前机器API契约")
+    capability_fields = {"intended_use", "owner", "dependencies", "data", "open_roles", "feature_flags", "version", "tests", "rollback", "governance_status"}
+    for item in registry.get("capabilities", []):
+        if capability_fields - set(item):
+            errors.append(f"运营能力登记字段不完整：{item.get('id')}")
+    if registry.get("production_release_approved") is not False:
+        errors.append("运营能力注册表不得自动标记生产发布批准")
+    if registry.get("temporary_showcase_exception", {}).get("formal_permission_acceptance") is not False:
+        errors.append("临时展示越权不得用于正式权限验收")
+    if registry.get("treatment_assessment", {}).get("real_participant_release_allowed") is not False:
+        errors.append("治疗性评估真实参与者发布门禁必须保持关闭")
+    card_fields = {"source", "license", "metrics", "bias", "failure_modes", "out_of_domain", "admission_criteria", "disable_criteria"}
+    card_types = set()
+    for item in cards.get("cards", []):
+        card_types.add(item.get("card_type"))
+        if card_fields - set(item):
+            errors.append(f"运营数据/规则/模型卡字段不完整：{item.get('id')}")
+    if not {"dataset", "rule", "model"}.issubset(card_types):
+        errors.append("运营卡片必须同时覆盖数据集、规则和模型")
+    required_artifact_types = {"content", "rule", "model", "dictionary", "prompt", "knowledge_index"}
+    artifact_types = {item.get("artifact_type") for item in manifest.get("artifacts", [])}
+    if not required_artifact_types.issubset(artifact_types):
+        errors.append("运营发布包未覆盖内容、规则、模型、词典、提示和知识索引")
+    for item in manifest.get("artifacts", []):
+        relative = str(item.get("path") or "")
+        target = content_dir / relative.removeprefix("content/")
+        if not target.is_file() or hashlib.sha256(target.read_bytes()).hexdigest() != item.get("sha256"):
+            errors.append(f"运营发布制品哈希无效：{relative}")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -870,6 +914,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_security_registry_content(content_dir))
     errors.extend(validate_reliability_registry_content(content_dir))
     errors.extend(validate_ux_experience_registry_content(content_dir))
+    errors.extend(validate_operations_governance_content(content_dir))
     return errors
 
 

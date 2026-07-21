@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-07-21.1"
+CONTRACT_VERSION = "2026-07-21.2"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 
@@ -37,6 +37,14 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path.startswith("/api/operations-governance"):
+        if path == "/api/operations-governance/public-status":
+            return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
+        if path == "/api/operations-governance/evidence-packages" or path.endswith("/postmortem"):
+            return {"mode": "role", "roles": ["supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        if path.endswith("/release") or path == "/api/operations-governance/packages/<package_id>/<action>" or path == "/api/operations-governance/runtime/rollback" or "/notifications/" in path:
+            return {"mode": "role", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+        return {"mode": "role", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path == "/api/ux-governance/public-status":
         return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
     if path.startswith("/api/ux-governance"):
@@ -121,6 +129,10 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+    if path == "/api/operations-governance/public-status":
+        return "non_sensitive_operations_gate_status_only"
+    if path.startswith("/api/operations-governance"):
+        return "internal_immutable_artifact_metadata_aggregate_metrics_and_incident_evidence_refs_no_participant_text"
     if path == "/api/ux-governance/public-status":
         return "non_sensitive_ux_gate_status_only"
     if path.startswith("/api/ux-governance"):
@@ -222,6 +234,19 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ("/api/ux-governance/audits", "POST"): ["environment", "platform", "viewport", "results"],
     }
     body_fields.update(ux_body_fields.get((path, method), []))
+    operations_body_fields = {
+        ("/api/operations-governance/packages", "POST"): ["package_version", "previous_package_id", "risk_level", "target_environment"],
+        ("/api/operations-governance/packages/<package_id>/reviews", "POST"): ["decision", "evidence_ref", "note"],
+        ("/api/operations-governance/packages/<package_id>/approvals", "POST"): ["domain", "decision", "evidence_ref", "note"],
+        ("/api/operations-governance/packages/<package_id>/release", "POST"): ["confirmation"],
+        ("/api/operations-governance/packages/<package_id>/<action>", "POST"): ["reason_code"],
+        ("/api/operations-governance/runtime/rollback", "POST"): ["target_package_id", "reason_code"],
+        ("/api/operations-governance/monitoring/snapshots", "POST"): ["window_days", "environment"],
+        ("/api/operations-governance/incidents", "POST"): ["capability_id", "package_id", "incident_type", "severity", "evidence_refs", "summary_code"],
+        ("/api/operations-governance/incidents/<incident_id>/postmortem", "POST"): ["root_cause_code", "corrective_actions", "evidence_refs"],
+        ("/api/operations-governance/incidents/<incident_id>/notifications/<notification_id>/<action>", "POST"): ["error_code"],
+    }
+    body_fields.update(operations_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),

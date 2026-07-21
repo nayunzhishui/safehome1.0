@@ -119,6 +119,17 @@ class Config:
         "UX_GOVERNANCE_WORKBENCH_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
     ).strip().lower() in {"1", "true", "yes"}
+    OPERATIONS_GOVERNANCE_WORKBENCH_ENABLED = os.environ.get(
+        "OPERATIONS_GOVERNANCE_WORKBENCH_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
+    OPERATIONS_LOCAL_RELEASE_ENABLED = os.environ.get(
+        "OPERATIONS_LOCAL_RELEASE_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
+    OPERATIONS_PRODUCTION_RELEASE_ENABLED = os.environ.get(
+        "OPERATIONS_PRODUCTION_RELEASE_ENABLED", "0"
+    ).strip().lower() in {"1", "true", "yes"}
 
     @classmethod
     def validate(cls) -> None:
@@ -152,6 +163,8 @@ class Config:
             raise RuntimeError("T32测试云观察和人工发布批准尚未完成，RELIABILITY_GRADUAL_RELEASE_ENABLED 必须保持关闭")
         if cls.RELIABILITY_PRODUCTION_SLO_FROZEN:
             raise RuntimeError("T32测试云观察期尚未完成，RELIABILITY_PRODUCTION_SLO_FROZEN 必须保持关闭")
+        if cls.OPERATIONS_PRODUCTION_RELEASE_ENABLED:
+            raise RuntimeError("T34人工、伦理、云、真机和生产批准尚未完成，OPERATIONS_PRODUCTION_RELEASE_ENABLED 必须保持关闭")
         if cls.WECHAT_SUBSCRIBE_SEND_ENABLED:
             missing = [
                 name
