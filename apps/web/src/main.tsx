@@ -40,6 +40,7 @@ const OfflineBenchmarkWorkbench = lazy(() => import("./pages/OfflineBenchmarkWor
 const ResearchMethodologyWorkbench = lazy(() => import("./pages/ResearchMethodologyWorkbench").then((module) => ({ default: module.ResearchMethodologyWorkbench })));
 const SecurityPrivacyWorkbench = lazy(() => import("./pages/SecurityPrivacyWorkbench").then((module) => ({ default: module.SecurityPrivacyWorkbench })));
 const ReliabilityReleaseWorkbench = lazy(() => import("./pages/ReliabilityReleaseWorkbench").then((module) => ({ default: module.ReliabilityReleaseWorkbench })));
+const ExperienceGovernanceWorkbench = lazy(() => import("./pages/ExperienceGovernanceWorkbench").then((module) => ({ default: module.ExperienceGovernanceWorkbench })));
 
 interface AdminLink {
   href: string;
@@ -69,6 +70,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/research/methodology", label: "研究方法冻结准备", match: (p) => p === "/research/methodology", roles: ["admin", "researcher", "supervisor"] },
   { href: "/security/privacy", label: "安全与隐私防护", match: (p) => p === "/security/privacy", roles: ["admin", "researcher", "supervisor"] },
   { href: "/reliability/release", label: "可靠性与发布证据", match: (p) => p === "/reliability/release", roles: ["admin", "researcher", "supervisor"] },
+  { href: "/system/experience", label: "体验与无障碍", match: (p) => p === "/system/experience", roles: ["admin", "researcher", "supervisor"] },
   { href: "/export", label: "数据导出", match: (p) => p === "/export", roles: ["admin", "researcher"] },
   { href: "/integration-test", label: "联调测试", match: (p) => p === "/integration-test", roles: ["admin"] },
   { href: "/privacy", label: "隐私中心", match: (p) => p === "/privacy" },
@@ -80,6 +82,19 @@ const publicLinks: AdminLink[] = [
   { href: "/login", label: "登录", match: (p) => p === "/login" },
   { href: "/register", label: "注册", match: (p) => p === "/register" },
 ];
+
+const researcherWorkspaces = [
+  { label: "待处理", paths: ["/dashboard", "/feedback", "/supervision", "/reviews", "/privacy-requests"] },
+  { label: "参与者", paths: ["/diaries", "/goals", "/checkins", "/reports", "/profiles", "/family", "/privacy"] },
+  { label: "内容", paths: ["/content/review", "/content/scales", "/content/worksheets", "/content/cards", "/content/rules"] },
+  { label: "研究/导出", paths: ["/ai-sandbox", "/research/benchmarks", "/research/methodology", "/export"] },
+  { label: "系统状态", paths: ["/security/privacy", "/reliability/release", "/system/experience", "/integration-test"] },
+];
+
+function groupedVisibleLinks(user: AuthUser | null, showcaseEnabled = false) {
+  const links = visibleLinks(user, showcaseEnabled);
+  return researcherWorkspaces.map((workspace) => ({ ...workspace, links: links.filter((link) => workspace.paths.includes(link.href)) })).filter((workspace) => workspace.links.length);
+}
 
 function visibleLinks(user: AuthUser | null, showcaseEnabled = false): AdminLink[] {
   if (!user || !user.role) return publicLinks;
@@ -167,6 +182,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isResearchMethodologyPath = path === "/research/methodology";
   const isSecurityPrivacyPath = path === "/security/privacy";
   const isReliabilityReleasePath = path === "/reliability/release";
+  const isExperienceGovernancePath = path === "/system/experience";
   const isKnownAdminPath = [
     "/dashboard",
     "/goals",
@@ -191,6 +207,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/research/methodology",
     "/security/privacy",
     "/reliability/release",
+    "/system/experience",
   ].some((route) => path === route || path.startsWith(`${route}/`));
   const matchedAdminLink = findAdminLink(path);
   const shouldBlockAdminPath = isKnownAdminPath && matchedAdminLink && !canAccessPath(matchedAdminLink, authUser, showcaseEnabled);
@@ -211,6 +228,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isResearchMethodologyPath &&
     !isSecurityPrivacyPath &&
     !isReliabilityReleasePath &&
+    !isExperienceGovernancePath &&
     !isSupervisionPath &&
     !isContentReviewPath &&
     !isScalesPath &&
@@ -256,6 +274,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isResearchMethodologyPath ? <ResearchMethodologyWorkbench /> : null}
       {isSecurityPrivacyPath ? <SecurityPrivacyWorkbench /> : null}
       {isReliabilityReleasePath ? <ReliabilityReleaseWorkbench /> : null}
+      {isExperienceGovernancePath ? <ExperienceGovernanceWorkbench /> : null}
       {path === "/integration-test" ? <IntegrationSmokeTest /> : null}
       {isDiariesPath ? <AdminDashboard /> : null}
       {shouldRenderDeferredAdmin ? <DeferredAdminPage path={path} /> : null}
@@ -295,11 +314,16 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
           <span aria-hidden="true">{mobileNavOpen ? "−" : "+"}</span>
         </button>
         <nav className={`adminNav ${mobileNavOpen ? "isOpen" : ""}`} id="admin-function-nav" aria-label="后台功能导航">
-          {visibleLinks(authUser, showcaseEnabled).map((link) => (
-            <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
-              <span className="navDot" aria-hidden="true" />
-              {link.label}
-            </a>
+          {groupedVisibleLinks(authUser, showcaseEnabled).map((workspace) => (
+            <section className="adminNavGroup" aria-label={workspace.label} key={workspace.label}>
+              <strong className="adminNavGroupLabel">{workspace.label}</strong>
+              {workspace.links.map((link) => (
+                <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
+                  <span className="navDot" aria-hidden="true" />
+                  {link.label}
+                </a>
+              ))}
+            </section>
           ))}
           <a href="/">
             <span className="navDot" aria-hidden="true" />

@@ -105,6 +105,7 @@ const API_ENDPOINTS = {
   researchMethodology: "/api/research/methodology",
   securityControls: "/api/security",
   reliability: "/api/reliability",
+  uxGovernance: "/api/ux-governance",
 };
 
 function createSafeHomeApi(options = {}) {
@@ -464,9 +465,11 @@ function createSafeHomeApi(options = {}) {
     },
 
     createGoal(data) {
+      const idempotencyKey = data.client_submission_id || "";
       return request(API_ENDPOINTS.goals, {
         method: "POST",
         data: withDefaultUser(data),
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
         requiresAuth: true,
       });
     },
@@ -488,9 +491,11 @@ function createSafeHomeApi(options = {}) {
     },
 
     createDiary(data) {
+      const idempotencyKey = data.client_submission_id || "";
       return request(API_ENDPOINTS.diaries, {
         method: "POST",
         data: withDefaultUser(data),
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
         requiresAuth: true,
       });
     },
@@ -520,9 +525,11 @@ function createSafeHomeApi(options = {}) {
     },
 
     createProfile(data) {
+      const idempotencyKey = data.client_submission_id || "";
       return request(API_ENDPOINTS.profile, {
         method: "POST",
         data: withDefaultUser(data),
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
         requiresAuth: true,
       });
     },
@@ -778,9 +785,11 @@ function createSafeHomeApi(options = {}) {
     },
 
     createAssessmentResult(data) {
+      const idempotencyKey = data.client_submission_id || "";
       return request(API_ENDPOINTS.assessmentResults, {
         method: "POST",
         data: withDefaultUser(data),
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
         requiresAuth: true,
       });
     },
@@ -922,9 +931,11 @@ function createSafeHomeApi(options = {}) {
     },
 
     createCheckin(data) {
+      const idempotencyKey = data.client_submission_id || "";
       return request(API_ENDPOINTS.checkins, {
         method: "POST",
         data: withDefaultUser(data),
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
         requiresAuth: true,
       });
     },
@@ -942,9 +953,11 @@ function createSafeHomeApi(options = {}) {
     },
 
     createSupervision(data) {
+      const idempotencyKey = data.client_submission_id || "";
       return request(API_ENDPOINTS.supervision, {
         method: "POST",
         data: withDefaultUser(data),
+        header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
         requiresAuth: true,
       });
     },
@@ -993,6 +1006,10 @@ function createSafeHomeApi(options = {}) {
 
     getReliabilityPublicStatus() {
       return request(`${API_ENDPOINTS.reliability}/public-status`);
+    },
+
+    getUXGovernancePublicStatus() {
+      return request(`${API_ENDPOINTS.uxGovernance}/public-status`);
     },
 
     getParentAssessmentResult(id, params = {}) {

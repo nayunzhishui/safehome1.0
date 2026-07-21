@@ -29,18 +29,39 @@ def create_diary():
         return auth_error_response(exc)
     timestamp = now_iso()
     diary_id = new_id("diary")
+    submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
+    if len(submission_id) > 120:
+        return fail("validation_error", "提交标识不能超过120个字符。", status=400)
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
+        if submission_id:
+            existing = conn.execute("SELECT * FROM emotion_diaries WHERE user_id = ? AND client_submission_id = ?", (user_id, submission_id)).fetchone()
+            if existing is not None:
+                expected = (
+                    payload.get("goal_id"), payload.get("event_time"), payload["scene"], payload["event_description"],
+                    payload["parent_emotion"], parse_int(payload.get("parent_emotion_intensity"), 5),
+                    payload.get("child_emotion"), parse_int(payload.get("child_emotion_intensity"), None),
+                    payload.get("automatic_thought"), payload.get("body_sensation"), payload.get("behavior"), payload.get("raw_text"),
+                )
+                actual = (
+                    existing["goal_id"], existing["event_time"], existing["scene"], existing["event_description"],
+                    existing["parent_emotion"], existing["parent_emotion_intensity"], existing["child_emotion"],
+                    existing["child_emotion_intensity"], existing["automatic_thought"], existing["body_sensation"],
+                    existing["behavior"], existing["raw_text"],
+                )
+                if actual != expected:
+                    return fail("idempotency_conflict", "该提交标识已用于另一份情绪记录。", status=409)
+                return ok(row_to_dict(existing))
         conn.execute(
             """
             INSERT INTO emotion_diaries (
                 id, user_id, goal_id, event_time, scene, event_description,
                 parent_emotion, parent_emotion_intensity, child_emotion,
                 child_emotion_intensity, automatic_thought, body_sensation,
-                behavior, raw_text, created_at, updated_at
+                behavior, raw_text, client_submission_id, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 diary_id,
@@ -57,6 +78,7 @@ def create_diary():
                 payload.get("body_sensation"),
                 payload.get("behavior"),
                 payload.get("raw_text"),
+                submission_id or None,
                 timestamp,
                 timestamp,
             ),

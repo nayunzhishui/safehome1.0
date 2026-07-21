@@ -74,9 +74,11 @@ REQUIRED_HEALTH_TABLES = [
     "reliability_slo_snapshots",
     "reliability_drill_runs",
     "reliability_evidence_packages",
+    "ux_audit_runs",
+    "ux_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_20_020"
-CURRENT_SCHEMA_NAME = "reliability_observability_release_engineering"
+CURRENT_SCHEMA_VERSION = "2026_07_20_021"
+CURRENT_SCHEMA_NAME = "ux_accessibility_resilience_governance"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_VARCHAR_COLUMNS = {
     "id",
@@ -95,11 +97,15 @@ MYSQL_VARCHAR_COLUMNS = {
     "response",
     "assessment_result_id",
     "idempotency_key",
+    "client_submission_id",
     "job_type",
     "flag_name",
     "journey",
     "scenario",
     "environment",
+    "platform",
+    "viewport",
+    "registry_version",
     "password_hash",
     "wechat_openid",
     "avatar_url",
@@ -882,9 +888,16 @@ def ensure_schema_columns(conn) -> None:
         "source_type": "TEXT",
         "source_id": "TEXT",
         "source_title": "TEXT",
+        "client_submission_id": "TEXT",
     }
     for column, definition in supervision_columns.items():
         ensure_column(conn, "supervision_requests", column, definition)
+
+    ensure_column(conn, "goals", "client_submission_id", "TEXT")
+    ensure_column(conn, "emotion_diaries", "client_submission_id", "TEXT")
+    ensure_column(conn, "checkins", "client_submission_id", "TEXT")
+    ensure_column(conn, "assessment_results", "client_submission_id", "TEXT")
+    ensure_column(conn, "parent_assessment_submissions", "client_submission_id", "TEXT")
 
     privacy_request_columns = {
         "handling_scope_json": "TEXT NOT NULL DEFAULT '[]'",

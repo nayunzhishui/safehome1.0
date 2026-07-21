@@ -1,6 +1,6 @@
 # API机器契约
 
-契约版本：`2026-07-20.4`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
+契约版本：`2026-07-21.1`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
 
 统一成功包络为`{ok:true,data,request_id}`，统一错误包络为`{ok:false,error:{code,message},request_id}`；下载接口除外，但响应头仍含`X-Request-ID`。
 
@@ -24,7 +24,7 @@
 | GET | `/api/ai-qa/sessions/<session_id>` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
 | POST | `/api/ai-qa/sessions/<session_id>/messages` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
 | GET | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | page/page_size | — | active |
-| POST | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
+| POST | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | supported | active |
 | GET | `/api/assessment-results/<result_id>` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/assessment-results/<result_id>/profile-position` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/assessments` | public:public | not_applicable_or_development_legacy | — | — | active |
@@ -43,7 +43,7 @@
 | GET | `/api/cards` | role:researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/cards/recommend` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/checkins` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | page/page_size | — | active |
-| POST | `/api/checkins` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
+| POST | `/api/checkins` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | supported | active |
 | GET | `/api/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/content-review/active/<content_type>/<item_id>` | public:public | not_applicable_or_development_legacy | — | — | active |
@@ -66,7 +66,7 @@
 | GET | `/api/courses/pathways` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/courses/progress` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/diaries` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
-| POST | `/api/diaries` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
+| POST | `/api/diaries` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | supported | active |
 | POST | `/api/emotion-thermometer` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/emotion-thermometer/day` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | POST | `/api/family/bind-student` | role:student | role_scoped | — | — | active |
@@ -78,7 +78,7 @@
 | GET | `/api/feedback-ledger/summary` | role:researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/feedback/generate` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/goals` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
-| POST | `/api/goals` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/goals` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | supported | active |
 | GET | `/api/growth/overview` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/journey/today` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/messages` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
@@ -92,7 +92,7 @@
 | POST | `/api/notifications/run-due` | role:admin | role_scoped | — | — | active |
 | GET | `/api/parent-assessment` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/parent-assessments` | admin:admin | role_scoped | — | — | active |
-| POST | `/api/parent-assessments` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/parent-assessments` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | supported | active |
 | GET | `/api/parent-assessments/<submission_id>` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | POST | `/api/parent-assessments/<submission_id>/actions` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/privacy/admin/requests` | role:supervisor,admin | full_for_supervisor_admin | page/page_size | — | active |
@@ -110,7 +110,7 @@
 | POST | `/api/privacy/requests/<request_id>/cancel` | authenticated:parent,student,researcher,supervisor,admin | self | — | supported | active |
 | POST | `/api/privacy/revoke-consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | self | — | — | active |
 | POST | `/api/product-events` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
-| POST | `/api/profile` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/profile` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | supported | active |
 | GET | `/api/profile-results` | admin:admin | role_scoped | — | — | active |
 | GET | `/api/profile-results/<profile_id>` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/profile-results/<profile_id>/followups` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
@@ -196,12 +196,17 @@
 | GET | `/api/security/workbench` | role:researcher,supervisor,admin | internal_redacted_security_evidence_no_secret_values | — | — | active |
 | GET | `/api/showcase-access` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/student-assessment` | public:public | not_applicable_or_development_legacy | — | — | active |
-| POST | `/api/supervision` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
+| POST | `/api/supervision` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | supported | active |
 | POST | `/api/supervision/<request_id>/reply` | role:admin,supervisor | role_scoped | — | — | active |
 | GET | `/api/text-analysis/summary` | role:admin,researcher | role_scoped | — | — | active |
 | GET | `/api/training-effectiveness` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/training-plan` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | POST | `/api/training-plan/assignment` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
+| POST | `/api/ux-governance/audits` | role:admin | internal_page_inventory_and_redacted_machine_evidence_no_participant_text | — | — | active |
+| POST | `/api/ux-governance/evidence-packages` | role:supervisor,admin | internal_page_inventory_and_redacted_machine_evidence_no_participant_text | — | — | active |
+| GET | `/api/ux-governance/public-status` | public:public | non_sensitive_ux_gate_status_only | — | — | active |
+| GET | `/api/ux-governance/registry` | role:researcher,supervisor,admin | internal_page_inventory_and_redacted_machine_evidence_no_participant_text | — | — | active |
+| GET | `/api/ux-governance/workbench` | role:researcher,supervisor,admin | internal_page_inventory_and_redacted_machine_evidence_no_participant_text | — | — | active |
 | GET | `/api/weekly-report` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/healthz` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/healthz/deep` | public:public | not_applicable_or_development_legacy | — | — | active |

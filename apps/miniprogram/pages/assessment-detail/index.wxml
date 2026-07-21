@@ -56,6 +56,9 @@
       <button wx:if="{{needsLogin}}" class="safe-primary-button login-button" bindtap="goLogin">去登录后继续</button>
     </view>
 
+    <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+    <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
+
     <button class="safe-primary-button submit-button" bindtap="submitWorksheet" disabled="{{submitting}}">
       {{submitting ? '保存中...' : (worksheet.isStudentProfile ? '生成阶段性画像' : '保存观察记录')}}
     </button>

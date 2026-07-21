@@ -2,7 +2,7 @@
   "schema": "safehome.security_privacy_abuse_registry.v1",
   "version": "2026-07-20-t31-security-v1",
   "status": "engineering_controls_ready_formal_acceptance_blocked",
-  "generated_from_contract_version": "2026-07-20.4",
+  "generated_from_contract_version": "2026-07-21.1",
   "asset_inventory": [
     {
       "asset_id": "identity_and_tokens",
@@ -562,10 +562,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     {
@@ -1038,10 +1038,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     {
@@ -1621,10 +1621,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     {
@@ -1912,10 +1912,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     {
@@ -2255,10 +2255,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     {
@@ -2694,10 +2694,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     {
@@ -4828,10 +4828,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     {
@@ -4957,6 +4957,132 @@
       }
     },
     {
+      "operation_id": "ux_governance.post_audit.post",
+      "method": "POST",
+      "path": "/api/ux-governance/audits",
+      "object_type": "ux_governance",
+      "action": "create",
+      "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.post_evidence_package.post",
+      "method": "POST",
+      "path": "/api/ux-governance/evidence-packages",
+      "object_type": "ux_governance",
+      "action": "create",
+      "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
+      "allowed_roles": [
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.public_status.get",
+      "method": "GET",
+      "path": "/api/ux-governance/public-status",
+      "object_type": "ux_governance",
+      "action": "read",
+      "object_scope": "non_sensitive_ux_gate_status_only",
+      "allowed_roles": [
+        "public"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.registry.get",
+      "method": "GET",
+      "path": "/api/ux-governance/registry",
+      "object_type": "ux_governance",
+      "action": "read",
+      "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.get_workbench.get",
+      "method": "GET",
+      "path": "/api/ux-governance/workbench",
+      "object_type": "ux_governance",
+      "action": "read",
+      "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "reports.weekly_report.get",
       "method": "GET",
       "path": "/api/weekly-report",
@@ -5060,7 +5186,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 200,
+    "operation_count": 205,
     "showcase_bypass_operation_count": 6,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

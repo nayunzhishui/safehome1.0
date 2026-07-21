@@ -62,6 +62,8 @@ import type {
   ReliabilityPublicStatus,
   ReliabilitySloSnapshot,
   ReliabilityWorkbench,
+  UXGovernancePublicStatus,
+  UXGovernanceWorkbench,
   ParentAssessmentInput,
   ParentAssessmentPayload,
   ParentAssessmentResult,
@@ -295,6 +297,7 @@ export class SafeHomeApiClient {
     return this.requestData<StudentProfileResult>(API_ENDPOINTS.profile, {
       method: "POST",
       body: this.withDefaultUser(input),
+      headers: input.client_submission_id ? { "Idempotency-Key": input.client_submission_id } : undefined,
     });
   }
 
@@ -395,6 +398,7 @@ export class SafeHomeApiClient {
     return this.requestData<ParentAssessmentResult>(API_ENDPOINTS.parentAssessments, {
       method: "POST",
       body: this.withDefaultUser(input),
+      headers: input.client_submission_id ? { "Idempotency-Key": input.client_submission_id } : undefined,
     });
   }
 
@@ -455,7 +459,11 @@ export class SafeHomeApiClient {
   }
 
   createAssessmentResult(input: AssessmentResultInput): Promise<AssessmentResult> {
-    return this.requestData(API_ENDPOINTS.assessmentResults, { method: "POST", body: input });
+    return this.requestData(API_ENDPOINTS.assessmentResults, {
+      method: "POST",
+      body: input,
+      headers: input.client_submission_id ? { "Idempotency-Key": input.client_submission_id } : undefined,
+    });
   }
 
   getRelationshipResearchDashboard(adminToken?: string): Promise<ListResponse<RelationshipPilotEnrollment> & { boundary_notice?: string }> {
@@ -967,6 +975,18 @@ export class SafeHomeApiClient {
 
   createReliabilityEvidencePackage(): Promise<Record<string, unknown>> {
     return this.requestData(`${API_ENDPOINTS.reliability}/evidence-packages`, { method: "POST" });
+  }
+
+  getUXGovernancePublicStatus(): Promise<UXGovernancePublicStatus> {
+    return this.requestData(`${API_ENDPOINTS.uxGovernance}/public-status`);
+  }
+
+  getUXGovernanceWorkbench(): Promise<UXGovernanceWorkbench> {
+    return this.requestData(`${API_ENDPOINTS.uxGovernance}/workbench`);
+  }
+
+  createUXEvidencePackage(): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.uxGovernance}/evidence-packages`, { method: "POST" });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {

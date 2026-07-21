@@ -25,6 +25,9 @@ def create_supervision_request():
         return auth_error_response(exc)
     timestamp = now_iso()
     request_id = new_id("supervision")
+    submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
+    if len(submission_id) > 120:
+        return fail("validation_error", "提交标识不能超过120个字符。", status=400)
     source_type = str(payload.get("source_type") or "").strip()
     source_id = str(payload.get("source_id") or payload.get("diary_id") or "").strip()
     source_title = str(payload.get("source_title") or "").strip()[:120]
@@ -37,6 +40,23 @@ def create_supervision_request():
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
+        if submission_id:
+            existing = conn.execute("SELECT * FROM supervision_requests WHERE user_id = ? AND client_submission_id = ?", (user_id, submission_id)).fetchone()
+            if existing is not None:
+                same_payload = (
+                    existing["message"] == payload["message"]
+                    and (existing["source_type"] or "") == source_type
+                    and (existing["source_id"] or "") == source_id
+                    and existing["contact"] == payload.get("contact")
+                    and existing["risk_hint"] == payload.get("risk_hint")
+                    and (not source_title or existing["source_title"] == source_title)
+                )
+                if not same_payload:
+                    return fail("idempotency_conflict", "该提交标识已用于另一份人工支持请求。", status=409)
+                item = row_to_dict(existing)
+                item["risk"] = risk_result
+                item["boundary_notice"] = risk_result.get("boundary_notice")
+                return ok(item)
         if source_type == "diary":
             source_row = conn.execute(
                 "SELECT id, scene FROM emotion_diaries WHERE id = ? AND user_id = ?",
@@ -57,9 +77,9 @@ def create_supervision_request():
             """
             INSERT INTO supervision_requests (
                 id, user_id, diary_id, source_type, source_id, source_title,
-                message, contact, risk_hint, risk_level, status, created_at
+                message, contact, risk_hint, risk_level, status, client_submission_id, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
             """,
             (
                 request_id,
@@ -72,6 +92,7 @@ def create_supervision_request():
                 payload.get("contact"),
                 payload.get("risk_hint"),
                 stored_risk_level,
+                submission_id or None,
                 timestamp,
             ),
         )

@@ -76,6 +76,9 @@
       <text>{{errorMessage}}</text>
     </view>
 
+    <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+    <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
+
     <button class="safe-primary-button submit-button" bindtap="submitSupervision" disabled="{{submitting}}">
       {{submitting ? '提交中...' : '提交给老师补充看看'}}
     </button>

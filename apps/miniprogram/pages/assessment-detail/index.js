@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { requireLogin } = require("../../utils/authGuard");
+const { createResilientForm } = require("../../utils/resilientForm");
 
 const api = createSafeHomeApi();
 
@@ -66,6 +67,9 @@ Page({
     submitting: false,
     errorMessage: "",
     needsLogin: false,
+    saveStatus: "尚未填写",
+    draftRestored: false,
+    slowSubmitting: false,
   },
 
   onLoad(options) {
@@ -78,7 +82,26 @@ Page({
       return;
     }
     this.setData({ worksheetId });
+    this.draftController = createResilientForm({
+      storageKey: `safehome:resilientDraft:assessment:${worksheetId}`,
+      fields: ["answers"],
+      submissionPrefix: "assessment",
+      hasContent: (values) => Array.isArray(values.answers) && values.answers.some((answer) => String(answer.value || "").trim()),
+    });
+    this.pendingDraft = this.draftController.restore();
     this.loadWorksheet(worksheetId);
+  },
+
+  onHide() {
+    if (this.draftController && !this.data.submitting && this.data.worksheet) {
+      this.setData(this.draftController.flush({ answers: this.buildAnswers() }));
+    }
+  },
+
+  onUnload() {
+    if (this.draftController && !this.data.submitting && this.data.worksheet) {
+      this.draftController.flush({ answers: this.buildAnswers() });
+    }
   },
 
   async loadWorksheet(worksheetId) {
@@ -90,10 +113,21 @@ Page({
     this.setData({ loading: true, errorMessage: "" });
     try {
       const worksheet = await api.getAssessment(worksheetId);
+      const hydrated = withAnswerState(worksheet);
+      const restoredAnswers = this.pendingDraft && this.pendingDraft.values && this.pendingDraft.values.answers;
+      if (Array.isArray(restoredAnswers)) {
+        const answerMap = new Map(restoredAnswers.map((answer) => [answer.question_id, answer]));
+        hydrated.questions = hydrated.questions.map((question) => {
+          const answer = answerMap.get(question.id);
+          return answer ? { ...question, answerValue: answer.value || "", answerScore: answer.score } : question;
+        });
+      }
       this.setData({
-        worksheet: withAnswerState(worksheet),
+        worksheet: hydrated,
         loading: false,
         needsLogin: false,
+        saveStatus: this.pendingDraft ? this.pendingDraft.saveStatus : "尚未填写",
+        draftRestored: Boolean(this.pendingDraft),
       });
     } catch (error) {
       this.setData({
@@ -105,7 +139,7 @@ Page({
 
   onTextInput(event) {
     const index = Number(event.currentTarget.dataset.index);
-    this.setData({ [`worksheet.questions[${index}].answerValue`]: event.detail.value, errorMessage: "" });
+    this.setData({ [`worksheet.questions[${index}].answerValue`]: event.detail.value, errorMessage: "" }, () => this.scheduleDraftSave());
   },
 
   selectOption(event) {
@@ -117,7 +151,13 @@ Page({
       [`worksheet.questions[${index}].answerValue`]: value,
       [`worksheet.questions[${index}].answerScore`]: Number.isNaN(score) ? undefined : score,
       errorMessage: "",
-    });
+    }, () => this.scheduleDraftSave());
+  },
+
+  scheduleDraftSave() {
+    if (!this.draftController) return;
+    this.setData({ saveStatus: "正在保存草稿…" });
+    this.draftController.schedule({ answers: this.buildAnswers() }, (status) => this.setData(status));
   },
 
   buildAnswers() {
@@ -168,6 +208,7 @@ Page({
       },
       support_resource: this.getAnswerValue(answers, "support_resource"),
       free_text: this.getAnswerValue(answers, "free_text"),
+      client_submission_id: this.draftController ? this.draftController.getSubmissionId() : undefined,
     };
   },
 
@@ -182,18 +223,22 @@ Page({
       return;
     }
 
-    this.setData({ submitting: true, errorMessage: "" });
+    if (this.draftController) this.setData(this.draftController.flush({ answers }));
+    this.setData({ submitting: true, slowSubmitting: false, errorMessage: "" });
+    this.slowTimer = setTimeout(() => this.setData({ slowSubmitting: true }), 8000);
     try {
       const result = worksheet.isStudentProfile
         ? await api.createProfile(this.buildProfilePayload(answers))
         : await api.createAssessmentResult({
             worksheet_id: worksheet.id,
             answers,
+            client_submission_id: this.draftController ? this.draftController.getSubmissionId() : undefined,
           });
       const resultId = worksheet.isStudentProfile ? result.assessment_result_id : result.id;
       if (!resultId) {
         throw new Error("后端未返回结果 ID，请稍后重试。");
       }
+      if (this.draftController) this.draftController.clear();
       wx.showToast({ title: "已保存", icon: "success" });
       wx.navigateTo({
         url: `/pages/assessment-result/index?id=${encodeURIComponent(resultId)}&worksheet_id=${encodeURIComponent(worksheet.id)}`,
@@ -210,7 +255,8 @@ Page({
         errorMessage: error.message || "保存暂时没能完成，请检查网络后再试一次。你填写的内容还在。",
       });
     } finally {
-      this.setData({ submitting: false });
+      if (this.slowTimer) clearTimeout(this.slowTimer);
+      this.setData({ submitting: false, slowSubmitting: false });
     }
   },
 

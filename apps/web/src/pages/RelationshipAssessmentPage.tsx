@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { AssessmentProfilePosition, AssessmentResult, AssessmentWorksheet } from "../../../../shared/types/api";
 import { getStoredAuthUser } from "../services/authState";
 import { formatSafeHomeError, SafeHomeApiClient } from "../services/safehomeApi";
+import { useResilientDraft } from "../hooks/useResilientDraft";
 
 const api = new SafeHomeApiClient();
 const SCALE_IDS = new Set([
@@ -19,6 +20,15 @@ export function RelationshipAssessmentPage() {
   const [result, setResult] = useState<AssessmentResult | null>(null);
   const [profile, setProfile] = useState<AssessmentProfilePosition | null>(null);
   const [message, setMessage] = useState("正在读取关系探索测评...");
+  const [submitting, setSubmitting] = useState(false);
+  const [slowSubmitting, setSlowSubmitting] = useState(false);
+  const draft = useResilientDraft({
+    storageKey: "safehome:draft:relationship-assessment",
+    submissionPrefix: "relationship-assessment",
+    value: { selectedId, answers },
+    restore: (saved) => { setSelectedId(saved.selectedId || ""); setAnswers(saved.answers || {}); },
+    hasContent: (saved) => Object.values(saved.answers || {}).some(Boolean),
+  });
 
   useEffect(() => {
     api.listAssessments({ audience_class: "student", q: "关系" })
@@ -26,7 +36,7 @@ export function RelationshipAssessmentPage() {
         const items = payload.items.filter((item) => SCALE_IDS.has(item.id));
         const details = await Promise.all(items.map((item) => api.getAssessment(item.id)));
         setWorksheets(details);
-        setSelectedId(details[0]?.id || "");
+        setSelectedId((current) => current && details.some((item) => item.id === current) ? current : details[0]?.id || "");
         setMessage(details.length ? "请选择一份量表开始填写。" : "当前没有可用的关系探索量表。");
       })
       .catch((error) => setMessage(formatSafeHomeError(error, "量表读取失败。")));
@@ -42,12 +52,16 @@ export function RelationshipAssessmentPage() {
   }
 
   async function submit() {
-    if (!worksheet) return;
+    if (!worksheet || submitting) return;
     const missing = worksheet.questions.filter((question) => question.required !== false && !answers[question.id]);
     if (missing.length) {
       setMessage(`还有 ${missing.length} 题未填写。`);
       return;
     }
+    draft.flush();
+    setSubmitting(true);
+    setSlowSubmitting(false);
+    const slowTimer = window.setTimeout(() => setSlowSubmitting(true), 8000);
     try {
       const saved = await api.createAssessmentResult({
         worksheet_id: worksheet.id,
@@ -56,13 +70,19 @@ export function RelationshipAssessmentPage() {
           prompt: question.prompt,
           value: answers[question.id],
         })),
+        client_submission_id: draft.clientSubmissionId,
       });
+      draft.clear();
       setResult(saved);
       const position = await api.getAssessmentProfilePosition(saved.id);
       setProfile(position);
       setMessage("测评已保存。以下为阶段性画像位置和支持性解释。");
     } catch (error) {
       setMessage(formatSafeHomeError(error, "提交失败，请检查登录状态后重试。"));
+    } finally {
+      window.clearTimeout(slowTimer);
+      setSubmitting(false);
+      setSlowSubmitting(false);
     }
   }
 
@@ -101,7 +121,9 @@ export function RelationshipAssessmentPage() {
               </fieldset>
             ))}
           </div>
-          <button className="primaryButton" type="button" onClick={() => void submit()}>提交并查看阶段性画像</button>
+          <p className="draftStatus" aria-live="polite">{draft.restored ? "已恢复：" : ""}{draft.saveStatus}</p>
+          {slowSubmitting ? <p className="status compact">网络响应较慢；草稿仍在本机，请不要重复提交。</p> : null}
+          <button className="primaryButton" disabled={submitting} type="button" onClick={() => void submit()}>{submitting ? "提交中..." : "提交并查看阶段性画像"}</button>
           <p className="muted">{worksheet.result_disclaimer}</p>
         </section>
       ) : null}

@@ -1,6 +1,6 @@
 {
   "schema": "safehome.api-contract.v1",
-  "version": "2026-07-20.4",
+  "version": "2026-07-21.1",
   "base_path": "/api",
   "compatibility_policy": {
     "additive_fields_allowed": true,
@@ -1215,17 +1215,20 @@
         "query_parameters": [],
         "body_fields": [
           "answers",
+          "client_submission_id",
           "nickname",
           "result_summary",
           "worksheet_id"
         ],
-        "headers": [],
+        "headers": [
+          "Idempotency-Key"
+        ],
         "pagination": null,
         "idempotency": {
-          "supported": false,
+          "supported": true,
           "required": false,
-          "header": null,
-          "max_length": null
+          "header": "Idempotency-Key",
+          "max_length": 120
         }
       },
       "response": {
@@ -1248,7 +1251,8 @@
         "internal_error",
         "missing_fields",
         "not_found",
-        "unauthorized"
+        "unauthorized",
+        "validation_error"
       ],
       "enum_refs": [
         "assessment_status"
@@ -2400,6 +2404,7 @@
           "after_thermometer_id",
           "before_thermometer_id",
           "card_id",
+          "client_submission_id",
           "completed",
           "diary_id",
           "emotion_after",
@@ -2410,13 +2415,15 @@
           "skip_reason",
           "source_recommendation_id"
         ],
-        "headers": [],
+        "headers": [
+          "Idempotency-Key"
+        ],
         "pagination": null,
         "idempotency": {
-          "supported": false,
+          "supported": true,
           "required": false,
-          "header": null,
-          "max_length": null
+          "header": "Idempotency-Key",
+          "max_length": 120
         }
       },
       "response": {
@@ -2435,9 +2442,11 @@
       "error_codes": [
         "forbidden",
         "http_error",
+        "idempotency_conflict",
         "internal_error",
         "missing_fields",
-        "unauthorized"
+        "unauthorized",
+        "validation_error"
       ],
       "enum_refs": [],
       "deprecation": {
@@ -3756,6 +3765,7 @@
           "body_sensation",
           "child_emotion",
           "child_emotion_intensity",
+          "client_submission_id",
           "event_description",
           "event_time",
           "goal_id",
@@ -3765,13 +3775,15 @@
           "raw_text",
           "scene"
         ],
-        "headers": [],
+        "headers": [
+          "Idempotency-Key"
+        ],
         "pagination": null,
         "idempotency": {
-          "supported": false,
+          "supported": true,
           "required": false,
-          "header": null,
-          "max_length": null
+          "header": "Idempotency-Key",
+          "max_length": 120
         }
       },
       "response": {
@@ -3790,9 +3802,11 @@
       "error_codes": [
         "forbidden",
         "http_error",
+        "idempotency_conflict",
         "internal_error",
         "missing_fields",
-        "unauthorized"
+        "unauthorized",
+        "validation_error"
       ],
       "enum_refs": [],
       "deprecation": {
@@ -4509,6 +4523,7 @@
         "path_parameters": [],
         "query_parameters": [],
         "body_fields": [
+          "client_submission_id",
           "motivation",
           "nickname",
           "scene",
@@ -4516,13 +4531,15 @@
           "start_date",
           "status"
         ],
-        "headers": [],
+        "headers": [
+          "Idempotency-Key"
+        ],
         "pagination": null,
         "idempotency": {
-          "supported": false,
+          "supported": true,
           "required": false,
-          "header": null,
-          "max_length": null
+          "header": "Idempotency-Key",
+          "max_length": 120
         }
       },
       "response": {
@@ -4541,6 +4558,7 @@
       "error_codes": [
         "forbidden",
         "http_error",
+        "idempotency_conflict",
         "internal_error",
         "missing_fields",
         "unauthorized",
@@ -5388,6 +5406,7 @@
         "path_parameters": [],
         "query_parameters": [],
         "body_fields": [
+          "client_submission_id",
           "completed_at",
           "consent_version",
           "nickname",
@@ -5397,13 +5416,15 @@
           "started_at",
           "study_batch"
         ],
-        "headers": [],
+        "headers": [
+          "Idempotency-Key"
+        ],
         "pagination": null,
         "idempotency": {
-          "supported": false,
+          "supported": true,
           "required": false,
-          "header": null,
-          "max_length": null
+          "header": "Idempotency-Key",
+          "max_length": 120
         }
       },
       "response": {
@@ -5423,6 +5444,7 @@
         "content_load_error",
         "forbidden",
         "http_error",
+        "idempotency_conflict",
         "internal_error",
         "missing_parent_assessment_answers",
         "unauthorized",
@@ -6568,14 +6590,18 @@
         "content_type": "application/json",
         "path_parameters": [],
         "query_parameters": [],
-        "body_fields": [],
-        "headers": [],
+        "body_fields": [
+          "client_submission_id"
+        ],
+        "headers": [
+          "Idempotency-Key"
+        ],
         "pagination": null,
         "idempotency": {
-          "supported": false,
+          "supported": true,
           "required": false,
-          "header": null,
-          "max_length": null
+          "header": "Idempotency-Key",
+          "max_length": 120
         }
       },
       "response": {
@@ -6595,6 +6621,7 @@
         "content_load_error",
         "forbidden",
         "http_error",
+        "idempotency_conflict",
         "internal_error",
         "missing_profile_scores",
         "unauthorized",
@@ -12098,6 +12125,7 @@
         "path_parameters": [],
         "query_parameters": [],
         "body_fields": [
+          "client_submission_id",
           "contact",
           "diary_id",
           "message",
@@ -12108,13 +12136,15 @@
           "source_title",
           "source_type"
         ],
-        "headers": [],
+        "headers": [
+          "Idempotency-Key"
+        ],
         "pagination": null,
         "idempotency": {
-          "supported": false,
+          "supported": true,
           "required": false,
-          "header": null,
-          "max_length": null
+          "header": "Idempotency-Key",
+          "max_length": 120
         }
       },
       "response": {
@@ -12133,11 +12163,13 @@
       "error_codes": [
         "forbidden",
         "http_error",
+        "idempotency_conflict",
         "internal_error",
         "invalid_source_type",
         "missing_fields",
         "source_not_found",
-        "unauthorized"
+        "unauthorized",
+        "validation_error"
       ],
       "enum_refs": [
         "supervision_status"
@@ -12429,6 +12461,289 @@
         "envelope": "standard",
         "request_id": true,
         "data_contract": "routes.training_plan.save_training_plan_assignment.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.post_audit.post",
+      "method": "POST",
+      "path": "/api/ux-governance/audits",
+      "handler": "ux_governance.post_audit",
+      "module": "routes.ux_governance",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [
+          "environment",
+          "platform",
+          "results",
+          "viewport"
+        ],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ux_governance.post_audit.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.post_evidence_package.post",
+      "method": "POST",
+      "path": "/api/ux-governance/evidence-packages",
+      "handler": "ux_governance.post_evidence_package",
+      "module": "routes.ux_governance",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ux_governance.post_evidence_package.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.public_status.get",
+      "method": "GET",
+      "path": "/api/ux-governance/public-status",
+      "handler": "ux_governance.public_status",
+      "module": "routes.ux_governance",
+      "access": {
+        "mode": "public",
+        "roles": [
+          "public"
+        ],
+        "legacy_admin_token": false,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "non_sensitive_ux_gate_status_only",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ux_governance.public_status.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "http_error",
+        "internal_error"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.registry.get",
+      "method": "GET",
+      "path": "/api/ux-governance/registry",
+      "handler": "ux_governance.registry",
+      "module": "routes.ux_governance",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ux_governance.registry.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "ux_governance.get_workbench.get",
+      "method": "GET",
+      "path": "/api/ux-governance/workbench",
+      "handler": "ux_governance.get_workbench",
+      "module": "routes.ux_governance",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_page_inventory_and_redacted_machine_evidence_no_participant_text",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.ux_governance.get_workbench.data"
       },
       "error_envelope": {
         "ok": false,

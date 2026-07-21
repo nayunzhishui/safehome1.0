@@ -323,6 +323,9 @@ def create_assessment_result():
         return fail("assessment_not_enabled", "这份测一测内容仍在人工审核中，暂不开放填写。", status=400)
 
     submitted_answers = payload.get("answers")
+    submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
+    if len(submission_id) > 120:
+        return fail("validation_error", "提交标识不能超过120个字符。", status=400)
     try:
         result = submit_assessment(
             worksheet,
@@ -330,10 +333,11 @@ def create_assessment_result():
             user_id=user_id,
             nickname=payload.get("nickname"),
             result_summary=payload.get("result_summary"),
+            client_submission_id=submission_id or None,
         )
     except AssessmentSubmissionError as exc:
-        return fail(exc.code, exc.message)
-    return ok(result, status=201)
+        return fail(exc.code, exc.message, status=409 if exc.code == "idempotency_conflict" else 400)
+    return ok(result, status=200 if result.get("idempotency_replayed") else 201)
 
 
 @bp.get("/assessment-results")

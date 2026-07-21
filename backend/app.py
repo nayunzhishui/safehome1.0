@@ -36,6 +36,7 @@ from routes.notifications import bp as notifications_bp
 from routes.offline_benchmarks import bp as offline_benchmarks_bp
 from routes.research_methodology import bp as research_methodology_bp
 from routes.reliability import bp as reliability_bp
+from routes.ux_governance import bp as ux_governance_bp
 from routes.security_controls import bp as security_controls_bp
 from routes.parent_assessments import bp as parent_assessments_bp
 from routes.privacy import bp as privacy_bp
@@ -77,6 +78,7 @@ REQUIRED_CONTENT_FILES = [
     "research_methodology_registry.json",
     "security_privacy_abuse_registry.json",
     "reliability_release_registry.json",
+    "ux_experience_registry.json",
     "readfeedback/student_profile_model.json",
 ]
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
@@ -225,6 +227,7 @@ def create_app(
     app.register_blueprint(offline_benchmarks_bp)
     app.register_blueprint(research_methodology_bp)
     app.register_blueprint(reliability_bp)
+    app.register_blueprint(ux_governance_bp)
     app.register_blueprint(security_controls_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(progress_summary_bp)

@@ -825,6 +825,34 @@ def validate_reliability_registry_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_ux_experience_registry_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        registry = load_json(content_dir / "ux_experience_registry.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"ux_experience_registry.json 不可读取：{exc}"]
+    pages = registry.get("pages", [])
+    if sum(item.get("platform") == "miniprogram" for item in pages) != 40:
+        errors.append("体验注册表必须覆盖当前40个小程序页面")
+    if sum(item.get("platform") == "web" for item in pages) < 35:
+        errors.append("体验注册表必须覆盖全部已知Web路由")
+    required = {"platform", "path", "title", "workspace", "goal", "primary_action", "data_source", "states", "roles", "sensitivity", "owner", "draft_required"}
+    for item in pages:
+        missing = required - set(item)
+        if missing:
+            errors.append(f"体验页面 {item.get('path', '<unknown>')} 缺少字段：{', '.join(sorted(missing))}")
+    if registry.get("participant_information_architecture") != ["记录", "练习", "了解自己", "人工支持"]:
+        errors.append("参与者信息架构必须保持四个固定入口模型")
+    if registry.get("researcher_information_architecture") != ["待处理", "参与者", "内容", "研究/导出", "系统状态"]:
+        errors.append("研究者信息架构必须保持五个固定工作区")
+    expected_gates = {"touch_target", "contrast", "focus_visible", "accessible_name", "heading_order", "form_association", "horizontal_overflow", "reduced_motion"}
+    if set(registry.get("automated_gates", [])) != expected_gates:
+        errors.append("体验自动门禁必须完整覆盖八项检查")
+    if registry.get("home_layout_guard", {}).get("today_step_before") != "三步开始":
+        errors.append("今天的一小步必须保持在三步开始之前")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -841,6 +869,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_research_methodology_content(content_dir))
     errors.extend(validate_security_registry_content(content_dir))
     errors.extend(validate_reliability_registry_content(content_dir))
+    errors.extend(validate_ux_experience_registry_content(content_dir))
     return errors
 
 

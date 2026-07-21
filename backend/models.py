@@ -49,6 +49,8 @@ MVP_TABLES = [
     "reliability_slo_snapshots",
     "reliability_drill_runs",
     "reliability_evidence_packages",
+    "ux_audit_runs",
+    "ux_evidence_packages",
 ]
 
 
@@ -466,6 +468,7 @@ SCHEMA_SQL = [
         motivation TEXT,
         start_date TEXT,
         status TEXT NOT NULL DEFAULT 'active',
+        client_submission_id TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )
@@ -486,6 +489,7 @@ SCHEMA_SQL = [
         body_sensation TEXT,
         behavior TEXT,
         raw_text TEXT,
+        client_submission_id TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )
@@ -550,6 +554,7 @@ SCHEMA_SQL = [
         source_recommendation_id TEXT,
         before_thermometer_id TEXT,
         after_thermometer_id TEXT,
+        client_submission_id TEXT,
         created_at TEXT NOT NULL
     )
     """,
@@ -609,6 +614,7 @@ SCHEMA_SQL = [
         profile_pc1 REAL,
         profile_pc2 REAL,
         profile_confidence REAL,
+        client_submission_id TEXT,
         created_at TEXT NOT NULL
     )
     """,
@@ -697,6 +703,7 @@ SCHEMA_SQL = [
         quality_flags_json TEXT NOT NULL DEFAULT '{}',
         legacy_source_id TEXT,
         legacy_source_table TEXT,
+        client_submission_id TEXT,
         export_allowed INTEGER NOT NULL DEFAULT 1,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
@@ -808,6 +815,7 @@ SCHEMA_SQL = [
         risk_level TEXT NOT NULL DEFAULT 'low',
         status TEXT NOT NULL DEFAULT 'pending',
         supervisor_reply TEXT,
+        client_submission_id TEXT,
         created_at TEXT NOT NULL,
         replied_at TEXT
     )
@@ -1217,6 +1225,34 @@ SCHEMA_SQL = [
         created_at TEXT NOT NULL
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS ux_audit_runs (
+        id TEXT PRIMARY KEY,
+        environment TEXT NOT NULL,
+        platform TEXT NOT NULL,
+        viewport TEXT NOT NULL,
+        registry_version TEXT NOT NULL,
+        results_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        status TEXT NOT NULL,
+        contains_participant_text INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ux_evidence_packages (
+        id TEXT PRIMARY KEY,
+        status TEXT NOT NULL,
+        package_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        human_research_approved INTEGER NOT NULL DEFAULT 0,
+        device_acceptance_approved INTEGER NOT NULL DEFAULT 0,
+        release_approved INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
 ]
 
 
@@ -1288,6 +1324,14 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_feature_flag_versions_name ON feature_flag_versions(flag_name, version)",
     "CREATE INDEX IF NOT EXISTS idx_reliability_slo_created ON reliability_slo_snapshots(environment, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_reliability_drills_created ON reliability_drill_runs(scenario, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ux_audit_runs_created ON ux_audit_runs(platform, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ux_evidence_created ON ux_evidence_packages(status, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_goals_client_submission ON goals(user_id, client_submission_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_diaries_client_submission ON emotion_diaries(user_id, client_submission_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_supervision_client_submission ON supervision_requests(user_id, client_submission_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_checkins_client_submission ON checkins(user_id, client_submission_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_assessment_results_client_submission ON assessment_results(user_id, client_submission_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_parent_assessments_client_submission ON parent_assessment_submissions(user_id, client_submission_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",

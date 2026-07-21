@@ -67,8 +67,11 @@
       <text>{{errorMessage}}</text>
     </view>
 
-    <button class="primary-button" bindtap="submitCheckin" disabled="{{submitting}}">
-      {{submitting ? '保存中...' : '记录这次尝试'}}
+    <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+    <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢；草稿仍在本机，请不要重复点击。</text>
+
+    <button class="primary-button" bindtap="submitCheckin" disabled="{{submitting || submitted}}">
+      {{submitted ? '已记录' : (submitting ? '保存中...' : '记录这次尝试')}}
     </button>
 
     <button class="secondary-button" bindtap="goHome">回到首页</button>

@@ -22,18 +22,49 @@ def create_checkin():
         return auth_error_response(exc)
     timestamp = now_iso()
     checkin_id = new_id("checkin")
+    submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
+    if len(submission_id) > 120:
+        return fail("validation_error", "提交标识不能超过120个字符。", status=400)
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
+        if submission_id:
+            existing = conn.execute(
+                "SELECT * FROM checkins WHERE user_id = ? AND client_submission_id = ?",
+                (user_id, submission_id),
+            ).fetchone()
+            if existing is not None:
+                expected = (
+                    payload["card_id"],
+                    payload.get("diary_id"),
+                    1 if parse_bool(payload.get("completed"), True) else 0,
+                    parse_int(payload.get("emotion_before"), None),
+                    parse_int(payload.get("emotion_after"), None),
+                    str(payload.get("reflection") or ""),
+                    payload.get("helpfulness_rating"),
+                    payload.get("skip_reason"),
+                    payload.get("source_recommendation_id"),
+                    payload.get("before_thermometer_id"),
+                    payload.get("after_thermometer_id"),
+                )
+                actual = (
+                    existing["card_id"], existing["diary_id"], existing["completed"],
+                    existing["emotion_before"], existing["emotion_after"], str(existing["reflection"] or ""),
+                    existing["helpfulness_rating"], existing["skip_reason"], existing["source_recommendation_id"],
+                    existing["before_thermometer_id"], existing["after_thermometer_id"],
+                )
+                if actual != expected:
+                    return fail("idempotency_conflict", "该提交标识已用于另一份练习记录。", status=409)
+                return ok(row_to_dict(existing))
         conn.execute(
             """
             INSERT INTO checkins (
                 id, user_id, card_id, diary_id, completed, emotion_before,
                 emotion_after, reflection, helpfulness_rating, skip_reason,
                 source_recommendation_id, before_thermometer_id,
-                after_thermometer_id, created_at
+                after_thermometer_id, client_submission_id, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 checkin_id,
@@ -49,6 +80,7 @@ def create_checkin():
                 payload.get("source_recommendation_id"),
                 payload.get("before_thermometer_id"),
                 payload.get("after_thermometer_id"),
+                submission_id or None,
                 timestamp,
             ),
         )

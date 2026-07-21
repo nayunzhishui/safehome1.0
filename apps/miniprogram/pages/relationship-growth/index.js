@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { createResilientForm } = require("../../utils/resilientForm");
 
 const api = createSafeHomeApi();
 const COUNT_KEYS = ["active_social_count", "authentic_expression_count"];
@@ -80,8 +81,6 @@ function createIdempotencyKey(prefix) {
 }
 
 Page({
-  weeklySubmissionKey: "",
-  eventSubmissionKey: "",
   data: {
     enrollmentId: "",
     canRecord: false,
@@ -104,6 +103,11 @@ Page({
     selfNarratives: [],
     showSelfNarratives: false,
     researcherConfirmations: [],
+    saveStatus: "尚未填写",
+    draftRestored: false,
+    slowSaving: false,
+    weeklySubmissionKey: "",
+    eventSubmissionKey: "",
     form: {
       active_social_count: 0,
       authentic_expression_count: 0,
@@ -125,8 +129,32 @@ Page({
       wx.redirectTo({ url: `/pages/growth-dashboard/index?section=relationship${suffix}` });
       return;
     }
-    this.setData({ enrollmentId: decodeURIComponent(options.enrollment_id || "") });
+    const enrollmentId = decodeURIComponent(options.enrollment_id || "");
+    this.draftController = createResilientForm({
+      storageKey: `safehome:resilientDraft:relationship-growth:${enrollmentId || "latest"}`,
+      fields: ["form", "weeklySubmissionKey", "eventSubmissionKey"],
+      submissionPrefix: "relationship-growth",
+      hasContent: (values) => {
+        const form = values.form || {};
+        return Boolean(
+          String(form.setback_coping || "").trim() || String(form.achievement || "").trim()
+          || String(form.setback || "").trim() || String(form.event_summary || "").trim()
+          || Number(form.active_social_count || 0) || Number(form.authentic_expression_count || 0)
+          || Number(form.approach_willingness || 3) !== 3 || Number(form.worry_intensity || 3) !== 3
+        );
+      },
+    });
+    const restored = this.draftController.restore();
+    this.setData({
+      enrollmentId,
+      ...(restored ? restored.values : {}),
+      saveStatus: restored ? restored.saveStatus : "尚未填写",
+      draftRestored: Boolean(restored),
+    });
   },
+
+  onHide() { if (this.draftController && !this.data.savingWeekly && !this.data.savingEvent) this.setData(this.draftController.flush(this.data)); },
+  onUnload() { if (this.draftController && !this.data.savingWeekly && !this.data.savingEvent) this.draftController.flush(this.data); },
 
   onShow() {
     if (this.redirectingToUnified) return;
@@ -287,12 +315,18 @@ Page({
     this.setData({ showSelfNarratives: !this.data.showSelfNarratives });
   },
 
+  scheduleDraftSave() {
+    if (!this.draftController) return;
+    this.setData({ saveStatus: "正在保存草稿…" });
+    this.draftController.schedule(this.data, (status) => this.setData(status));
+  },
+
   onFieldInput(event) {
-    this.setData({ [`form.${event.currentTarget.dataset.key}`]: event.detail.value });
+    this.setData({ [`form.${event.currentTarget.dataset.key}`]: event.detail.value }, () => this.scheduleDraftSave());
   },
 
   onSliderChange(event) {
-    this.setData({ [`form.${event.currentTarget.dataset.key}`]: event.detail.value });
+    this.setData({ [`form.${event.currentTarget.dataset.key}`]: event.detail.value }, () => this.scheduleDraftSave());
   },
 
   requireEnrollment() {
@@ -310,8 +344,10 @@ Page({
   async saveWeekly() {
     if (this.data.savingWeekly || !this.requireEnrollment()) return;
     const form = this.data.form;
-    if (!this.weeklySubmissionKey) this.weeklySubmissionKey = createIdempotencyKey("relationship-weekly");
-    this.setData({ savingWeekly: true, errorMessage: "" });
+    const weeklySubmissionKey = this.data.weeklySubmissionKey || createIdempotencyKey("relationship-weekly");
+    this.setData({ weeklySubmissionKey, savingWeekly: true, slowSaving: false, errorMessage: "" });
+    if (this.draftController) this.setData(this.draftController.flush({ ...this.data, weeklySubmissionKey }));
+    this.slowTimer = setTimeout(() => this.setData({ slowSaving: true }), 8000);
     try {
       await api.createRelationshipLongitudinal(this.data.enrollmentId, {
         entry_type: "weekly_supplement",
@@ -324,15 +360,25 @@ Page({
         },
         narratives: { achievement: form.achievement, setback: form.setback },
         event_at: new Date().toISOString(),
-        idempotency_key: this.weeklySubmissionKey,
+        idempotency_key: weeklySubmissionKey,
       });
-      this.weeklySubmissionKey = "";
       wx.showToast({ title: "本周记录已保存", icon: "success" });
+      this.setData({
+        weeklySubmissionKey: "",
+        "form.active_social_count": 0,
+        "form.authentic_expression_count": 0,
+        "form.setback_coping": "",
+        "form.approach_willingness": 3,
+        "form.worry_intensity": 3,
+        "form.achievement": "",
+        "form.setback": "",
+      }, () => this.scheduleDraftSave());
       await this.loadGrowth();
     } catch (error) {
       this.setData({ errorMessage: error.message || "本周记录暂时没能保存。" });
     } finally {
-      this.setData({ savingWeekly: false });
+      if (this.slowTimer) clearTimeout(this.slowTimer);
+      this.setData({ savingWeekly: false, slowSaving: false });
     }
   },
 
@@ -343,24 +389,26 @@ Page({
       wx.showToast({ title: "请先写下关键事件", icon: "none" });
       return;
     }
-    this.setData({ savingEvent: true, errorMessage: "" });
-    if (!this.eventSubmissionKey) this.eventSubmissionKey = createIdempotencyKey("relationship-event");
+    const eventSubmissionKey = this.data.eventSubmissionKey || createIdempotencyKey("relationship-event");
+    this.setData({ eventSubmissionKey, savingEvent: true, slowSaving: false, errorMessage: "" });
+    if (this.draftController) this.setData(this.draftController.flush({ ...this.data, eventSubmissionKey }));
+    this.slowTimer = setTimeout(() => this.setData({ slowSaving: true }), 8000);
     try {
       await api.createRelationshipLongitudinal(this.data.enrollmentId, {
         entry_type: "key_event",
         measures: {},
         narratives: { event_summary: this.data.form.event_summary },
         event_at: new Date().toISOString(),
-        idempotency_key: this.eventSubmissionKey,
+        idempotency_key: eventSubmissionKey,
       });
-      this.eventSubmissionKey = "";
       wx.showToast({ title: "关键事件已记录", icon: "success" });
-      this.setData({ "form.event_summary": "" });
+      this.setData({ "form.event_summary": "", eventSubmissionKey: "" }, () => this.scheduleDraftSave());
       await this.loadGrowth();
     } catch (error) {
       this.setData({ errorMessage: error.message || "关键事件暂时没能保存。" });
     } finally {
-      this.setData({ savingEvent: false });
+      if (this.slowTimer) clearTimeout(this.slowTimer);
+      this.setData({ savingEvent: false, slowSaving: false });
     }
   },
 });

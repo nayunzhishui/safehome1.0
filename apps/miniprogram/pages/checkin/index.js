@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { requireLogin } = require("../../utils/authGuard");
+const { createResilientForm } = require("../../utils/resilientForm");
 
 const api = createSafeHomeApi();
 
@@ -27,6 +28,10 @@ Page({
     submitting: false,
     successMessage: "",
     errorMessage: "",
+    saveStatus: "尚未填写",
+    draftRestored: false,
+    slowSubmitting: false,
+    submitted: false,
   },
 
   onLoad(options) {
@@ -40,24 +45,43 @@ Page({
     })) {
       return;
     }
+    this.draftController = createResilientForm({
+      storageKey: `safehome:resilientDraft:checkin:${cardId}:${diaryId || "none"}`,
+      fields: ["emotionBefore", "emotionAfter", "helpfulnessRating", "skipReason", "reflection"],
+      submissionPrefix: "checkin",
+      hasContent: (values) => Boolean(String(values.reflection || "").trim() || String(values.skipReason || "").trim() || values.helpfulnessRating || values.emotionBefore !== 5 || values.emotionAfter !== 5),
+    });
+    const restored = this.draftController.restore();
     this.setData({
       cardId,
       diaryId,
       cardTitle,
       sourceRecommendationId: selectedCard && selectedCard.id === cardId ? selectedCard.sourceRecommendationId || "" : "",
+      ...(restored ? restored.values : {}),
+      saveStatus: restored ? restored.saveStatus : "尚未填写",
+      draftRestored: Boolean(restored),
     });
   },
 
+  onHide() { if (this.draftController && !this.data.submitting && !this.data.submitted) this.setData(this.draftController.flush(this.data)); },
+  onUnload() { if (this.draftController && !this.data.submitting && !this.data.submitted) this.draftController.flush(this.data); },
+
+  scheduleDraftSave() {
+    if (!this.draftController || this.data.submitted) return;
+    this.setData({ saveStatus: "正在保存草稿…" });
+    this.draftController.schedule(this.data, (status) => this.setData(status));
+  },
+
   onEmotionBeforeChange(event) {
-    this.setData({ emotionBefore: Number(event.detail.value), successMessage: "", errorMessage: "" });
+    this.setData({ emotionBefore: Number(event.detail.value), successMessage: "", errorMessage: "" }, () => this.scheduleDraftSave());
   },
 
   onEmotionAfterChange(event) {
-    this.setData({ emotionAfter: Number(event.detail.value), successMessage: "", errorMessage: "" });
+    this.setData({ emotionAfter: Number(event.detail.value), successMessage: "", errorMessage: "" }, () => this.scheduleDraftSave());
   },
 
   onReflectionInput(event) {
-    this.setData({ reflection: event.detail.value, successMessage: "", errorMessage: "" });
+    this.setData({ reflection: event.detail.value, successMessage: "", errorMessage: "" }, () => this.scheduleDraftSave());
   },
 
   chooseHelpfulness(event) {
@@ -65,20 +89,23 @@ Page({
       helpfulnessRating: event.currentTarget.dataset.value || "",
       successMessage: "",
       errorMessage: "",
-    });
+    }, () => this.scheduleDraftSave());
   },
 
   onSkipReasonInput(event) {
-    this.setData({ skipReason: event.detail.value, successMessage: "", errorMessage: "" });
+    this.setData({ skipReason: event.detail.value, successMessage: "", errorMessage: "" }, () => this.scheduleDraftSave());
   },
 
   async submitCheckin() {
+    if (this.data.submitting || this.data.submitted) return;
     if (!this.data.cardId) {
       this.setData({ errorMessage: "缺少训练卡信息，请返回重新选择训练卡。" });
       return;
     }
 
-    this.setData({ submitting: true, successMessage: "", errorMessage: "" });
+    if (this.draftController) this.setData(this.draftController.flush(this.data));
+    this.setData({ submitting: true, slowSubmitting: false, successMessage: "", errorMessage: "" });
+    this.slowTimer = setTimeout(() => this.setData({ slowSubmitting: true }), 8000);
 
     try {
       await api.createCheckin({
@@ -91,17 +118,22 @@ Page({
         helpfulness_rating: this.data.helpfulnessRating || undefined,
         skip_reason: this.data.skipReason.trim() || undefined,
         source_recommendation_id: this.data.sourceRecommendationId || undefined,
+        client_submission_id: this.draftController ? this.draftController.getSubmissionId() : undefined,
       });
 
+      if (this.draftController) this.draftController.clear();
       this.setData({
         successMessage: "已记录这次尝试。可以先观察这次练习对自己回应方式的帮助。",
+        submitted: true,
+        saveStatus: "已提交",
       });
     } catch (error) {
       this.setData({
         errorMessage: error.message || "这次打卡暂时没能保存，请检查网络后再试一次。",
       });
     } finally {
-      this.setData({ submitting: false });
+      if (this.slowTimer) clearTimeout(this.slowTimer);
+      this.setData({ submitting: false, slowSubmitting: false });
     }
   },
 

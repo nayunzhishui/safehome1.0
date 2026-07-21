@@ -142,3 +142,15 @@
   color: #ffffff;
   border-radius: 8rpx;
 }
+
+.draft-status {
+  display: block;
+  margin: 0 0 14rpx;
+  color: #5b6b60;
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.draft-status--slow {
+  color: #8a5a2f;
+}

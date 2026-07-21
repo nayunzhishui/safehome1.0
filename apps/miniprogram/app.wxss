@@ -37,6 +37,7 @@ page {
   --safe-section-gap: 40rpx;
   --safe-card-pad: 28rpx;
   --safe-touch: 88rpx;
+  --safe-focus: #1f6f54;
   min-height: 100vh;
   background: var(--safe-bg);
   color: var(--safe-title);
@@ -64,6 +65,12 @@ button:active {
   transform: scale(0.985);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  button:active {
+    transform: none;
+  }
+}
+
 button::after {
   border: 0;
 }
@@ -83,6 +90,7 @@ input {
   padding: var(--safe-page-x);
   padding-bottom: calc(44rpx + env(safe-area-inset-bottom));
   background: var(--safe-bg);
+  overflow-x: hidden;
 }
 
 .safe-page--with-tabbar {
@@ -420,4 +428,20 @@ input {
 .action-grid .safe-primary-button:first-child,
 .action-grid .action-button:first-child {
   grid-column: 1 / -1;
+}
+
+.draft-status {
+  display: block;
+  margin: 18rpx 0 8rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.draft-status--slow {
+  color: #8a5a20;
+  background: #fff7e8;
+  border-radius: var(--safe-radius-sm);
+  padding: 14rpx 18rpx;
 }

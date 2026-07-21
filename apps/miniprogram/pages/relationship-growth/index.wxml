@@ -70,12 +70,15 @@
       <label class="field-label"><view class="slider-heading"><text>当前担忧强度</text><text class="value-badge">{{form.worry_intensity}} / 5</text></view><slider min="1" max="5" step="1" data-key="worry_intensity" value="{{form.worry_intensity}}" bindchange="onSliderChange" /></label>
       <label class="field-label">最近一周最有成就感的事<textarea maxlength="500" data-key="achievement" value="{{form.achievement}}" bindinput="onFieldInput" /></label>
       <label class="field-label">最近一周最挫败的事<textarea maxlength="500" data-key="setback" value="{{form.setback}}" bindinput="onFieldInput" /></label>
+      <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+      <text wx:if="{{slowSaving}}" class="draft-status draft-status--slow">网络响应较慢；草稿和提交标识仍在本机，请不要重复点击。</text>
       <button class="safe-primary-button" loading="{{savingWeekly}}" disabled="{{savingWeekly}}" bindtap="saveWeekly">保存本周记录</button>
     </view>
 
     <view wx:if="{{canRecord}}" class="safe-card section-card record-section">
       <text class="section-title">记录一个关键事件</text>
       <textarea class="event-input" maxlength="500" data-key="event_summary" value="{{form.event_summary}}" bindinput="onFieldInput" placeholder="例如：一次靠近、被拒绝、表达边界或感到被理解的时刻"></textarea>
+      <text class="draft-status">{{saveStatus}}</text>
       <button class="safe-outline-button" loading="{{savingEvent}}" disabled="{{savingEvent}}" bindtap="saveEvent">加入时间轴</button>
     </view>
   </view>

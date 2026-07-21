@@ -84,7 +84,7 @@ def _ensure_research_consent(conn, user_id: str, agreed: bool, consent_version: 
             user_id,
             consent_version,
             1 if agreed else 0,
-            timestamp if agreed else None,
+            timestamp,
             None if agreed else timestamp,
             timestamp,
         ),
@@ -107,6 +107,9 @@ def get_parent_assessment():
 @bp.post("/parent-assessments")
 def create_parent_assessment():
     payload = request.get_json(silent=True) or {}
+    client_submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
+    if len(client_submission_id) > 120:
+        return fail("validation_error", "提交标识不能超过120个字符。", status=400)
     try:
         user_id = require_user_id(payload)
     except ValueError as exc:
@@ -128,6 +131,26 @@ def create_parent_assessment():
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
+        if client_submission_id:
+            existing = conn.execute(
+                "SELECT * FROM parent_assessment_submissions WHERE user_id = ? AND client_submission_id = ?",
+                (user_id, client_submission_id),
+            ).fetchone()
+            if existing is not None:
+                expected_answers = {
+                    "scale_answers": result.get("answers"),
+                    "question_answers": result.get("question_answers"),
+                }
+                if json_loads(existing["answers_json"], {}) != expected_answers or bool(existing["research_consent"]) != research_consent:
+                    return fail("idempotency_conflict", "该提交标识已用于另一份家长测评。", status=409)
+                item = _expand_parent_row(row_to_dict(existing))
+                item["report_url"] = f"/assessment/report/{existing['id']}"
+                item["risk"] = risk_result
+                item["boundary_notice"] = risk_result.get("boundary_notice")
+                item["consent_summary"] = _ensure_research_consent(conn, user_id, research_consent, consent_version, timestamp)
+                item["idempotency_replayed"] = True
+                conn.commit()
+                return ok(item)
         consent_summary = _ensure_research_consent(conn, user_id, research_consent, consent_version, timestamp)
         conn.execute(
             """
@@ -136,9 +159,9 @@ def create_parent_assessment():
                 study_batch, source_channel, questionnaire_version, scoring_version,
                 answers_json, scores_json, profile_key, report_json,
                 started_at, completed_at, duration_seconds, quality_flags_json,
-                export_allowed, created_at, updated_at
+                client_submission_id, export_allowed, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 submission_id,
@@ -158,6 +181,7 @@ def create_parent_assessment():
                 completed_at,
                 result.get("duration_seconds", 0),
                 json_dumps(result.get("quality_flags", {})),
+                client_submission_id or None,
                 1,
                 timestamp,
                 timestamp,

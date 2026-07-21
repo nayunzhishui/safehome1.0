@@ -210,3 +210,15 @@
 .back-button {
   margin-top: 20rpx;
 }
+
+.draft-status {
+  display: block;
+  margin-bottom: 14rpx;
+  color: var(--safe-muted);
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.draft-status--slow {
+  color: #8a5a2f;
+}

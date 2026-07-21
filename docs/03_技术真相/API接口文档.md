@@ -2076,3 +2076,15 @@ relationship_initiation_intention_action
 
 所有API响应增加`X-Content-Type-Options: nosniff`、`X-Frame-Options: DENY`、`Referrer-Policy`和`Permissions-Policy`；`/api/*`增加`Cache-Control: no-store`。CSV字符串若在可选空白后以`= + - @ TAB CR`开头，服务端以前置单引号阻止表格公式执行。临时展示越权不适用于正式权限验收，也不放宽上述写接口。
 
+## 2026-07-21：体验与无障碍治理接口
+
+| 接口 | 权限与用途 |
+|---|---|
+| `GET /api/ux-governance/public-status` | 公开返回页面覆盖数、自动门禁概况和外部门禁待补状态；不返回页面矩阵或内部证据 |
+| `GET /api/ux-governance/registry` | researcher/supervisor/admin读取页面、状态、角色、敏感性和设计模式注册表 |
+| `GET /api/ux-governance/workbench` | researcher/supervisor/admin读取最近自动检查和待人工证据包 |
+| `POST /api/ux-governance/audits` | admin登记固定八类自动检查；拒绝额外字段和参与者原文 |
+| `POST /api/ux-governance/evidence-packages` | supervisor/admin生成`draft_for_human_ux_review`包；不提供签字或批准动作 |
+
+目标、情绪日记、人工支持、练习打卡、普通测评、学生画像和家长测评写入支持`Idempotency-Key`或`client_submission_id`。相同内容重试返回200及原记录，不同内容复用同一标识返回`idempotency_conflict`（409）；首次创建仍返回201。小程序只接入公开体验状态，不暴露内部登记接口。
+

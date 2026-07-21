@@ -1,0 +1,32 @@
+{
+  "version": "2026.07-task33-v1",
+  "color": {
+    "canvas": "#f7f8f5",
+    "surface": "#ffffff",
+    "ink": "#202622",
+    "muted": "#68736d",
+    "primary": "#4f7c6b",
+    "primary_deep": "#2f5b4d",
+    "warning": "#b86a24",
+    "danger": "#a5453f",
+    "line": "#dfe5dc",
+    "focus": "#1f6f54"
+  },
+  "touch_target": {
+    "web_px": 44,
+    "miniprogram_rpx": 88
+  },
+  "radius": {
+    "small": "8px",
+    "medium": "16px",
+    "large": "20px",
+    "pill": "999px"
+  },
+  "principles": [
+    "一个页面一个主行动",
+    "错误必须提供恢复动作",
+    "敏感内容按需展开",
+    "不同量尺不混成单一成长分",
+    "自动检查不替代真人验收"
+  ]
+}

@@ -36,6 +36,10 @@ from routes.consent import get_latest_consent
 bp = Blueprint("profile", __name__, url_prefix="/api")
 
 
+class ProfileIdempotencyConflict(ValueError):
+    """The same client submission key was reused with different profile answers."""
+
+
 PROFILE_WORKSHEET_ID = "student_profile_v1"
 PROFILE_WORKSHEET_TITLE = "学生支持性画像测评"
 
@@ -232,7 +236,7 @@ def get_profile_stats():
     )
 
 
-def _save_profile_result(payload: dict, result: dict) -> dict:
+def _save_profile_result(payload: dict, result: dict, client_submission_id: str | None = None) -> dict:
     user_id = require_user_id(payload)
     result_id = new_id("assessment")
     profile_id = new_id("profile")
@@ -270,15 +274,34 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
         consent_summary = _consent_summary(conn, user_id)
+        if client_submission_id:
+            existing = conn.execute(
+                "SELECT * FROM assessment_results WHERE user_id = ? AND client_submission_id = ?",
+                (user_id, client_submission_id),
+            ).fetchone()
+            if existing is not None:
+                if existing["worksheet_id"] != PROFILE_WORKSHEET_ID or json_loads(existing["answers_json"], {}) != answers:
+                    raise ProfileIdempotencyConflict("该提交标识已用于另一份支持性测评。")
+                profile = conn.execute(
+                    "SELECT id FROM student_profiles WHERE assessment_result_id = ? LIMIT 1",
+                    (existing["id"],),
+                ).fetchone()
+                saved = row_to_dict(existing) or {}
+                saved["student_profile_id"] = profile["id"] if profile else None
+                saved["answers"] = answers
+                saved["scores"] = json_loads(existing["scores_json"], {})
+                saved["consent_summary"] = consent_summary
+                saved["idempotency_replayed"] = True
+                return saved
         report = dict(result.get("report") or {})
         report["consent_summary"] = consent_summary
         conn.execute(
             """
             INSERT INTO assessment_results (
                 id, user_id, worksheet_id, worksheet_title, category,
-                answers_json, scores_json, total_score, result_summary, created_at
+                answers_json, scores_json, total_score, result_summary, client_submission_id, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 result_id,
@@ -290,6 +313,7 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
                 json_dumps(scores),
                 None,
                 result_summary,
+                client_submission_id,
                 timestamp,
             ),
         )
@@ -386,12 +410,16 @@ def _save_profile_result(payload: dict, result: dict) -> dict:
     saved["answers"] = answers
     saved["scores"] = scores
     saved["consent_summary"] = consent_summary
+    saved["idempotency_replayed"] = False
     return saved
 
 
 @bp.post("/profile")
 def create_profile():
     payload = request.get_json(silent=True) or {}
+    submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
+    if len(submission_id) > 120:
+        return fail("validation_error", "提交标识不能超过120个字符。", status=400)
     try:
         require_user_id(payload)
     except ValueError as exc:
@@ -402,13 +430,22 @@ def create_profile():
         return fail("missing_profile_scores", str(exc), status=400)
     except ContentLoadError as exc:
         return fail("content_load_error", str(exc), status=500)
-    saved = _save_profile_result(payload, result)
+    try:
+        saved = _save_profile_result(payload, result, submission_id or None)
+    except ProfileIdempotencyConflict as exc:
+        return fail("idempotency_conflict", str(exc), status=409)
+    if saved.get("idempotency_replayed"):
+        persisted = saved.get("scores") or {}
+        for key, value in persisted.items():
+            if key != "model_scores":
+                result[key] = value
     result["assessment_result_id"] = saved.get("id")
     result["student_profile_id"] = saved.get("student_profile_id")
     result["consent_summary"] = saved.get("consent_summary")
     result["saved_to_assessment_results"] = True
     result["saved_to_student_profiles"] = True
-    return ok(result, status=201)
+    result["idempotency_replayed"] = bool(saved.get("idempotency_replayed"))
+    return ok(result, status=200 if result["idempotency_replayed"] else 201)
 
 
 @bp.get("/student-assessment")

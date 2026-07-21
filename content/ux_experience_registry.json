@@ -1,0 +1,1926 @@
+{
+  "version": "2026.07-task33-v1",
+  "status": "engineering_complete_local_external_validation_pending",
+  "participant_information_architecture": [
+    "记录",
+    "练习",
+    "了解自己",
+    "人工支持"
+  ],
+  "researcher_information_architecture": [
+    "待处理",
+    "参与者",
+    "内容",
+    "研究/导出",
+    "系统状态"
+  ],
+  "home_layout_guard": {
+    "preserve_existing_blocks": true,
+    "today_step_after": "测一测/情绪日记",
+    "today_step_before": "三步开始"
+  },
+  "design_tokens": {
+    "color": [
+      "canvas",
+      "surface",
+      "ink",
+      "muted",
+      "primary",
+      "primary_deep",
+      "warning",
+      "danger",
+      "line",
+      "focus"
+    ],
+    "type": [
+      "display",
+      "title",
+      "body",
+      "caption",
+      "data"
+    ],
+    "space": [
+      "xs",
+      "sm",
+      "md",
+      "lg",
+      "xl"
+    ],
+    "radius": [
+      "sm",
+      "md",
+      "lg",
+      "pill"
+    ],
+    "patterns": [
+      "primary_task",
+      "state_panel",
+      "feedback_evaluation",
+      "sensitive_notice",
+      "form",
+      "table",
+      "timeline",
+      "chart"
+    ]
+  },
+  "automated_gates": [
+    "touch_target",
+    "contrast",
+    "focus_visible",
+    "accessible_name",
+    "heading_order",
+    "form_association",
+    "horizontal_overflow",
+    "reduced_motion"
+  ],
+  "form_resilience": [
+    "draft_timestamp",
+    "save_status",
+    "duplicate_submit_guard",
+    "leave_prompt",
+    "restore_entry",
+    "slow_loading_state",
+    "retry_without_reentry"
+  ],
+  "pages": [
+    {
+      "platform": "miniprogram",
+      "path": "pages/home/index",
+      "title": "首页",
+      "workspace": "记录",
+      "goal": "完成首页的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/login/index",
+      "title": "登录",
+      "workspace": "账户与系统",
+      "goal": "完成登录的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "medium",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/register/index",
+      "title": "注册",
+      "workspace": "账户与系统",
+      "goal": "完成注册的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "medium",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/messages/index",
+      "title": "消息中心",
+      "workspace": "人工支持",
+      "goal": "完成消息中心的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/message-detail/index",
+      "title": "消息详情",
+      "workspace": "人工支持",
+      "goal": "完成消息详情的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/emergency-guide/index",
+      "title": "安全支持说明",
+      "workspace": "人工支持",
+      "goal": "完成安全支持说明的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/emergency-resources/index",
+      "title": "现实支持资源",
+      "workspace": "人工支持",
+      "goal": "完成现实支持资源的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/getting-started/index",
+      "title": "三步开始",
+      "workspace": "练习",
+      "goal": "完成三步开始的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/thermometer/index",
+      "title": "情绪温度",
+      "workspace": "记录",
+      "goal": "完成情绪温度的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/training/index",
+      "title": "训练中心",
+      "workspace": "练习",
+      "goal": "完成训练中心的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/training-history/index",
+      "title": "训练记录",
+      "workspace": "练习",
+      "goal": "完成训练记录的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/personalized-plan/index",
+      "title": "个性化训练方案",
+      "workspace": "练习",
+      "goal": "完成个性化训练方案的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/program-list/index",
+      "title": "项目列表",
+      "workspace": "了解自己",
+      "goal": "完成项目列表的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/program-detail/index",
+      "title": "项目详情",
+      "workspace": "了解自己",
+      "goal": "完成项目详情的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "medium",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/relationship-pilot/index",
+      "title": "关系探索试点",
+      "workspace": "了解自己",
+      "goal": "完成关系探索试点的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/relationship-report/index",
+      "title": "阶段性报告",
+      "workspace": "了解自己",
+      "goal": "完成阶段性报告的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/relationship-task/index",
+      "title": "关系探索任务",
+      "workspace": "了解自己",
+      "goal": "完成关系探索任务的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/relationship-growth/index",
+      "title": "关系成长记录",
+      "workspace": "了解自己",
+      "goal": "完成关系成长记录的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/growth-dashboard/index",
+      "title": "成长仪表盘",
+      "workspace": "了解自己",
+      "goal": "完成成长仪表盘的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/relationship-narrative/index",
+      "title": "关系探索材料",
+      "workspace": "了解自己",
+      "goal": "完成关系探索材料的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/researcher-dashboard/index",
+      "title": "研究者仪表盘",
+      "workspace": "账户与系统",
+      "goal": "完成研究者仪表盘的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/course/index",
+      "title": "课程",
+      "workspace": "练习",
+      "goal": "完成课程的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/course-detail/index",
+      "title": "课程详情",
+      "workspace": "练习",
+      "goal": "完成课程详情的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/profile/index",
+      "title": "我的",
+      "workspace": "账户与系统",
+      "goal": "完成我的的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/settings-detail/index",
+      "title": "设置详情",
+      "workspace": "账户与系统",
+      "goal": "完成设置详情的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/goal-setting/index",
+      "title": "目标设定",
+      "workspace": "记录",
+      "goal": "完成目标设定的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "medium",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/diary-form/index",
+      "title": "情绪日记",
+      "workspace": "记录",
+      "goal": "完成情绪日记的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "medium",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/feedback-result/index",
+      "title": "支持性反馈",
+      "workspace": "了解自己",
+      "goal": "完成支持性反馈的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/assessment/index",
+      "title": "测一测",
+      "workspace": "了解自己",
+      "goal": "完成测一测的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/assessment-history/index",
+      "title": "测评记录",
+      "workspace": "了解自己",
+      "goal": "完成测评记录的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/assessment-detail/index",
+      "title": "测评填写",
+      "workspace": "了解自己",
+      "goal": "完成测评填写的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "medium",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/assessment-result/index",
+      "title": "测评结果",
+      "workspace": "了解自己",
+      "goal": "完成测评结果的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/hot-topics/index",
+      "title": "支持性案例",
+      "workspace": "了解自己",
+      "goal": "完成支持性案例的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/task-detail/index",
+      "title": "训练任务",
+      "workspace": "练习",
+      "goal": "完成训练任务的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/training-card/index",
+      "title": "训练卡",
+      "workspace": "练习",
+      "goal": "完成训练卡的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/checkin/index",
+      "title": "练习打卡",
+      "workspace": "练习",
+      "goal": "完成练习打卡的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "medium",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/weekly-report/index",
+      "title": "本周复盘",
+      "workspace": "记录",
+      "goal": "完成本周复盘的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/supervision/index",
+      "title": "人工支持",
+      "workspace": "人工支持",
+      "goal": "完成人工支持的单一主要任务",
+      "primary_action": "保存并继续",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "participant_experience",
+      "draft_required": true
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/debug/index",
+      "title": "调试",
+      "workspace": "账户与系统",
+      "goal": "完成调试的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher"
+      ],
+      "sensitivity": "low",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
+      "path": "pages/integration-test/index",
+      "title": "联调测试",
+      "workspace": "账户与系统",
+      "goal": "完成联调测试的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher"
+      ],
+      "sensitivity": "low",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/",
+      "title": "项目首页",
+      "workspace": "public",
+      "goal": "完成项目首页的主要任务",
+      "primary_action": "公开入口",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "public"
+      ],
+      "sensitivity": "low",
+      "owner": "public_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/about-study",
+      "title": "研究说明",
+      "workspace": "public",
+      "goal": "完成研究说明的主要任务",
+      "primary_action": "阅读研究边界",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "public"
+      ],
+      "sensitivity": "medium",
+      "owner": "public_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/login",
+      "title": "登录",
+      "workspace": "public",
+      "goal": "完成登录的主要任务",
+      "primary_action": "登录",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "public"
+      ],
+      "sensitivity": "medium",
+      "owner": "public_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/register",
+      "title": "注册",
+      "workspace": "public",
+      "goal": "完成注册的主要任务",
+      "primary_action": "创建账号",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "public"
+      ],
+      "sensitivity": "high",
+      "owner": "public_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/privacy",
+      "title": "隐私中心",
+      "workspace": "participant",
+      "goal": "完成隐私中心的主要任务",
+      "primary_action": "管理隐私申请",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/assessment",
+      "title": "家长支持性测评",
+      "workspace": "participant",
+      "goal": "完成家长支持性测评的主要任务",
+      "primary_action": "填写测评",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": true
+    },
+    {
+      "platform": "web",
+      "path": "/assessment/report/:id",
+      "title": "家长测评报告",
+      "workspace": "participant",
+      "goal": "完成家长测评报告的主要任务",
+      "primary_action": "查看支持性报告",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/student",
+      "title": "学生入口",
+      "workspace": "participant",
+      "goal": "完成学生入口的主要任务",
+      "primary_action": "了解测评",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "medium",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/student/assessment",
+      "title": "学生支持性测评",
+      "workspace": "participant",
+      "goal": "完成学生支持性测评的主要任务",
+      "primary_action": "填写测评",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": true
+    },
+    {
+      "platform": "web",
+      "path": "/student/report/:id",
+      "title": "学生测评报告",
+      "workspace": "participant",
+      "goal": "完成学生测评报告的主要任务",
+      "primary_action": "查看支持性报告",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/relationship-assessment",
+      "title": "关系行动方式问卷",
+      "workspace": "participant",
+      "goal": "完成关系行动方式问卷的主要任务",
+      "primary_action": "填写九点问卷",
+      "data_source": "local_draft_and_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": true
+    },
+    {
+      "platform": "web",
+      "path": "/family",
+      "title": "家庭绑定",
+      "workspace": "participant",
+      "goal": "完成家庭绑定的主要任务",
+      "primary_action": "管理家庭关联",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/dashboard",
+      "title": "研究者总览",
+      "workspace": "待处理",
+      "goal": "完成研究者总览的主要任务",
+      "primary_action": "进入待处理事项",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/diaries",
+      "title": "参与者与记录",
+      "workspace": "参与者",
+      "goal": "完成参与者与记录的主要任务",
+      "primary_action": "查看记录",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/feedback",
+      "title": "反馈审核",
+      "workspace": "待处理",
+      "goal": "完成反馈审核的主要任务",
+      "primary_action": "审核反馈",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/supervision",
+      "title": "人工支持工作台",
+      "workspace": "待处理",
+      "goal": "完成人工支持工作台的主要任务",
+      "primary_action": "处置支持请求",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/reviews",
+      "title": "人工复核",
+      "workspace": "待处理",
+      "goal": "完成人工复核的主要任务",
+      "primary_action": "处理复核",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/privacy-requests",
+      "title": "隐私申请",
+      "workspace": "待处理",
+      "goal": "完成隐私申请的主要任务",
+      "primary_action": "处理隐私申请",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/goals",
+      "title": "目标管理",
+      "workspace": "参与者",
+      "goal": "完成目标管理的主要任务",
+      "primary_action": "查看目标",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/checkins",
+      "title": "练习记录",
+      "workspace": "参与者",
+      "goal": "完成练习记录的主要任务",
+      "primary_action": "查看练习",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/reports",
+      "title": "周度报告",
+      "workspace": "参与者",
+      "goal": "完成周度报告的主要任务",
+      "primary_action": "查看报告",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/profiles",
+      "title": "支持性画像",
+      "workspace": "参与者",
+      "goal": "完成支持性画像的主要任务",
+      "primary_action": "查看画像",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/content/review",
+      "title": "内容审核总览",
+      "workspace": "内容",
+      "goal": "完成内容审核总览的主要任务",
+      "primary_action": "查看审核状态",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "medium",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/content/scales",
+      "title": "量表目录",
+      "workspace": "内容",
+      "goal": "完成量表目录的主要任务",
+      "primary_action": "审核量表",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/content/worksheets",
+      "title": "测评题库",
+      "workspace": "内容",
+      "goal": "完成测评题库的主要任务",
+      "primary_action": "管理题库",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/content/cards",
+      "title": "训练卡",
+      "workspace": "内容",
+      "goal": "完成训练卡的主要任务",
+      "primary_action": "管理训练卡",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "medium",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/content/rules",
+      "title": "反馈规则",
+      "workspace": "内容",
+      "goal": "完成反馈规则的主要任务",
+      "primary_action": "查看规则",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/ai-sandbox",
+      "title": "AI合成沙盒",
+      "workspace": "研究/导出",
+      "goal": "完成AI合成沙盒的主要任务",
+      "primary_action": "运行合成评测",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/research/benchmarks",
+      "title": "离线算法基准",
+      "workspace": "研究/导出",
+      "goal": "完成离线算法基准的主要任务",
+      "primary_action": "查看离线证据",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/research/methodology",
+      "title": "研究方法冻结准备",
+      "workspace": "研究/导出",
+      "goal": "完成研究方法冻结准备的主要任务",
+      "primary_action": "生成冻结证据",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/export",
+      "title": "数据导出",
+      "workspace": "研究/导出",
+      "goal": "完成数据导出的主要任务",
+      "primary_action": "生成脱敏导出",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "critical",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/security/privacy",
+      "title": "安全与隐私防护",
+      "workspace": "系统状态",
+      "goal": "完成安全与隐私防护的主要任务",
+      "primary_action": "查看安全状态",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "critical",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/reliability/release",
+      "title": "可靠性与发布证据",
+      "workspace": "系统状态",
+      "goal": "完成可靠性与发布证据的主要任务",
+      "primary_action": "查看可靠性证据",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "critical",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/system/experience",
+      "title": "体验与无障碍",
+      "workspace": "系统状态",
+      "goal": "完成体验与无障碍的主要任务",
+      "primary_action": "查看体验门禁",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "medium",
+      "owner": "research_operations",
+      "draft_required": false
+    },
+    {
+      "platform": "web",
+      "path": "/integration-test",
+      "title": "联调测试",
+      "workspace": "系统状态",
+      "goal": "完成联调测试的主要任务",
+      "primary_action": "运行本地联调",
+      "data_source": "safehome_api",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "sensitivity": "high",
+      "owner": "research_operations",
+      "draft_required": false
+    }
+  ],
+  "external_gates": [
+    {
+      "gate": "large_text",
+      "status": "pending_human_device_evidence"
+    },
+    {
+      "gate": "screen_reader",
+      "status": "pending_human_device_evidence"
+    },
+    {
+      "gate": "wechat_embedded_browser",
+      "status": "pending_human_device_evidence"
+    },
+    {
+      "gate": "android_ios",
+      "status": "pending_human_device_evidence"
+    },
+    {
+      "gate": "formative_cognitive_interviews",
+      "status": "pending_human_research_evidence"
+    }
+  ],
+  "boundary_notice": "自动检查只能发现部分体验问题，不能替代大字体、读屏、真机和真人认知访谈，也不构成发布批准。"
+}

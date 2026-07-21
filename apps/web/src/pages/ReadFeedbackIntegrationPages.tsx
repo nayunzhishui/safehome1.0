@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
 
 import { safeHomeApi as api } from "../services/safehomeApi";
+import { useResilientDraft } from "../hooks/useResilientDraft";
 import type {
   ParentAssessmentPayload,
   ParentAssessmentResult,
@@ -453,6 +454,22 @@ export function StudentAssessmentPage() {
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState<LoadState>("loading");
   const [message, setMessage] = useState("正在读取学生测评题目...");
+  const [slowSubmitting, setSlowSubmitting] = useState(false);
+  const draft = useResilientDraft({
+    storageKey: "safehome:draft:student-assessment",
+    submissionPrefix: "student-assessment",
+    value: { answers, textAnswers, participantCode, consentAccepted, researchConsent, viewMode, step },
+    restore: (saved) => {
+      setAnswers(saved.answers || {});
+      setTextAnswers(saved.textAnswers || {});
+      setParticipantCode(saved.participantCode || "");
+      setConsentAccepted(Boolean(saved.consentAccepted));
+      setResearchConsent(saved.researchConsent !== false);
+      setViewMode(saved.viewMode || "block");
+      setStep(Number(saved.step || 0));
+    },
+    hasContent: (saved) => Object.values(saved.answers || {}).some(Boolean) || Object.values(saved.textAnswers || {}).some(Boolean) || Boolean(saved.participantCode),
+  });
 
   useEffect(() => {
     api
@@ -484,6 +501,9 @@ export function StudentAssessmentPage() {
     }
     setStatus("saving");
     setMessage("正在生成阶段性画像...");
+    draft.flush();
+    setSlowSubmitting(false);
+    const slowTimer = window.setTimeout(() => setSlowSubmitting(true), 8000);
     try {
       const result = await api.createProfile({
         nickname: participantCode || undefined,
@@ -492,11 +512,16 @@ export function StudentAssessmentPage() {
         free_text: Object.values(textAnswers).join(" "),
         support_resource: researchConsent ? "同意匿名研究分析" : "仅生成个人反馈",
         round: 1,
+        client_submission_id: draft.clientSubmissionId,
       });
+      draft.clear();
       window.location.href = `/student/report/${encodeURIComponent(result.student_profile_id || "")}`;
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "提交失败，请确认后端服务已启动。");
+    } finally {
+      window.clearTimeout(slowTimer);
+      setSlowSubmitting(false);
     }
   }
 
@@ -606,6 +631,8 @@ export function StudentAssessmentPage() {
               </button>
             )}
           </div>
+          <p className="draftStatus" aria-live="polite">{draft.restored ? "已恢复：" : ""}{draft.saveStatus}</p>
+          {slowSubmitting ? <p className="status compact">网络响应较慢；草稿仍在本机，请不要重复提交。</p> : null}
         </>
       ) : null}
     </section>
@@ -817,6 +844,24 @@ export function ParentAssessmentPage() {
   const [status, setStatus] = useState<LoadState>("loading");
   const [message, setMessage] = useState("正在读取家长测评题目...");
   const startedAt = useMemo(() => new Date().toISOString(), []);
+  const [slowSubmitting, setSlowSubmitting] = useState(false);
+  const draft = useResilientDraft({
+    storageKey: "safehome:draft:parent-assessment",
+    submissionPrefix: "parent-assessment",
+    value: { answers, questionAnswers, participantCode, studyBatch, sourceChannel, consentAccepted, researchConsent, viewMode, step },
+    restore: (saved) => {
+      setAnswers(saved.answers || {});
+      setQuestionAnswers(saved.questionAnswers || {});
+      setParticipantCode(saved.participantCode || "");
+      setStudyBatch(saved.studyBatch || "");
+      setSourceChannel(saved.sourceChannel || "safehome-web");
+      setConsentAccepted(Boolean(saved.consentAccepted));
+      setResearchConsent(Boolean(saved.researchConsent));
+      setViewMode(saved.viewMode || "block");
+      setStep(Number(saved.step || 0));
+    },
+    hasContent: (saved) => Object.values(saved.answers || {}).some(Boolean) || Object.values(saved.questionAnswers || {}).some(Boolean) || Boolean(saved.participantCode || saved.studyBatch),
+  });
 
   useEffect(() => {
     api
@@ -848,6 +893,9 @@ export function ParentAssessmentPage() {
     }
     setStatus("saving");
     setMessage("正在生成家长支持性反馈...");
+    draft.flush();
+    setSlowSubmitting(false);
+    const slowTimer = window.setTimeout(() => setSlowSubmitting(true), 8000);
     try {
       const result = await api.createParentAssessment({
         participant_code: participantCode,
@@ -858,11 +906,16 @@ export function ParentAssessmentPage() {
         completed_at: new Date().toISOString(),
         answers,
         question_answers: questionAnswers,
+        client_submission_id: draft.clientSubmissionId,
       });
+      draft.clear();
       window.location.href = `/assessment/report/${encodeURIComponent(result.id)}`;
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "提交失败，请确认后端服务已启动。");
+    } finally {
+      window.clearTimeout(slowTimer);
+      setSlowSubmitting(false);
     }
   }
 
@@ -984,6 +1037,8 @@ export function ParentAssessmentPage() {
               </button>
             )}
           </div>
+          <p className="draftStatus" aria-live="polite">{draft.restored ? "已恢复：" : ""}{draft.saveStatus}</p>
+          {slowSubmitting ? <p className="status compact">网络响应较慢；草稿仍在本机，请不要重复提交。</p> : null}
         </>
       ) : null}
     </section>

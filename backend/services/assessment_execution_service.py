@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from database import ensure_user, get_connection, json_dumps, new_id, now_iso, row_to_dict
+from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
@@ -33,6 +33,7 @@ def submit_assessment(
     user_id: str,
     nickname: str | None = None,
     result_summary: str | None = None,
+    client_submission_id: str | None = None,
 ) -> dict:
     """Validate, score, risk-check, save, profile, and recommend in one module."""
 
@@ -53,47 +54,61 @@ def submit_assessment(
     if risk_result and not risk_result.get("allow_auto_feedback", True):
         summary = risk_result.get("safe_response") or summary
 
+    replayed = False
     with get_connection() as conn:
         ensure_user(conn, user_id, nickname)
-        conn.execute(
-            """
-            INSERT INTO assessment_results (
-                id, user_id, worksheet_id, worksheet_title, category,
-                answers_json, scores_json, scoring_version, raw_scale_json,
-                raw_scores_json, transformed_scores_json, transformation_version,
-                total_score, result_summary, created_at
+        existing = None
+        if client_submission_id:
+            existing = conn.execute(
+                "SELECT * FROM assessment_results WHERE user_id = ? AND client_submission_id = ?",
+                (user_id, client_submission_id),
+            ).fetchone()
+        if existing is not None:
+            if existing["worksheet_id"] != worksheet["id"] or json_loads(existing["answers_json"], []) != answers:
+                raise AssessmentSubmissionError("idempotency_conflict", "该提交标识已用于另一份测评记录。")
+            row = existing
+            replayed = True
+        else:
+            conn.execute(
+                """
+                INSERT INTO assessment_results (
+                    id, user_id, worksheet_id, worksheet_title, category,
+                    answers_json, scores_json, scoring_version, raw_scale_json,
+                    raw_scores_json, transformed_scores_json, transformation_version,
+                    total_score, result_summary, client_submission_id, created_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    result_id,
+                    user_id,
+                    worksheet["id"],
+                    worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
+                    worksheet.get("category"),
+                    json_dumps(answers),
+                    json_dumps(scores),
+                    score_provenance["scoring_version"],
+                    json_dumps(score_provenance["raw_scale"]),
+                    json_dumps(score_provenance["raw_scores"]),
+                    json_dumps(score_provenance["transformed_scores"]),
+                    score_provenance["transformation_version"],
+                    execution.total_score,
+                    summary,
+                    client_submission_id,
+                    now_iso(),
+                ),
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                result_id,
-                user_id,
-                worksheet["id"],
-                worksheet.get("display_title") or worksheet.get("source_title") or worksheet["id"],
-                worksheet.get("category"),
-                json_dumps(answers),
-                json_dumps(scores),
-                score_provenance["scoring_version"],
-                json_dumps(score_provenance["raw_scale"]),
-                json_dumps(score_provenance["raw_scores"]),
-                json_dumps(score_provenance["transformed_scores"]),
-                score_provenance["transformation_version"],
-                execution.total_score,
-                summary,
-                now_iso(),
-            ),
-        )
-        create_risk_review_record(conn, user_id, "assessment_result", result_id, risk_result)
-        row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
-        result_row = row_to_dict(row)
-        if result_row:
-            result_row["answers"] = answers
-            try:
-                position = build_assessment_profile_position(result_row, worksheet)
-                _backfill_profile_position(conn, result_id, position)
-                row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
-            except ProfilePositionUnavailable:
-                pass
+            create_risk_review_record(conn, user_id, "assessment_result", result_id, risk_result)
+            row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
+            result_row = row_to_dict(row)
+            if result_row:
+                result_row["answers"] = answers
+                try:
+                    position = build_assessment_profile_position(result_row, worksheet)
+                    _backfill_profile_position(conn, result_id, position)
+                    row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
+                except ProfilePositionUnavailable:
+                    pass
         conn.commit()
 
     result = row_to_dict(row)
@@ -121,6 +136,7 @@ def submit_assessment(
     result["risk"] = risk_result
     result["boundary_notice"] = worksheet.get("boundary_notice")
     result["result_disclaimer"] = worksheet.get("result_disclaimer")
+    result["idempotency_replayed"] = replayed
     return result
 
 

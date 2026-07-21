@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-07-20.4"
+CONTRACT_VERSION = "2026-07-21.1"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 
@@ -37,6 +37,16 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path == "/api/ux-governance/public-status":
+        return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
+    if path.startswith("/api/ux-governance"):
+        if path == "/api/ux-governance/audits":
+            roles = ["admin"]
+        elif path == "/api/ux-governance/evidence-packages":
+            roles = ["supervisor", "admin"]
+        else:
+            roles = ["researcher", "supervisor", "admin"]
+        return {"mode": "role", "roles": roles, "legacy_admin_token": True, "showcase_read_bypass": False}
     if path == "/api/reliability/public-status":
         return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
     if path.startswith("/api/reliability"):
@@ -111,6 +121,10 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+    if path == "/api/ux-governance/public-status":
+        return "non_sensitive_ux_gate_status_only"
+    if path.startswith("/api/ux-governance"):
+        return "internal_page_inventory_and_redacted_machine_evidence_no_participant_text"
     if path == "/api/reliability/public-status":
         return "non_sensitive_reliability_gate_status_only"
     if path.startswith("/api/reliability"):
@@ -204,6 +218,10 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ("/api/reliability/drills", "POST"): ["scenario"],
     }
     body_fields.update(reliability_body_fields.get((path, method), []))
+    ux_body_fields = {
+        ("/api/ux-governance/audits", "POST"): ["environment", "platform", "viewport", "results"],
+    }
+    body_fields.update(ux_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),

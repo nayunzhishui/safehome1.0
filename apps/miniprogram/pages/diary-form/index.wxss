@@ -265,6 +265,18 @@
   padding-bottom: 16rpx;
 }
 
+.draft-status {
+  display: block;
+  margin-bottom: 14rpx;
+  color: var(--safe-muted);
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.draft-status--slow {
+  color: #8a5a2f;
+}
+
 .submit-note {
   margin-bottom: 24rpx;
   padding: 22rpx 26rpx;

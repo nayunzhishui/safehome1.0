@@ -1148,6 +1148,7 @@ export interface AssessmentResultInput {
   worksheet_id: ID;
   answers: AssessmentAnswer[];
   result_summary?: string;
+  client_submission_id?: string;
 }
 
 export interface AssessmentProfileCluster {
@@ -1444,6 +1445,7 @@ export interface StudentProfileInput {
   text_answers?: Record<string, string>;
   support_resource?: string;
   free_text?: string;
+  client_submission_id?: string;
 }
 
 export interface ProfileVisuals {
@@ -1654,6 +1656,7 @@ export interface ParentAssessmentInput {
   completed_at?: ISODateTime;
   answers: Record<string, string | number>;
   question_answers?: Record<string, string>;
+  client_submission_id?: string;
 }
 
 export interface ParentAssessmentResult {
@@ -2207,6 +2210,73 @@ export interface ReliabilityWorkbench {
   evidence_packages: Array<Record<string, unknown>>;
   production_slo_frozen: false;
   gradual_release_enabled: false;
+}
+
+export type UXGateStatus = "passed" | "failed" | "manual_required" | "not_run";
+
+export interface UXPageCoverageEntry {
+  platform: "web" | "miniprogram";
+  path: string;
+  title: string;
+  workspace: string;
+  goal: string;
+  primary_action: string;
+  data_source: string;
+  states: string[];
+  roles: string[];
+  sensitivity: "low" | "medium" | "high" | "critical";
+  owner: string;
+  draft_required: boolean;
+}
+
+export interface UXExperienceRegistry {
+  version: string;
+  status: string;
+  participant_information_architecture: string[];
+  researcher_information_architecture: string[];
+  home_layout_guard: { preserve_existing_blocks: boolean; today_step_after: string; today_step_before: string };
+  design_tokens: Record<string, string[]>;
+  automated_gates: string[];
+  form_resilience: string[];
+  pages: UXPageCoverageEntry[];
+  external_gates: Array<{ gate: string; status: string }>;
+  boundary_notice: string;
+}
+
+export interface UXAuditRun {
+  id: ID;
+  environment: "local_automated" | "test_cloud_evidence_pending";
+  platform: "web" | "miniprogram" | "cross_platform";
+  viewport: string;
+  registry_version: string;
+  results: Record<string, { status: UXGateStatus; checked: number; issues: number; artifact: string }>;
+  artifact_hash: string;
+  status: string;
+  contains_participant_text: false;
+  created_by: ID;
+  created_at: ISODateTime;
+}
+
+export interface UXGovernancePublicStatus {
+  status: string;
+  registry_version: string;
+  miniprogram_page_count: number;
+  web_route_count: number;
+  automated_gate_count: number;
+  human_device_acceptance_approved: false;
+  formative_research_approved: false;
+  release_approved: false;
+  boundary_notice: string;
+}
+
+export interface UXGovernanceWorkbench {
+  registry: UXExperienceRegistry;
+  audit_runs: UXAuditRun[];
+  evidence_packages: Array<Record<string, unknown>>;
+  external_gates: Array<{ gate: string; status: string }>;
+  human_device_acceptance_approved: false;
+  formative_research_approved: false;
+  release_approved: false;
 }
 
 export interface AssessmentListResponse {

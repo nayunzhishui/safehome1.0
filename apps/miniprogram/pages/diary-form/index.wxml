@@ -186,6 +186,8 @@
     </view>
 
     <view class="submit-area">
+      <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
+      <text wx:if="{{slowSubmitting}}" class="draft-status draft-status--slow">网络响应较慢，请保持页面打开；草稿仍在本机，不需要重复填写。</text>
       <view class="submit-note">
         <text>保存后会进入支持性反馈和训练卡推荐。反馈只用于观察和练习，不做诊断。</text>
       </view>
