@@ -8,7 +8,7 @@
   ],
   "counts": {
     "blocker": 0,
-    "warning": 57
+    "warning": 61
   },
   "quality_boundary": "Static findings are engineering review signals, not participant or researcher quality scores.",
   "findings": [
@@ -69,38 +69,62 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:253",
+      "location": "backend/routes/auth.py:321",
       "handler": "register"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:295",
+      "location": "backend/routes/auth.py:363",
       "handler": "login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:334",
+      "location": "backend/routes/auth.py:446",
       "handler": "wechat_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:403",
+      "location": "backend/routes/auth.py:515",
       "handler": "phone_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:467",
+      "location": "backend/routes/auth.py:579",
       "handler": "bind_phone"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:515",
+      "location": "backend/routes/auth.py:627",
       "handler": "admin_create_account"
+    },
+    {
+      "severity": "warning",
+      "rule": "select_star_in_http_adapter",
+      "location": "backend/routes/auth.py:754",
+      "handler": "change_password"
+    },
+    {
+      "severity": "warning",
+      "rule": "select_star_in_http_adapter",
+      "location": "backend/routes/auth.py:810",
+      "handler": "admin_unlock_account"
+    },
+    {
+      "severity": "warning",
+      "rule": "select_star_in_http_adapter",
+      "location": "backend/routes/auth.py:859",
+      "handler": "admin_verify_account"
+    },
+    {
+      "severity": "warning",
+      "rule": "select_star_in_http_adapter",
+      "location": "backend/routes/auth.py:873",
+      "handler": "admin_revoke_account"
     },
     {
       "severity": "warning",

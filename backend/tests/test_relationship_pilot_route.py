@@ -1,6 +1,7 @@
 import importlib
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -16,7 +17,14 @@ def _fresh_app(tmp_path):
             sys.modules.pop(name, None)
     os.environ["APP_ENV"] = "development"
     os.environ["DATABASE_PATH"] = str(tmp_path / "safehome-test.sqlite3")
-    os.environ["CONTENT_DIR"] = str(PROJECT_ROOT / "content")
+    content_dir = tmp_path / "content"
+    shutil.copytree(PROJECT_ROOT / "content", content_dir)
+    showcase_path = content_dir / "showcase_access.json"
+    showcase = json.loads(showcase_path.read_text(encoding="utf-8"))
+    showcase["researcher_platform_full_access"] = False
+    showcase["read_only_role_bypass"] = False
+    showcase_path.write_text(json.dumps(showcase, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.environ["CONTENT_DIR"] = str(content_dir)
     return importlib.import_module("app").app
 
 
@@ -212,6 +220,11 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     forbidden_growth = client.get("/api/relationship-pilot/growth", headers=other_headers)
     assert forbidden_growth.status_code == 200
     assert forbidden_growth.get_json()["data"]["timeline"] == []
+    claimed = client.post(
+        f"/api/research/access/enrollments/{enrollment['id']}/claim",
+        headers={**researcher_headers, "Idempotency-Key": "pilot-researcher-claim"},
+    )
+    assert claimed.status_code == 201
     dashboard = client.get("/api/relationship-pilot/researcher/dashboard", headers=researcher_headers)
     assert dashboard.status_code == 200
     dossier = dashboard.get_json()["data"]["items"][0]

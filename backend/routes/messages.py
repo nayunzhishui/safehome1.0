@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request
 
-from routes.auth_utils import AuthError, auth_error_response, require_login, require_role
+from routes.auth_utils import AuthError, auth_error_response, require_capability, require_login
 from routes.utils import fail, ok, parse_int, resolve_user_id_for_query
 from services.message_service import (
     MessageServiceError,
@@ -50,7 +50,7 @@ def list_messages():
 @bp.post("")
 def send_researcher_message():
     try:
-        actor = require_role("researcher", "supervisor", "admin", allow_legacy_admin=True)
+        actor = require_capability("research.message.send", allow_legacy_admin=True)
         item, status = send_message_to_participant(
             actor,
             request.get_json(silent=True) or {},

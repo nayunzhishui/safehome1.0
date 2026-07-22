@@ -38,6 +38,8 @@ MVP_TABLES = [
     "relationship_narratives",
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
+    "research_scope_assignments",
+    "research_scope_assignment_actions",
     "feedback_ledger",
     "feedback_ledger_actions",
     "recommendation_snapshots",
@@ -112,6 +114,33 @@ SCHEMA_SQL = [
         review_status TEXT NOT NULL DEFAULT 'pending_review',
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_scope_assignments (
+        id TEXT PRIMARY KEY,
+        enrollment_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        assignment_role TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'active',
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT,
+        assigned_by TEXT NOT NULL,
+        revoked_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_scope_assignment_actions (
+        id TEXT PRIMARY KEY,
+        assignment_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        request_hash TEXT NOT NULL,
+        result_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL
     )
     """,
     """
@@ -1530,6 +1559,10 @@ INDEX_SQL = [
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_enrollment_assessment_unique ON relationship_pilot_enrollments(assessment_result_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_report_version_unique ON relationship_screening_reports(enrollment_id, version)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_enrollment_assigned ON relationship_pilot_enrollments(assigned_researcher_id)",
+    "CREATE INDEX IF NOT EXISTS idx_research_scope_actor_status ON research_scope_assignments(actor_id, status)",
+    "CREATE INDEX IF NOT EXISTS idx_research_scope_enrollment_status ON research_scope_assignments(enrollment_id, status)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_scope_assigner_idempotency ON research_scope_assignments(assigned_by, idempotency_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_scope_action_actor_idempotency ON research_scope_assignment_actions(actor_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_task_idempotency_unique ON relationship_pilot_tasks(user_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_longitudinal_idempotency_unique ON relationship_longitudinal_entries(user_id, idempotency_key)",
 ]

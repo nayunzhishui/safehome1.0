@@ -1,0 +1,164 @@
+{
+  "version": "2026.07.task36-f03-v1",
+  "updated_at": "2026-07-22",
+  "default_decision": "deny",
+  "formal_roles": ["researcher", "supervisor", "admin"],
+  "showcase_policy": {
+    "mode": "synthetic_or_deidentified_read_only",
+    "writes_allowed": false,
+    "development_exception_flag": "researcher_platform_full_access",
+    "development_exception_is_formal_evidence": false
+  },
+  "capabilities": [
+    {
+      "id": "research.capabilities.read",
+      "operations": ["GET /api/research/access/capabilities"],
+      "roles": ["parent", "student", "researcher", "supervisor", "admin"],
+      "object_scope": "self_role",
+      "sensitivity": "low",
+      "audit_required": false,
+      "mobile_available": true,
+      "development_exception": true
+    },
+    {
+      "id": "research.dashboard.read",
+      "operations": ["GET /api/relationship-pilot/researcher/dashboard"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "assigned_or_claimable_for_researcher; supervised_for_supervisor; all_for_admin",
+      "sensitivity": "high",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": true
+    },
+    {
+      "id": "research.participant.read",
+      "operations": ["GET /api/relationship-pilot/enrollments", "GET /api/relationship-pilot/enrollments/{id}"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "assigned_for_researcher; supervised_for_supervisor; all_for_admin",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": true
+    },
+    {
+      "id": "research.report.read",
+      "operations": ["GET /api/relationship-pilot/reports/{id}", "GET /api/relationship-pilot/growth"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "assigned_for_researcher; supervised_for_supervisor; all_for_admin",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": true
+    },
+    {
+      "id": "research.feedback.write",
+      "operations": ["PATCH /api/relationship-pilot/reports/{id}", "POST /api/relationship-pilot/reports/{id}/confirm", "POST /api/relationship-pilot/reports/{id}/send", "POST /api/relationship-pilot/enrollments/{id}/notes"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "assigned_for_researcher; supervised_for_supervisor; all_for_admin",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": true
+    },
+    {
+      "id": "research.message.send",
+      "operations": ["POST /api/messages"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "assigned_for_researcher; supervised_for_supervisor; all_for_admin",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": true
+    },
+    {
+      "id": "research.narrative.manage",
+      "operations": ["POST /api/relationship-pilot/enrollments/{id}/narrative", "POST /api/relationship-pilot/narratives/{id}/confirm", "GET /api/relationship-pilot/narratives/{id}"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "assigned_for_researcher; supervised_for_supervisor; all_for_admin",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": true
+    },
+    {
+      "id": "research.assignment.read",
+      "operations": ["GET /api/research/access/assignments"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "self_for_researcher_and_supervisor; all_for_admin",
+      "sensitivity": "medium",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": false
+    },
+    {
+      "id": "research.assignment.claim",
+      "operations": ["POST /api/research/access/enrollments/{id}/claim"],
+      "roles": ["researcher"],
+      "object_scope": "claimable_unassigned_active_enrollment",
+      "sensitivity": "high",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": false
+    },
+    {
+      "id": "research.assignment.manage",
+      "operations": ["POST /api/research/access/assignments", "PATCH /api/research/access/assignments/{id}"],
+      "roles": ["admin"],
+      "object_scope": "all",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": false,
+      "development_exception": false
+    },
+    {
+      "id": "research.analysis.read",
+      "operations": ["GET /api/text-analysis/summary"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "assigned_or_supervised_aggregate; all_for_admin",
+      "sensitivity": "high",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": true
+    },
+    {
+      "id": "research.export",
+      "operations": ["GET /api/admin/export"],
+      "roles": ["admin"],
+      "object_scope": "all_with_export_policy",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": false,
+      "development_exception": false
+    },
+    {
+      "id": "research.account.manage",
+      "operations": ["POST /api/auth/admin-create-account", "POST /api/auth/admin-unlock-account"],
+      "roles": ["admin"],
+      "object_scope": "all",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": false,
+      "development_exception": false
+    },
+    {
+      "id": "research.security.manage",
+      "operations": ["POST /api/security-controls/runs"],
+      "roles": ["admin"],
+      "object_scope": "all",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": false,
+      "development_exception": false
+    },
+    {
+      "id": "research.production.manage",
+      "operations": ["POST /api/operations/releases", "POST /api/operations/runtime-controls"],
+      "roles": ["admin"],
+      "object_scope": "production_human_gate_required",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": false,
+      "development_exception": false
+    }
+  ]
+}

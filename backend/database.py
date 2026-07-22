@@ -38,6 +38,8 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_narratives",
     "relationship_longitudinal_entries",
     "relationship_hypothesis_feedback",
+    "research_scope_assignments",
+    "research_scope_assignment_actions",
     "feedback_ledger",
     "feedback_ledger_actions",
     "recommendation_snapshots",
@@ -87,8 +89,8 @@ REQUIRED_HEALTH_TABLES = [
     "operations_incident_notifications",
     "operations_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_22_024"
-CURRENT_SCHEMA_NAME = "credential_lifecycle"
+CURRENT_SCHEMA_VERSION = "2026_07_22_025"
+CURRENT_SCHEMA_NAME = "researcher_capability_scope"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -104,6 +106,10 @@ MYSQL_VARCHAR_COLUMNS = {
     "phone_hash",
     "enrollment_id",
     "assigned_researcher_id",
+    "assignment_role",
+    "assigned_by",
+    "assignment_id",
+    "request_hash",
     "report_id",
     "response",
     "assessment_result_id",

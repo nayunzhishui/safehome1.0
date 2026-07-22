@@ -100,6 +100,7 @@ const API_ENDPOINTS = {
   supervision: "/api/supervision",
   adminExport: "/api/admin/export",
   relationshipPilot: "/api/relationship-pilot",
+  researchAccess: "/api/research/access",
   productEvents: "/api/product-events",
   privacyRequests: "/api/privacy/requests",
   privacyDeleteMyData: "/api/privacy/delete-my-data",
@@ -926,6 +927,22 @@ function createSafeHomeApi(options = {}) {
 
     getRelationshipResearchDashboard() {
       return request(`${API_ENDPOINTS.relationshipPilot}/researcher/dashboard`, { requiresAuth: true });
+    },
+
+    getResearchCapabilities() {
+      return request(`${API_ENDPOINTS.researchAccess}/capabilities`, { requiresAuth: true });
+    },
+
+    listResearchAssignments(params = {}) {
+      return request(`${API_ENDPOINTS.researchAccess}/assignments${queryString(params)}`, { requiresAuth: true });
+    },
+
+    claimResearchEnrollment(enrollmentId, idempotencyKey) {
+      return request(`${API_ENDPOINTS.researchAccess}/enrollments/${encodeURIComponent(enrollmentId)}/claim`, {
+        method: "POST",
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
     },
 
     createRelationshipResearchNote(enrollmentId, data) {

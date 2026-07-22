@@ -7,6 +7,10 @@
 .development-access-title, .development-access-copy { display: block; }
 .development-access-title { color: #7a4c13; font-size: 23rpx; font-weight: 850; }
 .development-access-copy { color: #6a5439; font-size: 21rpx; line-height: 1.6; }
+.capability-scope-card { display: grid; gap: 6rpx; padding: 16rpx 20rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-sm); background: var(--safe-primary-soft); }
+.capability-scope-title, .capability-scope-copy { display: block; }
+.capability-scope-title { color: var(--safe-primary-deep); font-size: 22rpx; font-weight: 800; }
+.capability-scope-copy { color: var(--safe-text); font-size: 20rpx; line-height: 1.55; }
 .dossier-tabs { white-space: nowrap; }
 .dossier-tab { display: inline-block; width: auto; margin-right: 12rpx; padding: 12rpx 18rpx; border: 1rpx solid var(--safe-border); border-radius: 999rpx; background: var(--safe-card); color: var(--safe-text); font-size: 22rpx; }
 .dossier-tab.active { border-color: var(--safe-primary); background: var(--safe-primary-soft); color: var(--safe-primary-deep); }

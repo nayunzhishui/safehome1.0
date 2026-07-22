@@ -11138,7 +11138,7 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 | T36-F00 基线与执行器 | 本地工程完成 | `task36_registry.json`连续覆盖F00—F19；执行器支持plan/next/resume/verify/report/snapshot；状态与快照仅写`.codex_tmp` | 9项专项、六个云端只读探针、命令漂移与dirty保护通过 | 无；未执行生产变更 |
 | T36-F01 研究者账号 | 本地工程完成/外部接收待办 | receipt环境隔离、24小时失效、首次强制改密、旧会话撤销、锁定/解锁/核验/撤销、双端改密UI和024迁移完成；未动生产凭据 | F01专项23项；执行器专项54项；认证/安全/迁移回归100项，契约/双端构建检查通过 | 负责人接收、生产首次改密、测试云/生产核验 |
 | T36-F02 受控外部访问 | 本地工程完成/外部门禁待办 | 默认禁用配置、Named Tunnel/Access/人工门禁模板、loopback同源代理、可恢复控制器和安全阻断完成 | 专项7项、真实本地代理回放、Web build、执行器verify通过；dry-run启动0进程 | 域名、访问者、数据范围、Access与Tunnel批准；未启动公网访问 |
-| T36-F03 权限矩阵 | 开发临时例外完成 | 所有已登录普通账号在研究者平台专用路径临时 admin 等效读写；正式矩阵仍待做 | Test1 读仪表盘、向 wyd 写备注/发消息，wyd 列表收取；关闭开关恢复拒绝 | 临时越权不得通过正式验收 |
+| T36-F03 权限矩阵 | 本地工程完成/外部门禁待办 | 版本化能力注册表、服务端guard、研究者/督导对象分配、幂等领取/撤销/转交、持久化操作回执、025双读双写迁移与双端契约完成；开发例外原范围保留 | F03专项12项、注册表关联24项、后端全量555项、Web typecheck/build、小程序审计和API契约通过 | CloudBase/MySQL迁移、正式角色矩阵人工抽查、合成展示数据；临时越权不得通过正式验收 |
 | T36-F04 移动工作台 | 计划未开始 | 待处理、参与者、反馈消息、试点、我的工作 | 四视口/状态/弱网/权限 | 微信真机和大字体 |
 | T36-F05 参与者档案 | 计划未开始 | 测评、日记、训练、试点、项目、消息、支持时间线 | 分页、旧数据、越权ID、敏感最小化 | 真实研究者抽查 |
 | T36-F06 反馈消息闭环 | 计划未开始 | 草稿、预览、确认、发送、版本、撤回、回执 | 幂等/重复/停用/弱网/审计 | 双账号真实收取 |
@@ -11210,3 +11210,15 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 验收：专项7项、SPA深链/API allowlist/身份头剥离真实本地回放、Web build、任务36执行器F02 verify通过。唯一真实控制命令为prepare dry-run，结果`processes_started=0`、`public_access_started=false`、`external_gate_approved=false`、`state_written=false`。
 - 明确未做：未启动cloudflared、未修改DNS或生产CORS、未创建Access应用、未批准真实数据、未签署外部门禁。
 - 下一切片：T36-F03正式能力矩阵和对象范围；保留既有开发例外，但不得扩大路径或用其通过正式权限验收。
+
+## 十一、T36-F03执行结果（2026-07-22）
+
+- 状态：`engineering_complete_local / external_production_migration_and_formal_acceptance_pending`。
+- 权限契约：15项能力默认拒绝；导出、账号、安全和生产管理固定admin-only，且`development_exception=false`。403统一返回`forbidden`、`required_capability`和request_id。
+- 对象范围：新增`research_scope_assignments`，researcher仅访问明确分配对象并可幂等领取活动报名，supervisor仅访问监督分配，admin访问全部；撤销和转交使用`expected_version`防并发覆盖。
+- 迁移与回滚：本地schema为`2026_07_22_025 / researcher_capability_scope`；旧`assigned_researcher_id`保留并双读双写，回填脚本默认阻断生产，rollback只撤销回填记录、不删除旧字段。
+- 双端：shared、Web和小程序API client已同步；小程序仪表盘显示正式角色、矩阵版本和授权项数，页面提示不替代服务端鉴权。
+- 开发例外：Test1/wyd现有研究平台精确路径临时提权保留，未扩大到高危能力；通用展示只读绕过不再覆盖真实研究平台，临时例外仍不能作为正式证据。
+- 验收：F03专项12项、任务36机器注册表关联验收24项、后端全量555项、Web typecheck/build、小程序审计、API契约重建通过。
+- 未做：未执行CloudBase/MySQL 025迁移、未签署正式权限矩阵、未建立正式合成展示数据源，未启动隧道、轮换生产密码或修改微信Secret。
+- 下一切片：按注册表继续F08/F09云端故障与指纹闭环；F04依赖F09，不能提前把未验证云端状态包装成移动工作台完成。

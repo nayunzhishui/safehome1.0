@@ -4405,6 +4405,131 @@
       }
     },
     {
+      "operation_id": "research_access.assignments_route.get",
+      "method": "GET",
+      "path": "/api/research/access/assignments",
+      "object_type": "research_access",
+      "action": "read",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_access.create_assignment_route.post",
+      "method": "POST",
+      "path": "/api/research/access/assignments",
+      "object_type": "research_access",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
+      "operation_id": "research_access.update_assignment_route.patch",
+      "method": "PATCH",
+      "path": "/api/research/access/assignments/<assignment_id>",
+      "object_type": "research_access",
+      "action": "update",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
+      "operation_id": "research_access.capabilities_route.get",
+      "method": "GET",
+      "path": "/api/research/access/capabilities",
+      "object_type": "research_access",
+      "action": "read",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_access.claim_enrollment_route.post",
+      "method": "POST",
+      "path": "/api/research/access/enrollments/<enrollment_id>/claim",
+      "object_type": "research_access",
+      "action": "update",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
       "operation_id": "offline_benchmarks.agreement.get",
       "method": "GET",
       "path": "/api/research/benchmarks/agreement",
@@ -5783,7 +5908,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 229,
+    "operation_count": 234,
     "showcase_bypass_operation_count": 6,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

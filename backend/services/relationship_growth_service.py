@@ -11,6 +11,7 @@ from services.relationship_pilot_common import (
     expand_enrollment,
     ensure_researcher_access,
     four_layer_profile,
+    minimize_claimable_enrollment,
 )
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
@@ -101,6 +102,13 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
         user_id = str(actor["id"])
     with get_connection() as conn:
         enrollment_rows = rows_to_dicts(conn.execute("SELECT * FROM relationship_pilot_enrollments WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
+        if actor.get("role") in {"researcher", "supervisor"} and requested_user_id and not enrollment_rows:
+            raise RelationshipPilotError(
+                "forbidden",
+                "当前账号没有访问该参与者资料的范围权限。",
+                403,
+                {"required_capability": "research.report.read"},
+            )
         for enrollment in enrollment_rows:
             ensure_researcher_access(actor, enrollment)
         task_rows = rows_to_dicts(conn.execute("SELECT id, enrollment_id, task_type, risk_level, review_status, created_at FROM relationship_pilot_tasks WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
@@ -172,7 +180,26 @@ def researcher_dashboard(actor: dict) -> ServiceResult:
         where_clause = ""
         params: tuple = ()
         if actor.get("role") == "researcher":
-            where_clause = "WHERE e.assigned_researcher_id IS NULL OR e.assigned_researcher_id = ?"
+            where_clause = """
+            WHERE (
+                (e.assigned_researcher_id IS NULL AND e.status IN ('enrolled', 'active'))
+                OR e.assigned_researcher_id = ?
+                OR EXISTS (
+                    SELECT 1 FROM research_scope_assignments a
+                    WHERE a.enrollment_id = e.id AND a.actor_id = ?
+                      AND a.assignment_role = 'researcher' AND a.status = 'active'
+                )
+            )
+            """
+            params = (str(actor["id"]), str(actor["id"]))
+        elif actor.get("role") == "supervisor":
+            where_clause = """
+            WHERE EXISTS (
+                SELECT 1 FROM research_scope_assignments a
+                WHERE a.enrollment_id = e.id AND a.actor_id = ?
+                  AND a.assignment_role = 'supervisor' AND a.status = 'active'
+            )
+            """
             params = (str(actor["id"]),)
         rows = conn.execute(
             f"""
@@ -192,4 +219,11 @@ def researcher_dashboard(actor: dict) -> ServiceResult:
         write_audit_log(conn, "relationship_research_dashboard_viewed", actor["id"], "relationship_pilot_dashboard", "all", {"records_count": len(rows)})
         conn.commit()
     items = [expand_enrollment(item) for item in rows_to_dicts(rows)]
+    if actor.get("role") == "researcher":
+        items = [
+            item
+            if str(item.get("assigned_researcher_id") or "") == str(actor["id"])
+            else minimize_claimable_enrollment(item)
+            for item in items
+        ]
     return ServiceResult({"items": items, "count": len(items), "boundary_notice": "洞察提示只作为访谈探索线索，不构成诊断或人格判断。"})

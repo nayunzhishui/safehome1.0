@@ -105,6 +105,16 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
         return {"mode": "role", "roles": ["supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path == "/api/messages" and method == "POST":
         return {"mode": "role", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+    if path.startswith("/api/research/access"):
+        if (path == "/api/research/access/assignments" and method == "POST") or method == "PATCH":
+            roles = ["admin"]
+        elif path.endswith("/claim"):
+            roles = ["researcher"]
+        elif path.endswith("/capabilities"):
+            roles = ALL_AUTHENTICATED_ROLES
+        else:
+            roles = ["researcher", "supervisor", "admin"]
+        return {"mode": "role", "roles": roles, "legacy_admin_token": True, "showcase_read_bypass": False}
     if path.startswith("/api/profile-results/") or path.startswith("/api/parent-assessments/"):
         return {"mode": "owner_or_authorized", "roles": ALL_AUTHENTICATED_ROLES, "legacy_admin_token": True, "showcase_read_bypass": False}
     if path.startswith("/api/relationship-pilot/researcher/") or any(
@@ -115,7 +125,7 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
     if role_call:
         roles = re.findall(r"['\"](parent|student|researcher|supervisor|admin)['\"]", role_call.group(1))
         return {"mode": "role", "roles": roles or ALL_AUTHENTICATED_ROLES, "legacy_admin_token": "allow_legacy_admin=True" in role_call.group(1), "showcase_read_bypass": False}
-    if "_researcher()" in source:
+    if "_researcher(" in source:
         return {"mode": "role", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": method == "GET"}
     if "require_login(" in source or "_actor()" in source:
         return {"mode": "authenticated", "roles": ALL_AUTHENTICATED_ROLES, "legacy_admin_token": True, "showcase_read_bypass": method == "GET" and path.startswith("/api/relationship-pilot/")}

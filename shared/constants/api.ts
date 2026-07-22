@@ -90,6 +90,7 @@ export const API_ENDPOINTS = {
   familyMembers: "/api/family/members",
   familyUnbind: "/api/family/unbind",
   relationshipPilot: "/api/relationship-pilot",
+  researchAccess: "/api/research/access",
   researchParticipants: "/api/research/participants",
   researchOperations: "/api/research/operations",
   researchQueues: "/api/research/queues",

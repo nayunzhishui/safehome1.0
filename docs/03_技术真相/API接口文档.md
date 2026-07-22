@@ -2136,3 +2136,14 @@ relationship_initiation_intention_action
 - `POST /api/product-events`兼容新增今日行动展示/点击/完成/跳过/恢复、不适和人工升级事件；只接收白名单枚举元数据，可使用`client_event_id`防重复，不接收参与者原文。
 
 以上接口不构成诊断、治疗安排或疗效证明；临时展示越权不能替代服务端对象权限验收。
+## 2026-07-22：任务36 F03研究权限API
+
+正式权限使用 `content/researcher_capability_registry.json`，前端显示不具有授权效力。新增接口：
+
+- `GET /api/research/access/capabilities`：返回矩阵版本、正式/有效角色、开发例外状态和能力ID；
+- `GET /api/research/access/assignments`：admin查看全部，researcher/supervisor仅查看自己的分配；
+- `POST /api/research/access/assignments`：admin-only，必须提供`Idempotency-Key`；
+- `PATCH /api/research/access/assignments/{id}`：admin-only，使用`expected_version`撤销或转交；必须提供`Idempotency-Key`，相同键和载荷重放第一次结果，不同载荷复用同一键返回409；
+- `POST /api/research/access/enrollments/{id}/claim`：researcher领取活动且未分配报名，必须提供`Idempotency-Key`。
+
+正式对象范围为researcher=明确分配、supervisor=监督分配、admin=全部。拒绝包络为`403 forbidden`，`error.details.required_capability`只说明所需能力，不返回敏感对象内容；顶层始终带`request_id`。临时`researcher_platform_full_access`仍只用于既有精确开发路径，不能授权导出、账号、安全或生产操作。

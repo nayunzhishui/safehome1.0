@@ -10,6 +10,7 @@ from routes.auth_utils import (
     AuthError,
     auth_error_response,
     elevate_actor_for_showcase_researcher_platform,
+    require_capability,
     require_login,
     require_role,
 )
@@ -33,9 +34,9 @@ def _actor():
         return None, auth_error_response(exc)
 
 
-def _researcher():
+def _researcher(capability_id: str):
     try:
-        return require_role("researcher", "admin", "supervisor", allow_legacy_admin=True), None
+        return require_capability(capability_id, allow_legacy_admin=True), None
     except AuthError as exc:
         return None, auth_error_response(exc)
 
@@ -45,7 +46,7 @@ def _respond(callable_, *args, **kwargs):
         result: ServiceResult = callable_(*args, **kwargs)
     except RelationshipPilotError as exc:
         record_operation_failure(callable_.__name__)
-        return fail(exc.code, exc.message, status=exc.status)
+        return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
     except Exception:
         record_operation_failure(callable_.__name__)
         raise
@@ -93,7 +94,7 @@ def get_report_route(report_id: str):
     try:
         result = get_report(actor, report_id, download=download)
     except RelationshipPilotError as exc:
-        return fail(exc.code, exc.message, status=exc.status)
+        return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
     if download:
         body = json.dumps(result.data, ensure_ascii=False, indent=2)
         return Response(body, mimetype="application/json", headers={"Content-Disposition": f'attachment; filename="relationship-report-{report_id}.json"'})
@@ -111,7 +112,7 @@ def save_hypothesis_feedback_route(report_id: str, hypothesis_index: int):
 
 @bp.post("/reports/<report_id>/confirm")
 def confirm_report_route(report_id: str):
-    actor, error = _researcher()
+    actor, error = _researcher("research.feedback.write")
     if error:
         return error
     return _respond(confirm_report, actor, report_id)
@@ -119,7 +120,7 @@ def confirm_report_route(report_id: str):
 
 @bp.patch("/reports/<report_id>")
 def update_report_route(report_id: str):
-    actor, error = _researcher()
+    actor, error = _researcher("research.feedback.write")
     if error:
         return error
     return _respond(update_report, actor, report_id, request.get_json(silent=True) or {})
@@ -127,7 +128,7 @@ def update_report_route(report_id: str):
 
 @bp.post("/reports/<report_id>/send")
 def send_report_route(report_id: str):
-    actor, error = _researcher()
+    actor, error = _researcher("research.feedback.write")
     if error:
         return error
     return _respond(send_report, actor, report_id)
@@ -171,7 +172,7 @@ def relationship_growth_route():
 
 @bp.get("/researcher/dashboard")
 def researcher_dashboard_route():
-    actor, error = _researcher()
+    actor, error = _researcher("research.dashboard.read")
     if error:
         return error
     return _respond(researcher_dashboard, actor)
@@ -179,7 +180,7 @@ def researcher_dashboard_route():
 
 @bp.post("/enrollments/<enrollment_id>/notes")
 def create_note_route(enrollment_id: str):
-    actor, error = _researcher()
+    actor, error = _researcher("research.feedback.write")
     if error:
         return error
     note = str((request.get_json(silent=True) or {}).get("note") or "")
@@ -188,7 +189,7 @@ def create_note_route(enrollment_id: str):
 
 @bp.post("/enrollments/<enrollment_id>/narrative")
 def create_narrative_route(enrollment_id: str):
-    actor, error = _researcher()
+    actor, error = _researcher("research.narrative.manage")
     if error:
         return error
     return _respond(create_narrative, actor, enrollment_id, request.get_json(silent=True) or {})
@@ -196,7 +197,7 @@ def create_narrative_route(enrollment_id: str):
 
 @bp.post("/narratives/<narrative_id>/confirm")
 def confirm_narrative_route(narrative_id: str):
-    actor, error = _researcher()
+    actor, error = _researcher("research.narrative.manage")
     if error:
         return error
     return _respond(confirm_narrative, actor, narrative_id)

@@ -1431,6 +1431,39 @@ export interface ResearcherMessageInput {
   idempotency_key?: string;
 }
 
+export type ResearchAssignmentRole = "researcher" | "supervisor";
+export type ResearchAssignmentStatus = "active" | "revoked";
+
+export interface ResearchCapabilitySummary {
+  registry_version: string;
+  formal_role: UserRole;
+  effective_role: UserRole;
+  development_exception_active: boolean;
+  development_exception_is_formal_evidence: false;
+  capability_ids: string[];
+}
+
+export interface ResearchScopeAssignment {
+  id: ID;
+  enrollment_id: ID;
+  actor_id: ID;
+  assignment_role: ResearchAssignmentRole;
+  status: ResearchAssignmentStatus;
+  version: number;
+  assigned_by: ID;
+  idempotency_key?: string | null;
+  revoked_at?: ISODateTime | null;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface ResearchScopeAssignmentInput {
+  enrollment_id: ID;
+  actor_id: ID;
+  assignment_role: ResearchAssignmentRole;
+  idempotency_key: string;
+}
+
 export type {
   FourLayerProfile,
   HypothesisFeedback,

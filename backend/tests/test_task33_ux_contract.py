@@ -45,7 +45,7 @@ def test_schema_migration_and_rollback_are_idempotent_and_non_destructive(tmp_pa
     first = migration.apply()
     second = migration.apply()
     rollback = migration.rollback_plan()
-    assert first["schema_version"] == "2026_07_22_024"
+    assert first["schema_version"] == "2026_07_22_025"
     assert second["ok"] is True
     assert rollback["automatic_schema_rollback_executed"] is False
     assert rollback["retain_audit_and_evidence"] is True

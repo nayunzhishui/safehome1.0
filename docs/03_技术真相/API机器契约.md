@@ -180,6 +180,11 @@
 | GET | `/api/reliability/public-status` | public:public | non_sensitive_reliability_gate_status_only | — | — | active |
 | POST | `/api/reliability/slo-snapshots` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
 | GET | `/api/reliability/workbench` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| GET | `/api/research/access/assignments` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| POST | `/api/research/access/assignments` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | supported | active |
+| PATCH | `/api/research/access/assignments/<assignment_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | supported | active |
+| GET | `/api/research/access/capabilities` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| POST | `/api/research/access/enrollments/<enrollment_id>/claim` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | supported | active |
 | GET | `/api/research/benchmarks/agreement` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/cases` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/cases/<case_id>/annotations` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |

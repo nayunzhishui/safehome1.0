@@ -55,6 +55,9 @@ import type {
   ResearchMethodologyRegistry,
   ResearchMethodologySimulation,
   ResearchMethodologyVersion,
+  ResearchCapabilitySummary,
+  ResearchScopeAssignment,
+  ResearchScopeAssignmentInput,
   SecurityPublicStatus,
   SecurityScanResult,
   SecurityWorkbench,
@@ -512,6 +515,31 @@ export class SafeHomeApiClient {
     return this.requestData(`${API_ENDPOINTS.relationshipPilot}/researcher/dashboard`, {
       headers: this.adminHeaders(adminToken),
     });
+  }
+
+  getResearchCapabilities(): Promise<ResearchCapabilitySummary> {
+    return this.requestData(`${API_ENDPOINTS.researchAccess}/capabilities`);
+  }
+
+  listResearchAssignments(enrollmentId = ""): Promise<ListResponse<ResearchScopeAssignment>> {
+    return this.requestData(
+      this.withQuery(`${API_ENDPOINTS.researchAccess}/assignments`, { enrollment_id: enrollmentId || undefined }),
+    );
+  }
+
+  createResearchAssignment(input: ResearchScopeAssignmentInput): Promise<ResearchScopeAssignment> {
+    return this.requestData(`${API_ENDPOINTS.researchAccess}/assignments`, {
+      method: "POST",
+      headers: { "Idempotency-Key": input.idempotency_key },
+      body: input,
+    });
+  }
+
+  claimResearchEnrollment(enrollmentId: string, idempotencyKey: string): Promise<ResearchScopeAssignment> {
+    return this.requestData(
+      `${API_ENDPOINTS.researchAccess}/enrollments/${encodeURIComponent(enrollmentId)}/claim`,
+      { method: "POST", headers: { "Idempotency-Key": idempotencyKey } },
+    );
   }
 
   listResearchParticipants(

@@ -8,11 +8,15 @@
     <text class="development-access-title">开发全权限模式</text>
     <text class="development-access-copy">当前所有已登录账号临时拥有研究者平台读写权限，仅用于开发验证。操作仍会记录审计，正式发布前必须关闭。</text>
   </view>
+  <view wx:if="{{capabilityScope}}" class="capability-scope-card">
+    <text class="capability-scope-title">权限范围 · {{capabilityScope.formal_role}}</text>
+    <text class="capability-scope-copy">能力矩阵 {{capabilityScope.registry_version}} · 已授权 {{capabilityScope.capability_ids.length}} 项。页面提示不替代服务端权限校验。</text>
+  </view>
   <view wx:if="{{loading}}" class="safe-card">正在读取档案...</view>
   <view wx:elif="{{errorMessage}}" class="safe-card error-card">{{errorMessage}}</view>
   <view wx:else class="dashboard-layout">
     <scroll-view scroll-x class="dossier-tabs">
-      <button wx:for="{{items}}" wx:key="id" class="dossier-tab {{selected.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectEnrollment">{{item.nickname || item.user_id}} · {{item.reviewStatusText}}</button>
+      <button wx:for="{{items}}" wx:key="id" class="dossier-tab {{selected.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectEnrollment">{{item.nickname || '匿名参与者'}} · {{item.scopeStatus === 'claimable' ? '可领取' : item.reviewStatusText}}</button>
     </scroll-view>
 
     <view wx:if="{{selected}}">

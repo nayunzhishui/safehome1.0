@@ -59,14 +59,19 @@ Page({
     sendingMessage: false,
     sendingFeedback: false,
     developmentFullAccess: false,
+    capabilityScope: null,
   },
 
   async onLoad() {
     if (!requireLogin({ redirectUrl: "/pages/researcher-dashboard/index" })) return;
     const user = getAuthUser();
-    const showcase = await api.getShowcaseAccess().catch(() => ({ enabled: false }));
+    const [showcase, capabilityScope] = await Promise.all([
+      api.getShowcaseAccess().catch(() => ({ enabled: false })),
+      api.getResearchCapabilities().catch(() => null),
+    ]);
     this.setData({
       developmentFullAccess: Boolean(showcase.researcher_platform_full_access),
+      capabilityScope,
     });
     if (!showcase.enabled && (!user || !["researcher", "admin", "supervisor"].includes(user.role))) {
       this.setData({ loading: false, errorMessage: "当前账号没有研究者权限。" });
@@ -80,18 +85,42 @@ Page({
       const payload = await api.getRelationshipResearchDashboard();
       const items = (payload.items || []).map((item) => ({
         ...item,
+        scopeStatus: item.scope_status || "assigned",
         statusText: statusLabel(item.status),
         reviewStatusText: statusLabel(item.review_status),
       }));
-      this.setData({ loading: false, items });
-      if (items[0]) await this.selectEnrollmentById(items[0].id);
+      this.setData({ loading: false, errorMessage: "", items });
+      const firstAssigned = items.find((item) => item.scopeStatus !== "claimable");
+      if (firstAssigned) await this.selectEnrollmentById(firstAssigned.id);
     } catch (error) {
       this.setData({ loading: false, errorMessage: error.message || "仪表盘暂时无法读取。" });
     }
   },
 
-  selectEnrollment(event) {
-    this.selectEnrollmentById(event.currentTarget.dataset.id);
+  async selectEnrollment(event) {
+    const id = event.currentTarget.dataset.id;
+    const item = this.data.items.find((row) => row.id === id);
+    if (item && item.scopeStatus === "claimable") {
+      const confirmed = await new Promise((resolve) => {
+        wx.showModal({
+          title: "领取参与者",
+          content: "领取后你可以查看完整档案并留下研究反馈。",
+          confirmText: "确认领取",
+          success: (result) => resolve(Boolean(result.confirm)),
+          fail: () => resolve(false),
+        });
+      });
+      if (!confirmed) return;
+      try {
+        await api.claimResearchEnrollment(id, `mobile-claim-${id}-${Date.now()}`);
+        await this.loadDashboard();
+        await this.selectEnrollmentById(id);
+      } catch (error) {
+        wx.showToast({ title: error.message || "暂时无法领取", icon: "none" });
+      }
+      return;
+    }
+    this.selectEnrollmentById(id);
   },
 
   async selectEnrollmentById(id) {

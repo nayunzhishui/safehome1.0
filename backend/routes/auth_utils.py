@@ -13,13 +13,9 @@ from routes.utils import fail, require_admin_token
 AUTH_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7
 ALLOWED_ROLES = {"parent", "student", "researcher", "supervisor", "admin"}
 PUBLIC_REGISTER_ROLES = {"parent", "student"}
-SHOWCASE_READ_PATH_PREFIXES = (
-    "/api/relationship-pilot/researcher/dashboard",
-    "/api/relationship-pilot/enrollments",
-    "/api/relationship-pilot/reports/",
-    "/api/relationship-pilot/narratives/",
-    "/api/text-analysis/summary",
-)
+# Formal researcher data never uses the generic showcase read bypass. The
+# separate development exception below stays exact-path and visibly labelled.
+SHOWCASE_READ_PATH_PREFIXES: tuple[str, ...] = ()
 SHOWCASE_RESEARCHER_PLATFORM_PATH_PREFIXES = (
     "/api/relationship-pilot/",
     "/api/text-analysis/summary",
@@ -30,10 +26,11 @@ SHOWCASE_RESEARCHER_PLATFORM_OPERATIONS = {
 
 
 class AuthError(ValueError):
-    def __init__(self, message: str, status: int = 401, code: str | None = None) -> None:
+    def __init__(self, message: str, status: int = 401, code: str | None = None, details: dict | None = None) -> None:
         super().__init__(message)
         self.status = status
         self.code = code
+        self.details = details
 
 
 def _serializer() -> URLSafeTimedSerializer:
@@ -142,6 +139,21 @@ def require_role(*roles: str, allow_legacy_admin: bool = True) -> dict:
     return actor
 
 
+def require_capability(capability_id: str, allow_legacy_admin: bool = True) -> dict:
+    """Authorize a versioned research capability on the server."""
+
+    from services.research_access_service import ResearchAccessError, assert_capability
+
+    actor = elevate_actor_for_showcase_researcher_platform(
+        require_login(allow_legacy_admin=allow_legacy_admin)
+    )
+    try:
+        assert_capability(actor, capability_id)
+    except ResearchAccessError as exc:
+        raise AuthError(exc.message, status=exc.status, code=exc.code, details=exc.details) from exc
+    return actor
+
+
 def resolve_actor_user_id(
     requested_user_id: str | None = None,
     payload: dict | None = None,
@@ -178,7 +190,12 @@ def auth_error_response(exc: AuthError):
         401: "unauthorized",
         403: "forbidden",
     }
-    return fail(exc.code or code_by_status.get(exc.status, "auth_error"), str(exc), status=exc.status)
+    return fail(
+        exc.code or code_by_status.get(exc.status, "auth_error"),
+        str(exc),
+        status=exc.status,
+        details=exc.details,
+    )
 
 
 def role_required(*roles: str, allow_legacy_admin: bool = True):

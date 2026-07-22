@@ -14,6 +14,7 @@ from services.relationship_pilot_common import (
     expand_enrollment,
     expand_task,
     ensure_researcher_access,
+    minimize_claimable_enrollment,
     own_or_researcher,
     worksheet,
 )
@@ -120,9 +121,28 @@ def create_enrollment(actor: dict, payload: dict) -> ServiceResult:
 
 def list_enrollments(actor: dict) -> ServiceResult:
     if actor.get("role") == "researcher":
-        where = "WHERE assigned_researcher_id IS NULL OR assigned_researcher_id = ?"
+        where = """
+        WHERE (
+            (e.assigned_researcher_id IS NULL AND e.status IN ('enrolled', 'active'))
+            OR e.assigned_researcher_id = ?
+            OR EXISTS (
+                SELECT 1 FROM research_scope_assignments a
+                WHERE a.enrollment_id = e.id AND a.actor_id = ?
+                  AND a.assignment_role = 'researcher' AND a.status = 'active'
+            )
+        )
+        """
+        params = [actor["id"], actor["id"]]
+    elif actor.get("role") == "supervisor":
+        where = """
+        WHERE EXISTS (
+            SELECT 1 FROM research_scope_assignments a
+            WHERE a.enrollment_id = e.id AND a.actor_id = ?
+              AND a.assignment_role = 'supervisor' AND a.status = 'active'
+        )
+        """
         params = [actor["id"]]
-    elif actor.get("role") in {"admin", "supervisor"}:
+    elif actor.get("role") == "admin":
         where = ""
         params = []
     else:
@@ -141,6 +161,13 @@ def list_enrollments(actor: dict) -> ServiceResult:
             params,
         ).fetchall()
     items = [expand_enrollment(item) for item in rows_to_dicts(rows)]
+    if actor.get("role") == "researcher":
+        items = [
+            item
+            if str(item.get("assigned_researcher_id") or "") == str(actor["id"])
+            else minimize_claimable_enrollment(item)
+            for item in items
+        ]
     if actor.get("role") not in RESEARCH_ROLES:
         for item in items:
             item.pop("assigned_researcher_id", None)

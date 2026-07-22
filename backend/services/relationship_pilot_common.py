@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from database import json_loads, load_content_json, now_iso, row_to_dict, write_audit_log
+from database import get_connection, json_loads, load_content_json, now_iso, row_to_dict, write_audit_log
 
 
 RELATIONSHIP_WORKSHEET_IDS = {
@@ -26,11 +26,12 @@ class ServiceResult:
 
 
 class RelationshipPilotError(Exception):
-    def __init__(self, code: str, message: str, status: int = 400):
+    def __init__(self, code: str, message: str, status: int = 400, details: dict | None = None):
         super().__init__(message)
         self.code = code
         self.message = message
         self.status = status
+        self.details = details or {}
 
 
 def worksheet(worksheet_id: str) -> dict | None:
@@ -58,6 +59,23 @@ def expand_task(item: dict, include_sensitive: bool = True) -> dict:
     return item
 
 
+def minimize_claimable_enrollment(item: dict) -> dict:
+    """Return queue metadata without profile, report or task material."""
+
+    minimized = {
+        key: item.get(key)
+        for key in ("id", "nickname", "status", "review_status", "created_at", "updated_at")
+        if key in item
+    }
+    return {
+        **minimized,
+        "scope_status": "claimable",
+        "profile": {},
+        "dimensions": [],
+        "radar_features": [],
+    }
+
+
 def own_or_researcher(actor: dict, user_id: str) -> bool:
     return actor.get("role") in RESEARCH_ROLES or str(actor.get("id")) == str(user_id)
 
@@ -70,37 +88,38 @@ def enrollment_by_id(conn, enrollment_id: str) -> dict | None:
 def ensure_researcher_assignment(conn, actor: dict, enrollment: dict) -> dict:
     """Claim an unassigned enrollment for a researcher and reject cross-researcher writes."""
 
+    if actor.get("role") == "admin":
+        return enrollment
+    if actor.get("role") == "supervisor":
+        ensure_researcher_access(actor, enrollment)
+        return enrollment
     if actor.get("role") != "researcher":
         return enrollment
+    from services.research_access_service import ResearchAccessError, claim_enrollment, has_object_scope
+
     actor_id = str(actor.get("id") or "")
-    ensure_researcher_access(actor, enrollment)
-    assigned_id = str(enrollment.get("assigned_researcher_id") or "")
-    if not assigned_id:
-        conn.execute(
-            "UPDATE relationship_pilot_enrollments SET assigned_researcher_id = ?, updated_at = ? WHERE id = ? AND assigned_researcher_id IS NULL",
-            (actor_id, now_iso(), enrollment["id"]),
-        )
-        refreshed = enrollment_by_id(conn, enrollment["id"])
-        if not refreshed or str(refreshed.get("assigned_researcher_id") or "") != actor_id:
-            raise RelationshipPilotError("researcher_assignment_conflict", "该参与者已分配给其他研究者。", 403)
-        write_audit_log(
-            conn,
-            "relationship_researcher_assigned",
-            actor_id,
-            "relationship_pilot_enrollment",
-            enrollment["id"],
-            {"assigned_researcher_id": actor_id},
-        )
-        return refreshed
-    return enrollment
+    if has_object_scope(conn, actor, enrollment):
+        return enrollment
+    try:
+        claim_enrollment(actor, str(enrollment["id"]), f"legacy-auto-{enrollment['id']}-{actor_id}")
+    except ResearchAccessError as exc:
+        raise RelationshipPilotError(exc.code, exc.message, exc.status, exc.details) from exc
+    refreshed = enrollment_by_id(conn, enrollment["id"])
+    if not refreshed:
+        raise RelationshipPilotError("not_found", "没有找到可操作的报名记录。", 404)
+    return refreshed
 
 
 def ensure_researcher_access(actor: dict, enrollment: dict) -> None:
-    if actor.get("role") != "researcher":
+    if actor.get("role") not in RESEARCH_ROLES:
         return
-    assigned_id = str(enrollment.get("assigned_researcher_id") or "")
-    if assigned_id and assigned_id != str(actor.get("id") or ""):
-        raise RelationshipPilotError("researcher_assignment_conflict", "该参与者已分配给其他研究者。", 403)
+    from services.research_access_service import ResearchAccessError, require_object_scope
+
+    try:
+        with get_connection() as access_conn:
+            require_object_scope(access_conn, actor, enrollment, "research.participant.read")
+    except ResearchAccessError as exc:
+        raise RelationshipPilotError(exc.code, exc.message, exc.status, exc.details) from exc
 
 
 def dimension_lookup(dimensions: list[dict]) -> dict[str, float]:

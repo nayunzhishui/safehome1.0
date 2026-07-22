@@ -3,8 +3,8 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 229,
-  "capability_count": 40,
+  "operation_count": 234,
+  "capability_count": 41,
   "capabilities": [
     {
       "id": "capability.app",
@@ -1412,6 +1412,48 @@
       "production_release_approved": false,
       "operation_ids": [
         "reports.weekly_report.get"
+      ]
+    },
+    {
+      "id": "capability.research_access",
+      "title": "research access",
+      "intended_use": "通过统一机器契约受控提供“research_access”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 5)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "research_access.assignments_route.get",
+        "research_access.capabilities_route.get",
+        "research_access.claim_enrollment_route.post",
+        "research_access.create_assignment_route.post",
+        "research_access.update_assignment_route.patch"
       ]
     },
     {
