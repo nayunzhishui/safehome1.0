@@ -120,15 +120,41 @@
       <text class="state-copy">请检查关键词，或确认当前账号的分配范围与研究授权。</text>
     </view>
     <view wx:if="{{participantItems.length}}" class="participant-list">
-      <view wx:for="{{participantItems}}" wx:key="user_id" class="safe-card participant-card">
+      <view wx:for="{{participantItems}}" wx:key="user_id" class="safe-card participant-card" data-id="{{item.user_id}}" bindtap="selectParticipantDossier" role="button" aria-label="查看{{item.displayName}}的参与者档案">
         <view class="participant-avatar">{{item.displayInitial}}</view>
         <view class="participant-main">
           <text class="participant-name">{{item.displayName}}</text>
+          <text class="participant-meta">{{item.anonymousId}}</text>
           <text class="participant-meta">{{item.activityCount}} 条活动摘要 · {{item.relationship_count}} 个关系试点</text>
         </view>
         <text class="participant-count">{{item.unread_message_count}} 未读</text>
       </view>
       <button wx:if="{{participantHasMore}}" class="safe-outline-button list-more" loading="{{participantLoading}}" bindtap="loadMoreParticipants">加载下一页</button>
+    </view>
+    <view wx:if="{{participantDossier}}" class="safe-card participant-dossier-panel">
+      <view class="section-heading">
+        <view>
+          <text class="section-eyebrow">按需档案</text>
+          <text class="section-title">{{participantDossier.participant.nickname || '匿名参与者'}}</text>
+          <text class="participant-meta">{{participantDossier.participant.anonymous_id}}</text>
+        </view>
+        <button class="icon-refresh" bindtap="closeParticipantDossier" aria-label="关闭参与者档案">关闭</button>
+      </view>
+      <scroll-view scroll-x class="dossier-tabs" aria-label="参与者档案标签">
+        <button wx:for="{{participantDossier.modules}}" wx:key="key" class="dossier-tab {{participantModule && participantModule.module === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="loadParticipantModule">{{item.label}} {{item.count}}</button>
+      </scroll-view>
+      <view wx:if="{{participantModuleLoading}}" class="empty-state"><text class="state-copy">正在按需读取当前标签…</text></view>
+      <view wx:elif="{{participantModule}}" class="module-result-list">
+        <text class="section-title">{{participantModule.module_label}}</text>
+        <view wx:if="{{!participantModule.items.length}}" class="empty-state"><text class="state-copy">当前标签暂无记录。</text></view>
+        <view wx:for="{{participantModule.items}}" wx:for-item="record" wx:key="id" class="module-result-card">
+          <text wx:for="{{record.displayLines}}" wx:for-item="line" wx:key="*this" class="detail-line">{{line}}</text>
+        </view>
+        <button wx:if="{{participantModule.has_more}}" class="safe-outline-button list-more" data-key="{{participantModule.module}}" data-page="{{participantModule.page + 1}}" bindtap="loadParticipantModule">加载下一页</button>
+        <text class="boundary-line">{{participantModule.boundary_notice}}</text>
+      </view>
+      <view wx:else class="empty-state"><text class="state-copy">选择标签后才读取详情，避免一次加载全部长文本。</text></view>
+      <text class="boundary-line">{{participantDossier.boundary_notice}}</text>
     </view>
   </view>
 

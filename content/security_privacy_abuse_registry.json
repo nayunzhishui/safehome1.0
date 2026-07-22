@@ -5131,6 +5131,31 @@
       }
     },
     {
+      "operation_id": "research_workspace.get_participant_module.get",
+      "method": "GET",
+      "path": "/api/research/participants/<user_id>/modules/<module_key>",
+      "object_type": "research_workspace",
+      "action": "read",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "research_workspace.get_research_queue.get",
       "method": "GET",
       "path": "/api/research/queues",
@@ -5908,7 +5933,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 234,
+    "operation_count": 235,
     "showcase_bypass_operation_count": 6,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

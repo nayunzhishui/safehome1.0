@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from flask import Blueprint, current_app, request
 
-from database import get_connection, json_loads, now_iso, rows_to_dicts, write_audit_log
+from database import get_connection, now_iso, rows_to_dicts, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.utils import fail, ok, parse_int
 from services.research_queue_service import list_research_queue, sync_all_work_item_sources
 from services.research_work_item_service import WorkItemError, get_work_item_detail, get_work_item_metrics, perform_work_item_action
+from services.research_participant_service import anonymous_id, list_module, participant_summary
 
 
 bp = Blueprint("research_workspace", __name__, url_prefix="/api/research")
@@ -39,6 +40,7 @@ def _allowed_user_clause(actor: dict, alias: str = "u") -> tuple[str, list[str]]
         f"""EXISTS (
             SELECT 1 FROM relationship_pilot_enrollments access_e
             WHERE access_e.user_id = {alias}.id AND access_e.assigned_researcher_id = ?
+              AND access_e.status NOT IN ('withdrawn', 'deleted')
         ) AND ({consent_clause})""",
         [str(actor["id"])],
     )
@@ -96,6 +98,7 @@ def list_participants():
         params.extend([f"%{query}%", f"%{query}%"])
     participant_clause = f"""
         u.role IN ('parent', 'student', 'user')
+        AND COALESCE(u.status, 'active') != 'deleted'
         AND ({allowed_clause})
         {search_clause}
         AND (
@@ -145,9 +148,12 @@ def list_participants():
             {"result_count": len(rows), "query_used": bool(query), "page": page, "page_size": page_size},
         )
         conn.commit()
+    items = rows_to_dicts(rows)
+    for item in items:
+        item["anonymous_id"] = anonymous_id(str(item["user_id"]))
     return ok(
         {
-            "items": rows_to_dicts(rows),
+            "items": items,
             "count": len(rows),
             "total": total,
             "page": page,
@@ -167,105 +173,80 @@ def get_participant_dossier(user_id: str):
     allowed_clause, params = _allowed_user_clause(actor)
     with get_connection() as conn:
         user = conn.execute(
-            f"SELECT id AS user_id, nickname, role, created_at, updated_at FROM users u WHERE u.id = ? AND ({allowed_clause})",
+            f"SELECT id FROM users u WHERE u.id = ? AND COALESCE(u.status, 'active') != 'deleted' AND ({allowed_clause})",
             tuple([user_id, *params]),
         ).fetchone()
         if user is None:
             return fail("not_found", "没有找到可访问的参与者档案。", status=404)
-        assessments = rows_to_dicts(
-            conn.execute(
-                "SELECT id, worksheet_id, worksheet_title, scores_json, total_score, profile_model_id, profile_cluster_id, profile_confidence, created_at FROM assessment_results WHERE user_id = ? ORDER BY created_at DESC LIMIT 100",
-                (user_id,),
-            ).fetchall()
-        )
-        diaries = rows_to_dicts(
-            conn.execute(
-                "SELECT id, event_time, scene, event_description, parent_emotion, parent_emotion_intensity, child_emotion, child_emotion_intensity, automatic_thought, body_sensation, behavior, created_at FROM emotion_diaries WHERE user_id = ? ORDER BY created_at DESC LIMIT 100",
-                (user_id,),
-            ).fetchall()
-        )
-        checkins = rows_to_dicts(
-            conn.execute(
-                "SELECT id, card_id, completed, emotion_before, emotion_after, helpfulness_rating, skip_reason, created_at FROM checkins WHERE user_id = ? ORDER BY created_at DESC LIMIT 100",
-                (user_id,),
-            ).fetchall()
-        )
-        program_rows = rows_to_dicts(
-            conn.execute(
-                "SELECT id, source_id, data_json, created_at FROM records WHERE user_id = ? AND module_type = 'program_entry' ORDER BY created_at DESC LIMIT 100",
-                (user_id,),
-            ).fetchall()
-        )
-        programs = []
-        for row in program_rows:
-            data = json_loads(row.pop("data_json", None), {})
-            programs.append({**row, **data})
-        relationships = rows_to_dicts(
-            conn.execute(
-                "SELECT id, worksheet_id, status, review_status, profile_json, dimensions_json, created_at FROM relationship_pilot_enrollments WHERE user_id = ? ORDER BY created_at DESC",
-                (user_id,),
-            ).fetchall()
-        )
-        relationship_tasks = rows_to_dicts(
-            conn.execute(
-                "SELECT id, enrollment_id, task_type, narration, answers_json, risk_level, review_status, created_at FROM relationship_pilot_tasks WHERE user_id = ? ORDER BY created_at DESC LIMIT 100",
-                (user_id,),
-            ).fetchall()
-        )
-        relationship_reports = rows_to_dicts(
-            conn.execute(
-                "SELECT id, enrollment_id, version, status, report_json, confirmed_at, created_at FROM relationship_screening_reports WHERE user_id = ? ORDER BY created_at DESC LIMIT 100",
-                (user_id,),
-            ).fetchall()
-        )
-        supervision = rows_to_dicts(
-            conn.execute(
-                "SELECT id, source_type, source_id, source_title, message, risk_hint, risk_level, status, supervisor_reply, created_at, replied_at FROM supervision_requests WHERE user_id = ? ORDER BY created_at DESC LIMIT 100",
-                (user_id,),
-            ).fetchall()
-        )
-        messages = rows_to_dicts(
-            conn.execute(
-                "SELECT id, sender_role, message_type, title, body, source_type, source_id, status, created_at, read_at FROM messages WHERE user_id = ? ORDER BY created_at DESC LIMIT 100",
-                (user_id,),
-            ).fetchall()
-        )
-        audit_count = conn.execute(
-            "SELECT COUNT(*) AS count FROM audit_logs WHERE target_id = ? OR actor_id = ?",
-            (user_id, user_id),
-        ).fetchone()["count"]
+        summary = participant_summary(conn, user_id)
         write_audit_log(
             conn,
-            "research_participant_dossier_viewed",
+            "research_participant_summary_viewed",
             actor["id"],
             "user",
             user_id,
+            {"module_count": len(summary["modules"]), "raw_text_included": False},
+        )
+        conn.commit()
+    return ok(summary)
+
+
+@bp.get("/participants/<user_id>/modules/<module_key>")
+def get_participant_module(user_id: str, module_key: str):
+    actor, error = _actor()
+    if error:
+        return error
+    page = parse_int(request.args.get("page"), 1)
+    page_size = parse_int(request.args.get("page_size"), 20)
+    page = 1 if page is None else page
+    page_size = 20 if page_size is None else page_size
+    if page < 1 or page_size < 1 or page_size > 100:
+        return fail("validation_error", "page 需大于等于1，page_size 需为1至100。", status=400)
+    allowed_clause, params = _allowed_user_clause(actor)
+    with get_connection() as conn:
+        user = conn.execute(
+            f"SELECT id FROM users u WHERE u.id = ? AND COALESCE(u.status, 'active') != 'deleted' AND ({allowed_clause})",
+            tuple([user_id, *params]),
+        ).fetchone()
+        if user is None:
+            return fail("not_found", "没有找到可访问的参与者档案。", status=404)
+        try:
+            payload = list_module(
+                conn,
+                user_id,
+                module_key,
+                page=page,
+                page_size=page_size,
+                date_from=str(request.args.get("date_from") or "").strip(),
+                date_to=str(request.args.get("date_to") or "").strip(),
+                item_type=str(request.args.get("type") or "").strip(),
+                status=str(request.args.get("status") or "").strip(),
+                batch=str(request.args.get("batch") or "").strip(),
+            )
+        except KeyError:
+            return fail("validation_error", "未知的参与者档案标签。", status=400)
+        write_audit_log(
+            conn,
+            "research_participant_sensitive_module_viewed" if payload["sensitive"] else "research_participant_timeline_viewed",
+            actor["id"],
+            f"research_participant_{module_key}",
+            user_id,
             {
-                "assessment_count": len(assessments),
-                "diary_count": len(diaries),
-                "program_count": len(programs),
-                "relationship_count": len(relationships),
+                "module": module_key,
+                "result_count": payload["count"],
+                "page": page,
+                "page_size": page_size,
+                "filter_flags": {
+                    "batch": bool(request.args.get("batch")),
+                    "date": bool(request.args.get("date_from") or request.args.get("date_to")),
+                    "type": bool(request.args.get("type")),
+                    "status": bool(request.args.get("status")),
+                },
             },
         )
         conn.commit()
-    return ok(
-        {
-            "participant": dict(user),
-            "modules": {
-                "assessments": assessments,
-                "diaries": diaries,
-                "checkins": checkins,
-                "program_entries": programs,
-                "relationship_enrollments": relationships,
-                "relationship_tasks": relationship_tasks,
-                "relationship_reports": relationship_reports,
-                "supervision_requests": supervision,
-                "messages": messages,
-            },
-            "audit_summary": {"related_event_count": audit_count},
-            "boundary_notice": "原始填写仅供授权研究审阅，不得直接改写；研究者备注与反馈应另存并保留审计。",
-        }
-    )
+    payload["boundary_notice"] = "仅按当前标签读取必要资料；联系方式、登录凭据和无关敏感字段不会返回。"
+    return ok(payload)
 
 
 @bp.get("/operations")

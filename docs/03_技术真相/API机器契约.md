@@ -209,6 +209,7 @@
 | GET | `/api/research/operations` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | GET | `/api/research/participants` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
 | GET | `/api/research/participants/<user_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| GET | `/api/research/participants/<user_id>/modules/<module_key>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
 | GET | `/api/research/queues` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
 | GET | `/api/research/work-items/<work_item_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | POST | `/api/research/work-items/<work_item_id>/actions` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | required | active |

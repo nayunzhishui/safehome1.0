@@ -978,6 +978,14 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.researchParticipants}${queryString(params)}`, { requiresAuth: true });
     },
 
+    getResearchParticipant(userId) {
+      return request(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}`, { requiresAuth: true });
+    },
+
+    getResearchParticipantModule(userId, moduleKey, params = {}) {
+      return request(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}/modules/${encodeURIComponent(moduleKey)}${queryString(params)}`, { requiresAuth: true });
+    },
+
     listResearchAssignments(params = {}) {
       return request(`${API_ENDPOINTS.researchAccess}/assignments${queryString(params)}`, { requiresAuth: true });
     },

@@ -3579,6 +3579,29 @@ ul {
   gap: 10px;
 }
 
+.dossierModuleTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.dossierModuleTabs button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--safe-border, #cfd9d3);
+  border-radius: 999px;
+  background: #fff;
+  color: #315f51;
+  cursor: pointer;
+}
+
+.dossierModuleTabs button.active {
+  border-color: #315f51;
+  background: #e9f2ed;
+  font-weight: 700;
+}
+
 .participantMatrixRow {
   width: 100%;
   display: grid;

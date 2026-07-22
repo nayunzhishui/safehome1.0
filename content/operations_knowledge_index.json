@@ -128,7 +128,7 @@
     {
       "source_file": "operations_capability_registry.json",
       "source_version": "2026-07-21-t34-v1",
-      "source_sha256": "d978cf8136b50ab762ad910d34d9cbd26a9411d3386c071a0416ced1e87b2f07",
+      "source_sha256": "f74febeeb30f05702acf5c8c07ce56e24d93d2b83636760002a103a1626bf760",
       "content_types": [
         "capability_registry",
         "release_gate",
@@ -162,8 +162,8 @@
     },
     {
       "source_file": "reliability_release_registry.json",
-      "source_version": "2026-07-20-t32-reliability-v1",
-      "source_sha256": "41233b6c1cd0c8e2844f210496ab78c129ff8e8e32d214f6bb30aec5fc69a61e",
+      "source_version": "2026-07-22-t36-f09-observability-v1",
+      "source_sha256": "153f59e68b9fd48427e8e3b720aff3072df0314af07863da539fc5c3e2f535a5",
       "content_types": [
         "reliability_journey",
         "reliable_job",
@@ -200,7 +200,7 @@
     {
       "source_file": "security_privacy_abuse_registry.json",
       "source_version": "2026-07-20-t31-security-v1",
-      "source_sha256": "bf49baf23a4e04197b2886272ea13899012b2af50a9e61c6ae2c4ca433dc4c5e",
+      "source_sha256": "4e23901e934dde36231af64c4def0501a102f80200f03c69f2ff1fcba9e00afd",
       "content_types": [
         "security_asset_inventory",
         "authorization_matrix",
@@ -250,5 +250,5 @@
   "draft_or_internal_notes_indexed": false,
   "participant_text_indexed": false,
   "production_release_approved": false,
-  "index_hash": "d81cb8fb6692ab77f91f1406b443b2a15e4a5163e178867dad909ff152e760c6"
+  "index_hash": "6a06cd9f8e20022d1de1c5aaaf5ecfb0fbbb097fdb9de566a7a3f0a5a47db568"
 }

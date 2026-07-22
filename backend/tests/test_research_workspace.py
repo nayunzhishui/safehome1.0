@@ -59,8 +59,17 @@ def test_research_workspace_lists_and_reads_multi_module_participant(tmp_path, m
     assert dossier.status_code == 200
     detail = dossier.get_json()["data"]
     assert detail["participant"]["user_id"] == user_id
-    assert detail["modules"]["diaries"][0]["event_description"]
-    assert detail["modules"]["program_entries"][0]["reflection"]
+    assert detail["participant"]["anonymous_id"].startswith("anon_")
+    assert next(item for item in detail["modules"] if item["key"] == "diaries")["count"] == 1
+    assert "contact" not in detail["participant"]
+
+    diaries = client.get(f"/api/research/participants/{user_id}/modules/diaries?page=1&page_size=10", headers=ADMIN_HEADERS)
+    assert diaries.status_code == 200
+    assert diaries.get_json()["data"]["items"][0]["event_description"]
+
+    projects = client.get(f"/api/research/participants/{user_id}/modules/project_tests?page=1&page_size=10", headers=ADMIN_HEADERS)
+    assert projects.status_code == 200
+    assert projects.get_json()["data"]["items"][0]["reflection"]
     assert "原始填写" in detail["boundary_notice"]
 
 

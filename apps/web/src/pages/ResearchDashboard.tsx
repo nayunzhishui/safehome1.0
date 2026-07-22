@@ -9,6 +9,8 @@ import {
   SafeHomeApiError,
   SafeHomeApiClient,
   type ResearchParticipantDossier,
+  type ResearchParticipantModuleKey,
+  type ResearchParticipantModulePage,
   type ResearchParticipantSummary,
 } from "../services/safehomeApi";
 import { getStoredAdminToken, setStoredAdminToken } from "../services/adminToken";
@@ -152,6 +154,8 @@ export function ResearchDashboard() {
   const [participantSearch, setParticipantSearch] = useState("");
   const [participantMatrix, setParticipantMatrix] = useState<ResearchParticipantSummary[]>([]);
   const [participantDossier, setParticipantDossier] = useState<ResearchParticipantDossier | null>(null);
+  const [participantModule, setParticipantModule] = useState<ResearchParticipantModulePage | null>(null);
+  const [participantModuleStatus, setParticipantModuleStatus] = useState<LoadStatus>("idle");
   const [operationsQueue, setOperationsQueue] = useState<ResearchQueuePage | null>(null);
   const [operationsQueueStatus, setOperationsQueueStatus] = useState<LoadStatus>("idle");
   const [selectedWorkItem, setSelectedWorkItem] = useState<ResearchWorkItemDetail | null>(null);
@@ -426,6 +430,7 @@ export function ResearchDashboard() {
         ? await api.getResearchParticipant(payload.items[0].user_id, getStoredAdminToken().trim())
         : null;
       setParticipantDossier(selected);
+      setParticipantModule(null);
     } catch (error) {
       setState((current) => ({
         ...current,
@@ -438,12 +443,33 @@ export function ResearchDashboard() {
   async function selectParticipant(userId: string) {
     try {
       setParticipantDossier(await api.getResearchParticipant(userId, getStoredAdminToken().trim()));
+      setParticipantModule(null);
     } catch (error) {
       setState((current) => ({
         ...current,
         status: "error",
         message: formatSafeHomeError(error, "参与者档案暂时无法读取。"),
       }));
+    }
+  }
+
+  async function loadParticipantModule(moduleKey: ResearchParticipantModuleKey, page = 1) {
+    if (!participantDossier) return;
+    setParticipantModuleStatus("loading");
+    try {
+      const payload = await api.getResearchParticipantModule(
+        participantDossier.participant.user_id,
+        moduleKey,
+        { page, page_size: 20 },
+        getStoredAdminToken().trim(),
+      );
+      setParticipantModule((current) => page > 1 && current?.module === payload.module
+        ? { ...payload, items: [...current.items, ...payload.items] }
+        : payload);
+      setParticipantModuleStatus("success");
+    } catch (error) {
+      setParticipantModuleStatus("error");
+      setState((current) => ({ ...current, status: "error", message: formatSafeHomeError(error, "该档案标签暂时无法读取。") }));
     }
   }
 
@@ -714,8 +740,8 @@ export function ResearchDashboard() {
         <div className="participantWorkspaceHeader">
           <div>
             <p className="eyebrow">Participant Matrix</p>
-            <h2>参与者矩阵与单人全模块档案</h2>
-            <p>按用户ID检索，在同一处查看测评、情绪日记、训练、项目、关系试点、人工支持和消息。</p>
+            <h2>参与者矩阵与按需档案</h2>
+            <p>先看匿名摘要，再按标签读取测评、日记、训练、项目、消息与支持资料。</p>
           </div>
           <form
             className="participantSearch"
@@ -742,7 +768,7 @@ export function ResearchDashboard() {
               >
                 <span className="participantIdentity">
                   <strong>{item.nickname || "未设置昵称"}</strong>
-                  <small>{item.user_id}</small>
+                  <small>{item.anonymous_id || item.user_id}</small>
                 </span>
                 <span className="participantCounts">
                   测评 {item.assessment_count} · 日记 {item.diary_count} · 训练 {item.checkin_count} · 项目 {item.program_count}
@@ -760,27 +786,28 @@ export function ResearchDashboard() {
                 <div className="participantDossierHead">
                   <div>
                     <h3>{participantDossier.participant.nickname || "参与者档案"}</h3>
-                    <p>{participantDossier.participant.user_id}</p>
+                    <p>{participantDossier.participant.anonymous_id}</p>
                   </div>
                   <span className="countBadge">审计事件 {participantDossier.audit_summary.related_event_count}</span>
                 </div>
                 <div className="dossierMetricGrid">
-                  <DossierMetric label="测评" value={participantDossier.modules.assessments?.length || 0} />
-                  <DossierMetric label="情绪日记" value={participantDossier.modules.diaries?.length || 0} />
-                  <DossierMetric label="训练" value={participantDossier.modules.checkins?.length || 0} />
-                  <DossierMetric label="项目练习" value={participantDossier.modules.program_entries?.length || 0} />
-                  <DossierMetric label="关系试点" value={participantDossier.modules.relationship_enrollments?.length || 0} />
-                  <DossierMetric label="人工支持" value={participantDossier.modules.supervision_requests?.length || 0} />
+                  {participantDossier.modules.map((item) => <DossierMetric key={item.key} label={item.label} value={item.count} />)}
                 </div>
-                <DossierModuleSection title="测评记录" items={participantDossier.modules.assessments} primaryKeys={["worksheet_title", "total_score", "created_at"]} />
-                <DossierModuleSection title="情绪日记" items={participantDossier.modules.diaries} primaryKeys={["scene", "event_description", "parent_emotion", "created_at"]} />
-                <DossierModuleSection title="训练打卡" items={participantDossier.modules.checkins} primaryKeys={["card_id", "completed", "emotion_before", "emotion_after", "helpfulness_rating", "created_at"]} />
-                <DossierModuleSection title="项目练习" items={participantDossier.modules.program_entries} primaryKeys={["program_title", "session_no", "reflection", "created_at"]} />
-                <DossierModuleSection title="关系试点报名" items={participantDossier.modules.relationship_enrollments} primaryKeys={["status", "review_status", "created_at"]} />
-                <DossierModuleSection title="关系试点任务" items={participantDossier.modules.relationship_tasks} primaryKeys={["task_type", "narration", "risk_level", "review_status", "created_at"]} />
-                <DossierModuleSection title="关系阶段报告" items={participantDossier.modules.relationship_reports} primaryKeys={["version", "status", "confirmed_at", "created_at"]} />
-                <DossierModuleSection title="人工支持" items={participantDossier.modules.supervision_requests} primaryKeys={["source_title", "message", "supervisor_reply", "status", "created_at"]} />
-                <DossierModuleSection title="消息与阶段反馈" items={participantDossier.modules.messages} primaryKeys={["title", "body", "status", "created_at"]} />
+                <div className="dossierModuleTabs" aria-label="参与者档案标签">
+                  {participantDossier.modules.map((item) => (
+                    <button key={item.key} type="button" className={participantModule?.module === item.key ? "active" : ""} onClick={() => void loadParticipantModule(item.key)}>
+                      {item.label} {item.count}
+                    </button>
+                  ))}
+                </div>
+                {participantModuleStatus === "loading" ? <div className="emptyState">正在按需读取当前标签…</div> : null}
+                {participantModule ? (
+                  <>
+                    <DossierModuleSection title={participantModule.module_label} items={participantModule.items} primaryKeys={["title", "worksheet_title", "scene", "card_id", "status", "created_at"]} />
+                    {participantModule.has_more ? <button type="button" className="secondaryButton" onClick={() => void loadParticipantModule(participantModule.module, participantModule.page + 1)}>加载下一页</button> : null}
+                    <p className="analysisBoundary">{participantModule.boundary_notice}</p>
+                  </>
+                ) : <div className="emptyState">选择一个标签后才会读取详情，避免一次加载全部长文本。</div>}
                 <p className="analysisBoundary">{participantDossier.boundary_notice}</p>
               </>
             ) : (

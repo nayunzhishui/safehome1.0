@@ -87,6 +87,9 @@ import type {
   RelationshipPilotEnrollment,
   RelationshipScreeningReport,
   ResearchOperationsSnapshot,
+  ResearchParticipantDossier,
+  ResearchParticipantModuleKey,
+  ResearchParticipantModulePage,
   ResearchParticipantPage,
   ResearchParticipantSummary,
   ResearchQueuePage,
@@ -118,24 +121,11 @@ import type { AuthUser } from "./authState";
 import { getStoredAuthUser, getToken } from "./authState";
 import { clearAnonymousUserId, getAnonymousUserId } from "./userIdentity";
 
-export type { ResearchParticipantSummary } from "../../../../shared/types/api";
+export type { ResearchParticipantDossier, ResearchParticipantModuleKey, ResearchParticipantModulePage, ResearchParticipantSummary } from "../../../../shared/types/api";
 
 export interface SafeHomeApiClientOptions {
   baseUrl?: string;
   defaultUserId?: string;
-}
-
-export interface ResearchParticipantDossier {
-  participant: {
-    user_id: string;
-    nickname?: string | null;
-    role: string;
-    created_at?: string;
-    updated_at?: string;
-  };
-  modules: Record<string, Array<Record<string, unknown>>>;
-  audit_summary: { related_event_count: number };
-  boundary_notice: string;
 }
 
 export class SafeHomeApiError extends Error {
@@ -590,6 +580,18 @@ export class SafeHomeApiClient {
     return this.requestData(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}`, {
       headers: this.adminHeaders(adminToken),
     });
+  }
+
+  getResearchParticipantModule(
+    userId: string,
+    moduleKey: ResearchParticipantModuleKey,
+    params: { page?: number; page_size?: number; date_from?: string; date_to?: string; type?: string; status?: string; batch?: string } = {},
+    adminToken?: string,
+  ): Promise<ResearchParticipantModulePage> {
+    return this.requestData(
+      this.withQuery(`${API_ENDPOINTS.researchParticipants}/${encodeURIComponent(userId)}/modules/${encodeURIComponent(moduleKey)}`, params),
+      { headers: this.adminHeaders(adminToken) },
+    );
   }
 
   getResearchOperations(adminToken?: string): Promise<ResearchOperationsSnapshot> {

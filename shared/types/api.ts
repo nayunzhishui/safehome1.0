@@ -61,6 +61,7 @@ export interface ResearchOperationsSnapshot {
 
 export interface ResearchParticipantSummary {
   user_id: ID;
+  anonymous_id: string;
   nickname?: string | null;
   role: UserRole | "user";
   last_activity_at?: ISODateTime | null;
@@ -71,6 +72,46 @@ export interface ResearchParticipantSummary {
   relationship_count: number;
   supervision_count: number;
   unread_message_count: number;
+}
+
+export type ResearchParticipantModuleKey =
+  | "assessments" | "measurements" | "diaries" | "training" | "stage_reports"
+  | "relationship_pilot" | "project_tests" | "messages" | "human_support" | "timeline";
+
+export interface ResearchParticipantModuleDescriptor {
+  key: ResearchParticipantModuleKey;
+  label: string;
+  count: number;
+  sensitive: boolean;
+}
+
+export interface ResearchParticipantDossier {
+  participant: {
+    user_id: ID;
+    anonymous_id: string;
+    nickname?: string | null;
+    role: UserRole | "user";
+    status?: string;
+    created_at?: ISODateTime;
+    updated_at?: ISODateTime;
+  };
+  enrollment?: Record<string, unknown> | null;
+  assignment?: Record<string, unknown> | null;
+  modules: ResearchParticipantModuleDescriptor[];
+  audit_summary: { related_event_count: number };
+  boundary_notice: string;
+}
+
+export interface ResearchParticipantModulePage extends ListResponse<Record<string, unknown>> {
+  module: ResearchParticipantModuleKey;
+  module_label: string;
+  total: number;
+  page: number;
+  page_size: number;
+  has_more: boolean;
+  sensitive: boolean;
+  timezone: "Asia/Shanghai";
+  boundary_notice: string;
 }
 
 export interface ResearchParticipantPage extends ListResponse<ResearchParticipantSummary> {

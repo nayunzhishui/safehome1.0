@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 234,
+  "operation_count": 235,
   "capability_count": 41,
   "capabilities": [
     {
@@ -1534,7 +1534,7 @@
       "feature_flags": [],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 7)",
+        "backend/tests (operation coverage: 8)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1544,6 +1544,7 @@
       "operation_ids": [
         "research_workspace.act_on_research_work_item.post",
         "research_workspace.get_participant_dossier.get",
+        "research_workspace.get_participant_module.get",
         "research_workspace.get_research_operations.get",
         "research_workspace.get_research_queue.get",
         "research_workspace.get_research_work_item.get",

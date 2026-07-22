@@ -2171,3 +2171,9 @@ relationship_initiation_intention_action
 - 加载失败只在界面显示`request_id`；复制诊断可包含客户端、服务和构建版本，但不包含token、请求/响应正文或参与者文本。
 
 数据库不新增表/列，继续复用`research_work_items`、`relationship_pilot_enrollments`、`messages`和`audit_logs`。回滚可恢复原单页WXML/WXSS/JS及旧`limit`调用；新增分页返回字段为兼容性追加，无需回滚数据。临时展示全权限仍显示显著警告且不能作为正式角色验收证据。
+## T36-F05 参与者档案按需读取（2026-07-22）
+
+- `GET /api/research/participants`：最小列表，支持`q/page/page_size`，返回匿名ID、活动数量、`total/has_more`，不返回填写原文。
+- `GET /api/research/participants/<user_id>`：档案摘要，返回参与者匿名信息、最近报名/分配状态、十个模块目录和数量，不返回各模块长文本。
+- `GET /api/research/participants/<user_id>/modules/<module_key>`：单模块分页。`module_key`为`assessments/measurements/diaries/training/stage_reports/relationship_pilot/project_tests/messages/human_support/timeline`；支持`page/page_size/date_from/date_to/type/status/batch`。
+- 三个接口都执行角色、研究授权和对象范围校验；敏感模块查看写审计。错误仍使用统一包络和`request_id`。

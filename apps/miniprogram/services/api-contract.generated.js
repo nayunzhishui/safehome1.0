@@ -12846,6 +12846,92 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "research_workspace.get_participant_module.get",
+    "method": "GET",
+    "path": "/api/research/participants/<user_id>/modules/<module_key>",
+    "handler": "research_workspace.get_participant_module",
+    "module": "routes.research_workspace",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "module_key",
+        "user_id"
+      ],
+      "query_parameters": [
+        "batch",
+        "date_from",
+        "date_to",
+        "page",
+        "page_size",
+        "status",
+        "type"
+      ],
+      "body_fields": [
+        "boundary_notice",
+        "count",
+        "sensitive"
+      ],
+      "headers": [],
+      "pagination": {
+        "page": "page",
+        "page_size": "page_size",
+        "max_page_size": 100,
+        "response": [
+          "items",
+          "page",
+          "page_size",
+          "total",
+          "has_more"
+        ],
+        "deprecated_aliases": []
+      },
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.research_workspace.get_participant_module.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "research_workspace.get_research_queue.get",
     "method": "GET",
     "path": "/api/research/queues",

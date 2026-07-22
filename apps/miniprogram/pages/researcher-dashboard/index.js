@@ -23,6 +23,17 @@ const QUEUES = [
 const PRIORITY_ORDER = { urgent: 0, attention: 1, routine: 2 };
 const PRIORITY_LABELS = { urgent: "优先处理", attention: "需要关注", routine: "常规" };
 const DRAFT_PREFIX = "researcher_workspace_draft_v1:";
+const MODULE_PRIMARY_FIELDS = ["title", "worksheet_title", "scene", "card_id", "message_type", "task_type", "status", "created_at"];
+
+function moduleRows(items) {
+  return (items || []).map((item) => ({
+    ...item,
+    displayLines: MODULE_PRIMARY_FIELDS
+      .filter((key) => item[key] !== undefined && item[key] !== null && item[key] !== "")
+      .slice(0, 4)
+      .map((key) => `${key === "created_at" ? "时间" : key}：${String(item[key]).slice(0, 180)}`),
+  }));
+}
 
 function emptyOperations() {
   return {
@@ -133,6 +144,9 @@ Page({
     participantItems: [],
     participantPage: 1,
     participantHasMore: false,
+    participantDossier: null,
+    participantModule: null,
+    participantModuleLoading: false,
     pilotLoading: false,
     pilotError: "",
     pilotDiagnostic: null,
@@ -201,7 +215,10 @@ Page({
   },
 
   async refreshActiveWorkspace() {
-    if (this.data.activeWorkspace === "participants") return this.loadParticipants(true);
+    if (this.data.activeWorkspace === "participants") {
+      if (this.data.participantDossier && this.data.participantModule) return this.loadParticipantModule({ currentTarget: { dataset: { key: this.data.participantModule.module, page: 1 } } });
+      return this.loadParticipants(true);
+    }
     if (this.data.activeWorkspace === "pilots") return Promise.all([this.loadWorkbench(), this.loadDashboard()]);
     return this.loadWorkbench();
   },
@@ -285,6 +302,7 @@ Page({
       const incoming = (payload.items || []).map((item) => ({
         ...item,
         displayName: item.nickname || item.user_id || "匿名参与者",
+        anonymousId: item.anonymous_id || item.user_id,
         displayInitial: String(item.nickname || item.user_id || "匿").slice(0, 1),
         activityCount: Number(item.assessment_count || 0) + Number(item.diary_count || 0) + Number(item.checkin_count || 0) + Number(item.program_count || 0),
       }));
@@ -301,6 +319,40 @@ Page({
 
   retryParticipants() { return this.loadParticipants(true); },
   loadMoreParticipants() { return this.loadParticipants(false); },
+
+  async selectParticipantDossier(event) {
+    const userId = event.currentTarget.dataset.id;
+    this.setData({ participantLoading: true, participantError: "", participantDossier: null, participantModule: null });
+    try {
+      const participantDossier = await api.getResearchParticipant(userId);
+      this.setData({ participantLoading: false, participantDossier });
+    } catch (error) {
+      this.setData({ participantLoading: false, participantError: error.message || "参与者档案暂时无法读取。", participantDiagnostic: buildErrorDiagnostic(error) });
+    }
+  },
+
+  closeParticipantDossier() {
+    this.setData({ participantDossier: null, participantModule: null });
+  },
+
+  async loadParticipantModule(event) {
+    if (!this.data.participantDossier) return;
+    const moduleKey = event.currentTarget.dataset.key;
+    const requestedPage = Number(event.currentTarget.dataset.page || 1);
+    this.setData({ participantModuleLoading: true, participantError: "" });
+    try {
+      const payload = await api.getResearchParticipantModule(this.data.participantDossier.participant.user_id, moduleKey, { page: requestedPage, page_size: 10 });
+      const items = moduleRows(payload.items);
+      this.setData({
+        participantModuleLoading: false,
+        participantModule: requestedPage > 1 && this.data.participantModule && this.data.participantModule.module === moduleKey
+          ? { ...payload, items: [...this.data.participantModule.items, ...items] }
+          : { ...payload, items },
+      });
+    } catch (error) {
+      this.setData({ participantModuleLoading: false, participantError: error.message || "该档案标签暂时无法读取。", participantDiagnostic: buildErrorDiagnostic(error) });
+    }
+  },
 
   async loadDashboard() {
     this.setData({ pilotLoading: true, pilotError: "", pilotDiagnostic: null });

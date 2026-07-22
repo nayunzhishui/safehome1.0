@@ -379,3 +379,23 @@
 @media (prefers-reduced-motion: reduce) {
   .state-orbit { border-top-color: var(--safe-primary-soft); }
 }
+/* T36-F05：参与者详情按标签加载，保持移动端低认知负荷。 */
+.participant-card {
+  min-height: 112rpx;
+}
+
+.participant-dossier-panel {
+  margin-top: 24rpx;
+}
+
+.module-result-list {
+  margin-top: 20rpx;
+}
+
+.module-result-card {
+  margin-top: 16rpx;
+  padding: 20rpx;
+  border: 1rpx solid #dce5df;
+  border-radius: 20rpx;
+  background: #fbfdfb;
+}
