@@ -15,16 +15,30 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_USERNAME = "safehome_researcher_01"
 DEFAULT_BASE_URL = "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com"
+ALLOWED_BOOTSTRAP_ROLES = {"researcher", "supervisor", "admin"}
 
 
-def prepare(receipt_path: Path | None = None) -> Path:
+def prepare(
+    receipt_path: Path | None = None,
+    *,
+    username: str = DEFAULT_USERNAME,
+    role: str = "researcher",
+    nickname: str | None = None,
+) -> Path:
+    username = str(username or "").strip()
+    role = str(role or "").strip()
+    if len(username) < 3:
+        raise ValueError("账号名至少需要3个字符。")
+    if role not in ALLOWED_BOOTSTRAP_ROLES:
+        raise ValueError("初始化脚本只允许researcher、supervisor或admin角色。")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    target = receipt_path or ROOT / ".codex_tmp" / f"researcher-account-{timestamp}.json"
+    account_kind = "admin" if role == "admin" else role
+    target = receipt_path or ROOT / ".codex_tmp" / f"{account_kind}-account-{timestamp}.json"
     payload = {
-        "username": DEFAULT_USERNAME,
+        "username": username,
         "password": secrets.token_urlsafe(20),
-        "role": "researcher",
-        "nickname": "安心陪伴研究者",
+        "role": role,
+        "nickname": nickname or ("安心陪伴管理员" if role == "admin" else "安心陪伴研究者"),
         "status": "pending_cloud_provision",
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "security_notice": "一次性凭据文件，不得提交 Git；首次登录后应轮换密码。",
@@ -74,15 +88,23 @@ def main() -> None:
     subparsers = parser.add_subparsers(dest="command", required=True)
     prepare_parser = subparsers.add_parser("prepare")
     prepare_parser.add_argument("--receipt", type=Path)
+    prepare_parser.add_argument("--username", default=DEFAULT_USERNAME)
+    prepare_parser.add_argument("--role", choices=sorted(ALLOWED_BOOTSTRAP_ROLES), default="researcher")
+    prepare_parser.add_argument("--nickname")
     apply_parser = subparsers.add_parser("apply")
     apply_parser.add_argument("--receipt", type=Path, required=True)
     apply_parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     args = parser.parse_args()
 
     if args.command == "prepare":
-        path = prepare(args.receipt)
+        path = prepare(
+            args.receipt,
+            username=args.username,
+            role=args.role,
+            nickname=args.nickname,
+        )
         print(f"receipt={path}")
-        print(f"username={DEFAULT_USERNAME}")
+        print(f"username={args.username}")
         print("password=stored_in_receipt_only")
         return
 

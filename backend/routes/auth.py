@@ -25,6 +25,7 @@ bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 CLOUDBASE_ACCESS_TOKEN_PATH = "/.tencentcloudbase/wx/cloudbase_access_token"
 _WECHAT_ACCESS_TOKEN_CACHE: dict[str, float | str] = {"appid": "", "token": "", "expires_at": 0.0}
 _CLOUDBASE_OPENID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{6,128}$")
+_CLOUDBASE_MINIPROGRAM_SOURCES = {"wx_devtools", "wx_client"}
 
 
 class WechatAuthError(ValueError):
@@ -54,17 +55,62 @@ def _trusted_cloudbase_openid() -> str | None:
     the trusted gateway.
     """
 
-    if not current_app.config.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", False):
-        return None
     openid = str(request.headers.get("X-WX-OPENID") or "").strip()
     source = str(request.headers.get("X-WX-SOURCE") or "").strip()
-    if source != "wx-cloudbase" or not _CLOUDBASE_OPENID_PATTERN.fullmatch(openid):
+    request_appid = str(request.headers.get("X-WX-APPID") or "").strip()
+    explicit_trust = bool(current_app.config.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", False))
+
+    if not explicit_trust:
+        return None
+    if not _CLOUDBASE_OPENID_PATTERN.fullmatch(openid):
+        return None
+    if source not in _CLOUDBASE_MINIPROGRAM_SOURCES:
+        return None
+    configured_appid = os.environ.get("WECHAT_APPID", "").strip()
+    if configured_appid and (
+        not request_appid or not hmac.compare_digest(configured_appid, request_appid)
+    ):
         return None
     return openid
 
 
 def _read_json_response(response) -> dict:
     return json.loads(response.read().decode("utf-8"))
+
+
+def _log_wechat_transport_failure(operation: str, exc: Exception) -> None:
+    """Log only transport metadata; never log URLs, codes, AppSecret or response bodies."""
+
+    upstream_status = exc.code if isinstance(exc, HTTPError) else None
+    reason = exc.reason if isinstance(exc, URLError) else None
+    current_app.logger.warning(
+        "wechat_transport_failure operation=%s kind=%s upstream_status=%s reason_type=%s",
+        operation,
+        type(exc).__name__,
+        upstream_status,
+        type(reason).__name__ if reason is not None else None,
+    )
+
+
+def _wechat_transport_error(operation: str, exc: Exception) -> WechatAuthError:
+    _log_wechat_transport_failure(operation, exc)
+    if isinstance(exc, HTTPError):
+        return WechatAuthError(
+            "wechat_upstream_http_error",
+            "微信服务拒绝了服务器连接，请稍后重试或使用账号密码登录。",
+            502,
+        )
+    if isinstance(exc, json.JSONDecodeError):
+        return WechatAuthError(
+            "wechat_upstream_invalid_response",
+            "微信服务返回了无法识别的结果，请稍后重试或使用账号密码登录。",
+            502,
+        )
+    return WechatAuthError(
+        "wechat_network_unavailable",
+        "服务器暂时无法连接微信服务，请稍后重试或使用账号密码登录。",
+        502,
+    )
 
 
 def _wechat_session_from_code(code: str) -> dict:
@@ -80,10 +126,14 @@ def _wechat_session_from_code(code: str) -> dict:
             }
         )
         try:
-            with urlopen(f"https://api.weixin.qq.com/sns/jscode2session?{query}", timeout=8) as response:
+            api_request = Request(
+                f"https://api.weixin.qq.com/sns/jscode2session?{query}",
+                headers={"Accept": "application/json", "User-Agent": "SafeHome-WeChat-Auth/1.0"},
+            )
+            with urlopen(api_request, timeout=8) as response:
                 payload = _read_json_response(response)
         except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
-            raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 502) from exc
+            raise _wechat_transport_error("jscode2session", exc) from exc
         if payload.get("errcode"):
             raise WechatAuthError("wechat_login_failed", "微信登录凭证已失效，请重新尝试。", 400)
         if not payload.get("openid"):
@@ -129,10 +179,14 @@ def _standard_wechat_access_token() -> str | None:
 
     query = urlencode({"grant_type": "client_credential", "appid": appid, "secret": secret})
     try:
-        with urlopen(f"https://api.weixin.qq.com/cgi-bin/token?{query}", timeout=8) as response:
+        api_request = Request(
+            f"https://api.weixin.qq.com/cgi-bin/token?{query}",
+            headers={"Accept": "application/json", "User-Agent": "SafeHome-WeChat-Auth/1.0"},
+        )
+        with urlopen(api_request, timeout=8) as response:
             payload = _read_json_response(response)
     except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
-        raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 502) from exc
+        raise _wechat_transport_error("access_token", exc) from exc
     token = str(payload.get("access_token") or "").strip()
     if not token:
         raise WechatAuthError("wechat_phone_config_invalid", "手机号快捷登录暂不可用，请使用其他登录方式。", 503)
@@ -190,7 +244,7 @@ def _wechat_phone_from_code(code: str) -> dict:
         with urlopen(api_request, timeout=8) as response:
             payload = _read_json_response(response)
     except (HTTPError, URLError, OSError, json.JSONDecodeError) as exc:
-        raise WechatAuthError("wechat_service_unavailable", "微信服务暂时没有响应，请稍后重试。", 502) from exc
+        raise _wechat_transport_error("getuserphonenumber", exc) from exc
     if payload.get("errcode") not in {None, 0}:
         raise WechatAuthError("wechat_phone_exchange_failed", "手机号授权已失效，请重新授权后再试。", 400)
     phone_info = payload.get("phone_info") or payload.get("phoneInfo") or {}
@@ -216,16 +270,19 @@ def auth_capabilities():
         os.environ.get("WECHAT_APPID", "").strip()
         and os.environ.get("WECHAT_SECRET", "").strip()
     )
-    cloudbase_identity_available = _trusted_cloudbase_openid() is not None
+    cloudbase_identity_configured = bool(
+        current_app.config.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", False)
+    )
+    cloudbase_request_identity = _trusted_cloudbase_openid() is not None
     cloudbase_phone_token_available = _cloudbase_access_token() is not None
     return ok(
         {
             "account_password": {"available": True},
             "wechat_login": {
-                "available": bool(cloudbase_identity_available or standard_wechat_configured),
+                "available": bool(cloudbase_request_identity or cloudbase_identity_configured or standard_wechat_configured),
                 "mode": (
                     "cloudbase_identity"
-                    if cloudbase_identity_available
+                    if cloudbase_request_identity or cloudbase_identity_configured
                     else "jscode2session"
                     if standard_wechat_configured
                     else "not_configured"

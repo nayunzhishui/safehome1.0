@@ -6,7 +6,13 @@ import json
 
 from flask import Blueprint, Response, request
 
-from routes.auth_utils import AuthError, auth_error_response, require_login, require_role
+from routes.auth_utils import (
+    AuthError,
+    auth_error_response,
+    elevate_actor_for_showcase_researcher_platform,
+    require_login,
+    require_role,
+)
 from routes.utils import fail, ok
 from services.relationship_enrollment_service import create_enrollment, get_enrollment, list_enrollments
 from services.relationship_growth_service import create_longitudinal_entry, get_growth, researcher_dashboard
@@ -21,7 +27,8 @@ bp = Blueprint("relationship_pilot", __name__, url_prefix="/api/relationship-pil
 
 def _actor():
     try:
-        return require_login(allow_legacy_admin=True), None
+        actor = require_login(allow_legacy_admin=True)
+        return elevate_actor_for_showcase_researcher_platform(actor), None
     except AuthError as exc:
         return None, auth_error_response(exc)
 

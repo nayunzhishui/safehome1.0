@@ -127,10 +127,11 @@ def list_checkins():
         query_params.append(completed_filter)
 
     with get_connection() as conn:
-        total = conn.execute(
-            f"SELECT COUNT(*) FROM checkins WHERE {where_sql}",
+        total_row = conn.execute(
+            f"SELECT COUNT(*) AS count FROM checkins WHERE {where_sql}",
             tuple(query_params),
-        ).fetchone()[0]
+        ).fetchone()
+        total = int(total_row["count"] if total_row else 0)
         rows = conn.execute(
             f"""
             SELECT * FROM checkins

@@ -225,7 +225,9 @@ Page({
       selectedMetricLabel: metric.label,
       selectedPoints: points,
       trendText,
-    }, () => this.drawChart(group.key, points));
+    }, () => {
+      if (points.length >= 2) this.drawChart(group.key, points);
+    });
   },
 
   selectCurveGroup(event) {
@@ -241,7 +243,9 @@ Page({
   selectSection(event) {
     const activeSection = event.currentTarget.dataset.section;
     this.setData({ activeSection }, () => {
-      if (activeSection === "curve") this.drawChart(this.data.selectedGroup, this.data.selectedPoints);
+      if (activeSection === "curve" && this.data.selectedPoints.length >= 2) {
+        this.drawChart(this.data.selectedGroup, this.data.selectedPoints);
+      }
     });
   },
 

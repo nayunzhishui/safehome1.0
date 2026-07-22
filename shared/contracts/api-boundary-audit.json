@@ -69,37 +69,37 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:250",
+      "location": "backend/routes/auth.py:253",
       "handler": "register"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:292",
+      "location": "backend/routes/auth.py:295",
       "handler": "login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:331",
+      "location": "backend/routes/auth.py:334",
       "handler": "wechat_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:400",
+      "location": "backend/routes/auth.py:403",
       "handler": "phone_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:464",
+      "location": "backend/routes/auth.py:467",
       "handler": "bind_phone"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:512",
+      "location": "backend/routes/auth.py:515",
       "handler": "admin_create_account"
     },
     {

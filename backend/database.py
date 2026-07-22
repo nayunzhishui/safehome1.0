@@ -90,6 +90,7 @@ REQUIRED_HEALTH_TABLES = [
 CURRENT_SCHEMA_VERSION = "2026_07_21_023"
 CURRENT_SCHEMA_NAME = "participant_journey_feedback_recommendation"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
+MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
     "id",
     "version",
@@ -292,6 +293,11 @@ MYSQL_VARCHAR_COLUMNS = {
     "knowledge_version",
     "message_id",
     "request_hash",
+    "request_id",
+    "case_id",
+    "verified_at",
+    "job_id",
+    "available_at",
     "severity",
     "outcome",
     "provider",
@@ -429,9 +435,14 @@ def _mysql_column_line(line: str) -> str:
     if "PRIMARY KEY" in rest:
         column_type = "VARCHAR(128)"
     elif column in MYSQL_VARCHAR_COLUMNS:
-        column_type = "VARCHAR(255)"
+        column_type = f"VARCHAR({MYSQL_INDEXABLE_VARCHAR_LENGTH})"
     elif column.endswith("_json"):
         column_type = "LONGTEXT"
+    elif re.search(r"\bDEFAULT\b", rest, re.IGNORECASE):
+        # MySQL 5.7 rejects defaults on TEXT/BLOB columns. Scalar TEXT fields
+        # with defaults are bounded status/config values, so keep the default
+        # while using an index-friendly VARCHAR representation.
+        column_type = f"VARCHAR({MYSQL_INDEXABLE_VARCHAR_LENGTH})"
     else:
         column_type = "TEXT"
 
@@ -674,8 +685,9 @@ def ensure_mysql_index_columns(conn) -> None:
                 continue
             row = conn.execute(
                 """
-                SELECT data_type AS data_type, is_nullable AS is_nullable
-                FROM information_schema.columns
+            SELECT data_type AS data_type, is_nullable AS is_nullable
+                 , character_maximum_length AS character_maximum_length
+            FROM information_schema.columns
                 WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?
                 LIMIT 1
                 """,
@@ -683,11 +695,18 @@ def ensure_mysql_index_columns(conn) -> None:
             ).fetchone()
             if not row:
                 continue
-            if str(row["data_type"]).lower() not in {"tinytext", "text", "mediumtext", "longtext"}:
+            data_type = str(row["data_type"]).lower()
+            current_length = int(row.get("character_maximum_length") or 0)
+            if data_type not in {"tinytext", "text", "mediumtext", "longtext", "varchar"}:
+                continue
+            if data_type == "varchar" and current_length <= MYSQL_INDEXABLE_VARCHAR_LENGTH:
                 continue
             null_clause = "NOT NULL" if row["is_nullable"] == "NO" else "NULL"
             # table/column come from parsed internal INDEX_SQL targets and MYSQL_VARCHAR_COLUMNS allowlist.
-            conn.execute(f"ALTER TABLE {table} MODIFY COLUMN {column} VARCHAR(255) {null_clause}")
+            conn.execute(
+                f"ALTER TABLE {table} MODIFY COLUMN {column} "
+                f"VARCHAR({MYSQL_INDEXABLE_VARCHAR_LENGTH}) {null_clause}"
+            )
 
 
 def ensure_mysql_content_text_capacity(conn) -> None:

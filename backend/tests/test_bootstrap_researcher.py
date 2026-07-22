@@ -37,3 +37,29 @@ def test_apply_researcher_receipt_requires_admin_token(tmp_path):
         assert "ADMIN_EXPORT_TOKEN" in str(exc)
     else:
         raise AssertionError("missing admin token must block researcher provisioning")
+
+
+def test_prepare_supports_explicit_admin_account_without_logging_password(tmp_path):
+    module = load_module()
+    receipt_path = module.prepare(
+        tmp_path / "admin.json",
+        username="safehome1.0",
+        role="admin",
+        nickname="安心陪伴管理员",
+    )
+    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+
+    assert payload["username"] == "safehome1.0"
+    assert payload["role"] == "admin"
+    assert payload["nickname"] == "安心陪伴管理员"
+    assert len(payload["password"]) >= 20
+
+
+def test_prepare_rejects_public_participant_roles(tmp_path):
+    module = load_module()
+    try:
+        module.prepare(tmp_path / "parent.json", username="unsafe-parent", role="parent")
+    except ValueError as exc:
+        assert "只允许" in str(exc)
+    else:
+        raise AssertionError("bootstrap must not create participant roles")

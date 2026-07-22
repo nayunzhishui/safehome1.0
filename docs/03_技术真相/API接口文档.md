@@ -1378,7 +1378,7 @@ Invoke-WebRequest `
 
 ### `POST /api/auth/wechat-login`
 
-用途：微信小程序登录或绑定用户。仅当云托管部署显式设置 `TRUST_CLOUDBASE_IDENTITY_HEADERS=1` 时，后端读取 `wx.cloud.callContainer` 注入的 `X-WX-OPENID` 和固定值 `X-WX-SOURCE=wx-cloudbase`；默认关闭该信任路径，防止普通公网请求伪造身份头。非云托管环境使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。开发环境在两者都不可用时保留稳定兜底 openid。
+用途：微信小程序登录或绑定用户。当前生产默认只使用 `code + WECHAT_APPID/WECHAT_SECRET` 调用 `jscode2session`。只有部署显式设置 `TRUST_CLOUDBASE_IDENTITY_HEADERS=1` 时，后端才允许读取 CloudBase 注入的 `X-WX-OPENID`，并同时要求 `X-WX-SOURCE` 为 `wx_devtools`/`wx_client`、OpenID格式合法，以及存在服务端AppID时请求AppID完全匹配。2026-07-22 公网负向探针证明默认公网域名会透传调用者自填的 `X-WX-*` 头，因此只要服务仍开放该公网入口，就必须保持可信头开关为0；AppID匹配不能证明请求来自CloudBase。只有关闭公网入口、改为仅 `callContainer`，或拆分独立的小程序私有服务并重新完成负向验收后，才可考虑开启可信头。开发环境在正式身份路径都不可用时保留稳定兜底 openid。
 
 请求字段：
 
@@ -1391,7 +1391,7 @@ Invoke-WebRequest `
 
 返回：`token`、`user`、`dev_fallback`、`identity_source`。`identity_source` 可为 `cloudbase_header`、`jscode2session` 或 `development_fallback`。
 
-生产边界：接口不会把 `WECHAT_APPID`、`WECHAT_SECRET` 或微信服务端原始错误暴露给用户；停用账号不能通过微信重新登录。
+生产边界：接口不会把 `WECHAT_APPID`、`WECHAT_SECRET`、登录 code 或微信服务端原始响应暴露给用户或普通日志；传输故障日志只记录操作名、异常类型、上游HTTP状态和底层原因类型。停用账号不能通过微信重新登录。
 
 ### `POST /api/auth/admin-create-account`
 

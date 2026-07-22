@@ -316,7 +316,10 @@ def create_app(
         if request.method == "GET" and request.path in LEGACY_LIMIT_PATHS and "limit" in request.args:
             response.headers["Deprecation"] = "true"
             response.headers["Sunset"] = "Sat, 31 Oct 2026 00:00:00 GMT"
-            response.headers["Link"] = '</docs/03_技术真相/API机器契约.md>; rel="deprecation"'
+            # CloudBase/Gunicorn rejects the former repository-relative Link
+            # header as an invalid HTTP header and turns an otherwise valid
+            # 200 response into a gateway 502. Keep the standard lifecycle
+            # headers and publish migration guidance in the API contract.
         return response
 
     @app.errorhandler(Exception)

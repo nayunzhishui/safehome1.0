@@ -13080,6 +13080,7 @@ export const GENERATED_API_ENDPOINTS = [
         "open_programs",
         "open_training_cards",
         "read_only_role_bypass",
+        "researcher_platform_full_access",
         "version"
       ],
       "headers": [],

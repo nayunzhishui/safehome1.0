@@ -58,12 +58,16 @@ Page({
     messageBody: "",
     sendingMessage: false,
     sendingFeedback: false,
+    developmentFullAccess: false,
   },
 
   async onLoad() {
     if (!requireLogin({ redirectUrl: "/pages/researcher-dashboard/index" })) return;
     const user = getAuthUser();
     const showcase = await api.getShowcaseAccess().catch(() => ({ enabled: false }));
+    this.setData({
+      developmentFullAccess: Boolean(showcase.researcher_platform_full_access),
+    });
     if (!showcase.enabled && (!user || !["researcher", "admin", "supervisor"].includes(user.role))) {
       this.setData({ loading: false, errorMessage: "当前账号没有研究者权限。" });
       return;

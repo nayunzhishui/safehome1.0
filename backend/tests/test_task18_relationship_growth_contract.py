@@ -38,3 +38,21 @@ def test_relationship_growth_page_uses_progressive_disclosure_and_supportive_cop
     assert "变化记录，不是疗效证明" in wxml
     assert "不合并成总分" in wxml
     assert "section-nav__item--active" in wxss
+
+
+def test_relationship_growth_page_matches_dashboard_visual_hierarchy():
+    js = (ROOT / "apps/miniprogram/pages/relationship-growth/index.js").read_text(encoding="utf-8")
+    wxml = (ROOT / "apps/miniprogram/pages/relationship-growth/index.wxml").read_text(encoding="utf-8")
+    wxss = (ROOT / "apps/miniprogram/pages/relationship-growth/index.wxss").read_text(encoding="utf-8")
+    config = (ROOT / "apps/miniprogram/pages/relationship-growth/index.json").read_text(encoding="utf-8")
+
+    assert wxml.count('class="growth-summary-icon"') == 3
+    assert 'role="tablist"' in wxml
+    assert 'role="tab"' in wxml
+    assert 'aria-selected="{{activeSection === item.key}}"' in wxml
+    assert 'wx:if="{{selectedPoints.length >= 2}}" canvas-id="growthChart"' in wxml
+    assert "这里不会根据单次记录判断变化" in wxml
+    assert "position: sticky" in wxss
+    assert "font-variant-numeric: tabular-nums" in wxss
+    assert "if (points.length >= 2) this.drawChart" in js
+    assert '"navigationBarTitleText": "关系探索成长仪表盘"' in config

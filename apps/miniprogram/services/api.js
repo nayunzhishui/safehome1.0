@@ -34,6 +34,9 @@ const ERROR_MESSAGES_BY_CODE = {
   wechat_phone_exchange_failed: "手机号授权已失效，请重新授权后再试。",
   wechat_phone_invalid: "微信没有返回有效手机号，请重新授权。",
   wechat_service_unavailable: "微信服务暂时没有响应，请稍后重试。",
+  wechat_network_unavailable: "服务器暂时无法连接微信服务，请稍后重试或使用账号密码登录。",
+  wechat_upstream_http_error: "微信服务拒绝了服务器连接，请稍后重试或使用账号密码登录。",
+  wechat_upstream_invalid_response: "微信服务返回异常，请稍后重试或使用账号密码登录。",
   phone_account_conflict: "该手机号已关联其他账号，请使用原账号登录。",
 };
 

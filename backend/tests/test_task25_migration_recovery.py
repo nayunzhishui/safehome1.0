@@ -53,8 +53,8 @@ def test_task25_mysql_schema_contract_contains_portable_work_item_columns(monkey
     models = importlib.import_module("models")
     statement = next(sql for sql in models.SCHEMA_SQL if "CREATE TABLE IF NOT EXISTS research_work_items" in sql)
     converted = database.mysqlize_schema_statement(statement)
-    assert "queue_type VARCHAR(255)" in converted
-    assert "source_id VARCHAR(255)" in converted
+    assert "queue_type VARCHAR(191)" in converted
+    assert "source_id VARCHAR(191)" in converted
     assert "version INTEGER NOT NULL DEFAULT 0" in converted
     assert "UNIQUE(queue_type, source_type, source_id)" in converted
 

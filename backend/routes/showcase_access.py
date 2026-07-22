@@ -16,6 +16,7 @@ def get_showcase_access():
         {
             "enabled": bool(payload.get("enabled")),
             "read_only_role_bypass": bool(payload.get("read_only_role_bypass")),
+            "researcher_platform_full_access": bool(payload.get("researcher_platform_full_access")),
             "open_programs": bool(payload.get("open_programs")),
             "allow_program_participation": bool(payload.get("allow_program_participation")),
             "open_training_cards": bool(payload.get("open_training_cards")),

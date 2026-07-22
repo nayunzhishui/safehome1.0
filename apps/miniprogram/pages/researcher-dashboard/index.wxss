@@ -3,6 +3,10 @@
 .dashboard-kicker { color: var(--safe-primary-deep); font-size: 22rpx; font-weight: 800; }
 .dashboard-title { margin-top: 8rpx; color: var(--safe-title); font-size: 36rpx; font-weight: 900; }
 .dashboard-copy { margin-top: 10rpx; color: var(--safe-text); font-size: 24rpx; line-height: 1.65; }
+.development-access-banner { display: grid; gap: 6rpx; padding: 18rpx 20rpx; border: 1rpx solid rgba(184, 127, 45, 0.36); border-radius: var(--safe-radius-sm); background: var(--safe-orange-soft); }
+.development-access-title, .development-access-copy { display: block; }
+.development-access-title { color: #7a4c13; font-size: 23rpx; font-weight: 850; }
+.development-access-copy { color: #6a5439; font-size: 21rpx; line-height: 1.6; }
 .dossier-tabs { white-space: nowrap; }
 .dossier-tab { display: inline-block; width: auto; margin-right: 12rpx; padding: 12rpx 18rpx; border: 1rpx solid var(--safe-border); border-radius: 999rpx; background: var(--safe-card); color: var(--safe-text); font-size: 22rpx; }
 .dossier-tab.active { border-color: var(--safe-primary); background: var(--safe-primary-soft); color: var(--safe-primary-deep); }

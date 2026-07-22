@@ -18,7 +18,9 @@ Page({
   async loadMessages() {
     this.setData({ loading: true, errorMessage: "", needsLogin: false });
     try {
-      const result = await api.listMessages({ limit: 50 });
+      // CloudBase currently rejects the legacy `limit` response headers at
+      // the gateway. `page_size` is the canonical equivalent and avoids 502.
+      const result = await api.listMessages({ page: 1, page_size: 50 });
       this.setData({
         loading: false,
         messages: result.items || [],

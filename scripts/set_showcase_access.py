@@ -17,12 +17,13 @@ def set_mode(enabled: bool) -> dict:
         "version": "2026.07-showcase-v1",
         "enabled": enabled,
         "read_only_role_bypass": enabled,
+        "researcher_platform_full_access": enabled,
         "open_programs": enabled,
         "allow_program_participation": enabled,
         "open_training_cards": enabled,
         "open_courses": enabled,
         "notice": (
-            "临时展示模式已开启：登录用户可查看跨角色内容并参加项目试点；高风险阻断、数据归属和后台管理写权限保持不变。"
+            "开发验证全权限模式已开启：所有已登录账号可临时读写关系探索研究者平台；高风险阻断、审计和研究者平台以外的后台权限保持不变。正式发布前必须关闭。"
             if enabled
             else "展示模式已关闭：恢复正式角色、项目审核和训练卡发布门禁。"
         ),

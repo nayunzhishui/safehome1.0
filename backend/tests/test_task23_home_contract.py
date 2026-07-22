@@ -47,3 +47,18 @@ def test_today_step_card_has_accessible_action_and_all_states():
     assert "min-height: 88rpx" in wxss
     for state in ["loading", "error", "paused", "completed", "not_due"]:
         assert state in source or state in wxml or state in component_wxml or state in wxss
+
+
+def test_home_progress_fallback_actions_do_not_clip_button_labels():
+    wxml = _read("apps/miniprogram/pages/home/index.wxml")
+    wxss = _read("apps/miniprogram/pages/home/index.wxss")
+
+    assert 'class="progress-empty-btn"' in wxml
+    assert 'class="progress-empty-btn progress-empty-btn--secondary"' in wxml
+    block = wxss.split(".progress-empty-btn {", 1)[1].split("}", 1)[0]
+    assert "min-height: var(--safe-touch)" in block
+    assert "display: flex" in block
+    assert "align-items: center" in block
+    assert "justify-content: center" in block
+    assert "box-sizing: border-box" in block
+    assert "line-height: 1.3" in block

@@ -103,6 +103,7 @@ def test_legacy_limit_parameter_remains_compatible_for_messages(tmp_path, monkey
     assert data["page"] == 1 and data["page_size"] == 1
     assert response.headers["Deprecation"] == "true"
     assert "31 Oct 2026" in response.headers["Sunset"]
+    assert "Link" not in response.headers
     contract = json.loads((PROJECT_ROOT / "shared" / "contracts" / "api-contract.json").read_text(encoding="utf-8"))
     operation = next(item for item in contract["endpoints"] if item["path"] == "/api/messages" and item["method"] == "GET")
     assert operation["request"]["pagination"]["deprecated_aliases"][0]["replacement"] == "page_size"

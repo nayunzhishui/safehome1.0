@@ -2,10 +2,11 @@
   "version": "2026.07-showcase-v1",
   "enabled": true,
   "read_only_role_bypass": true,
+  "researcher_platform_full_access": true,
   "open_programs": true,
   "allow_program_participation": true,
   "open_training_cards": true,
   "open_courses": true,
-  "notice": "临时展示模式已开启：登录用户可查看跨角色内容并参加项目试点；高风险阻断、数据归属和后台管理写权限保持不变。",
+  "notice": "开发验证全权限模式已开启：所有已登录账号可临时读写关系探索研究者平台；高风险阻断、审计和研究者平台以外的后台权限保持不变。正式发布前必须关闭。",
   "updated_at": "2026-07-12"
 }

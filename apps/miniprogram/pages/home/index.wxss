@@ -538,13 +538,20 @@
 }
 
 .progress-empty-btn {
-  min-height: 64rpx;
+  min-height: var(--safe-touch);
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 12rpx 20rpx;
   border: 1rpx solid var(--safe-primary);
   border-radius: 999rpx;
   background: var(--safe-primary);
   color: #fff;
-  font-size: 22rpx;
-  font-weight: 800;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 .progress-empty-btn--secondary {

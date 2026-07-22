@@ -20,6 +20,13 @@ SHOWCASE_READ_PATH_PREFIXES = (
     "/api/relationship-pilot/narratives/",
     "/api/text-analysis/summary",
 )
+SHOWCASE_RESEARCHER_PLATFORM_PATH_PREFIXES = (
+    "/api/relationship-pilot/",
+    "/api/text-analysis/summary",
+)
+SHOWCASE_RESEARCHER_PLATFORM_OPERATIONS = {
+    ("POST", "/api/messages"),
+}
 
 
 class AuthError(ValueError):
@@ -89,8 +96,32 @@ def require_login(allow_legacy_admin: bool = True) -> dict:
     return actor
 
 
+def elevate_actor_for_showcase_researcher_platform(actor: dict) -> dict:
+    """Temporarily elevate signed-in users inside the researcher platform only."""
+
+    from services.showcase_access_service import allow_showcase_researcher_platform_full_access
+
+    if (
+        allow_showcase_researcher_platform_full_access()
+        and (
+            request.path.startswith(SHOWCASE_RESEARCHER_PLATFORM_PATH_PREFIXES)
+            or (request.method, request.path) in SHOWCASE_RESEARCHER_PLATFORM_OPERATIONS
+        )
+    ):
+        return {
+            **actor,
+            "original_role": actor.get("original_role") or actor.get("role"),
+            "role": "admin",
+            "showcase_access": True,
+            "showcase_full_access": True,
+        }
+    return actor
+
+
 def require_role(*roles: str, allow_legacy_admin: bool = True) -> dict:
-    actor = require_login(allow_legacy_admin=allow_legacy_admin)
+    actor = elevate_actor_for_showcase_researcher_platform(
+        require_login(allow_legacy_admin=allow_legacy_admin)
+    )
     if actor["role"] not in roles:
         from services.showcase_access_service import allow_showcase_read_bypass
 

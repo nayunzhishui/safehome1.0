@@ -1,33 +1,36 @@
 <view class="safe-page growth-page">
   <view class="growth-hero">
-    <text class="growth-kicker">变化记录，不是疗效证明</text>
     <text class="growth-title">关系探索成长仪表盘</text>
+    <text class="growth-kicker">变化记录，不是疗效证明</text>
     <text class="growth-copy growth-copy--center">把不同类型的变化分开看，保留可回顾的事实与阶段性反馈。</text>
   </view>
 
   <view wx:if="{{loading}}" class="safe-card loading-card">正在读取成长记录...</view>
   <view wx:elif="{{growth}}" class="growth-content">
     <view class="growth-summary-grid" aria-label="成长记录摘要">
-      <view class="growth-summary-item">
+      <view class="growth-summary-item" aria-label="累计记录{{growth.timeline.length}}条">
+        <view class="growth-summary-icon"><icon type="success_no_circle" size="24" color="#3f7b60" /></view>
         <text class="growth-summary-value">{{growth.timeline.length}}</text>
         <text class="growth-summary-label">累计记录</text>
         <text class="growth-summary-unit">条</text>
       </view>
-      <view class="growth-summary-item">
+      <view class="growth-summary-item" aria-label="可看指标组{{curveGroups.length}}组">
+        <view class="growth-summary-icon"><icon type="success" size="24" color="#3f7b60" /></view>
         <text class="growth-summary-value">{{curveGroups.length}}</text>
         <text class="growth-summary-label">可看指标组</text>
         <text class="growth-summary-unit">组</text>
       </view>
-      <view class="growth-summary-item">
+      <view class="growth-summary-item" aria-label="阶段性反馈{{researcherConfirmations.length}}条">
+        <view class="growth-summary-icon"><icon type="waiting" size="24" color="#3f7b60" /></view>
         <text class="growth-summary-value">{{researcherConfirmations.length}}</text>
         <text class="growth-summary-label">阶段性反馈</text>
         <text class="growth-summary-unit">条</text>
       </view>
     </view>
 
-    <scroll-view scroll-x class="section-nav" aria-label="成长仪表盘栏目">
-      <view class="section-nav__row">
-        <button wx:for="{{sectionTabs}}" wx:key="key" class="section-nav__item {{activeSection === item.key ? 'section-nav__item--active' : ''}}" data-section="{{item.key}}" bindtap="selectSection">{{item.label}}</button>
+    <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="section-nav" aria-label="成长仪表盘栏目">
+      <view class="section-nav__row" role="tablist">
+        <button wx:for="{{sectionTabs}}" wx:key="key" role="tab" aria-selected="{{activeSection === item.key}}" aria-label="查看{{item.label}}" class="section-nav__item {{activeSection === item.key ? 'section-nav__item--active' : ''}}" data-section="{{item.key}}" bindtap="selectSection">{{item.label}}</button>
       </view>
     </scroll-view>
 
@@ -40,9 +43,18 @@
           <scroll-view scroll-x class="filter-scroll"><view class="filter-row"><button wx:for="{{curveGroups}}" wx:key="key" class="filter-chip {{selectedGroup === item.key ? 'filter-chip--active' : ''}}" data-key="{{item.key}}" bindtap="selectCurveGroup">{{item.label}}</button></view></scroll-view>
           <scroll-view scroll-x class="filter-scroll metric-scroll"><view class="filter-row"><button wx:for="{{selectedMetrics}}" wx:key="key" class="metric-chip {{selectedMetric === item.key ? 'metric-chip--active' : ''}}" data-key="{{item.key}}" bindtap="selectMetric">{{item.label}}</button></view></scroll-view>
           <text class="chart-title">{{selectedMetricLabel}}</text>
-          <canvas canvas-id="growthChart" class="chart-canvas" width="620" height="300" aria-label="{{selectedMetricLabel}}变化折线图"></canvas>
-          <visualization-state wx:if="{{selectedPoints.length < 2}}" state="insufficient" message="再记录 {{selectedPoints.length ? 1 : 2}} 次后可查看变化趋势。"></visualization-state>
-          <text wx:else class="trend-copy">{{trendText}}</text>
+          <view class="chart-shell">
+            <canvas wx:if="{{selectedPoints.length >= 2}}" canvas-id="growthChart" class="chart-canvas" width="620" height="300" aria-label="{{selectedMetricLabel}}变化折线图"></canvas>
+            <view wx:else class="chart-empty" role="status" aria-live="polite">
+              <text class="chart-empty__title">再记录 {{selectedPoints.length ? 1 : 2}} 次后可查看变化趋势</text>
+              <text class="chart-empty__copy">持续记录，帮助你看见同一指标在不同时间的变化。</text>
+              <view class="chart-empty__note">
+                <text class="chart-empty__note-title">数据不足</text>
+                <text>目前有 {{selectedPoints.length}} 个记录点；这里不会根据单次记录判断变化。</text>
+              </view>
+            </view>
+          </view>
+          <text wx:if="{{selectedPoints.length >= 2}}" class="trend-copy">{{trendText}}</text>
         </view>
         <visualization-state wx:else state="insufficient" message="还没有可绘制的数据。先完成一次测评或本周记录。"></visualization-state>
       </view>

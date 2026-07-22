@@ -5,6 +5,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = PROJECT_ROOT / "backend"
+MINIPROGRAM_ROOT = PROJECT_ROOT / "apps" / "miniprogram"
 
 
 def _fresh_app(tmp_path, monkeypatch):
@@ -74,6 +75,13 @@ def test_profile_stats_and_messages_flow(tmp_path, monkeypatch):
     detail_response = client.get(f"/api/messages/{owner_message['id']}?user_id={user_id}", headers={"Authorization": f"Bearer {token}"})
     assert detail_response.status_code == 200
     assert detail_response.get_json()["data"]["status"] == "read"
+
+
+def test_miniprogram_message_list_uses_cloudbase_safe_page_size_parameter():
+    page = (MINIPROGRAM_ROOT / "pages/messages/index.js").read_text(encoding="utf-8")
+
+    assert "page_size: 50" in page
+    assert "limit: 50" not in page
 
 
 def test_admin_worksheet_crud_and_assessment_results_endpoint(tmp_path, monkeypatch):

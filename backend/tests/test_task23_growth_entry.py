@@ -143,7 +143,8 @@ def test_growth_entry_keeps_historical_urls_and_one_profile_entry():
     assert 'url: "/pages/relationship-growth/index"' not in profile_source
     assert "/pages/growth-dashboard/index?section=relationship" in relationship_source
     assert "options.detail === \"1\"" in relationship_source
-    assert "/pages/growth-dashboard/index?section=relationship" in pilot_source
+    assert "/pages/relationship-growth/index?detail=1" in pilot_source
+    assert "/pages/growth-dashboard/index?section=relationship" not in pilot_source
     assert "/pages/relationship-growth/index?detail=1" in unified_source
     for label in ["记录与练习", "测评变化", "关系探索", "研究者反馈"]:
         assert label in unified_source or label in unified_markup
