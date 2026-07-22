@@ -1,0 +1,174 @@
+{
+  "schema": "safehome.task36.registry.v1",
+  "version": "2026-07-22-f00-baseline-v1",
+  "scope": [
+    "T36-F00", "T36-F01", "T36-F02", "T36-F03", "T36-F04",
+    "T36-F05", "T36-F06", "T36-F07", "T36-F08", "T36-F09",
+    "T36-F10", "T36-F11", "T36-F12", "T36-F13", "T36-F14",
+    "T36-F15", "T36-F16", "T36-F17", "T36-F18", "T36-F19"
+  ],
+  "policy": {
+    "state_path": ".codex_tmp/task36_state.json",
+    "baseline_path": ".codex_tmp/task36_baseline.json",
+    "execution_record_path": "docs/00_当前事实基准/Claude计划模式.md",
+    "authoritative_plan_path": "docs/01_当前执行入口/任务三十六研究者移动平台与受控在线能力完整实现计划_20260722.md",
+    "release_approval_mutation_allowed": false,
+    "external_gate_execution_allowed": false,
+    "production_account_mutation_allowed": false,
+    "public_tunnel_start_allowed": false,
+    "wechat_secret_mutation_allowed": false,
+    "showcase_write_scope_expansion_allowed": false,
+    "dirty_worktree_policy": "observe_only_never_revert",
+    "temporary_showcase_bypass_retained": true,
+    "temporary_showcase_bypass_counts_as_formal_permission_evidence": false,
+    "allowed_command_executables": ["python", "python.exe", "node", "node.exe", "npm.cmd"],
+    "forbidden_command_terms": [
+      "bootstrap_researcher.py apply",
+      "bootstrap_researcher.py rotate",
+      "cloudflared tunnel run",
+      "cloudflared tunnel --url",
+      "WECHAT_APP_SECRET=",
+      "TRUST_CLOUDBASE_IDENTITY_HEADERS=1",
+      "git reset",
+      "git checkout --",
+      "git clean"
+    ]
+  },
+  "required_layers": [
+    "backend", "database", "shared", "web", "miniprogram", "permissions",
+    "audit", "recovery", "migration", "rollback", "targeted_acceptance",
+    "full_acceptance", "documentation"
+  ],
+  "baseline": {
+    "cloudbase": {
+      "base_url": "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com",
+      "service": "flask-gh3l",
+      "environment": "prod-d3gl35otiaa7c8d24",
+      "snapshot_timeout_seconds": 12,
+      "endpoints": [
+        {"id": "health", "method": "GET", "path": "/healthz", "kind": "health", "expected_statuses": [200]},
+        {"id": "ready", "method": "GET", "path": "/readyz", "kind": "readiness", "expected_statuses": [200, 503]},
+        {"id": "auth_capabilities", "method": "GET", "path": "/api/auth/capabilities", "kind": "capabilities", "expected_statuses": [200]},
+        {"id": "messages_fault", "method": "GET", "path": "/api/messages?page=1&page_size=50", "kind": "fault", "expected_statuses": [401]},
+        {"id": "checkins_fault", "method": "GET", "path": "/api/checkins?page=1&page_size=50&completed=true", "kind": "fault", "expected_statuses": [401]},
+        {"id": "researcher_dashboard_fault", "method": "GET", "path": "/api/relationship-pilot/researcher/dashboard", "kind": "fault", "expected_statuses": [401, 403]}
+      ]
+    },
+    "database": {
+      "expected_schema_version": "2026_07_21_023",
+      "expected_schema_name": "participant_journey_feedback_recommendation",
+      "providers": ["sqlite", "mysql"]
+    },
+    "feature_flags": [
+      {
+        "id": "researcher_platform_full_access",
+        "source": "content/showcase_access.json",
+        "frozen_value": true,
+        "scope": "development_researcher_platform_paths_only",
+        "formal_permission_evidence": false,
+        "must_not_expand_in_f00": true
+      },
+      {
+        "id": "trust_cloudbase_identity_headers",
+        "source": "environment",
+        "frozen_value": false,
+        "reason": "public_gateway_header_spoofing_negative_probe_failed_on_previous_build"
+      }
+    ]
+  },
+  "roles": [
+    {"id": "participant", "object_scope": "self", "formal_research_access": "none", "development_exception": "researcher_platform_full_access_only"},
+    {"id": "researcher", "object_scope": "assigned_or_claimable", "formal_research_access": "approved_workflows"},
+    {"id": "supervisor", "object_scope": "supervised_assignments", "formal_research_access": "review_and_supervision"},
+    {"id": "admin", "object_scope": "all_authorized", "formal_research_access": "full_except_external_gate_signoff"},
+    {"id": "showcase", "object_scope": "synthetic_or_deidentified", "formal_research_access": "read_only", "writes_allowed": false}
+  ],
+  "web_routes": [
+    {"path": "/login", "roles": ["public"]},
+    {"path": "/dashboard", "roles": ["admin", "researcher", "supervisor"]},
+    {"path": "/diaries", "roles": ["admin", "researcher"]},
+    {"path": "/feedback", "roles": ["admin", "researcher"]},
+    {"path": "/checkins", "roles": ["admin", "researcher"]},
+    {"path": "/reports", "roles": ["admin", "researcher"]},
+    {"path": "/profiles", "roles": ["admin", "researcher", "supervisor"]},
+    {"path": "/reviews", "roles": ["admin", "supervisor"]},
+    {"path": "/supervision", "roles": ["admin", "supervisor"]},
+    {"path": "/ai-sandbox", "roles": ["admin", "researcher", "supervisor"], "participant_enabled": false},
+    {"path": "/research/benchmarks", "roles": ["admin", "researcher", "supervisor"]},
+    {"path": "/research/methodology", "roles": ["admin", "researcher", "supervisor"]},
+    {"path": "/security/privacy", "roles": ["admin", "researcher", "supervisor"]},
+    {"path": "/reliability/release", "roles": ["admin", "researcher", "supervisor"]},
+    {"path": "/system/experience", "roles": ["admin", "researcher", "supervisor"]},
+    {"path": "/system/operations-governance", "roles": ["admin", "researcher", "supervisor"]},
+    {"path": "/export", "roles": ["admin", "researcher"], "mobile_migration": "forbidden"}
+  ],
+  "miniprogram_pages": [
+    {"path": "pages/login/index", "purpose": "account_wechat_phone_login"},
+    {"path": "pages/messages/index", "purpose": "participant_message_list"},
+    {"path": "pages/message-detail/index", "purpose": "participant_message_detail"},
+    {"path": "pages/training-history/index", "purpose": "participant_checkin_history"},
+    {"path": "pages/researcher-dashboard/index", "purpose": "researcher_mobile_workspace"},
+    {"path": "pages/relationship-report/index", "purpose": "relationship_stage_report"},
+    {"path": "pages/relationship-growth/index", "purpose": "participant_growth_dashboard"},
+    {"path": "pages/integration-test/index", "purpose": "retained_integration_diagnostics", "must_retain": true}
+  ],
+  "api_operations": [
+    {"id": "messages.list", "method": "GET", "path": "/api/messages", "roles": ["authenticated"], "object_scope": "self", "error_contract": ["unauthorized", "invalid_pagination", "internal_error"]},
+    {"id": "messages.send_researcher", "method": "POST", "path": "/api/messages", "roles": ["researcher", "supervisor", "admin"], "object_scope": "assigned_supervised_or_all", "audit": true},
+    {"id": "messages.read", "method": "POST", "path": "/api/messages/{message_id}/read", "roles": ["authenticated"], "object_scope": "self"},
+    {"id": "checkins.list", "method": "GET", "path": "/api/checkins", "roles": ["authenticated"], "object_scope": "self", "error_contract": ["unauthorized", "invalid_pagination", "internal_error"]},
+    {"id": "relationship.dashboard", "method": "GET", "path": "/api/relationship-pilot/researcher/dashboard", "roles": ["researcher", "supervisor", "admin"], "object_scope": "assigned_supervised_or_all", "development_exception": true},
+    {"id": "relationship.enrollment_detail", "method": "GET", "path": "/api/relationship-pilot/enrollments/{id}", "roles": ["participant", "researcher", "supervisor", "admin"], "object_scope": "self_or_assignment"},
+    {"id": "relationship.note_create", "method": "POST", "path": "/api/relationship-pilot/enrollments/{id}/notes", "roles": ["researcher", "supervisor", "admin"], "object_scope": "assignment", "audit": true},
+    {"id": "relationship.report_update", "method": "PATCH", "path": "/api/relationship-pilot/reports/{id}", "roles": ["researcher", "supervisor", "admin"], "object_scope": "assignment", "audit": true},
+    {"id": "relationship.report_send", "method": "POST", "path": "/api/relationship-pilot/reports/{id}/send", "roles": ["researcher", "supervisor", "admin"], "object_scope": "assignment", "audit": true},
+    {"id": "auth.capabilities", "method": "GET", "path": "/api/auth/capabilities", "roles": ["public"], "object_scope": "none"},
+    {"id": "auth.wechat", "method": "POST", "path": "/api/auth/wechat-login", "roles": ["public"], "object_scope": "new_or_bound_identity", "external_gate": "wechat_and_cloud_network"},
+    {"id": "auth.phone", "method": "POST", "path": "/api/auth/phone-login", "roles": ["public"], "object_scope": "new_or_bound_identity", "external_gate": "wechat_phone_qualification_secret_privacy"}
+  ],
+  "error_states": [
+    {"code": "unauthorized", "http_status": 401, "must_be_json": true},
+    {"code": "forbidden", "http_status": 403, "must_include": ["request_id"], "must_not_disclose_object": true},
+    {"code": "conflict", "http_status": 409, "must_be_json": true},
+    {"code": "upstream_gateway_failure", "http_status": 502, "must_not_be_html": true},
+    {"code": "service_unavailable", "http_status": 503, "must_be_retryable": true},
+    {"code": "network_timeout", "http_status": 0, "client_recovery": "retry_without_empty_state_fallback"}
+  ],
+  "image_issue_map": [
+    {"issue": "researcher_dashboard_permission_denied", "page": "pages/researcher-dashboard/index", "api": "relationship.dashboard", "expected": "401 without login; 403 outside formal role or object scope; development exception visibly warned"},
+    {"issue": "training_history_server_load_failure", "page": "pages/training-history/index", "api": "checkins.list", "expected": "JSON error envelope, retry action, never HTML or false empty list"},
+    {"issue": "messages_server_load_failure", "page": "pages/messages/index", "api": "messages.list", "expected": "JSON error envelope, retry action, never gateway HTML"},
+    {"issue": "wechat_login_no_response", "page": "pages/login/index", "api": "auth.wechat", "expected": "capability-specific error; password fallback remains available"}
+  ],
+  "tasks": [
+    {"id": "T36-F00", "title": "基线冻结与机器注册表", "dependencies": [], "engineering_complete": true, "status": "engineering_complete_local", "evidence": ["config/task36_registry.json", "scripts/run_task36.py", "backend/tests/test_task36_orchestrator.py"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task36_orchestrator.py", "-q"], ["python", "scripts/run_task36.py", "report"]]},
+    {"id": "T36-F01", "title": "研究者账号、密码轮换与安全交付", "dependencies": ["T36-F00"], "engineering_complete": false, "status": "implementation_partial_external_credential_gate_pending", "evidence": ["backend/scripts/bootstrap_researcher.py"]},
+    {"id": "T36-F02", "title": "Web研究者后台受控外部访问", "dependencies": ["T36-F00"], "engineering_complete": false, "status": "plan_complete_external_domain_identity_gate_pending", "evidence": ["docs/04_部署运维/Web研究者后台受控外部访问与内网穿透实施计划_20260722.md"]},
+    {"id": "T36-F03", "title": "正式权限能力矩阵和对象范围", "dependencies": ["T36-F00"], "engineering_complete": false, "status": "development_exception_complete_formal_matrix_pending", "evidence": ["content/showcase_access.json"]},
+    {"id": "T36-F04", "title": "小程序研究者移动工作台壳层", "dependencies": ["T36-F03", "T36-F09"], "engineering_complete": false, "status": "planned_full", "evidence": ["apps/miniprogram/pages/researcher-dashboard/index.js"]},
+    {"id": "T36-F05", "title": "参与者全景档案与研究数据查看", "dependencies": ["T36-F03", "T36-F04"], "engineering_complete": false, "status": "planned_full", "evidence": []},
+    {"id": "T36-F06", "title": "研究反馈、报告与站内消息移动闭环", "dependencies": ["T36-F05", "T36-F07", "T36-F08"], "engineering_complete": false, "status": "planned_full", "evidence": ["apps/miniprogram/pages/researcher-dashboard/index.js"]},
+    {"id": "T36-F07", "title": "训练记录与历次反馈统一读取契约", "dependencies": ["T36-F00"], "engineering_complete": true, "status": "engineering_complete_local_test_cloud_pending", "evidence": ["backend/routes/checkins.py", "backend/tests/test_mysql_database_adapter.py"]},
+    {"id": "T36-F08", "title": "消息接口502根因修复", "dependencies": ["T36-F00"], "engineering_complete": true, "status": "engineering_complete_local_test_cloud_pending", "evidence": ["backend/routes/messages.py", "apps/miniprogram/pages/messages/index.js"]},
+    {"id": "T36-F09", "title": "构建指纹、可观测性和部署一致性", "dependencies": ["T36-F08"], "engineering_complete": false, "status": "planned_full", "evidence": []},
+    {"id": "T36-F10", "title": "微信一键登录配置与真实闭环", "dependencies": ["T36-F09"], "engineering_complete": false, "status": "security_fix_local_external_cloud_network_device_gates_pending", "evidence": ["backend/routes/auth.py", "backend/tests/test_auth_route.py"]},
+    {"id": "T36-F11", "title": "手机号快捷登录配置与真实闭环", "dependencies": ["T36-F10"], "engineering_complete": false, "status": "diagnosed_external_secret_qualification_device_gates_pending", "evidence": ["backend/routes/auth.py", "apps/miniprogram/pages/login/index.wxml"]},
+    {"id": "T36-F12", "title": "身份绑定、数据认领与角色保持", "dependencies": ["T36-F10", "T36-F11"], "engineering_complete": false, "status": "planned_full", "evidence": []},
+    {"id": "T36-F13", "title": "研究者在线分析任务框架", "dependencies": ["T36-F03", "T36-F09", "T36-F12"], "engineering_complete": false, "status": "planned_full", "evidence": []},
+    {"id": "T36-F14", "title": "情感计算、语义网络和家庭拓扑在线呈现", "dependencies": ["T36-F13"], "engineering_complete": false, "status": "planned_full_t35_rights_model_gate", "evidence": []},
+    {"id": "T36-F15", "title": "AI自由问答研究者沙盒", "dependencies": ["T36-F13", "T36-F17"], "engineering_complete": false, "status": "planned_full_external_ai_ethics_security_gates", "evidence": ["content/ai_qa_governance.json"]},
+    {"id": "T36-F16", "title": "治疗性评估TA-03至TA-05受控接入", "dependencies": ["T36-F05", "T36-F06", "T36-F17"], "engineering_complete": false, "status": "planned_full_external_qualification_ethics_supervision_gates", "evidence": []},
+    {"id": "T36-F17", "title": "全栈可靠性、隐私和安全收口", "dependencies": ["T36-F03", "T36-F09", "T36-F12", "T36-F13"], "engineering_complete": false, "status": "planned_full", "evidence": ["content/security_privacy_abuse_registry.json", "content/reliability_release_registry.json"]},
+    {"id": "T36-F18", "title": "数据库迁移、备份恢复和非破坏性回滚", "dependencies": ["T36-F17"], "engineering_complete": false, "status": "planned_full_external_production_migration_gate", "evidence": []},
+    {"id": "T36-F19", "title": "专项、全量和外部门禁验收", "dependencies": ["T36-F04", "T36-F05", "T36-F06", "T36-F07", "T36-F08", "T36-F09", "T36-F10", "T36-F11", "T36-F12", "T36-F13", "T36-F14", "T36-F15", "T36-F16", "T36-F17", "T36-F18"], "engineering_complete": false, "status": "planned_full_external_human_ethics_device_cloud_production_gates", "evidence": []}
+  ],
+  "full_acceptance_commands": [
+    {"cwd": ".", "command": ["python", "-m", "pytest", "backend/tests", "-q"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/validate_content.py"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/build_api_contract.py", "--check"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/check_api_compatibility.py"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/audit_miniprogram_frontend.py"]},
+    {"cwd": "apps/web", "command": ["npm.cmd", "run", "typecheck"]},
+    {"cwd": "apps/web", "command": ["npm.cmd", "run", "build"]}
+  ]
+}

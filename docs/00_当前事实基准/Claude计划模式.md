@@ -11096,7 +11096,7 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 
 登记日期：2026-07-22
 
-状态：`planned_not_started / credential_tunnel_cloud_wechat_human_gates_pending`
+状态：`implementation_in_progress / f00_engineering_complete / credential_tunnel_cloud_wechat_human_gates_pending`
 
 权威详细计划：`docs/01_当前执行入口/任务三十六研究者移动平台与受控在线能力完整实现计划_20260722.md`
 
@@ -11135,7 +11135,7 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 
 | 子任务 | 状态 | 实现范围 | 自动验收 | 外部门禁 |
 |---|---|---|---|---|
-| T36-F00 基线与执行器 | 计划未开始 | Git/云端/故障/权限快照，机器注册表和可恢复执行器 | 命令漂移、dirty保护、脱敏快照 | 无 |
+| T36-F00 基线与执行器 | 本地工程完成 | `task36_registry.json`连续覆盖F00—F19；执行器支持plan/next/resume/verify/report/snapshot；状态与快照仅写`.codex_tmp` | 9项专项、六个云端只读探针、命令漂移与dirty保护通过 | 无；未执行生产变更 |
 | T36-F01 研究者账号 | 部分完成 | 本地 safehome1.0/admin receipt 与登录验证完成；生产轮换/首次改密/锁定恢复待做 | 账号脚本 4 项通过 | 负责人接收与首次改密 |
 | T36-F02 受控外部访问 | 详细计划完成 | 命名Tunnel+Access、组网、合成短时Quick Tunnel、启停验收回滚 | 文档契约 | 域名、访问者和数据范围批准；未启动公网访问 |
 | T36-F03 权限矩阵 | 开发临时例外完成 | 所有已登录普通账号在研究者平台专用路径临时 admin 等效读写；正式矩阵仍待做 | Test1 读仪表盘、向 wyd 写备注/发消息，wyd 列表收取；关闭开关恢复拒绝 | 临时越权不得通过正式验收 |
@@ -11178,3 +11178,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 ```text
 读取任务三十六权威详细计划、Claude计划模式任务36和当前事实基准，保留全部既有未提交改动，只执行T36-F00。冻结Git、CloudBase health/ready/auth capabilities、messages/checkins/researcher dashboard故障和角色/对象范围，建立task36机器注册表与可恢复执行器。不得轮换生产密码、启动公网隧道、修改微信Secret或放开展示写权限。专项验收通过后把结果写回F00和任务36，更新三份事实文档，独立提交并推送。
 ```
+
+## 八、T36-F00执行结果（2026-07-22）
+
+- 状态：`engineering_complete_local`；任务36整体仍是`implementation_in_progress`。
+- Git冻结点：`a0236bebd675e779dc0e50197e89580ab9c7a5e7 / main / origin/main`；dirty只包含F00新增的3个文件，执行器没有reset、checkout、clean或文件回退能力。
+- CloudBase脱敏快照：health/ready/auth capabilities为200；messages/checkins/researcher dashboard无令牌均为JSON 401并带request_id；MySQL schema为023；微信/手机号能力分别为`jscode2session`、`wechat_access_token`。
+- 版本漂移：运行版本仍报告`safehome-2026-07-10-task12-login`，留给F09建立构建指纹，不用旧字符串判断是否已部署。
+- 权限冻结：participant/researcher/supervisor/admin/showcase与self/assignment/supervision/all/synthetic范围已入机器注册表；`researcher_platform_full_access=true`原值保留，但不是正式权限证据，F00未扩大任何写权限。
+- 执行器：`python scripts/run_task36.py plan|report|snapshot`；`verify --task T36-F00`已通过；`run --next`停在F01并在缺少实现后验收命令时拒绝跳步；命令digest变化时禁止resume。
+- 安全边界：未轮换生产密码、未启动隧道、未读取或修改微信Secret、未修改CloudBase、未签署人工/伦理/真机/生产门禁。
