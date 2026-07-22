@@ -1,0 +1,15 @@
+{
+  "schema": "safehome.external_identity_policy.v1",
+  "application_type": "self_hosted",
+  "hostname": "<APPROVED_RESEARCH_HOST>",
+  "default_action": "deny",
+  "session_minutes": 30,
+  "allow": {
+    "emails": [
+      "<APPROVED_EMAIL>"
+    ],
+    "groups": []
+  },
+  "safehome_application_login_required": true,
+  "notes": "仅作为人工配置模板，不含Cloudflare token、账号或真实访问者信息。"
+}

@@ -1,0 +1,6 @@
+tunnel: <TUNNEL_ID>
+credentials-file: <PROTECTED_CREDENTIAL_FILE>
+ingress:
+  - hostname: <APPROVED_RESEARCH_HOST>
+    service: http://127.0.0.1:8787
+  - service: http_status:404

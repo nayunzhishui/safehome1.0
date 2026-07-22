@@ -1,0 +1,30 @@
+{
+  "schema": "safehome.external_access.v1",
+  "enabled": false,
+  "public_data_scope": "synthetic_only",
+  "public_host": "https://research.example.invalid",
+  "allowed_origins": [
+    "https://research.example.invalid"
+  ],
+  "web_root": "apps/web/dist",
+  "api_base_url": "http://127.0.0.1:5050",
+  "local_proxy": {
+    "host": "127.0.0.1",
+    "port": 8787,
+    "max_request_bytes": 1048576
+  },
+  "tunnel": {
+    "mode": "named",
+    "binary": "cloudflared",
+    "config_path": "config/cloudflared.safehome.local.yml"
+  },
+  "access": {
+    "default_policy": "deny",
+    "session_minutes": 30,
+    "safehome_login_still_required": true
+  },
+  "runtime": {
+    "state_path": ".codex_tmp/task36_external_access_state.json",
+    "log_dir": ".codex_tmp/task36_external_access_logs"
+  }
+}

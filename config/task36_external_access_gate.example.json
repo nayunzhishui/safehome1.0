@@ -1,0 +1,11 @@
+{
+  "schema": "safehome.external_access_gate.v1",
+  "approved": false,
+  "public_host": "https://research.example.invalid",
+  "data_scope": "synthetic_only",
+  "expires_at": "<UTC_EXPIRY_WITH_TIMEZONE>",
+  "owner_approved": false,
+  "privacy_approved": false,
+  "security_approved": false,
+  "notes": "本文件只是门禁结构示例，不能复制为已批准证据，也不能由自动化签字。"
+}

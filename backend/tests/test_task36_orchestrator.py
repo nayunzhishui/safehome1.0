@@ -175,4 +175,10 @@ def test_report_keeps_external_and_formal_permission_gates_false():
     assert report["production_mutations_executed"] is False
     assert report["temporary_showcase_bypass_counts_as_formal_permission_evidence"] is False
     assert report["all_current_evidence_present"] is True
-    assert report["next_automatable_task"] == "T36-F01"
+    completed = {task["id"] for task in module.load_registry()["tasks"] if task["engineering_complete"]}
+    expected_next = next(
+        task["id"]
+        for task in module.load_registry()["tasks"]
+        if not task["engineering_complete"] and set(task["dependencies"]).issubset(completed)
+    )
+    assert report["next_automatable_task"] == expected_next
