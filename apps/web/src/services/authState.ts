@@ -10,6 +10,7 @@ export interface AuthUser {
   nickname?: string;
   anonymous_id?: string;
   status?: string;
+  must_change_password?: boolean;
 }
 
 export function getStoredAuthToken(): string {

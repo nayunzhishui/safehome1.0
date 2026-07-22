@@ -58,6 +58,7 @@ export const API_ENDPOINTS = {
   privacyExportMyData: "/api/privacy/export-my-data",
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
+  authChangePassword: "/api/auth/change-password",
   authCapabilities: "/api/auth/capabilities",
   authWechatLogin: "/api/auth/wechat-login",
   authPhoneLogin: "/api/auth/phone-login",

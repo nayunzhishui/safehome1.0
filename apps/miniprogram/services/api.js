@@ -38,6 +38,7 @@ const ERROR_MESSAGES_BY_CODE = {
   wechat_upstream_http_error: "微信服务拒绝了服务器连接，请稍后重试或使用账号密码登录。",
   wechat_upstream_invalid_response: "微信服务返回异常，请稍后重试或使用账号密码登录。",
   phone_account_conflict: "该手机号已关联其他账号，请使用原账号登录。",
+  password_change_required: "首次登录需要先设置新密码。",
 };
 
 const API_ENDPOINTS = {
@@ -83,6 +84,7 @@ const API_ENDPOINTS = {
   modelInfo: "/api/model/info",
   authRegister: "/api/auth/register",
   authLogin: "/api/auth/login",
+  authChangePassword: "/api/auth/change-password",
   authCapabilities: "/api/auth/capabilities",
   authWechatLogin: "/api/auth/wechat-login",
   authPhoneLogin: "/api/auth/phone-login",
@@ -273,7 +275,8 @@ function createSafeHomeApi(options = {}) {
     const payload = res.data;
 
     if (statusCode < 200 || statusCode >= 300) {
-      if (statusCode === 401) {
+      const backendCode = String(payload && payload.error && payload.error.code || "");
+      if (statusCode === 401 && backendCode !== "invalid_credentials") {
         clearAuthSession();
       }
       reject(normalizeApiError({
@@ -402,6 +405,20 @@ function createSafeHomeApi(options = {}) {
         method: "POST",
         data: { claim_id: claimId, confirm: true },
         requiresAuth: true,
+      });
+    },
+
+    changePassword(data) {
+      return request(API_ENDPOINTS.authChangePassword, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      }).then((result) => {
+        if (result && result.token) {
+          wx.setStorageSync("auth_token", result.token);
+          wx.setStorageSync("auth_user", result.user || null);
+        }
+        return result;
       });
     },
 

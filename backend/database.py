@@ -87,8 +87,8 @@ REQUIRED_HEALTH_TABLES = [
     "operations_incident_notifications",
     "operations_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_21_023"
-CURRENT_SCHEMA_NAME = "participant_journey_feedback_recommendation"
+CURRENT_SCHEMA_VERSION = "2026_07_22_024"
+CURRENT_SCHEMA_NAME = "credential_lifecycle"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -123,6 +123,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "environment",
     "platform",
     "viewport",
+    "credential_receipt_id",
     "registry_version",
     "package_version",
     "package_id",
@@ -976,6 +977,13 @@ def ensure_schema_columns(conn) -> None:
         ensure_column(conn, "privacy_requests", column, definition)
     ensure_column(conn, "privacy_deletion_tombstones", "scope_json", "TEXT NOT NULL DEFAULT '[]'")
     ensure_column(conn, "users", "auth_epoch", "INTEGER NOT NULL DEFAULT 0")
+    ensure_column(conn, "users", "must_change_password", "INTEGER NOT NULL DEFAULT 0")
+    ensure_column(conn, "users", "credential_receipt_id", "TEXT")
+    ensure_column(conn, "users", "credential_expires_at", "TEXT")
+    ensure_column(conn, "users", "password_changed_at", "TEXT")
+    ensure_column(conn, "users", "failed_login_count", "INTEGER NOT NULL DEFAULT 0")
+    ensure_column(conn, "users", "last_failed_login_at", "TEXT")
+    ensure_column(conn, "users", "locked_until", "TEXT")
     ensure_column(conn, "users", "status_reason", "TEXT")
 
 

@@ -12,6 +12,13 @@
   margin-top: 32rpx;
 }
 
+.password-change-title {
+  margin-top: 32rpx;
+  color: var(--safe-text);
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
 .field {
   display: flex;
   flex-direction: column;

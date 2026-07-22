@@ -1395,9 +1395,29 @@ Invoke-WebRequest `
 
 ### `POST /api/auth/admin-create-account`
 
-用途：由持有 `X-Admin-Token` 的负责人创建研究者、督导或管理员等后台角色账号。任务十八后可传 `rotate_existing=true` 幂等轮换同名账号的密码和角色；未显式传该字段时，同名账号仍返回 `409 username_exists`。
+用途：由持有 `X-Admin-Token` 的负责人创建研究者、督导或管理员等后台角色账号。可传 `rotate_existing=true` 显式轮换同名账号凭据，但轮换不能同时改变角色；未显式传该字段时，同名账号返回 `409 username_exists`。
 
 生产研究者用户名固定为 `safehome_researcher_01`。一次性密码由 `backend/scripts/bootstrap_researcher.py prepare` 生成到 `.codex_tmp`，再由 `apply` 子命令调用本接口；密码不得写入 Git、API 文档或普通运行日志。
+
+一次性凭据还必须传 `temporary_credential=true`、唯一 `credential_receipt_id` 和不超过24小时的 `credential_expires_at`。同一账号重复应用同一receipt为幂等成功；receipt跨账号复用返回`409 credential_receipt_reused`。一次性密码至少12位并包含四类字符中的三类。
+
+### `POST /api/auth/change-password`
+
+用途：登录用户修改当前密码；一次性账号首次登录后只允许访问`/api/auth/me`、本接口和logout，其他接口固定返回`403 password_change_required`。
+
+请求字段：`current_password`、`new_password`。新密码至少12位并包含大小写字母、数字或符号中的三类，且不能与当前密码相同。成功后清除一次性凭据状态、递增`auth_epoch`、撤销旧token并返回新`token`、`user`与`sessions_revoked=true`。
+
+### `GET /api/auth/admin-accounts/<username>`
+
+用途：持有`X-Admin-Token`的负责人核验账号状态。仅返回用户名、角色、状态、最后登录时间、是否已设置密码、是否必须改密、凭据世代、临时凭据过期时间及锁定状态；不返回密码、哈希或receipt ID。
+
+### `POST /api/auth/admin-accounts/<username>/unlock`
+
+用途：解除因连续5次密码失败产生的15分钟临时锁定，并写入审计日志。不存在账号返回404。
+
+### `POST /api/auth/admin-accounts/<username>/revoke`
+
+用途：停用账号、清除一次性凭据状态并递增`auth_epoch`使现有token失效；重复撤销为幂等成功。恢复账号不属于本接口，必须走新的受控批准流程。
 
 ### `GET /api/profile/stats`
 

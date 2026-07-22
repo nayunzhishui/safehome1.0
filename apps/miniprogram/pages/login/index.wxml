@@ -4,6 +4,26 @@
     <view class="safe-h1">登录</view>
     <view class="safe-body">登录后可以查看消息、阶段性反馈和个人记录。选择一种方便的方式继续。</view>
 
+    <block wx:if="{{mustChangePassword}}">
+      <view class="password-change-title">首次登录，请先设置新密码</view>
+      <view class="auth-note">新密码至少 12 位，并包含三类字符。更新后临时密码和旧会话立即失效。</view>
+      <view class="field">
+        <text>临时密码</text>
+        <input value="{{currentPassword}}" password placeholder="请输入临时密码" bindinput="onCurrentPasswordInput" />
+      </view>
+      <view class="field">
+        <text>新密码</text>
+        <input value="{{newPassword}}" password placeholder="请输入新密码" bindinput="onNewPasswordInput" />
+      </view>
+      <view class="field">
+        <text>再次输入新密码</text>
+        <input value="{{confirmPassword}}" password placeholder="请再次输入新密码" bindinput="onConfirmPasswordInput" />
+      </view>
+      <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
+      <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitPasswordChange">更新密码并继续</button>
+    </block>
+
+    <block wx:else>
     <view class="auth-methods" aria-label="快捷登录方式">
       <button class="wechat-action" loading="{{wechatLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitWechatLogin">微信一键登录</button>
       <button class="phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="handlePhoneLogin">手机号快捷登录</button>
@@ -24,5 +44,6 @@
     <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
     <button class="primary-action" loading="{{loading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitLogin">登录</button>
     <button class="ghost-action" bindtap="goRegister">注册新账号</button>
+    </block>
   </view>
 </view>

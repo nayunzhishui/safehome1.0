@@ -218,6 +218,16 @@ export class SafeHomeApiClient {
     return data;
   }
 
+  async changePassword(input: {
+    current_password: string;
+    new_password: string;
+  }): Promise<{ token: string; user: AuthUser; sessions_revoked: boolean }> {
+    return this.requestData(API_ENDPOINTS.authChangePassword, {
+      method: "POST",
+      body: input,
+    });
+  }
+
   async getCurrentUser(): Promise<AuthUser> {
     const data = await this.requestData<{ user: AuthUser }>(API_ENDPOINTS.authMe);
     return data.user;

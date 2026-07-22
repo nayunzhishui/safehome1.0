@@ -1513,6 +1513,180 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "auth.admin_verify_account.get",
+    "method": "GET",
+    "path": "/api/auth/admin-accounts/<username>",
+    "handler": "auth.admin_verify_account",
+    "module": "routes.auth",
+    "access": {
+      "mode": "admin",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "username"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_verify_account.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.admin_revoke_account.post",
+    "method": "POST",
+    "path": "/api/auth/admin-accounts/<username>/revoke",
+    "handler": "auth.admin_revoke_account",
+    "module": "routes.auth",
+    "access": {
+      "mode": "admin",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "username"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_revoke_account.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.admin_unlock_account.post",
+    "method": "POST",
+    "path": "/api/auth/admin-accounts/<username>/unlock",
+    "handler": "auth.admin_unlock_account",
+    "module": "routes.auth",
+    "access": {
+      "mode": "admin",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "username"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_unlock_account.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "auth.admin_create_account.post",
     "method": "POST",
     "path": "/api/auth/admin-create-account",
@@ -1533,10 +1707,13 @@ const GENERATED_API_ENDPOINTS = [
       "query_parameters": [],
       "body_fields": [
         "anonymous_id",
+        "credential_expires_at",
+        "credential_receipt_id",
         "nickname",
         "password",
         "role",
         "rotate_existing",
+        "temporary_credential",
         "username"
       ],
       "headers": [],
@@ -1562,9 +1739,13 @@ const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
+      "account_not_found",
+      "credential_receipt_reused",
       "forbidden",
       "http_error",
       "internal_error",
+      "role_change_forbidden",
+      "temporary_credential_expired",
       "unauthorized",
       "username_exists",
       "validation_error"
@@ -1684,6 +1865,71 @@ const GENERATED_API_ENDPOINTS = [
     "error_codes": [
       "http_error",
       "internal_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.change_password.post",
+    "method": "POST",
+    "path": "/api/auth/change-password",
+    "handler": "auth.change_password",
+    "module": "routes.auth",
+    "access": {
+      "mode": "authenticated",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "current_password",
+        "new_password"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.change_password.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "invalid_credentials",
+      "password_reuse_forbidden",
+      "unauthorized",
+      "validation_error"
     ],
     "enum_refs": [],
     "deprecation": {
@@ -1864,9 +2110,11 @@ const GENERATED_API_ENDPOINTS = [
     },
     "error_codes": [
       "account_inactive",
+      "account_locked",
       "http_error",
       "internal_error",
-      "invalid_credentials"
+      "invalid_credentials",
+      "temporary_credential_expired"
     ],
     "enum_refs": [],
     "deprecation": {

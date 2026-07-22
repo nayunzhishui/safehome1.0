@@ -6,6 +6,7 @@ import json
 import os
 import re
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
@@ -26,6 +27,8 @@ CLOUDBASE_ACCESS_TOKEN_PATH = "/.tencentcloudbase/wx/cloudbase_access_token"
 _WECHAT_ACCESS_TOKEN_CACHE: dict[str, float | str] = {"appid": "", "token": "", "expires_at": 0.0}
 _CLOUDBASE_OPENID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{6,128}$")
 _CLOUDBASE_MINIPROGRAM_SOURCES = {"wx_devtools", "wx_client"}
+MAX_PASSWORD_FAILURES = 5
+PASSWORD_LOCK_MINUTES = 15
 
 
 class WechatAuthError(ValueError):
@@ -44,6 +47,7 @@ def _public_user(row: dict) -> dict:
         "anonymous_id": row.get("anonymous_id"),
         "avatar_url": row.get("avatar_url"),
         "status": row.get("status") or "active",
+        "must_change_password": bool(row.get("must_change_password")),
     }
 
 
@@ -263,6 +267,16 @@ def _wechat_error_response(exc: WechatAuthError):
     return fail(exc.code, str(exc), status=exc.status)
 
 
+def _parse_utc_timestamp(value: str) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(value)
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
 @bp.get("/capabilities")
 def auth_capabilities():
     """Expose login readiness without returning credentials or identity values."""
@@ -353,14 +367,42 @@ def login():
     anonymous_id = str(payload.get("anonymous_id") or "").strip() or None
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        now = datetime.now(timezone.utc)
+        if row is not None and row["locked_until"]:
+            locked_until = _parse_utc_timestamp(str(row["locked_until"]))
+            if locked_until is not None and locked_until > now:
+                return fail("account_locked", "登录失败次数过多，请稍后重试或联系管理员解锁", status=423)
+            conn.execute(
+                "UPDATE users SET failed_login_count = 0, last_failed_login_at = NULL, locked_until = NULL WHERE id = ?",
+                (row["id"],),
+            )
+            conn.commit()
+            row = conn.execute("SELECT * FROM users WHERE id = ?", (row["id"],)).fetchone()
         if row is None or not row["password_hash"] or not check_password_hash(row["password_hash"], password):
+            locked = False
+            failure_count = 1
+            if row is not None:
+                failure_count = int(row["failed_login_count"] or 0) + 1
+                locked = failure_count >= MAX_PASSWORD_FAILURES
+                lock_until = (now + timedelta(minutes=PASSWORD_LOCK_MINUTES)).isoformat() if locked else None
+                conn.execute(
+                    """
+                    UPDATE users
+                    SET failed_login_count = ?, last_failed_login_at = ?, locked_until = ?, updated_at = ?
+                    WHERE id = ?
+                    """,
+                    (failure_count, now.isoformat(), lock_until, now.isoformat(), row["id"]),
+                )
+                conn.commit()
             record_security_event(
-                "login_failed",
-                "medium",
+                "account_locked" if locked else "login_failed",
+                "high" if locked else "medium",
                 target_type="credential_hash",
                 target_id=hashlib.sha256(username.encode("utf-8")).hexdigest()[:16] if username else None,
-                metadata={"source": "password", "failure_count": 1},
+                metadata={"source": "password", "failure_count": failure_count},
             )
+            if locked:
+                return fail("account_locked", "登录失败次数过多，请稍后重试或联系管理员解锁", status=423)
             return fail("invalid_credentials", "用户名或密码不正确", status=401)
         if row["status"] and row["status"] != "active":
             record_security_event(
@@ -371,9 +413,25 @@ def login():
                 metadata={"source": "password", "status": row["status"]},
             )
             return fail("account_inactive", "账号暂不可用", status=403)
+        if bool(row["must_change_password"]) and row["credential_expires_at"]:
+            expires_at = _parse_utc_timestamp(str(row["credential_expires_at"]))
+            if expires_at is None or expires_at <= datetime.now(timezone.utc):
+                record_security_event(
+                    "temporary_credential_expired",
+                    "medium",
+                    target_type="user",
+                    target_id=row["id"],
+                    metadata={"source": "password"},
+                )
+                return fail("temporary_credential_expired", "一次性密码已过期，请联系管理员重新生成", status=403)
         timestamp = now_iso()
         conn.execute(
-            "UPDATE users SET anonymous_id = COALESCE(?, anonymous_id), last_login_at = ?, updated_at = ? WHERE id = ?",
+            """
+            UPDATE users
+            SET anonymous_id = COALESCE(?, anonymous_id), last_login_at = ?, updated_at = ?,
+                failed_login_count = 0, last_failed_login_at = NULL, locked_until = NULL
+            WHERE id = ?
+            """,
             (anonymous_id, timestamp, timestamp, row["id"]),
         )
         register_claim_candidate(conn, row["id"], anonymous_id)
@@ -580,6 +638,9 @@ def admin_create_account():
     nickname = str(payload.get("nickname") or "").strip() or None
     anonymous_id = str(payload.get("anonymous_id") or "").strip() or None
     rotate_existing = payload.get("rotate_existing") is True
+    temporary_credential = payload.get("temporary_credential") is True
+    credential_receipt_id = str(payload.get("credential_receipt_id") or "").strip() or None
+    credential_expires_at = str(payload.get("credential_expires_at") or "").strip() or None
 
     if len(username) < 3:
         return fail("validation_error", "用户名至少需要 3 个字符", status=400)
@@ -587,16 +648,54 @@ def admin_create_account():
         return fail("validation_error", "密码至少需要 8 个字符", status=400)
     if role not in {"admin", "researcher", "supervisor", "parent", "student"}:
         return fail("validation_error", "不支持该角色", status=400)
+    if temporary_credential and (not credential_receipt_id or not credential_expires_at):
+        return fail("validation_error", "一次性凭据需要receipt ID和过期时间", status=400)
+    if temporary_credential:
+        password_error = _validate_new_password(password)
+        if password_error:
+            return fail("validation_error", password_error, status=400)
+        expires_at = _parse_utc_timestamp(credential_expires_at)
+        now = datetime.now(timezone.utc)
+        if expires_at is None:
+            return fail("validation_error", "一次性凭据过期时间必须包含有效时区", status=400)
+        if expires_at <= now:
+            return fail("temporary_credential_expired", "一次性凭据已过期，请重新生成", status=400)
+        if expires_at > now + timedelta(hours=24, minutes=5):
+            return fail("validation_error", "一次性凭据有效期不能超过24小时", status=400)
 
     timestamp = now_iso()
     user_id = new_id("user")
     with get_connection() as conn:
-        existing = conn.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone()
+        receipt_owner = None
+        if credential_receipt_id:
+            receipt_owner = conn.execute(
+                "SELECT username FROM users WHERE credential_receipt_id = ?",
+                (credential_receipt_id,),
+            ).fetchone()
+        if receipt_owner is not None and str(receipt_owner["username"] or "") != username:
+            return fail("credential_receipt_reused", "该一次性凭据回执已被使用", status=409)
+        existing = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
         if existing:
+            if temporary_credential and credential_receipt_id and hmac.compare_digest(
+                str(existing["credential_receipt_id"] or ""), credential_receipt_id
+            ):
+                existing_user = _public_user(row_to_dict(existing))
+                return ok(
+                    {
+                        "user": existing_user,
+                        "created": False,
+                        "credentials_rotated": False,
+                        "already_applied": True,
+                    }
+                )
             if not rotate_existing:
                 return fail("username_exists", "该用户名已被使用", status=409)
+            if str(existing["role"] or "") != role:
+                return fail("role_change_forbidden", "凭据轮换不能同时修改账号角色", status=409)
             user_id = existing["id"]
         else:
+            if rotate_existing:
+                return fail("account_not_found", "待轮换账号不存在", status=404)
             ensure_user(conn, user_id, nickname)
         conn.execute(
             """
@@ -604,10 +703,25 @@ def admin_create_account():
             SET username = ?, phone_or_email = ?, password_hash = ?,
                 anonymous_id = ?, role = ?, source = 'admin_created',
                 status = 'active', status_reason = NULL,
-                auth_epoch = auth_epoch + ?, updated_at = ?
+                auth_epoch = auth_epoch + ?,
+                must_change_password = ?, credential_receipt_id = ?, credential_expires_at = ?,
+                failed_login_count = 0, last_failed_login_at = NULL, locked_until = NULL,
+                updated_at = ?
             WHERE id = ?
             """,
-            (username, None, generate_password_hash(password), anonymous_id, role, 1 if existing else 0, timestamp, user_id),
+            (
+                username,
+                None,
+                generate_password_hash(password),
+                anonymous_id,
+                role,
+                1 if existing else 0,
+                1 if temporary_credential else 0,
+                credential_receipt_id,
+                credential_expires_at,
+                timestamp,
+                user_id,
+            ),
         )
         write_audit_log(
             conn,
@@ -622,6 +736,174 @@ def admin_create_account():
 
     user = _public_user(row_to_dict(row))
     return ok({"user": user, "created": existing is None, "credentials_rotated": existing is not None}, status=201 if existing is None else 200)
+
+
+def _validate_new_password(password: str) -> str | None:
+    if len(password) < 12:
+        return "新密码至少需要12个字符"
+    categories = sum(
+        bool(pattern.search(password))
+        for pattern in (re.compile(r"[a-z]"), re.compile(r"[A-Z]"), re.compile(r"\d"), re.compile(r"[^A-Za-z0-9]"))
+    )
+    if categories < 3:
+        return "新密码需要包含大小写字母、数字或符号中的至少三类"
+    return None
+
+
+@bp.post("/change-password")
+def change_password():
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+
+    payload = request.get_json(silent=True) or {}
+    current_password = str(payload.get("current_password") or "")
+    new_password = str(payload.get("new_password") or "")
+    validation_error = _validate_new_password(new_password)
+    if validation_error:
+        return fail("validation_error", validation_error, status=400)
+    if hmac.compare_digest(current_password, new_password):
+        return fail("password_reuse_forbidden", "新密码不能与当前密码相同", status=409)
+
+    timestamp = now_iso()
+    with get_connection() as conn:
+        row = conn.execute("SELECT * FROM users WHERE id = ?", (actor["id"],)).fetchone()
+        if row is None or not row["password_hash"] or not check_password_hash(row["password_hash"], current_password):
+            record_security_event(
+                "password_change_failed",
+                "medium",
+                actor_id=actor["id"],
+                target_type="user",
+                target_id=actor["id"],
+                metadata={"source": "password_change"},
+            )
+            return fail("invalid_credentials", "当前密码不正确", status=401)
+        conn.execute(
+            """
+            UPDATE users
+            SET password_hash = ?, must_change_password = 0,
+                credential_receipt_id = NULL, credential_expires_at = NULL,
+                password_changed_at = ?, failed_login_count = 0,
+                last_failed_login_at = NULL, locked_until = NULL,
+                auth_epoch = auth_epoch + 1, updated_at = ?
+            WHERE id = ?
+            """,
+            (generate_password_hash(new_password), timestamp, timestamp, actor["id"]),
+        )
+        write_audit_log(
+            conn,
+            "account_password_changed",
+            actor["id"],
+            "user",
+            actor["id"],
+            {"sessions_revoked": True, "temporary_credential_cleared": True},
+        )
+        conn.commit()
+        updated = row_to_dict(conn.execute("SELECT * FROM users WHERE id = ?", (actor["id"],)).fetchone())
+
+    user = _public_user(updated)
+    return ok({"token": generate_auth_token(updated), "user": user, "sessions_revoked": True})
+
+
+@bp.post("/admin-accounts/<username>/unlock")
+def admin_unlock_account(username: str):
+    try:
+        require_admin_token()
+    except ValueError as exc:
+        return fail("unauthorized", str(exc), status=401)
+    normalized = str(username or "").strip()
+    timestamp = now_iso()
+    with get_connection() as conn:
+        row = conn.execute("SELECT * FROM users WHERE username = ?", (normalized,)).fetchone()
+        if row is None:
+            return fail("not_found", "没有找到该账号", status=404)
+        conn.execute(
+            """
+            UPDATE users
+            SET failed_login_count = 0, last_failed_login_at = NULL, locked_until = NULL, updated_at = ?
+            WHERE id = ?
+            """,
+            (timestamp, row["id"]),
+        )
+        write_audit_log(
+            conn,
+            "account_login_unlocked",
+            "admin-token",
+            "user",
+            row["id"],
+            {"previous_failure_count": int(row["failed_login_count"] or 0)},
+        )
+        conn.commit()
+    return ok({"username": normalized, "failed_login_count": 0, "locked": False})
+
+
+def _admin_account_status(row: dict) -> dict:
+    locked_until = _parse_utc_timestamp(str(row.get("locked_until") or ""))
+    return {
+        "username": row.get("username"),
+        "role": row.get("role"),
+        "status": row.get("status"),
+        "last_login_at": row.get("last_login_at"),
+        "password_configured": bool(row.get("password_hash")),
+        "must_change_password": bool(row.get("must_change_password")),
+        "credential_generation": int(row.get("auth_epoch") or 0),
+        "temporary_credential_expires_at": row.get("credential_expires_at"),
+        "failed_login_count": int(row.get("failed_login_count") or 0),
+        "locked": bool(locked_until and locked_until > datetime.now(timezone.utc)),
+        "locked_until": row.get("locked_until"),
+    }
+
+
+@bp.get("/admin-accounts/<username>")
+def admin_verify_account(username: str):
+    try:
+        require_admin_token()
+    except ValueError as exc:
+        return fail("unauthorized", str(exc), status=401)
+    normalized = str(username or "").strip()
+    with get_connection() as conn:
+        row = conn.execute("SELECT * FROM users WHERE username = ?", (normalized,)).fetchone()
+    if row is None:
+        return fail("not_found", "没有找到该账号", status=404)
+    return ok(_admin_account_status(row_to_dict(row)))
+
+
+@bp.post("/admin-accounts/<username>/revoke")
+def admin_revoke_account(username: str):
+    try:
+        require_admin_token()
+    except ValueError as exc:
+        return fail("unauthorized", str(exc), status=401)
+    normalized = str(username or "").strip()
+    timestamp = now_iso()
+    with get_connection() as conn:
+        row = conn.execute("SELECT * FROM users WHERE username = ?", (normalized,)).fetchone()
+        if row is None:
+            return fail("not_found", "没有找到该账号", status=404)
+        already_revoked = row["status"] == "disabled" and row["status_reason"] == "credential_revoked"
+        if not already_revoked:
+            conn.execute(
+                """
+                UPDATE users
+                SET status = 'disabled', status_reason = 'credential_revoked',
+                    must_change_password = 0, credential_receipt_id = NULL,
+                    credential_expires_at = NULL, auth_epoch = auth_epoch + 1, updated_at = ?
+                WHERE id = ?
+                """,
+                (timestamp, row["id"]),
+            )
+            write_audit_log(
+                conn,
+                "account_credentials_revoked",
+                "admin-token",
+                "user",
+                row["id"],
+                {"tokens_revoked": True},
+            )
+            conn.commit()
+        updated = row_to_dict(conn.execute("SELECT * FROM users WHERE id = ?", (row["id"],)).fetchone())
+    return ok({**_admin_account_status(updated), "tokens_revoked": True, "already_revoked": already_revoked})
 
 
 @bp.post("/logout")

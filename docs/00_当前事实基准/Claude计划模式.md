@@ -11136,7 +11136,7 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 | 子任务 | 状态 | 实现范围 | 自动验收 | 外部门禁 |
 |---|---|---|---|---|
 | T36-F00 基线与执行器 | 本地工程完成 | `task36_registry.json`连续覆盖F00—F19；执行器支持plan/next/resume/verify/report/snapshot；状态与快照仅写`.codex_tmp` | 9项专项、六个云端只读探针、命令漂移与dirty保护通过 | 无；未执行生产变更 |
-| T36-F01 研究者账号 | 部分完成 | 本地 safehome1.0/admin receipt 与登录验证完成；生产轮换/首次改密/锁定恢复待做 | 账号脚本 4 项通过 | 负责人接收与首次改密 |
+| T36-F01 研究者账号 | 本地工程完成/外部接收待办 | receipt环境隔离、24小时失效、首次强制改密、旧会话撤销、锁定/解锁/核验/撤销、双端改密UI和024迁移完成；未动生产凭据 | F01专项23项；执行器专项54项；认证/安全/迁移回归100项，契约/双端构建检查通过 | 负责人接收、生产首次改密、测试云/生产核验 |
 | T36-F02 受控外部访问 | 详细计划完成 | 命名Tunnel+Access、组网、合成短时Quick Tunnel、启停验收回滚 | 文档契约 | 域名、访问者和数据范围批准；未启动公网访问 |
 | T36-F03 权限矩阵 | 开发临时例外完成 | 所有已登录普通账号在研究者平台专用路径临时 admin 等效读写；正式矩阵仍待做 | Test1 读仪表盘、向 wyd 写备注/发消息，wyd 列表收取；关闭开关恢复拒绝 | 临时越权不得通过正式验收 |
 | T36-F04 移动工作台 | 计划未开始 | 待处理、参与者、反馈消息、试点、我的工作 | 四视口/状态/弱网/权限 | 微信真机和大字体 |
@@ -11188,3 +11188,14 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 权限冻结：participant/researcher/supervisor/admin/showcase与self/assignment/supervision/all/synthetic范围已入机器注册表；`researcher_platform_full_access=true`原值保留，但不是正式权限证据，F00未扩大任何写权限。
 - 执行器：`python scripts/run_task36.py plan|report|snapshot`；`verify --task T36-F00`已通过；`run --next`停在F01并在缺少实现后验收命令时拒绝跳步；命令digest变化时禁止resume。
 - 安全边界：未轮换生产密码、未启动隧道、未读取或修改微信Secret、未修改CloudBase、未签署人工/伦理/真机/生产门禁。
+
+## 九、T36-F01执行结果（2026-07-22）
+
+- 状态：`engineering_complete_local / external_production_credential_acceptance_pending`；工程完成不等于生产凭据已交付或发布批准。
+- 凭据生命周期：`prepare/apply/verify/revoke/rotate`、环境隔离、receipt唯一性、24小时失效、强密码、显式轮换和脱敏错误均已实现；receipt仍只允许写`.codex_tmp`。
+- 身份安全：首次登录必须改密；改密和轮换递增`auth_epoch`并使旧token失效；连续5次失败锁定15分钟，支持自动恢复和管理员解锁；核验接口不返回密码、哈希或receipt ID。
+- 跨端闭环：Web和小程序在`must_change_password=true`时停止导航，仅允许`me/change-password/logout`，成功改密后替换token再进入工作台。
+- 数据与契约：本地schema升级为`2026_07_22_024 / credential_lifecycle`；新增7个用户凭据状态字段及receipt唯一索引；机器契约229项，T31—T34衍生注册表同步。
+- 验收：F01专项23项、任务36执行器专项54项通过；认证、安全、MySQL适配、健康和T31—T34契约回归合计100项通过；Web production build、小程序40页审计、API/安全/可靠性/体验/运营契约检查通过。
+- 明确未做：未生成或轮换生产密码，未调用`apply/rotate`云端操作，未启动隧道，未修改微信Secret，未扩大临时展示写权限。负责人接收、生产首次改密与云端核验继续保持外部门禁。
+- 下一切片：T36-F02仅完成受控外部访问的本地配置/脚本/失败契约和dry-run；不得启动真实公网隧道。

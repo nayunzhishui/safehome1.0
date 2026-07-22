@@ -32,6 +32,10 @@ Page({
     status: "idle",
     message: "",
     capabilityMessage: "",
+    mustChangePassword: false,
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   },
 
   onLoad(options = {}) {
@@ -92,8 +96,55 @@ Page({
     if (app && app.setAuthSession) {
       app.setAuthSession(result.token, result.user);
     }
+    if (result.user && result.user.must_change_password) {
+      this.setData({
+        mustChangePassword: true,
+        currentPassword: this.data.password,
+        password: "",
+        status: "idle",
+        message: "首次登录，请先设置新密码。完成后才可继续。",
+      });
+      return;
+    }
     wx.showToast({ title: toastTitle, icon: "success" });
     navigateAfterAuth(this.data.redirectUrl);
+  },
+
+  onCurrentPasswordInput(event) {
+    this.setData({ currentPassword: event.detail.value });
+  },
+
+  onNewPasswordInput(event) {
+    this.setData({ newPassword: event.detail.value });
+  },
+
+  onConfirmPasswordInput(event) {
+    this.setData({ confirmPassword: event.detail.value });
+  },
+
+  submitPasswordChange() {
+    const currentPassword = this.data.currentPassword;
+    const newPassword = this.data.newPassword;
+    if (!currentPassword || !newPassword) {
+      this.setData({ status: "error", message: "请填写临时密码和新密码。" });
+      return;
+    }
+    if (newPassword !== this.data.confirmPassword) {
+      this.setData({ status: "error", message: "两次输入的新密码不一致。" });
+      return;
+    }
+    this.setData({ loading: true, status: "loading", message: "正在更新密码..." });
+    api.changePassword({ current_password: currentPassword, new_password: newPassword })
+      .then((result) => {
+        const app = getApp();
+        if (app && app.setAuthSession) app.setAuthSession(result.token, result.user);
+        wx.showToast({ title: "密码已更新", icon: "success" });
+        navigateAfterAuth(this.data.redirectUrl);
+      })
+      .catch((error) => {
+        this.setData({ status: "error", message: error.message || "密码更新失败，请检查后重试。" });
+      })
+      .finally(() => this.setData({ loading: false }));
   },
 
   submitWechatLogin() {

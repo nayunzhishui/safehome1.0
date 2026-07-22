@@ -1,6 +1,6 @@
 {
   "schema": "safehome.task36.registry.v1",
-  "version": "2026-07-22-f00-baseline-v1",
+  "version": "2026-07-22-f01-credential-lifecycle-v1",
   "scope": [
     "T36-F00", "T36-F01", "T36-F02", "T36-F03", "T36-F04",
     "T36-F05", "T36-F06", "T36-F07", "T36-F08", "T36-F09",
@@ -142,7 +142,7 @@
   ],
   "tasks": [
     {"id": "T36-F00", "title": "基线冻结与机器注册表", "dependencies": [], "engineering_complete": true, "status": "engineering_complete_local", "evidence": ["config/task36_registry.json", "scripts/run_task36.py", "backend/tests/test_task36_orchestrator.py"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task36_orchestrator.py", "-q"], ["python", "scripts/run_task36.py", "report"]]},
-    {"id": "T36-F01", "title": "研究者账号、密码轮换与安全交付", "dependencies": ["T36-F00"], "engineering_complete": false, "status": "implementation_partial_external_credential_gate_pending", "evidence": ["backend/scripts/bootstrap_researcher.py"]},
+    {"id": "T36-F01", "title": "研究者账号、密码轮换与安全交付", "dependencies": ["T36-F00"], "engineering_complete": true, "status": "engineering_complete_local_external_production_credential_acceptance_pending", "evidence": ["backend/scripts/bootstrap_researcher.py", "backend/routes/auth.py", "backend/tests/test_task36_credentials.py", "backend/tests/test_bootstrap_researcher.py", "apps/web/src/pages/LoginPage.tsx", "apps/miniprogram/pages/login/index.js"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task36_credentials.py", "backend/tests/test_bootstrap_researcher.py", "backend/tests/test_auth_route.py", "backend/tests/test_task31_security_privacy_abuse.py", "-q"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["python", "backend/scripts/audit_miniprogram_frontend.py"]]},
     {"id": "T36-F02", "title": "Web研究者后台受控外部访问", "dependencies": ["T36-F00"], "engineering_complete": false, "status": "plan_complete_external_domain_identity_gate_pending", "evidence": ["docs/04_部署运维/Web研究者后台受控外部访问与内网穿透实施计划_20260722.md"]},
     {"id": "T36-F03", "title": "正式权限能力矩阵和对象范围", "dependencies": ["T36-F00"], "engineering_complete": false, "status": "development_exception_complete_formal_matrix_pending", "evidence": ["content/showcase_access.json"]},
     {"id": "T36-F04", "title": "小程序研究者移动工作台壳层", "dependencies": ["T36-F03", "T36-F09"], "engineering_complete": false, "status": "planned_full", "evidence": ["apps/miniprogram/pages/researcher-dashboard/index.js"]},

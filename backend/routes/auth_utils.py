@@ -30,9 +30,10 @@ SHOWCASE_RESEARCHER_PLATFORM_OPERATIONS = {
 
 
 class AuthError(ValueError):
-    def __init__(self, message: str, status: int = 401) -> None:
+    def __init__(self, message: str, status: int = 401, code: str | None = None) -> None:
         super().__init__(message)
         self.status = status
+        self.code = code
 
 
 def _serializer() -> URLSafeTimedSerializer:
@@ -86,6 +87,12 @@ def get_current_actor(allow_legacy_admin: bool = True) -> dict | None:
     if not token:
         return None
     user = verify_auth_token(token)
+    if bool(user.get("must_change_password")) and request.path not in {
+        "/api/auth/me",
+        "/api/auth/change-password",
+        "/api/auth/logout",
+    }:
+        raise AuthError("首次登录需要先修改一次性密码", status=403, code="password_change_required")
     return {"id": user["id"], "role": user.get("role") or "parent", "source": "auth_token", "user": user}
 
 
@@ -171,7 +178,7 @@ def auth_error_response(exc: AuthError):
         401: "unauthorized",
         403: "forbidden",
     }
-    return fail(code_by_status.get(exc.status, "auth_error"), str(exc), status=exc.status)
+    return fail(exc.code or code_by_status.get(exc.status, "auth_error"), str(exc), status=exc.status)
 
 
 def role_required(*roles: str, allow_legacy_admin: bool = True):
