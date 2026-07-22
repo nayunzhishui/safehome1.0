@@ -5,6 +5,33 @@ const DEFAULT_CONTAINER_SERVICE = DEFAULT_CLOUD_CONFIG.containerService;
 const DEFAULT_CLOUD_ENV_ID = DEFAULT_CLOUD_CONFIG.cloudEnvId;
 const DEFAULT_HTTP_BASE_URL = DEFAULT_CLOUD_CONFIG.httpBaseUrl;
 
+function getClientVersion() {
+  try {
+    const account = wx.getAccountInfoSync && wx.getAccountInfoSync();
+    const miniProgram = account && account.miniProgram;
+    return miniProgram && (miniProgram.version || miniProgram.envVersion) || "dev-unversioned";
+  } catch (error) {
+    return "dev-unversioned";
+  }
+}
+
+function getResponseHeader(headers, name) {
+  const target = String(name).toLowerCase();
+  const source = headers || {};
+  const key = Object.keys(source).find((item) => String(item).toLowerCase() === target);
+  return key ? String(source[key] || "") : "";
+}
+
+function transportMetadata(headers = {}, requestId = "") {
+  return {
+    requestId: requestId || getResponseHeader(headers, "X-Request-ID"),
+    clientVersion: getClientVersion(),
+    serviceVersion: getResponseHeader(headers, "X-SafeHome-Service-Version"),
+    buildId: getResponseHeader(headers, "X-SafeHome-Build-ID"),
+    occurredAt: new Date().toISOString(),
+  };
+}
+
 const ERROR_MESSAGES_BY_STATUS = {
   400: "提交内容还不完整，请检查后再试一次。",
   401: "登录状态已过期，请重新登录后再继续。",
@@ -173,6 +200,7 @@ function createSafeHomeApi(options = {}) {
       transport: useLocalHttp ? "local-http" : "cloud-container",
       path,
       method,
+      clientVersion: getClientVersion(),
     };
     const authToken = wx.getStorageSync("auth_token") || "";
     const authHeader = authToken ? { Authorization: `Bearer ${authToken}` } : {};
@@ -189,6 +217,7 @@ function createSafeHomeApi(options = {}) {
           statusCode: 401,
           debug,
           debugMessage: "本接口需要先登录，小程序端未找到 auth_token。",
+          ...transportMetadata(),
         });
         return;
       }
@@ -217,6 +246,7 @@ function createSafeHomeApi(options = {}) {
               status: 0,
               detail: err,
               debug,
+              ...transportMetadata(),
             });
           },
         });
@@ -232,6 +262,7 @@ function createSafeHomeApi(options = {}) {
           retryable: true,
           debugMessage,
           debug,
+          ...transportMetadata(),
         });
         return;
       }
@@ -265,6 +296,7 @@ function createSafeHomeApi(options = {}) {
             status: 0,
             detail: err,
             debug,
+            ...transportMetadata(),
           });
         },
       });
@@ -285,6 +317,7 @@ function createSafeHomeApi(options = {}) {
         method,
         statusCode,
         payload,
+        headers: res.header || res.headers || {},
         debug,
       }));
       return;
@@ -296,6 +329,7 @@ function createSafeHomeApi(options = {}) {
         method,
         statusCode,
         payload,
+        headers: res.header || res.headers || {},
         debug,
       }));
       return;
@@ -304,7 +338,7 @@ function createSafeHomeApi(options = {}) {
     resolve(payload && payload.data !== undefined ? payload.data : payload);
   }
 
-  function normalizeApiError({ path, method, statusCode, payload, debug }) {
+  function normalizeApiError({ path, method, statusCode, payload, headers, debug }) {
     const backendError = payload && payload.error ? payload.error : {};
     const rawCode = backendError.code || payload && payload.code || "api_error";
     const code = String(rawCode || "api_error");
@@ -323,6 +357,7 @@ function createSafeHomeApi(options = {}) {
       payload,
       debug,
       debugMessage: rawMessage ? `后端返回：${rawMessage}` : "",
+      ...transportMetadata(headers, String(payload && payload.request_id || "")),
     };
   }
 

@@ -169,7 +169,7 @@ def create_slo_snapshot(actor: dict, payload: dict) -> dict:
         raise ReliabilityError("validation_error", "window_minutes 必须在1到10080之间。")
     cutoff = _iso(_now() - timedelta(minutes=window))
     with get_connection() as conn:
-        rows = rows_to_dicts(conn.execute("SELECT journey, outcome, latency_ms, retry_count, recovered FROM observability_events WHERE created_at >= ?", (cutoff,)).fetchall())
+        rows = rows_to_dicts(conn.execute("SELECT journey, outcome, status_code, latency_ms, retry_count, recovered FROM observability_events WHERE created_at >= ?", (cutoff,)).fetchall())
         grouped: dict[str, list[dict]] = {}
         for row in rows:
             grouped.setdefault(row["journey"], []).append(row)
@@ -179,8 +179,25 @@ def create_slo_snapshot(actor: dict, payload: dict) -> dict:
             success = sum(item["outcome"] == "success" for item in items)
             retried = sum(int(item["retry_count"] or 0) > 0 for item in items)
             recovered = sum(bool(item["recovered"]) for item in items)
+            server_errors = sum(int(item["status_code"] or 0) >= 500 for item in items)
+            gateway_502 = sum(int(item["status_code"] or 0) == 502 for item in items)
+            auth_401 = sum(int(item["status_code"] or 0) == 401 for item in items)
+            forbidden_403 = sum(int(item["status_code"] or 0) == 403 for item in items)
             latencies = [float(item["latency_ms"]) for item in items]
-            metrics[journey] = {"requests": total, "success_rate": round(success / total, 4), "error_rate": round((total - success) / total, 4), "retry_rate": round(retried / total, 4), "recovery_rate": round(recovered / total, 4), "latency_p50_ms": _percentile(latencies, 0.5), "latency_p95_ms": _percentile(latencies, 0.95)}
+            metrics[journey] = {
+                "requests": total,
+                "success_rate": round(success / total, 4),
+                "error_rate": round((total - success) / total, 4),
+                "server_error_rate": round(server_errors / total, 4),
+                "retry_rate": round(retried / total, 4),
+                "recovery_rate": round(recovered / total, 4),
+                "latency_p50_ms": _percentile(latencies, 0.5),
+                "latency_p95_ms": _percentile(latencies, 0.95),
+                "server_error_count": server_errors,
+                "gateway_502_count": gateway_502,
+                "auth_401_count": auth_401,
+                "forbidden_403_count": forbidden_403,
+            }
         snapshot_id = new_id("slo")
         timestamp = now_iso()
         conn.execute(

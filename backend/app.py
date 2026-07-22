@@ -58,6 +58,11 @@ from services.runtime_metrics import record_response, snapshot as runtime_metric
 from services.reliability_service import record_request_event
 from routes.auth_utils import AuthError, get_current_actor
 from services.assessment_profile_service import model_artifact_hash_is_valid
+from services.build_fingerprint_service import (
+    deployment_consistency,
+    load_build_identity,
+    public_build_identity,
+)
 
 
 SERVICE_VERSION = os.environ.get("SERVICE_VERSION", "safehome-2026-07-10-task12-login").strip() or "safehome-2026-07-10-task12-login"
@@ -218,6 +223,7 @@ def create_app(
     configure_logging(app)
     if init_database:
         init_db()
+    app.extensions["safehome_build_identity"] = load_build_identity(app.config["CONTENT_DIR"])
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(ai_qa_bp)
@@ -272,6 +278,9 @@ def create_app(
         request_id = getattr(g, "request_id", uuid.uuid4().hex)
         duration_ms = round((time.perf_counter() - getattr(g, "request_started_at", time.perf_counter())) * 1000, 2)
         response.headers["X-Request-ID"] = request_id
+        build_identity = app.extensions.get("safehome_build_identity") or {}
+        response.headers["X-SafeHome-Build-ID"] = str(build_identity.get("build_id") or "unknown")
+        response.headers["X-SafeHome-Service-Version"] = SERVICE_VERSION
         app.logger.info(
             "request_completed request_id=%s method=%s path=%s status=%s duration_ms=%.2f",
             request_id,
@@ -345,12 +354,14 @@ def create_app(
 
     @app.get("/healthz")
     def healthz():
+        build = app.extensions.get("safehome_build_identity") or {}
         return jsonify(
             {
                 "ok": True,
                 "service": "safehome-backend",
                 "env": app.config.get("APP_ENV"),
                 "version": SERVICE_VERSION,
+                "build": public_build_identity(build),
             }
         )
 
@@ -369,11 +380,15 @@ def create_app(
 def build_readiness_payload(app: Flask) -> dict:
     database = check_database_health()
     content = check_content_health(app.config["CONTENT_DIR"])
+    build = load_build_identity(app.config["CONTENT_DIR"])
+    deployment = deployment_consistency(build, database, str(app.config.get("APP_ENV") or ""))
     return {
-        "ok": bool(database.get("ok") and content.get("ok")),
+        "ok": bool(database.get("ok") and content.get("ok") and deployment.get("ok")),
         "service": "safehome-backend",
         "env": app.config.get("APP_ENV"),
         "version": SERVICE_VERSION,
+        "build": public_build_identity(build),
+        "deployment": deployment,
         "database": database,
         "content": content,
         "runtime_metrics": runtime_metrics_snapshot(),

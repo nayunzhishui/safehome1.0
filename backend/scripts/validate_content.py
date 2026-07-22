@@ -806,9 +806,9 @@ def validate_reliability_registry_content(content_dir: Path) -> list[str]:
         registry = load_json(content_dir / "reliability_release_registry.json")
     except (OSError, json.JSONDecodeError) as exc:
         return [f"reliability_release_registry.json 不可读取：{exc}"]
-    if len(registry.get("journeys", [])) != 7:
-        errors.append("可靠性注册表必须覆盖七条核心旅程")
-    required_trace = {"request_id", "actor_scope", "module", "journey", "outcome", "error_code", "latency_ms", "retry_count", "recovered"}
+    if len(registry.get("journeys", [])) != 9:
+        errors.append("可靠性注册表必须覆盖九条核心旅程")
+    required_trace = {"request_id", "actor_scope", "module", "journey", "outcome", "error_code", "status_code", "latency_ms", "retry_count", "recovered"}
     if set(registry.get("trace_fields", [])) != required_trace:
         errors.append("可靠性追踪字段必须使用脱敏白名单")
     forbidden = {"authorization", "cookie", "password", "token", "request_body", "response_body", "participant_text"}

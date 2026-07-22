@@ -54,6 +54,7 @@ try {
     "backend/app.py",
     "backend/database.py",
     "backend/config.py",
+    "backend/build_info.json",
     "backend/requirements.txt",
     "content/training_cards.json",
     "content/feedback_rules.json",
@@ -133,6 +134,37 @@ try {
   }
   if ($manifestText -notmatch "Included=Dockerfile,.dockerignore,backend,content,shared") {
     throw "Manifest does not list the expected included paths."
+  }
+
+  $buildInfoEntry = $archive.GetEntry("backend/build_info.json")
+  if (-not $buildInfoEntry) {
+    throw "Package missing backend/build_info.json"
+  }
+  $buildInfoStream = $buildInfoEntry.Open()
+  try {
+    $buildInfoReader = New-Object System.IO.StreamReader($buildInfoStream)
+    $buildInfoText = $buildInfoReader.ReadToEnd()
+  } finally {
+    $buildInfoStream.Dispose()
+  }
+  $buildInfo = $buildInfoText | ConvertFrom-Json
+  if ($buildInfo.schema -ne "safehome.build-fingerprint.v1") {
+    throw "Build info schema is invalid."
+  }
+  if ($buildInfo.commit_sha -notmatch '^[a-f0-9]{40}$') {
+    throw "Build info commit SHA is invalid."
+  }
+  if ($buildInfo.api_contract_hash -notmatch '^[a-f0-9]{64}$') {
+    throw "Build info API contract hash is invalid."
+  }
+  if ($buildInfo.content_manifest_hash -notmatch '^[a-f0-9]{64}$') {
+    throw "Build info content manifest hash is invalid."
+  }
+  if ($buildInfoText -match '(?i)(appsecret|secret_key|authorization|password|auth_token)') {
+    throw "Build info contains a forbidden secret-like key."
+  }
+  if ($buildInfoText -match '(?i)([A-Z]:\\|/Users/|/home/)') {
+    throw "Build info contains an absolute local path."
   }
 } finally {
   $archive.Dispose()

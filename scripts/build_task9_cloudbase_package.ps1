@@ -149,11 +149,19 @@ try {
   Rename-ProfileModelsForCloudBase
 
   $branch = (git branch --show-current 2>$null)
-  $head = (git rev-parse --short HEAD 2>$null)
+  $head = (git rev-parse HEAD 2>$null)
   $status = (git status --short 2>$null)
+  $buildTime = (Get-Date).ToUniversalTime().ToString("o")
+  Invoke-Native "python" @(
+    "scripts\generate_build_fingerprint.py",
+    "--root", $StagingRoot,
+    "--output", (Join-Path $StagingRoot "backend\build_info.json"),
+    "--commit-sha", $head,
+    "--build-time", $buildTime
+  )
   $manifest = @(
     "SafeHome task 9 CloudBase package",
-    "GeneratedAt=$(Get-Date -Format o)",
+    "GeneratedAt=$buildTime",
     "Branch=$branch",
     "Head=$head",
     "Included=Dockerfile,.dockerignore,backend,content,shared",

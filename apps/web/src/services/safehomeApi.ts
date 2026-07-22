@@ -151,13 +151,56 @@ export interface ResearchParticipantDossier {
 export class SafeHomeApiError extends Error {
   code: string;
   status: number;
+  requestId: string;
+  clientVersion: string;
+  serviceVersion: string;
+  buildId: string;
+  occurredAt: string;
 
-  constructor(message: string, code: string, status: number) {
+  constructor(
+    message: string,
+    code: string,
+    status: number,
+    diagnostic: Partial<Pick<SafeHomeApiError, "requestId" | "clientVersion" | "serviceVersion" | "buildId" | "occurredAt">> = {},
+  ) {
     super(message);
     this.name = "SafeHomeApiError";
     this.code = code;
     this.status = status;
+    this.requestId = diagnostic.requestId || "";
+    this.clientVersion = diagnostic.clientVersion || "web-dev";
+    this.serviceVersion = diagnostic.serviceVersion || "";
+    this.buildId = diagnostic.buildId || "";
+    this.occurredAt = diagnostic.occurredAt || new Date().toISOString();
   }
+}
+
+export function formatSafeHomeErrorDiagnostic(error: SafeHomeApiError): string {
+  return [
+    `请求编号：${error.requestId || "未返回"}`,
+    `客户端版本：${error.clientVersion || "未知"}`,
+    `服务版本：${error.serviceVersion || "未知"}`,
+    `构建编号：${error.buildId || "未知"}`,
+    `发生时间：${error.occurredAt}`,
+  ].join("\n");
+}
+
+export async function copySafeHomeErrorDiagnostic(error: SafeHomeApiError): Promise<void> {
+  const text = formatSafeHomeErrorDiagnostic(error);
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  if (!copied) throw new Error("复制诊断信息失败");
 }
 
 export function formatSafeHomeError(error: unknown, fallback: string): string {
@@ -170,10 +213,12 @@ export function formatSafeHomeError(error: unknown, fallback: string): string {
 export class SafeHomeApiClient {
   private readonly baseUrl: string;
   private readonly defaultUserId: string;
+  private readonly clientVersion: string;
 
   constructor(options: SafeHomeApiClientOptions = {}) {
     this.baseUrl = options.baseUrl ?? import.meta.env.VITE_SAFEHOME_API_BASE_URL ?? "http://127.0.0.1:5050";
     this.defaultUserId = options.defaultUserId ?? getAnonymousUserId();
+    this.clientVersion = import.meta.env.VITE_SAFEHOME_CLIENT_VERSION ?? "web-dev";
   }
 
   async healthz(): Promise<{ ok: true; service: string }> {
@@ -1161,13 +1206,40 @@ export class SafeHomeApiClient {
   ): Promise<T> {
     const token = getToken();
     const authHeader: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-    const response = await fetch(this.absoluteUrl(path), {
-      method: options.method ?? "GET",
-      headers: { "Content-Type": "application/json", ...authHeader, ...(options.headers || {}) },
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
-    });
+    let response: Response;
+    try {
+      response = await fetch(this.absoluteUrl(path), {
+        method: options.method ?? "GET",
+        headers: { "Content-Type": "application/json", ...authHeader, ...(options.headers || {}) },
+        body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      });
+    } catch (error) {
+      throw new SafeHomeApiError("现在没能连接服务，请检查网络后再试。", "network_error", 0, {
+        clientVersion: this.clientVersion,
+        occurredAt: new Date().toISOString(),
+      });
+    }
 
-    const payload = await response.json();
+    const responseText = await response.text();
+    let payload: any;
+    try {
+      payload = responseText ? JSON.parse(responseText) : {};
+    } catch (error) {
+      throw new SafeHomeApiError("服务返回了无法识别的内容，请稍后再试。", "invalid_response", response.status, {
+        requestId: response.headers.get("X-Request-ID") || "",
+        clientVersion: this.clientVersion,
+        serviceVersion: response.headers.get("X-SafeHome-Service-Version") || "",
+        buildId: response.headers.get("X-SafeHome-Build-ID") || "",
+        occurredAt: new Date().toISOString(),
+      });
+    }
+    const diagnostic = {
+      requestId: String(payload?.request_id || response.headers.get("X-Request-ID") || ""),
+      clientVersion: this.clientVersion,
+      serviceVersion: response.headers.get("X-SafeHome-Service-Version") || "",
+      buildId: response.headers.get("X-SafeHome-Build-ID") || "",
+      occurredAt: new Date().toISOString(),
+    };
     if (!response.ok) {
       const isAdminRequest = path.startsWith("/api/admin") || Boolean(options.headers?.["X-Admin-Token"]);
       const message =
@@ -1175,10 +1247,10 @@ export class SafeHomeApiClient {
           ? "后台令牌缺失或无效。请使用当前部署环境提供的后台令牌。"
           : payload?.error?.message ?? (response.status === 401 ? "需要先登录或重新登录。" : "请求失败");
       const code = response.status === 401 && isAdminRequest ? "admin_unauthorized" : payload?.error?.code ?? "http_error";
-      throw new SafeHomeApiError(message, code, response.status);
+      throw new SafeHomeApiError(message, code, response.status, diagnostic);
     }
     if (payload && typeof payload === "object" && payload.ok === false) {
-      throw new SafeHomeApiError(payload.error?.message ?? "请求失败", payload.error?.code ?? "api_error", response.status);
+      throw new SafeHomeApiError(payload.error?.message ?? "请求失败", payload.error?.code ?? "api_error", response.status, diagnostic);
     }
     return payload as T;
   }

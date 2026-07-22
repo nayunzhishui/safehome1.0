@@ -88,3 +88,8 @@
   color: var(--safe-muted);
   font-size: 21rpx;
 }
+
+.diagnostic-card { margin-top: 14rpx; padding: 18rpx 20rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-sm); background: var(--safe-card); }
+.diagnostic-copy { display: block; color: var(--safe-muted); font-size: 21rpx; line-height: 1.55; overflow-wrap: anywhere; }
+.diagnostic-action { min-height: 88rpx; margin: 10rpx 0 0; border: 0; background: transparent; color: var(--safe-primary-deep); font-size: 24rpx; font-weight: 800; line-height: 88rpx; }
+.diagnostic-action::after { border: 0; }

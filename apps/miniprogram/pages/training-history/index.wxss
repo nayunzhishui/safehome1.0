@@ -165,6 +165,10 @@
   border-color: rgba(215, 111, 103, 0.3);
 }
 
+.diagnostic-copy { display: block; margin-top: 10rpx; color: var(--safe-muted); font-size: 21rpx; line-height: 1.55; overflow-wrap: anywhere; }
+.diagnostic-action { min-height: 88rpx; margin: 8rpx 0 0; border: 0; background: transparent; color: var(--safe-primary-deep); font-size: 24rpx; font-weight: 800; line-height: 88rpx; }
+.diagnostic-action::after { border: 0; }
+
 .state-title {
   color: var(--safe-title);
   font-size: 29rpx;

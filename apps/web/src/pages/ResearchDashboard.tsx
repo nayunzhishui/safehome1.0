@@ -4,7 +4,9 @@ import { ProfileRadarChart } from "../components/ProfileRadarChart";
 import { RelationshipStatusBadge } from "../components/RelationshipStatusBadge";
 import { ProfileScatterChart } from "../components/ProfileScatterChart";
 import {
+  copySafeHomeErrorDiagnostic,
   formatSafeHomeError,
+  SafeHomeApiError,
   SafeHomeApiClient,
   type ResearchParticipantDossier,
   type ResearchParticipantSummary,
@@ -160,6 +162,7 @@ export function ResearchDashboard() {
   const [resolutionCode, setResolutionCode] = useState("handled");
   const [transferAssigneeId, setTransferAssigneeId] = useState("");
   const [operationsMetrics, setOperationsMetrics] = useState<ResearchWorkItemMetrics | null>(null);
+  const [lastError, setLastError] = useState<SafeHomeApiError | null>(null);
   const [state, setState] = useState<OverviewState>({
     status: "idle",
     message: "正在准备研究者平台总览。",
@@ -235,6 +238,7 @@ export function ResearchDashboard() {
   ];
 
   async function loadOverview() {
+    setLastError(null);
     setState((current) => ({
       ...current,
       status: "loading",
@@ -310,6 +314,7 @@ export function ResearchDashboard() {
       setOperationsMetrics(await api.getResearchWorkItemMetrics(7, getStoredAdminToken().trim()));
       setOperationsQueueStatus("success");
     } catch (error) {
+      setLastError(error instanceof SafeHomeApiError ? error : null);
       setOperationsQueue(null);
       setOperationsQueueStatus("error");
       setState((current) => ({ ...current, message: formatSafeHomeError(error, "队列暂时无法读取。") }));
@@ -461,6 +466,19 @@ export function ResearchDashboard() {
       </div>
 
       <div className={`status ${state.status}`}>{state.message}</div>
+      {state.status === "error" && lastError ? (
+        <section className="errorDiagnosticCard" aria-label="错误诊断信息">
+          <div>
+            <strong>请求编号：{lastError.requestId || "未返回"}</strong>
+            <span>客户端 {lastError.clientVersion} · 服务 {lastError.serviceVersion || "未知"} · 构建 {lastError.buildId || "未知"}</span>
+            <span>发生时间：{lastError.occurredAt}</span>
+          </div>
+          <div className="errorDiagnosticActions">
+            <button type="button" onClick={() => void loadOverview()}>重新加载</button>
+            <button type="button" onClick={() => void copySafeHomeErrorDiagnostic(lastError)}>复制诊断信息</button>
+          </div>
+        </section>
+      ) : null}
 
       <section className="guidanceBox" aria-label="后台令牌">
         <label className="tokenField">

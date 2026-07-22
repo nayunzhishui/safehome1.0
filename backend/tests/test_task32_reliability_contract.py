@@ -16,8 +16,8 @@ def test_reliability_registry_generator_and_content_validator_pass():
 
 def test_registry_has_complete_journeys_jobs_faults_and_human_gates():
     registry = json.loads((ROOT / "content/reliability_release_registry.json").read_text(encoding="utf-8"))
-    assert len(registry["journeys"]) == 7
-    assert set(registry["trace_fields"]) == {"request_id", "actor_scope", "module", "journey", "outcome", "error_code", "latency_ms", "retry_count", "recovered"}
+    assert len(registry["journeys"]) == 9
+    assert set(registry["trace_fields"]) == {"request_id", "actor_scope", "module", "journey", "outcome", "error_code", "status_code", "latency_ms", "retry_count", "recovered"}
     assert {item["job_type"] for item in registry["job_adapters"]} == {"notification_delivery", "privacy_execution", "ai_evaluation", "offline_benchmark"}
     assert {item["scenario"] for item in registry["fault_scenarios"]} == {"content_missing", "database_timeout", "provider_failure", "token_invalidated", "duplicate_message", "artifact_corrupted"}
     assert registry["production_slo"]["status"] == "pending_test_cloud_observation"

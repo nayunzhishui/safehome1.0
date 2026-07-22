@@ -157,8 +157,13 @@
         "latency_p50_ms",
         "latency_p95_ms",
         "error_rate",
+        "server_error_rate",
         "retry_rate",
-        "recovery_rate"
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
       ],
       "paths": [
         "/api/auth/login",
@@ -176,8 +181,13 @@
         "latency_p50_ms",
         "latency_p95_ms",
         "error_rate",
+        "server_error_rate",
         "retry_rate",
-        "recovery_rate"
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
       ],
       "paths": [
         "/api/diaries"
@@ -193,8 +203,13 @@
         "latency_p50_ms",
         "latency_p95_ms",
         "error_rate",
+        "server_error_rate",
         "retry_rate",
-        "recovery_rate"
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
       ],
       "paths": [
         "/api/feedback/generate"
@@ -210,8 +225,13 @@
         "latency_p50_ms",
         "latency_p95_ms",
         "error_rate",
+        "server_error_rate",
         "retry_rate",
-        "recovery_rate"
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
       ],
       "paths": [
         "/api/training-plan",
@@ -228,12 +248,62 @@
         "latency_p50_ms",
         "latency_p95_ms",
         "error_rate",
+        "server_error_rate",
         "retry_rate",
-        "recovery_rate"
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
       ],
       "paths": [
         "/api/messages",
         "/api/notifications"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    },
+    {
+      "journey_id": "training_history",
+      "label": "训练记录",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "server_error_rate",
+        "retry_rate",
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
+      ],
+      "paths": [
+        "/api/checkins"
+      ],
+      "production_target": null,
+      "target_status": "pending_test_cloud_observation"
+    },
+    {
+      "journey_id": "researcher_dashboard",
+      "label": "研究者仪表盘",
+      "metrics": [
+        "success_rate",
+        "latency_p50_ms",
+        "latency_p95_ms",
+        "error_rate",
+        "server_error_rate",
+        "retry_rate",
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
+      ],
+      "paths": [
+        "/api/relationship-pilot/researcher/dashboard",
+        "/api/research/access"
       ],
       "production_target": null,
       "target_status": "pending_test_cloud_observation"
@@ -246,8 +316,13 @@
         "latency_p50_ms",
         "latency_p95_ms",
         "error_rate",
+        "server_error_rate",
         "retry_rate",
-        "recovery_rate"
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
       ],
       "paths": [
         "/api/research/work-items",
@@ -264,8 +339,13 @@
         "latency_p50_ms",
         "latency_p95_ms",
         "error_rate",
+        "server_error_rate",
         "retry_rate",
-        "recovery_rate"
+        "recovery_rate",
+        "server_error_count",
+        "gateway_502_count",
+        "auth_401_count",
+        "forbidden_403_count"
       ],
       "paths": [
         "/api/ai-qa"
@@ -305,9 +385,10 @@
     "journey",
     "outcome",
     "error_code",
+    "status_code",
     "latency_ms",
     "retry_count",
     "recovered"
   ],
-  "version": "2026-07-20-t32-reliability-v1"
+  "version": "2026-07-22-t36-f09-observability-v1"
 }

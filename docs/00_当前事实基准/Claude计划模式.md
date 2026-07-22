@@ -11144,7 +11144,7 @@ docs/02_专项进度与验收/情感计算与网络分析公开数据集适配�
 | T36-F06 反馈消息闭环 | 计划未开始 | 草稿、预览、确认、发送、版本、撤回、回执 | 幂等/重复/停用/弱网/审计 | 双账号真实收取 |
 | T36-F07 训练与反馈读取 | 工程修复完成/云端待部署 | 修复 MySQL DictCursor 计数 KeyError，统一字典读取 | MySQL与训练历史专项通过 | 新包上传后云端真实账号复验 |
 | T36-F08 消息502修复 | 工程修复完成/云端待部署 | 定位非法相对 Link 响应头导致网关502；移除该头并改用page_size | API/小程序契约专项通过 | 新包上传后连续云探针 |
-| T36-F09 部署指纹 | 计划未开始 | commit/契约/content/schema/request_id和旅程指标 | 旧端/旧后端/旧内容/旧库区分 | 测试云观察 |
+| T36-F09 部署指纹 | 本地完整工程完成/测试云观察待补 | 构建清单、health/ready一致性、双端可复制诊断、9条旅程指标 | 专项21项、受影响56项、后端全量560项、双端构建审计与包指纹校验通过 | CloudBase发布后合成冒烟和连续观察 |
 | T36-F10 微信登录 | 紧急安全修复待发布/网络待修 | 163425公网伪造头负向探针真实返回token，已撤销AppID匹配自动信任；TRUST=0时统一jscode2session，并细分脱敏传输错误 | 安全/登录/小程序专项23项通过；紧急包SHA256 `C7E2CE6DC1F445C6AFAFBACF3DC667A1F231C9587AF6146CFD0EC624F7B84B02` | 立即发布165133包、确认伪造头400无token、修复公网出访/VPC NAT、Android/iOS真机 |
 | T36-F11 手机号登录 | 已定位/Secret与资质门禁 | getPhoneNumber入口存在；云端token或AppID/Secret缺失 | 能力接口确认not_configured | 负责人录入Secret、微信资质/隐私和真机 |
 | T36-F12 身份与认领 | 计划未开始 | username/openid/phone/anonymous状态机 | 并发、唯一性、认领、角色提升阻断 | 账号合并人工确认 |
@@ -11222,3 +11222,14 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 验收：F03专项12项、任务36机器注册表关联验收24项、后端全量555项、Web typecheck/build、小程序审计、API契约重建通过。
 - 未做：未执行CloudBase/MySQL 025迁移、未签署正式权限矩阵、未建立正式合成展示数据源，未启动隧道、轮换生产密码或修改微信Secret。
 - 下一切片：按注册表继续F08/F09云端故障与指纹闭环；F04依赖F09，不能提前把未验证云端状态包装成移动工作台完成。
+
+## 十二、T36-F09执行结果（2026-07-22）
+
+- 状态：`engineering_complete_local / external_test_cloud_observation_pending`；没有发布CloudBase或推断生产批准。
+- 构建一致性：制品生成`safehome.build-fingerprint.v1`，记录commit、build time、API契约/content哈希、build ID和预期schema；包校验拒绝错误哈希、秘密样式字段与本地绝对路径。
+- 运行诊断：`/healthz`暴露安全构建身份和版本响应头；`/readyz`分别识别`backend_contract_mismatch`、`content_manifest_mismatch`、`database_schema_mismatch`并在生产降级503。
+- 可观测性：可靠性注册表升级为9条旅程；登录、消息、训练记录和研究者仪表盘聚合成功率、P95、5xx、502、401/403、重试与恢复，仅保存传输元数据。
+- 双端恢复：Web研究者仪表盘与小程序消息/训练记录/研究者仪表盘错误态可复制request_id、客户端/服务/构建版本和时间，不复制token、正文或任意请求载荷。
+- 验收：专项21项、旧注册表影响契约56项、后端全量560项通过；内容校验、Web typecheck/build、小程序40页审计、JS语法和云托管包指纹校验通过。
+- 门禁：测试云合成冒烟、连续SLO、Android/iOS、生产schema迁移/恢复和发布批准仍待外部执行；临时展示越权保持原范围且不能作为正式权限证据。
+- 下一切片：以`python scripts/run_task36.py run --next`返回为准，不能使用文档中的旧`next`命令；继续禁止自动改微信Secret、启动公网隧道或放宽展示写权限。

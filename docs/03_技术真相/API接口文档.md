@@ -91,7 +91,7 @@
 
 ### `GET /healthz`
 
-用途：确认后端是否启动。该接口只返回轻量状态，不检查数据库。
+用途：确认后端是否启动。该接口只返回轻量状态和不含路径/密钥的构建身份，不检查数据库。
 
 响应示例：
 
@@ -100,7 +100,15 @@
   "ok": true,
   "service": "safehome-backend",
   "env": "development",
-  "version": "safehome-2026-06-04"
+  "version": "safehome-2026-06-04",
+  "build": {
+    "build_id": "10439c1c26c147970a36",
+    "commit_sha": "<git-sha>",
+    "build_time": "<UTC>",
+    "api_contract_hash": "<sha256>",
+    "content_manifest_hash": "<sha256>",
+    "schema_expected": {"version": "2026_07_22_025"}
+  }
 }
 ```
 
@@ -115,6 +123,7 @@
 - content 必需文件是否存在；
 - `training_cards` 是否与 `content/training_cards.json` 同步；
 - `assessment_worksheets` 是否与 `content/assessment_worksheets.json` 同步。
+- 容器API契约、content清单和数据库schema是否与包内构建指纹一致。
 
 ### `GET /readyz`
 
@@ -129,9 +138,13 @@
   "env": "development",
   "version": "safehome-2026-06-04",
   "database": {},
-  "content": {}
+  "content": {},
+  "build": {},
+  "deployment": {"ok": true, "diagnosis": "consistent"}
 }
 ```
+
+生产环境缺少有效构建清单，或API契约、content清单、数据库schema任一不匹配时，`/readyz`返回`503`。所有响应同时带`X-SafeHome-Build-ID`和`X-SafeHome-Service-Version`，便于双端错误页关联；不返回本地路径、密钥或请求正文。
 
 全局未处理异常会返回稳定 JSON，不向用户暴露堆栈或内部错误：
 

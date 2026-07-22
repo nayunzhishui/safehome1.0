@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { buildErrorDiagnostic, copyErrorDiagnostic } = require("../../utils/errorDiagnostics");
 
 const api = createSafeHomeApi();
 
@@ -6,6 +7,7 @@ Page({
   data: {
     loading: true,
     errorMessage: "",
+    errorDiagnostic: null,
     needsLogin: false,
     messages: [],
     unreadCount: 0,
@@ -16,7 +18,7 @@ Page({
   },
 
   async loadMessages() {
-    this.setData({ loading: true, errorMessage: "", needsLogin: false });
+    this.setData({ loading: true, errorMessage: "", errorDiagnostic: null, needsLogin: false });
     try {
       // CloudBase currently rejects the legacy `limit` response headers at
       // the gateway. `page_size` is the canonical equivalent and avoids 502.
@@ -36,6 +38,7 @@ Page({
       this.setData({
         loading: false,
         errorMessage: error.message || "消息暂时没能加载，请检查网络后再试一次。",
+        errorDiagnostic: buildErrorDiagnostic(error),
         needsLogin,
       });
     }
@@ -45,6 +48,15 @@ Page({
     const id = event.currentTarget.dataset.id;
     if (!id) return;
     wx.navigateTo({ url: `/pages/message-detail/index?id=${encodeURIComponent(id)}` });
+  },
+
+  async copyDiagnostic() {
+    try {
+      await copyErrorDiagnostic(this.data.errorDiagnostic || {});
+      wx.showToast({ title: "诊断信息已复制", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: "复制失败", icon: "none" });
+    }
   },
 
   handleStateAction() {

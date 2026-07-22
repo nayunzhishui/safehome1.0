@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { requireLogin } = require("../../utils/authGuard");
+const { buildErrorDiagnostic, copyErrorDiagnostic } = require("../../utils/errorDiagnostics");
 
 const api = createSafeHomeApi();
 const PAGE_SIZE = 50;
@@ -30,6 +31,7 @@ Page({
     loading: true,
     loadingMore: false,
     errorMessage: "",
+    errorDiagnostic: null,
     items: [],
     page: 1,
     total: 0,
@@ -49,7 +51,7 @@ Page({
 
   async loadPage(page) {
     const append = page > 1;
-    this.setData({ loading: !append, loadingMore: append, errorMessage: append ? this.data.errorMessage : "" });
+    this.setData({ loading: !append, loadingMore: append, errorMessage: append ? this.data.errorMessage : "", errorDiagnostic: append ? this.data.errorDiagnostic : null });
     try {
       const result = await api.listCheckins({ page, page_size: PAGE_SIZE, completed: true });
       const nextItems = (result.items || []).map(formatCheckin);
@@ -57,6 +59,7 @@ Page({
         loading: false,
         loadingMore: false,
         errorMessage: "",
+        errorDiagnostic: null,
         items: append ? this.data.items.concat(nextItems) : nextItems,
         page: result.page || page,
         total: Number(result.total || 0),
@@ -67,7 +70,17 @@ Page({
         loading: false,
         loadingMore: false,
         errorMessage: error.message || "训练记录暂时没能加载，请检查网络后再试一次。",
+        errorDiagnostic: buildErrorDiagnostic(error),
       });
+    }
+  },
+
+  async copyDiagnostic() {
+    try {
+      await copyErrorDiagnostic(this.data.errorDiagnostic || {});
+      wx.showToast({ title: "诊断信息已复制", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: "复制失败", icon: "none" });
     }
   },
 

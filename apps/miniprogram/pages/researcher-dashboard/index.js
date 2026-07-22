@@ -1,5 +1,6 @@
 const { createSafeHomeApi } = require("../../services/api");
 const { getAuthUser, requireLogin } = require("../../utils/authGuard");
+const { buildErrorDiagnostic, copyErrorDiagnostic } = require("../../utils/errorDiagnostics");
 
 const api = createSafeHomeApi();
 
@@ -44,6 +45,7 @@ Page({
   data: {
     loading: true,
     errorMessage: "",
+    errorDiagnostic: null,
     items: [],
     selected: null,
     note: "",
@@ -81,6 +83,7 @@ Page({
   },
 
   async loadDashboard() {
+    this.setData({ loading: true, errorMessage: "", errorDiagnostic: null });
     try {
       const payload = await api.getRelationshipResearchDashboard();
       const items = (payload.items || []).map((item) => ({
@@ -89,11 +92,20 @@ Page({
         statusText: statusLabel(item.status),
         reviewStatusText: statusLabel(item.review_status),
       }));
-      this.setData({ loading: false, errorMessage: "", items });
+      this.setData({ loading: false, errorMessage: "", errorDiagnostic: null, items });
       const firstAssigned = items.find((item) => item.scopeStatus !== "claimable");
       if (firstAssigned) await this.selectEnrollmentById(firstAssigned.id);
     } catch (error) {
-      this.setData({ loading: false, errorMessage: error.message || "仪表盘暂时无法读取。" });
+      this.setData({ loading: false, errorMessage: error.message || "仪表盘暂时无法读取。", errorDiagnostic: buildErrorDiagnostic(error) });
+    }
+  },
+
+  async copyDiagnostic() {
+    try {
+      await copyErrorDiagnostic(this.data.errorDiagnostic || {});
+      wx.showToast({ title: "诊断信息已复制", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: "复制失败", icon: "none" });
     }
   },
 

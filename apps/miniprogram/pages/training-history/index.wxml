@@ -18,7 +18,9 @@
   <view wx:elif="{{errorMessage && !items.length}}" class="safe-card state-card state-card--error">
     <text class="state-title">记录暂时没有加载成功</text>
     <text class="state-text">{{errorMessage}}</text>
+    <text class="diagnostic-copy">请求编号：{{errorDiagnostic.requestId || '未返回'}} · 服务版本：{{errorDiagnostic.serviceVersion || '未知'}}</text>
     <button class="safe-outline-button state-action" bindtap="retry">重新加载</button>
+    <button class="diagnostic-action" bindtap="copyDiagnostic">复制诊断信息</button>
   </view>
 
   <view wx:elif="{{items.length}}" class="record-list">
@@ -37,6 +39,7 @@
       <button wx:if="{{hasMore}}" class="safe-outline-button load-more" loading="{{loadingMore}}" disabled="{{loadingMore}}" bindtap="loadMore">{{loadingMore ? '加载中' : '加载更多'}}</button>
       <text wx:else class="list-end">已显示全部 {{total}} 次记录</text>
       <text wx:if="{{errorMessage}}" class="load-error">{{errorMessage}}</text>
+      <button wx:if="{{errorMessage && errorDiagnostic}}" class="diagnostic-action" bindtap="copyDiagnostic">复制诊断信息</button>
     </view>
   </view>
 
