@@ -81,14 +81,40 @@ def list_participants():
     if error:
         return error
     query = str(request.args.get("q") or "").strip().lower()
-    limit = min(max(parse_int(request.args.get("limit"), 50), 1), 100)
+    page = parse_int(request.args.get("page"), 1)
+    legacy_limit = parse_int(request.args.get("limit"), 50)
+    page_size = parse_int(request.args.get("page_size"), legacy_limit)
+    page = 1 if page is None else page
+    legacy_limit = 50 if legacy_limit is None else legacy_limit
+    page_size = legacy_limit if page_size is None else page_size
+    if page < 1 or page_size < 1 or page_size > 100:
+        return fail("validation_error", "page 需大于等于1，page_size 需为1至100。", status=400)
     allowed_clause, params = _allowed_user_clause(actor)
     search_clause = ""
     if query:
         search_clause = "AND (LOWER(u.id) LIKE ? OR LOWER(COALESCE(u.nickname, '')) LIKE ?)"
         params.extend([f"%{query}%", f"%{query}%"])
-    params.append(limit)
+    participant_clause = f"""
+        u.role IN ('parent', 'student', 'user')
+        AND ({allowed_clause})
+        {search_clause}
+        AND (
+            EXISTS (SELECT 1 FROM assessment_results a WHERE a.user_id = u.id)
+            OR EXISTS (SELECT 1 FROM emotion_diaries d WHERE d.user_id = u.id)
+            OR EXISTS (SELECT 1 FROM checkins c WHERE c.user_id = u.id)
+            OR EXISTS (SELECT 1 FROM records r WHERE r.user_id = u.id AND r.module_type = 'program_entry')
+            OR EXISTS (SELECT 1 FROM relationship_pilot_enrollments e WHERE e.user_id = u.id)
+            OR EXISTS (SELECT 1 FROM supervision_requests s WHERE s.user_id = u.id)
+        )
+    """
+    offset = (page - 1) * page_size
     with get_connection() as conn:
+        total = int(
+            conn.execute(
+                f"SELECT COUNT(*) AS count FROM users u WHERE {participant_clause}",
+                tuple(params),
+            ).fetchone()["count"]
+        )
         rows = conn.execute(
             f"""
             SELECT
@@ -104,21 +130,11 @@ def list_participants():
                 (SELECT COUNT(*) FROM supervision_requests s WHERE s.user_id = u.id) AS supervision_count,
                 (SELECT COUNT(*) FROM messages m WHERE m.user_id = u.id AND m.status = 'unread') AS unread_message_count
             FROM users u
-            WHERE u.role IN ('parent', 'student', 'user')
-              AND ({allowed_clause})
-              {search_clause}
-              AND (
-                EXISTS (SELECT 1 FROM assessment_results a WHERE a.user_id = u.id)
-                OR EXISTS (SELECT 1 FROM emotion_diaries d WHERE d.user_id = u.id)
-                OR EXISTS (SELECT 1 FROM checkins c WHERE c.user_id = u.id)
-                OR EXISTS (SELECT 1 FROM records r WHERE r.user_id = u.id AND r.module_type = 'program_entry')
-                OR EXISTS (SELECT 1 FROM relationship_pilot_enrollments e WHERE e.user_id = u.id)
-                OR EXISTS (SELECT 1 FROM supervision_requests s WHERE s.user_id = u.id)
-              )
-            ORDER BY u.updated_at DESC
-            LIMIT ?
+            WHERE {participant_clause}
+            ORDER BY u.updated_at DESC, u.id ASC
+            LIMIT ? OFFSET ?
             """,
-            tuple(params),
+            tuple([*params, page_size, offset]),
         ).fetchall()
         write_audit_log(
             conn,
@@ -126,13 +142,17 @@ def list_participants():
             actor["id"],
             "research_participant_matrix",
             "filtered" if query else "all",
-            {"result_count": len(rows), "query_used": bool(query)},
+            {"result_count": len(rows), "query_used": bool(query), "page": page, "page_size": page_size},
         )
         conn.commit()
     return ok(
         {
             "items": rows_to_dicts(rows),
             "count": len(rows),
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "has_more": offset + len(rows) < total,
             "scope": "assigned_participants" if actor.get("role") == "researcher" else "all_participants",
             "boundary_notice": "研究者仅查看获授权范围内的参与者资料；敏感详情访问会写入审计日志。",
         }

@@ -59,6 +59,29 @@ export interface ResearchOperationsSnapshot {
   boundary_notice: string;
 }
 
+export interface ResearchParticipantSummary {
+  user_id: ID;
+  nickname?: string | null;
+  role: UserRole | "user";
+  last_activity_at?: ISODateTime | null;
+  assessment_count: number;
+  diary_count: number;
+  checkin_count: number;
+  program_count: number;
+  relationship_count: number;
+  supervision_count: number;
+  unread_message_count: number;
+}
+
+export interface ResearchParticipantPage extends ListResponse<ResearchParticipantSummary> {
+  total: number;
+  page: number;
+  page_size: number;
+  has_more: boolean;
+  scope: "assigned_participants" | "all_participants";
+  boundary_notice: string;
+}
+
 export type PrivacyRequestStatus = "pending" | "processing" | "completed" | "rejected" | "cancelled";
 
 export interface PrivacyRequest {

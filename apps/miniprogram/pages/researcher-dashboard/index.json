@@ -1,3 +1,5 @@
 {
-  "navigationBarTitleText": "研究者评估仪表盘"
+  "navigationBarTitleText": "研究者移动工作台",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
 }

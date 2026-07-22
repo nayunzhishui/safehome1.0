@@ -12726,11 +12726,31 @@ export const GENERATED_API_ENDPOINTS = [
       "path_parameters": [],
       "query_parameters": [
         "limit",
+        "page",
+        "page_size",
         "q"
       ],
       "body_fields": [],
       "headers": [],
-      "pagination": null,
+      "pagination": {
+        "page": "page",
+        "page_size": "page_size",
+        "max_page_size": 100,
+        "response": [
+          "items",
+          "page",
+          "page_size",
+          "total",
+          "has_more"
+        ],
+        "deprecated_aliases": [
+          {
+            "name": "limit",
+            "replacement": "page_size",
+            "remove_after": "2026-10-31"
+          }
+        ]
+      },
       "idempotency": {
         "supported": false,
         "required": false,
@@ -12755,7 +12775,8 @@ export const GENERATED_API_ENDPOINTS = [
       "forbidden",
       "http_error",
       "internal_error",
-      "unauthorized"
+      "unauthorized",
+      "validation_error"
     ],
     "enum_refs": [],
     "deprecation": {

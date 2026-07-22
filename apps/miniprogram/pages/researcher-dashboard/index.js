@@ -4,6 +4,67 @@ const { buildErrorDiagnostic, copyErrorDiagnostic } = require("../../utils/error
 
 const api = createSafeHomeApi();
 
+const WORKSPACES = [
+  { id: "pending", label: "待处理", capability: "research.dashboard.read" },
+  { id: "participants", label: "参与者", capability: "research.participant.read" },
+  { id: "feedback", label: "反馈与消息", capability: "research.feedback.write" },
+  { id: "pilots", label: "试点项目", capability: "research.dashboard.read" },
+  { id: "mine", label: "我的工作", capability: "research.dashboard.read" },
+];
+
+const QUEUES = [
+  { id: "risk_review", label: "风险信号复核" },
+  { id: "supervision", label: "人工支持" },
+  { id: "stage_feedback", label: "阶段性反馈" },
+  { id: "feedback_review", label: "不适反馈复核" },
+  { id: "notification_failed", label: "消息发送恢复" },
+];
+
+const PRIORITY_ORDER = { urgent: 0, attention: 1, routine: 2 };
+const PRIORITY_LABELS = { urgent: "优先处理", attention: "需要关注", routine: "常规" };
+const DRAFT_PREFIX = "researcher_workspace_draft_v1:";
+
+function emptyOperations() {
+  return {
+    scope: "assigned_participants",
+    notification_deliveries: { failed: 0 },
+    backlog: { stage_feedback: 0, supervision: 0, risk_review: 0, privacy_requests: 0 },
+  };
+}
+
+function visibleWorkspaces(capabilityScope) {
+  const ids = new Set((capabilityScope && capabilityScope.capability_ids) || []);
+  const development = Boolean(capabilityScope && capabilityScope.development_exception_active);
+  return WORKSPACES.filter((item) => development || ids.has(item.capability)).map((item) => ({ ...item }));
+}
+
+function queuePreview(results) {
+  const failures = [];
+  const items = [];
+  let total = 0;
+  results.forEach((result, index) => {
+    const queue = QUEUES[index];
+    if (result.status === "rejected") {
+      failures.push({ id: queue.id, label: queue.label, requestId: buildErrorDiagnostic(result.reason).requestId || "" });
+      return;
+    }
+    total += Number(result.value.total || result.value.count || 0);
+    (result.value.items || []).forEach((item) => items.push({
+      workItemId: item.work_item_id,
+      queueType: queue.id,
+      queueLabel: queue.label,
+      title: item.title || queue.label,
+      priority: item.priority || "routine",
+      priorityText: PRIORITY_LABELS[item.priority] || PRIORITY_LABELS.routine,
+      status: item.status || "open",
+      waitMinutes: Number(item.wait_minutes || 0),
+      dueAt: item.due_at || "",
+    }));
+  });
+  items.sort((a, b) => (PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]) || (b.waitMinutes - a.waitMinutes));
+  return { items, failures, total };
+}
+
 const STATUS_LABELS = {
   active: "进行中",
   completed: "已完成",
@@ -21,6 +82,12 @@ const STATUS_LABELS = {
 function statusLabel(value) {
   const key = String(value || "");
   return STATUS_LABELS[key] || "待核对";
+}
+
+function syncTimeLabel(date = new Date()) {
+  const hour = String(date.getHours()).padStart(2, "0");
+  const minute = String(date.getMinutes()).padStart(2, "0");
+  return `${hour}:${minute}`;
 }
 
 function normalizeDetail(detail) {
@@ -46,6 +113,29 @@ Page({
     loading: true,
     errorMessage: "",
     errorDiagnostic: null,
+    workspaces: [],
+    activeWorkspace: "pending",
+    offline: false,
+    lastSyncText: "尚未同步",
+    operations: null,
+    pendingItems: [],
+    pendingTotal: 0,
+    pendingVisibleItems: [],
+    pendingPage: 1,
+    pendingPageSize: 5,
+    pendingHasMore: false,
+    urgentCount: 0,
+    partialFailures: [],
+    participantLoading: false,
+    participantError: "",
+    participantDiagnostic: null,
+    participantQuery: "",
+    participantItems: [],
+    participantPage: 1,
+    participantHasMore: false,
+    pilotLoading: false,
+    pilotError: "",
+    pilotDiagnostic: null,
     items: [],
     selected: null,
     note: "",
@@ -71,19 +161,149 @@ Page({
       api.getShowcaseAccess().catch(() => ({ enabled: false })),
       api.getResearchCapabilities().catch(() => null),
     ]);
+    const workspaces = visibleWorkspaces(capabilityScope);
     this.setData({
       developmentFullAccess: Boolean(showcase.researcher_platform_full_access),
       capabilityScope,
+      workspaces,
+      activeWorkspace: workspaces.length ? workspaces[0].id : "pending",
     });
     if (!showcase.enabled && (!user || !["researcher", "admin", "supervisor"].includes(user.role))) {
       this.setData({ loading: false, errorMessage: "当前账号没有研究者权限。" });
       return;
     }
-    this.loadDashboard();
+    this.bindNetworkState();
+    await this.loadWorkbench();
   },
 
-  async loadDashboard() {
+  onUnload() {
+    if (this.networkHandler && wx.offNetworkStatusChange) wx.offNetworkStatusChange(this.networkHandler);
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+  },
+
+  async onPullDownRefresh() {
+    try {
+      await this.refreshActiveWorkspace();
+    } finally {
+      wx.stopPullDownRefresh();
+    }
+  },
+
+  bindNetworkState() {
+    wx.getNetworkType({
+      success: (result) => this.setData({ offline: result.networkType === "none" }),
+    });
+    this.networkHandler = (result) => {
+      this.setData({ offline: !result.isConnected });
+      if (result.isConnected && this.data.errorMessage) this.loadWorkbench();
+    };
+    wx.onNetworkStatusChange(this.networkHandler);
+  },
+
+  async refreshActiveWorkspace() {
+    if (this.data.activeWorkspace === "participants") return this.loadParticipants(true);
+    if (this.data.activeWorkspace === "pilots") return Promise.all([this.loadWorkbench(), this.loadDashboard()]);
+    return this.loadWorkbench();
+  },
+
+  async switchWorkspace(event) {
+    const id = event.currentTarget.dataset.id;
+    if (!this.data.workspaces.some((item) => item.id === id)) return;
+    this.setData({ activeWorkspace: id });
+    if (id === "participants" && !this.data.participantItems.length) await this.loadParticipants(true);
+    if (id === "pilots" && !this.data.items.length) await this.loadDashboard();
+  },
+
+  async loadWorkbench() {
+    if (this.data.offline) {
+      this.setData({
+        loading: false,
+        errorMessage: this.data.operations ? "" : "当前处于离线状态，已有内容会保留，联网后可重试。",
+      });
+      return;
+    }
     this.setData({ loading: true, errorMessage: "", errorDiagnostic: null });
+    const operationsPromise = api.getResearchOperations();
+    const queuePromises = QUEUES.map((queue) => api.getResearchQueue({ queue: queue.id, page: 1, page_size: 20, status: "active" }));
+    const [operationsResult, ...queueResults] = await Promise.allSettled([operationsPromise, ...queuePromises]);
+    const preview = queuePreview(queueResults);
+    if (operationsResult.status === "rejected" && !preview.items.length && !this.data.operations) {
+      this.setData({
+        loading: false,
+        errorMessage: operationsResult.reason.message || "移动工作台暂时无法读取。",
+        errorDiagnostic: buildErrorDiagnostic(operationsResult.reason),
+        partialFailures: preview.failures,
+      });
+      return;
+    }
+    const operations = operationsResult.status === "fulfilled" ? operationsResult.value : (this.data.operations || emptyOperations());
+    const partialFailures = [...preview.failures];
+    if (operationsResult.status === "rejected") {
+      partialFailures.unshift({ id: "operations", label: "工作台摘要", requestId: buildErrorDiagnostic(operationsResult.reason).requestId || "" });
+    }
+    const pageSize = this.data.pendingPageSize;
+    this.setData({
+      loading: false,
+      operations,
+      pendingItems: preview.items,
+      pendingTotal: preview.total,
+      pendingVisibleItems: preview.items.slice(0, pageSize),
+      pendingPage: 1,
+      pendingHasMore: preview.items.length > pageSize,
+      urgentCount: preview.items.filter((item) => item.priority === "urgent").length,
+      partialFailures,
+      lastSyncText: syncTimeLabel(),
+    });
+  },
+
+  showMorePending() {
+    const nextPage = this.data.pendingPage + 1;
+    const visibleCount = nextPage * this.data.pendingPageSize;
+    this.setData({
+      pendingPage: nextPage,
+      pendingVisibleItems: this.data.pendingItems.slice(0, visibleCount),
+      pendingHasMore: visibleCount < this.data.pendingItems.length,
+    });
+  },
+
+  onParticipantQueryInput(event) {
+    const participantQuery = event.detail.value || "";
+    this.setData({ participantQuery });
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadParticipants(true), 350);
+  },
+
+  async loadParticipants(reset = false) {
+    if (this.data.offline) {
+      this.setData({ participantError: "当前离线，联网后再搜索参与者。" });
+      return;
+    }
+    const page = reset ? 1 : this.data.participantPage + 1;
+    this.setData({ participantLoading: true, participantError: "", participantDiagnostic: null });
+    try {
+      const payload = await api.getResearchParticipants({ q: this.data.participantQuery.trim(), page, page_size: 10 });
+      const incoming = (payload.items || []).map((item) => ({
+        ...item,
+        displayName: item.nickname || item.user_id || "匿名参与者",
+        displayInitial: String(item.nickname || item.user_id || "匿").slice(0, 1),
+        activityCount: Number(item.assessment_count || 0) + Number(item.diary_count || 0) + Number(item.checkin_count || 0) + Number(item.program_count || 0),
+      }));
+      this.setData({
+        participantLoading: false,
+        participantItems: reset ? incoming : [...this.data.participantItems, ...incoming],
+        participantPage: page,
+        participantHasMore: Boolean(payload.has_more),
+      });
+    } catch (error) {
+      this.setData({ participantLoading: false, participantError: error.message || "参与者列表暂时无法读取。", participantDiagnostic: buildErrorDiagnostic(error) });
+    }
+  },
+
+  retryParticipants() { return this.loadParticipants(true); },
+  loadMoreParticipants() { return this.loadParticipants(false); },
+
+  async loadDashboard() {
+    this.setData({ pilotLoading: true, pilotError: "", pilotDiagnostic: null });
     try {
       const payload = await api.getRelationshipResearchDashboard();
       const items = (payload.items || []).map((item) => ({
@@ -92,17 +312,23 @@ Page({
         statusText: statusLabel(item.status),
         reviewStatusText: statusLabel(item.review_status),
       }));
-      this.setData({ loading: false, errorMessage: "", errorDiagnostic: null, items });
+      this.setData({ pilotLoading: false, pilotError: "", pilotDiagnostic: null, items });
       const firstAssigned = items.find((item) => item.scopeStatus !== "claimable");
       if (firstAssigned) await this.selectEnrollmentById(firstAssigned.id);
     } catch (error) {
-      this.setData({ loading: false, errorMessage: error.message || "仪表盘暂时无法读取。", errorDiagnostic: buildErrorDiagnostic(error) });
+      this.setData({ pilotLoading: false, pilotError: error.message || "试点项目暂时无法读取。", pilotDiagnostic: buildErrorDiagnostic(error) });
     }
   },
 
-  async copyDiagnostic() {
+  async copyDiagnostic(event) {
+    const scope = event && event.currentTarget && event.currentTarget.dataset.scope;
+    const diagnostic = scope === "pilot"
+      ? this.data.pilotDiagnostic
+      : scope === "participants"
+        ? this.data.participantDiagnostic
+        : this.data.errorDiagnostic;
     try {
-      await copyErrorDiagnostic(this.data.errorDiagnostic || {});
+      await copyErrorDiagnostic(diagnostic || {});
       wx.showToast({ title: "诊断信息已复制", icon: "success" });
     } catch (error) {
       wx.showToast({ title: "复制失败", icon: "none" });
@@ -138,7 +364,15 @@ Page({
   async selectEnrollmentById(id) {
     try {
       const detail = normalizeDetail(await api.getRelationshipEnrollment(id));
-      this.setData({ selected: detail, narrative: null }, () => this.drawMaterial(detail.drawingTask));
+      const draft = this.readDraft(id);
+      this.setData({
+        selected: detail,
+        narrative: null,
+        note: draft.note || "",
+        messageTitle: draft.messageTitle || "研究者补充消息",
+        messageBody: draft.messageBody || "",
+        stageFeedbackForm: draft.stageFeedbackForm || { observation: "", evidence: "", nextStep: "", openQuestion: "" },
+      }, () => this.drawMaterial(detail.drawingTask));
     } catch (error) {
       wx.showToast({ title: error.message || "档案暂时无法读取", icon: "none" });
     }
@@ -167,19 +401,48 @@ Page({
     }).exec();
   },
 
-  onNoteInput(event) { this.setData({ note: event.detail.value }); },
+  draftKey(id) { return `${DRAFT_PREFIX}${id || "none"}`; },
+  readDraft(id) {
+    try { return wx.getStorageSync(this.draftKey(id)) || {}; } catch (error) { return {}; }
+  },
+  persistDraft(patch = {}) {
+    const selected = this.data.selected;
+    if (!selected) return;
+    const current = this.readDraft(selected.id);
+    try { wx.setStorageSync(this.draftKey(selected.id), { ...current, ...patch, savedAt: new Date().toISOString() }); } catch (error) { /* 本地空间不足时不阻断编辑 */ }
+  },
+  clearDraft(id) {
+    try { wx.removeStorageSync(this.draftKey(id)); } catch (error) { /* 不阻断已完成提交 */ }
+  },
+
+  onNoteInput(event) {
+    const note = event.detail.value;
+    this.setData({ note });
+    this.persistDraft({ note });
+  },
   onStageFeedbackInput(event) {
     const key = event.currentTarget.dataset.key;
     if (!["observation", "evidence", "nextStep", "openQuestion"].includes(key)) return;
-    this.setData({ [`stageFeedbackForm.${key}`]: event.detail.value });
+    const stageFeedbackForm = { ...this.data.stageFeedbackForm, [key]: event.detail.value };
+    this.setData({ stageFeedbackForm });
+    this.persistDraft({ stageFeedbackForm });
   },
-  onMessageTitleInput(event) { this.setData({ messageTitle: event.detail.value }); },
-  onMessageBodyInput(event) { this.setData({ messageBody: event.detail.value }); },
+  onMessageTitleInput(event) {
+    const messageTitle = event.detail.value;
+    this.setData({ messageTitle });
+    this.persistDraft({ messageTitle });
+  },
+  onMessageBodyInput(event) {
+    const messageBody = event.detail.value;
+    this.setData({ messageBody });
+    this.persistDraft({ messageBody });
+  },
 
   async saveNote() {
     if (!this.data.note.trim()) return;
     await api.createRelationshipResearchNote(this.data.selected.id, { note: this.data.note.trim() });
     this.setData({ note: "" });
+    this.persistDraft({ note: "" });
     await this.selectEnrollmentById(this.data.selected.id);
     wx.showToast({ title: "备注已保存", icon: "success" });
   },
@@ -247,6 +510,7 @@ Page({
           openQuestion: "",
         },
       });
+      this.clearDraft(selected.id);
       await this.selectEnrollmentById(selected.id);
       wx.showToast({ title: "阶段性反馈已发送", icon: "success" });
     } catch (error) {
@@ -274,6 +538,7 @@ Page({
         idempotency_key: `researcher-message-${selected.id}-${Date.now()}`,
       });
       this.setData({ messageBody: "" });
+      this.persistDraft({ messageBody: "" });
       wx.showToast({ title: "已发送到参与者消息", icon: "success" });
     } catch (error) {
       wx.showToast({ title: error.message || "消息发送失败", icon: "none" });

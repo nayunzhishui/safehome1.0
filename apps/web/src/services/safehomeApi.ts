@@ -87,6 +87,8 @@ import type {
   RelationshipPilotEnrollment,
   RelationshipScreeningReport,
   ResearchOperationsSnapshot,
+  ResearchParticipantPage,
+  ResearchParticipantSummary,
   ResearchQueuePage,
   ResearchQueueType,
   ResearchWorkItemActionInput,
@@ -116,23 +118,11 @@ import type { AuthUser } from "./authState";
 import { getStoredAuthUser, getToken } from "./authState";
 import { clearAnonymousUserId, getAnonymousUserId } from "./userIdentity";
 
+export type { ResearchParticipantSummary } from "../../../../shared/types/api";
+
 export interface SafeHomeApiClientOptions {
   baseUrl?: string;
   defaultUserId?: string;
-}
-
-export interface ResearchParticipantSummary {
-  user_id: string;
-  nickname?: string | null;
-  role: string;
-  last_activity_at?: string | null;
-  assessment_count: number;
-  diary_count: number;
-  checkin_count: number;
-  program_count: number;
-  relationship_count: number;
-  supervision_count: number;
-  unread_message_count: number;
 }
 
 export interface ResearchParticipantDossier {
@@ -588,9 +578,9 @@ export class SafeHomeApiClient {
   }
 
   listResearchParticipants(
-    params: { q?: string; limit?: number } = {},
+    params: { q?: string; limit?: number; page?: number; page_size?: number } = {},
     adminToken?: string,
-  ): Promise<ListResponse<ResearchParticipantSummary> & { scope: string; boundary_notice: string }> {
+  ): Promise<ResearchParticipantPage> {
     return this.requestData(this.withQuery(API_ENDPOINTS.researchParticipants, params), {
       headers: this.adminHeaders(adminToken),
     });

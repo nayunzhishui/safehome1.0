@@ -1,114 +1,276 @@
 <view class="safe-page researcher-dashboard-page">
-  <view class="safe-card safe-card--hero">
-    <text class="dashboard-kicker">研究者专属</text>
-    <text class="dashboard-title">关系探索评估仪表盘</text>
-    <text class="dashboard-copy">画像、维度和洞察只作为访谈探索线索。所有访问和操作均写入审计日志。</text>
+  <view class="workbench-hero">
+    <view>
+      <text class="dashboard-kicker">研究者移动工作台</text>
+      <text class="dashboard-title">先处理重要的一小步</text>
+      <text class="dashboard-copy">移动端用于查看摘要、处理提醒和进入试点；完整研究配置与批量工作仍在 Web 完成。</text>
+    </view>
+    <view class="sync-chip" bindtap="refreshActiveWorkspace" role="button" aria-label="刷新当前工作区">
+      <text class="sync-label">最近同步</text>
+      <text class="sync-time">{{lastSyncText}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{offline}}" class="state-banner state-banner--offline">
+    <text class="state-title">当前离线</text>
+    <text class="state-copy">已读取内容会保留；联网后下拉刷新或点“重新同步”。</text>
   </view>
   <view wx:if="{{developmentFullAccess}}" class="development-access-banner">
     <text class="development-access-title">开发全权限模式</text>
-    <text class="development-access-copy">当前所有已登录账号临时拥有研究者平台读写权限，仅用于开发验证。操作仍会记录审计，正式发布前必须关闭。</text>
+    <text class="development-access-copy">普通测试账号临时可进入研究者工作区；这不是正式权限验收，正式发布前必须关闭。</text>
   </view>
   <view wx:if="{{capabilityScope}}" class="capability-scope-card">
-    <text class="capability-scope-title">权限范围 · {{capabilityScope.formal_role}}</text>
-    <text class="capability-scope-copy">能力矩阵 {{capabilityScope.registry_version}} · 已授权 {{capabilityScope.capability_ids.length}} 项。页面提示不替代服务端权限校验。</text>
+    <text class="capability-scope-title">当前身份：{{capabilityScope.formal_role}} · 能力矩阵 {{capabilityScope.registry_version}}</text>
+    <text class="capability-scope-copy">页面导航按能力显示；每次深链访问仍由服务端重新授权并记录审计。</text>
   </view>
-  <view wx:if="{{loading}}" class="safe-card">正在读取档案...</view>
+
+  <scroll-view scroll-x class="workspace-tabs" aria-label="研究者工作区导航">
+    <button wx:for="{{workspaces}}" wx:key="id" class="workspace-tab {{activeWorkspace === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="switchWorkspace">{{item.label}}</button>
+  </scroll-view>
+
+  <view wx:if="{{loading && !operations}}" class="safe-card state-card">
+    <view class="state-orbit"></view>
+    <text class="state-title">正在同步工作台</text>
+    <text class="state-copy">只读取必要摘要，不加载参与者长文本。</text>
+  </view>
   <view wx:elif="{{errorMessage}}" class="safe-card error-card">
-    <text class="error-title">仪表盘暂时没有读取成功</text>
+    <text class="error-title">工作台暂时没有读取成功</text>
     <text class="error-copy">{{errorMessage}}</text>
-    <text class="diagnostic-copy">请求编号：{{errorDiagnostic.requestId || '未返回'}} · 服务版本：{{errorDiagnostic.serviceVersion || '未知'}}</text>
+    <text class="diagnostic-copy">请求编号：{{errorDiagnostic.requestId || '未返回'}}</text>
     <view class="error-actions">
-      <button class="safe-primary-button" bindtap="loadDashboard">重新加载</button>
-      <button class="safe-outline-button" bindtap="copyDiagnostic">复制诊断信息</button>
+      <button class="safe-primary-button" bindtap="loadWorkbench">重新同步</button>
+      <button class="safe-outline-button" data-scope="workbench" bindtap="copyDiagnostic">复制诊断信息</button>
     </view>
   </view>
-  <view wx:else class="dashboard-layout">
-    <scroll-view scroll-x class="dossier-tabs">
-      <button wx:for="{{items}}" wx:key="id" class="dossier-tab {{selected.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectEnrollment">{{item.nickname || '匿名参与者'}} · {{item.scopeStatus === 'claimable' ? '可领取' : item.reviewStatusText}}</button>
-    </scroll-view>
 
-    <view wx:if="{{selected}}">
-      <view class="safe-card dossier-card">
-        <text class="section-title">用户档案与报名</text>
-        <text class="detail-line">用户：{{selected.nickname || selected.user_id}}</text>
-        <text class="detail-line">参与状态：{{selected.statusText}}</text>
-        <text class="detail-line">复核进度：{{selected.reviewStatusText}}</text>
-        <text class="detail-line">测评来源：关系探索支持性测评</text>
-        <text class="detail-line">画像：{{selected.profile.profile_name}}</text>
-        <text class="detail-line">{{selected.profile.profile_description}}</text>
+  <view wx:if="{{partialFailures.length}}" class="state-banner state-banner--partial">
+    <text class="state-title">部分摘要暂未同步</text>
+    <text class="state-copy">其余工作区仍可使用。失败模块：<text wx:for="{{partialFailures}}" wx:key="id">{{item.label}}{{index < partialFailures.length - 1 ? '、' : ''}}</text></text>
+    <button class="inline-retry" bindtap="loadWorkbench">重试未完成同步</button>
+  </view>
+
+  <view wx:if="{{activeWorkspace === 'pending' && !errorMessage}}" class="workspace-panel">
+    <view class="summary-grid">
+      <view class="summary-card summary-card--primary">
+        <text class="summary-value">{{pendingTotal}}</text>
+        <text class="summary-label">待处理摘要</text>
       </view>
-
-      <view class="safe-card dossier-card">
-        <text class="section-title">预设评估问题</text>
-        <text wx:for="{{selected.profile.suggested_assessment_questions}}" wx:key="*this" class="detail-line">{{index + 1}}. {{item}}</text>
+      <view class="summary-card {{urgentCount ? 'summary-card--urgent' : ''}}">
+        <text class="summary-value">{{urgentCount}}</text>
+        <text class="summary-label">优先处理</text>
       </view>
-
-      <view class="safe-card dossier-card">
-        <text class="section-title">初筛报告</text>
-        <view wx:if="{{selected.latestReport}}" class="action-row">
-          <button class="small-action" bindtap="openReport">查看</button>
-          <button wx:if="{{selected.latestReport.status === 'pending_review' || selected.latestReport.status === 'ready'}}" class="small-action" bindtap="confirmReport">人工确认</button>
-          <button wx:if="{{selected.latestReport.status === 'confirmed' || selected.latestReport.status === 'updated'}}" class="small-action primary" bindtap="sendReport">发送用户</button>
-          <text wx:if="{{selected.latestReport.status === 'sent'}}" class="detail-line">当前版本已发送</text>
+      <view class="summary-card">
+        <text class="summary-value">{{operations.notification_deliveries.failed || 0}}</text>
+        <text class="summary-label">消息待恢复</text>
+      </view>
+    </view>
+    <view class="safe-card workspace-card">
+      <view class="section-heading">
+        <view>
+          <text class="section-eyebrow">按优先级排列</text>
+          <text class="section-title">现在需要留意</text>
         </view>
-        <button wx:else class="safe-primary-button" bindtap="createReport">生成报告</button>
+        <button class="icon-refresh" bindtap="loadWorkbench" aria-label="刷新待处理列表">刷新</button>
       </view>
-
-      <view class="safe-card dossier-card">
-        <text class="section-title">阶段性报告中的研究者反馈</text>
-        <text class="detail-line">按“观察—依据—下一小步—待讨论问题”填写。发送后生成新报告版本，并同步进入参与者消息列表。</text>
-        <view class="feedback-field">
-          <text class="feedback-label">近期可观察到的变化 <text class="required-mark">必填</text></text>
-          <textarea class="note-input" maxlength="600" value="{{stageFeedbackForm.observation}}" data-key="observation" bindinput="onStageFeedbackInput" placeholder="描述本阶段可观察、可复述的变化，不做人格或关系结论"></textarea>
-        </view>
-        <view class="feedback-field">
-          <text class="feedback-label">可供共同核对的依据</text>
-          <textarea class="note-input" maxlength="600" value="{{stageFeedbackForm.evidence}}" data-key="evidence" bindinput="onStageFeedbackInput" placeholder="可引用练习完成情况、参与者原话或记录变化"></textarea>
-        </view>
-        <view class="feedback-field">
-          <text class="feedback-label">可以先尝试的一小步 <text class="required-mark">必填</text></text>
-          <textarea class="note-input" maxlength="600" value="{{stageFeedbackForm.nextStep}}" data-key="nextStep" bindinput="onStageFeedbackInput" placeholder="给出一个低负担、可选择、可暂停的小行动"></textarea>
-        </view>
-        <view class="feedback-field">
-          <text class="feedback-label">后续可继续讨论</text>
-          <textarea class="note-input" maxlength="400" value="{{stageFeedbackForm.openQuestion}}" data-key="openQuestion" bindinput="onStageFeedbackInput" placeholder="保留一个开放问题，邀请参与者补充自己的理解"></textarea>
-        </view>
-        <button class="safe-primary-button" loading="{{sendingFeedback}}" disabled="{{sendingFeedback}}" bindtap="saveAndSendStageFeedback">保存并发送阶段性反馈</button>
+      <view wx:if="{{!pendingVisibleItems.length}}" class="empty-state">
+        <text class="empty-symbol">✓</text>
+        <text class="state-title">暂时没有待处理事项</text>
+        <text class="state-copy">可以稍后回来，或进入“试点项目”查看已分配内容。</text>
       </view>
-
-      <view class="safe-card dossier-card">
-        <text class="section-title">发送参与者消息</text>
-        <text class="detail-line">路径：参与者“我的” → “消息”即可收到。</text>
-        <input class="note-input" maxlength="60" value="{{messageTitle}}" bindinput="onMessageTitleInput" placeholder="消息标题" />
-        <textarea class="note-input" maxlength="2000" value="{{messageBody}}" bindinput="onMessageBodyInput" placeholder="消息正文"></textarea>
-        <button class="safe-outline-button" loading="{{sendingMessage}}" disabled="{{sendingMessage}}" bindtap="sendParticipantMessage">发送消息</button>
-      </view>
-
-      <view class="safe-card dossier-card">
-        <text class="section-title">线上任务材料（{{selected.tasks.length}}）</text>
-        <view wx:for="{{selected.tasks}}" wx:key="id" class="material-card">
-          <text class="material-title">{{item.typeText}} · {{item.reviewStatusText}}</text>
-          <text wx:if="{{item.narration}}" class="detail-line">画外音：{{item.narration}}</text>
-          <text wx:for="{{item.answerRows}}" wx:for-item="answer" wx:key="context" class="detail-line">{{answer.context}}：{{answer.answer}}</text>
+      <view wx:else>
+        <view wx:for="{{pendingVisibleItems}}" wx:key="workItemId" class="queue-item">
+          <view class="priority-dot priority-dot--{{item.priority}}"></view>
+          <view class="queue-main">
+            <text class="queue-title">{{item.queueLabel}}</text>
+            <text class="queue-meta">{{item.priorityText}} · 已等待 {{item.waitMinutes}} 分钟</text>
+          </view>
+          <text class="priority-pill priority-pill--{{item.priority}}">{{item.priorityText}}</text>
         </view>
-        <canvas wx:if="{{selected.drawingTask}}" canvas-id="researchDrawingCanvas" class="material-canvas" aria-label="用户授权提交的关系绘画预览，材料仅用于人工复核"></canvas>
-        <text class="boundary-line">绘画只作为叙事材料，不自动解释象征或潜意识。</text>
+        <button wx:if="{{pendingHasMore}}" class="safe-outline-button list-more" bindtap="showMorePending">继续查看</button>
       </view>
+      <text class="boundary-line">此处仅显示队列类型、优先级和等待时间，不展示参与者填写原文。</text>
+    </view>
+  </view>
 
-      <view class="safe-card dossier-card">
-        <text class="section-title">人工备注</text>
-        <text wx:for="{{selected.research_notes}}" wx:key="id" class="detail-line">{{item.note}}</text>
-        <textarea class="note-input" maxlength="1000" value="{{note}}" bindinput="onNoteInput" placeholder="写下待核对的问题或访谈线索，不覆盖用户原报告"></textarea>
-        <button class="safe-outline-button" bindtap="saveNote">保存备注</button>
+  <view wx:if="{{activeWorkspace === 'participants'}}" class="workspace-panel">
+    <view class="safe-card workspace-card">
+      <text class="section-eyebrow">授权范围内</text>
+      <text class="section-title">查找参与者</text>
+      <view class="search-box">
+        <text class="search-icon">⌕</text>
+        <input value="{{participantQuery}}" bindinput="onParticipantQueryInput" placeholder="输入昵称或用户 ID" confirm-type="search" aria-label="搜索参与者" />
       </view>
+      <text class="boundary-line">输入停止 350 毫秒后搜索；列表仅展示最小活动摘要。</text>
+    </view>
+    <view wx:if="{{participantError}}" class="safe-card error-card">
+      <text class="error-title">参与者列表暂时无法读取</text>
+      <text class="error-copy">{{participantError}}</text>
+      <text class="diagnostic-copy">请求编号：{{participantDiagnostic.requestId || '未返回'}}</text>
+      <view class="error-actions">
+        <button class="safe-primary-button" bindtap="retryParticipants">重新加载</button>
+        <button class="safe-outline-button" data-scope="participants" bindtap="copyDiagnostic">复制诊断信息</button>
+      </view>
+    </view>
+    <view wx:if="{{participantLoading && !participantItems.length}}" class="safe-card state-card">
+      <text class="state-title">正在读取参与者摘要</text>
+    </view>
+    <view wx:elif="{{!participantItems.length && !participantError}}" class="safe-card empty-state">
+      <text class="empty-symbol">○</text>
+      <text class="state-title">没有找到参与者</text>
+      <text class="state-copy">请检查关键词，或确认当前账号的分配范围与研究授权。</text>
+    </view>
+    <view wx:if="{{participantItems.length}}" class="participant-list">
+      <view wx:for="{{participantItems}}" wx:key="user_id" class="safe-card participant-card">
+        <view class="participant-avatar">{{item.displayInitial}}</view>
+        <view class="participant-main">
+          <text class="participant-name">{{item.displayName}}</text>
+          <text class="participant-meta">{{item.activityCount}} 条活动摘要 · {{item.relationship_count}} 个关系试点</text>
+        </view>
+        <text class="participant-count">{{item.unread_message_count}} 未读</text>
+      </view>
+      <button wx:if="{{participantHasMore}}" class="safe-outline-button list-more" loading="{{participantLoading}}" bindtap="loadMoreParticipants">加载下一页</button>
+    </view>
+  </view>
 
-      <view class="safe-card dossier-card">
-        <text class="section-title">治疗性反馈会议材料</text>
-        <button class="safe-outline-button" bindtap="draftNarrative">生成探索手记草稿</button>
-        <view wx:if="{{narrative}}" class="narrative-box">
-          <text class="detail-line">状态：{{narrative.status}}</text>
-          <text class="detail-line">{{narrative.draft.boundary_notice}}</text>
-          <button wx:if="{{narrative.status !== 'confirmed'}}" class="safe-primary-button" bindtap="confirmNarrative">确认后交付用户</button>
+  <view wx:if="{{activeWorkspace === 'feedback'}}" class="workspace-panel">
+    <view class="summary-grid summary-grid--two">
+      <view class="summary-card summary-card--primary">
+        <text class="summary-value">{{operations.backlog.stage_feedback || 0}}</text>
+        <text class="summary-label">阶段反馈</text>
+      </view>
+      <view class="summary-card">
+        <text class="summary-value">{{operations.backlog.supervision || 0}}</text>
+        <text class="summary-label">人工支持</text>
+      </view>
+    </view>
+    <view class="safe-card workspace-card">
+      <text class="section-eyebrow">移动端轻处理</text>
+      <text class="section-title">反馈与消息</text>
+      <text class="detail-line">进入“试点项目”选择参与者后，可继续撰写阶段性反馈或发送站内消息。草稿按参与者保存在本机，切换页面不会丢失。</text>
+      <button class="safe-primary-button" data-id="pilots" bindtap="switchWorkspace">进入试点项目</button>
+      <text class="boundary-line">批量发送、模板配置与复杂审阅继续在 Web 研究者后台完成。</text>
+    </view>
+  </view>
+
+  <view wx:if="{{activeWorkspace === 'mine'}}" class="workspace-panel">
+    <view class="safe-card workspace-card">
+      <text class="section-eyebrow">我的工作范围</text>
+      <text class="section-title">{{capabilityScope.formal_role}} · {{operations.scope}}</text>
+      <view class="mine-row"><text>能力数量</text><text>{{capabilityScope.capability_ids.length}} 项</text></view>
+      <view class="mine-row"><text>待处理事项</text><text>{{pendingTotal}} 项</text></view>
+      <view class="mine-row"><text>最后同步</text><text>{{lastSyncText}}</text></view>
+      <button class="safe-outline-button" bindtap="loadWorkbench">重新同步</button>
+      <text class="boundary-line">开发全权限仅用于联调，不代表当前普通账号拥有正式研究角色。</text>
+    </view>
+  </view>
+
+  <view wx:if="{{activeWorkspace === 'pilots'}}" class="workspace-panel">
+    <view wx:if="{{pilotLoading && !items.length}}" class="safe-card state-card">
+      <text class="state-title">正在读取试点项目</text>
+      <text class="state-copy">参与者详情按选择后加载。</text>
+    </view>
+    <view wx:elif="{{pilotError}}" class="safe-card error-card">
+      <text class="error-title">试点项目暂时没有读取成功</text>
+      <text class="error-copy">{{pilotError}}</text>
+      <text class="diagnostic-copy">请求编号：{{pilotDiagnostic.requestId || '未返回'}}</text>
+      <view class="error-actions">
+        <button class="safe-primary-button" bindtap="loadDashboard">重新加载</button>
+        <button class="safe-outline-button" data-scope="pilot" bindtap="copyDiagnostic">复制诊断信息</button>
+      </view>
+    </view>
+    <view wx:elif="{{!items.length}}" class="safe-card empty-state">
+      <text class="empty-symbol">○</text>
+      <text class="state-title">当前没有可查看的试点</text>
+      <text class="state-copy">请确认研究授权、角色分配或开发展示开关。</text>
+    </view>
+    <view wx:else class="dashboard-layout">
+      <scroll-view scroll-x class="dossier-tabs">
+        <button wx:for="{{items}}" wx:key="id" class="dossier-tab {{selected.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectEnrollment">{{item.nickname || '匿名参与者'}} · {{item.scopeStatus === 'claimable' ? '可领取' : item.reviewStatusText}}</button>
+      </scroll-view>
+
+      <view wx:if="{{selected}}">
+        <view class="safe-card dossier-card">
+          <text class="section-title">用户档案与报名</text>
+          <text class="detail-line">用户：{{selected.nickname || selected.user_id}}</text>
+          <text class="detail-line">参与状态：{{selected.statusText}}</text>
+          <text class="detail-line">复核进度：{{selected.reviewStatusText}}</text>
+          <text class="detail-line">测评来源：关系探索支持性测评</text>
+          <text class="detail-line">画像：{{selected.profile.profile_name}}</text>
+          <text class="detail-line">{{selected.profile.profile_description}}</text>
+        </view>
+
+        <view class="safe-card dossier-card">
+          <text class="section-title">预设评估问题</text>
+          <text wx:for="{{selected.profile.suggested_assessment_questions}}" wx:key="*this" class="detail-line">{{index + 1}}. {{item}}</text>
+        </view>
+
+        <view class="safe-card dossier-card">
+          <text class="section-title">初筛报告</text>
+          <view wx:if="{{selected.latestReport}}" class="action-row">
+            <button class="small-action" bindtap="openReport">查看</button>
+            <button wx:if="{{selected.latestReport.status === 'pending_review' || selected.latestReport.status === 'ready'}}" class="small-action" bindtap="confirmReport">人工确认</button>
+            <button wx:if="{{selected.latestReport.status === 'confirmed' || selected.latestReport.status === 'updated'}}" class="small-action primary" bindtap="sendReport">发送用户</button>
+            <text wx:if="{{selected.latestReport.status === 'sent'}}" class="detail-line">当前版本已发送</text>
+          </view>
+          <button wx:else class="safe-primary-button" bindtap="createReport">生成报告</button>
+        </view>
+
+        <view class="safe-card dossier-card">
+          <text class="section-title">阶段性报告中的研究者反馈</text>
+          <text class="detail-line">按“观察—依据—下一小步—待讨论问题”填写。内容会暂存在本机；发送后生成新报告版本并进入参与者消息列表。</text>
+          <view class="feedback-field">
+            <text class="feedback-label">近期可观察到的变化 <text class="required-mark">必填</text></text>
+            <textarea class="note-input" maxlength="600" value="{{stageFeedbackForm.observation}}" data-key="observation" bindinput="onStageFeedbackInput" placeholder="描述本阶段可观察、可复述的变化，不做人格或关系结论"></textarea>
+          </view>
+          <view class="feedback-field">
+            <text class="feedback-label">可供共同核对的依据</text>
+            <textarea class="note-input" maxlength="600" value="{{stageFeedbackForm.evidence}}" data-key="evidence" bindinput="onStageFeedbackInput" placeholder="可引用练习完成情况、参与者原话或记录变化"></textarea>
+          </view>
+          <view class="feedback-field">
+            <text class="feedback-label">可以先尝试的一小步 <text class="required-mark">必填</text></text>
+            <textarea class="note-input" maxlength="600" value="{{stageFeedbackForm.nextStep}}" data-key="nextStep" bindinput="onStageFeedbackInput" placeholder="给出一个低负担、可选择、可暂停的小行动"></textarea>
+          </view>
+          <view class="feedback-field">
+            <text class="feedback-label">后续可继续讨论</text>
+            <textarea class="note-input" maxlength="400" value="{{stageFeedbackForm.openQuestion}}" data-key="openQuestion" bindinput="onStageFeedbackInput" placeholder="保留一个开放问题，邀请参与者补充自己的理解"></textarea>
+          </view>
+          <button class="safe-primary-button" loading="{{sendingFeedback}}" disabled="{{sendingFeedback}}" bindtap="saveAndSendStageFeedback">保存并发送阶段性反馈</button>
+        </view>
+
+        <view class="safe-card dossier-card">
+          <text class="section-title">发送参与者消息</text>
+          <text class="detail-line">参与者可在“我的 → 消息”查看；移动端草稿按当前参与者恢复。</text>
+          <input class="note-input note-input--single" maxlength="60" value="{{messageTitle}}" bindinput="onMessageTitleInput" placeholder="消息标题" />
+          <textarea class="note-input" maxlength="2000" value="{{messageBody}}" bindinput="onMessageBodyInput" placeholder="消息正文"></textarea>
+          <button class="safe-outline-button" loading="{{sendingMessage}}" disabled="{{sendingMessage}}" bindtap="sendParticipantMessage">发送消息</button>
+        </view>
+
+        <view class="safe-card dossier-card">
+          <text class="section-title">线上任务材料（{{selected.tasks.length}}）</text>
+          <view wx:for="{{selected.tasks}}" wx:key="id" class="material-card">
+            <text class="material-title">{{item.typeText}} · {{item.reviewStatusText}}</text>
+            <text wx:if="{{item.narration}}" class="detail-line">画外音：{{item.narration}}</text>
+            <text wx:for="{{item.answerRows}}" wx:for-item="answer" wx:key="context" class="detail-line">{{answer.context}}：{{answer.answer}}</text>
+          </view>
+          <canvas wx:if="{{selected.drawingTask}}" canvas-id="researchDrawingCanvas" class="material-canvas" aria-label="用户授权提交的关系绘画预览，材料仅用于人工复核"></canvas>
+          <text class="boundary-line">绘画只作为叙事材料，不自动解释象征或潜意识。</text>
+        </view>
+
+        <view class="safe-card dossier-card">
+          <text class="section-title">人工备注</text>
+          <text wx:for="{{selected.research_notes}}" wx:key="id" class="detail-line">{{item.note}}</text>
+          <textarea class="note-input" maxlength="1000" value="{{note}}" bindinput="onNoteInput" placeholder="写下待核对的问题或访谈线索，不覆盖用户原报告"></textarea>
+          <button class="safe-outline-button" bindtap="saveNote">保存备注</button>
+        </view>
+
+        <view class="safe-card dossier-card">
+          <text class="section-title">治疗性反馈会议材料</text>
+          <button class="safe-outline-button" bindtap="draftNarrative">生成探索手记草稿</button>
+          <view wx:if="{{narrative}}" class="narrative-box">
+            <text class="detail-line">状态：{{narrative.status}}</text>
+            <text class="detail-line">{{narrative.draft.boundary_notice}}</text>
+            <button wx:if="{{narrative.status !== 'confirmed'}}" class="safe-primary-button" bindtap="confirmNarrative">确认后交付用户</button>
+          </view>
         </view>
       </view>
     </view>

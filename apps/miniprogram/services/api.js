@@ -131,6 +131,8 @@ const API_ENDPOINTS = {
   productEvents: "/api/product-events",
   privacyRequests: "/api/privacy/requests",
   privacyDeleteMyData: "/api/privacy/delete-my-data",
+  researchParticipants: "/api/research/participants",
+  researchOperations: "/api/research/operations",
   researchQueues: "/api/research/queues",
   researchWorkItems: "/api/research/work-items",
   researchWorkItemMetrics: "/api/research/work-items/metrics",
@@ -966,6 +968,14 @@ function createSafeHomeApi(options = {}) {
 
     getResearchCapabilities() {
       return request(`${API_ENDPOINTS.researchAccess}/capabilities`, { requiresAuth: true });
+    },
+
+    getResearchOperations() {
+      return request(API_ENDPOINTS.researchOperations, { requiresAuth: true });
+    },
+
+    getResearchParticipants(params = {}) {
+      return request(`${API_ENDPOINTS.researchParticipants}${queryString(params)}`, { requiresAuth: true });
     },
 
     listResearchAssignments(params = {}) {

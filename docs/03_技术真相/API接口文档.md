@@ -1883,7 +1883,7 @@ relationship_initiation_intention_action
 
 ### `GET /api/research/participants`
 
-用途：研究工作台参与者矩阵，支持 `q` 按用户 ID/昵称检索，`limit` 最大 100。
+用途：研究工作台参与者矩阵，支持 `q` 按用户 ID/昵称检索；支持 `page`、`page_size` 分页，`page_size` 最大 100。旧客户端的 `limit` 参数继续作为 `page_size` 兼容输入。
 
 权限：
 
@@ -1892,7 +1892,7 @@ relationship_initiation_intention_action
 - Web 后台兼容受控 `X-Admin-Token`；
 - 每次查询写入 `audit_logs`，不向参与者端开放。
 
-返回每位参与者的测评、情绪日记、训练打卡、项目练习、关系试点、人工支持和未读消息数量。矩阵不返回开放文本。
+返回每位参与者的测评、情绪日记、训练打卡、项目练习、关系试点、人工支持和未读消息数量，并返回 `total/page/page_size/has_more`。排序固定为最近活动倒序、用户 ID 升序，保证翻页稳定。矩阵不返回开放文本。
 
 ### `GET /api/research/participants/<user_id>`
 
@@ -2160,3 +2160,14 @@ relationship_initiation_intention_action
 - `POST /api/research/access/enrollments/{id}/claim`：researcher领取活动且未分配报名，必须提供`Idempotency-Key`。
 
 正式对象范围为researcher=明确分配、supervisor=监督分配、admin=全部。拒绝包络为`403 forbidden`，`error.details.required_capability`只说明所需能力，不返回敏感对象内容；顶层始终带`request_id`。临时`researcher_platform_full_access`仍只用于既有精确开发路径，不能授权导出、账号、安全或生产操作。
+
+## 2026-07-22：任务36 F04研究者移动工作台契约
+
+小程序研究者移动工作台复用既有接口，不新增移动端专属高权限聚合接口：
+
+- 首页通过`GET /api/research/operations`读取脱敏数量，通过五类`GET /api/research/queues`读取不含原文的优先级摘要；任一队列失败时保留其他结果并显示对应`request_id`。
+- “参与者”通过`GET /api/research/participants?q=&page=&page_size=`进行350毫秒防抖搜索和稳定分页；列表只返回昵称/用户ID及模块数量，详情仍需服务端对象范围复核。
+- “试点项目”继续使用`/api/relationship-pilot/researcher/dashboard`及单报名详情接口；移动导航可见不等于深链授权成功。
+- 加载失败只在界面显示`request_id`；复制诊断可包含客户端、服务和构建版本，但不包含token、请求/响应正文或参与者文本。
+
+数据库不新增表/列，继续复用`research_work_items`、`relationship_pilot_enrollments`、`messages`和`audit_logs`。回滚可恢复原单页WXML/WXSS/JS及旧`limit`调用；新增分页返回字段为兼容性追加，无需回滚数据。临时展示全权限仍显示显著警告且不能作为正式角色验收证据。

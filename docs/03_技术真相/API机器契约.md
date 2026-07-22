@@ -207,7 +207,7 @@
 | GET | `/api/research/methodology/versions` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
 | POST | `/api/research/methodology/versions/sync` | role:admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
 | GET | `/api/research/operations` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
-| GET | `/api/research/participants` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| GET | `/api/research/participants` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
 | GET | `/api/research/participants/<user_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | GET | `/api/research/queues` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
 | GET | `/api/research/work-items/<work_item_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
