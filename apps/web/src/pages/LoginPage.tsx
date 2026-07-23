@@ -146,6 +146,9 @@ export function LoginPage() {
       <p className="authLinks">
         还没有账号？<a href="/register">注册新账号</a> ｜ <a href="/privacy">隐私中心</a>
       </p>
+      <p className="subtitle">
+        微信一键登录和手机号快捷登录仅在微信小程序内发起；网页端不会申请或读取手机号。
+      </p>
     </section>
   );
 }

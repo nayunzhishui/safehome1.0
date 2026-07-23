@@ -64,6 +64,24 @@
   font-weight: 800;
 }
 
+.auth-unavailable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
+  padding: 0 24rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-pill);
+  color: var(--safe-muted);
+  background: var(--safe-surface);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.auth-unavailable-secondary {
+  margin-top: 18rpx;
+}
+
 .auth-note {
   margin-top: 14rpx;
   color: var(--safe-muted);

@@ -65,6 +65,7 @@ const ERROR_MESSAGES_BY_CODE = {
   wechat_upstream_http_error: "微信服务拒绝了服务器连接，请稍后重试或使用账号密码登录。",
   wechat_upstream_invalid_response: "微信服务返回异常，请稍后重试或使用账号密码登录。",
   phone_account_conflict: "该手机号已关联其他账号，请使用原账号登录。",
+  account_inactive: "当前账号暂不可用，请改用其他账号或联系项目负责人。",
   password_change_required: "首次登录需要先设置新密码。",
 };
 

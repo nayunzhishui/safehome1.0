@@ -357,7 +357,7 @@ def test_cloudbase_identity_requires_exact_source_and_valid_openid(tmp_path, mon
         assert response.get_json()["error"]["code"] == "validation_error"
 
 
-def test_phone_login_creates_and_reuses_verified_phone_without_storing_raw(tmp_path, monkeypatch):
+def test_phone_login_creates_and_reuses_verified_phone_without_storing_raw(tmp_path, monkeypatch, caplog):
     monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
@@ -390,6 +390,7 @@ def test_phone_login_creates_and_reuses_verified_phone_without_storing_raw(tmp_p
     assert row["source"] == "wechat_phone"
     assert row["phone_or_email"] is None
     assert "13800138000" not in str(dict(row))
+    assert "13800138000" not in caplog.text
 
 
 def test_phone_login_returns_safe_configuration_error_without_token_source(tmp_path, monkeypatch):
@@ -402,6 +403,86 @@ def test_phone_login_returns_safe_configuration_error_without_token_source(tmp_p
     body = response.get_json()
     assert body["error"]["code"] == "wechat_phone_config_missing"
     assert "WECHAT_SECRET" not in body["error"]["message"]
+
+
+def test_phone_login_conflict_is_non_destructive_and_redacted(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    auth_module = importlib.import_module("routes.auth")
+    monkeypatch.setattr(
+        auth_module,
+        "_wechat_phone_from_code",
+        lambda _code: {
+            "phone_number": "13800138000",
+            "pure_phone_number": "13800138000",
+            "country_code": "86",
+        },
+    )
+    phone_only = client.post("/api/auth/phone-login", json={"code": "first-phone-code"})
+    assert phone_only.status_code == 200
+    phone_user_id = phone_only.get_json()["data"]["user"]["id"]
+
+    headers = {
+        "X-WX-OPENID": "different-wechat-identity",
+        "X-WX-SOURCE": "wx_client",
+    }
+    wechat_only = client.post("/api/auth/wechat-login", headers=headers, json={})
+    assert wechat_only.status_code == 200
+    wechat_user_id = wechat_only.get_json()["data"]["user"]["id"]
+    assert phone_user_id != wechat_user_id
+
+    conflict = client.post(
+        "/api/auth/phone-login",
+        headers=headers,
+        json={"code": "conflict-phone-code"},
+    )
+    assert conflict.status_code == 409
+    body = conflict.get_json()
+    assert body["error"]["code"] == "phone_account_conflict"
+    assert "13800138000" not in str(body)
+
+    from database import get_connection
+
+    with get_connection() as conn:
+        phone_row = conn.execute(
+            "SELECT * FROM users WHERE id = ?", (phone_user_id,)
+        ).fetchone()
+        wechat_row = conn.execute(
+            "SELECT * FROM users WHERE id = ?", (wechat_user_id,)
+        ).fetchone()
+    assert phone_row["phone_hash"]
+    assert wechat_row["phone_hash"] is None
+    assert "13800138000" not in str(dict(phone_row))
+    assert "13800138000" not in str(dict(wechat_row))
+
+
+def test_phone_login_rejects_disabled_phone_account(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    auth_module = importlib.import_module("routes.auth")
+    monkeypatch.setattr(
+        auth_module,
+        "_wechat_phone_from_code",
+        lambda _code: {
+            "phone_number": "13900139000",
+            "pure_phone_number": "13900139000",
+            "country_code": "86",
+        },
+    )
+    first = client.post("/api/auth/phone-login", json={"code": "phone-code-1"})
+    assert first.status_code == 200
+    user_id = first.get_json()["data"]["user"]["id"]
+
+    from database import get_connection
+
+    with get_connection() as conn:
+        conn.execute("UPDATE users SET status = 'disabled' WHERE id = ?", (user_id,))
+        conn.commit()
+
+    disabled = client.post("/api/auth/phone-login", json={"code": "phone-code-2"})
+    assert disabled.status_code == 403
+    assert disabled.get_json()["error"]["code"] == "account_inactive"
 
 
 def test_auth_capabilities_report_missing_external_configuration_without_secrets(tmp_path, monkeypatch):

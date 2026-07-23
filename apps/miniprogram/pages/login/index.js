@@ -29,6 +29,8 @@ Page({
     loading: false,
     wechatLoading: false,
     phoneLoading: false,
+    wechatAvailable: true,
+    phoneAvailable: true,
     status: "idle",
     message: "",
     capabilityMessage: "",
@@ -56,7 +58,7 @@ Page({
         } else if (!phoneAvailable) {
           capabilityMessage = "手机号快捷登录尚未完成云端配置，可使用微信或账号密码登录。";
         }
-        this.setData({ capabilityMessage });
+        this.setData({ capabilityMessage, wechatAvailable, phoneAvailable });
       })
       .catch(() => {
         // Older deployments may not expose capability probing yet; login buttons remain usable.

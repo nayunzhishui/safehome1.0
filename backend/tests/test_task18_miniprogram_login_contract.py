@@ -25,3 +25,10 @@ def test_login_page_probes_capabilities_without_disabling_account_login():
     assert "api.getAuthCapabilities()" in js
     assert "capabilityMessage" in wxml
     assert 'disabled="{{loading || wechatLoading || phoneLoading}}"' in wxml
+    assert "phoneAvailable: true" in js
+    assert "wechatAvailable: true" in js
+    assert "this.setData({ capabilityMessage, wechatAvailable, phoneAvailable })" in js
+    assert 'wx:if="{{phoneAvailable}}"' in wxml
+    assert "手机号快捷登录（暂不可用）" in wxml
+    assert 'wx:if="{{wechatAvailable}}"' in wxml
+    assert "微信一键登录（暂不可用）" in wxml
