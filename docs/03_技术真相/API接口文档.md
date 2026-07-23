@@ -1,6 +1,6 @@
 # API 接口文档
 
-最后更新时间：2026-07-21
+最后更新时间：2026-07-24
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。
 
@@ -2177,3 +2177,19 @@ relationship_initiation_intention_action
 - `GET /api/research/participants/<user_id>`：档案摘要，返回参与者匿名信息、最近报名/分配状态、十个模块目录和数量，不返回各模块长文本。
 - `GET /api/research/participants/<user_id>/modules/<module_key>`：单模块分页。`module_key`为`assessments/measurements/diaries/training/stage_reports/relationship_pilot/project_tests/messages/human_support/timeline`；支持`page/page_size/date_from/date_to/type/status/batch`。
 - 三个接口都执行角色、研究授权和对象范围校验；敏感模块查看写审计。错误仍使用统一包络和`request_id`。
+# T36-F06 研究反馈与消息交付（2026-07-24）
+
+研究者、督导和管理员在正式对象范围内，通过同一组接口完成“草稿 → 预览 → 确认 → 发送”。临时展示全权限不扩大这些写接口的正式权限。
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| `GET` | `/api/research/deliveries?enrollment_id=...` | 按报名读取交付历史，支持分页 |
+| `POST` | `/api/research/deliveries` | 创建阶段性反馈或参与者消息草稿 |
+| `GET` | `/api/research/deliveries/{id}` | 读取草稿、当前不可变版本、事件和发送回执 |
+| `PATCH` | `/api/research/deliveries/{id}` | 保存草稿；必须提交 `expected_version` |
+| `POST` | `/api/research/deliveries/{id}/preview` | 生成不可变预览版本并执行风险检查 |
+| `POST` | `/api/research/deliveries/{id}/confirm` | 确认当前预览版本 |
+| `POST` | `/api/research/deliveries/{id}/send` | 幂等发送消息；阶段性反馈同时生成报告版本 |
+| `POST` | `/api/research/deliveries/{id}/withdraw` | 撤回显示状态但保留消息、报告、版本和审计历史 |
+
+所有写请求必须提供 `Idempotency-Key`。状态冲突、重复键冲突和过期版本统一返回 `409`；报名停用或分配被撤销后不可继续交付。参与者消息增加 `delivery_id`、`delivery_version`、`withdrawn_at` 和 `is_withdrawn`。

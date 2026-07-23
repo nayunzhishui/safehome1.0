@@ -56,6 +56,9 @@ import type {
   ResearchMethodologySimulation,
   ResearchMethodologyVersion,
   ResearchCapabilitySummary,
+  ResearchDeliveryContent,
+  ResearchDeliveryType,
+  ResearchDeliveryWorkflow,
   ResearchScopeAssignment,
   ResearchScopeAssignmentInput,
   SecurityPublicStatus,
@@ -544,6 +547,47 @@ export class SafeHomeApiClient {
 
   getResearchCapabilities(): Promise<ResearchCapabilitySummary> {
     return this.requestData(`${API_ENDPOINTS.researchAccess}/capabilities`);
+  }
+
+  createResearchDelivery(
+    input: { enrollment_id: string; delivery_type: ResearchDeliveryType; title: string; content: ResearchDeliveryContent },
+    idempotencyKey: string,
+  ): Promise<ResearchDeliveryWorkflow> {
+    return this.requestData(API_ENDPOINTS.researchDeliveries, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: input,
+    });
+  }
+
+  saveResearchDelivery(
+    id: string,
+    input: { expected_version: number; title: string; content: ResearchDeliveryContent },
+    idempotencyKey: string,
+  ): Promise<ResearchDeliveryWorkflow> {
+    return this.requestData(`${API_ENDPOINTS.researchDeliveries}/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: input,
+    });
+  }
+
+  runResearchDeliveryAction(
+    id: string,
+    action: "preview" | "confirm" | "send" | "withdraw",
+    expectedVersion: number,
+    idempotencyKey: string,
+    extra: Record<string, unknown> = {},
+  ): Promise<ResearchDeliveryWorkflow> {
+    return this.requestData(`${API_ENDPOINTS.researchDeliveries}/${encodeURIComponent(id)}/${action}`, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: { expected_version: expectedVersion, ...extra },
+    });
+  }
+
+  listResearchDeliveries(enrollmentId: string): Promise<ListResponse<ResearchDeliveryWorkflow>> {
+    return this.requestData(this.withQuery(API_ENDPOINTS.researchDeliveries, { enrollment_id: enrollmentId }));
   }
 
   listResearchAssignments(enrollmentId = ""): Promise<ListResponse<ResearchScopeAssignment>> {

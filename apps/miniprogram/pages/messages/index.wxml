@@ -16,10 +16,10 @@
     <button wx:for="{{messages}}" wx:key="id" class="message-row {{item.is_unread ? 'message-row--unread' : ''}}" data-id="{{item.id}}" bindtap="openMessage">
       <view class="message-copy">
         <text class="message-title">{{item.title}}</text>
-        <text class="message-body">{{item.body || '打开查看详情。'}}</text>
-        <text class="message-time">{{item.created_at}}</text>
+        <text class="message-body">{{item.is_withdrawn ? '研究者已撤回这条内容，请忽略此前版本。' : (item.body || '打开查看详情。')}}</text>
+        <text class="message-time">{{item.sender_role ? '研究者补充 · ' : ''}}{{item.created_at}}{{item.delivery_version ? ' · 第 ' + item.delivery_version + ' 版' : ''}}</text>
       </view>
-      <status-pill label="{{item.is_unread ? '未读' : '已读'}}" tone="{{item.is_unread ? 'success' : 'neutral'}}" aria-label="消息状态：{{item.is_unread ? '未读' : '已读'}}" />
+      <status-pill label="{{item.is_withdrawn ? '已撤回' : (item.is_unread ? '未读' : '已读')}}" tone="{{item.is_withdrawn ? 'neutral' : (item.is_unread ? 'success' : 'neutral')}}" aria-label="消息状态：{{item.is_withdrawn ? '已撤回' : (item.is_unread ? '未读' : '已读')}}" />
     </button>
   </view>
 

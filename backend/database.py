@@ -40,6 +40,9 @@ REQUIRED_HEALTH_TABLES = [
     "relationship_hypothesis_feedback",
     "research_scope_assignments",
     "research_scope_assignment_actions",
+    "research_delivery_workflows",
+    "research_delivery_versions",
+    "research_delivery_events",
     "feedback_ledger",
     "feedback_ledger_actions",
     "recommendation_snapshots",
@@ -89,8 +92,8 @@ REQUIRED_HEALTH_TABLES = [
     "operations_incident_notifications",
     "operations_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_22_025"
-CURRENT_SCHEMA_NAME = "researcher_capability_scope"
+CURRENT_SCHEMA_VERSION = "2026_07_23_026"
+CURRENT_SCHEMA_NAME = "research_delivery_workflow"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -215,6 +218,16 @@ MYSQL_VARCHAR_COLUMNS = {
     "target_type",
     "target_id",
     "actor_id",
+    "workflow_id",
+    "delivery_id",
+    "active_version_id",
+    "source_report_id",
+    "message_id",
+    "create_idempotency_key",
+    "delivery_type",
+    "content_hash",
+    "created_by",
+    "risk_level",
     "action",
     "consent_type",
     "consent_version",
@@ -942,6 +955,9 @@ def ensure_schema_columns(conn) -> None:
         "sender_id": "TEXT",
         "sender_role": "TEXT",
         "idempotency_key": "TEXT",
+        "delivery_id": "TEXT",
+        "delivery_version": "INTEGER",
+        "withdrawn_at": "TEXT",
     }
     for column, definition in message_columns.items():
         ensure_column(conn, "messages", column, definition)

@@ -26,6 +26,8 @@ import type {
   RelationshipPilotEnrollment,
   RelationshipScreeningReport,
   ResearchOperationsSnapshot,
+  ResearchDeliveryType,
+  ResearchDeliveryWorkflow,
   ResearchQueuePage,
   ResearchQueueType,
   ResearchWorkItemAction,
@@ -163,6 +165,15 @@ export function ResearchDashboard() {
   const [workItemNote, setWorkItemNote] = useState("");
   const [participantMessageTitle, setParticipantMessageTitle] = useState("人工支持进度");
   const [participantMessageBody, setParticipantMessageBody] = useState("");
+  const [deliveryType, setDeliveryType] = useState<ResearchDeliveryType>("stage_feedback");
+  const [deliveryTitle, setDeliveryTitle] = useState("本阶段可以一起核对的变化");
+  const [deliveryObservation, setDeliveryObservation] = useState("");
+  const [deliveryEvidence, setDeliveryEvidence] = useState("");
+  const [deliveryNextStep, setDeliveryNextStep] = useState("");
+  const [deliveryOpenQuestion, setDeliveryOpenQuestion] = useState("");
+  const [deliveryMessageBody, setDeliveryMessageBody] = useState("");
+  const [deliveryWorkflow, setDeliveryWorkflow] = useState<ResearchDeliveryWorkflow | null>(null);
+  const [deliveryBusy, setDeliveryBusy] = useState(false);
   const [resolutionCode, setResolutionCode] = useState("handled");
   const [transferAssigneeId, setTransferAssigneeId] = useState("");
   const [operationsMetrics, setOperationsMetrics] = useState<ResearchWorkItemMetrics | null>(null);
@@ -388,6 +399,7 @@ export function ResearchDashboard() {
 
   async function selectRelationshipEnrollment(enrollmentId: string) {
     try {
+      setDeliveryWorkflow(null);
       const enrollment = await api.getRelationshipEnrollment(enrollmentId, getStoredAdminToken().trim());
       const reportId = enrollment.reports?.[0]?.id;
       const relationshipReport = reportId
@@ -417,6 +429,73 @@ export function ResearchDashboard() {
     if (!note) return;
     await api.createRelationshipResearchNote(state.selectedRelationshipEnrollment.id, note, getStoredAdminToken().trim());
     await selectRelationshipEnrollment(state.selectedRelationshipEnrollment.id);
+  }
+
+  async function previewResearchDelivery() {
+    const enrollment = state.selectedRelationshipEnrollment;
+    if (!enrollment) return;
+    setDeliveryBusy(true);
+    setLastError(null);
+    try {
+      const content = deliveryType === "stage_feedback"
+        ? {
+            observation: deliveryObservation.trim(),
+            evidence: deliveryEvidence.trim(),
+            next_step: deliveryNextStep.trim(),
+            open_question: deliveryOpenQuestion.trim(),
+          }
+        : { body: deliveryMessageBody.trim() };
+      const nonce = Date.now();
+      let workflow = deliveryWorkflow;
+      if (!workflow || ["sent", "withdrawn"].includes(workflow.status) || workflow.delivery_type !== deliveryType) {
+        workflow = await api.createResearchDelivery(
+          { enrollment_id: enrollment.id, delivery_type: deliveryType, title: deliveryTitle.trim(), content },
+          `web-delivery-create-${enrollment.id}-${nonce}`,
+        );
+      } else {
+        workflow = await api.saveResearchDelivery(
+          workflow.id,
+          { expected_version: workflow.version, title: deliveryTitle.trim(), content },
+          `web-delivery-save-${workflow.id}-${nonce}`,
+        );
+      }
+      workflow = await api.runResearchDeliveryAction(
+        workflow.id,
+        "preview",
+        workflow.version,
+        `web-delivery-preview-${workflow.id}-${nonce}`,
+      );
+      setDeliveryWorkflow(workflow);
+    } catch (error) {
+      setLastError(error instanceof SafeHomeApiError ? error : null);
+      setState((current) => ({ ...current, message: formatSafeHomeError(error, "交付预览生成失败。") }));
+    } finally {
+      setDeliveryBusy(false);
+    }
+  }
+
+  async function runResearchDeliveryStep(action: "confirm" | "send" | "withdraw") {
+    if (!deliveryWorkflow) return;
+    setDeliveryBusy(true);
+    try {
+      const workflow = await api.runResearchDeliveryAction(
+        deliveryWorkflow.id,
+        action,
+        deliveryWorkflow.version,
+        `web-delivery-${action}-${deliveryWorkflow.id}-${Date.now()}`,
+        action === "withdraw" ? { reason: "研究者发现内容需要重新核对" } : {},
+      );
+      setDeliveryWorkflow(workflow);
+      setState((current) => ({
+        ...current,
+        message: action === "send" ? "已发送到参与者消息，并生成可审计回执。" : action === "confirm" ? "当前预览版本已确认，可以发送。" : "内容已撤回，历史版本仍保留。",
+      }));
+    } catch (error) {
+      setLastError(error instanceof SafeHomeApiError ? error : null);
+      setState((current) => ({ ...current, message: formatSafeHomeError(error, "交付操作失败。") }));
+    } finally {
+      setDeliveryBusy(false);
+    }
   }
 
   async function searchParticipants() {
@@ -836,6 +915,7 @@ export function ResearchDashboard() {
               </select>
             </label>
             {state.selectedRelationshipEnrollment ? (
+              <>
               <div className="dashboardGrid overviewGrid">
                 <section className="listPanel">
                   <h3>{state.selectedRelationshipEnrollment.profile.profile_name || "阶段性画像"}</h3>
@@ -871,6 +951,63 @@ export function ResearchDashboard() {
                   ) : <div className="emptyState">用户端或研究者端生成报告后可在这里复核。</div>}
                 </section>
               </div>
+              <section className="deliveryComposer" aria-label="研究者反馈与消息交付">
+                <div className="sectionTitleRow">
+                  <div>
+                    <p className="eyebrow">受控交付</p>
+                    <h3>草稿、预览、确认、发送</h3>
+                  </div>
+                  <span className="countBadge">不会覆盖原始填写</span>
+                </div>
+                <div className="deliveryRail" aria-label="交付进度">
+                  {[
+                    ["draft", "草稿"],
+                    ["previewed", "预览"],
+                    ["confirmed", "确认"],
+                    ["sent", "发送"],
+                  ].map(([status, label], index) => {
+                    const order = ["draft", "previewed", "confirmed", "sent"];
+                    const activeIndex = deliveryWorkflow ? order.indexOf(deliveryWorkflow.status) : 0;
+                    return <span className={index <= activeIndex ? "active" : ""} key={status}><b>{index + 1}</b>{label}</span>;
+                  })}
+                </div>
+                <div className="deliveryFormGrid">
+                  <label>交付类型
+                    <select value={deliveryType} onChange={(event) => { setDeliveryType(event.target.value as ResearchDeliveryType); setDeliveryWorkflow(null); }}>
+                      <option value="stage_feedback">阶段性反馈</option>
+                      <option value="participant_message">参与者消息</option>
+                    </select>
+                  </label>
+                  <label>标题
+                    <input value={deliveryTitle} maxLength={60} onChange={(event) => setDeliveryTitle(event.target.value)} />
+                  </label>
+                </div>
+                {deliveryType === "stage_feedback" ? (
+                  <div className="deliveryFormGrid">
+                    <label>近期可观察到的变化<textarea value={deliveryObservation} maxLength={600} onChange={(event) => setDeliveryObservation(event.target.value)} /></label>
+                    <label>可供共同核对的依据<textarea value={deliveryEvidence} maxLength={600} onChange={(event) => setDeliveryEvidence(event.target.value)} /></label>
+                    <label>可以先尝试的一小步<textarea value={deliveryNextStep} maxLength={600} onChange={(event) => setDeliveryNextStep(event.target.value)} /></label>
+                    <label>后续可继续讨论<textarea value={deliveryOpenQuestion} maxLength={400} onChange={(event) => setDeliveryOpenQuestion(event.target.value)} /></label>
+                  </div>
+                ) : (
+                  <label className="deliveryWideField">消息正文<textarea value={deliveryMessageBody} maxLength={2000} onChange={(event) => setDeliveryMessageBody(event.target.value)} /></label>
+                )}
+                {deliveryWorkflow?.active_version ? (
+                  <article className="deliveryPreview">
+                    <div className="sectionTitleRow"><strong>{deliveryWorkflow.preview.title}</strong><span>第 {deliveryWorkflow.active_version.version_no} 版</span></div>
+                    <p>{deliveryWorkflow.preview.body}</p>
+                    <small>{deliveryWorkflow.preview.boundary_notice}</small>
+                  </article>
+                ) : null}
+                <div className="dashboardActions">
+                  {(!deliveryWorkflow || ["draft", "previewed"].includes(deliveryWorkflow.status)) ? <button type="button" className="secondaryButton" disabled={deliveryBusy} onClick={() => void previewResearchDelivery()}>生成并核对预览</button> : null}
+                  {deliveryWorkflow?.status === "previewed" ? <button type="button" className="secondaryButton" disabled={deliveryBusy} onClick={() => void runResearchDeliveryStep("confirm")}>确认这个版本</button> : null}
+                  {deliveryWorkflow?.status === "confirmed" ? <button type="button" className="primaryButton" disabled={deliveryBusy} onClick={() => void runResearchDeliveryStep("send")}>发送到参与者消息</button> : null}
+                  {deliveryWorkflow?.status === "sent" ? <button type="button" className="secondaryButton" disabled={deliveryBusy} onClick={() => void runResearchDeliveryStep("withdraw")}>撤回并保留历史</button> : null}
+                </div>
+                {deliveryWorkflow?.message ? <p className="deliveryReceipt">交付回执：{displayStatus(deliveryWorkflow.message.status)} · 第 {deliveryWorkflow.message.delivery_version} 版 · {formatTime(deliveryWorkflow.sent_at)}</p> : null}
+              </section>
+              </>
             ) : null}
           </>
         ) : <div className="emptyState">当前还没有第二阶段报名记录。</div>}

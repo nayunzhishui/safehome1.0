@@ -196,6 +196,14 @@
 | POST | `/api/research/benchmarks/runs/<run_id>/reviews` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/affect` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/network` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/deliveries` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
+| POST | `/api/research/deliveries` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | supported | active |
+| GET | `/api/research/deliveries/<workflow_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| PATCH | `/api/research/deliveries/<workflow_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | supported | active |
+| POST | `/api/research/deliveries/<workflow_id>/confirm` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| POST | `/api/research/deliveries/<workflow_id>/preview` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| POST | `/api/research/deliveries/<workflow_id>/send` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| POST | `/api/research/deliveries/<workflow_id>/withdraw` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | POST | `/api/research/methodology/checks/run` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
 | GET | `/api/research/methodology/config` | role:researcher,supervisor,admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |
 | POST | `/api/research/methodology/disable` | role:admin | internal_pre_freeze_structure_and_synthetic_evidence_no_outcome_rows | — | — | active |

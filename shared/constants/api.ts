@@ -96,6 +96,7 @@ export const API_ENDPOINTS = {
   researchQueues: "/api/research/queues",
   researchWorkItems: "/api/research/work-items",
   researchWorkItemMetrics: "/api/research/work-items/metrics",
+  researchDeliveries: "/api/research/deliveries",
   productEvents: "/api/product-events",
 } as const;
 

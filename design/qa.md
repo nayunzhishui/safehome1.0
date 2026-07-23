@@ -1,5 +1,16 @@
 # 任务二十首批设计 QA
 
+## 2026-07-23 T36-F06 QA 增量
+
+- PASS：Web 与小程序均使用“草稿—预览—确认—发送”同一交付心智模型。
+- PASS：预览、确认、发送各自为独立请求，按钮文案描述动作结果，不再出现一键保存并发送。
+- PASS：预览卡展示最终正文、不可变版本和非诊断边界；发送回执展示版本、状态和时间。
+- PASS：参与者消息列表展示版本，撤回后明确提示忽略旧版本，历史记录不被删除。
+- PASS：移动端交付节点可在窄屏内四等分；主操作最小高度沿用 88rpx。
+- PASS：Web 生产构建通过，React/TypeScript 无编译错误。
+- BLOCKED：Chrome 扩展控制运行时返回“failed to write kernel assets”，因此未取得本轮桌面/窄屏截图。
+- MANUAL：微信开发者工具、iOS/Android 真机、系统大字体与读屏验收仍需负责人生成证据，不自动签字。
+
 prototype: `http://127.0.0.1:5173/dashboard`
 source: `design/context.md`、`design/audit.md`、任务二十计划、问题截图
 

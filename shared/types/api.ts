@@ -1475,6 +1475,10 @@ export interface UserMessage {
   is_unread?: boolean;
   created_at: ISODateTime;
   read_at?: ISODateTime | null;
+  delivery_id?: ID | null;
+  delivery_version?: number | null;
+  withdrawn_at?: ISODateTime | null;
+  is_withdrawn?: boolean;
 }
 
 export interface UserMessageList {
@@ -1493,6 +1497,51 @@ export interface ResearcherMessageInput {
   body: string;
   message_type?: "researcher_message" | "relationship_stage_feedback";
   idempotency_key?: string;
+}
+
+export type ResearchDeliveryType = "stage_feedback" | "participant_message";
+export type ResearchDeliveryStatus = "draft" | "previewed" | "confirmed" | "sent" | "withdrawn";
+
+export interface ResearchDeliveryContent {
+  body?: string;
+  observation?: string;
+  evidence?: string;
+  next_step?: string;
+  open_question?: string;
+}
+
+export interface ResearchDeliveryVersion {
+  id: ID;
+  workflow_id: ID;
+  version_no: number;
+  title: string;
+  content: ResearchDeliveryContent;
+  content_hash: string;
+  risk_level: "low" | "medium" | "high";
+  created_by: ID;
+  created_at: ISODateTime;
+}
+
+export interface ResearchDeliveryWorkflow {
+  id: ID;
+  enrollment_id: ID;
+  user_id: ID;
+  actor_id: ID;
+  delivery_type: ResearchDeliveryType;
+  status: ResearchDeliveryStatus;
+  title: string;
+  content: ResearchDeliveryContent;
+  active_version?: ResearchDeliveryVersion | null;
+  message?: UserMessage | null;
+  source_report_id?: ID | null;
+  version: number;
+  preview: { title: string; body: string; boundary_notice: string };
+  events: Array<{ action: string; from_status?: string | null; to_status: string; created_at: ISODateTime }>;
+  confirmed_at?: ISODateTime | null;
+  sent_at?: ISODateTime | null;
+  withdrawn_at?: ISODateTime | null;
+  idempotency_replayed?: boolean;
+  already_sent?: boolean;
 }
 
 export type ResearchAssignmentRole = "researcher" | "supervisor";

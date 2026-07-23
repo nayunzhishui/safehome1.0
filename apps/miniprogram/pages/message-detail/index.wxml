@@ -4,8 +4,8 @@
   <view wx:else class="safe-card safe-card--hero">
     <text class="detail-kicker">{{message.message_type === 'supervision_feedback' ? '人工补充反馈' : '消息提醒'}}</text>
     <text class="detail-title">{{message.title}}</text>
-    <text class="detail-time">{{message.created_at}}</text>
-    <text class="detail-body">{{message.body || '暂无更多内容。'}}</text>
+    <text class="detail-time">{{message.sender_role ? '来源：研究者补充 · ' : ''}}{{message.created_at}}{{message.delivery_version ? ' · 第 ' + message.delivery_version + ' 版' : ''}}</text>
+    <text class="detail-body">{{message.is_withdrawn ? '研究者已撤回这条内容，请忽略此前版本。' : (message.body || '暂无更多内容。')}}</text>
   </view>
 
   <button wx:if="{{canOpenSource}}" class="safe-primary-button bottom-action" bindtap="openSource">{{sourceButtonLabel}}</button>

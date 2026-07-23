@@ -136,6 +136,7 @@ const API_ENDPOINTS = {
   researchQueues: "/api/research/queues",
   researchWorkItems: "/api/research/work-items",
   researchWorkItemMetrics: "/api/research/work-items/metrics",
+  researchDeliveries: "/api/research/deliveries",
   contentGovernanceActive: "/api/content-review/active",
   aiQaConfig: "/api/ai-qa/config",
   offlineBenchmarks: "/api/research/benchmarks",
@@ -651,6 +652,39 @@ function createSafeHomeApi(options = {}) {
         method: "POST",
         data: payload,
         header: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
+        requiresAuth: true,
+      });
+    },
+
+    createResearchDelivery(data, idempotencyKey) {
+      return request(API_ENDPOINTS.researchDeliveries, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    saveResearchDelivery(id, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.researchDeliveries}/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    runResearchDeliveryAction(id, action, expectedVersion, idempotencyKey, extra = {}) {
+      return request(`${API_ENDPOINTS.researchDeliveries}/${encodeURIComponent(id)}/${encodeURIComponent(action)}`, {
+        method: "POST",
+        data: { expected_version: expectedVersion, ...extra },
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    listResearchDeliveries(enrollmentId, params = {}) {
+      return request(`${API_ENDPOINTS.researchDeliveries}${queryString({ enrollment_id: enrollmentId, ...params })}`, {
         requiresAuth: true,
       });
     },

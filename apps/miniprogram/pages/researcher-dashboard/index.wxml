@@ -260,7 +260,24 @@
             <text class="feedback-label">后续可继续讨论</text>
             <textarea class="note-input" maxlength="400" value="{{stageFeedbackForm.openQuestion}}" data-key="openQuestion" bindinput="onStageFeedbackInput" placeholder="保留一个开放问题，邀请参与者补充自己的理解"></textarea>
           </view>
-          <button class="safe-primary-button" loading="{{sendingFeedback}}" disabled="{{sendingFeedback}}" bindtap="saveAndSendStageFeedback">保存并发送阶段性反馈</button>
+          <view class="delivery-rail" aria-label="阶段性反馈交付进度">
+            <view class="delivery-step active"><text>1</text><text>草稿</text></view>
+            <view class="delivery-line"></view>
+            <view class="delivery-step {{stageFeedbackDelivery ? 'active' : ''}}"><text>2</text><text>预览</text></view>
+            <view class="delivery-line"></view>
+            <view class="delivery-step {{stageFeedbackDelivery.status === 'confirmed' || stageFeedbackDelivery.status === 'sent' ? 'active' : ''}}"><text>3</text><text>确认</text></view>
+            <view class="delivery-line"></view>
+            <view class="delivery-step {{stageFeedbackDelivery.status === 'sent' ? 'active' : ''}}"><text>4</text><text>发送</text></view>
+          </view>
+          <view wx:if="{{stageFeedbackDelivery}}" class="delivery-preview">
+            <text class="delivery-preview-title">{{stageFeedbackDelivery.preview.title}} · 第 {{stageFeedbackDelivery.active_version.version_no}} 版</text>
+            <text class="detail-line delivery-preview-body">{{stageFeedbackDelivery.preview.body}}</text>
+            <text class="delivery-boundary">{{stageFeedbackDelivery.preview.boundary_notice}}</text>
+          </view>
+          <button wx:if="{{!stageFeedbackDelivery || stageFeedbackDelivery.status === 'draft' || stageFeedbackDelivery.status === 'previewed'}}" class="safe-primary-button" loading="{{sendingFeedback}}" disabled="{{sendingFeedback}}" bindtap="previewStageFeedback">生成并核对预览</button>
+          <button wx:if="{{stageFeedbackDelivery.status === 'previewed'}}" class="safe-outline-button" loading="{{sendingFeedback}}" disabled="{{sendingFeedback}}" data-kind="stage" data-action="confirm" bindtap="runDeliveryStep">确认这个版本</button>
+          <button wx:if="{{stageFeedbackDelivery.status === 'confirmed'}}" class="safe-primary-button" loading="{{sendingFeedback}}" disabled="{{sendingFeedback}}" data-kind="stage" data-action="send" bindtap="runDeliveryStep">发送到参与者消息</button>
+          <text wx:if="{{stageFeedbackDelivery.status === 'sent'}}" class="delivery-receipt">已发送 · {{stageFeedbackDelivery.sent_at}} · 参与者消息第 {{stageFeedbackDelivery.active_version.version_no}} 版</text>
         </view>
 
         <view class="safe-card dossier-card">
@@ -268,7 +285,23 @@
           <text class="detail-line">参与者可在“我的 → 消息”查看；移动端草稿按当前参与者恢复。</text>
           <input class="note-input note-input--single" maxlength="60" value="{{messageTitle}}" bindinput="onMessageTitleInput" placeholder="消息标题" />
           <textarea class="note-input" maxlength="2000" value="{{messageBody}}" bindinput="onMessageBodyInput" placeholder="消息正文"></textarea>
-          <button class="safe-outline-button" loading="{{sendingMessage}}" disabled="{{sendingMessage}}" bindtap="sendParticipantMessage">发送消息</button>
+          <view class="delivery-rail" aria-label="参与者消息交付进度">
+            <view class="delivery-step active"><text>1</text><text>草稿</text></view>
+            <view class="delivery-line"></view>
+            <view class="delivery-step {{participantMessageDelivery ? 'active' : ''}}"><text>2</text><text>预览</text></view>
+            <view class="delivery-line"></view>
+            <view class="delivery-step {{participantMessageDelivery.status === 'confirmed' || participantMessageDelivery.status === 'sent' ? 'active' : ''}}"><text>3</text><text>确认</text></view>
+            <view class="delivery-line"></view>
+            <view class="delivery-step {{participantMessageDelivery.status === 'sent' ? 'active' : ''}}"><text>4</text><text>发送</text></view>
+          </view>
+          <view wx:if="{{participantMessageDelivery}}" class="delivery-preview">
+            <text class="delivery-preview-title">{{participantMessageDelivery.preview.title}} · 第 {{participantMessageDelivery.active_version.version_no}} 版</text>
+            <text class="detail-line delivery-preview-body">{{participantMessageDelivery.preview.body}}</text>
+          </view>
+          <button wx:if="{{!participantMessageDelivery || participantMessageDelivery.status === 'draft' || participantMessageDelivery.status === 'previewed'}}" class="safe-outline-button" loading="{{sendingMessage}}" disabled="{{sendingMessage}}" bindtap="previewParticipantMessage">生成并核对预览</button>
+          <button wx:if="{{participantMessageDelivery.status === 'previewed'}}" class="safe-outline-button" loading="{{sendingMessage}}" disabled="{{sendingMessage}}" data-kind="message" data-action="confirm" bindtap="runDeliveryStep">确认这个版本</button>
+          <button wx:if="{{participantMessageDelivery.status === 'confirmed'}}" class="safe-primary-button" loading="{{sendingMessage}}" disabled="{{sendingMessage}}" data-kind="message" data-action="send" bindtap="runDeliveryStep">发送到参与者消息</button>
+          <text wx:if="{{participantMessageDelivery.status === 'sent'}}" class="delivery-receipt">已发送 · {{participantMessageDelivery.sent_at}} · 参与者消息第 {{participantMessageDelivery.active_version.version_no}} 版</text>
         </view>
 
         <view class="safe-card dossier-card">

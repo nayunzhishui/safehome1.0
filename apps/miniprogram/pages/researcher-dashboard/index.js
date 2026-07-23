@@ -162,6 +162,8 @@ Page({
     },
     messageTitle: "研究者补充消息",
     messageBody: "",
+    stageFeedbackDelivery: null,
+    participantMessageDelivery: null,
     sendingMessage: false,
     sendingFeedback: false,
     developmentFullAccess: false,
@@ -424,6 +426,8 @@ Page({
         messageTitle: draft.messageTitle || "研究者补充消息",
         messageBody: draft.messageBody || "",
         stageFeedbackForm: draft.stageFeedbackForm || { observation: "", evidence: "", nextStep: "", openQuestion: "" },
+        stageFeedbackDelivery: null,
+        participantMessageDelivery: null,
       }, () => this.drawMaterial(detail.drawingTask));
     } catch (error) {
       wx.showToast({ title: error.message || "档案暂时无法读取", icon: "none" });
@@ -524,78 +528,98 @@ Page({
     }
   },
 
-  async saveAndSendStageFeedback() {
+  async prepareDelivery(deliveryType) {
     const form = this.data.stageFeedbackForm;
-    const observation = form.observation.trim();
-    const evidence = form.evidence.trim();
-    const nextStep = form.nextStep.trim();
-    const openQuestion = form.openQuestion.trim();
     const selected = this.data.selected;
-    if (!selected || !observation || !nextStep) {
-      wx.showToast({ title: "请填写观察与下一小步", icon: "none" });
-      return;
+    const isStage = deliveryType === "stage_feedback";
+    const stateKey = isStage ? "stageFeedbackDelivery" : "participantMessageDelivery";
+    const current = this.data[stateKey];
+    const title = isStage ? "本阶段可以一起核对的变化" : this.data.messageTitle.trim();
+    const content = isStage ? {
+      observation: form.observation.trim(),
+      evidence: form.evidence.trim(),
+      next_step: form.nextStep.trim(),
+      open_question: form.openQuestion.trim(),
+    } : { body: this.data.messageBody.trim() };
+    if (!selected || !title || (isStage ? !content.observation || !content.next_step : !content.body)) {
+      wx.showToast({ title: isStage ? "请填写观察与下一小步" : "请填写消息标题和正文", icon: "none" });
+      return null;
     }
-    const sections = [
-      `近期可观察到的变化：${observation}`,
-      evidence ? `可供共同核对的依据：${evidence}` : "",
-      `可以先尝试的一小步：${nextStep}`,
-      openQuestion ? `后续可继续讨论：${openQuestion}` : "",
-    ].filter(Boolean);
-    const text = sections.join("\n\n");
+    let workflow = current;
+    const nonce = Date.now();
+    if (!workflow || ["sent", "withdrawn"].includes(workflow.status)) {
+      workflow = await api.createResearchDelivery({
+        enrollment_id: selected.id,
+        delivery_type: deliveryType,
+        title,
+        content,
+      }, `delivery-create-${deliveryType}-${selected.id}-${nonce}`);
+    } else {
+      workflow = await api.saveResearchDelivery(workflow.id, {
+        expected_version: workflow.version,
+        title,
+        content,
+      }, `delivery-save-${workflow.id}-${nonce}`);
+    }
+    workflow = await api.runResearchDeliveryAction(
+      workflow.id,
+      "preview",
+      workflow.version,
+      `delivery-preview-${workflow.id}-${nonce}`,
+    );
+    this.setData({ [stateKey]: workflow });
+    return workflow;
+  },
+
+  async previewStageFeedback() {
     this.setData({ sendingFeedback: true });
     try {
-      let report = selected.latestReport;
-      if (!report) report = await api.createRelationshipReport(selected.id);
-      if (!["confirmed", "sent", "updated"].includes(report.status)) {
-        report = await api.confirmRelationshipReport(report.id);
-      }
-      report = await api.updateRelationshipReport(report.id, {
-        version: `2026.07-stage-feedback-${Date.now()}`,
-        personalized_interpretation: text,
-      });
-      await api.sendRelationshipReport(report.id);
-      this.setData({
-        stageFeedbackForm: {
-          observation: "",
-          evidence: "",
-          nextStep: "",
-          openQuestion: "",
-        },
-      });
-      this.clearDraft(selected.id);
-      await this.selectEnrollmentById(selected.id);
-      wx.showToast({ title: "阶段性反馈已发送", icon: "success" });
+      await this.prepareDelivery("stage_feedback");
+      wx.showToast({ title: "预览已生成", icon: "success" });
     } catch (error) {
-      wx.showToast({ title: error.message || "阶段性反馈发送失败", icon: "none" });
+      wx.showToast({ title: error.message || "预览生成失败", icon: "none" });
     } finally {
       this.setData({ sendingFeedback: false });
     }
   },
 
-  async sendParticipantMessage() {
-    const title = this.data.messageTitle.trim();
-    const body = this.data.messageBody.trim();
-    const selected = this.data.selected;
-    if (!selected || !title || !body) {
-      wx.showToast({ title: "请填写消息标题和正文", icon: "none" });
-      return;
-    }
+  async previewParticipantMessage() {
     this.setData({ sendingMessage: true });
     try {
-      await api.sendResearcherMessage({
-        enrollment_id: selected.id,
-        title,
-        body,
-        message_type: "researcher_message",
-        idempotency_key: `researcher-message-${selected.id}-${Date.now()}`,
-      });
-      this.setData({ messageBody: "" });
-      this.persistDraft({ messageBody: "" });
-      wx.showToast({ title: "已发送到参与者消息", icon: "success" });
+      await this.prepareDelivery("participant_message");
+      wx.showToast({ title: "预览已生成", icon: "success" });
     } catch (error) {
-      wx.showToast({ title: error.message || "消息发送失败", icon: "none" });
+      wx.showToast({ title: error.message || "预览生成失败", icon: "none" });
     } finally {
       this.setData({ sendingMessage: false });
+    }
+  },
+
+  async runDeliveryStep(event) {
+    const kind = event.currentTarget.dataset.kind;
+    const action = event.currentTarget.dataset.action;
+    const stateKey = kind === "stage" ? "stageFeedbackDelivery" : "participantMessageDelivery";
+    const workflow = this.data[stateKey];
+    if (!workflow) return;
+    this.setData(kind === "stage" ? { sendingFeedback: true } : { sendingMessage: true });
+    try {
+      const result = await api.runResearchDeliveryAction(
+        workflow.id,
+        action,
+        workflow.version,
+        `delivery-${action}-${workflow.id}-${Date.now()}`,
+      );
+      this.setData({ [stateKey]: result });
+      if (action === "send") {
+        wx.showToast({ title: "已发送到参与者消息", icon: "success" });
+        if (kind === "stage") this.clearDraft(this.data.selected.id);
+      } else {
+        wx.showToast({ title: "已确认，可发送", icon: "success" });
+      }
+    } catch (error) {
+      wx.showToast({ title: error.message || "操作失败，请重试", icon: "none" });
+    } finally {
+      this.setData({ sendingFeedback: false, sendingMessage: false });
     }
   },
 

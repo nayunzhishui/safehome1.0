@@ -41,7 +41,7 @@ def test_registry_freezes_routes_roles_scopes_faults_schema_and_flags():
     endpoint_ids = {item["id"] for item in payload["baseline"]["cloudbase"]["endpoints"]}
     assert {"health", "ready", "auth_capabilities", "messages_fault", "checkins_fault", "researcher_dashboard_fault"} <= endpoint_ids
     assert {role["id"] for role in payload["roles"]} == {"participant", "researcher", "supervisor", "admin", "showcase"}
-    assert payload["baseline"]["database"]["expected_schema_version"] == "2026_07_21_023"
+    assert payload["baseline"]["database"]["expected_schema_version"] == "2026_07_23_026"
     flags = {item["id"]: item for item in payload["baseline"]["feature_flags"]}
     assert flags["researcher_platform_full_access"]["formal_permission_evidence"] is False
     assert flags["researcher_platform_full_access"]["must_not_expand_in_f00"] is True

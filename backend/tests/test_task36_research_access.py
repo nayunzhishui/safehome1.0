@@ -94,7 +94,7 @@ def _assign(client, headers, enrollment_id, actor_id, assignment_role="researche
 def test_capability_registry_is_complete_and_keeps_dangerous_operations_admin_only():
     payload = json.loads((ROOT / "content" / "researcher_capability_registry.json").read_text(encoding="utf-8"))
 
-    assert payload["version"] == "2026.07.task36-f03-v1"
+    assert payload["version"] == "2026.07.task36-f06-v1"
     assert payload["default_decision"] == "deny"
     assert len(payload["capabilities"]) >= 12
     for capability in payload["capabilities"]:
@@ -284,8 +284,8 @@ def test_schema_contains_recoverable_assignment_table(tmp_path, monkeypatch):
                 row["name"]
                 for row in conn.execute("PRAGMA index_list(research_scope_assignment_actions)").fetchall()
             }
-        assert CURRENT_SCHEMA_VERSION == "2026_07_22_025"
-        assert CURRENT_SCHEMA_NAME == "researcher_capability_scope"
+        assert CURRENT_SCHEMA_VERSION == "2026_07_23_026"
+        assert CURRENT_SCHEMA_NAME == "research_delivery_workflow"
         assert {"enrollment_id", "actor_id", "assignment_role", "status", "version", "idempotency_key"} <= columns
         assert "idx_research_scope_actor_status" in indexes
         assert "idx_research_scope_enrollment_status" in indexes
@@ -300,7 +300,7 @@ def test_capability_endpoint_reports_formal_scope_and_development_exception(tmp_
 
     assert response.status_code == 200
     data = response.get_json()["data"]
-    assert data["registry_version"] == "2026.07.task36-f03-v1"
+    assert data["registry_version"] == "2026.07.task36-f06-v1"
     assert data["formal_role"] == "researcher"
     assert data["development_exception_active"] is False
     assert "research.dashboard.read" in data["capability_ids"]

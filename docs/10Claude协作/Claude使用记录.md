@@ -423,3 +423,11 @@
 - 修改文件：`config/task23_34_registry.json`、`scripts/run_tasks_23_34.py`、执行器测试及主计划/事实/交接/开发说明。
 - 验证情况：执行器4项契约、report/plan/T34 dry-run；T34专项13项、后端485项、内容/契约/兼容/小程序、Web typecheck/build及修复慢注册等待后的双视口34项通过。
 - 后续事项：T25—T34工程无需重复开发；若继续，先做T23完整差距复审或按外部门禁补真实人工/云/真机证据。
+## 2026-07-24 Codex T36-F06
+
+- 工具或模型：Codex；implement、TDD、Product Design、design-audit、design-prototype、design-qa、Chrome控制插件。
+- 会话标识：当前Codex任务（无外部`/RESUME`地址）。
+- 摘要：实现研究反馈/消息四步交付、不可变版本、撤回、回执和跨端UI；更新026迁移、权限能力和任务36执行记录。
+- 修改文件：后端交付服务/路由/数据库/测试，shared类型，两端API和页面，设计审计、技术真相、任务计划及事实文档。
+- 验证：专项24项、后端全量572项、API契约136条回放、内容/小程序/体验审计、Web typecheck/build、迁移和执行器verify通过。Chrome插件初始化因本地资源写入错误未生成截图。
+- 后续：双微信账号、微信真机、CloudBase 026迁移、大字体/读屏和生产批准均保持外部门禁。

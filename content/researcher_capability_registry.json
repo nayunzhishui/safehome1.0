@@ -1,5 +1,5 @@
 {
-  "version": "2026.07.task36-f03-v1",
+  "version": "2026.07.task36-f06-v1",
   "updated_at": "2026-07-22",
   "default_decision": "deny",
   "formal_roles": ["researcher", "supervisor", "admin"],
@@ -52,7 +52,7 @@
     },
     {
       "id": "research.feedback.write",
-      "operations": ["PATCH /api/relationship-pilot/reports/{id}", "POST /api/relationship-pilot/reports/{id}/confirm", "POST /api/relationship-pilot/reports/{id}/send", "POST /api/relationship-pilot/enrollments/{id}/notes"],
+      "operations": ["PATCH /api/relationship-pilot/reports/{id}", "POST /api/relationship-pilot/reports/{id}/confirm", "POST /api/relationship-pilot/reports/{id}/send", "POST /api/relationship-pilot/enrollments/{id}/notes", "POST /api/research/deliveries", "PATCH /api/research/deliveries/{id}", "POST /api/research/deliveries/{id}/preview", "POST /api/research/deliveries/{id}/confirm", "POST /api/research/deliveries/{id}/send", "POST /api/research/deliveries/{id}/withdraw"],
       "roles": ["researcher", "supervisor", "admin"],
       "object_scope": "assigned_for_researcher; supervised_for_supervisor; all_for_admin",
       "sensitivity": "restricted",

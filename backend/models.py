@@ -40,6 +40,9 @@ MVP_TABLES = [
     "relationship_hypothesis_feedback",
     "research_scope_assignments",
     "research_scope_assignment_actions",
+    "research_delivery_workflows",
+    "research_delivery_versions",
+    "research_delivery_events",
     "feedback_ledger",
     "feedback_ledger_actions",
     "recommendation_snapshots",
@@ -141,6 +144,57 @@ SCHEMA_SQL = [
         request_hash TEXT NOT NULL,
         result_json TEXT NOT NULL DEFAULT '{}',
         created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_delivery_workflows (
+        id TEXT PRIMARY KEY,
+        enrollment_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        delivery_type TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'draft',
+        title TEXT NOT NULL,
+        draft_json TEXT NOT NULL DEFAULT '{}',
+        active_version_id TEXT,
+        source_report_id TEXT,
+        message_id TEXT,
+        version INTEGER NOT NULL DEFAULT 0,
+        create_idempotency_key TEXT NOT NULL,
+        confirmed_at TEXT,
+        sent_at TEXT,
+        withdrawn_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(actor_id, create_idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_delivery_versions (
+        id TEXT PRIMARY KEY,
+        workflow_id TEXT NOT NULL,
+        version_no INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        content_json TEXT NOT NULL,
+        content_hash TEXT NOT NULL,
+        risk_level TEXT NOT NULL DEFAULT 'low',
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(workflow_id, version_no)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_delivery_events (
+        id TEXT PRIMARY KEY,
+        workflow_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        from_status TEXT,
+        to_status TEXT NOT NULL,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(actor_id, idempotency_key)
     )
     """,
     """
@@ -908,9 +962,12 @@ SCHEMA_SQL = [
         source_type TEXT,
         source_id TEXT,
         idempotency_key TEXT,
+        delivery_id TEXT,
+        delivery_version INTEGER,
         status TEXT NOT NULL DEFAULT 'unread',
         created_at TEXT NOT NULL,
-        read_at TEXT
+        read_at TEXT,
+        withdrawn_at TEXT
     )
     """,
     """
@@ -1563,6 +1620,12 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_research_scope_enrollment_status ON research_scope_assignments(enrollment_id, status)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_scope_assigner_idempotency ON research_scope_assignments(assigned_by, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_scope_action_actor_idempotency ON research_scope_assignment_actions(actor_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_research_delivery_enrollment_status ON research_delivery_workflows(enrollment_id, status, updated_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_delivery_user_status ON research_delivery_workflows(user_id, status, updated_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_delivery_create_idempotency ON research_delivery_workflows(actor_id, create_idempotency_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_delivery_version_unique ON research_delivery_versions(workflow_id, version_no)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_delivery_event_idempotency ON research_delivery_events(actor_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_messages_delivery ON messages(delivery_id, delivery_version)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_task_idempotency_unique ON relationship_pilot_tasks(user_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_relationship_longitudinal_idempotency_unique ON relationship_longitudinal_entries(user_id, idempotency_key)",
 ]

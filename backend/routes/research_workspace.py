@@ -8,6 +8,17 @@ from database import get_connection, now_iso, rows_to_dicts, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.utils import fail, ok, parse_int
 from services.research_queue_service import list_research_queue, sync_all_work_item_sources
+from services.research_delivery_service import (
+    ResearchDeliveryError,
+    confirm_delivery,
+    create_delivery,
+    get_delivery,
+    list_deliveries,
+    preview_delivery,
+    save_draft,
+    send_delivery,
+    withdraw_delivery,
+)
 from services.research_work_item_service import WorkItemError, get_work_item_detail, get_work_item_metrics, perform_work_item_action
 from services.research_participant_service import anonymous_id, list_module, participant_summary
 
@@ -20,6 +31,103 @@ def _actor():
         return require_role("researcher", "supervisor", "admin", allow_legacy_admin=True), None
     except AuthError as exc:
         return None, auth_error_response(exc)
+
+
+def _delivery_error(exc: ResearchDeliveryError):
+    return fail(exc.code, str(exc), status=exc.status)
+
+
+def _idempotency_key(payload: dict) -> str:
+    return str(request.headers.get("Idempotency-Key") or payload.get("idempotency_key") or "").strip()
+
+
+@bp.get("/deliveries")
+def get_research_deliveries():
+    actor, error = _actor()
+    if error:
+        return error
+    enrollment_id = str(request.args.get("enrollment_id") or "").strip()
+    page = parse_int(request.args.get("page"), 1) or 1
+    page_size = parse_int(request.args.get("page_size"), 20) or 20
+    if not enrollment_id:
+        return fail("validation_error", "请选择参与者。", status=400)
+    if page < 1 or page_size < 1 or page_size > 100:
+        return fail("validation_error", "page 需大于等于1，page_size 需为1至100。", status=400)
+    try:
+        return ok(list_deliveries(actor, enrollment_id, page, page_size))
+    except ResearchDeliveryError as exc:
+        return _delivery_error(exc)
+
+
+@bp.post("/deliveries")
+def create_research_delivery():
+    actor, error = _actor()
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    try:
+        data, status = create_delivery(actor, payload, _idempotency_key(payload))
+        return ok(data, status=status)
+    except ResearchDeliveryError as exc:
+        return _delivery_error(exc)
+
+
+@bp.get("/deliveries/<workflow_id>")
+def get_research_delivery(workflow_id: str):
+    actor, error = _actor()
+    if error:
+        return error
+    try:
+        return ok(get_delivery(actor, workflow_id))
+    except ResearchDeliveryError as exc:
+        return _delivery_error(exc)
+
+
+@bp.patch("/deliveries/<workflow_id>")
+def update_research_delivery(workflow_id: str):
+    actor, error = _actor()
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    try:
+        return ok(save_draft(actor, workflow_id, payload, _idempotency_key(payload)))
+    except ResearchDeliveryError as exc:
+        return _delivery_error(exc)
+
+
+def _delivery_action(workflow_id: str, action):
+    actor, error = _actor()
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    try:
+        result = action(actor, workflow_id, payload, _idempotency_key(payload))
+        if isinstance(result, tuple):
+            data, status = result
+            return ok(data, status=status)
+        return ok(result)
+    except ResearchDeliveryError as exc:
+        return _delivery_error(exc)
+
+
+@bp.post("/deliveries/<workflow_id>/preview")
+def preview_research_delivery(workflow_id: str):
+    return _delivery_action(workflow_id, preview_delivery)
+
+
+@bp.post("/deliveries/<workflow_id>/confirm")
+def confirm_research_delivery(workflow_id: str):
+    return _delivery_action(workflow_id, confirm_delivery)
+
+
+@bp.post("/deliveries/<workflow_id>/send")
+def send_research_delivery(workflow_id: str):
+    return _delivery_action(workflow_id, send_delivery)
+
+
+@bp.post("/deliveries/<workflow_id>/withdraw")
+def withdraw_research_delivery(workflow_id: str):
+    return _delivery_action(workflow_id, withdraw_delivery)
 
 
 def _allowed_user_clause(actor: dict, alias: str = "u") -> tuple[str, list[str]]:

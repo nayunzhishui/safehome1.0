@@ -7,7 +7,7 @@ from services.risk_service import check_text_risk
 
 PUBLIC_FIELDS = {
     "id", "user_id", "message_type", "title", "body", "source_type", "source_id",
-    "sender_role", "status", "created_at", "read_at",
+    "sender_role", "status", "created_at", "read_at", "delivery_id", "delivery_version", "withdrawn_at",
 }
 
 
@@ -21,6 +21,7 @@ class MessageServiceError(ValueError):
 def public_message(item: dict) -> dict:
     result = {key: value for key, value in item.items() if key in PUBLIC_FIELDS}
     result["is_unread"] = result.get("status") == "unread"
+    result["is_withdrawn"] = result.get("status") == "withdrawn"
     if item.get("already_sent"):
         result["already_sent"] = True
     return result
@@ -37,6 +38,8 @@ def create_message(
     sender_id: str | None = None,
     sender_role: str | None = None,
     idempotency_key: str | None = None,
+    delivery_id: str | None = None,
+    delivery_version: int | None = None,
 ) -> dict:
     message_id = new_id("msg")
     timestamp = now_iso()
@@ -45,10 +48,11 @@ def create_message(
         INSERT INTO messages (
             id, user_id, sender_id, sender_role, message_type, title, body,
             source_type, source_id, idempotency_key, status, created_at, read_at
+            , delivery_id, delivery_version, withdrawn_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unread', ?, NULL)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unread', ?, NULL, ?, ?, NULL)
         """,
-        (message_id, user_id, sender_id, sender_role, message_type, title, body, source_type, source_id, idempotency_key, timestamp),
+        (message_id, user_id, sender_id, sender_role, message_type, title, body, source_type, source_id, idempotency_key, timestamp, delivery_id, delivery_version),
     )
     row = conn.execute("SELECT * FROM messages WHERE id = ?", (message_id,)).fetchone()
     return row_to_dict(row) or {"id": message_id, "user_id": user_id}
@@ -132,7 +136,7 @@ def get_user_message(user_id: str, message_id: str, *, mark_read: bool = True) -
         row = conn.execute("SELECT * FROM messages WHERE id = ? AND user_id = ?", (message_id, user_id)).fetchone()
         if row is None:
             raise MessageServiceError("not_found", "没有找到这条消息。", 404)
-        if mark_read and row["status"] != "read":
+        if mark_read and row["status"] == "unread":
             conn.execute("UPDATE messages SET status = 'read', read_at = ? WHERE id = ?", (now_iso(), message_id))
             conn.commit()
             row = conn.execute("SELECT * FROM messages WHERE id = ? AND user_id = ?", (message_id, user_id)).fetchone()
@@ -142,6 +146,10 @@ def get_user_message(user_id: str, message_id: str, *, mark_read: bool = True) -
 def mark_one_read(user_id: str, message_id: str) -> dict:
     get_user_message(user_id, message_id, mark_read=False)
     with get_connection() as conn:
-        conn.execute("UPDATE messages SET status = 'read', read_at = COALESCE(read_at, ?) WHERE id = ? AND user_id = ?", (now_iso(), message_id, user_id))
+        conn.execute(
+            "UPDATE messages SET status = 'read', read_at = COALESCE(read_at, ?) WHERE id = ? AND user_id = ? AND status = 'unread'",
+            (now_iso(), message_id, user_id),
+        )
         conn.commit()
-    return {"id": message_id, "status": "read"}
+        row = conn.execute("SELECT status, read_at, withdrawn_at FROM messages WHERE id = ? AND user_id = ?", (message_id, user_id)).fetchone()
+    return {"id": message_id, "status": row["status"], "read_at": row["read_at"], "withdrawn_at": row["withdrawn_at"]}

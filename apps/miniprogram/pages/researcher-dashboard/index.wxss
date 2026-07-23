@@ -399,3 +399,49 @@
   border-radius: 20rpx;
   background: #fbfdfb;
 }
+
+/* T36-F06：交付轨道把高风险的发送动作拆成可核对的四步。 */
+.delivery-rail {
+  display: flex;
+  align-items: flex-start;
+  margin: 8rpx 0 18rpx;
+}
+
+.delivery-step {
+  display: grid;
+  flex: 0 0 72rpx;
+  justify-items: center;
+  gap: 6rpx;
+  color: var(--safe-muted);
+  font-size: 19rpx;
+}
+
+.delivery-step text:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  border: 2rpx solid var(--safe-border);
+  border-radius: 50%;
+  background: #fff;
+  font-weight: 800;
+}
+
+.delivery-step.active { color: var(--safe-primary-deep); }
+.delivery-step.active text:first-child { border-color: var(--safe-primary); background: var(--safe-primary-soft); }
+.delivery-line { flex: 1; height: 2rpx; margin-top: 24rpx; background: var(--safe-border); }
+
+.delivery-preview {
+  display: grid;
+  gap: 10rpx;
+  padding: 22rpx;
+  border: 1rpx solid rgba(78, 124, 107, 0.25);
+  border-radius: 22rpx;
+  background: #f8fbf8;
+}
+
+.delivery-preview-title { color: var(--safe-title); font-size: 24rpx; font-weight: 820; }
+.delivery-preview-body { white-space: pre-wrap; }
+.delivery-boundary { color: var(--safe-muted); font-size: 20rpx; line-height: 1.55; }
+.delivery-receipt { padding: 16rpx 20rpx; border-radius: 18rpx; background: var(--safe-primary-soft); color: var(--safe-primary-deep); font-size: 21rpx; line-height: 1.5; }
