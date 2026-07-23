@@ -219,6 +219,47 @@ def test_cloudbase_identity_headers_are_ignored_without_explicit_trust(tmp_path,
     assert response.status_code == 400
     assert response.get_json()["error"]["code"] == "validation_error"
 
+    from database import get_connection
+
+    with get_connection() as conn:
+        created = conn.execute(
+            "SELECT COUNT(*) AS count FROM users WHERE source = 'wechat'"
+        ).fetchone()
+    assert created["count"] == 0
+
+
+def test_wechat_login_reuses_identity_and_rejects_disabled_account(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRUST_CLOUDBASE_IDENTITY_HEADERS", "1")
+    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+    client = app.test_client()
+    headers = {
+        "X-WX-OPENID": "cloudbase-repeat-login",
+        "X-WX-SOURCE": "wx_devtools",
+    }
+
+    first = client.post("/api/auth/wechat-login", headers=headers, json={"nickname": "首次"})
+    second = client.post("/api/auth/wechat-login", headers=headers, json={"nickname": "再次"})
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    first_user = first.get_json()["data"]["user"]
+    second_user = second.get_json()["data"]["user"]
+    assert first_user["id"] == second_user["id"]
+    assert first_user["role"] == "parent"
+
+    from database import get_connection
+
+    with get_connection() as conn:
+        conn.execute(
+            "UPDATE users SET status = 'disabled' WHERE id = ?",
+            (first_user["id"],),
+        )
+        conn.commit()
+
+    disabled = client.post("/api/auth/wechat-login", headers=headers, json={})
+    assert disabled.status_code == 403
+    assert disabled.get_json()["error"]["code"] == "account_inactive"
+
 
 def test_cloudbase_identity_matching_appid_is_still_rejected_without_explicit_trust(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")

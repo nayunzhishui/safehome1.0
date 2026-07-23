@@ -1,6 +1,6 @@
 {
   "schema": "safehome.task36.registry.v1",
-  "version": "2026-07-24-f06-research-delivery-v1",
+  "version": "2026-07-24-f10-wechat-login-v1",
   "scope": [
     "T36-F00", "T36-F01", "T36-F02", "T36-F03", "T36-F04",
     "T36-F05", "T36-F06", "T36-F07", "T36-F08", "T36-F09",
@@ -72,6 +72,7 @@
         "id": "trust_cloudbase_identity_headers",
         "source": "environment",
         "frozen_value": false,
+        "formal_permission_evidence": false,
         "reason": "public_gateway_header_spoofing_negative_probe_failed_on_previous_build"
       }
     ]
@@ -156,7 +157,7 @@
     {"id": "T36-F07", "title": "训练记录与历次反馈统一读取契约", "dependencies": ["T36-F00"], "engineering_complete": true, "status": "engineering_complete_local_test_cloud_pending", "evidence": ["backend/routes/checkins.py", "backend/tests/test_mysql_database_adapter.py"]},
     {"id": "T36-F08", "title": "消息接口502根因修复", "dependencies": ["T36-F00"], "engineering_complete": true, "status": "engineering_complete_local_test_cloud_pending", "evidence": ["backend/routes/messages.py", "apps/miniprogram/pages/messages/index.js"]},
     {"id": "T36-F09", "title": "构建指纹、可观测性和部署一致性", "dependencies": ["T36-F08"], "engineering_complete": true, "status": "engineering_complete_local_external_test_cloud_observation_pending", "evidence": ["backend/services/build_fingerprint_service.py", "backend/tests/test_task36_deployment_fingerprint.py", "scripts/generate_build_fingerprint.py", "scripts/build_task9_cloudbase_package.ps1", "scripts/verify_task9_cloudbase_package.ps1", "apps/miniprogram/utils/errorDiagnostics.js", "apps/web/src/services/safehomeApi.ts", "content/reliability_release_registry.json"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task36_deployment_fingerprint.py", "backend/tests/test_healthz.py", "backend/tests/test_task32_reliability_release.py", "-q"], ["python", "backend/scripts/validate_content.py"], ["python", "backend/scripts/audit_miniprogram_frontend.py"], ["npm.cmd", "--prefix", "apps/web", "run", "typecheck"], ["npm.cmd", "--prefix", "apps/web", "run", "build"]]},
-    {"id": "T36-F10", "title": "微信一键登录配置与真实闭环", "dependencies": ["T36-F09"], "engineering_complete": false, "status": "security_fix_local_external_cloud_network_device_gates_pending", "evidence": ["backend/routes/auth.py", "backend/tests/test_auth_route.py"]},
+    {"id": "T36-F10", "title": "微信一键登录配置与真实闭环", "dependencies": ["T36-F09"], "engineering_complete": true, "status": "engineering_complete_local_external_cloud_network_device_gates_pending", "evidence": ["backend/routes/auth.py", "backend/tests/test_auth_route.py", "backend/tests/test_task36_wechat_login_audit.py", "scripts/audit_task36_wechat_login.py", "apps/miniprogram/pages/login/index.js", "apps/miniprogram/pages/login/index.wxml", "apps/miniprogram/project.config.json", "apps/miniprogram/services/cloudConfig.js"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_auth_route.py", "backend/tests/test_task36_wechat_login_audit.py", "backend/tests/test_task36_credentials.py", "-q"], ["python", "scripts/audit_task36_wechat_login.py"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["python", "backend/scripts/audit_miniprogram_frontend.py"]]},
     {"id": "T36-F11", "title": "手机号快捷登录配置与真实闭环", "dependencies": ["T36-F10"], "engineering_complete": false, "status": "diagnosed_external_secret_qualification_device_gates_pending", "evidence": ["backend/routes/auth.py", "apps/miniprogram/pages/login/index.wxml"]},
     {"id": "T36-F12", "title": "身份绑定、数据认领与角色保持", "dependencies": ["T36-F10", "T36-F11"], "engineering_complete": false, "status": "planned_full", "evidence": []},
     {"id": "T36-F13", "title": "研究者在线分析任务框架", "dependencies": ["T36-F03", "T36-F09", "T36-F12"], "engineering_complete": false, "status": "planned_full", "evidence": []},
