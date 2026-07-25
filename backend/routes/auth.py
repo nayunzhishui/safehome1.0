@@ -17,9 +17,30 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import Config
 from database import ensure_user, get_connection, new_id, now_iso, row_to_dict, write_audit_log
-from routes.auth_utils import PUBLIC_REGISTER_ROLES, AuthError, auth_error_response, generate_auth_token, get_current_actor, require_login
+from routes.auth_utils import (
+    PUBLIC_REGISTER_ROLES,
+    AuthError,
+    auth_error_response,
+    generate_auth_token,
+    get_current_actor,
+    require_login,
+    require_role,
+)
 from routes.utils import fail, ok, require_admin_token
 from services.data_claim_service import claim_preview, claim_records, register_claim_candidate
+from services.identity_lifecycle_service import (
+    BACKEND_ROLES,
+    PARTICIPANT_ROLES,
+    IdentityLifecycleError,
+    confirm_merge,
+    create_merge_candidate,
+    execute_merge,
+    get_merge_workflow,
+    identity_status,
+    rollback_merge,
+    unbind_identity,
+    verify_merge,
+)
 from services.security_control_service import record_security_event
 
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
@@ -49,6 +70,41 @@ def _public_user(row: dict) -> dict:
         "status": row.get("status") or "active",
         "must_change_password": bool(row.get("must_change_password")),
     }
+
+
+def _participant_quick_login_row(conn, row):
+    """Resolve only participant identities; never turn a quick login into a backend session."""
+
+    if row is None:
+        return None
+    item = row_to_dict(row)
+    if item.get("role") in BACKEND_ROLES:
+        raise IdentityLifecycleError(
+            "backend_role_quick_login_forbidden",
+            "研究与管理账号只能使用后台账号方式登录。",
+            403,
+        )
+    if item.get("status") == "merged" and item.get("merged_into_user_id"):
+        target = conn.execute(
+            "SELECT * FROM users WHERE id = ?",
+            (item["merged_into_user_id"],),
+        ).fetchone()
+        if target is None:
+            raise IdentityLifecycleError("merged_account_unavailable", "账号关联状态需要人工核对", 409)
+        item = row_to_dict(target)
+    if item.get("role") not in PARTICIPANT_ROLES:
+        raise IdentityLifecycleError(
+            "backend_role_quick_login_forbidden",
+            "研究与管理账号只能使用后台账号方式登录。",
+            403,
+        )
+    if item.get("status") != "active":
+        raise IdentityLifecycleError("account_inactive", "账号暂不可用", 403)
+    return item
+
+
+def _identity_error_response(exc: IdentityLifecycleError):
+    return fail(exc.code, str(exc), status=exc.status)
 
 
 def _trusted_cloudbase_openid() -> str | None:
@@ -482,9 +538,11 @@ def wechat_login():
                 (openid, avatar_url, anonymous_id, timestamp, timestamp, user_id),
             )
         else:
-            user_id = row["id"]
-            if row["status"] and row["status"] != "active":
-                return fail("account_inactive", "账号暂不可用", status=403)
+            try:
+                participant = _participant_quick_login_row(conn, row)
+            except IdentityLifecycleError as exc:
+                return _identity_error_response(exc)
+            user_id = participant["id"]
             conn.execute(
                 """
                 UPDATE users
@@ -535,17 +593,24 @@ def phone_login():
             if cloudbase_openid
             else None
         )
-        if phone_row is not None and openid_row is not None and phone_row["id"] != openid_row["id"]:
+        try:
+            phone_participant = _participant_quick_login_row(conn, phone_row)
+            openid_participant = _participant_quick_login_row(conn, openid_row)
+        except IdentityLifecycleError as exc:
+            return _identity_error_response(exc)
+        if (
+            phone_participant is not None
+            and openid_participant is not None
+            and phone_participant["id"] != openid_participant["id"]
+        ):
             return fail("phone_account_conflict", "该手机号已关联其他账号，请使用原账号登录。", status=409)
 
-        row = phone_row or openid_row
+        row = phone_participant or openid_participant
         if row is None:
             user_id = new_id("user")
             ensure_user(conn, user_id, "微信用户")
         else:
             user_id = row["id"]
-            if row["status"] and row["status"] != "active":
-                return fail("account_inactive", "账号暂不可用", status=403)
 
         conn.execute(
             """
@@ -583,6 +648,12 @@ def bind_phone():
         actor = require_login(allow_legacy_admin=False)
     except AuthError as exc:
         return auth_error_response(exc)
+    if actor.get("role") not in PARTICIPANT_ROLES:
+        return fail(
+            "backend_role_quick_login_forbidden",
+            "研究与管理账号不能绑定参与者快捷登录身份。",
+            status=403,
+        )
 
     payload = request.get_json(silent=True) or {}
     code = str(payload.get("code") or "").strip()
@@ -934,6 +1005,179 @@ def me():
     return ok({"user": _public_user(actor["user"])})
 
 
+@bp.get("/identity-status")
+def get_identity_status():
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    with get_connection() as conn:
+        try:
+            result = identity_status(conn, actor["id"])
+        except IdentityLifecycleError as exc:
+            return _identity_error_response(exc)
+    return ok(result)
+
+
+@bp.post("/identity-unbind")
+def identity_unbind():
+    try:
+        actor = require_login(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    if actor.get("role") not in PARTICIPANT_ROLES:
+        return fail("forbidden", "研究与管理账号不能从参与者端撤销登录绑定", status=403)
+    payload = request.get_json(silent=True) or {}
+    if payload.get("confirm") is not True:
+        return fail("validation_error", "需要明确确认后才能撤销登录绑定", status=400)
+    try:
+        expected_auth_epoch = int(payload.get("expected_auth_epoch"))
+    except (TypeError, ValueError):
+        return fail("validation_error", "缺少有效的账号状态版本", status=400)
+    try:
+        with get_connection() as conn:
+            result = unbind_identity(
+                conn,
+                actor["id"],
+                str(payload.get("identity_type") or "").strip(),
+                expected_auth_epoch,
+            )
+            conn.commit()
+    except IdentityLifecycleError as exc:
+        return _identity_error_response(exc)
+    return ok(result)
+
+
+@bp.post("/admin-account-merges")
+def admin_create_account_merge():
+    try:
+        actor = require_role("admin")
+    except AuthError as exc:
+        return auth_error_response(exc)
+    payload = request.get_json(silent=True) or {}
+    idempotency_key = str(request.headers.get("Idempotency-Key") or "").strip()
+    if not idempotency_key:
+        return fail("idempotency_key_required", "创建账号合并候选需要幂等键", status=400)
+    try:
+        with get_connection() as conn:
+            result, created = create_merge_candidate(
+                conn,
+                source_user_id=str(payload.get("source_user_id") or "").strip(),
+                target_user_id=str(payload.get("target_user_id") or "").strip(),
+                reason_code=str(payload.get("reason_code") or "identity_conflict").strip(),
+                requested_by=actor["id"],
+                idempotency_key=idempotency_key,
+            )
+            conn.commit()
+    except IdentityLifecycleError as exc:
+        return _identity_error_response(exc)
+    return ok(result, status=201 if created else 200)
+
+
+@bp.get("/admin-account-merges/<workflow_id>")
+def admin_get_account_merge(workflow_id: str):
+    try:
+        require_role("admin")
+        with get_connection() as conn:
+            result = get_merge_workflow(conn, workflow_id)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    except IdentityLifecycleError as exc:
+        return _identity_error_response(exc)
+    return ok(result)
+
+
+def _expected_merge_version(payload: dict) -> int:
+    try:
+        return int(payload.get("expected_version"))
+    except (TypeError, ValueError) as exc:
+        raise IdentityLifecycleError("validation_error", "缺少有效的合并流程版本", 400) from exc
+
+
+@bp.post("/admin-account-merges/<workflow_id>/confirm")
+def admin_confirm_account_merge(workflow_id: str):
+    payload = request.get_json(silent=True) or {}
+    if payload.get("confirm") is not True:
+        return fail("validation_error", "需要人工明确确认后才能继续", status=400)
+    try:
+        actor = require_role("admin")
+        with get_connection() as conn:
+            result = confirm_merge(conn, workflow_id, actor["id"], _expected_merge_version(payload))
+            conn.commit()
+    except AuthError as exc:
+        return auth_error_response(exc)
+    except IdentityLifecycleError as exc:
+        return _identity_error_response(exc)
+    return ok(result)
+
+
+@bp.post("/admin-account-merges/<workflow_id>/execute")
+def admin_execute_account_merge(workflow_id: str):
+    payload = request.get_json(silent=True) or {}
+    idempotency_key = str(request.headers.get("Idempotency-Key") or f"execute:{workflow_id}").strip()
+    try:
+        actor = require_role("admin")
+        with get_connection() as conn:
+            result = execute_merge(
+                conn,
+                workflow_id,
+                actor["id"],
+                _expected_merge_version(payload),
+                idempotency_key,
+            )
+            conn.commit()
+    except AuthError as exc:
+        return auth_error_response(exc)
+    except IdentityLifecycleError as exc:
+        return _identity_error_response(exc)
+    except Exception:
+        current_app.logger.exception("identity_merge_execute_failed workflow_id=%s", workflow_id)
+        return fail("merge_execution_failed", "账号合并未完成，事务已回滚，可刷新后重试", status=409)
+    return ok(result)
+
+
+@bp.post("/admin-account-merges/<workflow_id>/verify")
+def admin_verify_account_merge(workflow_id: str):
+    payload = request.get_json(silent=True) or {}
+    try:
+        actor = require_role("admin")
+        with get_connection() as conn:
+            result = verify_merge(conn, workflow_id, actor["id"], _expected_merge_version(payload))
+            conn.commit()
+    except AuthError as exc:
+        return auth_error_response(exc)
+    except IdentityLifecycleError as exc:
+        return _identity_error_response(exc)
+    return ok(result)
+
+
+@bp.post("/admin-account-merges/<workflow_id>/rollback")
+def admin_rollback_account_merge(workflow_id: str):
+    payload = request.get_json(silent=True) or {}
+    if payload.get("confirm") is not True:
+        return fail("validation_error", "需要人工明确确认后才能撤销合并", status=400)
+    idempotency_key = str(request.headers.get("Idempotency-Key") or f"rollback:{workflow_id}").strip()
+    try:
+        actor = require_role("admin")
+        with get_connection() as conn:
+            result = rollback_merge(
+                conn,
+                workflow_id,
+                actor["id"],
+                _expected_merge_version(payload),
+                idempotency_key,
+            )
+            conn.commit()
+    except AuthError as exc:
+        return auth_error_response(exc)
+    except IdentityLifecycleError as exc:
+        return _identity_error_response(exc)
+    except Exception:
+        current_app.logger.exception("identity_merge_rollback_failed workflow_id=%s", workflow_id)
+        return fail("merge_rollback_failed", "账号合并撤销未完成，事务已回滚，可刷新后重试", status=409)
+    return ok(result)
+
+
 @bp.get("/data-claim-preview")
 def data_claim_preview():
     try:
@@ -964,9 +1208,24 @@ def data_claim():
     claim_id = str(payload.get("claim_id") or "").strip()
     if not claim_id or payload.get("confirm") is not True:
         return fail("validation_error", "需要明确确认后才能合并试用记录", status=400)
+    expected_version = payload.get("expected_version")
+    if expected_version is not None:
+        try:
+            expected_version = int(expected_version)
+        except (TypeError, ValueError):
+            return fail("validation_error", "认领状态版本无效", status=400)
+    idempotency_key = str(
+        request.headers.get("Idempotency-Key") or f"claim:{claim_id}:{actor['id']}"
+    ).strip()
     try:
         with get_connection() as conn:
-            result = claim_records(conn, actor["id"], claim_id)
+            result = claim_records(
+                conn,
+                actor["id"],
+                claim_id,
+                idempotency_key=idempotency_key,
+                expected_version=expected_version,
+            )
             conn.commit()
     except LookupError as exc:
         return fail("not_found", str(exc), status=404)

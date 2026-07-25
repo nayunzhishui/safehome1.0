@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { SecurityAuthorizationOperation, SecurityWorkbench } from "../../../../shared/types/api";
+import type { IdentityMergeWorkflow, SecurityAuthorizationOperation, SecurityWorkbench } from "../../../../shared/types/api";
 import { getStoredAuthUser } from "../services/authState";
 import { safeHomeApi } from "../services/safehomeApi";
 
@@ -21,6 +21,11 @@ export function SecurityPrivacyWorkbench() {
   const [action, setAction] = useState("all");
   const [status, setStatus] = useState("正在读取安全、隐私与滥用防护证据…");
   const [busy, setBusy] = useState(false);
+  const [mergeSource, setMergeSource] = useState("");
+  const [mergeTarget, setMergeTarget] = useState("");
+  const [mergeReason, setMergeReason] = useState("identity_conflict");
+  const [mergeWorkflow, setMergeWorkflow] = useState<IdentityMergeWorkflow | null>(null);
+  const [mergeMessage, setMergeMessage] = useState("");
 
   const load = useCallback(async () => {
     const next = await safeHomeApi.getSecurityWorkbench();
@@ -51,6 +56,51 @@ export function SecurityPrivacyWorkbench() {
   async function resolveEvent(id: string) {
     setBusy(true);
     try { await safeHomeApi.resolveSecurityEvent(id); await load(); } catch (error) { setStatus(messageOf(error)); } finally { setBusy(false); }
+  }
+
+  async function createMergeCandidate() {
+    if (!mergeSource.trim() || !mergeTarget.trim()) {
+      setMergeMessage("请填写来源账号编号和保留账号编号。");
+      return;
+    }
+    setBusy(true);
+    setMergeMessage("正在生成只读预览...");
+    try {
+      const workflow = await safeHomeApi.createIdentityMergeCandidate({
+        source_user_id: mergeSource.trim(),
+        target_user_id: mergeTarget.trim(),
+        reason_code: mergeReason,
+        idempotency_key: `identity-merge-${mergeSource.trim()}-${mergeTarget.trim()}`,
+      });
+      setMergeWorkflow(workflow);
+      setMergeMessage("候选已建立。请核对数量，再单独确认和执行。");
+    } catch (error) {
+      setMergeMessage(messageOf(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function actOnMerge(action: "confirm" | "execute" | "verify" | "rollback") {
+    if (!mergeWorkflow) return;
+    const actionLabel = ({ confirm: "人工确认", execute: "执行合并", verify: "核对结果", rollback: "撤销合并" } as const)[action];
+    if ((action === "execute" || action === "rollback") && !window.confirm(`确认${actionLabel}？系统会保留审计和来源记录。`)) return;
+    setBusy(true);
+    setMergeMessage(`正在${actionLabel}...`);
+    try {
+      const workflow = await safeHomeApi.actOnIdentityMerge(
+        mergeWorkflow.id,
+        action,
+        mergeWorkflow.version,
+        `identity-merge-${action}-${mergeWorkflow.id}`,
+      );
+      setMergeWorkflow(workflow);
+      setMergeMessage(`${actionLabel}已完成；当前状态：${workflow.status}。`);
+    } catch (error) {
+      setMergeMessage(messageOf(error));
+    } finally {
+      setBusy(false);
+    }
   }
 
   const registry = data?.registry;
@@ -114,6 +164,44 @@ export function SecurityPrivacyWorkbench() {
         <div className="tableScroller" tabIndex={0} aria-label="对象权限矩阵，可横向滚动">
           <table className="securityMatrix"><thead><tr><th>方法与路径</th><th>对象/动作</th><th>允许角色</th><th>对象范围</th><th>幂等</th></tr></thead><tbody>{operations.map((item: SecurityAuthorizationOperation) => <tr key={item.operation_id}><td><strong>{item.method}</strong><code>{item.path}</code></td><td>{item.object_type}<small>{item.action}</small></td><td>{item.allowed_roles.join("、")}</td><td>{item.object_scope}</td><td>{item.idempotency.required ? "必须" : item.idempotency.supported ? "支持" : "—"}</td></tr>)}</tbody></table>
         </div>
+      </section>
+
+      <section className="panel" aria-label="参与者账号合并">
+        <div className="panelHeading">
+          <div>
+            <span className="panelKicker">候选 → 确认 → 执行 → 核对 → 撤销窗口</span>
+            <h2>参与者账号冲突恢复</h2>
+          </div>
+          <span className="gateBadge gateBlocked">仅管理员</span>
+        </div>
+        <p className="boundaryCallout">只允许家长、学生等参与者账号之间合并；研究者、督导和管理员角色不会进入此流程。执行前只展示记录数量，不展示正文。</p>
+        {isAdmin ? (
+          <>
+            <div className="securityFilters">
+              <label><span>来源账号编号</span><input value={mergeSource} onChange={(event) => setMergeSource(event.target.value)} placeholder="将停用的参与者账号" /></label>
+              <label><span>保留账号编号</span><input value={mergeTarget} onChange={(event) => setMergeTarget(event.target.value)} placeholder="继续使用的参与者账号" /></label>
+              <label><span>原因</span><select value={mergeReason} onChange={(event) => setMergeReason(event.target.value)}><option value="identity_conflict">快捷登录身份冲突</option><option value="duplicate_participant_account">重复参与者账号</option><option value="manual_recovery">人工恢复</option></select></label>
+            </div>
+            <button className="secondaryButton" type="button" disabled={busy} onClick={() => void createMergeCandidate()}>生成合并候选</button>
+            {mergeWorkflow ? (
+              <div className="securityBoundary" style={{ marginTop: 16 }}>
+                <div>
+                  <span className="panelKicker">当前状态：{mergeWorkflow.status}</span>
+                  <h3>{mergeWorkflow.total_records} 条记录待处理</h3>
+                  <p>{mergeWorkflow.modules.map((item) => `${item.label} ${item.count}`).join("；") || "没有业务记录需要迁移"}</p>
+                  {mergeWorkflow.rollback_until ? <small>撤销窗口至：{mergeWorkflow.rollback_until}</small> : null}
+                </div>
+                <div className="dashboardActions">
+                  {mergeWorkflow.status === "candidate" ? <button className="secondaryButton" type="button" disabled={busy} onClick={() => void actOnMerge("confirm")}>人工确认</button> : null}
+                  {mergeWorkflow.status === "confirmed" ? <button className="primaryButton" type="button" disabled={busy} onClick={() => void actOnMerge("execute")}>执行合并</button> : null}
+                  {mergeWorkflow.status === "executed" ? <button className="primaryButton" type="button" disabled={busy} onClick={() => void actOnMerge("verify")}>核对结果</button> : null}
+                  {["executed", "verified"].includes(mergeWorkflow.status) ? <button className="secondaryButton" type="button" disabled={busy} onClick={() => void actOnMerge("rollback")}>撤销合并</button> : null}
+                </div>
+              </div>
+            ) : null}
+            {mergeMessage ? <div className="status compact" role="status" aria-live="polite">{mergeMessage}</div> : null}
+          </>
+        ) : <p className="emptyState">请使用管理员账号处理账号冲突。研究者和督导只能提交人工核对线索。</p>}
       </section>
 
       <section className="panel" aria-label="安全事件">

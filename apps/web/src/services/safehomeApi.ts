@@ -30,6 +30,8 @@ import type {
   ContentReviewDiscipline,
   DataClaimPreview,
   DataClaimResult,
+  IdentityMergeWorkflow,
+  IdentityStatus,
   EmotionDiary,
   EmotionDiaryInput,
   FeedbackGenerateInput,
@@ -268,6 +270,21 @@ export class SafeHomeApiClient {
     return this.requestData<DataClaimPreview>(API_ENDPOINTS.authDataClaimPreview);
   }
 
+  getIdentityStatus(): Promise<IdentityStatus> {
+    return this.requestData<IdentityStatus>(API_ENDPOINTS.authIdentityStatus);
+  }
+
+  unbindIdentity(identityType: "wechat" | "phone", expectedAuthEpoch: number): Promise<IdentityStatus> {
+    return this.requestData<IdentityStatus>(API_ENDPOINTS.authIdentityUnbind, {
+      method: "POST",
+      body: {
+        identity_type: identityType,
+        expected_auth_epoch: expectedAuthEpoch,
+        confirm: true,
+      },
+    });
+  }
+
   getTodayJourney(params: { user_id?: string } = {}): Promise<TodayJourney> {
     return this.requestData<TodayJourney>(this.withQuery(API_ENDPOINTS.journeyToday, this.withDefaultUserParam(params)));
   }
@@ -315,11 +332,52 @@ export class SafeHomeApiClient {
     return this.requestData<FeedbackLedgerSummary>(this.withQuery(API_ENDPOINTS.feedbackLedgerSummary, { user_id: userId }));
   }
 
-  claimAnonymousData(claimId: string): Promise<DataClaimResult> {
+  claimAnonymousData(claimId: string, expectedVersion = 0): Promise<DataClaimResult> {
     return this.requestData<DataClaimResult>(API_ENDPOINTS.authDataClaim, {
       method: "POST",
-      body: { claim_id: claimId, confirm: true },
+      headers: { "Idempotency-Key": `data-claim-${claimId}` },
+      body: { claim_id: claimId, confirm: true, expected_version: expectedVersion },
     });
+  }
+
+  createIdentityMergeCandidate(input: {
+    source_user_id: string;
+    target_user_id: string;
+    reason_code: string;
+    idempotency_key: string;
+  }): Promise<IdentityMergeWorkflow> {
+    return this.requestData<IdentityMergeWorkflow>(API_ENDPOINTS.authAccountMerges, {
+      method: "POST",
+      headers: { "Idempotency-Key": input.idempotency_key },
+      body: {
+        source_user_id: input.source_user_id,
+        target_user_id: input.target_user_id,
+        reason_code: input.reason_code,
+      },
+    });
+  }
+
+  getIdentityMergeWorkflow(id: string): Promise<IdentityMergeWorkflow> {
+    return this.requestData<IdentityMergeWorkflow>(`${API_ENDPOINTS.authAccountMerges}/${encodeURIComponent(id)}`);
+  }
+
+  actOnIdentityMerge(
+    id: string,
+    action: "confirm" | "execute" | "verify" | "rollback",
+    expectedVersion: number,
+    idempotencyKey: string,
+  ): Promise<IdentityMergeWorkflow> {
+    return this.requestData<IdentityMergeWorkflow>(
+      `${API_ENDPOINTS.authAccountMerges}/${encodeURIComponent(id)}/${action}`,
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+        body: {
+          expected_version: expectedVersion,
+          confirm: action === "confirm" || action === "rollback",
+        },
+      },
+    );
   }
 
   createGoal(input: GoalInput): Promise<Goal> {

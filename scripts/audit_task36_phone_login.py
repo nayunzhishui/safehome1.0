@@ -40,7 +40,8 @@ def build_report() -> dict:
             ["backend/models.py", "backend/routes/auth.py"],
         ),
         "account_conflict": _check(
-            "phone_row is not None and openid_row is not None" in auth_route
+            "phone_participant is not None" in auth_route
+            and "openid_participant is not None" in auth_route
             and '"phone_account_conflict"' in auth_route
             and '"account_inactive"' in auth_route,
             ["backend/routes/auth.py", "backend/tests/test_auth_route.py"],

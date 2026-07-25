@@ -1513,6 +1513,365 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "auth.admin_create_account_merge.post",
+    "method": "POST",
+    "path": "/api/auth/admin-account-merges",
+    "handler": "auth.admin_create_account_merge",
+    "module": "routes.auth",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "reason_code",
+        "source_user_id",
+        "target_user_id"
+      ],
+      "headers": [
+        "Idempotency-Key"
+      ],
+      "pagination": null,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_create_account_merge.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "idempotency_key_required",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.admin_get_account_merge.get",
+    "method": "GET",
+    "path": "/api/auth/admin-account-merges/<workflow_id>",
+    "handler": "auth.admin_get_account_merge",
+    "module": "routes.auth",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "workflow_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_get_account_merge.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.admin_confirm_account_merge.post",
+    "method": "POST",
+    "path": "/api/auth/admin-account-merges/<workflow_id>/confirm",
+    "handler": "auth.admin_confirm_account_merge",
+    "module": "routes.auth",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "workflow_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [
+        "confirm"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_confirm_account_merge.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.admin_execute_account_merge.post",
+    "method": "POST",
+    "path": "/api/auth/admin-account-merges/<workflow_id>/execute",
+    "handler": "auth.admin_execute_account_merge",
+    "module": "routes.auth",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "workflow_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [
+        "Idempotency-Key"
+      ],
+      "pagination": null,
+      "idempotency": {
+        "supported": true,
+        "required": true,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_execute_account_merge.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "merge_execution_failed",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.admin_rollback_account_merge.post",
+    "method": "POST",
+    "path": "/api/auth/admin-account-merges/<workflow_id>/rollback",
+    "handler": "auth.admin_rollback_account_merge",
+    "module": "routes.auth",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "workflow_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [
+        "confirm"
+      ],
+      "headers": [
+        "Idempotency-Key"
+      ],
+      "pagination": null,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_rollback_account_merge.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "merge_rollback_failed",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.admin_verify_account_merge.post",
+    "method": "POST",
+    "path": "/api/auth/admin-account-merges/<workflow_id>/verify",
+    "handler": "auth.admin_verify_account_merge",
+    "module": "routes.auth",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "workflow_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.admin_verify_account_merge.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "auth.admin_verify_account.get",
     "method": "GET",
     "path": "/api/auth/admin-accounts/<username>",
@@ -1806,6 +2165,7 @@ const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
+      "backend_role_quick_login_forbidden",
       "forbidden",
       "http_error",
       "internal_error",
@@ -1963,15 +2323,18 @@ const GENERATED_API_ENDPOINTS = [
       "query_parameters": [],
       "body_fields": [
         "claim_id",
-        "confirm"
+        "confirm",
+        "expected_version"
       ],
-      "headers": [],
+      "headers": [
+        "Idempotency-Key"
+      ],
       "pagination": null,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     "response": {
@@ -2054,6 +2417,129 @@ const GENERATED_API_ENDPOINTS = [
       "http_error",
       "internal_error",
       "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.get_identity_status.get",
+    "method": "GET",
+    "path": "/api/auth/identity-status",
+    "handler": "auth.get_identity_status",
+    "module": "routes.auth",
+    "access": {
+      "mode": "authenticated",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.get_identity_status.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "auth.identity_unbind.post",
+    "method": "POST",
+    "path": "/api/auth/identity-unbind",
+    "handler": "auth.identity_unbind",
+    "module": "routes.auth",
+    "access": {
+      "mode": "authenticated",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "confirm",
+        "expected_auth_epoch",
+        "identity_type"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.auth.identity_unbind.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
     ],
     "enum_refs": [],
     "deprecation": {
@@ -2281,7 +2767,6 @@ const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
-      "account_inactive",
       "http_error",
       "internal_error",
       "phone_account_conflict",
@@ -2406,7 +2891,6 @@ const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
-      "account_inactive",
       "http_error",
       "internal_error",
       "validation_error"

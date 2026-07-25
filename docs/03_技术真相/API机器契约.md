@@ -29,6 +29,12 @@
 | GET | `/api/assessment-results/<result_id>/profile-position` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/assessments` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/assessments/<worksheet_id>` | public:public | not_applicable_or_development_legacy | — | — | active |
+| POST | `/api/auth/admin-account-merges` | role:admin | role_scoped | — | supported | active |
+| GET | `/api/auth/admin-account-merges/<workflow_id>` | role:admin | role_scoped | — | — | active |
+| POST | `/api/auth/admin-account-merges/<workflow_id>/confirm` | role:admin | role_scoped | — | — | active |
+| POST | `/api/auth/admin-account-merges/<workflow_id>/execute` | role:admin | role_scoped | — | required | active |
+| POST | `/api/auth/admin-account-merges/<workflow_id>/rollback` | role:admin | role_scoped | — | supported | active |
+| POST | `/api/auth/admin-account-merges/<workflow_id>/verify` | role:admin | role_scoped | — | — | active |
 | GET | `/api/auth/admin-accounts/<username>` | admin:admin | role_scoped | — | — | active |
 | POST | `/api/auth/admin-accounts/<username>/revoke` | admin:admin | role_scoped | — | — | active |
 | POST | `/api/auth/admin-accounts/<username>/unlock` | admin:admin | role_scoped | — | — | active |
@@ -36,8 +42,10 @@
 | POST | `/api/auth/bind-phone` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/auth/capabilities` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/auth/change-password` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
-| POST | `/api/auth/data-claim` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/auth/data-claim` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | supported | active |
 | GET | `/api/auth/data-claim-preview` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/auth/identity-status` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/auth/identity-unbind` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/auth/login` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/auth/logout` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/auth/me` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

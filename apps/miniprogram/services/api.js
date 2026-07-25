@@ -65,6 +65,10 @@ const ERROR_MESSAGES_BY_CODE = {
   wechat_upstream_http_error: "微信服务拒绝了服务器连接，请稍后重试或使用账号密码登录。",
   wechat_upstream_invalid_response: "微信服务返回异常，请稍后重试或使用账号密码登录。",
   phone_account_conflict: "该手机号已关联其他账号，请使用原账号登录。",
+  backend_role_quick_login_forbidden: "研究者、督导和管理员请使用后台账号登录。",
+  last_login_identity: "请先连接另一种登录方式，再撤销当前唯一登录方式。",
+  identity_version_conflict: "账号状态已更新，请刷新后重试。",
+  merge_version_conflict: "账号合并流程已更新，请重新读取后操作。",
   account_inactive: "当前账号暂不可用，请改用其他账号或联系项目负责人。",
   password_change_required: "首次登录需要先设置新密码。",
 };
@@ -119,6 +123,9 @@ const API_ENDPOINTS = {
   authBindPhone: "/api/auth/bind-phone",
   authLogout: "/api/auth/logout",
   authMe: "/api/auth/me",
+  authIdentityStatus: "/api/auth/identity-status",
+  authIdentityUnbind: "/api/auth/identity-unbind",
+  authAccountMerges: "/api/auth/admin-account-merges",
   authDataClaimPreview: "/api/auth/data-claim-preview",
   authDataClaim: "/api/auth/data-claim",
   parentAssessments: "/api/parent-assessments",
@@ -440,10 +447,27 @@ function createSafeHomeApi(options = {}) {
       return request(API_ENDPOINTS.authDataClaimPreview, { requiresAuth: true });
     },
 
-    claimAnonymousData(claimId) {
+    getIdentityStatus() {
+      return request(API_ENDPOINTS.authIdentityStatus, { requiresAuth: true });
+    },
+
+    unbindIdentity(identityType, expectedAuthEpoch) {
+      return request(API_ENDPOINTS.authIdentityUnbind, {
+        method: "POST",
+        data: {
+          identity_type: identityType,
+          expected_auth_epoch: expectedAuthEpoch,
+          confirm: true,
+        },
+        requiresAuth: true,
+      });
+    },
+
+    claimAnonymousData(claimId, expectedVersion = 0) {
       return request(API_ENDPOINTS.authDataClaim, {
         method: "POST",
-        data: { claim_id: claimId, confirm: true },
+        data: { claim_id: claimId, confirm: true, expected_version: expectedVersion },
+        header: { "Idempotency-Key": `data-claim-${claimId}` },
         requiresAuth: true,
       });
     },

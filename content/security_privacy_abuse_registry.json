@@ -669,6 +669,156 @@
       }
     },
     {
+      "operation_id": "auth.admin_create_account_merge.post",
+      "method": "POST",
+      "path": "/api/auth/admin-account-merges",
+      "object_type": "auth",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
+      "operation_id": "auth.admin_get_account_merge.get",
+      "method": "GET",
+      "path": "/api/auth/admin-account-merges/<workflow_id>",
+      "object_type": "auth",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "auth.admin_confirm_account_merge.post",
+      "method": "POST",
+      "path": "/api/auth/admin-account-merges/<workflow_id>/confirm",
+      "object_type": "auth",
+      "action": "update",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "auth.admin_execute_account_merge.post",
+      "method": "POST",
+      "path": "/api/auth/admin-account-merges/<workflow_id>/execute",
+      "object_type": "auth",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": true,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
+      "operation_id": "auth.admin_rollback_account_merge.post",
+      "method": "POST",
+      "path": "/api/auth/admin-account-merges/<workflow_id>/rollback",
+      "object_type": "auth",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
+      "operation_id": "auth.admin_verify_account_merge.post",
+      "method": "POST",
+      "path": "/api/auth/admin-account-merges/<workflow_id>/verify",
+      "object_type": "auth",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "auth.admin_verify_account.get",
       "method": "GET",
       "path": "/api/auth/admin-accounts/<username>",
@@ -860,10 +1010,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
+        "supported": true,
         "required": false,
-        "header": null,
-        "max_length": null
+        "header": "Idempotency-Key",
+        "max_length": 120
       }
     },
     {
@@ -872,6 +1022,54 @@
       "path": "/api/auth/data-claim-preview",
       "object_type": "auth",
       "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "auth.get_identity_status.get",
+      "method": "GET",
+      "path": "/api/auth/identity-status",
+      "object_type": "auth",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "auth.identity_unbind.post",
+      "method": "POST",
+      "path": "/api/auth/identity-unbind",
+      "object_type": "auth",
+      "action": "create",
       "object_scope": "role_scoped",
       "allowed_roles": [
         "parent",
@@ -6133,7 +6331,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 243,
+    "operation_count": 251,
     "showcase_bypass_operation_count": 6,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

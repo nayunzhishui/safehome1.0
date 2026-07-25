@@ -31,6 +31,8 @@ REQUIRED_HEALTH_TABLES = [
     "research_work_item_notes",
     "research_work_item_actions",
     "data_claims",
+    "identity_merge_workflows",
+    "identity_merge_record_links",
     "relationship_pilot_enrollments",
     "relationship_screening_reports",
     "relationship_pilot_tasks",
@@ -92,8 +94,8 @@ REQUIRED_HEALTH_TABLES = [
     "operations_incident_notifications",
     "operations_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_23_026"
-CURRENT_SCHEMA_NAME = "research_delivery_workflow"
+CURRENT_SCHEMA_VERSION = "2026_07_24_027"
+CURRENT_SCHEMA_NAME = "identity_claim_lifecycle"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -102,6 +104,13 @@ MYSQL_VARCHAR_COLUMNS = {
     "name",
     "user_id",
     "target_user_id",
+    "source_user_id",
+    "merged_into_user_id",
+    "requested_by",
+    "confirmed_by",
+    "table_name",
+    "record_id",
+    "column_name",
     "nickname",
     "role",
     "username",
@@ -855,6 +864,8 @@ def ensure_schema_columns(conn) -> None:
         "last_login_at": "TEXT",
         "phone_verified_at": "TEXT",
         "phone_source": "TEXT",
+        "merged_into_user_id": "TEXT",
+        "merged_at": "TEXT",
     }
     for column, definition in user_columns.items():
         ensure_column(conn, "users", column, definition)
@@ -1007,6 +1018,12 @@ def ensure_schema_columns(conn) -> None:
     ensure_column(conn, "users", "last_failed_login_at", "TEXT")
     ensure_column(conn, "users", "locked_until", "TEXT")
     ensure_column(conn, "users", "status_reason", "TEXT")
+    ensure_column(conn, "users", "merged_into_user_id", "TEXT")
+    ensure_column(conn, "users", "merged_at", "TEXT")
+    ensure_column(conn, "data_claims", "idempotency_key", "TEXT")
+    ensure_column(conn, "data_claims", "version", "INTEGER NOT NULL DEFAULT 0")
+    ensure_column(conn, "identity_merge_record_links", "source_value", "TEXT")
+    ensure_column(conn, "identity_merge_record_links", "target_value", "TEXT")
 
 
 def _normalize_assessment_profile_cluster(conn) -> None:

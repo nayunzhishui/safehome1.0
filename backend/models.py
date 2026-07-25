@@ -96,6 +96,8 @@ SCHEMA_SQL = [
         last_login_at TEXT,
         phone_verified_at TEXT,
         phone_source TEXT,
+        merged_into_user_id TEXT,
+        merged_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )
@@ -1065,9 +1067,49 @@ SCHEMA_SQL = [
         target_user_id TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT 'available',
         counts_json TEXT NOT NULL DEFAULT '{}',
+        idempotency_key TEXT,
+        version INTEGER NOT NULL DEFAULT 0,
         claimed_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS identity_merge_workflows (
+        id TEXT PRIMARY KEY,
+        source_user_id TEXT NOT NULL,
+        target_user_id TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'candidate',
+        reason_code TEXT NOT NULL,
+        requested_by TEXT NOT NULL,
+        confirmed_by TEXT,
+        idempotency_key TEXT NOT NULL,
+        execution_idempotency_key TEXT,
+        rollback_idempotency_key TEXT,
+        counts_json TEXT NOT NULL DEFAULT '{}',
+        verification_json TEXT NOT NULL DEFAULT '{}',
+        version INTEGER NOT NULL DEFAULT 0,
+        rollback_until TEXT,
+        confirmed_at TEXT,
+        executed_at TEXT,
+        verified_at TEXT,
+        rolled_back_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS identity_merge_record_links (
+        id TEXT PRIMARY KEY,
+        workflow_id TEXT NOT NULL,
+        table_name TEXT NOT NULL,
+        record_id TEXT NOT NULL,
+        column_name TEXT NOT NULL,
+        source_user_id TEXT NOT NULL,
+        target_user_id TEXT NOT NULL,
+        source_value TEXT,
+        target_value TEXT,
+        created_at TEXT NOT NULL
     )
     """,
     """
@@ -1564,6 +1606,10 @@ INDEX_SQL = [
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_research_work_item_action_actor_idempotency ON research_work_item_actions(actor_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_data_claim_anonymous_unique ON data_claims(anonymous_id)",
     "CREATE INDEX IF NOT EXISTS idx_data_claim_target_status ON data_claims(target_user_id, status, updated_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_identity_merge_request_idempotency ON identity_merge_workflows(requested_by, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_identity_merge_users_status ON identity_merge_workflows(source_user_id, target_user_id, status, updated_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_identity_merge_link_unique ON identity_merge_record_links(workflow_id, table_name, record_id, column_name)",
+    "CREATE INDEX IF NOT EXISTS idx_identity_merge_link_workflow ON identity_merge_record_links(workflow_id, table_name)",
     "CREATE INDEX IF NOT EXISTS idx_relationship_hypothesis_report ON relationship_hypothesis_feedback(report_id, hypothesis_index)",
     "CREATE INDEX IF NOT EXISTS idx_feedback_ledger_user_created ON feedback_ledger(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_feedback_ledger_source ON feedback_ledger(source_type, source_id, content_version)",

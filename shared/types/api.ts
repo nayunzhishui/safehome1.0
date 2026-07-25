@@ -37,6 +37,7 @@ export interface DataClaimPreview {
   total_records: number;
   modules: DataClaimModuleCount[];
   boundary_notice: string;
+  version: number;
 }
 
 export interface DataClaimResult {
@@ -46,6 +47,49 @@ export interface DataClaimResult {
   modules: DataClaimModuleCount[];
   claimed_at?: string | null;
   already_completed: boolean;
+  version: number;
+}
+
+export type LoginIdentityState = "unbound" | "bound_direct" | "bound_linked" | "claim_pending" | "claimed";
+
+export interface LoginIdentityDescriptor {
+  state: LoginIdentityState;
+  can_unbind: boolean;
+}
+
+export interface IdentityStatus {
+  user_id: ID;
+  role: UserRole | "user";
+  auth_epoch: number;
+  identities: {
+    username: LoginIdentityDescriptor;
+    wechat: LoginIdentityDescriptor;
+    phone: LoginIdentityDescriptor;
+    anonymous: LoginIdentityDescriptor;
+  };
+  linked_account_count: number;
+  privacy_notice: string;
+  already_unbound?: boolean;
+  sessions_revoked?: boolean;
+}
+
+export interface IdentityMergeWorkflow {
+  id: ID;
+  source_user_id: ID;
+  target_user_id: ID;
+  status: "candidate" | "confirmed" | "executed" | "verified" | "rolled_back";
+  reason_code: string;
+  version: number;
+  total_records: number;
+  modules: DataClaimModuleCount[];
+  verification: Record<string, unknown>;
+  rollback_until?: ISODateTime | null;
+  confirmed_at?: ISODateTime | null;
+  executed_at?: ISODateTime | null;
+  verified_at?: ISODateTime | null;
+  rolled_back_at?: ISODateTime | null;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
 }
 
 export interface ResearchOperationsSnapshot {

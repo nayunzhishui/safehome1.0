@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 243,
+  "operation_count": 251,
   "capability_count": 41,
   "capabilities": [
     {
@@ -213,7 +213,7 @@
       "feature_flags": [],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 15)",
+        "backend/tests (operation coverage: 23)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -221,15 +221,23 @@
       "technical_implementation_complete": true,
       "production_release_approved": false,
       "operation_ids": [
+        "auth.admin_confirm_account_merge.post",
         "auth.admin_create_account.post",
+        "auth.admin_create_account_merge.post",
+        "auth.admin_execute_account_merge.post",
+        "auth.admin_get_account_merge.get",
         "auth.admin_revoke_account.post",
+        "auth.admin_rollback_account_merge.post",
         "auth.admin_unlock_account.post",
         "auth.admin_verify_account.get",
+        "auth.admin_verify_account_merge.post",
         "auth.auth_capabilities.get",
         "auth.bind_phone.post",
         "auth.change_password.post",
         "auth.data_claim.post",
         "auth.data_claim_preview.get",
+        "auth.get_identity_status.get",
+        "auth.identity_unbind.post",
         "auth.login.post",
         "auth.logout.post",
         "auth.me.get",

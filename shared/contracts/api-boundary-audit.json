@@ -69,61 +69,61 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:321",
+      "location": "backend/routes/auth.py:377",
       "handler": "register"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:363",
+      "location": "backend/routes/auth.py:419",
       "handler": "login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:446",
+      "location": "backend/routes/auth.py:502",
       "handler": "wechat_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:515",
+      "location": "backend/routes/auth.py:573",
       "handler": "phone_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:579",
+      "location": "backend/routes/auth.py:644",
       "handler": "bind_phone"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:627",
+      "location": "backend/routes/auth.py:698",
       "handler": "admin_create_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:754",
+      "location": "backend/routes/auth.py:825",
       "handler": "change_password"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:810",
+      "location": "backend/routes/auth.py:881",
       "handler": "admin_unlock_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:859",
+      "location": "backend/routes/auth.py:930",
       "handler": "admin_verify_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:873",
+      "location": "backend/routes/auth.py:944",
       "handler": "admin_revoke_account"
     },
     {

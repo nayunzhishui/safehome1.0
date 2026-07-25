@@ -92,6 +92,8 @@ Page({
     showcaseAccess: false,
     dataClaim: null,
     claimBusy: false,
+    identityStatus: null,
+    identityBusy: false,
   },
 
   onShow() {
@@ -102,9 +104,10 @@ Page({
     const storedUser = getAuthUser();
     const loggedIn = isLoggedIn();
     const canClaim = loggedIn && storedUser && ["parent", "student", "user"].includes(storedUser.role);
-    const [showcase, claimPreview] = await Promise.all([
+    const [showcase, claimPreview, identityStatus] = await Promise.all([
       api.getShowcaseAccess().catch(() => ({ enabled: false })),
       canClaim ? api.getDataClaimPreview().catch(() => null) : Promise.resolve(null),
+      canClaim ? api.getIdentityStatus().catch(() => null) : Promise.resolve(null),
     ]);
     const dismissedClaimId = wx.getStorageSync("safehome_dismissed_data_claim_id") || "";
     const dataClaim = claimPreview && claimPreview.available && claimPreview.claim_id !== dismissedClaimId
@@ -125,6 +128,7 @@ Page({
         isResearcher: !!showcase.enabled || !!(storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)),
         showcaseAccess: !!showcase.enabled,
         dataClaim,
+        identityStatus,
       });
     } catch (error) {
       this.setData({
@@ -136,6 +140,7 @@ Page({
           roleText: storedUser && storedUser.role ? this.formatRole(storedUser.role) : "",
         },
         dataClaim,
+        identityStatus,
       });
     }
   },
@@ -206,7 +211,7 @@ Page({
     if (!claim || !claim.claim_id || this.data.claimBusy) return;
     this.setData({ claimBusy: true });
     try {
-      const result = await api.claimAnonymousData(claim.claim_id);
+      const result = await api.claimAnonymousData(claim.claim_id, claim.version || 0);
       wx.removeStorageSync("safehome_dismissed_data_claim_id");
       this.setData({ dataClaim: null, claimBusy: false });
       wx.showToast({ title: `已合并 ${result.total_records || 0} 条记录`, icon: "success" });
@@ -215,6 +220,35 @@ Page({
       this.setData({ claimBusy: false });
       wx.showToast({ title: error.message || "暂时未能合并，请稍后再试", icon: "none" });
     }
+  },
+
+  requestIdentityUnbind(event) {
+    const identityType = event.currentTarget.dataset.identity;
+    const status = this.data.identityStatus;
+    const descriptor = status && status.identities ? status.identities[identityType] : null;
+    if (!descriptor || !descriptor.can_unbind || this.data.identityBusy) return;
+    const label = identityType === "wechat" ? "微信登录" : "手机号登录";
+    wx.showModal({
+      title: `撤销${label}`,
+      content: "撤销后会退出所有设备，但不会删除日记、测评或训练记录。确认继续吗？",
+      confirmText: "确认撤销",
+      confirmColor: "#9B4137",
+      success: async (modalResult) => {
+        if (!modalResult.confirm) return;
+        this.setData({ identityBusy: true });
+        try {
+          await api.unbindIdentity(identityType, status.auth_epoch);
+          logout();
+          wx.showToast({ title: "绑定已撤销，请重新登录", icon: "none" });
+          setTimeout(() => {
+            wx.redirectTo({ url: "/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex" });
+          }, 500);
+        } catch (error) {
+          this.setData({ identityBusy: false });
+          wx.showToast({ title: error.message || "状态已更新，请刷新后重试", icon: "none" });
+        }
+      },
+    });
   },
 
   doLogout() {

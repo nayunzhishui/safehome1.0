@@ -105,8 +105,8 @@ def register_claim_candidate(conn, target_user_id: str, anonymous_id: str | None
         """
         INSERT INTO data_claims (
             id, anonymous_id, target_user_id, status, counts_json,
-            claimed_at, created_at, updated_at
-        ) VALUES (?, ?, ?, 'available', ?, NULL, ?, ?)
+            idempotency_key, version, claimed_at, created_at, updated_at
+        ) VALUES (?, ?, ?, 'available', ?, NULL, 0, NULL, ?, ?)
         """,
         (claim_id, anonymous_id, target_user_id, json_dumps(counts), timestamp, timestamp),
     )
@@ -129,6 +129,7 @@ def claim_preview(conn, target_user_id: str) -> dict:
             "total_records": 0,
             "modules": [],
             "boundary_notice": "当前没有待合并的本机试用记录。",
+            "version": 0,
         }
     item = row_to_dict(row)
     counts = count_claimable_records(conn, item["anonymous_id"])
@@ -142,10 +143,18 @@ def claim_preview(conn, target_user_id: str) -> dict:
         "total_records": sum(counts.values()),
         "modules": summarized_counts(counts),
         "boundary_notice": "只显示记录数量，不展示试用期填写原文；需要你确认后才会合并。",
+        "version": int(item.get("version") or 0),
     }
 
 
-def claim_records(conn, target_user_id: str, claim_id: str) -> dict:
+def claim_records(
+    conn,
+    target_user_id: str,
+    claim_id: str,
+    *,
+    idempotency_key: str | None = None,
+    expected_version: int | None = None,
+) -> dict:
     row = conn.execute(
         "SELECT * FROM data_claims WHERE id = ? AND target_user_id = ?",
         (claim_id, target_user_id),
@@ -162,9 +171,40 @@ def claim_records(conn, target_user_id: str, claim_id: str) -> dict:
             "modules": summarized_counts(stored_counts),
             "claimed_at": claim.get("claimed_at"),
             "already_completed": True,
+            "version": int(claim.get("version") or 0),
         }
     if claim["status"] != "available":
         raise ValueError("该认领记录当前不可处理")
+    current_version = int(claim.get("version") or 0)
+    if expected_version is not None and int(expected_version) != current_version:
+        raise ValueError("认领状态已更新，请刷新后重试")
+    stable_idempotency_key = str(idempotency_key or f"claim:{claim_id}:{target_user_id}")[:191]
+    cursor = conn.execute(
+        """
+        UPDATE data_claims
+        SET status = 'processing', idempotency_key = ?, version = version + 1, updated_at = ?
+        WHERE id = ? AND target_user_id = ? AND status = 'available' AND version = ?
+        """,
+        (stable_idempotency_key, now_iso(), claim_id, target_user_id, current_version),
+    )
+    if cursor.rowcount != 1:
+        latest = conn.execute(
+            "SELECT * FROM data_claims WHERE id = ? AND target_user_id = ?",
+            (claim_id, target_user_id),
+        ).fetchone()
+        if latest is not None and latest["status"] == "claimed":
+            latest_item = row_to_dict(latest)
+            latest_counts = json_loads(latest_item.get("counts_json"), {})
+            return {
+                "claim_id": claim_id,
+                "status": "claimed",
+                "total_records": sum(int(value) for value in latest_counts.values()),
+                "modules": summarized_counts(latest_counts),
+                "claimed_at": latest_item.get("claimed_at"),
+                "already_completed": True,
+                "version": int(latest_item.get("version") or 0),
+            }
+        raise ValueError("认领状态已更新，请刷新后重试")
 
     anonymous_id = claim["anonymous_id"]
     counts = count_claimable_records(conn, anonymous_id)
@@ -184,7 +224,12 @@ def claim_records(conn, target_user_id: str, claim_id: str) -> dict:
 
     timestamp = now_iso()
     conn.execute(
-        "UPDATE data_claims SET status = 'claimed', counts_json = ?, claimed_at = ?, updated_at = ? WHERE id = ?",
+        """
+        UPDATE data_claims
+        SET status = 'claimed', counts_json = ?, claimed_at = ?,
+            version = version + 1, updated_at = ?
+        WHERE id = ? AND status = 'processing'
+        """,
         (json_dumps(counts), timestamp, timestamp, claim_id),
     )
     conn.execute(
@@ -209,4 +254,5 @@ def claim_records(conn, target_user_id: str, claim_id: str) -> dict:
         "modules": summarized_counts(counts),
         "claimed_at": timestamp,
         "already_completed": False,
+        "version": current_version + 2,
     }

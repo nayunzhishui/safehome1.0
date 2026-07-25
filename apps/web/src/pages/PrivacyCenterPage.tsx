@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 import { API_ENDPOINTS } from "../../../../shared/constants/api";
-import { getStoredAuthToken, getStoredAuthUser } from "../services/authState";
+import { clearAuthSession, getStoredAuthToken, getStoredAuthUser } from "../services/authState";
 import { getAnonymousUserId } from "../services/userIdentity";
 import { safeHomeApi } from "../services/safehomeApi";
-import type { PrivacyRequest } from "../../../../shared/types/api";
+import type { IdentityStatus, PrivacyRequest } from "../../../../shared/types/api";
 
 type ConsentItem = {
   user_id: string;
@@ -45,6 +45,8 @@ export function PrivacyCenterPage() {
   const [revokeStatus, setRevokeStatus] = useState<LoadStatus>("idle");
   const [revokeMessage, setRevokeMessage] = useState("");
   const [privacyRequests, setPrivacyRequests] = useState<PrivacyRequest[]>([]);
+  const [identityStatus, setIdentityStatus] = useState<IdentityStatus | null>(null);
+  const [identityMessage, setIdentityMessage] = useState("");
 
   const authToken = getStoredAuthToken();
   const authUser = getStoredAuthUser();
@@ -54,7 +56,26 @@ export function PrivacyCenterPage() {
   useEffect(() => {
     loadStatus();
     loadPrivacyRequests();
+    if (authUser && ["parent", "student", "user"].includes(authUser.role)) {
+      void safeHomeApi.getIdentityStatus()
+        .then(setIdentityStatus)
+        .catch(() => setIdentityMessage("登录方式状态暂时没有读取成功，请稍后刷新。"));
+    }
   }, []);
+
+  async function unbindIdentity(identityType: "wechat" | "phone") {
+    if (!identityStatus) return;
+    const label = identityType === "wechat" ? "微信登录" : "手机号登录";
+    if (!window.confirm(`确认撤销${label}？这会退出所有设备，但不会删除日记、测评或训练记录。`)) return;
+    setIdentityMessage("正在撤销登录方式...");
+    try {
+      await safeHomeApi.unbindIdentity(identityType, identityStatus.auth_epoch);
+      clearAuthSession();
+      window.location.href = "/login";
+    } catch (error) {
+      setIdentityMessage(error instanceof Error ? error.message : "撤销失败，请刷新后重试。");
+    }
+  }
 
   async function loadPrivacyRequests() {
     try {
@@ -186,6 +207,33 @@ export function PrivacyCenterPage() {
           <li>如需删除数据，请联系项目负责人并提供匿名编号。</li>
         </ul>
       </section>
+
+      {identityStatus ? (
+        <section className="guidanceBox" aria-labelledby="identity-status-title">
+          <h2 id="identity-status-title">登录方式</h2>
+          <p className="subtitle">{identityStatus.privacy_notice}</p>
+          <div className="metricGrid">
+            {(["wechat", "phone"] as const).map((identityType) => {
+              const descriptor = identityStatus.identities[identityType];
+              const label = identityType === "wechat" ? "微信登录" : "手机号登录";
+              return (
+                <div className="metricCard" key={identityType}>
+                  <span>{label}</span>
+                  <strong>{descriptor.state === "unbound" ? "未连接" : "已连接"}</strong>
+                  <small>系统不会在这里显示身份值</small>
+                  {descriptor.can_unbind ? (
+                    <button className="pill muted" type="button" onClick={() => { void unbindIdentity(identityType); }}>
+                      撤销此登录方式
+                    </button>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+          <p className="subtitle">撤销登录方式会退出所有设备，但不会删除业务记录。</p>
+          {identityMessage ? <div className="status compact" role="status" aria-live="polite">{identityMessage}</div> : null}
+        </section>
+      ) : null}
 
       <div className={`status compact ${status}`}>{message}</div>
 

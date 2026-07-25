@@ -20,6 +20,27 @@
       <button class="auth-primary" bindtap="goLogin">去登录</button>
       <button class="auth-secondary" bindtap="goRegister">注册账号</button>
     </view>
+    <view wx:if="{{identityStatus}}" class="identity-summary" aria-label="登录方式">
+      <view class="identity-heading">
+        <text class="identity-title">登录方式</text>
+        <text class="identity-note">只显示连接状态，不显示身份值</text>
+      </view>
+      <view class="identity-row">
+        <view class="identity-copy">
+          <text class="identity-label">微信登录</text>
+          <text class="identity-state">{{identityStatus.identities.wechat.state === 'unbound' ? '未连接' : '已连接'}}</text>
+        </view>
+        <button wx:if="{{identityStatus.identities.wechat.can_unbind}}" class="identity-action" data-identity="wechat" bindtap="requestIdentityUnbind" disabled="{{identityBusy}}">撤销</button>
+      </view>
+      <view class="identity-row">
+        <view class="identity-copy">
+          <text class="identity-label">手机号登录</text>
+          <text class="identity-state">{{identityStatus.identities.phone.state === 'unbound' ? '未连接' : '已连接'}}</text>
+        </view>
+        <button wx:if="{{identityStatus.identities.phone.can_unbind}}" class="identity-action" data-identity="phone" bindtap="requestIdentityUnbind" disabled="{{identityBusy}}">撤销</button>
+      </view>
+      <text class="identity-boundary">撤销登录方式会退出所有设备，但不会删除你的记录。</text>
+    </view>
   </view>
 
   <view wx:if="{{dataClaim}}" class="claim-card safe-card" aria-label="找回本机试用记录">

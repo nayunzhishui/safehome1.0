@@ -86,7 +86,7 @@ export function LoginPage() {
     setStatus("loading");
     setMessage("正在合并本机试用记录...");
     try {
-      const result = await safeHomeApi.claimAnonymousData(claimPreview.claim_id);
+      const result = await safeHomeApi.claimAnonymousData(claimPreview.claim_id, claimPreview.version);
       setMessage(`已合并 ${result.total_records} 条记录。`);
       window.location.href = destination;
     } catch (error) {
