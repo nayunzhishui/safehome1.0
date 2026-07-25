@@ -7,6 +7,28 @@
     var(--safe-bg);
 }
 
+.analysis-job-card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  border: 1rpx solid #dbe4de;
+  border-radius: 24rpx;
+  background: #fbfdfb;
+}
+
+.analysis-job-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 10rpx;
+}
+
+.analysis-job-title {
+  color: #183d31;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
 .workbench-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

@@ -3,8 +3,8 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 251,
-  "capability_count": 41,
+  "operation_count": 263,
+  "capability_count": 42,
   "capabilities": [
     {
       "id": "capability.app",
@@ -1462,6 +1462,55 @@
         "research_access.claim_enrollment_route.post",
         "research_access.create_assignment_route.post",
         "research_access.update_assignment_route.patch"
+      ]
+    },
+    {
+      "id": "capability.research_analysis",
+      "title": "research analysis",
+      "intended_use": "通过统一机器契约受控提供“research_analysis”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 12)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "research_analysis.delete_artifact_route.delete",
+        "research_analysis.get_artifact_route.get",
+        "research_analysis.get_job_route.get",
+        "research_analysis.get_jobs.get",
+        "research_analysis.post_cancel.post",
+        "research_analysis.post_claim.post",
+        "research_analysis.post_complete.post",
+        "research_analysis.post_fail.post",
+        "research_analysis.post_job.post",
+        "research_analysis.post_recover.post",
+        "research_analysis.post_snapshot.post",
+        "research_analysis.post_suspend.post"
       ]
     },
     {

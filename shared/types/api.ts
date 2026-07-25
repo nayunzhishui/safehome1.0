@@ -2671,3 +2671,78 @@ export interface AssessmentListResponse {
     nodes: Array<{ key: string; count: number }>;
   }>;
 }
+
+export type ResearchAnalysisType = "affect_aggregate" | "semantic_network" | "family_topology";
+export type ResearchAnalysisJobStatus =
+  | "queued"
+  | "running"
+  | "succeeded"
+  | "failed"
+  | "canceled"
+  | "expired"
+  | "suspended";
+
+export interface ResearchAnalysisSnapshot {
+  id: ID;
+  enrollment_id: ID;
+  purpose_code: string;
+  consent_type: string;
+  consent_version: string;
+  authorization_status: "active" | "suspended" | "expired";
+  source_count: number;
+  snapshot_hash: string;
+  expires_at: ISODateTime;
+  raw_text_included: false;
+}
+
+export interface ResearchAnalysisArtifact {
+  id: ID;
+  job_id: ID;
+  snapshot_id: ID;
+  analysis_type: ResearchAnalysisType;
+  analysis_version: string;
+  metrics: {
+    coverage_rate: number;
+    unknown_rate: number;
+    sample_size: number;
+    quality_status: "sufficient" | "limited" | "insufficient";
+    result?: Record<string, unknown>;
+    warnings?: string[];
+  };
+  artifact_hash: string;
+  quality_status: "sufficient" | "limited" | "insufficient";
+  boundary_notice: string;
+  visibility: "researcher_only";
+  status: "active" | "suspended" | "deleted";
+  raw_text_included: false;
+}
+
+export interface ResearchAnalysisJob {
+  id: ID;
+  snapshot_id: ID;
+  analysis_type: ResearchAnalysisType;
+  analysis_version: string;
+  resource_hash: string;
+  parameters: Record<string, unknown>;
+  status: ResearchAnalysisJobStatus;
+  attempt_count: number;
+  max_attempts: number;
+  available_at: ISODateTime;
+  last_error_code?: string | null;
+  result_artifact_id?: ID | null;
+  shadow_mode: true;
+  created_by: ID;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+  dead_lettered_at?: ISODateTime | null;
+  artifact?: ResearchAnalysisArtifact | null;
+  boundary_notice?: string;
+  raw_text_included?: false;
+}
+
+export interface ResearchAnalysisJobList {
+  items: ResearchAnalysisJob[];
+  count: number;
+  raw_text_included: false;
+  boundary_notice: string;
+}

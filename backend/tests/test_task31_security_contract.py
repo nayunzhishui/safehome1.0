@@ -43,7 +43,7 @@ def test_schema_migration_and_rollback_plan_are_idempotent(tmp_path, monkeypatch
     second = migration.apply()
     rollback = migration.rollback_plan()
     assert first["ok"] is True and second["ok"] is True
-    assert first["schema_version"] == "2026_07_24_027"
+    assert first["schema_version"] == "2026_07_25_028"
     assert first["temporary_showcase_exception_changed"] is False
     assert rollback["automatic_rollback_executed"] is False
     assert rollback["formal_security_acceptance_inferred"] is False

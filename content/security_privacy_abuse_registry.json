@@ -4728,6 +4728,306 @@
       }
     },
     {
+      "operation_id": "research_analysis.delete_artifact_route.delete",
+      "method": "DELETE",
+      "path": "/api/research/analysis/artifacts/<artifact_id>",
+      "object_type": "research_analysis",
+      "action": "delete",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.get_artifact_route.get",
+      "method": "GET",
+      "path": "/api/research/analysis/artifacts/<artifact_id>",
+      "object_type": "research_analysis",
+      "action": "read",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.get_jobs.get",
+      "method": "GET",
+      "path": "/api/research/analysis/jobs",
+      "object_type": "research_analysis",
+      "action": "read",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_job.post",
+      "method": "POST",
+      "path": "/api/research/analysis/jobs",
+      "object_type": "research_analysis",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
+      "operation_id": "research_analysis.get_job_route.get",
+      "method": "GET",
+      "path": "/api/research/analysis/jobs/<job_id>",
+      "object_type": "research_analysis",
+      "action": "read",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_cancel.post",
+      "method": "POST",
+      "path": "/api/research/analysis/jobs/<job_id>/cancel",
+      "object_type": "research_analysis",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_claim.post",
+      "method": "POST",
+      "path": "/api/research/analysis/jobs/<job_id>/claim",
+      "object_type": "research_analysis",
+      "action": "update",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_complete.post",
+      "method": "POST",
+      "path": "/api/research/analysis/jobs/<job_id>/complete",
+      "object_type": "research_analysis",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_fail.post",
+      "method": "POST",
+      "path": "/api/research/analysis/jobs/<job_id>/fail",
+      "object_type": "research_analysis",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_recover.post",
+      "method": "POST",
+      "path": "/api/research/analysis/jobs/<job_id>/recover",
+      "object_type": "research_analysis",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_suspend.post",
+      "method": "POST",
+      "path": "/api/research/analysis/jobs/<job_id>/suspend",
+      "object_type": "research_analysis",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_snapshot.post",
+      "method": "POST",
+      "path": "/api/research/analysis/snapshots",
+      "object_type": "research_analysis",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "offline_benchmarks.agreement.get",
       "method": "GET",
       "path": "/api/research/benchmarks/agreement",
@@ -6331,7 +6631,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 251,
+    "operation_count": 263,
     "showcase_bypass_operation_count": 6,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

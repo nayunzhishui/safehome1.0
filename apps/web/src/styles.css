@@ -2132,6 +2132,113 @@ ul {
 }
 
 /* T36-F06 researcher delivery: warm, quiet, but deliberately explicit around sending. */
+
+/* T36-F13 online analysis: compact shadow-mode research queue. */
+.researchAnalysisWorkbench .summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.researchAnalysisWorkbench .metricCard,
+.analysisJobCard {
+  border: 1px solid var(--border, #d9dfd8);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px rgba(45, 75, 61, 0.07);
+}
+
+.researchAnalysisWorkbench .metricCard {
+  padding: 20px;
+  display: grid;
+  gap: 4px;
+}
+
+.researchAnalysisWorkbench .metricCard strong {
+  color: #245f4b;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1;
+}
+
+.researchAnalysisWorkbench .metricCard::after {
+  content: none;
+}
+
+.researchAnalysisWorkbench .metricCard small,
+.analysisJobHeader,
+.analysisJobCard dt,
+.analysisMetrics {
+  color: #65736d;
+}
+
+.analysisJobGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.analysisJobCard {
+  padding: 18px;
+}
+
+.analysisJobHeader,
+.analysisMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.analysisJobCard h3 {
+  margin: 16px 0 12px;
+}
+
+.analysisJobCard dl {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.analysisJobCard dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.analysisJobCard dd {
+  margin: 0;
+  text-align: right;
+  word-break: break-word;
+}
+
+.analysisMetrics {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #d9dfd8;
+}
+
+.statusPill {
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #285c4b;
+  background: #eaf3ee;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.statusPill.status-failed,
+.statusPill.status-suspended,
+.statusPill.status-expired {
+  color: #8b5639;
+  background: #fff0e7;
+}
+
+@media (max-width: 720px) {
+  .researchAnalysisWorkbench .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+}
 .deliveryComposer {
   display: grid;
   gap: 20px;

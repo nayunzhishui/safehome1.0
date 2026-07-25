@@ -1,5 +1,5 @@
 {
-  "version": "2026.07.task36-f06-v1",
+  "version": "2026.07.task36-f13-v1",
   "updated_at": "2026-07-22",
   "default_decision": "deny",
   "formal_roles": ["researcher", "supervisor", "admin"],
@@ -112,13 +112,33 @@
     },
     {
       "id": "research.analysis.read",
-      "operations": ["GET /api/text-analysis/summary"],
+      "operations": ["GET /api/text-analysis/summary", "GET /api/research/analysis/jobs", "GET /api/research/analysis/jobs/{id}", "GET /api/research/analysis/artifacts/{id}"],
       "roles": ["researcher", "supervisor", "admin"],
       "object_scope": "assigned_or_supervised_aggregate; all_for_admin",
       "sensitivity": "high",
       "audit_required": true,
       "mobile_available": true,
       "development_exception": true
+    },
+    {
+      "id": "research.analysis.create",
+      "operations": ["POST /api/research/analysis/snapshots", "POST /api/research/analysis/jobs", "POST /api/research/analysis/jobs/{id}/cancel"],
+      "roles": ["researcher", "supervisor", "admin"],
+      "object_scope": "assigned_for_researcher; supervised_for_supervisor; all_for_admin",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": true,
+      "development_exception": false
+    },
+    {
+      "id": "research.analysis.operate",
+      "operations": ["POST /api/research/analysis/jobs/{id}/claim", "POST /api/research/analysis/jobs/{id}/complete", "POST /api/research/analysis/jobs/{id}/fail", "POST /api/research/analysis/jobs/{id}/recover", "POST /api/research/analysis/jobs/{id}/suspend", "DELETE /api/research/analysis/artifacts/{id}"],
+      "roles": ["admin"],
+      "object_scope": "all; worker lease required for completion",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": false,
+      "development_exception": false
     },
     {
       "id": "research.export",

@@ -69,7 +69,7 @@ def build_report() -> dict:
             ["backend/models.py", "backend/services/identity_lifecycle_service.py"],
         ),
         "migration_and_rollback": _check(
-            "2026_07_24_027" in _read("backend/database.py")
+            "identity_merge_workflows" in _read("backend/models.py")
             and "schema_preserved" in migration
             and "business_records_preserved" in migration
             and "不自动DROP" in migration,

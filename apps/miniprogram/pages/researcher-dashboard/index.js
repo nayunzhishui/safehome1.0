@@ -8,6 +8,7 @@ const WORKSPACES = [
   { id: "pending", label: "待处理", capability: "research.dashboard.read" },
   { id: "participants", label: "参与者", capability: "research.participant.read" },
   { id: "feedback", label: "反馈与消息", capability: "research.feedback.write" },
+  { id: "analysis", label: "在线分析", capability: "research.analysis.read" },
   { id: "pilots", label: "试点项目", capability: "research.dashboard.read" },
   { id: "mine", label: "我的工作", capability: "research.dashboard.read" },
 ];
@@ -168,6 +169,9 @@ Page({
     sendingFeedback: false,
     developmentFullAccess: false,
     capabilityScope: null,
+    analysisJobs: [],
+    analysisLoading: false,
+    analysisError: "",
   },
 
   async onLoad() {
@@ -231,6 +235,40 @@ Page({
     this.setData({ activeWorkspace: id });
     if (id === "participants" && !this.data.participantItems.length) await this.loadParticipants(true);
     if (id === "pilots" && !this.data.items.length) await this.loadDashboard();
+    if (id === "analysis" && !this.data.analysisJobs.length) await this.loadAnalysisJobs();
+  },
+
+  async loadAnalysisJobs() {
+    this.setData({ analysisLoading: true, analysisError: "" });
+    try {
+      const result = await api.getResearchAnalysisJobs({ limit: 30 });
+      const labels = {
+        affect_aggregate: "聚合情感线索",
+        semantic_network: "语义网络",
+        family_topology: "家庭关系拓扑",
+      };
+      const statuses = {
+        queued: "等待执行",
+        running: "正在运行",
+        succeeded: "已有结果",
+        failed: "执行失败",
+        canceled: "已取消",
+        expired: "已过期",
+        suspended: "已冻结",
+      };
+      this.setData({
+        analysisJobs: (result.items || []).map((item) => ({
+          ...item,
+          analysisLabel: labels[item.analysis_type] || item.analysis_type,
+          statusLabel: statuses[item.status] || "待核对",
+          createdText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+        })),
+      });
+    } catch (error) {
+      this.setData({ analysisError: error.message || "在线分析任务暂时无法读取。" });
+    } finally {
+      this.setData({ analysisLoading: false });
+    }
   },
 
   async loadWorkbench() {

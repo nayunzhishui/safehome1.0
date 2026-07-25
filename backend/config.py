@@ -94,6 +94,10 @@ class Config:
     ).strip().lower() in {"1", "true", "yes"}
     RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED = os.environ.get("RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED", "0").strip().lower() in {"1", "true", "yes"}
     RESEARCH_OUTCOME_ANALYSIS_ALLOWED = os.environ.get("RESEARCH_OUTCOME_ANALYSIS_ALLOWED", "0").strip().lower() in {"1", "true", "yes"}
+    RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED = os.environ.get(
+        "RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
     SECURITY_SCAN_EXECUTION_ENABLED = os.environ.get(
         "SECURITY_SCAN_EXECUTION_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",

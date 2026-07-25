@@ -2140,6 +2140,18 @@ relationship_initiation_intention_action
 
 高风险包要求提出者、独立审核者、研究/心理/安全批准人和发布执行人分离；同一人不得跨领域批准。发布包版本唯一，清单或制品哈希被篡改返回409；高严重度回归阻断送审和发布。生产发布开关当前强制false，临时展示越权不改变这些权限和门禁。
 
+## T36-F13 研究者在线分析任务接口
+
+- `POST /api/research/analysis/snapshots`：按正式对象范围和最新研究授权创建引用型快照；只接受来源类型、ID、版本和SHA256。
+- `POST /api/research/analysis/jobs`：必须提供`Idempotency-Key`，只接受快照ID、分析/资源版本和最小聚合参数；拒绝原文、prompt、正文和诊断标签。
+- `GET /api/research/analysis/jobs`、`GET /api/research/analysis/jobs/{id}`：研究者/督导/管理员按对象范围读取任务状态、事件和影子结果。
+- `POST /api/research/analysis/jobs/{id}/cancel`：创建者或管理员取消等待/失败/运行任务。
+- `POST .../{id}/claim|complete|fail|recover|suspend`：admin/受控执行器路径，执行租约、指数退避、死信、人工恢复和模型停用冻结。
+- `GET /api/research/analysis/artifacts/{id}`：只返回覆盖率、未知率、样本量、质量状态、聚合结果和非诊断边界。
+- `DELETE /api/research/analysis/artifacts/{id}`：admin受控删除派生结果，保留删除原因、时间和审计；不删除来源业务数据。
+
+状态为`queued/running/succeeded/failed/canceled/expired/suspended`。授权撤回或快照过期会同步冻结任务/结果。临时展示越权只允许既有只读展示，不开放创建、执行、恢复或删除权限。
+
 ## 2026-07-21 T23完整主旅程补充接口
 
 - `POST /api/feedback-ledger/<entry_id>/actions`：参与者本人撤回或纠错评价；必须提供幂等键，纠错生成新版本，撤回保留历史，跨用户返回403/404边界。

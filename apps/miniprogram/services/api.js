@@ -136,6 +136,7 @@ const API_ENDPOINTS = {
   adminExport: "/api/admin/export",
   relationshipPilot: "/api/relationship-pilot",
   researchAccess: "/api/research/access",
+  researchAnalysis: "/api/research/analysis",
   productEvents: "/api/product-events",
   privacyRequests: "/api/privacy/requests",
   privacyDeleteMyData: "/api/privacy/delete-my-data",
@@ -1027,6 +1028,31 @@ function createSafeHomeApi(options = {}) {
 
     getResearchCapabilities() {
       return request(`${API_ENDPOINTS.researchAccess}/capabilities`, { requiresAuth: true });
+    },
+
+    getResearchAnalysisJobs(params = {}) {
+      return request(`${API_ENDPOINTS.researchAnalysis}/jobs${queryString(params)}`, { requiresAuth: true });
+    },
+
+    getResearchAnalysisJob(jobId) {
+      return request(`${API_ENDPOINTS.researchAnalysis}/jobs/${encodeURIComponent(jobId)}`, { requiresAuth: true });
+    },
+
+    createResearchAnalysisSnapshot(data) {
+      return request(`${API_ENDPOINTS.researchAnalysis}/snapshots`, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      });
+    },
+
+    createResearchAnalysisJob(data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.researchAnalysis}/jobs`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
     },
 
     getResearchOperations() {

@@ -38,6 +38,7 @@ const WorksheetsManagement = lazy(() => import("./pages/WorksheetsManagement").t
 const AiQaSandboxPage = lazy(() => import("./pages/AiQaSandboxPage").then((module) => ({ default: module.AiQaSandboxPage })));
 const OfflineBenchmarkWorkbench = lazy(() => import("./pages/OfflineBenchmarkWorkbench").then((module) => ({ default: module.OfflineBenchmarkWorkbench })));
 const ResearchMethodologyWorkbench = lazy(() => import("./pages/ResearchMethodologyWorkbench").then((module) => ({ default: module.ResearchMethodologyWorkbench })));
+const ResearchAnalysisWorkbench = lazy(() => import("./pages/ResearchAnalysisWorkbench").then((module) => ({ default: module.ResearchAnalysisWorkbench })));
 const SecurityPrivacyWorkbench = lazy(() => import("./pages/SecurityPrivacyWorkbench").then((module) => ({ default: module.SecurityPrivacyWorkbench })));
 const ReliabilityReleaseWorkbench = lazy(() => import("./pages/ReliabilityReleaseWorkbench").then((module) => ({ default: module.ReliabilityReleaseWorkbench })));
 const ExperienceGovernanceWorkbench = lazy(() => import("./pages/ExperienceGovernanceWorkbench").then((module) => ({ default: module.ExperienceGovernanceWorkbench })));
@@ -69,6 +70,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/ai-sandbox", label: "AI 合成沙盒", match: (p) => p === "/ai-sandbox", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/benchmarks", label: "离线算法基准", match: (p) => p === "/research/benchmarks", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/methodology", label: "研究方法冻结准备", match: (p) => p === "/research/methodology", roles: ["admin", "researcher", "supervisor"] },
+  { href: "/research/analysis", label: "在线分析任务", match: (p) => p === "/research/analysis", roles: ["admin", "researcher", "supervisor"] },
   { href: "/security/privacy", label: "安全与隐私防护", match: (p) => p === "/security/privacy", roles: ["admin", "researcher", "supervisor"] },
   { href: "/reliability/release", label: "可靠性与发布证据", match: (p) => p === "/reliability/release", roles: ["admin", "researcher", "supervisor"] },
   { href: "/system/experience", label: "体验与无障碍", match: (p) => p === "/system/experience", roles: ["admin", "researcher", "supervisor"] },
@@ -89,7 +91,7 @@ const researcherWorkspaces = [
   { label: "待处理", paths: ["/dashboard", "/feedback", "/supervision", "/reviews", "/privacy-requests"] },
   { label: "参与者", paths: ["/diaries", "/goals", "/checkins", "/reports", "/profiles", "/family", "/privacy"] },
   { label: "内容", paths: ["/content/review", "/content/scales", "/content/worksheets", "/content/cards", "/content/rules"] },
-  { label: "研究/导出", paths: ["/ai-sandbox", "/research/benchmarks", "/research/methodology", "/export"] },
+  { label: "研究/导出", paths: ["/ai-sandbox", "/research/analysis", "/research/benchmarks", "/research/methodology", "/export"] },
   { label: "系统状态", paths: ["/security/privacy", "/reliability/release", "/system/experience", "/system/operations-governance", "/integration-test"] },
 ];
 
@@ -182,6 +184,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isAiQaSandboxPath = path === "/ai-sandbox";
   const isOfflineBenchmarkPath = path === "/research/benchmarks";
   const isResearchMethodologyPath = path === "/research/methodology";
+  const isResearchAnalysisPath = path === "/research/analysis";
   const isSecurityPrivacyPath = path === "/security/privacy";
   const isReliabilityReleasePath = path === "/reliability/release";
   const isExperienceGovernancePath = path === "/system/experience";
@@ -208,6 +211,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/ai-sandbox",
     "/research/benchmarks",
     "/research/methodology",
+    "/research/analysis",
     "/security/privacy",
     "/reliability/release",
     "/system/experience",
@@ -230,6 +234,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isAiQaSandboxPath &&
     !isOfflineBenchmarkPath &&
     !isResearchMethodologyPath &&
+    !isResearchAnalysisPath &&
     !isSecurityPrivacyPath &&
     !isReliabilityReleasePath &&
     !isExperienceGovernancePath &&
@@ -277,6 +282,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isAiQaSandboxPath ? <AiQaSandboxPage /> : null}
       {isOfflineBenchmarkPath ? <OfflineBenchmarkWorkbench /> : null}
       {isResearchMethodologyPath ? <ResearchMethodologyWorkbench /> : null}
+      {isResearchAnalysisPath ? <ResearchAnalysisWorkbench /> : null}
       {isSecurityPrivacyPath ? <SecurityPrivacyWorkbench /> : null}
       {isReliabilityReleasePath ? <ReliabilityReleaseWorkbench /> : null}
       {isExperienceGovernancePath ? <ExperienceGovernanceWorkbench /> : null}

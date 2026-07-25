@@ -178,6 +178,41 @@
     </view>
   </view>
 
+  <view wx:if="{{activeWorkspace === 'analysis'}}" class="workspace-panel">
+    <view class="safe-card workspace-card">
+      <view class="section-heading">
+        <view>
+          <text class="section-eyebrow">研究者影子模式</text>
+          <text class="section-title">在线分析任务</text>
+        </view>
+        <button class="icon-refresh" bindtap="loadAnalysisJobs">刷新</button>
+      </view>
+      <text class="detail-line">移动端只查看任务状态和聚合质量；创建快照、执行器恢复与派生数据删除继续在受控 Web 流程完成。</text>
+      <view wx:if="{{analysisLoading}}" class="empty-state"><text class="state-copy">正在读取任务摘要…</text></view>
+      <view wx:elif="{{analysisError}}" class="error-card">
+        <text class="error-title">任务暂时没有读取成功</text>
+        <text class="error-copy">{{analysisError}}</text>
+        <button class="safe-outline-button" bindtap="loadAnalysisJobs">重新加载</button>
+      </view>
+      <view wx:elif="{{!analysisJobs.length}}" class="empty-state">
+        <text class="empty-symbol">○</text>
+        <text class="state-title">暂时没有在线分析任务</text>
+        <text class="state-copy">任务建立后会在这里显示状态，不会展示参与者原文。</text>
+      </view>
+      <view wx:else>
+        <view wx:for="{{analysisJobs}}" wx:key="id" class="analysis-job-card">
+          <view class="analysis-job-heading">
+            <text class="analysis-job-title">{{item.analysisLabel}}</text>
+            <text class="priority-pill">{{item.statusLabel}}</text>
+          </view>
+          <text class="participant-meta">版本 {{item.analysis_version}} · {{item.createdText}}</text>
+          <text class="participant-meta">尝试 {{item.attempt_count}} / {{item.max_attempts}} · 影子模式</text>
+        </view>
+      </view>
+      <text class="boundary-line">结果只作为聚合研究线索，不构成诊断、标签或个体自动决策。</text>
+    </view>
+  </view>
+
   <view wx:if="{{activeWorkspace === 'mine'}}" class="workspace-panel">
     <view class="safe-card workspace-card">
       <text class="section-eyebrow">我的工作范围</text>

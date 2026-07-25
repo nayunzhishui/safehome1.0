@@ -79,6 +79,11 @@ REQUIRED_HEALTH_TABLES = [
     "observability_events",
     "reliable_jobs",
     "reliable_job_actions",
+    "research_analysis_snapshots",
+    "research_analysis_snapshot_links",
+    "research_analysis_jobs",
+    "research_analysis_artifacts",
+    "research_analysis_events",
     "feature_flag_versions",
     "reliability_slo_snapshots",
     "reliability_drill_runs",
@@ -94,8 +99,8 @@ REQUIRED_HEALTH_TABLES = [
     "operations_incident_notifications",
     "operations_evidence_packages",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_24_027"
-CURRENT_SCHEMA_NAME = "identity_claim_lifecycle"
+CURRENT_SCHEMA_VERSION = "2026_07_25_028"
+CURRENT_SCHEMA_NAME = "research_analysis_job_framework"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -105,6 +110,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "user_id",
     "target_user_id",
     "source_user_id",
+    "participant_user_id",
     "merged_into_user_id",
     "requested_by",
     "confirmed_by",
@@ -121,6 +127,24 @@ MYSQL_VARCHAR_COLUMNS = {
     "assignment_role",
     "assigned_by",
     "assignment_id",
+    "snapshot_id",
+    "analysis_type",
+    "analysis_version",
+    "resource_hash",
+    "purpose_code",
+    "consent_type",
+    "consent_version",
+    "authorization_status",
+    "source_type",
+    "source_version",
+    "source_hash",
+    "idempotency_key",
+    "lease_owner",
+    "result_artifact_id",
+    "artifact_hash",
+    "quality_status",
+    "visibility",
+    "deletion_reason_code",
     "request_hash",
     "report_id",
     "response",

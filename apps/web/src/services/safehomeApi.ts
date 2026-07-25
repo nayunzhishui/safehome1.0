@@ -57,6 +57,10 @@ import type {
   ResearchMethodologyRegistry,
   ResearchMethodologySimulation,
   ResearchMethodologyVersion,
+  ResearchAnalysisArtifact,
+  ResearchAnalysisJob,
+  ResearchAnalysisJobList,
+  ResearchAnalysisSnapshot,
   ResearchCapabilitySummary,
   ResearchDeliveryContent,
   ResearchDeliveryType,
@@ -1132,6 +1136,49 @@ export class SafeHomeApiClient {
 
   disableResearchMethodology(reason: string): Promise<Record<string, unknown>> {
     return this.requestData(`${API_ENDPOINTS.researchMethodology}/disable`, { method: "POST", body: { reason } });
+  }
+
+  listResearchAnalysisJobs(status = ""): Promise<ResearchAnalysisJobList> {
+    return this.requestData(this.withQuery(`${API_ENDPOINTS.researchAnalysis}/jobs`, { status }));
+  }
+
+  getResearchAnalysisJob(jobId: string): Promise<ResearchAnalysisJob> {
+    return this.requestData(`${API_ENDPOINTS.researchAnalysis}/jobs/${encodeURIComponent(jobId)}`);
+  }
+
+  createResearchAnalysisSnapshot(input: {
+    participant_user_id: string;
+    enrollment_id: string;
+    purpose_code: string;
+    expires_in_days: number;
+    source_refs: Array<{ source_type: string; source_id: string; source_version?: string; source_hash: string }>;
+  }): Promise<ResearchAnalysisSnapshot> {
+    return this.requestData(`${API_ENDPOINTS.researchAnalysis}/snapshots`, { method: "POST", body: input });
+  }
+
+  createResearchAnalysisJob(input: {
+    snapshot_id: string;
+    analysis_type: string;
+    analysis_version: string;
+    resource_hash: string;
+    parameters: Record<string, unknown>;
+    idempotency_key: string;
+  }): Promise<ResearchAnalysisJob> {
+    return this.requestData(`${API_ENDPOINTS.researchAnalysis}/jobs`, {
+      method: "POST",
+      headers: { "Idempotency-Key": input.idempotency_key },
+      body: {
+        snapshot_id: input.snapshot_id,
+        analysis_type: input.analysis_type,
+        analysis_version: input.analysis_version,
+        resource_hash: input.resource_hash,
+        parameters: input.parameters,
+      },
+    });
+  }
+
+  getResearchAnalysisArtifact(artifactId: string): Promise<ResearchAnalysisArtifact> {
+    return this.requestData(`${API_ENDPOINTS.researchAnalysis}/artifacts/${encodeURIComponent(artifactId)}`);
   }
 
   getSecurityPublicStatus(): Promise<SecurityPublicStatus> {

@@ -52,6 +52,11 @@ MVP_TABLES = [
     "observability_events",
     "reliable_jobs",
     "reliable_job_actions",
+    "research_analysis_snapshots",
+    "research_analysis_snapshot_links",
+    "research_analysis_jobs",
+    "research_analysis_artifacts",
+    "research_analysis_events",
     "feature_flag_versions",
     "reliability_slo_snapshots",
     "reliability_drill_runs",
@@ -1349,6 +1354,98 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS research_analysis_snapshots (
+        id TEXT PRIMARY KEY,
+        participant_user_id TEXT NOT NULL,
+        enrollment_id TEXT,
+        purpose_code TEXT NOT NULL,
+        consent_type TEXT NOT NULL,
+        consent_version TEXT NOT NULL,
+        authorization_status TEXT NOT NULL DEFAULT 'active',
+        source_count INTEGER NOT NULL DEFAULT 0,
+        snapshot_hash TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        suspended_at TEXT,
+        deleted_at TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_analysis_snapshot_links (
+        id TEXT PRIMARY KEY,
+        snapshot_id TEXT NOT NULL,
+        source_type TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        source_version TEXT,
+        source_hash TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(snapshot_id, source_type, source_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_analysis_jobs (
+        id TEXT PRIMARY KEY,
+        snapshot_id TEXT NOT NULL,
+        analysis_type TEXT NOT NULL,
+        analysis_version TEXT NOT NULL,
+        resource_hash TEXT NOT NULL,
+        parameters_json TEXT NOT NULL DEFAULT '{}',
+        idempotency_key TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'queued',
+        attempt_count INTEGER NOT NULL DEFAULT 0,
+        max_attempts INTEGER NOT NULL DEFAULT 3,
+        available_at TEXT NOT NULL,
+        lease_owner TEXT,
+        lease_expires_at TEXT,
+        last_error_code TEXT,
+        result_artifact_id TEXT,
+        shadow_mode INTEGER NOT NULL DEFAULT 1,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        completed_at TEXT,
+        canceled_at TEXT,
+        expired_at TEXT,
+        suspended_at TEXT,
+        dead_lettered_at TEXT,
+        UNIQUE(created_by, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_analysis_artifacts (
+        id TEXT PRIMARY KEY,
+        job_id TEXT NOT NULL UNIQUE,
+        snapshot_id TEXT NOT NULL,
+        analysis_type TEXT NOT NULL,
+        analysis_version TEXT NOT NULL,
+        metrics_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        quality_status TEXT NOT NULL,
+        boundary_notice TEXT NOT NULL,
+        visibility TEXT NOT NULL DEFAULT 'researcher_only',
+        status TEXT NOT NULL DEFAULT 'active',
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        suspended_at TEXT,
+        deleted_at TEXT,
+        deletion_reason_code TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS research_analysis_events (
+        id TEXT PRIMARY KEY,
+        job_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        from_status TEXT NOT NULL,
+        to_status TEXT NOT NULL,
+        error_code TEXT,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS feature_flag_versions (
         id TEXT PRIMARY KEY,
         flag_name TEXT NOT NULL,
@@ -1641,6 +1738,12 @@ INDEX_SQL = [
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_reliable_jobs_idempotency ON reliable_jobs(job_type, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_reliable_jobs_due ON reliable_jobs(status, available_at, lease_expires_at)",
     "CREATE INDEX IF NOT EXISTS idx_reliable_job_actions_job ON reliable_job_actions(job_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_analysis_snapshot_participant_status ON research_analysis_snapshots(participant_user_id, authorization_status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_analysis_snapshot_link_snapshot ON research_analysis_snapshot_links(snapshot_id, source_type)",
+    "CREATE INDEX IF NOT EXISTS idx_research_analysis_job_queue ON research_analysis_jobs(status, available_at, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_analysis_job_snapshot ON research_analysis_jobs(snapshot_id, analysis_type, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_analysis_artifact_snapshot ON research_analysis_artifacts(snapshot_id, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_research_analysis_event_job ON research_analysis_events(job_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_feature_flag_versions_name ON feature_flag_versions(flag_name, version)",
     "CREATE INDEX IF NOT EXISTS idx_reliability_slo_created ON reliability_slo_snapshots(environment, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_reliability_drills_created ON reliability_drill_runs(scenario, created_at)",
