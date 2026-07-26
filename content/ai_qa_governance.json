@@ -1,6 +1,6 @@
 {
   "schema_version": "safehome.ai-qa-governance.v1",
-  "version": "2026.07-task28-gate-v1",
+  "version": "2026.07-task36-f15-gate-v1",
   "status": "blocked_human_review",
   "participant_feature_enabled": false,
   "sandbox_scope": "synthetic_only",
@@ -15,5 +15,29 @@
     "shutdown_owner": {"proposed": "undecided", "status": "owner_required"}
   },
   "required_external_gates": ["T24隐私", "T31安全", "T32可靠性", "T34发布治理", "心理审核", "伦理/法律审核", "生产值守"],
+  "engineering_controls": {
+    "roles": ["researcher", "supervisor", "admin"],
+    "approved_knowledge_only": true,
+    "citation_and_version_required": true,
+    "uncertainty_required": true,
+    "fixed_refusal_categories": ["high_risk", "diagnosis", "treatment", "medicine", "legal", "privacy", "prompt_injection", "tool_abuse"],
+    "participant_formal_feedback_write_allowed": false,
+    "provider_adapter": {
+      "approved": ["fake"],
+      "external_enabled": false,
+      "bounded_retry": true,
+      "timeout": true,
+      "circuit_breaker": true,
+      "budget_guard": true,
+      "kill_switch_stop_only": true
+    },
+    "retention": {
+      "synthetic_default_days": 7,
+      "actual_purge_requires_admin_confirmation": true,
+      "production_policy_status": "privacy_legal_review_required"
+    },
+    "raw_prompt_in_evidence": false,
+    "participant_enabled": false
+  },
   "boundary_notice": "本文件只登记待决策项，不构成负责人、心理、伦理、法律、隐私、安全或生产批准。"
 }

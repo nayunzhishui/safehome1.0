@@ -53,7 +53,23 @@ def get_config_status() -> dict:
         "participant_eligible": False,
         "gate_decisions": governance.get("decisions", {}),
         "runtime_control": {"killed": int(runtime.get("killed") or 0), "changed_at": runtime.get("changed_at")},
-        "data_policy": {"cross_session_memory": False, "provider_training": False, "real_participant_data": False, "write_tools": False},
+        "data_policy": {
+            "cross_session_memory": False,
+            "provider_training": False,
+            "real_participant_data": False,
+            "write_tools": False,
+            "formal_participant_feedback_write": False,
+            "synthetic_retention_days": int(current_app.config.get("AI_QA_SYNTHETIC_RETENTION_DAYS", 7)),
+            "provider_metadata_contains_raw_text": False,
+        },
+        "provider_policy": {
+            "approved_providers": ["fake"],
+            "timeout_ms": int(current_app.config.get("AI_QA_TIMEOUT_MS", 3000)),
+            "max_retries": max(0, min(int(current_app.config.get("AI_QA_PROVIDER_RETRIES", 1)), 2)),
+            "circuit_failure_threshold": 3,
+            "budget_micros_per_day": int(current_app.config.get("AI_QA_DAILY_BUDGET_MICROS", 0)),
+            "external_provider_enabled": False,
+        },
         "boundary_notice": governance.get("boundary_notice"),
     }
 
@@ -201,12 +217,20 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
         return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": "circuit_open", "severity": "medium"})
     provider = get_provider(str(current_app.config.get("AI_QA_PROVIDER", "fake")))
     started = time.perf_counter()
-    try:
-        result = provider.generate(text, citations, mode=str(payload.get("fake_mode") or "normal"))
-        elapsed_ms = int((time.perf_counter() - started) * 1000)
-        if elapsed_ms > int(current_app.config.get("AI_QA_TIMEOUT_MS", 3000)):
-            raise ProviderError("provider_timeout", "供应商调用超过超时限制")
-    except ProviderError as exc:
+    result = None
+    exc = None
+    attempts = 1 + max(0, min(int(current_app.config.get("AI_QA_PROVIDER_RETRIES", 1)), 2))
+    for _attempt in range(attempts):
+        try:
+            result = provider.generate(text, citations, mode=str(payload.get("fake_mode") or "normal"))
+            elapsed_ms = int((time.perf_counter() - started) * 1000)
+            if elapsed_ms > int(current_app.config.get("AI_QA_TIMEOUT_MS", 3000)):
+                raise ProviderError("provider_timeout", "供应商调用超过超时限制")
+            exc = None
+            break
+        except ProviderError as caught:
+            exc = caught
+    if exc is not None or result is None:
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         with get_connection() as conn:
             conn.execute("INSERT INTO ai_qa_provider_events (id, session_id, user_id, provider, model_version, status, latency_ms, error_code, created_at) VALUES (?, ?, ?, 'fake', 'fake-safehome-v1', 'failed', ?, ?, ?)", (new_id("aiqpe"), session_id, actor["id"], elapsed_ms, exc.code, now_iso()))
@@ -218,12 +242,53 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
         conn.commit()
     if not postcheck["ok"]:
         return _fixed_message(actor, session_id, text, "postcheck_degraded", {"category": "postcheck", "severity": "high", "route": "postcheck_degraded"}, provider_status="called")
-    safety = {"version": SAFETY_VERSION, "precheck": {key: precheck.get(key) for key in ("category", "severity", "route")}, "postcheck": postcheck, "route": "answered", "human_escalation": False}
+    safety = {"version": SAFETY_VERSION, "precheck": {key: precheck.get(key) for key in ("category", "severity", "route")}, "postcheck": postcheck, "route": "answered", "human_escalation": False, "uncertainty": result.uncertainty}
     with get_connection() as conn:
-        assistant = _store_message(conn, session_id, actor["id"], "assistant", result.text, citations=citations, model={"provider": result.provider, "model_version": result.model_version, "provider_training_allowed": False, "tools_allowed": False}, safety=safety, knowledge_version=retrieval["knowledge_snapshot_hash"], token_estimate=result.token_estimate, cost_micros=result.cost_micros)
+        assistant = _store_message(conn, session_id, actor["id"], "assistant", result.text, citations=citations, model={"provider": result.provider, "model_version": result.model_version, "provider_training_allowed": False, "tools_allowed": False, "formal_feedback_write_allowed": False}, safety=safety, knowledge_version=retrieval["knowledge_snapshot_hash"], token_estimate=result.token_estimate, cost_micros=result.cost_micros)
         write_audit_log(conn, "ai_qa_answer_generated", actor["id"], "ai_qa_message", assistant["id"], {"session_id": session_id, "request_hash": _request_hash(text), "citation_count": len(citations), "knowledge_snapshot_hash": retrieval["knowledge_snapshot_hash"], "provider": result.provider, "model_version": result.model_version, "raw_text_logged": False, "tools_allowed": False})
         conn.commit()
-    return {"message": assistant, "route": "answered", "fixed_response": False, "human_escalation": False, "boundary_notice": "回答只基于已发布内容，不构成诊断、治疗、危机评估或专业判断。"}
+    return {"message": assistant, "route": "answered", "fixed_response": False, "human_escalation": False, "uncertainty": result.uncertainty, "boundary_notice": "回答只基于已发布内容，可能遗漏情境；请核对来源与适用范围。它不构成诊断、治疗、危机评估或正式参与者反馈。"}
+
+
+def purge_expired_synthetic_data(actor: dict, payload: dict) -> dict:
+    """Purge expired synthetic sandbox text; audit and aggregate evidence remain."""
+    retention_days = int(current_app.config.get("AI_QA_SYNTHETIC_RETENTION_DAYS", 7))
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=retention_days)).isoformat()
+    dry_run = payload.get("dry_run") is not False
+    with get_connection() as conn:
+        rows = conn.execute(
+            "SELECT id FROM ai_qa_sessions WHERE synthetic_data = 1 AND created_at < ? AND status != 'deleted'",
+            (cutoff,),
+        ).fetchall()
+        session_ids = [str(row["id"]) for row in rows]
+        counts = {"sessions": len(session_ids), "messages": 0, "feedback": 0, "provider_events": 0, "safety_events": 0}
+        for session_id in session_ids:
+            counts["messages"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_messages WHERE session_id = ?", (session_id,)).fetchone()["count"])
+            counts["feedback"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_feedback WHERE session_id = ?", (session_id,)).fetchone()["count"])
+            counts["provider_events"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_provider_events WHERE session_id = ?", (session_id,)).fetchone()["count"])
+            counts["safety_events"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_safety_events WHERE session_id = ?", (session_id,)).fetchone()["count"])
+        if not dry_run:
+            if payload.get("confirm_synthetic_purge") is not True:
+                raise AiQaError("confirmation_required", "执行合成沙盒清理需要明确确认", 409)
+            for session_id in session_ids:
+                conn.execute("DELETE FROM ai_qa_feedback WHERE session_id = ?", (session_id,))
+                conn.execute("DELETE FROM ai_qa_messages WHERE session_id = ?", (session_id,))
+                conn.execute("DELETE FROM ai_qa_provider_events WHERE session_id = ?", (session_id,))
+                conn.execute("DELETE FROM ai_qa_safety_events WHERE session_id = ?", (session_id,))
+                conn.execute(
+                    "UPDATE ai_qa_sessions SET status = 'deleted', deleted_at = ?, updated_at = ?, research_use_allowed = 0 WHERE id = ?",
+                    (now_iso(), now_iso(), session_id),
+                )
+            write_audit_log(conn, "ai_qa_retention_purge", actor["id"], "ai_qa_retention", cutoff, {"counts": counts, "raw_text_logged": False, "synthetic_only": True})
+            conn.commit()
+    return {
+        "dry_run": dry_run,
+        "retention_days": retention_days,
+        "cutoff": cutoff,
+        "counts": counts,
+        "synthetic_only": True,
+        "production_policy_approved": False,
+    }
 
 
 def save_feedback(actor: dict, message_id: str, payload: dict) -> dict:

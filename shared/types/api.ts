@@ -2116,7 +2116,23 @@ export interface AiQaConfig {
   participant_eligible: false;
   gate_decisions: Record<string, { proposed: unknown; status: string }>;
   runtime_control: { killed: 0 | 1; changed_at?: ISODateTime | null };
-  data_policy: { cross_session_memory: false; provider_training: false; real_participant_data: false; write_tools: false };
+  data_policy: {
+    cross_session_memory: false;
+    provider_training: false;
+    real_participant_data: false;
+    write_tools: false;
+    formal_participant_feedback_write: false;
+    synthetic_retention_days: number;
+    provider_metadata_contains_raw_text: false;
+  };
+  provider_policy: {
+    approved_providers: ["fake"];
+    timeout_ms: number;
+    max_retries: number;
+    circuit_failure_threshold: number;
+    budget_micros_per_day: number;
+    external_provider_enabled: false;
+  };
   boundary_notice: string;
 }
 
@@ -2125,6 +2141,7 @@ export interface AiQaAnswer {
   route: AiQaRoute;
   fixed_response: boolean;
   human_escalation: boolean;
+  uncertainty?: "low" | "medium" | "high";
   boundary_notice: string;
 }
 

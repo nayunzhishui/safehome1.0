@@ -82,6 +82,8 @@ class Config:
     AI_QA_REQUESTS_PER_HOUR = int(os.environ.get("AI_QA_REQUESTS_PER_HOUR", "30"))
     AI_QA_DAILY_BUDGET_MICROS = int(os.environ.get("AI_QA_DAILY_BUDGET_MICROS", "0"))
     AI_QA_TIMEOUT_MS = int(os.environ.get("AI_QA_TIMEOUT_MS", "3000"))
+    AI_QA_PROVIDER_RETRIES = int(os.environ.get("AI_QA_PROVIDER_RETRIES", "1"))
+    AI_QA_SYNTHETIC_RETENTION_DAYS = int(os.environ.get("AI_QA_SYNTHETIC_RETENTION_DAYS", "7"))
     OFFLINE_BENCHMARK_ENABLED = os.environ.get(
         "OFFLINE_BENCHMARK_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",

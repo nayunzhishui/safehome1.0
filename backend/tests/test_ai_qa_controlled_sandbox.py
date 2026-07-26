@@ -65,7 +65,13 @@ def test_config_keeps_participant_feature_closed_and_exposes_no_real_provider(tm
     assert data["participant_enabled"] is False
     assert data["participant_eligible"] is False
     assert data["provider"] == "fake"
-    assert data["data_policy"] == {"cross_session_memory": False, "provider_training": False, "real_participant_data": False, "write_tools": False}
+    assert data["data_policy"]["cross_session_memory"] is False
+    assert data["data_policy"]["provider_training"] is False
+    assert data["data_policy"]["real_participant_data"] is False
+    assert data["data_policy"]["write_tools"] is False
+    assert data["data_policy"]["formal_participant_feedback_write"] is False
+    assert data["provider_policy"]["approved_providers"] == ["fake"]
+    assert data["provider_policy"]["external_provider_enabled"] is False
 
 
 def test_only_research_roles_can_create_synthetic_session(tmp_path, monkeypatch):
@@ -144,6 +150,9 @@ def test_answer_retrieves_only_active_published_content_and_cites_version(tmp_pa
     assert citations[0]["governance_status"] == "published"
     assert all(item["content_id"] != "secret_draft" for item in citations)
     assert data["message"]["model"]["tools_allowed"] is False
+    assert data["message"]["model"]["formal_feedback_write_allowed"] is False
+    assert data["uncertainty"] == "medium"
+    assert "可能遗漏情境" in data["boundary_notice"]
 
 
 def test_no_approved_source_returns_explicit_unknown(tmp_path, monkeypatch):
@@ -241,3 +250,31 @@ def test_kill_switch_can_stop_but_cannot_reactivate_without_human_gate(tmp_path,
     assert restart.status_code == 409
     assert blocked.status_code == 503
     assert blocked.get_json()["error"]["code"] == "ai_qa_killed"
+
+
+def test_supervisor_can_use_only_own_synthetic_session(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    headers = _actors(app)
+    client = app.test_client()
+    session = _create_session(client, headers["supervisor-a"])
+    assert session["user_id"] == "supervisor-a"
+    assert client.get(f"/api/ai-qa/sessions/{session['id']}", headers=headers["researcher-a"]).status_code == 403
+
+
+def test_retention_purge_is_admin_confirmed_synthetic_only_and_audited(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    headers = _actors(app)
+    client = app.test_client()
+    session = _create_session(client, headers["researcher-a"])
+    with app.app_context():
+        database = importlib.import_module("database")
+        with database.get_connection() as conn:
+            conn.execute("UPDATE ai_qa_sessions SET created_at = '2020-01-01T00:00:00+00:00' WHERE id = ?", (session["id"],))
+            conn.commit()
+    preview = client.post("/api/ai-qa/retention/purge", json={"dry_run": True}, headers=headers["admin-a"])
+    blocked = client.post("/api/ai-qa/retention/purge", json={"dry_run": False}, headers=headers["admin-a"])
+    executed = client.post("/api/ai-qa/retention/purge", json={"dry_run": False, "confirm_synthetic_purge": True}, headers=headers["admin-a"])
+    assert preview.status_code == 200 and preview.get_json()["data"]["counts"]["sessions"] == 1
+    assert blocked.status_code == 409
+    assert executed.status_code == 200 and executed.get_json()["data"]["synthetic_only"] is True
+    assert client.get(f"/api/ai-qa/sessions/{session['id']}", headers=headers["researcher-a"]).get_json()["data"]["messages"] == []

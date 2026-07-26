@@ -18,6 +18,7 @@ class ProviderResult:
     model_version: str
     token_estimate: int
     cost_micros: int
+    uncertainty: str = "medium"
 
 
 class FakeProvider:
@@ -48,6 +49,7 @@ class FakeProvider:
             model_version=self.model_version,
             token_estimate=max(1, (len(question) + len(text)) // 2),
             cost_micros=0,
+            uncertainty="medium",
         )
 
 

@@ -2218,3 +2218,9 @@ relationship_initiation_intention_action
 - `GET /api/security/workbench` 同步返回相同的 `task36_integration`，用于核对生产默认关闭、外部门禁和敏感证据禁入规则。
 - `GET /api/research/analysis/catalog` 新增 `resilience_summary`：在线分析的幂等、租约并发、失败恢复和派生删除摘要。
 - 以上响应不包含参与者原文、手机号、OpenID、token、密码、Cookie、请求/响应正文或内部堆栈；也不代表生产批准。
+### T36-F15 AI问答补充
+
+- AI问答会话接口允许 `researcher/supervisor/admin`，但只能访问本人创建的合成会话；参与者仍返回403。
+- `GET /api/ai-qa/config` 新增 `provider_policy` 与保留策略：批准供应商仅fake，外部供应商关闭，返回超时、重试、熔断、预算和合成保留天数。
+- 成功回答新增 `uncertainty`，引用仍携带内容/发布版本和hash；回答不能写入正式参与者反馈。
+- `POST /api/ai-qa/retention/purge` 仅管理员可用；默认dry-run，实际清理必须提交 `dry_run=false` 和 `confirm_synthetic_purge=true`，且只清理过期合成沙盒内容。

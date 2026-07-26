@@ -484,3 +484,11 @@
 - 修改文件：F17机器注册表、T31/T32服务、在线分析目录、shared、Web/小程序摘要、专项测试/审计及事实文档。
 - 验证：F17专项、T31/T32/F14回归、静态审计、Web typecheck/build、小程序审计和API机器契约通过。
 - 后续：T36-F15；CloudBase/MySQL、真机、安全隐私伦理和生产批准仍待外部门禁。
+## 2026-07-26 T36-F15
+
+- 工具/模型：Codex GPT-5.6；Product Design、Chrome、Implement/TDD、pytest、TypeScript/Vite和机器注册表生成器。
+- 会话标识：当前Codex任务。
+- 摘要：完成三研究角色合成AI问答沙盒、批准知识来源/版本/不确定性、安全拒答、供应商韧性、保留清理和人工评测闭环；参与者/外部AI仍关闭。
+- 修改文件：AI问答配置/服务/路由/治理、shared、Web、专项测试/审计、API/安全/运营生成物及事实文档。
+- 验证：F15/T28/F17专项、内容/API/安全/运营注册表、Web typecheck/build和Chrome交互通过。
+- 后续：T36-F16；AI/心理/伦理/安全/隐私/值守/CloudBase/生产签字待人工。

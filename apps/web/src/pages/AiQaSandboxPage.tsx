@@ -17,7 +17,7 @@ function errorText(error: unknown): string {
 
 export function AiQaSandboxPage() {
   const actor = getStoredAuthUser();
-  const canChat = ["researcher", "admin"].includes(actor?.role || "");
+  const canChat = ["researcher", "supervisor", "admin"].includes(actor?.role || "");
   const canReview = ["supervisor", "admin"].includes(actor?.role || "");
   const isAdmin = actor?.role === "admin";
   const [config, setConfig] = useState<AiQaConfig | null>(null);
@@ -147,8 +147,10 @@ export function AiQaSandboxPage() {
         </div>
         <dl className="aiQaFacts">
           <div><dt>供应商</dt><dd>{config?.provider || "—"}（不出网）</dd></div>
+          <div><dt>超时与重试</dt><dd>{config?.provider_policy ? `${config.provider_policy.timeout_ms}ms / ${config.provider_policy.max_retries}次` : "等待新版本服务"}</dd></div>
           <div><dt>跨会话记忆</dt><dd>关闭</dd></div>
           <div><dt>写操作工具</dt><dd>禁止</dd></div>
+          <div><dt>合成原文保留</dt><dd>{config?.data_policy.synthetic_retention_days ? `${config.data_policy.synthetic_retention_days}天` : "待服务更新"}</dd></div>
           <div><dt>训练使用</dt><dd>禁止</dd></div>
         </dl>
       </section>
@@ -159,7 +161,7 @@ export function AiQaSandboxPage() {
             <div><span className="panelKicker">安全链路</span><h2>合成问答</h2></div>
             {canChat ? <button className="secondaryButton" disabled={busy || !config?.sandbox_enabled} type="button" onClick={createSession}>新建会话</button> : null}
           </div>
-          {!canChat ? <p className="emptyState">supervisor 只复核证据，不能创建或读取研究者会话。</p> : null}
+          {!canChat ? <p className="emptyState">当前角色不能创建或读取合成研究会话。</p> : null}
           {canChat && !activeSession ? <p className="emptyState">新建会话后，只输入团队编写的合成文本，不得粘贴真实参与者资料。</p> : null}
           {canChat && activeSession ? (
             <>
@@ -179,6 +181,7 @@ export function AiQaSandboxPage() {
             <article className="aiQaAnswer" aria-label="受控回答">
               <div className="answerMeta"><span>{answer.route}</span><span>{answer.fixed_response ? "固定安全响应" : "fake provider"}</span></div>
               <h3>回答</h3><p>{answer.message.content}</p>
+              <p className="boundaryCallout">不确定性：{answer.uncertainty || String(answer.message.safety.uncertainty || "不适用")}。{answer.boundary_notice}</p>
               <h3>来源</h3>
               {answer.message.citations.length ? answer.message.citations.map((item) => (
                 <div className="citationCard" key={`${item.release_id}-${item.content_id}`}>

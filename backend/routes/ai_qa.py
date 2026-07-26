@@ -13,6 +13,7 @@ from services.ai_qa_service import (
     get_session,
     list_review_evidence,
     list_sessions,
+    purge_expired_synthetic_data,
     review_evaluation,
     run_evaluation,
     save_feedback,
@@ -44,7 +45,7 @@ def ai_qa_config():
 
 @bp.get("/sessions")
 def ai_qa_sessions():
-    actor, error = _actor("researcher", "admin")
+    actor, error = _actor("researcher", "supervisor", "admin")
     if error:
         return error
     return _response(lambda: {"items": list_sessions(actor)})
@@ -52,7 +53,7 @@ def ai_qa_sessions():
 
 @bp.post("/sessions")
 def ai_qa_session_create():
-    actor, error = _actor("researcher", "admin")
+    actor, error = _actor("researcher", "supervisor", "admin")
     if error:
         return error
     payload = request.get_json(silent=True) or {}
@@ -61,7 +62,7 @@ def ai_qa_session_create():
 
 @bp.get("/sessions/<session_id>")
 def ai_qa_session_detail(session_id: str):
-    actor, error = _actor("researcher", "admin")
+    actor, error = _actor("researcher", "supervisor", "admin")
     if error:
         return error
     return _response(lambda: get_session(actor, session_id))
@@ -69,7 +70,7 @@ def ai_qa_session_detail(session_id: str):
 
 @bp.delete("/sessions/<session_id>")
 def ai_qa_session_delete(session_id: str):
-    actor, error = _actor("researcher", "admin")
+    actor, error = _actor("researcher", "supervisor", "admin")
     if error:
         return error
     return _response(lambda: delete_session(actor, session_id))
@@ -77,7 +78,7 @@ def ai_qa_session_delete(session_id: str):
 
 @bp.post("/sessions/<session_id>/messages")
 def ai_qa_message_create(session_id: str):
-    actor, error = _actor("researcher", "admin")
+    actor, error = _actor("researcher", "supervisor", "admin")
     if error:
         return error
     payload = request.get_json(silent=True) or {}
@@ -86,7 +87,7 @@ def ai_qa_message_create(session_id: str):
 
 @bp.post("/messages/<message_id>/feedback")
 def ai_qa_message_feedback(message_id: str):
-    actor, error = _actor("researcher", "admin")
+    actor, error = _actor("researcher", "supervisor", "admin")
     if error:
         return error
     payload = request.get_json(silent=True) or {}
@@ -125,3 +126,12 @@ def ai_qa_kill_switch():
         return error
     payload = request.get_json(silent=True) or {}
     return _response(lambda: activate_kill_switch(actor, payload))
+
+
+@bp.post("/retention/purge")
+def ai_qa_retention_purge():
+    actor, error = _actor("admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(lambda: purge_expired_synthetic_data(actor, payload))
