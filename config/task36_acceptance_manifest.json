@@ -1,0 +1,157 @@
+{
+  "schema": "safehome.task36.acceptance_manifest.v1",
+  "version": "2026-07-26-f19-v1",
+  "required_tasks": [
+    "T36-F00", "T36-F01", "T36-F02", "T36-F03", "T36-F04",
+    "T36-F05", "T36-F06", "T36-F07", "T36-F08", "T36-F09",
+    "T36-F10", "T36-F11", "T36-F12", "T36-F13", "T36-F14",
+    "T36-F15", "T36-F16", "T36-F17", "T36-F18", "T36-F19"
+  ],
+  "commands": [
+    {
+      "id": "backend_full",
+      "category": "backend",
+      "cwd": ".",
+      "command": ["python", "-m", "pytest", "backend/tests", "-q"],
+      "timeout_seconds": 1800,
+      "required": true
+    },
+    {
+      "id": "content_validation",
+      "category": "shared",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/validate_content.py"],
+      "timeout_seconds": 180,
+      "required": true
+    },
+    {
+      "id": "api_contract",
+      "category": "shared",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/build_api_contract.py", "--check"],
+      "timeout_seconds": 180,
+      "required": true
+    },
+    {
+      "id": "api_compatibility",
+      "category": "shared",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/check_api_compatibility.py"],
+      "timeout_seconds": 180,
+      "required": true
+    },
+    {
+      "id": "web_typecheck",
+      "category": "web",
+      "cwd": "apps/web",
+      "command": ["npm.cmd", "run", "typecheck"],
+      "timeout_seconds": 300,
+      "required": true
+    },
+    {
+      "id": "web_build",
+      "category": "web",
+      "cwd": "apps/web",
+      "command": ["npm.cmd", "run", "build"],
+      "timeout_seconds": 300,
+      "required": true
+    },
+    {
+      "id": "miniprogram_audit",
+      "category": "miniprogram",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/audit_miniprogram_frontend.py"],
+      "timeout_seconds": 180,
+      "required": true
+    },
+    {
+      "id": "miniprogram_mobile_workbench",
+      "category": "miniprogram",
+      "cwd": ".",
+      "command": ["node", "scripts/audit_task36_mobile_workbench.mjs"],
+      "timeout_seconds": 180,
+      "required": true
+    },
+    {
+      "id": "security_scan",
+      "category": "security",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/scan_task31_security.py"],
+      "timeout_seconds": 300,
+      "required": true
+    },
+    {
+      "id": "security_registry",
+      "category": "security",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/generate_task31_security_registry.py", "--check"],
+      "timeout_seconds": 300,
+      "required": true
+    },
+    {
+      "id": "operations_registry",
+      "category": "security",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/generate_task34_operations_registry.py", "--check"],
+      "timeout_seconds": 300,
+      "required": true
+    },
+    {
+      "id": "reliability_security_audit",
+      "category": "fault_recovery",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/audit_task36_f17_reliability_security.py"],
+      "timeout_seconds": 300,
+      "required": true
+    },
+    {
+      "id": "migration_recovery",
+      "category": "fault_recovery",
+      "cwd": ".",
+      "command": ["python", "backend/scripts/task36_migration_recovery.py", "verify"],
+      "timeout_seconds": 300,
+      "required": true
+    }
+  ],
+  "external_observation_commands": [
+    {
+      "id": "cloudbase_read_only_snapshot",
+      "category": "cloud_read_only",
+      "cwd": ".",
+      "command": ["python", "scripts/run_task36.py", "snapshot"],
+      "timeout_seconds": 180,
+      "required": false,
+      "mutates_external_state": false
+    }
+  ],
+  "required_paths": [
+    "docs/00_当前事实基准/Claude计划模式.md",
+    "docs/00_当前事实基准/开发日志.md",
+    "docs/00_当前事实基准/当前进度交接.md",
+    "docs/00_当前事实基准/开发说明.md",
+    "docs/00_当前事实基准/项目进度统一口径.md",
+    "docs/01_当前执行入口/任务三十六研究者移动平台与受控在线能力完整实现计划_20260722.md",
+    "docs/03_技术真相/API接口文档.md",
+    "docs/03_技术真相/数据库字段说明.md",
+    "docs/04_部署运维/任务36迁移备份恢复与回滚手册_20260726.md",
+    "docs/10Claude协作/Claude使用记录.md"
+  ],
+  "external_gates": [
+    "researcher_one_time_credential_receipt_and_rotation",
+    "external_access_identity_scope_and_expiry",
+    "wechat_appid_privacy_phone_capability_and_cloud_trust",
+    "wechat_devtools_android_ios_denial_expiry_dual_account",
+    "real_researcher_assignment_participant_delivery_and_withdrawal",
+    "psychology_ta_ethics_security_privacy_and_production_signoff",
+    "cloudbase_mysql_migration_restore_and_release"
+  ],
+  "policy": {
+    "release_approved": false,
+    "external_gate_execution_allowed": false,
+    "production_mutation_allowed": false,
+    "wechat_secret_mutation_allowed": false,
+    "public_tunnel_start_allowed": false,
+    "temporary_showcase_bypass_counts_as_formal_permission_evidence": false,
+    "store_command_output_text": false
+  }
+}

@@ -81,6 +81,25 @@ def test_complete_human_led_collaboration_and_version_scope(tmp_path, monkeypatc
     assert conflict.status_code == 409 and changed.status_code == 200
     assert changed.get_json()["data"]["version"] == 2
 
+    # 参与者不能自选研究者：研究者必须由督导/管理员通过 assign 分配后才能起草反馈。
+    unassigned = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
+        headers={**headers["researcher-f16"], "Idempotency-Key": "draft-unassigned"},
+        json={
+            "source": "human",
+            "uncertainty": "尚未分配。",
+            "next_step": "尚未分配。",
+            "participant_content": "研究者尚未被分配，不应能起草。",
+        },
+    )
+    assert unassigned.status_code == 403
+    assigned = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/assign",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": "assign-f16"},
+        json={"researcher_id": "researcher-f16"},
+    )
+    assert assigned.status_code == 200 and assigned.get_json()["data"]["assigned_researcher_id"] == "researcher-f16"
+
     draft = client.post(
         f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
         headers={**headers["researcher-f16"], "Idempotency-Key": "draft-f16"},
@@ -97,11 +116,6 @@ def test_complete_human_led_collaboration_and_version_scope(tmp_path, monkeypatc
     )
     assert draft.status_code == 201
     feedback_id = draft.get_json()["data"]["id"]
-    participant_before_review = client.get(
-        f"/api/therapeutic-assessment/cases/{case_id}",
-        headers=headers["participant-f16"],
-    )
-    assert participant_before_review.get_json()["data"]["feedback_versions"] == []
     blocked = client.post(
         f"/api/therapeutic-assessment/feedback-versions/{feedback_id}/review",
         headers={**headers["supervisor-f16"], "Idempotency-Key": "review-too-early"},

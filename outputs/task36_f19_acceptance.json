@@ -1,0 +1,361 @@
+{
+  "schema": "safehome.task36.acceptance_evidence.v1",
+  "manifest_version": "2026-07-26-f19-v1",
+  "status": "passed",
+  "started_at_epoch": 1785076770,
+  "completed_at_epoch": 1785080558,
+  "results": [
+    {
+      "id": "backend_full",
+      "category": "backend",
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "backend/tests",
+        "-q"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 978797,
+      "stdout_bytes": 3634,
+      "stderr_bytes": 0,
+      "stdout_sha256": "b25cad8730d1814b19c59e194100e57977d4c47c1dc600d5a6c7dde7c3545731",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "content_validation",
+      "category": "shared",
+      "command": [
+        "python",
+        "backend/scripts/validate_content.py"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 484,
+      "stdout_bytes": 16,
+      "stderr_bytes": 0,
+      "stdout_sha256": "6fbf6723175640c44fdaeddf661f381299d64fa2fddf90441e0b495d28a8700d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "api_contract",
+      "category": "shared",
+      "command": [
+        "python",
+        "backend/scripts/build_api_contract.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 3327,
+      "stdout_bytes": 40,
+      "stderr_bytes": 0,
+      "stdout_sha256": "61b41558e2680da8e801dde04935f758661be8a2e9e9f7fe925d05a393fafea3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "api_compatibility",
+      "category": "shared",
+      "command": [
+        "python",
+        "backend/scripts/check_api_compatibility.py"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 313,
+      "stdout_bytes": 56,
+      "stderr_bytes": 0,
+      "stdout_sha256": "a79a324bbf354068b1593210db36e9ca17a596655335dd6bd8049f4e18e02cbb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "web_typecheck",
+      "category": "web",
+      "command": [
+        "npm.cmd",
+        "run",
+        "typecheck"
+      ],
+      "cwd": "apps/web",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 11531,
+      "stdout_bytes": 48,
+      "stderr_bytes": 0,
+      "stdout_sha256": "05bc7e204c9a357b125f23d4161e880fcd6b734d3cd1980b39cfd974587f021b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "web_build",
+      "category": "web",
+      "command": [
+        "npm.cmd",
+        "run",
+        "build"
+      ],
+      "cwd": "apps/web",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 2655,
+      "stdout_bytes": 3940,
+      "stderr_bytes": 0,
+      "stdout_sha256": "29520acd6c1f828cb6f97f591c1bf111dbcf279089175e3066de6cbb6a1ac1eb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "miniprogram_audit",
+      "category": "miniprogram",
+      "command": [
+        "python",
+        "backend/scripts/audit_miniprogram_frontend.py"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 484,
+      "stdout_bytes": 106,
+      "stderr_bytes": 0,
+      "stdout_sha256": "3fcde7ea67d98d6bd9a787a8c933f45576d3c9863d06a3e3370228382f778da7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "miniprogram_mobile_workbench",
+      "category": "miniprogram",
+      "command": [
+        "node",
+        "scripts/audit_task36_mobile_workbench.mjs"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 17297,
+      "stdout_bytes": 340,
+      "stderr_bytes": 0,
+      "stdout_sha256": "fbcc8b23c9dbf998782cfb25824b44ad869ee3da871dc8c28a6715953f3cd050",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "security_scan",
+      "category": "security",
+      "command": [
+        "python",
+        "backend/scripts/scan_task31_security.py"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 1093,
+      "stdout_bytes": 62,
+      "stderr_bytes": 0,
+      "stdout_sha256": "b97c206e7dc4a2f975e85efed4d7dd29a5782cde8a617c81627a4d019b1dd4fb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "security_registry",
+      "category": "security",
+      "command": [
+        "python",
+        "backend/scripts/generate_task31_security_registry.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 265,
+      "stdout_bytes": 73,
+      "stderr_bytes": 0,
+      "stdout_sha256": "a41789ed13c39a548248240bbe271382aec31999cc7dd60377675a96df8d17a2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "operations_registry",
+      "category": "security",
+      "command": [
+        "python",
+        "backend/scripts/generate_task34_operations_registry.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 311,
+      "stdout_bytes": 42,
+      "stderr_bytes": 0,
+      "stdout_sha256": "7ed3070acfc5d15e857cfe944fbf917a0fd20f3b855d9f2583f74a8ff964ab20",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "reliability_security_audit",
+      "category": "fault_recovery",
+      "command": [
+        "python",
+        "backend/scripts/audit_task36_f17_reliability_security.py"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 188,
+      "stdout_bytes": 50,
+      "stderr_bytes": 0,
+      "stdout_sha256": "bf213afc8e4f64cf8e5c482fb182d179e9224f82803a6b98a43c20d9f6be2ff4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "migration_recovery",
+      "category": "fault_recovery",
+      "command": [
+        "python",
+        "backend/scripts/task36_migration_recovery.py",
+        "verify"
+      ],
+      "cwd": ".",
+      "required": true,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 4859,
+      "stdout_bytes": 9410,
+      "stderr_bytes": 0,
+      "stdout_sha256": "bcc6f12db7e5268384ba6c5cfa1f62bbfa54f73a40dfa62008b7941ba8bf76a7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "cloudbase_read_only_snapshot",
+      "category": "cloud_read_only",
+      "command": [
+        "python",
+        "scripts/run_task36.py",
+        "snapshot"
+      ],
+      "cwd": ".",
+      "required": false,
+      "returncode": 0,
+      "timed_out": false,
+      "duration_ms": 21234,
+      "stdout_bytes": 503,
+      "stderr_bytes": 0,
+      "stdout_sha256": "90e1bee937837495cf88fef6f7d633e10f5d753f416fdd88519d9e990372f650",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_text_stored": false,
+      "passed": true
+    },
+    {
+      "id": "documentation_paths",
+      "category": "documentation",
+      "required": true,
+      "missing_paths": [],
+      "passed": true,
+      "output_text_stored": false
+    },
+    {
+      "id": "task36_registry_f00_f18",
+      "category": "documentation",
+      "required": true,
+      "incomplete_tasks": [],
+      "passed": true,
+      "release_approved": false
+    }
+  ],
+  "category_status": {
+    "backend": "passed",
+    "cloud_read_only": "passed",
+    "documentation": "passed",
+    "fault_recovery": "passed",
+    "miniprogram": "passed",
+    "security": "passed",
+    "shared": "passed",
+    "web": "passed"
+  },
+  "external_gates": [
+    {
+      "id": "researcher_one_time_credential_receipt_and_rotation",
+      "status": "evidence_pending",
+      "executed": false,
+      "approved": false
+    },
+    {
+      "id": "external_access_identity_scope_and_expiry",
+      "status": "evidence_pending",
+      "executed": false,
+      "approved": false
+    },
+    {
+      "id": "wechat_appid_privacy_phone_capability_and_cloud_trust",
+      "status": "evidence_pending",
+      "executed": false,
+      "approved": false
+    },
+    {
+      "id": "wechat_devtools_android_ios_denial_expiry_dual_account",
+      "status": "evidence_pending",
+      "executed": false,
+      "approved": false
+    },
+    {
+      "id": "real_researcher_assignment_participant_delivery_and_withdrawal",
+      "status": "evidence_pending",
+      "executed": false,
+      "approved": false
+    },
+    {
+      "id": "psychology_ta_ethics_security_privacy_and_production_signoff",
+      "status": "evidence_pending",
+      "executed": false,
+      "approved": false
+    },
+    {
+      "id": "cloudbase_mysql_migration_restore_and_release",
+      "status": "evidence_pending",
+      "executed": false,
+      "approved": false
+    }
+  ],
+  "release_approved": false,
+  "external_gates_executed": false,
+  "production_mutations_executed": false,
+  "wechat_secret_mutated": false,
+  "public_tunnel_started": false,
+  "temporary_showcase_bypass_counts_as_formal_permission_evidence": false
+}

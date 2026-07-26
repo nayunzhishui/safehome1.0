@@ -173,9 +173,11 @@ def create_case(actor: dict, payload: dict, idempotency_key: str) -> tuple[dict,
             ) VALUES (?, ?, ?, ?, ?, 'active', ?, ?, ?, 'L0', ?, 1, ?, ?, ?)
             """,
             (
+                # assigned_researcher_id 固定为 NULL：参与者不能自选研究者，
+                # 研究者只能由督导/管理员通过 assign_case 分配，避免绕过分配门授予读权限。
                 case_id, str(actor["id"]), payload.get("enrollment_id"), question,
                 json_dumps(scope), status, risk["risk_level"], complexity,
-                payload.get("assigned_researcher_id"), str(actor["id"]), timestamp, timestamp,
+                None, str(actor["id"]), timestamp, timestamp,
             ),
         )
         _event(conn, case_id, actor, "case_created", key, None, 1, {"risk_level": risk["risk_level"], "shared_scope": scope})
@@ -243,21 +245,26 @@ def participant_transition(actor: dict, case_id: str, payload: dict, idempotency
         case = _case_row(conn, case_id)
         _assert_participant(actor, case)
         before = int(case["version"])
+        # 撤回是终态：已撤回的协作不能再撤回或提异议，避免反复流转与版本空转。
+        if case["status"] == "withdrawn" or case["consent_status"] == "withdrawn":
+            raise TherapeuticAssessmentError("withdrawn", "该协作已经撤回，不能再变更。", 409)
         note = str(payload.get("note") or "").strip()[:1000]
         if action == "disagree" and not note:
             raise TherapeuticAssessmentError("validation_error", "请简要说明不同意见。")
         status = "withdrawn" if action == "withdraw" else case["status"]
         consent = "withdrawn" if action == "withdraw" else case["consent_status"]
         timestamp = now_iso()
-        conn.execute(
+        cursor = conn.execute(
             """
             UPDATE therapeutic_assessment_cases
             SET status = ?, consent_status = ?, disagreement_note = ?,
                 withdrawn_at = ?, version = version + 1, updated_at = ?
-            WHERE id = ?
+            WHERE id = ? AND version = ?
             """,
-            (status, consent, note if action == "disagree" else case.get("disagreement_note"), timestamp if action == "withdraw" else case.get("withdrawn_at"), timestamp, case_id),
+            (status, consent, note if action == "disagree" else case.get("disagreement_note"), timestamp if action == "withdraw" else case.get("withdrawn_at"), timestamp, case_id, before),
         )
+        if cursor.rowcount != 1:
+            raise TherapeuticAssessmentError("version_conflict", "记录已更新，请刷新后重试。", 409)
         _event(conn, case_id, actor, action, key, before, before + 1, {"note_length": len(note)})
         write_audit_log(conn, f"therapeutic_assessment_{action}", str(actor["id"]), "therapeutic_assessment_case", case_id, {"before_version": before, "after_version": before + 1})
         conn.commit()
@@ -364,6 +371,9 @@ def review_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_ke
         case = _case_row(conn, feedback["case_id"])
         if case["readiness_level"] != "L2":
             raise TherapeuticAssessmentError("readiness_gate", "L0/L1记录不能进入人工确认和发送。", 409)
+        # 已发送的反馈是终态，不能再被复核改回 draft/reviewed；只允许复核 draft 或 reviewed 版本。
+        if feedback["status"] not in {"draft", "reviewed"}:
+            raise TherapeuticAssessmentError("invalid_state", "该反馈版本已发送或不可复核。", 409)
         status = "reviewed" if decision == "approved" else "draft"
         conn.execute("UPDATE therapeutic_assessment_feedback_versions SET status = ?, reviewed_by = ?, reviewed_at = ? WHERE id = ?", (status, str(actor["id"]), now_iso(), feedback_id))
         _event(conn, case["id"], actor, f"feedback_{decision}", key, case["version"], case["version"], {"feedback_id": feedback_id})

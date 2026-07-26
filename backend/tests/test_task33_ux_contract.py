@@ -21,7 +21,7 @@ def test_registry_covers_all_pages_routes_states_roles_and_fixed_information_arc
     mini = [item for item in registry["pages"] if item["platform"] == "miniprogram"]
     web = [item for item in registry["pages"] if item["platform"] == "web"]
     assert {item["path"] for item in mini} == set(app["pages"])
-    assert len(mini) == 40 and len(web) >= 35
+    assert len(mini) == len(app["pages"]) and len(web) >= 35
     assert registry["participant_information_architecture"] == ["记录", "练习", "了解自己", "人工支持"]
     assert registry["researcher_information_architecture"] == ["待处理", "参与者", "内容", "研究/导出", "系统状态"]
     assert all(set(item) >= {"goal", "primary_action", "data_source", "states", "roles", "sensitivity", "owner"} for item in registry["pages"])

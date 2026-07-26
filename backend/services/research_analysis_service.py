@@ -18,7 +18,7 @@ from database import (
     rows_to_dicts,
     write_audit_log,
 )
-from services.research_access_service import assert_capability, require_object_scope
+from services.research_access_service import assert_capability, has_object_scope, require_object_scope
 
 
 ANALYSIS_TYPES = {"affect_aggregate", "semantic_network", "family_topology"}
@@ -420,6 +420,15 @@ def list_jobs(actor: dict, status: str = "", limit: int = 50) -> dict:
         items = []
         for row in rows:
             item = _expand(row_to_dict(row))
+            # 逐项按对象范围过滤：researcher/supervisor 只能看到被授权参与者的任务，
+            # admin 全量可见；避免列表接口泄漏他人任务参数与指标。
+            try:
+                snapshot = _snapshot(conn, str(item["snapshot_id"]))
+                enrollment = _enrollment(conn, str(snapshot["enrollment_id"]), str(snapshot["participant_user_id"]))
+            except ResearchAnalysisError:
+                continue
+            if not has_object_scope(conn, actor, enrollment):
+                continue
             artifact = conn.execute(
                 "SELECT * FROM research_analysis_artifacts WHERE job_id = ?",
                 (item["id"],),
@@ -481,19 +490,44 @@ def claim_job(actor: dict, job_id: str, payload: dict) -> dict:
         item = _job(conn, job_id)
         snapshot = _snapshot(conn, str(item["snapshot_id"]))
         _freeze_invalid_snapshot(conn, snapshot)
-        if item["status"] not in {"queued", "failed"} or item.get("dead_lettered_at"):
+        prior_status = str(item["status"])
+        prior_lease = item.get("lease_expires_at")
+        reclaimed = False
+        if item.get("dead_lettered_at"):
             raise ResearchAnalysisError("job_state_conflict", "该任务当前不能领取。", 409)
-        if not force_due and datetime.fromisoformat(str(item["available_at"])) > now:
-            raise ResearchAnalysisError("job_not_due", "该任务尚未到重试时间。", 409)
+        if prior_status in {"queued", "failed"}:
+            if not force_due and datetime.fromisoformat(str(item["available_at"])) > now:
+                raise ResearchAnalysisError("job_not_due", "该任务尚未到重试时间。", 409)
+        elif prior_status == "running" and prior_lease and datetime.fromisoformat(str(prior_lease)) < now:
+            # 执行器崩溃或超时后租约过期，允许安全重领，避免任务永久卡在 running。
+            reclaimed = True
+        else:
+            raise ResearchAnalysisError("job_state_conflict", "该任务当前不能领取。", 409)
         expires_at = _iso(now + timedelta(seconds=lease_seconds))
-        updated = conn.execute(
-            """UPDATE research_analysis_jobs SET status = 'running', lease_owner = ?, lease_expires_at = ?, updated_at = ?
-               WHERE id = ? AND status = ?""",
-            (actor["id"], expires_at, _iso(now), job_id, item["status"]),
-        )
+        # 乐观锁同时绑定 prior_status 与 prior_lease，防止两个执行器同时新领或同时重领。
+        if prior_lease is None:
+            updated = conn.execute(
+                """UPDATE research_analysis_jobs SET status = 'running', lease_owner = ?, lease_expires_at = ?, updated_at = ?
+                   WHERE id = ? AND status = ? AND lease_expires_at IS NULL""",
+                (actor["id"], expires_at, _iso(now), job_id, prior_status),
+            )
+        else:
+            updated = conn.execute(
+                """UPDATE research_analysis_jobs SET status = 'running', lease_owner = ?, lease_expires_at = ?, updated_at = ?
+                   WHERE id = ? AND status = ? AND lease_expires_at = ?""",
+                (actor["id"], expires_at, _iso(now), job_id, prior_status, prior_lease),
+            )
         if updated.rowcount != 1:
             raise ResearchAnalysisError("job_lease_conflict", "任务已被其他执行器领取。", 409)
-        _event(conn, job_id, actor["id"], "claim", item["status"], "running", metadata={"lease_seconds": lease_seconds})
+        _event(
+            conn,
+            job_id,
+            actor["id"],
+            "reclaim" if reclaimed else "claim",
+            prior_status,
+            "running",
+            metadata={"lease_seconds": lease_seconds, "reclaimed_expired_lease": reclaimed},
+        )
         conn.commit()
         return _expand(_job(conn, job_id))
 

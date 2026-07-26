@@ -1,4 +1,5 @@
 import importlib
+import json
 import sys
 from pathlib import Path
 
@@ -47,7 +48,8 @@ def test_public_status_is_minimal_and_internal_registry_is_role_protected(tmp_pa
     denied = client.get("/api/ux-governance/registry", headers=headers["participant-t33"])
     allowed = client.get("/api/ux-governance/registry", headers=headers["researcher-t33"])
     assert public.status_code == 200 and denied.status_code == 403 and allowed.status_code == 200
-    assert public.get_json()["data"]["miniprogram_page_count"] == 40
+    expected_pages = json.loads((ROOT / "apps" / "miniprogram" / "app.json").read_text(encoding="utf-8"))["pages"]
+    assert public.get_json()["data"]["miniprogram_page_count"] == len(expected_pages)
     assert public.get_json()["data"]["release_approved"] is False
     assert "pages" not in public.get_json()["data"]
 

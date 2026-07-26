@@ -277,14 +277,33 @@ def claim_job(actor: dict, job_id: str, payload: dict) -> dict:
     with get_connection() as conn:
         row = _get_job(conn, job_id)
         item = row_to_dict(row)
-        if item["status"] not in {"pending", "retrying"}:
+        prior_status = str(item["status"])
+        prior_lease = item.get("lease_expires_at")
+        reclaimed = False
+        if prior_status in {"pending", "retrying"}:
+            available_at = datetime.fromisoformat(str(item["available_at"]))
+            if not force_due and available_at > now:
+                raise ReliabilityError("job_not_due", "该任务尚未到重试时间。", 409)
+        elif prior_status == "leased" and prior_lease and datetime.fromisoformat(str(prior_lease)) < now:
+            # 租约过期（执行器崩溃/超时）允许安全重领，防止任务卡死在 leased。
+            reclaimed = True
+        else:
             raise ReliabilityError("job_state_conflict", "该任务当前不能领取。", 409)
-        available_at = datetime.fromisoformat(str(item["available_at"]))
-        if not force_due and available_at > now:
-            raise ReliabilityError("job_not_due", "该任务尚未到重试时间。", 409)
         expires = _iso(now + timedelta(seconds=lease_seconds))
-        conn.execute("UPDATE reliable_jobs SET status = 'leased', lease_owner = ?, lease_expires_at = ?, updated_at = ? WHERE id = ?", (actor["id"], expires, _iso(now), job_id))
-        _record_job_action(conn, job_id, actor["id"], "claim", item["status"], "leased", metadata={"lease_seconds": lease_seconds})
+        # 乐观锁绑定 prior_status 与 prior_lease，避免两个执行器并发领取同一任务。
+        if prior_lease is None:
+            updated = conn.execute(
+                "UPDATE reliable_jobs SET status = 'leased', lease_owner = ?, lease_expires_at = ?, updated_at = ? WHERE id = ? AND status = ? AND lease_expires_at IS NULL",
+                (actor["id"], expires, _iso(now), job_id, prior_status),
+            )
+        else:
+            updated = conn.execute(
+                "UPDATE reliable_jobs SET status = 'leased', lease_owner = ?, lease_expires_at = ?, updated_at = ? WHERE id = ? AND status = ? AND lease_expires_at = ?",
+                (actor["id"], expires, _iso(now), job_id, prior_status, prior_lease),
+            )
+        if updated.rowcount != 1:
+            raise ReliabilityError("job_lease_conflict", "任务已被其他执行器领取。", 409)
+        _record_job_action(conn, job_id, actor["id"], "reclaim" if reclaimed else "claim", prior_status, "leased", metadata={"lease_seconds": lease_seconds, "reclaimed_expired_lease": reclaimed})
         conn.commit()
         return _job_dict(_get_job(conn, job_id))
 
@@ -406,7 +425,9 @@ def run_fault_drill(actor: dict, payload: dict) -> dict:
     if scenario not in FAULT_SCENARIOS:
         raise ReliabilityError("validation_error", "故障场景不在固定合成清单中。")
     expected = next(item["expected"] for item in _registry()["fault_scenarios"] if item["scenario"] == scenario)
-    result = {"scenario": scenario, "input": "fixed_synthetic_only", "expected": expected, "observed": expected, "safe_user_message": True, "researcher_actionable_error": True, "sensitive_text_logged": False, "status": "passed"}
+    # 诚实标注：本演练输出的是"固定合成期望值"，observed 直接取自登记的期望而非真实注入观测。
+    # evidence_mode / observed_is_measured 让下游证据不会被误读为真实故障注入结果。
+    result = {"scenario": scenario, "input": "fixed_synthetic_only", "expected": expected, "observed": expected, "evidence_mode": "declared_synthetic_expectation", "observed_is_measured": False, "safe_user_message": True, "researcher_actionable_error": True, "sensitive_text_logged": False, "status": "passed"}
     run_id = new_id("drill")
     timestamp = now_iso()
     artifact_hash = _hash(result)

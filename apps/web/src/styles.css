@@ -4100,6 +4100,10 @@ ul {
 .taVersionCard { padding: 16px; border: 1px solid #e0e5e1; border-radius: 16px; background: #fbfcfa; }
 .taVersionCard > div:first-child { display: flex; justify-content: space-between; gap: 12px; }
 .taVersionCard p { line-height: 1.65; }
-@media (max-width: 920px) { .therapeuticAssessmentWorkbench .summaryGrid, .taWorkspaceGrid, .taFormGrid { grid-template-columns: 1fr; } .taWideField { grid-column: auto; } }
-.therapeuticAssessmentWorkbench .summaryGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.therapeuticAssessmentWorkbench .summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
 .therapeuticAssessmentWorkbench .metricCard::after { display: none; }
+@media (max-width: 920px) { .therapeuticAssessmentWorkbench .summaryGrid, .taWorkspaceGrid, .taFormGrid { grid-template-columns: 1fr; } .taWideField { grid-column: auto; } }

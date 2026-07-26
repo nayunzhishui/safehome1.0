@@ -6357,6 +6357,323 @@
       }
     },
     {
+      "operation_id": "therapeutic_assessment.patch_action_route.patch",
+      "method": "PATCH",
+      "path": "/api/therapeutic-assessment/actions/<action_id>",
+      "object_type": "therapeutic_assessment",
+      "action": "update",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.get_cases_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/cases",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_case_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/cases",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.get_case_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/cases/<case_id>",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_action_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/actions",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_assign_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/assign",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_disagree_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/disagree",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_feedback_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/feedback-versions",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_readiness_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/readiness",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.patch_scope_route.patch",
+      "method": "PATCH",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/scope",
+      "object_type": "therapeutic_assessment",
+      "action": "update",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_withdraw_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/withdraw",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_review_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/review",
+      "object_type": "therapeutic_assessment",
+      "action": "update",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_send_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/send",
+      "object_type": "therapeutic_assessment",
+      "action": "send",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "progress_summary.get_training_effectiveness.get",
       "method": "GET",
       "path": "/api/training-effectiveness",
@@ -6706,7 +7023,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 266,
+    "operation_count": 279,
     "showcase_bypass_operation_count": 10,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

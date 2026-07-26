@@ -833,8 +833,12 @@ def validate_ux_experience_registry_content(content_dir: Path) -> list[str]:
     except (OSError, json.JSONDecodeError) as exc:
         return [f"ux_experience_registry.json 不可读取：{exc}"]
     pages = registry.get("pages", [])
-    if sum(item.get("platform") == "miniprogram" for item in pages) != 40:
-        errors.append("体验注册表必须覆盖当前40个小程序页面")
+    try:
+        miniprogram_pages = load_json(PROJECT_ROOT / "apps" / "miniprogram" / "app.json").get("pages", [])
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"小程序app.json不可读取：{exc}"]
+    if {item.get("path") for item in pages if item.get("platform") == "miniprogram"} != set(miniprogram_pages):
+        errors.append("体验注册表必须逐项覆盖当前小程序页面")
     if sum(item.get("platform") == "web" for item in pages) < 35:
         errors.append("体验注册表必须覆盖全部已知Web路由")
     required = {"platform", "path", "title", "workspace", "goal", "primary_action", "data_source", "states", "roles", "sensitivity", "owner", "draft_required"}

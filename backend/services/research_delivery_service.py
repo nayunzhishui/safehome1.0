@@ -7,7 +7,7 @@ import json
 
 from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from services.message_service import create_message, public_message
-from services.relationship_pilot_common import BOUNDARY
+from services.relationship_pilot_common import BOUNDARY, RelationshipPilotError, ensure_researcher_assignment
 from services.research_access_service import ResearchAccessError, require_object_scope
 from services.risk_service import check_text_risk
 
@@ -136,6 +136,13 @@ def _check_expected_version(workflow: dict, expected_version) -> int:
     if expected != int(workflow["version"]):
         raise ResearchDeliveryError("version_conflict", "草稿已在其他位置更新，请刷新后重试。", 409)
     return expected
+
+
+def _apply_versioned_update(conn, sql: str, params: tuple) -> None:
+    """执行乐观锁 UPDATE，并校验确实命中一行；命中0行说明版本被并发修改，回滚为结构化冲突。"""
+    cursor = conn.execute(sql, params)
+    if cursor.rowcount != 1:
+        raise ResearchDeliveryError("version_conflict", "草稿已在其他位置更新，请刷新后重试。", 409)
 
 
 def _active_version(conn, workflow: dict) -> dict | None:
@@ -311,7 +318,8 @@ def save_draft(actor: dict, workflow_id: str, payload: dict, idempotency_key: st
         title = str(payload.get("title") or workflow["title"]).strip()
         content = _validate_content(workflow["delivery_type"], title, payload.get("content") or json_loads(workflow["draft_json"], {}))
         next_version = int(workflow["version"]) + 1
-        conn.execute(
+        _apply_versioned_update(
+            conn,
             "UPDATE research_delivery_workflows SET status = 'draft', title = ?, draft_json = ?, active_version_id = NULL, version = ?, updated_at = ? WHERE id = ? AND version = ?",
             (title, json_dumps(content), next_version, now_iso(), workflow_id, workflow["version"]),
         )
@@ -345,7 +353,8 @@ def preview_delivery(actor: dict, workflow_id: str, payload: dict, idempotency_k
             (version_id, workflow_id, version_no, workflow["title"], json_dumps(content), _hash_payload(workflow["title"], content), str(risk.get("risk_level") or "low"), str(actor["id"]), timestamp),
         )
         next_version = int(workflow["version"]) + 1
-        conn.execute(
+        _apply_versioned_update(
+            conn,
             "UPDATE research_delivery_workflows SET status = 'previewed', active_version_id = ?, version = ?, updated_at = ? WHERE id = ? AND version = ?",
             (version_id, next_version, timestamp, workflow_id, workflow["version"]),
         )
@@ -366,7 +375,8 @@ def confirm_delivery(actor: dict, workflow_id: str, payload: dict, idempotency_k
             raise ResearchDeliveryError("delivery_not_previewed", "请先预览并核对内容。", 409)
         timestamp = now_iso()
         next_version = int(workflow["version"]) + 1
-        conn.execute(
+        _apply_versioned_update(
+            conn,
             "UPDATE research_delivery_workflows SET status = 'confirmed', confirmed_at = ?, version = ?, updated_at = ? WHERE id = ? AND version = ?",
             (timestamp, next_version, timestamp, workflow_id, workflow["version"]),
         )
@@ -448,7 +458,8 @@ def send_delivery(actor: dict, workflow_id: str, payload: dict, idempotency_key:
         )
         timestamp = now_iso()
         next_version = int(workflow["version"]) + 1
-        conn.execute(
+        _apply_versioned_update(
+            conn,
             "UPDATE research_delivery_workflows SET status = 'sent', source_report_id = ?, message_id = ?, sent_at = ?, version = ?, updated_at = ? WHERE id = ? AND version = ?",
             (report_id, message["id"], timestamp, next_version, timestamp, workflow_id, workflow["version"]),
         )
@@ -477,7 +488,8 @@ def withdraw_delivery(actor: dict, workflow_id: str, payload: dict, idempotency_
         if workflow.get("source_report_id"):
             conn.execute("UPDATE relationship_screening_reports SET status = 'withdrawn', updated_at = ? WHERE id = ?", (timestamp, workflow["source_report_id"]))
         next_version = int(workflow["version"]) + 1
-        conn.execute(
+        _apply_versioned_update(
+            conn,
             "UPDATE research_delivery_workflows SET status = 'withdrawn', withdrawn_at = ?, version = ?, updated_at = ? WHERE id = ? AND version = ?",
             (timestamp, next_version, timestamp, workflow_id, workflow["version"]),
         )
