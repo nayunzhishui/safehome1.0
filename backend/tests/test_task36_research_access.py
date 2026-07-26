@@ -284,8 +284,8 @@ def test_schema_contains_recoverable_assignment_table(tmp_path, monkeypatch):
                 row["name"]
                 for row in conn.execute("PRAGMA index_list(research_scope_assignment_actions)").fetchall()
             }
-        assert CURRENT_SCHEMA_VERSION == "2026_07_25_028"
-        assert CURRENT_SCHEMA_NAME == "research_analysis_job_framework"
+        assert CURRENT_SCHEMA_VERSION == "2026_07_26_029"
+        assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_collaboration"
         assert {"enrollment_id", "actor_id", "assignment_role", "status", "version", "idempotency_key"} <= columns
         assert "idx_research_scope_actor_status" in indexes
         assert "idx_research_scope_enrollment_status" in indexes

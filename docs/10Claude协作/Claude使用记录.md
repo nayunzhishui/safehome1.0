@@ -500,3 +500,12 @@
 - 修改：后端schema/service/routes/tests/migration/audit，shared/API契约，Web工作台，小程序页，隐私策略、成长仪表盘与事实文档。
 - 验证：专项和相关回归、迁移回滚、Web typecheck/build、小程序审计、API契约通过。
 - 后续：F18数据库迁移备份恢复矩阵；F19全量验收。未记录密钥、凭据或参与者原文。
+
+## 2026-07-26 任务36 F18
+
+- 工具/模型：Codex GPT-5.6；Implement/TDD、pytest、迁移隔离演练、TypeScript/Vite和小程序审计。
+- 会话标识：当前Codex任务。
+- 摘要：完成schema 029迁移差异矩阵、SQLite备份恢复演练、MySQL 5.7契约、隐私墓碑复核和非破坏回滚证据。
+- 修改：迁移矩阵/脚本/测试、隐私恢复检查、任务36注册表、迁移手册及事实文档。
+- 验证：32项专项、七场景隔离演练、API契约、Web typecheck/build、小程序41页审计通过。
+- 后续：F19全量验收、外部门禁证据包和云托管容器包；未执行生产迁移、恢复、回滚或人工签字。

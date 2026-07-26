@@ -1,0 +1,51 @@
+{
+  "schema": "safehome.task36.migration_matrix.v1",
+  "version": "2026-07-26-f18-v1",
+  "target_schema": {
+    "version": "2026_07_26_029",
+    "name": "therapeutic_assessment_collaboration"
+  },
+  "covered_slices": {
+    "T36-F03": ["research_scope_assignments", "research_scope_assignment_actions"],
+    "T36-F12": ["data_claims", "identity_merge_workflows", "identity_merge_record_links"],
+    "T36-F13": ["research_analysis_snapshots", "research_analysis_snapshot_links", "research_analysis_jobs", "research_analysis_artifacts", "research_analysis_events"],
+    "T36-F16": ["therapeutic_assessment_cases", "therapeutic_assessment_feedback_versions", "therapeutic_assessment_actions", "therapeutic_assessment_events"]
+  },
+  "sqlite_scenarios": [
+    "empty_database",
+    "legacy_database_with_preserved_marker",
+    "repeated_apply",
+    "partially_created_target_tables",
+    "interrupted_transaction",
+    "backup_restore_isolated"
+  ],
+  "mysql57_checks": [
+    "no_text_default",
+    "indexed_columns_are_varchar",
+    "composite_index_width_lte_3072",
+    "placeholder_conversion",
+    "additive_ddl_only"
+  ],
+  "backup_manifest": {
+    "required_fields": ["sha256", "schema_hash", "table_row_counts", "schema_version", "created_at"],
+    "contains_credentials": false,
+    "tracked_in_git": false
+  },
+  "rollback_order": [
+    "disable_new_entries",
+    "stop_public_tunnel_if_approved_and_running",
+    "revoke_temporary_accounts_and_tokens",
+    "pause_reliable_and_analysis_jobs",
+    "switch_application_to_previous_read_path",
+    "verify_health_ready_and_read_only_queries",
+    "retain_additive_tables_versions_and_audit"
+  ],
+  "production_policy": {
+    "automatic_apply": false,
+    "automatic_restore": false,
+    "automatic_rollback": false,
+    "drop_tables": false,
+    "delete_audit": false,
+    "requires_human_approval": true
+  }
+}

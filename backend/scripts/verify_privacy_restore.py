@@ -17,6 +17,7 @@ USER_TABLES = (
     "supervision_requests", "messages", "notification_preferences", "notification_deliveries",
     "relationship_pilot_enrollments", "relationship_screening_reports", "relationship_pilot_tasks",
     "relationship_narratives", "relationship_longitudinal_entries", "relationship_hypothesis_feedback", "feedback_ledger",
+    "therapeutic_assessment_cases", "therapeutic_assessment_actions",
 )
 
 TABLE_SCOPES = {
@@ -31,6 +32,8 @@ TABLE_SCOPES = {
     "relationship_pilot_tasks": "relationship_pilot", "relationship_narratives": "relationship_pilot",
     "relationship_longitudinal_entries": "relationship_pilot", "relationship_hypothesis_feedback": "relationship_pilot",
     "records": "research_outputs",
+    "therapeutic_assessment_cases": "therapeutic_assessment",
+    "therapeutic_assessment_actions": "therapeutic_assessment",
 }
 
 
@@ -60,11 +63,31 @@ def verify(database_path: Path, secret: bytes) -> dict:
             scope = TABLE_SCOPES.get(table)
             if not scope:
                 continue
-            rows = conn.execute(f"SELECT DISTINCT user_id FROM {table} WHERE user_id IS NOT NULL").fetchall()
+            user_column = "participant_user_id" if table in {"therapeutic_assessment_cases", "therapeutic_assessment_actions"} else "user_id"
+            rows = conn.execute(f"SELECT DISTINCT {user_column} AS user_id FROM {table} WHERE {user_column} IS NOT NULL").fetchall()
             violation_counts[table] = sum(
                 1 for row in rows
                 if scope in scopes_by_hash.get(hmac.new(secret, str(row["user_id"]).encode(), hashlib.sha256).hexdigest(), set())
             )
+        if "therapeutic_assessment_cases" in tables:
+            for table in ("therapeutic_assessment_feedback_versions", "therapeutic_assessment_events"):
+                if table not in tables:
+                    continue
+                rows = conn.execute(
+                    f"""
+                    SELECT DISTINCT c.participant_user_id AS user_id
+                    FROM {table} d
+                    JOIN therapeutic_assessment_cases c ON c.id = d.case_id
+                    WHERE c.participant_user_id IS NOT NULL
+                    """
+                ).fetchall()
+                violation_counts[table] = sum(
+                    1 for row in rows
+                    if "therapeutic_assessment" in scopes_by_hash.get(
+                        hmac.new(secret, str(row["user_id"]).encode(), hashlib.sha256).hexdigest(),
+                        set(),
+                    )
+                )
         violation_counts = {key: value for key, value in violation_counts.items() if value}
         return {
             "ok": not violation_counts,
