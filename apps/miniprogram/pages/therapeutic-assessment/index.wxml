@@ -1,0 +1,50 @@
+<view class="safe-page ta-page">
+  <view class="ta-hero">
+    <text class="ta-kicker">人工主导 · 可撤回</text>
+    <text class="ta-title">共同理解一次关系体验</text>
+    <text class="ta-copy">从你真正关心的问题出发，决定愿意共享什么。反馈是可讨论的版本，不是对你或关系的定论。</text>
+  </view>
+
+  <view wx:if="{{notice}}" class="ta-notice" role="status">{{notice}}</view>
+  <view wx:if="{{errorMessage}}" class="ta-error" role="alert">{{errorMessage}}</view>
+
+  <view class="safe-card ta-card">
+    <text class="ta-section-title">1. 写下想共同理解的问题</text>
+    <textarea class="ta-textarea" maxlength="1000" value="{{question}}" bindinput="onQuestionInput" placeholder="例如：为什么最近一次沟通让我既想靠近又想退开？"></textarea>
+    <text class="ta-field-label">本次愿意共享</text>
+    <checkbox-group class="ta-scope-list" bindchange="onScopeChange">
+      <label><checkbox value="question" checked="{{shareQuestion}}" color="#4f7c6b" />上面的问题</label>
+      <label><checkbox value="recent_record" checked="{{shareRecentRecord}}" color="#4f7c6b" />最近一次相关记录</label>
+    </checkbox-group>
+    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="createCase">提交协作问题</button>
+    <text class="ta-boundary">提交后仍可调整共享范围、表达不同意见或撤回。高风险内容会优先进入人工支持，不生成普通自动建议。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="safe-card ta-card">正在读取协作记录…</view>
+  <view wx:elif="{{activeCase}}" class="safe-card ta-card">
+    <view class="ta-heading">
+      <view><text class="ta-section-title">2. 查看当前协作</text><text class="ta-meta">{{activeCase.status}} · {{activeCase.readiness_level}}</text></view>
+      <text class="ta-version">版本 {{activeCase.version}}</text>
+    </view>
+    <text class="ta-question">{{activeCase.assessment_question}}</text>
+    <view wx:if="{{activeCase.latestFeedback}}" class="ta-feedback">
+      <text class="ta-kicker">经人工复核的反馈</text>
+      <text class="ta-feedback-copy">{{activeCase.latestFeedback.participant_content}}</text>
+      <text class="ta-meta">不确定性：{{activeCase.latestFeedback.uncertainty}}</text>
+      <text class="ta-meta">可讨论的下一步：{{activeCase.latestFeedback.next_step}}</text>
+    </view>
+    <view wx:else class="ta-waiting">研究者正在整理可讨论的草稿；未经人工复核的内容不会发送给你。</view>
+    <view class="ta-secondary-actions">
+      <button class="safe-outline-button" bindtap="disagree">这和我的体验不一致</button>
+      <button class="ta-withdraw" bindtap="withdraw">撤回本次协作</button>
+    </view>
+  </view>
+
+  <view wx:if="{{activeCase && activeCase.latestFeedback}}" class="safe-card ta-card">
+    <text class="ta-section-title">3. 选择一个愿意尝试的小行动</text>
+    <textarea class="ta-textarea ta-textarea--short" maxlength="500" value="{{actionText}}" bindinput="onActionInput" placeholder="写下低压力、可退出、今天能完成的一小步"></textarea>
+    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="chooseAction">记录下一小步</button>
+  </view>
+
+  <text class="ta-footer-boundary">共同反馈只记录变化、讨论和行动线索，不生成疗效分数，也不替代心理咨询、诊断或危机支持。</text>
+</view>

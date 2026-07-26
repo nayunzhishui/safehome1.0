@@ -43,6 +43,7 @@ const SecurityPrivacyWorkbench = lazy(() => import("./pages/SecurityPrivacyWorkb
 const ReliabilityReleaseWorkbench = lazy(() => import("./pages/ReliabilityReleaseWorkbench").then((module) => ({ default: module.ReliabilityReleaseWorkbench })));
 const ExperienceGovernanceWorkbench = lazy(() => import("./pages/ExperienceGovernanceWorkbench").then((module) => ({ default: module.ExperienceGovernanceWorkbench })));
 const OperationsGovernanceWorkbench = lazy(() => import("./pages/OperationsGovernanceWorkbench").then((module) => ({ default: module.OperationsGovernanceWorkbench })));
+const TherapeuticAssessmentWorkbench = lazy(() => import("./pages/TherapeuticAssessmentWorkbench").then((module) => ({ default: module.TherapeuticAssessmentWorkbench })));
 
 interface AdminLink {
   href: string;
@@ -71,6 +72,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/research/benchmarks", label: "离线算法基准", match: (p) => p === "/research/benchmarks", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/methodology", label: "研究方法冻结准备", match: (p) => p === "/research/methodology", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/analysis", label: "在线分析任务", match: (p) => p === "/research/analysis", roles: ["admin", "researcher", "supervisor"] },
+  { href: "/research/therapeutic-assessment", label: "治疗性评估协作", match: (p) => p === "/research/therapeutic-assessment", roles: ["admin", "researcher", "supervisor"] },
   { href: "/security/privacy", label: "安全与隐私防护", match: (p) => p === "/security/privacy", roles: ["admin", "researcher", "supervisor"] },
   { href: "/reliability/release", label: "可靠性与发布证据", match: (p) => p === "/reliability/release", roles: ["admin", "researcher", "supervisor"] },
   { href: "/system/experience", label: "体验与无障碍", match: (p) => p === "/system/experience", roles: ["admin", "researcher", "supervisor"] },
@@ -91,7 +93,7 @@ const researcherWorkspaces = [
   { label: "待处理", paths: ["/dashboard", "/feedback", "/supervision", "/reviews", "/privacy-requests"] },
   { label: "参与者", paths: ["/diaries", "/goals", "/checkins", "/reports", "/profiles", "/family", "/privacy"] },
   { label: "内容", paths: ["/content/review", "/content/scales", "/content/worksheets", "/content/cards", "/content/rules"] },
-  { label: "研究/导出", paths: ["/ai-sandbox", "/research/analysis", "/research/benchmarks", "/research/methodology", "/export"] },
+  { label: "研究/导出", paths: ["/ai-sandbox", "/research/analysis", "/research/therapeutic-assessment", "/research/benchmarks", "/research/methodology", "/export"] },
   { label: "系统状态", paths: ["/security/privacy", "/reliability/release", "/system/experience", "/system/operations-governance", "/integration-test"] },
 ];
 
@@ -185,6 +187,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isOfflineBenchmarkPath = path === "/research/benchmarks";
   const isResearchMethodologyPath = path === "/research/methodology";
   const isResearchAnalysisPath = path === "/research/analysis";
+  const isTherapeuticAssessmentPath = path === "/research/therapeutic-assessment";
   const isSecurityPrivacyPath = path === "/security/privacy";
   const isReliabilityReleasePath = path === "/reliability/release";
   const isExperienceGovernancePath = path === "/system/experience";
@@ -212,6 +215,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/research/benchmarks",
     "/research/methodology",
     "/research/analysis",
+    "/research/therapeutic-assessment",
     "/security/privacy",
     "/reliability/release",
     "/system/experience",
@@ -235,6 +239,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isOfflineBenchmarkPath &&
     !isResearchMethodologyPath &&
     !isResearchAnalysisPath &&
+    !isTherapeuticAssessmentPath &&
     !isSecurityPrivacyPath &&
     !isReliabilityReleasePath &&
     !isExperienceGovernancePath &&
@@ -283,6 +288,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isOfflineBenchmarkPath ? <OfflineBenchmarkWorkbench /> : null}
       {isResearchMethodologyPath ? <ResearchMethodologyWorkbench /> : null}
       {isResearchAnalysisPath ? <ResearchAnalysisWorkbench /> : null}
+      {isTherapeuticAssessmentPath ? <TherapeuticAssessmentWorkbench /> : null}
       {isSecurityPrivacyPath ? <SecurityPrivacyWorkbench /> : null}
       {isReliabilityReleasePath ? <ReliabilityReleaseWorkbench /> : null}
       {isExperienceGovernancePath ? <ExperienceGovernanceWorkbench /> : null}

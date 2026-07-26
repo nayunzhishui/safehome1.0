@@ -188,7 +188,57 @@ export type PrivacyHandlingScope =
   | "feedback_and_training"
   | "messages_and_notifications"
   | "relationship_pilot"
-  | "research_outputs";
+  | "research_outputs"
+  | "therapeutic_assessment";
+
+export type TherapeuticAssessmentStatus = "open" | "support_required" | "feedback_sent" | "withdrawn";
+export type TherapeuticAssessmentReadiness = "L0" | "L1" | "L2";
+
+export interface TherapeuticAssessmentFeedbackVersion {
+  id: string;
+  case_id: string;
+  version_no: number;
+  source: "human" | "ai_draft";
+  status: "draft" | "reviewed" | "sent";
+  observations: string[];
+  evidence: string[];
+  alternatives: string[];
+  uncertainty: string;
+  next_step: string;
+  human_discussion: string[];
+  participant_content: string;
+  reviewed_by?: string | null;
+  sent_at?: string | null;
+}
+
+export interface TherapeuticAssessmentAction {
+  id: string;
+  case_id: string;
+  action_text: string;
+  status: "chosen" | "completed" | "declined";
+  followup_note?: string | null;
+  created_at: string;
+}
+
+export interface TherapeuticAssessmentCase {
+  id: string;
+  participant_user_id: string;
+  assessment_question: string;
+  shared_scope: string[];
+  consent_status: "active" | "withdrawn";
+  status: TherapeuticAssessmentStatus;
+  risk_level: "low" | "medium" | "high";
+  complexity_scope: string;
+  readiness_level: TherapeuticAssessmentReadiness;
+  assigned_researcher_id?: string | null;
+  version: number;
+  disagreement_note?: string | null;
+  feedback_versions: TherapeuticAssessmentFeedbackVersion[];
+  actions: TherapeuticAssessmentAction[];
+  boundary_notice: string;
+  efficacy_score: null;
+  created_at: string;
+}
 
 export type PrivacyReviewAction = "start_processing" | "reject" | "return_to_pending";
 

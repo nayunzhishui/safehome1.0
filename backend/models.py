@@ -1662,6 +1662,79 @@ SCHEMA_SQL = [
         created_at TEXT NOT NULL
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_cases (
+        id TEXT PRIMARY KEY,
+        participant_user_id TEXT NOT NULL,
+        enrollment_id TEXT,
+        assessment_question TEXT NOT NULL,
+        shared_scope_json TEXT NOT NULL DEFAULT '[]',
+        consent_status TEXT NOT NULL,
+        status TEXT NOT NULL,
+        risk_level TEXT NOT NULL,
+        complexity_scope TEXT NOT NULL DEFAULT 'individual_adult_low_risk',
+        readiness_level TEXT NOT NULL DEFAULT 'L0',
+        assigned_researcher_id TEXT,
+        qualification_evidence_ref TEXT,
+        supervision_evidence_ref TEXT,
+        ethics_evidence_ref TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        disagreement_note TEXT,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        withdrawn_at TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_feedback_versions (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        version_no INTEGER NOT NULL,
+        author_id TEXT NOT NULL,
+        source TEXT NOT NULL,
+        status TEXT NOT NULL,
+        observations_json TEXT NOT NULL DEFAULT '[]',
+        evidence_json TEXT NOT NULL DEFAULT '[]',
+        alternatives_json TEXT NOT NULL DEFAULT '[]',
+        uncertainty TEXT NOT NULL,
+        next_step TEXT NOT NULL,
+        human_discussion_json TEXT NOT NULL DEFAULT '[]',
+        participant_content TEXT NOT NULL,
+        reviewed_by TEXT,
+        reviewed_at TEXT,
+        sent_at TEXT,
+        created_at TEXT NOT NULL,
+        UNIQUE(case_id, version_no)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_actions (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        participant_user_id TEXT NOT NULL,
+        feedback_version_id TEXT,
+        action_text TEXT NOT NULL,
+        status TEXT NOT NULL,
+        followup_note TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_events (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        before_version INTEGER,
+        after_version INTEGER,
+        idempotency_key TEXT NOT NULL,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL,
+        UNIQUE(actor_id, idempotency_key)
+    )
+    """,
 ]
 
 
@@ -1756,6 +1829,11 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_operations_incidents_status_created ON operations_incidents(status, severity, reported_at)",
     "CREATE INDEX IF NOT EXISTS idx_operations_notifications_due ON operations_incident_notifications(status, next_attempt_at)",
     "CREATE INDEX IF NOT EXISTS idx_operations_evidence_created ON operations_evidence_packages(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_cases_participant_status ON therapeutic_assessment_cases(participant_user_id, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_cases_assignee_status ON therapeutic_assessment_cases(assigned_researcher_id, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_feedback_case_version ON therapeutic_assessment_feedback_versions(case_id, version_no)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_actions_case_created ON therapeutic_assessment_actions(case_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_goals_client_submission ON goals(user_id, client_submission_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_diaries_client_submission ON emotion_diaries(user_id, client_submission_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_supervision_client_submission ON supervision_requests(user_id, client_submission_id)",

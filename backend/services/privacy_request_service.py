@@ -19,6 +19,7 @@ PRIVACY_HANDLING_SCOPES = {
     "messages_and_notifications",
     "relationship_pilot",
     "research_outputs",
+    "therapeutic_assessment",
 }
 REVIEW_ACTIONS = {"start_processing", "reject", "return_to_pending"}
 RESEARCH_CONSENT_TYPES = {"anonymous_research", "research_authorization"}
@@ -46,6 +47,12 @@ SCOPE_TABLES = {
         "relationship_hypothesis_feedback",
     ),
     "research_outputs": ("records", "profile_reviews"),
+    "therapeutic_assessment": (
+        "therapeutic_assessment_feedback_versions",
+        "therapeutic_assessment_events",
+        "therapeutic_assessment_actions",
+        "therapeutic_assessment_cases",
+    ),
 }
 
 DIRECT_USER_TABLES = {
@@ -547,6 +554,18 @@ def _table_count(conn, table: str, user_id: str) -> int:
         return _count(conn, "SELECT COUNT(*) AS count FROM profile_reviews WHERE profile_id IN (SELECT id FROM student_profiles WHERE user_id = ?)", (user_id,))
     if table == "relationship_research_notes":
         return _count(conn, "SELECT COUNT(*) AS count FROM relationship_research_notes WHERE enrollment_id IN (SELECT id FROM relationship_pilot_enrollments WHERE user_id = ?)", (user_id,))
+    if table in {"therapeutic_assessment_feedback_versions", "therapeutic_assessment_events"}:
+        return _count(
+            conn,
+            f"SELECT COUNT(*) AS count FROM {table} WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)",
+            (user_id,),
+        )
+    if table in {"therapeutic_assessment_actions", "therapeutic_assessment_cases"}:
+        return _count(
+            conn,
+            f"SELECT COUNT(*) AS count FROM {table} WHERE participant_user_id = ?",
+            (user_id,),
+        )
     return 0
 
 
@@ -641,6 +660,16 @@ def _delete_table_rows(conn, table: str, user_id: str) -> int:
         return conn.execute("DELETE FROM profile_reviews WHERE profile_id IN (SELECT id FROM student_profiles WHERE user_id = ?)", (user_id,)).rowcount
     if table == "relationship_research_notes":
         return conn.execute("DELETE FROM relationship_research_notes WHERE enrollment_id IN (SELECT id FROM relationship_pilot_enrollments WHERE user_id = ?)", (user_id,)).rowcount
+    if table in {"therapeutic_assessment_feedback_versions", "therapeutic_assessment_events"}:
+        return conn.execute(
+            f"DELETE FROM {table} WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)",
+            (user_id,),
+        ).rowcount
+    if table in {"therapeutic_assessment_actions", "therapeutic_assessment_cases"}:
+        return conn.execute(
+            f"DELETE FROM {table} WHERE participant_user_id = ?",
+            (user_id,),
+        ).rowcount
     return 0
 
 

@@ -102,6 +102,7 @@ export const API_ENDPOINTS = {
   researchWorkItemMetrics: "/api/research/work-items/metrics",
   researchDeliveries: "/api/research/deliveries",
   productEvents: "/api/product-events",
+  therapeuticAssessment: "/api/therapeutic-assessment",
 } as const;
 
 export const API_ERROR_CODES = {
@@ -159,6 +160,7 @@ export const PRIVACY_HANDLING_SCOPES = [
   "messages_and_notifications",
   "relationship_pilot",
   "research_outputs",
+  "therapeutic_assessment",
 ] as const;
 
 export const FEEDBACK_TAGS = [

@@ -118,6 +118,8 @@ import type {
   StudentProfileRecord,
   StudentProfileResult,
   SupervisionInput,
+  TherapeuticAssessmentCase,
+  TherapeuticAssessmentFeedbackVersion,
   SupervisionRequest,
   TrainingCard,
   TrainingPlan,
@@ -1304,6 +1306,50 @@ export class SafeHomeApiClient {
 
   createOperationsEvidencePackage(): Promise<Record<string, unknown>> {
     return this.requestData(`${API_ENDPOINTS.operationsGovernance}/evidence-packages`, { method: "POST" });
+  }
+
+  listTherapeuticAssessmentCases(): Promise<{ items: TherapeuticAssessmentCase[]; count: number; boundary_notice: string }> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases`);
+  }
+
+  getTherapeuticAssessmentCase(caseId: string): Promise<TherapeuticAssessmentCase> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}`);
+  }
+
+  createTherapeuticAssessmentFeedback(
+    caseId: string,
+    input: {
+      source: "human" | "ai_draft";
+      observations: string[];
+      evidence: string[];
+      alternatives: string[];
+      uncertainty: string;
+      next_step: string;
+      human_discussion: string[];
+      participant_content: string;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentFeedbackVersion> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/feedback-versions`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  reviewTherapeuticAssessmentFeedback(feedbackId: string, decision: "approved" | "changes_requested", idempotencyKey: string): Promise<TherapeuticAssessmentFeedbackVersion> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/feedback-versions/${encodeURIComponent(feedbackId)}/review`, {
+      method: "POST",
+      body: { decision },
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  sendTherapeuticAssessmentFeedback(feedbackId: string, idempotencyKey: string): Promise<TherapeuticAssessmentFeedbackVersion> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/feedback-versions/${encodeURIComponent(feedbackId)}/send`, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
   }
 
   private withDefaultUserParam<T extends object>(params: T): T & { user_id: string } {

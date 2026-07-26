@@ -37,6 +37,16 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path.startswith("/api/therapeutic-assessment"):
+        if "/feedback-versions/" in path and (path.endswith("/review") or path.endswith("/send")):
+            roles = ["supervisor", "admin"]
+        elif path.endswith("/readiness") or path.endswith("/assign"):
+            roles = ["supervisor", "admin"]
+        elif path.endswith("/feedback-versions"):
+            roles = ["researcher", "supervisor", "admin"]
+        else:
+            roles = ALL_AUTHENTICATED_ROLES
+        return {"mode": "role", "roles": roles, "legacy_admin_token": True, "showcase_read_bypass": False}
     if path.startswith("/api/research/analysis"):
         roles = ["researcher", "supervisor", "admin"]
         if path.endswith("/execute-synthetic") or path.endswith("/claim") or path.endswith("/complete") or path.endswith("/fail") or path.endswith("/recover") or path.endswith("/suspend") or method == "DELETE":

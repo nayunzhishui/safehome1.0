@@ -131,6 +131,10 @@ Page({
     },
   },
 
+  goTherapeuticAssessment() {
+    wx.navigateTo({ url: "/pages/therapeutic-assessment/index" });
+  },
+
   onLoad(options) {
     const isDetail = options.detail === "1";
     if (!isDetail) {

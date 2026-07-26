@@ -55,6 +55,7 @@ from routes.research_workspace import bp as research_workspace_bp
 from routes.supervision import bp as supervision_bp
 from routes.text_analysis import bp as text_analysis_bp
 from routes.training_plan import bp as training_plan_bp
+from routes.therapeutic_assessment import bp as therapeutic_assessment_bp
 from services.runtime_metrics import record_response, snapshot as runtime_metrics_snapshot
 from services.reliability_service import record_request_event
 from routes.auth_utils import AuthError, get_current_actor
@@ -266,6 +267,7 @@ def create_app(
     app.register_blueprint(supervision_bp)
     app.register_blueprint(text_analysis_bp)
     app.register_blueprint(training_plan_bp)
+    app.register_blueprint(therapeutic_assessment_bp)
     app.register_blueprint(admin_bp)
 
     @app.before_request

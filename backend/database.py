@@ -98,9 +98,13 @@ REQUIRED_HEALTH_TABLES = [
     "operations_incidents",
     "operations_incident_notifications",
     "operations_evidence_packages",
+    "therapeutic_assessment_cases",
+    "therapeutic_assessment_feedback_versions",
+    "therapeutic_assessment_actions",
+    "therapeutic_assessment_events",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_25_028"
-CURRENT_SCHEMA_NAME = "research_analysis_job_framework"
+CURRENT_SCHEMA_VERSION = "2026_07_26_029"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_collaboration"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {

@@ -492,3 +492,11 @@
 - 修改文件：AI问答配置/服务/路由/治理、shared、Web、专项测试/审计、API/安全/运营生成物及事实文档。
 - 验证：F15/T28/F17专项、内容/API/安全/运营注册表、Web typecheck/build和Chrome交互通过。
 - 后续：T36-F16；AI/心理/伦理/安全/隐私/值守/CloudBase/生产签字待人工。
+## 2026-07-26 任务36 F16
+
+- 工具/模型：Codex GPT-5.6；Product Design、前端设计、设计QA、TDD/实现流程。
+- 会话标识：当前Codex任务（可从项目交接继续）。
+- 摘要：完成治疗性评估参与者问题、共享范围、版本化反馈、人工门禁、下一小步与随访的全栈闭环。
+- 修改：后端schema/service/routes/tests/migration/audit，shared/API契约，Web工作台，小程序页，隐私策略、成长仪表盘与事实文档。
+- 验证：专项和相关回归、迁移回滚、Web typecheck/build、小程序审计、API契约通过。
+- 后续：F18数据库迁移备份恢复矩阵；F19全量验收。未记录密钥、凭据或参与者原文。

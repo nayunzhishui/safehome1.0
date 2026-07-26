@@ -128,6 +128,7 @@
     </view>
 
     <view class="growth-actions">
+      <button class="safe-outline-button" bindtap="goTherapeuticAssessment">共同理解一次关系体验</button>
       <button class="safe-primary-button growth-actions__primary" bindtap="openRecordSection">记录今天的一小步</button>
       <button class="growth-actions__secondary" bindtap="showFeedbackSection">查看阶段性反馈</button>
     </view>

@@ -115,6 +115,25 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
         report_rows = rows_to_dicts(conn.execute("SELECT id, enrollment_id, status, version, created_at FROM relationship_screening_reports WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
         long_rows = rows_to_dicts(conn.execute("SELECT * FROM relationship_longitudinal_entries WHERE user_id = ? ORDER BY event_at, created_at", (user_id,)).fetchall())
         message_rows = rows_to_dicts(conn.execute("SELECT id, source_id, title, body, message_type, created_at FROM messages WHERE user_id = ? AND message_type = 'relationship_stage_feedback' ORDER BY created_at", (user_id,)).fetchall())
+        therapeutic_rows = rows_to_dicts(
+            conn.execute(
+                """
+                SELECT c.id, c.assessment_question, c.created_at, f.participant_content,
+                       f.sent_at, f.version_no
+                FROM therapeutic_assessment_cases c
+                JOIN therapeutic_assessment_feedback_versions f ON f.case_id = c.id
+                WHERE c.participant_user_id = ? AND f.status = 'sent'
+                ORDER BY f.sent_at, f.version_no
+                """,
+                (user_id,),
+            ).fetchall()
+        )
+        therapeutic_actions = rows_to_dicts(
+            conn.execute(
+                "SELECT id, case_id, action_text, status, followup_note, created_at FROM therapeutic_assessment_actions WHERE participant_user_id = ? ORDER BY created_at",
+                (user_id,),
+            ).fetchall()
+        )
         if enrollment_rows:
             write_audit_log(conn, "relationship_growth_viewed", actor["id"], "relationship_growth", user_id, {"rounds": len(enrollment_rows)})
             conn.commit()
@@ -144,6 +163,22 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
                 curves.setdefault(key, []).append({"round": len(curves.get(key, [])) + 1, "value": measures[key], "created_at": row.get("event_at") or row["created_at"]})
     for message in message_rows:
         timeline.append({"id": message["id"], "type": "researcher_feedback", "title": message["title"], "created_at": message["created_at"], "summary": message.get("body") or "研究者已发送阶段性反馈"})
+    for item in therapeutic_rows:
+        timeline.append({
+            "id": item["id"],
+            "type": "therapeutic_assessment",
+            "title": "共同理解反馈",
+            "created_at": item.get("sent_at") or item["created_at"],
+            "summary": f"第{item['version_no']}版反馈已共同查看",
+        })
+    for item in therapeutic_actions:
+        timeline.append({
+            "id": item["id"],
+            "type": "therapeutic_action",
+            "title": "共同选择的小行动",
+            "created_at": item["created_at"],
+            "summary": "已复盘一个小行动" if item["status"] == "completed" else "已选择一个低压力小行动",
+        })
     timeline.sort(key=lambda row: row.get("created_at") or "")
     changes = []
     for key, points in curves.items():
@@ -158,6 +193,19 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
         "important_events": [item for item in timeline if item["type"] in {"key_event", "weekly_supplement", "project_task"}][-5:],
         "self_narratives": [{"entry_type": row["entry_type"], "created_at": row.get("event_at") or row["created_at"], "content": json_loads(row.get("narratives_json"), {})} for row in long_rows][-5:],
         "researcher_confirmations": [{"id": row["id"], "title": row["title"], "created_at": row["created_at"]} for row in message_rows][-5:],
+        "therapeutic_discussion_clues": [
+            {
+                "id": row["id"],
+                "question": row["assessment_question"],
+                "feedback_version": row["version_no"],
+                "created_at": row.get("sent_at") or row["created_at"],
+            }
+            for row in therapeutic_rows
+        ][-5:],
+        "therapeutic_action_clues": [
+            {"id": row["id"], "action_text": row["action_text"], "status": row["status"], "created_at": row["created_at"]}
+            for row in therapeutic_actions
+        ][-5:],
         "next_step": "选择一个用户愿意、低压力且可退出的小行动，并在下一次记录中复盘。",
         "four_layer_profile": four_layer,
         "boundary_notice": "成长报告只记录变化和探索线索，不构成诊断或关系能力评价，也不构成疗效证明。",

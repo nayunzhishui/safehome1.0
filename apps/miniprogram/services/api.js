@@ -135,6 +135,7 @@ const API_ENDPOINTS = {
   supervision: "/api/supervision",
   adminExport: "/api/admin/export",
   relationshipPilot: "/api/relationship-pilot",
+  therapeuticAssessment: "/api/therapeutic-assessment",
   researchAccess: "/api/research/access",
   researchAnalysis: "/api/research/analysis",
   productEvents: "/api/product-events",
@@ -1127,6 +1128,46 @@ function createSafeHomeApi(options = {}) {
 
     getRelationshipGrowth(params = {}) {
       return request(`${API_ENDPOINTS.relationshipPilot}/growth${queryString(params)}`, { requiresAuth: true });
+    },
+
+    listTherapeuticAssessmentCases() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases`, { requiresAuth: true });
+    },
+
+    createTherapeuticAssessmentCase(data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    updateTherapeuticAssessmentScope(caseId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/scope`, {
+        method: "PATCH",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    transitionTherapeuticAssessment(caseId, action, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/${action}`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    createTherapeuticAssessmentAction(caseId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/actions`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
     },
 
     trackProductEvent(eventName, metadata = {}, clientEventId = "") {

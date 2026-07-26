@@ -4086,3 +4086,20 @@ ul {
   .errorDiagnosticCard { align-items: stretch; flex-direction: column; }
   .errorDiagnosticActions button { flex: 1; }
 }
+.taWorkspaceGrid { display: grid; grid-template-columns: minmax(240px, .72fr) minmax(0, 1.6fr); gap: 20px; align-items: start; }
+.taCaseList, .taVersionList { display: grid; gap: 12px; }
+.taCaseButton { width: 100%; min-height: 72px; margin: 0; padding: 14px 16px; border: 1px solid var(--border, #d9ded9); border-radius: 16px; background: #fff; color: var(--ink, #1f2e29); text-align: left; }
+.taCaseButton strong, .taCaseButton span { display: block; }
+.taCaseButton span { margin-top: 6px; color: var(--muted, #66716c); font-size: 13px; }
+.taCaseButton.active { border-color: #4e7c6b; background: #f1f7f3; box-shadow: 0 8px 22px rgba(50, 91, 74, .10); }
+.taFormGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 18px 0; }
+.taFormGrid label { display: grid; gap: 7px; color: #31433c; font-weight: 700; }
+.taFormGrid textarea { box-sizing: border-box; width: 100%; min-height: 100px; padding: 12px; border: 1px solid #d8dfdb; border-radius: 14px; resize: vertical; }
+.taWideField { grid-column: 1 / -1; }
+.taVersionList { margin-top: 20px; }
+.taVersionCard { padding: 16px; border: 1px solid #e0e5e1; border-radius: 16px; background: #fbfcfa; }
+.taVersionCard > div:first-child { display: flex; justify-content: space-between; gap: 12px; }
+.taVersionCard p { line-height: 1.65; }
+@media (max-width: 920px) { .therapeuticAssessmentWorkbench .summaryGrid, .taWorkspaceGrid, .taFormGrid { grid-template-columns: 1fr; } .taWideField { grid-column: auto; } }
+.therapeuticAssessmentWorkbench .summaryGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.therapeuticAssessmentWorkbench .metricCard::after { display: none; }

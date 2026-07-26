@@ -2224,3 +2224,16 @@ relationship_initiation_intention_action
 - `GET /api/ai-qa/config` 新增 `provider_policy` 与保留策略：批准供应商仅fake，外部供应商关闭，返回超时、重试、熔断、预算和合成保留天数。
 - 成功回答新增 `uncertainty`，引用仍携带内容/发布版本和hash；回答不能写入正式参与者反馈。
 - `POST /api/ai-qa/retention/purge` 仅管理员可用；默认dry-run，实际清理必须提交 `dry_run=false` 和 `confirm_synthetic_purge=true`，且只清理过期合成沙盒内容。
+## 任务36 F16：治疗性评估协作接口
+
+统一前缀：`/api/therapeutic-assessment`。所有接口需要登录，所有写接口需要`Idempotency-Key`。
+
+- `GET/POST /cases`：按角色对象范围读取或由参与者创建协作问题。
+- `GET /cases/<id>`、`PATCH /cases/<id>/scope`：读取详情、按`expected_version`修改共享范围。
+- `POST /cases/<id>/disagree|withdraw`：参与者表达不同意见或撤回。
+- `POST /cases/<id>/assign|readiness`：督导/管理员分配对象并登记人工资格、督导、伦理证据引用。
+- `POST /cases/<id>/feedback-versions`：正式研究角色保存结构化人工或AI草稿。
+- `POST /feedback-versions/<id>/review|send`：督导/管理员人工复核和发送；L0/L1、高风险、撤回或复杂范围被服务端阻断。
+- `POST /cases/<id>/actions`、`PATCH /actions/<id>`：参与者选择、完成或拒绝下一小步并保存随访。
+
+参与者永远看不到草稿；成长数据不返回疗效分数。临时展示权限不参与这些写操作的正式鉴权。
