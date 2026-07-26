@@ -2212,3 +2212,9 @@ relationship_initiation_intention_action
 - `GET /api/research/analysis/jobs`：除任务字段外，成功任务会附带 researcher-only 工件及覆盖率、未知率、样本量和质量状态。
 - 当前 `real_participant_processing_enabled=false`、`production_training_enabled=false`；T35 人工门禁未签前，真实参与者来源固定返回 `real_participant_analysis_blocked`。
 - 小样本不返回类别分布或图节点/边；家庭拓扑不推断关系质量、潜意识或家庭病理。
+### T36-F17 可靠性与安全统一响应补充
+
+- `GET /api/reliability/workbench` 新增 `task36_integration`：只返回六条关键链路的引擎、幂等、并发、重试、死信、恢复、对象范围和删除范围等元数据。
+- `GET /api/security/workbench` 同步返回相同的 `task36_integration`，用于核对生产默认关闭、外部门禁和敏感证据禁入规则。
+- `GET /api/research/analysis/catalog` 新增 `resilience_summary`：在线分析的幂等、租约并发、失败恢复和派生删除摘要。
+- 以上响应不包含参与者原文、手机号、OpenID、token、密码、Cookie、请求/响应正文或内部堆栈；也不代表生产批准。

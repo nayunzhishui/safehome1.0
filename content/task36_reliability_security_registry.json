@@ -1,0 +1,136 @@
+{
+  "schema": "safehome.task36.reliability_security.v1",
+  "version": "2026-07-26-t36-f17-v1",
+  "status": "engineering_complete_local_external_gates_pending",
+  "production_defaults": {
+    "research_analysis_execution": false,
+    "ai_qa_external_provider": false,
+    "therapeutic_assessment_delivery": false,
+    "public_tunnel": false,
+    "automatic_release_approval": false
+  },
+  "journeys": [
+    {
+      "id": "messages",
+      "engine": "notification_deliveries+reliable_jobs",
+      "idempotency": true,
+      "concurrency": "lease",
+      "retry": "exponential_backoff",
+      "dead_letter": true,
+      "manual_recovery": true,
+      "object_scope": "self_or_assignment",
+      "deletion_scope": "messages_and_notifications"
+    },
+    {
+      "id": "checkins",
+      "engine": "transactional_business_write",
+      "idempotency": true,
+      "concurrency": "unique_business_key",
+      "retry": "client_safe_retry",
+      "dead_letter": false,
+      "manual_recovery": false,
+      "object_scope": "self",
+      "deletion_scope": "feedback_and_training"
+    },
+    {
+      "id": "login",
+      "engine": "identity_lifecycle",
+      "idempotency": true,
+      "concurrency": "identity_unique_key",
+      "retry": "bounded_provider_retry",
+      "dead_letter": false,
+      "manual_recovery": true,
+      "object_scope": "self",
+      "deletion_scope": "account_identity"
+    },
+    {
+      "id": "research_analysis",
+      "engine": "research_analysis_jobs",
+      "idempotency": true,
+      "concurrency": "lease_holder_and_state_machine",
+      "retry": "bounded_backoff",
+      "dead_letter": true,
+      "manual_recovery": true,
+      "object_scope": "assignment_or_creator",
+      "deletion_scope": "derived_artifact_tombstone"
+    },
+    {
+      "id": "ai_qa",
+      "engine": "ai_qa_sessions+reliable_jobs",
+      "idempotency": true,
+      "concurrency": "session_version",
+      "retry": "provider_adapter_bounded_retry",
+      "dead_letter": true,
+      "manual_recovery": true,
+      "object_scope": "research_role_own_session",
+      "deletion_scope": "messages_and_notifications"
+    },
+    {
+      "id": "therapeutic_assessment",
+      "engine": "versioned_human_review",
+      "idempotency": true,
+      "concurrency": "expected_version",
+      "retry": "review_queue_safe_retry",
+      "dead_letter": true,
+      "manual_recovery": true,
+      "object_scope": "self_or_assignment",
+      "deletion_scope": "therapeutic_assessment"
+    }
+  ],
+  "alert_rules": [
+    {
+      "id": "anomalous_auth_failures",
+      "source": "observability_events",
+      "condition": "auth_401_count>=10_per_actor_window",
+      "severity": "P1",
+      "response": "review_session_and_disable_if_confirmed"
+    },
+    {
+      "id": "bulk_read",
+      "source": "audit_logs",
+      "condition": "read_count>=100_per_actor_window",
+      "severity": "P1",
+      "response": "freeze_export_and_review_scope"
+    },
+    {
+      "id": "cross_object_denials",
+      "source": "security_events",
+      "condition": "object_scope_denied>=5_per_actor_window",
+      "severity": "P0",
+      "response": "disable_session_and_review_audit"
+    },
+    {
+      "id": "tracked_secret_or_sensitive_artifact",
+      "source": "local_redacted_scan",
+      "condition": "forbidden_pattern_count>0",
+      "severity": "P0",
+      "response": "block_package_and_rotate_outside_automation"
+    }
+  ],
+  "forbidden_evidence_fields": [
+    "raw_text",
+    "participant_text",
+    "phone_number",
+    "openid",
+    "token",
+    "password",
+    "cookie",
+    "authorization",
+    "stack_trace",
+    "request_body",
+    "response_body"
+  ],
+  "external_gates": [
+    "production_credential_rotation",
+    "public_tunnel_approval",
+    "cloudbase_observation",
+    "mysql_restore",
+    "wechat_devtools",
+    "real_device",
+    "security_privacy_ethics_review",
+    "production_release_approval"
+  ],
+  "formal_permission_acceptance_passed": false,
+  "temporary_showcase_exception_is_evidence": false,
+  "production_release_approved": false
+}

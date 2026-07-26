@@ -170,7 +170,8 @@ Page({
     developmentFullAccess: false,
     capabilityScope: null,
       analysisJobs: [],
-      analysisCatalog: null,
+    analysisCatalog: null,
+    analysisResilience: null,
       analysisLoading: false,
     analysisError: "",
   },
@@ -272,6 +273,7 @@ Page({
           suppressed: Boolean(item.artifact && item.artifact.metrics && item.artifact.metrics.result && item.artifact.metrics.result.suppressed),
         })),
         analysisCatalog: catalog,
+        analysisResilience: catalog.resilience_summary || null,
       });
     } catch (error) {
       this.setData({ analysisError: error.message || "在线分析任务暂时无法读取。" });

@@ -192,6 +192,10 @@
         <text>仅项目自有合成数据 · 真实参与者分析关闭</text>
         <text>目录 {{analysisCatalog.catalog_version}}</text>
       </view>
+      <view wx:if="{{analysisResilience}}" class="analysis-gate">
+        <text>幂等执行 · 租约并发 · 失败可恢复</text>
+        <text>派生结果可受控删除 · 生产发布未批准</text>
+      </view>
       <view wx:if="{{analysisLoading}}" class="empty-state"><text class="state-copy">正在读取任务摘要…</text></view>
       <view wx:elif="{{analysisError}}" class="error-card">
         <text class="error-title">任务暂时没有读取成功</text>

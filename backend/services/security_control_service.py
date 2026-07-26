@@ -14,6 +14,7 @@ from scripts.scan_task31_security import run_scan
 
 ROOT = Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "content" / "security_privacy_abuse_registry.json"
+TASK36_REGISTRY_PATH = ROOT / "content" / "task36_reliability_security_registry.json"
 ALLOWED_ACCOUNT_STATUSES = {"active", "disabled"}
 ALLOWED_REASON_CODES = {"security_review", "role_change", "credential_rotation", "account_recovery", "owner_request"}
 
@@ -28,6 +29,10 @@ class SecurityControlError(ValueError):
 
 def _registry() -> dict:
     return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+
+
+def _task36_registry() -> dict:
+    return json.loads(TASK36_REGISTRY_PATH.read_text(encoding="utf-8"))
 
 
 def _registry_hash(payload: dict) -> str:
@@ -107,6 +112,7 @@ def workbench() -> dict:
         )
     return {
         "registry": registry,
+        "task36_integration": _task36_registry(),
         "registry_hash": _registry_hash(registry),
         "runs": [_expand_json(item) for item in runs],
         "events": [_expand_json(item) for item in events],

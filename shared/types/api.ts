@@ -2449,6 +2449,7 @@ export interface ReliabilitySloSnapshot {
 
 export interface ReliabilityWorkbench {
   registry: ReliabilityRegistry;
+  task36_integration: Task36ReliabilitySecurityRegistry;
   recent_events: Array<Record<string, unknown>>;
   jobs: ReliabilityJob[];
   feature_flags: ReliabilityFeatureFlag[];
@@ -2457,6 +2458,32 @@ export interface ReliabilityWorkbench {
   evidence_packages: Array<Record<string, unknown>>;
   production_slo_frozen: false;
   gradual_release_enabled: false;
+}
+
+export interface Task36ReliabilitySecurityJourney {
+  id: string;
+  engine: string;
+  idempotency: boolean;
+  concurrency: string;
+  retry: string;
+  dead_letter: boolean;
+  manual_recovery: boolean;
+  object_scope: string;
+  deletion_scope: string;
+}
+
+export interface Task36ReliabilitySecurityRegistry {
+  schema: "safehome.task36.reliability_security.v1";
+  version: string;
+  status: string;
+  production_defaults: Record<string, boolean>;
+  journeys: Task36ReliabilitySecurityJourney[];
+  alert_rules: Array<Record<string, string>>;
+  forbidden_evidence_fields: string[];
+  external_gates: string[];
+  formal_permission_acceptance_passed: false;
+  temporary_showcase_exception_is_evidence: false;
+  production_release_approved: false;
 }
 
 export type UXGateStatus = "passed" | "failed" | "manual_required" | "not_run";
@@ -2768,5 +2795,14 @@ export interface ResearchAnalysisCatalog {
   production_training_enabled: false;
   real_participant_processing_enabled: false;
   human_rights_review_status: "pending";
+  resilience_summary: {
+    idempotency: boolean;
+    concurrency: string;
+    retry: string;
+    dead_letter: boolean;
+    manual_recovery: boolean;
+    derived_deletion: string;
+    production_release_approved: false;
+  };
   boundary_notice: string;
 }

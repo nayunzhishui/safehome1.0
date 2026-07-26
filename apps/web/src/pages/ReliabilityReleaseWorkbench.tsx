@@ -88,6 +88,14 @@ export function ReliabilityReleaseWorkbench() {
       </div>
 
       <div className="reliabilityColumns">
+        <section className="panel" aria-label="任务36韧性闭环">
+          <div className="panelHeading"><div><span className="panelKicker">T36 · 六条受控链路</span><h2>韧性与隐私闭环</h2></div><span>{data?.task36_integration.version || "读取中"}</span></div>
+          <div className="reliableJobList">
+            {(data?.task36_integration.journeys || []).map((journey) => <article key={journey.id}><div><strong>{journey.id}</strong><span className="jobState jobState-completed">{journey.dead_letter ? "可恢复" : "事务保护"}</span></div><p>{journey.engine} · {journey.concurrency}</p><small>删除范围：{journey.deletion_scope}</small></article>)}
+          </div>
+          <p className="boundaryCallout">生产开关保持关闭；临时展示越权、测试云通过或本地证据都不能替代正式权限与发布批准。</p>
+        </section>
+
         <section className="panel" aria-label="功能开关">
           <div className="panelHeading"><div><span className="panelKicker">版本化、按角色、可回滚</span><h2>功能开关</h2></div></div>
           <div className="featureFlagList">{(data?.feature_flags || []).map((flag) => <article key={flag.flag_name}><div><strong>{flag.flag_name}</strong><span>{flag.enabled ? "开启" : "关闭"}</span></div><p>v{flag.version} · {flag.rollout_percent}% · {flag.role_scope.join("、")}</p></article>)}</div>

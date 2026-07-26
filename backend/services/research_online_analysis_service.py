@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter
+from pathlib import Path
 
 from flask import current_app
 
@@ -23,6 +24,7 @@ from services.research_analysis_service import (
 
 
 CATALOG_VERSION = "2026-07-25-t36-f14-v1"
+TASK36_RESILIENCE_PATH = Path(__file__).resolve().parents[2] / "content" / "task36_reliability_security_registry.json"
 FIXTURE_ID = "safehome_synthetic_affect_240_v1"
 ALGORITHM_VERSIONS = {
     "affect_aggregate": "affect-rules-synthetic-v1",
@@ -94,6 +96,8 @@ def get_catalog(actor: dict) -> dict:
         }
         for analysis_type, version in ALGORITHM_VERSIONS.items()
     ]
+    resilience = json.loads(TASK36_RESILIENCE_PATH.read_text(encoding="utf-8"))
+    analysis_journey = next(item for item in resilience["journeys"] if item["id"] == "research_analysis")
     return {
         "catalog_version": CATALOG_VERSION,
         "fixture_id": FIXTURE_ID,
@@ -102,6 +106,15 @@ def get_catalog(actor: dict) -> dict:
         "production_training_enabled": False,
         "real_participant_processing_enabled": False,
         "human_rights_review_status": "pending",
+        "resilience_summary": {
+            "idempotency": analysis_journey["idempotency"],
+            "concurrency": analysis_journey["concurrency"],
+            "retry": analysis_journey["retry"],
+            "dead_letter": analysis_journey["dead_letter"],
+            "manual_recovery": analysis_journey["manual_recovery"],
+            "derived_deletion": analysis_journey["deletion_scope"],
+            "production_release_approved": resilience["production_release_approved"],
+        },
         "boundary_notice": BOUNDARY_NOTICE,
     }
 

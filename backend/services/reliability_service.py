@@ -15,6 +15,7 @@ from database import get_connection, json_dumps, json_loads, new_id, now_iso, ro
 
 ROOT = Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "content" / "reliability_release_registry.json"
+TASK36_REGISTRY_PATH = ROOT / "content" / "task36_reliability_security_registry.json"
 JOB_TYPES = {"notification_delivery", "privacy_execution", "ai_evaluation", "offline_benchmark"}
 JOB_STATUSES = {"pending", "leased", "retrying", "completed", "dead_letter"}
 FAULT_SCENARIOS = {"content_missing", "database_timeout", "provider_failure", "token_invalidated", "duplicate_message", "artifact_corrupted"}
@@ -33,6 +34,10 @@ class ReliabilityError(ValueError):
 
 def _registry() -> dict:
     return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+
+
+def _task36_registry() -> dict:
+    return json.loads(TASK36_REGISTRY_PATH.read_text(encoding="utf-8"))
 
 
 def _hash(payload: object) -> str:
@@ -141,6 +146,7 @@ def workbench() -> dict:
         conn.commit()
     return {
         "registry": _registry(),
+        "task36_integration": _task36_registry(),
         "recent_events": [_expand(item) for item in events],
         "jobs": [_expand(item) for item in jobs],
         "feature_flags": flags,
