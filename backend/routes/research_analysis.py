@@ -25,6 +25,7 @@ from services.research_analysis_service import (
     recover_job,
     suspend_job,
 )
+from services.research_online_analysis_service import execute_synthetic_job, get_catalog
 
 
 bp = Blueprint("research_analysis", __name__, url_prefix="/api/research/analysis")
@@ -120,6 +121,12 @@ def post_suspend(job_id: str):
     return error or _respond(suspend_job, actor, job_id, request.get_json(silent=True) or {})
 
 
+@bp.post("/jobs/<job_id>/execute-synthetic")
+def post_execute_synthetic(job_id: str):
+    actor, error = _actor()
+    return error or _respond(execute_synthetic_job, actor, job_id)
+
+
 @bp.get("/artifacts/<artifact_id>")
 def get_artifact_route(artifact_id: str):
     actor, error = _actor()
@@ -135,3 +142,7 @@ def delete_artifact_route(artifact_id: str):
         artifact_id,
         request.get_json(silent=True) or {},
     )
+@bp.get("/catalog")
+def get_catalog_route():
+    actor, error = _actor()
+    return error or _respond(get_catalog, actor)

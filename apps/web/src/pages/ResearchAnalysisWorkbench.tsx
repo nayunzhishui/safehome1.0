@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { ResearchAnalysisJob, ResearchAnalysisJobStatus } from "../../../../shared/types/api";
+import type {
+  ResearchAnalysisCatalog,
+  ResearchAnalysisJob,
+  ResearchAnalysisJobStatus,
+} from "../../../../shared/types/api";
 import { safeHomeApi, SafeHomeApiError } from "../services/safehomeApi";
 
 
@@ -22,6 +26,7 @@ const ANALYSIS_LABELS: Record<string, string> = {
 
 export function ResearchAnalysisWorkbench() {
   const [items, setItems] = useState<ResearchAnalysisJob[]>([]);
+  const [catalog, setCatalog] = useState<ResearchAnalysisCatalog | null>(null);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -31,9 +36,13 @@ export function ResearchAnalysisWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const result = await safeHomeApi.listResearchAnalysisJobs(status);
+      const [result, catalogResult] = await Promise.all([
+        safeHomeApi.listResearchAnalysisJobs(status),
+        safeHomeApi.getResearchAnalysisCatalog(),
+      ]);
       setItems(result.items);
       setBoundary(result.boundary_notice);
+      setCatalog(catalogResult);
     } catch (caught) {
       setError(caught instanceof SafeHomeApiError ? `${caught.message}（请求编号：${caught.requestId || "未返回"}）` : "在线分析任务暂时无法读取。");
     } finally {
@@ -72,6 +81,26 @@ export function ResearchAnalysisWorkbench() {
         <article className="metricCard"><span>冻结或终止</span><strong>{counts.frozen}</strong><small>撤回、过期或人工停止</small></article>
       </div>
 
+      <section className="panel analysisCatalog" aria-labelledby="analysis-catalog-title">
+        <div className="sectionHeader">
+          <div>
+            <p className="eyebrow">版本与数据门禁</p>
+            <h2 id="analysis-catalog-title">当前可运行管线</h2>
+          </div>
+          <span className="statusPill status-suspended">仅合成数据</span>
+        </div>
+        <div className="analysisPipelineGrid">
+          {(catalog?.pipelines || []).map((pipeline) => (
+            <article key={pipeline.analysis_type} className="analysisPipelineCard">
+              <strong>{pipeline.label}</strong>
+              <span>{pipeline.analysis_version}</span>
+              <small>最小样本 {pipeline.minimum_sample} · 真实参与者处理关闭</small>
+            </article>
+          ))}
+        </div>
+        <p className="fieldHint">T35 数据用途、伦理和模型权利门禁未签署；外部数据未下载，生产训练保持关闭。</p>
+      </section>
+
       <section className="panel" aria-labelledby="analysis-queue-title">
         <div className="sectionHeader">
           <div><p className="eyebrow">按状态查看</p><h2 id="analysis-queue-title">任务队列</h2></div>
@@ -101,11 +130,14 @@ export function ResearchAnalysisWorkbench() {
                 <div><dt>创建时间</dt><dd>{new Date(item.created_at).toLocaleString("zh-CN")}</dd></div>
               </dl>
               {item.artifact ? (
-                <div className="analysisMetrics" aria-label="聚合结果质量">
-                  <span>覆盖率 {(item.artifact.metrics.coverage_rate * 100).toFixed(0)}%</span>
-                  <span>未知率 {(item.artifact.metrics.unknown_rate * 100).toFixed(0)}%</span>
-                  <span>样本 {item.artifact.metrics.sample_size}</span>
-                </div>
+                <>
+                  <div className="analysisMetrics" aria-label="聚合结果质量">
+                    <span>覆盖率 {(item.artifact.metrics.coverage_rate * 100).toFixed(0)}%</span>
+                    <span>未知率 {(item.artifact.metrics.unknown_rate * 100).toFixed(0)}%</span>
+                    <span>样本 {item.artifact.metrics.sample_size}</span>
+                  </div>
+                  <AnalysisResultSummary result={item.artifact.metrics.result} />
+                </>
               ) : null}
               {item.last_error_code ? <p className="fieldHint">错误代码：{item.last_error_code}</p> : null}
             </article>
@@ -118,5 +150,26 @@ export function ResearchAnalysisWorkbench() {
         <p>创建快照和任务属于受控写操作；开发全权限展示不能替代正式分配、授权与审计。</p>
       </aside>
     </section>
+  );
+}
+
+function AnalysisResultSummary({ result }: { result?: Record<string, unknown> }) {
+  if (!result) return null;
+  if (result.suppressed === true) {
+    return <p className="analysisSuppressed">样本量低于展示阈值，图和类别分布已抑制。</p>;
+  }
+  const categories = Array.isArray(result.categories) ? result.categories : [];
+  const nodes = Array.isArray(result.nodes) ? result.nodes : [];
+  const edges = Array.isArray(result.edges) ? result.edges : [];
+  return (
+    <div className="analysisResultSummary" aria-label="聚合分析摘要">
+      {categories.slice(0, 6).map((item, index) => {
+        const row = item as { key?: string; count?: number };
+        return <span key={`${row.key || "category"}-${index}`}>{row.key || "未映射"} {Number(row.count || 0)}</span>;
+      })}
+      {nodes.length ? <span>节点 {nodes.length}</span> : null}
+      {edges.length ? <span>边 {edges.length}</span> : null}
+      {result.inference_disabled === true ? <span>关系推断已关闭</span> : null}
+    </div>
   );
 }

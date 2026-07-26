@@ -188,6 +188,10 @@
         <button class="icon-refresh" bindtap="loadAnalysisJobs">刷新</button>
       </view>
       <text class="detail-line">移动端只查看任务状态和聚合质量；创建快照、执行器恢复与派生数据删除继续在受控 Web 流程完成。</text>
+      <view wx:if="{{analysisCatalog}}" class="analysis-gate">
+        <text>仅项目自有合成数据 · 真实参与者分析关闭</text>
+        <text>目录 {{analysisCatalog.catalog_version}}</text>
+      </view>
       <view wx:if="{{analysisLoading}}" class="empty-state"><text class="state-copy">正在读取任务摘要…</text></view>
       <view wx:elif="{{analysisError}}" class="error-card">
         <text class="error-title">任务暂时没有读取成功</text>
@@ -207,6 +211,8 @@
           </view>
           <text class="participant-meta">版本 {{item.analysis_version}} · {{item.createdText}}</text>
           <text class="participant-meta">尝试 {{item.attempt_count}} / {{item.max_attempts}} · 影子模式</text>
+          <text wx:if="{{item.qualityText}}" class="analysis-quality">{{item.qualityText}}</text>
+          <text wx:if="{{item.suppressed}}" class="analysis-suppressed">小样本已抑制，不展示图形。</text>
         </view>
       </view>
       <text class="boundary-line">结果只作为聚合研究线索，不构成诊断、标签或个体自动决策。</text>

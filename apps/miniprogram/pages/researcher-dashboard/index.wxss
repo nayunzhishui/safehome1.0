@@ -467,3 +467,28 @@
 .delivery-preview-body { white-space: pre-wrap; }
 .delivery-boundary { color: var(--safe-muted); font-size: 20rpx; line-height: 1.55; }
 .delivery-receipt { padding: 16rpx 20rpx; border-radius: 18rpx; background: var(--safe-primary-soft); color: var(--safe-primary-deep); font-size: 21rpx; line-height: 1.5; }
+
+.analysis-gate {
+  display: grid;
+  gap: 6rpx;
+  margin: 18rpx 0;
+  padding: 18rpx 20rpx;
+  border-radius: 18rpx;
+  background: var(--safe-orange-soft);
+  color: var(--safe-text);
+  font-size: 21rpx;
+  line-height: 1.5;
+}
+
+.analysis-quality {
+  margin-top: 10rpx;
+  color: var(--safe-primary-deep);
+  font-size: 21rpx;
+  font-weight: 700;
+}
+
+.analysis-suppressed {
+  margin-top: 8rpx;
+  color: #805b28;
+  font-size: 20rpx;
+}

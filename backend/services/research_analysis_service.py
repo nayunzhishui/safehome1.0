@@ -23,10 +23,24 @@ from services.research_access_service import assert_capability, require_object_s
 
 ANALYSIS_TYPES = {"affect_aggregate", "semantic_network", "family_topology"}
 JOB_STATUSES = {"queued", "running", "succeeded", "failed", "canceled", "expired", "suspended"}
-SOURCE_TYPES = {"emotion_diary", "assessment_result", "relationship_task", "checkin", "message_feedback"}
+SOURCE_TYPES = {
+    "emotion_diary",
+    "assessment_result",
+    "relationship_task",
+    "checkin",
+    "message_feedback",
+    "synthetic_fixture",
+}
 RECOVERY_REASONS = {"dependency_recovered", "resource_reenabled", "authorization_restored", "operator_retry"}
 DELETION_REASONS = {"participant_withdrawal", "retention_expired", "correction", "model_retired"}
-PARAMETER_KEYS = {"window_days", "minimum_count", "aggregation_level", "dimension_ids", "include_unknown"}
+PARAMETER_KEYS = {
+    "window_days",
+    "minimum_count",
+    "aggregation_level",
+    "dimension_ids",
+    "include_unknown",
+    "synthetic_sample_size",
+}
 METRIC_KEYS = {"coverage_rate", "unknown_rate", "sample_size", "quality_status", "result", "warnings"}
 FORBIDDEN_KEYS = {"text", "raw_text", "content", "body", "prompt", "answer", "diagnosis", "label"}
 BOUNDARY_NOTICE = "结果仅供授权研究者查看，是聚合研究线索，不构成诊断、人格标签、治疗结论或个体自动决策。"
@@ -403,7 +417,15 @@ def list_jobs(actor: dict, status: str = "", limit: int = 50) -> dict:
                 "SELECT * FROM research_analysis_jobs ORDER BY created_at DESC LIMIT ?",
                 (limit,),
             ).fetchall()
-        items = [_expand(row_to_dict(row)) for row in rows]
+        items = []
+        for row in rows:
+            item = _expand(row_to_dict(row))
+            artifact = conn.execute(
+                "SELECT * FROM research_analysis_artifacts WHERE job_id = ?",
+                (item["id"],),
+            ).fetchone()
+            item["artifact"] = _expand(row_to_dict(artifact))
+            items.append(item)
     return {"items": items, "count": len(items), "raw_text_included": False, "boundary_notice": BOUNDARY_NOTICE}
 
 

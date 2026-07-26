@@ -2746,3 +2746,27 @@ export interface ResearchAnalysisJobList {
   raw_text_included: false;
   boundary_notice: string;
 }
+
+export interface ResearchAnalysisCatalogPipeline {
+  analysis_type: ResearchAnalysisType;
+  label: string;
+  analysis_version: string;
+  resource_hash: string;
+  data_mode: "project_owned_synthetic_only";
+  real_participant_processing_enabled: false;
+  minimum_sample: number;
+  maximum_graph_nodes: number;
+  maximum_graph_edges: number;
+  status: "engineering_shadow_ready";
+}
+
+export interface ResearchAnalysisCatalog {
+  catalog_version: string;
+  fixture_id: string;
+  pipelines: ResearchAnalysisCatalogPipeline[];
+  external_datasets_downloaded: false;
+  production_training_enabled: false;
+  real_participant_processing_enabled: false;
+  human_rights_review_status: "pending";
+  boundary_notice: string;
+}

@@ -11760,8 +11760,6 @@ export const GENERATED_API_ENDPOINTS = [
     "access": {
       "mode": "role",
       "roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "legacy_admin_token": true,
@@ -11824,7 +11822,7 @@ export const GENERATED_API_ENDPOINTS = [
         "admin"
       ],
       "legacy_admin_token": true,
-      "showcase_read_bypass": false
+      "showcase_read_bypass": true
     },
     "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
     "request": {
@@ -11870,6 +11868,63 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "research_analysis.get_catalog_route.get",
+    "method": "GET",
+    "path": "/api/research/analysis/catalog",
+    "handler": "research_analysis.get_catalog_route",
+    "module": "routes.research_analysis",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": true
+    },
+    "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.research_analysis.get_catalog_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "research_analysis.get_jobs.get",
     "method": "GET",
     "path": "/api/research/analysis/jobs",
@@ -11883,7 +11938,7 @@ export const GENERATED_API_ENDPOINTS = [
         "admin"
       ],
       "legacy_admin_token": true,
-      "showcase_read_bypass": false
+      "showcase_read_bypass": true
     },
     "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
     "request": {
@@ -12002,7 +12057,7 @@ export const GENERATED_API_ENDPOINTS = [
         "admin"
       ],
       "legacy_admin_token": true,
-      "showcase_read_bypass": false
+      "showcase_read_bypass": true
     },
     "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
     "request": {
@@ -12115,8 +12170,6 @@ export const GENERATED_API_ENDPOINTS = [
     "access": {
       "mode": "role",
       "roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "legacy_admin_token": true,
@@ -12174,8 +12227,6 @@ export const GENERATED_API_ENDPOINTS = [
     "access": {
       "mode": "role",
       "roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "legacy_admin_token": true,
@@ -12225,6 +12276,63 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "research_analysis.post_execute_synthetic.post",
+    "method": "POST",
+    "path": "/api/research/analysis/jobs/<job_id>/execute-synthetic",
+    "handler": "research_analysis.post_execute_synthetic",
+    "module": "routes.research_analysis",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "job_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.research_analysis.post_execute_synthetic.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "research_analysis.post_fail.post",
     "method": "POST",
     "path": "/api/research/analysis/jobs/<job_id>/fail",
@@ -12233,8 +12341,6 @@ export const GENERATED_API_ENDPOINTS = [
     "access": {
       "mode": "role",
       "roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "legacy_admin_token": true,
@@ -12292,8 +12398,6 @@ export const GENERATED_API_ENDPOINTS = [
     "access": {
       "mode": "role",
       "roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "legacy_admin_token": true,
@@ -12351,8 +12455,6 @@ export const GENERATED_API_ENDPOINTS = [
     "access": {
       "mode": "role",
       "roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "legacy_admin_token": true,

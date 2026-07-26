@@ -4735,13 +4735,13 @@
       "action": "delete",
       "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
       "allowed_roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "student"
+        "student",
+        "researcher",
+        "supervisor"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -4769,7 +4769,32 @@
         "student"
       ],
       "legacy_admin_token": true,
-      "showcase_read_bypass": false,
+      "showcase_read_bypass": true,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.get_catalog_route.get",
+      "method": "GET",
+      "path": "/api/research/analysis/catalog",
+      "object_type": "research_analysis",
+      "action": "read",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": true,
       "idempotency": {
         "supported": false,
         "required": false,
@@ -4794,7 +4819,7 @@
         "student"
       ],
       "legacy_admin_token": true,
-      "showcase_read_bypass": false,
+      "showcase_read_bypass": true,
       "idempotency": {
         "supported": false,
         "required": false,
@@ -4844,7 +4869,7 @@
         "student"
       ],
       "legacy_admin_token": true,
-      "showcase_read_bypass": false,
+      "showcase_read_bypass": true,
       "idempotency": {
         "supported": false,
         "required": false,
@@ -4885,13 +4910,13 @@
       "action": "update",
       "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
       "allowed_roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "student"
+        "student",
+        "researcher",
+        "supervisor"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -4910,13 +4935,38 @@
       "action": "create",
       "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
       "allowed_roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "student"
+        "student",
+        "researcher",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "research_analysis.post_execute_synthetic.post",
+      "method": "POST",
+      "path": "/api/research/analysis/jobs/<job_id>/execute-synthetic",
+      "object_type": "research_analysis",
+      "action": "create",
+      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -4935,13 +4985,13 @@
       "action": "create",
       "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
       "allowed_roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "student"
+        "student",
+        "researcher",
+        "supervisor"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -4960,13 +5010,13 @@
       "action": "create",
       "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
       "allowed_roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "student"
+        "student",
+        "researcher",
+        "supervisor"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -4985,13 +5035,13 @@
       "action": "create",
       "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
       "allowed_roles": [
-        "researcher",
-        "supervisor",
         "admin"
       ],
       "denied_roles": [
         "parent",
-        "student"
+        "student",
+        "researcher",
+        "supervisor"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -6631,8 +6681,8 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 263,
-    "showcase_bypass_operation_count": 6,
+    "operation_count": 265,
+    "showcase_bypass_operation_count": 10,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"
   },
@@ -6782,7 +6832,11 @@
       "relationship_pilot.relationship_growth_route.get",
       "relationship_pilot.get_narrative_route.get",
       "relationship_pilot.get_report_route.get",
-      "relationship_pilot.researcher_dashboard_route.get"
+      "relationship_pilot.researcher_dashboard_route.get",
+      "research_analysis.get_artifact_route.get",
+      "research_analysis.get_catalog_route.get",
+      "research_analysis.get_jobs.get",
+      "research_analysis.get_job_route.get"
     ],
     "stop_condition": "正式权限验收、真实治疗性评估、试点发布或生产发布前必须停用并重跑允许/拒绝矩阵。",
     "accepted_for_formal_permission_testing": false

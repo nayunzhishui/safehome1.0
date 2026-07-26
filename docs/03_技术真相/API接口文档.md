@@ -2205,3 +2205,10 @@ relationship_initiation_intention_action
 | `POST` | `/api/research/deliveries/{id}/withdraw` | 撤回显示状态但保留消息、报告、版本和审计历史 |
 
 所有写请求必须提供 `Idempotency-Key`。状态冲突、重复键冲突和过期版本统一返回 `409`；报名停用或分配被撤销后不可继续交付。参与者消息增加 `delivery_id`、`delivery_version`、`withdrawn_at` 和 `is_withdrawn`。
+## 任务36 F14：受控在线情感与网络分析
+
+- `GET /api/research/analysis/catalog`：研究者、督导和管理员读取版本化管线目录。返回资源 SHA256、最小样本、图规模上限、数据模式和外部门禁状态。
+- `POST /api/research/analysis/jobs/{job_id}/execute-synthetic`：仅管理员执行项目自有合成基准。任务必须引用 `synthetic_fixture`，版本与资源指纹必须和目录一致。
+- `GET /api/research/analysis/jobs`：除任务字段外，成功任务会附带 researcher-only 工件及覆盖率、未知率、样本量和质量状态。
+- 当前 `real_participant_processing_enabled=false`、`production_training_enabled=false`；T35 人工门禁未签前，真实参与者来源固定返回 `real_participant_analysis_blocked`。
+- 小样本不返回类别分布或图节点/边；家庭拓扑不推断关系质量、潜意识或家庭病理。

@@ -112,7 +112,7 @@
     },
     {
       "id": "research.analysis.read",
-      "operations": ["GET /api/text-analysis/summary", "GET /api/research/analysis/jobs", "GET /api/research/analysis/jobs/{id}", "GET /api/research/analysis/artifacts/{id}"],
+      "operations": ["GET /api/text-analysis/summary", "GET /api/research/analysis/catalog", "GET /api/research/analysis/jobs", "GET /api/research/analysis/jobs/{id}", "GET /api/research/analysis/artifacts/{id}"],
       "roles": ["researcher", "supervisor", "admin"],
       "object_scope": "assigned_or_supervised_aggregate; all_for_admin",
       "sensitivity": "high",
@@ -132,7 +132,7 @@
     },
     {
       "id": "research.analysis.operate",
-      "operations": ["POST /api/research/analysis/jobs/{id}/claim", "POST /api/research/analysis/jobs/{id}/complete", "POST /api/research/analysis/jobs/{id}/fail", "POST /api/research/analysis/jobs/{id}/recover", "POST /api/research/analysis/jobs/{id}/suspend", "DELETE /api/research/analysis/artifacts/{id}"],
+      "operations": ["POST /api/research/analysis/jobs/{id}/claim", "POST /api/research/analysis/jobs/{id}/complete", "POST /api/research/analysis/jobs/{id}/execute-synthetic", "POST /api/research/analysis/jobs/{id}/fail", "POST /api/research/analysis/jobs/{id}/recover", "POST /api/research/analysis/jobs/{id}/suspend", "DELETE /api/research/analysis/artifacts/{id}"],
       "roles": ["admin"],
       "object_scope": "all; worker lease required for completion",
       "sensitivity": "restricted",

@@ -58,6 +58,7 @@ import type {
   ResearchMethodologySimulation,
   ResearchMethodologyVersion,
   ResearchAnalysisArtifact,
+  ResearchAnalysisCatalog,
   ResearchAnalysisJob,
   ResearchAnalysisJobList,
   ResearchAnalysisSnapshot,
@@ -1175,6 +1176,10 @@ export class SafeHomeApiClient {
         parameters: input.parameters,
       },
     });
+  }
+
+  getResearchAnalysisCatalog(): Promise<ResearchAnalysisCatalog> {
+    return this.requestData(`${API_ENDPOINTS.researchAnalysis}/catalog`);
   }
 
   getResearchAnalysisArtifact(artifactId: string): Promise<ResearchAnalysisArtifact> {

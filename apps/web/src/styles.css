@@ -2177,6 +2177,51 @@ ul {
   gap: 14px;
 }
 
+.analysisPipelineGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.analysisPipelineCard {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-soft);
+}
+
+.analysisPipelineCard span,
+.analysisPipelineCard small {
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+
+.analysisResultSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.analysisResultSummary span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #edf5ef;
+  color: #245844;
+  font-size: 0.82rem;
+}
+
+.analysisSuppressed {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #fff5e8;
+  color: #795322;
+}
+
 .analysisJobCard {
   padding: 18px;
 }
@@ -2235,6 +2280,9 @@ ul {
 }
 
 @media (max-width: 720px) {
+  .analysisPipelineGrid {
+    grid-template-columns: 1fr;
+  }
   .researchAnalysisWorkbench .summaryGrid {
     grid-template-columns: 1fr;
   }

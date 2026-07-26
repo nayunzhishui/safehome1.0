@@ -37,6 +37,11 @@ def _source(view_func) -> str:
 
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
+    if path.startswith("/api/research/analysis"):
+        roles = ["researcher", "supervisor", "admin"]
+        if path.endswith("/execute-synthetic") or path.endswith("/claim") or path.endswith("/complete") or path.endswith("/fail") or path.endswith("/recover") or path.endswith("/suspend") or method == "DELETE":
+            roles = ["admin"]
+        return {"mode": "role", "roles": roles, "legacy_admin_token": True, "showcase_read_bypass": method == "GET"}
     if path.startswith("/api/operations-governance"):
         if path == "/api/operations-governance/public-status":
             return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}

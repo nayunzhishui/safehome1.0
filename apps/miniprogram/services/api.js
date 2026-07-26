@@ -1033,6 +1033,9 @@ function createSafeHomeApi(options = {}) {
     getResearchAnalysisJobs(params = {}) {
       return request(`${API_ENDPOINTS.researchAnalysis}/jobs${queryString(params)}`, { requiresAuth: true });
     },
+    getResearchAnalysisCatalog() {
+      return request(`${API_ENDPOINTS.researchAnalysis}/catalog`, { requiresAuth: true });
+    },
 
     getResearchAnalysisJob(jobId) {
       return request(`${API_ENDPOINTS.researchAnalysis}/jobs/${encodeURIComponent(jobId)}`, { requiresAuth: true });

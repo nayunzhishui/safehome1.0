@@ -169,8 +169,9 @@ Page({
     sendingFeedback: false,
     developmentFullAccess: false,
     capabilityScope: null,
-    analysisJobs: [],
-    analysisLoading: false,
+      analysisJobs: [],
+      analysisCatalog: null,
+      analysisLoading: false,
     analysisError: "",
   },
 
@@ -241,7 +242,10 @@ Page({
   async loadAnalysisJobs() {
     this.setData({ analysisLoading: true, analysisError: "" });
     try {
-      const result = await api.getResearchAnalysisJobs({ limit: 30 });
+      const [result, catalog] = await Promise.all([
+        api.getResearchAnalysisJobs({ limit: 30 }),
+        api.getResearchAnalysisCatalog(),
+      ]);
       const labels = {
         affect_aggregate: "聚合情感线索",
         semantic_network: "语义网络",
@@ -262,7 +266,12 @@ Page({
           analysisLabel: labels[item.analysis_type] || item.analysis_type,
           statusLabel: statuses[item.status] || "待核对",
           createdText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+          qualityText: item.artifact
+            ? `覆盖 ${Math.round(Number(item.artifact.metrics.coverage_rate || 0) * 100)}% · 未知 ${Math.round(Number(item.artifact.metrics.unknown_rate || 0) * 100)}% · 样本 ${item.artifact.metrics.sample_size || 0}`
+            : "",
+          suppressed: Boolean(item.artifact && item.artifact.metrics && item.artifact.metrics.result && item.artifact.metrics.result.suppressed),
         })),
+        analysisCatalog: catalog,
       });
     } catch (error) {
       this.setData({ analysisError: error.message || "在线分析任务暂时无法读取。" });
