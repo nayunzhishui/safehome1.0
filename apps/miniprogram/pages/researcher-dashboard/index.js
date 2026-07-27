@@ -9,6 +9,7 @@ const WORKSPACES = [
   { id: "participants", label: "参与者", capability: "research.participant.read" },
   { id: "feedback", label: "反馈与消息", capability: "research.feedback.write" },
   { id: "analysis", label: "在线分析", capability: "research.analysis.read" },
+  { id: "assessment", label: "评估证据", capability: "research.dashboard.read" },
   { id: "pilots", label: "试点项目", capability: "research.dashboard.read" },
   { id: "mine", label: "我的工作", capability: "research.dashboard.read" },
 ];
@@ -174,6 +175,15 @@ Page({
     analysisResilience: null,
       analysisLoading: false,
     analysisError: "",
+    assessmentLoading: false,
+    assessmentError: "",
+    assessmentCases: [],
+    assessmentCaseId: "",
+    assessmentWorkbench: null,
+    assessmentFilters: { kind: "", review_status: "", visibility: "" },
+    assessmentInternalNotes: "",
+    assessmentParticipantDraft: "",
+    assessmentSaving: false,
   },
 
   async onLoad() {
@@ -228,6 +238,7 @@ Page({
       return this.loadParticipants(true);
     }
     if (this.data.activeWorkspace === "pilots") return Promise.all([this.loadWorkbench(), this.loadDashboard()]);
+    if (this.data.activeWorkspace === "assessment") return this.loadAssessmentCases();
     return this.loadWorkbench();
   },
 
@@ -238,6 +249,109 @@ Page({
     if (id === "participants" && !this.data.participantItems.length) await this.loadParticipants(true);
     if (id === "pilots" && !this.data.items.length) await this.loadDashboard();
     if (id === "analysis" && !this.data.analysisJobs.length) await this.loadAnalysisJobs();
+    if (id === "assessment" && !this.data.assessmentCases.length) await this.loadAssessmentCases();
+  },
+
+  async loadAssessmentCases() {
+    this.setData({ assessmentLoading: true, assessmentError: "" });
+    try {
+      const result = await api.listTherapeuticAssessmentCases();
+      const assessmentCases = (result.items || []).map((item) => ({
+        ...item,
+        displayQuestion: item.working_question || item.assessment_question,
+      }));
+      const assessmentCaseId = this.data.assessmentCaseId || (assessmentCases[0] && assessmentCases[0].id) || "";
+      this.setData({ assessmentCases, assessmentCaseId });
+      if (assessmentCaseId) await this.loadAssessmentWorkbench(assessmentCaseId);
+    } catch (error) {
+      this.setData({ assessmentError: error.message || "评估证据暂时无法读取。" });
+    } finally {
+      this.setData({ assessmentLoading: false });
+    }
+  },
+
+  async loadAssessmentWorkbench(caseId = this.data.assessmentCaseId) {
+    if (!caseId) return;
+    this.setData({ assessmentLoading: true, assessmentError: "" });
+    try {
+      const result = await api.getTherapeuticAssessmentResearcherWorkbench(caseId, {
+        ...this.data.assessmentFilters,
+        page: 1,
+        page_size: 20,
+      });
+      const evidenceItems = (result.evidence_items || []).map((item) => ({
+        ...item,
+        kindLabel: { O: "观察", P: "模式候选", H: "人工假设", U: "未知项" }[item.kind] || item.kind,
+        visibilityText: (item.visibility_scope || []).join("、"),
+        supportingText: (item.supporting_evidence || []).map((entry) => entry.ref || String(entry)).join("；"),
+        counterText: (item.counter_evidence || []).join("；"),
+        alternativesText: (item.alternative_explanations || []).join("；"),
+      }));
+      this.setData({
+        assessmentWorkbench: {
+          ...result,
+          case: {
+            ...result.case,
+            sharedScopeText: (result.case.shared_scope || []).join("、"),
+          },
+          evidence_items: evidenceItems,
+        },
+        assessmentInternalNotes: result.draft.internal_notes || "",
+        assessmentParticipantDraft: result.draft.participant_visible_draft || "",
+      });
+    } catch (error) {
+      this.setData({ assessmentError: error.message || "评估证据暂时无法读取。" });
+    } finally {
+      this.setData({ assessmentLoading: false });
+    }
+  },
+
+  selectAssessmentCase(event) {
+    const assessmentCaseId = event.currentTarget.dataset.id;
+    this.setData({ assessmentCaseId });
+    this.loadAssessmentWorkbench(assessmentCaseId);
+  },
+
+  onAssessmentFilter(event) {
+    const key = event.currentTarget.dataset.key;
+    const options = key === "kind"
+      ? ["", "O", "P", "H", "U"]
+      : ["", "participant", "research_team", "supervisor"];
+    const assessmentFilters = {
+      ...this.data.assessmentFilters,
+      [key]: options[Number(event.detail.value)] || "",
+    };
+    this.setData({ assessmentFilters });
+    this.loadAssessmentWorkbench(this.data.assessmentCaseId);
+  },
+
+  onAssessmentDraftInput(event) {
+    const key = event.currentTarget.dataset.key;
+    this.setData({ [key]: event.detail.value });
+  },
+
+  async saveAssessmentDraft() {
+    const workbench = this.data.assessmentWorkbench;
+    if (!workbench) return;
+    this.setData({ assessmentSaving: true });
+    try {
+      const draft = await api.saveTherapeuticAssessmentResearcherDraft(
+        this.data.assessmentCaseId,
+        {
+          internal_notes: this.data.assessmentInternalNotes,
+          participant_visible_draft: this.data.assessmentParticipantDraft,
+          filters: this.data.assessmentFilters,
+          expected_version: workbench.draft.version,
+        },
+        `mini-ta-workbench-${this.data.assessmentCaseId}-${Date.now()}`,
+      );
+      this.setData({ "assessmentWorkbench.draft": draft });
+      wx.showToast({ title: "草稿已保存", icon: "success" });
+    } catch (error) {
+      wx.showToast({ title: error.message || "保存失败", icon: "none" });
+    } finally {
+      this.setData({ assessmentSaving: false });
+    }
   },
 
   async loadAnalysisJobs() {

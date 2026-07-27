@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { TherapeuticAssessmentCase, TherapeuticAssessmentEvidenceItem } from "../../../../shared/types/api";
+import type {
+  TherapeuticAssessmentCase,
+  TherapeuticAssessmentEvidenceItem,
+  TherapeuticAssessmentEvidenceKind,
+  TherapeuticAssessmentResearcherDraft,
+  TherapeuticAssessmentResearcherWorkbench as WorkbenchPayload,
+} from "../../../../shared/types/api";
 import { safeHomeApi, SafeHomeApiError } from "../services/safehomeApi";
 
-
-function lines(value: string) {
-  return value.split("\n").map((item) => item.trim()).filter(Boolean);
-}
 
 const workflowLabels: Record<string, string> = {
   submitted: "已提交",
@@ -25,26 +27,78 @@ const workflowLabels: Record<string, string> = {
   withdrawn: "已撤回",
 };
 
+const kindLabels: Record<TherapeuticAssessmentEvidenceKind, string> = {
+  O: "观察",
+  P: "模式候选",
+  H: "人工假设",
+  U: "未知项",
+};
+
+type Filters = TherapeuticAssessmentResearcherDraft["filters"];
+
+function textList(items: unknown[]) {
+  return items.map((item) => {
+    if (typeof item === "string") return item;
+    if (!item || typeof item !== "object") return "";
+    const record = item as Record<string, unknown>;
+    const reference = typeof record.ref === "string" ? record.ref : "";
+    const source = typeof record.source === "string" ? record.source : "";
+    return [reference, source].filter(Boolean).join(" · ") || "结构化资料";
+  }).filter(Boolean);
+}
+
+function EvidenceCard({ item }: { item: TherapeuticAssessmentEvidenceItem }) {
+  const metadata = [
+    item.source_ref ? `来源：${item.source_ref}` : "",
+    item.observed_at ? `时间：${item.observed_at}` : "",
+    item.provider_id ? `提供者：${item.provider_id}` : "",
+    item.context ? `情境：${item.context}` : "",
+    `权限：${item.visibility_scope.join("、")}`,
+  ].filter(Boolean);
+  return (
+    <article className={`taEvidenceCard taEvidence-${item.kind}`}>
+      <header>
+        <span className="taKindBadge">{item.kind} · {kindLabels[item.kind]}</span>
+        <span>{item.review_status}</span>
+      </header>
+      <p className="taEvidenceContent">{item.content}</p>
+      <dl className="taEvidenceMeta">
+        {metadata.map((entry) => <div key={entry}><dt>资料</dt><dd>{entry}</dd></div>)}
+        <div><dt>方法限制</dt><dd>{item.method_limitations}</dd></div>
+        {item.question_link ? <div><dt>关联问题</dt><dd>{item.question_link}</dd></div> : null}
+      </dl>
+      {item.kind === "H" ? (
+        <div className="taHypothesisGrid" aria-label="人工假设核对">
+          <section><strong>支持依据</strong>{textList(item.supporting_evidence).map((value) => <p key={value}>{value}</p>)}</section>
+          <section><strong>反证</strong>{item.counter_evidence.map((value) => <p key={value}>{value}</p>)}</section>
+          <section><strong>其它可能</strong>{item.alternative_explanations.map((value) => <p key={value}>{value}</p>)}</section>
+          <section><strong>参与者识别</strong><p>{item.participant_recognition || "尚未核对"}</p></section>
+        </div>
+      ) : null}
+      {item.kind === "U" ? <p className="taUncertainty">未知类型：{item.uncertainty_type}</p> : null}
+    </article>
+  );
+}
+
 export function TherapeuticAssessmentWorkbench() {
   const [cases, setCases] = useState<TherapeuticAssessmentCase[]>([]);
   const [selectedId, setSelectedId] = useState("");
+  const [workbench, setWorkbench] = useState<WorkbenchPayload | null>(null);
+  const [filters, setFilters] = useState<Filters>({});
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadingEvidence, setLoadingEvidence] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [evidenceItems, setEvidenceItems] = useState<TherapeuticAssessmentEvidenceItem[]>([]);
-  const [form, setForm] = useState({
-    observations: "",
-    evidence: "",
-    alternatives: "",
-    uncertainty: "",
-    nextStep: "",
-    discussion: "",
-    participantContent: "",
-  });
-  const selected = useMemo(() => cases.find((item) => item.id === selectedId) || cases[0], [cases, selectedId]);
+  const [internalNotes, setInternalNotes] = useState("");
+  const [participantVisibleDraft, setParticipantVisibleDraft] = useState("");
+  const selected = useMemo(
+    () => cases.find((item) => item.id === selectedId) || cases[0],
+    [cases, selectedId],
+  );
 
-  const load = async () => {
+  const loadCases = async () => {
     setLoading(true);
     setError("");
     try {
@@ -58,22 +112,73 @@ export function TherapeuticAssessmentWorkbench() {
     }
   };
 
+  const loadWorkbench = async (caseId: string, nextFilters = filters, nextPage = page) => {
+    setLoadingEvidence(true);
+    setError("");
+    try {
+      const result = await safeHomeApi.getTherapeuticAssessmentResearcherWorkbench(caseId, {
+        ...nextFilters,
+        page: nextPage,
+        page_size: 8,
+      });
+      setWorkbench(result);
+      setInternalNotes(result.draft.internal_notes);
+      setParticipantVisibleDraft(result.draft.participant_visible_draft);
+    } catch (caught) {
+      setWorkbench(null);
+      setError(caught instanceof SafeHomeApiError ? caught.message : "证据工作台暂时无法读取。");
+    } finally {
+      setLoadingEvidence(false);
+    }
+  };
+
   useEffect(() => {
-    void load();
+    void loadCases();
   }, []);
 
   useEffect(() => {
-    if (!selectedId) {
-      setEvidenceItems([]);
+    if (selectedId) void loadWorkbench(selectedId, filters, page);
+  }, [selectedId, filters.kind, filters.review_status, filters.visibility, page]);
+
+  const changeFilter = (name: keyof Filters, value: string) => {
+    setFilters((current) => ({ ...current, [name]: value }));
+    setPage(1);
+  };
+
+  const saveDraft = async () => {
+    if (!selected || !workbench) return;
+    setSaving(true);
+    setError("");
+    try {
+      const draft = await safeHomeApi.saveTherapeuticAssessmentResearcherDraft(
+        selected.id,
+        {
+          internal_notes: internalNotes,
+          participant_visible_draft: participantVisibleDraft,
+          filters,
+          expected_version: workbench.draft.version,
+        },
+        `web-ta-workbench-${selected.id}-${Date.now()}`,
+      );
+      setWorkbench({ ...workbench, draft });
+      setNotice("工作台草稿已保存；内部备注不会出现在参与者端。");
+    } catch (caught) {
+      setError(caught instanceof SafeHomeApiError ? caught.message : "工作台草稿保存失败。");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const createFeedbackDraft = async () => {
+    if (!selected || !participantVisibleDraft.trim()) {
+      setError("请先填写参与者可见草稿。");
       return;
     }
-    void safeHomeApi.listTherapeuticAssessmentEvidence(selectedId)
-      .then((result) => setEvidenceItems(result.items))
-      .catch(() => setEvidenceItems([]));
-  }, [selectedId]);
-
-  const draft = async () => {
-    if (!selected) return;
+    const evidenceRefs = workbench?.evidence_items.map((item) => item.source_ref || item.id) || [];
+    if (!evidenceRefs.length) {
+      setError("当前没有可核对依据，不能提交正式反馈草稿。");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -81,39 +186,20 @@ export function TherapeuticAssessmentWorkbench() {
         selected.id,
         {
           source: "human",
-          observations: lines(form.observations),
-          evidence: lines(form.evidence),
-          alternatives: lines(form.alternatives),
-          uncertainty: form.uncertainty,
-          next_step: form.nextStep,
-          human_discussion: lines(form.discussion),
-          participant_content: form.participantContent,
+          observations: ["已依据当前授权资料整理"],
+          evidence: evidenceRefs,
+          alternatives: ["当前理解仍可随参与者核对和新资料修订"],
+          uncertainty: "仅基于当前已授权资料",
+          next_step: "与参与者共同核对这份草稿",
+          human_discussion: internalNotes ? [internalNotes] : [],
+          participant_content: participantVisibleDraft,
         },
-        `web-ta-draft-${selected.id}-${Date.now()}`,
+        `web-ta-feedback-${selected.id}-${Date.now()}`,
       );
-      setNotice("草稿已保存。它还没有发送，需要督导或管理员人工复核。");
-      await load();
+      setNotice("已创建正式反馈草稿，仍需另一位人工复核后才能发送。");
+      await loadCases();
     } catch (caught) {
-      setError(caught instanceof SafeHomeApiError ? caught.message : "草稿保存失败。");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const actOnFeedback = async (feedbackId: string, action: "review" | "send") => {
-    setSaving(true);
-    setError("");
-    try {
-      if (action === "review") {
-        await safeHomeApi.reviewTherapeuticAssessmentFeedback(feedbackId, "approved", `web-ta-review-${feedbackId}-${Date.now()}`);
-        setNotice("人工复核已记录。");
-      } else {
-        await safeHomeApi.sendTherapeuticAssessmentFeedback(feedbackId, `web-ta-send-${feedbackId}-${Date.now()}`);
-        setNotice("已发送给参与者，并保留版本和审计记录。");
-      }
-      await load();
-    } catch (caught) {
-      setError(caught instanceof SafeHomeApiError ? caught.message : "操作未完成。");
+      setError(caught instanceof SafeHomeApiError ? caught.message : "正式反馈草稿创建失败。");
     } finally {
       setSaving(false);
     }
@@ -121,90 +207,94 @@ export function TherapeuticAssessmentWorkbench() {
 
   return (
     <section className="dashboardShell therapeuticAssessmentWorkbench" aria-labelledby="ta-title">
-      <header className="dashboardHeader">
+      <header className="dashboardHeader taWorkbenchHeader">
         <div>
-          <p className="eyebrow">人工主导 · 共同理解</p>
-          <h1 id="ta-title">协作式评估工作台</h1>
-          <p className="summary">从参与者的问题出发，明确共享范围，形成可讨论的版本化反馈，再共同选择一个低压力的小行动。</p>
+          <p className="eyebrow">人工主导 · 证据可追溯</p>
+          <h1 id="ta-title">协作式评估工作台 · 证据时间线</h1>
+          <p className="summary">从参与者的问题出发，按时间查看资料、反证和未知项，再分别保存内部记录与参与者可见草稿。</p>
         </div>
-        <button className="secondaryButton" type="button" onClick={() => void load()} disabled={loading}>重新同步</button>
+        <button className="secondaryButton" type="button" onClick={() => void loadCases()} disabled={loading}>重新同步</button>
       </header>
-
-      <div className="summaryGrid" aria-label="协作状态摘要">
-        <article className="metricCard"><span>协作记录</span><strong>{cases.length}</strong><small>按对象范围读取</small></article>
-        <article className="metricCard"><span>待人工复核</span><strong>{cases.reduce((sum, item) => sum + item.feedback_versions.filter((version) => version.status === "draft").length, 0)}</strong><small>AI 只能生成草稿</small></article>
-        <article className="metricCard"><span>已发送版本</span><strong>{cases.reduce((sum, item) => sum + item.feedback_versions.filter((version) => version.status === "sent").length, 0)}</strong><small>参与者可不同意或撤回</small></article>
-      </div>
 
       {error ? <div className="status error" role="alert">{error}</div> : null}
       {notice ? <div className="status success" role="status">{notice}</div> : null}
-      {loading ? <div className="status">正在读取协作记录…</div> : null}
 
       <div className="taWorkspaceGrid">
-        <section className="panel" aria-label="协作记录列表">
+        <aside className="panel taCaseRail" aria-label="参与者问题">
           <div className="sectionHeader"><div><p className="eyebrow">对象范围</p><h2>参与者问题</h2></div></div>
-          {!loading && !cases.length ? <div className="emptyState"><strong>暂无协作记录</strong><p>参与者提交问题并同意共享范围后，会出现在这里。</p></div> : null}
+          {loading ? <p>正在读取…</p> : null}
+          {!loading && !cases.length ? <div className="emptyState"><strong>暂无协作记录</strong><p>参与者提交并同意共享后会出现在这里。</p></div> : null}
           <div className="taCaseList">
             {cases.map((item) => (
-              <button type="button" key={item.id} className={`taCaseButton ${selected?.id === item.id ? "active" : ""}`} onClick={() => setSelectedId(item.id)}>
+              <button
+                type="button"
+                key={item.id}
+                className={`taCaseButton ${selected?.id === item.id ? "active" : ""}`}
+                onClick={() => { setSelectedId(item.id); setPage(1); }}
+              >
                 <strong>{item.assessment_question}</strong>
                 <span>{workflowLabels[item.workflow_state] || item.workflow_state} · {item.service_level.display_name}</span>
               </button>
             ))}
           </div>
-        </section>
+        </aside>
 
-        <section className="panel" aria-label="结构化反馈工作区">
+        <main className="panel taEvidenceWorkspace" aria-label="证据时间线">
           {selected ? (
             <>
-              <div className="sectionHeader">
-                <div><p className="eyebrow">{selected.service_level.display_name} · 版本 {selected.version}</p><h2>结构化共同反馈</h2></div>
+              <section className="taQuestionFocus">
+                <div><p className="eyebrow">{selected.service_level.display_name} · 当前议题 · 版本 {selected.version}</p><h2>{selected.working_question || selected.assessment_question}</h2></div>
                 <span className={`statusPill status-${selected.status}`}>{workflowLabels[selected.workflow_state] || selected.workflow_state}</span>
-              </div>
-              <div className="guidanceBox">
-                <strong>参与者的问题</strong>
-                <p>{selected.assessment_question}</p>
-                <small>共享范围：{selected.shared_scope.join("、")}；复杂范围：{selected.complexity_scope}</small>
-                <small>共同理解：{selected.hypothesis_state}；安全支持：{selected.safety_state}</small>
-              </div>
-              <section className="guidanceBox" aria-label="O P H U证据账本">
-                <strong>证据账本</strong>
-                {evidenceItems.length ? evidenceItems.map((item) => (
-                  <p key={item.id}><b>{item.kind}</b> · {item.content} <small>（{item.review_status}）</small></p>
-                )) : <p>尚无可见证据项。先记录具体观察，再讨论模式、人工假设和未知项。</p>}
+                <p>共享范围：{selected.shared_scope.join("、")}；共同理解：{selected.hypothesis_state}；安全支持：{selected.safety_state}</p>
               </section>
-              <div className="taFormGrid">
-                <label><span>观察（每行一条）</span><textarea value={form.observations} onChange={(event) => setForm({ ...form, observations: event.target.value })} /></label>
-                <label><span>依据（每行一条）</span><textarea value={form.evidence} onChange={(event) => setForm({ ...form, evidence: event.target.value })} /></label>
-                <label><span>其它可能（每行一条）</span><textarea value={form.alternatives} onChange={(event) => setForm({ ...form, alternatives: event.target.value })} /></label>
-                <label><span>不确定性</span><textarea value={form.uncertainty} onChange={(event) => setForm({ ...form, uncertainty: event.target.value })} /></label>
-                <label><span>建议讨论的问题</span><textarea value={form.discussion} onChange={(event) => setForm({ ...form, discussion: event.target.value })} /></label>
-                <label><span>下一小步</span><textarea value={form.nextStep} onChange={(event) => setForm({ ...form, nextStep: event.target.value })} /></label>
-                <label className="taWideField"><span>参与者可见版本</span><textarea value={form.participantContent} onChange={(event) => setForm({ ...form, participantContent: event.target.value })} /></label>
+
+              <section className="taFilterBar" aria-label="证据过滤">
+                <label>类型<select value={filters.kind || ""} onChange={(event) => changeFilter("kind", event.target.value)}>
+                  <option value="">全部</option>{Object.entries(kindLabels).map(([value, label]) => <option key={value} value={value}>{value} · {label}</option>)}
+                </select></label>
+                <label>发布状态<select value={filters.review_status || ""} onChange={(event) => changeFilter("review_status", event.target.value)}>
+                  <option value="">全部</option><option value="draft">草稿</option><option value="human_reviewed">人工已复核</option><option value="changes_requested">待修订</option><option value="participant_checked">参与者已核对</option>
+                </select></label>
+                <label>可见范围<select value={filters.visibility || ""} onChange={(event) => changeFilter("visibility", event.target.value)}>
+                  <option value="">全部</option><option value="participant">参与者可见</option><option value="research_team">研究团队</option><option value="supervisor">督导</option>
+                </select></label>
+              </section>
+
+              {loadingEvidence ? <div className="status" role="status">正在读取这一页证据…</div> : null}
+              {!loadingEvidence && !workbench?.evidence_items.length ? <div className="emptyState"><strong>当前条件下没有证据</strong><p>可调整过滤条件，或先记录具体观察和未知项。</p></div> : null}
+              <div className="taEvidenceTimeline">
+                {workbench?.evidence_items.map((item) => <EvidenceCard key={item.id} item={item} />)}
               </div>
-              <button className="primaryButton" type="button" disabled={saving} onClick={() => void draft()}>保存为待人工复核草稿</button>
-              <div className="taVersionList">
-                {selected.feedback_versions.map((version) => (
-                  <article className="taVersionCard" key={version.id}>
-                    <div><strong>第 {version.version_no} 版</strong><span>{version.source === "ai_draft" ? "AI 草稿" : "人工草稿"} · {version.status}</span></div>
-                    <p>{version.participant_content}</p>
-                    <small>不确定性：{version.uncertainty}</small>
-                    <div className="dashboardActions">
-                      {version.status === "draft" ? <button className="secondaryButton" type="button" disabled={saving} onClick={() => void actOnFeedback(version.id, "review")}>人工复核通过</button> : null}
-                      {version.status === "reviewed" ? <button className="primaryButton" type="button" disabled={saving} onClick={() => void actOnFeedback(version.id, "send")}>发送给参与者</button> : null}
-                    </div>
-                  </article>
-                ))}
+              {workbench && workbench.evidence_total > workbench.page_size ? (
+                <nav className="taPagination" aria-label="证据分页">
+                  <button type="button" className="secondaryButton" disabled={page === 1 || loadingEvidence} onClick={() => setPage((value) => value - 1)}>上一页</button>
+                  <span>第 {page} 页 · 共 {workbench.evidence_total} 条</span>
+                  <button type="button" className="secondaryButton" disabled={!workbench.has_more || loadingEvidence} onClick={() => setPage((value) => value + 1)}>下一页</button>
+                </nav>
+              ) : null}
+
+              <section className="taDraftSeparation" aria-label="起草区">
+                <label className="taInternalDraft">
+                  <span><strong>内部工作备注</strong><small>仅研究团队可见，不会发送给参与者</small></span>
+                  <textarea value={internalNotes} onChange={(event) => setInternalNotes(event.target.value)} rows={7} />
+                </label>
+                <label className="taParticipantDraft">
+                  <span><strong>参与者可见草稿</strong><small>提交正式草稿后仍需独立人工复核</small></span>
+                  <textarea value={participantVisibleDraft} onChange={(event) => setParticipantVisibleDraft(event.target.value)} rows={7} />
+                </label>
+              </section>
+              <div className="dashboardActions">
+                <button className="secondaryButton" type="button" disabled={saving || !workbench} onClick={() => void saveDraft()}>保存工作台草稿</button>
+                <button className="primaryButton" type="button" disabled={saving || !workbench} onClick={() => void createFeedbackDraft()}>提交为待复核反馈</button>
               </div>
             </>
           ) : <div className="emptyState"><strong>请选择一条协作记录</strong></div>}
-        </section>
+        </main>
       </div>
 
-      <aside className="guidanceBox" aria-label="协作式评估边界">
+      <aside className="guidanceBox" aria-label="使用边界">
         <strong>使用边界</strong>
-        <p>儿童、伴侣、多方关系、高风险和诊断性范围继续受 D01–D26 资格、督导与伦理门禁约束。L0/L1 不能确认或发送，临时展示权限不能替代正式对象授权。</p>
-        <p>成长仪表盘只记录变化、讨论和行动线索，不生成疗效分数。</p>
+        <p>证据工作台用于共同理解和人工讨论，不生成诊断、人格标签或疗效分数。临时展示权限不能替代正式对象授权。</p>
       </aside>
     </section>
   );

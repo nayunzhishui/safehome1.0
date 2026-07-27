@@ -40,6 +40,10 @@ from services.therapeutic_assessment_safety_service import (
     resolve_safety_event,
     restore_runtime,
 )
+from services.therapeutic_assessment_workbench_service import (
+    get_workbench,
+    save_workbench_draft,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -123,6 +127,18 @@ def get_evidence_route(case_id: str):
 def post_evidence_route(case_id: str):
     actor, error = _actor()
     return error or _respond(create_evidence, actor, case_id, _payload(), _key())
+
+
+@bp.get("/cases/<case_id>/researcher-workbench")
+def get_researcher_workbench_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(get_workbench, actor, case_id, request.args.to_dict())
+
+
+@bp.put("/cases/<case_id>/researcher-workbench/draft")
+def put_researcher_workbench_draft_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(save_workbench_draft, actor, case_id, _payload(), _key())
 
 
 @bp.post("/evidence/<evidence_id>/review")

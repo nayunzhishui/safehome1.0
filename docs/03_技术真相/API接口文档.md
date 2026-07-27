@@ -2303,3 +2303,10 @@ relationship_initiation_intention_action
 - `POST /api/therapeutic-assessment/safety-events/<event_id>/resolve`：仅督导/管理员提交人工处置证据后解除单个事件。
 - `POST /api/therapeutic-assessment/safety/runtime/restore`：全部开放事件已解除后，由督导/管理员提交恢复证据恢复普通流程。
 - 安全事件、责任链中断或队列超时会在服务端阻断普通反馈、发送和训练行动；临时展示越权不能解除安全门。
+
+## 2026-07-27：T38-F08研究者证据工作台
+
+- `GET /api/therapeutic-assessment/cases/<case_id>/researcher-workbench`：仅对象范围内研究者、督导或管理员读取；支持`kind`、`review_status`、`visibility`、`page`和`page_size`。
+- `PUT /api/therapeutic-assessment/cases/<case_id>/researcher-workbench/draft`：保存内部记录、参与者可见草稿和筛选状态；必须携带`expected_version`和`Idempotency-Key`。
+- 工作台读取会写敏感访问审计；草稿保存使用case、操作者、版本和幂等键防止重复与覆盖。
+- 参与者读取case时不返回内部记录、内部讨论或未发送草稿；正式反馈仍走独立起草与复核接口。

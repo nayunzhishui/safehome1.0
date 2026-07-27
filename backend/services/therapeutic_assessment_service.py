@@ -139,7 +139,17 @@ def _present_case(conn, case: dict, actor: dict) -> dict:
     item = _expand_case(conn, case)
     if str(actor.get("role") or "") in {"parent", "student"}:
         item["feedback_versions"] = [
-            version for version in item["feedback_versions"] if version["status"] == "sent"
+            {
+                "id": version["id"],
+                "case_id": version["case_id"],
+                "version_no": version["version_no"],
+                "status": version["status"],
+                "participant_content": version["participant_content"],
+                "sent_at": version.get("sent_at"),
+                "created_at": version["created_at"],
+            }
+            for version in item["feedback_versions"]
+            if version["status"] == "sent"
         ]
         for field in ("qualification_evidence_ref", "supervision_evidence_ref", "ethics_evidence_ref"):
             item.pop(field, None)

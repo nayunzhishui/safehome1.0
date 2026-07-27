@@ -281,6 +281,8 @@
 | PUT | `/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/cases/<case_id>/question` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/readiness` | role:supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/cases/<case_id>/researcher-workbench` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| PUT | `/api/therapeutic-assessment/cases/<case_id>/researcher-workbench/draft` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PUT | `/api/therapeutic-assessment/cases/<case_id>/responsibility-chain` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/safety-signals` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/cases/<case_id>/scope` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

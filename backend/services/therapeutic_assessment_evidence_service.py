@@ -83,6 +83,8 @@ def _validate(actor: dict, payload: dict) -> dict:
         "provider_id": _text(payload, "provider_id", 128, False),
         "observed_at": _text(payload, "observed_at", 64, False),
         "context": _text(payload, "context", 1000, False),
+        "method_limitations": _text(payload, "method_limitations", 1000, False)
+        or "仅适用于当前已授权资料与时间范围，不代表完整解释或诊断结论。",
         "visibility_scope": visibility,
         "applicability_scope": _text(payload, "applicability_scope", 1000, False),
         "question_link": _text(payload, "question_link", 500, False),
@@ -154,18 +156,18 @@ def create_evidence(actor: dict, case_id: str, payload: dict, idempotency_key: s
             """
             INSERT INTO therapeutic_assessment_evidence_items (
                 id, case_id, kind, content, source_origin, source_ref, provider_id,
-                observed_at, context, visibility_scope_json, applicability_scope,
+                observed_at, context, method_limitations, visibility_scope_json, applicability_scope,
                 question_link, exceptions_json, time_window, supporting_evidence_json,
                 counter_evidence_json, alternative_explanations_json,
                 falsification_criteria_json, protective_function, cost,
                 participant_recognition, uncertainty_type, author_id, review_status,
                 version, idempotency_key, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
             """,
             (
                 item_id, case_id, data["kind"], data["content"], data["source_origin"],
                 data["source_ref"], data["provider_id"], data["observed_at"], data["context"],
-                json_dumps(data["visibility_scope"]), data["applicability_scope"],
+                data["method_limitations"], json_dumps(data["visibility_scope"]), data["applicability_scope"],
                 data["question_link"], json_dumps(data["exceptions"]), data["time_window"],
                 json_dumps(data["supporting_evidence"]), json_dumps(data["counter_evidence"]),
                 json_dumps(data["alternative_explanations"]), json_dumps(data["falsification_criteria"]),

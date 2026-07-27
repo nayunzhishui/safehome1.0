@@ -228,6 +228,7 @@ export interface TherapeuticAssessmentEvidenceItem {
   provider_id?: string | null;
   observed_at?: string | null;
   context?: string | null;
+  method_limitations: string;
   visibility_scope: Array<"participant" | "research_team" | "supervisor">;
   applicability_scope?: string | null;
   question_link?: string | null;
@@ -245,6 +246,33 @@ export interface TherapeuticAssessmentEvidenceItem {
   review_status: "recorded" | "candidate" | "draft" | "human_reviewed" | "changes_requested" | "participant_checked";
   version: number;
   created_at: string;
+}
+
+export interface TherapeuticAssessmentResearcherDraft {
+  id?: string | null;
+  case_id: string;
+  researcher_user_id: string;
+  internal_notes: string;
+  participant_visible_draft: string;
+  filters: {
+    kind?: TherapeuticAssessmentEvidenceKind | "";
+    review_status?: TherapeuticAssessmentEvidenceItem["review_status"] | "";
+    visibility?: "participant" | "research_team" | "supervisor" | "";
+  };
+  selected_evidence_id?: string | null;
+  version: number;
+  updated_at?: string | null;
+}
+
+export interface TherapeuticAssessmentResearcherWorkbench {
+  case: TherapeuticAssessmentCase;
+  evidence_items: TherapeuticAssessmentEvidenceItem[];
+  evidence_total: number;
+  page: number;
+  page_size: number;
+  has_more: boolean;
+  filters: TherapeuticAssessmentResearcherDraft["filters"];
+  draft: TherapeuticAssessmentResearcherDraft;
 }
 
 export interface TherapeuticAssessmentDataItem {

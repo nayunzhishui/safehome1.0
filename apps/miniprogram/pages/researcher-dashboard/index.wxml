@@ -178,6 +178,82 @@
     </view>
   </view>
 
+  <view wx:if="{{activeWorkspace === 'assessment'}}" class="workspace-panel">
+    <view class="safe-card workspace-card">
+      <view class="section-heading">
+        <view>
+          <text class="section-eyebrow">人工主导 · 对象范围内</text>
+          <text class="section-title">协作式评估证据</text>
+        </view>
+        <button class="icon-refresh" bindtap="loadAssessmentCases">刷新</button>
+      </view>
+      <text class="detail-line">先选择参与者议题，再按时间查看观察、模式候选、人工假设与未知项。</text>
+      <scroll-view wx:if="{{assessmentCases.length}}" scroll-x class="assessment-case-tabs">
+        <button wx:for="{{assessmentCases}}" wx:key="id" class="assessment-case-tab {{assessmentCaseId === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectAssessmentCase">{{item.displayQuestion}}</button>
+      </scroll-view>
+      <view wx:if="{{assessmentError}}" class="error-card">
+        <text class="error-title">评估证据暂时没有读取成功</text>
+        <text class="error-copy">{{assessmentError}}</text>
+        <button class="safe-outline-button" bindtap="loadAssessmentCases">重新加载</button>
+      </view>
+      <view wx:elif="{{assessmentLoading}}" class="empty-state"><text class="state-copy">正在读取证据时间线…</text></view>
+      <view wx:elif="{{!assessmentCases.length}}" class="empty-state">
+        <text class="empty-symbol">○</text>
+        <text class="state-title">当前没有可查看的评估议题</text>
+      </view>
+      <view wx:elif="{{assessmentWorkbench}}">
+        <view class="assessment-question-card">
+          <text class="section-eyebrow">当前议题</text>
+          <text class="assessment-question">{{assessmentWorkbench.case.working_question || assessmentWorkbench.case.assessment_question}}</text>
+          <text class="participant-meta">共享范围：{{assessmentWorkbench.case.sharedScopeText}}</text>
+        </view>
+        <view class="assessment-filter-row">
+          <picker mode="selector" range="{{['全部类型','观察 O','模式 P','人工假设 H','未知 U']}}" bindchange="onAssessmentFilter" data-key="kind">
+            <view class="assessment-filter">类型：{{assessmentFilters.kind || '全部'}}</view>
+          </picker>
+          <picker mode="selector" range="{{['全部范围','参与者','研究团队','督导']}}" bindchange="onAssessmentFilter" data-key="visibility">
+            <view class="assessment-filter">权限：{{assessmentFilters.visibility || '全部'}}</view>
+          </picker>
+        </view>
+        <view wx:if="{{!assessmentWorkbench.evidence_items.length}}" class="empty-state">
+          <text class="state-title">当前条件下没有证据</text>
+          <text class="state-copy">可在 Web 工作台补充资料或调整过滤条件。</text>
+        </view>
+        <view wx:for="{{assessmentWorkbench.evidence_items}}" wx:key="id" class="assessment-evidence-card">
+          <view class="analysis-job-heading">
+            <text class="analysis-job-title">{{item.kind}} · {{item.kindLabel}}</text>
+            <text class="priority-pill">{{item.review_status}}</text>
+          </view>
+          <text class="assessment-evidence-content">{{item.content}}</text>
+          <text wx:if="{{item.source_ref}}" class="participant-meta">来源：{{item.source_ref}}</text>
+          <text wx:if="{{item.observed_at}}" class="participant-meta">时间：{{item.observed_at}}</text>
+          <text wx:if="{{item.provider_id}}" class="participant-meta">提供者：{{item.provider_id}}</text>
+          <text wx:if="{{item.context}}" class="participant-meta">情境：{{item.context}}</text>
+          <text class="participant-meta">权限：{{item.visibilityText}}</text>
+          <text class="assessment-method-limit">方法限制：{{item.method_limitations}}</text>
+          <view wx:if="{{item.kind === 'H'}}" class="assessment-hypothesis-grid">
+            <text>支持依据：{{item.supportingText || '待补充'}}</text>
+            <text>反证：{{item.counterText || '待补充'}}</text>
+            <text>其它可能：{{item.alternativesText || '待补充'}}</text>
+            <text>参与者识别：{{item.participant_recognition || '尚未核对'}}</text>
+          </view>
+        </view>
+        <view class="assessment-draft assessment-draft--internal">
+          <text class="feedback-label">内部工作备注</text>
+          <text class="boundary-line">仅研究团队可见，不会发送给参与者。</text>
+          <textarea class="note-input" value="{{assessmentInternalNotes}}" data-key="assessmentInternalNotes" bindinput="onAssessmentDraftInput" maxlength="12000"></textarea>
+        </view>
+        <view class="assessment-draft assessment-draft--participant">
+          <text class="feedback-label">参与者可见草稿</text>
+          <text class="boundary-line">提交正式反馈后仍需另一位人工复核。</text>
+          <textarea class="note-input" value="{{assessmentParticipantDraft}}" data-key="assessmentParticipantDraft" bindinput="onAssessmentDraftInput" maxlength="6000"></textarea>
+        </view>
+        <button class="safe-primary-button" loading="{{assessmentSaving}}" disabled="{{assessmentSaving}}" bindtap="saveAssessmentDraft">保存工作台草稿</button>
+      </view>
+      <text class="boundary-line">移动端与 Web 使用同一证据和草稿契约；工作台不生成诊断或疗效分数。</text>
+    </view>
+  </view>
+
   <view wx:if="{{activeWorkspace === 'analysis'}}" class="workspace-panel">
     <view class="safe-card workspace-card">
       <view class="section-heading">

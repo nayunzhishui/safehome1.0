@@ -121,6 +121,8 @@ import type {
   SupervisionInput,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
+  TherapeuticAssessmentResearcherDraft,
+  TherapeuticAssessmentResearcherWorkbench,
   TherapeuticAssessmentDataItem,
   TherapeuticAssessmentParticipantDraft,
   TherapeuticAssessmentParticipantStep,
@@ -1348,6 +1350,41 @@ export class SafeHomeApiClient {
 
   listTherapeuticAssessmentEvidence(caseId: string): Promise<{ items: TherapeuticAssessmentEvidenceItem[]; count: number }> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/evidence`);
+  }
+
+  getTherapeuticAssessmentResearcherWorkbench(
+    caseId: string,
+    query: {
+      kind?: string;
+      review_status?: string;
+      visibility?: string;
+      page?: number;
+      page_size?: number;
+    } = {},
+  ): Promise<TherapeuticAssessmentResearcherWorkbench> {
+    return this.requestData(
+      this.withQuery(
+        `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/researcher-workbench`,
+        query,
+      ),
+    );
+  }
+
+  saveTherapeuticAssessmentResearcherDraft(
+    caseId: string,
+    input: {
+      internal_notes: string;
+      participant_visible_draft: string;
+      filters: TherapeuticAssessmentResearcherDraft["filters"];
+      selected_evidence_id?: string | null;
+      expected_version: number;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentResearcherDraft> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/researcher-workbench/draft`,
+      { method: "PUT", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
   }
 
   updateTherapeuticAssessmentQuestion(

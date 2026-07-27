@@ -108,6 +108,8 @@ REQUIRED_HEALTH_TABLES = [
     "therapeutic_assessment_responsibility_chains",
     "therapeutic_assessment_safety_events",
     "therapeutic_assessment_runtime_control",
+    "therapeutic_assessment_researcher_workbench_drafts",
+    "therapeutic_assessment_researcher_workbench_draft_events",
     "therapeutic_assessment_actions",
     "therapeutic_assessment_events",
     "computation_datasets",
@@ -116,8 +118,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_27_036"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_human_safety_chain"
+CURRENT_SCHEMA_VERSION = "2026_07_27_037"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_researcher_workbench"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1095,6 +1097,12 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in therapeutic_question_columns.items():
         ensure_column(conn, "therapeutic_assessment_cases", column, definition)
+    ensure_column(
+        conn,
+        "therapeutic_assessment_evidence_items",
+        "method_limitations",
+        "TEXT NOT NULL DEFAULT '仅适用于当前已授权资料与时间范围，不代表完整解释或诊断结论。'",
+    )
     conn.execute(
         """
         UPDATE therapeutic_assessment_cases

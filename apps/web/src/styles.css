@@ -4195,3 +4195,252 @@ ul {
   outline: 3px solid rgba(47, 103, 82, 0.28);
   outline-offset: 3px;
 }
+.therapeuticAssessmentWorkbench {
+  --ta-surface: #fffdf9;
+  --ta-forest: #245f4c;
+  --ta-border: #d9e1db;
+  --ta-muted: #62706b;
+}
+
+.taWorkbenchHeader {
+  align-items: flex-start;
+}
+
+.taWorkspaceGrid {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.32fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.taCaseRail {
+  position: sticky;
+  top: 18px;
+}
+
+.taCaseList {
+  display: grid;
+  gap: 10px;
+}
+
+.taCaseButton {
+  width: 100%;
+  min-height: 76px;
+  padding: 14px 16px;
+  border: 1px solid var(--ta-border);
+  border-radius: 16px;
+  background: var(--ta-surface);
+  color: inherit;
+  text-align: left;
+}
+
+.taCaseButton strong,
+.taCaseButton span {
+  display: block;
+}
+
+.taCaseButton span {
+  margin-top: 8px;
+  color: var(--ta-muted);
+  font-size: 0.88rem;
+}
+
+.taCaseButton.active {
+  border-color: var(--ta-forest);
+  box-shadow: 0 0 0 2px rgba(36, 95, 76, 0.1);
+}
+
+.taQuestionFocus {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 18px;
+  padding: 20px;
+  border: 1px solid #cddbd3;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f5faf6, #fffdf9);
+}
+
+.taQuestionFocus h2,
+.taQuestionFocus p {
+  margin: 0;
+}
+
+.taQuestionFocus > p {
+  grid-column: 1 / -1;
+  color: var(--ta-muted);
+}
+
+.taFilterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.taFilterBar label {
+  display: grid;
+  gap: 5px;
+  color: var(--ta-muted);
+  font-size: 0.84rem;
+}
+
+.taFilterBar select {
+  min-height: 42px;
+  padding: 0 36px 0 12px;
+  border: 1px solid var(--ta-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.taEvidenceTimeline {
+  display: grid;
+  gap: 14px;
+}
+
+.taEvidenceCard {
+  position: relative;
+  padding: 18px 18px 18px 24px;
+  border: 1px solid var(--ta-border);
+  border-radius: 18px;
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+
+.taEvidenceCard::before {
+  position: absolute;
+  inset: 18px auto 18px 0;
+  width: 5px;
+  border-radius: 0 5px 5px 0;
+  background: #78a18e;
+  content: "";
+}
+
+.taEvidenceCard header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--ta-muted);
+  font-size: 0.84rem;
+}
+
+.taKindBadge {
+  color: var(--ta-forest);
+  font-weight: 700;
+}
+
+.taEvidenceContent {
+  margin: 12px 0;
+  font-size: 1.03rem;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.taEvidenceMeta {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.taEvidenceMeta div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.taEvidenceMeta dt {
+  color: var(--ta-muted);
+}
+
+.taEvidenceMeta dd {
+  margin: 0;
+}
+
+.taHypothesisGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.taHypothesisGrid section {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f6f8f5;
+}
+
+.taHypothesisGrid p {
+  margin: 6px 0 0;
+}
+
+.taUncertainty {
+  margin-bottom: 0;
+  color: #835f32;
+}
+
+.taPagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.taDraftSeparation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.taDraftSeparation label {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 18px;
+}
+
+.taDraftSeparation label > span,
+.taDraftSeparation label small {
+  display: block;
+}
+
+.taDraftSeparation label small {
+  margin-top: 5px;
+  color: var(--ta-muted);
+}
+
+.taDraftSeparation textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid var(--ta-border);
+  border-radius: 12px;
+  font: inherit;
+  line-height: 1.6;
+}
+
+.taInternalDraft {
+  border: 1px solid #e2d6c3;
+  background: #fff9ef;
+}
+
+.taParticipantDraft {
+  border: 1px solid #cbded4;
+  background: #f3faf6;
+}
+
+@media (max-width: 900px) {
+  .taWorkspaceGrid,
+  .taDraftSeparation {
+    grid-template-columns: 1fr;
+  }
+
+  .taCaseRail {
+    position: static;
+  }
+
+  .taHypothesisGrid {
+    grid-template-columns: 1fr;
+  }
+}

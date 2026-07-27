@@ -1734,6 +1734,7 @@ SCHEMA_SQL = [
         provider_id TEXT,
         observed_at TEXT,
         context TEXT,
+        method_limitations TEXT NOT NULL DEFAULT '仅适用于当前已授权资料与时间范围，不代表完整解释或诊断结论。',
         visibility_scope_json TEXT NOT NULL DEFAULT '[]',
         applicability_scope TEXT,
         question_link TEXT,
@@ -1866,6 +1867,32 @@ SCHEMA_SQL = [
         changed_by TEXT,
         changed_at TEXT NOT NULL,
         restoration_evidence_ref TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_researcher_workbench_drafts (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        researcher_user_id TEXT NOT NULL,
+        internal_notes TEXT NOT NULL DEFAULT '',
+        participant_visible_draft TEXT NOT NULL DEFAULT '',
+        filters_json TEXT NOT NULL DEFAULT '{}',
+        selected_evidence_id TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(case_id, researcher_user_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_researcher_workbench_draft_events (
+        id TEXT PRIMARY KEY,
+        draft_id TEXT NOT NULL,
+        researcher_user_id TEXT NOT NULL,
+        result_version INTEGER NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(researcher_user_id, idempotency_key)
     )
     """,
     """
