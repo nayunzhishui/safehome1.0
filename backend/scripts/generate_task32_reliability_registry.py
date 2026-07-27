@@ -49,6 +49,9 @@ def build_registry() -> dict:
             {"job_type": "privacy_execution", "source_table": "privacy_request_executions", "lease": True, "idempotency": True, "backoff": "manual_after_transaction_failure", "dead_letter": True, "manual_recovery": True},
             {"job_type": "ai_evaluation", "source_table": "ai_qa_evaluation_runs", "lease": True, "idempotency": True, "backoff": "exponential_60s_cap_3600s", "dead_letter": True, "manual_recovery": True},
             {"job_type": "offline_benchmark", "source_table": "offline_benchmark_runs", "lease": True, "idempotency": True, "backoff": "manual_after_artifact_check", "dead_letter": True, "manual_recovery": True},
+            {"job_type": "affective_computation", "source_table": "reliable_jobs", "lease": True, "idempotency": True, "backoff": "exponential_60s_cap_3600s", "dead_letter": True, "manual_recovery": True},
+            {"job_type": "social_network_analysis", "source_table": "reliable_jobs", "lease": True, "idempotency": True, "backoff": "exponential_60s_cap_3600s", "dead_letter": True, "manual_recovery": True},
+            {"job_type": "participant_ai_qa", "source_table": "reliable_jobs", "lease": True, "idempotency": True, "backoff": "exponential_60s_cap_3600s", "dead_letter": True, "manual_recovery": True},
         ],
         "feature_flags": [
             {"name": "participant_journey", "default_enabled": True, "role_scope": ["parent", "student"], "rollback_default": True},
@@ -57,6 +60,9 @@ def build_registry() -> dict:
             {"name": "content_governance_publish", "default_enabled": False, "role_scope": ["admin"], "rollback_default": False},
             {"name": "ai_qa_sandbox", "default_enabled": False, "role_scope": ["researcher", "supervisor", "admin"], "rollback_default": False},
             {"name": "offline_benchmark", "default_enabled": False, "role_scope": ["researcher", "supervisor", "admin"], "rollback_default": False},
+            {"name": "affective_computing", "default_enabled": False, "role_scope": ["researcher", "supervisor", "admin"], "rollback_default": False},
+            {"name": "social_network_analysis", "default_enabled": False, "role_scope": ["researcher", "supervisor", "admin"], "rollback_default": False},
+            {"name": "participant_ai_qa", "default_enabled": False, "role_scope": ["parent", "student", "researcher", "supervisor", "admin"], "rollback_default": False},
         ],
         "fault_scenarios": [
             {"scenario": "content_missing", "expected": "readiness_blocked_and_recoverable_message"},

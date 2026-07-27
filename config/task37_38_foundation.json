@@ -46,7 +46,7 @@
     {"path": "backend/models.py", "bytes": 72829, "sha256": "ee238ac043ec4adb362afe28bb402e7d57ade92b28eb2c180a5a20e6b2681a12"},
     {"path": "shared/types/api.ts", "bytes": 80526, "sha256": "a0e7c87a4f43b165bf6573d5dafd4d4c687e922f718613094d4179732f7be26f"},
     {"path": "shared/constants/api.ts", "bytes": 7469, "sha256": "7296ccbc544daa517f224bf3072282841d20e29015a92d91f0db73c28b4d14e8"},
-    {"path": "docs/01_当前执行入口/任务三十七至三十八完整实现主计划_20260727.md", "bytes": 43344, "sha256": "7e633e4ffb23f10942d49a20f9d5266c2e35a1a5ad3aa526666b456ade7b6755"}
+    {"path": "docs/01_当前执行入口/任务三十七至三十八完整实现主计划_20260727.md", "bytes": 44340, "sha256": "7227c94c98464863d0b3ca999b7651aad32a680d00ff77be330ab7514431eba2"}
   ],
   "safety": {
     "raw_participant_text_in_foundation": false,

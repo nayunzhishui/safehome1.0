@@ -108,6 +108,38 @@
         "admin"
       ],
       "rollback_default": false
+    },
+    {
+      "default_enabled": false,
+      "name": "affective_computing",
+      "role_scope": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "rollback_default": false
+    },
+    {
+      "default_enabled": false,
+      "name": "social_network_analysis",
+      "role_scope": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "rollback_default": false
+    },
+    {
+      "default_enabled": false,
+      "name": "participant_ai_qa",
+      "role_scope": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "rollback_default": false
     }
   ],
   "job_adapters": [
@@ -146,6 +178,33 @@
       "lease": true,
       "manual_recovery": true,
       "source_table": "offline_benchmark_runs"
+    },
+    {
+      "backoff": "exponential_60s_cap_3600s",
+      "dead_letter": true,
+      "idempotency": true,
+      "job_type": "affective_computation",
+      "lease": true,
+      "manual_recovery": true,
+      "source_table": "reliable_jobs"
+    },
+    {
+      "backoff": "exponential_60s_cap_3600s",
+      "dead_letter": true,
+      "idempotency": true,
+      "job_type": "social_network_analysis",
+      "lease": true,
+      "manual_recovery": true,
+      "source_table": "reliable_jobs"
+    },
+    {
+      "backoff": "exponential_60s_cap_3600s",
+      "dead_letter": true,
+      "idempotency": true,
+      "job_type": "participant_ai_qa",
+      "lease": true,
+      "manual_recovery": true,
+      "source_table": "reliable_jobs"
     }
   ],
   "journeys": [

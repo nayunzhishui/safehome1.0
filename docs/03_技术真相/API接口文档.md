@@ -2239,3 +2239,19 @@ relationship_initiation_intention_action
 - `POST /cases/<id>/actions`、`PATCH /actions/<id>`：参与者选择、完成或拒绝下一小步并保存随访。
 
 参与者永远看不到草稿；成长数据不返回疗效分数。临时展示权限不参与这些写操作的正式鉴权。
+
+## 2026-07-27：T37-P04计算任务Harness
+
+统一前缀：`/api/reliability/computation-harness`。读取指标需要researcher、supervisor或admin；任务写操作和worker心跳仅admin。临时展示越权不扩展这些接口。
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| `POST` | `/jobs` | 按能力、来源引用和幂等键创建元数据任务；不接受原文、身份或凭据 |
+| `POST` | `/jobs/{id}/cancel` | 取消尚未终结的任务 |
+| `POST` | `/jobs/{id}/freeze` | 使用受控原因冻结任务并释放租约 |
+| `POST` | `/jobs/{id}/resume` | 使用受控原因恢复冻结任务 |
+| `POST` | `/heartbeat` | 记录哈希化worker引用、容量和活动任务数 |
+| `GET` | `/metrics` | 返回吞吐、排队时长、失败率、覆盖率、弃答率、成本和人工积压 |
+| `GET` | `/error-categories` | 返回用户、数据、模型、供应商和权限五类错误契约 |
+
+情感计算、社会网络分析和参与者AI具有独立默认关闭开关。工程接口完成不表示生产任务执行或真实模型发布已批准。

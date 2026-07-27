@@ -10583,6 +10583,464 @@
       }
     },
     {
+      "operation_id": "reliability.get_computation_error_categories.get",
+      "method": "GET",
+      "path": "/api/reliability/computation-harness/error-categories",
+      "handler": "reliability.get_computation_error_categories",
+      "module": "routes.reliability",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.reliability.get_computation_error_categories.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "job_lease_conflict",
+        "job_not_due",
+        "job_state_conflict",
+        "not_found",
+        "reliability_job_execution_disabled",
+        "reliability_workbench_disabled",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "reliability_control_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "reliability.post_computation_heartbeat.post",
+      "method": "POST",
+      "path": "/api/reliability/computation-harness/heartbeat",
+      "handler": "reliability.post_computation_heartbeat",
+      "module": "routes.reliability",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.reliability.post_computation_heartbeat.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "job_lease_conflict",
+        "job_not_due",
+        "job_state_conflict",
+        "not_found",
+        "reliability_job_execution_disabled",
+        "reliability_workbench_disabled",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "reliability_control_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "reliability.post_computation_job.post",
+      "method": "POST",
+      "path": "/api/reliability/computation-harness/jobs",
+      "handler": "reliability.post_computation_job",
+      "module": "routes.reliability",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.reliability.post_computation_job.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "job_lease_conflict",
+        "job_not_due",
+        "job_state_conflict",
+        "not_found",
+        "reliability_job_execution_disabled",
+        "reliability_workbench_disabled",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "reliability_control_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "reliability.post_computation_job_cancel.post",
+      "method": "POST",
+      "path": "/api/reliability/computation-harness/jobs/<job_id>/cancel",
+      "handler": "reliability.post_computation_job_cancel",
+      "module": "routes.reliability",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "job_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.reliability.post_computation_job_cancel.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "job_lease_conflict",
+        "job_not_due",
+        "job_state_conflict",
+        "not_found",
+        "reliability_job_execution_disabled",
+        "reliability_workbench_disabled",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "reliability_control_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "reliability.post_computation_job_freeze.post",
+      "method": "POST",
+      "path": "/api/reliability/computation-harness/jobs/<job_id>/freeze",
+      "handler": "reliability.post_computation_job_freeze",
+      "module": "routes.reliability",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "job_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.reliability.post_computation_job_freeze.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "job_lease_conflict",
+        "job_not_due",
+        "job_state_conflict",
+        "not_found",
+        "reliability_job_execution_disabled",
+        "reliability_workbench_disabled",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "reliability_control_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "reliability.post_computation_job_resume.post",
+      "method": "POST",
+      "path": "/api/reliability/computation-harness/jobs/<job_id>/resume",
+      "handler": "reliability.post_computation_job_resume",
+      "module": "routes.reliability",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "job_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.reliability.post_computation_job_resume.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "job_lease_conflict",
+        "job_not_due",
+        "job_state_conflict",
+        "not_found",
+        "reliability_job_execution_disabled",
+        "reliability_workbench_disabled",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "reliability_control_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "reliability.get_computation_metrics.get",
+      "method": "GET",
+      "path": "/api/reliability/computation-harness/metrics",
+      "handler": "reliability.get_computation_metrics",
+      "module": "routes.reliability",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "internal_redacted_reliability_metadata_no_participant_payload",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.reliability.get_computation_metrics.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "job_lease_conflict",
+        "job_not_due",
+        "job_state_conflict",
+        "not_found",
+        "reliability_job_execution_disabled",
+        "reliability_workbench_disabled",
+        "unauthorized",
+        "validation_error"
+      ],
+      "enum_refs": [
+        "reliability_control_status"
+      ],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
       "operation_id": "reliability.post_drill.post",
       "method": "POST",
       "path": "/api/reliability/drills",

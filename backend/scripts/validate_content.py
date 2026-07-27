@@ -814,7 +814,9 @@ def validate_reliability_registry_content(content_dir: Path) -> list[str]:
     forbidden = {"authorization", "cookie", "password", "token", "request_body", "response_body", "participant_text"}
     if not forbidden.issubset(set(registry.get("sensitive_fields_forbidden", []))):
         errors.append("可靠性注册表未完整禁止秘密值和参与者正文")
-    if {item.get("job_type") for item in registry.get("job_adapters", [])} != {"notification_delivery", "privacy_execution", "ai_evaluation", "offline_benchmark"}:
+    if not {"notification_delivery", "privacy_execution", "ai_evaluation", "offline_benchmark"}.issubset(
+        {item.get("job_type") for item in registry.get("job_adapters", [])}
+    ):
         errors.append("可靠任务适配器必须覆盖通知、隐私、AI评估和离线基准")
     if len(registry.get("fault_scenarios", [])) != 6:
         errors.append("可靠性固定合成故障场景必须为六类")

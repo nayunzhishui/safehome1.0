@@ -175,6 +175,13 @@
 | PUT | `/api/relationship-pilot/reports/<report_id>/hypotheses/<int:hypothesis_index>` | authenticated:parent,student,researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | POST | `/api/relationship-pilot/reports/<report_id>/send` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | GET | `/api/relationship-pilot/researcher/dashboard` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
+| GET | `/api/reliability/computation-harness/error-categories` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/computation-harness/heartbeat` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/computation-harness/jobs` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/computation-harness/jobs/<job_id>/cancel` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/computation-harness/jobs/<job_id>/freeze` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| POST | `/api/reliability/computation-harness/jobs/<job_id>/resume` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
+| GET | `/api/reliability/computation-harness/metrics` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
 | POST | `/api/reliability/drills` | role:admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
 | POST | `/api/reliability/evidence-packages` | role:supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |
 | GET | `/api/reliability/feature-flags` | role:researcher,supervisor,admin | internal_redacted_reliability_metadata_no_participant_payload | — | — | active |

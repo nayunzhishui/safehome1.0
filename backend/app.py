@@ -88,6 +88,7 @@ REQUIRED_CONTENT_FILES = [
     "research_methodology_registry.json",
     "task37_data_use_governance.json",
     "task37_computation_contract.json",
+    "task37_execution_harness.json",
     "researcher_capability_registry.json",
     "security_privacy_abuse_registry.json",
     "reliability_release_registry.json",

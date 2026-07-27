@@ -21,6 +21,15 @@ from services.reliability_service import (
     update_feature_flag,
     workbench,
 )
+from services.task37_harness_service import (
+    cancel as cancel_computation_job,
+    dispatch as dispatch_computation_job,
+    error_categories as computation_error_categories,
+    freeze as freeze_computation_job,
+    heartbeat as computation_worker_heartbeat,
+    metrics as computation_metrics,
+    resume as resume_computation_job,
+)
 
 
 bp = Blueprint("reliability", __name__, url_prefix="/api/reliability")
@@ -159,3 +168,57 @@ def post_evidence_package():
     if error:
         return error
     return _response(lambda: create_evidence_package(actor))
+
+
+@bp.post("/computation-harness/jobs")
+def post_computation_job():
+    actor, error = _actor("admin")
+    if error:
+        return error
+    try:
+        item, created = dispatch_computation_job(actor, request.get_json(silent=True) or {})
+        return ok(item, status=201 if created else 200)
+    except ReliabilityError as exc:
+        return fail(exc.code, str(exc), status=exc.status, details=exc.details or None)
+
+
+@bp.post("/computation-harness/jobs/<job_id>/cancel")
+def post_computation_job_cancel(job_id: str):
+    actor, error = _actor("admin")
+    return error or _response(lambda: cancel_computation_job(actor, job_id))
+
+
+@bp.post("/computation-harness/jobs/<job_id>/freeze")
+def post_computation_job_freeze(job_id: str):
+    actor, error = _actor("admin")
+    return error or _response(
+        lambda: freeze_computation_job(actor, job_id, request.get_json(silent=True) or {})
+    )
+
+
+@bp.post("/computation-harness/jobs/<job_id>/resume")
+def post_computation_job_resume(job_id: str):
+    actor, error = _actor("admin")
+    return error or _response(
+        lambda: resume_computation_job(actor, job_id, request.get_json(silent=True) or {})
+    )
+
+
+@bp.post("/computation-harness/heartbeat")
+def post_computation_heartbeat():
+    actor, error = _actor("admin")
+    return error or _response(
+        lambda: computation_worker_heartbeat(request.get_json(silent=True) or {})
+    )
+
+
+@bp.get("/computation-harness/metrics")
+def get_computation_metrics():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    return error or _response(computation_metrics)
+
+
+@bp.get("/computation-harness/error-categories")
+def get_computation_error_categories():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    return error or _response(computation_error_categories)

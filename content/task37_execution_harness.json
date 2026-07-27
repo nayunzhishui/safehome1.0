@@ -1,0 +1,70 @@
+{
+  "schema": "safehome.task37.execution-harness.v1",
+  "version": "2026-07-27-p04-v1",
+  "job_states": [
+    "pending",
+    "leased",
+    "retrying",
+    "completed",
+    "dead_letter",
+    "canceled",
+    "suspended"
+  ],
+  "capabilities": {
+    "affective_computing": {
+      "job_type": "affective_computation",
+      "production_enabled": false
+    },
+    "social_network_analysis": {
+      "job_type": "social_network_analysis",
+      "production_enabled": false
+    },
+    "participant_ai_qa": {
+      "job_type": "participant_ai_qa",
+      "production_enabled": false
+    }
+  },
+  "kill_switches": [
+    "affective_computing",
+    "social_network_analysis",
+    "participant_ai_qa"
+  ],
+  "resource_limits": {
+    "max_attempts": 5,
+    "lease_seconds_min": 30,
+    "lease_seconds_max": 900,
+    "heartbeat_capacity_max": 32,
+    "heartbeat_active_jobs_max": 32
+  },
+  "error_categories": [
+    "user",
+    "data",
+    "model",
+    "provider",
+    "permission"
+  ],
+  "metrics": [
+    "throughput",
+    "queue_duration_ms",
+    "failure_rate",
+    "coverage_rate",
+    "abstention_rate",
+    "cost_microunits",
+    "human_backlog"
+  ],
+  "logging": {
+    "stores_raw_text": false,
+    "stores_secret": false,
+    "stores_phone": false,
+    "stores_full_user_id": false,
+    "worker_id_storage": "sha256_prefix",
+    "allowed_heartbeat_fields": [
+      "capacity",
+      "active_jobs"
+    ]
+  },
+  "release": {
+    "production_execution_enabled": false,
+    "external_signoff_inferred": false
+  }
+}

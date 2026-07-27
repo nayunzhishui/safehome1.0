@@ -16,8 +16,16 @@ from database import get_connection, json_dumps, json_loads, new_id, now_iso, ro
 ROOT = Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "content" / "reliability_release_registry.json"
 TASK36_REGISTRY_PATH = ROOT / "content" / "task36_reliability_security_registry.json"
-JOB_TYPES = {"notification_delivery", "privacy_execution", "ai_evaluation", "offline_benchmark"}
-JOB_STATUSES = {"pending", "leased", "retrying", "completed", "dead_letter"}
+JOB_TYPES = {
+    "notification_delivery",
+    "privacy_execution",
+    "ai_evaluation",
+    "offline_benchmark",
+    "affective_computation",
+    "social_network_analysis",
+    "participant_ai_qa",
+}
+JOB_STATUSES = {"pending", "leased", "retrying", "completed", "dead_letter", "canceled", "suspended"}
 FAULT_SCENARIOS = {"content_missing", "database_timeout", "provider_failure", "token_invalidated", "duplicate_message", "artifact_corrupted"}
 ROLE_SCOPES = {"parent", "student", "researcher", "supervisor", "admin"}
 ALLOWED_JOB_KEYS = {"job_type", "source_type", "source_id", "idempotency_key", "max_attempts"}

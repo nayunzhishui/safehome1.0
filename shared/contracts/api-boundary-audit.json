@@ -141,19 +141,19 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/consent.py:36",
+      "location": "backend/routes/consent.py:40",
       "handler": "create_consent_record"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/consent.py:86",
+      "location": "backend/routes/consent.py:90",
       "handler": "list_consent_records"
     },
     {
       "severity": "warning",
       "rule": "possible_unbounded_list",
-      "location": "backend/routes/consent.py:86",
+      "location": "backend/routes/consent.py:90",
       "handler": "list_consent_records"
     },
     {
