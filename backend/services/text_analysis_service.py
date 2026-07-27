@@ -16,6 +16,36 @@ ALLOWED_FILES = {
     "summary": "text_analysis_summary.json",
 }
 
+_FORBIDDEN_KEYS = {
+    "text",
+    "raw_text",
+    "content",
+    "body",
+    "prompt",
+    "answer",
+    "diagnosis",
+    "records",
+    "record",
+}
+_MAX_LEAF_STR = 2000
+
+
+def _independent_privacy_gate(payload: object, _depth: int = 0) -> bool:
+    """独立检查离线聚合产物，不能仅信任文件自报的隐私门状态。"""
+    if _depth > 12:
+        return False
+    if isinstance(payload, dict):
+        return all(
+            str(key).lower() not in _FORBIDDEN_KEYS
+            and _independent_privacy_gate(child, _depth + 1)
+            for key, child in payload.items()
+        )
+    if isinstance(payload, list):
+        return all(_independent_privacy_gate(item, _depth + 1) for item in payload)
+    if isinstance(payload, str):
+        return len(payload) <= _MAX_LEAF_STR
+    return True
+
 
 def _read_output(filename: str) -> dict:
     path = OUTPUT_DIR / filename
@@ -42,10 +72,16 @@ def _read_output(filename: str) -> dict:
     quality_status = payload.get("quality_status")
     if not quality_status:
         quality_status = "empty" if not record_count else "validation_failed"
-    privacy_passed = payload.get("privacy_gate_passed", payload.get("raw_text_included") is False)
+    declared_passed = payload.get("privacy_gate_passed", payload.get("raw_text_included") is False)
+    structural_passed = _independent_privacy_gate(payload)
+    privacy_passed = bool(declared_passed) and structural_passed
     payload["quality_status"] = quality_status
-    payload["privacy_gate_passed"] = bool(privacy_passed)
-    payload["available"] = quality_status == "valid" and bool(privacy_passed)
+    payload["privacy_gate_passed"] = privacy_passed
+    payload["privacy_gate_declared"] = bool(declared_passed)
+    payload["privacy_gate_structural"] = structural_passed
+    payload["available"] = quality_status == "valid" and privacy_passed
+    if not structural_passed:
+        payload.setdefault("reason", "privacy_gate_structural_failed")
     if quality_status != "valid":
         payload.setdefault("reason", f"offline_output_{quality_status}")
     payload["filename"] = filename

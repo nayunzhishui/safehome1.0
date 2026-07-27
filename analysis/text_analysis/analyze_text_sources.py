@@ -221,8 +221,10 @@ def _empty_sentiment(record_count: int = 0) -> dict:
         "arousal": 0,
         "matched_emotion_count": 0,
         "negated_match_count": 0,
+        "negated_polarity_signal": 0,
         "text_length": 0,
         "coverage_rate": 0,
+        "effective_coverage_rate": 0,
     }
 
 
@@ -233,6 +235,7 @@ def _analyze_sentiment(records: list[dict], dictionaries: dict) -> dict:
     arousal_values: list[float] = []
     intensity_score = 0.0
     negated_count = 0
+    negated_polarity_values: list[float] = []
     text_length = sum(len(item.get("text") or "") for item in records)
     for item in records:
         for segment, contrast_weight in _sentence_segments(item.get("text") or ""):
@@ -244,6 +247,14 @@ def _analyze_sentiment(records: list[dict], dictionaries: dict) -> dict:
                 degree, negated = _modifier(tokens, index)
                 if negated:
                     negated_count += 1
+                    flipped = (
+                        -float(emotion["polarity"])
+                        * float(emotion["intensity"])
+                        * degree
+                        * contrast_weight
+                        * 0.5
+                    )
+                    negated_polarity_values.append(flipped)
                     continue
                 effective_intensity = float(emotion["intensity"]) * degree * contrast_weight
                 emotion_words[word] += 1
@@ -265,8 +276,18 @@ def _analyze_sentiment(records: list[dict], dictionaries: dict) -> dict:
             "arousal": round(sum(arousal_values) / matched, 3) if matched else 0,
             "matched_emotion_count": matched,
             "negated_match_count": negated_count,
+            "negated_polarity_signal": (
+                round(sum(negated_polarity_values) / len(negated_polarity_values), 3)
+                if negated_polarity_values
+                else 0
+            ),
             "text_length": text_length,
             "coverage_rate": round(matched / record_count, 3) if record_count else 0,
+            "effective_coverage_rate": (
+                round((matched + negated_count) / record_count, 3)
+                if record_count
+                else 0
+            ),
         }
     )
     return result

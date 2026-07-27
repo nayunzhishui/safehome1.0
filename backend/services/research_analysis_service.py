@@ -109,7 +109,18 @@ def _enrollment(conn, enrollment_id: str, participant_user_id: str) -> dict:
     return row_to_dict(row)
 
 
-def _assert_safe_shape(value: object, allowed: set[str] | None = None) -> None:
+_MAX_DEPTH = 8
+_MAX_STR_LEN = 200
+_MAX_COLLECTION = 512
+
+
+def _assert_safe_shape(value: object, allowed: set[str] | None = None, _depth: int = 0) -> None:
+    if _depth > _MAX_DEPTH:
+        raise ResearchAnalysisError(
+            "sensitive_payload_rejected",
+            "聚合结构嵌套过深，疑似夹带非聚合数据。",
+            details={"max_depth": _MAX_DEPTH},
+        )
     if isinstance(value, dict):
         keys = {str(key) for key in value}
         if allowed is not None and not keys.issubset(allowed):
@@ -125,11 +136,29 @@ def _assert_safe_shape(value: object, allowed: set[str] | None = None) -> None:
                 "分析任务和结果不得包含参与者原文或诊断标签。",
                 details={"forbidden_fields": sorted(found)},
             )
+        if len(value) > _MAX_COLLECTION:
+            raise ResearchAnalysisError(
+                "sensitive_payload_rejected",
+                "聚合对象字段过多。",
+                details={"max": _MAX_COLLECTION},
+            )
         for child in value.values():
-            _assert_safe_shape(child)
+            _assert_safe_shape(child, None, _depth + 1)
     elif isinstance(value, list):
+        if len(value) > _MAX_COLLECTION:
+            raise ResearchAnalysisError(
+                "sensitive_payload_rejected",
+                "聚合数组元素过多。",
+                details={"max": _MAX_COLLECTION},
+            )
         for child in value:
-            _assert_safe_shape(child)
+            _assert_safe_shape(child, None, _depth + 1)
+    elif isinstance(value, str) and len(value) > _MAX_STR_LEN:
+        raise ResearchAnalysisError(
+            "sensitive_payload_rejected",
+            "聚合结果中的文本过长，疑似夹带参与者原文。",
+            details={"max_chars": _MAX_STR_LEN},
+        )
 
 
 def _snapshot(conn, snapshot_id: str) -> dict:

@@ -12,7 +12,20 @@ from config import PROJECT_ROOT
 from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 
 
-ALLOWED_LABELS = {"anxiety", "fear", "anger", "irritation", "sadness", "helplessness", "guilt", "shame", "calm", "positive", "unmapped"}
+ALLOWED_LABELS = {
+    "anxiety",
+    "fear",
+    "anger",
+    "irritation",
+    "sadness",
+    "helplessness",
+    "guilt",
+    "shame",
+    "calm",
+    "positive",
+    "crisis_expression",
+    "unmapped",
+}
 ALLOWED_REFLEX_NODES = {"trigger", "thought", "body_feeling", "emotion", "reaction", "behavior", "outcome", "unmapped"}
 REVIEW_DECISIONS = {"engineering_reviewed", "changes_required", "stop"}
 ALGORITHM_VERSION = "safehome-offline-affect-network-v1"
