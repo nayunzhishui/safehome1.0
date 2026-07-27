@@ -1135,6 +1135,10 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases`, { requiresAuth: true });
     },
 
+    getTherapeuticAssessmentServiceLevels() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`, { requiresAuth: true });
+    },
+
     createTherapeuticAssessmentCase(data, idempotencyKey) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases`, {
         method: "POST",

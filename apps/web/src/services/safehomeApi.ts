@@ -121,6 +121,7 @@ import type {
   SupervisionInput,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentFeedbackVersion,
+  TherapeuticAssessmentServiceLevelStatus,
   SupervisionRequest,
   TrainingCard,
   TrainingPlan,
@@ -1315,6 +1316,10 @@ export class SafeHomeApiClient {
 
   listTherapeuticAssessmentCases(): Promise<{ items: TherapeuticAssessmentCase[]; count: number; boundary_notice: string }> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases`);
+  }
+
+  getTherapeuticAssessmentServiceLevels(): Promise<TherapeuticAssessmentServiceLevelStatus> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`);
   }
 
   getTherapeuticAssessmentCase(caseId: string): Promise<TherapeuticAssessmentCase> {

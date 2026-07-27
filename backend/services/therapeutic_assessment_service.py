@@ -17,6 +17,7 @@ from database import (
 )
 from services.risk_service import check_text_risk
 from services.risk_review_service import create_risk_review_record
+from services.therapeutic_assessment_level_service import level as service_level
 
 
 BOUNDARY_NOTICE = "本功能用于共同理解当前体验和商量下一小步，不构成诊断、治疗承诺或疗效评分。"
@@ -109,6 +110,7 @@ def _event(conn, case_id: str, actor: dict, action: str, key: str, before: int |
 def _expand_case(conn, case: dict) -> dict:
     item = dict(case)
     item["shared_scope"] = json_loads(item.pop("shared_scope_json", None), [])
+    item["service_level"] = service_level(str(item.get("readiness_level") or "L0"))
     feedback = rows_to_dicts(
         conn.execute(
             "SELECT * FROM therapeutic_assessment_feedback_versions WHERE case_id = ? ORDER BY version_no",

@@ -279,6 +279,7 @@
 | POST | `/api/therapeutic-assessment/cases/<case_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/review` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/send` | role:supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/service-levels` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/training-effectiveness` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/training-plan` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | POST | `/api/training-plan/assignment` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |

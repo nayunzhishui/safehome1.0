@@ -19,6 +19,7 @@ from services.therapeutic_assessment_service import (
     update_action,
     update_scope,
 )
+from services.therapeutic_assessment_level_service import public_status as service_level_status
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -48,6 +49,12 @@ def _payload():
 
 def _key():
     return str(request.headers.get("Idempotency-Key") or "")
+
+
+@bp.get("/service-levels")
+def get_service_levels_route():
+    actor, error = _actor()
+    return error or ok(service_level_status())
 
 
 @bp.get("/cases")

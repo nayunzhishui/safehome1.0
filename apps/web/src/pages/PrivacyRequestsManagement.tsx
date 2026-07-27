@@ -27,7 +27,7 @@ const SCOPE_LABELS: Record<PrivacyHandlingScope, string> = {
   messages_and_notifications: "消息与提醒记录",
   relationship_pilot: "关系试点记录",
   research_outputs: "研究导出与离线产物",
-  therapeutic_assessment: "治疗性评估协作记录",
+  therapeutic_assessment: "支持性评估协作记录",
 };
 
 function formatTime(value?: string | null) {

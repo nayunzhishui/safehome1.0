@@ -96,7 +96,7 @@ export function TherapeuticAssessmentWorkbench() {
       <header className="dashboardHeader">
         <div>
           <p className="eyebrow">人工主导 · 共同理解</p>
-          <h1 id="ta-title">治疗性评估协作</h1>
+          <h1 id="ta-title">协作式评估工作台</h1>
           <p className="summary">从参与者的问题出发，明确共享范围，形成可讨论的版本化反馈，再共同选择一个低压力的小行动。</p>
         </div>
         <button className="secondaryButton" type="button" onClick={() => void load()} disabled={loading}>重新同步</button>
@@ -120,7 +120,7 @@ export function TherapeuticAssessmentWorkbench() {
             {cases.map((item) => (
               <button type="button" key={item.id} className={`taCaseButton ${selected?.id === item.id ? "active" : ""}`} onClick={() => setSelectedId(item.id)}>
                 <strong>{item.assessment_question}</strong>
-                <span>{item.status} · {item.readiness_level} · {item.risk_level}</span>
+                <span>{item.status} · {item.service_level.display_name} · {item.risk_level}</span>
               </button>
             ))}
           </div>
@@ -130,7 +130,7 @@ export function TherapeuticAssessmentWorkbench() {
           {selected ? (
             <>
               <div className="sectionHeader">
-                <div><p className="eyebrow">版本 {selected.version}</p><h2>结构化共同反馈</h2></div>
+                <div><p className="eyebrow">{selected.service_level.display_name} · 版本 {selected.version}</p><h2>结构化共同反馈</h2></div>
                 <span className={`statusPill status-${selected.status}`}>{selected.status}</span>
               </div>
               <div className="guidanceBox">
@@ -166,7 +166,7 @@ export function TherapeuticAssessmentWorkbench() {
         </section>
       </div>
 
-      <aside className="guidanceBox" aria-label="治疗性评估边界">
+      <aside className="guidanceBox" aria-label="协作式评估边界">
         <strong>使用边界</strong>
         <p>儿童、伴侣、多方关系、高风险和诊断性范围继续受 D01–D26 资格、督导与伦理门禁约束。L0/L1 不能确认或发送，临时展示权限不能替代正式对象授权。</p>
         <p>成长仪表盘只记录变化、讨论和行动线索，不生成疗效分数。</p>

@@ -1,0 +1,82 @@
+{
+  "schema": "safehome.therapeutic-assessment.service-levels.v1",
+  "version": "2026-07-27-f01-v1",
+  "default_level": "L0",
+  "production_max_without_human_chain": "L0",
+  "public_terms": [
+    "支持性评估",
+    "协作式阶段性评估",
+    "自我了解线索"
+  ],
+  "forbidden_without_l3": [
+    "正式治疗性评估",
+    "AIS",
+    "FIS",
+    "疗效证明",
+    "疗效承诺"
+  ],
+  "levels": [
+    {
+      "id": "L0",
+      "display_name": "支持性评估准备",
+      "short_name": "自助准备",
+      "description": "由参与者整理自己的问题、事件、已有资源和希望了解的内容。",
+      "human_led": false,
+      "supervision_required": false,
+      "formal_ta": false,
+      "participant_feedback_allowed": false,
+      "required_evidence": []
+    },
+    {
+      "id": "L1",
+      "display_name": "真人支持性复核",
+      "short_name": "真人复核",
+      "description": "由真人核对资料是否完整、是否适合继续，以及还需要补充什么。",
+      "human_led": true,
+      "supervision_required": false,
+      "formal_ta": false,
+      "participant_feedback_allowed": true,
+      "required_evidence": [
+        "reviewer_identity",
+        "scope_confirmation"
+      ]
+    },
+    {
+      "id": "L2",
+      "display_name": "协作式阶段性评估",
+      "short_name": "协作评估",
+      "description": "由受训人员在督导下，与参与者共同核对阶段性理解和下一小步。",
+      "human_led": true,
+      "supervision_required": true,
+      "formal_ta": false,
+      "participant_feedback_allowed": true,
+      "required_evidence": [
+        "qualification",
+        "supervision",
+        "ethics_scope"
+      ]
+    },
+    {
+      "id": "L3",
+      "display_name": "专业治疗性评估",
+      "short_name": "正式TA",
+      "description": "由具备测验资质、治疗性评估训练和持续督导责任链的专业人员提供。",
+      "human_led": true,
+      "supervision_required": true,
+      "formal_ta": true,
+      "participant_feedback_allowed": true,
+      "required_evidence": [
+        "assessment_qualification",
+        "therapeutic_assessment_training",
+        "continuous_supervision",
+        "ethics_scope",
+        "service_owner"
+      ]
+    }
+  ],
+  "release": {
+    "l1_l3_production_enabled": false,
+    "external_human_evidence_complete": false,
+    "temporary_showcase_bypass_accepted": false
+  }
+}

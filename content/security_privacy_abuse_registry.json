@@ -6875,6 +6875,30 @@
       }
     },
     {
+      "operation_id": "therapeutic_assessment.get_service_levels_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/service-levels",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "progress_summary.get_training_effectiveness.get",
       "method": "GET",
       "path": "/api/training-effectiveness",
@@ -7224,7 +7248,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 287,
+    "operation_count": 288,
     "showcase_bypass_operation_count": 10,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

@@ -192,7 +192,29 @@ export type PrivacyHandlingScope =
   | "therapeutic_assessment";
 
 export type TherapeuticAssessmentStatus = "open" | "support_required" | "feedback_sent" | "withdrawn";
-export type TherapeuticAssessmentReadiness = "L0" | "L1" | "L2";
+export type TherapeuticAssessmentReadiness = "L0" | "L1" | "L2" | "L3";
+
+export interface TherapeuticAssessmentServiceLevel {
+  id: TherapeuticAssessmentReadiness;
+  display_name: string;
+  short_name: string;
+  description: string;
+  human_led: boolean;
+  supervision_required: boolean;
+  formal_ta: boolean;
+  participant_feedback_allowed: boolean;
+  required_evidence: string[];
+}
+
+export interface TherapeuticAssessmentServiceLevelStatus {
+  schema: string;
+  version: string;
+  levels: TherapeuticAssessmentServiceLevel[];
+  current_default: TherapeuticAssessmentServiceLevel;
+  production_max_without_human_chain: TherapeuticAssessmentReadiness;
+  public_terms: string[];
+  boundary_notice: string;
+}
 
 export interface TherapeuticAssessmentFeedbackVersion {
   id: string;
@@ -230,6 +252,7 @@ export interface TherapeuticAssessmentCase {
   risk_level: "low" | "medium" | "high";
   complexity_scope: string;
   readiness_level: TherapeuticAssessmentReadiness;
+  service_level: TherapeuticAssessmentServiceLevel;
   assigned_researcher_id?: string | null;
   version: number;
   disagreement_note?: string | null;

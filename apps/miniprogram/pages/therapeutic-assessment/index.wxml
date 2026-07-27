@@ -1,6 +1,6 @@
-<view class="safe-page ta-page" role="main" aria-label="治疗性评估">
+<view class="safe-page ta-page" role="main" aria-label="支持性评估">
   <view class="ta-hero">
-    <text class="ta-kicker">人工主导 · 可撤回</text>
+    <text class="ta-kicker">{{activeCase ? activeCase.service_level.display_name : defaultServiceLevel.display_name}} · 可撤回</text>
     <text class="ta-title">共同理解一次关系体验</text>
     <text class="ta-copy">从你真正关心的问题出发，决定愿意共享什么。反馈是可讨论的版本，不是对你或关系的定论。</text>
   </view>
@@ -23,7 +23,7 @@
   <view wx:if="{{loading}}" class="safe-card ta-card">正在读取协作记录…</view>
   <view wx:elif="{{activeCase}}" class="safe-card ta-card">
     <view class="ta-heading">
-      <view><text class="ta-section-title">2. 查看当前协作</text><text class="ta-meta">{{activeCase.status}} · {{activeCase.readiness_level}}</text></view>
+      <view><text class="ta-section-title">2. 查看当前协作</text><text class="ta-meta">{{activeCase.status}} · {{activeCase.service_level.display_name}}</text></view>
       <text class="ta-version">版本 {{activeCase.version}}</text>
     </view>
     <text class="ta-question">{{activeCase.assessment_question}}</text>

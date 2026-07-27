@@ -18,6 +18,11 @@ Page({
     actionText: "",
     notice: "",
     errorMessage: "",
+    defaultServiceLevel: {
+      id: "L0",
+      display_name: "支持性评估准备",
+      short_name: "自助准备",
+    },
   },
 
   onShow() {
@@ -27,12 +32,19 @@ Page({
   async loadCases() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const result = await api.listTherapeuticAssessmentCases();
+      const [result, levelStatus] = await Promise.all([
+        api.listTherapeuticAssessmentCases(),
+        api.getTherapeuticAssessmentServiceLevels(),
+      ]);
       const cases = (result.items || []).map((item) => ({
         ...item,
         latestFeedback: (item.feedback_versions || []).filter((version) => version.status === "sent").slice(-1)[0] || null,
       }));
-      this.setData({ cases, activeCase: cases[0] || null });
+      this.setData({
+        cases,
+        activeCase: cases[0] || null,
+        defaultServiceLevel: levelStatus.current_default || this.data.defaultServiceLevel,
+      });
     } catch (error) {
       this.setData({ errorMessage: error.message || "协作记录暂时无法读取。" });
     } finally {

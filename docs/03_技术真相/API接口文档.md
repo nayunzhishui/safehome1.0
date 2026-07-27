@@ -2240,6 +2240,12 @@ relationship_initiation_intention_action
 
 参与者永远看不到草稿；成长数据不返回疗效分数。临时展示权限不参与这些写操作的正式鉴权。
 
+### T38-F01服务级别补充
+
+- `GET /api/therapeutic-assessment/service-levels`：登录用户读取L0—L3版本化名称、范围、人工/督导要求和当前生产上限。
+- `GET /cases`与`GET /cases/{id}`的每条case新增`service_level`，与`readiness_level`一致，包含`display_name`、`formal_ta`和所需证据类型。
+- 当前默认及无人工责任链生产上限为L0；返回L1—L3定义不表示相关服务已经批准开放。
+
 ## 2026-07-27：T37-P04计算任务Harness
 
 统一前缀：`/api/reliability/computation-harness`。读取指标需要researcher、supervisor或admin；任务写操作和worker心跳仅admin。临时展示越权不扩展这些接口。
