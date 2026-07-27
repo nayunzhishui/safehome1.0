@@ -1,0 +1,57 @@
+{
+  "schema": "safehome.tasks37_38.foundation.v1",
+  "version": "2026-07-27-p00-v1",
+  "captured_on": "2026-07-27",
+  "git": {
+    "head": "777ba8b24a62df8dca787bc3866c8c89e85d76d4",
+    "branch": "main",
+    "upstream": "origin/main",
+    "dirty_worktree_policy": "observe_only_never_revert"
+  },
+  "database": {
+    "schema_version": "2026_07_26_029",
+    "schema_name": "therapeutic_assessment_collaboration",
+    "providers": ["sqlite", "mysql"]
+  },
+  "current_capabilities": {
+    "affective_computing": "rules_and_synthetic_only",
+    "social_network_analysis": "synthetic_group_descriptive_only",
+    "ai_provider": "fake_only",
+    "participant_ai_entry": "development_open_l0_only",
+    "therapeutic_assessment": "engineering_workflow_without_qualified_human_chain",
+    "production_release": "not_approved"
+  },
+  "known_drift": [
+    {
+      "asset": "content/offline_benchmark_registry.json",
+      "fact": "GoEmotions、CPED和SocioPatterns已下载到项目外候选目录，旧T29注册仍保持下载前阻断状态。",
+      "resolution_task": "T37-P01"
+    },
+    {
+      "asset": "content/ai_qa_governance.json",
+      "fact": "负责人要求参与者入口开放，但现有治理仍为参与者关闭和fake-only。",
+      "resolution_task": "T37-C01"
+    }
+  ],
+  "assets": [
+    {"path": "CONTEXT.md", "bytes": 1558, "sha256": "281abc3e3b6554ccad36daceb257d1fe24b6387923747dd9d02ec338a7b29e63"},
+    {"path": "config/task36_registry.json", "bytes": 32500, "sha256": "3941b48655d176c315ab1bc77d044e39ad0bf5ef703b1d0448c9209d08321a2c"},
+    {"path": "config/task36_acceptance_manifest.json", "bytes": 5032, "sha256": "71e44061a1bca2eed136f933778c64cbff69b74a4b03bb5c2f34c2caa991344e"},
+    {"path": "content/offline_benchmark_registry.json", "bytes": 5525, "sha256": "919e22f0a0c02dd4e1d75356e8605a0fd941a1a936ca856bb7d87d691ba3222e"},
+    {"path": "content/ai_qa_governance.json", "bytes": 2363, "sha256": "bdc2bd1124ff563d9bb4d8f408d37de0c2df08b4d2fe26c6fb4e767f8f8c9f78"},
+    {"path": "content/research_methodology_registry.json", "bytes": 88542, "sha256": "2e65547ce77e858480a5b973e2bff5043d8ccc080887aa51a11791905bf6e933"},
+    {"path": "content/task36_reliability_security_registry.json", "bytes": 4026, "sha256": "2c30d5f4aeddf3e4051b5867f960711c3094d0e81f9d6f89d93cbf63da70940f"},
+    {"path": "content/showcase_access.json", "bytes": 512, "sha256": "76679f2c60d0bef669eca2af50065690155f0b5089d05081e5e2274c4d4a60bd"},
+    {"path": "backend/database.py", "bytes": 44924, "sha256": "f8379badb71ab6efd4825f051e95c14e27a2928abada2d4ba3b65f2c394d9b23"},
+    {"path": "backend/models.py", "bytes": 69983, "sha256": "f3f755b248fadb7f104d561658d66615b82f1ef32540c1094f26825a4228df81"},
+    {"path": "shared/types/api.ts", "bytes": 80088, "sha256": "d4e5d0167dd4e82bc09381d5816ff852406b5b4bf56df12af5fd0d2c6c59009f"},
+    {"path": "shared/constants/api.ts", "bytes": 7408, "sha256": "f87c47d4988413770b92db1bcb07bc0e15867775b920cea0d014c231a871a2a7"},
+    {"path": "docs/01_当前执行入口/任务三十七至三十八完整实现主计划_20260727.md", "bytes": 40786, "sha256": "ab881862588e9c0bb2a2fee84d89da0541a4f05a3ef213631fadee7850c6a609"}
+  ],
+  "safety": {
+    "raw_participant_text_in_foundation": false,
+    "secrets_in_foundation": false,
+    "temporary_showcase_bypass_is_formal_permission": false,
+    "simulated_agents_are_human_signoff": false
+  }
+}

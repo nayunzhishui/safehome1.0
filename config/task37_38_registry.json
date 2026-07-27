@@ -1,0 +1,227 @@
+{
+  "schema": "safehome.tasks37_38.registry.v1",
+  "version": "2026-07-27-p00-f00-v1",
+  "scope": [
+    "T37-P00", "T37-P01", "T37-P02", "T37-P03", "T37-P04",
+    "T38-F00", "T38-F01", "T38-F02", "T38-F03", "T38-F04", "T38-F05",
+    "T38-F06", "T38-F07", "T38-F08", "T38-F09", "T38-F10", "T38-F11",
+    "T38-F12", "T38-F13", "T38-F14", "T38-F15", "T38-F16", "T38-F17",
+    "T38-F18", "T38-F19", "T38-F20", "T38-F21", "T38-F22", "T38-F23",
+    "T38-F24", "T38-F25",
+    "T37-A01", "T37-A02", "T37-A03", "T37-A04", "T37-A05", "T37-A06",
+    "T37-A07",
+    "T37-B01", "T37-B02", "T37-B03", "T37-B04", "T37-B05",
+    "T37-C01", "T37-C02", "T37-C03", "T37-C04", "T37-C05", "T37-C06",
+    "T37-C07", "T37-C08", "T37-C09", "T37-C10",
+    "T37-R01", "T37-R02", "T37-R03", "T37-R04"
+  ],
+  "execution_order": [
+    "T37-P00", "T38-F00",
+    "T37-P01", "T37-P02", "T37-P03", "T37-P04",
+    "T38-F01", "T38-F02", "T38-F03", "T38-F04", "T38-F05",
+    "T38-F06", "T38-F07", "T38-F08", "T38-F09", "T38-F10", "T38-F11", "T38-F12",
+    "T37-A01", "T37-A02", "T37-A03", "T37-A04", "T37-A05", "T37-A06", "T37-A07",
+    "T37-B01", "T37-B02", "T37-B03", "T37-B04", "T37-B05",
+    "T37-C01", "T37-C02", "T37-C03", "T37-C04", "T37-C05", "T37-C06",
+    "T37-C07", "T37-C08", "T37-C09", "T37-C10",
+    "T38-F13", "T38-F14", "T38-F15", "T38-F16", "T38-F17", "T38-F18",
+    "T38-F19", "T38-F20", "T38-F21", "T38-F22", "T38-F23",
+    "T37-R01", "T37-R02", "T37-R03", "T37-R04",
+    "T38-F24", "T38-F25"
+  ],
+  "policy": {
+    "state_path": ".codex_tmp/task37_38_state.json",
+    "snapshot_path": ".codex_tmp/task37_38_snapshot.json",
+    "foundation_path": "config/task37_38_foundation.json",
+    "source_registry_path": "content/task38_source_registry.json",
+    "execution_record_path": "docs/00_当前事实基准/Claude计划模式.md",
+    "handoff_path": "docs/00_当前事实基准/当前进度交接.md",
+    "authoritative_plan_path": "docs/01_当前执行入口/任务三十七至三十八完整实现主计划_20260727.md",
+    "agent_root": "agents/task37_38",
+    "rag_root": "rag/task37_38",
+    "dirty_worktree_policy": "observe_only_never_revert",
+    "production_automation_authorized": true,
+    "production_automation_requires_backup_restore_canary_kill_switch": true,
+    "simulated_agent_may_sign_external_gate": false,
+    "secret_values_may_be_recorded": false,
+    "default_training_consent_allowed": false,
+    "temporary_showcase_bypass_retained": true,
+    "temporary_showcase_bypass_counts_as_formal_permission_evidence": false,
+    "allowed_command_executables": ["python", "python.exe", "node", "node.exe", "npm.cmd"],
+    "forbidden_command_terms": [
+      "git reset",
+      "git checkout --",
+      "git clean",
+      "WECHAT_APP_SECRET=",
+      "OPENAI_API_KEY=",
+      "DEEPSEEK_API_KEY=",
+      "TRUST_CLOUDBASE_IDENTITY_HEADERS=1",
+      "cloudflared tunnel run"
+    ]
+  },
+  "owner_decisions": {
+    "project_mode": "noncommercial_research_pilot",
+    "participant_ai_entry": {
+      "development_open": true,
+      "production_entry_requested": true,
+      "production_max_service_level_without_humans": "L0",
+      "pretend_human_review_allowed": false,
+      "high_risk_free_text_without_on_call_allowed": false
+    },
+    "individual_risk": {
+      "requested": true,
+      "mode": "shadow_human_review_signal",
+      "participant_label_allowed": false,
+      "automatic_action_allowed": false
+    },
+    "training_consent": {
+      "separate_purpose_required": true,
+      "default_selected": false,
+      "withdrawal_supported": true,
+      "refusal_blocks_basic_service": false
+    },
+    "populations": {
+      "adult_development_open": true,
+      "minor_development_open": true,
+      "partner_development_open": true,
+      "minor_or_partner_production_feedback_without_qualified_human_allowed": false
+    },
+    "providers": ["deepseek", "openai"],
+    "data_region": "mainland_china_default",
+    "openai_participant_identifiable_data_allowed": false,
+    "monthly_budget_cny": {
+      "test": 100,
+      "production_candidate": 500,
+      "warning_ratio": 0.8,
+      "hard_stop_ratio": 1.0
+    },
+    "web_search_rag": {
+      "candidate_quarantine_allowed": true,
+      "automatic_production_indexing_allowed": false,
+      "human_approval_required": true
+    },
+    "simulated_roles": {
+      "expert_agents": 5,
+      "responsibility_agents": 3,
+      "count_as_human_signoff": false
+    },
+    "human_staff": {
+      "t1_t2_t3_available": false,
+      "supervision_or_on_call_configured": false
+    },
+    "evidence_claims": {
+      "cped_rights": "owner_confirmed_evidence_file_pending",
+      "relationship_sna_consent": "owner_confirmed_evidence_archive_pending",
+      "ethics_privacy_security": "owner_confirmed_evidence_archive_pending",
+      "a1_to_a4_recruitment": "owner_confirmed_ready"
+    }
+  },
+  "required_layers": [
+    "backend", "database", "shared", "web", "miniprogram", "permissions",
+    "audit", "privacy", "recovery", "migration", "rollback", "targeted_acceptance",
+    "full_acceptance", "documentation", "agents", "rag"
+  ],
+  "tasks": [
+    {
+      "id": "T37-P00",
+      "title": "当前事实与资产冻结",
+      "dependencies": [],
+      "engineering_complete": true,
+      "status": "engineering_complete_local",
+      "evidence": [
+        "config/task37_38_registry.json",
+        "config/task37_38_foundation.json",
+        "scripts/run_tasks_37_38.py",
+        "backend/tests/test_tasks37_38_foundation.py",
+        "agents/task37_38/README.md",
+        "rag/task37_38/README.md"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_tasks37_38_foundation.py", "-q"],
+        ["python", "scripts/run_tasks_37_38.py", "report"],
+        ["python", "scripts/run_tasks_37_38.py", "snapshot"]
+      ]
+    },
+    {
+      "id": "T38-F00",
+      "title": "资料源、术语和证据等级注册",
+      "dependencies": ["T37-P00"],
+      "engineering_complete": true,
+      "status": "engineering_complete_local_external_expert_visual_gates_pending",
+      "evidence": [
+        "CONTEXT.md",
+        "content/task38_source_registry.json",
+        "scripts/generate_task38_source_registry.py",
+        "backend/tests/test_tasks37_38_foundation.py"
+      ],
+      "verify_commands": [
+        ["python", "scripts/generate_task38_source_registry.py", "--check"],
+        ["python", "-m", "pytest", "backend/tests/test_tasks37_38_foundation.py", "-q"]
+      ]
+    },
+    {"id": "T37-P01", "title": "预期用途、禁止用途和数据用途", "dependencies": ["T38-F00"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-P02", "title": "统一计算契约与版本注册", "dependencies": ["T37-P01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-P03", "title": "生产数据层、血缘与隐私生命周期", "dependencies": ["T37-P02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-P04", "title": "异步任务、Harness与可观测性", "dependencies": ["T37-P03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F01", "title": "服务级别L0至L3与对外命名", "dependencies": ["T38-F00"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F02", "title": "问题驱动状态机与兼容迁移", "dependencies": ["T38-F01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F03", "title": "O/P/H/U证据账本", "dependencies": ["T38-F02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F04", "title": "我的问题与问题质量量规", "dependencies": ["T38-F03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F05", "title": "多方资料与动态同意", "dependencies": ["T38-F04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F06", "title": "参与者八页面闭环", "dependencies": ["T38-F05", "T37-P04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F07", "title": "适用性、安全和人工责任链", "dependencies": ["T38-F06"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F08", "title": "研究者证据工作台", "dependencies": ["T38-F07"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F09", "title": "分层反馈、书面信与用户核对", "dependencies": ["T38-F08"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F10", "title": "小行动与随访", "dependencies": ["T38-F09"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F11", "title": "T1至T3胜任力与授权", "dependencies": ["T38-F10"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F12", "title": "督导、质量抽样和事件修复", "dependencies": ["T38-F11"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-A01", "title": "情绪标签体系和标注手册", "dependencies": ["T37-P04", "T38-F05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-A02", "title": "数据权利、双人标注与裁决", "dependencies": ["T37-A01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-A03", "title": "透明基线、候选模型和校准", "dependencies": ["T37-A02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-A04", "title": "群体级社会网络分析", "dependencies": ["T37-A02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-A05", "title": "模型注册、影子执行和研究者界面", "dependencies": ["T37-A03", "T37-A04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-A06", "title": "漂移、公平性、异常和回滚", "dependencies": ["T37-A05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-A07", "title": "情感计算发布门禁", "dependencies": ["T37-A06"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-B01", "title": "协作式评估生产契约桥接", "dependencies": ["T38-F12", "T37-P04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-B02", "title": "人工队列、对象范围与值守基础", "dependencies": ["T37-B01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-B03", "title": "五道门发布流水线", "dependencies": ["T37-B02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-B04", "title": "反馈生命周期、随访和恢复", "dependencies": ["T37-B03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-B05", "title": "协作式评估生产门禁", "dependencies": ["T37-B04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C01", "title": "AI用例冻结", "dependencies": ["T37-P04", "T38-F05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C02", "title": "供应商遴选和合同证据", "dependencies": ["T37-C01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C03", "title": "真实Provider适配器和密钥管理", "dependencies": ["T37-C02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C04", "title": "批准知识库和RAG", "dependencies": ["T37-C03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C05", "title": "输入安全、隐私最小化和提示注入防护", "dependencies": ["T37-C03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C06", "title": "输出五道门和结构化契约", "dependencies": ["T37-C04", "T37-C05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C07", "title": "人工审阅工作台", "dependencies": ["T37-C06", "T38-F12"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C08", "title": "评测、红队和持续质量", "dependencies": ["T37-C07"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C09", "title": "预算、限流、熔断、降级和删除", "dependencies": ["T37-C08"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-C10", "title": "AI分阶段发布", "dependencies": ["T37-C09"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F13", "title": "低风险成人L1/L2首发范围", "dependencies": ["T38-F12"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F14", "title": "未成年人/亲子保护子线", "dependencies": ["T38-F13"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F15", "title": "伴侣与多人资料保护子线", "dependencies": ["T38-F14"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F16", "title": "AI辅助的五道门", "dependencies": ["T38-F15", "T37-C06"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F17", "title": "内容库和方法治理", "dependencies": ["T38-F16"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F18", "title": "研究协议、指标和统计计划", "dependencies": ["T38-F17"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F19", "title": "A0专家走查证据包", "dependencies": ["T38-F18", "T37-A07", "T37-B05", "T37-C10"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F20", "title": "A1认知访谈证据包", "dependencies": ["T38-F19"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F21", "title": "A2低风险人工原型", "dependencies": ["T38-F20"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F22", "title": "A3小程序形成性试点", "dependencies": ["T38-F21"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F23", "title": "A4可行性试点", "dependencies": ["T38-F22"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-R01", "title": "测试云部署", "dependencies": ["T37-A07", "T37-B05", "T37-C10", "T38-F18"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-R02", "title": "生产迁移证据包", "dependencies": ["T37-R01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-R03", "title": "Canary和事件演练", "dependencies": ["T37-R02", "T38-F22"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-R04", "title": "全量收口与发布观察", "dependencies": ["T37-R03", "T38-F23"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F24", "title": "停止规则、恢复和回滚", "dependencies": ["T38-F23", "T37-R04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T38-F25", "title": "全量验收和发布证据包", "dependencies": ["T38-F24"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []}
+  ],
+  "full_acceptance_commands": [
+    {"cwd": ".", "command": ["python", "-m", "pytest", "backend/tests", "-q"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/validate_content.py"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/build_api_contract.py", "--check"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/check_api_compatibility.py"]},
+    {"cwd": ".", "command": ["python", "backend/scripts/audit_miniprogram_frontend.py"]},
+    {"cwd": "apps/web", "command": ["npm.cmd", "run", "typecheck"]},
+    {"cwd": "apps/web", "command": ["npm.cmd", "run", "build"]}
+  ]
+}
