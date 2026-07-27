@@ -11541,3 +11541,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - shared、Web、小程序客户端和机器API契约已同步。
 - 验收：专项与既有协作24项、API契约17项及Web生产构建通过；生产迁移未执行。
 - 下一任务：`T38-F03` O/P/H/U证据账本。
+
+## 2026-07-27：T38-F03执行记录
+
+- 状态：`engineering_complete / production_migration_not_executed / release_not_approved`。
+- schema为`2026_07_27_032 / therapeutic_assessment_evidence_ledger`，O/P/H/U均保存来源、可见范围、作者、复核状态、版本与审计。
+- O/P/H/U各自具有服务端硬约束；H缺少反证、替代解释、推翻条件或人工来源时拒绝。
+- AI/系统不能创建或升级H，未人工复核H不会展示给参与者。
+- Web和小程序可读取对象范围内的账本，shared与机器契约同步。
+- 验收：F03/F02/既有协作14项、Web类型检查和小程序语法通过；生产迁移未执行。
+- 下一任务：`T38-F04`“我的问题”与问题质量量规。

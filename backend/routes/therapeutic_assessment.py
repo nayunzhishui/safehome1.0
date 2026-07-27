@@ -21,6 +21,11 @@ from services.therapeutic_assessment_service import (
 )
 from services.therapeutic_assessment_level_service import public_status as service_level_status
 from services.therapeutic_assessment_transition_service import transition_case
+from services.therapeutic_assessment_evidence_service import (
+    create_evidence,
+    list_evidence,
+    review_hypothesis,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -86,6 +91,24 @@ def patch_scope_route(case_id: str):
 def post_transition_route(case_id: str):
     actor, error = _actor()
     return error or _respond(transition_case, actor, case_id, _payload(), _key())
+
+
+@bp.get("/cases/<case_id>/evidence")
+def get_evidence_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(list_evidence, actor, case_id)
+
+
+@bp.post("/cases/<case_id>/evidence")
+def post_evidence_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(create_evidence, actor, case_id, _payload(), _key())
+
+
+@bp.post("/evidence/<evidence_id>/review")
+def post_evidence_review_route(evidence_id: str):
+    actor, error = _actor()
+    return error or _respond(review_hypothesis, actor, evidence_id, _payload(), _key())
 
 
 @bp.post("/cases/<case_id>/disagree")

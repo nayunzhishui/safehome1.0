@@ -58,7 +58,7 @@ def test_healthz_exposes_safe_build_identity_and_response_headers(tmp_path, monk
     assert body["build"]["build_time"] == "2026-07-22T12:00:00+00:00"
     assert len(body["build"]["api_contract_hash"]) == 64
     assert len(body["build"]["content_manifest_hash"]) == 64
-    assert body["build"]["schema_expected"]["version"] == "2026_07_27_031"
+    assert body["build"]["schema_expected"]["version"] == "2026_07_27_032"
     assert response.headers["X-SafeHome-Build-ID"] == body["build"]["build_id"]
     assert response.headers["X-SafeHome-Service-Version"] == body["version"]
     serialized = response.get_data(as_text=True)

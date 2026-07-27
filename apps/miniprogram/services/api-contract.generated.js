@@ -16796,6 +16796,128 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "therapeutic_assessment.get_evidence_route.get",
+    "method": "GET",
+    "path": "/api/therapeutic-assessment/cases/<case_id>/evidence",
+    "handler": "therapeutic_assessment.get_evidence_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "case_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.get_evidence_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.post_evidence_route.post",
+    "method": "POST",
+    "path": "/api/therapeutic-assessment/cases/<case_id>/evidence",
+    "handler": "therapeutic_assessment.post_evidence_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "case_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.post_evidence_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "therapeutic_assessment.post_feedback_route.post",
     "method": "POST",
     "path": "/api/therapeutic-assessment/cases/<case_id>/feedback-versions",
@@ -17073,6 +17195,64 @@ const GENERATED_API_ENDPOINTS = [
       "envelope": "standard",
       "request_id": true,
       "data_contract": "routes.therapeutic_assessment.post_withdraw_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.post_evidence_review_route.post",
+    "method": "POST",
+    "path": "/api/therapeutic-assessment/evidence/<evidence_id>/review",
+    "handler": "therapeutic_assessment.post_evidence_review_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "evidence_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.post_evidence_review_route.data"
     },
     "error_envelope": {
       "ok": false,

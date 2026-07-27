@@ -34,6 +34,13 @@
       <text class="ta-meta">可讨论的下一步：{{activeCase.latestFeedback.next_step}}</text>
     </view>
     <view wx:else class="ta-waiting">研究者正在整理可讨论的草稿；未经人工复核的内容不会发送给你。</view>
+    <view class="ta-feedback">
+      <text class="ta-kicker">本次可见线索</text>
+      <block wx:if="{{evidenceItems.length}}">
+        <text wx:for="{{evidenceItems}}" wx:key="id" class="ta-meta">{{item.kind}} · {{item.content}}</text>
+      </block>
+      <text wx:else class="ta-meta">尚无可见线索；内部草稿不会提前展示。</text>
+    </view>
     <view class="ta-secondary-actions">
       <button class="safe-outline-button" bindtap="disagree">这和我的体验不一致</button>
       <button class="ta-withdraw" bindtap="withdraw">撤回本次协作</button>

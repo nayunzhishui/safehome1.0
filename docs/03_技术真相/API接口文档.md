@@ -2269,3 +2269,9 @@ relationship_initiation_intention_action
 - `track`为`workflow`、`hypothesis`或`safety`；合法边和原因码以`content/therapeutic_assessment_state_machine.json`为准。
 - 接口校验登录、对象范围、角色、当前状态和版本。非法跳转、旧版本或终态写入返回409，权限不足返回403。
 - 相同操作者、幂等键、case和转换会返回已完成结果；幂等键被其它操作占用时返回409。
+
+## 2026-07-27：T38-F03证据账本
+
+- `GET/POST /api/therapeutic-assessment/cases/<case_id>/evidence`：按对象范围读取或创建O/P/H/U证据项。
+- `POST /api/therapeutic-assessment/evidence/<evidence_id>/review`：仅督导/管理员复核H，要求版本和幂等键。
+- 参与者只能写O/U；AI/系统来源不能写H；参与者读取时过滤未人工复核H和未授权可见范围。

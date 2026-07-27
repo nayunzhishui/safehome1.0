@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import type { TherapeuticAssessmentCase } from "../../../../shared/types/api";
+import type { TherapeuticAssessmentCase, TherapeuticAssessmentEvidenceItem } from "../../../../shared/types/api";
 import { safeHomeApi, SafeHomeApiError } from "../services/safehomeApi";
 
 
@@ -32,6 +32,7 @@ export function TherapeuticAssessmentWorkbench() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [evidenceItems, setEvidenceItems] = useState<TherapeuticAssessmentEvidenceItem[]>([]);
   const [form, setForm] = useState({
     observations: "",
     evidence: "",
@@ -60,6 +61,16 @@ export function TherapeuticAssessmentWorkbench() {
   useEffect(() => {
     void load();
   }, []);
+
+  useEffect(() => {
+    if (!selectedId) {
+      setEvidenceItems([]);
+      return;
+    }
+    void safeHomeApi.listTherapeuticAssessmentEvidence(selectedId)
+      .then((result) => setEvidenceItems(result.items))
+      .catch(() => setEvidenceItems([]));
+  }, [selectedId]);
 
   const draft = async () => {
     if (!selected) return;
@@ -156,6 +167,12 @@ export function TherapeuticAssessmentWorkbench() {
                 <small>共享范围：{selected.shared_scope.join("、")}；复杂范围：{selected.complexity_scope}</small>
                 <small>共同理解：{selected.hypothesis_state}；安全支持：{selected.safety_state}</small>
               </div>
+              <section className="guidanceBox" aria-label="O P H U证据账本">
+                <strong>证据账本</strong>
+                {evidenceItems.length ? evidenceItems.map((item) => (
+                  <p key={item.id}><b>{item.kind}</b> · {item.content} <small>（{item.review_status}）</small></p>
+                )) : <p>尚无可见证据项。先记录具体观察，再讨论模式、人工假设和未知项。</p>}
+              </section>
               <div className="taFormGrid">
                 <label><span>观察（每行一条）</span><textarea value={form.observations} onChange={(event) => setForm({ ...form, observations: event.target.value })} /></label>
                 <label><span>依据（每行一条）</span><textarea value={form.evidence} onChange={(event) => setForm({ ...form, evidence: event.target.value })} /></label>

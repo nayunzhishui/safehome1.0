@@ -38,7 +38,9 @@ def _source(view_func) -> str:
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
     if path.startswith("/api/therapeutic-assessment"):
-        if "/feedback-versions/" in path and (path.endswith("/review") or path.endswith("/send")):
+        if (
+            "/feedback-versions/" in path and (path.endswith("/review") or path.endswith("/send"))
+        ) or ("/evidence/" in path and path.endswith("/review")):
             roles = ["supervisor", "admin"]
         elif path.endswith("/readiness") or path.endswith("/assign"):
             roles = ["supervisor", "admin"]

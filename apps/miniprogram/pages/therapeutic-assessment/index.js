@@ -35,6 +35,7 @@ Page({
     actionText: "",
     notice: "",
     errorMessage: "",
+    evidenceItems: [],
     defaultServiceLevel: {
       id: "L0",
       display_name: "支持性评估准备",
@@ -63,6 +64,12 @@ Page({
         activeCase: cases[0] || null,
         defaultServiceLevel: levelStatus.current_default || this.data.defaultServiceLevel,
       });
+      if (cases[0]) {
+        const evidence = await api.listTherapeuticAssessmentEvidence(cases[0].id);
+        this.setData({ evidenceItems: evidence.items || [] });
+      } else {
+        this.setData({ evidenceItems: [] });
+      }
     } catch (error) {
       this.setData({ errorMessage: error.message || "协作记录暂时无法读取。" });
     } finally {

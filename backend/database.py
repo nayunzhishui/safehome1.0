@@ -100,6 +100,7 @@ REQUIRED_HEALTH_TABLES = [
     "operations_evidence_packages",
     "therapeutic_assessment_cases",
     "therapeutic_assessment_feedback_versions",
+    "therapeutic_assessment_evidence_items",
     "therapeutic_assessment_actions",
     "therapeutic_assessment_events",
     "computation_datasets",
@@ -108,8 +109,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_27_031"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_state_machine"
+CURRENT_SCHEMA_VERSION = "2026_07_27_032"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_evidence_ledger"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {

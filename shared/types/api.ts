@@ -217,6 +217,36 @@ export interface TherapeuticAssessmentTransitionInput {
   reason_code: TherapeuticAssessmentTransitionReason;
 }
 
+export type TherapeuticAssessmentEvidenceKind = "O" | "P" | "H" | "U";
+export interface TherapeuticAssessmentEvidenceItem {
+  id: string;
+  case_id: string;
+  kind: TherapeuticAssessmentEvidenceKind;
+  content: string;
+  source_origin: "human" | "ai" | "system";
+  source_ref?: string | null;
+  provider_id?: string | null;
+  observed_at?: string | null;
+  context?: string | null;
+  visibility_scope: Array<"participant" | "research_team" | "supervisor">;
+  applicability_scope?: string | null;
+  question_link?: string | null;
+  exceptions: string[];
+  time_window?: string | null;
+  supporting_evidence: Array<{ ref: string; source: string }>;
+  counter_evidence: string[];
+  alternative_explanations: string[];
+  falsification_criteria: string[];
+  protective_function?: string | null;
+  cost?: string | null;
+  participant_recognition?: "unconfirmed" | "recognized" | "partly_recognized" | "not_recognized" | null;
+  uncertainty_type?: "missing" | "conflict" | "permission_denied" | "unconfirmed" | null;
+  author_id: string;
+  review_status: "recorded" | "candidate" | "draft" | "human_reviewed" | "changes_requested" | "participant_checked";
+  version: number;
+  created_at: string;
+}
+
 export interface TherapeuticAssessmentServiceLevel {
   id: TherapeuticAssessmentReadiness;
   display_name: string;
