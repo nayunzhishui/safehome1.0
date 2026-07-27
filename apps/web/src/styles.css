@@ -4107,3 +4107,76 @@ ul {
 }
 .therapeuticAssessmentWorkbench .metricCard::after { display: none; }
 @media (max-width: 920px) { .therapeuticAssessmentWorkbench .summaryGrid, .taWorkspaceGrid, .taFormGrid { grid-template-columns: 1fr; } .taWideField { grid-column: auto; } }
+
+.fatalErrorPage {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(circle at 10% 8%, rgba(85, 128, 102, 0.08), transparent 34%),
+    #fbf7f0;
+}
+
+.fatalErrorCard {
+  width: min(100%, 520px);
+  box-sizing: border-box;
+  padding: clamp(24px, 5vw, 38px);
+  border: 1px solid #dfe5dc;
+  border-radius: 24px;
+  background: rgba(255, 253, 249, 0.98);
+  box-shadow: 0 20px 48px rgba(48, 67, 58, 0.12);
+  color: #24342d;
+}
+
+.fatalErrorCard h1 {
+  margin: 8px 0 12px;
+  font-size: clamp(24px, 5vw, 34px);
+  line-height: 1.25;
+}
+
+.fatalErrorCard p:not(.eyebrow) {
+  margin: 0;
+  color: #64706a;
+  line-height: 1.75;
+}
+
+.fatalErrorActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.fatalErrorActions button,
+.fatalErrorActions a {
+  min-height: 44px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 22px;
+  border: 1px solid #477862;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fatalErrorActions button {
+  background: #477862;
+  color: #fff;
+}
+
+.fatalErrorActions a {
+  background: #fffdf9;
+  color: #2f6752;
+}
+
+.fatalErrorActions button:focus-visible,
+.fatalErrorActions a:focus-visible {
+  outline: 3px solid rgba(47, 103, 82, 0.28);
+  outline-offset: 3px;
+}

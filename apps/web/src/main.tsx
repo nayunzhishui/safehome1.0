@@ -1,8 +1,9 @@
-import React, { lazy, Suspense, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import { clearAuthSession, getStoredAuthToken, saveAuthSession, type AuthUser } from "./services/authState";
 import { safeHomeApi, SafeHomeApiError } from "./services/safehomeApi";
+import { ErrorBoundary, lazyWithRetry as lazy } from "./components/ErrorBoundary";
 import "./styles.css";
 
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard").then((module) => ({ default: module.AdminDashboard })));
@@ -375,7 +376,9 @@ const root = createRoot(document.getElementById("root") as HTMLElement);
 function renderApp(authUser: AuthUser | null, showcaseEnabled = false) {
   root.render(
     <React.StrictMode>
-      <App authUser={authUser} showcaseEnabled={showcaseEnabled} />
+      <ErrorBoundary>
+        <App authUser={authUser} showcaseEnabled={showcaseEnabled} />
+      </ErrorBoundary>
     </React.StrictMode>,
   );
 }

@@ -11369,3 +11369,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 验收：温度计/T10专项15项、Web TypeScript、小程序41页结构和64个JS/57个JSON资源校验通过。
 - 外部门禁：微信开发者工具和真机视觉/读屏仍待人工；本轮未发布CloudBase。
 - 下一步：M6 Web顶层ErrorBoundary与懒加载恢复，增加无敏感错误日志和可测试重试上限。
+
+### M6：Web顶层错误边界与懒加载恢复
+
+- 状态：`engineering_complete_local / external_browser_fault_injection_gate_pending`。
+- React根节点加入ErrorBoundary，渲染异常不再显示整页空白；兜底页提供重新加载和返回首页，44px触控与键盘焦点样式齐备。
+- 所有现有`lazy(...)`页面统一经过`lazyWithRetry`；分包失败时每个路径最多自动刷新一次，第二次失败交给错误边界，避免无限刷新。
+- 生产环境不输出错误message、组件栈、props或用户正文；开发环境只记录脱敏错误类型。
+- 验收：错误恢复契约1项、Web TypeScript和production build通过。
+- 外部门禁：真实CDN分包失败、弱网、浏览器版本及辅助技术人工验收仍待外部执行。
+- 下一步：M7前端设计Token、页面状态、分批视觉与可访问性审计；只按当前页面结构增量修复，不应用Claude Patch 7的大规模重复文件。

@@ -562,3 +562,12 @@
 - 修改：温度计路由/测试、shared类型、小程序温度计页面、API/数据库说明和事实文档。
 - 验证：相关15项、Web typecheck、小程序41页及资源校验通过。
 - 后续：M6 Web ErrorBoundary；真机和CloudBase保持外部门禁。
+
+## 2026-07-27 四模块M6 Web错误恢复
+
+- 工具/模型：Codex；Implement、TDD、Frontend Design、Accessibility。
+- 会话标识：当前Codex任务。
+- 摘要：移植Claude ErrorBoundary方向并增强为单次页面刷新、生产脱敏日志和设计系统样式；未采用无限或无缓存意义的重复import。
+- 修改：Web ErrorBoundary、入口、样式、专项契约和事实文档。
+- 验证：专项、TypeScript、production build和`git diff --check`通过。
+- 后续：M7 UI Token与页面状态分批审计。
