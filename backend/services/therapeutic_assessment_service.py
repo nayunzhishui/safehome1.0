@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 from dataclasses import dataclass
 
 from database import (
@@ -15,6 +16,7 @@ from database import (
     write_audit_log,
 )
 from services.risk_service import check_text_risk
+from services.risk_review_service import create_risk_review_record
 
 
 BOUNDARY_NOTICE = "本功能用于共同理解当前体验和商量下一小步，不构成诊断、治疗承诺或疗效评分。"
@@ -94,7 +96,7 @@ def _event(conn, case_id: str, actor: dict, action: str, key: str, before: int |
             """,
             (new_id("ta_event"), case_id, str(actor["id"]), action, before, after, key, json_dumps(metadata), now_iso()),
         )
-    except Exception as exc:
+    except sqlite3.IntegrityError as exc:
         existing = conn.execute(
             "SELECT case_id, action FROM therapeutic_assessment_events WHERE actor_id = ? AND idempotency_key = ?",
             (str(actor["id"]), key),
@@ -182,6 +184,14 @@ def create_case(actor: dict, payload: dict, idempotency_key: str) -> tuple[dict,
         )
         _event(conn, case_id, actor, "case_created", key, None, 1, {"risk_level": risk["risk_level"], "shared_scope": scope})
         write_audit_log(conn, "therapeutic_assessment_case_created", str(actor["id"]), "therapeutic_assessment_case", case_id, {"risk_level": risk["risk_level"], "consent_status": "active"})
+        if risk["requires_review"]:
+            create_risk_review_record(
+                conn,
+                str(actor["id"]),
+                "therapeutic_assessment_case",
+                case_id,
+                risk,
+            )
         conn.commit()
         result = _present_case(conn, _case_row(conn, case_id), actor)
     return result, 201
@@ -248,6 +258,9 @@ def participant_transition(actor: dict, case_id: str, payload: dict, idempotency
         # 撤回是终态：已撤回的协作不能再撤回或提异议，避免反复流转与版本空转。
         if case["status"] == "withdrawn" or case["consent_status"] == "withdrawn":
             raise TherapeuticAssessmentError("withdrawn", "该协作已经撤回，不能再变更。", 409)
+        expected = payload.get("expected_version")
+        if expected is not None and int(expected) != before:
+            raise TherapeuticAssessmentError("version_conflict", "记录已更新，请刷新后重试。", 409)
         note = str(payload.get("note") or "").strip()[:1000]
         if action == "disagree" and not note:
             raise TherapeuticAssessmentError("validation_error", "请简要说明不同意见。")
@@ -315,17 +328,52 @@ def create_feedback(actor: dict, case_id: str, payload: dict, idempotency_key: s
     source = str(payload.get("source") or "human")
     if source not in {"human", "ai_draft"}:
         raise TherapeuticAssessmentError("validation_error", "反馈来源不受支持。")
-    uncertainty = _required_text(payload, "uncertainty", 1000)
-    next_step = _required_text(payload, "next_step", 1000)
-    participant_content = _required_text(payload, "participant_content", 3000)
-    risk = check_text_risk([participant_content, next_step], source="therapeutic_assessment_feedback")
-    if risk["requires_review"]:
-        raise TherapeuticAssessmentError("risk_review_required", "反馈文本触发安全复核，不能进入普通发送流程。", 409)
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         _assert_researcher(actor, case)
         if case["status"] in {"withdrawn", "support_required"} or case["consent_status"] != "active":
             raise TherapeuticAssessmentError("invalid_state", "当前记录不能创建普通反馈。", 409)
+    uncertainty = _required_text(payload, "uncertainty", 1000)
+    next_step = _required_text(payload, "next_step", 1000)
+    participant_content = _required_text(payload, "participant_content", 3000)
+    evidence = payload.get("evidence")
+    if not isinstance(evidence, list) or not any(str(item).strip() for item in evidence):
+        raise TherapeuticAssessmentError(
+            "evidence_required",
+            "反馈必须至少给出一条可核对的依据。",
+            422,
+        )
+    observations = payload.get("observations") or []
+    alternatives = payload.get("alternatives") or []
+    if observations and not any(str(item).strip() for item in alternatives):
+        raise TherapeuticAssessmentError(
+            "alternatives_required",
+            "给出观察时，请同时给出至少一种其它可能的理解。",
+            422,
+        )
+    risk = check_text_risk([participant_content, next_step], source="therapeutic_assessment_feedback")
+    if risk["requires_review"]:
+        with get_connection() as conn:
+            case = _case_row(conn, case_id)
+            create_risk_review_record(
+                conn,
+                str(case["participant_user_id"]),
+                "therapeutic_assessment_feedback_attempt",
+                case_id,
+                risk,
+            )
+            write_audit_log(
+                conn,
+                "therapeutic_assessment_feedback_risk_queued",
+                str(actor["id"]),
+                "therapeutic_assessment_case",
+                case_id,
+                {"risk_level": risk["risk_level"]},
+            )
+            conn.commit()
+        raise TherapeuticAssessmentError("risk_review_required", "反馈文本触发安全复核，不能进入普通发送流程。", 409)
+    with get_connection() as conn:
+        case = _case_row(conn, case_id)
         existing = conn.execute("SELECT * FROM therapeutic_assessment_events WHERE actor_id = ? AND idempotency_key = ?", (str(actor["id"]), key)).fetchone()
         if existing:
             version = conn.execute("SELECT * FROM therapeutic_assessment_feedback_versions WHERE id = ?", (json_loads(existing["metadata_json"], {}).get("feedback_id"),)).fetchone()
@@ -371,9 +419,12 @@ def review_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_ke
         case = _case_row(conn, feedback["case_id"])
         if case["readiness_level"] != "L2":
             raise TherapeuticAssessmentError("readiness_gate", "L0/L1记录不能进入人工确认和发送。", 409)
-        # 已发送的反馈是终态，不能再被复核改回 draft/reviewed；只允许复核 draft 或 reviewed 版本。
-        if feedback["status"] not in {"draft", "reviewed"}:
-            raise TherapeuticAssessmentError("invalid_state", "该反馈版本已发送或不可复核。", 409)
+        if feedback["status"] != "draft":
+            raise TherapeuticAssessmentError("invalid_state", "只有草稿版本可以复核；如需修改，请新建版本。", 409)
+        if case["consent_status"] != "active" or case["status"] == "withdrawn":
+            raise TherapeuticAssessmentError("consent_withdrawn", "参与者已撤回，不能复核。", 409)
+        if str(feedback["author_id"]) == str(actor["id"]):
+            raise TherapeuticAssessmentError("self_review_forbidden", "起草人不能复核自己撰写的反馈。", 403)
         status = "reviewed" if decision == "approved" else "draft"
         conn.execute("UPDATE therapeutic_assessment_feedback_versions SET status = ?, reviewed_by = ?, reviewed_at = ? WHERE id = ?", (status, str(actor["id"]), now_iso(), feedback_id))
         _event(conn, case["id"], actor, f"feedback_{decision}", key, case["version"], case["version"], {"feedback_id": feedback_id})
@@ -411,13 +462,21 @@ def create_action(actor: dict, case_id: str, payload: dict, idempotency_key: str
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         _assert_participant(actor, case)
+        if case["status"] == "withdrawn" or case["consent_status"] == "withdrawn":
+            raise TherapeuticAssessmentError("withdrawn", "该协作已经撤回，不能再选择下一小步。", 409)
         if not conn.execute("SELECT 1 FROM therapeutic_assessment_feedback_versions WHERE case_id = ? AND status = 'sent'", (case_id,)).fetchone():
             raise TherapeuticAssessmentError("feedback_not_sent", "收到经人工复核的反馈后才能选择下一小步。", 409)
+        feedback_version_id = payload.get("feedback_version_id")
+        if feedback_version_id and not conn.execute(
+            "SELECT 1 FROM therapeutic_assessment_feedback_versions WHERE id = ? AND case_id = ?",
+            (feedback_version_id, case_id),
+        ).fetchone():
+            raise TherapeuticAssessmentError("validation_error", "引用的反馈版本不属于该协作记录。", 422)
         action_id = new_id("ta_action")
         timestamp = now_iso()
         conn.execute(
             "INSERT INTO therapeutic_assessment_actions (id, case_id, participant_user_id, feedback_version_id, action_text, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'chosen', ?, ?)",
-            (action_id, case_id, str(actor["id"]), payload.get("feedback_version_id"), action_text, timestamp, timestamp),
+            (action_id, case_id, str(actor["id"]), feedback_version_id, action_text, timestamp, timestamp),
         )
         _event(conn, case_id, actor, "action_chosen", key, case["version"], case["version"], {"action_id": action_id})
         write_audit_log(conn, "therapeutic_assessment_action_chosen", str(actor["id"]), "therapeutic_assessment_action", action_id, {"case_id": case_id})

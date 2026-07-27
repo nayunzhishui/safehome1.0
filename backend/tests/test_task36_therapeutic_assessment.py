@@ -57,6 +57,47 @@ def _create(client, headers, key="case-f16", question="我想和研究者一起�
     )
 
 
+def _feedback_payload(**overrides):
+    payload = {
+        "source": "human",
+        "observations": ["这次记录中可以看到你愿意停下来观察。"],
+        "evidence": ["参与者主动提出共同理解问题。"],
+        "alternatives": ["也可能与当时精力不足有关。"],
+        "uncertainty": "目前只有一次记录，需要与你核对。",
+        "next_step": "选择一次低压力沟通，先停顿三秒。",
+        "human_discussion": ["哪些描述与你的体验一致？"],
+        "participant_content": "这是待人工复核的共同理解草稿。",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _assign_and_prepare(client, headers, case_id, prefix):
+    assigned = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/assign",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": f"{prefix}-assign"},
+        json={"researcher_id": "researcher-f16"},
+    )
+    assert assigned.status_code == 200
+    draft = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
+        headers={**headers["researcher-f16"], "Idempotency-Key": f"{prefix}-draft"},
+        json=_feedback_payload(),
+    )
+    assert draft.status_code == 201
+    ready = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/readiness",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": f"{prefix}-ready"},
+        json={
+            "qualification_evidence_ref": "evidence://q",
+            "supervision_evidence_ref": "evidence://s",
+            "ethics_evidence_ref": "evidence://e",
+        },
+    )
+    assert ready.status_code == 200
+    return draft.get_json()["data"]["id"]
+
+
 def test_complete_human_led_collaboration_and_version_scope(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     headers = _seed(app)
@@ -204,3 +245,96 @@ def test_disagree_withdraw_risk_and_external_complexity_gates(tmp_path, monkeypa
             audit_count = conn.execute("SELECT COUNT(*) AS count FROM audit_logs WHERE action LIKE 'therapeutic_assessment_%'").fetchone()["count"]
             event_count = conn.execute("SELECT COUNT(*) AS count FROM therapeutic_assessment_events").fetchone()["count"]
             assert audit_count >= 4 and event_count >= 4
+
+
+def test_feedback_requires_evidence_and_independent_review(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    headers = _seed(app)
+    client = app.test_client()
+    case_id = _create(client, headers, "case-hardening").get_json()["data"]["id"]
+    client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/assign",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": "hard-assign"},
+        json={"researcher_id": "researcher-f16"},
+    )
+
+    no_evidence = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
+        headers={**headers["researcher-f16"], "Idempotency-Key": "hard-no-evidence"},
+        json=_feedback_payload(evidence=[]),
+    )
+    assert no_evidence.status_code == 422
+    assert no_evidence.get_json()["error"]["code"] == "evidence_required"
+
+    self_draft = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": "hard-self-draft"},
+        json=_feedback_payload(),
+    )
+    feedback_id = self_draft.get_json()["data"]["id"]
+    client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/readiness",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": "hard-ready"},
+        json={
+            "qualification_evidence_ref": "evidence://q",
+            "supervision_evidence_ref": "evidence://s",
+            "ethics_evidence_ref": "evidence://e",
+        },
+    )
+    reviewed = client.post(
+        f"/api/therapeutic-assessment/feedback-versions/{feedback_id}/review",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": "hard-self-review"},
+        json={"decision": "approved"},
+    )
+    assert reviewed.status_code == 403
+    assert reviewed.get_json()["error"]["code"] == "self_review_forbidden"
+
+
+def test_risk_queue_version_and_feedback_ownership_guards(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    headers = _seed(app)
+    client = app.test_client()
+    risky = _create(client, headers, "case-risk-queue", "我现在想自杀，需要人工支持。")
+    assert risky.status_code == 201
+    with app.app_context():
+        from database import get_connection
+
+        with get_connection() as conn:
+            queued = conn.execute(
+                "SELECT COUNT(*) AS count FROM risk_review_records "
+                "WHERE source_type = 'therapeutic_assessment_case' AND source_id = ?",
+                (risky.get_json()["data"]["id"],),
+            ).fetchone()["count"]
+            assert queued == 1
+
+    case_one = _create(client, headers, "case-owner-one").get_json()["data"]["id"]
+    stale = client.post(
+        f"/api/therapeutic-assessment/cases/{case_one}/disagree",
+        headers={**headers["participant-f16"], "Idempotency-Key": "stale-transition"},
+        json={"expected_version": 99, "note": "这段理解不完全一致。"},
+    )
+    assert stale.status_code == 409
+    assert stale.get_json()["error"]["code"] == "version_conflict"
+
+    feedback_one = _assign_and_prepare(client, headers, case_one, "owner-one")
+    reviewed = client.post(
+        f"/api/therapeutic-assessment/feedback-versions/{feedback_one}/review",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": "owner-one-review"},
+        json={"decision": "approved"},
+    )
+    assert reviewed.status_code == 200
+    sent = client.post(
+        f"/api/therapeutic-assessment/feedback-versions/{feedback_one}/send",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": "owner-one-send"},
+    )
+    assert sent.status_code == 200
+
+    case_two = _create(client, headers, "case-owner-two").get_json()["data"]["id"]
+    feedback_two = _assign_and_prepare(client, headers, case_two, "owner-two")
+    cross_case = client.post(
+        f"/api/therapeutic-assessment/cases/{case_one}/actions",
+        headers={**headers["participant-f16"], "Idempotency-Key": "owner-cross"},
+        json={"feedback_version_id": feedback_two, "action_text": "先停顿三秒。"},
+    )
+    assert cross_case.status_code == 422
+    assert cross_case.get_json()["error"]["code"] == "validation_error"
