@@ -79,7 +79,7 @@ def get_enrollment_route(enrollment_id: str):
 
 @bp.post("/enrollments/<enrollment_id>/report")
 def create_report_route(enrollment_id: str):
-    actor, error = _actor()
+    actor, error = _researcher("research.feedback.write")
     if error:
         return error
     return _respond(create_report, actor, enrollment_id)

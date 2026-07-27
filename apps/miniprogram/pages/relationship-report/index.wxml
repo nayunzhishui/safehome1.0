@@ -2,6 +2,13 @@
   <page-state wx:if="{{loading}}" kind="loading" title="正在整理阶段性报告" description="报告、研究者确认和你的核对会分开呈现。" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="阶段性报告暂时没有读取成功" description="{{errorMessage}}" action-label="重新读取" bind:action="loadReport" />
   <view wx:else>
+    <view wx:if="{{deliveryPending}}" class="safe-card safe-card--hero report-head">
+      <text class="section-eyebrow">正在人工核对</text>
+      <text class="report-title">{{report.title}}</text>
+      <text class="report-copy">研究者完成核对并发送后，你会在消息列表收到提醒。当前不会展示画像、解释或机制假设。</text>
+      <view class="boundary-card">{{report.boundary_notice}}</view>
+    </view>
+    <block wx:else>
     <view class="safe-card safe-card--hero report-head">
       <view class="report-status-row"><relationship-status status="{{record.status}}"></relationship-status><text class="version-chip">{{report.version}}</text></view>
       <text class="report-title">{{report.title}}</text>
@@ -81,6 +88,7 @@
     <view class="boundary-card">{{report.boundary_notice}}</view>
     <button class="safe-primary-button" loading="{{exporting}}" disabled="{{exporting}}" bindtap="drawLongImage">生成脱敏报告长图</button>
     <text class="download-help">长图只包含用户可见的支持性内容，不含模型中心、内部关联字段或研究备注。</text>
+    </block>
   </view>
   <canvas canvas-id="reportShareCanvas" class="share-canvas" style="width:640px;height:{{shareCanvasHeight}}px;" width="640" height="{{shareCanvasHeight}}" aria-hidden="true"></canvas>
 </view>

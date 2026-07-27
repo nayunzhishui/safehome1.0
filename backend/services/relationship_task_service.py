@@ -167,4 +167,9 @@ def get_narrative(actor: dict, narrative_id: str) -> ServiceResult:
         write_audit_log(conn, "relationship_narrative_viewed", actor["id"], "relationship_narrative", narrative_id, {"role": actor.get("role")})
         conn.commit()
     item["draft"] = json_loads(item.get("draft_json"), {})
+    if actor.get("role") not in RESEARCH_ROLES:
+        item["draft"].pop("researcher_notes", None)
+        item["audience"] = "participant"
+    else:
+        item["audience"] = "researcher"
     return ServiceResult(item)

@@ -13,6 +13,8 @@ Page({
       this.setData({
         loading: false,
         narrative,
+        isConfirmed: narrative.status === "confirmed",
+        isResearcherView: narrative.audience === "researcher",
         noteRows: narrative.draft.researcher_notes || [],
         taskRows: narrative.draft.online_task_materials || [],
       });

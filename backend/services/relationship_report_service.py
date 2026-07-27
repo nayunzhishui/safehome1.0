@@ -7,6 +7,7 @@ from services.message_service import create_message
 from services.risk_service import check_text_risk
 from services.relationship_pilot_common import (
     BOUNDARY,
+    RESEARCH_ROLES,
     REPORT_VERSION,
     RelationshipPilotError,
     ServiceResult,
@@ -93,6 +94,35 @@ def get_report(actor: dict, report_id: str, download: bool = False) -> ServiceRe
             raise RelationshipPilotError("forbidden", "无权查看该报告。", 403)
         enrollment = enrollment_by_id(conn, item["enrollment_id"])
         ensure_researcher_access(actor, enrollment)
+        is_researcher = actor.get("role") in RESEARCH_ROLES
+        if not is_researcher and item["status"] != "sent":
+            if download:
+                raise RelationshipPilotError("report_not_delivered", "报告尚未完成人工确认和发送。", 409)
+            write_audit_log(
+                conn,
+                "relationship_report_pending_viewed",
+                actor["id"],
+                "relationship_screening_report",
+                report_id,
+                {"status": item["status"]},
+            )
+            conn.commit()
+            return ServiceResult(
+                {
+                    "id": item["id"],
+                    "enrollment_id": item["enrollment_id"],
+                    "user_id": item["user_id"],
+                    "status": item["status"],
+                    "version": item["version"],
+                    "delivery_pending": True,
+                    "report": {
+                        "title": "阶段性报告正在人工复核",
+                        "boundary_notice": BOUNDARY,
+                    },
+                    "hypothesis_feedback": [],
+                    "sent_at": None,
+                }
+            )
         sent_row = conn.execute(
             "SELECT created_at FROM messages WHERE user_id = ? AND source_type = 'relationship_screening_report' AND source_id = ? ORDER BY created_at DESC LIMIT 1",
             (item["user_id"], report_id),
@@ -119,6 +149,8 @@ def save_hypothesis_feedback(actor: dict, report_id: str, hypothesis_index: int,
         item = expand_report(row_to_dict(row))
         if str(actor["id"]) != str(item["user_id"]):
             raise RelationshipPilotError("forbidden", "只能核对自己的阶段性假设。", 403)
+        if item["status"] != "sent":
+            raise RelationshipPilotError("report_not_delivered", "报告完成人工确认并发送后才能核对。", 409)
         hypotheses = (((item.get("report") or {}).get("four_layer_profile") or {}).get("mechanism") or {}).get("hypotheses") or []
         if hypothesis_index < 0 or hypothesis_index >= len(hypotheses):
             raise RelationshipPilotError("validation_error", "没有找到这条待核对假设。")

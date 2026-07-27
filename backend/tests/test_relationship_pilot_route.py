@@ -128,7 +128,7 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
 
     report_response = client.post(
         f"/api/relationship-pilot/enrollments/{enrollment['id']}/report",
-        headers=student_headers,
+        headers=researcher_headers,
     )
     assert report_response.status_code == 201
     report = report_response.get_json()["data"]
@@ -137,12 +137,19 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     assert report["report"]["interpretation_status"] in {"usable", "low_confidence", "outlier"}
     assert "不构成诊断" in report["report"]["boundary_notice"]
 
+    participant_cannot_generate = client.post(
+        f"/api/relationship-pilot/enrollments/{enrollment['id']}/report",
+        headers=student_headers,
+    )
+    assert participant_cannot_generate.status_code == 403
+
     hypothesis_response = client.put(
         f"/api/relationship-pilot/reports/{report['id']}/hypotheses/0",
         headers=student_headers,
         json={"response": "uncertain"},
     )
-    assert hypothesis_response.status_code == 200
+    assert hypothesis_response.status_code == 409
+    assert hypothesis_response.get_json()["error"]["code"] == "report_not_delivered"
     hypothesis_forbidden = client.put(
         f"/api/relationship-pilot/reports/{report['id']}/hypotheses/0",
         headers=other_headers,
@@ -150,16 +157,13 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     )
     assert hypothesis_forbidden.status_code == 403
     report_detail = client.get(f"/api/relationship-pilot/reports/{report['id']}", headers=student_headers).get_json()["data"]
-    assert report_detail["hypothesis_feedback"][0]["response"] == "uncertain"
+    assert report_detail["delivery_pending"] is True
+    assert "profile_description" not in report_detail["report"]
+    assert report_detail["hypothesis_feedback"] == []
 
     download = client.get(f"/api/relationship-pilot/reports/{report['id']}?download=1", headers=student_headers)
-    assert download.status_code == 200
-    download_payload = json.loads(download.data)
-    assert download_payload["title"] == "关系健康初筛报告"
-    assert "assessment_result_id" not in download_payload
-    assert "worksheet_id" not in download_payload
-    assert "model_id" not in download.data.decode("utf-8")
-    assert "research_notes" not in download.data.decode("utf-8")
+    assert download.status_code == 409
+    assert download.get_json()["error"]["code"] == "report_not_delivered"
 
     forbidden = client.get(f"/api/relationship-pilot/reports/{report['id']}", headers=other_headers)
     assert forbidden.status_code == 403
@@ -224,7 +228,7 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
         f"/api/research/access/enrollments/{enrollment['id']}/claim",
         headers={**researcher_headers, "Idempotency-Key": "pilot-researcher-claim"},
     )
-    assert claimed.status_code == 201
+    assert claimed.status_code in {200, 201}
     dashboard = client.get("/api/relationship-pilot/researcher/dashboard", headers=researcher_headers)
     assert dashboard.status_code == 200
     dossier = dashboard.get_json()["data"]["items"][0]
@@ -254,6 +258,8 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     assert confirmed.status_code == 200
     visible = client.get(f"/api/relationship-pilot/narratives/{narrative_id}", headers=student_headers)
     assert visible.status_code == 200
+    assert "researcher_notes" not in visible.get_json()["data"]["draft"]
+    assert visible.get_json()["data"]["audience"] == "participant"
 
     report_confirmed = client.post(
         f"/api/relationship-pilot/reports/{report['id']}/confirm",
@@ -297,6 +303,22 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     delivered_report = client.get(f"/api/relationship-pilot/reports/{report['id']}", headers=student_headers).get_json()["data"]
     assert delivered_report["status"] == "sent"
     assert delivered_report["sent_at"]
+    hypothesis_response = client.put(
+        f"/api/relationship-pilot/reports/{report['id']}/hypotheses/0",
+        headers=student_headers,
+        json={"response": "uncertain"},
+    )
+    assert hypothesis_response.status_code == 200
+    delivered_report = client.get(f"/api/relationship-pilot/reports/{report['id']}", headers=student_headers).get_json()["data"]
+    assert delivered_report["hypothesis_feedback"][0]["response"] == "uncertain"
+    download = client.get(f"/api/relationship-pilot/reports/{report['id']}?download=1", headers=student_headers)
+    assert download.status_code == 200
+    download_payload = json.loads(download.data)
+    assert download_payload["title"] == "关系健康初筛报告"
+    assert "assessment_result_id" not in download_payload
+    assert "worksheet_id" not in download_payload
+    assert "model_id" not in download.data.decode("utf-8")
+    assert "research_notes" not in download.data.decode("utf-8")
 
     high_risk_update = client.patch(
         f"/api/relationship-pilot/reports/{report['id']}",
@@ -326,11 +348,14 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     assert original_for_student["report"]["personalized_interpretation"] != "这份更新仍只作为共同讨论线索。"
     updated_for_student = client.get(f"/api/relationship-pilot/reports/{updated_report['id']}", headers=student_headers).get_json()["data"]
     assert updated_for_student["version"] == "2026.07-relationship-screening-v2"
-    assert updated_for_student["report"]["personalized_interpretation"] == "这份更新仍只作为共同讨论线索。"
+    assert updated_for_student["delivery_pending"] is True
+    assert "personalized_interpretation" not in updated_for_student["report"]
     sent_update = client.post(f"/api/relationship-pilot/reports/{updated_report['id']}/send", headers=researcher_headers)
     assert sent_update.status_code == 201
     sent_update_again = client.post(f"/api/relationship-pilot/reports/{updated_report['id']}/send", headers=researcher_headers)
     assert sent_update_again.status_code == 200
+    delivered_update = client.get(f"/api/relationship-pilot/reports/{updated_report['id']}", headers=student_headers).get_json()["data"]
+    assert delivered_update["report"]["personalized_interpretation"] == "这份更新仍只作为共同讨论线索。"
     updated_messages = client.get("/api/messages", headers=student_headers).get_json()["data"]["items"]
     assert {report["id"], updated_report["id"]} <= {
         item["source_id"] for item in updated_messages if item["source_type"] == "relationship_screening_report"

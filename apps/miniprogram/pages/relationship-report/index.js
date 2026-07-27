@@ -79,6 +79,17 @@ Page({
     this.setData({ loading: true, errorMessage: "" });
     try {
       const record = await api.getRelationshipReport(this.data.id);
+      if (record.delivery_pending) {
+        this.setData({
+          loading: false,
+          record,
+          report: record.report,
+          deliveryPending: true,
+          statusText: reportStatusLabel(record.status),
+          statusSteps: statusSteps(record.status),
+        });
+        return;
+      }
       const canShowProfile = ["confirmed", "sent", "updated"].includes(record.status);
       const report = {
         ...record.report,
@@ -94,6 +105,7 @@ Page({
         loading: false,
         record,
         report,
+        deliveryPending: false,
         isStageFeedback: String(report.version || "").includes("stage-feedback"),
         radarRows: radarRows(report),
         statusText: reportStatusLabel(record.status),

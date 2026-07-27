@@ -167,14 +167,11 @@ Page({
 
   async openReport() {
     if (!this.data.enrollment) return;
-    try {
-      const report = this.data.enrollment.report_id
-        ? { id: this.data.enrollment.report_id }
-        : await api.createRelationshipReport(this.data.enrollment.id);
-      wx.navigateTo({ url: `/pages/relationship-report/index?id=${encodeURIComponent(report.id)}` });
-    } catch (error) {
-      wx.showToast({ title: error.message || "报告暂未生成", icon: "none" });
+    if (!this.data.enrollment.report_id) {
+      wx.showToast({ title: "报告将由研究者生成并核对", icon: "none" });
+      return;
     }
+    wx.navigateTo({ url: `/pages/relationship-report/index?id=${encodeURIComponent(this.data.enrollment.report_id)}` });
   },
 
   openDrawing() {
