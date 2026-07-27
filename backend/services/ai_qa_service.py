@@ -16,7 +16,7 @@ from services.ai_qa_retrieval_service import retrieve_published_content
 from services.ai_qa_safety_service import fixed_response, post_check, pre_route
 
 
-PROMPT_VERSION = "safehome-ai-qa-prompt-v1"
+PROMPT_VERSION = "safehome-ai-qa-prompt-v2"
 SAFETY_VERSION = "safehome-ai-qa-safety-v1"
 FEEDBACK_VALUES = {"helpful", "neutral", "does_not_match", "uncomfortable"}
 
@@ -66,7 +66,8 @@ def get_config_status() -> dict:
             "approved_providers": ["fake"],
             "timeout_ms": int(current_app.config.get("AI_QA_TIMEOUT_MS", 3000)),
             "max_retries": max(0, min(int(current_app.config.get("AI_QA_PROVIDER_RETRIES", 1)), 2)),
-            "circuit_failure_threshold": 3,
+            "circuit_failure_threshold": int(current_app.config.get("AI_QA_CIRCUIT_THRESHOLD", 3)),
+            "hard_timeout_enforced_by_provider": True,
             "budget_micros_per_day": int(current_app.config.get("AI_QA_DAILY_BUDGET_MICROS", 0)),
             "external_provider_enabled": False,
         },
@@ -160,11 +161,31 @@ def _rate_and_budget_guard(user_id: str) -> None:
         raise AiQaError("ai_qa_budget_exhausted", "当日沙盒预算已用完", 429)
 
 
-def _circuit_open() -> bool:
+def _circuit_open(user_id: str, provider: str) -> bool:
     cutoff = (datetime.now(timezone.utc) - timedelta(minutes=5)).isoformat()
+    threshold = int(current_app.config.get("AI_QA_CIRCUIT_THRESHOLD", 3))
     with get_connection() as conn:
-        row = conn.execute("SELECT COUNT(*) AS count FROM ai_qa_provider_events WHERE status = 'failed' AND created_at >= ?", (cutoff,)).fetchone()
-    return int(row["count"]) >= 3
+        row = conn.execute(
+            """
+            SELECT COUNT(*) AS count
+            FROM ai_qa_provider_events
+            WHERE status = 'failed' AND user_id = ? AND provider = ? AND created_at >= ?
+            """,
+            (user_id, provider, cutoff),
+        ).fetchone()
+    return int(row["count"]) >= threshold
+
+
+def _generate_with_deadline(provider, text: str, citations: list[dict], mode: str, timeout_ms: int):
+    """要求供应商在传输层执行超时；不把线程提前返回误称为上游调用已取消。"""
+    if not getattr(provider, "supports_hard_timeout", False):
+        raise ProviderError("provider_timeout_contract_missing", "供应商未实现传输层硬超时")
+    return provider.generate(
+        text,
+        citations,
+        mode=mode,
+        timeout_seconds=max(0.001, timeout_ms / 1000),
+    )
 
 
 def _store_message(conn, session_id: str, user_id: str, role: str, content: str, *, citations=None, model=None, safety=None, knowledge_version="none", token_estimate=0, cost_micros=0) -> dict:
@@ -213,27 +234,47 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
     citations = retrieval["citations"]
     if not citations:
         return _fixed_message(actor, session_id, text, "no_sources", {**precheck, "category": "insufficient_sources", "severity": "low"})
-    if _circuit_open():
+    provider_name = str(current_app.config.get("AI_QA_PROVIDER", "fake"))
+    if _circuit_open(actor["id"], provider_name):
         return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": "circuit_open", "severity": "medium"})
-    provider = get_provider(str(current_app.config.get("AI_QA_PROVIDER", "fake")))
-    started = time.perf_counter()
+    provider = get_provider(provider_name)
+    timeout_ms = int(current_app.config.get("AI_QA_TIMEOUT_MS", 3000))
+    mode = str(payload.get("fake_mode") or "normal")
+    if str(current_app.config.get("APP_ENV", "")).lower() not in {"development", "testing"}:
+        mode = "normal"
     result = None
     exc = None
+    elapsed_ms = 0
     attempts = 1 + max(0, min(int(current_app.config.get("AI_QA_PROVIDER_RETRIES", 1)), 2))
     for _attempt in range(attempts):
+        started = time.perf_counter()
         try:
-            result = provider.generate(text, citations, mode=str(payload.get("fake_mode") or "normal"))
+            result = _generate_with_deadline(provider, text, citations, mode, timeout_ms)
             elapsed_ms = int((time.perf_counter() - started) * 1000)
-            if elapsed_ms > int(current_app.config.get("AI_QA_TIMEOUT_MS", 3000)):
-                raise ProviderError("provider_timeout", "供应商调用超过超时限制")
             exc = None
             break
         except ProviderError as caught:
+            elapsed_ms = int((time.perf_counter() - started) * 1000)
             exc = caught
     if exc is not None or result is None:
-        elapsed_ms = int((time.perf_counter() - started) * 1000)
         with get_connection() as conn:
-            conn.execute("INSERT INTO ai_qa_provider_events (id, session_id, user_id, provider, model_version, status, latency_ms, error_code, created_at) VALUES (?, ?, ?, 'fake', 'fake-safehome-v1', 'failed', ?, ?, ?)", (new_id("aiqpe"), session_id, actor["id"], elapsed_ms, exc.code, now_iso()))
+            conn.execute(
+                """
+                INSERT INTO ai_qa_provider_events
+                (id, session_id, user_id, provider, model_version, status, latency_ms, cost_micros, error_code, created_at)
+                VALUES (?, ?, ?, ?, ?, 'failed', ?, 0, ?, ?)
+                """,
+                (
+                    new_id("aiqpe"),
+                    session_id,
+                    actor["id"],
+                    provider_name,
+                    getattr(provider, "model_version", "unknown"),
+                    elapsed_ms,
+                    exc.code,
+                    now_iso(),
+                ),
+            )
             conn.commit()
         return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": exc.code, "severity": "medium"})
     postcheck = post_check(result.text, citations)

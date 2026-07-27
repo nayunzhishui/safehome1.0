@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from database import load_content_json
+from services.ai_qa_prompt import validate_output
 from services.risk_service import check_text_risk
 
 
@@ -49,4 +50,13 @@ def post_check(text: str, citations: list[dict]) -> dict:
     violations = [term for term in POST_BLOCK_TERMS if term.lower() in str(text or "").lower()]
     if not citations:
         violations.append("missing_approved_citation")
-    return {"ok": not violations, "violations": violations, "route": "answered" if not violations else "postcheck_degraded"}
+    contract = validate_output(text, citations)
+    violations.extend(contract["violations"])
+    unique = sorted(set(violations))
+    return {
+        "ok": not unique,
+        "violations": unique,
+        "grounding_ratio": contract["grounding_ratio"],
+        "grounding_method": contract["grounding_method"],
+        "route": "answered" if not unique else "postcheck_degraded",
+    }
