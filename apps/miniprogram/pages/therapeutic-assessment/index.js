@@ -140,6 +140,26 @@ Page({
     }
   },
 
+  async updateQuestionAction(event) {
+    const activeCase = this.data.activeCase;
+    const action = event.currentTarget.dataset.action;
+    if (!activeCase || !action) return;
+    this.setData({ saving: true, errorMessage: "" });
+    try {
+      await api.updateTherapeuticAssessmentQuestion(
+        activeCase.id,
+        { action, expected_version: activeCase.version },
+        submissionKey(`mini-ta-question-${action}`),
+      );
+      this.setData({ notice: action === "pause" ? "已暂停，你可以稍后继续。" : "问题候选状态已更新。" });
+      await this.loadCases();
+    } catch (error) {
+      this.setData({ errorMessage: error.message || "问题状态暂时没有更新成功。" });
+    } finally {
+      this.setData({ saving: false });
+    }
+  },
+
   disagree() {
     const activeCase = this.data.activeCase;
     if (!activeCase) return;

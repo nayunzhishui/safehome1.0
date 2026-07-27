@@ -26,6 +26,7 @@ from services.therapeutic_assessment_evidence_service import (
     list_evidence,
     review_hypothesis,
 )
+from services.therapeutic_assessment_question_service import update_question
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -85,6 +86,12 @@ def get_case_route(case_id: str):
 def patch_scope_route(case_id: str):
     actor, error = _actor()
     return error or _respond(update_scope, actor, case_id, _payload(), _key())
+
+
+@bp.patch("/cases/<case_id>/question")
+def patch_question_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(update_question, actor, case_id, _payload(), _key())
 
 
 @bp.post("/cases/<case_id>/transitions")

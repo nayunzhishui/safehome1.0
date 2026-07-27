@@ -1344,6 +1344,18 @@ export class SafeHomeApiClient {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/evidence`);
   }
 
+  updateTherapeuticAssessmentQuestion(
+    caseId: string,
+    input: Record<string, unknown>,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentCase> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/question`, {
+      method: "PATCH",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
   createTherapeuticAssessmentEvidence(
     caseId: string,
     input: Record<string, unknown>,

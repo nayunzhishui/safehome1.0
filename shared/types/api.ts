@@ -299,6 +299,20 @@ export interface TherapeuticAssessmentCase {
   id: string;
   participant_user_id: string;
   assessment_question: string;
+  working_question?: string | null;
+  question_candidates: Array<{ id: string; text: string; source: string }>;
+  question_quality: {
+    personal_concern?: boolean;
+    explorable?: boolean;
+    non_blame?: boolean;
+    evidence_responsive?: boolean;
+    allows_uncertainty?: boolean;
+  };
+  best_guess?: string | null;
+  best_guess_notice: string;
+  question_status: "draft" | "submitted" | "paused" | "deleted";
+  candidate_decision: string;
+  question_version: number;
   shared_scope: string[];
   consent_status: "active" | "withdrawn";
   status: TherapeuticAssessmentStatus;

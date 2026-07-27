@@ -263,7 +263,7 @@ def test_schema_contains_execution_and_recovery_evidence_tables(tmp_path, monkey
     with app.app_context():
         from database import CURRENT_SCHEMA_VERSION, check_database_health, get_connection
 
-        assert CURRENT_SCHEMA_VERSION == "2026_07_27_032"
+        assert CURRENT_SCHEMA_VERSION == "2026_07_27_033"
         assert check_database_health()["ok"] is True
         with get_connection() as conn:
             columns = {row["name"] for row in conn.execute("PRAGMA table_info(privacy_requests)").fetchall()}

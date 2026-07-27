@@ -109,8 +109,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_27_032"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_evidence_ledger"
+CURRENT_SCHEMA_VERSION = "2026_07_27_033"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_question_quality"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1077,6 +1077,24 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in therapeutic_state_columns.items():
         ensure_column(conn, "therapeutic_assessment_cases", column, definition)
+    therapeutic_question_columns = {
+        "working_question": "TEXT",
+        "question_candidates_json": "TEXT NOT NULL DEFAULT '[]'",
+        "question_quality_json": "TEXT NOT NULL DEFAULT '{}'",
+        "best_guess": "TEXT",
+        "question_status": "TEXT NOT NULL DEFAULT 'submitted'",
+        "candidate_decision": "TEXT NOT NULL DEFAULT 'unreviewed'",
+        "question_version": "INTEGER NOT NULL DEFAULT 1",
+    }
+    for column, definition in therapeutic_question_columns.items():
+        ensure_column(conn, "therapeutic_assessment_cases", column, definition)
+    conn.execute(
+        """
+        UPDATE therapeutic_assessment_cases
+        SET working_question = assessment_question
+        WHERE working_question IS NULL AND question_status != 'deleted'
+        """
+    )
     _normalize_therapeutic_assessment_states(conn)
 
 

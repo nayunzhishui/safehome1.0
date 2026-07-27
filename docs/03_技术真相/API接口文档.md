@@ -2275,3 +2275,9 @@ relationship_initiation_intention_action
 - `GET/POST /api/therapeutic-assessment/cases/<case_id>/evidence`：按对象范围读取或创建O/P/H/U证据项。
 - `POST /api/therapeutic-assessment/evidence/<evidence_id>/review`：仅督导/管理员复核H，要求版本和幂等键。
 - 参与者只能写O/U；AI/系统来源不能写H；参与者读取时过滤未人工复核H和未授权可见范围。
+
+## 2026-07-27：T38-F04问题版本
+
+- `PATCH /api/therapeutic-assessment/cases/<case_id>/question`：参与者本人执行生成候选、改写、选择、都不符合、暂停、删除或提交。
+- 必须携带`expected_version`和`Idempotency-Key`；原始`assessment_question`不可覆盖。
+- 响应返回`working_question`、`question_candidates`、`question_quality`、`best_guess`、状态和版本。

@@ -110,6 +110,9 @@ def _event(conn, case_id: str, actor: dict, action: str, key: str, before: int |
 def _expand_case(conn, case: dict) -> dict:
     item = dict(case)
     item["shared_scope"] = json_loads(item.pop("shared_scope_json", None), [])
+    item["question_candidates"] = json_loads(item.pop("question_candidates_json", None), [])
+    item["question_quality"] = json_loads(item.pop("question_quality_json", None), {})
+    item["best_guess_notice"] = "最好猜测不是结论，可以随新资料修订或删除。"
     item["service_level"] = service_level(str(item.get("readiness_level") or "L0"))
     feedback = rows_to_dicts(
         conn.execute(
@@ -171,17 +174,18 @@ def create_case(actor: dict, payload: dict, idempotency_key: str) -> tuple[dict,
             """
             INSERT INTO therapeutic_assessment_cases (
                 id, participant_user_id, enrollment_id, assessment_question,
+                working_question,
                 shared_scope_json, consent_status, status, risk_level,
                 workflow_state, hypothesis_state, safety_state,
                 complexity_scope, readiness_level, assigned_researcher_id,
                 version, created_by, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, 'active', ?, ?, 'submitted', 'observations_only', ?,
+            ) VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?, 'submitted', 'observations_only', ?,
                       ?, 'L0', ?, 1, ?, ?, ?)
             """,
             (
                 # assigned_researcher_id 固定为 NULL：参与者不能自选研究者，
                 # 研究者只能由督导/管理员通过 assign_case 分配，避免绕过分配门授予读权限。
-                case_id, str(actor["id"]), payload.get("enrollment_id"), question,
+                case_id, str(actor["id"]), payload.get("enrollment_id"), question, question,
                 json_dumps(scope), status, risk["risk_level"],
                 "needs_human_review" if risk["requires_review"] else "low_risk",
                 complexity,

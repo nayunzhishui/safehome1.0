@@ -27,6 +27,13 @@
       <text class="ta-version">版本 {{activeCase.version}}</text>
     </view>
     <text class="ta-question">{{activeCase.assessment_question}}</text>
+    <text wx:if="{{activeCase.working_question && activeCase.working_question !== activeCase.assessment_question}}" class="ta-meta">当前改写：{{activeCase.working_question}}</text>
+    <view class="ta-secondary-actions">
+      <button class="safe-outline-button" data-action="generate_candidates" bindtap="updateQuestionAction">查看两个问题候选</button>
+      <button class="safe-outline-button" data-action="none_fit" bindtap="updateQuestionAction">都不符合</button>
+      <button class="safe-outline-button" data-action="pause" bindtap="updateQuestionAction">暂时停一下</button>
+    </view>
+    <text wx:for="{{activeCase.question_candidates}}" wx:key="id" class="ta-meta">{{item.text}}</text>
     <view wx:if="{{activeCase.latestFeedback}}" class="ta-feedback">
       <text class="ta-kicker">经人工复核的反馈</text>
       <text class="ta-feedback-copy">{{activeCase.latestFeedback.participant_content}}</text>
