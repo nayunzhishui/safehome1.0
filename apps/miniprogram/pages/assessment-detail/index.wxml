@@ -1,4 +1,4 @@
-<view class="safe-page assessment-detail-page">
+<view class="safe-page assessment-detail-page" role="main" aria-label="支持性测评填写">
   <view wx:if="{{loading}}" class="state-box">
     <text>正在读取测一测内容...</text>
   </view>
@@ -33,6 +33,8 @@
             data-index="{{qi}}"
             data-value="{{opt.value}}"
             data-score="{{opt.score}}"
+            role="button"
+            aria-label="选择 {{opt.displayLabel}}"
             bindtap="selectOption"
           >
             <text class="option-value">{{opt.value}}</text>

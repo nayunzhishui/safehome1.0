@@ -1,4 +1,4 @@
-<view class="safe-page safe-page--with-tabbar diary-page">
+<view class="safe-page safe-page--with-tabbar diary-page" role="main" aria-label="情绪事件记录">
   <view class="diary-hero safe-card safe-card--hero">
     <view class="hero-copy">
       <text class="hero-title">记录刚才发生的一小段</text>

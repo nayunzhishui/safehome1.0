@@ -1,4 +1,4 @@
-<view class="safe-page auth-page">
+<view class="safe-page auth-page" role="main" aria-label="注册">
   <view class="safe-card auth-card">
     <view class="safe-eyebrow">SafeHome</view>
     <view class="safe-h1">注册</view>

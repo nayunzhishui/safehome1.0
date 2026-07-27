@@ -1,4 +1,4 @@
-<view class="safe-page safe-page--with-tabbar training-page">
+<view class="safe-page safe-page--with-tabbar training-page" role="main" aria-label="训练中心">
   <view class="training-hero safe-card safe-card--hero">
     <view class="hero-copy">
       <text class="hero-title">从先稳定自己开始</text>

@@ -1,4 +1,4 @@
-<view class="safe-page getting-page">
+<view class="safe-page getting-page" role="main" aria-label="三步开始">
   <view class="intro-card">
     <text class="intro-kicker">新手说明</text>
     <text class="intro-title">用“三步”完成一次最小陪伴练习</text>

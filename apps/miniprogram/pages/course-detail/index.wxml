@@ -1,4 +1,4 @@
-<view class="safe-page course-detail-page">
+<view class="safe-page course-detail-page" role="main" aria-label="课程详情">
   <view wx:if="{{loading}}" class="state-card">
     <text>正在读取课程内容...</text>
   </view>

@@ -1,4 +1,4 @@
-<view class="safe-page hot-topics-page">
+<view class="safe-page hot-topics-page" role="main" aria-label="热门主题">
   <view class="topic-hero">
     <text class="hero-kicker">教育热榜</text>
     <text class="hero-title">看看其他家庭如何处理类似问题</text>

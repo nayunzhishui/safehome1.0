@@ -347,6 +347,12 @@
   color: var(--safe-muted);
 }
 
+.risk-support-actions {
+  display: grid;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
 .supervision-entry {
   display: flex;
   align-items: center;

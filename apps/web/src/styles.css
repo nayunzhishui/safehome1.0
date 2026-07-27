@@ -622,6 +622,21 @@
 
 :root {
   color-scheme: light;
+  /* AUTO-GEN:experience-tokens — checked by scripts/check_design_tokens.py */
+  --experience-canvas: #f7f8f5;
+  --experience-surface: #ffffff;
+  --experience-ink: #202622;
+  --experience-muted: #68736d;
+  --experience-primary: #4f7c6b;
+  --experience-primary-deep: #2f5b4d;
+  --experience-warning: #b86a24;
+  --experience-danger: #a5453f;
+  --experience-line: #dfe5dc;
+  --experience-focus: #1f6f54;
+  --experience-touch: 44px;
+  --experience-font-caption: 12px;
+  --experience-font-body: 16px;
+  --experience-font-title: 20px;
   --safe-cream: #fff7f0;
   --safe-rice: #f7efe6;
   --safe-peach: #ffe3d2;

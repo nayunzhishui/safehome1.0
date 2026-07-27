@@ -1,4 +1,4 @@
-<view class="safe-page history-page">
+<view class="safe-page history-page" role="main" aria-label="测评历史记录">
   <view class="history-head">
     <text class="page-kicker">测评记录</text>
     <text class="page-title">回看每一次阶段性观察</text>

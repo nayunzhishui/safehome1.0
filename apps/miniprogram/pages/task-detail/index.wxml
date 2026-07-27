@@ -1,4 +1,4 @@
-<view class="safe-page task-detail-page" wx:if="{{task}}">
+<view class="safe-page task-detail-page" wx:if="{{task}}" role="main" aria-label="训练任务详情">
   <view class="detail-nav">
     <button class="back-button" bindtap="goBack">‹</button>
     <text class="nav-title">训练卡详情</text>

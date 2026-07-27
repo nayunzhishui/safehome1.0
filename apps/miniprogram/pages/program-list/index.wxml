@@ -1,4 +1,4 @@
-<view class="safe-page program-list-page">
+<view class="safe-page program-list-page" role="main" aria-label="项目测试列表">
   <view class="page-head">
     <text class="safe-h1">项目测试</text>
     <text class="safe-subtitle">先选一个主题，按小节慢慢练习。</text>
@@ -6,7 +6,7 @@
 
   <view wx:if="{{previewMode}}" class="preview-notice">研究者预览：草案仅供审核，不可作为正式项目提交。</view>
 
-  <view wx:for="{{programs}}" wx:key="id" class="safe-card program-card {{item.preview_only ? 'program-card--preview' : ''}}" data-id="{{item.id}}" data-preview="{{item.preview_only}}" bindtap="openProgram">
+  <view wx:for="{{programs}}" wx:key="id" class="safe-card program-card {{item.preview_only ? 'program-card--preview' : ''}}" data-id="{{item.id}}" data-preview="{{item.preview_only}}" role="button" aria-label="打开项目：{{item.title}}" bindtap="openProgram">
     <view class="program-head">
     <text class="program-status">{{item.showcase_open ? '展示开放' : item.preview_only ? '待三方审核' : '已批准试点'}}</text>
       <text class="program-count">{{item.session_count}} 小节</text>
@@ -19,21 +19,11 @@
     <text class="program-first">第一节：{{item.first_session_title}}</text>
   </view>
 
-  <view wx:if="{{loading}}" class="safe-card empty-card">
-    <text class="safe-body">正在读取项目测试内容...</text>
-  </view>
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取项目测试内容" description="请稍候。" />
 
-  <view wx:if="{{!loading && errorMessage}}" class="safe-card empty-card">
-    <text class="safe-h3">暂时没能读取</text>
-    <text class="safe-body">{{errorMessage}}</text>
-    <button class="safe-primary-button" bindtap="loadPrograms">重试</button>
-  </view>
+  <page-state wx:if="{{!loading && errorMessage}}" kind="error" title="项目内容暂时没能读取" description="{{errorMessage}}" action-label="重新读取" bind:action="loadPrograms" />
 
-  <view wx:if="{{!loading && !errorMessage && !programs.length}}" class="safe-card empty-card">
-    <text class="safe-h3">项目方案正在审核</text>
-    <text class="safe-body">{{availability && availability.message ? availability.message : '当前还没有已完成治理审核的项目测试内容。'}}</text>
-    <text wx:if="{{availability && availability.pending_review_count}}" class="pending-count">已有 {{availability.pending_review_count}} 个方案完成开发，待研究、心理和伦理审核。</text>
-  </view>
+  <page-state wx:if="{{!loading && !errorMessage && !programs.length}}" kind="empty" title="项目方案正在审核" description="{{availability && availability.message ? availability.message : '当前还没有已完成治理审核的项目测试内容。'}}" />
 
   <view class="boundary-note">{{boundaryNotice}}</view>
 </view>

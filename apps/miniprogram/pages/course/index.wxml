@@ -1,4 +1,4 @@
-<view class="safe-page safe-page--with-tabbar course-page">
+<view class="safe-page safe-page--with-tabbar course-page" role="main" aria-label="课程列表">
   <view class="course-hero safe-card safe-card--hero">
     <view class="hero-copy">
       <text class="hero-kicker">练习内容目录</text>

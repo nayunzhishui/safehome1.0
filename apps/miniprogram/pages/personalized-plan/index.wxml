@@ -1,4 +1,4 @@
-<view class="safe-page plan-page">
+<view class="safe-page plan-page" role="main" aria-label="个性化训练方案">
   <view class="page-head">
     <text class="safe-h1">个性化训练方案</text>
     <text class="safe-subtitle">根据最近测评和阶段性画像，推荐更适合先练的小动作。</text>

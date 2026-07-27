@@ -1,4 +1,4 @@
-<view class="safe-page message-detail-page">
+<view class="safe-page message-detail-page" role="main" aria-label="消息详情">
   <page-state wx:if="{{loading}}" kind="loading" title="正在打开消息" description="内容只会在你的账号中显示。" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="消息暂时没有打开" description="{{errorMessage}}" action-label="{{id ? '重新打开' : '返回消息列表'}}" bind:action="handleStateAction" />
   <view wx:else class="safe-card safe-card--hero">

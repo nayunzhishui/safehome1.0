@@ -1,4 +1,4 @@
-<view class="safe-page weekly-page">
+<view class="safe-page weekly-page" role="main" aria-label="本周复盘">
   <view class="weekly-hero safe-card safe-card--hero">
     <view class="hero-copy">
       <text class="hero-kicker">本周复盘</text>

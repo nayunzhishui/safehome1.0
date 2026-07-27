@@ -1,4 +1,4 @@
-<view class="safe-page emergency-page">
+<view class="safe-page emergency-page" role="main" aria-label="紧急安全指引">
   <view class="safe-card safe-card--hero">
     <text class="page-kicker">安全优先</text>
     <text class="page-title">先找现实帮助</text>
@@ -32,5 +32,8 @@
     </view>
   </view>
 
-  <button class="safe-primary-button bottom-action" bindtap="goHome">回到首页</button>
+  <view class="bottom-actions">
+    <button class="safe-primary-button bottom-action" bindtap="openResources">查看现实支持资源</button>
+    <button class="safe-outline-button bottom-action" bindtap="goHome">回到首页</button>
+  </view>
 </view>

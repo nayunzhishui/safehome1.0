@@ -1,4 +1,4 @@
-<view class="safe-page relationship-report-page">
+<view class="safe-page relationship-report-page" role="main" aria-label="关系阶段性报告">
   <page-state wx:if="{{loading}}" kind="loading" title="正在整理阶段性报告" description="报告、研究者确认和你的核对会分开呈现。" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="阶段性报告暂时没有读取成功" description="{{errorMessage}}" action-label="重新读取" bind:action="loadReport" />
   <view wx:else>

@@ -16,6 +16,20 @@
     "web_px": 44,
     "miniprogram_rpx": 88
   },
+  "type": {
+    "caption": {
+      "web_px": 12,
+      "miniprogram_rpx": 24
+    },
+    "body": {
+      "web_px": 16,
+      "miniprogram_rpx": 28
+    },
+    "title": {
+      "web_px": 20,
+      "miniprogram_rpx": 40
+    }
+  },
   "radius": {
     "small": "8px",
     "medium": "16px",

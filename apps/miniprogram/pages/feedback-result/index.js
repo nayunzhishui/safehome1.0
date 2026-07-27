@@ -256,4 +256,8 @@ Page({
       url: `/pages/supervision/index?diary_id=${encodeURIComponent(this.data.diaryId)}`,
     });
   },
+
+  openEmergencyGuide() {
+    wx.navigateTo({ url: "/pages/emergency-guide/index" });
+  },
 });

@@ -3,11 +3,14 @@ const { createSafeHomeApi } = require("../../services/api");
 const api = createSafeHomeApi();
 
 Page({
-  data: { loading: true, errorMessage: "", narrative: null, noteRows: [], taskRows: [] },
+  data: { loading: true, errorMessage: "", narrativeId: "", narrative: null, noteRows: [], taskRows: [] },
   onLoad(options) {
-    this.loadNarrative(decodeURIComponent(options.id || ""));
+    const narrativeId = decodeURIComponent(options.id || "");
+    this.setData({ narrativeId });
+    this.loadNarrative(narrativeId);
   },
   async loadNarrative(id) {
+    this.setData({ loading: true, errorMessage: "" });
     try {
       const narrative = await api.getRelationshipNarrative(id);
       this.setData({
@@ -21,5 +24,8 @@ Page({
     } catch (error) {
       this.setData({ loading: false, errorMessage: error.message || "手记尚未确认或无法读取。" });
     }
+  },
+  retryLoad() {
+    this.loadNarrative(this.data.narrativeId);
   },
 });

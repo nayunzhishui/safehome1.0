@@ -1,4 +1,4 @@
-<view class="safe-page history-page">
+<view class="safe-page history-page" role="main" aria-label="训练记录">
   <view class="history-head">
     <view>
       <text class="page-kicker">训练记录</text>

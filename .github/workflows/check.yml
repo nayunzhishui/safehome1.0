@@ -59,6 +59,15 @@ jobs:
         working-directory: apps/web
         run: npm run build
 
+      - name: Check shared design tokens
+        run: python scripts/check_design_tokens.py
+
+      - name: Audit miniprogram UI governance
+        run: python scripts/audit_miniprogram_ui_governance.py
+
+      - name: Audit participant visual states
+        run: node scripts/audit_task23_visual_system.mjs
+
       - name: Audit miniprogram structure
         run: python backend/scripts/audit_miniprogram_frontend.py
 

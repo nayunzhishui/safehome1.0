@@ -1,4 +1,4 @@
-<view class="safe-page ta-page">
+<view class="safe-page ta-page" role="main" aria-label="治疗性评估">
   <view class="ta-hero">
     <text class="ta-kicker">人工主导 · 可撤回</text>
     <text class="ta-title">共同理解一次关系体验</text>

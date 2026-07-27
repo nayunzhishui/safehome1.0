@@ -1,4 +1,4 @@
-<view class="safe-page assessment-page">
+<view class="safe-page assessment-page" role="main" aria-label="支持性测评">
   <view class="assessment-head">
     <text class="page-title">支持性测评</text>
     <text class="page-subtitle">按当前情况做一次自我观察。结果只用于理解线索和选择练习，不给人贴标签。</text>
@@ -44,6 +44,8 @@
         class="worksheet-card {{worksheet.is_student_profile ? 'student-profile' : ''}} {{worksheet.is_enabled_for_user ? '' : 'disabled'}}"
         data-id="{{worksheet.id}}"
         data-enabled="{{worksheet.is_enabled_for_user}}"
+        role="button"
+        aria-label="打开测评：{{worksheet.display_title}}"
         bindtap="openAssessmentEntry"
       >
         <view class="worksheet-main">
@@ -65,6 +67,8 @@
         class="recent-card clickable {{item.is_profile ? 'recent-card--profile' : ''}}"
         data-id="{{item.id}}"
         data-worksheet-id="{{item.worksheet_id}}"
+        role="button"
+        aria-label="查看测评记录：{{item.worksheet_title}}"
         bindtap="openRecentResult"
       >
         <view class="recent-head">

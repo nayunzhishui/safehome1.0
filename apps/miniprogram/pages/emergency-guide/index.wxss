@@ -89,5 +89,11 @@
 }
 
 .bottom-action {
+  width: 100%;
+}
+
+.bottom-actions {
+  display: grid;
+  gap: 16rpx;
   margin-top: 32rpx;
 }

@@ -1,4 +1,4 @@
-<view class="safe-page training-card-page">
+<view class="safe-page training-card-page" role="main" aria-label="训练卡">
   <view class="detail-hero safe-card safe-card--hero">
     <view class="hero-copy">
       <text class="hero-title">今天先练这一小步</text>

@@ -18,4 +18,8 @@ Page({
   goHome() {
     wx.reLaunch({ url: "/pages/home/index" });
   },
+
+  openResources() {
+    wx.navigateTo({ url: "/pages/emergency-resources/index" });
+  },
 });

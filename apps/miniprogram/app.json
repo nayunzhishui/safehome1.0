@@ -48,9 +48,12 @@
     "navigationBarTextStyle": "black",
     "backgroundColor": "#FFF7F0"
   },
+  "usingComponents": {
+    "page-state": "/components/page-state/index"
+  },
   "tabBar": {
     "color": "#8A8D89",
-    "selectedColor": "#4E7C6B",
+    "selectedColor": "#4f7c6b",
     "backgroundColor": "#FFFDF8",
     "borderStyle": "white",
     "list": [

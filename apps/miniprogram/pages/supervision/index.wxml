@@ -1,4 +1,4 @@
-<view class="safe-page supervision-page">
+<view class="safe-page supervision-page" role="main" aria-label="人工支持">
   <view class="supervision-hero">
     <view class="hero-copy">
       <text class="eyebrow">人工补充反馈</text>

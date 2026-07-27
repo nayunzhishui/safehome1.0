@@ -1,4 +1,4 @@
-<view class="safe-page settings-detail-page">
+<view class="safe-page settings-detail-page" role="main" aria-label="设置详情">
   <view class="safe-card safe-card--hero hero-card">
     <text class="hero-kicker">{{notice.kicker}}</text>
     <text class="hero-title">{{notice.title}}</text>
@@ -20,7 +20,7 @@
 
     <page-state
       wx:if="{{privacyLoading || privacyError}}"
-      state="{{privacyLoading ? 'loading' : 'error'}}"
+      kind="{{privacyLoading ? 'loading' : 'error'}}"
       title="{{privacyLoading ? '正在读取申请' : '申请暂时没有读取成功'}}"
       description="{{privacyLoading ? '请稍候。' : privacyError}}"
       action-label="{{privacyLoading ? '' : (privacyNeedsLogin ? '去登录' : '重新读取')}}"
@@ -56,7 +56,7 @@
 
     <page-state
       wx:else
-      state="empty"
+      kind="empty"
       title="当前没有删除申请"
       description="如果需要删除账号相关数据，可以在下方提交申请。提交后不会立即执行。"
     />

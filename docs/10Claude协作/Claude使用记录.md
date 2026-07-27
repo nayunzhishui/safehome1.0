@@ -571,3 +571,12 @@
 - 修改：Web ErrorBoundary、入口、样式、专项契约和事实文档。
 - 验证：专项、TypeScript、production build和`git diff --check`通过。
 - 后续：M7 UI Token与页面状态分批审计。
+
+## 2026-07-27 四模块M7 UI治理
+
+- 工具/模型：Codex；Implement、TDD、Frontend Design、Accessibility。
+- 会话标识：当前Codex任务。
+- 摘要：未应用Claude Patch 7；按当前结构增量建立Token契约、页面状态、可访问控件和高风险行动路径。
+- 修改：shared设计Token、Web/小程序样式与页面、CI、UI治理脚本和事实文档。
+- 验证：Token、UI治理、41页/资源、T23四视口、T33、Web typecheck/build通过。
+- 后续：M8全量回归和CloudBase未上传容器包；真机、读屏、伦理和发布保持人工门禁。

@@ -19,6 +19,11 @@
       <view
         id="intensityThermometer"
         class="thermometer-shell"
+        role="slider"
+        aria-label="调整情绪强度"
+        aria-valuemin="1"
+        aria-valuemax="10"
+        aria-valuenow="{{intensityLevel}}"
         bindtap="onThermometerTap"
         bindtouchmove="onThermometerMove"
       >

@@ -1,4 +1,4 @@
-<view class="safe-page feedback-page">
+<view class="safe-page feedback-page" role="main" aria-label="支持性反馈">
   <view class="feedback-hero safe-card safe-card--hero">
     <view class="hero-copy">
       <text class="hero-title">先看见发生了什么</text>
@@ -61,6 +61,10 @@
         <text class="risk-support-title">优先联系现实支持</text>
         <text class="risk-support-text">{{riskSupportText}}</text>
         <text class="risk-support-note">这里不是实时危机服务，也不替代线下专业支持或当地紧急服务。</text>
+        <view class="risk-support-actions">
+          <button class="safe-primary-button" bindtap="openEmergencyGuide">查看安全指引</button>
+          <button class="safe-outline-button" bindtap="openSupervision">提交人工关注</button>
+        </view>
       </view>
     </view>
 

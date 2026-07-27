@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "紧急安全指引"
+  "navigationBarTitleText": "紧急安全指引",
+  "usingComponents": {
+    "section-title": "/components/section-title/index"
+  }
 }

@@ -1,4 +1,4 @@
-<view class="safe-page emergency-page">
+<view class="safe-page emergency-page" role="main" aria-label="现实支持资源">
   <view class="safe-card safe-card--hero">
     <text class="page-kicker">现实资源</text>
     <text class="page-title">先把人连接上</text>

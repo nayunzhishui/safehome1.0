@@ -1,4 +1,19 @@
 page {
+  /* AUTO-GEN:experience-tokens — checked by scripts/check_design_tokens.py */
+  --experience-canvas: #f7f8f5;
+  --experience-surface: #ffffff;
+  --experience-ink: #202622;
+  --experience-muted: #68736d;
+  --experience-primary: #4f7c6b;
+  --experience-primary-deep: #2f5b4d;
+  --experience-warning: #b86a24;
+  --experience-danger: #a5453f;
+  --experience-line: #dfe5dc;
+  --experience-focus: #1f6f54;
+  --experience-touch: 88rpx;
+  --experience-font-caption: 24rpx;
+  --experience-font-body: 28rpx;
+  --experience-font-title: 40rpx;
   --safe-primary: #4f7c6b;
   --safe-primary-soft: #e8f0ea;
   --safe-primary-pale: #f4f8f5;
