@@ -4662,6 +4662,7 @@ export const GENERATED_API_ENDPOINTS = [
       "internal_error",
       "invalid_arousal_level",
       "invalid_control_level",
+      "invalid_created_at",
       "invalid_intensity_level",
       "invalid_valence_level",
       "unauthorized"
@@ -9895,10 +9896,8 @@ export const GENERATED_API_ENDPOINTS = [
     "handler": "relationship_pilot.create_report_route",
     "module": "routes.relationship_pilot_routes",
     "access": {
-      "mode": "authenticated",
+      "mode": "role",
       "roles": [
-        "parent",
-        "student",
         "researcher",
         "supervisor",
         "admin"

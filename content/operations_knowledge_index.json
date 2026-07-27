@@ -200,7 +200,7 @@
     {
       "source_file": "security_privacy_abuse_registry.json",
       "source_version": "2026-07-20-t31-security-v1",
-      "source_sha256": "e23f34db8e996d4df6fc083ba0c25d8a05eac9a2ce1e76751e4f7c35546e89ba",
+      "source_sha256": "5e97464fe78ea3606986b51f388f8a69096abbf55401a21641e208e6bcdb9f87",
       "content_types": [
         "security_asset_inventory",
         "authorization_matrix",
@@ -250,5 +250,5 @@
   "draft_or_internal_notes_indexed": false,
   "participant_text_indexed": false,
   "production_release_approved": false,
-  "index_hash": "0fd3df286b00a91f86fcda59034411892d8545781507f454af16177bf2edd8a0"
+  "index_hash": "be765bc4aea017dee0ec3e6f62be871047c95bd6bef96696b87839a1178c9151"
 }

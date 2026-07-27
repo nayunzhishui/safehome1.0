@@ -195,13 +195,13 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/emotion_thermometer.py:60",
+      "location": "backend/routes/emotion_thermometer.py:128",
       "handler": "create_emotion_thermometer_record"
     },
     {
       "severity": "warning",
       "rule": "possible_unbounded_list",
-      "location": "backend/routes/emotion_thermometer.py:118",
+      "location": "backend/routes/emotion_thermometer.py:192",
       "handler": "get_emotion_thermometer_day"
     },
     {

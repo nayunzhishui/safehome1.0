@@ -4015,13 +4015,14 @@
       "action": "create",
       "object_scope": "self_or_assigned_participant_or_supervisor_admin",
       "allowed_roles": [
-        "parent",
-        "student",
         "researcher",
         "supervisor",
         "admin"
       ],
-      "denied_roles": [],
+      "denied_roles": [
+        "parent",
+        "student"
+      ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {

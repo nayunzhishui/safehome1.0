@@ -164,7 +164,7 @@
 | POST | `/api/relationship-pilot/enrollments/<enrollment_id>/longitudinal` | authenticated:parent,student,researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | supported | active |
 | POST | `/api/relationship-pilot/enrollments/<enrollment_id>/narrative` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | POST | `/api/relationship-pilot/enrollments/<enrollment_id>/notes` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
-| POST | `/api/relationship-pilot/enrollments/<enrollment_id>/report` | authenticated:parent,student,researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
+| POST | `/api/relationship-pilot/enrollments/<enrollment_id>/report` | role:researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | POST | `/api/relationship-pilot/enrollments/<enrollment_id>/tasks` | authenticated:parent,student,researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | supported | active |
 | GET | `/api/relationship-pilot/growth` | authenticated:parent,student,researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
 | GET | `/api/relationship-pilot/narratives/<narrative_id>` | authenticated:parent,student,researcher,supervisor,admin | self_or_assigned_participant_or_supervisor_admin | — | — | active |
