@@ -3,8 +3,8 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 279,
-  "capability_count": 43,
+  "operation_count": 280,
+  "capability_count": 44,
   "capabilities": [
     {
       "id": "capability.app",
@@ -1778,6 +1778,44 @@
       "operation_ids": [
         "supervision.create_supervision_request.post",
         "supervision.reply_supervision_request.post"
+      ]
+    },
+    {
+      "id": "capability.task37_contracts",
+      "title": "task37 contracts",
+      "intended_use": "通过统一机器契约受控提供“task37_contracts”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "researcher",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-07-21.2",
+      "tests": [
+        "backend/tests (operation coverage: 1)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "task37_contracts.get_public_status.get"
       ]
     },
     {

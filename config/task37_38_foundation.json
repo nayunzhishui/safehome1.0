@@ -9,8 +9,8 @@
     "dirty_worktree_policy": "observe_only_never_revert"
   },
   "database": {
-    "schema_version": "2026_07_26_029",
-    "schema_name": "therapeutic_assessment_collaboration",
+    "schema_version": "2026_07_27_030",
+    "schema_name": "computation_lineage_privacy_lifecycle",
     "providers": ["sqlite", "mysql"]
   },
   "current_capabilities": {
@@ -42,11 +42,11 @@
     {"path": "content/research_methodology_registry.json", "bytes": 88542, "sha256": "2e65547ce77e858480a5b973e2bff5043d8ccc080887aa51a11791905bf6e933"},
     {"path": "content/task36_reliability_security_registry.json", "bytes": 4026, "sha256": "2c30d5f4aeddf3e4051b5867f960711c3094d0e81f9d6f89d93cbf63da70940f"},
     {"path": "content/showcase_access.json", "bytes": 512, "sha256": "76679f2c60d0bef669eca2af50065690155f0b5089d05081e5e2274c4d4a60bd"},
-    {"path": "backend/database.py", "bytes": 44924, "sha256": "f8379badb71ab6efd4825f051e95c14e27a2928abada2d4ba3b65f2c394d9b23"},
-    {"path": "backend/models.py", "bytes": 69983, "sha256": "f3f755b248fadb7f104d561658d66615b82f1ef32540c1094f26825a4228df81"},
-    {"path": "shared/types/api.ts", "bytes": 80088, "sha256": "d4e5d0167dd4e82bc09381d5816ff852406b5b4bf56df12af5fd0d2c6c59009f"},
-    {"path": "shared/constants/api.ts", "bytes": 7408, "sha256": "f87c47d4988413770b92db1bcb07bc0e15867775b920cea0d014c231a871a2a7"},
-    {"path": "docs/01_当前执行入口/任务三十七至三十八完整实现主计划_20260727.md", "bytes": 42459, "sha256": "04bdd10784e33a6804e261309918003765a7b07901cd6bbf1792b3f654d3b9cc"}
+    {"path": "backend/database.py", "bytes": 45365, "sha256": "470640fd0053d4f652ef17f89d58b8e1c5849dd9aa499803df6f07a5372ffb6e"},
+    {"path": "backend/models.py", "bytes": 72829, "sha256": "ee238ac043ec4adb362afe28bb402e7d57ade92b28eb2c180a5a20e6b2681a12"},
+    {"path": "shared/types/api.ts", "bytes": 80526, "sha256": "a0e7c87a4f43b165bf6573d5dafd4d4c687e922f718613094d4179732f7be26f"},
+    {"path": "shared/constants/api.ts", "bytes": 7469, "sha256": "7296ccbc544daa517f224bf3072282841d20e29015a92d91f0db73c28b4d14e8"},
+    {"path": "docs/01_当前执行入口/任务三十七至三十八完整实现主计划_20260727.md", "bytes": 43344, "sha256": "7e633e4ffb23f10942d49a20f9d5266c2e35a1a5ad3aa526666b456ade7b6755"}
   ],
   "safety": {
     "raw_participant_text_in_foundation": false,

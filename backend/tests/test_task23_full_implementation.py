@@ -172,7 +172,7 @@ def test_task23_schema_and_clients_include_full_contract(tmp_path, monkeypatch):
     with app.app_context():
         from database import CURRENT_SCHEMA_VERSION, get_connection, list_database_columns, list_database_tables
 
-        assert CURRENT_SCHEMA_VERSION == "2026_07_26_029"
+        assert CURRENT_SCHEMA_VERSION == "2026_07_27_030"
         with get_connection() as conn:
             tables = {row["name"] for row in list_database_tables(conn)}
             columns = {row["name"] for row in list_database_columns(conn, "feedback_ledger")}

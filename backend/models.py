@@ -71,6 +71,11 @@ MVP_TABLES = [
     "operations_incidents",
     "operations_incident_notifications",
     "operations_evidence_packages",
+    "computation_datasets",
+    "computation_authorization_snapshots",
+    "computation_lineage_edges",
+    "computation_deletion_tombstones",
+    "computation_legal_holds",
 ]
 
 
@@ -1735,6 +1740,69 @@ SCHEMA_SQL = [
         UNIQUE(actor_id, idempotency_key)
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS computation_datasets (
+        id TEXT PRIMARY KEY,
+        dataset_key TEXT NOT NULL,
+        version TEXT NOT NULL,
+        data_class TEXT NOT NULL,
+        storage_layer TEXT NOT NULL,
+        source_kind TEXT NOT NULL,
+        rights_status TEXT NOT NULL,
+        purpose TEXT NOT NULL,
+        retention_until TEXT,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL,
+        UNIQUE(dataset_key, version)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS computation_authorization_snapshots (
+        id TEXT PRIMARY KEY,
+        dataset_id TEXT NOT NULL,
+        subject_hash TEXT NOT NULL,
+        consent_type TEXT NOT NULL,
+        consent_version TEXT NOT NULL,
+        status TEXT NOT NULL,
+        captured_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS computation_lineage_edges (
+        id TEXT PRIMARY KEY,
+        parent_resource_type TEXT NOT NULL,
+        parent_resource_id TEXT NOT NULL,
+        child_resource_type TEXT NOT NULL,
+        child_resource_id TEXT NOT NULL,
+        transform_version TEXT NOT NULL,
+        purpose TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(parent_resource_type, parent_resource_id, child_resource_type, child_resource_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS computation_deletion_tombstones (
+        id TEXT PRIMARY KEY,
+        subject_hash TEXT NOT NULL,
+        root_resource_type TEXT NOT NULL,
+        root_resource_id TEXT NOT NULL,
+        reason_code TEXT NOT NULL,
+        affected_resources_json TEXT NOT NULL DEFAULT '[]',
+        blocked_by_legal_hold INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS computation_legal_holds (
+        id TEXT PRIMARY KEY,
+        scope_type TEXT NOT NULL,
+        scope_id TEXT NOT NULL,
+        reason_code TEXT NOT NULL,
+        expires_at TEXT,
+        released_at TEXT,
+        created_at TEXT NOT NULL
+    )
+    """,
 ]
 
 
@@ -1834,6 +1902,11 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_feedback_case_version ON therapeutic_assessment_feedback_versions(case_id, version_no)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_actions_case_created ON therapeutic_assessment_actions(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
+    "CREATE INDEX IF NOT EXISTS idx_computation_lineage_parent ON computation_lineage_edges(parent_resource_type, parent_resource_id)",
+    "CREATE INDEX IF NOT EXISTS idx_computation_lineage_child ON computation_lineage_edges(child_resource_type, child_resource_id)",
+    "CREATE INDEX IF NOT EXISTS idx_computation_tombstone_subject ON computation_deletion_tombstones(subject_hash)",
+    "CREATE INDEX IF NOT EXISTS idx_computation_holds_scope ON computation_legal_holds(scope_type, scope_id, released_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_goals_client_submission ON goals(user_id, client_submission_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_diaries_client_submission ON emotion_diaries(user_id, client_submission_id)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_supervision_client_submission ON supervision_requests(user_id, client_submission_id)",

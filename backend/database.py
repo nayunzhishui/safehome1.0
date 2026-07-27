@@ -102,9 +102,14 @@ REQUIRED_HEALTH_TABLES = [
     "therapeutic_assessment_feedback_versions",
     "therapeutic_assessment_actions",
     "therapeutic_assessment_events",
+    "computation_datasets",
+    "computation_authorization_snapshots",
+    "computation_lineage_edges",
+    "computation_deletion_tombstones",
+    "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_26_029"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_collaboration"
+CURRENT_SCHEMA_VERSION = "2026_07_27_030"
+CURRENT_SCHEMA_NAME = "computation_lineage_privacy_lifecycle"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -183,6 +188,18 @@ MYSQL_VARCHAR_COLUMNS = {
     "snapshot_hash",
     "state",
     "reason_code",
+    "dataset_key",
+    "dataset_id",
+    "subject_hash",
+    "parent_resource_type",
+    "parent_resource_id",
+    "child_resource_type",
+    "child_resource_id",
+    "root_resource_type",
+    "root_resource_id",
+    "scope_type",
+    "scope_id",
+    "released_at",
     "incident_type",
     "severity",
     "summary_code",

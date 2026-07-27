@@ -11504,3 +11504,12 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 后端新增只读公开状态接口，shared、Web和小程序客户端已同步；生产写入仍关闭。
 - 验收：专项10项、Web typecheck/build及小程序API语法检查通过。
 - 下一任务：`T37-P03`生产数据层、血缘与隐私生命周期。
+
+## 2026-07-27：T37-P03执行记录
+
+- 状态：`engineering_complete / production_migration_not_executed / release_not_approved`。
+- schema升至`2026_07_27_030 / computation_lineage_privacy_lifecycle`，新增数据集、授权快照、派生血缘、删除墓碑和法定保留五类元数据表。
+- 服务端以HMAC对象摘要代替原始身份，拒绝把原始文本写入血缘层；撤回递归追踪派生资源并追加墓碑，法定保留会显式阻断自动删除。
+- 新增SQLite/MySQL加法迁移和恢复核验器；生产apply需要精确确认，rollback不DROP表、不删除历史。
+- 验收：P03专项7项、受影响契约48项、MySQL索引专项及内容校验通过；未操作生产数据库。
+- 下一任务：`T37-P04`异步任务、Harness与可观测性。

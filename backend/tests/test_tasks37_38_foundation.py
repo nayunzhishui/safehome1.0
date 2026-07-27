@@ -72,7 +72,7 @@ def test_production_automation_is_conditional_and_never_accepts_simulated_signof
 def test_foundation_freezes_schema_commit_and_core_asset_fingerprints():
     payload = json.loads(FOUNDATION.read_text(encoding="utf-8"))
     assert payload["schema"] == "safehome.tasks37_38.foundation.v1"
-    assert payload["database"]["schema_version"] == "2026_07_26_029"
+    assert payload["database"]["schema_version"] == "2026_07_27_030"
     assert len(payload["git"]["head"]) == 40
     assert payload["git"]["dirty_worktree_policy"] == "observe_only_never_revert"
     assert len(payload["assets"]) >= 12
