@@ -1,0 +1,206 @@
+{
+  "schema_version": "safehome.task37-data-use-governance.v1",
+  "version": "2026-07-27-t37-p01-v1",
+  "status": "engineering_complete_external_review_pending",
+  "domains": {
+    "affective_computing": {
+      "display_name": "情绪表达线索计算",
+      "intended_uses": [
+        "生成群体或记录级的情绪表达候选线索",
+        "支持研究者质量复核和非诊断性产品改进",
+        "生成只进入真人队列的需要了解影子信号"
+      ],
+      "prohibited_uses": [
+        "clinical_diagnosis",
+        "personality_labeling",
+        "relationship_quality_ranking",
+        "automatic_crisis_action",
+        "participant_visible_individual_risk_prediction",
+        "automatic_treatment_recommendation"
+      ],
+      "risk_shadow_signal": {
+        "enabled_for_human_review_queue": true,
+        "participant_visible_conclusion": false,
+        "automatic_action": false,
+        "label": "需要真人了解"
+      }
+    },
+    "group_sna": {
+      "display_name": "群体互动网络描述",
+      "intended_uses": [
+        "在明确授权的数据上生成群体级结构描述",
+        "评估算法稳定性、缺失数据影响和聚合质量",
+        "为研究设计提供不指向个人的探索性线索"
+      ],
+      "prohibited_uses": [
+        "clinical_diagnosis",
+        "personality_labeling",
+        "relationship_quality_ranking",
+        "automatic_crisis_action",
+        "individual_risk_score",
+        "individual_relationship_score",
+        "participant_visible_individual_risk_prediction"
+      ],
+      "risk_shadow_signal": {
+        "enabled_for_human_review_queue": false,
+        "participant_visible_conclusion": false,
+        "automatic_action": false,
+        "label": "不适用"
+      }
+    },
+    "controlled_ai": {
+      "display_name": "受控支持性内容助手",
+      "intended_uses": [
+        "解释产品功能和经批准的心理教育材料",
+        "帮助参与者把记录写得更具体",
+        "基于批准知识库生成带出处的低风险支持性回答",
+        "帮助研究者整理资料和发现证据缺口"
+      ],
+      "prohibited_uses": [
+        "clinical_diagnosis",
+        "personality_labeling",
+        "relationship_quality_ranking",
+        "automatic_crisis_action",
+        "participant_visible_individual_risk_prediction",
+        "automatic_treatment_recommendation",
+        "medicine_or_legal_decision"
+      ],
+      "risk_shadow_signal": {
+        "enabled_for_human_review_queue": true,
+        "participant_visible_conclusion": false,
+        "automatic_action": false,
+        "label": "需要真人了解"
+      }
+    }
+  },
+  "data_purposes": {
+    "service_delivery": {
+      "display_name": "提供用户主动请求的服务",
+      "separate_authorization": true,
+      "consent_type": "service_data",
+      "default_selected": false,
+      "service_access_condition": true,
+      "revocable": true
+    },
+    "quality_evaluation": {
+      "display_name": "独立的质量评估",
+      "separate_authorization": true,
+      "consent_type": "quality_evaluation",
+      "default_selected": false,
+      "service_access_condition": false,
+      "revocable": true
+    },
+    "model_training": {
+      "display_name": "模型训练或微调",
+      "separate_authorization": true,
+      "consent_type": "model_training",
+      "default_selected": false,
+      "service_access_condition": false,
+      "revocable": true
+    },
+    "secondary_research": {
+      "display_name": "超出原服务目的的二次研究",
+      "separate_authorization": true,
+      "consent_type": "secondary_research",
+      "default_selected": false,
+      "service_access_condition": false,
+      "revocable": true
+    }
+  },
+  "source_rules": {
+    "participant_text": {
+      "participant_data": true,
+      "explicit_current_purpose_consent_required": true,
+      "de_identification_required_for_training_or_research": true
+    },
+    "participant_network": {
+      "participant_data": true,
+      "explicit_current_purpose_consent_required": true,
+      "de_identification_required_for_training_or_research": true
+    },
+    "synthetic": {
+      "participant_data": false,
+      "approved_rights_statuses": [
+        "approved_project_owned",
+        "approved_synthetic"
+      ]
+    },
+    "public_licensed": {
+      "participant_data": false,
+      "approved_rights_statuses": [
+        "approved_public_license",
+        "approved_contract"
+      ]
+    }
+  },
+  "card_templates": {
+    "data_card": {
+      "required_fields": [
+        "id",
+        "version",
+        "owner",
+        "source",
+        "rights_status",
+        "population",
+        "allowed_uses",
+        "prohibited_uses",
+        "sensitivity",
+        "de_identification",
+        "retention",
+        "rollback"
+      ]
+    },
+    "model_card": {
+      "required_fields": [
+        "id",
+        "version",
+        "owner",
+        "intended_uses",
+        "prohibited_uses",
+        "training_data_cards",
+        "evaluation",
+        "calibration",
+        "abstention",
+        "known_limitations",
+        "rollback"
+      ]
+    },
+    "prompt_card": {
+      "required_fields": [
+        "id",
+        "version",
+        "owner",
+        "intended_uses",
+        "prohibited_uses",
+        "input_contract",
+        "output_contract",
+        "grounding",
+        "safety_checks",
+        "rollback"
+      ]
+    },
+    "public_source_card": {
+      "required_fields": [
+        "id",
+        "version",
+        "owner",
+        "source_url",
+        "license",
+        "rights_status",
+        "allowed_uses",
+        "prohibited_uses",
+        "privacy_review",
+        "artifact_sha256",
+        "rollback"
+      ]
+    }
+  },
+  "external_reviews": {
+    "legal": "pending_human_evidence",
+    "ethics": "pending_human_evidence",
+    "psychology": "pending_human_evidence",
+    "research_methods": "pending_human_evidence",
+    "privacy_security": "pending_human_evidence"
+  },
+  "boundary_notice": "工程契约不构成伦理、法律、专业或生产发布批准；模拟Agent意见不计真人签字。"
+}

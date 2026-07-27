@@ -96,6 +96,37 @@ def test_invalid_consent_type_is_rejected(tmp_path, monkeypatch):
     assert response.get_json()["error"]["code"] == "validation_error"
 
 
+def test_task37_data_purposes_have_separate_consent_records(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+
+    for consent_type in (
+        "service_data",
+        "quality_evaluation",
+        "model_training",
+        "secondary_research",
+    ):
+        response = client.post(
+            "/api/consent",
+            json={
+                "user_id": "participant-task37",
+                "consent_type": consent_type,
+                "consent_version": f"2026.07-{consent_type}-v1",
+                "agreed": consent_type == "service_data",
+            },
+        )
+        assert response.status_code == 201
+        assert response.get_json()["data"]["consent_type"] == consent_type
+
+    listed = client.get("/api/consent?user_id=participant-task37").get_json()["data"]
+    assert {item["consent_type"] for item in listed["items"]} == {
+        "service_data",
+        "quality_evaluation",
+        "model_training",
+        "secondary_research",
+    }
+
+
 def test_production_consent_requires_user_id(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")
     client = app.test_client()

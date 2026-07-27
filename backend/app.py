@@ -85,6 +85,7 @@ REQUIRED_CONTENT_FILES = [
     "offline_benchmark_annotation_manual.json",
     "synthetic_affect_benchmark_240.json",
     "research_methodology_registry.json",
+    "task37_data_use_governance.json",
     "researcher_capability_registry.json",
     "security_privacy_abuse_registry.json",
     "reliability_release_registry.json",

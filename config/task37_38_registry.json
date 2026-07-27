@@ -159,7 +159,7 @@
         ["python", "-m", "pytest", "backend/tests/test_tasks37_38_foundation.py", "-q"]
       ]
     },
-    {"id": "T37-P01", "title": "预期用途、禁止用途和数据用途", "dependencies": ["T38-F00"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-P01", "title": "预期用途、禁止用途和数据用途", "dependencies": ["T38-F00"], "engineering_complete": true, "status": "engineering_complete_external_review_pending", "evidence": ["content/task37_data_use_governance.json", "backend/services/task37_data_use_service.py", "backend/scripts/audit_task37_p01_data_use.py", "backend/tests/test_task37_p01_data_use_governance.py", "backend/tests/test_consent_route.py"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task37_p01_data_use_governance.py", "backend/tests/test_consent_route.py", "-q"], ["python", "backend/scripts/audit_task37_p01_data_use.py"]]},
     {"id": "T37-P02", "title": "统一计算契约与版本注册", "dependencies": ["T37-P01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-P03", "title": "生产数据层、血缘与隐私生命周期", "dependencies": ["T37-P02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-P04", "title": "异步任务、Harness与可观测性", "dependencies": ["T37-P03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

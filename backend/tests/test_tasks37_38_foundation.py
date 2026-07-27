@@ -135,10 +135,16 @@ def test_agent_and_rag_seams_are_separate_and_non_authoritative():
 
 def test_runner_report_and_dry_run_use_only_ignored_recoverable_state():
     runner = _load_module(RUNNER, "tasks37_38_runner_report")
-    report = runner.report(runner.load_registry())
+    registry = runner.load_registry()
+    report = runner.report(registry)
     assert report["tasks_total"] == 57
-    assert report["tasks_engineering_complete"] == 2
-    assert report["next_automatable_task"] == "T37-P01"
+    completed = sum(1 for task in registry["tasks"] if task["engineering_complete"])
+    expected_next = next(
+        (task_id for task_id in registry["execution_order"] if not next(task for task in registry["tasks"] if task["id"] == task_id)["engineering_complete"]),
+        None,
+    )
+    assert report["tasks_engineering_complete"] == completed
+    assert report["next_automatable_task"] == expected_next
     assert report["human_external_signoff_complete"] is False
     assert report["production_release_approved"] is False
 

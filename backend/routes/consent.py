@@ -14,6 +14,10 @@ ALLOWED_CONSENT_TYPES = {
     "research_authorization",
     "anonymous_research",
     "contact_permission",
+    "service_data",
+    "quality_evaluation",
+    "model_training",
+    "secondary_research",
 }
 
 DEFAULT_CONSENT_VERSION = "2026.06-consent-v1"
