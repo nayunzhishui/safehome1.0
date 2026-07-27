@@ -2288,3 +2288,9 @@ relationship_initiation_intention_action
 - `GET /api/therapeutic-assessment/data-items/<item_id>`：仅控制者、提供者、逐条指定专业人员或全部确认后的共同查看者可读。
 - `PATCH /api/therapeutic-assessment/data-items/<item_id>/consent`：主体/涉及者批准、修改或撤回；要求版本和幂等键。
 - 过期返回410，撤回返回403；法定保留不恢复查看权。
+
+## 2026-07-27：T38-F06参与者草稿
+
+- `GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>`：参与者读取本人指定步骤的云端草稿；不存在时返回`version=0`。
+- `PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>`：按`expected_version`、`Idempotency-Key`保存或完成草稿。
+- step限定为八个流程标识；跨参与者读取返回403，版本冲突返回409，已撤回case禁止继续同步。

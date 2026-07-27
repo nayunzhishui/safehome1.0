@@ -25,7 +25,7 @@ def _service():
 def test_schema_030_adds_lineage_and_lifecycle_tables(tmp_path, monkeypatch):
     _app(tmp_path, monkeypatch)
     database = importlib.import_module("database")
-    assert database.CURRENT_SCHEMA_VERSION == "2026_07_27_034"
+    assert database.CURRENT_SCHEMA_VERSION == "2026_07_27_035"
     with database.get_connection() as conn:
         tables = {row["name"] for row in database.list_database_tables(conn)}
         assert {
@@ -110,7 +110,7 @@ def test_migration_plan_and_rollback_are_non_destructive(tmp_path, monkeypatch):
     module = importlib.import_module("scripts.migrate_task37_p03_lineage")
     plan = module.inspect()
     assert plan["ok"] is True
-    assert plan["schema_version"] == "2026_07_27_034"
+    assert plan["schema_version"] == "2026_07_27_035"
     rollback = module.rollback()
     assert rollback["schema_preserved"] is True
     assert rollback["tables_dropped"] is False
@@ -129,7 +129,7 @@ def test_backup_restore_verifier_matches_schema_counts_and_tombstones(tmp_path, 
     verifier = importlib.import_module("scripts.verify_task37_p03_lineage_restore")
     result = verifier.compare(source, restored)
     assert result["ok"] is True
-    assert result["source"]["schema_version"] == "2026_07_27_034"
+    assert result["source"]["schema_version"] == "2026_07_27_035"
     assert result["source"]["tombstone_sha256"] == result["restored"]["tombstone_sha256"]
     assert result["raw_rows_emitted"] is False
 

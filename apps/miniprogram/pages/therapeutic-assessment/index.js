@@ -47,6 +47,21 @@ Page({
     this.loadCases();
   },
 
+  startParticipantFlow() {
+    wx.navigateTo({ url: "/pages/therapeutic-assessment-boundary/index" });
+  },
+
+  continueParticipantFlow() {
+    const caseId = this.data.activeCase && this.data.activeCase.id;
+    if (!caseId) {
+      this.startParticipantFlow();
+      return;
+    }
+    wx.navigateTo({
+      url: `/pages/therapeutic-assessment-boundary/index?caseId=${encodeURIComponent(caseId)}`,
+    });
+  },
+
   async loadCases() {
     this.setData({ loading: true, errorMessage: "" });
     try {

@@ -265,6 +265,28 @@ export interface TherapeuticAssessmentDataItem {
   notification_preview: string;
 }
 
+export type TherapeuticAssessmentParticipantStep =
+  | "boundary"
+  | "issue"
+  | "recent_event"
+  | "resources"
+  | "sharing"
+  | "summary"
+  | "feedback_check"
+  | "action_review";
+
+export interface TherapeuticAssessmentParticipantDraft {
+  id?: string;
+  case_id: string;
+  participant_user_id: string;
+  step_id: TherapeuticAssessmentParticipantStep;
+  payload: Record<string, unknown>;
+  status: "active" | "completed" | "discarded";
+  version: number;
+  client_updated_at?: string | null;
+  updated_at?: string | null;
+}
+
 export interface TherapeuticAssessmentServiceLevel {
   id: TherapeuticAssessmentReadiness;
   display_name: string;

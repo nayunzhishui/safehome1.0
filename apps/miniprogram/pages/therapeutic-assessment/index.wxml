@@ -8,6 +8,16 @@
   <view wx:if="{{notice}}" class="ta-notice" role="status">{{notice}}</view>
   <view wx:if="{{errorMessage}}" class="ta-error" role="alert">{{errorMessage}}</view>
 
+  <view class="safe-card ta-card ta-flow-entry">
+    <view>
+      <text class="ta-section-title">八步协作流程</text>
+      <text class="ta-meta">一屏只做一个主要决定，草稿会先保存在本机，登录后可跨设备继续。</text>
+    </view>
+    <button wx:if="{{activeCase}}" class="safe-primary-button" bindtap="continueParticipantFlow">继续最近一次协作</button>
+    <button wx:else class="safe-primary-button" bindtap="startParticipantFlow">开始一次协作</button>
+    <button wx:if="{{activeCase}}" class="safe-outline-button" bindtap="startParticipantFlow">开始新的议题</button>
+  </view>
+
   <view class="safe-card ta-card">
     <text class="ta-section-title">1. 写下想共同理解的问题</text>
     <textarea class="ta-textarea" maxlength="1000" value="{{question}}" bindinput="onQuestionInput" placeholder="例如：为什么最近一次沟通让我既想靠近又想退开？"></textarea>

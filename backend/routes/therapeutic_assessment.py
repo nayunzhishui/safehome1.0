@@ -32,6 +32,7 @@ from services.therapeutic_assessment_consent_service import (
     get_data_item,
     update_consent,
 )
+from services.therapeutic_assessment_draft_service import get_draft, save_draft
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -139,6 +140,18 @@ def get_data_item_route(item_id: str):
 def patch_data_consent_route(item_id: str):
     actor, error = _actor()
     return error or _respond(update_consent, actor, item_id, _payload(), _key())
+
+
+@bp.get("/cases/<case_id>/participant-drafts/<step_id>")
+def get_participant_draft_route(case_id: str, step_id: str):
+    actor, error = _actor()
+    return error or _respond(get_draft, actor, case_id, step_id)
+
+
+@bp.put("/cases/<case_id>/participant-drafts/<step_id>")
+def put_participant_draft_route(case_id: str, step_id: str):
+    actor, error = _actor()
+    return error or _respond(save_draft, actor, case_id, step_id, _payload(), _key())
 
 
 @bp.post("/cases/<case_id>/disagree")

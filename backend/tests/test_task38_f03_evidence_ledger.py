@@ -63,8 +63,8 @@ def test_schema_032_adds_evidence_ledger(tmp_path, monkeypatch):
         with get_connection() as conn:
             tables = {row["name"] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         assert "therapeutic_assessment_evidence_items" in tables
-        assert CURRENT_SCHEMA_VERSION == "2026_07_27_034"
-        assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_dynamic_consent"
+        assert CURRENT_SCHEMA_VERSION == "2026_07_27_035"
+        assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_participant_flow"
 
 
 def test_observation_requires_source_context_and_visibility(tmp_path, monkeypatch):

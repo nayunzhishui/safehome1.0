@@ -1,0 +1,21 @@
+.taf-page { min-height: 100vh; display: grid; align-content: start; gap: 28rpx; padding: 36rpx 40rpx calc(40rpx + env(safe-area-inset-bottom)); background: var(--safe-bg); }
+.taf-progress { display: grid; grid-template-columns: 1fr auto; gap: 18rpx; align-items: center; color: var(--safe-muted); font-size: 24rpx; }
+.taf-progress__bar { height: 10rpx; overflow: hidden; border-radius: 999rpx; background: var(--safe-border); }
+.taf-progress__value { height: 100%; border-radius: 999rpx; background: var(--safe-primary); }
+.taf-hero { display: grid; gap: 12rpx; }
+.taf-card { display: grid; gap: 24rpx; border-radius: var(--safe-radius-lg); box-shadow: var(--safe-shadow-float); }
+.taf-options { display: grid; gap: 16rpx; }
+.taf-option { box-sizing: border-box; min-height: 104rpx; display: flex; align-items: center; gap: 18rpx; padding: 18rpx 20rpx; border: 2rpx solid var(--safe-border); border-radius: var(--safe-radius-md); background: var(--safe-card); text-align: left; }
+.taf-option--selected { border-color: var(--safe-primary); background: var(--safe-primary-pale); }
+.taf-option__mark { width: 44rpx; height: 44rpx; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; border: 2rpx solid var(--safe-primary); border-radius: 50%; color: var(--safe-primary-deep); font-size: 24rpx; font-weight: 900; }
+.taf-option__copy { min-width: 0; display: grid; gap: 6rpx; }
+.taf-option__title { color: var(--safe-title); font-size: 28rpx; font-weight: 850; }
+.taf-option__description { color: var(--safe-muted); font-size: 24rpx; line-height: 1.55; }
+.taf-textarea { box-sizing: border-box; width: 100%; min-height: 260rpx; padding: 24rpx; border: 2rpx solid var(--safe-border-strong); border-radius: var(--safe-radius-md); background: #fff; color: var(--safe-title); font-size: 28rpx; line-height: 1.7; }
+.taf-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16rpx; }
+.taf-comparison__panel { min-width: 0; display: grid; align-content: start; gap: 12rpx; padding: 22rpx; border: 1rpx solid var(--safe-border); border-radius: var(--safe-radius-md); background: var(--safe-bg-soft); }
+.taf-actions { position: sticky; bottom: 0; z-index: 2; display: grid; grid-template-columns: minmax(160rpx, .45fr) 1fr; gap: 14rpx; padding: 18rpx 0 calc(10rpx + env(safe-area-inset-bottom)); background: rgba(247, 248, 245, .96); }
+.taf-actions button { min-height: 88rpx; }
+.taf-offline { padding: 20rpx; border-left: 6rpx solid var(--safe-warning); border-radius: var(--safe-radius-md); background: #fff7e8; color: #744818; font-size: 24rpx; line-height: 1.6; }
+.taf-boundary { display: block; color: var(--safe-muted); font-size: 22rpx; line-height: 1.6; text-align: center; }
+@media (max-width: 360px) { .taf-comparison { grid-template-columns: 1fr; } }

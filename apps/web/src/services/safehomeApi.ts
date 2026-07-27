@@ -122,6 +122,8 @@ import type {
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentDataItem,
+  TherapeuticAssessmentParticipantDraft,
+  TherapeuticAssessmentParticipantStep,
   TherapeuticAssessmentFeedbackVersion,
   TherapeuticAssessmentServiceLevelStatus,
   TherapeuticAssessmentTransitionInput,
@@ -1391,6 +1393,32 @@ export class SafeHomeApiClient {
       body: input,
       headers: { "Idempotency-Key": idempotencyKey },
     });
+  }
+
+  getTherapeuticAssessmentParticipantDraft(
+    caseId: string,
+    stepId: TherapeuticAssessmentParticipantStep,
+  ): Promise<TherapeuticAssessmentParticipantDraft> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/participant-drafts/${encodeURIComponent(stepId)}`,
+    );
+  }
+
+  saveTherapeuticAssessmentParticipantDraft(
+    caseId: string,
+    stepId: TherapeuticAssessmentParticipantStep,
+    input: {
+      payload: Record<string, unknown>;
+      expected_version: number;
+      status?: "active" | "completed" | "discarded";
+      client_updated_at?: string;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentParticipantDraft> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/participant-drafts/${encodeURIComponent(stepId)}`,
+      { method: "PUT", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
   }
 
   createTherapeuticAssessmentFeedback(

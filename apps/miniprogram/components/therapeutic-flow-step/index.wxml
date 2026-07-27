@@ -1,0 +1,91 @@
+<view class="taf-page" role="main" aria-label="{{title}}">
+  <view class="taf-progress" aria-label="第 {{stepNumber}} 步，共 {{stepTotal}} 步">
+    <view class="taf-progress__bar"><view class="taf-progress__value" style="width: {{stepNumber * 12.5}}%;"></view></view>
+    <text>第 {{stepNumber}} / {{stepTotal}} 步</text>
+  </view>
+
+  <view class="taf-hero">
+    <text class="safe-eyebrow">{{eyebrow}}</text>
+    <text class="safe-h1">{{title}}</text>
+    <text class="safe-body">{{description}}</text>
+  </view>
+
+  <page-state
+    wx:if="{{loading}}"
+    kind="loading"
+    title="正在读取"
+    description="正在恢复你上次保存的内容。"
+  />
+  <page-state
+    wx:elif="{{stateKind}}"
+    kind="{{stateKind === 'withdrawn' || stateKind === 'expired' ? 'error' : stateKind}}"
+    title="{{stateTitle}}"
+    description="{{stateDescription}}"
+    action-label="{{stateKind === 'error' || stateKind === 'offline' ? '重新读取' : ''}}"
+    action-aria-label="重新读取本步骤"
+    bindaction="handleRetry"
+  />
+
+  <view wx:if="{{offline}}" class="taf-offline" role="status" aria-live="polite">
+    当前离线。内容会先保存在本机，联网后可再次同步。
+  </view>
+
+  <view wx:if="{{!loading && stateKind !== 'withdrawn' && stateKind !== 'expired'}}" class="safe-card taf-card">
+    <text wx:if="{{prompt}}" class="safe-h3">{{prompt}}</text>
+
+    <view wx:if="{{mode === 'choice' || mode === 'feedback'}}" class="taf-options" role="radiogroup" aria-label="{{prompt || title}}">
+      <button
+        wx:for="{{options}}"
+        wx:key="value"
+        class="taf-option {{selected === item.value ? 'taf-option--selected' : ''}}"
+        data-value="{{item.value}}"
+        role="radio"
+        aria-checked="{{selected === item.value}}"
+        aria-label="{{item.label}}：{{item.description}}"
+        bindtap="handleOption"
+      >
+        <view class="taf-option__mark" aria-hidden="true">{{selected === item.value ? '✓' : ''}}</view>
+        <view class="taf-option__copy">
+          <text class="taf-option__title">{{item.label}}</text>
+          <text class="taf-option__description">{{item.description}}</text>
+        </view>
+      </button>
+    </view>
+
+    <textarea
+      wx:if="{{mode === 'text' || (mode === 'feedback' && selected === 'not_like')}}"
+      class="taf-textarea"
+      maxlength="4000"
+      value="{{value}}"
+      aria-label="{{prompt || title}}"
+      placeholder="只写你愿意记录的部分，可以稍后修改。"
+      bindinput="handleInput"
+    ></textarea>
+
+    <view wx:if="{{mode === 'summary'}}" class="taf-comparison">
+      <view class="taf-comparison__panel">
+        <text class="safe-eyebrow">你的原话</text>
+        <text class="safe-body">{{originalText || '尚未填写'}}</text>
+      </view>
+      <view class="taf-comparison__panel">
+        <text class="safe-eyebrow">系统整理</text>
+        <text class="safe-body">{{systemText || '尚未形成整理版本'}}</text>
+      </view>
+    </view>
+
+    <text class="draft-status" aria-live="polite">{{saveStatus}}</text>
+  </view>
+
+  <view wx:if="{{!loading && stateKind !== 'withdrawn' && stateKind !== 'expired'}}" class="taf-actions">
+    <button class="safe-ghost-button" aria-label="返回上一步" bindtap="handleBack">上一步</button>
+    <button
+      class="safe-primary-button"
+      loading="{{saving}}"
+      disabled="{{saving || !canContinue}}"
+      aria-label="{{nextLabel}}"
+      bindtap="handleContinue"
+    >{{nextLabel}}</button>
+  </view>
+
+  <text class="taf-boundary">你可以暂停、修改或撤回。这里提供自我了解线索，不替代诊断、治疗或紧急帮助。</text>
+</view>

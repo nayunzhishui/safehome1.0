@@ -1797,6 +1797,34 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_participant_drafts (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        participant_user_id TEXT NOT NULL,
+        step_id TEXT NOT NULL,
+        payload_json TEXT NOT NULL DEFAULT '{}',
+        client_updated_at TEXT,
+        status TEXT NOT NULL DEFAULT 'active',
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(case_id, participant_user_id, step_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_participant_draft_events (
+        id TEXT PRIMARY KEY,
+        draft_id TEXT NOT NULL,
+        participant_user_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        result_version INTEGER NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(participant_user_id, idempotency_key)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS therapeutic_assessment_actions (
         id TEXT PRIMARY KEY,
         case_id TEXT NOT NULL,
@@ -1988,6 +2016,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_data_case_status ON therapeutic_assessment_data_items(case_id, status, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_data_provider_idempotency ON therapeutic_assessment_data_items(provider_user_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_consent_actor_idempotency ON therapeutic_assessment_data_consents(actor_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_drafts_participant_updated ON therapeutic_assessment_participant_drafts(participant_user_id, updated_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_drafts_actor_idempotency ON therapeutic_assessment_participant_drafts(participant_user_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_draft_events_draft_created ON therapeutic_assessment_participant_draft_events(draft_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_actions_case_created ON therapeutic_assessment_actions(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
