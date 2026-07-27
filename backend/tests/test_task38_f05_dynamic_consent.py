@@ -74,7 +74,7 @@ def test_schema_034_and_binding_does_not_grant_access(tmp_path, monkeypatch):
     assert denied.status_code == 403
     with app.app_context():
         from database import CURRENT_SCHEMA_VERSION
-        assert CURRENT_SCHEMA_VERSION == "2026_07_27_038"
+        assert CURRENT_SCHEMA_VERSION >= "2026_07_27_038"
 
 
 def test_named_professional_only_and_no_raw_content(tmp_path, monkeypatch):

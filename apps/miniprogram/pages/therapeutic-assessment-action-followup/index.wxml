@@ -1,0 +1,39 @@
+<view class="safe-page action-page" role="main" aria-label="行动回看">
+  <view class="safe-card action-hero">
+    <text class="safe-eyebrow">一次记录，不是疗效证明</text>
+    <text class="safe-h1">回看这次小行动</text>
+    <text class="safe-body">无论是否做到，都可以记录真实发生的情况。这里不会按完成次数评价你。</text>
+  </view>
+
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取行动" description="请稍候。" />
+  <page-state wx:elif="{{error}}" kind="error" title="还需要处理" description="{{error}}" action-label="重新读取" bindaction="load" />
+
+  <view wx:elif="{{action}}" class="safe-card action-card">
+    <text class="safe-eyebrow">我选择的一小步</text>
+    <text class="safe-h3">{{action.action_text}}</text>
+    <text class="safe-body">{{action.purpose_text}}</text>
+    <view class="action-boundary">
+      <text>停止条件</text>
+      <text wx:for="{{action.stop_conditions}}" wx:key="*this">· {{item}}</text>
+    </view>
+
+    <text class="field-label">这次的状态</text>
+    <view class="option-row" role="radiogroup" aria-label="行动状态">
+      <button class="{{status === 'completed' ? 'selected' : ''}}" data-value="completed" role="radio" aria-checked="{{status === 'completed'}}" bindtap="selectStatus">尝试过</button>
+      <button class="{{status === 'stopped' ? 'selected' : ''}}" data-value="stopped" role="radio" aria-checked="{{status === 'stopped'}}" bindtap="selectStatus">中途停止</button>
+      <button class="{{status === 'declined' ? 'selected' : ''}}" data-value="declined" role="radio" aria-checked="{{status === 'declined'}}" bindtap="selectStatus">决定不做</button>
+    </view>
+
+    <text class="field-label">把这次内容记成</text>
+    <view class="option-row" role="radiogroup" aria-label="随访类型">
+      <button class="{{followupKind === 'O' ? 'selected' : ''}}" data-value="O" role="radio" aria-checked="{{followupKind === 'O'}}" bindtap="selectKind">新的观察</button>
+      <button class="{{followupKind === 'U' ? 'selected' : ''}}" data-value="U" role="radio" aria-checked="{{followupKind === 'U'}}" bindtap="selectKind">仍待了解</button>
+    </view>
+
+    <textarea class="action-textarea" maxlength="1000" value="{{note}}" aria-label="行动回看内容" placeholder="写下发生了什么、你注意到什么，或仍不确定什么。" bindinput="onNoteInput"></textarea>
+    <button wx:if="{{action.training_card_id}}" class="safe-ghost-button" bindtap="openTrainingCard">打开关联训练卡</button>
+    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="submit">保存这次回看</button>
+  </view>
+
+  <text class="action-notice">完成、停止或不做都可以被如实记录；这些记录只作为后续共同理解的线索。</text>
+</view>

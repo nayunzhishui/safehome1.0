@@ -11,6 +11,21 @@ ROOT = Path(__file__).resolve().parents[1]
 MINI = ROOT / "apps" / "miniprogram"
 
 
+def _has_accessible_name(page_source: str, page_json: Path) -> bool:
+    if "aria-label=" in page_source:
+        return True
+    if not page_json.exists():
+        return False
+    config = json.loads(page_json.read_text(encoding="utf-8"))
+    for tag, component_path in (config.get("usingComponents") or {}).items():
+        if f"<{tag}" not in page_source or not str(component_path).startswith("/"):
+            continue
+        component = MINI / f"{str(component_path).lstrip('/')}.wxml"
+        if component.exists() and "aria-label=" in component.read_text(encoding="utf-8"):
+            return True
+    return False
+
+
 def main() -> None:
     app = json.loads((MINI / "app.json").read_text(encoding="utf-8"))
     failures: list[str] = []
@@ -19,7 +34,7 @@ def main() -> None:
     for page in app["pages"]:
         path = MINI / f"{page}.wxml"
         source = path.read_text(encoding="utf-8")
-        if "aria-label=" not in source:
+        if not _has_accessible_name(source, path.with_suffix(".json")):
             failures.append(f"{page}: missing accessible name")
         page_state_count += int("<page-state" in source)
         for tag in re.findall(r"<view\b[^>]*(?:bindtap|catchtap)[^>]*>", source):

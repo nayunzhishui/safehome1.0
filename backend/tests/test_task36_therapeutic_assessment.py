@@ -189,13 +189,24 @@ def test_complete_human_led_collaboration_and_version_scope(tmp_path, monkeypatc
     chosen = client.post(
         f"/api/therapeutic-assessment/cases/{case_id}/actions",
         headers={**headers["participant-f16"], "Idempotency-Key": "action-f16"},
-        json={"feedback_version_id": feedback_id, "action_text": "下一次沟通前先停顿三秒。"},
+        json={
+            "feedback_version_id": feedback_id,
+            "action_text": "下一次沟通前先停顿三秒。",
+            "purpose_text": "先给自己一点整理思路的空间。",
+            "reminder_mode": "none",
+            "reminder_privacy": "generic_preview",
+            "stop_conditions": ["如果不再愿意或冲突升级，就先停止。"],
+            "setback_plan": "只记录发生了什么，不责备自己。",
+            "voluntary_confirmed": True,
+            "reversible_confirmed": True,
+            "stoppable_confirmed": True,
+        },
     )
     action_id = chosen.get_json()["data"]["id"]
     completed = client.patch(
         f"/api/therapeutic-assessment/actions/{action_id}",
         headers={**headers["participant-f16"], "Idempotency-Key": "followup-f16"},
-        json={"status": "completed", "followup_note": "停顿后更容易说明自己的需要。"},
+        json={"status": "completed", "followup_note": "停顿后更容易说明自己的需要。", "expected_version": 1},
     )
     assert chosen.status_code == 201 and completed.get_json()["data"]["status"] == "completed"
 
@@ -334,7 +345,18 @@ def test_risk_queue_version_and_feedback_ownership_guards(tmp_path, monkeypatch)
     cross_case = client.post(
         f"/api/therapeutic-assessment/cases/{case_one}/actions",
         headers={**headers["participant-f16"], "Idempotency-Key": "owner-cross"},
-        json={"feedback_version_id": feedback_two, "action_text": "先停顿三秒。"},
+        json={
+            "feedback_version_id": feedback_two,
+            "action_text": "先停顿三秒。",
+            "purpose_text": "先整理自己的想法。",
+            "reminder_mode": "none",
+            "reminder_privacy": "generic_preview",
+            "stop_conditions": ["不愿继续时就停止。"],
+            "setback_plan": "记录阻碍，再决定是否调整。",
+            "voluntary_confirmed": True,
+            "reversible_confirmed": True,
+            "stoppable_confirmed": True,
+        },
     )
     assert cross_case.status_code == 422
     assert cross_case.get_json()["error"]["code"] == "validation_error"

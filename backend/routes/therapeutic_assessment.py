@@ -26,6 +26,7 @@ from services.therapeutic_assessment_service import (
 from services.therapeutic_assessment_level_service import public_status as service_level_status
 from services.therapeutic_assessment_transition_service import transition_case
 from services.therapeutic_assessment_evidence_service import (
+    create_action_followup,
     create_evidence,
     list_evidence,
     review_hypothesis,
@@ -287,3 +288,9 @@ def post_action_route(case_id: str):
 def patch_action_route(action_id: str):
     actor, error = _actor()
     return error or _respond(update_action, actor, action_id, _payload(), _key())
+
+
+@bp.post("/actions/<action_id>/followups")
+def post_action_followup_route(action_id: str):
+    actor, error = _actor()
+    return error or _respond(create_action_followup, actor, action_id, _payload(), _key())

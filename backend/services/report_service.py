@@ -176,6 +176,16 @@ def build_weekly_report(user_id: str, week_start: str | None = None) -> dict:
             """,
             (user_id, start_iso, end_iso),
         ).fetchall()
+        action_rows = conn.execute(
+            """
+            SELECT id, action_text, purpose_text, status, training_card_id, linked_checkin_id,
+                   planned_date, created_at, completed_at
+            FROM therapeutic_assessment_actions
+            WHERE participant_user_id = ? AND substr(created_at, 1, 10) BETWEEN ? AND ?
+            ORDER BY created_at DESC
+            """,
+            (user_id, start_iso, end_iso),
+        ).fetchall()
 
     diaries = rows_to_dicts(diary_rows)
     checkins = rows_to_dicts(checkin_rows)
@@ -183,6 +193,7 @@ def build_weekly_report(user_id: str, week_start: str | None = None) -> dict:
     profiles = rows_to_dicts(profile_rows)
     assessments = rows_to_dicts(assessment_rows)
     thermometers = rows_to_dicts(thermometer_rows)
+    therapeutic_actions = rows_to_dicts(action_rows)
 
     scene_counts = Counter(item.get("scene") for item in diaries if item.get("scene"))
     emotion_counts = Counter(item.get("parent_emotion") for item in diaries if item.get("parent_emotion"))
@@ -242,5 +253,13 @@ def build_weekly_report(user_id: str, week_start: str | None = None) -> dict:
         "thermometer_trend": {"record_count": thermometer_summary["count"], **thermometer_summary},
         "thermometer_summary": thermometer_summary,
         "training_effectiveness_summary": training_effectiveness_summary,
+        "therapeutic_action_summary": {
+            "record_count": len(therapeutic_actions),
+            "completed_count": sum(
+                1 for item in therapeutic_actions if item.get("status") == "completed"
+            ),
+            "items": therapeutic_actions[:8],
+            "interpretation_boundary": "这里仅记录参与和回看情况，不把完成次数解释为疗效。",
+        },
         "next_week_suggestion": suggestion,
     }

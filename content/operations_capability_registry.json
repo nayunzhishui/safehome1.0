@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 309,
+  "operation_count": 310,
   "capability_count": 44,
   "capabilities": [
     {
@@ -1891,7 +1891,7 @@
       "feature_flags": [],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 35)",
+        "backend/tests (operation coverage: 36)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1911,6 +1911,7 @@
         "therapeutic_assessment.patch_data_consent_route.patch",
         "therapeutic_assessment.patch_question_route.patch",
         "therapeutic_assessment.patch_scope_route.patch",
+        "therapeutic_assessment.post_action_followup_route.post",
         "therapeutic_assessment.post_action_route.post",
         "therapeutic_assessment.post_assign_route.post",
         "therapeutic_assessment.post_case_route.post",

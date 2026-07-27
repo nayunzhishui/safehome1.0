@@ -188,6 +188,57 @@ def create_evidence(actor: dict, case_id: str, payload: dict, idempotency_key: s
         return _present(row_to_dict(row)), 201
 
 
+def create_action_followup(
+    actor: dict,
+    action_id: str,
+    payload: dict,
+    idempotency_key: str,
+) -> tuple[dict, int]:
+    """将一次行动后的新观察或未知项写回证据账本。"""
+    kind = str(payload.get("kind") or "O").upper()
+    if kind not in {"O", "U"}:
+        raise TherapeuticAssessmentError(
+            "validation_error",
+            "行动随访只记录新的观察或仍待了解的部分。",
+            422,
+        )
+    with get_connection() as conn:
+        action = conn.execute(
+            "SELECT * FROM therapeutic_assessment_actions WHERE id = ?",
+            (action_id,),
+        ).fetchone()
+        if action is None:
+            raise TherapeuticAssessmentError("not_found", "没有找到该行动记录。", 404)
+        action_item = row_to_dict(action)
+        case = _case_row(conn, str(action_item["case_id"]))
+        if str(actor.get("role") or "") in {"parent", "student"}:
+            _assert_participant(actor, case)
+            if str(action_item["participant_user_id"]) != str(actor["id"]):
+                raise TherapeuticAssessmentError("forbidden", "只能随访自己的行动记录。", 403)
+        else:
+            _assert_researcher(actor, case)
+
+    evidence_payload = dict(payload)
+    evidence_payload.update(
+        {
+            "kind": kind,
+            "source_origin": "human",
+            "source_ref": f"therapeutic-action:{action_id}",
+            "provider_id": str(actor["id"]),
+            "context": str(payload.get("context") or "参与者对一次自选小行动的后续记录"),
+            "visibility_scope": payload.get("visibility_scope")
+            or ["participant", "research_team"],
+            "method_limitations": str(
+                payload.get("method_limitations")
+                or "这是一次行动后的新线索；是否完成、完成次数或主观变化均不代表疗效。"
+            ),
+        }
+    )
+    if kind == "U" and not evidence_payload.get("uncertainty_type"):
+        evidence_payload["uncertainty_type"] = "unconfirmed"
+    return create_evidence(actor, str(action_item["case_id"]), evidence_payload, idempotency_key)
+
+
 def list_evidence(actor: dict, case_id: str) -> dict:
     with get_connection() as conn:
         case = _case_row(conn, case_id)

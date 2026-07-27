@@ -1,0 +1,16 @@
+{
+  "schema": "safehome.therapeutic-assessment.action-policy.v1",
+  "version": "2026.07.27-f10",
+  "allowed_case_scope": {
+    "risk_level": "low",
+    "complexity_scope": "individual_adult_low_risk",
+    "readiness_levels": ["L1", "L2"]
+  },
+  "required_confirmations": ["voluntary_confirmed", "reversible_confirmed", "stoppable_confirmed"],
+  "reminder_modes": ["none", "in_app", "wechat_subscription"],
+  "reminder_privacy_options": ["generic_preview", "hidden_preview"],
+  "action_statuses": ["chosen", "completed", "declined", "stopped"],
+  "default_stop_condition": "任何不适、压力明显增加或不愿继续时，可以立即停止。",
+  "default_setback_plan": "没有完成也不代表失败；可以只记录当时发生了什么，并决定是否调整或停止。",
+  "outcome_boundary": "行动完成次数只记录参与过程，不代表疗效、能力或关系改善。"
+}

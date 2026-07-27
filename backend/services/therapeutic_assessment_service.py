@@ -56,6 +56,10 @@ def _feedback_policy() -> dict:
     return load_content_json("therapeutic_assessment_feedback_policy.json")
 
 
+def _action_policy() -> dict:
+    return load_content_json("therapeutic_assessment_action_policy.json")
+
+
 def _feedback_fields(case: dict, payload: dict) -> dict:
     policy = _feedback_policy()
     source = str(payload.get("source") or "human")
@@ -295,6 +299,8 @@ def _expand_case(conn, case: dict) -> dict:
             (item["id"],),
         ).fetchall()
     )
+    for action in item["actions"]:
+        action["stop_conditions"] = json_loads(action.pop("stop_conditions_json", None), [])
     item["boundary_notice"] = BOUNDARY_NOTICE
     item["efficacy_score"] = None
     return item
@@ -898,6 +904,42 @@ def resend_feedback(actor: dict, feedback_id: str, idempotency_key: str) -> dict
 def create_action(actor: dict, case_id: str, payload: dict, idempotency_key: str) -> tuple[dict, int]:
     key = _idempotency(idempotency_key)
     action_text = _required_text(payload, "action_text", 500)
+    purpose_text = _required_text(payload, "purpose_text", 500)
+    planned_date = str(payload.get("planned_date") or "").strip()
+    if planned_date and (
+        len(planned_date) != 10
+        or planned_date[4] != "-"
+        or planned_date[7] != "-"
+        or not planned_date.replace("-", "").isdigit()
+    ):
+        raise TherapeuticAssessmentError("validation_error", "计划日期需使用YYYY-MM-DD格式。")
+    policy = _action_policy()
+    if not all(payload.get(field) is True for field in policy["required_confirmations"]):
+        raise TherapeuticAssessmentError(
+            "action_safety_confirmation_required",
+            "行动必须由参与者自愿选择，并确认可逆、可停止。",
+            422,
+        )
+    reminder_mode = str(payload.get("reminder_mode") or "none")
+    reminder_privacy = str(payload.get("reminder_privacy") or "generic_preview")
+    if reminder_mode not in set(policy["reminder_modes"]):
+        raise TherapeuticAssessmentError("validation_error", "提醒方式不受支持。")
+    if reminder_privacy not in set(policy["reminder_privacy_options"]):
+        raise TherapeuticAssessmentError("validation_error", "提醒隐私方式不受支持。")
+    stop_conditions = payload.get("stop_conditions")
+    if not isinstance(stop_conditions, list) or not any(str(item).strip() for item in stop_conditions):
+        raise TherapeuticAssessmentError("validation_error", "至少需要一条停止条件。")
+    stop_conditions = [str(item).strip()[:300] for item in stop_conditions if str(item).strip()][:10]
+    setback_plan = _required_text(payload, "setback_plan", 800)
+    training_card_id = str(payload.get("training_card_id") or "").strip()[:128] or None
+    if training_card_id:
+        card_ids = {
+            str(item.get("id") or "")
+            for item in load_content_json("training_cards.json").get("cards", [])
+            if isinstance(item, dict)
+        }
+        if training_card_id not in card_ids:
+            raise TherapeuticAssessmentError("validation_error", "关联训练卡不存在。", 422)
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         _assert_participant(actor, case)
@@ -906,6 +948,30 @@ def create_action(actor: dict, case_id: str, payload: dict, idempotency_key: str
         assert_normal_flow_allowed(conn, case)
         if case["status"] == "withdrawn" or case["consent_status"] == "withdrawn":
             raise TherapeuticAssessmentError("withdrawn", "该协作已经撤回，不能再选择下一小步。", 409)
+        if (
+            case["risk_level"] != policy["allowed_case_scope"]["risk_level"]
+            or case["complexity_scope"] != policy["allowed_case_scope"]["complexity_scope"]
+            or case["readiness_level"] not in set(policy["allowed_case_scope"]["readiness_levels"])
+        ):
+            raise TherapeuticAssessmentError(
+                "action_scope_blocked",
+                "当前记录不进入普通行动推荐，请等待人工支持。",
+                409,
+            )
+        existing = conn.execute(
+            "SELECT * FROM therapeutic_assessment_events WHERE actor_id = ? AND idempotency_key = ? AND action = 'action_chosen'",
+            (str(actor["id"]), key),
+        ).fetchone()
+        if existing:
+            action_id = json_loads(existing["metadata_json"], {}).get("action_id")
+            result = row_to_dict(
+                conn.execute(
+                    "SELECT * FROM therapeutic_assessment_actions WHERE id = ?",
+                    (action_id,),
+                ).fetchone()
+            )
+            result["stop_conditions"] = json_loads(result.pop("stop_conditions_json", None), [])
+            return result, 200
         if not conn.execute("SELECT 1 FROM therapeutic_assessment_feedback_versions WHERE case_id = ? AND status = 'sent'", (case_id,)).fetchone():
             raise TherapeuticAssessmentError("feedback_not_sent", "收到经人工复核的反馈后才能选择下一小步。", 409)
         feedback_version_id = payload.get("feedback_version_id")
@@ -917,19 +983,43 @@ def create_action(actor: dict, case_id: str, payload: dict, idempotency_key: str
         action_id = new_id("ta_action")
         timestamp = now_iso()
         conn.execute(
-            "INSERT INTO therapeutic_assessment_actions (id, case_id, participant_user_id, feedback_version_id, action_text, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'chosen', ?, ?)",
-            (action_id, case_id, str(actor["id"]), feedback_version_id, action_text, timestamp, timestamp),
+            """
+            INSERT INTO therapeutic_assessment_actions (
+                id, case_id, participant_user_id, feedback_version_id, action_text,
+                purpose_text, planned_date, reminder_mode, reminder_privacy,
+                stop_conditions_json, setback_plan, training_card_id,
+                status, version, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'chosen', 1, ?, ?)
+            """,
+            (
+                action_id,
+                case_id,
+                str(actor["id"]),
+                feedback_version_id,
+                action_text,
+                purpose_text,
+                planned_date or None,
+                reminder_mode,
+                reminder_privacy,
+                json_dumps(stop_conditions),
+                setback_plan,
+                training_card_id,
+                timestamp,
+                timestamp,
+            ),
         )
         _event(conn, case_id, actor, "action_chosen", key, case["version"], case["version"], {"action_id": action_id})
         write_audit_log(conn, "therapeutic_assessment_action_chosen", str(actor["id"]), "therapeutic_assessment_action", action_id, {"case_id": case_id})
         conn.commit()
-        return row_to_dict(conn.execute("SELECT * FROM therapeutic_assessment_actions WHERE id = ?", (action_id,)).fetchone()), 201
+        result = row_to_dict(conn.execute("SELECT * FROM therapeutic_assessment_actions WHERE id = ?", (action_id,)).fetchone())
+        result["stop_conditions"] = json_loads(result.pop("stop_conditions_json", None), [])
+        return result, 201
 
 
 def update_action(actor: dict, action_id: str, payload: dict, idempotency_key: str) -> dict:
     key = _idempotency(idempotency_key)
     status = str(payload.get("status") or "")
-    if status not in {"completed", "declined"}:
+    if status not in {"completed", "declined", "stopped"}:
         raise TherapeuticAssessmentError("validation_error", "动作状态不受支持。")
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM therapeutic_assessment_actions WHERE id = ?", (action_id,)).fetchone()
@@ -938,9 +1028,46 @@ def update_action(actor: dict, action_id: str, payload: dict, idempotency_key: s
         action = row_to_dict(row)
         if str(action["participant_user_id"]) != str(actor["id"]):
             raise TherapeuticAssessmentError("forbidden", "只能更新自己的行动记录。", 403)
+        replay = conn.execute(
+            "SELECT 1 FROM therapeutic_assessment_events WHERE actor_id = ? AND idempotency_key = ? AND action = ?",
+            (str(actor["id"]), key, f"action_{status}"),
+        ).fetchone()
+        if replay:
+            action["stop_conditions"] = json_loads(action.pop("stop_conditions_json", None), [])
+            return action
+        expected = payload.get("expected_version")
+        if not isinstance(expected, int) or expected != int(action.get("version") or 1):
+            raise TherapeuticAssessmentError("version_conflict", "行动记录已变化，请重新读取。", 409)
         note = str(payload.get("followup_note") or "").strip()[:1000]
-        conn.execute("UPDATE therapeutic_assessment_actions SET status = ?, followup_note = ?, updated_at = ? WHERE id = ?", (status, note or None, now_iso(), action_id))
+        linked_checkin_id = str(payload.get("linked_checkin_id") or "").strip() or None
+        if linked_checkin_id and not conn.execute(
+            "SELECT 1 FROM checkins WHERE id = ? AND user_id = ?",
+            (linked_checkin_id, str(actor["id"])),
+        ).fetchone():
+            raise TherapeuticAssessmentError("validation_error", "关联打卡不属于当前参与者。", 422)
+        timestamp = now_iso()
+        cursor = conn.execute(
+            """
+            UPDATE therapeutic_assessment_actions
+            SET status = ?, followup_note = ?, linked_checkin_id = COALESCE(?, linked_checkin_id),
+                version = version + 1, completed_at = ?, updated_at = ?
+            WHERE id = ? AND version = ?
+            """,
+            (
+                status,
+                note or None,
+                linked_checkin_id,
+                timestamp if status == "completed" else action.get("completed_at"),
+                timestamp,
+                action_id,
+                expected,
+            ),
+        )
+        if cursor.rowcount != 1:
+            raise TherapeuticAssessmentError("version_conflict", "行动记录已变化，请重新读取。", 409)
         _event(conn, action["case_id"], actor, f"action_{status}", key, None, None, {"action_id": action_id, "followup_present": bool(note)})
         write_audit_log(conn, f"therapeutic_assessment_action_{status}", str(actor["id"]), "therapeutic_assessment_action", action_id, {"case_id": action["case_id"]})
         conn.commit()
-        return row_to_dict(conn.execute("SELECT * FROM therapeutic_assessment_actions WHERE id = ?", (action_id,)).fetchone())
+        result = row_to_dict(conn.execute("SELECT * FROM therapeutic_assessment_actions WHERE id = ?", (action_id,)).fetchone())
+        result["stop_conditions"] = json_loads(result.pop("stop_conditions_json", None), [])
+        return result

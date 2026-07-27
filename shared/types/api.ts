@@ -424,10 +424,23 @@ export interface TherapeuticAssessmentFeedbackDelivery {
 export interface TherapeuticAssessmentAction {
   id: string;
   case_id: string;
+  participant_user_id: string;
+  feedback_version_id?: string | null;
   action_text: string;
-  status: "chosen" | "completed" | "declined";
+  purpose_text: string;
+  planned_date?: string | null;
+  reminder_mode: "none" | "in_app" | "wechat_subscription";
+  reminder_privacy: "generic_preview" | "hidden_preview";
+  stop_conditions: string[];
+  setback_plan: string;
+  training_card_id?: string | null;
+  linked_checkin_id?: string | null;
+  status: "chosen" | "completed" | "declined" | "stopped";
   followup_note?: string | null;
+  version: number;
+  completed_at?: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 export interface TherapeuticAssessmentCase {

@@ -1942,8 +1942,18 @@ SCHEMA_SQL = [
         participant_user_id TEXT NOT NULL,
         feedback_version_id TEXT,
         action_text TEXT NOT NULL,
+        purpose_text TEXT,
+        planned_date TEXT,
+        reminder_mode TEXT NOT NULL DEFAULT 'none',
+        reminder_privacy TEXT NOT NULL DEFAULT 'generic_preview',
+        stop_conditions_json TEXT NOT NULL DEFAULT '[]',
+        setback_plan TEXT,
+        training_card_id TEXT,
+        linked_checkin_id TEXT,
         status TEXT NOT NULL,
         followup_note TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        completed_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )

@@ -69,6 +69,39 @@
       bindinput="handleInput"
     ></textarea>
 
+    <view wx:if="{{mode === 'action'}}" class="taf-action-form">
+      <label class="taf-field">
+        <text class="taf-field__label">我愿意尝试的一小步</text>
+        <textarea class="taf-textarea taf-textarea--compact" maxlength="500" value="{{value}}" data-field="actionText" aria-label="我愿意尝试的一小步" placeholder="写下低压力、可停止的一小步。" bindinput="handleInput"></textarea>
+      </label>
+      <label class="taf-field">
+        <text class="taf-field__label">我为什么想试试</text>
+        <textarea class="taf-textarea taf-textarea--compact" maxlength="500" value="{{actionPlan.purposeText}}" data-field="purposeText" aria-label="行动目的" placeholder="记录你的目的，不要求证明效果。" bindinput="handleActionInput"></textarea>
+      </label>
+      <label class="taf-field">
+        <text class="taf-field__label">计划日期（可不填）</text>
+        <input class="taf-input" type="date" value="{{actionPlan.plannedDate}}" data-field="plannedDate" aria-label="计划日期" bindinput="handleActionInput" />
+      </label>
+      <label class="taf-field">
+        <text class="taf-field__label">提醒方式</text>
+        <picker mode="selector" range="{{reminderOptions}}" value="{{actionPlan.reminderMode === 'in_app' ? 1 : actionPlan.reminderMode === 'wechat_subscription' ? 2 : 0}}" bindchange="handleReminderMode">
+          <view class="taf-input" role="button" aria-label="选择提醒方式">{{actionPlan.reminderMode === 'in_app' ? '仅站内提醒' : actionPlan.reminderMode === 'wechat_subscription' ? '微信订阅提醒' : '不提醒'}}</view>
+        </picker>
+      </label>
+      <label class="taf-field">
+        <text class="taf-field__label">什么情况下先停下来</text>
+        <textarea class="taf-textarea taf-textarea--compact" maxlength="300" value="{{actionPlan.stopCondition}}" data-field="stopCondition" aria-label="停止条件" placeholder="例如：感到明显不适、冲突升级或不再愿意时。" bindinput="handleActionInput"></textarea>
+      </label>
+      <label class="taf-field">
+        <text class="taf-field__label">如果没做到，我会怎么记录</text>
+        <textarea class="taf-textarea taf-textarea--compact" maxlength="800" value="{{actionPlan.setbackPlan}}" data-field="setbackPlan" aria-label="未完成时的记录方式" placeholder="只记录发生了什么，不责备自己。" bindinput="handleActionInput"></textarea>
+      </label>
+      <button class="taf-confirmation {{actionPlan.confirmed ? 'taf-confirmation--selected' : ''}}" role="checkbox" aria-checked="{{actionPlan.confirmed}}" bindtap="handleActionConfirmation">
+        <text class="taf-confirmation__mark">{{actionPlan.confirmed ? '✓' : ''}}</text>
+        <text>这是我自愿选择的行动，我知道可以修改、停止或不做。</text>
+      </button>
+    </view>
+
     <view wx:if="{{mode === 'summary'}}" class="taf-comparison">
       <view class="taf-comparison__panel">
         <text class="safe-eyebrow">你的原话</text>

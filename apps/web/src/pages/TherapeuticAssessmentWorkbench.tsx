@@ -373,6 +373,24 @@ export function TherapeuticAssessmentWorkbench() {
                   </>
                 )}
               </section>
+              <section className="taFeedbackLifecycle" aria-label="参与者小行动与随访">
+                <div className="sectionHeader">
+                  <div>
+                    <p className="eyebrow">参与者自选</p>
+                    <h2>小行动与回看</h2>
+                  </div>
+                </div>
+                {!selected.actions.length ? <p>参与者尚未选择小行动。</p> : selected.actions.map((action) => (
+                  <article className="evidenceCard" key={action.id}>
+                    <p><strong>{action.action_text}</strong> · {action.status}</p>
+                    <p>{action.purpose_text}</p>
+                    <p>停止条件：{action.stop_conditions.join("；")}</p>
+                    <p>未完成时：{action.setback_plan}</p>
+                    {action.followup_note ? <p>参与者回看：{action.followup_note}</p> : null}
+                    <small>完成与否只记录参与过程，不作为疗效或能力评价。</small>
+                  </article>
+                ))}
+              </section>
             </>
           ) : <div className="emptyState"><strong>请选择一条协作记录</strong></div>}
         </main>

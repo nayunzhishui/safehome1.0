@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "行动回看",
+  "usingComponents": {
+    "page-state": "/components/page-state/index"
+  }
+}

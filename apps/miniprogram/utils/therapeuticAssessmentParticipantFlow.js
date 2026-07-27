@@ -84,7 +84,7 @@ const CONFIG = {
     title: "一个小行动与回看",
     description: "只选择低压力、可停止、由你愿意尝试的一小步。完成次数不代表疗效。",
     prompt: "如果你愿意，下一步想尝试什么？",
-    mode: "text",
+    mode: "action",
     nextLabel: "记录并返回总览",
   },
 };
@@ -118,6 +118,15 @@ function registerTherapeuticAssessmentStepPage(stepId) {
       stepTotal: STEPS.length,
       value: "",
       selected: "",
+      actionPlan: {
+        purposeText: "",
+        plannedDate: "",
+        reminderMode: "none",
+        stopCondition: "如果感到明显不适、冲突升级或我不再愿意，就先停下来。",
+        setbackPlan: "只记录当时发生了什么和阻碍，不责备自己，再决定是否调整。",
+        confirmed: false,
+      },
+      createdActionId: "",
       caseId: "",
       activeCase: null,
       originalText: "",
@@ -145,7 +154,7 @@ function registerTherapeuticAssessmentStepPage(stepId) {
       this.setData({ caseId });
       this.draftController = createResilientForm({
         storageKey: `safehome:resilientDraft:therapeutic:${caseId || "new"}:${stepId}`,
-        fields: ["value", "selected"],
+        fields: ["value", "selected", "actionPlan"],
         submissionPrefix: `ta-${stepId}`,
         hasContent: (values) => Boolean(String(values.value || "").trim() || values.selected),
       });
@@ -167,7 +176,7 @@ function registerTherapeuticAssessmentStepPage(stepId) {
 
     flushLocal() {
       if (!this.draftController || this.data.saving) return;
-      this.setData(this.draftController.flush({ value: this.data.value, selected: this.data.selected }));
+      this.setData(this.draftController.flush({ value: this.data.value, selected: this.data.selected, actionPlan: this.data.actionPlan }));
     },
 
     async loadStep() {
@@ -245,6 +254,7 @@ function registerTherapeuticAssessmentStepPage(stepId) {
             this.setData({
               value: String(remote.payload.value || ""),
               selected: String(remote.payload.selected || ""),
+              actionPlan: remote.payload.actionPlan || this.data.actionPlan,
               remoteVersion: remote.version,
               saveStatus: `已从云端恢复 · ${String(remote.updated_at || "").slice(11, 16) || "刚刚"}`,
             });
@@ -267,9 +277,17 @@ function registerTherapeuticAssessmentStepPage(stepId) {
     },
 
     onValueChange(event) {
-      this.setData({ value: event.detail.value, stateKind: "", saveStatus: "正在保存草稿…" });
+      const plan = this.data.actionPlan;
+      const canContinue = stepId !== "action_review" || Boolean(
+        event.detail.value.trim()
+        && plan.purposeText.trim()
+        && plan.stopCondition.trim()
+        && plan.setbackPlan.trim()
+        && plan.confirmed
+      );
+      this.setData({ value: event.detail.value, canContinue, stateKind: "", saveStatus: "正在保存草稿…" });
       this.draftController.schedule(
-        { value: event.detail.value, selected: this.data.selected },
+        { value: event.detail.value, selected: this.data.selected, actionPlan: this.data.actionPlan },
         (status) => this.setData(status),
       );
     },
@@ -277,7 +295,23 @@ function registerTherapeuticAssessmentStepPage(stepId) {
     onOptionChange(event) {
       this.setData({ selected: event.detail.value, stateKind: "", saveStatus: "正在保存草稿…" });
       this.draftController.schedule(
-        { value: this.data.value, selected: event.detail.value },
+        { value: this.data.value, selected: event.detail.value, actionPlan: this.data.actionPlan },
+        (status) => this.setData(status),
+      );
+    },
+
+    onActionChange(event) {
+      const actionPlan = { ...this.data.actionPlan, [event.detail.field]: event.detail.value };
+      const canContinue = Boolean(
+        this.data.value.trim()
+        && actionPlan.purposeText.trim()
+        && actionPlan.stopCondition.trim()
+        && actionPlan.setbackPlan.trim()
+        && actionPlan.confirmed
+      );
+      this.setData({ actionPlan, canContinue, stateKind: "", saveStatus: "正在保存草稿…" });
+      this.draftController.schedule(
+        { value: this.data.value, selected: this.data.selected, actionPlan },
         (status) => this.setData(status),
       );
     },
@@ -291,7 +325,7 @@ function registerTherapeuticAssessmentStepPage(stepId) {
         this.data.caseId,
         stepId,
         {
-          payload: { value: this.data.value, selected: this.data.selected },
+          payload: { value: this.data.value, selected: this.data.selected, actionPlan: this.data.actionPlan },
           expected_version: this.data.remoteVersion,
           status,
           client_updated_at: new Date().toISOString(),
@@ -307,6 +341,12 @@ function registerTherapeuticAssessmentStepPage(stepId) {
       if (config.mode === "feedback" && !this.data.selected) return "请先选择反馈与你体验的接近程度。";
       if (config.mode === "feedback" && this.data.selected === "not_like" && !this.data.value.trim()) return "请简要写下不一致的地方。";
       if (stepId === "issue" && !this.data.value.trim()) return "请写下本次最想共同理解的问题。";
+      if (stepId === "action_review") {
+        const plan = this.data.actionPlan;
+        if (!this.data.value.trim() || !plan.purposeText.trim()) return "请写下行动和你想尝试它的原因。";
+        if (!plan.stopCondition.trim() || !plan.setbackPlan.trim()) return "请补充停止条件和没做到时的记录方式。";
+        if (!plan.confirmed) return "请确认这是你自愿选择、可以停止的一小步。";
+      }
       return "";
     },
 
@@ -333,7 +373,11 @@ function registerTherapeuticAssessmentStepPage(stepId) {
         await this.commitStepContent();
         this.draftController.clear();
         const next = nextStep(stepId);
-        if (next) wx.redirectTo({ url: route(next, this.data.caseId) });
+        if (this.data.createdActionId) {
+          wx.redirectTo({
+            url: `/pages/therapeutic-assessment-action-followup/index?caseId=${encodeURIComponent(this.data.caseId)}&actionId=${encodeURIComponent(this.data.createdActionId)}`,
+          });
+        } else if (next) wx.redirectTo({ url: route(next, this.data.caseId) });
         else wx.redirectTo({ url: "/pages/therapeutic-assessment/index" });
       } catch (error) {
         this.applyError(error);
@@ -394,11 +438,25 @@ function registerTherapeuticAssessmentStepPage(stepId) {
       if (stepId === "action_review" && this.data.value.trim()) {
         const latestFeedback = (activeCase.feedback_versions || []).filter((item) => item.status === "sent").slice(-1)[0];
         if (latestFeedback) {
-          await api.createTherapeuticAssessmentAction(
+          const plan = this.data.actionPlan;
+          const action = await api.createTherapeuticAssessmentAction(
             activeCase.id,
-            { feedback_version_id: latestFeedback.id, action_text: this.data.value.trim() },
+            {
+              feedback_version_id: latestFeedback.id,
+              action_text: this.data.value.trim(),
+              purpose_text: plan.purposeText.trim(),
+              planned_date: plan.plannedDate || undefined,
+              reminder_mode: plan.reminderMode,
+              reminder_privacy: "generic_preview",
+              stop_conditions: [plan.stopCondition.trim()],
+              setback_plan: plan.setbackPlan.trim(),
+              voluntary_confirmed: true,
+              reversible_confirmed: true,
+              stoppable_confirmed: true,
+            },
             key("mini-ta-action-review"),
           );
+          this.setData({ createdActionId: action.id });
         }
       }
     },

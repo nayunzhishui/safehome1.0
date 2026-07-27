@@ -1,5 +1,8 @@
 Component({
   options: { styleIsolation: "apply-shared" },
+  data: {
+    reminderOptions: ["不提醒", "仅站内提醒", "微信订阅提醒"],
+  },
   properties: {
     stepNumber: { type: Number, value: 1 },
     stepTotal: { type: Number, value: 8 },
@@ -16,6 +19,7 @@ Component({
     feedbackTitle: { type: String, value: "" },
     feedbackContent: { type: String, value: "" },
     feedbackLayerLabel: { type: String, value: "" },
+    actionPlan: { type: Object, value: {} },
     nextLabel: { type: String, value: "保存并继续" },
     saveStatus: { type: String, value: "尚未填写" },
     loading: { type: Boolean, value: false },
@@ -32,6 +36,25 @@ Component({
     },
     handleOption(event) {
       this.triggerEvent("optionchange", { value: event.currentTarget.dataset.value });
+    },
+    handleActionInput(event) {
+      this.triggerEvent("actionchange", {
+        field: event.currentTarget.dataset.field,
+        value: event.detail.value,
+      });
+    },
+    handleReminderMode(event) {
+      const modes = ["none", "in_app", "wechat_subscription"];
+      this.triggerEvent("actionchange", {
+        field: "reminderMode",
+        value: modes[Number(event.detail.value)] || "none",
+      });
+    },
+    handleActionConfirmation() {
+      this.triggerEvent("actionchange", {
+        field: "confirmed",
+        value: !this.data.actionPlan.confirmed,
+      });
     },
     handleContinue() {
       this.triggerEvent("continue");

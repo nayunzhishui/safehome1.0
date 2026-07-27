@@ -120,8 +120,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_27_038"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_layered_feedback"
+CURRENT_SCHEMA_VERSION = "2026_07_27_039"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_action_followup"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1116,6 +1116,20 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in therapeutic_feedback_columns.items():
         ensure_column(conn, "therapeutic_assessment_feedback_versions", column, definition)
+    therapeutic_action_columns = {
+        "purpose_text": "TEXT",
+        "planned_date": "TEXT",
+        "reminder_mode": "TEXT NOT NULL DEFAULT 'none'",
+        "reminder_privacy": "TEXT NOT NULL DEFAULT 'generic_preview'",
+        "stop_conditions_json": "TEXT NOT NULL DEFAULT '[]'",
+        "setback_plan": "TEXT",
+        "training_card_id": "TEXT",
+        "linked_checkin_id": "TEXT",
+        "version": "INTEGER NOT NULL DEFAULT 1",
+        "completed_at": "TEXT",
+    }
+    for column, definition in therapeutic_action_columns.items():
+        ensure_column(conn, "therapeutic_assessment_actions", column, definition)
     conn.execute(
         """
         UPDATE therapeutic_assessment_cases

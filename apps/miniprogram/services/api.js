@@ -1308,6 +1308,24 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    updateTherapeuticAssessmentAction(actionId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/actions/${encodeURIComponent(actionId)}`, {
+        method: "PATCH",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    createTherapeuticAssessmentActionFollowup(actionId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/actions/${encodeURIComponent(actionId)}/followups`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
     trackProductEvent(eventName, metadata = {}, clientEventId = "") {
       return request(API_ENDPOINTS.productEvents, {
         method: "POST",

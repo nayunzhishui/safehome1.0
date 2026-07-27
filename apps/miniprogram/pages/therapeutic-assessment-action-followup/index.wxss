@@ -1,0 +1,11 @@
+.action-page { display: grid; align-content: start; gap: 28rpx; padding: 36rpx 40rpx calc(44rpx + env(safe-area-inset-bottom)); }
+.action-hero, .action-card { display: grid; gap: 20rpx; }
+.action-card { border-radius: var(--safe-radius-lg); box-shadow: var(--safe-shadow-float); }
+.action-boundary { display: grid; gap: 8rpx; padding: 20rpx; border-radius: var(--safe-radius-md); background: var(--safe-bg-soft); color: var(--safe-muted); font-size: 24rpx; line-height: 1.6; }
+.field-label { color: var(--safe-title); font-size: 26rpx; font-weight: 800; }
+.option-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
+.option-row button { min-height: 88rpx; padding: 14rpx; border: 2rpx solid var(--safe-border); border-radius: var(--safe-radius-md); background: #fff; color: var(--safe-muted); font-size: 24rpx; }
+.option-row button.selected { border-color: var(--safe-primary); background: var(--safe-primary-pale); color: var(--safe-primary-deep); font-weight: 800; }
+.action-textarea { box-sizing: border-box; width: 100%; min-height: 240rpx; padding: 24rpx; border: 2rpx solid var(--safe-border-strong); border-radius: var(--safe-radius-md); background: #fff; color: var(--safe-title); font-size: 28rpx; line-height: 1.7; }
+.action-notice { color: var(--safe-muted); font-size: 22rpx; line-height: 1.6; text-align: center; }
+@media (max-width: 360px) { .option-row { grid-template-columns: 1fr; } }
