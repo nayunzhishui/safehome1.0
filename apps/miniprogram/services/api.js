@@ -151,6 +151,7 @@ const API_ENDPOINTS = {
   aiQaConfig: "/api/ai-qa/config",
   offlineBenchmarks: "/api/research/benchmarks",
   researchMethodology: "/api/research/methodology",
+  computationContract: "/api/research/computation-contract",
   securityControls: "/api/security",
   reliability: "/api/reliability",
   uxGovernance: "/api/ux-governance",
@@ -1246,6 +1247,10 @@ function createSafeHomeApi(options = {}) {
 
     getResearchMethodologyPublicStatus() {
       return request(`${API_ENDPOINTS.researchMethodology}/public-status`);
+    },
+
+    getComputationContractPublicStatus() {
+      return request(`${API_ENDPOINTS.computationContract}/public-status`);
     },
 
     getSecurityPublicStatus() {

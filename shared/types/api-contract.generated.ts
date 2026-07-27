@@ -13332,6 +13332,63 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "task37_contracts.get_public_status.get",
+    "method": "GET",
+    "path": "/api/research/computation-contract/public-status",
+    "handler": "task37_contracts.get_public_status",
+    "module": "routes.task37_contracts",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.task37_contracts.get_public_status.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "research_workspace.get_research_deliveries.get",
     "method": "GET",
     "path": "/api/research/deliveries",

@@ -82,6 +82,7 @@ export const API_ENDPOINTS = {
   aiQaKillSwitch: "/api/ai-qa/kill-switch",
   offlineBenchmarks: "/api/research/benchmarks",
   researchMethodology: "/api/research/methodology",
+  computationContract: "/api/research/computation-contract",
   researchAnalysis: "/api/research/analysis",
   securityControls: "/api/security",
   reliability: "/api/reliability",

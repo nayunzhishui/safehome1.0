@@ -2884,3 +2884,21 @@ export interface ResearchAnalysisCatalog {
   };
   boundary_notice: string;
 }
+
+export type ComputationEntityType =
+  | "Observation"
+  | "DerivedFeature"
+  | "ModelRun"
+  | "AnalysisArtifact"
+  | "Citation"
+  | "HumanReview";
+
+export interface ComputationContractPublicStatus {
+  contract_version: "safehome.computation.v1";
+  entity_types: ComputationEntityType[];
+  required_input_fields: string[];
+  governed_output_fields: string[];
+  legacy_readable: true;
+  writes_enabled: false;
+  boundary_notice: string;
+}

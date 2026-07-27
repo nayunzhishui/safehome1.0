@@ -219,6 +219,7 @@
 | POST | `/api/research/benchmarks/runs/<run_id>/reviews` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/affect` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/network` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/computation-contract/public-status` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | GET | `/api/research/deliveries` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
 | POST | `/api/research/deliveries` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | supported | active |
 | GET | `/api/research/deliveries/<workflow_id>` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |

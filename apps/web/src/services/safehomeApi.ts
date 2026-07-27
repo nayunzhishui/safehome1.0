@@ -17,6 +17,7 @@ import type {
   CardRecommendResponse,
   Checkin,
   CheckinInput,
+  ComputationContractPublicStatus,
   ConsentInput,
   ConsentRecord,
   ContentReviewUpdateInput,
@@ -1103,6 +1104,10 @@ export class SafeHomeApiClient {
 
   getResearchMethodologyPublicStatus(): Promise<ResearchMethodologyPublicStatus> {
     return this.requestData(`${API_ENDPOINTS.researchMethodology}/public-status`);
+  }
+
+  getComputationContractPublicStatus(): Promise<ComputationContractPublicStatus> {
+    return this.requestData(`${API_ENDPOINTS.computationContract}/public-status`);
   }
 
   getResearchMethodologyConfig(): Promise<ResearchMethodologyConfig> {
