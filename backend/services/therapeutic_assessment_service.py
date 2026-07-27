@@ -143,6 +143,13 @@ def _present_case(conn, case: dict, actor: dict) -> dict:
         ]
         for field in ("qualification_evidence_ref", "supervision_evidence_ref", "ethics_evidence_ref"):
             item.pop(field, None)
+        item.pop("risk_level", None)
+        item["support_signal"] = (
+            "needs_human_understanding"
+            if item.get("status") == "support_required"
+            or item.get("safety_state") in {"needs_human_review", "safety_path"}
+            else "ordinary_flow"
+        )
     return item
 
 
@@ -372,6 +379,9 @@ def create_feedback(actor: dict, case_id: str, payload: dict, idempotency_key: s
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         _assert_researcher(actor, case)
+        from services.therapeutic_assessment_safety_service import assert_normal_flow_allowed
+
+        assert_normal_flow_allowed(conn, case)
         if case["status"] in {"withdrawn", "support_required"} or case["consent_status"] != "active":
             raise TherapeuticAssessmentError("invalid_state", "当前记录不能创建普通反馈。", 409)
     uncertainty = _required_text(payload, "uncertainty", 1000)
@@ -458,6 +468,9 @@ def review_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_ke
             raise TherapeuticAssessmentError("not_found", "没有找到反馈版本。", 404)
         feedback = row_to_dict(row)
         case = _case_row(conn, feedback["case_id"])
+        from services.therapeutic_assessment_safety_service import assert_normal_flow_allowed
+
+        assert_normal_flow_allowed(conn, case)
         if case["readiness_level"] != "L2":
             raise TherapeuticAssessmentError("readiness_gate", "L0/L1记录不能进入人工确认和发送。", 409)
         if feedback["status"] != "draft":
@@ -484,6 +497,9 @@ def send_feedback(actor: dict, feedback_id: str, idempotency_key: str) -> dict:
             raise TherapeuticAssessmentError("not_found", "没有找到反馈版本。", 404)
         feedback = row_to_dict(row)
         case = _case_row(conn, feedback["case_id"])
+        from services.therapeutic_assessment_safety_service import assert_normal_flow_allowed
+
+        assert_normal_flow_allowed(conn, case)
         if feedback["status"] != "reviewed" or case["readiness_level"] != "L2":
             raise TherapeuticAssessmentError("human_review_required", "反馈尚未完成人工复核。", 409)
         if case["consent_status"] != "active" or case["status"] == "withdrawn":
@@ -503,6 +519,9 @@ def create_action(actor: dict, case_id: str, payload: dict, idempotency_key: str
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         _assert_participant(actor, case)
+        from services.therapeutic_assessment_safety_service import assert_normal_flow_allowed
+
+        assert_normal_flow_allowed(conn, case)
         if case["status"] == "withdrawn" or case["consent_status"] == "withdrawn":
             raise TherapeuticAssessmentError("withdrawn", "该协作已经撤回，不能再选择下一小步。", 409)
         if not conn.execute("SELECT 1 FROM therapeutic_assessment_feedback_versions WHERE case_id = ? AND status = 'sent'", (case_id,)).fetchone():

@@ -281,6 +281,8 @@
 | PUT | `/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/cases/<case_id>/question` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/readiness` | role:supervisor,admin | role_scoped | — | — | active |
+| PUT | `/api/therapeutic-assessment/cases/<case_id>/responsibility-chain` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/cases/<case_id>/safety-signals` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/cases/<case_id>/scope` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/transitions` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
@@ -289,6 +291,9 @@
 | POST | `/api/therapeutic-assessment/evidence/<evidence_id>/review` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/review` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/send` | role:supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/safety-events/<event_id>/resolve` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/safety/runtime/restore` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/safety/status` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/service-levels` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/training-effectiveness` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/training-plan` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |

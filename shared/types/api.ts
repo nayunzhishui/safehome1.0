@@ -287,6 +287,37 @@ export interface TherapeuticAssessmentParticipantDraft {
   updated_at?: string | null;
 }
 
+export interface TherapeuticAssessmentSafetyStatus {
+  ordinary_flow_enabled: boolean;
+  needs_human_understanding_count: number;
+  pause_reason?: string | null;
+  participant_message: string;
+  reactivation_requires_human_evidence: true;
+}
+
+export interface TherapeuticAssessmentResponsibilityChain {
+  id: string;
+  case_id: string;
+  responsible_user_id: string;
+  supervisor_user_id: string;
+  support_channel: string;
+  evidence_ref: string;
+  status: "active" | "inactive";
+  queue_timeout_minutes: number;
+  version: number;
+}
+
+export interface TherapeuticAssessmentSafetyEvent {
+  id: string;
+  case_id: string;
+  signal_type: "self_harm" | "harm_other" | "violence" | "abuse" | "coercive_control" | "acute_crisis" | "other";
+  state: "needs_human_understanding" | "safety_paused" | "human_taken_over" | "resolved_by_human";
+  source_ref: string;
+  reason_summary?: string | null;
+  created_at: string;
+  resolved_at?: string | null;
+}
+
 export interface TherapeuticAssessmentServiceLevel {
   id: TherapeuticAssessmentReadiness;
   display_name: string;

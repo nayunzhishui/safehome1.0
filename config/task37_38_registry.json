@@ -169,7 +169,31 @@
     {"id": "T38-F04", "title": "我的问题与问题质量量规", "dependencies": ["T38-F03"], "engineering_complete": true, "status": "engineering_complete_production_migration_not_executed", "evidence": ["backend/services/therapeutic_assessment_question_service.py", "backend/scripts/migrate_task38_f04_question_quality.py", "backend/tests/test_task38_f04_question_quality.py", "shared/types/api.ts", "apps/miniprogram/pages/therapeutic-assessment/index.js"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task38_f04_question_quality.py", "backend/tests/test_task38_f03_evidence_ledger.py", "backend/tests/test_task38_f02_state_machine.py", "-q"], ["python", "backend/scripts/migrate_task38_f04_question_quality.py", "apply"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"]]},
     {"id": "T38-F05", "title": "多方资料与动态同意", "dependencies": ["T38-F04"], "engineering_complete": true, "status": "engineering_complete_production_migration_not_executed", "evidence": ["backend/services/therapeutic_assessment_consent_service.py", "backend/scripts/migrate_task38_f05_dynamic_consent.py", "backend/tests/test_task38_f05_dynamic_consent.py", "shared/types/api.ts", "apps/miniprogram/pages/therapeutic-assessment/index.wxml"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task38_f05_dynamic_consent.py", "backend/tests/test_task38_f04_question_quality.py", "backend/tests/test_task38_f03_evidence_ledger.py", "-q"], ["python", "backend/scripts/migrate_task38_f05_dynamic_consent.py", "apply"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"]]},
     {"id": "T38-F06", "title": "参与者八页面闭环", "dependencies": ["T38-F05", "T37-P04"], "engineering_complete": true, "status": "engineering_complete_production_migration_not_executed_real_device_gate_pending", "evidence": ["backend/services/therapeutic_assessment_draft_service.py", "backend/scripts/migrate_task38_f06_participant_flow.py", "backend/scripts/audit_task38_f06_participant_flow.py", "backend/tests/test_task38_f06_participant_flow.py", "apps/miniprogram/components/therapeutic-flow-step/index.wxml", "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js", "apps/miniprogram/app.json", "shared/types/api.ts"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task38_f06_participant_flow.py", "backend/tests/test_task38_f05_dynamic_consent.py", "backend/tests/test_task38_f04_question_quality.py", "-q"], ["python", "backend/scripts/audit_task38_f06_participant_flow.py"], ["python", "backend/scripts/migrate_task38_f06_participant_flow.py", "apply"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["node", "--check", "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js"], ["node", "--check", "apps/miniprogram/components/therapeutic-flow-step/index.js"], ["node", "--check", "apps/miniprogram/services/api.js"], ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"]]},
-    {"id": "T38-F07", "title": "适用性、安全和人工责任链", "dependencies": ["T38-F06"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T38-F07",
+      "title": "适用性、安全和人工责任链",
+      "dependencies": ["T38-F06"],
+      "engineering_complete": true,
+      "status": "engineering_complete_production_migration_not_executed_external_human_gate_pending",
+      "evidence": [
+        "backend/services/therapeutic_assessment_safety_service.py",
+        "backend/scripts/migrate_task38_f07_safety_chain.py",
+        "backend/tests/test_task38_f07_safety_chain.py",
+        "backend/models.py",
+        "backend/routes/therapeutic_assessment.py",
+        "shared/types/api.ts",
+        "apps/web/src/services/safehomeApi.ts",
+        "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task38_f07_safety_chain.py", "backend/tests/test_task38_f06_participant_flow.py", "backend/tests/test_task38_f05_dynamic_consent.py", "-q"],
+        ["python", "backend/scripts/migrate_task38_f07_safety_chain.py", "apply"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["node", "--check", "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js"],
+        ["node", "--check", "apps/miniprogram/services/api.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T38-F08", "title": "研究者证据工作台", "dependencies": ["T38-F07"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T38-F09", "title": "分层反馈、书面信与用户核对", "dependencies": ["T38-F08"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T38-F10", "title": "小行动与随访", "dependencies": ["T38-F09"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

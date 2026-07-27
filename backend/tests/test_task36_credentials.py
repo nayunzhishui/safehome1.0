@@ -308,7 +308,7 @@ def test_credential_lifecycle_schema_is_migrated_and_receipt_is_unique(tmp_path,
     app = _fresh_app(tmp_path, monkeypatch)
     with app.app_context():
         database = importlib.import_module("database")
-        assert database.CURRENT_SCHEMA_VERSION == "2026_07_27_035"
+        assert database.CURRENT_SCHEMA_VERSION == "2026_07_27_036"
         with database.get_connection() as conn:
             columns = {row["name"] for row in database.list_database_columns(conn, "users")}
             indexes = {

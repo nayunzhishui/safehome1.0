@@ -2294,3 +2294,12 @@ relationship_initiation_intention_action
 - `GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>`：参与者读取本人指定步骤的云端草稿；不存在时返回`version=0`。
 - `PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>`：按`expected_version`、`Idempotency-Key`保存或完成草稿。
 - step限定为八个流程标识；跨参与者读取返回403，版本冲突返回409，已撤回case禁止继续同步。
+
+## 2026-07-27：T38-F07人工安全责任链
+
+- `GET /api/therapeutic-assessment/safety/status`：返回普通流程是否可用及当前用户对象范围内的“需要真人了解”数量；参与者不返回内部暂停原因。
+- `PUT /api/therapeutic-assessment/cases/<case_id>/responsibility-chain`：仅督导/管理员按版本配置责任人、督导、支持通道、证据和队列时限。
+- `POST /api/therapeutic-assessment/cases/<case_id>/safety-signals`：参与者本人或对象范围内专业人员记录安全信号；只形成真人了解队列，不向参与者输出风险等级。
+- `POST /api/therapeutic-assessment/safety-events/<event_id>/resolve`：仅督导/管理员提交人工处置证据后解除单个事件。
+- `POST /api/therapeutic-assessment/safety/runtime/restore`：全部开放事件已解除后，由督导/管理员提交恢复证据恢复普通流程。
+- 安全事件、责任链中断或队列超时会在服务端阻断普通反馈、发送和训练行动；临时展示越权不能解除安全门。

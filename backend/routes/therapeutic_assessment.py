@@ -33,6 +33,13 @@ from services.therapeutic_assessment_consent_service import (
     update_consent,
 )
 from services.therapeutic_assessment_draft_service import get_draft, save_draft
+from services.therapeutic_assessment_safety_service import (
+    configure_responsibility_chain,
+    create_safety_signal,
+    public_safety_status,
+    resolve_safety_event,
+    restore_runtime,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -152,6 +159,36 @@ def get_participant_draft_route(case_id: str, step_id: str):
 def put_participant_draft_route(case_id: str, step_id: str):
     actor, error = _actor()
     return error or _respond(save_draft, actor, case_id, step_id, _payload(), _key())
+
+
+@bp.get("/safety/status")
+def get_safety_status_route():
+    actor, error = _actor()
+    return error or _respond(public_safety_status, actor)
+
+
+@bp.put("/cases/<case_id>/responsibility-chain")
+def put_responsibility_chain_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(configure_responsibility_chain, actor, case_id, _payload(), _key())
+
+
+@bp.post("/cases/<case_id>/safety-signals")
+def post_safety_signal_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(create_safety_signal, actor, case_id, _payload(), _key())
+
+
+@bp.post("/safety-events/<event_id>/resolve")
+def post_safety_resolution_route(event_id: str):
+    actor, error = _actor()
+    return error or _respond(resolve_safety_event, actor, event_id, _payload(), _key())
+
+
+@bp.post("/safety/runtime/restore")
+def post_safety_runtime_restore_route():
+    actor, error = _actor()
+    return error or _respond(restore_runtime, actor, _payload())
 
 
 @bp.post("/cases/<case_id>/disagree")

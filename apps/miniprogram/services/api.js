@@ -1232,6 +1232,45 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    getTherapeuticAssessmentSafetyStatus() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/safety/status`, { requiresAuth: true });
+    },
+
+    configureTherapeuticAssessmentResponsibilityChain(caseId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/responsibility-chain`, {
+        method: "PUT",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    createTherapeuticAssessmentSafetySignal(caseId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/safety-signals`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    resolveTherapeuticAssessmentSafetyEvent(eventId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/safety-events/${encodeURIComponent(eventId)}/resolve`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    restoreTherapeuticAssessmentRuntime(data) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/safety/runtime/restore`, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      });
+    },
+
     createTherapeuticAssessmentAction(caseId, data, idempotencyKey) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/actions`, {
         method: "POST",

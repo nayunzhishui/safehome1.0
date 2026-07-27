@@ -170,6 +170,17 @@ function registerTherapeuticAssessmentStepPage(stepId) {
     async loadStep() {
       this.setData({ loading: true, stateKind: "", stateTitle: "", stateDescription: "" });
       try {
+        const safetyStatus = await api.getTherapeuticAssessmentSafetyStatus();
+        if (!safetyStatus.ordinary_flow_enabled) {
+          this.setData({
+            loading: false,
+            stateKind: "error",
+            stateTitle: "普通流程暂时暂停",
+            stateDescription: safetyStatus.participant_message,
+            canContinue: false,
+          });
+          return;
+        }
         if (stepId === "boundary" && !this.data.caseId) {
           this.setData({ loading: false });
           return;

@@ -124,6 +124,9 @@ import type {
   TherapeuticAssessmentDataItem,
   TherapeuticAssessmentParticipantDraft,
   TherapeuticAssessmentParticipantStep,
+  TherapeuticAssessmentResponsibilityChain,
+  TherapeuticAssessmentSafetyEvent,
+  TherapeuticAssessmentSafetyStatus,
   TherapeuticAssessmentFeedbackVersion,
   TherapeuticAssessmentServiceLevelStatus,
   TherapeuticAssessmentTransitionInput,
@@ -1419,6 +1422,52 @@ export class SafeHomeApiClient {
       `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/participant-drafts/${encodeURIComponent(stepId)}`,
       { method: "PUT", body: input, headers: { "Idempotency-Key": idempotencyKey } },
     );
+  }
+
+  getTherapeuticAssessmentSafetyStatus(): Promise<TherapeuticAssessmentSafetyStatus> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/safety/status`);
+  }
+
+  configureTherapeuticAssessmentResponsibilityChain(
+    caseId: string,
+    input: Record<string, unknown>,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentResponsibilityChain> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/responsibility-chain`,
+      { method: "PUT", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
+  }
+
+  createTherapeuticAssessmentSafetySignal(
+    caseId: string,
+    input: Record<string, unknown>,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentSafetyEvent> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/safety-signals`,
+      { method: "POST", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
+  }
+
+  resolveTherapeuticAssessmentSafetyEvent(
+    eventId: string,
+    input: { resolution_evidence_ref: string },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentSafetyEvent> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/safety-events/${encodeURIComponent(eventId)}/resolve`,
+      { method: "POST", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
+  }
+
+  restoreTherapeuticAssessmentRuntime(
+    input: { restoration_evidence_ref: string },
+  ): Promise<TherapeuticAssessmentSafetyStatus> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/safety/runtime/restore`, {
+      method: "POST",
+      body: input,
+    });
   }
 
   createTherapeuticAssessmentFeedback(
