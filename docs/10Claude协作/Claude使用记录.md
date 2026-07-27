@@ -589,3 +589,12 @@
 - 修改：项目列表、机器契约及注册表、任务36测试和事实文档。
 - 验证：后端627项，任务36七类工程类别全部通过；证据位于`.codex_tmp/task36_f19_acceptance_post_m7.json`。
 - 后续：基于已提交HEAD构建CloudBase包；不上传、不发布、不代签外部门禁。
+
+## 2026-07-27 CloudBase包生成
+
+- 工具/模型：Codex；PowerShell容器构建/核验脚本。
+- 会话标识：当前Codex任务。
+- 摘要：从`main@0adf8a0`生成未上传的CloudBase容器包并校验启动文件、排除项、指纹和哈希。
+- 文件：`.codex_tmp/safehome-cloudbase-task36-m8-20260727.zip`，1,122,762 bytes。
+- SHA-256：`7CAA47D19CF386761D8C3B23E952344113F6D0E28DCFB94EC7101A99C9181FDA`。
+- 后续：等待负责人批准测试云上传；没有执行生产发布、数据库迁移或外部门禁签字。

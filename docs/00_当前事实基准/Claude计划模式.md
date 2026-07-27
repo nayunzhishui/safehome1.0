@@ -11400,3 +11400,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 最终机器证据：`.codex_tmp/task36_f19_acceptance_post_m7.json`，后端627项及内容、API兼容、Web、小程序、安全、可靠性、迁移恢复和文档全部通过。
 - 发布批准仍为false；七类外部门禁均为`evidence_pending`，临时展示越权仍不计正式权限证据。
 - 下一步：以通过验收后的Git提交构建CloudBase容器包，核验内容、启动文件和SHA-256；只生成，不上传、不发布。
+
+### M9：CloudBase容器包
+
+- 状态：`package_built_and_verified / upload_and_release_not_executed`。
+- 基线：`main@0adf8a0e05f07e8a93688289ac8fbd679039918f`。
+- 包：`.codex_tmp/safehome-cloudbase-task36-m8-20260727.zip`，1,122,762 bytes。
+- SHA-256：`7CAA47D19CF386761D8C3B23E952344113F6D0E28DCFB94EC7101A99C9181FDA`。
+- 构建指纹已写入包内：build id `3eda7b33218416822080`；包校验脚本通过。
+- 包只包含Dockerfile、后端、content和shared；不包含环境变量、数据库、日志、缓存、虚拟环境或Web构建产物。
+- 未上传CloudBase、未执行数据库迁移、未发布；下一步等待负责人明确批准。
