@@ -172,19 +172,38 @@ def create_case(actor: dict, payload: dict, idempotency_key: str) -> tuple[dict,
             INSERT INTO therapeutic_assessment_cases (
                 id, participant_user_id, enrollment_id, assessment_question,
                 shared_scope_json, consent_status, status, risk_level,
+                workflow_state, hypothesis_state, safety_state,
                 complexity_scope, readiness_level, assigned_researcher_id,
                 version, created_by, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, 'active', ?, ?, ?, 'L0', ?, 1, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, 'active', ?, ?, 'submitted', 'observations_only', ?,
+                      ?, 'L0', ?, 1, ?, ?, ?)
             """,
             (
                 # assigned_researcher_id 固定为 NULL：参与者不能自选研究者，
                 # 研究者只能由督导/管理员通过 assign_case 分配，避免绕过分配门授予读权限。
                 case_id, str(actor["id"]), payload.get("enrollment_id"), question,
-                json_dumps(scope), status, risk["risk_level"], complexity,
+                json_dumps(scope), status, risk["risk_level"],
+                "needs_human_review" if risk["requires_review"] else "low_risk",
+                complexity,
                 None, str(actor["id"]), timestamp, timestamp,
             ),
         )
-        _event(conn, case_id, actor, "case_created", key, None, 1, {"risk_level": risk["risk_level"], "shared_scope": scope})
+        _event(
+            conn,
+            case_id,
+            actor,
+            "case_created",
+            key,
+            None,
+            1,
+            {
+                "risk_level": risk["risk_level"],
+                "shared_scope": scope,
+                "workflow_state": "submitted",
+                "hypothesis_state": "observations_only",
+                "safety_state": "needs_human_review" if risk["requires_review"] else "low_risk",
+            },
+        )
         write_audit_log(conn, "therapeutic_assessment_case_created", str(actor["id"]), "therapeutic_assessment_case", case_id, {"risk_level": risk["risk_level"], "consent_status": "active"})
         if risk["requires_review"]:
             create_risk_review_record(
@@ -268,15 +287,31 @@ def participant_transition(actor: dict, case_id: str, payload: dict, idempotency
             raise TherapeuticAssessmentError("validation_error", "请简要说明不同意见。")
         status = "withdrawn" if action == "withdraw" else case["status"]
         consent = "withdrawn" if action == "withdraw" else case["consent_status"]
+        workflow = (
+            "withdrawn"
+            if action == "withdraw"
+            else "revision_requested"
+            if case.get("workflow_state") == "participant_check"
+            else case.get("workflow_state")
+        )
         timestamp = now_iso()
         cursor = conn.execute(
             """
             UPDATE therapeutic_assessment_cases
-            SET status = ?, consent_status = ?, disagreement_note = ?,
+            SET status = ?, consent_status = ?, workflow_state = ?, disagreement_note = ?,
                 withdrawn_at = ?, version = version + 1, updated_at = ?
             WHERE id = ? AND version = ?
             """,
-            (status, consent, note if action == "disagree" else case.get("disagreement_note"), timestamp if action == "withdraw" else case.get("withdrawn_at"), timestamp, case_id, before),
+            (
+                status,
+                consent,
+                workflow,
+                note if action == "disagree" else case.get("disagreement_note"),
+                timestamp if action == "withdraw" else case.get("withdrawn_at"),
+                timestamp,
+                case_id,
+                before,
+            ),
         )
         if cursor.rowcount != 1:
             raise TherapeuticAssessmentError("version_conflict", "记录已更新，请刷新后重试。", 409)

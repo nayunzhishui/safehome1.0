@@ -1,0 +1,66 @@
+{
+  "version": "2026-07-27-f02-v1",
+  "boundary": "三个状态轨道相互独立；任何轨道变化都必须记录操作者、时间、原因、版本和幂等键。",
+  "reason_codes": [
+    "participant_choice",
+    "research_review",
+    "evidence_updated",
+    "risk_signal",
+    "supervision_review",
+    "not_applicable",
+    "correction",
+    "followup_complete",
+    "withdrawal"
+  ],
+  "tracks": {
+    "workflow": {
+      "column": "workflow_state",
+      "initial": "submitted",
+      "terminal": ["archived", "withdrawn"],
+      "transitions": {
+        "draft_local": ["submitted"],
+        "submitted": ["pending_human_review", "withdrawn"],
+        "pending_human_review": ["needs_more_info", "not_applicable", "feedback_ready", "safety_path", "withdrawn"],
+        "needs_more_info": ["submitted", "withdrawn"],
+        "feedback_ready": ["feedback_draft", "withdrawn"],
+        "feedback_draft": ["professional_review", "withdrawn"],
+        "professional_review": ["participant_check", "feedback_draft", "safety_path", "withdrawn"],
+        "participant_check": ["revision_requested", "action_selected", "withdrawn"],
+        "revision_requested": ["feedback_draft", "withdrawn"],
+        "action_selected": ["followup", "withdrawn"],
+        "followup": ["archived", "withdrawn"],
+        "safety_path": ["archived", "withdrawn"],
+        "not_applicable": ["archived", "withdrawn"],
+        "archived": [],
+        "withdrawn": []
+      }
+    },
+    "hypothesis": {
+      "column": "hypothesis_state",
+      "initial": "observations_only",
+      "terminal": ["withdrawn"],
+      "transitions": {
+        "observations_only": ["pattern_candidate"],
+        "pattern_candidate": ["human_hypothesis_draft", "observations_only"],
+        "human_hypothesis_draft": ["human_reviewed", "pattern_candidate"],
+        "human_reviewed": ["participant_checked", "revised"],
+        "participant_checked": ["revised", "withdrawn"],
+        "revised": ["human_reviewed", "withdrawn"],
+        "withdrawn": []
+      }
+    },
+    "safety": {
+      "column": "safety_state",
+      "initial": "not_assessed",
+      "terminal": ["closed"],
+      "transitions": {
+        "not_assessed": ["low_risk", "needs_human_review", "safety_path"],
+        "low_risk": ["needs_human_review", "safety_path", "closed"],
+        "needs_human_review": ["low_risk", "safety_path", "stabilized"],
+        "safety_path": ["stabilized"],
+        "stabilized": ["closed", "safety_path"],
+        "closed": []
+      }
+    }
+  }
+}

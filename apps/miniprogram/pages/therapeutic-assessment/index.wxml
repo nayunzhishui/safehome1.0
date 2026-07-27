@@ -23,7 +23,7 @@
   <view wx:if="{{loading}}" class="safe-card ta-card">正在读取协作记录…</view>
   <view wx:elif="{{activeCase}}" class="safe-card ta-card">
     <view class="ta-heading">
-      <view><text class="ta-section-title">2. 查看当前协作</text><text class="ta-meta">{{activeCase.status}} · {{activeCase.service_level.display_name}}</text></view>
+      <view><text class="ta-section-title">2. 查看当前协作</text><text class="ta-meta">{{activeCase.workflowLabel}} · {{activeCase.service_level.display_name}}</text></view>
       <text class="ta-version">版本 {{activeCase.version}}</text>
     </view>
     <text class="ta-question">{{activeCase.assessment_question}}</text>

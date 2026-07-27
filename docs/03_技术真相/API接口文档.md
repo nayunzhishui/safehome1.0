@@ -2261,3 +2261,11 @@ relationship_initiation_intention_action
 | `GET` | `/error-categories` | 返回用户、数据、模型、供应商和权限五类错误契约 |
 
 情感计算、社会网络分析和参与者AI具有独立默认关闭开关。工程接口完成不表示生产任务执行或真实模型发布已批准。
+
+## 2026-07-27：T38-F02三轨状态转换
+
+- `POST /api/therapeutic-assessment/cases/<case_id>/transitions`
+- 请求头必须携带`Idempotency-Key`；请求体仅允许`track`、`target_state`、`expected_version`、`reason_code`。
+- `track`为`workflow`、`hypothesis`或`safety`；合法边和原因码以`content/therapeutic_assessment_state_machine.json`为准。
+- 接口校验登录、对象范围、角色、当前状态和版本。非法跳转、旧版本或终态写入返回409，权限不足返回403。
+- 相同操作者、幂等键、case和转换会返回已完成结果；幂等键被其它操作占用时返回409。

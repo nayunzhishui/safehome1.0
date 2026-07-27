@@ -90,6 +90,7 @@ REQUIRED_CONTENT_FILES = [
     "task37_computation_contract.json",
     "task37_execution_harness.json",
     "therapeutic_assessment_service_levels.json",
+    "therapeutic_assessment_state_machine.json",
     "researcher_capability_registry.json",
     "security_privacy_abuse_registry.json",
     "reliability_release_registry.json",

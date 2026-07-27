@@ -122,6 +122,7 @@ import type {
   TherapeuticAssessmentCase,
   TherapeuticAssessmentFeedbackVersion,
   TherapeuticAssessmentServiceLevelStatus,
+  TherapeuticAssessmentTransitionInput,
   SupervisionRequest,
   TrainingCard,
   TrainingPlan,
@@ -1324,6 +1325,18 @@ export class SafeHomeApiClient {
 
   getTherapeuticAssessmentCase(caseId: string): Promise<TherapeuticAssessmentCase> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}`);
+  }
+
+  transitionTherapeuticAssessmentState(
+    caseId: string,
+    input: TherapeuticAssessmentTransitionInput,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentCase> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/transitions`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
   }
 
   createTherapeuticAssessmentFeedback(

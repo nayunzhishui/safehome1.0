@@ -108,8 +108,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_27_030"
-CURRENT_SCHEMA_NAME = "computation_lineage_privacy_lifecycle"
+CURRENT_SCHEMA_VERSION = "2026_07_27_031"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_state_machine"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1069,6 +1069,49 @@ def ensure_schema_columns(conn) -> None:
     ensure_column(conn, "data_claims", "version", "INTEGER NOT NULL DEFAULT 0")
     ensure_column(conn, "identity_merge_record_links", "source_value", "TEXT")
     ensure_column(conn, "identity_merge_record_links", "target_value", "TEXT")
+    therapeutic_state_columns = {
+        "workflow_state": "TEXT NOT NULL DEFAULT 'draft_local'",
+        "hypothesis_state": "TEXT NOT NULL DEFAULT 'observations_only'",
+        "safety_state": "TEXT NOT NULL DEFAULT 'not_assessed'",
+    }
+    for column, definition in therapeutic_state_columns.items():
+        ensure_column(conn, "therapeutic_assessment_cases", column, definition)
+    _normalize_therapeutic_assessment_states(conn)
+
+
+def _normalize_therapeutic_assessment_states(conn) -> None:
+    """Map legacy single-status cases into the additive three-track model."""
+
+    conn.execute(
+        """
+        UPDATE therapeutic_assessment_cases
+        SET workflow_state = CASE
+            WHEN status = 'withdrawn' THEN 'withdrawn'
+            WHEN status = 'support_required' THEN 'safety_path'
+            WHEN status = 'feedback_sent' THEN 'participant_check'
+            ELSE 'submitted'
+        END
+        WHERE workflow_state IS NULL OR workflow_state = '' OR workflow_state = 'draft_local'
+        """
+    )
+    conn.execute(
+        """
+        UPDATE therapeutic_assessment_cases
+        SET hypothesis_state = 'observations_only'
+        WHERE hypothesis_state IS NULL OR hypothesis_state = ''
+        """
+    )
+    conn.execute(
+        """
+        UPDATE therapeutic_assessment_cases
+        SET safety_state = CASE
+            WHEN risk_level IN ('medium', 'high') OR status = 'support_required'
+                THEN 'needs_human_review'
+            ELSE 'low_risk'
+        END
+        WHERE safety_state IS NULL OR safety_state = '' OR safety_state = 'not_assessed'
+        """
+    )
 
 
 def _normalize_assessment_profile_cluster(conn) -> None:

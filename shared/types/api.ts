@@ -193,6 +193,29 @@ export type PrivacyHandlingScope =
 
 export type TherapeuticAssessmentStatus = "open" | "support_required" | "feedback_sent" | "withdrawn";
 export type TherapeuticAssessmentReadiness = "L0" | "L1" | "L2" | "L3";
+export type TherapeuticAssessmentWorkflowState =
+  | "draft_local" | "submitted" | "pending_human_review" | "needs_more_info"
+  | "not_applicable" | "feedback_ready" | "feedback_draft" | "professional_review"
+  | "participant_check" | "revision_requested" | "action_selected" | "followup"
+  | "safety_path" | "archived" | "withdrawn";
+export type TherapeuticAssessmentHypothesisState =
+  | "observations_only" | "pattern_candidate" | "human_hypothesis_draft"
+  | "human_reviewed" | "participant_checked" | "revised" | "withdrawn";
+export type TherapeuticAssessmentSafetyState =
+  | "not_assessed" | "low_risk" | "needs_human_review" | "safety_path"
+  | "stabilized" | "closed";
+export type TherapeuticAssessmentStateTrack = "workflow" | "hypothesis" | "safety";
+export type TherapeuticAssessmentTransitionReason =
+  | "participant_choice" | "research_review" | "evidence_updated" | "risk_signal"
+  | "supervision_review" | "not_applicable" | "correction" | "followup_complete"
+  | "withdrawal";
+
+export interface TherapeuticAssessmentTransitionInput {
+  track: TherapeuticAssessmentStateTrack;
+  target_state: string;
+  expected_version: number;
+  reason_code: TherapeuticAssessmentTransitionReason;
+}
 
 export interface TherapeuticAssessmentServiceLevel {
   id: TherapeuticAssessmentReadiness;
@@ -249,6 +272,9 @@ export interface TherapeuticAssessmentCase {
   shared_scope: string[];
   consent_status: "active" | "withdrawn";
   status: TherapeuticAssessmentStatus;
+  workflow_state: TherapeuticAssessmentWorkflowState;
+  hypothesis_state: TherapeuticAssessmentHypothesisState;
+  safety_state: TherapeuticAssessmentSafetyState;
   risk_level: "low" | "medium" | "high";
   complexity_scope: string;
   readiness_level: TherapeuticAssessmentReadiness;

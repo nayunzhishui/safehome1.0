@@ -276,6 +276,7 @@
 | POST | `/api/therapeutic-assessment/cases/<case_id>/feedback-versions` | role:researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/readiness` | role:supervisor,admin | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/cases/<case_id>/scope` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/cases/<case_id>/transitions` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/review` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/send` | role:supervisor,admin | role_scoped | — | — | active |

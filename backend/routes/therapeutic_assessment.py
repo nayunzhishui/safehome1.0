@@ -20,6 +20,7 @@ from services.therapeutic_assessment_service import (
     update_scope,
 )
 from services.therapeutic_assessment_level_service import public_status as service_level_status
+from services.therapeutic_assessment_transition_service import transition_case
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -79,6 +80,12 @@ def get_case_route(case_id: str):
 def patch_scope_route(case_id: str):
     actor, error = _actor()
     return error or _respond(update_scope, actor, case_id, _payload(), _key())
+
+
+@bp.post("/cases/<case_id>/transitions")
+def post_transition_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(transition_case, actor, case_id, _payload(), _key())
 
 
 @bp.post("/cases/<case_id>/disagree")

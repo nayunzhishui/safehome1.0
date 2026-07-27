@@ -1166,6 +1166,15 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    transitionTherapeuticAssessmentState(caseId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/transitions`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
     createTherapeuticAssessmentAction(caseId, data, idempotencyKey) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/actions`, {
         method: "POST",

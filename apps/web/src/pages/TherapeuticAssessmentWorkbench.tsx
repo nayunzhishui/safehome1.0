@@ -8,6 +8,23 @@ function lines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
 }
 
+const workflowLabels: Record<string, string> = {
+  submitted: "已提交",
+  pending_human_review: "待人工复核",
+  needs_more_info: "待补充资料",
+  feedback_ready: "可整理反馈",
+  feedback_draft: "反馈草稿",
+  professional_review: "待专业复核",
+  participant_check: "待参与者核对",
+  revision_requested: "待修订",
+  action_selected: "已选择小行动",
+  followup: "随访中",
+  safety_path: "人工安全支持",
+  not_applicable: "本轮不适用",
+  archived: "已归档",
+  withdrawn: "已撤回",
+};
+
 export function TherapeuticAssessmentWorkbench() {
   const [cases, setCases] = useState<TherapeuticAssessmentCase[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -120,7 +137,7 @@ export function TherapeuticAssessmentWorkbench() {
             {cases.map((item) => (
               <button type="button" key={item.id} className={`taCaseButton ${selected?.id === item.id ? "active" : ""}`} onClick={() => setSelectedId(item.id)}>
                 <strong>{item.assessment_question}</strong>
-                <span>{item.status} · {item.service_level.display_name} · {item.risk_level}</span>
+                <span>{workflowLabels[item.workflow_state] || item.workflow_state} · {item.service_level.display_name}</span>
               </button>
             ))}
           </div>
@@ -131,12 +148,13 @@ export function TherapeuticAssessmentWorkbench() {
             <>
               <div className="sectionHeader">
                 <div><p className="eyebrow">{selected.service_level.display_name} · 版本 {selected.version}</p><h2>结构化共同反馈</h2></div>
-                <span className={`statusPill status-${selected.status}`}>{selected.status}</span>
+                <span className={`statusPill status-${selected.status}`}>{workflowLabels[selected.workflow_state] || selected.workflow_state}</span>
               </div>
               <div className="guidanceBox">
                 <strong>参与者的问题</strong>
                 <p>{selected.assessment_question}</p>
                 <small>共享范围：{selected.shared_scope.join("、")}；复杂范围：{selected.complexity_scope}</small>
+                <small>共同理解：{selected.hypothesis_state}；安全支持：{selected.safety_state}</small>
               </div>
               <div className="taFormGrid">
                 <label><span>观察（每行一条）</span><textarea value={form.observations} onChange={(event) => setForm({ ...form, observations: event.target.value })} /></label>

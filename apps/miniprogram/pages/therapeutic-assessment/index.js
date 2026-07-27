@@ -6,6 +6,23 @@ function submissionKey(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+const WORKFLOW_LABELS = {
+  submitted: "已提交",
+  pending_human_review: "待人工复核",
+  needs_more_info: "待补充资料",
+  feedback_ready: "可整理反馈",
+  feedback_draft: "反馈草稿",
+  professional_review: "待专业复核",
+  participant_check: "待你核对",
+  revision_requested: "待修订",
+  action_selected: "已选择小行动",
+  followup: "随访中",
+  safety_path: "人工安全支持",
+  not_applicable: "本轮不适用",
+  archived: "已归档",
+  withdrawn: "已撤回",
+};
+
 Page({
   data: {
     loading: true,
@@ -38,6 +55,7 @@ Page({
       ]);
       const cases = (result.items || []).map((item) => ({
         ...item,
+        workflowLabel: WORKFLOW_LABELS[item.workflow_state] || item.workflow_state,
         latestFeedback: (item.feedback_versions || []).filter((version) => version.status === "sent").slice(-1)[0] || null,
       }));
       this.setData({
