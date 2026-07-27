@@ -1511,6 +1511,9 @@ export class SafeHomeApiClient {
     caseId: string,
     input: {
       source: "human" | "ai_draft";
+      feedback_layer?: "layer_1" | "layer_2";
+      recipient_user_id?: string;
+      letter_title?: string;
       observations: string[];
       evidence: string[];
       alternatives: string[];
@@ -1538,6 +1541,55 @@ export class SafeHomeApiClient {
 
   sendTherapeuticAssessmentFeedback(feedbackId: string, idempotencyKey: string): Promise<TherapeuticAssessmentFeedbackVersion> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/feedback-versions/${encodeURIComponent(feedbackId)}/send`, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  respondToTherapeuticAssessmentFeedback(
+    feedbackId: string,
+    input: { recognition: "like" | "partly_like" | "not_like" | "need_time"; disagreement_note?: string },
+    idempotencyKey: string,
+  ) {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/feedback-versions/${encodeURIComponent(feedbackId)}/responses`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  reviseTherapeuticAssessmentFeedback(
+    feedbackId: string,
+    input: {
+      expected_lifecycle_version: number;
+      revision_reason: string;
+      feedback_layer?: "layer_1" | "layer_2";
+      letter_title?: string;
+      participant_content?: string;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentFeedbackVersion> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/feedback-versions/${encodeURIComponent(feedbackId)}/revise`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  withdrawTherapeuticAssessmentFeedback(
+    feedbackId: string,
+    input: { expected_lifecycle_version: number; reason: string },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentFeedbackVersion> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/feedback-versions/${encodeURIComponent(feedbackId)}/withdraw`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  resendTherapeuticAssessmentFeedback(feedbackId: string, idempotencyKey: string) {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/feedback-versions/${encodeURIComponent(feedbackId)}/resend`, {
       method: "POST",
       headers: { "Idempotency-Key": idempotencyKey },
     });

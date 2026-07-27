@@ -93,9 +93,16 @@ export function TherapeuticAssessmentWorkbench() {
   const [notice, setNotice] = useState("");
   const [internalNotes, setInternalNotes] = useState("");
   const [participantVisibleDraft, setParticipantVisibleDraft] = useState("");
+  const [feedbackLayer, setFeedbackLayer] = useState<"layer_1" | "layer_2">("layer_1");
+  const [letterTitle, setLetterTitle] = useState("给你的阶段性反馈");
+  const [lifecycleNote, setLifecycleNote] = useState("");
   const selected = useMemo(
     () => cases.find((item) => item.id === selectedId) || cases[0],
     [cases, selectedId],
+  );
+  const latestFeedback = useMemo(
+    () => selected?.feedback_versions?.slice(-1)[0] || null,
+    [selected],
   );
 
   const loadCases = async () => {
@@ -186,6 +193,9 @@ export function TherapeuticAssessmentWorkbench() {
         selected.id,
         {
           source: "human",
+          feedback_layer: feedbackLayer,
+          recipient_user_id: selected.participant_user_id,
+          letter_title: letterTitle,
           observations: ["已依据当前授权资料整理"],
           evidence: evidenceRefs,
           alternatives: ["当前理解仍可随参与者核对和新资料修订"],
@@ -200,6 +210,49 @@ export function TherapeuticAssessmentWorkbench() {
       await loadCases();
     } catch (caught) {
       setError(caught instanceof SafeHomeApiError ? caught.message : "正式反馈草稿创建失败。");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const runFeedbackAction = async (action: "review" | "send" | "revise" | "withdraw" | "resend") => {
+    if (!latestFeedback) return;
+    setSaving(true);
+    setError("");
+    try {
+      const key = `web-ta-${action}-${latestFeedback.id}-${Date.now()}`;
+      if (action === "review") {
+        await safeHomeApi.reviewTherapeuticAssessmentFeedback(latestFeedback.id, "approved", key);
+      } else if (action === "send") {
+        await safeHomeApi.sendTherapeuticAssessmentFeedback(latestFeedback.id, key);
+      } else if (action === "revise") {
+        await safeHomeApi.reviseTherapeuticAssessmentFeedback(
+          latestFeedback.id,
+          {
+            expected_lifecycle_version: latestFeedback.lifecycle_version,
+            revision_reason: lifecycleNote || "根据参与者核对结果修订",
+            feedback_layer: latestFeedback.feedback_layer === "layer_2" ? "layer_2" : "layer_1",
+            participant_content: participantVisibleDraft || latestFeedback.participant_content,
+            letter_title: letterTitle || latestFeedback.letter_title,
+          },
+          key,
+        );
+      } else if (action === "withdraw") {
+        await safeHomeApi.withdrawTherapeuticAssessmentFeedback(
+          latestFeedback.id,
+          {
+            expected_lifecycle_version: latestFeedback.lifecycle_version,
+            reason: lifecycleNote || "内容需要修订，暂时撤回",
+          },
+          key,
+        );
+      } else {
+        await safeHomeApi.resendTherapeuticAssessmentFeedback(latestFeedback.id, key);
+      }
+      setNotice("反馈生命周期操作已记录。");
+      await loadCases();
+    } catch (caught) {
+      setError(caught instanceof SafeHomeApiError ? caught.message : "反馈生命周期操作失败。");
     } finally {
       setSaving(false);
     }
@@ -283,10 +336,43 @@ export function TherapeuticAssessmentWorkbench() {
                   <textarea value={participantVisibleDraft} onChange={(event) => setParticipantVisibleDraft(event.target.value)} rows={7} />
                 </label>
               </section>
+              <section className="taFeedbackComposition" aria-label="反馈层级和书面信">
+                <label>反馈层级
+                  <select value={feedbackLayer} onChange={(event) => setFeedbackLayer(event.target.value as "layer_1" | "layer_2")}>
+                    <option value="layer_1">第一层 · 与当前理解一致</option>
+                    <option value="layer_2">第二层 · 可讨论的新连接</option>
+                  </select>
+                </label>
+                <label>书面信标题
+                  <input value={letterTitle} maxLength={120} onChange={(event) => setLetterTitle(event.target.value)} />
+                </label>
+                <p>第三层挑战性内容不进入数字自动流程，需要在线下人工协作中处理。</p>
+              </section>
               <div className="dashboardActions">
                 <button className="secondaryButton" type="button" disabled={saving || !workbench} onClick={() => void saveDraft()}>保存工作台草稿</button>
                 <button className="primaryButton" type="button" disabled={saving || !workbench} onClick={() => void createFeedbackDraft()}>提交为待复核反馈</button>
               </div>
+              <section className="taFeedbackLifecycle" aria-label="反馈生命周期">
+                <div className="sectionHeader"><div><p className="eyebrow">最新反馈版本</p><h2>复核、修订与撤回</h2></div></div>
+                {!latestFeedback ? <p>尚未创建反馈版本。</p> : (
+                  <>
+                    <p><strong>{latestFeedback.letter_title}</strong> · {latestFeedback.feedback_layer === "layer_2" ? "可讨论的新连接" : "与当前理解一致"} · {latestFeedback.status}</p>
+                    {latestFeedback.participant_responses?.length ? (
+                      <p>参与者最近核对：{latestFeedback.participant_responses.slice(-1)[0].recognition}；异议原文会保留。</p>
+                    ) : <p>参与者尚未核对。</p>}
+                    <label>操作依据
+                      <input value={lifecycleNote} onChange={(event) => setLifecycleNote(event.target.value)} placeholder="写明修订或撤回原因" />
+                    </label>
+                    <div className="dashboardActions">
+                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status !== "draft"} onClick={() => void runFeedbackAction("review")}>人工复核</button>
+                      <button type="button" className="primaryButton" disabled={saving || latestFeedback.status !== "reviewed"} onClick={() => void runFeedbackAction("send")}>发送</button>
+                      <button type="button" className="secondaryButton" disabled={saving} onClick={() => void runFeedbackAction("revise")}>新建修订版</button>
+                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status === "withdrawn"} onClick={() => void runFeedbackAction("withdraw")}>撤回</button>
+                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status !== "sent"} onClick={() => void runFeedbackAction("resend")}>重新发送</button>
+                    </div>
+                  </>
+                )}
+              </section>
             </>
           ) : <div className="emptyState"><strong>请选择一条协作记录</strong></div>}
         </main>

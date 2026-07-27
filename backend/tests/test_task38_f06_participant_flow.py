@@ -85,8 +85,8 @@ def test_schema_035_and_cross_device_draft_round_trip(tmp_path, monkeypatch):
     assert loaded.get_json()["data"]["payload"]["value"] == "草稿"
     with app.app_context():
         from database import CURRENT_SCHEMA_NAME, CURRENT_SCHEMA_VERSION
-        assert CURRENT_SCHEMA_VERSION == "2026_07_27_037"
-        assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_researcher_workbench"
+        assert CURRENT_SCHEMA_VERSION == "2026_07_27_038"
+        assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_layered_feedback"
 
 
 def test_draft_scope_version_conflict_and_idempotent_replay(tmp_path, monkeypatch):

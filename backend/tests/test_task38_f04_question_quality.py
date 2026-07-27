@@ -61,7 +61,7 @@ def test_schema_033_and_original_question_is_immutable(tmp_path, monkeypatch):
     assert data["working_question"] == "我想探索这次退开前发生了什么"
     with app.app_context():
         from database import CURRENT_SCHEMA_VERSION
-        assert CURRENT_SCHEMA_VERSION == "2026_07_27_037"
+        assert CURRENT_SCHEMA_VERSION == "2026_07_27_038"
 
 
 def test_candidates_do_not_count_as_acceptance_and_none_fit_is_explicit(tmp_path, monkeypatch):

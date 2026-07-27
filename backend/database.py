@@ -100,6 +100,8 @@ REQUIRED_HEALTH_TABLES = [
     "operations_evidence_packages",
     "therapeutic_assessment_cases",
     "therapeutic_assessment_feedback_versions",
+    "therapeutic_assessment_feedback_deliveries",
+    "therapeutic_assessment_feedback_responses",
     "therapeutic_assessment_evidence_items",
     "therapeutic_assessment_data_items",
     "therapeutic_assessment_data_consents",
@@ -118,8 +120,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_27_037"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_researcher_workbench"
+CURRENT_SCHEMA_VERSION = "2026_07_27_038"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_layered_feedback"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1103,6 +1105,17 @@ def ensure_schema_columns(conn) -> None:
         "method_limitations",
         "TEXT NOT NULL DEFAULT '仅适用于当前已授权资料与时间范围，不代表完整解释或诊断结论。'",
     )
+    therapeutic_feedback_columns = {
+        "feedback_layer": "TEXT NOT NULL DEFAULT 'layer_1'",
+        "recipient_user_id": "TEXT",
+        "letter_title": "TEXT NOT NULL DEFAULT '给你的阶段性反馈'",
+        "supersedes_feedback_id": "TEXT",
+        "withdrawn_at": "TEXT",
+        "withdrawal_reason": "TEXT",
+        "lifecycle_version": "INTEGER NOT NULL DEFAULT 1",
+    }
+    for column, definition in therapeutic_feedback_columns.items():
+        ensure_column(conn, "therapeutic_assessment_feedback_versions", column, definition)
     conn.execute(
         """
         UPDATE therapeutic_assessment_cases

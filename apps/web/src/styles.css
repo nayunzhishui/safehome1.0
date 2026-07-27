@@ -4377,6 +4377,55 @@ ul {
   color: #835f32;
 }
 
+.taFeedbackComposition,
+.taFeedbackLifecycle {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--safe-line);
+  border-radius: var(--safe-radius-lg);
+  background: rgba(255, 253, 250, 0.78);
+}
+
+.taFeedbackComposition {
+  grid-template-columns: minmax(220px, .7fr) minmax(260px, 1fr);
+  align-items: end;
+}
+
+.taFeedbackComposition p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--safe-muted);
+}
+
+.taFeedbackComposition label,
+.taFeedbackLifecycle label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.taFeedbackComposition input,
+.taFeedbackComposition select,
+.taFeedbackLifecycle input {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--safe-line);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  color: var(--safe-ink);
+}
+
+@media (max-width: 760px) {
+  .taFeedbackComposition {
+    grid-template-columns: 1fr;
+  }
+
+  .taFeedbackComposition p {
+    grid-column: auto;
+  }
+}
+
 .taPagination {
   display: flex;
   justify-content: center;

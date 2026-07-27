@@ -33,6 +33,13 @@
   <view wx:if="{{!loading && stateKind !== 'withdrawn' && stateKind !== 'expired'}}" class="safe-card taf-card">
     <text wx:if="{{prompt}}" class="safe-h3">{{prompt}}</text>
 
+    <view wx:if="{{mode === 'feedback' && feedbackContent}}" class="taf-feedback-letter" role="article" aria-label="{{feedbackTitle}}">
+      <text class="safe-eyebrow">{{feedbackLayerLabel}}</text>
+      <text class="safe-h3">{{feedbackTitle}}</text>
+      <text class="safe-body">{{feedbackContent}}</text>
+      <text class="taf-feedback-boundary">这是一份可讨论、可不同意、可修订的阶段性理解。</text>
+    </view>
+
     <view wx:if="{{mode === 'choice' || mode === 'feedback'}}" class="taf-options" role="radiogroup" aria-label="{{prompt || title}}">
       <button
         wx:for="{{options}}"

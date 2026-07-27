@@ -1251,6 +1251,15 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    respondToTherapeuticAssessmentFeedback(feedbackId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/feedback-versions/${encodeURIComponent(feedbackId)}/responses`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
     getTherapeuticAssessmentSafetyStatus() {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/safety/status`, { requiresAuth: true });
     },

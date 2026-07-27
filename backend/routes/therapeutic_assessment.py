@@ -13,11 +13,15 @@ from services.therapeutic_assessment_service import (
     get_case,
     list_cases,
     participant_transition,
+    resend_feedback,
+    revise_feedback,
     review_feedback,
     send_feedback,
+    submit_feedback_response,
     set_readiness,
     update_action,
     update_scope,
+    withdraw_feedback,
 )
 from services.therapeutic_assessment_level_service import public_status as service_level_status
 from services.therapeutic_assessment_transition_service import transition_case
@@ -247,6 +251,30 @@ def post_review_route(feedback_id: str):
 def post_send_route(feedback_id: str):
     actor, error = _actor()
     return error or _respond(send_feedback, actor, feedback_id, _key())
+
+
+@bp.post("/feedback-versions/<feedback_id>/responses")
+def post_feedback_response_route(feedback_id: str):
+    actor, error = _actor()
+    return error or _respond(submit_feedback_response, actor, feedback_id, _payload(), _key())
+
+
+@bp.post("/feedback-versions/<feedback_id>/revise")
+def post_feedback_revise_route(feedback_id: str):
+    actor, error = _actor()
+    return error or _respond(revise_feedback, actor, feedback_id, _payload(), _key())
+
+
+@bp.post("/feedback-versions/<feedback_id>/withdraw")
+def post_feedback_withdraw_route(feedback_id: str):
+    actor, error = _actor()
+    return error or _respond(withdraw_feedback, actor, feedback_id, _payload(), _key())
+
+
+@bp.post("/feedback-versions/<feedback_id>/resend")
+def post_feedback_resend_route(feedback_id: str):
+    actor, error = _actor()
+    return error or _respond(resend_feedback, actor, feedback_id, _key())
 
 
 @bp.post("/cases/<case_id>/actions")

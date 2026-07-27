@@ -122,6 +122,9 @@ function registerTherapeuticAssessmentStepPage(stepId) {
       activeCase: null,
       originalText: "",
       systemText: "",
+      feedbackTitle: "",
+      feedbackContent: "",
+      feedbackLayerLabel: "",
       loading: true,
       saving: false,
       offline: false,
@@ -215,6 +218,11 @@ function registerTherapeuticAssessmentStepPage(stepId) {
           activeCase,
           originalText: activeCase ? activeCase.assessment_question : this.data.value,
           systemText: activeCase ? activeCase.working_question : "",
+          feedbackTitle: latestFeedback ? latestFeedback.letter_title : "",
+          feedbackContent: latestFeedback ? latestFeedback.participant_content : "",
+          feedbackLayerLabel: latestFeedback
+            ? (latestFeedback.feedback_layer === "layer_2" ? "可讨论的新连接" : "与当前理解一致")
+            : "",
           canContinue: stepId !== "action_review" || Boolean(latestFeedback),
         });
         if (stepId === "feedback_check" && !latestFeedback) {
@@ -371,14 +379,17 @@ function registerTherapeuticAssessmentStepPage(stepId) {
         );
         this.setData({ activeCase: updated });
       }
-      if (stepId === "feedback_check" && this.data.selected === "not_like") {
-        const updated = await api.transitionTherapeuticAssessment(
-          activeCase.id,
-          "disagree",
-          { note: this.data.value.trim(), expected_version: activeCase.version },
-          key("mini-ta-feedback-disagree"),
+      if (stepId === "feedback_check") {
+        const latestFeedback = (activeCase.feedback_versions || []).filter((item) => item.status === "sent").slice(-1)[0];
+        if (!latestFeedback) return;
+        await api.respondToTherapeuticAssessmentFeedback(
+          latestFeedback.id,
+          {
+            recognition: this.data.selected,
+            disagreement_note: this.data.value.trim() || undefined,
+          },
+          key("mini-ta-feedback-response"),
         );
-        this.setData({ activeCase: updated });
       }
       if (stepId === "action_review" && this.data.value.trim()) {
         const latestFeedback = (activeCase.feedback_versions || []).filter((item) => item.status === "sent").slice(-1)[0];

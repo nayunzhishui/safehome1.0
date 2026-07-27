@@ -291,8 +291,12 @@
 | GET | `/api/therapeutic-assessment/data-items/<item_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/data-items/<item_id>/consent` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/evidence/<evidence_id>/review` | role:supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/resend` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/responses` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/review` | role:supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/revise` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/send` | role:supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/safety-events/<event_id>/resolve` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/safety/runtime/restore` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/safety/status` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

@@ -1,0 +1,19 @@
+{
+  "schema": "safehome.therapeutic-assessment.feedback-policy.v1",
+  "version": "2026.07.27-f09",
+  "digital_layers": ["layer_1", "layer_2"],
+  "offline_only_layers": ["layer_3"],
+  "recognition_options": ["like", "partly_like", "not_like", "need_time"],
+  "blocked_phrases": [
+    "诊断为",
+    "你就是",
+    "你肯定",
+    "你内心其实",
+    "都是你的错",
+    "保证有效",
+    "一定会改善",
+    "病态关系",
+    "人格问题"
+  ],
+  "participant_boundary": "这是一份可讨论、可不同意、可修订的阶段性理解，不构成诊断、责备或效果保证。"
+}

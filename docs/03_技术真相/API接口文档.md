@@ -2310,3 +2310,10 @@ relationship_initiation_intention_action
 - `PUT /api/therapeutic-assessment/cases/<case_id>/researcher-workbench/draft`：保存内部记录、参与者可见草稿和筛选状态；必须携带`expected_version`和`Idempotency-Key`。
 - 工作台读取会写敏感访问审计；草稿保存使用case、操作者、版本和幂等键防止重复与覆盖。
 - 参与者读取case时不返回内部记录、内部讨论或未发送草稿；正式反馈仍走独立起草与复核接口。
+## 2026-07-27 T38-F09反馈生命周期API
+
+- `POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses`：参与者提交“像/部分像/不像/需要想想”。
+- `POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/revise`：研究者基于核对意见创建新版本，不覆盖原版本。
+- `POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw`：有权限人员撤回反馈并保留历史。
+- `POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/resend`：督导或管理员新增一次发送记录。
+- 新增接口均要求登录；写操作要求`Idempotency-Key`。对象范围、人工复核、授权资料和生命周期状态由服务端校验。

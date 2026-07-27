@@ -373,7 +373,10 @@ export interface TherapeuticAssessmentFeedbackVersion {
   case_id: string;
   version_no: number;
   source: "human" | "ai_draft";
-  status: "draft" | "reviewed" | "sent";
+  status: "draft" | "reviewed" | "sent" | "withdrawn";
+  feedback_layer: "layer_1" | "layer_2" | "layer_3";
+  recipient_user_id?: string | null;
+  letter_title: string;
   observations: string[];
   evidence: string[];
   alternatives: string[];
@@ -381,8 +384,41 @@ export interface TherapeuticAssessmentFeedbackVersion {
   next_step: string;
   human_discussion: string[];
   participant_content: string;
+  supersedes_feedback_id?: string | null;
   reviewed_by?: string | null;
   sent_at?: string | null;
+  withdrawn_at?: string | null;
+  withdrawal_reason?: string | null;
+  lifecycle_version: number;
+  delivery_count?: number;
+  deliveries?: TherapeuticAssessmentFeedbackDelivery[];
+  participant_response?: TherapeuticAssessmentFeedbackResponse | null;
+  participant_responses?: TherapeuticAssessmentFeedbackResponse[];
+}
+
+export type TherapeuticAssessmentFeedbackRecognition = "like" | "partly_like" | "not_like" | "need_time";
+
+export interface TherapeuticAssessmentFeedbackResponse {
+  id: string;
+  feedback_id: string;
+  case_id: string;
+  participant_user_id: string;
+  recognition: TherapeuticAssessmentFeedbackRecognition;
+  disagreement_note?: string | null;
+  supersedes_response_id?: string | null;
+  created_at: string;
+}
+
+export interface TherapeuticAssessmentFeedbackDelivery {
+  id: string;
+  feedback_id: string;
+  case_id: string;
+  recipient_user_id: string;
+  sequence_no: number;
+  status: "sent" | "withdrawn";
+  sent_by: string;
+  sent_at: string;
+  withdrawn_at?: string | null;
 }
 
 export interface TherapeuticAssessmentAction {

@@ -5,6 +5,8 @@
 .taf-hero { display: grid; gap: 12rpx; }
 .taf-card { display: grid; gap: 24rpx; border-radius: var(--safe-radius-lg); box-shadow: var(--safe-shadow-float); }
 .taf-options { display: grid; gap: 16rpx; }
+.taf-feedback-letter { display: grid; gap: 14rpx; padding: 24rpx; border: 2rpx solid var(--safe-border-strong); border-radius: var(--safe-radius-md); background: var(--safe-bg-soft); }
+.taf-feedback-boundary { color: var(--safe-muted); font-size: 22rpx; line-height: 1.6; }
 .taf-option { box-sizing: border-box; min-height: 104rpx; display: flex; align-items: center; gap: 18rpx; padding: 18rpx 20rpx; border: 2rpx solid var(--safe-border); border-radius: var(--safe-radius-md); background: var(--safe-card); text-align: left; }
 .taf-option--selected { border-color: var(--safe-primary); background: var(--safe-primary-pale); }
 .taf-option__mark { width: 44rpx; height: 44rpx; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; border: 2rpx solid var(--safe-primary); border-radius: 50%; color: var(--safe-primary-deep); font-size: 24rpx; font-weight: 900; }

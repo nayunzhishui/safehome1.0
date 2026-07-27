@@ -1709,6 +1709,9 @@ SCHEMA_SQL = [
         author_id TEXT NOT NULL,
         source TEXT NOT NULL,
         status TEXT NOT NULL,
+        feedback_layer TEXT NOT NULL DEFAULT 'layer_1',
+        recipient_user_id TEXT,
+        letter_title TEXT NOT NULL DEFAULT '给你的阶段性反馈',
         observations_json TEXT NOT NULL DEFAULT '[]',
         evidence_json TEXT NOT NULL DEFAULT '[]',
         alternatives_json TEXT NOT NULL DEFAULT '[]',
@@ -1716,11 +1719,48 @@ SCHEMA_SQL = [
         next_step TEXT NOT NULL,
         human_discussion_json TEXT NOT NULL DEFAULT '[]',
         participant_content TEXT NOT NULL,
+        supersedes_feedback_id TEXT,
         reviewed_by TEXT,
         reviewed_at TEXT,
         sent_at TEXT,
+        withdrawn_at TEXT,
+        withdrawal_reason TEXT,
+        lifecycle_version INTEGER NOT NULL DEFAULT 1,
         created_at TEXT NOT NULL,
         UNIQUE(case_id, version_no)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_feedback_deliveries (
+        id TEXT PRIMARY KEY,
+        feedback_id TEXT NOT NULL,
+        case_id TEXT NOT NULL,
+        recipient_user_id TEXT NOT NULL,
+        sequence_no INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        sent_by TEXT NOT NULL,
+        sent_at TEXT NOT NULL,
+        withdrawn_by TEXT,
+        withdrawn_at TEXT,
+        withdrawal_reason TEXT,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(sent_by, idempotency_key),
+        UNIQUE(feedback_id, sequence_no)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_feedback_responses (
+        id TEXT PRIMARY KEY,
+        feedback_id TEXT NOT NULL,
+        case_id TEXT NOT NULL,
+        participant_user_id TEXT NOT NULL,
+        recognition TEXT NOT NULL,
+        disagreement_note TEXT,
+        supersedes_response_id TEXT,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(participant_user_id, idempotency_key)
     )
     """,
     """
@@ -2082,6 +2122,8 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_cases_participant_status ON therapeutic_assessment_cases(participant_user_id, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_cases_assignee_status ON therapeutic_assessment_cases(assigned_researcher_id, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_feedback_case_version ON therapeutic_assessment_feedback_versions(case_id, version_no)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_feedback_delivery_case ON therapeutic_assessment_feedback_deliveries(case_id, sent_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_feedback_response_case ON therapeutic_assessment_feedback_responses(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_evidence_case_kind ON therapeutic_assessment_evidence_items(case_id, kind, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_evidence_actor_idempotency ON therapeutic_assessment_evidence_items(author_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_data_case_status ON therapeutic_assessment_data_items(case_id, status, created_at)",

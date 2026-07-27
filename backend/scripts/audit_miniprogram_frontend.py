@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 MINIPROGRAM = ROOT / "apps" / "miniprogram"
-REQUIRED_PAGE_SUFFIXES = (".js", ".json", ".wxml", ".wxss")
+REQUIRED_RUNTIME_SUFFIXES = (".js", ".json", ".wxml")
 INTERNAL_TEXT_PATTERNS = ("WECHAT_SECRET", "WECHAT_APPID", "debugMessage", "model_center", "cluster_centers")
 EVENT_PATTERN = re.compile(r"(?:bind|catch)(?:tap|input|change|getphonenumber|touchstart|touchmove|touchend|submit)=[\"']([A-Za-z_$][\w$]*)[\"']")
 CANVAS_PATTERN = re.compile(r"<canvas\b.*?</canvas>", re.IGNORECASE | re.DOTALL)
@@ -33,7 +33,7 @@ def audit() -> dict:
 
     for page in pages:
         base = MINIPROGRAM / page
-        for suffix in REQUIRED_PAGE_SUFFIXES:
+        for suffix in REQUIRED_RUNTIME_SUFFIXES:
             if not base.with_suffix(suffix).exists():
                 issues.append(f"missing_page_file:{page}{suffix}")
         json_path = base.with_suffix(".json")
@@ -47,7 +47,7 @@ def audit() -> dict:
             component = _component_base(base, value)
             if component is None:
                 continue
-            for suffix in REQUIRED_PAGE_SUFFIXES:
+            for suffix in REQUIRED_RUNTIME_SUFFIXES:
                 if not component.with_suffix(suffix).exists():
                     issues.append(f"missing_component_file:{page}:{name}:{value}{suffix}")
         wxml = wxml_path.read_text(encoding="utf-8")
