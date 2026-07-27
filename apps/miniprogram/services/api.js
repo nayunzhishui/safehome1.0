@@ -1199,6 +1199,24 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    createTherapeuticAssessmentDataItem(caseId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/data-items`, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    updateTherapeuticAssessmentDataConsent(itemId, data, idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/data-items/${encodeURIComponent(itemId)}/consent`, {
+        method: "PATCH",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
     createTherapeuticAssessmentAction(caseId, data, idempotencyKey) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/actions`, {
         method: "POST",

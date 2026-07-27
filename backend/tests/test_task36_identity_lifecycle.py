@@ -347,7 +347,7 @@ def test_identity_lifecycle_migration_is_additive_and_repeatable(tmp_path, monke
 
     assert first["ok"] is True
     assert second["ok"] is True
-    assert second["schema_version"] == "2026_07_27_033"
-    assert second["schema_name"] == "therapeutic_assessment_question_quality"
+    assert second["schema_version"] == "2026_07_27_034"
+    assert second["schema_name"] == "therapeutic_assessment_dynamic_consent"
     assert rollback["schema_preserved"] is True
     assert rollback["business_records_preserved"] is True

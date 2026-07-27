@@ -1758,6 +1758,45 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_data_items (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        subject_user_id TEXT NOT NULL,
+        provider_user_id TEXT NOT NULL,
+        involved_user_ids_json TEXT NOT NULL DEFAULT '[]',
+        controller_user_id TEXT NOT NULL,
+        visibility TEXT NOT NULL,
+        allowed_viewer_ids_json TEXT NOT NULL DEFAULT '[]',
+        purpose TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        status TEXT NOT NULL,
+        consent_version INTEGER NOT NULL DEFAULT 1,
+        content_ref TEXT NOT NULL,
+        content_sha256 TEXT NOT NULL,
+        legal_hold_reason TEXT,
+        withdrawn_at TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_data_consents (
+        id TEXT PRIMARY KEY,
+        data_item_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        visibility TEXT NOT NULL,
+        allowed_viewer_ids_json TEXT NOT NULL DEFAULT '[]',
+        purpose TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        consent_version INTEGER NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS therapeutic_assessment_actions (
         id TEXT PRIMARY KEY,
         case_id TEXT NOT NULL,
@@ -1946,6 +1985,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_feedback_case_version ON therapeutic_assessment_feedback_versions(case_id, version_no)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_evidence_case_kind ON therapeutic_assessment_evidence_items(case_id, kind, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_evidence_actor_idempotency ON therapeutic_assessment_evidence_items(author_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_data_case_status ON therapeutic_assessment_data_items(case_id, status, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_data_provider_idempotency ON therapeutic_assessment_data_items(provider_user_id, idempotency_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_consent_actor_idempotency ON therapeutic_assessment_data_consents(actor_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_actions_case_created ON therapeutic_assessment_actions(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",

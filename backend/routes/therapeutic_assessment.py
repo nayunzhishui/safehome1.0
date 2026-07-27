@@ -27,6 +27,11 @@ from services.therapeutic_assessment_evidence_service import (
     review_hypothesis,
 )
 from services.therapeutic_assessment_question_service import update_question
+from services.therapeutic_assessment_consent_service import (
+    create_data_item,
+    get_data_item,
+    update_consent,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -116,6 +121,24 @@ def post_evidence_route(case_id: str):
 def post_evidence_review_route(evidence_id: str):
     actor, error = _actor()
     return error or _respond(review_hypothesis, actor, evidence_id, _payload(), _key())
+
+
+@bp.post("/cases/<case_id>/data-items")
+def post_data_item_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(create_data_item, actor, case_id, _payload(), _key())
+
+
+@bp.get("/data-items/<item_id>")
+def get_data_item_route(item_id: str):
+    actor, error = _actor()
+    return error or _respond(get_data_item, actor, item_id)
+
+
+@bp.patch("/data-items/<item_id>/consent")
+def patch_data_consent_route(item_id: str):
+    actor, error = _actor()
+    return error or _respond(update_consent, actor, item_id, _payload(), _key())
 
 
 @bp.post("/cases/<case_id>/disagree")

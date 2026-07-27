@@ -2281,3 +2281,10 @@ relationship_initiation_intention_action
 - `PATCH /api/therapeutic-assessment/cases/<case_id>/question`：参与者本人执行生成候选、改写、选择、都不符合、暂停、删除或提交。
 - 必须携带`expected_version`和`Idempotency-Key`；原始`assessment_question`不可覆盖。
 - 响应返回`working_question`、`question_candidates`、`question_quality`、`best_guess`、状态和版本。
+
+## 2026-07-27：T38-F05动态同意
+
+- `POST /api/therapeutic-assessment/cases/<case_id>/data-items`：创建不含原文的资料控制记录。
+- `GET /api/therapeutic-assessment/data-items/<item_id>`：仅控制者、提供者、逐条指定专业人员或全部确认后的共同查看者可读。
+- `PATCH /api/therapeutic-assessment/data-items/<item_id>/consent`：主体/涉及者批准、修改或撤回；要求版本和幂等键。
+- 过期返回410，撤回返回403；法定保留不恢复查看权。

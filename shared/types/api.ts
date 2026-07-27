@@ -247,6 +247,24 @@ export interface TherapeuticAssessmentEvidenceItem {
   created_at: string;
 }
 
+export interface TherapeuticAssessmentDataItem {
+  id: string;
+  case_id: string;
+  subject_user_id: string;
+  provider_user_id: string;
+  involved_user_ids: string[];
+  controller_user_id: string;
+  visibility: "private" | "professionals" | "confirmed_shared_feedback";
+  allowed_viewer_ids: string[];
+  purpose: "collaborative_assessment" | "human_review" | "shared_feedback";
+  expires_at: string;
+  status: "active" | "pending_subject_consent" | "withdrawn";
+  consent_version: number;
+  version: number;
+  retained_under_legal_hold: boolean;
+  notification_preview: string;
+}
+
 export interface TherapeuticAssessmentServiceLevel {
   id: TherapeuticAssessmentReadiness;
   display_name: string;

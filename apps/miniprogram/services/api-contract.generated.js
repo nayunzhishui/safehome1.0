@@ -16735,6 +16735,67 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "therapeutic_assessment.post_data_item_route.post",
+    "method": "POST",
+    "path": "/api/therapeutic-assessment/cases/<case_id>/data-items",
+    "handler": "therapeutic_assessment.post_data_item_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "case_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.post_data_item_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "therapeutic_assessment.post_disagree_route.post",
     "method": "POST",
     "path": "/api/therapeutic-assessment/cases/<case_id>/disagree",
@@ -17256,6 +17317,128 @@ const GENERATED_API_ENDPOINTS = [
       "envelope": "standard",
       "request_id": true,
       "data_contract": "routes.therapeutic_assessment.post_withdraw_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.get_data_item_route.get",
+    "method": "GET",
+    "path": "/api/therapeutic-assessment/data-items/<item_id>",
+    "handler": "therapeutic_assessment.get_data_item_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "item_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.get_data_item_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.patch_data_consent_route.patch",
+    "method": "PATCH",
+    "path": "/api/therapeutic-assessment/data-items/<item_id>/consent",
+    "handler": "therapeutic_assessment.patch_data_consent_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "item_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.patch_data_consent_route.data"
     },
     "error_envelope": {
       "ok": false,

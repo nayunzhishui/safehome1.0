@@ -60,5 +60,10 @@
     <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="chooseAction">记录下一小步</button>
   </view>
 
+  <view class="safe-card ta-card">
+    <text class="ta-section-title">资料与共享</text>
+    <text class="ta-boundary">每条资料单独决定：仅自己、指定专业人员，或经所有相关人确认后用于共同反馈。账号绑定不会自动互看；授权可修改、到期或撤回。</text>
+  </view>
+
   <text class="ta-footer-boundary">共同反馈只记录变化、讨论和行动线索，不生成疗效分数，也不替代心理咨询、诊断或危机支持。</text>
 </view>

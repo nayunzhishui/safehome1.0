@@ -121,6 +121,7 @@ import type {
   SupervisionInput,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
+  TherapeuticAssessmentDataItem,
   TherapeuticAssessmentFeedbackVersion,
   TherapeuticAssessmentServiceLevelStatus,
   TherapeuticAssessmentTransitionInput,
@@ -1363,6 +1364,30 @@ export class SafeHomeApiClient {
   ): Promise<TherapeuticAssessmentEvidenceItem> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/evidence`, {
       method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  createTherapeuticAssessmentDataItem(
+    caseId: string,
+    input: Record<string, unknown>,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentDataItem> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/data-items`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  updateTherapeuticAssessmentDataConsent(
+    itemId: string,
+    input: Record<string, unknown>,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentDataItem> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/data-items/${encodeURIComponent(itemId)}/consent`, {
+      method: "PATCH",
       body: input,
       headers: { "Idempotency-Key": idempotencyKey },
     });
