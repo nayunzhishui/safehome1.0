@@ -1959,6 +1959,41 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_authorizations (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        competency_level TEXT NOT NULL,
+        task_code TEXT NOT NULL,
+        scope_json TEXT NOT NULL DEFAULT '{}',
+        supervisor_user_id TEXT NOT NULL,
+        evidence_ref TEXT NOT NULL,
+        starts_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'active',
+        version INTEGER NOT NULL DEFAULT 1,
+        granted_by TEXT NOT NULL,
+        revoked_by TEXT,
+        revoked_at TEXT,
+        revocation_reason TEXT,
+        status_reason TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_authorization_events (
+        id TEXT PRIMARY KEY,
+        authorization_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        before_version INTEGER,
+        after_version INTEGER,
+        reason TEXT,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS therapeutic_assessment_events (
         id TEXT PRIMARY KEY,
         case_id TEXT NOT NULL,
@@ -2144,6 +2179,8 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_draft_events_draft_created ON therapeutic_assessment_participant_draft_events(draft_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_safety_case_state ON therapeutic_assessment_safety_events(case_id, state, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_actions_case_created ON therapeutic_assessment_actions(case_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_authorizations_user_task ON therapeutic_assessment_authorizations(user_id, task_code, status, expires_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_authorization_event_idempotency ON therapeutic_assessment_authorization_events(actor_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_parent ON computation_lineage_edges(parent_resource_type, parent_resource_id)",

@@ -113,6 +113,8 @@ REQUIRED_HEALTH_TABLES = [
     "therapeutic_assessment_researcher_workbench_drafts",
     "therapeutic_assessment_researcher_workbench_draft_events",
     "therapeutic_assessment_actions",
+    "therapeutic_assessment_authorizations",
+    "therapeutic_assessment_authorization_events",
     "therapeutic_assessment_events",
     "computation_datasets",
     "computation_authorization_snapshots",
@@ -120,8 +122,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_27_039"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_action_followup"
+CURRENT_SCHEMA_VERSION = "2026_07_27_040"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_competency_authorization"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1130,6 +1132,7 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in therapeutic_action_columns.items():
         ensure_column(conn, "therapeutic_assessment_actions", column, definition)
+    ensure_column(conn, "therapeutic_assessment_authorizations", "status_reason", "TEXT")
     conn.execute(
         """
         UPDATE therapeutic_assessment_cases

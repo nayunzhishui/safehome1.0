@@ -2317,3 +2317,12 @@ relationship_initiation_intention_action
 - `POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw`：有权限人员撤回反馈并保留历史。
 - `POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/resend`：督导或管理员新增一次发送记录。
 - 新增接口均要求登录；写操作要求`Idempotency-Key`。对象范围、人工复核、授权资料和生命周期状态由服务端校验。
+
+## 2026-07-28：T38-F10行动与T38-F11任务授权API
+
+- `POST /api/therapeutic-assessment/cases/<case_id>/actions`、`PATCH /actions/<action_id>`与`POST /actions/<action_id>/followups`：参与者本人创建、更新和回看自选小行动，随访只形成O/U线索。
+- `GET /api/therapeutic-assessment/competency/authorizations`：本人查看自己的任务授权；督导/管理员可按`user_id`查看。
+- `POST /api/therapeutic-assessment/competency/authorizations`：督导/管理员按级别、任务、范围、督导证据和有效期授予任务权限。
+- `PATCH /api/therapeutic-assessment/competency/authorizations/<authorization_id>/revoke`：按版本和原因撤销授权。
+- `GET /api/therapeutic-assessment/competency/effective?case_id=...&task_code=...`：按当前账号、case、任务、T级别、范围和有效期返回是否可写。
+- 工作台草稿、O/P/H证据、反馈起草、复核、发送、修订、撤回和重发均在服务端重新校验任务授权；普通账号的临时展示越权不会改变正式写权限。

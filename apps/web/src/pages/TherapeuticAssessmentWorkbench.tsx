@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type {
+  TherapeuticAssessmentAuthorizationStatus,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
@@ -35,6 +36,16 @@ const kindLabels: Record<TherapeuticAssessmentEvidenceKind, string> = {
 };
 
 type Filters = TherapeuticAssessmentResearcherDraft["filters"];
+type AuthorizationState = Record<
+  "workbench_draft" | "feedback_draft" | "feedback_review",
+  TherapeuticAssessmentAuthorizationStatus
+>;
+
+const deniedAuthorizations: AuthorizationState = {
+  workbench_draft: { authorized: false, task_code: "workbench_draft" },
+  feedback_draft: { authorized: false, task_code: "feedback_draft" },
+  feedback_review: { authorized: false, task_code: "feedback_review" },
+};
 
 function textList(items: unknown[]) {
   return items.map((item) => {
@@ -96,6 +107,8 @@ export function TherapeuticAssessmentWorkbench() {
   const [feedbackLayer, setFeedbackLayer] = useState<"layer_1" | "layer_2">("layer_1");
   const [letterTitle, setLetterTitle] = useState("给你的阶段性反馈");
   const [lifecycleNote, setLifecycleNote] = useState("");
+  const [authorizations, setAuthorizations] = useState<AuthorizationState>(deniedAuthorizations);
+  const [authorizationNotice, setAuthorizationNotice] = useState("");
   const selected = useMemo(
     () => cases.find((item) => item.id === selectedId) || cases[0],
     [cases, selectedId],
@@ -139,6 +152,25 @@ export function TherapeuticAssessmentWorkbench() {
     }
   };
 
+  const loadAuthorizations = async (caseId: string) => {
+    setAuthorizationNotice("");
+    try {
+      const [workbenchDraft, feedbackDraft, feedbackReview] = await Promise.all([
+        safeHomeApi.getTherapeuticAssessmentAuthorizationStatus(caseId, "workbench_draft"),
+        safeHomeApi.getTherapeuticAssessmentAuthorizationStatus(caseId, "feedback_draft"),
+        safeHomeApi.getTherapeuticAssessmentAuthorizationStatus(caseId, "feedback_review"),
+      ]);
+      setAuthorizations({
+        workbench_draft: workbenchDraft,
+        feedback_draft: feedbackDraft,
+        feedback_review: feedbackReview,
+      });
+    } catch {
+      setAuthorizations(deniedAuthorizations);
+      setAuthorizationNotice("任务授权暂时无法确认，正式写入已按默认拒绝处理。");
+    }
+  };
+
   useEffect(() => {
     void loadCases();
   }, []);
@@ -146,6 +178,10 @@ export function TherapeuticAssessmentWorkbench() {
   useEffect(() => {
     if (selectedId) void loadWorkbench(selectedId, filters, page);
   }, [selectedId, filters.kind, filters.review_status, filters.visibility, page]);
+
+  useEffect(() => {
+    if (selectedId) void loadAuthorizations(selectedId);
+  }, [selectedId]);
 
   const changeFilter = (name: keyof Filters, value: string) => {
     setFilters((current) => ({ ...current, [name]: value }));
@@ -301,6 +337,17 @@ export function TherapeuticAssessmentWorkbench() {
                 <p>共享范围：{selected.shared_scope.join("、")}；共同理解：{selected.hypothesis_state}；安全支持：{selected.safety_state}</p>
               </section>
 
+              <section className="status" aria-label="当前任务授权">
+                <strong>当前任务授权</strong>
+                <p>
+                  工作台整理：{authorizations.workbench_draft.authorized ? `${authorizations.workbench_draft.competency_level} 已授权` : "未授权"}；
+                  反馈起草：{authorizations.feedback_draft.authorized ? `${authorizations.feedback_draft.competency_level} 已授权` : "未授权"}；
+                  反馈复核：{authorizations.feedback_review.authorized ? `${authorizations.feedback_review.competency_level} 已授权` : "未授权"}
+                </p>
+                {authorizationNotice ? <p>{authorizationNotice}</p> : null}
+                <small>账号角色和临时展示权限都不能代替任务级、对象级和限期授权。</small>
+              </section>
+
               <section className="taFilterBar" aria-label="证据过滤">
                 <label>类型<select value={filters.kind || ""} onChange={(event) => changeFilter("kind", event.target.value)}>
                   <option value="">全部</option>{Object.entries(kindLabels).map(([value, label]) => <option key={value} value={value}>{value} · {label}</option>)}
@@ -349,8 +396,8 @@ export function TherapeuticAssessmentWorkbench() {
                 <p>第三层挑战性内容不进入数字自动流程，需要在线下人工协作中处理。</p>
               </section>
               <div className="dashboardActions">
-                <button className="secondaryButton" type="button" disabled={saving || !workbench} onClick={() => void saveDraft()}>保存工作台草稿</button>
-                <button className="primaryButton" type="button" disabled={saving || !workbench} onClick={() => void createFeedbackDraft()}>提交为待复核反馈</button>
+                <button className="secondaryButton" type="button" disabled={saving || !workbench || !authorizations.workbench_draft.authorized} onClick={() => void saveDraft()}>保存工作台草稿</button>
+                <button className="primaryButton" type="button" disabled={saving || !workbench || !authorizations.feedback_draft.authorized} onClick={() => void createFeedbackDraft()}>提交为待复核反馈</button>
               </div>
               <section className="taFeedbackLifecycle" aria-label="反馈生命周期">
                 <div className="sectionHeader"><div><p className="eyebrow">最新反馈版本</p><h2>复核、修订与撤回</h2></div></div>
@@ -364,11 +411,11 @@ export function TherapeuticAssessmentWorkbench() {
                       <input value={lifecycleNote} onChange={(event) => setLifecycleNote(event.target.value)} placeholder="写明修订或撤回原因" />
                     </label>
                     <div className="dashboardActions">
-                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status !== "draft"} onClick={() => void runFeedbackAction("review")}>人工复核</button>
-                      <button type="button" className="primaryButton" disabled={saving || latestFeedback.status !== "reviewed"} onClick={() => void runFeedbackAction("send")}>发送</button>
-                      <button type="button" className="secondaryButton" disabled={saving} onClick={() => void runFeedbackAction("revise")}>新建修订版</button>
-                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status === "withdrawn"} onClick={() => void runFeedbackAction("withdraw")}>撤回</button>
-                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status !== "sent"} onClick={() => void runFeedbackAction("resend")}>重新发送</button>
+                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status !== "draft" || !authorizations.feedback_review.authorized} onClick={() => void runFeedbackAction("review")}>人工复核</button>
+                      <button type="button" className="primaryButton" disabled={saving || latestFeedback.status !== "reviewed" || !authorizations.feedback_review.authorized} onClick={() => void runFeedbackAction("send")}>发送</button>
+                      <button type="button" className="secondaryButton" disabled={saving || !authorizations.feedback_draft.authorized} onClick={() => void runFeedbackAction("revise")}>新建修订版</button>
+                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status === "withdrawn" || !(latestFeedback.status === "sent" ? authorizations.feedback_review.authorized : authorizations.feedback_draft.authorized)} onClick={() => void runFeedbackAction("withdraw")}>撤回</button>
+                      <button type="button" className="secondaryButton" disabled={saving || latestFeedback.status !== "sent" || !authorizations.feedback_review.authorized} onClick={() => void runFeedbackAction("resend")}>重新发送</button>
                     </div>
                   </>
                 )}

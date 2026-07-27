@@ -37,6 +37,32 @@ def _seed(app):
                     "INSERT INTO users (id, nickname, role, status, created_at, updated_at) VALUES (?, ?, ?, 'active', ?, ?)",
                     (actor_id, actor_id, role, now, now),
                 )
+            for authorization_id, user_id, level, task_code in (
+                ("auth-f16-draft", "researcher-f16", "T2", "feedback_draft"),
+                ("auth-f16-supervisor-draft", "supervisor-f16", "T2", "feedback_draft"),
+                ("auth-f16-review", "supervisor-f16", "T3", "feedback_review"),
+            ):
+                conn.execute(
+                    """
+                    INSERT INTO therapeutic_assessment_authorizations (
+                        id, user_id, competency_level, task_code, scope_json,
+                        supervisor_user_id, evidence_ref, starts_at, expires_at,
+                        status, version, granted_by, created_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, 'admin-f16', ?, ?,
+                        '2099-01-01T00:00:00+00:00', 'active', 1, 'admin-f16', ?, ?)
+                    """,
+                    (
+                        authorization_id,
+                        user_id,
+                        level,
+                        task_code,
+                        '{"complexity_scopes":["individual_adult_low_risk"]}',
+                        f"test-evidence:{authorization_id}",
+                        now,
+                        now,
+                        now,
+                    ),
+                )
             conn.commit()
         return {
             actor_id: {"Authorization": f"Bearer {generate_auth_token({'id': actor_id, 'role': role})}"}
@@ -79,12 +105,6 @@ def _assign_and_prepare(client, headers, case_id, prefix):
         json={"researcher_id": "researcher-f16"},
     )
     assert assigned.status_code == 200
-    draft = client.post(
-        f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
-        headers={**headers["researcher-f16"], "Idempotency-Key": f"{prefix}-draft"},
-        json=_feedback_payload(),
-    )
-    assert draft.status_code == 201
     ready = client.post(
         f"/api/therapeutic-assessment/cases/{case_id}/readiness",
         headers={**headers["supervisor-f16"], "Idempotency-Key": f"{prefix}-ready"},
@@ -95,6 +115,12 @@ def _assign_and_prepare(client, headers, case_id, prefix):
         },
     )
     assert ready.status_code == 200
+    draft = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
+        headers={**headers["researcher-f16"], "Idempotency-Key": f"{prefix}-draft"},
+        json=_feedback_payload(),
+    )
+    assert draft.status_code == 201
     return draft.get_json()["data"]["id"]
 
 
@@ -141,7 +167,7 @@ def test_complete_human_led_collaboration_and_version_scope(tmp_path, monkeypatc
     )
     assert assigned.status_code == 200 and assigned.get_json()["data"]["assigned_researcher_id"] == "researcher-f16"
 
-    draft = client.post(
+    before_readiness = client.post(
         f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
         headers={**headers["researcher-f16"], "Idempotency-Key": "draft-f16"},
         json={
@@ -155,14 +181,8 @@ def test_complete_human_led_collaboration_and_version_scope(tmp_path, monkeypatc
             "participant_content": "这是待人工复核的共同理解草稿，你可以不同意或补充。",
         },
     )
-    assert draft.status_code == 201
-    feedback_id = draft.get_json()["data"]["id"]
-    blocked = client.post(
-        f"/api/therapeutic-assessment/feedback-versions/{feedback_id}/review",
-        headers={**headers["supervisor-f16"], "Idempotency-Key": "review-too-early"},
-        json={"decision": "approved"},
-    )
-    assert blocked.status_code == 409 and blocked.get_json()["error"]["code"] == "readiness_gate"
+    assert before_readiness.status_code == 403
+    assert before_readiness.get_json()["error"]["code"] == "competency_authorization_required"
 
     ready = client.post(
         f"/api/therapeutic-assessment/cases/{case_id}/readiness",
@@ -174,6 +194,22 @@ def test_complete_human_led_collaboration_and_version_scope(tmp_path, monkeypatc
         },
     )
     assert ready.status_code == 200 and ready.get_json()["data"]["readiness_level"] == "L2"
+    draft = client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
+        headers={**headers["researcher-f16"], "Idempotency-Key": "draft-f16-ready"},
+        json={
+            "source": "ai_draft",
+            "observations": ["这次记录中可以看到你愿意停下来观察。"],
+            "evidence": ["参与者主动提出共同理解问题。"],
+            "alternatives": ["也可能与当时精力不足有关。"],
+            "uncertainty": "目前只有一次记录，需要与你核对。",
+            "next_step": "选择一次低压力沟通，先停顿三秒。",
+            "human_discussion": ["哪些描述与你的体验一致？"],
+            "participant_content": "这是待人工复核的共同理解草稿，你可以不同意或补充。",
+        },
+    )
+    assert draft.status_code == 201
+    feedback_id = draft.get_json()["data"]["id"]
     reviewed = client.post(
         f"/api/therapeutic-assessment/feedback-versions/{feedback_id}/review",
         headers={**headers["supervisor-f16"], "Idempotency-Key": "review-f16"},
@@ -268,6 +304,15 @@ def test_feedback_requires_evidence_and_independent_review(tmp_path, monkeypatch
         headers={**headers["supervisor-f16"], "Idempotency-Key": "hard-assign"},
         json={"researcher_id": "researcher-f16"},
     )
+    client.post(
+        f"/api/therapeutic-assessment/cases/{case_id}/readiness",
+        headers={**headers["supervisor-f16"], "Idempotency-Key": "hard-ready"},
+        json={
+            "qualification_evidence_ref": "evidence://q",
+            "supervision_evidence_ref": "evidence://s",
+            "ethics_evidence_ref": "evidence://e",
+        },
+    )
 
     no_evidence = client.post(
         f"/api/therapeutic-assessment/cases/{case_id}/feedback-versions",
@@ -283,15 +328,6 @@ def test_feedback_requires_evidence_and_independent_review(tmp_path, monkeypatch
         json=_feedback_payload(),
     )
     feedback_id = self_draft.get_json()["data"]["id"]
-    client.post(
-        f"/api/therapeutic-assessment/cases/{case_id}/readiness",
-        headers={**headers["supervisor-f16"], "Idempotency-Key": "hard-ready"},
-        json={
-            "qualification_evidence_ref": "evidence://q",
-            "supervision_evidence_ref": "evidence://s",
-            "ethics_evidence_ref": "evidence://e",
-        },
-    )
     reviewed = client.post(
         f"/api/therapeutic-assessment/feedback-versions/{feedback_id}/review",
         headers={**headers["supervisor-f16"], "Idempotency-Key": "hard-self-review"},

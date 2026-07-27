@@ -443,6 +443,52 @@ export interface TherapeuticAssessmentAction {
   updated_at: string;
 }
 
+export type TherapeuticAssessmentCompetencyLevel = "T1" | "T2" | "T3";
+export type TherapeuticAssessmentTaskCode =
+  | "workbench_draft"
+  | "evidence_organize"
+  | "evidence_pattern"
+  | "feedback_draft"
+  | "feedback_review"
+  | "formal_assessment"
+  | "minor_or_family"
+  | "couple_or_multi_person";
+
+export interface TherapeuticAssessmentAuthorization {
+  id: string;
+  user_id: string;
+  competency_level: TherapeuticAssessmentCompetencyLevel;
+  task_code: TherapeuticAssessmentTaskCode;
+  scope: {
+    case_ids?: string[];
+    complexity_scopes?: string[];
+    readiness_levels?: TherapeuticAssessmentReadiness[];
+    case_scope_snapshots?: Record<
+      string,
+      { complexity_scope: string; readiness_level: TherapeuticAssessmentReadiness }
+    >;
+  };
+  supervisor_user_id: string;
+  evidence_ref: string;
+  starts_at: string;
+  expires_at: string;
+  status: "active" | "review_required" | "revoked";
+  status_reason?: string | null;
+  version: number;
+  effective: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TherapeuticAssessmentAuthorizationStatus {
+  authorized: boolean;
+  task_code: TherapeuticAssessmentTaskCode;
+  reason?: string;
+  authorization_id?: string;
+  competency_level?: TherapeuticAssessmentCompetencyLevel;
+  expires_at?: string;
+}
+
 export interface TherapeuticAssessmentCase {
   id: string;
   participant_user_id: string;

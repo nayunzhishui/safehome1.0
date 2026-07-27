@@ -289,6 +289,10 @@
 | PATCH | `/api/therapeutic-assessment/cases/<case_id>/scope` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/transitions` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/competency/authorizations` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/competency/authorizations` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| PATCH | `/api/therapeutic-assessment/competency/authorizations/<authorization_id>/revoke` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/competency/effective` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/data-items/<item_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/data-items/<item_id>/consent` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/evidence/<evidence_id>/review` | role:supervisor,admin | role_scoped | — | — | active |

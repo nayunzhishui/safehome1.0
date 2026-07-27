@@ -207,6 +207,10 @@
           <text class="assessment-question">{{assessmentWorkbench.case.working_question || assessmentWorkbench.case.assessment_question}}</text>
           <text class="participant-meta">共享范围：{{assessmentWorkbench.case.sharedScopeText}}</text>
         </view>
+        <view class="state-banner {{assessmentAuthorization.authorized ? '' : 'state-banner--partial'}}">
+          <text class="state-title">工作台写入：{{assessmentAuthorization.authorized ? assessmentAuthorization.competency_level + ' 已授权' : '未授权'}}</text>
+          <text class="state-copy">{{assessmentAuthorization.authorized ? '授权仅对当前任务、对象范围和有效期生效。' : (assessmentAuthorization.reason || '账号角色和临时展示权限不能替代正式任务授权。')}}</text>
+        </view>
         <view class="assessment-filter-row">
           <picker mode="selector" range="{{['全部类型','观察 O','模式 P','人工假设 H','未知 U']}}" bindchange="onAssessmentFilter" data-key="kind">
             <view class="assessment-filter">类型：{{assessmentFilters.kind || '全部'}}</view>
@@ -248,7 +252,7 @@
           <text class="boundary-line">提交正式反馈后仍需另一位人工复核。</text>
           <textarea class="note-input" value="{{assessmentParticipantDraft}}" data-key="assessmentParticipantDraft" bindinput="onAssessmentDraftInput" maxlength="6000"></textarea>
         </view>
-        <button class="safe-primary-button" loading="{{assessmentSaving}}" disabled="{{assessmentSaving}}" bindtap="saveAssessmentDraft">保存工作台草稿</button>
+        <button class="safe-primary-button" loading="{{assessmentSaving}}" disabled="{{assessmentSaving || !assessmentAuthorization.authorized}}" bindtap="saveAssessmentDraft">保存工作台草稿</button>
       </view>
       <text class="boundary-line">移动端与 Web 使用同一证据和草稿契约；工作台不生成诊断或疗效分数。</text>
     </view>

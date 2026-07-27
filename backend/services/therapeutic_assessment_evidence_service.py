@@ -142,6 +142,17 @@ def create_evidence(actor: dict, case_id: str, payload: dict, idempotency_key: s
             _assert_participant(actor, case)
         else:
             _assert_researcher(actor, case)
+            from services.therapeutic_assessment_competency_service import (
+                assert_task_authorized,
+            )
+
+            task_code = {
+                "O": "evidence_organize",
+                "U": "evidence_organize",
+                "P": "evidence_pattern",
+                "H": "formal_assessment",
+            }[data["kind"]]
+            assert_task_authorized(conn, actor, case, task_code)
         existing = conn.execute(
             "SELECT * FROM therapeutic_assessment_evidence_items WHERE author_id = ? AND idempotency_key = ?",
             (str(actor["id"]), key),
@@ -285,6 +296,11 @@ def review_hypothesis(actor: dict, evidence_id: str, payload: dict, idempotency_
             raise TherapeuticAssessmentError("validation_error", "只有H项进入人工假设复核。")
         case = _case_row(conn, str(item["case_id"]))
         _assert_researcher(actor, case)
+        from services.therapeutic_assessment_competency_service import (
+            assert_task_authorized,
+        )
+
+        assert_task_authorized(conn, actor, case, "formal_assessment")
         if int(item["version"]) != expected:
             raise TherapeuticAssessmentError("version_conflict", "证据项已更新，请刷新后重试。", 409)
         status = "human_reviewed" if decision == "approved" else "changes_requested"

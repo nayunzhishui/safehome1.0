@@ -1131,11 +1131,44 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.relationshipPilot}/growth${queryString(params)}`, { requiresAuth: true });
     },
 
-    listTherapeuticAssessmentCases() {
-      return request(`${API_ENDPOINTS.therapeuticAssessment}/cases`, { requiresAuth: true });
-    },
+  listTherapeuticAssessmentCases() {
+    return request(`${API_ENDPOINTS.therapeuticAssessment}/cases`, { requiresAuth: true });
+  },
 
-    getTherapeuticAssessmentServiceLevels() {
+  listTherapeuticAssessmentAuthorizations(userId = "") {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/competency/authorizations${queryString(userId ? { user_id: userId } : {})}`,
+      { requiresAuth: true },
+    );
+  },
+
+  getTherapeuticAssessmentAuthorizationStatus(caseId, taskCode) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/competency/effective${queryString({
+        case_id: caseId,
+        task_code: taskCode,
+      })}`,
+      { requiresAuth: true },
+    );
+  },
+
+  createTherapeuticAssessmentAuthorization(data, idempotencyKey) {
+    return request(`${API_ENDPOINTS.therapeuticAssessment}/competency/authorizations`, {
+      method: "POST",
+      data,
+      idempotencyKey,
+      requiresAuth: true,
+    });
+  },
+
+  revokeTherapeuticAssessmentAuthorization(authorizationId, data, idempotencyKey) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/competency/authorizations/${encodeURIComponent(authorizationId)}/revoke`,
+      { method: "PATCH", data, idempotencyKey, requiresAuth: true },
+    );
+  },
+
+  getTherapeuticAssessmentServiceLevels() {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`, { requiresAuth: true });
     },
 

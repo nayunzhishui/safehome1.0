@@ -119,7 +119,10 @@ import type {
   StudentProfileRecord,
   StudentProfileResult,
   SupervisionInput,
+  TherapeuticAssessmentAuthorization,
+  TherapeuticAssessmentAuthorizationStatus,
   TherapeuticAssessmentCase,
+  TherapeuticAssessmentCompetencyLevel,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentResearcherDraft,
   TherapeuticAssessmentResearcherWorkbench,
@@ -132,6 +135,7 @@ import type {
   TherapeuticAssessmentFeedbackVersion,
   TherapeuticAssessmentServiceLevelStatus,
   TherapeuticAssessmentTransitionInput,
+  TherapeuticAssessmentTaskCode,
   SupervisionRequest,
   TrainingCard,
   TrainingPlan,
@@ -1326,6 +1330,55 @@ export class SafeHomeApiClient {
 
   listTherapeuticAssessmentCases(): Promise<{ items: TherapeuticAssessmentCase[]; count: number; boundary_notice: string }> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases`);
+  }
+
+  listTherapeuticAssessmentAuthorizations(userId?: string): Promise<{
+    items: TherapeuticAssessmentAuthorization[];
+    count: number;
+    default_decision: "deny";
+    temporary_showcase_bypass_counts: false;
+  }> {
+    const query = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/competency/authorizations${query}`);
+  }
+
+  getTherapeuticAssessmentAuthorizationStatus(
+    caseId: string,
+    taskCode: TherapeuticAssessmentTaskCode,
+  ): Promise<TherapeuticAssessmentAuthorizationStatus> {
+    const params = new URLSearchParams({ case_id: caseId, task_code: taskCode });
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/competency/effective?${params.toString()}`);
+  }
+
+  createTherapeuticAssessmentAuthorization(
+    input: {
+      user_id: string;
+      competency_level: TherapeuticAssessmentCompetencyLevel;
+      task_code: TherapeuticAssessmentTaskCode;
+      scope: TherapeuticAssessmentAuthorization["scope"];
+      supervisor_user_id: string;
+      evidence_ref: string;
+      starts_at?: string;
+      expires_at: string;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentAuthorization> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/competency/authorizations`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  revokeTherapeuticAssessmentAuthorization(
+    authorizationId: string,
+    input: { reason: string; expected_version: number },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentAuthorization> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/competency/authorizations/${encodeURIComponent(authorizationId)}/revoke`,
+      { method: "PATCH", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
   }
 
   getTherapeuticAssessmentServiceLevels(): Promise<TherapeuticAssessmentServiceLevelStatus> {

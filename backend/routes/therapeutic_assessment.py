@@ -49,6 +49,12 @@ from services.therapeutic_assessment_workbench_service import (
     get_workbench,
     save_workbench_draft,
 )
+from services.therapeutic_assessment_competency_service import (
+    create_authorization,
+    effective_authorization,
+    list_authorizations,
+    revoke_authorization,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -294,3 +300,27 @@ def patch_action_route(action_id: str):
 def post_action_followup_route(action_id: str):
     actor, error = _actor()
     return error or _respond(create_action_followup, actor, action_id, _payload(), _key())
+
+
+@bp.get("/competency/authorizations")
+def get_competency_authorizations_route():
+    actor, error = _actor()
+    return error or _respond(list_authorizations, actor, request.args.to_dict())
+
+
+@bp.post("/competency/authorizations")
+def post_competency_authorization_route():
+    actor, error = _actor()
+    return error or _respond(create_authorization, actor, _payload(), _key())
+
+
+@bp.patch("/competency/authorizations/<authorization_id>/revoke")
+def patch_competency_authorization_revoke_route(authorization_id: str):
+    actor, error = _actor()
+    return error or _respond(revoke_authorization, actor, authorization_id, _payload(), _key())
+
+
+@bp.get("/competency/effective")
+def get_competency_effective_route():
+    actor, error = _actor()
+    return error or _respond(effective_authorization, actor, request.args.to_dict())

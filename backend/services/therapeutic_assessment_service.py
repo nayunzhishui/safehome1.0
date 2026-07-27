@@ -565,9 +565,13 @@ def create_feedback(actor: dict, case_id: str, payload: dict, idempotency_key: s
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         _assert_researcher(actor, case)
+        from services.therapeutic_assessment_competency_service import (
+            assert_task_authorized,
+        )
         from services.therapeutic_assessment_safety_service import assert_normal_flow_allowed
 
         assert_normal_flow_allowed(conn, case)
+        assert_task_authorized(conn, actor, case, "feedback_draft")
         if case["status"] in {"withdrawn", "support_required"} or case["consent_status"] != "active":
             raise TherapeuticAssessmentError("invalid_state", "当前记录不能创建普通反馈。", 409)
         fields = _feedback_fields(case, payload)
@@ -623,6 +627,11 @@ def review_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_ke
             raise TherapeuticAssessmentError("not_found", "没有找到反馈版本。", 404)
         feedback = row_to_dict(row)
         case = _case_row(conn, feedback["case_id"])
+        from services.therapeutic_assessment_competency_service import (
+            assert_task_authorized,
+        )
+
+        assert_task_authorized(conn, actor, case, "feedback_review")
         existing = conn.execute(
             "SELECT 1 FROM therapeutic_assessment_events WHERE actor_id = ? AND idempotency_key = ? AND action IN ('feedback_approved', 'feedback_changes_requested')",
             (str(actor["id"]), key),
@@ -694,6 +703,11 @@ def send_feedback(actor: dict, feedback_id: str, idempotency_key: str) -> dict:
             raise TherapeuticAssessmentError("not_found", "没有找到反馈版本。", 404)
         feedback = row_to_dict(row)
         case = _case_row(conn, feedback["case_id"])
+        from services.therapeutic_assessment_competency_service import (
+            assert_task_authorized,
+        )
+
+        assert_task_authorized(conn, actor, case, "feedback_review")
         existing = conn.execute(
             "SELECT 1 FROM therapeutic_assessment_events WHERE actor_id = ? AND idempotency_key = ? AND action = 'feedback_sent'",
             (str(actor["id"]), key),
@@ -802,6 +816,11 @@ def revise_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_ke
         previous = row_to_dict(row)
         case = _case_row(conn, previous["case_id"])
         _assert_researcher(actor, case)
+        from services.therapeutic_assessment_competency_service import (
+            assert_task_authorized,
+        )
+
+        assert_task_authorized(conn, actor, case, "feedback_draft")
         expected = int(payload.get("expected_lifecycle_version", -1))
         if expected != int(previous.get("lifecycle_version") or 1):
             raise TherapeuticAssessmentError("version_conflict", "反馈版本已变化，请重新读取。", 409)
@@ -850,6 +869,12 @@ def withdraw_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_
         ).fetchone()
         if existing:
             return feedback
+        from services.therapeutic_assessment_competency_service import (
+            assert_task_authorized,
+        )
+
+        task_code = "feedback_review" if feedback["status"] == "sent" else "feedback_draft"
+        assert_task_authorized(conn, actor, case, task_code)
         if feedback["status"] == "sent" and str(actor.get("role") or "") not in REVIEW_ROLES:
             raise TherapeuticAssessmentError("forbidden", "已发送反馈只能由督导或管理员撤回。", 403)
         expected = int(payload.get("expected_lifecycle_version", -1))
@@ -883,6 +908,11 @@ def resend_feedback(actor: dict, feedback_id: str, idempotency_key: str) -> dict
             raise TherapeuticAssessmentError("not_found", "没有找到反馈版本。", 404)
         feedback = row_to_dict(row)
         case = _case_row(conn, feedback["case_id"])
+        from services.therapeutic_assessment_competency_service import (
+            assert_task_authorized,
+        )
+
+        assert_task_authorized(conn, actor, case, "feedback_review")
         if feedback["status"] != "sent" or feedback.get("withdrawn_at"):
             raise TherapeuticAssessmentError("invalid_state", "只有仍有效的已发送反馈可以重发。", 409)
         existing = conn.execute(

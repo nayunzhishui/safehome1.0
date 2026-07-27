@@ -1,7 +1,7 @@
 {
   "schema": "safehome.task38.source-registry.v1",
   "version": "2026-07-27-f00-v1",
-  "generated_on": "2026-07-27",
+  "generated_on": "2026-07-28",
   "status": "structured_read_complete_external_expert_and_visual_gates_pending",
   "source_count": 108,
   "extension_counts": {

@@ -34,6 +34,31 @@ def _seed(app):
                     "INSERT INTO users (id, nickname, role, status, created_at, updated_at) VALUES (?, ?, ?, 'active', ?, ?)",
                     (user_id, user_id, role, now, now),
                 )
+            for authorization_id, user_id, level, task_code in (
+                ("auth-f10-draft", "r-f10", "T2", "feedback_draft"),
+                ("auth-f10-review", "s-f10", "T3", "feedback_review"),
+            ):
+                conn.execute(
+                    """
+                    INSERT INTO therapeutic_assessment_authorizations (
+                        id, user_id, competency_level, task_code, scope_json,
+                        supervisor_user_id, evidence_ref, starts_at, expires_at,
+                        status, version, granted_by, created_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, 's-f10', ?, ?,
+                        '2099-01-01T00:00:00+00:00', 'active', 1, 's-f10', ?, ?)
+                    """,
+                    (
+                        authorization_id,
+                        user_id,
+                        level,
+                        task_code,
+                        '{"complexity_scopes":["individual_adult_low_risk"]}',
+                        f"test-evidence:{authorization_id}",
+                        now,
+                        now,
+                        now,
+                    ),
+                )
             conn.commit()
         return {
             user_id: {"Authorization": f"Bearer {generate_auth_token({'id': user_id, 'role': role})}"}

@@ -184,6 +184,11 @@ Page({
     assessmentInternalNotes: "",
     assessmentParticipantDraft: "",
     assessmentSaving: false,
+    assessmentAuthorization: {
+      authorized: false,
+      task_code: "workbench_draft",
+      reason: "尚未确认任务授权",
+    },
   },
 
   async onLoad() {
@@ -279,6 +284,19 @@ Page({
         page: 1,
         page_size: 20,
       });
+      let assessmentAuthorization = {
+        authorized: false,
+        task_code: "workbench_draft",
+        reason: "任务授权暂时无法确认，正式写入已按默认拒绝处理。",
+      };
+      try {
+        assessmentAuthorization = await api.getTherapeuticAssessmentAuthorizationStatus(
+          caseId,
+          "workbench_draft",
+        );
+      } catch (_error) {
+        // 工作台仍可只读；任务授权读取失败时保持写入默认拒绝。
+      }
       const evidenceItems = (result.evidence_items || []).map((item) => ({
         ...item,
         kindLabel: { O: "观察", P: "模式候选", H: "人工假设", U: "未知项" }[item.kind] || item.kind,
@@ -298,6 +316,7 @@ Page({
         },
         assessmentInternalNotes: result.draft.internal_notes || "",
         assessmentParticipantDraft: result.draft.participant_visible_draft || "",
+        assessmentAuthorization,
       });
     } catch (error) {
       this.setData({ assessmentError: error.message || "评估证据暂时无法读取。" });
@@ -333,6 +352,10 @@ Page({
   async saveAssessmentDraft() {
     const workbench = this.data.assessmentWorkbench;
     if (!workbench) return;
+    if (!this.data.assessmentAuthorization.authorized) {
+      wx.showToast({ title: "当前任务尚未获得正式授权", icon: "none" });
+      return;
+    }
     this.setData({ assessmentSaving: true });
     try {
       const draft = await api.saveTherapeuticAssessmentResearcherDraft(

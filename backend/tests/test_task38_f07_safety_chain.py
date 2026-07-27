@@ -35,6 +35,18 @@ def _seed(app):
                     "INSERT INTO users (id, nickname, role, status, created_at, updated_at) VALUES (?, ?, ?, 'active', ?, ?)",
                     (user_id, user_id, role, now, now),
                 )
+            conn.execute(
+                """
+                INSERT INTO therapeutic_assessment_authorizations (
+                    id, user_id, competency_level, task_code, scope_json,
+                    supervisor_user_id, evidence_ref, starts_at, expires_at,
+                    status, version, granted_by, created_at, updated_at
+                ) VALUES ('auth-f07-draft', 'a-f07', 'T2', 'feedback_draft', ?,
+                    's-f07', 'test-evidence:f07', ?, '2099-01-01T00:00:00+00:00',
+                    'active', 1, 's-f07', ?, ?)
+                """,
+                ('{"complexity_scopes":["individual_adult_low_risk"]}', now, now, now),
+            )
             conn.commit()
         return {
             user_id: {"Authorization": f"Bearer {generate_auth_token({'id': user_id, 'role': role})}"}

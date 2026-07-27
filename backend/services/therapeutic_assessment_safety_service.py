@@ -263,13 +263,29 @@ def create_safety_signal(actor: dict, case_id: str, payload: dict, idempotency_k
         chain = _chain(conn, case_id)
         if chain is None or chain["status"] != "active":
             _kill(conn, "responsibility_chain_unavailable")
+        authorization_recheck_count = 0
+        if signal_type != "other":
+            from services.therapeutic_assessment_competency_service import (
+                require_reauthorization_after_major_event,
+            )
+
+            authorization_recheck_count = require_reauthorization_after_major_event(
+                conn,
+                case,
+                event_id,
+                actor_id,
+            )
         write_audit_log(
             conn,
             "therapeutic_assessment_safety_signal_recorded",
             actor_id,
             "therapeutic_assessment_case",
             case_id,
-            {"signal_type": signal_type, "ordinary_flow_paused": True},
+            {
+                "signal_type": signal_type,
+                "ordinary_flow_paused": True,
+                "authorization_recheck_count": authorization_recheck_count,
+            },
         )
         conn.commit()
         return row_to_dict(conn.execute(

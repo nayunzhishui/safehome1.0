@@ -1,0 +1,38 @@
+{
+  "schema": "safehome.therapeutic-assessment.competency-policy.v1",
+  "version": "2026.07.27-f11",
+  "levels": {
+    "T1": {
+      "label": "资料整理",
+      "allows": ["workbench_draft", "evidence_organize"],
+      "boundary": "只整理格式、原话、权限、状态和已批准模板，不作模式或假设解释。"
+    },
+    "T2": {
+      "label": "低风险协作评估",
+      "allows": ["workbench_draft", "evidence_organize", "evidence_pattern", "feedback_draft"],
+      "boundary": "仅在有效督导和任务授权下处理低风险成人单人L1/L2。"
+    },
+    "T3": {
+      "label": "正式专业评估",
+      "allows": ["workbench_draft", "evidence_organize", "evidence_pattern", "feedback_draft", "feedback_review", "formal_assessment", "minor_or_family", "couple_or_multi_person"],
+      "boundary": "可承担正式测验解释、未成年人、伴侣或高挑战反馈，但仍需逐项、限期授权。"
+    }
+  },
+  "minimum_level": {
+    "workbench_draft": "T1",
+    "evidence_organize": "T1",
+    "evidence_pattern": "T2",
+    "feedback_draft": "T2",
+    "feedback_review": "T3",
+    "formal_assessment": "T3",
+    "minor_or_family": "T3",
+    "couple_or_multi_person": "T3"
+  },
+  "low_risk_scope": {
+    "complexity_scopes": ["individual_adult_low_risk"],
+    "readiness_levels": ["L1", "L2"]
+  },
+  "default_decision": "deny",
+  "temporary_showcase_bypass_changes_formal_authorization": false,
+  "expiry_and_recheck": ["expired", "left_role", "major_incident", "scope_changed"]
+}

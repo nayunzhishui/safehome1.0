@@ -158,6 +158,11 @@ def save_workbench_draft(actor: dict, case_id: str, payload: dict, idempotency_k
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         _assert_researcher(actor, case)
+        from services.therapeutic_assessment_competency_service import (
+            assert_task_authorized,
+        )
+
+        assert_task_authorized(conn, actor, case, "workbench_draft")
         prior_event = conn.execute(
             """
             SELECT d.* FROM therapeutic_assessment_researcher_workbench_draft_events e
