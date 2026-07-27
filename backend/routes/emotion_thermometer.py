@@ -1,6 +1,8 @@
 """Emotion thermometer endpoints for lightweight daily mood tracking."""
 
 import re
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from flask import Blueprint, request
 
@@ -11,10 +13,23 @@ from routes.utils import fail, ok
 
 bp = Blueprint("emotion_thermometer", __name__, url_prefix="/api/emotion-thermometer")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+LOCAL_TZ = ZoneInfo("Asia/Shanghai")
 
 
 def _today_key() -> str:
-    return now_iso()[:10]
+    return datetime.now(LOCAL_TZ).date().isoformat()
+
+
+def _local_datetime(value: str) -> datetime:
+    normalized = str(value or "").strip().replace("Z", "+00:00")
+    parsed = datetime.fromisoformat(normalized)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=LOCAL_TZ)
+    return parsed.astimezone(LOCAL_TZ)
+
+
+def _local_day_key(value: str) -> str:
+    return _local_datetime(value).date().isoformat()
 
 
 def _normalize_level(value) -> int | None:
@@ -56,6 +71,59 @@ def _summary(items: list[dict]) -> dict:
     }
 
 
+def _build_receipt(conn, user_id: str, record: dict) -> dict:
+    """生成非评判、描述性的记录回执；不推断好坏或疗效。"""
+    record_day = _local_datetime(str(record["created_at"])).date()
+    rows = conn.execute(
+        """
+        SELECT intensity_level, control_level, created_at
+        FROM emotion_thermometer
+        WHERE user_id = ?
+        ORDER BY created_at ASC
+        """,
+        (user_id,),
+    ).fetchall()
+    today_rows = [row for row in rows if _local_datetime(str(row["created_at"])).date() == record_day]
+    previous_week_rows = [
+        row
+        for row in rows
+        if record_day - timedelta(days=7)
+        <= _local_datetime(str(row["created_at"])).date()
+        < record_day
+    ]
+
+    today_levels = [int(row["intensity_level"]) for row in today_rows]
+    week_levels = [int(row["intensity_level"]) for row in previous_week_rows]
+    today_average = round(sum(today_levels) / len(today_levels), 1)
+    week_average = round(sum(week_levels) / len(week_levels), 1) if week_levels else None
+    sequence = len(today_rows)
+    level = int(record["intensity_level"])
+
+    messages = [f"这是你今天的第 {sequence} 次记录。"]
+    if sequence > 1:
+        messages.append(f"今天记录的强度平均在 {today_average} 左右。")
+    elif week_average is None:
+        messages.append("继续记录几次后，可以在今日曲线里看看自己的变化。")
+    if week_average is not None:
+        difference = round(level - week_average, 1)
+        if abs(difference) < 0.5:
+            messages.append(f"这次和近七天平均值（约 {week_average}）比较接近。")
+        elif difference > 0:
+            messages.append(f"这次比近七天平均值（约 {week_average}）高一些；单次记录不代表趋势。")
+        else:
+            messages.append(f"这次比近七天平均值（约 {week_average}）低一些；单次记录不代表趋势。")
+
+    return {
+        "sequence_today": sequence,
+        "local_date": record_day.isoformat(),
+        "today_intensity_avg": today_average,
+        "recent_week_intensity_avg": week_average,
+        "messages": messages,
+        "practice_available": True,
+        "boundary_notice": "这是对你所记录内容的描述性回顾，不评价好坏，也不构成诊断或疗效判断。",
+    }
+
+
 @bp.post("")
 def create_emotion_thermometer_record():
     payload = request.get_json(silent=True) or {}
@@ -86,6 +154,10 @@ def create_emotion_thermometer_record():
         return fail("brief_text_too_long", "简短备注不能超过 200 字", status=400)
 
     created_at = str(payload.get("created_at") or now_iso())
+    try:
+        _local_datetime(created_at)
+    except (TypeError, ValueError):
+        return fail("invalid_created_at", "created_at 必须是有效的ISO时间", status=400)
     record_id = new_id("thermo")
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
@@ -111,7 +183,9 @@ def create_emotion_thermometer_record():
             ),
         )
         row = conn.execute("SELECT * FROM emotion_thermometer WHERE id = ?", (record_id,)).fetchone()
-    return ok(row_to_dict(row), status=201)
+        record = row_to_dict(row)
+        record["receipt"] = _build_receipt(conn, user_id, record)
+    return ok(record, status=201)
 
 
 @bp.get("/day")
@@ -131,13 +205,17 @@ def get_emotion_thermometer_day():
             SELECT id, user_id, intensity_level, valence_level, arousal_level,
                    control_level, emotion_label, brief_text, created_at, updated_at
             FROM emotion_thermometer
-            WHERE user_id = ? AND substr(created_at, 1, 10) = ?
+            WHERE user_id = ?
             ORDER BY created_at ASC
             """,
-            (user_id, day),
+            (user_id,),
         ).fetchall()
 
-    items = rows_to_dicts(rows)
+    items = [
+        item
+        for item in rows_to_dicts(rows)
+        if _local_day_key(str(item["created_at"])) == day
+    ]
     return ok(
         {
             "user_id": user_id,

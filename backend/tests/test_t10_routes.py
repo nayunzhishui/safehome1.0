@@ -132,6 +132,10 @@ def test_emotion_thermometer_accepts_lightweight_dimensions(tmp_path, monkeypatc
     assert created["user_id"] == user_id
     assert created["valence_level"] == 3
     assert created["emotion_label"] == "着急"
+    assert created["receipt"]["sequence_today"] == 1
+    assert created["receipt"]["local_date"] == "2026-07-05"
+    assert created["receipt"]["practice_available"] is True
+    assert all("诊断" not in text for text in created["receipt"]["messages"])
 
     day_response = client.get(
         "/api/emotion-thermometer/day?date=2026-07-05",

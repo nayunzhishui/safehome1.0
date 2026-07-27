@@ -71,6 +71,23 @@
     <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="saveRecord">记录一次</button>
   </view>
 
+  <view wx:if="{{receipt}}" class="safe-card receipt-panel" aria-label="本次记录回执">
+    <view class="receipt-heading">
+      <view>
+        <text class="safe-caption">刚刚记录完成</text>
+        <text class="safe-h3">先看见这一次</text>
+      </view>
+      <button class="receipt-close" aria-label="收起记录回执" bindtap="dismissReceipt">×</button>
+    </view>
+    <text wx:for="{{receipt.messages}}" wx:key="*this" class="receipt-message">{{item}}</text>
+    <text class="safe-caption">{{receipt.boundary_notice}}</text>
+    <button
+      wx:if="{{receipt.practice_available}}"
+      class="safe-primary-button"
+      bindtap="openPractice"
+    >去练一张卡</button>
+  </view>
+
   <view class="safe-card curve-panel">
     <view class="panel-top">
       <view>

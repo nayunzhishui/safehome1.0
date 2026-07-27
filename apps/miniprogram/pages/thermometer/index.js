@@ -28,6 +28,7 @@ Page({
     loading: false,
     saving: false,
     errorMessage: "",
+    receipt: null,
     boundaryNotice: "情绪温度计只用于自我观察和练习提示，不构成诊断或筛查。",
   },
 
@@ -147,9 +148,14 @@ Page({
         emotion_label: this.data.emotionLabel,
         brief_text: this.data.briefText,
       })
-      .then(() => {
+      .then((record) => {
         wx.showToast({ title: "已记录", icon: "success" });
-        this.setData({ briefText: "", emotionLabel: "", saving: false });
+        this.setData({
+          briefText: "",
+          emotionLabel: "",
+          saving: false,
+          receipt: record.receipt || null,
+        });
         this.loadDay();
       })
       .catch((error) => {
@@ -159,6 +165,14 @@ Page({
         });
         wx.showToast({ title: error.message || "保存失败", icon: "none" });
       });
+  },
+
+  openPractice() {
+    wx.navigateTo({ url: "/pages/training-card/index" });
+  },
+
+  dismissReceipt() {
+    this.setData({ receipt: null });
   },
 
   handleCanvasTap(event) {

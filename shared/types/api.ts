@@ -566,6 +566,16 @@ export interface EmotionDiaryInput {
   raw_text?: string;
 }
 
+export interface EmotionThermometerReceipt {
+  sequence_today: number;
+  local_date: ISODate;
+  today_intensity_avg: number;
+  recent_week_intensity_avg: number | null;
+  messages: string[];
+  practice_available: boolean;
+  boundary_notice: string;
+}
+
 export interface EmotionThermometerRecord {
   id: ID;
   user_id: ID;
@@ -577,6 +587,7 @@ export interface EmotionThermometerRecord {
   brief_text?: string | null;
   created_at: ISODateTime;
   updated_at: ISODateTime;
+  receipt?: EmotionThermometerReceipt;
 }
 
 export interface AuthSession {

@@ -553,3 +553,12 @@
 - 修改：AI提示词、provider、安全服务、问答服务、生产就绪测试及事实文档。
 - 验证：AI相关26项、F15静态审计及`git diff --check`通过。
 - 后续：M5温度计回执；真实供应商、参与者、外部数据和生产门禁继续关闭。
+
+## 2026-07-27 四模块M5温度计回执
+
+- 工具/模型：Codex；Implement、TDD、Frontend Design。
+- 会话标识：当前Codex任务。
+- 摘要：在Claude回执方向上补齐上海本地日期、shared契约和小程序训练卡入口，保持非评判与非疗效边界。
+- 修改：温度计路由/测试、shared类型、小程序温度计页面、API/数据库说明和事实文档。
+- 验证：相关15项、Web typecheck、小程序41页及资源校验通过。
+- 后续：M6 Web ErrorBoundary；真机和CloudBase保持外部门禁。

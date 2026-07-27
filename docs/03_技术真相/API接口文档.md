@@ -164,6 +164,8 @@
 
 用途：保存一次当天情绪温度计记录，用于自我观察和日曲线展示，不构成诊断或筛查。
 
+响应在原记录字段外增加`receipt`：包含当天本地日期、今日第几次、今日/近七天描述性均值、两条以内支持性文字、练习入口可用状态和非诊断边界。它只描述用户自己的记录，不判断变好、变差或疗效。
+
 请求字段：
 
 | 字段 | 类型 | 必填 | 说明 |
@@ -179,7 +181,7 @@
 
 ### `GET /api/emotion-thermometer/day?user_id=&date=YYYY-MM-DD`
 
-用途：返回某用户某一天的温度计记录、`min/max/avg/count` 汇总、`valence_avg/arousal_avg/control_avg` 轻量维度均值和边界说明。日期过滤使用 `substr(created_at, 1, 10)=date`，不依赖数据库当前日期函数。
+用途：返回某用户某一天的温度计记录、`min/max/avg/count` 汇总、`valence_avg/arousal_avg/control_avg` 轻量维度均值和边界说明。服务端按`Asia/Shanghai`解释带时区的ISO时间，避免UTC跨日把记录放错到前一天或后一天。
 
 ### `GET /api/progress-summary?range=7d`
 
