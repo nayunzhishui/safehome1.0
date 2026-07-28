@@ -6,6 +6,8 @@ import type {
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
   TherapeuticAssessmentProductionContract,
+  TherapeuticAssessmentQueueRuntime,
+  TherapeuticAssessmentWorkQueueItem,
   TherapeuticAssessmentResearcherDraft,
   TherapeuticAssessmentResearcherWorkbench as WorkbenchPayload,
 } from "../../../../shared/types/api";
@@ -98,6 +100,9 @@ export function TherapeuticAssessmentWorkbench() {
   const [workbench, setWorkbench] = useState<WorkbenchPayload | null>(null);
   const [productionContract, setProductionContract] =
     useState<TherapeuticAssessmentProductionContract | null>(null);
+  const [queueItems, setQueueItems] = useState<TherapeuticAssessmentWorkQueueItem[]>([]);
+  const [queueRuntime, setQueueRuntime] =
+    useState<TherapeuticAssessmentQueueRuntime | null>(null);
   const [filters, setFilters] = useState<Filters>({});
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -125,12 +130,16 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract] = await Promise.all([
+      const [result, contract, queue, runtime] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
+        safeHomeApi.listTherapeuticAssessmentWorkQueue(),
+        safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
       ]);
       setCases(result.items);
       setProductionContract(contract);
+      setQueueItems(queue.items);
+      setQueueRuntime(runtime);
       if (!selectedId && result.items[0]) setSelectedId(result.items[0].id);
     } catch (caught) {
       setError(caught instanceof SafeHomeApiError ? caught.message : "协作记录暂时无法读取。");
@@ -324,6 +333,16 @@ export function TherapeuticAssessmentWorkbench() {
             五道门 {productionContract.five_gates.length} 项。
           </p>
           <small>{productionContract.boundary_notice}</small>
+        </section>
+      ) : null}
+      {queueRuntime ? (
+        <section className={`status ${queueRuntime.paused ? "error" : ""}`} aria-label="人工队列和值守状态">
+          <strong>{queueRuntime.paused ? "人工队列已暂停" : "人工队列可用"}</strong>
+          <p>
+            我的/可见任务 {queueItems.length} 项；待处理 {queueRuntime.pending_count} 项；
+            超时 {queueRuntime.overdue_count} 项；无人值守紧急项 {queueRuntime.unattended_urgent_count} 项。
+          </p>
+          <small>领取任务还需同时满足对象范围、胜任力、有效期和值守班次；没有合格接手人时不会自动降级给普通角色。</small>
         </section>
       ) : null}
 

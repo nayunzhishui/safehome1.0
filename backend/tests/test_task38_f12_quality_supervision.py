@@ -178,7 +178,10 @@ def test_schema_041_adds_quality_supervision_tables(tmp_path, monkeypatch):
             "therapeutic_assessment_quality_runtime",
         }.issubset(tables)
         assert CURRENT_SCHEMA_VERSION >= "2026_07_28_041"
-        assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_quality_supervision"
+        if CURRENT_SCHEMA_VERSION == "2026_07_28_041":
+            assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_quality_supervision"
+        else:
+            assert CURRENT_SCHEMA_NAME.startswith("therapeutic_assessment_")
 
 
 def test_l2_feedback_enters_quality_queue_and_requires_task_grant(tmp_path, monkeypatch):

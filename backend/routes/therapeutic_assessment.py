@@ -70,6 +70,16 @@ from services.therapeutic_assessment_contract_service import (
     create_snapshot,
     validate_dimensions,
 )
+from services.therapeutic_assessment_queue_service import (
+    claim_work_item,
+    create_duty_shift,
+    create_work_item,
+    handoff_work_item,
+    list_duty_shifts,
+    list_work_items,
+    queue_runtime_status,
+    run_queue_monitor,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -127,6 +137,54 @@ def post_production_contract_snapshot_route():
     if actor.get("role") != "admin":
         return fail("forbidden", "只有管理员可以冻结机器契约快照。", status=403)
     return _respond(create_snapshot, actor)
+
+
+@bp.get("/work-queue")
+def get_work_queue_route():
+    actor, error = _actor()
+    return error or _respond(list_work_items, actor, request.args.to_dict())
+
+
+@bp.post("/cases/<case_id>/work-queue")
+def post_work_queue_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(create_work_item, actor, case_id, _payload(), _key())
+
+
+@bp.post("/work-queue/<item_id>/claim")
+def post_work_queue_claim_route(item_id: str):
+    actor, error = _actor()
+    return error or _respond(claim_work_item, actor, item_id, _payload(), _key())
+
+
+@bp.post("/work-queue/<item_id>/handoff")
+def post_work_queue_handoff_route(item_id: str):
+    actor, error = _actor()
+    return error or _respond(handoff_work_item, actor, item_id, _payload(), _key())
+
+
+@bp.get("/work-queue/runtime")
+def get_work_queue_runtime_route():
+    actor, error = _actor()
+    return error or _respond(queue_runtime_status)
+
+
+@bp.post("/work-queue/monitor")
+def post_work_queue_monitor_route():
+    actor, error = _actor()
+    return error or _respond(run_queue_monitor, actor)
+
+
+@bp.get("/duty-shifts")
+def get_duty_shifts_route():
+    actor, error = _actor()
+    return error or _respond(list_duty_shifts, actor, request.args.to_dict())
+
+
+@bp.post("/duty-shifts")
+def post_duty_shift_route():
+    actor, error = _actor()
+    return error or _respond(create_duty_shift, actor, _payload(), _key())
 
 
 @bp.get("/cases")

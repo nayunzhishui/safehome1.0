@@ -1,0 +1,50 @@
+{
+  "schema": "safehome.therapeutic-assessment.queue-policy.v1",
+  "version": "2026-07-28-t37-b02-v1",
+  "queue_types": {
+    "review": {
+      "task_code": "feedback_review",
+      "required_competency": "T3",
+      "sla_hours": 24,
+      "priority": "high",
+      "draft_reviewer_separation": true
+    },
+    "information": {
+      "task_code": "evidence_organize",
+      "required_competency": "T1",
+      "sla_hours": 48,
+      "priority": "normal",
+      "draft_reviewer_separation": false
+    },
+    "feedback": {
+      "task_code": "feedback_draft",
+      "required_competency": "T2",
+      "sla_hours": 24,
+      "priority": "high",
+      "draft_reviewer_separation": false
+    },
+    "risk": {
+      "task_code": "feedback_review",
+      "required_competency": "T3",
+      "sla_hours": 4,
+      "priority": "urgent",
+      "draft_reviewer_separation": true
+    },
+    "supervision": {
+      "task_code": "quality_review",
+      "required_competency": "T3",
+      "sla_hours": 24,
+      "priority": "high",
+      "draft_reviewer_separation": true
+    }
+  },
+  "runtime_pause": {
+    "max_pending": 50,
+    "max_overdue": 3,
+    "pause_when_urgent_queue_unattended": true
+  },
+  "statuses": ["open", "claimed", "handoff_required", "completed", "cancelled"],
+  "temporary_showcase_bypass_changes_write_permission": false,
+  "automatic_role_downgrade_allowed": false,
+  "production_release_approved": false
+}

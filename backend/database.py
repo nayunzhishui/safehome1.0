@@ -128,6 +128,11 @@ REQUIRED_HEALTH_TABLES = [
     "therapeutic_assessment_quality_incidents",
     "therapeutic_assessment_quality_events",
     "therapeutic_assessment_contract_snapshots",
+    "therapeutic_assessment_work_queue",
+    "therapeutic_assessment_queue_events",
+    "therapeutic_assessment_duty_shifts",
+    "therapeutic_assessment_duty_events",
+    "therapeutic_assessment_queue_runtime",
     "therapeutic_assessment_quality_runtime",
     "therapeutic_assessment_events",
     "computation_datasets",
@@ -136,8 +141,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_046"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_contract_bridge"
+CURRENT_SCHEMA_VERSION = "2026_07_28_047"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_queue_and_duty"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {

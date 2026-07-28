@@ -50,6 +50,17 @@
   </view>
 
   <view wx:if="{{activeWorkspace === 'pending' && !errorMessage}}" class="workspace-panel">
+    <view wx:if="{{assessmentQueueRuntime}}" class="safe-card workspace-card queue-runtime-card {{assessmentQueueRuntime.paused ? 'queue-runtime-card--paused' : ''}}">
+      <view class="section-heading">
+        <view>
+          <text class="section-eyebrow">协作式评估人工队列</text>
+          <text class="section-title">{{assessmentQueueRuntime.paused ? '当前已暂停领取' : '值守与队列正常'}}</text>
+        </view>
+        <text class="priority-pill {{assessmentQueueRuntime.paused ? 'priority-pill--urgent' : 'priority-pill--routine'}}">{{assessmentDutyShifts.length}} 个可见班次</text>
+      </view>
+      <text class="state-copy">待处理 {{assessmentQueueRuntime.pending_count}} · 超时 {{assessmentQueueRuntime.overdue_count}} · 无人值守紧急项 {{assessmentQueueRuntime.unattended_urgent_count}}</text>
+      <text class="boundary-line">没有匹配对象范围、胜任力、有效期和值守班次的接手人时，任务不会自动降级给普通角色。</text>
+    </view>
     <view class="summary-grid">
       <view class="summary-card summary-card--primary">
         <text class="summary-value">{{pendingTotal}}</text>

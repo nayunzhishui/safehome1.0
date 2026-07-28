@@ -138,6 +138,8 @@ Page({
     pendingPageSize: 5,
     pendingHasMore: false,
     urgentCount: 0,
+    assessmentQueueRuntime: null,
+    assessmentDutyShifts: [],
     partialFailures: [],
     participantLoading: false,
     participantError: "",
@@ -453,7 +455,15 @@ Page({
     this.setData({ loading: true, errorMessage: "", errorDiagnostic: null });
     const operationsPromise = api.getResearchOperations();
     const queuePromises = QUEUES.map((queue) => api.getResearchQueue({ queue: queue.id, page: 1, page_size: 20, status: "active" }));
-    const [operationsResult, ...queueResults] = await Promise.allSettled([operationsPromise, ...queuePromises]);
+    const [operationsResult, ...workbenchResults] = await Promise.allSettled([
+      operationsPromise,
+      ...queuePromises,
+      api.getTherapeuticAssessmentQueueRuntime(),
+      api.listTherapeuticAssessmentDutyShifts(),
+    ]);
+    const queueResults = workbenchResults.slice(0, QUEUES.length);
+    const runtimeResult = workbenchResults[QUEUES.length];
+    const dutyResult = workbenchResults[QUEUES.length + 1];
     const preview = queuePreview(queueResults);
     if (operationsResult.status === "rejected" && !preview.items.length && !this.data.operations) {
       this.setData({
@@ -479,6 +489,8 @@ Page({
       pendingPage: 1,
       pendingHasMore: preview.items.length > pageSize,
       urgentCount: preview.items.filter((item) => item.priority === "urgent").length,
+      assessmentQueueRuntime: runtimeResult.status === "fulfilled" ? runtimeResult.value : null,
+      assessmentDutyShifts: dutyResult.status === "fulfilled" ? (dutyResult.value.items || []) : [],
       partialFailures,
       lastSyncText: syncTimeLabel(),
     });

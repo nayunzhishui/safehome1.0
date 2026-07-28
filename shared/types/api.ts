@@ -383,6 +383,61 @@ export interface TherapeuticAssessmentProductionContract {
   boundary_notice: string;
 }
 
+export type TherapeuticAssessmentQueueType =
+  | "review"
+  | "information"
+  | "feedback"
+  | "risk"
+  | "supervision";
+
+export interface TherapeuticAssessmentWorkQueueItem {
+  id: string;
+  case_id: string;
+  queue_type: TherapeuticAssessmentQueueType;
+  task_code: string;
+  required_competency: TherapeuticAssessmentCompetencyLevel;
+  priority: "normal" | "high" | "urgent";
+  status: "open" | "claimed" | "handoff_required" | "completed" | "cancelled";
+  scope_snapshot: {
+    case_id: string;
+    complexity_scope: string;
+    readiness_level: TherapeuticAssessmentReadiness;
+    safety_state: string;
+  };
+  drafted_by?: string | null;
+  assigned_user_id?: string | null;
+  due_at: string;
+  overdue: boolean;
+  version: number;
+  created_at: string;
+}
+
+export interface TherapeuticAssessmentDutyShift {
+  id: string;
+  user_id: string;
+  supervisor_user_id: string;
+  queue_types: TherapeuticAssessmentQueueType[];
+  scope: Record<string, string[]>;
+  starts_at: string;
+  expires_at: string;
+  status: "active" | "ended" | "cancelled";
+  effective: boolean;
+  evidence_ref: string;
+  version: number;
+}
+
+export interface TherapeuticAssessmentQueueRuntime {
+  id: "global";
+  paused: 0 | 1;
+  reason?: string | null;
+  pending_count: number;
+  overdue_count: number;
+  unattended_urgent_count: number;
+  policy_version: string;
+  version: number;
+  updated_at: string;
+}
+
 export interface TherapeuticAssessmentFeedbackVersion {
   id: string;
   case_id: string;

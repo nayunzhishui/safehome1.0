@@ -1009,6 +1009,28 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
             continue
         if hashlib.sha256(source_path.read_bytes()).hexdigest() != expected_hash:
             errors.append(f"{filename} 来源契约哈希漂移：{source_name}")
+    queue_filename = "therapeutic_assessment_queue_policy.json"
+    try:
+        queue_policy = load_json(content_dir / queue_filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{queue_filename} 不可读取：{exc}")
+        return errors
+    required_queue_types = {"review", "information", "feedback", "risk", "supervision"}
+    if set(queue_policy.get("queue_types", {})) != required_queue_types:
+        errors.append(f"{queue_filename} 必须覆盖复核、补资料、反馈、风险和督导队列")
+    if (
+        queue_policy.get("temporary_showcase_bypass_changes_write_permission") is not False
+        or queue_policy.get("automatic_role_downgrade_allowed") is not False
+        or queue_policy.get("production_release_approved") is not False
+    ):
+        errors.append(f"{queue_filename} 不得接受展示越权、自动降级或自动发布")
+    for queue_type, config in queue_policy.get("queue_types", {}).items():
+        if (
+            not config.get("task_code")
+            or config.get("required_competency") not in {"T1", "T2", "T3"}
+            or int(config.get("sla_hours", 0)) <= 0
+        ):
+            errors.append(f"{queue_filename}.{queue_type} 缺少任务、胜任力或SLA")
     return errors
 
 

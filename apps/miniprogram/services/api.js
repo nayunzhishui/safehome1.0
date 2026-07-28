@@ -1234,6 +1234,24 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/production-contract`, { requiresAuth: true });
     },
 
+    listTherapeuticAssessmentWorkQueue(status = "") {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/work-queue${status ? `?status=${encodeURIComponent(status)}` : ""}`,
+        { requiresAuth: true },
+      );
+    },
+
+    getTherapeuticAssessmentQueueRuntime() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/work-queue/runtime`, { requiresAuth: true });
+    },
+
+    listTherapeuticAssessmentDutyShifts(userId = "") {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/duty-shifts${userId ? `?user_id=${encodeURIComponent(userId)}` : ""}`,
+        { requiresAuth: true },
+      );
+    },
+
     createTherapeuticAssessmentCase(data, idempotencyKey) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases`, {
         method: "POST",

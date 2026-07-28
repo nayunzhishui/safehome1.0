@@ -621,3 +621,12 @@
   border: 1rpx solid #c8ddd1;
   background: #f3faf6;
 }
+
+.queue-runtime-card {
+  border-left: 7rpx solid var(--safe-primary);
+}
+
+.queue-runtime-card--paused {
+  border-left-color: var(--safe-danger);
+  background: #fff8f6;
+}

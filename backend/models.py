@@ -2215,6 +2215,84 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_work_queue (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        queue_type TEXT NOT NULL,
+        task_code TEXT NOT NULL,
+        required_competency TEXT NOT NULL,
+        priority TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'open',
+        scope_snapshot_json TEXT NOT NULL DEFAULT '{}',
+        drafted_by TEXT,
+        assigned_user_id TEXT,
+        claimed_at TEXT,
+        due_at TEXT NOT NULL,
+        completed_at TEXT,
+        outcome TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_queue_events (
+        id TEXT PRIMARY KEY,
+        queue_item_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        before_version INTEGER,
+        after_version INTEGER,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(actor_id, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_duty_shifts (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        supervisor_user_id TEXT NOT NULL,
+        queue_types_json TEXT NOT NULL DEFAULT '[]',
+        scope_json TEXT NOT NULL DEFAULT '{}',
+        starts_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'active',
+        version INTEGER NOT NULL DEFAULT 1,
+        evidence_ref TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_duty_events (
+        id TEXT PRIMARY KEY,
+        duty_shift_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(actor_id, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_queue_runtime (
+        id TEXT PRIMARY KEY,
+        paused INTEGER NOT NULL DEFAULT 0,
+        reason TEXT,
+        pending_count INTEGER NOT NULL DEFAULT 0,
+        overdue_count INTEGER NOT NULL DEFAULT 0,
+        unattended_urgent_count INTEGER NOT NULL DEFAULT 0,
+        policy_version TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS therapeutic_assessment_quality_runtime (
         id TEXT PRIMARY KEY,
         paused INTEGER NOT NULL DEFAULT 0,
@@ -2428,6 +2506,11 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_quality_incidents_case ON therapeutic_assessment_quality_incidents(case_id, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_quality_event_idempotency ON therapeutic_assessment_quality_events(actor_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_contract_snapshots_created ON therapeutic_assessment_contract_snapshots(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_work_queue_status_due ON therapeutic_assessment_work_queue(status, due_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_work_queue_case ON therapeutic_assessment_work_queue(case_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_duty_user_status ON therapeutic_assessment_duty_shifts(user_id, status, starts_at, expires_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_queue_event_idempotency ON therapeutic_assessment_queue_events(actor_id, idempotency_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_duty_event_idempotency ON therapeutic_assessment_duty_events(actor_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_parent ON computation_lineage_edges(parent_resource_type, parent_resource_id)",

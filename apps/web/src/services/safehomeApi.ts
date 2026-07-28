@@ -154,6 +154,10 @@ import type {
   TherapeuticAssessmentQualityReview,
   TherapeuticAssessmentQualityRuntime,
   TherapeuticAssessmentProductionContract,
+  TherapeuticAssessmentDutyShift,
+  TherapeuticAssessmentQueueRuntime,
+  TherapeuticAssessmentQueueType,
+  TherapeuticAssessmentWorkQueueItem,
   TherapeuticAssessmentServiceLevelStatus,
   TherapeuticAssessmentTransitionInput,
   TherapeuticAssessmentTaskCode,
@@ -1608,6 +1612,56 @@ export class SafeHomeApiClient {
 
   getTherapeuticAssessmentProductionContract(): Promise<TherapeuticAssessmentProductionContract> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/production-contract`);
+  }
+
+  listTherapeuticAssessmentWorkQueue(status = ""): Promise<{
+    items: TherapeuticAssessmentWorkQueueItem[];
+    count: number;
+  }> {
+    const suffix = status ? `?status=${encodeURIComponent(status)}` : "";
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/work-queue${suffix}`);
+  }
+
+  getTherapeuticAssessmentQueueRuntime(): Promise<TherapeuticAssessmentQueueRuntime> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/work-queue/runtime`);
+  }
+
+  runTherapeuticAssessmentQueueMonitor(): Promise<TherapeuticAssessmentQueueRuntime> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/work-queue/monitor`, {
+      method: "POST",
+    });
+  }
+
+  createTherapeuticAssessmentWorkItem(
+    caseId: string,
+    input: { queue_type: TherapeuticAssessmentQueueType; drafted_by?: string },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentWorkQueueItem> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/work-queue`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  claimTherapeuticAssessmentWorkItem(
+    itemId: string,
+    expectedVersion: number,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentWorkQueueItem> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/work-queue/${encodeURIComponent(itemId)}/claim`, {
+      method: "POST",
+      body: { expected_version: expectedVersion },
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  listTherapeuticAssessmentDutyShifts(userId = ""): Promise<{
+    items: TherapeuticAssessmentDutyShift[];
+    count: number;
+  }> {
+    const suffix = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/duty-shifts${suffix}`);
   }
 
   getTherapeuticAssessmentCase(caseId: string): Promise<TherapeuticAssessmentCase> {
