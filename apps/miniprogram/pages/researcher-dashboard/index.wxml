@@ -254,6 +254,7 @@
         </view>
         <button class="safe-primary-button" loading="{{assessmentSaving}}" disabled="{{assessmentSaving || !assessmentAuthorization.authorized}}" bindtap="saveAssessmentDraft">保存工作台草稿</button>
       </view>
+      <button class="safe-outline-button" bindtap="openAssessmentQuality">进入质量抽检与修复</button>
       <text class="boundary-line">移动端与 Web 使用同一证据和草稿契约；工作台不生成诊断或疗效分数。</text>
     </view>
   </view>

@@ -62,6 +62,13 @@ Page({
     });
   },
 
+  openQualityRecord() {
+    const caseId = this.data.activeCase && this.data.activeCase.id;
+    wx.navigateTo({
+      url: `/pages/therapeutic-assessment-quality/index${caseId ? `?caseId=${encodeURIComponent(caseId)}` : ""}`,
+    });
+  },
+
   async loadCases() {
     this.setData({ loading: true, errorMessage: "" });
     try {

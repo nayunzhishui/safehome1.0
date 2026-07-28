@@ -14,7 +14,7 @@
     },
     "T3": {
       "label": "正式专业评估",
-      "allows": ["workbench_draft", "evidence_organize", "evidence_pattern", "feedback_draft", "feedback_review", "formal_assessment", "minor_or_family", "couple_or_multi_person"],
+      "allows": ["workbench_draft", "evidence_organize", "evidence_pattern", "feedback_draft", "feedback_review", "quality_review", "quality_incident_analysis", "quality_incident_resolution", "formal_assessment", "minor_or_family", "couple_or_multi_person"],
       "boundary": "可承担正式测验解释、未成年人、伴侣或高挑战反馈，但仍需逐项、限期授权。"
     }
   },
@@ -24,6 +24,9 @@
     "evidence_pattern": "T2",
     "feedback_draft": "T2",
     "feedback_review": "T3",
+    "quality_review": "T3",
+    "quality_incident_analysis": "T3",
+    "quality_incident_resolution": "T3",
     "formal_assessment": "T3",
     "minor_or_family": "T3",
     "couple_or_multi_person": "T3"

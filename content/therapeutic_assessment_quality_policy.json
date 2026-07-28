@@ -1,0 +1,59 @@
+{
+  "schema": "safehome.therapeutic-assessment.quality-policy.v1",
+  "version": "2026.07.28-f12",
+  "service_levels": {
+    "L0": {
+      "supervision_frequency": "monthly",
+      "sample_rate": 0.1,
+      "queue_sla_hours": 72
+    },
+    "L1": {
+      "supervision_frequency": "biweekly",
+      "sample_rate": 0.25,
+      "queue_sla_hours": 48
+    },
+    "L2": {
+      "supervision_frequency": "weekly",
+      "sample_rate": 1.0,
+      "queue_sla_hours": 24
+    },
+    "L3": {
+      "supervision_frequency": "per_case",
+      "sample_rate": 1.0,
+      "queue_sla_hours": 4
+    }
+  },
+  "review_dimensions": [
+    "question_quality",
+    "evidence_sufficiency",
+    "authorization",
+    "language",
+    "participant_recognition",
+    "action_fit"
+  ],
+  "dimension_statuses": ["pass", "concern", "not_applicable"],
+  "decisions": ["pass", "remediation_required"],
+  "incident_categories": [
+    "complaint",
+    "correction_request",
+    "withdrawal_request",
+    "notification_issue",
+    "quality_review"
+  ],
+  "resolution_actions": ["no_change", "withdraw", "correct"],
+  "queue_pause": {
+    "max_pending": 50,
+    "max_overdue": 3
+  },
+  "mandatory_escalation": [
+    "diagnostic_language",
+    "blame_or_shame",
+    "unauthorized_disclosure",
+    "risk_chain_failure",
+    "irreversible_error"
+  ],
+  "same_person_draft_and_final_review_allowed": false,
+  "independent_incident_review_required": true,
+  "preserve_error_cases": true,
+  "temporary_showcase_bypass_changes_quality_gate": false
+}

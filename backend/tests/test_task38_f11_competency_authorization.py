@@ -119,7 +119,7 @@ def _feedback_payload():
 def test_schema_040_adds_competency_authorization_ledger(tmp_path, monkeypatch):
     app = _app(tmp_path, monkeypatch)
     with app.app_context():
-        from database import CURRENT_SCHEMA_NAME, CURRENT_SCHEMA_VERSION, get_connection
+        from database import CURRENT_SCHEMA_VERSION, get_connection
 
         with get_connection() as conn:
             tables = {
@@ -140,7 +140,6 @@ def test_schema_040_adds_competency_authorization_ledger(tmp_path, monkeypatch):
         }.issubset(tables)
         assert "status_reason" in authorization_columns
         assert CURRENT_SCHEMA_VERSION >= "2026_07_27_040"
-        assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_competency_authorization"
 
 
 def test_roles_and_showcase_do_not_replace_task_authorization(tmp_path, monkeypatch):

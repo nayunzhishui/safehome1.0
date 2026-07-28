@@ -133,6 +133,10 @@ import type {
   TherapeuticAssessmentSafetyEvent,
   TherapeuticAssessmentSafetyStatus,
   TherapeuticAssessmentFeedbackVersion,
+  TherapeuticAssessmentQualityDimension,
+  TherapeuticAssessmentQualityIncident,
+  TherapeuticAssessmentQualityReview,
+  TherapeuticAssessmentQualityRuntime,
   TherapeuticAssessmentServiceLevelStatus,
   TherapeuticAssessmentTransitionInput,
   TherapeuticAssessmentTaskCode,
@@ -1378,6 +1382,110 @@ export class SafeHomeApiClient {
     return this.requestData(
       `${API_ENDPOINTS.therapeuticAssessment}/competency/authorizations/${encodeURIComponent(authorizationId)}/revoke`,
       { method: "PATCH", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
+  }
+
+  getTherapeuticAssessmentQualityRuntime(): Promise<TherapeuticAssessmentQualityRuntime> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/quality/runtime`);
+  }
+
+  listTherapeuticAssessmentQualityReviews(
+    query: { status?: string; page?: number; page_size?: number } = {},
+  ): Promise<{
+    items: TherapeuticAssessmentQualityReview[];
+    total: number;
+    page: number;
+    page_size: number;
+    runtime: TherapeuticAssessmentQualityRuntime;
+    policy: { version: string; review_dimensions: TherapeuticAssessmentQualityDimension[] };
+  }> {
+    return this.requestData(
+      this.withQuery(`${API_ENDPOINTS.therapeuticAssessment}/quality/reviews`, query),
+    );
+  }
+
+  claimTherapeuticAssessmentQualityReview(
+    reviewId: string,
+    expectedVersion: number,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentQualityReview> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/reviews/${encodeURIComponent(reviewId)}/claim`,
+      {
+        method: "POST",
+        body: { expected_version: expectedVersion },
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
+    );
+  }
+
+  completeTherapeuticAssessmentQualityReview(
+    reviewId: string,
+    input: {
+      expected_version: number;
+      dimensions: Record<
+        TherapeuticAssessmentQualityDimension,
+        { status: "pass" | "concern" | "not_applicable"; note: string; evidence_ref: string }
+      >;
+      decision: "pass" | "remediation_required";
+      remediation_summary?: string;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentQualityReview> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/reviews/${encodeURIComponent(reviewId)}/complete`,
+      { method: "POST", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
+  }
+
+  createTherapeuticAssessmentQualityIncident(
+    caseId: string,
+    input: {
+      feedback_id?: string;
+      category: TherapeuticAssessmentQualityIncident["category"];
+      description: string;
+      requested_resolution: string;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentQualityIncident> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/quality-incidents`,
+      { method: "POST", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
+  }
+
+  listTherapeuticAssessmentQualityIncidents(
+    query: { case_id?: string; status?: string } = {},
+  ): Promise<{ items: TherapeuticAssessmentQualityIncident[]; count: number }> {
+    return this.requestData(
+      this.withQuery(`${API_ENDPOINTS.therapeuticAssessment}/quality/incidents`, query),
+    );
+  }
+
+  analyzeTherapeuticAssessmentQualityIncident(
+    incidentId: string,
+    input: { expected_version: number; impact_analysis: Record<string, unknown> },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentQualityIncident> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/incidents/${encodeURIComponent(incidentId)}/impact-analysis`,
+      { method: "POST", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
+  }
+
+  resolveTherapeuticAssessmentQualityIncident(
+    incidentId: string,
+    input: {
+      expected_version: number;
+      resolution_action: "no_change" | "withdraw" | "correct";
+      resolution_summary: string;
+      replacement_feedback_id?: string;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentQualityIncident> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/incidents/${encodeURIComponent(incidentId)}/resolve`,
+      { method: "POST", body: input, headers: { "Idempotency-Key": idempotencyKey } },
     );
   }
 

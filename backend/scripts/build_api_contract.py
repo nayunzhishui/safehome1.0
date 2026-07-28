@@ -38,7 +38,17 @@ def _source(view_func) -> str:
 
 def _access_for(path: str, method: str, module: str, source: str) -> dict[str, Any]:
     if path.startswith("/api/therapeutic-assessment"):
-        if (
+        task_authorization = None
+        if "/quality/reviews" in path:
+            roles = ["supervisor", "admin"]
+            task_authorization = "quality_review"
+        elif path.endswith("/impact-analysis"):
+            roles = ["supervisor", "admin"]
+            task_authorization = "quality_incident_analysis"
+        elif "/quality/incidents/" in path and path.endswith("/resolve"):
+            roles = ["supervisor", "admin"]
+            task_authorization = "quality_incident_resolution"
+        elif (
             "/feedback-versions/" in path and (path.endswith("/review") or path.endswith("/send"))
         ) or ("/evidence/" in path and path.endswith("/review")):
             roles = ["supervisor", "admin"]
@@ -48,7 +58,15 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
             roles = ["researcher", "supervisor", "admin"]
         else:
             roles = ALL_AUTHENTICATED_ROLES
-        return {"mode": "role", "roles": roles, "legacy_admin_token": True, "showcase_read_bypass": False}
+        access = {
+            "mode": "role",
+            "roles": roles,
+            "legacy_admin_token": True,
+            "showcase_read_bypass": False,
+        }
+        if task_authorization:
+            access["task_authorization"] = task_authorization
+        return access
     if path.startswith("/api/research/analysis"):
         roles = ["researcher", "supervisor", "admin"]
         if path.endswith("/execute-synthetic") or path.endswith("/claim") or path.endswith("/complete") or path.endswith("/fail") or path.endswith("/recover") or path.endswith("/suspend") or method == "DELETE":
@@ -156,6 +174,14 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+    if path == "/api/therapeutic-assessment/quality/runtime":
+        return "authenticated_quality_queue_counts_and_pause_state_no_participant_text"
+    if "/api/therapeutic-assessment/quality/reviews" in path:
+        return "task_authorized_case_scoped_quality_review_with_version_and_independence_gates"
+    if "/api/therapeutic-assessment/quality/incidents" in path:
+        return "participant_owned_assigned_or_task_authorized_quality_incident_history"
+    if path.endswith("/quality-incidents"):
+        return "participant_owned_or_authorized_case_quality_incident_append_only"
     if path == "/api/operations-governance/public-status":
         return "non_sensitive_operations_gate_status_only"
     if path.startswith("/api/operations-governance"):

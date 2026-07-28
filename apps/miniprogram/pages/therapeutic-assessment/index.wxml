@@ -62,6 +62,7 @@
       <button class="safe-outline-button" bindtap="disagree">这和我的体验不一致</button>
       <button class="ta-withdraw" bindtap="withdraw">撤回本次协作</button>
     </view>
+    <button class="safe-outline-button" bindtap="openQualityRecord">查看或提交更正与投诉</button>
   </view>
 
   <view wx:if="{{activeCase && activeCase.latestFeedback}}" class="safe-card ta-card">

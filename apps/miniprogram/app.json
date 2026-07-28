@@ -28,6 +28,7 @@
     "pages/therapeutic-assessment-feedback-check/index",
     "pages/therapeutic-assessment-action-review/index",
     "pages/therapeutic-assessment-action-followup/index",
+    "pages/therapeutic-assessment-quality/index",
     "pages/growth-dashboard/index",
     "pages/relationship-narrative/index",
     "pages/researcher-dashboard/index",

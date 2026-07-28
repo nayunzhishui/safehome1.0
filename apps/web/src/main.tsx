@@ -45,6 +45,7 @@ const ReliabilityReleaseWorkbench = lazy(() => import("./pages/ReliabilityReleas
 const ExperienceGovernanceWorkbench = lazy(() => import("./pages/ExperienceGovernanceWorkbench").then((module) => ({ default: module.ExperienceGovernanceWorkbench })));
 const OperationsGovernanceWorkbench = lazy(() => import("./pages/OperationsGovernanceWorkbench").then((module) => ({ default: module.OperationsGovernanceWorkbench })));
 const TherapeuticAssessmentWorkbench = lazy(() => import("./pages/TherapeuticAssessmentWorkbench").then((module) => ({ default: module.TherapeuticAssessmentWorkbench })));
+const TherapeuticAssessmentQualityWorkbench = lazy(() => import("./pages/TherapeuticAssessmentQualityWorkbench").then((module) => ({ default: module.TherapeuticAssessmentQualityWorkbench })));
 
 interface AdminLink {
   href: string;
@@ -74,6 +75,7 @@ const allAdminLinks: AdminLink[] = [
   { href: "/research/methodology", label: "研究方法冻结准备", match: (p) => p === "/research/methodology", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/analysis", label: "在线分析任务", match: (p) => p === "/research/analysis", roles: ["admin", "researcher", "supervisor"] },
   { href: "/research/therapeutic-assessment", label: "治疗性评估协作", match: (p) => p === "/research/therapeutic-assessment", roles: ["admin", "researcher", "supervisor"] },
+  { href: "/research/therapeutic-assessment/quality", label: "评估质量监督", match: (p) => p === "/research/therapeutic-assessment/quality", roles: ["admin", "supervisor"] },
   { href: "/security/privacy", label: "安全与隐私防护", match: (p) => p === "/security/privacy", roles: ["admin", "researcher", "supervisor"] },
   { href: "/reliability/release", label: "可靠性与发布证据", match: (p) => p === "/reliability/release", roles: ["admin", "researcher", "supervisor"] },
   { href: "/system/experience", label: "体验与无障碍", match: (p) => p === "/system/experience", roles: ["admin", "researcher", "supervisor"] },
@@ -94,7 +96,7 @@ const researcherWorkspaces = [
   { label: "待处理", paths: ["/dashboard", "/feedback", "/supervision", "/reviews", "/privacy-requests"] },
   { label: "参与者", paths: ["/diaries", "/goals", "/checkins", "/reports", "/profiles", "/family", "/privacy"] },
   { label: "内容", paths: ["/content/review", "/content/scales", "/content/worksheets", "/content/cards", "/content/rules"] },
-  { label: "研究/导出", paths: ["/ai-sandbox", "/research/analysis", "/research/therapeutic-assessment", "/research/benchmarks", "/research/methodology", "/export"] },
+  { label: "研究/导出", paths: ["/ai-sandbox", "/research/analysis", "/research/therapeutic-assessment", "/research/therapeutic-assessment/quality", "/research/benchmarks", "/research/methodology", "/export"] },
   { label: "系统状态", paths: ["/security/privacy", "/reliability/release", "/system/experience", "/system/operations-governance", "/integration-test"] },
 ];
 
@@ -189,6 +191,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   const isResearchMethodologyPath = path === "/research/methodology";
   const isResearchAnalysisPath = path === "/research/analysis";
   const isTherapeuticAssessmentPath = path === "/research/therapeutic-assessment";
+  const isTherapeuticAssessmentQualityPath = path === "/research/therapeutic-assessment/quality";
   const isSecurityPrivacyPath = path === "/security/privacy";
   const isReliabilityReleasePath = path === "/reliability/release";
   const isExperienceGovernancePath = path === "/system/experience";
@@ -217,6 +220,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     "/research/methodology",
     "/research/analysis",
     "/research/therapeutic-assessment",
+    "/research/therapeutic-assessment/quality",
     "/security/privacy",
     "/reliability/release",
     "/system/experience",
@@ -241,6 +245,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isResearchMethodologyPath &&
     !isResearchAnalysisPath &&
     !isTherapeuticAssessmentPath &&
+    !isTherapeuticAssessmentQualityPath &&
     !isSecurityPrivacyPath &&
     !isReliabilityReleasePath &&
     !isExperienceGovernancePath &&
@@ -290,6 +295,7 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       {isResearchMethodologyPath ? <ResearchMethodologyWorkbench /> : null}
       {isResearchAnalysisPath ? <ResearchAnalysisWorkbench /> : null}
       {isTherapeuticAssessmentPath ? <TherapeuticAssessmentWorkbench /> : null}
+      {isTherapeuticAssessmentQualityPath ? <TherapeuticAssessmentQualityWorkbench /> : null}
       {isSecurityPrivacyPath ? <SecurityPrivacyWorkbench /> : null}
       {isReliabilityReleasePath ? <ReliabilityReleaseWorkbench /> : null}
       {isExperienceGovernancePath ? <ExperienceGovernanceWorkbench /> : null}

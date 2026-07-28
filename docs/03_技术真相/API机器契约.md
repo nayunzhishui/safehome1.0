@@ -280,6 +280,7 @@
 | POST | `/api/therapeutic-assessment/cases/<case_id>/feedback-versions` | role:researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PUT | `/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/cases/<case_id>/quality-incidents` | role:parent,student,researcher,supervisor,admin | participant_owned_or_authorized_case_quality_incident_append_only | — | — | active |
 | PATCH | `/api/therapeutic-assessment/cases/<case_id>/question` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/readiness` | role:supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>/researcher-workbench` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
@@ -302,6 +303,13 @@
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/revise` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/send` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/quality/incidents` | role:parent,student,researcher,supervisor,admin | participant_owned_assigned_or_task_authorized_quality_incident_history | — | — | active |
+| POST | `/api/therapeutic-assessment/quality/incidents/<incident_id>/impact-analysis` | role:supervisor,admin | participant_owned_assigned_or_task_authorized_quality_incident_history | — | — | active |
+| POST | `/api/therapeutic-assessment/quality/incidents/<incident_id>/resolve` | role:supervisor,admin | participant_owned_assigned_or_task_authorized_quality_incident_history | — | — | active |
+| GET | `/api/therapeutic-assessment/quality/reviews` | role:supervisor,admin | task_authorized_case_scoped_quality_review_with_version_and_independence_gates | — | — | active |
+| POST | `/api/therapeutic-assessment/quality/reviews/<review_id>/claim` | role:supervisor,admin | task_authorized_case_scoped_quality_review_with_version_and_independence_gates | — | — | active |
+| POST | `/api/therapeutic-assessment/quality/reviews/<review_id>/complete` | role:supervisor,admin | task_authorized_case_scoped_quality_review_with_version_and_independence_gates | — | — | active |
+| GET | `/api/therapeutic-assessment/quality/runtime` | role:parent,student,researcher,supervisor,admin | authenticated_quality_queue_counts_and_pause_state_no_participant_text | — | — | active |
 | POST | `/api/therapeutic-assessment/safety-events/<event_id>/resolve` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/safety/runtime/restore` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/safety/status` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

@@ -17223,6 +17223,67 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "therapeutic_assessment.post_quality_incident_route.post",
+    "method": "POST",
+    "path": "/api/therapeutic-assessment/cases/<case_id>/quality-incidents",
+    "handler": "therapeutic_assessment.post_quality_incident_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "participant_owned_or_authorized_case_quality_incident_append_only",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "case_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.post_quality_incident_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "therapeutic_assessment.patch_question_route.patch",
     "method": "PATCH",
     "path": "/api/therapeutic-assessment/cases/<case_id>/question",
@@ -18524,6 +18585,417 @@ const GENERATED_API_ENDPOINTS = [
       "envelope": "standard",
       "request_id": true,
       "data_contract": "routes.therapeutic_assessment.post_feedback_withdraw_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.get_quality_incidents_route.get",
+    "method": "GET",
+    "path": "/api/therapeutic-assessment/quality/incidents",
+    "handler": "therapeutic_assessment.get_quality_incidents_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "participant_owned_assigned_or_task_authorized_quality_incident_history",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.get_quality_incidents_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.post_quality_incident_analysis_route.post",
+    "method": "POST",
+    "path": "/api/therapeutic-assessment/quality/incidents/<incident_id>/impact-analysis",
+    "handler": "therapeutic_assessment.post_quality_incident_analysis_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "task_authorization": "quality_incident_analysis"
+    },
+    "object_scope": "participant_owned_assigned_or_task_authorized_quality_incident_history",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "incident_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.post_quality_incident_analysis_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.post_quality_incident_resolution_route.post",
+    "method": "POST",
+    "path": "/api/therapeutic-assessment/quality/incidents/<incident_id>/resolve",
+    "handler": "therapeutic_assessment.post_quality_incident_resolution_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "task_authorization": "quality_incident_resolution"
+    },
+    "object_scope": "participant_owned_assigned_or_task_authorized_quality_incident_history",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "incident_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.post_quality_incident_resolution_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.get_quality_reviews_route.get",
+    "method": "GET",
+    "path": "/api/therapeutic-assessment/quality/reviews",
+    "handler": "therapeutic_assessment.get_quality_reviews_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "task_authorization": "quality_review"
+    },
+    "object_scope": "task_authorized_case_scoped_quality_review_with_version_and_independence_gates",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.get_quality_reviews_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.post_quality_review_claim_route.post",
+    "method": "POST",
+    "path": "/api/therapeutic-assessment/quality/reviews/<review_id>/claim",
+    "handler": "therapeutic_assessment.post_quality_review_claim_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "task_authorization": "quality_review"
+    },
+    "object_scope": "task_authorized_case_scoped_quality_review_with_version_and_independence_gates",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "review_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.post_quality_review_claim_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.post_quality_review_complete_route.post",
+    "method": "POST",
+    "path": "/api/therapeutic-assessment/quality/reviews/<review_id>/complete",
+    "handler": "therapeutic_assessment.post_quality_review_complete_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "task_authorization": "quality_review"
+    },
+    "object_scope": "task_authorized_case_scoped_quality_review_with_version_and_independence_gates",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "review_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.post_quality_review_complete_route.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "therapeutic_assessment.get_quality_runtime_route.get",
+    "method": "GET",
+    "path": "/api/therapeutic-assessment/quality/runtime",
+    "handler": "therapeutic_assessment.get_quality_runtime_route",
+    "module": "routes.therapeutic_assessment",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "authenticated_quality_queue_counts_and_pause_state_no_participant_text",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.therapeutic_assessment.get_quality_runtime_route.data"
     },
     "error_envelope": {
       "ok": false,

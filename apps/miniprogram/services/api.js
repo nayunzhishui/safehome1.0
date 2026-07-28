@@ -1168,6 +1168,64 @@ function createSafeHomeApi(options = {}) {
     );
   },
 
+  getTherapeuticAssessmentQualityRuntime() {
+    return request(`${API_ENDPOINTS.therapeuticAssessment}/quality/runtime`, { requiresAuth: true });
+  },
+
+  listTherapeuticAssessmentQualityReviews(params = {}) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/reviews${queryString(params)}`,
+      { requiresAuth: true },
+    );
+  },
+
+  claimTherapeuticAssessmentQualityReview(reviewId, expectedVersion, idempotencyKey) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/reviews/${encodeURIComponent(reviewId)}/claim`,
+      {
+        method: "POST",
+        data: { expected_version: expectedVersion },
+        idempotencyKey,
+        requiresAuth: true,
+      },
+    );
+  },
+
+  completeTherapeuticAssessmentQualityReview(reviewId, data, idempotencyKey) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/reviews/${encodeURIComponent(reviewId)}/complete`,
+      { method: "POST", data, idempotencyKey, requiresAuth: true },
+    );
+  },
+
+  createTherapeuticAssessmentQualityIncident(caseId, data, idempotencyKey) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/quality-incidents`,
+      { method: "POST", data, idempotencyKey, requiresAuth: true },
+    );
+  },
+
+  listTherapeuticAssessmentQualityIncidents(params = {}) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/incidents${queryString(params)}`,
+      { requiresAuth: true },
+    );
+  },
+
+  analyzeTherapeuticAssessmentQualityIncident(incidentId, data, idempotencyKey) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/incidents/${encodeURIComponent(incidentId)}/impact-analysis`,
+      { method: "POST", data, idempotencyKey, requiresAuth: true },
+    );
+  },
+
+  resolveTherapeuticAssessmentQualityIncident(incidentId, data, idempotencyKey) {
+    return request(
+      `${API_ENDPOINTS.therapeuticAssessment}/quality/incidents/${encodeURIComponent(incidentId)}/resolve`,
+      { method: "POST", data, idempotencyKey, requiresAuth: true },
+    );
+  },
+
   getTherapeuticAssessmentServiceLevels() {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`, { requiresAuth: true });
     },

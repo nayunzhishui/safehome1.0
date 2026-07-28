@@ -55,6 +55,16 @@ from services.therapeutic_assessment_competency_service import (
     list_authorizations,
     revoke_authorization,
 )
+from services.therapeutic_assessment_quality_service import (
+    analyze_quality_incident,
+    claim_quality_review,
+    complete_quality_review,
+    create_quality_incident,
+    list_quality_incidents,
+    list_quality_queue,
+    quality_runtime_status,
+    resolve_quality_incident,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -324,3 +334,51 @@ def patch_competency_authorization_revoke_route(authorization_id: str):
 def get_competency_effective_route():
     actor, error = _actor()
     return error or _respond(effective_authorization, actor, request.args.to_dict())
+
+
+@bp.get("/quality/runtime")
+def get_quality_runtime_route():
+    actor, error = _actor()
+    return error or _respond(quality_runtime_status)
+
+
+@bp.get("/quality/reviews")
+def get_quality_reviews_route():
+    actor, error = _actor()
+    return error or _respond(list_quality_queue, actor, request.args.to_dict())
+
+
+@bp.post("/quality/reviews/<review_id>/claim")
+def post_quality_review_claim_route(review_id: str):
+    actor, error = _actor()
+    return error or _respond(claim_quality_review, actor, review_id, _payload(), _key())
+
+
+@bp.post("/quality/reviews/<review_id>/complete")
+def post_quality_review_complete_route(review_id: str):
+    actor, error = _actor()
+    return error or _respond(complete_quality_review, actor, review_id, _payload(), _key())
+
+
+@bp.post("/cases/<case_id>/quality-incidents")
+def post_quality_incident_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(create_quality_incident, actor, case_id, _payload(), _key())
+
+
+@bp.get("/quality/incidents")
+def get_quality_incidents_route():
+    actor, error = _actor()
+    return error or _respond(list_quality_incidents, actor, request.args.to_dict())
+
+
+@bp.post("/quality/incidents/<incident_id>/impact-analysis")
+def post_quality_incident_analysis_route(incident_id: str):
+    actor, error = _actor()
+    return error or _respond(analyze_quality_incident, actor, incident_id, _payload(), _key())
+
+
+@bp.post("/quality/incidents/<incident_id>/resolve")
+def post_quality_incident_resolution_route(incident_id: str):
+    actor, error = _actor()
+    return error or _respond(resolve_quality_incident, actor, incident_id, _payload(), _key())

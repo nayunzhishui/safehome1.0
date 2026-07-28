@@ -450,6 +450,9 @@ export type TherapeuticAssessmentTaskCode =
   | "evidence_pattern"
   | "feedback_draft"
   | "feedback_review"
+  | "quality_review"
+  | "quality_incident_analysis"
+  | "quality_incident_resolution"
   | "formal_assessment"
   | "minor_or_family"
   | "couple_or_multi_person";
@@ -487,6 +490,70 @@ export interface TherapeuticAssessmentAuthorizationStatus {
   authorization_id?: string;
   competency_level?: TherapeuticAssessmentCompetencyLevel;
   expires_at?: string;
+}
+
+export type TherapeuticAssessmentQualityDimension =
+  | "question_quality"
+  | "evidence_sufficiency"
+  | "authorization"
+  | "language"
+  | "participant_recognition"
+  | "action_fit";
+
+export interface TherapeuticAssessmentQualityRuntime {
+  paused: boolean;
+  reason?: string | null;
+  pending_count: number;
+  overdue_count: number;
+  policy_version: string;
+  new_case_intake_enabled: boolean;
+}
+
+export interface TherapeuticAssessmentQualityReview {
+  id: string;
+  case_id: string;
+  feedback_id: string;
+  service_level: TherapeuticAssessmentReadiness;
+  sample_reason: string;
+  status: "pending" | "in_review" | "passed" | "remediation_required";
+  due_at: string;
+  claimed_by?: string | null;
+  completed_by?: string | null;
+  decision?: "pass" | "remediation_required" | null;
+  dimensions: Partial<
+    Record<
+      TherapeuticAssessmentQualityDimension,
+      { status: "pass" | "concern" | "not_applicable"; note: string; evidence_ref: string }
+    >
+  >;
+  remediation_summary?: string | null;
+  version: number;
+  overdue: boolean;
+  assessment_question?: string;
+  participant_user_id?: string;
+}
+
+export interface TherapeuticAssessmentQualityIncident {
+  id: string;
+  case_id: string;
+  feedback_id?: string | null;
+  quality_review_id?: string | null;
+  reporter_user_id: string;
+  source_type: "participant_report" | "staff_report" | "quality_sample";
+  category: "complaint" | "correction_request" | "withdrawal_request" | "notification_issue" | "quality_review";
+  description: string;
+  requested_resolution: string;
+  status: "reported" | "independent_review" | "resolved";
+  impact_analysis: Record<string, unknown>;
+  analyzed_by?: string | null;
+  resolution_action?: "no_change" | "withdraw" | "correct" | null;
+  replacement_feedback_id?: string | null;
+  notification_status: "pending" | "sent";
+  independent_reviewer_id?: string | null;
+  resolution_summary?: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TherapeuticAssessmentCase {

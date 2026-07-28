@@ -1,0 +1,145 @@
+<view class="safe-page quality-page" role="main" aria-label="治疗性评估质量监督与更正">
+  <view class="quality-hero">
+    <text class="quality-kicker">治疗性评估 · 质量监督</text>
+    <text class="quality-title">把不同理解、修复和通知留在同一条记录里</text>
+    <text class="quality-copy">这里只核对问题、依据、授权、语言、参与者识别与行动适配，不生成诊断或疗效结论。</text>
+  </view>
+
+  <view wx:if="{{runtime}}" class="runtime-card {{runtime.paused ? 'runtime-card--paused' : ''}}">
+    <text class="runtime-title">{{runtime.paused ? '新协作记录已自动暂停' : '质量队列在承诺范围内'}}</text>
+    <text class="runtime-copy">待处理 {{runtime.pending_count}} · 已超时 {{runtime.overdue_count}} · 规则 {{runtime.policy_version}}</text>
+  </view>
+
+  <view wx:if="{{errorMessage}}" class="state-card state-card--error">
+    <text class="state-title">暂时没有处理成功</text>
+    <text class="state-copy">{{errorMessage}}</text>
+    <button class="outline-button" bindtap="loadData">重新读取</button>
+  </view>
+  <view wx:if="{{notice}}" class="state-card state-card--notice">
+    <text class="state-copy">{{notice}}</text>
+  </view>
+  <view wx:if="{{loading}}" class="state-card">
+    <text class="state-title">正在读取质量记录</text>
+    <text class="state-copy">只加载当前账号可查看的对象范围。</text>
+  </view>
+
+  <view wx:if="{{!loading && cases.length}}" class="quality-card">
+    <text class="section-kicker">更正与投诉</text>
+    <text class="section-title">记录哪里不像，或希望如何处理</text>
+    <picker mode="selector" range="{{cases}}" range-key="displayQuestion" value="{{selectedCaseIndex}}" bindchange="onCaseChange">
+      <view class="picker-field">协作记录：{{cases[selectedCaseIndex].displayQuestion}}</view>
+    </picker>
+    <picker mode="selector" range="{{incidentCategoryOptions}}" value="{{incidentCategoryIndex}}" bindchange="onIncidentCategory">
+      <view class="picker-field">问题类型：{{incidentCategoryOptions[incidentCategoryIndex]}}</view>
+    </picker>
+    <label class="field-label">
+      <text>具体哪里不像或发生了什么</text>
+      <textarea class="text-area" value="{{incidentDescription}}" data-key="incidentDescription" bindinput="onFieldInput" maxlength="4000" placeholder="只写你愿意补充的部分"></textarea>
+    </label>
+    <label class="field-label">
+      <text>希望怎样处理</text>
+      <textarea class="text-area text-area--short" value="{{requestedResolution}}" data-key="requestedResolution" bindinput="onFieldInput" maxlength="1000" placeholder="例如：记录不同理解、撤回或重新核对"></textarea>
+    </label>
+    <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="submitIncident">提交更正或投诉</button>
+    <text class="boundary-copy">提交不会覆盖原记录；原反馈、异议和处理版本都会保留。</text>
+  </view>
+
+  <view wx:if="{{isReviewRole && !loading}}" class="quality-card">
+    <view class="section-heading">
+      <view>
+        <text class="section-kicker">抽检队列</text>
+        <text class="section-title">逐项质量复核</text>
+      </view>
+      <text class="count-pill">{{reviews.length}} 项</text>
+    </view>
+    <view wx:if="{{!reviews.length}}" class="empty-state">
+      <text class="state-title">当前授权范围内没有复核任务</text>
+    </view>
+    <scroll-view wx:else scroll-x class="item-tabs">
+      <button wx:for="{{reviews}}" wx:key="id" class="item-tab {{selectedReview.id === item.id ? 'is-active' : ''}}" data-id="{{item.id}}" bindtap="selectReview">
+        <text>{{item.statusText}}</text>
+        <text class="item-meta">{{item.service_level}} · {{item.overdue ? '已超时' : '时限内'}}</text>
+      </button>
+    </scroll-view>
+
+    <view wx:if="{{selectedReview}}" class="quality-detail">
+      <text class="detail-title">{{selectedReview.assessment_question || '协作记录'}}</text>
+      <text class="item-meta">抽检原因：{{selectedReview.sample_reason}} · 截止：{{selectedReview.due_at}}</text>
+      <button wx:if="{{selectedReview.status === 'pending'}}" class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="claimReview">认领这项复核</button>
+      <view wx:if="{{selectedReview.status === 'in_review'}}">
+        <view wx:for="{{reviewDimensions}}" wx:key="key" class="dimension-card">
+          <text class="dimension-title">{{item.label}}</text>
+          <picker mode="selector" range="{{statusOptions}}" value="{{item.statusIndex}}" data-index="{{index}}" bindchange="onDimensionStatus">
+            <view class="picker-field">结论：{{item.statusLabel}}</view>
+          </picker>
+          <view wx:if="{{item.status === 'concern'}}" class="dimension-fields">
+            <input class="text-input" value="{{item.note}}" data-index="{{index}}" data-key="note" bindinput="onDimensionInput" placeholder="说明需要修复的位置" />
+            <input class="text-input" value="{{item.evidenceRef}}" data-index="{{index}}" data-key="evidenceRef" bindinput="onDimensionInput" placeholder="填写可追溯依据" />
+          </view>
+        </view>
+        <label class="field-label">
+          <text>修复说明（有修复项时必填）</text>
+          <textarea class="text-area text-area--short" value="{{remediationSummary}}" data-key="remediationSummary" bindinput="onFieldInput"></textarea>
+        </label>
+        <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="completeReview">提交质量结论</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{isReviewRole && !loading}}" class="quality-card">
+    <view class="section-heading">
+      <view>
+        <text class="section-kicker">问题修复</text>
+        <text class="section-title">影响分析与独立结案</text>
+      </view>
+      <text class="count-pill">{{incidents.length}} 项</text>
+    </view>
+    <view wx:if="{{!incidents.length}}" class="empty-state">
+      <text class="state-title">当前授权范围内没有质量事件</text>
+    </view>
+    <scroll-view wx:else scroll-x class="item-tabs">
+      <button wx:for="{{incidents}}" wx:key="id" class="item-tab {{selectedIncident.id === item.id ? 'is-active' : ''}}" data-id="{{item.id}}" bindtap="selectIncident">
+        <text>{{item.statusText}}</text>
+        <text class="item-meta">{{item.category}}</text>
+      </button>
+    </scroll-view>
+    <view wx:if="{{selectedIncident}}" class="quality-detail">
+      <text class="detail-title">{{selectedIncident.description}}</text>
+      <text class="boundary-copy">希望的处理：{{selectedIncident.requested_resolution}}</text>
+      <view wx:if="{{selectedIncident.status === 'reported'}}">
+        <label class="field-label">
+          <text>立即措施与影响摘要</text>
+          <textarea class="text-area" value="{{impactSummary}}" data-key="impactSummary" bindinput="onFieldInput"></textarea>
+        </label>
+        <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="analyzeIncident">保存影响分析</button>
+      </view>
+      <view wx:if="{{selectedIncident.status === 'independent_review'}}">
+        <picker mode="selector" range="{{resolutionActionOptions}}" value="{{resolutionActionIndex}}" bindchange="onResolutionAction">
+          <view class="picker-field">处理动作：{{resolutionActionOptions[resolutionActionIndex]}}</view>
+        </picker>
+        <label class="field-label">
+          <text>参与者可理解的处理说明</text>
+          <textarea class="text-area" value="{{resolutionSummary}}" data-key="resolutionSummary" bindinput="onFieldInput"></textarea>
+        </label>
+        <button class="primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="resolveIncident">独立结案并通知参与者</button>
+      </view>
+      <view wx:if="{{selectedIncident.status === 'resolved'}}" class="resolution-card">
+        <text class="state-title">已完成处理</text>
+        <text class="state-copy">{{selectedIncident.resolution_summary}}</text>
+        <text class="item-meta">通知状态：{{selectedIncident.notification_status}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{!loading && incidents.length && !isReviewRole}}" class="quality-card">
+    <text class="section-kicker">历次处理</text>
+    <text class="section-title">你提交的更正与投诉</text>
+    <view wx:for="{{incidents}}" wx:key="id" class="participant-incident">
+      <text class="detail-title">{{item.description}}</text>
+      <text class="item-meta">{{item.statusText}}</text>
+      <text wx:if="{{item.resolution_summary}}" class="state-copy">{{item.resolution_summary}}</text>
+    </view>
+  </view>
+
+  <text class="page-boundary">临时展示权限不能替代正式任务授权；同一人不能同时起草和最终复核。</text>
+</view>

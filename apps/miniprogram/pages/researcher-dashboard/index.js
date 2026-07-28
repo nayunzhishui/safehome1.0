@@ -377,6 +377,10 @@ Page({
     }
   },
 
+  openAssessmentQuality() {
+    wx.navigateTo({ url: "/pages/therapeutic-assessment-quality/index" });
+  },
+
   async loadAnalysisJobs() {
     this.setData({ analysisLoading: true, analysisError: "" });
     try {

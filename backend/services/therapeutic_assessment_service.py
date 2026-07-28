@@ -357,6 +357,20 @@ def create_case(actor: dict, payload: dict, idempotency_key: str) -> tuple[dict,
         raise TherapeuticAssessmentError("validation_error", "不支持的协作范围。")
     risk = check_text_risk([question], source="therapeutic_assessment")
     timestamp = now_iso()
+    # 先保留幂等重放语义，再检查质量队列容量；队列暂停不能让一次已成功的
+    # 创建请求在重试时变成失败。随后正式事务中再次检查，覆盖并发重放。
+    with get_connection() as conn:
+        existing = conn.execute(
+            "SELECT c.* FROM therapeutic_assessment_events e JOIN therapeutic_assessment_cases c ON c.id = e.case_id WHERE e.actor_id = ? AND e.idempotency_key = ?",
+            (str(actor["id"]), key),
+        ).fetchone()
+        if existing:
+            return _present_case(conn, row_to_dict(existing), actor), 200
+    from services.therapeutic_assessment_quality_service import (
+        assert_new_case_intake_allowed,
+    )
+
+    assert_new_case_intake_allowed()
     with get_connection() as conn:
         existing = conn.execute(
             "SELECT c.* FROM therapeutic_assessment_events e JOIN therapeutic_assessment_cases c ON c.id = e.case_id WHERE e.actor_id = ? AND e.idempotency_key = ?",
@@ -725,10 +739,19 @@ def send_feedback(actor: dict, feedback_id: str, idempotency_key: str) -> dict:
         _insert_feedback_delivery(conn, feedback, case, actor, key)
         conn.execute("UPDATE therapeutic_assessment_feedback_versions SET status = 'sent', sent_at = ? WHERE id = ?", (timestamp, feedback_id))
         conn.execute("UPDATE therapeutic_assessment_cases SET status = 'feedback_sent', updated_at = ? WHERE id = ?", (timestamp, case["id"]))
+        sent_feedback = row_to_dict(
+            conn.execute(
+                "SELECT * FROM therapeutic_assessment_feedback_versions WHERE id = ?",
+                (feedback_id,),
+            ).fetchone()
+        )
+        from services.therapeutic_assessment_quality_service import enqueue_quality_review
+
+        enqueue_quality_review(conn, sent_feedback, case)
         _event(conn, case["id"], actor, "feedback_sent", key, case["version"], case["version"], {"feedback_id": feedback_id})
         write_audit_log(conn, "therapeutic_assessment_feedback_sent", str(actor["id"]), "therapeutic_assessment_feedback", feedback_id, {"case_id": case["id"], "human_reviewed": True})
         conn.commit()
-        return row_to_dict(conn.execute("SELECT * FROM therapeutic_assessment_feedback_versions WHERE id = ?", (feedback_id,)).fetchone())
+        return sent_feedback
 
 
 def submit_feedback_response(actor: dict, feedback_id: str, payload: dict, idempotency_key: str) -> tuple[dict, int]:
