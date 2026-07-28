@@ -14,6 +14,8 @@
 .ta-notice, .ta-error { padding: 20rpx 24rpx; border-radius: 18rpx; font-size: 22rpx; line-height: 1.6; }
 .ta-notice { border-left: 6rpx solid var(--safe-primary); background: var(--safe-primary-pale); color: var(--safe-primary-deep); }
 .ta-error { border-left: 6rpx solid var(--safe-danger); background: #fff3f1; color: #8b3b36; }
+.ta-contract { display: grid; gap: 10rpx; padding: 20rpx 24rpx; border: 1rpx solid var(--safe-border-strong); border-radius: 20rpx; background: var(--safe-primary-pale); }
+.ta-contract-heading { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
 .ta-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16rpx; }
 .ta-heading > view { display: grid; gap: 5rpx; }
 .ta-version { flex: none; padding: 6rpx 14rpx; border-radius: 999rpx; background: var(--safe-primary-soft); color: var(--safe-primary-deep); font-size: 20rpx; }

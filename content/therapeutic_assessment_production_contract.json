@@ -1,0 +1,30 @@
+{
+  "schema": "safehome.therapeutic-assessment.production-contract.v1",
+  "version": "2026-07-28-t37-b01-v1",
+  "source_contracts": {
+    "therapeutic_assessment_service_levels.json": "82d946d7b115063555b16236100c7468a29c84047dd3f93efcdf975bee00bc57",
+    "therapeutic_assessment_competency_policy.json": "32e51ff7b103fb02e3f9e7167b1843ea414e18d986cf0781189b764d527f7813",
+    "therapeutic_assessment_quality_policy.json": "0a7a88d1a02869272c8afc184ca85492e938bcbd6791438996ee6ffcd06191c3"
+  },
+  "service_levels": ["L0", "L1", "L2", "L3"],
+  "competency_levels": ["T1", "T2", "T3"],
+  "evidence_kinds": ["O", "P", "H", "U"],
+  "five_gates": [
+    "minimum_input",
+    "permission",
+    "source",
+    "language",
+    "responsibility"
+  ],
+  "separate_dimensions": [
+    "service_level",
+    "competency_level",
+    "object_permission",
+    "safety_state"
+  ],
+  "default_unknown_decision": "deny",
+  "legacy_case_readable": true,
+  "temporary_showcase_bypass_changes_formal_authorization": false,
+  "production_release_approved": false,
+  "boundary_notice": "服务级别、人员胜任力、对象权限和安全状态分别判断，任何一个都不能替代另一个；未知值或缺少责任角色时默认拒绝。"
+}

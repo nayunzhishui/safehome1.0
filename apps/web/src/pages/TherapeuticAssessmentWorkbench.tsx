@@ -5,6 +5,7 @@ import type {
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
+  TherapeuticAssessmentProductionContract,
   TherapeuticAssessmentResearcherDraft,
   TherapeuticAssessmentResearcherWorkbench as WorkbenchPayload,
 } from "../../../../shared/types/api";
@@ -95,6 +96,8 @@ export function TherapeuticAssessmentWorkbench() {
   const [cases, setCases] = useState<TherapeuticAssessmentCase[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [workbench, setWorkbench] = useState<WorkbenchPayload | null>(null);
+  const [productionContract, setProductionContract] =
+    useState<TherapeuticAssessmentProductionContract | null>(null);
   const [filters, setFilters] = useState<Filters>({});
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -122,8 +125,12 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const result = await safeHomeApi.listTherapeuticAssessmentCases();
+      const [result, contract] = await Promise.all([
+        safeHomeApi.listTherapeuticAssessmentCases(),
+        safeHomeApi.getTherapeuticAssessmentProductionContract(),
+      ]);
       setCases(result.items);
+      setProductionContract(contract);
       if (!selectedId && result.items[0]) setSelectedId(result.items[0].id);
     } catch (caught) {
       setError(caught instanceof SafeHomeApiError ? caught.message : "协作记录暂时无法读取。");
@@ -307,6 +314,18 @@ export function TherapeuticAssessmentWorkbench() {
 
       {error ? <div className="status error" role="alert">{error}</div> : null}
       {notice ? <div className="status success" role="status">{notice}</div> : null}
+      {productionContract ? (
+        <section className="status" aria-label="协作式评估机器契约">
+          <strong>机器契约 {productionContract.version}</strong>
+          <p>
+            服务级别 {productionContract.service_levels.join(" / ")}；
+            胜任力 {productionContract.competency_levels.join(" / ")}；
+            证据 {productionContract.evidence_kinds.join(" / ")}；
+            五道门 {productionContract.five_gates.length} 项。
+          </p>
+          <small>{productionContract.boundary_notice}</small>
+        </section>
+      ) : null}
 
       <div className="taWorkspaceGrid">
         <aside className="panel taCaseRail" aria-label="参与者问题">

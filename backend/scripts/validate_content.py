@@ -962,6 +962,56 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    filename = "therapeutic_assessment_production_contract.json"
+    try:
+        contract = load_json(content_dir / filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{filename} 不可读取：{exc}"]
+    expected_sets = {
+        "service_levels": {"L0", "L1", "L2", "L3"},
+        "competency_levels": {"T1", "T2", "T3"},
+        "evidence_kinds": {"O", "P", "H", "U"},
+        "five_gates": {
+            "minimum_input",
+            "permission",
+            "source",
+            "language",
+            "responsibility",
+        },
+        "separate_dimensions": {
+            "service_level",
+            "competency_level",
+            "object_permission",
+            "safety_state",
+        },
+    }
+    for field, expected in expected_sets.items():
+        if set(contract.get(field, [])) != expected:
+            errors.append(f"{filename}.{field} 与权威契约不一致")
+    if (
+        contract.get("default_unknown_decision") != "deny"
+        or contract.get("legacy_case_readable") is not True
+        or contract.get("temporary_showcase_bypass_changes_formal_authorization") is not False
+        or contract.get("production_release_approved") is not False
+    ):
+        errors.append(f"{filename} 必须默认拒绝未知值、兼容旧记录且禁止展示越权和自动发布")
+    import hashlib
+
+    source_contracts = contract.get("source_contracts", {})
+    if not source_contracts:
+        errors.append(f"{filename}.source_contracts 不能为空")
+    for source_name, expected_hash in source_contracts.items():
+        source_path = content_dir / source_name
+        if not source_path.exists():
+            errors.append(f"{filename} 指向不存在的来源契约：{source_name}")
+            continue
+        if hashlib.sha256(source_path.read_bytes()).hexdigest() != expected_hash:
+            errors.append(f"{filename} 来源契约哈希漂移：{source_name}")
+    return errors
+
+
 def validate_research_methodology_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -1152,6 +1202,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_cross_content_rules(content_dir))
     errors.extend(validate_emotion_annotation_content(content_dir))
     errors.extend(validate_offline_benchmark_content(content_dir))
+    errors.extend(validate_therapeutic_assessment_contract(content_dir))
     errors.extend(validate_research_methodology_content(content_dir))
     errors.extend(validate_security_registry_content(content_dir))
     errors.extend(validate_reliability_registry_content(content_dir))

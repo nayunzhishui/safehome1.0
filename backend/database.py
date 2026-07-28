@@ -127,6 +127,7 @@ REQUIRED_HEALTH_TABLES = [
     "therapeutic_assessment_quality_reviews",
     "therapeutic_assessment_quality_incidents",
     "therapeutic_assessment_quality_events",
+    "therapeutic_assessment_contract_snapshots",
     "therapeutic_assessment_quality_runtime",
     "therapeutic_assessment_events",
     "computation_datasets",
@@ -135,8 +136,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_045"
-CURRENT_SCHEMA_NAME = "offline_model_release_gate"
+CURRENT_SCHEMA_VERSION = "2026_07_28_046"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_contract_bridge"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {

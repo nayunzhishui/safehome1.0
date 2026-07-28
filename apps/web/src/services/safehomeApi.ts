@@ -153,6 +153,7 @@ import type {
   TherapeuticAssessmentQualityIncident,
   TherapeuticAssessmentQualityReview,
   TherapeuticAssessmentQualityRuntime,
+  TherapeuticAssessmentProductionContract,
   TherapeuticAssessmentServiceLevelStatus,
   TherapeuticAssessmentTransitionInput,
   TherapeuticAssessmentTaskCode,
@@ -1603,6 +1604,10 @@ export class SafeHomeApiClient {
 
   getTherapeuticAssessmentServiceLevels(): Promise<TherapeuticAssessmentServiceLevelStatus> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`);
+  }
+
+  getTherapeuticAssessmentProductionContract(): Promise<TherapeuticAssessmentProductionContract> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/production-contract`);
   }
 
   getTherapeuticAssessmentCase(caseId: string): Promise<TherapeuticAssessmentCase> {

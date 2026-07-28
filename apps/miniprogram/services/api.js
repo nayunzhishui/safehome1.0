@@ -1226,8 +1226,12 @@ function createSafeHomeApi(options = {}) {
     );
   },
 
-  getTherapeuticAssessmentServiceLevels() {
+    getTherapeuticAssessmentServiceLevels() {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`, { requiresAuth: true });
+    },
+
+    getTherapeuticAssessmentProductionContract() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/production-contract`, { requiresAuth: true });
     },
 
     createTherapeuticAssessmentCase(data, idempotencyKey) {

@@ -7,6 +7,13 @@
 
   <view wx:if="{{notice}}" class="ta-notice" role="status">{{notice}}</view>
   <view wx:if="{{errorMessage}}" class="ta-error" role="alert">{{errorMessage}}</view>
+  <view wx:if="{{productionContract}}" class="ta-contract" aria-label="协作式评估机器契约">
+    <view class="ta-contract-heading">
+      <text class="ta-section-title">协作边界已对齐</text>
+      <text class="ta-version">{{productionContract.version}}</text>
+    </view>
+    <text class="ta-meta">服务级别、人员胜任力、对象权限和安全状态分别判断；任一项未知都会暂停继续。</text>
+  </view>
 
   <view class="safe-card ta-card ta-flow-entry">
     <view>

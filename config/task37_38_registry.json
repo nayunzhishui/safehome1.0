@@ -326,7 +326,33 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T37-B01", "title": "协作式评估生产契约桥接", "dependencies": ["T38-F12", "T37-P04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-B01",
+      "title": "协作式评估生产契约桥接",
+      "dependencies": ["T38-F12", "T37-P04"],
+      "engineering_complete": true,
+      "status": "engineering_complete_contract_bridge_release_blocked_external_gates",
+      "evidence": [
+        "content/therapeutic_assessment_production_contract.json",
+        "backend/services/therapeutic_assessment_contract_service.py",
+        "backend/scripts/migrate_task37_b01_contract_bridge.py",
+        "backend/tests/test_task37_b01_contract_bridge.py",
+        "apps/web/src/pages/TherapeuticAssessmentWorkbench.tsx",
+        "apps/miniprogram/pages/therapeutic-assessment/index.js",
+        "shared/types/api.ts"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_b01_contract_bridge.py", "backend/tests/test_task38_f01_service_levels.py", "backend/tests/test_task38_f03_evidence_ledger.py", "backend/tests/test_task38_f11_competency_authorization.py", "-q"],
+        ["python", "backend/scripts/migrate_task37_b01_contract_bridge.py", "--apply"],
+        ["python", "backend/scripts/migrate_task37_b01_contract_bridge.py"],
+        ["python", "backend/scripts/migrate_task37_b01_contract_bridge.py", "--rollback-plan"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["node", "--check", "apps/miniprogram/pages/therapeutic-assessment/index.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T37-B02", "title": "人工队列、对象范围与值守基础", "dependencies": ["T37-B01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-B03", "title": "五道门发布流水线", "dependencies": ["T37-B02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-B04", "title": "反馈生命周期、随访和恢复", "dependencies": ["T37-B03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

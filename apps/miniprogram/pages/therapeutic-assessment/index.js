@@ -36,6 +36,7 @@ Page({
     notice: "",
     errorMessage: "",
     evidenceItems: [],
+    productionContract: null,
     defaultServiceLevel: {
       id: "L0",
       display_name: "支持性评估准备",
@@ -72,9 +73,10 @@ Page({
   async loadCases() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const [result, levelStatus] = await Promise.all([
+      const [result, levelStatus, productionContract] = await Promise.all([
         api.listTherapeuticAssessmentCases(),
         api.getTherapeuticAssessmentServiceLevels(),
+        api.getTherapeuticAssessmentProductionContract(),
       ]);
       const cases = (result.items || []).map((item) => ({
         ...item,
@@ -85,6 +87,7 @@ Page({
         cases,
         activeCase: cases[0] || null,
         defaultServiceLevel: levelStatus.current_default || this.data.defaultServiceLevel,
+        productionContract,
       });
       if (cases[0]) {
         const evidence = await api.listTherapeuticAssessmentEvidence(cases[0].id);

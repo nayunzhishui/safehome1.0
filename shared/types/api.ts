@@ -368,6 +368,21 @@ export interface TherapeuticAssessmentServiceLevelStatus {
   boundary_notice: string;
 }
 
+export interface TherapeuticAssessmentProductionContract {
+  schema: "safehome.therapeutic-assessment.production-contract.v1";
+  version: string;
+  service_levels: TherapeuticAssessmentReadiness[];
+  competency_levels: TherapeuticAssessmentCompetencyLevel[];
+  evidence_kinds: TherapeuticAssessmentEvidenceKind[];
+  five_gates: Array<"minimum_input" | "permission" | "source" | "language" | "responsibility">;
+  separate_dimensions: Array<"service_level" | "competency_level" | "object_permission" | "safety_state">;
+  default_unknown_decision: "deny";
+  legacy_case_readable: true;
+  drift_detected: false;
+  production_release_approved: false;
+  boundary_notice: string;
+}
+
 export interface TherapeuticAssessmentFeedbackVersion {
   id: string;
   case_id: string;

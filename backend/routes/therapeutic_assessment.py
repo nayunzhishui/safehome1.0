@@ -65,6 +65,11 @@ from services.therapeutic_assessment_quality_service import (
     quality_runtime_status,
     resolve_quality_incident,
 )
+from services.therapeutic_assessment_contract_service import (
+    contract_status,
+    create_snapshot,
+    validate_dimensions,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -100,6 +105,28 @@ def _key():
 def get_service_levels_route():
     actor, error = _actor()
     return error or ok(service_level_status())
+
+
+@bp.get("/production-contract")
+def get_production_contract_route():
+    actor, error = _actor()
+    return error or _respond(contract_status)
+
+
+@bp.post("/production-contract/check")
+def post_production_contract_check_route():
+    actor, error = _actor()
+    return error or _respond(validate_dimensions, _payload())
+
+
+@bp.post("/production-contract/snapshots")
+def post_production_contract_snapshot_route():
+    actor, error = _actor()
+    if error:
+        return error
+    if actor.get("role") != "admin":
+        return fail("forbidden", "只有管理员可以冻结机器契约快照。", status=403)
+    return _respond(create_snapshot, actor)
 
 
 @bp.get("/cases")

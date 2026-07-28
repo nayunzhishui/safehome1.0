@@ -2201,6 +2201,20 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_contract_snapshots (
+        id TEXT PRIMARY KEY,
+        contract_version TEXT NOT NULL,
+        contract_hash TEXT NOT NULL,
+        source_hashes_json TEXT NOT NULL DEFAULT '{}',
+        status TEXT NOT NULL,
+        drift_detected INTEGER NOT NULL DEFAULT 0,
+        production_release_approved INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(contract_version, contract_hash)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS therapeutic_assessment_quality_runtime (
         id TEXT PRIMARY KEY,
         paused INTEGER NOT NULL DEFAULT 0,
@@ -2413,6 +2427,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_quality_incidents_status_created ON therapeutic_assessment_quality_incidents(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_quality_incidents_case ON therapeutic_assessment_quality_incidents(case_id, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_quality_event_idempotency ON therapeutic_assessment_quality_events(actor_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_contract_snapshots_created ON therapeutic_assessment_contract_snapshots(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_parent ON computation_lineage_edges(parent_resource_type, parent_resource_id)",
