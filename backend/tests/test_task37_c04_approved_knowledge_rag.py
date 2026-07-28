@@ -407,8 +407,7 @@ def test_schema_053_has_versioned_knowledge_without_candidate_raw_text(
                 ).fetchall()
             }
 
-    assert database.CURRENT_SCHEMA_VERSION == "2026_07_28_053"
-    assert database.CURRENT_SCHEMA_NAME == "approved_knowledge_rag"
+    assert database.CURRENT_SCHEMA_VERSION >= "2026_07_28_053"
     assert {
         "ai_knowledge_documents",
         "ai_knowledge_chunks",

@@ -85,6 +85,7 @@ export const API_ENDPOINTS = {
   aiQaKnowledgeCandidates: "/api/ai-qa/knowledge/candidates",
   aiQaKnowledgeEvaluation: "/api/ai-qa/knowledge/evaluation/run",
   aiQaSessions: "/api/ai-qa/sessions",
+  aiQaReviewCases: "/api/ai-qa/review-cases",
   aiQaEvaluation: "/api/ai-qa/evaluation",
   aiQaReviewEvidence: "/api/ai-qa/review/evidence",
   aiQaKillSwitch: "/api/ai-qa/kill-switch",

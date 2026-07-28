@@ -3021,6 +3021,56 @@ export interface AiQaAnswer {
   human_escalation: boolean;
   uncertainty?: "low" | "medium" | "high";
   boundary_notice: string;
+  review_case_id?: ID;
+}
+
+export type AiQaReviewDecision =
+  | "adopt"
+  | "modify"
+  | "reject"
+  | "none_match";
+
+export interface AiQaReviewCase {
+  id: ID;
+  message_id: ID;
+  session_id: ID;
+  subject_type: string;
+  subject_id: ID;
+  recipient_user_id: ID;
+  draft_author_id: string;
+  publication_candidate_id?: ID | null;
+  candidate_text: string;
+  candidate_sha256: string;
+  citations: AiQaCitation[];
+  gate_violations: string[];
+  scope: {
+    object_scope?: string;
+    risk_level?: string;
+    involves_minor?: boolean;
+    multi_party?: boolean;
+    mechanism_explanation?: boolean;
+  };
+  source_snapshot_hash: string;
+  required_task_code: string;
+  required_competency: "T2" | "T3";
+  status: "pending_review" | "adopted" | "modified" | "rejected" | "none_match";
+  final_text?: string | null;
+  final_sha256?: string | null;
+  reviewed_by?: ID | null;
+  published_by?: ID | null;
+  formal_feedback_written: false;
+  diff: { changed: boolean; similarity: number | null };
+  version: number;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+  reviewed_at?: ISODateTime | null;
+}
+
+export interface AiQaReviewDecisionInput {
+  decision: AiQaReviewDecision;
+  expected_version: number;
+  final_text?: string;
+  rationale?: string;
 }
 
 export interface AiQaEvaluationRun {

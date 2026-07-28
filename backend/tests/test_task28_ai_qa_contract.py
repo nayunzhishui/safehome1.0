@@ -49,7 +49,7 @@ def test_task28_mysql_schema_contract_keeps_ai_keys_indexable(tmp_path, monkeypa
     database = importlib.import_module("database")
     models = importlib.import_module("models")
     statements = [sql for sql in models.SCHEMA_SQL if "CREATE TABLE IF NOT EXISTS ai_qa" in sql]
-    assert len(statements) == 8
+    assert len(statements) >= 8
     converted = [database.mysqlize_schema_statement(sql) for sql in statements]
     assert all("TEXT PRIMARY KEY" not in sql for sql in converted)
     assert any("UNIQUE(message_id, user_id)" in sql for sql in converted)

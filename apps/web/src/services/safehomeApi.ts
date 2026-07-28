@@ -5,6 +5,8 @@ import type {
   AiQaConfig,
   AiQaEvaluationReview,
   AiQaEvaluationRun,
+  AiQaReviewCase,
+  AiQaReviewDecisionInput,
   AiQaReviewEvidence,
   AiQaSession,
   AiKnowledgeInventory,
@@ -1164,6 +1166,32 @@ export class SafeHomeApiClient {
 
   saveAiQaFeedback(messageId: string, evaluation: "helpful" | "neutral" | "does_not_match" | "uncomfortable", note?: string): Promise<Record<string, unknown>> {
     return this.requestData(`/api/ai-qa/messages/${encodeURIComponent(messageId)}/feedback`, { method: "POST", body: { evaluation, note, research_use_allowed: false } });
+  }
+
+  listAiQaReviewCases(status?: string): Promise<ListResponse<AiQaReviewCase>> {
+    const query = status ? `?status=${encodeURIComponent(status)}` : "";
+    return this.requestData(`${API_ENDPOINTS.aiQaReviewCases}${query}`);
+  }
+
+  getAiQaReviewCase(caseId: string): Promise<AiQaReviewCase> {
+    return this.requestData(
+      `${API_ENDPOINTS.aiQaReviewCases}/${encodeURIComponent(caseId)}`,
+    );
+  }
+
+  decideAiQaReviewCase(
+    caseId: string,
+    input: AiQaReviewDecisionInput,
+    idempotencyKey: string,
+  ): Promise<AiQaReviewCase> {
+    return this.requestData(
+      `${API_ENDPOINTS.aiQaReviewCases}/${encodeURIComponent(caseId)}/decisions`,
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+        body: input,
+      },
+    );
   }
 
   runAiQaEvaluation(): Promise<AiQaEvaluationRun> {

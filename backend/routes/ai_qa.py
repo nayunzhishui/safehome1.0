@@ -34,6 +34,12 @@ from services.ai_qa_retrieval_service import (
     run_retrieval_evaluation,
     sync_approved_knowledge,
 )
+from services.ai_qa_review_service import (
+    AiQaReviewError,
+    decide_review_case,
+    get_review_case,
+    list_review_cases,
+)
 
 
 bp = Blueprint("ai_qa", __name__, url_prefix="/api/ai-qa")
@@ -56,7 +62,7 @@ def _response(callback):
         ):
             return ok(result[0], status=result[1])
         return ok(result)
-    except (AiQaError, KnowledgeError) as exc:
+    except (AiQaError, KnowledgeError, AiQaReviewError) as exc:
         return fail(exc.code, str(exc), status=exc.status, details=exc.details or None)
 
 
@@ -215,6 +221,34 @@ def ai_qa_message_feedback(message_id: str):
         return error
     payload = request.get_json(silent=True) or {}
     return _response(lambda: save_feedback(actor, message_id, payload))
+
+
+@bp.get("/review-cases")
+def ai_qa_review_cases():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: list_review_cases(actor, request.args))
+
+
+@bp.get("/review-cases/<case_id>")
+def ai_qa_review_case_detail(case_id: str):
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: get_review_case(actor, case_id))
+
+
+@bp.post("/review-cases/<case_id>/decisions")
+def ai_qa_review_case_decision(case_id: str):
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    key = str(request.headers.get("Idempotency-Key") or "")
+    return _response(
+        lambda: decide_review_case(actor, case_id, payload, key)
+    )
 
 
 @bp.post("/evaluation/run")

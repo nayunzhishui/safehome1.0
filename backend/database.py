@@ -141,6 +141,8 @@ REQUIRED_HEALTH_TABLES = [
     "publication_candidates",
     "publication_gate_checks",
     "publication_candidate_events",
+    "ai_qa_review_cases",
+    "ai_qa_review_actions",
     "therapeutic_assessment_release_evidence",
     "therapeutic_assessment_release_gate_runs",
     "therapeutic_assessment_release_gate_checks",
@@ -152,8 +154,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_053"
-CURRENT_SCHEMA_NAME = "approved_knowledge_rag"
+CURRENT_SCHEMA_VERSION = "2026_07_28_054"
+CURRENT_SCHEMA_NAME = "ai_review_workbench"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -321,6 +323,16 @@ MYSQL_VARCHAR_COLUMNS = {
     "active_version_id",
     "source_report_id",
     "message_id",
+    "session_id",
+    "review_case_id",
+    "draft_author_id",
+    "publication_candidate_id",
+    "required_task_code",
+    "required_competency",
+    "published_by",
+    "candidate_sha256",
+    "final_sha256",
+    "request_sha256",
     "create_idempotency_key",
     "delivery_type",
     "content_hash",

@@ -325,4 +325,4 @@ def test_policy_and_schema_are_fail_closed(tmp_path, monkeypatch):
             "publication_gate_checks",
             "publication_candidate_events",
         } <= tables
-        assert database.CURRENT_SCHEMA_VERSION == "2026_07_28_049"
+        assert database.CURRENT_SCHEMA_VERSION >= "2026_07_28_049"

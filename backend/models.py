@@ -2450,6 +2450,54 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS ai_qa_review_cases (
+        id TEXT PRIMARY KEY,
+        message_id TEXT NOT NULL UNIQUE,
+        session_id TEXT NOT NULL,
+        subject_type TEXT NOT NULL,
+        subject_id TEXT NOT NULL,
+        recipient_user_id TEXT NOT NULL,
+        draft_author_id TEXT NOT NULL,
+        publication_candidate_id TEXT,
+        candidate_text TEXT NOT NULL,
+        candidate_sha256 TEXT NOT NULL,
+        citations_json TEXT NOT NULL DEFAULT '[]',
+        gate_violations_json TEXT NOT NULL DEFAULT '[]',
+        scope_json TEXT NOT NULL DEFAULT '{}',
+        source_snapshot_hash TEXT NOT NULL,
+        required_task_code TEXT NOT NULL,
+        required_competency TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending_review',
+        final_text TEXT,
+        final_sha256 TEXT,
+        reviewed_by TEXT,
+        published_by TEXT,
+        formal_feedback_written INTEGER NOT NULL DEFAULT 0,
+        version INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        reviewed_at TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_review_actions (
+        id TEXT PRIMARY KEY,
+        review_case_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        before_version INTEGER NOT NULL,
+        after_version INTEGER NOT NULL,
+        candidate_sha256 TEXT NOT NULL,
+        final_sha256 TEXT,
+        diff_json TEXT NOT NULL DEFAULT '{}',
+        rationale TEXT NOT NULL,
+        request_sha256 TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(actor_id, idempotency_key)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS therapeutic_assessment_release_evidence (
         id TEXT PRIMARY KEY,
         evidence_type TEXT NOT NULL,
@@ -2730,6 +2778,10 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_publication_candidates_subject ON publication_candidates(subject_type, subject_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_publication_gate_checks_candidate ON publication_gate_checks(candidate_id, attempt_no)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_publication_events_actor_idempotency ON publication_candidate_events(actor_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_review_cases_status_updated ON ai_qa_review_cases(status, updated_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_review_cases_subject ON ai_qa_review_cases(subject_type, subject_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_review_actions_case_created ON ai_qa_review_actions(review_case_id, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_ai_qa_review_actions_actor_idempotency ON ai_qa_review_actions(actor_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_ta_release_evidence_type_status ON therapeutic_assessment_release_evidence(evidence_type, environment, status)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_ta_release_runs_actor_idempotency ON therapeutic_assessment_release_gate_runs(evaluated_by, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_ta_release_checks_run_gate ON therapeutic_assessment_release_gate_checks(run_id, gate_name)",

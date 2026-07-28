@@ -1309,6 +1309,195 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "ai_qa.ai_qa_review_cases.get",
+    "method": "GET",
+    "path": "/api/ai-qa/review-cases",
+    "handler": "ai_qa.ai_qa_review_cases",
+    "module": "routes.ai_qa",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_synthetic_evidence_role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.ai_qa.ai_qa_review_cases.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "ai_qa_killed",
+      "ai_qa_sandbox_disabled",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [
+      "ai_qa_route"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "ai_qa.ai_qa_review_case_detail.get",
+    "method": "GET",
+    "path": "/api/ai-qa/review-cases/<case_id>",
+    "handler": "ai_qa.ai_qa_review_case_detail",
+    "module": "routes.ai_qa",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_synthetic_evidence_role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "case_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.ai_qa.ai_qa_review_case_detail.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "ai_qa_killed",
+      "ai_qa_sandbox_disabled",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [
+      "ai_qa_route"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "ai_qa.ai_qa_review_case_decision.post",
+    "method": "POST",
+    "path": "/api/ai-qa/review-cases/<case_id>/decisions",
+    "handler": "ai_qa.ai_qa_review_case_decision",
+    "module": "routes.ai_qa",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_synthetic_evidence_role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "case_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [
+        "Idempotency-Key"
+      ],
+      "pagination": null,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.ai_qa.ai_qa_review_case_decision.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "ai_qa_killed",
+      "ai_qa_sandbox_disabled",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [
+      "ai_qa_route"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "ai_qa.ai_qa_review_evidence.get",
     "method": "GET",
     "path": "/api/ai-qa/review/evidence",

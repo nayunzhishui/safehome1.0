@@ -2390,3 +2390,13 @@ relationship_initiation_intention_action
 - 诊断、保证、责备、个体风险结论和关系/人格定性词均触发固定降级；不合格输出不进行自动修补或无界重试。
 - Grounding仅使用词面重叠启发式，接口明确返回`grounding_is_factuality_check=false`，不能据此声称事实正确。
 - `GET /api/ai-qa/config`新增`output_contract`，只公开schema版本、五道门名称、校验方式、固定降级、Grounding边界和人工核对要求。
+
+### T37-C07 AI候选人工审阅工作台
+
+- `POST /api/ai-qa/sessions/<id>/messages`：安全门通过后返回`review_case_id`。AI候选仅进入内部审阅任务；对应`publication_candidates.channel=ai_candidate`保持`approved`，不会标记为已发布，也不会写入参与者正式反馈。
+- `GET /api/ai-qa/review-cases`：`researcher/supervisor/admin`查看审阅任务，可按`status`和`required_task_code`过滤；读取行为写入审计。
+- `GET /api/ai-qa/review-cases/<id>`：同屏返回批准来源及版本、AI候选、拦截代码、对象范围、编辑差异、最终文本、起草者、复核者和发布者。`formal_feedback_written`在本链路固定为`false`。
+- `POST /api/ai-qa/review-cases/<id>/decisions`：要求`Idempotency-Key`和`expected_version`，决定仅允许`adopt/modify/reject/none_match`。起草者不能复核自己的候选；角色本身不等于任务授权。
+- 普通低风险成人候选要求`feedback_draft/T2/individual_adult_low_risk`有效授权；高风险、未成年人、伴侣或多人、机制解释分别要求匹配的T3任务和复杂度授权。缺少授权返回`review_authorization_required`。
+- 修改后的内部候选仍检查长度、批准来源编号和非诊断语言边界；任何人工决定都只写审阅状态和审计，不触发消息、训练卡、正式反馈或自动发布。
+- 删除合成会话或执行保留期清理时，同步删除审阅候选原文与动作，AI发布候选正文被清空并标记撤回；不含原文的审计链保留。

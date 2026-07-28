@@ -157,6 +157,7 @@ const API_ENDPOINTS = {
   aiQaKnowledgeRetrieve: "/api/ai-qa/knowledge/retrieve",
   aiQaKnowledgeCandidates: "/api/ai-qa/knowledge/candidates",
   aiQaKnowledgeEvaluation: "/api/ai-qa/knowledge/evaluation/run",
+  aiQaReviewCases: "/api/ai-qa/review-cases",
   offlineBenchmarks: "/api/research/benchmarks",
   researchMethodology: "/api/research/methodology",
   computationContract: "/api/research/computation-contract",
@@ -1640,6 +1641,31 @@ function createSafeHomeApi(options = {}) {
         header: { "Idempotency-Key": idempotencyKey },
         requiresAuth: true,
       });
+    },
+
+    listAiQaReviewCases(params = {}) {
+      return request(`${API_ENDPOINTS.aiQaReviewCases}${queryString(params)}`, {
+        requiresAuth: true,
+      });
+    },
+
+    getAiQaReviewCase(caseId) {
+      return request(
+        `${API_ENDPOINTS.aiQaReviewCases}/${encodeURIComponent(caseId)}`,
+        { requiresAuth: true },
+      );
+    },
+
+    decideAiQaReviewCase(caseId, data, idempotencyKey) {
+      return request(
+        `${API_ENDPOINTS.aiQaReviewCases}/${encodeURIComponent(caseId)}/decisions`,
+        {
+          method: "POST",
+          data,
+          header: { "Idempotency-Key": idempotencyKey },
+          requiresAuth: true,
+        },
+      );
     },
 
     getOfflineBenchmarkConfig() {

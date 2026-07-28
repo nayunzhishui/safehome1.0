@@ -195,6 +195,21 @@ def test_answer_retrieves_only_active_published_content_and_cites_version(tmp_pa
     assert data["message"]["model"]["formal_feedback_write_allowed"] is False
     assert data["uncertainty"] == "medium"
     assert "可能遗漏情境" in data["boundary_notice"]
+    assert data["review_case_id"]
+    with app.app_context():
+        database = importlib.import_module("database")
+        with database.get_connection() as conn:
+            review_case = conn.execute(
+                "SELECT * FROM ai_qa_review_cases WHERE id = ?",
+                (data["review_case_id"],),
+            ).fetchone()
+            candidate = conn.execute(
+                "SELECT status FROM publication_candidates WHERE id = ?",
+                (review_case["publication_candidate_id"],),
+            ).fetchone()
+    assert review_case["status"] == "pending_review"
+    assert review_case["formal_feedback_written"] == 0
+    assert candidate["status"] == "approved"
 
 
 def test_input_is_deidentified_and_client_control_fields_fail_closed(

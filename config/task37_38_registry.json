@@ -650,7 +650,41 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T37-C07", "title": "人工审阅工作台", "dependencies": ["T37-C06", "T38-F12"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-C07",
+      "title": "人工审阅工作台",
+      "dependencies": ["T37-C06", "T38-F12"],
+      "engineering_complete": true,
+      "status": "engineering_complete_human_qualification_and_release_gated",
+      "evidence": [
+        "backend/services/ai_qa_review_service.py",
+        "backend/services/ai_qa_service.py",
+        "backend/routes/ai_qa.py",
+        "backend/scripts/migrate_task37_c07_ai_review_workbench.py",
+        "backend/tests/test_task37_c07_ai_review_workbench.py",
+        "backend/tests/test_ai_qa_controlled_sandbox.py",
+        "shared/constants/api.ts",
+        "shared/types/api.ts",
+        "apps/web/src/pages/AiQaSandboxPage.tsx",
+        "apps/web/src/services/safehomeApi.ts",
+        "apps/miniprogram/services/api.js",
+        "docs/03_技术真相/API接口文档.md",
+        "docs/03_技术真相/数据库字段说明.md"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_c07_ai_review_workbench.py", "backend/tests/test_task37_c06_output_contract.py", "backend/tests/test_task37_c05_input_security.py", "backend/tests/test_ai_qa_controlled_sandbox.py", "backend/tests/test_ai_qa_production_readiness.py", "backend/tests/test_task28_ai_qa_contract.py", "backend/tests/test_task36_ai_qa_full_closure.py", "backend/tests/test_task37_c01_ai_use_case_freeze.py", "backend/tests/test_task37_c02_provider_selection.py", "backend/tests/test_task37_c03_real_provider_adapters.py", "backend/tests/test_task37_c04_approved_knowledge_rag.py", "backend/tests/test_task37_b03_publication_gate.py", "backend/tests/test_task38_f11_competency_authorization.py", "-q"],
+        ["python", "backend/scripts/migrate_task37_c07_ai_review_workbench.py", "plan", "--database-path", ".codex_tmp/t37_c07_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c07_ai_review_workbench.py", "apply", "--database-path", ".codex_tmp/t37_c07_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c07_ai_review_workbench.py", "verify", "--database-path", ".codex_tmp/t37_c07_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c07_ai_review_workbench.py", "rollback", "--database-path", ".codex_tmp/t37_c07_registry.sqlite3"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["python", "backend/scripts/audit_miniprogram_frontend.py"],
+        ["node", "--check", "apps/miniprogram/services/api.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T37-C08", "title": "评测、红队和持续质量", "dependencies": ["T37-C07"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-C09", "title": "预算、限流、熔断、降级和删除", "dependencies": ["T37-C08"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-C10", "title": "AI分阶段发布", "dependencies": ["T37-C09"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

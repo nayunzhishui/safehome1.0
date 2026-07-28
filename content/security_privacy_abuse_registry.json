@@ -621,6 +621,81 @@
       }
     },
     {
+      "operation_id": "ai_qa.ai_qa_review_case_decision.post",
+      "method": "POST",
+      "path": "/api/ai-qa/review-cases/<case_id>/decisions",
+      "object_type": "ai_qa",
+      "action": "update",
+      "object_scope": "internal_synthetic_evidence_role_scoped",
+      "allowed_roles": [
+        "researcher",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_review_case_detail.get",
+      "method": "GET",
+      "path": "/api/ai-qa/review-cases/<case_id>",
+      "object_type": "ai_qa",
+      "action": "read",
+      "object_scope": "internal_synthetic_evidence_role_scoped",
+      "allowed_roles": [
+        "researcher",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "ai_qa.ai_qa_review_cases.get",
+      "method": "GET",
+      "path": "/api/ai-qa/review-cases",
+      "object_type": "ai_qa",
+      "action": "read",
+      "object_scope": "internal_synthetic_evidence_role_scoped",
+      "allowed_roles": [
+        "researcher",
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "student",
+        "supervisor"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "ai_qa.ai_qa_review_evidence.get",
       "method": "GET",
       "path": "/api/ai-qa/review/evidence",

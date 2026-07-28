@@ -7,6 +7,8 @@ import type {
   AiQaAnswer,
   AiQaConfig,
   AiQaEvaluationRun,
+  AiQaReviewCase,
+  AiQaReviewDecision,
   AiQaReviewEvidence,
   AiQaSession,
   AiKnowledgeInventory,
@@ -53,6 +55,11 @@ export function AiQaSandboxPage() {
   const [sessions, setSessions] = useState<AiQaSession[]>([]);
   const [activeSession, setActiveSession] = useState<AiQaSession | null>(null);
   const [answer, setAnswer] = useState<AiQaAnswer | null>(null);
+  const [reviewCases, setReviewCases] = useState<AiQaReviewCase[]>([]);
+  const [activeReviewCase, setActiveReviewCase] = useState<AiQaReviewCase | null>(null);
+  const [reviewDecision, setReviewDecision] = useState<AiQaReviewDecision>("adopt");
+  const [reviewFinalText, setReviewFinalText] = useState("");
+  const [reviewRationale, setReviewRationale] = useState("");
   const [evidence, setEvidence] = useState<AiQaReviewEvidence | null>(null);
   const [evaluation, setEvaluation] = useState<AiQaEvaluationRun | null>(null);
   const [providerSelection, setProviderSelection] = useState<AiProviderSelection | null>(null);
@@ -91,8 +98,16 @@ export function AiQaSandboxPage() {
     setProviderEvidence(nextProviderEvidence.items);
     setKnowledge(nextKnowledge);
     if (canChat) {
-      const listed = await safeHomeApi.listAiQaSessions();
+      const [listed, listedReviewCases] = await Promise.all([
+        safeHomeApi.listAiQaSessions(),
+        safeHomeApi.listAiQaReviewCases(),
+      ]);
       setSessions(listed.items);
+      setReviewCases(listedReviewCases.items);
+      if (listedReviewCases.items[0]) {
+        setActiveReviewCase(listedReviewCases.items[0]);
+        setReviewFinalText(listedReviewCases.items[0].candidate_text);
+      }
       const current = listed.items.find((item) => item.status === "active");
       if (current) setActiveSession(await safeHomeApi.getAiQaSession(current.id));
     }
@@ -138,6 +153,45 @@ export function AiQaSandboxPage() {
       const nextAnswer = await safeHomeApi.sendAiQaMessage(activeSession.id, text);
       setAnswer(nextAnswer);
       setActiveSession(await safeHomeApi.getAiQaSession(activeSession.id));
+      if (nextAnswer.review_case_id) {
+        const reviewCase = await safeHomeApi.getAiQaReviewCase(nextAnswer.review_case_id);
+        setActiveReviewCase(reviewCase);
+        setReviewFinalText(reviewCase.candidate_text);
+        setReviewCases((current) => [
+          reviewCase,
+          ...current.filter((item) => item.id !== reviewCase.id),
+        ]);
+      }
+    });
+  }
+
+  function selectReviewCase(caseId: string) {
+    void run("读取AI候选审阅任务", async () => {
+      const reviewCase = await safeHomeApi.getAiQaReviewCase(caseId);
+      setActiveReviewCase(reviewCase);
+      setReviewFinalText(reviewCase.final_text || reviewCase.candidate_text);
+      setReviewRationale("");
+    });
+  }
+
+  function decideReviewCase() {
+    if (!activeReviewCase) return;
+    void run("保存人工审阅决定", async () => {
+      const decided = await safeHomeApi.decideAiQaReviewCase(
+        activeReviewCase.id,
+        {
+          decision: reviewDecision,
+          expected_version: activeReviewCase.version,
+          final_text: reviewDecision === "modify" ? reviewFinalText.trim() : undefined,
+          rationale: reviewRationale.trim() || undefined,
+        },
+        `ai-review:${activeReviewCase.id}:${reviewDecision}:${Date.now()}`,
+      );
+      setActiveReviewCase(decided);
+      setReviewCases((current) => current.map((item) => (
+        item.id === decided.id ? decided : item
+      )));
+      setReviewRationale("");
     });
   }
 
@@ -447,6 +501,117 @@ export function AiQaSandboxPage() {
           <p className="mutedText">已有 {evidence?.runs.length || 0} 次运行、{evidence?.reviews.length || 0} 条人工复核；证据列表不返回原始提示词。</p>
         </section>
       </div>
+
+      <section className="panel" aria-label="AI候选人工审阅工作台">
+        <div className="panelHeading">
+          <div>
+            <span className="panelKicker">T37-C07 · 起草与复核分离</span>
+            <h2>AI候选人工审阅</h2>
+          </div>
+          <span className="gateBadge gateBlocked">不写入参与者正式反馈</span>
+        </div>
+        <p className="boundaryCallout">
+          同屏核对来源、AI候选、拦截原因、修改差异和责任人。角色名称不等于胜任力授权；缺少当前对象范围授权时，服务端会拒绝决定。
+        </p>
+        <label className="fieldLabel" htmlFor="ai-review-case">审阅任务</label>
+        <select
+          id="ai-review-case"
+          value={activeReviewCase?.id || ""}
+          disabled={busy || !reviewCases.length}
+          onChange={(event) => selectReviewCase(event.target.value)}
+        >
+          {!reviewCases.length ? <option value="">暂无候选</option> : null}
+          {reviewCases.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.status} · {item.required_task_code} · {item.id}
+            </option>
+          ))}
+        </select>
+        {activeReviewCase ? (
+          <>
+            <dl className="aiQaFacts">
+              <div><dt>状态</dt><dd>{activeReviewCase.status} · v{activeReviewCase.version}</dd></div>
+              <div><dt>任务授权</dt><dd>{activeReviewCase.required_task_code} / {activeReviewCase.required_competency}</dd></div>
+              <div><dt>起草者</dt><dd>{activeReviewCase.draft_author_id}</dd></div>
+              <div><dt>审阅者</dt><dd>{activeReviewCase.reviewed_by || "待独立人工审阅"}</dd></div>
+              <div><dt>发布者</dt><dd>{activeReviewCase.published_by || "未发布"}</dd></div>
+              <div><dt>正式反馈写入</dt><dd>{activeReviewCase.formal_feedback_written ? "是" : "否"}</dd></div>
+              <div><dt>来源快照</dt><dd>{activeReviewCase.source_snapshot_hash}</dd></div>
+              <div><dt>修改差异</dt><dd>{activeReviewCase.diff.changed ? `已修改 · 相似度 ${activeReviewCase.diff.similarity}` : "未修改"}</dd></div>
+            </dl>
+            <div className="aiQaColumns">
+              <article className="evaluationCard">
+                <h3>AI候选</h3>
+                <p>{activeReviewCase.candidate_text}</p>
+                <h3>拦截原因</h3>
+                <p>{activeReviewCase.gate_violations.length ? activeReviewCase.gate_violations.join(" / ") : "输出五道门已通过"}</p>
+              </article>
+              <article className="evaluationCard">
+                <h3>批准来源</h3>
+                {activeReviewCase.citations.map((item) => (
+                  <div className="citationCard" key={`${item.release_id}-${item.content_id}`}>
+                    <strong>{item.title}</strong>
+                    <span>{item.source_ref} · {item.source_version}</span>
+                    <p>{item.excerpt}</p>
+                  </div>
+                ))}
+              </article>
+            </div>
+            {activeReviewCase.status === "pending_review" ? (
+              <div className="formGrid">
+                <label>
+                  人工决定
+                  <select
+                    value={reviewDecision}
+                    onChange={(event) => setReviewDecision(event.target.value as AiQaReviewDecision)}
+                  >
+                    <option value="adopt">采用候选</option>
+                    <option value="modify">修改后采用</option>
+                    <option value="reject">拒绝候选</option>
+                    <option value="none_match">没有匹配项</option>
+                  </select>
+                </label>
+                <label>
+                  修改后的内部候选
+                  <textarea
+                    value={reviewFinalText}
+                    maxLength={3000}
+                    disabled={reviewDecision !== "modify"}
+                    onChange={(event) => setReviewFinalText(event.target.value)}
+                  />
+                </label>
+                <label>
+                  审阅理由
+                  <textarea
+                    value={reviewRationale}
+                    maxLength={1000}
+                    onChange={(event) => setReviewRationale(event.target.value)}
+                  />
+                </label>
+                <button
+                  className="primaryButton"
+                  type="button"
+                  disabled={
+                    busy
+                    || (reviewDecision === "modify" && !reviewFinalText.trim())
+                    || (reviewDecision !== "adopt" && !reviewRationale.trim())
+                  }
+                  onClick={decideReviewCase}
+                >
+                  保存人工决定
+                </button>
+              </div>
+            ) : (
+              <article className="evaluationCard">
+                <h3>人工最终文本</h3>
+                <p>{activeReviewCase.final_text || "本次决定不保留最终文本。"}</p>
+              </article>
+            )}
+          </>
+        ) : (
+          <p className="emptyState">生成通过安全门的AI候选后，审阅任务会在这里出现。</p>
+        )}
+      </section>
 
       <section className="panel" aria-label="待人工冻结事项">
         <div className="panelHeading"><div><span className="panelKicker">不能自动签字</span><h2>待人工冻结事项</h2></div>{isAdmin ? <button className="textButton dangerText" disabled={busy || Boolean(config?.runtime_control.killed)} type="button" onClick={killSandbox}>立即停用沙盒</button> : null}</div>

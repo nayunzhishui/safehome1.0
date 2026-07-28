@@ -254,15 +254,70 @@ def get_session(actor: dict, session_id: str) -> dict:
     return session
 
 
+def _purge_review_content(conn, session_id: str) -> dict[str, int]:
+    case_rows = conn.execute(
+        """
+        SELECT id, publication_candidate_id
+        FROM ai_qa_review_cases
+        WHERE session_id = ?
+        """,
+        (session_id,),
+    ).fetchall()
+    case_ids = [str(row["id"]) for row in case_rows]
+    action_count = 0
+    for case_id in case_ids:
+        action_count += int(
+            conn.execute(
+                "SELECT COUNT(*) AS count FROM ai_qa_review_actions WHERE review_case_id = ?",
+                (case_id,),
+            ).fetchone()["count"]
+        )
+        conn.execute(
+            "DELETE FROM ai_qa_review_actions WHERE review_case_id = ?",
+            (case_id,),
+        )
+    candidate_ids = [
+        str(row["publication_candidate_id"])
+        for row in case_rows
+        if row["publication_candidate_id"]
+    ]
+    for candidate_id in candidate_ids:
+        conn.execute(
+            """
+            UPDATE publication_candidates
+            SET status = 'withdrawn', content_json = '{}',
+                content_sha256 = ?, withdrawn_at = ?, updated_at = ?,
+                withdrawal_reason = 'synthetic_session_deleted'
+            WHERE id = ? AND channel = 'ai_candidate'
+            """,
+            (
+                hashlib.sha256(b"{}").hexdigest(),
+                now_iso(),
+                now_iso(),
+                candidate_id,
+            ),
+        )
+    conn.execute(
+        "DELETE FROM ai_qa_review_cases WHERE session_id = ?",
+        (session_id,),
+    )
+    return {
+        "review_cases": len(case_ids),
+        "review_actions": action_count,
+        "publication_candidates_redacted": len(candidate_ids),
+    }
+
+
 def delete_session(actor: dict, session_id: str) -> dict:
     session = _get_owned_session(actor, session_id, active_required=False)
     if session["status"] == "deleted":
         return {"id": session_id, "status": "deleted", "idempotent": True}
     with get_connection() as conn:
+        review_counts = _purge_review_content(conn, session_id)
         conn.execute("DELETE FROM ai_qa_feedback WHERE session_id = ? AND user_id = ?", (session_id, actor["id"]))
         conn.execute("DELETE FROM ai_qa_messages WHERE session_id = ? AND user_id = ?", (session_id, actor["id"]))
         conn.execute("UPDATE ai_qa_sessions SET status = 'deleted', deleted_at = ?, updated_at = ?, research_use_allowed = 0 WHERE id = ?", (now_iso(), now_iso(), session_id))
-        write_audit_log(conn, "ai_qa_session_deleted", actor["id"], "ai_qa_session", session_id, {"message_content_deleted": True, "provider_logs_contain_raw_text": False})
+        write_audit_log(conn, "ai_qa_session_deleted", actor["id"], "ai_qa_session", session_id, {"message_content_deleted": True, "review_content_deleted": True, "provider_logs_contain_raw_text": False, **review_counts})
         conn.commit()
     return {"id": session_id, "status": "deleted", "idempotent": False}
 
@@ -695,8 +750,8 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
         PublicationGateError,
         assert_candidate_approved,
         evaluate_candidate,
-        mark_published,
     )
+    from services.ai_qa_review_service import create_review_case
 
     with get_connection() as conn:
         try:
@@ -772,7 +827,28 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
             token_estimate=result.token_estimate,
             cost_micros=result.cost_micros,
         )
-        mark_published(conn, candidate["id"], actor)
+        review_case = create_review_case(
+            conn,
+            message_id=assistant["id"],
+            session_id=session_id,
+            subject_type="ai_qa_session",
+            subject_id=session_id,
+            recipient_user_id=str(actor["id"]),
+            draft_author_id=(
+                f"provider:{result.provider}:{result.model_version}"
+            ),
+            candidate_text=answer_text,
+            citations=citations,
+            gate_violations=output_gate["violations"],
+            scope={
+                "object_scope": "individual_adult_low_risk",
+                "risk_level": "low",
+                "involves_minor": False,
+                "multi_party": False,
+                "mechanism_explanation": False,
+            },
+            publication_candidate_id=candidate["id"],
+        )
         write_audit_log(conn, "ai_qa_answer_generated", actor["id"], "ai_qa_message", assistant["id"], {"session_id": session_id, "request_hash": _request_hash(text), "citation_count": len(citations), "knowledge_snapshot_hash": retrieval["knowledge_snapshot_hash"], "provider": result.provider, "model_version": result.model_version, "raw_text_logged": False, "tools_allowed": False})
         conn.commit()
     return {
@@ -782,6 +858,7 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
         "human_escalation": False,
         "uncertainty": structured_output["uncertainty"],
         "boundary_notice": structured_output["boundary_notice"],
+        "review_case_id": review_case["id"],
     }
 
 
@@ -796,16 +873,20 @@ def purge_expired_synthetic_data(actor: dict, payload: dict) -> dict:
             (cutoff,),
         ).fetchall()
         session_ids = [str(row["id"]) for row in rows]
-        counts = {"sessions": len(session_ids), "messages": 0, "feedback": 0, "provider_events": 0, "safety_events": 0}
+        counts = {"sessions": len(session_ids), "messages": 0, "feedback": 0, "provider_events": 0, "safety_events": 0, "review_cases": 0, "review_actions": 0, "publication_candidates_redacted": 0}
         for session_id in session_ids:
             counts["messages"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_messages WHERE session_id = ?", (session_id,)).fetchone()["count"])
             counts["feedback"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_feedback WHERE session_id = ?", (session_id,)).fetchone()["count"])
             counts["provider_events"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_provider_events WHERE session_id = ?", (session_id,)).fetchone()["count"])
             counts["safety_events"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_safety_events WHERE session_id = ?", (session_id,)).fetchone()["count"])
+            counts["review_cases"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_review_cases WHERE session_id = ?", (session_id,)).fetchone()["count"])
+            counts["review_actions"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_review_actions WHERE review_case_id IN (SELECT id FROM ai_qa_review_cases WHERE session_id = ?)", (session_id,)).fetchone()["count"])
+            counts["publication_candidates_redacted"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_review_cases WHERE session_id = ? AND publication_candidate_id IS NOT NULL", (session_id,)).fetchone()["count"])
         if not dry_run:
             if payload.get("confirm_synthetic_purge") is not True:
                 raise AiQaError("confirmation_required", "执行合成沙盒清理需要明确确认", 409)
             for session_id in session_ids:
+                _purge_review_content(conn, session_id)
                 conn.execute("DELETE FROM ai_qa_feedback WHERE session_id = ?", (session_id,))
                 conn.execute("DELETE FROM ai_qa_messages WHERE session_id = ?", (session_id,))
                 conn.execute("DELETE FROM ai_qa_provider_events WHERE session_id = ?", (session_id,))
