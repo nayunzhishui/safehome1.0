@@ -773,6 +773,8 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
         "offline_benchmark_annotation_manual.json",
         "synthetic_affect_benchmark_240.json",
         "affect_model_candidate_registry.json",
+        "network_analysis_policy.json",
+        "synthetic_group_network_suite.json",
     ]
     payloads = {}
     for filename in filenames:
@@ -851,6 +853,44 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
         errors.append("中文预训练候选在模型制品和许可归档前必须保持阻断")
     if candidates.get("probability_display_policy") != "not_clinical_confidence":
         errors.append("模型分数不得显示为临床置信度")
+    network_policy = payloads["network_analysis_policy.json"]
+    if any(
+        network_policy.get(key) is not False
+        for key in (
+            "participant_visible",
+            "individual_metrics_allowed",
+            "training_model",
+            "causal_inference_allowed",
+            "family_quality_inference_allowed",
+            "production_group_data_allowed",
+        )
+    ):
+        errors.append("群体网络分析不得开启参与者展示、个体指标、训练、因果或生产真实数据")
+    if set(network_policy.get("boundary_variants", [])) != {
+        "approved_cohort",
+        "observed_nodes",
+        "active_nodes",
+    }:
+        errors.append("群体网络分析必须登记三类边界敏感性")
+    network_fixture = payloads["synthetic_group_network_suite.json"]
+    fixture_canonical = {
+        "nodes": network_fixture.get("nodes", []),
+        "windows": network_fixture.get("windows", []),
+    }
+    fixture_hash = hashlib.sha256(
+        json.dumps(
+            fixture_canonical,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    if (
+        network_fixture.get("contains_real_data") is not False
+        or network_fixture.get("data_class") != "synthetic"
+        or fixture_hash != network_fixture.get("fixture_hash")
+    ):
+        errors.append("群体网络合成工件必须明确无真人数据且哈希一致")
     return errors
 
 

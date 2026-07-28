@@ -47,6 +47,9 @@ import type {
   ListResponse,
   ModelInfo,
   AffectModelCandidateRegistry,
+  GroupNetworkAnalysisInput,
+  GroupNetworkAnalysisPolicy,
+  GroupNetworkAnalysisReport,
   OfflineAdjudicationQueueItem,
   OfflineAgreementSummary,
   OfflineAnnotationGovernance,
@@ -1092,6 +1095,17 @@ export class SafeHomeApiClient {
 
   getOfflineModelCandidates(): Promise<AffectModelCandidateRegistry> {
     return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/model-candidates`);
+  }
+
+  getGroupNetworkAnalysisPolicy(): Promise<GroupNetworkAnalysisPolicy> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/network-policy`);
+  }
+
+  analyzeGroupNetwork(input: GroupNetworkAnalysisInput): Promise<GroupNetworkAnalysisReport> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/network/analyze`, {
+      method: "POST",
+      body: input,
+    });
   }
 
   syncOfflineDatasetCards(): Promise<{ registry_version: string; card_count: number; external_downloaded: false }> {

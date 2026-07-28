@@ -16,6 +16,17 @@ def test_task29_content_and_generated_fixture_are_deterministic():
     assert validator.validate_content(CONTENT_ROOT, CONTENT_ROOT / "schemas") == []
     result = subprocess.run([sys.executable, str(BACKEND_ROOT / "scripts" / "generate_task29_synthetic_benchmark.py"), "--check"], cwd=PROJECT_ROOT, capture_output=True, text=True)
     assert result.returncode == 0 and "240 cases" in result.stdout
+    network = subprocess.run(
+        [
+            sys.executable,
+            str(BACKEND_ROOT / "scripts" / "generate_task37_a04_synthetic_network.py"),
+            "--check",
+        ],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert network.returncode == 0 and "fixture check passed" in network.stdout
 
 
 def test_task29_registry_blocks_unapproved_external_downloads():

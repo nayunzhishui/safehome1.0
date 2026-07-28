@@ -6,12 +6,14 @@ from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.utils import fail, ok
 from services.offline_benchmark_service import (
     OfflineBenchmarkError,
+    analyze_network_payload,
     adjudicate_case,
     agreement_summary,
     disable_runtime,
     get_affect_model_candidates,
     get_annotation_governance,
     get_config,
+    get_network_analysis_policy,
     list_adjudication_queue,
     list_blind_cases,
     list_dataset_cards,
@@ -23,6 +25,7 @@ from services.offline_benchmark_service import (
     split_report,
     sync_registry,
 )
+from services.group_network_analysis_service import NetworkAnalysisError
 
 
 bp = Blueprint("offline_benchmarks", __name__, url_prefix="/api/research/benchmarks")
@@ -38,7 +41,7 @@ def _actor(*roles: str):
 def _response(callback):
     try:
         return ok(callback())
-    except OfflineBenchmarkError as exc:
+    except (OfflineBenchmarkError, NetworkAnalysisError) as exc:
         return fail(exc.code, str(exc), status=exc.status, details=exc.details or None)
 
 
@@ -88,6 +91,23 @@ def model_candidates():
     if error:
         return error
     return _response(get_affect_model_candidates)
+
+
+@bp.get("/network-policy")
+def network_policy():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(get_network_analysis_policy)
+
+
+@bp.post("/network/analyze")
+def network_analyze():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(lambda: analyze_network_payload(actor, payload))
 
 
 @bp.post("/cases/<case_id>/annotations")

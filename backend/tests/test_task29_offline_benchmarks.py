@@ -115,10 +115,11 @@ def test_network_benchmark_validates_weight_threshold_stability_and_boundary(tmp
     headers = _actors(app)
     run = app.test_client().post("/api/research/benchmarks/runs/network", headers=headers["researcher-a"]).get_json()["data"]
     metrics = run["metrics"]
-    assert metrics["passed"] is True
-    assert all(metrics["checks"].values())
-    assert metrics["public_graph_used"] is False
-    assert metrics["public_graph_block_reason"] == "source_data_rights_human_review_pending"
+    assert metrics["suppressed"] is False
+    assert metrics["individual_metrics_included"] is False
+    assert metrics["node_identifiers_included"] is False
+    assert len(metrics["boundary_sensitivity"]) == 3
+    assert len(metrics["missingness_sensitivity"]) == 3
     assert metrics["family_quality_inference"] is False
 
 

@@ -51,8 +51,8 @@
       "id": "safehome_synthetic_network_v1",
       "card_type": "dataset",
       "source": {
-        "url": "project://generated/synthetic-network-suite-v1",
-        "version": "v1",
+        "url": "project://content/synthetic_group_network_suite.json",
+        "version": "2026-07-28-t37-a04-v1",
         "population": "synthetic_no_people",
         "context": "环、星、双社区和加权扰动图"
       },
@@ -62,7 +62,7 @@
       },
       "metrics": {
         "status": "not_admitted_for_production_training",
-        "sample_or_artifact": "generated_in_memory"
+        "sample_or_artifact": "generated_and_verified_at_runtime"
       },
       "bias": [
         "language=not_applicable",

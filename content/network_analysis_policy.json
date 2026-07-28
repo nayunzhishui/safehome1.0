@@ -1,0 +1,59 @@
+{
+  "schema": "safehome.group-network-analysis-policy.v1",
+  "version": "2026-07-28-t37-a04-v1",
+  "status": "synthetic_engineering_ready_real_group_data_gated",
+  "research_questions": [
+    {
+      "id": "group_interaction_structure_over_time",
+      "description": "在预先批准的群体和观察窗口内，描述互动结构是否发生变化。",
+      "causal": false
+    }
+  ],
+  "node_definition": "已获准纳入同一群体观察窗口的去标识实体；节点ID必须是本次分析专用的不可回连代号。",
+  "edge_definition": "观察窗口内经批准的互动计数或强度；不包含消息正文、关系评价或临床解释。",
+  "window_definition": {
+    "minimum_days": 7,
+    "maximum_days": 90,
+    "maximum_windows_per_run": 8
+  },
+  "missingness_definition": "未记录、未同意或技术失败导致的潜在边缺失；缺失不能自动解释为没有互动。",
+  "boundary_variants": [
+    "approved_cohort",
+    "observed_nodes",
+    "active_nodes"
+  ],
+  "minimum_privacy_thresholds": {
+    "nodes": 12,
+    "edges_per_window": 10,
+    "community_size": 5,
+    "maximum_missing_edge_rate": 0.3
+  },
+  "input_limits": {
+    "maximum_nodes": 500,
+    "maximum_edges_per_window": 5000,
+    "node_id_pattern": "^n_[0-9a-f]{12}$"
+  },
+  "missingness_sensitivity_rates": [0.0, 0.1, 0.2],
+  "community_edge_weight_threshold": 0.5,
+  "participant_visible": false,
+  "individual_metrics_allowed": false,
+  "individual_labels_forbidden": [
+    "核心人物",
+    "边缘人物",
+    "关系风险",
+    "孤立者",
+    "影响力排名"
+  ],
+  "training_model": false,
+  "causal_inference_allowed": false,
+  "family_quality_inference_allowed": false,
+  "production_group_data_allowed": false,
+  "real_data_gate": [
+    "purpose_specific_consent",
+    "approved_group_boundary",
+    "deidentification_verification",
+    "minimum_sample_verification",
+    "retention_and_deletion_plan"
+  ],
+  "boundary_notice": "社会网络分析仅提供满足隐私阈值的群体级描述和敏感性线索，不训练情绪模型、不评价个人或关系质量、不作因果解释。"
+}

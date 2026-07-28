@@ -226,6 +226,8 @@
 | POST | `/api/research/benchmarks/dataset-cards/sync` | role:admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/disable` | role:admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/model-candidates` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/benchmarks/network-policy` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/network/analyze` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/runs` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/<run_id>/reviews` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/affect` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |

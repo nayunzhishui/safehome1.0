@@ -27,8 +27,8 @@
     {
       "id": "safehome_synthetic_network_v1",
       "name": "安心陪伴合成算法图组",
-      "source_url": "project://generated/synthetic-network-suite-v1",
-      "source_version": "v1",
+      "source_url": "project://content/synthetic_group_network_suite.json",
+      "source_version": "2026-07-28-t37-a04-v1",
       "language": "not_applicable",
       "platform": "synthetic",
       "population": "synthetic_no_people",
@@ -38,11 +38,11 @@
       "sensitivity": "none_synthetic",
       "allowed_uses": ["engineering_test", "offline_benchmark"],
       "prohibited_uses": ["family_quality_scoring", "participant_inference"],
-      "artifact_sha256": "generated_in_memory",
-      "local_path": null,
+      "artifact_sha256": "generated_and_verified_at_runtime",
+      "local_path": "content/synthetic_group_network_suite.json",
       "ingest_status": "local_synthetic_ready",
-      "deletion_method": "no_persistent_source_artifact",
-      "review_note": "只验证图算法，不表示家庭或社会关系。"
+      "deletion_method": "delete_generated_artifact_and_rebuild_from_generator",
+      "review_note": "固定合成18节点双窗口图；只验证群体描述、隐私阈值和敏感性，不表示家庭或社会关系。"
     },
     {
       "id": "google_goemotions_1_0",

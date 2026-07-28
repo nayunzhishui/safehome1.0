@@ -2662,6 +2662,94 @@ export interface AffectModelCandidateRegistry {
   };
 }
 
+export interface GroupNetworkAnalysisPolicy {
+  version: string;
+  status: string;
+  research_questions: Array<{ id: string; description: string; causal: false }>;
+  node_definition: string;
+  edge_definition: string;
+  window_definition: {
+    minimum_days: number;
+    maximum_days: number;
+    maximum_windows_per_run: number;
+  };
+  missingness_definition: string;
+  boundary_variants: Array<
+    "approved_cohort" | "observed_nodes" | "active_nodes"
+  >;
+  minimum_privacy_thresholds: {
+    nodes: number;
+    edges_per_window: number;
+    community_size: number;
+    maximum_missing_edge_rate: number;
+  };
+  participant_visible: false;
+  individual_metrics_allowed: false;
+  training_model: false;
+  causal_inference_allowed: false;
+  family_quality_inference_allowed: false;
+  production_group_data_allowed: false;
+  real_data_gate: string[];
+  boundary_notice: string;
+}
+
+export interface GroupNetworkAnalysisInput {
+  schema?: string;
+  version?: string;
+  contains_real_data: false;
+  data_class: "synthetic";
+  output_mode: "group_aggregate";
+  research_question_id: "group_interaction_structure_over_time";
+  expected_missing_edge_rate: number;
+  nodes: Array<{
+    id: string;
+    approved_cohort: boolean;
+    observed: boolean;
+    active: boolean;
+  }>;
+  windows: Array<{
+    id: string;
+    start_date: string;
+    end_date: string;
+    edges: Array<{ source: string; target: string; weight: number }>;
+  }>;
+  fixture_hash?: string;
+  boundary_notice?: string;
+}
+
+export interface GroupNetworkAggregateMetrics {
+  node_count: number;
+  edge_count: number;
+  density: number;
+  weighted_strength_distribution: Record<string, number | null>;
+  component_count: number;
+  community_size_distribution: Record<string, number | null>;
+  suppressed_small_community_count: number;
+}
+
+export interface GroupNetworkAnalysisReport {
+  suppressed: boolean;
+  suppression_reason: "minimum_privacy_threshold_not_met" | null;
+  aggregate_metrics: GroupNetworkAggregateMetrics | null;
+  boundary_sensitivity: Array<{
+    boundary: string;
+    metrics: GroupNetworkAggregateMetrics;
+  }>;
+  missingness_sensitivity: Array<{
+    removed_edge_rate: number;
+    metrics: GroupNetworkAggregateMetrics;
+  }>;
+  temporal_change: Record<string, unknown>;
+  individual_metrics_included: false;
+  node_identifiers_included: false;
+  training_model: false;
+  causal_inference: false;
+  family_quality_inference: false;
+  participant_visible: false;
+  analysis_digest?: string;
+  boundary_notice: string;
+}
+
 export interface OfflineDatasetCard {
   id: ID;
   name: string;
@@ -2691,7 +2779,8 @@ export interface OfflineBenchmarkRun {
   benchmark_type:
     | "affect_lexicon"
     | "affect_candidate_comparison"
-    | "network_algorithms";
+    | "network_algorithms"
+    | "network_group_descriptive";
   dataset_card_id: ID;
   evidence_level: "synthetic_engineering_only";
   algorithm_version: string;

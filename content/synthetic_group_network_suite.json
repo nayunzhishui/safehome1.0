@@ -1,0 +1,392 @@
+{
+  "schema": "safehome.synthetic-group-network.v1",
+  "version": "2026-07-28-t37-a04-v1",
+  "contains_real_data": false,
+  "data_class": "synthetic",
+  "output_mode": "group_aggregate",
+  "research_question_id": "group_interaction_structure_over_time",
+  "expected_missing_edge_rate": 0.05,
+  "nodes": [
+    {
+      "id": "n_6410c991bca4",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_c8281e9f49fc",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_f889ad07e1cd",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_7e3a1a00f44a",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_4cb02604e5d9",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_bd65ae6aeca2",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_55ddcce805d8",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_158aa90e4dd1",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_985ec262d135",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_757136e80f14",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_0e43f4577aea",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_999697b04a3c",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_6dcce9752a46",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_78c9eed53352",
+      "approved_cohort": true,
+      "observed": true,
+      "active": true
+    },
+    {
+      "id": "n_85e657260d8a",
+      "approved_cohort": true,
+      "observed": true,
+      "active": false
+    },
+    {
+      "id": "n_9263a2ef20ed",
+      "approved_cohort": true,
+      "observed": true,
+      "active": false
+    },
+    {
+      "id": "n_55afbfb35db0",
+      "approved_cohort": true,
+      "observed": false,
+      "active": false
+    },
+    {
+      "id": "n_0fcd7e02e85c",
+      "approved_cohort": true,
+      "observed": false,
+      "active": false
+    }
+  ],
+  "windows": [
+    {
+      "id": "window_1",
+      "start_date": "2026-06-01",
+      "end_date": "2026-06-14",
+      "edges": [
+        {
+          "source": "n_6410c991bca4",
+          "target": "n_c8281e9f49fc",
+          "weight": 1.0
+        },
+        {
+          "source": "n_c8281e9f49fc",
+          "target": "n_f889ad07e1cd",
+          "weight": 1.0
+        },
+        {
+          "source": "n_f889ad07e1cd",
+          "target": "n_7e3a1a00f44a",
+          "weight": 1.0
+        },
+        {
+          "source": "n_7e3a1a00f44a",
+          "target": "n_4cb02604e5d9",
+          "weight": 1.0
+        },
+        {
+          "source": "n_4cb02604e5d9",
+          "target": "n_bd65ae6aeca2",
+          "weight": 1.0
+        },
+        {
+          "source": "n_bd65ae6aeca2",
+          "target": "n_6410c991bca4",
+          "weight": 1.0
+        },
+        {
+          "source": "n_6410c991bca4",
+          "target": "n_7e3a1a00f44a",
+          "weight": 0.8
+        },
+        {
+          "source": "n_55ddcce805d8",
+          "target": "n_158aa90e4dd1",
+          "weight": 1.0
+        },
+        {
+          "source": "n_158aa90e4dd1",
+          "target": "n_985ec262d135",
+          "weight": 1.0
+        },
+        {
+          "source": "n_985ec262d135",
+          "target": "n_757136e80f14",
+          "weight": 1.0
+        },
+        {
+          "source": "n_757136e80f14",
+          "target": "n_0e43f4577aea",
+          "weight": 1.0
+        },
+        {
+          "source": "n_0e43f4577aea",
+          "target": "n_999697b04a3c",
+          "weight": 1.0
+        },
+        {
+          "source": "n_999697b04a3c",
+          "target": "n_55ddcce805d8",
+          "weight": 1.0
+        },
+        {
+          "source": "n_55ddcce805d8",
+          "target": "n_757136e80f14",
+          "weight": 0.8
+        },
+        {
+          "source": "n_6dcce9752a46",
+          "target": "n_78c9eed53352",
+          "weight": 1.0
+        },
+        {
+          "source": "n_78c9eed53352",
+          "target": "n_85e657260d8a",
+          "weight": 1.0
+        },
+        {
+          "source": "n_85e657260d8a",
+          "target": "n_9263a2ef20ed",
+          "weight": 1.0
+        },
+        {
+          "source": "n_9263a2ef20ed",
+          "target": "n_55afbfb35db0",
+          "weight": 1.0
+        },
+        {
+          "source": "n_55afbfb35db0",
+          "target": "n_0fcd7e02e85c",
+          "weight": 1.0
+        },
+        {
+          "source": "n_0fcd7e02e85c",
+          "target": "n_6dcce9752a46",
+          "weight": 1.0
+        },
+        {
+          "source": "n_6dcce9752a46",
+          "target": "n_9263a2ef20ed",
+          "weight": 0.8
+        },
+        {
+          "source": "n_f889ad07e1cd",
+          "target": "n_985ec262d135",
+          "weight": 0.2
+        },
+        {
+          "source": "n_757136e80f14",
+          "target": "n_9263a2ef20ed",
+          "weight": 0.2
+        }
+      ]
+    },
+    {
+      "id": "window_2",
+      "start_date": "2026-06-15",
+      "end_date": "2026-06-28",
+      "edges": [
+        {
+          "source": "n_6410c991bca4",
+          "target": "n_c8281e9f49fc",
+          "weight": 1.0
+        },
+        {
+          "source": "n_c8281e9f49fc",
+          "target": "n_f889ad07e1cd",
+          "weight": 1.0
+        },
+        {
+          "source": "n_f889ad07e1cd",
+          "target": "n_7e3a1a00f44a",
+          "weight": 1.0
+        },
+        {
+          "source": "n_7e3a1a00f44a",
+          "target": "n_4cb02604e5d9",
+          "weight": 1.0
+        },
+        {
+          "source": "n_4cb02604e5d9",
+          "target": "n_bd65ae6aeca2",
+          "weight": 1.0
+        },
+        {
+          "source": "n_bd65ae6aeca2",
+          "target": "n_6410c991bca4",
+          "weight": 1.0
+        },
+        {
+          "source": "n_6410c991bca4",
+          "target": "n_7e3a1a00f44a",
+          "weight": 0.8
+        },
+        {
+          "source": "n_55ddcce805d8",
+          "target": "n_158aa90e4dd1",
+          "weight": 1.0
+        },
+        {
+          "source": "n_158aa90e4dd1",
+          "target": "n_985ec262d135",
+          "weight": 1.0
+        },
+        {
+          "source": "n_985ec262d135",
+          "target": "n_757136e80f14",
+          "weight": 1.0
+        },
+        {
+          "source": "n_757136e80f14",
+          "target": "n_0e43f4577aea",
+          "weight": 1.0
+        },
+        {
+          "source": "n_0e43f4577aea",
+          "target": "n_999697b04a3c",
+          "weight": 1.0
+        },
+        {
+          "source": "n_999697b04a3c",
+          "target": "n_55ddcce805d8",
+          "weight": 1.0
+        },
+        {
+          "source": "n_55ddcce805d8",
+          "target": "n_757136e80f14",
+          "weight": 0.8
+        },
+        {
+          "source": "n_6dcce9752a46",
+          "target": "n_78c9eed53352",
+          "weight": 1.0
+        },
+        {
+          "source": "n_78c9eed53352",
+          "target": "n_85e657260d8a",
+          "weight": 1.0
+        },
+        {
+          "source": "n_85e657260d8a",
+          "target": "n_9263a2ef20ed",
+          "weight": 1.0
+        },
+        {
+          "source": "n_9263a2ef20ed",
+          "target": "n_55afbfb35db0",
+          "weight": 1.0
+        },
+        {
+          "source": "n_55afbfb35db0",
+          "target": "n_0fcd7e02e85c",
+          "weight": 1.0
+        },
+        {
+          "source": "n_0fcd7e02e85c",
+          "target": "n_6dcce9752a46",
+          "weight": 1.0
+        },
+        {
+          "source": "n_6dcce9752a46",
+          "target": "n_9263a2ef20ed",
+          "weight": 0.8
+        },
+        {
+          "source": "n_f889ad07e1cd",
+          "target": "n_985ec262d135",
+          "weight": 0.2
+        },
+        {
+          "source": "n_757136e80f14",
+          "target": "n_9263a2ef20ed",
+          "weight": 0.2
+        },
+        {
+          "source": "n_c8281e9f49fc",
+          "target": "n_4cb02604e5d9",
+          "weight": 0.7
+        },
+        {
+          "source": "n_158aa90e4dd1",
+          "target": "n_0e43f4577aea",
+          "weight": 0.7
+        },
+        {
+          "source": "n_78c9eed53352",
+          "target": "n_55afbfb35db0",
+          "weight": 0.7
+        },
+        {
+          "source": "n_4cb02604e5d9",
+          "target": "n_0e43f4577aea",
+          "weight": 0.25
+        },
+        {
+          "source": "n_999697b04a3c",
+          "target": "n_0fcd7e02e85c",
+          "weight": 0.25
+        }
+      ]
+    }
+  ],
+  "fixture_hash": "6a3889163c0b09d5dceedb6378efaa9053c46cfd94ca97c3ebb9b8225c0064cb",
+  "boundary_notice": "固定生成的无真人图，只用于群体级描述算法与隐私阈值工程验收。"
+}

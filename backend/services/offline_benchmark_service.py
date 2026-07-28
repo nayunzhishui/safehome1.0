@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections import Counter, defaultdict, deque
+from collections import Counter, defaultdict
 
 from flask import current_app
 
@@ -13,6 +13,10 @@ from database import get_connection, json_dumps, json_loads, new_id, now_iso, ro
 from services.affect_model_benchmark_service import (
     compare_affect_candidates,
     synthetic_case_partition,
+)
+from services.group_network_analysis_service import (
+    analyze_group_network,
+    public_policy as public_network_policy,
 )
 
 
@@ -119,6 +123,35 @@ def get_affect_model_candidates() -> dict:
         "candidates": registry["candidates"],
         "model_card": registry["model_card"],
     }
+
+
+def get_network_analysis_policy() -> dict:
+    return public_network_policy(_content_json("network_analysis_policy.json"))
+
+
+def analyze_network_payload(actor: dict, data: dict) -> dict:
+    _require_enabled()
+    report = analyze_group_network(
+        data,
+        _content_json("network_analysis_policy.json"),
+    )
+    with get_connection() as conn:
+        write_audit_log(
+            conn,
+            "offline_group_network_analyzed",
+            actor["id"],
+            "offline_group_network",
+            report.get("analysis_digest") or "suppressed",
+            {
+                "suppressed": report["suppressed"],
+                "individual_metrics_included": False,
+                "node_identifiers_included": False,
+                "raw_input_persisted": False,
+                "production_replacement_allowed": False,
+            },
+        )
+        conn.commit()
+    return report
 
 
 def _decode_card(row) -> dict:
@@ -569,53 +602,6 @@ def _dictionary_terms() -> dict[str, list[str]]:
     return terms
 
 
-def _components(nodes: list[str], edges: list[tuple[str, str, float]], threshold: float) -> list[list[str]]:
-    graph = {node: set() for node in nodes}
-    for left, right, weight in edges:
-        if weight >= threshold:
-            graph[left].add(right); graph[right].add(left)
-    seen, groups = set(), []
-    for start in nodes:
-        if start in seen:
-            continue
-        queue, group = deque([start]), []
-        seen.add(start)
-        while queue:
-            node = queue.popleft(); group.append(node)
-            for nxt in graph[node] - seen:
-                seen.add(nxt); queue.append(nxt)
-        groups.append(sorted(group))
-    return groups
-
-
-def _network_metrics() -> dict:
-    star_nodes = [f"s{i}" for i in range(12)]
-    star_edges = [("s0", f"s{i}", 1.0 + (i % 3) * 0.2) for i in range(1, 12)]
-    strength = Counter()
-    for left, right, weight in star_edges:
-        strength[left] += weight; strength[right] += weight
-    community_nodes = [f"c{i}" for i in range(12)]
-    community_edges = []
-    for start in (0, 6):
-        for index in range(start, start + 6):
-            community_edges.append((f"c{index}", f"c{start + ((index - start + 1) % 6)}", 1.0))
-    community_edges.append(("c2", "c8", 0.1))
-    groups_low = _components(community_nodes, community_edges, 0.0)
-    groups_sparse = _components(community_nodes, community_edges, 0.5)
-    perturbed = [(left, right, weight * (1.05 if index % 2 else 0.95)) for index, (left, right, weight) in enumerate(star_edges)]
-    perturbed_strength = Counter()
-    for left, right, weight in perturbed:
-        perturbed_strength[left] += weight; perturbed_strength[right] += weight
-    checks = {
-        "inverse_weight_distance_positive": all(1 / weight > 0 for _, _, weight in star_edges),
-        "star_center_highest_strength": strength.most_common(1)[0][0] == "s0",
-        "star_center_stable_under_5pct_perturbation": perturbed_strength.most_common(1)[0][0] == "s0",
-        "community_threshold_splits_weak_bridge": len(groups_low) == 1 and len(groups_sparse) == 2,
-        "sparse_threshold_documented": True,
-    }
-    return {"synthetic_graphs": ["ring", "star", "two_community", "weighted_perturbation"], "checks": checks, "passed": all(checks.values()), "community_count_before_threshold": len(groups_low), "community_count_after_threshold": len(groups_sparse), "complexity_note": "strength O(E); components O(V+E); production centrality remains offline and bounded", "public_graph_used": False, "public_graph_block_reason": "source_data_rights_human_review_pending", "family_quality_inference": False}
-
-
 def _save_run(actor: dict, benchmark_type: str, card_id: str, metrics: dict, parameters: dict) -> dict:
     timestamp = now_iso()
     run_id = new_id("obr")
@@ -653,8 +639,25 @@ def run_affect_benchmark(actor: dict) -> dict:
 
 def run_network_benchmark(actor: dict) -> dict:
     _require_enabled()
-    metrics = _network_metrics()
-    return _save_run(actor, "network_algorithms", "safehome_synthetic_network_v1", metrics, {"random_seed": 29, "weight_distance": "1/weight", "thresholds": [0.0, 0.5], "perturbation": 0.05})
+    fixture = _content_json("synthetic_group_network_suite.json")
+    metrics = analyze_group_network(
+        fixture,
+        _content_json("network_analysis_policy.json"),
+    )
+    return _save_run(
+        actor,
+        "network_group_descriptive",
+        "safehome_synthetic_network_v1",
+        metrics,
+        {
+            "fixture_hash": fixture["fixture_hash"],
+            "policy_version": _content_json("network_analysis_policy.json")[
+                "version"
+            ],
+            "raw_input_persisted": False,
+            "individual_output_allowed": False,
+        },
+    )
 
 
 def _decode_run(row) -> dict:
