@@ -25,6 +25,12 @@
     <text wx:elif="{{launchScreening}}" class="ta-kicker">范围记录：{{launchScreening.decision}}</text>
   </view>
 
+  <view wx:if="{{childPolicy}}" class="safe-card ta-card" aria-label="未成年人亲子保护范围">
+    <text class="ta-section-title">未成年人/亲子子线</text>
+    <text class="ta-meta">当前入口未开放。监护人同意和儿童知情、同意或拒绝会分别记录。</text>
+    <text class="ta-boundary">{{childPolicy.boundary_notice}}</text>
+  </view>
+
   <view class="safe-card ta-card ta-flow-entry">
     <view>
       <text class="ta-section-title">八步协作流程</text>

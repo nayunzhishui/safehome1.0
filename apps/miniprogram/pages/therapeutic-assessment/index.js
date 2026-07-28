@@ -38,6 +38,7 @@ Page({
     evidenceItems: [],
     productionContract: null,
     adultLaunchScope: null,
+    childPolicy: null,
     launchScreening: null,
     defaultServiceLevel: {
       id: "L0",
@@ -75,11 +76,12 @@ Page({
   async loadCases() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const [result, levelStatus, productionContract, adultLaunchScope] = await Promise.all([
+      const [result, levelStatus, productionContract, adultLaunchScope, childPolicy] = await Promise.all([
         api.listTherapeuticAssessmentCases(),
         api.getTherapeuticAssessmentServiceLevels(),
         api.getTherapeuticAssessmentProductionContract(),
         api.getTherapeuticAssessmentAdultLaunchScope(),
+        api.getTherapeuticAssessmentChildPolicy(),
       ]);
       const cases = (result.items || []).map((item) => ({
         ...item,
@@ -92,6 +94,7 @@ Page({
         defaultServiceLevel: levelStatus.current_default || this.data.defaultServiceLevel,
         productionContract,
         adultLaunchScope,
+        childPolicy,
       });
       if (cases[0]) {
         const [evidence, launchScreening] = await Promise.all([

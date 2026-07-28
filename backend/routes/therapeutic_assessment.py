@@ -102,6 +102,13 @@ from services.therapeutic_assessment_launch_service import (
     public_scope as adult_launch_scope,
     record_screening,
 )
+from services.therapeutic_assessment_child_service import (
+    get_safeguard as get_child_safeguard,
+    initialize as initialize_child_safeguard,
+    public_policy as child_safeguard_policy,
+    update_decision as update_child_decision,
+    update_gates as update_child_gates,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -137,6 +144,42 @@ def _key():
 def get_launch_scope_route():
     actor, error = _actor()
     return error or _respond(adult_launch_scope)
+
+
+@bp.get("/child-safeguards")
+def get_child_safeguards_policy_route():
+    actor, error = _actor()
+    return error or _respond(child_safeguard_policy)
+
+
+@bp.post("/cases/<case_id>/child-safeguards")
+def post_child_safeguard_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        initialize_child_safeguard, actor, case_id, _payload(), _key()
+    )
+
+
+@bp.get("/cases/<case_id>/child-safeguards")
+def get_child_safeguard_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(get_child_safeguard, actor, case_id)
+
+
+@bp.patch("/cases/<case_id>/child-safeguards/decision")
+def patch_child_safeguard_decision_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        update_child_decision, actor, case_id, _payload(), _key()
+    )
+
+
+@bp.patch("/cases/<case_id>/child-safeguards/gates")
+def patch_child_safeguard_gates_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        update_child_gates, actor, case_id, _payload(), _key()
+    )
 
 
 @bp.post("/cases/<case_id>/launch-screenings")

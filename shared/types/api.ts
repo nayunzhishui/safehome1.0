@@ -417,6 +417,53 @@ export interface TherapeuticAssessmentLaunchScreening {
   updated_at?: ISODateTime;
 }
 
+export interface TherapeuticAssessmentChildPolicy {
+  schema: "safehome.therapeutic-assessment.child-safeguards.v1";
+  version: string;
+  entry_enabled: false;
+  production_release_approved: false;
+  guardian_consent_does_not_override_child_refusal: true;
+  required_external_gates: Array<
+    "t3_child_competency" | "ethics_approval" | "a0_a3_pilot_evidence"
+  >;
+  source_domains: Array<"child" | "guardian" | "school" | "professional">;
+  child_rights: string[];
+  parent_position: string;
+  temporary_showcase_counts_as_permission: false;
+  boundary_notice: string;
+}
+
+export interface TherapeuticAssessmentChildSafeguard {
+  id: ID;
+  case_id: ID;
+  guardian_user_id: ID;
+  child_user_id: ID;
+  guardian_consent_status: "pending" | "active" | "withdrawn";
+  child_assent_status: "pending" | "assented" | "refused" | "withdrawn";
+  source_permissions: Record<
+    "child" | "guardian" | "school" | "professional",
+    {
+      recorded_separately: true;
+      joint_feedback_allowed: false;
+      requires_explicit_scope_confirmation: true;
+    }
+  >;
+  status:
+    | "blocked_pending_child_safeguards"
+    | "blocked_child_refusal"
+    | "blocked_external_gates"
+    | "specialist_review_ready";
+  policy_version: string;
+  version: number;
+  entry_enabled: false;
+  production_release_approved: false;
+  temporary_showcase_counts_as_permission: false;
+  child_private_material_auto_shared: false;
+  boundary_notice: string;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
 export interface TherapeuticAssessmentProductionContract {
   schema: "safehome.therapeutic-assessment.production-contract.v1";
   version: string;

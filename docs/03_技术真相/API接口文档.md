@@ -2431,3 +2431,11 @@ relationship_initiation_intention_action
 - `POST /api/therapeutic-assessment/cases/<case_id>/launch-screenings`：参与者本人或具备对象范围的正式研究角色登记范围筛查；要求`Idempotency-Key`、`expected_case_version`及五项知悉确认。
 - `GET /api/therapeutic-assessment/cases/<case_id>/launch-screenings/latest`：参与者本人、分配研究者、督导或管理员读取最新筛查；无记录时返回`screening_required`。
 - 决策只允许`eligible_l1_l2`、`human_review_required`和`outside_first_release_scope`。所有结果均保持`production_release_approved=false`，临时展示越权不改变对象权限或发布结论。
+
+### T38-F14 未成年人/亲子保护子线
+
+- `GET /api/therapeutic-assessment/child-safeguards`：返回入口关闭、儿童权利、来源分离和外部门禁。
+- `POST /api/therapeutic-assessment/cases/<case_id>/child-safeguards`：督导/管理员建立监护人与儿童对象映射；要求幂等键和case版本。
+- `GET /api/therapeutic-assessment/cases/<case_id>/child-safeguards`：仅监护人、儿童、分配研究者、督导或管理员按对象范围读取。
+- `PATCH .../child-safeguards/decision`：监护人只能同意/撤回自己的同意；儿童只能同意、拒绝或撤回。儿童拒绝为优先阻断。
+- `PATCH .../child-safeguards/gates`：督导/管理员登记T3、伦理和A0—A3证据；即使齐全，生产入口仍需独立批准。

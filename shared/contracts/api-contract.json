@@ -19062,6 +19062,250 @@
       }
     },
     {
+      "operation_id": "therapeutic_assessment.get_child_safeguard_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards",
+      "handler": "therapeutic_assessment.get_child_safeguard_route",
+      "module": "routes.therapeutic_assessment",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "parent",
+          "student",
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "role_scoped",
+      "request": {
+        "content_type": null,
+        "path_parameters": [
+          "case_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.therapeutic_assessment.get_child_safeguard_route.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_child_safeguard_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards",
+      "handler": "therapeutic_assessment.post_child_safeguard_route",
+      "module": "routes.therapeutic_assessment",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "parent",
+          "student",
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "role_scoped",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "case_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.therapeutic_assessment.post_child_safeguard_route.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.patch_child_safeguard_decision_route.patch",
+      "method": "PATCH",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards/decision",
+      "handler": "therapeutic_assessment.patch_child_safeguard_decision_route",
+      "module": "routes.therapeutic_assessment",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "parent",
+          "student",
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "role_scoped",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "case_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.therapeutic_assessment.patch_child_safeguard_decision_route.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.patch_child_safeguard_gates_route.patch",
+      "method": "PATCH",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards/gates",
+      "handler": "therapeutic_assessment.patch_child_safeguard_gates_route",
+      "module": "routes.therapeutic_assessment",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "parent",
+          "student",
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "role_scoped",
+      "request": {
+        "content_type": "application/json",
+        "path_parameters": [
+          "case_id"
+        ],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.therapeutic_assessment.patch_child_safeguard_gates_route.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
       "operation_id": "therapeutic_assessment.post_data_item_route.post",
       "method": "POST",
       "path": "/api/therapeutic-assessment/cases/<case_id>/data-items",
@@ -20317,6 +20561,65 @@
         "envelope": "standard",
         "request_id": true,
         "data_contract": "routes.therapeutic_assessment.post_work_queue_route.data"
+      },
+      "error_envelope": {
+        "ok": false,
+        "error": {
+          "code": "string",
+          "message": "string"
+        },
+        "request_id": "string"
+      },
+      "error_codes": [
+        "forbidden",
+        "http_error",
+        "internal_error",
+        "unauthorized"
+      ],
+      "enum_refs": [],
+      "deprecation": {
+        "status": "active",
+        "remove_after": null,
+        "replacement": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.get_child_safeguards_policy_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/child-safeguards",
+      "handler": "therapeutic_assessment.get_child_safeguards_policy_route",
+      "module": "routes.therapeutic_assessment",
+      "access": {
+        "mode": "role",
+        "roles": [
+          "parent",
+          "student",
+          "researcher",
+          "supervisor",
+          "admin"
+        ],
+        "legacy_admin_token": true,
+        "showcase_read_bypass": false
+      },
+      "object_scope": "role_scoped",
+      "request": {
+        "content_type": null,
+        "path_parameters": [],
+        "query_parameters": [],
+        "body_fields": [],
+        "headers": [],
+        "pagination": null,
+        "idempotency": {
+          "supported": false,
+          "required": false,
+          "header": null,
+          "max_length": null
+        }
+      },
+      "response": {
+        "envelope": "standard",
+        "request_id": true,
+        "data_contract": "routes.therapeutic_assessment.get_child_safeguards_policy_route.data"
       },
       "error_envelope": {
         "ok": false,

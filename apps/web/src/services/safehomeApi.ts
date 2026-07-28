@@ -151,6 +151,8 @@ import type {
   TherapeuticAssessmentAuthorization,
   TherapeuticAssessmentAuthorizationStatus,
   TherapeuticAssessmentAdultLaunchScope,
+  TherapeuticAssessmentChildPolicy,
+  TherapeuticAssessmentChildSafeguard,
   TherapeuticAssessmentLaunchScreening,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentCompetencyLevel,
@@ -1772,6 +1774,16 @@ export class SafeHomeApiClient {
 
   getTherapeuticAssessmentAdultLaunchScope(): Promise<TherapeuticAssessmentAdultLaunchScope> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/launch-scope`);
+  }
+
+  getTherapeuticAssessmentChildPolicy(): Promise<TherapeuticAssessmentChildPolicy> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/child-safeguards`);
+  }
+
+  getTherapeuticAssessmentChildSafeguard(caseId: string): Promise<TherapeuticAssessmentChildSafeguard> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/child-safeguards`,
+    );
   }
 
   getTherapeuticAssessmentLaunchScreening(caseId: string): Promise<TherapeuticAssessmentLaunchScreening> {

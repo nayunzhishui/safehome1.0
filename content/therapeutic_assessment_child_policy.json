@@ -1,0 +1,34 @@
+{
+  "schema": "safehome.therapeutic-assessment.child-safeguards.v1",
+  "version": "2026-07-29-f14-v1",
+  "entry_enabled": false,
+  "production_release_approved": false,
+  "guardian_consent_does_not_override_child_refusal": true,
+  "required_external_gates": [
+    "t3_child_competency",
+    "ethics_approval",
+    "a0_a3_pilot_evidence"
+  ],
+  "source_domains": [
+    "child",
+    "guardian",
+    "school",
+    "professional"
+  ],
+  "default_source_permission": {
+    "recorded_separately": true,
+    "joint_feedback_allowed": false,
+    "requires_explicit_scope_confirmation": true
+  },
+  "child_rights": [
+    "age_appropriate_information",
+    "assent",
+    "refusal",
+    "withdrawal",
+    "private_material_not_auto_shared",
+    "complaint_and_correction"
+  ],
+  "parent_position": "合作伙伴，不作为儿童困难的自动病因解释。",
+  "temporary_showcase_counts_as_permission": false,
+  "boundary_notice": "未成年人/亲子子线仍处于工程准备状态。监护人同意与儿童知情、同意或拒绝分别记录；儿童个别资料不会因家庭绑定自动进入共同反馈。"
+}

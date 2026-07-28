@@ -1129,6 +1129,35 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
         "complaint_path",
     }:
         errors.append(f"{adult_filename} 必须完整说明等待、退出、隐私、保密例外和投诉")
+    child_filename = "therapeutic_assessment_child_policy.json"
+    try:
+        child_policy = load_json(content_dir / child_filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{child_filename} 不可读取：{exc}")
+        return errors
+    if (
+        child_policy.get("schema")
+        != "safehome.therapeutic-assessment.child-safeguards.v1"
+        or child_policy.get("entry_enabled") is not False
+        or child_policy.get("production_release_approved") is not False
+        or child_policy.get("guardian_consent_does_not_override_child_refusal")
+        is not True
+        or child_policy.get("temporary_showcase_counts_as_permission") is not False
+    ):
+        errors.append(f"{child_filename} 必须保持入口关闭、儿童拒绝优先且禁止展示旁路")
+    if set(child_policy.get("source_domains", [])) != {
+        "child",
+        "guardian",
+        "school",
+        "professional",
+    }:
+        errors.append(f"{child_filename} 必须分开儿童、监护人、学校和专业来源")
+    if set(child_policy.get("required_external_gates", [])) != {
+        "t3_child_competency",
+        "ethics_approval",
+        "a0_a3_pilot_evidence",
+    }:
+        errors.append(f"{child_filename} 必须要求T3、伦理和A0-A3试点证据")
     return errors
 
 

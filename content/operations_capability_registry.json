@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 382,
+  "operation_count": 387,
   "capability_count": 44,
   "capabilities": [
     {
@@ -1927,7 +1927,7 @@
       "feature_flags": [],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 72)",
+        "backend/tests (operation coverage: 77)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1938,6 +1938,8 @@
         "therapeutic_assessment.get_case_lifecycle_route.get",
         "therapeutic_assessment.get_case_route.get",
         "therapeutic_assessment.get_cases_route.get",
+        "therapeutic_assessment.get_child_safeguard_route.get",
+        "therapeutic_assessment.get_child_safeguards_policy_route.get",
         "therapeutic_assessment.get_competency_authorizations_route.get",
         "therapeutic_assessment.get_competency_effective_route.get",
         "therapeutic_assessment.get_data_item_route.get",
@@ -1960,6 +1962,8 @@
         "therapeutic_assessment.get_work_queue_route.get",
         "therapeutic_assessment.get_work_queue_runtime_route.get",
         "therapeutic_assessment.patch_action_route.patch",
+        "therapeutic_assessment.patch_child_safeguard_decision_route.patch",
+        "therapeutic_assessment.patch_child_safeguard_gates_route.patch",
         "therapeutic_assessment.patch_competency_authorization_revoke_route.patch",
         "therapeutic_assessment.patch_data_consent_route.patch",
         "therapeutic_assessment.patch_question_route.patch",
@@ -1968,6 +1972,7 @@
         "therapeutic_assessment.post_action_route.post",
         "therapeutic_assessment.post_assign_route.post",
         "therapeutic_assessment.post_case_route.post",
+        "therapeutic_assessment.post_child_safeguard_route.post",
         "therapeutic_assessment.post_competency_authorization_route.post",
         "therapeutic_assessment.post_data_item_route.post",
         "therapeutic_assessment.post_disagree_route.post",

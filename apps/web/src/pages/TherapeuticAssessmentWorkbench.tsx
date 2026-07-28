@@ -4,6 +4,7 @@ import type {
   PublicationCandidate,
   TherapeuticAssessmentAuthorizationStatus,
   TherapeuticAssessmentAdultLaunchScope,
+  TherapeuticAssessmentChildPolicy,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
@@ -106,6 +107,8 @@ export function TherapeuticAssessmentWorkbench() {
     useState<TherapeuticAssessmentProductionContract | null>(null);
   const [adultLaunchScope, setAdultLaunchScope] =
     useState<TherapeuticAssessmentAdultLaunchScope | null>(null);
+  const [childPolicy, setChildPolicy] =
+    useState<TherapeuticAssessmentChildPolicy | null>(null);
   const [launchScreening, setLaunchScreening] =
     useState<TherapeuticAssessmentLaunchScreening | null>(null);
   const [queueItems, setQueueItems] = useState<TherapeuticAssessmentWorkQueueItem[]>([]);
@@ -142,10 +145,11 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, launchScope, queue, runtime, publications, lifecycle] = await Promise.all([
+      const [result, contract, launchScope, childSafeguards, queue, runtime, publications, lifecycle] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
         safeHomeApi.getTherapeuticAssessmentAdultLaunchScope(),
+        safeHomeApi.getTherapeuticAssessmentChildPolicy(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
         safeHomeApi.listPublicationCandidates(),
@@ -154,6 +158,7 @@ export function TherapeuticAssessmentWorkbench() {
       setCases(result.items);
       setProductionContract(contract);
       setAdultLaunchScope(launchScope);
+      setChildPolicy(childSafeguards);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
       setPublicationCandidates(publications.items);
@@ -372,6 +377,13 @@ export function TherapeuticAssessmentWorkbench() {
             当前记录：{launchScreening?.decision || "尚未筛查"}。
           </p>
           <small>{adultLaunchScope.boundary_notice}</small>
+        </section>
+      ) : null}
+      {childPolicy ? (
+        <section className="status" aria-label="未成年人亲子保护子线">
+          <strong>未成年人/亲子子线未开放</strong>
+          <p>监护人同意、儿童知情与拒绝权、四类资料来源和专业门禁分别记录。</p>
+          <small>{childPolicy.boundary_notice}</small>
         </section>
       ) : null}
       {queueRuntime ? (
