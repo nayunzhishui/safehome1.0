@@ -104,7 +104,7 @@
     {
       "source_file": "offline_annotation_data_policy.json",
       "source_version": "2026-07-28-t37-a02-v1",
-      "source_sha256": "5389194cc4564188ee714f16fc5d9a0acecd8fb2a8bb986fcd55a25d3d26f286",
+      "source_sha256": "be848a424e3b7dd688dca54e4630f4945bf305107c7e61e7fc9f47471cd1957a",
       "content_types": [
         "annotation_data_rights_policy"
       ],
@@ -161,7 +161,7 @@
     {
       "source_file": "operations_capability_registry.json",
       "source_version": "2026-07-21-t34-v1",
-      "source_sha256": "6e70d65c6d42b4812a4288600a027179066efbcbd9f8349bb3112eacd6ed1415",
+      "source_sha256": "45245ac559b63744fc2a0256c3aaac43ba37e767aff544f00bebdc88ee0efa72",
       "content_types": [
         "capability_registry",
         "release_gate",
@@ -233,7 +233,7 @@
     {
       "source_file": "security_privacy_abuse_registry.json",
       "source_version": "2026-07-20-t31-security-v1",
-      "source_sha256": "abee7c762f10679e7020783ea09e0a0e69f74991595c8d068100f3ce13a29caa",
+      "source_sha256": "207c7e07f804b83be2450405869ec5a2cf4ddcdcc86309a0a68d5a6bfc37b854",
       "content_types": [
         "security_asset_inventory",
         "authorization_matrix",
@@ -283,5 +283,5 @@
   "draft_or_internal_notes_indexed": false,
   "participant_text_indexed": false,
   "production_release_approved": false,
-  "index_hash": "560a13bc251d7608890e1053c890632fa3ff9a12f19b660816c0faa2b7736ba6"
+  "index_hash": "84eba3fee44eaba478cdcb881448641a0aee6a25a832daec4f027fb5d7070e1c"
 }

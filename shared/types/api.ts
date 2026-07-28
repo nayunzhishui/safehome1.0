@@ -2613,6 +2613,55 @@ export interface OfflineBenchmarkConfig {
   boundary_notice: string;
 }
 
+export interface AffectModelCandidate {
+  id: string;
+  kind: "rule_lexicon" | "linear_calibrated" | "chinese_pretrained";
+  name: string;
+  version: string;
+  execution_status:
+    | "runnable_synthetic_engineering_only"
+    | "blocked_artifact_and_rights_review";
+  calibration: string;
+  production_eligible: false;
+  block_reasons?: string[];
+}
+
+export interface AffectModelCandidateRegistry {
+  version: string;
+  status: string;
+  random_seed: 37;
+  dataset_id: ID;
+  split_policy: {
+    version: string;
+    train_percent: 70;
+    validation_percent: 15;
+    test_percent: 15;
+    same_group_cross_split_allowed: false;
+  };
+  feature_contract: {
+    version: string;
+    normalization: string;
+    raw_text_persisted_in_run: false;
+    identity_features_allowed: false;
+  };
+  abstention_policy: {
+    minimum_text_length: number;
+    linear_probability_threshold: number;
+    linear_threshold_candidates: number[];
+    reasons: string[];
+    outcome: "unknown_human_review";
+  };
+  probability_display_policy: "not_clinical_confidence";
+  production_replacement_allowed: false;
+  candidates: AffectModelCandidate[];
+  model_card: {
+    intended_use: string;
+    out_of_scope: string[];
+    known_limitations: string[];
+    release_gate: string;
+  };
+}
+
 export interface OfflineDatasetCard {
   id: ID;
   name: string;
@@ -2639,7 +2688,10 @@ export interface OfflineDatasetCard {
 
 export interface OfflineBenchmarkRun {
   id: ID;
-  benchmark_type: "affect_lexicon" | "network_algorithms";
+  benchmark_type:
+    | "affect_lexicon"
+    | "affect_candidate_comparison"
+    | "network_algorithms";
   dataset_card_id: ID;
   evidence_level: "synthetic_engineering_only";
   algorithm_version: string;

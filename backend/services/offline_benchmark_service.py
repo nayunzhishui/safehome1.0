@@ -10,6 +10,10 @@ from flask import current_app
 
 from config import PROJECT_ROOT
 from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
+from services.affect_model_benchmark_service import (
+    compare_affect_candidates,
+    synthetic_case_partition,
+)
 
 
 ALLOWED_LABELS = {
@@ -33,7 +37,7 @@ REVIEW_DECISIONS = {"engineering_reviewed", "changes_required", "stop"}
 ALGORITHM_VERSION = "safehome-offline-affect-network-v1"
 ANNOTATION_DATASET_ID = "safehome_synthetic_affect_240_v1"
 ANNOTATION_MANUAL_VERSION = "2026-07-28-t37-a01-v1"
-SPLIT_POLICY_VERSION = "group-hash-70-15-15-v1"
+SPLIT_POLICY_VERSION = "synthetic-case-group-hash-70-15-15-v2"
 
 
 class OfflineBenchmarkError(ValueError):
@@ -95,6 +99,25 @@ def get_annotation_governance() -> dict:
         "split_policy": policy["split_policy"],
         "annotation_policy": policy["annotation_policy"],
         "real_data_gate": policy["real_data_gate"],
+    }
+
+
+def get_affect_model_candidates() -> dict:
+    registry = _content_json("affect_model_candidate_registry.json")
+    return {
+        "version": registry["version"],
+        "status": registry["status"],
+        "random_seed": registry["random_seed"],
+        "dataset_id": registry["dataset_id"],
+        "split_policy": registry["split_policy"],
+        "feature_contract": registry["feature_contract"],
+        "abstention_policy": registry["abstention_policy"],
+        "probability_display_policy": registry["probability_display_policy"],
+        "production_replacement_allowed": registry[
+            "production_replacement_allowed"
+        ],
+        "candidates": registry["candidates"],
+        "model_card": registry["model_card"],
     }
 
 
@@ -198,23 +221,13 @@ def _annotation_fields(data: dict, case_text: str) -> dict:
     }
 
 
-def _split_for_group(group_hash: str) -> str:
-    bucket = int(group_hash[:8], 16) % 100
-    if bucket < 70:
-        return "train"
-    if bucket < 85:
-        return "validation"
-    return "test"
-
-
 def _ensure_group_split(conn, case: dict, timestamp: str) -> tuple[str, str]:
-    group_key = f"synthetic-project:{case.get('subgroup') or 'unmapped'}"
-    group_hash = hashlib.sha256(f"safehome-annotation-group-v1:{group_key}".encode("utf-8")).hexdigest()
+    group_hash, split_name = synthetic_case_partition(case)
     row = conn.execute(
         "SELECT split_name FROM offline_annotation_group_splits WHERE dataset_card_id = ? AND group_hash = ?",
         (ANNOTATION_DATASET_ID, group_hash),
     ).fetchone()
-    split_name = row["split_name"] if row else _split_for_group(group_hash)
+    split_name = row["split_name"] if row else split_name
     if not row:
         conn.execute(
             "INSERT INTO offline_annotation_group_splits (id, dataset_card_id, group_hash, split_name, split_policy_version, created_at) VALUES (?, ?, ?, ?, ?, ?)",
@@ -556,42 +569,6 @@ def _dictionary_terms() -> dict[str, list[str]]:
     return terms
 
 
-def _predict(text: str, terms: dict[str, list[str]]) -> tuple[str, float]:
-    scores = {label: sum(text.count(term) for term in words) for label, words in terms.items()}
-    best = max(scores, key=lambda key: (scores[key], key)) if scores else "unmapped"
-    return (best, 1.0) if scores.get(best, 0) > 0 else ("unmapped", 0.0)
-
-
-def _classification_metrics(cases: list[dict]) -> dict:
-    terms = _dictionary_terms()
-    labels = sorted(ALLOWED_LABELS)
-    confusion = {gold: {pred: 0 for pred in labels} for gold in labels}
-    failures, confidences = [], []
-    subgroup_counts: dict[str, list[int]] = defaultdict(lambda: [0, 0])
-    for case in cases:
-        pred, confidence = _predict(case["text"], terms)
-        gold = case["generator_label"]
-        confusion[gold][pred] += 1
-        correct = int(pred == gold)
-        confidences.append((confidence, correct))
-        subgroup_counts[case["subgroup"]][0] += correct
-        subgroup_counts[case["subgroup"]][1] += 1
-        if not correct:
-            failures.append({"case_id": case["id"], "gold": gold, "predicted": pred, "subgroup": case["subgroup"]})
-    f1s = []
-    for label in sorted({case["generator_label"] for case in cases}):
-        tp = confusion[label][label]
-        fp = sum(confusion[other][label] for other in labels if other != label)
-        fn = sum(confusion[label][other] for other in labels if other != label)
-        precision = tp / (tp + fp) if tp + fp else 0
-        recall = tp / (tp + fn) if tp + fn else 0
-        f1s.append(2 * precision * recall / (precision + recall) if precision + recall else 0)
-    accuracy = sum(correct for _, correct in confidences) / len(cases)
-    ece = sum(abs(confidence - correct) for confidence, correct in confidences) / len(cases)
-    covered = sum(confidence > 0 for confidence, _ in confidences) / len(cases)
-    return {"sample_count": len(cases), "coverage_rate": round(covered, 4), "accuracy_against_generator_seed": round(accuracy, 4), "macro_f1_against_generator_seed": round(sum(f1s) / len(f1s), 4), "calibration_error": round(ece, 4), "confusion_matrix": confusion, "subgroups": {key: {"correct": values[0], "total": values[1], "accuracy": round(values[0] / values[1], 4)} for key, values in subgroup_counts.items()}, "failed_cases": failures, "human_gold_used": False}
-
-
 def _components(nodes: list[str], edges: list[tuple[str, str, float]], threshold: float) -> list[list[str]]:
     graph = {node: set() for node in nodes}
     for left, right, weight in edges:
@@ -654,8 +631,24 @@ def _save_run(actor: dict, benchmark_type: str, card_id: str, metrics: dict, par
 def run_affect_benchmark(actor: dict) -> dict:
     _require_enabled()
     payload = _synthetic_payload()
-    metrics = _classification_metrics(payload["cases"])
-    return _save_run(actor, "affect_lexicon", "safehome_synthetic_affect_240_v1", metrics, {"random_seed": None, "case_hash": payload["case_hash"], "label_reference": "generator_seed_not_human_gold"})
+    registry = _content_json("affect_model_candidate_registry.json")
+    metrics = compare_affect_candidates(
+        payload["cases"], _dictionary_terms(), registry
+    )
+    return _save_run(
+        actor,
+        "affect_candidate_comparison",
+        "safehome_synthetic_affect_240_v1",
+        metrics,
+        {
+            "random_seed": registry["random_seed"],
+            "case_hash": payload["case_hash"],
+            "label_reference": "generator_seed_not_human_gold",
+            "registry_version": registry["version"],
+            "feature_version": registry["feature_contract"]["version"],
+            "experiment_digest": metrics["experiment_digest"],
+        },
+    )
 
 
 def run_network_benchmark(actor: dict) -> dict:

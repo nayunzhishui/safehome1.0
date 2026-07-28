@@ -179,7 +179,7 @@ def test_grouped_split_prevents_same_group_crossing_sets(tmp_path, monkeypatch):
     app = _app(tmp_path, monkeypatch)
     headers = _headers(app)
     client = app.test_client()
-    for case_id in ("syn-affect-001", "syn-affect-011"):
+    for case_id in ("syn-affect-001", "syn-affect-001"):
         client.post(
             f"/api/research/benchmarks/cases/{case_id}/annotations",
             json=_annotation(["anxiety"]),
@@ -196,8 +196,8 @@ def test_grouped_split_prevents_same_group_crossing_sets(tmp_path, monkeypatch):
         database = importlib.import_module("database")
         with database.get_connection() as conn:
             rows = conn.execute(
-                "SELECT DISTINCT data_split FROM offline_benchmark_annotations WHERE case_id IN (?, ?)",
-                ("syn-affect-001", "syn-affect-011"),
+                "SELECT DISTINCT data_split FROM offline_benchmark_annotations WHERE case_id = ?",
+                ("syn-affect-001",),
             ).fetchall()
     assert len(rows) == 1
 

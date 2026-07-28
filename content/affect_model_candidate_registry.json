@@ -1,0 +1,90 @@
+{
+  "schema": "safehome.affect-model-candidate-registry.v1",
+  "version": "2026-07-28-t37-a03-v1",
+  "status": "engineering_comparison_ready_human_gold_pending",
+  "random_seed": 37,
+  "dataset_id": "safehome_synthetic_affect_240_v1",
+  "label_reference": "generator_seed_not_human_gold",
+  "split_policy": {
+    "version": "synthetic-case-group-hash-70-15-15-v2",
+    "train_percent": 70,
+    "validation_percent": 15,
+    "test_percent": 15,
+    "same_group_cross_split_allowed": false
+  },
+  "feature_contract": {
+    "version": "zh-char-tfidf-1-3-v1",
+    "normalization": "strip_only",
+    "raw_text_persisted_in_run": false,
+    "identity_features_allowed": false
+  },
+  "abstention_policy": {
+    "minimum_text_length": 4,
+    "linear_probability_threshold": 0.45,
+    "linear_threshold_candidates": [0.35, 0.45, 0.55, 0.65],
+    "reasons": [
+      "text_too_short",
+      "out_of_domain_no_emotion_cue",
+      "conflicting_emotion_cues",
+      "low_model_confidence"
+    ],
+    "outcome": "unknown_human_review"
+  },
+  "rare_cue_labels": [
+    "helplessness",
+    "guilt",
+    "shame"
+  ],
+  "probability_display_policy": "not_clinical_confidence",
+  "production_replacement_allowed": false,
+  "candidates": [
+    {
+      "id": "rule_lexicon_72_v1",
+      "kind": "rule_lexicon",
+      "name": "72词透明规则基线",
+      "version": "sample_dlut_style_v2_extended",
+      "execution_status": "runnable_synthetic_engineering_only",
+      "calibration": "fixed_rule_score_not_probability",
+      "production_eligible": false
+    },
+    {
+      "id": "char_tfidf_logreg_platt_v1",
+      "kind": "linear_calibrated",
+      "name": "中文字符TF-IDF线性模型",
+      "version": "zh-char-tfidf-1-3-logreg-platt-v1",
+      "execution_status": "runnable_synthetic_engineering_only",
+      "calibration": "sigmoid_platt_cv3",
+      "production_eligible": false
+    },
+    {
+      "id": "zh_pretrained_candidate_v1",
+      "kind": "chinese_pretrained",
+      "name": "中文预训练候选模型",
+      "version": "unselected",
+      "execution_status": "blocked_artifact_and_rights_review",
+      "calibration": "not_run",
+      "production_eligible": false,
+      "block_reasons": [
+        "model_artifact_not_admitted",
+        "license_evidence_not_archived"
+      ]
+    }
+  ],
+  "model_card": {
+    "intended_use": "中文情绪表达线索的离线工程比较与人工复核排序",
+    "out_of_scope": [
+      "临床诊断",
+      "人格或关系评价",
+      "个体风险结论",
+      "替代人工复核",
+      "直接改写参与者反馈或训练卡"
+    ],
+    "known_limitations": [
+      "当前仅使用固定模板合成句和生成标签",
+      "没有人工金标准、自然语言变体或真实部署域证据",
+      "模型分数不能解释为临床置信度",
+      "中文预训练候选尚未通过模型制品与许可准入"
+    ],
+    "release_gate": "双人盲标金标准、分歧裁决、模型制品哈希、许可证据、公平性与漂移专项、人工批准全部完成后另行评估"
+  }
+}

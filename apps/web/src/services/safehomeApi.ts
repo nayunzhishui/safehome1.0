@@ -46,6 +46,7 @@ import type {
   GrowthOverview,
   ListResponse,
   ModelInfo,
+  AffectModelCandidateRegistry,
   OfflineAdjudicationQueueItem,
   OfflineAgreementSummary,
   OfflineAnnotationGovernance,
@@ -1087,6 +1088,10 @@ export class SafeHomeApiClient {
 
   getOfflineBenchmarkConfig(): Promise<OfflineBenchmarkConfig> {
     return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/config`);
+  }
+
+  getOfflineModelCandidates(): Promise<AffectModelCandidateRegistry> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/model-candidates`);
   }
 
   syncOfflineDatasetCards(): Promise<{ registry_version: string; card_count: number; external_downloaded: false }> {

@@ -767,7 +767,13 @@ def validate_emotion_annotation_content(content_dir: Path) -> list[str]:
 
 def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
-    filenames = ["offline_benchmark_registry.json", "offline_benchmark_label_mapping.json", "offline_benchmark_annotation_manual.json", "synthetic_affect_benchmark_240.json"]
+    filenames = [
+        "offline_benchmark_registry.json",
+        "offline_benchmark_label_mapping.json",
+        "offline_benchmark_annotation_manual.json",
+        "synthetic_affect_benchmark_240.json",
+        "affect_model_candidate_registry.json",
+    ]
     payloads = {}
     for filename in filenames:
         try:
@@ -827,6 +833,24 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
     mapping = payloads["offline_benchmark_label_mapping.json"]
     if "unmapped" not in mapping.get("project_labels", []):
         errors.append("offline_benchmark_label_mapping.json 必须保留unmapped")
+    candidates = payloads["affect_model_candidate_registry.json"]
+    kinds = [item.get("kind") for item in candidates.get("candidates", [])]
+    if kinds != ["rule_lexicon", "linear_calibrated", "chinese_pretrained"]:
+        errors.append("情感候选注册表必须依次登记规则、线性和中文预训练候选")
+    if candidates.get("production_replacement_allowed") is not False:
+        errors.append("情感候选注册表在人工金标准完成前不得允许生产替换")
+    pretrained = next(
+        (
+            item
+            for item in candidates.get("candidates", [])
+            if item.get("kind") == "chinese_pretrained"
+        ),
+        {},
+    )
+    if pretrained.get("execution_status") != "blocked_artifact_and_rights_review":
+        errors.append("中文预训练候选在模型制品和许可归档前必须保持阻断")
+    if candidates.get("probability_display_policy") != "not_clinical_confidence":
+        errors.append("模型分数不得显示为临床置信度")
     return errors
 
 

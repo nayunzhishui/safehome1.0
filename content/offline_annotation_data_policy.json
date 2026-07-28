@@ -36,8 +36,8 @@
     "zero_means_project_owned_synthetic_fixture": true
   },
   "split_policy": {
-    "version": "group-hash-70-15-15-v1",
-    "group_levels": ["user", "family", "project"],
+    "version": "synthetic-case-group-hash-70-15-15-v2",
+    "group_levels": ["synthetic_case", "user", "family", "project"],
     "train_percent": 70,
     "validation_percent": 15,
     "test_percent": 15,

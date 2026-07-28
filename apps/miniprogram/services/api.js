@@ -1491,6 +1491,10 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/config`, { requiresAuth: true });
     },
 
+    getOfflineModelCandidates() {
+      return request(`${API_ENDPOINTS.offlineBenchmarks}/model-candidates`, { requiresAuth: true });
+    },
+
     getResearchMethodologyPublicStatus() {
       return request(`${API_ENDPOINTS.researchMethodology}/public-status`);
     },

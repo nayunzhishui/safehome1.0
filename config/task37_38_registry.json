@@ -296,7 +296,7 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T37-A03", "title": "透明基线、候选模型和校准", "dependencies": ["T37-A02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {"id": "T37-A03", "title": "透明基线、候选模型和校准", "dependencies": ["T37-A02"], "engineering_complete": true, "status": "engineering_complete_pretrained_and_human_gold_gated", "evidence": ["content/affect_model_candidate_registry.json", "backend/services/affect_model_benchmark_service.py", "backend/services/offline_benchmark_service.py", "backend/scripts/migrate_task37_a03_model_baselines.py", "backend/tests/test_task37_a03_model_baselines.py", "shared/types/api.ts"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task37_a03_model_baselines.py", "backend/tests/test_task37_a02_annotation_governance.py", "backend/tests/test_task29_offline_benchmarks.py", "backend/tests/test_task29_offline_benchmark_contract.py", "-q"], ["python", "backend/scripts/validate_content.py"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"], ["npm.cmd", "run", "build", "--prefix", "apps/web"]]},
     {"id": "T37-A04", "title": "群体级社会网络分析", "dependencies": ["T37-A02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-A05", "title": "模型注册、影子执行和研究者界面", "dependencies": ["T37-A03", "T37-A04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-A06", "title": "漂移、公平性、异常和回滚", "dependencies": ["T37-A05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

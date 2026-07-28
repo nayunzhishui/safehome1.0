@@ -9,6 +9,7 @@ from services.offline_benchmark_service import (
     adjudicate_case,
     agreement_summary,
     disable_runtime,
+    get_affect_model_candidates,
     get_annotation_governance,
     get_config,
     list_adjudication_queue,
@@ -79,6 +80,14 @@ def annotation_governance():
     if error:
         return error
     return _response(get_annotation_governance)
+
+
+@bp.get("/model-candidates")
+def model_candidates():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(get_affect_model_candidates)
 
 
 @bp.post("/cases/<case_id>/annotations")
