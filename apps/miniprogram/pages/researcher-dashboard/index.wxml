@@ -277,6 +277,25 @@
         <text>幂等执行 · 租约并发 · 失败可恢复</text>
         <text>派生结果可受控删除 · 生产发布未批准</text>
       </view>
+      <view class="analysis-shadow-summary">
+        <view class="analysis-job-heading">
+          <text class="analysis-job-title">情感模型影子版本</text>
+          <text class="priority-pill">{{affectModelVersions.length}} 个版本</text>
+        </view>
+        <text class="detail-line">只读合成分析；不改参与者反馈、训练卡或个体决策。</text>
+        <view wx:if="{{affectShadowRuns.length}}">
+          <view wx:for="{{affectShadowRuns}}" wx:key="id" class="analysis-job-card">
+            <view class="analysis-job-heading">
+              <text class="analysis-job-title">{{item.model_version}}</text>
+              <text class="priority-pill">{{item.status}}</text>
+            </view>
+            <text class="participant-meta">样本 {{item.sample_count}} · 覆盖 {{item.coverageText}} · 未知 {{item.unknown_count}}</text>
+            <text class="participant-meta">{{item.createdText}} · 不含原文</text>
+          </view>
+        </view>
+        <text wx:else class="state-copy">尚无影子运行；请在 Web 受控工作台登记版本并执行。</text>
+        <text class="boundary-line">人工复核队列 {{affectShadowReviewCount}} 条，仅显示合成案例代号，不显示原文。</text>
+      </view>
       <view wx:if="{{analysisLoading}}" class="empty-state"><text class="state-copy">正在读取任务摘要…</text></view>
       <view wx:elif="{{analysisError}}" class="error-card">
         <text class="error-title">任务暂时没有读取成功</text>

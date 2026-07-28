@@ -1,0 +1,49 @@
+{
+  "schema": "safehome.affect-shadow-execution-policy.v1",
+  "version": "2026-07-28-t37-a05-v1",
+  "status": "engineering_shadow_only",
+  "active_candidate_id": "char_tfidf_logreg_platt_v1",
+  "allowed_data_classes": [
+    "synthetic"
+  ],
+  "participant_effect_allowed": false,
+  "feedback_write_allowed": false,
+  "training_card_write_allowed": false,
+  "raw_text_persistence_allowed": false,
+  "required_asset_files": [
+    "content/affect_model_candidate_registry.json",
+    "content/synthetic_affect_benchmark_240.json",
+    "analysis/text_analysis/dictionaries/emotion_terms.json"
+  ],
+  "drift_stop_conditions": [
+    "model_registry_hash_changed",
+    "lexicon_hash_changed",
+    "threshold_hash_changed",
+    "feature_version_changed",
+    "dataset_hash_changed",
+    "schema_version_changed",
+    "code_commit_missing"
+  ],
+  "review_queue": {
+    "stores_raw_text": false,
+    "allowed_case_prefix": "syn-affect-",
+    "reasons": [
+      "text_too_short",
+      "out_of_domain_no_emotion_cue",
+      "conflicting_emotion_cues",
+      "low_model_confidence"
+    ]
+  },
+  "researcher_view": {
+    "fields": [
+      "sample_count",
+      "coverage_rate",
+      "unknown_count",
+      "model_version",
+      "limitations",
+      "review_queue_count"
+    ],
+    "raw_text_visible": false
+  },
+  "boundary_notice": "当前只运行项目自有合成数据的只读影子分析，不改变参与者反馈、训练卡或任何个体决策。"
+}

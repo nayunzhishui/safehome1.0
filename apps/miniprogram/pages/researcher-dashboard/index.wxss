@@ -480,6 +480,15 @@
   line-height: 1.5;
 }
 
+.analysis-shadow-summary {
+  display: grid;
+  gap: 16rpx;
+  padding: 24rpx;
+  border: 1rpx solid #d9e7df;
+  border-radius: 22rpx;
+  background: #f8fcfa;
+}
+
 .analysis-quality {
   margin-top: 10rpx;
   color: var(--safe-primary-deep);

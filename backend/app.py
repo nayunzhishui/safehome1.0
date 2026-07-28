@@ -85,6 +85,8 @@ REQUIRED_CONTENT_FILES = [
     "offline_benchmark_label_mapping.json",
     "offline_benchmark_annotation_manual.json",
     "synthetic_affect_benchmark_240.json",
+    "affect_model_candidate_registry.json",
+    "affect_shadow_execution_policy.json",
     "research_methodology_registry.json",
     "task37_data_use_governance.json",
     "task37_computation_contract.json",

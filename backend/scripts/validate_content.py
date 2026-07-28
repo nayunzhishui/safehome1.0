@@ -773,6 +773,7 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
         "offline_benchmark_annotation_manual.json",
         "synthetic_affect_benchmark_240.json",
         "affect_model_candidate_registry.json",
+        "affect_shadow_execution_policy.json",
         "network_analysis_policy.json",
         "synthetic_group_network_suite.json",
     ]
@@ -853,6 +854,29 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
         errors.append("中文预训练候选在模型制品和许可归档前必须保持阻断")
     if candidates.get("probability_display_policy") != "not_clinical_confidence":
         errors.append("模型分数不得显示为临床置信度")
+    shadow_policy = payloads["affect_shadow_execution_policy.json"]
+    if (
+        shadow_policy.get("allowed_data_classes") != ["synthetic"]
+        or shadow_policy.get("participant_effect_allowed") is not False
+        or shadow_policy.get("feedback_write_allowed") is not False
+        or shadow_policy.get("training_card_write_allowed") is not False
+        or shadow_policy.get("raw_text_persistence_allowed") is not False
+    ):
+        errors.append("情感影子执行必须只读、仅合成且不得影响参与者反馈或训练卡")
+    if shadow_policy.get("active_candidate_id") not in {
+        item.get("id") for item in candidates.get("candidates", [])
+    }:
+        errors.append("情感影子执行的活动候选必须存在于模型注册表")
+    if set(shadow_policy.get("drift_stop_conditions", [])) != {
+        "model_registry_hash_changed",
+        "lexicon_hash_changed",
+        "threshold_hash_changed",
+        "feature_version_changed",
+        "dataset_hash_changed",
+        "schema_version_changed",
+        "code_commit_missing",
+    }:
+        errors.append("情感影子执行必须在模型、内容、数据、schema或commit漂移时停止")
     network_policy = payloads["network_analysis_policy.json"]
     if any(
         network_policy.get(key) is not False

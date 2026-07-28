@@ -175,6 +175,9 @@ Page({
     analysisResilience: null,
       analysisLoading: false,
     analysisError: "",
+    affectModelVersions: [],
+    affectShadowRuns: [],
+    affectShadowReviewCount: 0,
     assessmentLoading: false,
     assessmentError: "",
     assessmentCases: [],
@@ -384,9 +387,12 @@ Page({
   async loadAnalysisJobs() {
     this.setData({ analysisLoading: true, analysisError: "" });
     try {
-      const [result, catalog] = await Promise.all([
+      const [result, catalog, modelVersions, shadowRuns, shadowQueue] = await Promise.all([
         api.getResearchAnalysisJobs({ limit: 30 }),
         api.getResearchAnalysisCatalog(),
+        api.listOfflineModelVersions(),
+        api.listOfflineModelShadowRuns(),
+        api.listOfflineModelReviewQueue(),
       ]);
       const labels = {
         affect_aggregate: "聚合情感线索",
@@ -415,6 +421,13 @@ Page({
         })),
         analysisCatalog: catalog,
         analysisResilience: catalog.resilience_summary || null,
+        affectModelVersions: modelVersions.items || [],
+        affectShadowRuns: (shadowRuns.items || []).slice(0, 3).map((item) => ({
+          ...item,
+          coverageText: `${Math.round(Number(item.coverage_rate || 0) * 100)}%`,
+          createdText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+        })),
+        affectShadowReviewCount: (shadowQueue.items || []).length,
       });
     } catch (error) {
       this.setData({ analysisError: error.message || "在线分析任务暂时无法读取。" });

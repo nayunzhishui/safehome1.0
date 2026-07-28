@@ -1243,6 +1243,54 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS offline_model_versions (
+        id TEXT PRIMARY KEY,
+        candidate_id TEXT NOT NULL,
+        model_version TEXT NOT NULL,
+        registry_version TEXT NOT NULL,
+        lexicon_hash TEXT NOT NULL,
+        threshold_hash TEXT NOT NULL,
+        feature_version TEXT NOT NULL,
+        code_commit TEXT NOT NULL,
+        dataset_id TEXT NOT NULL,
+        dataset_hash TEXT NOT NULL,
+        schema_version TEXT NOT NULL,
+        asset_manifest_hash TEXT NOT NULL,
+        limitations_json TEXT NOT NULL DEFAULT '[]',
+        status TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(candidate_id, model_version, asset_manifest_hash)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_model_shadow_runs (
+        id TEXT PRIMARY KEY,
+        model_version_id TEXT NOT NULL,
+        parent_run_id TEXT,
+        input_snapshot_hash TEXT NOT NULL,
+        result_json TEXT NOT NULL DEFAULT '{}',
+        artifact_hash TEXT NOT NULL,
+        status TEXT NOT NULL,
+        raw_text_included INTEGER NOT NULL DEFAULT 0,
+        participant_effect_allowed INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_model_review_queue (
+        id TEXT PRIMARY KEY,
+        shadow_run_id TEXT NOT NULL,
+        case_id TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        status TEXT NOT NULL,
+        raw_text_included INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        UNIQUE(shadow_run_id, case_id, reason)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS research_methodology_versions (
         id TEXT PRIMARY KEY,
         version TEXT NOT NULL UNIQUE,
@@ -2254,6 +2302,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_offline_annotation_adjudications_case ON offline_annotation_adjudications(dataset_card_id, case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_annotation_group_splits_name ON offline_annotation_group_splits(dataset_card_id, split_name)",
     "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_reviews_run ON offline_benchmark_reviews(run_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_model_versions_created ON offline_model_versions(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_model_shadow_runs_created ON offline_model_shadow_runs(model_version_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_model_review_queue_status ON offline_model_review_queue(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_checks_version_created ON research_methodology_checks(version_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_simulations_version_created ON research_methodology_simulation_runs(version_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_evidence_version_created ON research_methodology_evidence_packages(version_id, created_at)",

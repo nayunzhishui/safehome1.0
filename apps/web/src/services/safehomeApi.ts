@@ -58,6 +58,9 @@ import type {
   OfflineBenchmarkConfig,
   OfflineBenchmarkRun,
   OfflineDatasetCard,
+  OfflineModelReviewQueueItem,
+  OfflineModelShadowRun,
+  OfflineModelVersion,
   OfflineSplitReport,
   ResearchMethodologyCheck,
   ResearchMethodologyConfig,
@@ -1122,6 +1125,39 @@ export class SafeHomeApiClient {
 
   runOfflineBenchmark(type: "affect" | "network"): Promise<OfflineBenchmarkRun> {
     return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/runs/${type}`, { method: "POST" });
+  }
+
+  registerOfflineModelVersion(codeCommit: string): Promise<OfflineModelVersion> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/model-versions`, {
+      method: "POST",
+      body: { code_commit: codeCommit },
+    });
+  }
+
+  listOfflineModelVersions(): Promise<ListResponse<OfflineModelVersion> & { boundary_notice: string }> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/model-versions`);
+  }
+
+  runOfflineModelShadow(modelVersionId: string): Promise<OfflineModelShadowRun> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/shadow-runs`, {
+      method: "POST",
+      body: { model_version_id: modelVersionId },
+    });
+  }
+
+  replayOfflineModelShadow(runId: string, modelVersionId: string): Promise<OfflineModelShadowRun> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/shadow-runs/${encodeURIComponent(runId)}/replay`, {
+      method: "POST",
+      body: { model_version_id: modelVersionId },
+    });
+  }
+
+  listOfflineModelShadowRuns(): Promise<ListResponse<OfflineModelShadowRun>> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/shadow-runs`);
+  }
+
+  listOfflineModelReviewQueue(): Promise<ListResponse<OfflineModelReviewQueueItem> & { raw_text_included: false; participant_identifiers_included: false }> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/shadow-review-queue`);
   }
 
   getOfflineAgreement(): Promise<OfflineAgreementSummary> {

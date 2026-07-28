@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 329,
+  "operation_count": 335,
   "capability_count": 44,
   "capabilities": [
     {
@@ -914,7 +914,7 @@
       ],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 18)",
+        "backend/tests (operation coverage: 24)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -935,11 +935,17 @@
         "offline_benchmarks.dataset_cards_sync.post",
         "offline_benchmarks.disable.post",
         "offline_benchmarks.model_candidates.get",
+        "offline_benchmarks.model_version_create.post",
+        "offline_benchmarks.model_versions.get",
         "offline_benchmarks.network_analyze.post",
         "offline_benchmarks.network_policy.get",
         "offline_benchmarks.network_run.post",
         "offline_benchmarks.run_review.post",
-        "offline_benchmarks.runs.get"
+        "offline_benchmarks.runs.get",
+        "offline_benchmarks.shadow_review_queue.get",
+        "offline_benchmarks.shadow_run_create.post",
+        "offline_benchmarks.shadow_run_replay.post",
+        "offline_benchmarks.shadow_runs.get"
       ]
     },
     {

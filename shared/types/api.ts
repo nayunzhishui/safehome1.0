@@ -2794,6 +2794,59 @@ export interface OfflineBenchmarkRun {
   created_at: ISODateTime;
 }
 
+export interface OfflineModelVersion {
+  id: ID;
+  candidate_id: string;
+  model_version: string;
+  registry_version: string;
+  lexicon_hash: string;
+  threshold_hash: string;
+  feature_version: string;
+  code_commit: string;
+  dataset_id: ID;
+  dataset_hash: string;
+  schema_version: string;
+  asset_manifest_hash: string;
+  limitations: string[];
+  status: "registered_shadow_only";
+  created_by: ID;
+  created_at: ISODateTime;
+}
+
+export interface OfflineModelShadowRun {
+  id: ID;
+  model_version_id: ID;
+  parent_run_id?: ID | null;
+  input_snapshot_hash: string;
+  artifact_hash: string;
+  status: "completed_shadow_only";
+  raw_text_included: 0;
+  participant_effect_allowed: 0;
+  sample_count: number;
+  coverage_rate: number;
+  unknown_count: number;
+  review_queue_count: number;
+  limitations: string[];
+  model_version: string;
+  boundary_notice: string;
+  created_by: ID;
+  created_at: ISODateTime;
+}
+
+export interface OfflineModelReviewQueueItem {
+  id: ID;
+  shadow_run_id: ID;
+  case_id: string;
+  reason:
+    | "text_too_short"
+    | "out_of_domain_no_emotion_cue"
+    | "conflicting_emotion_cues"
+    | "low_model_confidence";
+  status: "pending";
+  raw_text_included: 0;
+  created_at: ISODateTime;
+}
+
 export interface OfflineAgreementSummary {
   complete_double_annotated_cases: number;
   required_cases: 200;

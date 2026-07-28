@@ -26,6 +26,14 @@ from services.offline_benchmark_service import (
     sync_registry,
 )
 from services.group_network_analysis_service import NetworkAnalysisError
+from services.affect_shadow_service import (
+    AffectShadowError,
+    list_model_versions,
+    list_review_queue as list_shadow_review_queue,
+    list_shadow_runs,
+    register_model_version,
+    run_shadow,
+)
 
 
 bp = Blueprint("offline_benchmarks", __name__, url_prefix="/api/research/benchmarks")
@@ -41,7 +49,7 @@ def _actor(*roles: str):
 def _response(callback):
     try:
         return ok(callback())
-    except (OfflineBenchmarkError, NetworkAnalysisError) as exc:
+    except (OfflineBenchmarkError, NetworkAnalysisError, AffectShadowError) as exc:
         return fail(exc.code, str(exc), status=exc.status, details=exc.details or None)
 
 
@@ -108,6 +116,67 @@ def network_analyze():
         return error
     payload = request.get_json(silent=True) or {}
     return _response(lambda: analyze_network_payload(actor, payload))
+
+
+@bp.post("/model-versions")
+def model_version_create():
+    actor, error = _actor("admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(
+        lambda: register_model_version(actor, str(payload.get("code_commit") or ""))
+    )
+
+
+@bp.get("/model-versions")
+def model_versions():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(list_model_versions)
+
+
+@bp.post("/shadow-runs")
+def shadow_run_create():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(
+        lambda: run_shadow(actor, str(payload.get("model_version_id") or ""))
+    )
+
+
+@bp.post("/shadow-runs/<run_id>/replay")
+def shadow_run_replay(run_id: str):
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(
+        lambda: run_shadow(
+            actor,
+            str(payload.get("model_version_id") or ""),
+            parent_run_id=run_id,
+        )
+    )
+
+
+@bp.get("/shadow-runs")
+def shadow_runs():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: list_shadow_runs(actor))
+
+
+@bp.get("/shadow-review-queue")
+def shadow_review_queue():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: list_shadow_review_queue(actor))
 
 
 @bp.post("/cases/<case_id>/annotations")

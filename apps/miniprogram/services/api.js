@@ -1495,6 +1495,18 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/model-candidates`, { requiresAuth: true });
     },
 
+    listOfflineModelVersions() {
+      return request(`${API_ENDPOINTS.offlineBenchmarks}/model-versions`, { requiresAuth: true });
+    },
+
+    listOfflineModelShadowRuns() {
+      return request(`${API_ENDPOINTS.offlineBenchmarks}/shadow-runs`, { requiresAuth: true });
+    },
+
+    listOfflineModelReviewQueue() {
+      return request(`${API_ENDPOINTS.offlineBenchmarks}/shadow-review-queue`, { requiresAuth: true });
+    },
+
     getGroupNetworkAnalysisPolicy() {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/network-policy`, { requiresAuth: true });
     },

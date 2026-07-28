@@ -2634,6 +2634,19 @@ ul {
 .datasetCardList article div span,.datasetCardList article small { color: #71817c; }
 .datasetCardList article p,.datasetCardList article small { grid-column: 1 / -1; margin: 0; line-height: 1.55; }
 .benchmarkRunActions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.shadowRegistryPanel { display: grid; gap: 18px; }
+.shadowRegistryActions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: end; }
+.shadowRegistryActions label { grid-column: 1 / -1; color: #50655d; font-weight: 750; }
+.shadowRegistryActions input { min-height: 46px; padding: 0 14px; border: 1px solid #c9d9d1; border-radius: 12px; font: inherit; }
+.shadowVersionGrid,.shadowRunList { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.shadowVersionGrid article,.shadowRunList article { display: grid; align-content: start; gap: 10px; padding: 16px; border: 1px solid #d5e4dc; border-radius: 16px; background: #fbfdfc; }
+.shadowVersionGrid h3,.shadowVersionGrid p,.shadowRunList p { margin: 0; }
+.shadowVersionGrid small { color: #6d7d77; overflow-wrap: anywhere; }
+.shadowRunList article > div { display: flex; justify-content: space-between; gap: 10px; }
+.shadowRunList dl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 0; }
+.shadowRunList dl div { display: grid; gap: 3px; padding: 9px 6px; border-radius: 10px; background: #edf5f1; text-align: center; }
+.shadowRunList dt { color: #687a73; font-size: .72rem; }
+.shadowRunList dd { margin: 0; color: #214d3d; font-weight: 850; }
 .benchmarkResult { padding: 18px; border: 1px solid #d4e4dc; border-radius: 18px; background: #f8fbf9; }
 .benchmarkResult h3 { margin: 12px 0; }
 .benchmarkResult code { overflow-wrap: anywhere; }
@@ -2652,7 +2665,7 @@ ul {
 .adjudicationCompare > div { padding: 14px; border: 1px solid #dce6e1; border-radius: 14px; background: #fff; }
 .adjudicationCompare span { display: block; margin-top: 6px; color: #61736d; }
 @media (max-width: 900px) { .benchmarkBoundary,.benchmarkColumns,.blindAnnotationGrid { grid-template-columns: 1fr; } .benchmarkBoundary .aiQaFacts { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 540px) { .benchmarkBoundary { padding: 20px; } .datasetCardList article { grid-template-columns: 1fr; } .datasetCardList article .gateBadge { justify-self: start; } .benchmarkRunActions > * { width: 100%; } .blindCaseList button { grid-template-columns: 1fr auto; } .blindCaseList button span { grid-column: 1 / -1; } .annotationLabelGrid,.adjudicationCompare { grid-template-columns: 1fr; } }
+@media (max-width: 540px) { .benchmarkBoundary { padding: 20px; } .datasetCardList article { grid-template-columns: 1fr; } .datasetCardList article .gateBadge { justify-self: start; } .benchmarkRunActions > * { width: 100%; } .blindCaseList button { grid-template-columns: 1fr auto; } .blindCaseList button span { grid-column: 1 / -1; } .annotationLabelGrid,.adjudicationCompare { grid-template-columns: 1fr; } .shadowRegistryActions { grid-template-columns: 1fr; } .shadowRegistryActions label { grid-column: auto; } .shadowRunList dl { grid-template-columns: repeat(2, 1fr); } }
 
 /* T30 research methodology pre-freeze workbench */
 .methodologyWorkbench { --method-ink: #17332f; --method-green: #3f7569; --method-wash: #eef6f2; }

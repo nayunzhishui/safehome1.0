@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { OfflineAdjudicationQueueItem, OfflineAgreementSummary, OfflineAnnotationGovernance, OfflineBenchmarkConfig, OfflineBenchmarkRun, OfflineBlindCase, OfflineDatasetCard, OfflineEmotionLabel, OfflineSplitReport } from "../../../../shared/types/api";
+import type { OfflineAdjudicationQueueItem, OfflineAgreementSummary, OfflineAnnotationGovernance, OfflineBenchmarkConfig, OfflineBenchmarkRun, OfflineBlindCase, OfflineDatasetCard, OfflineEmotionLabel, OfflineModelReviewQueueItem, OfflineModelShadowRun, OfflineModelVersion, OfflineSplitReport } from "../../../../shared/types/api";
 import { getStoredAuthUser } from "../services/authState";
 import { safeHomeApi } from "../services/safehomeApi";
 
@@ -23,6 +23,10 @@ export function OfflineBenchmarkWorkbench() {
   const [governance, setGovernance] = useState<OfflineAnnotationGovernance | null>(null);
   const [adjudicationQueue, setAdjudicationQueue] = useState<OfflineAdjudicationQueueItem[]>([]);
   const [splitReport, setSplitReport] = useState<OfflineSplitReport | null>(null);
+  const [modelVersions, setModelVersions] = useState<OfflineModelVersion[]>([]);
+  const [shadowRuns, setShadowRuns] = useState<OfflineModelShadowRun[]>([]);
+  const [shadowQueue, setShadowQueue] = useState<OfflineModelReviewQueueItem[]>([]);
+  const [codeCommit, setCodeCommit] = useState("");
   const [selectedCase, setSelectedCase] = useState<OfflineBlindCase | null>(null);
   const [labels, setLabels] = useState<OfflineEmotionLabel[]>(["unknown"]);
   const [intensity, setIntensity] = useState<0 | 1 | 2 | 3 | 4>(0);
@@ -35,15 +39,19 @@ export function OfflineBenchmarkWorkbench() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const [nextConfig, cardList, runList, blindCases, nextGovernance] = await Promise.all([
+    const [nextConfig, cardList, runList, blindCases, nextGovernance, versionList, shadowRunList, shadowQueueList] = await Promise.all([
       safeHomeApi.getOfflineBenchmarkConfig(),
       safeHomeApi.listOfflineDatasetCards(),
       safeHomeApi.listOfflineBenchmarkRuns(),
       safeHomeApi.listOfflineBlindCases(),
       safeHomeApi.getOfflineAnnotationGovernance(),
+      safeHomeApi.listOfflineModelVersions(),
+      safeHomeApi.listOfflineModelShadowRuns(),
+      safeHomeApi.listOfflineModelReviewQueue(),
     ]);
     setGovernance(nextGovernance);
     setConfig(nextConfig); setCards(cardList.items); setRuns(runList.items); setCases(blindCases.items);
+    setModelVersions(versionList.items); setShadowRuns(shadowRunList.items); setShadowQueue(shadowQueueList.items);
     setSelectedCase((current) => current || blindCases.items[0] || null);
     if (canReview) {
       const [nextAgreement, nextQueue, nextSplit] = await Promise.all([
@@ -87,6 +95,17 @@ export function OfflineBenchmarkWorkbench() {
           <div><dt>外部下载</dt><dd>关闭</dd></div><div><dt>真实参与者原文</dt><dd>禁止</dd></div>
           <div><dt>生产规则替换</dt><dd>禁止</dd></div><div><dt>合成案例</dt><dd>{config?.synthetic_case_count || 0} 条</dd></div>
         </dl>
+      </section>
+
+      <section className="panel shadowRegistryPanel" aria-label="模型注册与影子执行">
+        <div className="panelHeading">
+          <div><span className="panelKicker">版本不可覆盖 · 结果可回放</span><h2>情感模型影子运行</h2></div>
+          <span className="gateBadge gateBlocked">不影响参与者</span>
+        </div>
+        {isAdmin ? <div className="shadowRegistryActions"><label htmlFor="model-code-commit">40位 Git commit</label><input id="model-code-commit" value={codeCommit} maxLength={40} onChange={(event) => setCodeCommit(event.target.value.trim().toLowerCase())} placeholder="由受控构建流程提供" /><button className="secondaryButton" type="button" disabled={busy || !/^[0-9a-f]{40}$/.test(codeCommit)} onClick={() => void runAction("登记模型版本", async () => { await safeHomeApi.registerOfflineModelVersion(codeCommit); setCodeCommit(""); await load(); })}>登记当前版本</button></div> : null}
+        {modelVersions.length ? <div className="shadowVersionGrid">{modelVersions.map((version) => <article key={version.id}><span className="gateBadge gatePassed">{version.status}</span><h3>{version.model_version}</h3><p>{version.candidate_id} · 特征 {version.feature_version}</p><small>数据 {version.dataset_hash.slice(0, 12)}… · 代码 {version.code_commit.slice(0, 10)}…</small><button className="primaryButton" disabled={busy} type="button" onClick={() => void runAction("运行只读影子分析", async () => { await safeHomeApi.runOfflineModelShadow(version.id); await load(); })}>运行影子分析</button></article>)}</div> : <p className="emptyState">尚未登记模型版本。登记必须绑定词典、阈值、特征、数据、schema和代码commit。</p>}
+        {shadowRuns.length ? <div className="shadowRunList">{shadowRuns.slice(0, 5).map((run) => <article key={run.id}><div><strong>{run.model_version}</strong><span>{run.status}</span></div><dl><div><dt>样本量</dt><dd>{run.sample_count}</dd></div><div><dt>覆盖率</dt><dd>{Math.round(run.coverage_rate * 100)}%</dd></div><div><dt>未知</dt><dd>{run.unknown_count}</dd></div><div><dt>待复核</dt><dd>{run.review_queue_count}</dd></div></dl><p>{run.limitations.join("；")}</p><button className="secondaryButton" disabled={busy} type="button" onClick={() => void runAction("回放历史运行", async () => { await safeHomeApi.replayOfflineModelShadow(run.id, run.model_version_id); await load(); })}>回放为新记录</button></article>)}</div> : null}
+        <div className="boundaryCallout">人工复核队列 {shadowQueue.length} 条；仅含合成案例代号和弃答原因，不含原文或参与者身份。影子结果不会写入反馈、训练卡或参与者页面。</div>
       </section>
 
       <div className="benchmarkColumns">
