@@ -735,6 +735,60 @@ def send_feedback(actor: dict, feedback_id: str, idempotency_key: str) -> dict:
             raise TherapeuticAssessmentError("human_review_required", "反馈尚未完成人工复核。", 409)
         if case["consent_status"] != "active" or case["status"] == "withdrawn":
             raise TherapeuticAssessmentError("consent_withdrawn", "参与者已撤回，不能发送。", 409)
+        from services.publication_gate_service import (
+            PublicationGateError,
+            assert_candidate_approved,
+            evaluate_candidate,
+            mark_published,
+        )
+
+        try:
+            candidate = evaluate_candidate(
+                conn,
+                actor,
+                channel="therapeutic_feedback",
+                subject_type="therapeutic_assessment_feedback",
+                subject_id=feedback_id,
+                recipient_user_id=str(
+                    feedback.get("recipient_user_id") or case["participant_user_id"]
+                ),
+                content={
+                    "title": feedback["letter_title"],
+                    "participant_content": feedback["participant_content"],
+                    "next_step": feedback["next_step"],
+                },
+                source_refs=json_loads(feedback["evidence_json"], []),
+                idempotency_key=f"therapeutic-feedback:{key}",
+                context={
+                    "permission_granted": True,
+                    "consent_active": case["consent_status"] == "active",
+                    "recipient_matches_scope": str(
+                        feedback.get("recipient_user_id")
+                        or case["participant_user_id"]
+                    )
+                    == str(case["participant_user_id"]),
+                    "source_authorized": True,
+                    "language_checked": True,
+                    "responsible_role": str(actor.get("role") or ""),
+                    "publisher_id": str(actor["id"]),
+                    "author_id": str(feedback["author_id"]),
+                    "reviewer_id": str(feedback.get("reviewed_by") or ""),
+                    "human_reviewed": bool(feedback.get("reviewed_by")),
+                    "risk_level": str(case.get("risk_level") or "low"),
+                    "high_risk_reviewed": False,
+                    "ordinary_training_path": False,
+                    "multi_party": False,
+                },
+            )
+            assert_candidate_approved(candidate)
+        except PublicationGateError as exc:
+            conn.commit()
+            raise TherapeuticAssessmentError(
+                exc.code,
+                exc.message,
+                exc.status,
+                exc.details,
+            ) from exc
         timestamp = now_iso()
         _insert_feedback_delivery(conn, feedback, case, actor, key)
         conn.execute("UPDATE therapeutic_assessment_feedback_versions SET status = 'sent', sent_at = ? WHERE id = ?", (timestamp, feedback_id))
@@ -748,6 +802,7 @@ def send_feedback(actor: dict, feedback_id: str, idempotency_key: str) -> dict:
         from services.therapeutic_assessment_quality_service import enqueue_quality_review
 
         enqueue_quality_review(conn, sent_feedback, case)
+        mark_published(conn, candidate["id"], actor)
         _event(conn, case["id"], actor, "feedback_sent", key, case["version"], case["version"], {"feedback_id": feedback_id})
         write_audit_log(conn, "therapeutic_assessment_feedback_sent", str(actor["id"]), "therapeutic_assessment_feedback", feedback_id, {"case_id": case["id"], "human_reviewed": True})
         conn.commit()

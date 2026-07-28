@@ -96,6 +96,7 @@ REQUIRED_CONTENT_FILES = [
     "therapeutic_assessment_service_levels.json",
     "therapeutic_assessment_production_contract.json",
     "therapeutic_assessment_queue_policy.json",
+    "publication_gate_policy.json",
     "therapeutic_assessment_state_machine.json",
     "researcher_capability_registry.json",
     "security_privacy_abuse_registry.json",

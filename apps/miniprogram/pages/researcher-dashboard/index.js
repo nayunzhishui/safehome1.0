@@ -140,6 +140,7 @@ Page({
     urgentCount: 0,
     assessmentQueueRuntime: null,
     assessmentDutyShifts: [],
+    publicationCandidateSummary: null,
     partialFailures: [],
     participantLoading: false,
     participantError: "",
@@ -460,10 +461,12 @@ Page({
       ...queuePromises,
       api.getTherapeuticAssessmentQueueRuntime(),
       api.listTherapeuticAssessmentDutyShifts(),
+      api.listPublicationCandidates(),
     ]);
     const queueResults = workbenchResults.slice(0, QUEUES.length);
     const runtimeResult = workbenchResults[QUEUES.length];
     const dutyResult = workbenchResults[QUEUES.length + 1];
+    const publicationResult = workbenchResults[QUEUES.length + 2];
     const preview = queuePreview(queueResults);
     if (operationsResult.status === "rejected" && !preview.items.length && !this.data.operations) {
       this.setData({
@@ -491,6 +494,13 @@ Page({
       urgentCount: preview.items.filter((item) => item.priority === "urgent").length,
       assessmentQueueRuntime: runtimeResult.status === "fulfilled" ? runtimeResult.value : null,
       assessmentDutyShifts: dutyResult.status === "fulfilled" ? (dutyResult.value.items || []) : [],
+      publicationCandidateSummary: publicationResult.status === "fulfilled"
+        ? {
+            blocked: (publicationResult.value.items || []).filter((item) => item.status === "blocked").length,
+            approved: (publicationResult.value.items || []).filter((item) => item.status === "approved").length,
+            published: (publicationResult.value.items || []).filter((item) => item.status === "published").length,
+          }
+        : null,
       partialFailures,
       lastSyncText: syncTimeLabel(),
     });

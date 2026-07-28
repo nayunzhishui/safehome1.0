@@ -104,6 +104,7 @@ import type {
   ParentAssessmentPayload,
   ParentAssessmentResult,
   PrivacyRequest,
+  PublicationCandidate,
   PrivacyExecutionResult,
   PrivacyScopePreview,
   PrivacyHandlingScope,
@@ -1662,6 +1663,56 @@ export class SafeHomeApiClient {
   }> {
     const suffix = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/duty-shifts${suffix}`);
+  }
+
+  listPublicationCandidates(status = "", channel = ""): Promise<{
+    items: PublicationCandidate[];
+    count: number;
+    production_release_approved: false;
+  }> {
+    const params = new URLSearchParams();
+    if (status) params.set("status", status);
+    if (channel) params.set("channel", channel);
+    const suffix = params.size ? `?${params.toString()}` : "";
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/publication-candidates${suffix}`,
+    );
+  }
+
+  recoverPublicationCandidate(
+    candidateId: string,
+    input: {
+      expected_version: number;
+      content?: unknown;
+      source_refs?: string[];
+      context: Record<string, unknown>;
+    },
+    idempotencyKey: string,
+  ): Promise<PublicationCandidate> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/publication-candidates/${encodeURIComponent(candidateId)}/recover`,
+      {
+        method: "POST",
+        body: input,
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
+    );
+  }
+
+  withdrawPublicationCandidate(
+    candidateId: string,
+    expectedVersion: number,
+    reason: string,
+    idempotencyKey: string,
+  ): Promise<PublicationCandidate> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/publication-candidates/${encodeURIComponent(candidateId)}/withdraw`,
+      {
+        method: "POST",
+        body: { expected_version: expectedVersion, reason },
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
+    );
   }
 
   getTherapeuticAssessmentCase(caseId: string): Promise<TherapeuticAssessmentCase> {

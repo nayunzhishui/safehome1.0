@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type {
+  PublicationCandidate,
   TherapeuticAssessmentAuthorizationStatus,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
@@ -103,6 +104,8 @@ export function TherapeuticAssessmentWorkbench() {
   const [queueItems, setQueueItems] = useState<TherapeuticAssessmentWorkQueueItem[]>([]);
   const [queueRuntime, setQueueRuntime] =
     useState<TherapeuticAssessmentQueueRuntime | null>(null);
+  const [publicationCandidates, setPublicationCandidates] =
+    useState<PublicationCandidate[]>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -130,16 +133,18 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, queue, runtime] = await Promise.all([
+      const [result, contract, queue, runtime, publications] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
+        safeHomeApi.listPublicationCandidates(),
       ]);
       setCases(result.items);
       setProductionContract(contract);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
+      setPublicationCandidates(publications.items);
       if (!selectedId && result.items[0]) setSelectedId(result.items[0].id);
     } catch (caught) {
       setError(caught instanceof SafeHomeApiError ? caught.message : "协作记录暂时无法读取。");
@@ -345,6 +350,15 @@ export function TherapeuticAssessmentWorkbench() {
           <small>领取任务还需同时满足对象范围、胜任力、有效期和值守班次；没有合格接手人时不会自动降级给普通角色。</small>
         </section>
       ) : null}
+      <section className="status" aria-label="五道门发布状态">
+        <strong>五道门发布流水线</strong>
+        <p>
+          已拦截 {publicationCandidates.filter((item) => item.status === "blocked").length} 项；
+          待发布 {publicationCandidates.filter((item) => item.status === "approved").length} 项；
+          已发布 {publicationCandidates.filter((item) => item.status === "published").length} 项。
+        </p>
+        <small>反馈、AI候选、报告和消息均由服务端逐门核对；失败内容保留为可解释候选，不会静默丢弃。</small>
+      </section>
 
       <div className="taWorkspaceGrid">
         <aside className="panel taCaseRail" aria-label="参与者问题">

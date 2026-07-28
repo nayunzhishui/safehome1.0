@@ -284,8 +284,68 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
     if not postcheck["ok"]:
         return _fixed_message(actor, session_id, text, "postcheck_degraded", {"category": "postcheck", "severity": "high", "route": "postcheck_degraded"}, provider_status="called")
     safety = {"version": SAFETY_VERSION, "precheck": {key: precheck.get(key) for key in ("category", "severity", "route")}, "postcheck": postcheck, "route": "answered", "human_escalation": False, "uncertainty": result.uncertainty}
+    from services.publication_gate_service import (
+        PublicationGateError,
+        assert_candidate_approved,
+        evaluate_candidate,
+        mark_published,
+    )
+
     with get_connection() as conn:
+        try:
+            candidate = evaluate_candidate(
+                conn,
+                actor,
+                channel="ai_candidate",
+                subject_type="ai_qa_session",
+                subject_id=session_id,
+                recipient_user_id=str(actor["id"]),
+                content=result.text,
+                source_refs=[
+                    f"content_governance_version:{item['version_id']}"
+                    for item in citations
+                    if item.get("version_id")
+                ],
+                idempotency_key=(
+                    f"ai-candidate:{session_id}:{_request_hash(text)}:"
+                    f"{_request_hash(result.text)}"
+                ),
+                context={
+                    "permission_granted": True,
+                    "consent_active": True,
+                    "recipient_matches_scope": True,
+                    "source_authorized": retrieval["only_published"] is True,
+                    "language_checked": postcheck["ok"] is True,
+                    "responsible_role": "ai_safety_pipeline",
+                    "publisher_id": str(actor["id"]),
+                    "author_id": f"provider:{result.provider}",
+                    "reviewer_id": "",
+                    "human_reviewed": False,
+                    "risk_level": "low",
+                    "high_risk_reviewed": False,
+                    "ordinary_training_path": False,
+                    "multi_party": False,
+                    "safety_checked": True,
+                    "formal_feedback_write_allowed": False,
+                },
+            )
+            assert_candidate_approved(candidate)
+        except PublicationGateError:
+            conn.commit()
+            return _fixed_message(
+                actor,
+                session_id,
+                text,
+                "postcheck_degraded",
+                {
+                    "category": "publication_gate",
+                    "severity": "high",
+                    "route": "postcheck_degraded",
+                },
+                provider_status="called",
+            )
         assistant = _store_message(conn, session_id, actor["id"], "assistant", result.text, citations=citations, model={"provider": result.provider, "model_version": result.model_version, "provider_training_allowed": False, "tools_allowed": False, "formal_feedback_write_allowed": False}, safety=safety, knowledge_version=retrieval["knowledge_snapshot_hash"], token_estimate=result.token_estimate, cost_micros=result.cost_micros)
+        mark_published(conn, candidate["id"], actor)
         write_audit_log(conn, "ai_qa_answer_generated", actor["id"], "ai_qa_message", assistant["id"], {"session_id": session_id, "request_hash": _request_hash(text), "citation_count": len(citations), "knowledge_snapshot_hash": retrieval["knowledge_snapshot_hash"], "provider": result.provider, "model_version": result.model_version, "raw_text_logged": False, "tools_allowed": False})
         conn.commit()
     return {"message": assistant, "route": "answered", "fixed_response": False, "human_escalation": False, "uncertainty": result.uncertainty, "boundary_notice": "回答只基于已发布内容，可能遗漏情境；请核对来源与适用范围。它不构成诊断、治疗、危机评估或正式参与者反馈。"}

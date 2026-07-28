@@ -328,6 +328,9 @@
 | GET | `/api/therapeutic-assessment/production-contract` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/production-contract/check` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/production-contract/snapshots` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/publication-candidates` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/publication-candidates/<candidate_id>/recover` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/publication-candidates/<candidate_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/quality/incidents` | role:parent,student,researcher,supervisor,admin | participant_owned_assigned_or_task_authorized_quality_incident_history | — | — | active |
 | POST | `/api/therapeutic-assessment/quality/incidents/<incident_id>/impact-analysis` | role:supervisor,admin | participant_owned_assigned_or_task_authorized_quality_incident_history | — | — | active |
 | POST | `/api/therapeutic-assessment/quality/incidents/<incident_id>/resolve` | role:supervisor,admin | participant_owned_assigned_or_task_authorized_quality_incident_history | — | — | active |

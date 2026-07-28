@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from database import get_connection, json_dumps, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
+from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from services.message_service import create_message
 from services.risk_service import check_text_risk
 from services.relationship_pilot_common import (
@@ -307,6 +307,57 @@ def send_report(actor: dict, report_id: str) -> ServiceResult:
             return ServiceResult(item)
         if row["status"] not in {"confirmed", "updated"}:
             raise RelationshipPilotError("report_not_confirmed", "报告需人工确认后才能发送。", 409)
+        report_content = json_loads(row["report_json"], {})
+        report_risk = check_text_risk(
+            [json_dumps(report_content)],
+            source="relationship_report_publication",
+        )
+        from services.publication_gate_service import (
+            PublicationGateError,
+            assert_candidate_approved,
+            evaluate_candidate,
+            mark_published,
+        )
+
+        try:
+            candidate = evaluate_candidate(
+                conn,
+                actor,
+                channel="relationship_report",
+                subject_type="relationship_screening_report",
+                subject_id=report_id,
+                recipient_user_id=str(row["user_id"]),
+                content=report_content,
+                source_refs=[
+                    f"relationship_pilot_enrollment:{row['enrollment_id']}",
+                    f"assessment_result:{row['assessment_result_id']}",
+                ],
+                idempotency_key=f"relationship-report:{report_id}:{row['version']}",
+                context={
+                    "permission_granted": True,
+                    "consent_active": enrollment.get("status") == "enrolled",
+                    "recipient_matches_scope": str(row["user_id"])
+                    == str(enrollment["user_id"]),
+                    "source_authorized": True,
+                    "language_checked": True,
+                    "responsible_role": str(actor.get("role") or ""),
+                    "publisher_id": str(actor["id"]),
+                    "author_id": "relationship-report-service",
+                    "reviewer_id": str(row["confirmed_by"] or ""),
+                    "human_reviewed": bool(row["confirmed_by"]),
+                    "risk_level": str(report_risk.get("risk_level") or "low"),
+                    "high_risk_reviewed": (
+                        report_risk.get("risk_level") != "high"
+                        or str(actor.get("role") or "") in {"supervisor", "admin"}
+                    ),
+                    "ordinary_training_path": False,
+                    "multi_party": False,
+                },
+            )
+            assert_candidate_approved(candidate)
+        except PublicationGateError as exc:
+            conn.commit()
+            raise RelationshipPilotError(exc.code, exc.message, exc.status) from exc
         is_stage_feedback = row["status"] == "updated"
         message = create_message(
             conn,
@@ -320,6 +371,7 @@ def send_report(actor: dict, report_id: str) -> ServiceResult:
             sender_role=str(actor.get("role") or "researcher"),
             idempotency_key=f"relationship-report:{report_id}:{row['version']}",
         )
+        mark_published(conn, candidate["id"], actor)
         conn.execute("UPDATE relationship_screening_reports SET status = 'sent', updated_at = ? WHERE id = ?", (now_iso(), report_id))
         write_audit_log(conn, "relationship_report_sent", actor["id"], "relationship_screening_report", report_id, {"recipient_user_id": row["user_id"], "message_id": message["id"]})
         conn.commit()

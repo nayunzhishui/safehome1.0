@@ -2293,6 +2293,66 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS publication_candidates (
+        id TEXT PRIMARY KEY,
+        channel TEXT NOT NULL,
+        subject_type TEXT NOT NULL,
+        subject_id TEXT NOT NULL,
+        recipient_user_id TEXT NOT NULL,
+        author_id TEXT,
+        reviewed_by TEXT,
+        published_by TEXT,
+        status TEXT NOT NULL DEFAULT 'draft',
+        blocked_gate TEXT,
+        reason_code TEXT,
+        risk_level TEXT NOT NULL DEFAULT 'low',
+        multi_party INTEGER NOT NULL DEFAULT 0,
+        content_json TEXT NOT NULL DEFAULT '{}',
+        content_sha256 TEXT NOT NULL,
+        source_refs_json TEXT NOT NULL DEFAULT '[]',
+        gate_summary_json TEXT NOT NULL DEFAULT '{}',
+        diff_json TEXT NOT NULL DEFAULT '{}',
+        policy_version TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        published_at TEXT,
+        withdrawn_at TEXT,
+        withdrawal_reason TEXT,
+        UNIQUE(created_by, channel, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS publication_gate_checks (
+        id TEXT PRIMARY KEY,
+        candidate_id TEXT NOT NULL,
+        attempt_no INTEGER NOT NULL,
+        gate_name TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        reason_code TEXT,
+        details_json TEXT NOT NULL DEFAULT '{}',
+        checked_by TEXT NOT NULL,
+        checked_at TEXT NOT NULL,
+        UNIQUE(candidate_id, attempt_no, gate_name)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS publication_candidate_events (
+        id TEXT PRIMARY KEY,
+        candidate_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        before_version INTEGER,
+        after_version INTEGER,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(actor_id, idempotency_key)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS therapeutic_assessment_quality_runtime (
         id TEXT PRIMARY KEY,
         paused INTEGER NOT NULL DEFAULT 0,
@@ -2511,6 +2571,10 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_duty_user_status ON therapeutic_assessment_duty_shifts(user_id, status, starts_at, expires_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_queue_event_idempotency ON therapeutic_assessment_queue_events(actor_id, idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_duty_event_idempotency ON therapeutic_assessment_duty_events(actor_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_publication_candidates_status_updated ON publication_candidates(status, updated_at)",
+    "CREATE INDEX IF NOT EXISTS idx_publication_candidates_subject ON publication_candidates(subject_type, subject_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_publication_gate_checks_candidate ON publication_gate_checks(candidate_id, attempt_no)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_publication_events_actor_idempotency ON publication_candidate_events(actor_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_parent ON computation_lineage_edges(parent_resource_type, parent_resource_id)",

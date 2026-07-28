@@ -438,6 +438,40 @@ export interface TherapeuticAssessmentQueueRuntime {
   updated_at: string;
 }
 
+export type PublicationChannel =
+  | "therapeutic_feedback"
+  | "relationship_report"
+  | "researcher_message"
+  | "ai_candidate";
+
+export interface PublicationCandidate {
+  id: string;
+  channel: PublicationChannel;
+  subject_type: string;
+  subject_id: string;
+  recipient_user_id: string;
+  author_id?: string | null;
+  reviewed_by?: string | null;
+  published_by?: string | null;
+  status: "draft" | "blocked" | "approved" | "published" | "withdrawn";
+  blocked_gate?: string | null;
+  reason_code?: string | null;
+  risk_level: "low" | "medium" | "high";
+  multi_party: boolean;
+  gate_summary: Record<string, "passed" | "blocked">;
+  diff: {
+    previous_sha256?: string | null;
+    current_sha256: string;
+    changed: boolean;
+  };
+  policy_version: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+  published_at?: string | null;
+  withdrawn_at?: string | null;
+}
+
 export interface TherapeuticAssessmentFeedbackVersion {
   id: string;
   case_id: string;

@@ -118,7 +118,47 @@ def send_message_to_participant(actor: dict, payload: dict, idempotency_key: str
                     raise MessageServiceError("idempotency_conflict", "该幂等键已用于另一条消息，请更换后重试。", 409)
                 item["already_sent"] = True
                 return public_message(item), 200
+        from services.publication_gate_service import (
+            PublicationGateError,
+            assert_candidate_approved,
+            evaluate_candidate,
+            mark_published,
+        )
+
+        try:
+            candidate = evaluate_candidate(
+                conn,
+                actor,
+                channel="researcher_message",
+                subject_type="relationship_pilot_enrollment",
+                subject_id=enrollment_id,
+                recipient_user_id=str(enrollment["user_id"]),
+                content={"title": title, "body": body},
+                source_refs=[f"relationship_pilot_enrollment:{enrollment_id}"],
+                idempotency_key=f"researcher-message:{idempotency_key}",
+                context={
+                    "permission_granted": True,
+                    "consent_active": enrollment.get("status") == "enrolled",
+                    "recipient_matches_scope": True,
+                    "source_authorized": True,
+                    "language_checked": True,
+                    "responsible_role": str(actor.get("role") or ""),
+                    "publisher_id": str(actor["id"]),
+                    "author_id": str(actor["id"]),
+                    "reviewer_id": "",
+                    "human_reviewed": False,
+                    "risk_level": str(risk.get("risk_level") or "low"),
+                    "high_risk_reviewed": False,
+                    "ordinary_training_path": False,
+                    "multi_party": False,
+                },
+            )
+            assert_candidate_approved(candidate)
+        except PublicationGateError as exc:
+            conn.commit()
+            raise MessageServiceError(exc.code, exc.message, exc.status) from exc
         message = create_message(conn, enrollment["user_id"], title, body, message_type, "relationship_pilot_enrollment", enrollment_id, sender_id=str(actor["id"]), sender_role=str(actor.get("role") or "researcher"), idempotency_key=idempotency_key or None)
+        mark_published(conn, candidate["id"], actor)
         write_audit_log(conn, "researcher_message_sent", actor["id"], "message", message["id"], {"enrollment_id": enrollment_id, "recipient_user_id": enrollment["user_id"], "message_type": message_type, "risk_level": risk.get("risk_level")})
         conn.commit()
     return public_message(message), 201

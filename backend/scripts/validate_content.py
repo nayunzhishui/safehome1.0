@@ -1031,6 +1031,40 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
             or int(config.get("sla_hours", 0)) <= 0
         ):
             errors.append(f"{queue_filename}.{queue_type} 缺少任务、胜任力或SLA")
+    publication_filename = "publication_gate_policy.json"
+    try:
+        publication_policy = load_json(content_dir / publication_filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{publication_filename} 不可读取：{exc}")
+        return errors
+    required_gates = {
+        "minimum_input",
+        "permission",
+        "source",
+        "language",
+        "responsibility",
+    }
+    required_channels = {
+        "therapeutic_feedback",
+        "relationship_report",
+        "researcher_message",
+        "ai_candidate",
+    }
+    if set(publication_policy.get("five_gates", [])) != required_gates:
+        errors.append(f"{publication_filename} 必须完整登记五道发布门")
+    if set(publication_policy.get("channels", {})) != required_channels:
+        errors.append(f"{publication_filename} 必须覆盖反馈、AI候选、报告和消息")
+    if (
+        publication_policy.get("unknown_decision") != "deny"
+        or publication_policy.get("failure_mode") != "explain_and_hold"
+        or publication_policy.get(
+            "temporary_showcase_bypass_changes_write_permission"
+        )
+        is not False
+        or publication_policy.get("rules_or_ai_can_bypass_server_gate") is not False
+        or publication_policy.get("production_release_approved") is not False
+    ):
+        errors.append(f"{publication_filename} 必须失败关闭、可解释保留且禁止绕过")
     return errors
 
 

@@ -61,6 +61,17 @@
       <text class="state-copy">待处理 {{assessmentQueueRuntime.pending_count}} · 超时 {{assessmentQueueRuntime.overdue_count}} · 无人值守紧急项 {{assessmentQueueRuntime.unattended_urgent_count}}</text>
       <text class="boundary-line">没有匹配对象范围、胜任力、有效期和值守班次的接手人时，任务不会自动降级给普通角色。</text>
     </view>
+    <view wx:if="{{publicationCandidateSummary}}" class="safe-card workspace-card queue-runtime-card">
+      <view class="section-heading">
+        <view>
+          <text class="section-eyebrow">服务端统一核对</text>
+          <text class="section-title">五道门发布流水线</text>
+        </view>
+        <text class="priority-pill priority-pill--routine">已拦截 {{publicationCandidateSummary.blocked}}</text>
+      </view>
+      <text class="state-copy">待发布 {{publicationCandidateSummary.approved}} · 已发布 {{publicationCandidateSummary.published}}</text>
+      <text class="boundary-line">反馈、AI候选、报告和消息逐门核对；失败内容会保留原因和版本，不会静默丢弃。</text>
+    </view>
     <view class="summary-grid">
       <view class="summary-card summary-card--primary">
         <text class="summary-value">{{pendingTotal}}</text>

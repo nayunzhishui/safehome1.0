@@ -1,0 +1,58 @@
+{
+  "schema": "safehome.publication-gate-policy.v1",
+  "version": "2026-07-28-t37-b03-v1",
+  "five_gates": [
+    "minimum_input",
+    "permission",
+    "source",
+    "language",
+    "responsibility"
+  ],
+  "channels": {
+    "therapeutic_feedback": {
+      "allowed_publisher_roles": ["supervisor", "admin"],
+      "human_review_required": true,
+      "source_required": true
+    },
+    "relationship_report": {
+      "allowed_publisher_roles": ["researcher", "supervisor", "admin"],
+      "human_review_required": true,
+      "source_required": true
+    },
+    "researcher_message": {
+      "allowed_publisher_roles": ["researcher", "supervisor", "admin"],
+      "human_review_required": false,
+      "source_required": true
+    },
+    "ai_candidate": {
+      "allowed_publisher_roles": ["parent", "student", "participant", "researcher", "supervisor", "admin"],
+      "human_review_required": false,
+      "source_required": true,
+      "formal_feedback_write_allowed": false
+    }
+  },
+  "blocked_phrases": [
+    "诊断为",
+    "你就是",
+    "你肯定",
+    "你内心其实",
+    "都是你的错",
+    "保证有效",
+    "一定会改善",
+    "病态关系",
+    "人格问题"
+  ],
+  "high_risk": {
+    "ordinary_training_path_allowed": false,
+    "reviewer_roles": ["supervisor", "admin"]
+  },
+  "multi_party": {
+    "explicit_scope_required": true,
+    "human_review_required": true
+  },
+  "failure_mode": "explain_and_hold",
+  "unknown_decision": "deny",
+  "temporary_showcase_bypass_changes_write_permission": false,
+  "rules_or_ai_can_bypass_server_gate": false,
+  "production_release_approved": false
+}

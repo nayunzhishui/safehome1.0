@@ -1252,6 +1252,40 @@ function createSafeHomeApi(options = {}) {
       );
     },
 
+    listPublicationCandidates(status = "", channel = "") {
+      const query = [];
+      if (status) query.push(`status=${encodeURIComponent(status)}`);
+      if (channel) query.push(`channel=${encodeURIComponent(channel)}`);
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/publication-candidates${query.length ? `?${query.join("&")}` : ""}`,
+        { requiresAuth: true },
+      );
+    },
+
+    recoverPublicationCandidate(candidateId, data, idempotencyKey) {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/publication-candidates/${encodeURIComponent(candidateId)}/recover`,
+        {
+          method: "POST",
+          data,
+          header: { "Idempotency-Key": idempotencyKey },
+          requiresAuth: true,
+        },
+      );
+    },
+
+    withdrawPublicationCandidate(candidateId, data, idempotencyKey) {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/publication-candidates/${encodeURIComponent(candidateId)}/withdraw`,
+        {
+          method: "POST",
+          data,
+          header: { "Idempotency-Key": idempotencyKey },
+          requiresAuth: true,
+        },
+      );
+    },
+
     createTherapeuticAssessmentCase(data, idempotencyKey) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases`, {
         method: "POST",

@@ -80,6 +80,12 @@ from services.therapeutic_assessment_queue_service import (
     queue_runtime_status,
     run_queue_monitor,
 )
+from services.publication_gate_service import (
+    PublicationGateError,
+    list_candidates,
+    recover_candidate,
+    withdraw_candidate,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -92,10 +98,10 @@ def _actor():
         return None, auth_error_response(exc)
 
 
-def _respond(callable_, *args):
+def _respond(callable_, *args, **kwargs):
     try:
-        result = callable_(*args)
-    except TherapeuticAssessmentError as exc:
+        result = callable_(*args, **kwargs)
+    except (TherapeuticAssessmentError, PublicationGateError) as exc:
         return fail(exc.code, exc.message, status=exc.status, details=exc.details)
     if isinstance(result, tuple):
         data, status = result
@@ -185,6 +191,42 @@ def get_duty_shifts_route():
 def post_duty_shift_route():
     actor, error = _actor()
     return error or _respond(create_duty_shift, actor, _payload(), _key())
+
+
+@bp.get("/publication-candidates")
+def get_publication_candidates_route():
+    actor, error = _actor()
+    return error or _respond(
+        list_candidates,
+        actor,
+        status=str(request.args.get("status") or ""),
+        channel=str(request.args.get("channel") or ""),
+        limit=int(request.args.get("limit") or 50),
+    )
+
+
+@bp.post("/publication-candidates/<candidate_id>/recover")
+def post_publication_candidate_recover_route(candidate_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        recover_candidate,
+        actor,
+        candidate_id,
+        _payload(),
+        _key(),
+    )
+
+
+@bp.post("/publication-candidates/<candidate_id>/withdraw")
+def post_publication_candidate_withdraw_route(candidate_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        withdraw_candidate,
+        actor,
+        candidate_id,
+        _payload(),
+        _key(),
+    )
 
 
 @bp.get("/cases")

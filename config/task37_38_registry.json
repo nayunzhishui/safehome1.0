@@ -382,7 +382,39 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T37-B03", "title": "五道门发布流水线", "dependencies": ["T37-B02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-B03",
+      "title": "五道门发布流水线",
+      "dependencies": ["T37-B02"],
+      "engineering_complete": true,
+      "status": "engineering_complete_external_release_gated",
+      "evidence": [
+        "content/publication_gate_policy.json",
+        "backend/services/publication_gate_service.py",
+        "backend/scripts/migrate_task37_b03_publication_gate.py",
+        "backend/tests/test_task37_b03_publication_gate.py",
+        "backend/services/therapeutic_assessment_service.py",
+        "backend/services/relationship_report_service.py",
+        "backend/services/message_service.py",
+        "backend/services/ai_qa_service.py",
+        "apps/web/src/pages/TherapeuticAssessmentWorkbench.tsx",
+        "apps/miniprogram/pages/researcher-dashboard/index.js",
+        "shared/types/api.ts"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_b03_publication_gate.py", "backend/tests/test_task38_f09_layered_feedback.py", "backend/tests/test_relationship_pilot_route.py", "backend/tests/test_ai_qa_controlled_sandbox.py", "backend/tests/test_ai_qa_production_readiness.py", "backend/tests/test_task28_ai_qa_contract.py", "backend/tests/test_task36_ai_qa_full_closure.py", "-q"],
+        ["python", "backend/scripts/migrate_task37_b03_publication_gate.py", "--apply"],
+        ["python", "backend/scripts/migrate_task37_b03_publication_gate.py"],
+        ["python", "backend/scripts/migrate_task37_b03_publication_gate.py", "--rollback-plan"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["python", "backend/scripts/audit_miniprogram_frontend.py"],
+        ["python", "scripts/audit_miniprogram_ui_governance.py"],
+        ["node", "--check", "apps/miniprogram/pages/researcher-dashboard/index.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T37-B04", "title": "反馈生命周期、随访和恢复", "dependencies": ["T37-B03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-B05", "title": "协作式评估生产门禁", "dependencies": ["T37-B04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-C01", "title": "AI用例冻结", "dependencies": ["T37-P04", "T38-F05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
