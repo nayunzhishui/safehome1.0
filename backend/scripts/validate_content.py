@@ -662,6 +662,85 @@ def validate_profile_models(
     return errors
 
 
+def validate_emotion_annotation_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        ontology = load_json(content_dir / "emotion_annotation_ontology.json")
+        examples = load_json(content_dir / "emotion_annotation_examples.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"情绪标注体系不可读取：{exc}"]
+
+    labels = ontology.get("emotion_labels", [])
+    codes = [item.get("code") for item in labels]
+    required_labels = {
+        "anxiety",
+        "fear",
+        "anger",
+        "irritation",
+        "sadness",
+        "helplessness",
+        "guilt",
+        "shame",
+        "calm",
+        "positive",
+        "unknown",
+    }
+    if len(codes) != len(set(codes)) or not required_labels.issubset(set(codes)):
+        errors.append("情绪标注体系标签必须唯一并包含全部基础标签和unknown")
+    required_label_fields = {
+        "code",
+        "name",
+        "include",
+        "exclude",
+        "prohibited_interpretations",
+    }
+    for item in labels:
+        if required_label_fields - set(item):
+            errors.append(f"情绪标签字段不完整：{item.get('code')}")
+        if not item.get("include") or not item.get("exclude") or not item.get(
+            "prohibited_interpretations"
+        ):
+            errors.append(f"情绪标签必须包含纳入、排除和禁用解释：{item.get('code')}")
+    mode = ontology.get("annotation_mode", {})
+    if mode.get("emotion") != "multi_label" or mode.get("maximum_emotion_labels") != 3:
+        errors.append("情绪标注必须采用最多三个标签的多标签规则")
+    if mode.get("polarity_status") != ["affirmed", "negated", "uncertain"]:
+        errors.append("情绪标注必须区分肯定、否定和不确定")
+    intensity = mode.get("intensity_scale", {})
+    if intensity.get("min") != 0 or intensity.get("max") != 4 or len(
+        intensity.get("anchors", {})
+    ) != 5:
+        errors.append("情绪强度必须定义0至4的五级锚点")
+    safety_cues = ontology.get("safety_cues", [])
+    if (
+        len(safety_cues) != 1
+        or safety_cues[0].get("code") != "crisis_expression"
+        or safety_cues[0].get("is_emotion_label") is not False
+        or "概率" not in str(safety_cues[0].get("rule", ""))
+    ):
+        errors.append("安全线索必须与情绪标签分离且不得输出危机概率")
+    release = ontology.get("release_boundary", {})
+    if (
+        release.get("expert_review_required") is not True
+        or release.get("automatic_expert_signoff_allowed") is not False
+    ):
+        errors.append("情绪标注体系必须等待真人专家审查且禁止自动专家签字")
+    example_items = examples.get("examples", [])
+    counterexamples = examples.get("counterexamples", [])
+    if len(example_items) < 12 or len(counterexamples) < 8:
+        errors.append("情绪标注体系至少需要12个边界样例和8个反例")
+    valid_codes = set(codes)
+    for item in example_items:
+        if not set(item.get("labels", [])).issubset(valid_codes):
+            errors.append(f"情绪标注样例含未登记标签：{item.get('id')}")
+        if not 0 <= int(item.get("intensity", -1)) <= 4:
+            errors.append(f"情绪标注样例强度越界：{item.get('id')}")
+    adjudication = examples.get("adjudication", {})
+    if adjudication.get("automatic_adjudication_allowed") is not False:
+        errors.append("情绪标注分歧不得自动裁决")
+    return errors
+
+
 def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
     filenames = ["offline_benchmark_registry.json", "offline_benchmark_label_mapping.json", "offline_benchmark_annotation_manual.json", "synthetic_affect_benchmark_240.json"]
@@ -915,6 +994,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     for schema_path in schema_paths:
         errors.extend(validate_file(content_dir, schema_path))
     errors.extend(validate_cross_content_rules(content_dir))
+    errors.extend(validate_emotion_annotation_content(content_dir))
     errors.extend(validate_offline_benchmark_content(content_dir))
     errors.extend(validate_research_methodology_content(content_dir))
     errors.extend(validate_security_registry_content(content_dir))

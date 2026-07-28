@@ -253,7 +253,24 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T37-A01", "title": "情绪标签体系和标注手册", "dependencies": ["T37-P04", "T38-F05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-A01",
+      "title": "情绪标签体系和标注手册",
+      "dependencies": ["T37-P04", "T38-F05"],
+      "engineering_complete": true,
+      "status": "engineering_complete_expert_review_gated",
+      "evidence": [
+        "content/emotion_annotation_ontology.json",
+        "content/emotion_annotation_examples.json",
+        "content/offline_benchmark_annotation_manual.json",
+        "docs/05_内容与心理边界/中文情绪线索标注手册_T37_A01.md",
+        "backend/tests/test_task37_a01_emotion_annotation_system.py"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_a01_emotion_annotation_system.py", "backend/tests/test_emotion_module_hardening.py", "backend/tests/test_text_analysis_pipeline.py", "-q"],
+        ["python", "backend/scripts/validate_content.py"]
+      ]
+    },
     {"id": "T37-A02", "title": "数据权利、双人标注与裁决", "dependencies": ["T37-A01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-A03", "title": "透明基线、候选模型和校准", "dependencies": ["T37-A02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-A04", "title": "群体级社会网络分析", "dependencies": ["T37-A02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

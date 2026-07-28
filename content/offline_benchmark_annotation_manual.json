@@ -1,6 +1,19 @@
 {
-  "version": "2026-07-20-t29-annotation-v1",
+  "version": "2026-07-28-t37-a01-bridge-v1",
   "status": "draft_human_annotation_pending",
+  "ontology_file": "emotion_annotation_ontology.json",
+  "examples_file": "emotion_annotation_examples.json",
+  "human_manual_file": "docs/05_内容与心理边界/中文情绪线索标注手册_T37_A01.md",
+  "target_contract": {
+    "emotion_mode": "multi_label_max_3",
+    "intensity": "0_to_4",
+    "polarity": ["affirmed", "negated", "uncertain"],
+    "mixed_emotion": true,
+    "unknown": true,
+    "needs_human_understanding": true,
+    "safety_cue_separate_from_emotion": true
+  },
+  "legacy_runtime_contract": "下列fields和allowed_emotion_labels仅用于240例既有单标签工程基准；72词规则表继续作为测试基线，不得升级为人工金标准。",
   "target_case_count": 240,
   "minimum_annotators": 2,
   "blind_policy": "标注者看不到生成标签、另一标注者答案或模型预测。",

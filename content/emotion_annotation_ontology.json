@@ -1,0 +1,135 @@
+{
+  "schema": "safehome.emotion-annotation-ontology.v1",
+  "version": "2026-07-28-t37-a01-v1",
+  "status": "engineering_complete_expert_review_pending",
+  "project_question": "在不作诊断、人格判断或关系优劣评价的前提下，识别中文自我记录中明确表达的情绪线索、强度、否定、混合状态和需要真人进一步了解的边界。",
+  "unit_of_annotation": "一条完整记录；必要时可引用最小连续证据片段，但不得脱离上下文只按关键词标注。",
+  "annotation_mode": {
+    "emotion": "multi_label",
+    "maximum_emotion_labels": 3,
+    "intensity_scale": {
+      "min": 0,
+      "max": 4,
+      "anchors": {
+        "0": "未表达或无法判断",
+        "1": "轻微、间接或短暂",
+        "2": "明确但未显示明显干扰",
+        "3": "强烈或反复，已影响当下行动",
+        "4": "极强且伴随明显失控、持续受困或紧急安全线索"
+      }
+    },
+    "polarity_status": ["affirmed", "negated", "uncertain"],
+    "mixed_emotion_allowed": true,
+    "unknown_label": "unknown",
+    "human_review_flag": "needs_human_understanding"
+  },
+  "emotion_labels": [
+    {
+      "code": "anxiety",
+      "name": "担心/焦虑线索",
+      "include": ["对未来不确定结果的担忧、紧张或反复预想"],
+      "exclude": ["仅描述客观准备事项", "有明确当前威胁且主要是害怕"],
+      "prohibited_interpretations": ["焦虑症", "焦虑型人格"]
+    },
+    {
+      "code": "fear",
+      "name": "害怕/恐惧线索",
+      "include": ["面对当前或临近威胁时明确表达害怕、恐惧或惊吓"],
+      "exclude": ["主要是对未来不确定性的担心", "仅描述危险事实而无主观感受"],
+      "prohibited_interpretations": ["恐惧症", "创伤诊断"]
+    },
+    {
+      "code": "anger",
+      "name": "愤怒线索",
+      "include": ["明确表达生气、愤怒、被冒犯或想反击"],
+      "exclude": ["轻微不耐烦但未达到愤怒", "仅批评某件事不合理"],
+      "prohibited_interpretations": ["攻击型人格", "暴力倾向结论"]
+    },
+    {
+      "code": "irritation",
+      "name": "烦躁/不耐线索",
+      "include": ["明确表达烦躁、恼火、不耐烦或容易被打断"],
+      "exclude": ["强烈愤怒", "身体不适但未表达情绪"],
+      "prohibited_interpretations": ["情绪不稳定", "冲动型人格"]
+    },
+    {
+      "code": "sadness",
+      "name": "难过/悲伤线索",
+      "include": ["明确表达难过、悲伤、失落或想哭"],
+      "exclude": ["仅描述损失事件", "主要是无力而非难过"],
+      "prohibited_interpretations": ["抑郁症", "抑郁人格"]
+    },
+    {
+      "code": "helplessness",
+      "name": "无力/无助线索",
+      "include": ["明确表达不知道还能做什么、无法改变或缺少可用办法"],
+      "exclude": ["一时不知道答案", "主动选择暂缓"],
+      "prohibited_interpretations": ["习得性无助诊断", "能力低下"]
+    },
+    {
+      "code": "guilt",
+      "name": "内疚线索",
+      "include": ["对自己的具体行为或遗漏感到抱歉、亏欠或自责"],
+      "exclude": ["对整体自我价值的羞耻", "仅承认事实错误"],
+      "prohibited_interpretations": ["病理性内疚", "道德评价"]
+    },
+    {
+      "code": "shame",
+      "name": "羞耻/难堪线索",
+      "include": ["担心自己被否定、丢脸，或把负面评价指向整体自我"],
+      "exclude": ["对具体行为感到内疚", "一般社交紧张"],
+      "prohibited_interpretations": ["低自尊人格", "人格缺陷"]
+    },
+    {
+      "code": "calm",
+      "name": "平静/放松线索",
+      "include": ["明确表达平静、放松、安定或恢复了一些"],
+      "exclude": ["没有表达情绪", "麻木或无所谓"],
+      "prohibited_interpretations": ["情绪健康结论", "疗效证明"]
+    },
+    {
+      "code": "positive",
+      "name": "积极情绪线索",
+      "include": ["明确表达开心、欣慰、希望、感激或满足"],
+      "exclude": ["一般赞同", "礼貌性正向用语"],
+      "prohibited_interpretations": ["心理健康结论", "关系良好结论"]
+    },
+    {
+      "code": "unknown",
+      "name": "情绪未知",
+      "include": ["文本不足、指代不清、反讽无法判断或只有事件没有主观感受"],
+      "exclude": ["已明确表达至少一种情绪"],
+      "prohibited_interpretations": ["没有情绪", "拒绝合作"]
+    }
+  ],
+  "safety_cues": [
+    {
+      "code": "crisis_expression",
+      "name": "需优先人工了解的安全线索",
+      "is_emotion_label": false,
+      "rule": "只标记文本中出现的自伤、自杀、伤人、严重暴力、虐待、急性失控或无法保证安全的明确线索；不得输出概率、诊断或自动处置结论。"
+    }
+  ],
+  "human_review_reasons": [
+    "safety_cue",
+    "ambiguous_pronoun",
+    "sarcasm_or_metaphor",
+    "mixed_emotion_over_limit",
+    "context_missing",
+    "cultural_or_dialect_uncertainty",
+    "annotator_conflict"
+  ],
+  "global_prohibited_inferences": [
+    "精神障碍或临床诊断",
+    "人格类型或稳定人格特征",
+    "个体危机概率或未来行为概率",
+    "关系质量、家庭功能或谁对谁错",
+    "治疗效果或能力高低"
+  ],
+  "release_boundary": {
+    "public_data_role": "只用于预训练比较或方法演练，不能直接证明本项目有效",
+    "synthetic_data_role": "只用于流程、契约和标注训练演练，不是人工金标准",
+    "expert_review_required": true,
+    "automatic_expert_signoff_allowed": false
+  }
+}

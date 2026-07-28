@@ -1,0 +1,34 @@
+{
+  "schema": "safehome.emotion-annotation-examples.v1",
+  "version": "2026-07-28-t37-a01-v1",
+  "status": "engineering_complete_expert_review_pending",
+  "examples": [
+    {"id": "ex-001", "text": "明天要汇报，我一直担心会说错。", "labels": ["anxiety"], "intensity": 2, "polarity": "affirmed", "needs_human_understanding": false, "note": "未来不确定结果的明确担心。"},
+    {"id": "ex-002", "text": "刚才那辆车突然冲过来，我现在还很害怕。", "labels": ["fear"], "intensity": 3, "polarity": "affirmed", "needs_human_understanding": false, "note": "临近威胁后的害怕。"},
+    {"id": "ex-003", "text": "我不是生气，只是有点累。", "labels": ["anger"], "intensity": 0, "polarity": "negated", "needs_human_understanding": false, "note": "否定范围只覆盖生气，不能据此推断其他情绪。"},
+    {"id": "ex-004", "text": "事情终于结束了，我松了口气，但还是有点担心后面。", "labels": ["calm", "anxiety"], "intensity": 2, "polarity": "affirmed", "needs_human_understanding": false, "note": "允许保留并存的混合情绪。"},
+    {"id": "ex-005", "text": "我把重要的事忘了，觉得很对不起他。", "labels": ["guilt"], "intensity": 2, "polarity": "affirmed", "needs_human_understanding": false, "note": "负面评价指向具体行为。"},
+    {"id": "ex-006", "text": "大家都看见了，我觉得自己整个人都很丢脸。", "labels": ["shame"], "intensity": 3, "polarity": "affirmed", "needs_human_understanding": false, "note": "负面评价指向整体自我。"},
+    {"id": "ex-007", "text": "他说了那句话。", "labels": ["unknown"], "intensity": 0, "polarity": "uncertain", "needs_human_understanding": true, "human_review_reason": "context_missing", "note": "只有事件，没有可观察的情绪表达。"},
+    {"id": "ex-008", "text": "真是太棒了，又要加班到半夜。", "labels": ["unknown"], "intensity": 0, "polarity": "uncertain", "needs_human_understanding": true, "human_review_reason": "sarcasm_or_metaphor", "note": "疑似反讽，不能按“太棒了”标积极。"},
+    {"id": "ex-009", "text": "我很烦，又觉得什么都改变不了。", "labels": ["irritation", "helplessness"], "intensity": 3, "polarity": "affirmed", "needs_human_understanding": false, "note": "两种情绪线索均有直接证据。"},
+    {"id": "ex-010", "text": "今晚我担心自己会伤害自己，不能保证安全。", "labels": ["fear"], "intensity": 4, "polarity": "affirmed", "safety_cues": ["crisis_expression"], "needs_human_understanding": true, "human_review_reason": "safety_cue", "note": "安全线索与情绪标签分开记录，必须人工优先了解。"},
+    {"id": "ex-011", "text": "我平静下来了一点，但身体还是绷得很紧。", "labels": ["calm"], "intensity": 1, "polarity": "affirmed", "needs_human_understanding": false, "note": "身体唤醒不自动改写明确情绪表达。"},
+    {"id": "ex-012", "text": "不知道怎么说，反正就那样。", "labels": ["unknown"], "intensity": 0, "polarity": "uncertain", "needs_human_understanding": true, "human_review_reason": "context_missing", "note": "不得把表达不足标成平静或无情绪。"}
+  ],
+  "counterexamples": [
+    {"text": "我准备了三页汇报材料。", "do_not_label": "anxiety", "reason": "准备行为不等于担心。"},
+    {"text": "这件事不合理。", "do_not_label": "anger", "reason": "观点判断不等于愤怒。"},
+    {"text": "我今天哭了。", "do_not_label": "sadness", "reason": "行为可由多种情境产生，需要上下文。"},
+    {"text": "我不知道答案。", "do_not_label": "helplessness", "reason": "不知道一个答案不等于无助。"},
+    {"text": "我做错了。", "do_not_label": "guilt", "reason": "承认错误不等于内疚。"},
+    {"text": "随便。", "do_not_label": "calm", "reason": "可能是回避、疲惫或不愿展开。"},
+    {"text": "谢谢。", "do_not_label": "positive", "reason": "礼貌用语不等于积极情绪。"},
+    {"text": "我们最近联系少了。", "do_not_infer": "关系质量下降", "reason": "事件频率不能直接解释关系优劣。"}
+  ],
+  "adjudication": {
+    "trigger": "任一主标签、否定范围、强度相差2级以上、安全线索或needs_human_understanding存在分歧",
+    "procedure": ["保留两名标注者原始答案", "第三位裁决者只查看文本、手册和两份理由", "记录裁决标签、理由、手册条款和版本", "无法确定时保留unknown并标记需真人了解"],
+    "automatic_adjudication_allowed": false
+  }
+}
