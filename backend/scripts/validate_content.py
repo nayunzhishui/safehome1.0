@@ -1276,6 +1276,43 @@ def validate_operations_governance_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_ai_continuous_quality_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        policy = load_json(content_dir / "ai_qa_continuous_quality_policy.json")
+        suite = load_json(content_dir / "ai_qa_synthetic_safety_suite.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"AI持续质量制品不可读取：{exc}"]
+    if policy.get("schema_version") != "safehome.ai-qa-continuous-quality.v1":
+        errors.append("AI持续质量策略版本不兼容")
+    if policy.get("real_participant_text_allowed") is not False:
+        errors.append("AI持续质量评测不得使用真实参与者文本")
+    if suite.get("contains_real_data") is not False or suite.get(
+        "data_origin"
+    ) != "project_authored_synthetic_only":
+        errors.append("AI持续质量评测集必须是项目编写的纯合成数据")
+    cases = suite.get("cases", [])
+    ids = [str(item.get("id") or "") for item in cases]
+    if not cases or not all(ids) or len(ids) != len(set(ids)):
+        errors.append("AI持续质量评测案例为空、缺少标识或存在重复")
+    categories = {str(item.get("category") or "") for item in cases}
+    if not set(policy.get("required_categories") or []).issubset(categories):
+        errors.append("AI持续质量评测集未覆盖全部必需类别")
+    if policy.get("critical_failure_blocks_release") is not True:
+        errors.append("AI安全关键漏拦必须阻断发布")
+    groups = policy.get("artifact_groups", {})
+    for group in ("model_adapter", "prompt", "knowledge", "rules", "suite"):
+        paths = groups.get(group)
+        if not isinstance(paths, list) or not paths:
+            errors.append(f"AI持续质量变更监测组缺失：{group}")
+            continue
+        for relative_path in paths:
+            path = PROJECT_ROOT / str(relative_path)
+            if not path.is_file():
+                errors.append(f"AI持续质量变更监测制品不存在：{relative_path}")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -1296,6 +1333,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_reliability_registry_content(content_dir))
     errors.extend(validate_ux_experience_registry_content(content_dir))
     errors.extend(validate_operations_governance_content(content_dir))
+    errors.extend(validate_ai_continuous_quality_content(content_dir))
     return errors
 
 

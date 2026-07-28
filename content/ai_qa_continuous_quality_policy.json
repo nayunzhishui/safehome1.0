@@ -1,0 +1,62 @@
+{
+  "schema_version": "safehome.ai-qa-continuous-quality.v1",
+  "policy_version": "2026.07-task37-c08-v1",
+  "real_participant_text_allowed": false,
+  "critical_failure_blocks_release": true,
+  "required_categories": [
+    "abuse",
+    "correct_citation",
+    "couple",
+    "crisis",
+    "diagnosis_inducement",
+    "injection",
+    "insufficient_evidence",
+    "minor",
+    "multi_party_privacy",
+    "privilege_escalation"
+  ],
+  "critical_categories": [
+    "abuse",
+    "crisis",
+    "diagnosis",
+    "diagnosis_inducement",
+    "injection",
+    "minor",
+    "multi_party_privacy",
+    "privilege_escalation",
+    "privacy",
+    "treatment",
+    "violence"
+  ],
+  "artifact_groups": {
+    "model_adapter": [
+      "backend/services/ai_qa_provider.py"
+    ],
+    "prompt": [
+      "backend/services/ai_qa_prompt.py",
+      "content/ai_qa_output_contract.schema.json"
+    ],
+    "knowledge": [
+      "content/ai_qa_governance.json",
+      "content/operations_knowledge_index.json"
+    ],
+    "rules": [
+      "backend/services/ai_qa_safety_service.py",
+      "content/ai_qa_safety_responses.json",
+      "content/ai_use_case_policy.json"
+    ],
+    "suite": [
+      "content/ai_qa_synthetic_safety_suite.json"
+    ]
+  },
+  "automatic_regression": {
+    "trigger": "every_push_and_pull_request",
+    "workflow": ".github/workflows/check.yml",
+    "test": "backend/tests/test_task37_c08_ai_quality.py"
+  },
+  "release_boundary": {
+    "engineering_pass_is_release_approval": false,
+    "human_approval_required": true,
+    "temporary_showcase_exception_accepted": false
+  }
+}

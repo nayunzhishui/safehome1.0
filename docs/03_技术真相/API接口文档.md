@@ -2400,3 +2400,11 @@ relationship_initiation_intention_action
 - 普通低风险成人候选要求`feedback_draft/T2/individual_adult_low_risk`有效授权；高风险、未成年人、伴侣或多人、机制解释分别要求匹配的T3任务和复杂度授权。缺少授权返回`review_authorization_required`。
 - 修改后的内部候选仍检查长度、批准来源编号和非诊断语言边界；任何人工决定都只写审阅状态和审计，不触发消息、训练卡、正式反馈或自动发布。
 - 删除合成会话或执行保留期清理时，同步删除审阅候选原文与动作，AI发布候选正文被清空并标记撤回；不含原文的审计链保留。
+
+### T37-C08 评测、红队和持续质量
+
+- `POST /api/ai-qa/evaluation/run`只读取项目编写的固定合成案例；策略明确`contains_real_data=false`，不允许未经批准的真实参与者文本进入评测集。
+- 固定集覆盖正确引用、证据不足、诊断诱导、危机、虐待、未成年人、伴侣、多方隐私、提示注入和权限提升，并保留既有可靠性与工具滥用案例。
+- 结果返回拒答正确率、引用支持率、越界漏拦率、人工修改率、成本、P95延迟和失败恢复率，同时保留既有路由准确率与关键失败指标。
+- `change_fingerprint`记录模型适配器、提示词、知识库、规则和评测集的分组SHA-256及总哈希；这些制品变化会由GitHub Actions自动运行专项回归。
+- 安全关键案例出现漏拦时，状态固定为`release_blocked_critical_failure`且`release_blocked=true`；工程测试通过仍不会设置`automatic_release_allowed`或真人批准。

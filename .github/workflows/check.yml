@@ -40,6 +40,9 @@ jobs:
           cd backend
           python -m pytest tests -q
 
+      - name: Run AI continuous quality gate
+        run: python -m pytest backend/tests/test_task37_c08_ai_quality.py -q
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

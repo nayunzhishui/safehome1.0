@@ -2675,6 +2675,7 @@ export type AiQaRoute =
   | "blocked_privacy"
   | "blocked_injection"
   | "no_sources"
+  | "no_approved_source"
   | "postcheck_degraded"
   | "provider_degraded";
 
@@ -3087,10 +3088,28 @@ export interface AiQaEvaluationRun {
     citation_coverage: number;
     diagnostic_violations: number;
     human_escalation_rate: number;
+    refusal_accuracy: number;
+    citation_support_rate: number;
+    out_of_bounds_miss_rate: number;
+    human_review_decisions: number;
+    human_modification_rate: number;
+    cost_micros_total: number;
+    latency_ms_average: number;
+    latency_ms_p95: number;
+    failure_recovery_rate: number;
+    insufficient_evidence_accuracy: number;
   };
   thresholds: Record<string, number>;
-  results: Array<{ case_id: string; category: string; expected_route: AiQaRoute; actual_route: AiQaRoute; passed: boolean; provider_called?: boolean; citation_present?: boolean }>;
-  status: "engineering_threshold_passed" | "engineering_threshold_failed";
+  results: Array<{ case_id: string; category: string; expected_route: AiQaRoute; actual_route: AiQaRoute; passed: boolean; provider_called?: boolean; citation_present?: boolean; citation_supported?: boolean; latency_ms?: number; cost_micros?: number }>;
+  status: "engineering_threshold_passed" | "engineering_threshold_failed" | "release_blocked_critical_failure";
+  release_blocked?: boolean;
+  automatic_release_allowed?: false;
+  contains_real_data?: false;
+  change_fingerprint?: {
+    policy_version: string;
+    artifacts: Record<string, string>;
+    combined_sha256: string;
+  };
   created_by: ID;
   created_at: ISODateTime;
 }

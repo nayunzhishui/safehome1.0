@@ -482,12 +482,15 @@ export function AiQaSandboxPage() {
               <div className="evaluationCard">
                 <span className={`gateBadge ${latest.status === "engineering_threshold_passed" ? "gatePassed" : "gateBlocked"}`}>{latest.status}</span>
                 <div className="metricGrid compactMetrics">
-                  <div><strong>{latest.metrics.route_accuracy}</strong><span>路由准确率</span></div>
-                  <div><strong>{latest.metrics.critical_failures}</strong><span>关键失败</span></div>
-                  <div><strong>{latest.metrics.citation_coverage}</strong><span>引用覆盖</span></div>
-                  <div><strong>{latest.metrics.diagnostic_violations}</strong><span>诊断违规</span></div>
+                  <div><strong>{latest.metrics.refusal_accuracy}</strong><span>拒答正确率</span></div>
+                  <div><strong>{latest.metrics.citation_support_rate}</strong><span>引用支持率</span></div>
+                  <div><strong>{latest.metrics.out_of_bounds_miss_rate}</strong><span>越界漏拦率</span></div>
+                  <div><strong>{latest.metrics.human_modification_rate}</strong><span>人工修改率</span></div>
+                  <div><strong>{latest.metrics.cost_micros_total}</strong><span>成本（微单位）</span></div>
+                  <div><strong>{latest.metrics.latency_ms_p95}</strong><span>P95延迟（毫秒）</span></div>
+                  <div><strong>{latest.metrics.failure_recovery_rate}</strong><span>失败恢复率</span></div>
                 </div>
-                <p className="boundaryCallout">工程阈值通过不等于心理、伦理、隐私、安全或生产批准。</p>
+                <p className="boundaryCallout">安全关键漏拦会直接阻断发布；工程阈值通过仍不等于心理、伦理、隐私、安全或生产批准。</p>
               </div>
             );
           })() : <p className="emptyState">尚无评测证据。测试只使用固定合成案例。</p>}
