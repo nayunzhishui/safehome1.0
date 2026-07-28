@@ -321,6 +321,11 @@
 | POST | `/api/therapeutic-assessment/cases/<case_id>/launch-screenings` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>/launch-screenings/latest` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>/lifecycle` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| PATCH | `/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/consent` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| PATCH | `/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/gates` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| PATCH | `/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/safety-screen` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PUT | `/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/quality-incidents` | role:parent,student,researcher,supervisor,admin | participant_owned_or_authorized_case_quality_incident_append_only | — | — | active |
@@ -352,6 +357,7 @@
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/launch-scope` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/lifecycle/metrics` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/multi-party-safeguards` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/production-contract` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/production-contract/check` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/production-contract/snapshots` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

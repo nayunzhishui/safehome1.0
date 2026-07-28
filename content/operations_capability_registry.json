@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 387,
+  "operation_count": 393,
   "capability_count": 44,
   "capabilities": [
     {
@@ -1927,7 +1927,7 @@
       "feature_flags": [],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 77)",
+        "backend/tests (operation coverage: 83)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1948,6 +1948,8 @@
         "therapeutic_assessment.get_latest_launch_screening_route.get",
         "therapeutic_assessment.get_launch_scope_route.get",
         "therapeutic_assessment.get_lifecycle_metrics_route.get",
+        "therapeutic_assessment.get_multi_party_policy_route.get",
+        "therapeutic_assessment.get_multi_party_safeguard_route.get",
         "therapeutic_assessment.get_participant_draft_route.get",
         "therapeutic_assessment.get_production_contract_route.get",
         "therapeutic_assessment.get_production_gate_evidence_route.get",
@@ -1966,6 +1968,9 @@
         "therapeutic_assessment.patch_child_safeguard_gates_route.patch",
         "therapeutic_assessment.patch_competency_authorization_revoke_route.patch",
         "therapeutic_assessment.patch_data_consent_route.patch",
+        "therapeutic_assessment.patch_multi_party_consent_route.patch",
+        "therapeutic_assessment.patch_multi_party_gates_route.patch",
+        "therapeutic_assessment.patch_multi_party_safety_route.patch",
         "therapeutic_assessment.patch_question_route.patch",
         "therapeutic_assessment.patch_scope_route.patch",
         "therapeutic_assessment.post_action_followup_route.post",
@@ -1985,6 +1990,7 @@
         "therapeutic_assessment.post_feedback_route.post",
         "therapeutic_assessment.post_feedback_withdraw_route.post",
         "therapeutic_assessment.post_launch_screening_route.post",
+        "therapeutic_assessment.post_multi_party_safeguard_route.post",
         "therapeutic_assessment.post_production_contract_check_route.post",
         "therapeutic_assessment.post_production_contract_snapshot_route.post",
         "therapeutic_assessment.post_production_gate_evaluate_route.post",

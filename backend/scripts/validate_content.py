@@ -1158,6 +1158,31 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
         "a0_a3_pilot_evidence",
     }:
         errors.append(f"{child_filename} 必须要求T3、伦理和A0-A3试点证据")
+    multi_filename = "therapeutic_assessment_multi_party_policy.json"
+    try:
+        multi_policy = load_json(content_dir / multi_filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{multi_filename} 不可读取：{exc}")
+        return errors
+    if (
+        multi_policy.get("schema")
+        != "safehome.therapeutic-assessment.multi-party.v1"
+        or multi_policy.get("entry_enabled") is not False
+        or multi_policy.get("production_release_approved") is not False
+        or multi_policy.get("individual_disclosure_joint_default") is not False
+        or multi_policy.get("relationship_cycle_must_not_equalize_harm") is not True
+        or multi_policy.get("temporary_showcase_counts_as_permission") is not False
+    ):
+        errors.append(f"{multi_filename} 必须默认关闭、个别资料不共享且不得平均伤害责任")
+    if set(multi_policy.get("precheck_signals", [])) != {
+        "fear",
+        "coercive_control",
+        "violence",
+        "retaliation_risk",
+        "custody_dispute",
+        "shared_device_risk",
+    }:
+        errors.append(f"{multi_filename} 必须完整登记六类共同反馈前安全检查")
     return errors
 
 

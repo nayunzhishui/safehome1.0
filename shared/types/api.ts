@@ -464,6 +464,43 @@ export interface TherapeuticAssessmentChildSafeguard {
   updated_at: ISODateTime;
 }
 
+export interface TherapeuticAssessmentMultiPartyPolicy {
+  schema: "safehome.therapeutic-assessment.multi-party.v1";
+  version: string;
+  entry_enabled: false;
+  production_release_approved: false;
+  individual_disclosure_joint_default: false;
+  relationship_cycle_must_not_equalize_harm: true;
+  precheck_signals: string[];
+  required_external_gates: string[];
+  temporary_showcase_counts_as_permission: false;
+  boundary_notice: string;
+}
+
+export interface TherapeuticAssessmentMultiPartySafeguard {
+  id: ID;
+  case_id: ID;
+  party_user_ids: ID[];
+  party_consents: Record<ID, "pending" | "active" | "refused" | "withdrawn">;
+  status:
+    | "blocked_pending_multi_party"
+    | "blocked_party_refusal"
+    | "separate_support_required"
+    | "blocked_external_gates"
+    | "specialist_review_ready";
+  safety_signal_present: boolean;
+  individual_disclosure_joint_default: false;
+  joint_feedback_allowed: boolean;
+  entry_enabled: false;
+  production_release_approved: false;
+  temporary_showcase_counts_as_permission: false;
+  policy_version: string;
+  version: number;
+  boundary_notice: string;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
 export interface TherapeuticAssessmentProductionContract {
   schema: "safehome.therapeutic-assessment.production-contract.v1";
   version: string;

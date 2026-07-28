@@ -870,7 +870,38 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T38-F15", "title": "伴侣与多人资料保护子线", "dependencies": ["T38-F14"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T38-F15",
+      "title": "伴侣与多人资料保护子线",
+      "dependencies": ["T38-F14"],
+      "engineering_complete": true,
+      "status": "engineering_complete_entry_closed_external_gates_pending",
+      "evidence": [
+        "content/therapeutic_assessment_multi_party_policy.json",
+        "backend/services/therapeutic_assessment_multi_party_service.py",
+        "backend/routes/therapeutic_assessment.py",
+        "backend/models.py",
+        "backend/database.py",
+        "backend/scripts/migrate_task38_f15_multi_party_safeguards.py",
+        "backend/tests/test_task38_f15_multi_party_safeguards.py",
+        "shared/types/api.ts",
+        "apps/web/src/pages/TherapeuticAssessmentWorkbench.tsx",
+        "apps/miniprogram/pages/therapeutic-assessment/index.wxml"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task38_f15_multi_party_safeguards.py", "backend/tests/test_task38_f14_child_safeguards.py", "backend/tests/test_task38_f13_adult_launch_scope.py", "backend/tests/test_task38_f12_quality_supervision.py", "backend/tests/test_task38_f07_safety_chain.py", "backend/tests/test_task38_f05_dynamic_consent.py", "backend/tests/test_schema_migrations.py", "-q"],
+        ["python", "backend/scripts/migrate_task38_f15_multi_party_safeguards.py", "plan", "--database-path", ".codex_tmp/t38_f15_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task38_f15_multi_party_safeguards.py", "apply", "--database-path", ".codex_tmp/t38_f15_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task38_f15_multi_party_safeguards.py", "verify", "--database-path", ".codex_tmp/t38_f15_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task38_f15_multi_party_safeguards.py", "rollback", "--database-path", ".codex_tmp/t38_f15_registry.sqlite3"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["node", "--check", "apps/miniprogram/services/api.js"],
+        ["node", "--check", "apps/miniprogram/pages/therapeutic-assessment/index.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T38-F16", "title": "AI辅助的五道门", "dependencies": ["T38-F15", "T37-C06"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T38-F17", "title": "内容库和方法治理", "dependencies": ["T38-F16"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T38-F18", "title": "研究协议、指标和统计计划", "dependencies": ["T38-F17"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

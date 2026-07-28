@@ -153,6 +153,8 @@ import type {
   TherapeuticAssessmentAdultLaunchScope,
   TherapeuticAssessmentChildPolicy,
   TherapeuticAssessmentChildSafeguard,
+  TherapeuticAssessmentMultiPartyPolicy,
+  TherapeuticAssessmentMultiPartySafeguard,
   TherapeuticAssessmentLaunchScreening,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentCompetencyLevel,
@@ -1783,6 +1785,16 @@ export class SafeHomeApiClient {
   getTherapeuticAssessmentChildSafeguard(caseId: string): Promise<TherapeuticAssessmentChildSafeguard> {
     return this.requestData(
       `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/child-safeguards`,
+    );
+  }
+
+  getTherapeuticAssessmentMultiPartyPolicy(): Promise<TherapeuticAssessmentMultiPartyPolicy> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/multi-party-safeguards`);
+  }
+
+  getTherapeuticAssessmentMultiPartySafeguard(caseId: string): Promise<TherapeuticAssessmentMultiPartySafeguard> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/multi-party-safeguards`,
     );
   }
 

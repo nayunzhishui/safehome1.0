@@ -31,6 +31,12 @@
     <text class="ta-boundary">{{childPolicy.boundary_notice}}</text>
   </view>
 
+  <view wx:if="{{multiPartyPolicy}}" class="safe-card ta-card" aria-label="伴侣与多人保护范围">
+    <text class="ta-section-title">伴侣与多人子线</text>
+    <text class="ta-meta">当前入口未开放。每个人的个别披露默认不会进入共同反馈。</text>
+    <text class="ta-boundary">{{multiPartyPolicy.boundary_notice}}</text>
+  </view>
+
   <view class="safe-card ta-card ta-flow-entry">
     <view>
       <text class="ta-section-title">八步协作流程</text>

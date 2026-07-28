@@ -5,6 +5,7 @@ import type {
   TherapeuticAssessmentAuthorizationStatus,
   TherapeuticAssessmentAdultLaunchScope,
   TherapeuticAssessmentChildPolicy,
+  TherapeuticAssessmentMultiPartyPolicy,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
@@ -109,6 +110,8 @@ export function TherapeuticAssessmentWorkbench() {
     useState<TherapeuticAssessmentAdultLaunchScope | null>(null);
   const [childPolicy, setChildPolicy] =
     useState<TherapeuticAssessmentChildPolicy | null>(null);
+  const [multiPartyPolicy, setMultiPartyPolicy] =
+    useState<TherapeuticAssessmentMultiPartyPolicy | null>(null);
   const [launchScreening, setLaunchScreening] =
     useState<TherapeuticAssessmentLaunchScreening | null>(null);
   const [queueItems, setQueueItems] = useState<TherapeuticAssessmentWorkQueueItem[]>([]);
@@ -145,11 +148,12 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, launchScope, childSafeguards, queue, runtime, publications, lifecycle] = await Promise.all([
+      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, queue, runtime, publications, lifecycle] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
         safeHomeApi.getTherapeuticAssessmentAdultLaunchScope(),
         safeHomeApi.getTherapeuticAssessmentChildPolicy(),
+        safeHomeApi.getTherapeuticAssessmentMultiPartyPolicy(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
         safeHomeApi.listPublicationCandidates(),
@@ -159,6 +163,7 @@ export function TherapeuticAssessmentWorkbench() {
       setProductionContract(contract);
       setAdultLaunchScope(launchScope);
       setChildPolicy(childSafeguards);
+      setMultiPartyPolicy(multiPartySafeguards);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
       setPublicationCandidates(publications.items);
@@ -384,6 +389,13 @@ export function TherapeuticAssessmentWorkbench() {
           <strong>未成年人/亲子子线未开放</strong>
           <p>监护人同意、儿童知情与拒绝权、四类资料来源和专业门禁分别记录。</p>
           <small>{childPolicy.boundary_notice}</small>
+        </section>
+      ) : null}
+      {multiPartyPolicy ? (
+        <section className="status" aria-label="伴侣与多人保护子线">
+          <strong>伴侣与多人子线未开放</strong>
+          <p>个别披露默认不进入共同反馈；安全信号会转为单独支持。</p>
+          <small>{multiPartyPolicy.boundary_notice}</small>
         </section>
       ) : null}
       {queueRuntime ? (

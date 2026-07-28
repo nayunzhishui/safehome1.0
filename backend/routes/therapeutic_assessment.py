@@ -109,6 +109,14 @@ from services.therapeutic_assessment_child_service import (
     update_decision as update_child_decision,
     update_gates as update_child_gates,
 )
+from services.therapeutic_assessment_multi_party_service import (
+    get_safeguard as get_multi_party_safeguard,
+    initialize as initialize_multi_party_safeguard,
+    public_policy as multi_party_policy,
+    update_consent as update_multi_party_consent,
+    update_gates as update_multi_party_gates,
+    update_safety_screen as update_multi_party_safety_screen,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -150,6 +158,50 @@ def get_launch_scope_route():
 def get_child_safeguards_policy_route():
     actor, error = _actor()
     return error or _respond(child_safeguard_policy)
+
+
+@bp.get("/multi-party-safeguards")
+def get_multi_party_policy_route():
+    actor, error = _actor()
+    return error or _respond(multi_party_policy)
+
+
+@bp.post("/cases/<case_id>/multi-party-safeguards")
+def post_multi_party_safeguard_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        initialize_multi_party_safeguard, actor, case_id, _payload(), _key()
+    )
+
+
+@bp.get("/cases/<case_id>/multi-party-safeguards")
+def get_multi_party_safeguard_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(get_multi_party_safeguard, actor, case_id)
+
+
+@bp.patch("/cases/<case_id>/multi-party-safeguards/consent")
+def patch_multi_party_consent_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        update_multi_party_consent, actor, case_id, _payload(), _key()
+    )
+
+
+@bp.patch("/cases/<case_id>/multi-party-safeguards/safety-screen")
+def patch_multi_party_safety_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        update_multi_party_safety_screen, actor, case_id, _payload(), _key()
+    )
+
+
+@bp.patch("/cases/<case_id>/multi-party-safeguards/gates")
+def patch_multi_party_gates_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        update_multi_party_gates, actor, case_id, _payload(), _key()
+    )
 
 
 @bp.post("/cases/<case_id>/child-safeguards")

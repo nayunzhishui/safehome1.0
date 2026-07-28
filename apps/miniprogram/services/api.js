@@ -1258,6 +1258,17 @@ function createSafeHomeApi(options = {}) {
       );
     },
 
+    getTherapeuticAssessmentMultiPartyPolicy() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/multi-party-safeguards`, { requiresAuth: true });
+    },
+
+    getTherapeuticAssessmentMultiPartySafeguard(caseId) {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/multi-party-safeguards`,
+        { requiresAuth: true },
+      );
+    },
+
     getTherapeuticAssessmentLaunchScreening(caseId) {
       return request(
         `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings/latest`,

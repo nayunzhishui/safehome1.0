@@ -2439,3 +2439,11 @@ relationship_initiation_intention_action
 - `GET /api/therapeutic-assessment/cases/<case_id>/child-safeguards`：仅监护人、儿童、分配研究者、督导或管理员按对象范围读取。
 - `PATCH .../child-safeguards/decision`：监护人只能同意/撤回自己的同意；儿童只能同意、拒绝或撤回。儿童拒绝为优先阻断。
 - `PATCH .../child-safeguards/gates`：督导/管理员登记T3、伦理和A0—A3证据；即使齐全，生产入口仍需独立批准。
+
+### T38-F15 伴侣与多人资料保护子线
+
+- `GET /api/therapeutic-assessment/multi-party-safeguards`：返回入口关闭、六类预检和个别披露隔离边界。
+- `POST /api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards`：督导/管理员建立至少两名参与方的对象映射。
+- `PATCH .../multi-party-safeguards/consent`：各参与方只处理自己的同意、拒绝或撤回；任一拒绝阻断共同反馈。
+- `PATCH .../multi-party-safeguards/safety-screen`：各参与方独立完成六类布尔预检；其他参与方只读取聚合安全状态。
+- `PATCH .../multi-party-safeguards/gates`：登记T3、伦理和专项试点证据；共同反馈还要求全员同意、全员完成无信号预检。

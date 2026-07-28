@@ -1,0 +1,25 @@
+{
+  "schema": "safehome.therapeutic-assessment.multi-party.v1",
+  "version": "2026-07-29-f15-v1",
+  "entry_enabled": false,
+  "production_release_approved": false,
+  "individual_disclosure_joint_default": false,
+  "relationship_cycle_must_not_equalize_harm": true,
+  "precheck_signals": [
+    "fear",
+    "coercive_control",
+    "violence",
+    "retaliation_risk",
+    "custody_dispute",
+    "shared_device_risk"
+  ],
+  "required_external_gates": [
+    "t3_multi_party_competency",
+    "ethics_approval",
+    "specialized_pilot_evidence"
+  ],
+  "unsafe_route": "separate_support_required",
+  "joint_feedback_requires_all_party_consent": true,
+  "temporary_showcase_counts_as_permission": false,
+  "boundary_notice": "伴侣与多人子线默认关闭。个别披露不会自动进入共同反馈；出现恐惧、强制控制、暴力、报复、监护争议或共享设备风险时转为单独支持和现实安全路径。"
+}
