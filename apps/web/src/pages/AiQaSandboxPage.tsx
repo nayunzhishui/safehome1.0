@@ -252,6 +252,10 @@ export function AiQaSandboxPage() {
           <div><dt>密钥位置</dt><dd>仅云托管 Secret 或服务端环境变量</dd></div>
           <div><dt>跨会话记忆</dt><dd>关闭</dd></div>
           <div><dt>写操作工具</dt><dd>禁止</dd></div>
+          <div><dt>输入去标识</dt><dd>{config?.input_security ? `${config.input_security.deidentification_categories.length}类` : "等待新版本服务"}</dd></div>
+          <div><dt>检索片段信任</dt><dd>{config?.input_security?.retrieved_content_trusted === false ? "不可信数据" : "等待新版本服务"}</dd></div>
+          <div><dt>只读工具清单</dt><dd>{config?.input_security?.allowlist.join(" / ") || "无"}</dd></div>
+          <div><dt>路径与外网参数</dt><dd>{config?.input_security?.arbitrary_paths_allowed === false && config?.input_security?.arbitrary_network_hosts_allowed === false ? "禁止" : "等待新版本服务"}</dd></div>
           <div><dt>合成原文保留</dt><dd>{config?.data_policy.synthetic_retention_days ? `${config.data_policy.synthetic_retention_days}天` : "待服务更新"}</dd></div>
           <div><dt>训练使用</dt><dd>禁止</dd></div>
         </dl>

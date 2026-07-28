@@ -2965,6 +2965,23 @@ export interface AiQaConfig {
     external_provider_enabled: false;
     candidate_ids: Array<"deepseek" | "openai">;
   };
+  input_security: {
+    version: string;
+    instruction_data_separated: true;
+    retrieved_content_trusted: false;
+    message_field_allowlist: string[];
+    source_field_allowlist: string[];
+    max_question_length: number;
+    max_source_excerpt_length: number;
+    deidentification_categories: string[];
+    cross_session_memory: false;
+    raw_input_persisted: false;
+    default_mode: "deny";
+    allowlist: ["knowledge.retrieve"];
+    write_tools_allowed: false;
+    arbitrary_paths_allowed: false;
+    arbitrary_network_hosts_allowed: false;
+  };
   use_case_policy: AiQaUseCaseCatalog;
   boundary_notice: string;
 }

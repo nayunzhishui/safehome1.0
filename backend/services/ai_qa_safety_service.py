@@ -7,8 +7,35 @@ from services.ai_qa_prompt import validate_output
 from services.risk_service import check_text_risk
 
 
-INJECTION_TERMS = ("忽略之前", "忽略以上", "系统提示", "扩大我的数据权限", "扮演管理员", "ignore previous", "system prompt", "developer message")
-PRIVACY_TERMS = ("另一个参与者", "其他用户", "别人的日记", "内部备注", "数据库内容", "管理员密钥", "api key", "token", "cookie")
+INJECTION_TERMS = (
+    "忽略之前",
+    "忽略以上",
+    "覆盖系统",
+    "系统提示",
+    "扩大我的数据权限",
+    "扮演管理员",
+    "提升为管理员",
+    "ignore previous",
+    "ignore all prior",
+    "system prompt",
+    "developer message",
+)
+PRIVACY_TERMS = (
+    "另一个参与者",
+    "其他用户",
+    "别人的日记",
+    "上一次会话",
+    "其他会话",
+    "跨用户记忆",
+    "内部备注",
+    "数据库内容",
+    "导出全部数据",
+    "把资料发到",
+    "管理员密钥",
+    "api key",
+    "token",
+    "cookie",
+)
 OUT_OF_SCOPE_TERMS = ("诊断", "确诊", "人格类型", "人格定性", "吃什么药", "药物剂量", "治疗方案", "法律判断", "保证治", "治好", "替我给所有", "自动修改", "自动提交")
 EXTRA_HIGH_RISK_TERMS = ("正在打我", "想伤害别人", "威胁我不许告诉", "正在发生暴力", "马上伤害")
 POST_BLOCK_TERMS = ("确诊", "一定会改善", "保证治愈", "人格障碍", "SYSTEM PROMPT", "system prompt", "api key", "管理员密钥")

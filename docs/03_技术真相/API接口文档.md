@@ -2374,3 +2374,11 @@ relationship_initiation_intention_action
 - `POST /api/ai-qa/knowledge/candidates`：仅督导和管理员登记HTTPS网页的标题、URL和SHA-256元数据；必须提供`Idempotency-Key`。接口拒绝正文、HTML和原始文本字段，候选固定进入`quarantined`且`indexed=false`。
 - `POST /api/ai-qa/knowledge/evaluation/run`：内部角色运行固定合成检索案例，记录召回率、引用正确率、无证据正确率和案例通过率；工程阈值通过不等于发布批准。
 - 任何检索都会先同步发布状态；材料暂停、撤回、替换或过期后立即不再返回。无足够证据时`citations=[]`且`evidence_status=insufficient`。
+
+### T37-C05 输入安全、隐私最小化和提示注入防护
+
+- `POST /api/ai-qa/sessions/<id>/messages`只接受`text`、`synthetic_data`、`use_case_id`，测试环境另允许`fake_mode`；客户端提交内部指令、跨用户对象、供应商或工具控制字段时失败关闭。
+- 手机号、邮箱、证件号、IP和微信号在写入会话、检索和模型调用前去标识；安全事件只保存HMAC与最小分类元数据，不保存原始输入。
+- 模型请求只接受已发布、权利明确、审核通过、版本与发布记录完整且适用于当前角色的引用。检索片段被明确标记为不可信数据，与系统指令分区。
+- 工具策略默认拒绝；当前唯一允许项为服务端只读`knowledge.retrieve`，参数只允许`query/method/limit`，角色范围由服务端注入。路径、文件、URL、主机、身份和认证参数全部拒绝。
+- `GET /api/ai-qa/config`新增`input_security`，公开输入长度、去标识类别、只读工具清单和路径/网络边界，不返回规则词表、内部提示或敏感值。

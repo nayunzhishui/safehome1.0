@@ -11,13 +11,20 @@ from datetime import datetime, timedelta, timezone
 from flask import current_app
 
 from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
+from services.ai_qa_input_security_service import (
+    InputSecurityError,
+    classify_input_domain,
+    get_input_security_policy,
+    prepare_provider_input,
+    validate_message_payload,
+)
 from services.ai_qa_provider import ProviderError, get_provider
 from services.ai_qa_retrieval_service import retrieve_published_content
 from services.ai_qa_safety_service import fixed_response, post_check, pre_route
 
 
-PROMPT_VERSION = "safehome-ai-qa-prompt-v2"
-SAFETY_VERSION = "safehome-ai-qa-safety-v1"
+PROMPT_VERSION = "safehome-ai-qa-prompt-v3"
+SAFETY_VERSION = "safehome-ai-qa-safety-v2"
 FEEDBACK_VALUES = {"helpful", "neutral", "does_not_match", "uncomfortable"}
 USE_CASE_POLICY_SCHEMA = "safehome.ai-use-case-policy.v1"
 
@@ -175,6 +182,7 @@ def get_config_status() -> dict:
             "runtime_admission_reason": provider_admission["reason"],
         },
         "provider_selection": get_provider_selection_summary(),
+        "input_security": get_input_security_policy(),
         "use_case_policy": get_use_case_catalog(),
         "boundary_notice": governance.get("boundary_notice"),
     }
@@ -319,11 +327,33 @@ def _record_safety(conn, session_id: str | None, user_id: str, text: str, catego
 
 def _fixed_message(actor: dict, session_id: str, text: str, route: str, precheck: dict, *, provider_status: str | None = None) -> dict:
     response = fixed_response(route)
-    safety = {"version": SAFETY_VERSION, "precheck": {key: precheck.get(key) for key in ("category", "severity", "route")}, "postcheck": None, "route": route, "human_escalation": response["human_escalation"]}
+    safety = {
+        "version": SAFETY_VERSION,
+        "precheck": {
+            key: precheck.get(key)
+            for key in ("category", "severity", "route")
+        },
+        "input_security": precheck.get("input_security"),
+        "postcheck": None,
+        "route": route,
+        "human_escalation": response["human_escalation"],
+    }
     provider_called = provider_status == "called"
     with get_connection() as conn:
         assistant = _store_message(conn, session_id, actor["id"], "assistant", response["answer"], safety=safety)
-        _record_safety(conn, session_id, actor["id"], text, precheck.get("category", route), precheck.get("severity", "medium"), route, {"provider_called": provider_called})
+        _record_safety(
+            conn,
+            session_id,
+            actor["id"],
+            text,
+            precheck.get("category", route),
+            precheck.get("severity", "medium"),
+            route,
+            {
+                "provider_called": provider_called,
+                "input_security": precheck.get("input_security"),
+            },
+        )
         write_audit_log(conn, "ai_qa_safety_routed", actor["id"], "ai_qa_session", session_id, {"route": route, "request_hash": _request_hash(text), "provider_called": provider_called})
         conn.commit()
     return {"message": assistant, "route": route, "fixed_response": True, "human_escalation": response["human_escalation"], "boundary_notice": response["boundary_notice"]}
@@ -333,6 +363,30 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
     _require_sandbox()
     session = _get_owned_session(actor, session_id)
     _require_allowed_use_case(session.get("use_case_id"))
+    if payload.get("tools"):
+        raise AiQaError(
+            "ai_qa_tools_forbidden",
+            "客户端不能指定工具；服务端只允许受控只读检索",
+            409,
+        )
+    if payload.get("provider") is not None:
+        raise AiQaError(
+            "ai_qa_provider_override_forbidden",
+            "供应商只能由服务端配置，客户端不能指定",
+            409,
+        )
+    try:
+        payload = validate_message_payload(
+            payload,
+            app_env=str(current_app.config.get("APP_ENV") or ""),
+        )
+    except InputSecurityError as exc:
+        raise AiQaError(
+            exc.code,
+            str(exc),
+            exc.status,
+            exc.details,
+        ) from exc
     requested_use_case = payload.get("use_case_id")
     if requested_use_case is not None and str(requested_use_case) != str(
         session["use_case_id"]
@@ -342,30 +396,106 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
             "消息不能改变会话已冻结的AI用例",
             409,
         )
-    text = str(payload.get("text") or "").strip()
-    if not text or len(text) > 2000:
-        raise AiQaError("validation_error", "问题长度必须为1至2000字")
+    original_text = str(payload.get("text") or "").strip()
+    try:
+        initial_input = prepare_provider_input(
+            original_text,
+            [],
+            audience=str(actor.get("role") or "researcher"),
+        )
+    except InputSecurityError as exc:
+        raise AiQaError(
+            exc.code,
+            str(exc),
+            exc.status,
+            exc.details,
+        ) from exc
+    text = initial_input["question"]
     if payload.get("synthetic_data") is not True:
         raise AiQaError("synthetic_data_required", "当前只允许合成问题", 409)
-    if payload.get("tools"):
-        raise AiQaError("ai_qa_tools_forbidden", "首轮内容助手不允许调用写操作工具", 409)
-    if payload.get("provider") is not None:
-        raise AiQaError(
-            "ai_qa_provider_override_forbidden",
-            "供应商只能由服务端配置，客户端不能指定",
-            409,
-        )
     _rate_and_budget_guard(actor["id"])
     with get_connection() as conn:
-        _store_message(conn, session_id, actor["id"], "user", text, safety={"synthetic_data": True})
+        _store_message(
+            conn,
+            session_id,
+            actor["id"],
+            "user",
+            text,
+            safety={
+                "synthetic_data": True,
+                "input_security_version": initial_input["security_version"],
+                "deidentified_count": initial_input["privacy"][
+                    "deidentified_count"
+                ],
+                "raw_input_persisted": False,
+            },
+        )
         conn.commit()
-    precheck = pre_route(text)
+    precheck = pre_route(original_text)
     if not precheck["allowed"]:
-        return _fixed_message(actor, session_id, text, precheck["route"], precheck)
-    retrieval = retrieve_published_content(text)
-    citations = retrieval["citations"]
+        return _fixed_message(
+            actor,
+            session_id,
+            text,
+            precheck["route"],
+            {
+                **precheck,
+                "input_security": {
+                    "version": initial_input["security_version"],
+                    "deidentified_count": initial_input["privacy"][
+                        "deidentified_count"
+                    ],
+                    "raw_input_persisted": False,
+                },
+            },
+        )
+    domain = classify_input_domain(text)
+    if not domain["allowed"]:
+        return _fixed_message(
+            actor,
+            session_id,
+            text,
+            "blocked_scope",
+            {
+                **precheck,
+                "route": "blocked_scope",
+                "category": "out_of_domain",
+                "severity": "medium",
+                "input_security": {
+                    "version": initial_input["security_version"],
+                    "matched_rules": domain["matched_rules"],
+                    "raw_input_persisted": False,
+                },
+            },
+        )
+    retrieval = retrieve_published_content(
+        text,
+        audience=str(actor.get("role") or "researcher"),
+    )
+    secured_input = prepare_provider_input(
+        text,
+        retrieval["citations"],
+        audience=str(actor.get("role") or "researcher"),
+    )
+    text = secured_input["question"]
+    citations = secured_input["citations"]
     if not citations:
-        return _fixed_message(actor, session_id, text, "no_sources", {**precheck, "category": "insufficient_sources", "severity": "low"})
+        return _fixed_message(
+            actor,
+            session_id,
+            text,
+            "no_sources",
+            {
+                **precheck,
+                "category": "insufficient_sources",
+                "severity": "low",
+                "input_security": {
+                    "version": secured_input["security_version"],
+                    **secured_input["authorization"],
+                    "raw_input_persisted": False,
+                },
+            },
+        )
     provider_name = str(current_app.config.get("AI_QA_PROVIDER", "fake"))
     if _circuit_open(actor["id"], provider_name):
         return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": "circuit_open", "severity": "medium"})
@@ -478,7 +608,28 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
         conn.commit()
     if not postcheck["ok"]:
         return _fixed_message(actor, session_id, text, "postcheck_degraded", {"category": "postcheck", "severity": "high", "route": "postcheck_degraded"}, provider_status="called")
-    safety = {"version": SAFETY_VERSION, "precheck": {key: precheck.get(key) for key in ("category", "severity", "route")}, "postcheck": postcheck, "route": "answered", "human_escalation": False, "uncertainty": result.uncertainty}
+    safety = {
+        "version": SAFETY_VERSION,
+        "precheck": {
+            key: precheck.get(key)
+            for key in ("category", "severity", "route")
+        },
+        "input_security": {
+            "version": secured_input["security_version"],
+            "deidentified_count": secured_input["privacy"][
+                "deidentified_count"
+            ],
+            "source_deidentified_count": secured_input["privacy"][
+                "source_deidentified_count"
+            ],
+            **secured_input["authorization"],
+            "raw_input_persisted": False,
+        },
+        "postcheck": postcheck,
+        "route": "answered",
+        "human_escalation": False,
+        "uncertainty": result.uncertainty,
+    }
     from services.publication_gate_service import (
         PublicationGateError,
         assert_candidate_approved,
@@ -638,7 +789,19 @@ def run_evaluation(actor: dict) -> dict:
         raise AiQaError("evaluation_privacy_invalid", "安全评测集必须明确不含真实数据", 409)
     results = [_evaluate_case(case) for case in suite.get("cases", [])]
     total = len(results)
-    critical_categories = {"diagnosis", "treatment", "crisis", "violence", "abuse", "privacy", "injection", "tool_abuse"}
+    critical_categories = {
+        "diagnosis",
+        "treatment",
+        "crisis",
+        "violence",
+        "abuse",
+        "privacy",
+        "injection",
+        "privilege_escalation",
+        "cross_session_memory",
+        "data_exfiltration",
+        "tool_abuse",
+    }
     critical_failures = sum(1 for item in results if item["category"] in critical_categories and not item["passed"])
     answered = [item for item in results if item["actual_route"] == "answered"]
     metrics = {
