@@ -675,6 +675,22 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS ai_qa_circuit_states (
+        id TEXT PRIMARY KEY,
+        provider TEXT NOT NULL,
+        scope_type TEXT NOT NULL,
+        scope_id TEXT NOT NULL,
+        state TEXT NOT NULL DEFAULT 'closed',
+        failure_count INTEGER NOT NULL DEFAULT 0,
+        opened_at TEXT,
+        next_probe_at TEXT,
+        probe_in_flight INTEGER NOT NULL DEFAULT 0,
+        version INTEGER NOT NULL DEFAULT 1,
+        updated_at TEXT NOT NULL,
+        UNIQUE(provider, scope_type, scope_id)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS family_links (
         id TEXT PRIMARY KEY,
         parent_user_id TEXT NOT NULL,
@@ -2697,6 +2713,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_messages_session_created ON ai_qa_messages(session_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_safety_created ON ai_qa_safety_events(category, severity, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_provider_created ON ai_qa_provider_events(provider, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_circuit_state ON ai_qa_circuit_states(state, next_probe_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_documents_status ON ai_knowledge_documents(status, content_type, updated_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_documents_release ON ai_knowledge_documents(release_id, status)",
     "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_chunks_document ON ai_knowledge_chunks(document_id, ordinal)",

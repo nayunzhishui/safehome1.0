@@ -42,6 +42,7 @@
     ],
     "rules": [
       "backend/services/ai_qa_safety_service.py",
+      "content/ai_qa_runtime_policy.json",
       "content/ai_qa_safety_responses.json",
       "content/ai_use_case_policy.json"
     ],

@@ -1313,6 +1313,53 @@ def validate_ai_continuous_quality_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_ai_runtime_policy_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        policy = load_json(content_dir / "ai_qa_runtime_policy.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"AI运行控制策略不可读取：{exc}"]
+    if policy.get("schema_version") != "safehome.ai-qa-runtime-policy.v1":
+        errors.append("AI运行控制策略版本不兼容")
+    expected_scopes = {"user", "role", "provider", "project"}
+    for field in ("budgets_micros_per_day", "rate_limits_per_hour"):
+        if set(policy.get(field) or {}) != expected_scopes:
+            errors.append(f"AI运行控制策略范围不完整：{field}")
+    circuit = policy.get("circuit_breaker", {})
+    if (
+        int(circuit.get("failure_threshold", 0)) < 1
+        or int(circuit.get("cooldown_seconds", 0)) < 1
+        or int(circuit.get("half_open_max_probes", 0)) != 1
+    ):
+        errors.append("AI熔断策略必须包含阈值、冷却和单探针半开")
+    retention = policy.get("retention", {})
+    if any(
+        int(retention.get(key, 0)) < 1
+        for key in (
+            "session_text_days",
+            "deidentified_derived_days",
+            "provider_metadata_days",
+            "audit_days",
+        )
+    ):
+        errors.append("AI文本、衍生数据、供应商元数据和审计保留期必须分开")
+    if policy.get("core_services_unaffected") != [
+        "messages",
+        "records",
+        "human_feedback",
+    ]:
+        errors.append("AI故障不得影响消息、记录和人工反馈")
+    if (
+        policy.get("degradation", {}).get(
+            "kill_switch_reactivation_via_api"
+        )
+        is not False
+        or policy.get("production_release_approved") is not False
+    ):
+        errors.append("AI运行策略不得自动恢复kill switch或批准生产发布")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -1334,6 +1381,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_ux_experience_registry_content(content_dir))
     errors.extend(validate_operations_governance_content(content_dir))
     errors.extend(validate_ai_continuous_quality_content(content_dir))
+    errors.extend(validate_ai_runtime_policy_content(content_dir))
     return errors
 
 

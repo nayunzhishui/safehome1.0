@@ -1,0 +1,40 @@
+{
+  "schema_version": "safehome.ai-qa-runtime-policy.v1",
+  "policy_version": "2026.07-task37-c09-v1",
+  "budgets_micros_per_day": {
+    "user": {"default": 0},
+    "role": {"default": 0},
+    "provider": {"default": 0},
+    "project": {"default": 0}
+  },
+  "rate_limits_per_hour": {
+    "user": {"default": 30},
+    "role": {"default": 300},
+    "provider": {"default": 1000},
+    "project": {"default": 500}
+  },
+  "circuit_breaker": {
+    "failure_threshold": 3,
+    "cooldown_seconds": 60,
+    "half_open_max_probes": 1
+  },
+  "degradation": {
+    "mode": "read_only_fixed_response",
+    "write_tools_enabled": false,
+    "automatic_retry_max": 2,
+    "kill_switch_reactivation_via_api": false
+  },
+  "retention": {
+    "session_text_days": 7,
+    "deidentified_derived_days": 90,
+    "provider_metadata_days": 30,
+    "audit_days": 180,
+    "audit_auto_delete_enabled": false
+  },
+  "core_services_unaffected": [
+    "messages",
+    "records",
+    "human_feedback"
+  ],
+  "production_release_approved": false
+}

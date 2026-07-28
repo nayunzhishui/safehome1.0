@@ -143,6 +143,7 @@ REQUIRED_HEALTH_TABLES = [
     "publication_candidate_events",
     "ai_qa_review_cases",
     "ai_qa_review_actions",
+    "ai_qa_circuit_states",
     "therapeutic_assessment_release_evidence",
     "therapeutic_assessment_release_gate_runs",
     "therapeutic_assessment_release_gate_checks",
@@ -154,8 +155,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_054"
-CURRENT_SCHEMA_NAME = "ai_review_workbench"
+CURRENT_SCHEMA_VERSION = "2026_07_28_055"
+CURRENT_SCHEMA_NAME = "ai_runtime_controls"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -261,6 +262,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "source",
     "created_at",
     "updated_at",
+    "next_probe_at",
     "applied_at",
     "goal_id",
     "diary_id",

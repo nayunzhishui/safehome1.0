@@ -32,6 +32,14 @@ from services.ai_qa_quality_service import (
     validate_quality_configuration,
 )
 from services.ai_qa_retrieval_service import retrieve_published_content
+from services.ai_qa_runtime_control_service import (
+    UsageControlError,
+    claim_circuit_permission,
+    enforce_usage_control,
+    load_runtime_policy,
+    record_circuit_outcome,
+    runtime_policy_summary,
+)
 from services.ai_qa_safety_service import fixed_response, post_check, pre_route
 
 
@@ -196,6 +204,7 @@ def get_config_status() -> dict:
         "provider_selection": get_provider_selection_summary(),
         "input_security": get_input_security_policy(),
         "output_contract": get_output_gate_policy(),
+        "runtime_limits": runtime_policy_summary(),
         "use_case_policy": get_use_case_catalog(),
         "boundary_notice": governance.get("boundary_notice"),
     }
@@ -330,34 +339,6 @@ def delete_session(actor: dict, session_id: str) -> dict:
     return {"id": session_id, "status": "deleted", "idempotent": False}
 
 
-def _rate_and_budget_guard(user_id: str) -> None:
-    hour_cutoff = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
-    day_cutoff = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
-    with get_connection() as conn:
-        count = conn.execute("SELECT COUNT(*) AS count FROM ai_qa_messages WHERE user_id = ? AND role = 'user' AND created_at >= ?", (user_id, hour_cutoff)).fetchone()
-        cost = conn.execute("SELECT COALESCE(SUM(cost_micros), 0) AS total FROM ai_qa_provider_events WHERE user_id = ? AND created_at >= ?", (user_id, day_cutoff)).fetchone()
-    if int(count["count"]) >= int(current_app.config.get("AI_QA_REQUESTS_PER_HOUR", 30)):
-        raise AiQaError("ai_qa_rate_limited", "合成沙盒请求过于频繁", 429)
-    budget = int(current_app.config.get("AI_QA_DAILY_BUDGET_MICROS", 0))
-    if budget > 0 and int(cost["total"]) >= budget:
-        raise AiQaError("ai_qa_budget_exhausted", "当日沙盒预算已用完", 429)
-
-
-def _circuit_open(user_id: str, provider: str) -> bool:
-    cutoff = (datetime.now(timezone.utc) - timedelta(minutes=5)).isoformat()
-    threshold = int(current_app.config.get("AI_QA_CIRCUIT_THRESHOLD", 3))
-    with get_connection() as conn:
-        row = conn.execute(
-            """
-            SELECT COUNT(*) AS count
-            FROM ai_qa_provider_events
-            WHERE status = 'failed' AND user_id = ? AND provider = ? AND created_at >= ?
-            """,
-            (user_id, provider, cutoff),
-        ).fetchone()
-    return int(row["count"]) >= threshold
-
-
 def _generate_with_deadline(
     provider,
     text: str,
@@ -426,7 +407,23 @@ def _fixed_message(actor: dict, session_id: str, text: str, route: str, precheck
         )
         write_audit_log(conn, "ai_qa_safety_routed", actor["id"], "ai_qa_session", session_id, {"route": route, "request_hash": _request_hash(text), "provider_called": provider_called})
         conn.commit()
-    return {"message": assistant, "route": route, "fixed_response": True, "human_escalation": response["human_escalation"], "boundary_notice": response["boundary_notice"]}
+    return {
+        "message": assistant,
+        "route": route,
+        "fixed_response": True,
+        "human_escalation": response["human_escalation"],
+        "boundary_notice": response["boundary_notice"],
+        "degradation_mode": (
+            "read_only_fixed_response"
+            if route == "provider_degraded"
+            else None
+        ),
+        "core_services_unaffected": [
+            "messages",
+            "records",
+            "human_feedback",
+        ],
+    }
 
 
 def send_message(actor: dict, session_id: str, payload: dict) -> dict:
@@ -483,7 +480,11 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
     text = initial_input["question"]
     if payload.get("synthetic_data") is not True:
         raise AiQaError("synthetic_data_required", "当前只允许合成问题", 409)
-    _rate_and_budget_guard(actor["id"])
+    provider_name = str(current_app.config.get("AI_QA_PROVIDER", "fake"))
+    try:
+        enforce_usage_control(actor, session, provider_name)
+    except UsageControlError as exc:
+        raise AiQaError(exc.code, str(exc), 429, {"scope": exc.scope}) from exc
     with get_connection() as conn:
         _store_message(
             conn,
@@ -566,9 +567,19 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
                 },
             },
         )
-    provider_name = str(current_app.config.get("AI_QA_PROVIDER", "fake"))
-    if _circuit_open(actor["id"], provider_name):
-        return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": "circuit_open", "severity": "medium"})
+    circuit = claim_circuit_permission(provider_name)
+    if not circuit["allowed"]:
+        return _fixed_message(
+            actor,
+            session_id,
+            text,
+            "provider_degraded",
+            {
+                **precheck,
+                "category": f"circuit_{circuit['state']}",
+                "severity": "medium",
+            },
+        )
     from services.ai_provider_governance_service import (
         get_runtime_provider_admission,
     )
@@ -648,7 +659,9 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
                 ),
             )
             conn.commit()
+        record_circuit_outcome(provider_name, success=False)
         return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": exc.code, "severity": "medium"})
+    record_circuit_outcome(provider_name, success=True)
     output_gate = evaluate_ai_output(
         result.text,
         citations,
@@ -872,24 +885,76 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
 
 def purge_expired_synthetic_data(actor: dict, payload: dict) -> dict:
     """Purge expired synthetic sandbox text; audit and aggregate evidence remain."""
-    retention_days = int(current_app.config.get("AI_QA_SYNTHETIC_RETENTION_DAYS", 7))
-    cutoff = (datetime.now(timezone.utc) - timedelta(days=retention_days)).isoformat()
+    runtime_policy = load_runtime_policy()
+    retention = dict(runtime_policy["retention"])
+    configured_text_days = int(
+        current_app.config.get("AI_QA_SYNTHETIC_RETENTION_DAYS", 0)
+    )
+    if configured_text_days > 0:
+        retention["session_text_days"] = configured_text_days
+    text_cutoff = (
+        datetime.now(timezone.utc)
+        - timedelta(days=int(retention["session_text_days"]))
+    ).isoformat()
+    metadata_cutoff = (
+        datetime.now(timezone.utc)
+        - timedelta(days=int(retention["provider_metadata_days"]))
+    ).isoformat()
+    derived_cutoff = (
+        datetime.now(timezone.utc)
+        - timedelta(days=int(retention["deidentified_derived_days"]))
+    ).isoformat()
     dry_run = payload.get("dry_run") is not False
     with get_connection() as conn:
         rows = conn.execute(
             "SELECT id FROM ai_qa_sessions WHERE synthetic_data = 1 AND created_at < ? AND status != 'deleted'",
-            (cutoff,),
+            (text_cutoff,),
         ).fetchall()
         session_ids = [str(row["id"]) for row in rows]
-        counts = {"sessions": len(session_ids), "messages": 0, "feedback": 0, "provider_events": 0, "safety_events": 0, "review_cases": 0, "review_actions": 0, "publication_candidates_redacted": 0}
+        counts = {
+            "sessions": len(session_ids),
+            "messages": 0,
+            "feedback": 0,
+            "provider_events": 0,
+            "safety_events": 0,
+            "review_cases": 0,
+            "review_actions": 0,
+            "publication_candidates_redacted": 0,
+            "derived_runs": int(
+                conn.execute(
+                    "SELECT COUNT(*) AS count FROM ai_qa_evaluation_runs WHERE created_at < ?",
+                    (derived_cutoff,),
+                ).fetchone()["count"]
+            ),
+        }
         for session_id in session_ids:
             counts["messages"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_messages WHERE session_id = ?", (session_id,)).fetchone()["count"])
             counts["feedback"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_feedback WHERE session_id = ?", (session_id,)).fetchone()["count"])
-            counts["provider_events"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_provider_events WHERE session_id = ?", (session_id,)).fetchone()["count"])
-            counts["safety_events"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_safety_events WHERE session_id = ?", (session_id,)).fetchone()["count"])
             counts["review_cases"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_review_cases WHERE session_id = ?", (session_id,)).fetchone()["count"])
             counts["review_actions"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_review_actions WHERE review_case_id IN (SELECT id FROM ai_qa_review_cases WHERE session_id = ?)", (session_id,)).fetchone()["count"])
             counts["publication_candidates_redacted"] += int(conn.execute("SELECT COUNT(*) AS count FROM ai_qa_review_cases WHERE session_id = ? AND publication_candidate_id IS NOT NULL", (session_id,)).fetchone()["count"])
+        counts["provider_events"] = int(
+            conn.execute(
+                """
+                SELECT COUNT(*) AS count
+                FROM ai_qa_provider_events e
+                JOIN ai_qa_sessions s ON s.id = e.session_id
+                WHERE s.synthetic_data = 1 AND e.created_at < ?
+                """,
+                (metadata_cutoff,),
+            ).fetchone()["count"]
+        )
+        counts["safety_events"] = int(
+            conn.execute(
+                """
+                SELECT COUNT(*) AS count
+                FROM ai_qa_safety_events e
+                JOIN ai_qa_sessions s ON s.id = e.session_id
+                WHERE s.synthetic_data = 1 AND e.created_at < ?
+                """,
+                (metadata_cutoff,),
+            ).fetchone()["count"]
+        )
         if not dry_run:
             if payload.get("confirm_synthetic_purge") is not True:
                 raise AiQaError("confirmation_required", "执行合成沙盒清理需要明确确认", 409)
@@ -897,18 +962,64 @@ def purge_expired_synthetic_data(actor: dict, payload: dict) -> dict:
                 _purge_review_content(conn, session_id)
                 conn.execute("DELETE FROM ai_qa_feedback WHERE session_id = ?", (session_id,))
                 conn.execute("DELETE FROM ai_qa_messages WHERE session_id = ?", (session_id,))
-                conn.execute("DELETE FROM ai_qa_provider_events WHERE session_id = ?", (session_id,))
-                conn.execute("DELETE FROM ai_qa_safety_events WHERE session_id = ?", (session_id,))
                 conn.execute(
                     "UPDATE ai_qa_sessions SET status = 'deleted', deleted_at = ?, updated_at = ?, research_use_allowed = 0 WHERE id = ?",
                     (now_iso(), now_iso(), session_id),
                 )
-            write_audit_log(conn, "ai_qa_retention_purge", actor["id"], "ai_qa_retention", cutoff, {"counts": counts, "raw_text_logged": False, "synthetic_only": True})
+            conn.execute(
+                """
+                DELETE FROM ai_qa_provider_events
+                WHERE created_at < ? AND session_id IN (
+                    SELECT id FROM ai_qa_sessions WHERE synthetic_data = 1
+                )
+                """,
+                (metadata_cutoff,),
+            )
+            conn.execute(
+                """
+                DELETE FROM ai_qa_safety_events
+                WHERE created_at < ? AND session_id IN (
+                    SELECT id FROM ai_qa_sessions WHERE synthetic_data = 1
+                )
+                """,
+                (metadata_cutoff,),
+            )
+            conn.execute(
+                """
+                DELETE FROM ai_qa_evaluation_reviews
+                WHERE run_id IN (
+                    SELECT id FROM ai_qa_evaluation_runs
+                    WHERE created_at < ?
+                )
+                """,
+                (derived_cutoff,),
+            )
+            conn.execute(
+                "DELETE FROM ai_qa_evaluation_runs WHERE created_at < ?",
+                (derived_cutoff,),
+            )
+            write_audit_log(
+                conn,
+                "ai_qa_retention_purge",
+                actor["id"],
+                "ai_qa_retention",
+                text_cutoff,
+                {
+                    "counts": counts,
+                    "retention": retention,
+                    "raw_text_logged": False,
+                    "synthetic_only": True,
+                    "audit_deleted": False,
+                },
+            )
             conn.commit()
     return {
         "dry_run": dry_run,
-        "retention_days": retention_days,
-        "cutoff": cutoff,
+        "retention_days": int(retention["session_text_days"]),
+        "retention": retention,
+        "cutoff": text_cutoff,
+        "metadata_cutoff": metadata_cutoff,
+        "derived_cutoff": derived_cutoff,
         "counts": counts,
         "synthetic_only": True,
         "production_policy_approved": False,

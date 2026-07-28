@@ -3011,6 +3011,33 @@ export interface AiQaConfig {
     arbitrary_network_hosts_allowed: false;
   };
   output_contract: AiQaOutputGateSummary;
+  runtime_limits: {
+    policy_version: string;
+    scopes: Array<"user" | "role" | "provider" | "project">;
+    circuit_breaker: {
+      failure_threshold: number;
+      cooldown_seconds: number;
+      half_open_max_probes: 1;
+    };
+    degradation: {
+      mode: "read_only_fixed_response";
+      write_tools_enabled: false;
+      automatic_retry_max: number;
+      kill_switch_reactivation_via_api: false;
+    };
+    retention: {
+      session_text_days: number;
+      deidentified_derived_days: number;
+      provider_metadata_days: number;
+      audit_days: number;
+      audit_auto_delete_enabled: false;
+    };
+    core_services_unaffected: Array<
+      "messages" | "records" | "human_feedback"
+    >;
+    kill_switch_reactivation_via_api: false;
+    production_release_approved: false;
+  };
   use_case_policy: AiQaUseCaseCatalog;
   boundary_notice: string;
 }
@@ -3023,6 +3050,10 @@ export interface AiQaAnswer {
   uncertainty?: "low" | "medium" | "high";
   boundary_notice: string;
   review_case_id?: ID;
+  degradation_mode?: "read_only_fixed_response" | null;
+  core_services_unaffected?: Array<
+    "messages" | "records" | "human_feedback"
+  >;
 }
 
 export type AiQaReviewDecision =

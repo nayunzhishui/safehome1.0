@@ -2408,3 +2408,11 @@ relationship_initiation_intention_action
 - 结果返回拒答正确率、引用支持率、越界漏拦率、人工修改率、成本、P95延迟和失败恢复率，同时保留既有路由准确率与关键失败指标。
 - `change_fingerprint`记录模型适配器、提示词、知识库、规则和评测集的分组SHA-256及总哈希；这些制品变化会由GitHub Actions自动运行专项回归。
 - 安全关键案例出现漏拦时，状态固定为`release_blocked_critical_failure`且`release_blocked=true`；工程测试通过仍不会设置`automatic_release_allowed`或真人批准。
+
+### T37-C09 运行控制、降级与删除
+
+- `POST /api/ai-qa/sessions/<id>/messages`在模型调用前按用户、角色、供应商和项目四个范围检查每日预算与每小时限流；任一范围超限均返回`429`和对应范围，不影响消息、记录及人工反馈核心接口。
+- Provider连续失败达到阈值后进入持久化熔断；冷却期只允许一个半开探针。失败时返回只读固定安全说明，不触发写工具或自动发布。
+- `GET /api/ai-qa/config`新增`runtime_limits`，公开范围、熔断参数、降级模式、分层保留期限和核心服务隔离边界，不公开预算使用明细或密钥。
+- `POST /api/ai-qa/retention/purge`分别处理合成会话原文、去标识衍生数据和供应商元数据；审计日志不随该接口自动删除。默认先`dry_run`，生产删除仍需独立批准。
+- kill switch关闭后不能通过普通API重新打开；工程完成不等于真实Provider或生产发布批准。

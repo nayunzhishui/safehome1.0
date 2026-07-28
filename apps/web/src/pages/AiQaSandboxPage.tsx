@@ -313,6 +313,8 @@ export function AiQaSandboxPage() {
           <div><dt>输出五道门</dt><dd>{config?.output_contract?.gates.join(" / ") || "等待新版本服务"}</dd></div>
           <div><dt>不合格输出</dt><dd>{config?.output_contract?.fixed_degradation ? "固定降级，不自动重试修复" : "等待新版本服务"}</dd></div>
           <div><dt>Grounding 边界</dt><dd>{config?.output_contract?.grounding_is_factuality_check === false ? "词面启发式，不等于事实正确" : "等待新版本服务"}</dd></div>
+          <div><dt>预算与限流范围</dt><dd>{config?.runtime_limits?.scopes.join(" / ") || "等待新版本服务"}</dd></div>
+          <div><dt>故障降级</dt><dd>{config?.runtime_limits?.degradation.mode === "read_only_fixed_response" ? "只读固定回执，核心记录链路不受影响" : "等待新版本服务"}</dd></div>
           <div><dt>合成原文保留</dt><dd>{config?.data_policy.synthetic_retention_days ? `${config.data_policy.synthetic_retention_days}天` : "待服务更新"}</dd></div>
           <div><dt>训练使用</dt><dd>禁止</dd></div>
         </dl>
