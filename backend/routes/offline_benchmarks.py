@@ -34,6 +34,11 @@ from services.affect_shadow_service import (
     register_model_version,
     run_shadow,
 )
+from services.affect_monitor_service import (
+    apply_runtime_action,
+    get_monitoring_status,
+    run_monitor_drill,
+)
 
 
 bp = Blueprint("offline_benchmarks", __name__, url_prefix="/api/research/benchmarks")
@@ -177,6 +182,38 @@ def shadow_review_queue():
     if error:
         return error
     return _response(lambda: list_shadow_review_queue(actor))
+
+
+@bp.get("/monitoring")
+def monitoring_status():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(get_monitoring_status)
+
+
+@bp.post("/monitoring/drills")
+def monitoring_drill_create():
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(
+        lambda: run_monitor_drill(
+            actor,
+            str(payload.get("scenario") or ""),
+            str(payload.get("model_version_id") or "") or None,
+        )
+    )
+
+
+@bp.post("/runtime-actions/<action>")
+def runtime_action_create(action: str):
+    actor, error = _actor("admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(lambda: apply_runtime_action(actor, action, payload))
 
 
 @bp.post("/cases/<case_id>/annotations")

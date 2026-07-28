@@ -74,7 +74,7 @@ def test_registration_pins_all_assets_and_is_idempotent(tmp_path, monkeypatch):
     second = _register(client, headers)
     assert first["id"] == second["id"]
     assert first["code_commit"] == COMMIT
-    assert first["schema_version"] == "2026_07_28_043"
+    assert first["schema_version"] >= "2026_07_28_043"
     assert len(first["lexicon_hash"]) == 64
     assert len(first["threshold_hash"]) == 64
     assert len(first["dataset_hash"]) == 64

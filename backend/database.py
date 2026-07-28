@@ -73,6 +73,8 @@ REQUIRED_HEALTH_TABLES = [
     "offline_model_versions",
     "offline_model_shadow_runs",
     "offline_model_review_queue",
+    "offline_model_monitor_runs",
+    "offline_model_runtime_controls",
     "research_methodology_versions",
     "research_methodology_checks",
     "research_methodology_simulation_runs",
@@ -131,8 +133,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_043"
-CURRENT_SCHEMA_NAME = "offline_model_registry_and_shadow_runs"
+CURRENT_SCHEMA_VERSION = "2026_07_28_044"
+CURRENT_SCHEMA_NAME = "offline_model_monitoring_and_rollback"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {

@@ -774,6 +774,7 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
         "synthetic_affect_benchmark_240.json",
         "affect_model_candidate_registry.json",
         "affect_shadow_execution_policy.json",
+        "affect_monitoring_policy.json",
         "network_analysis_policy.json",
         "synthetic_group_network_suite.json",
     ]
@@ -877,6 +878,30 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
         "code_commit_missing",
     }:
         errors.append("情感影子执行必须在模型、内容、数据、schema或commit漂移时停止")
+    monitor_policy = payloads["affect_monitoring_policy.json"]
+    required_monitor_metrics = {
+        "mean_input_length_delta",
+        "label_distribution_jsd",
+        "colloquial_style_rate_delta",
+        "missing_rate",
+        "abstention_rate",
+        "maximum_subgroup_error_gap",
+        "human_overturn_rate",
+        "provider_exception_rate",
+    }
+    if set(monitor_policy.get("metrics", {})) != required_monitor_metrics:
+        errors.append("情感监测必须覆盖长度、标签、语言风格、缺失、弃答、逐组误差、人工推翻和异常")
+    if any(
+        float(item.get("yellow", -1)) >= float(item.get("red", -1))
+        for item in monitor_policy.get("metrics", {}).values()
+    ):
+        errors.append("情感监测黄线必须低于红线")
+    if (
+        monitor_policy.get("participant_feedback_dependency") is not False
+        or monitor_policy.get("training_card_dependency") is not False
+        or monitor_policy.get("red_action") != "disable_model_runtime"
+    ):
+        errors.append("情感模型停机必须独立于参与者反馈和训练卡核心链路")
     network_policy = payloads["network_analysis_policy.json"]
     if any(
         network_policy.get(key) is not False

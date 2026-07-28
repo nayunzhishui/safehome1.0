@@ -1507,6 +1507,10 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/shadow-review-queue`, { requiresAuth: true });
     },
 
+    getOfflineModelMonitoring() {
+      return request(`${API_ENDPOINTS.offlineBenchmarks}/monitoring`, { requiresAuth: true });
+    },
+
     getGroupNetworkAnalysisPolicy() {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/network-policy`, { requiresAuth: true });
     },

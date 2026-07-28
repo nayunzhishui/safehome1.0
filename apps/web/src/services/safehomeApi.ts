@@ -59,6 +59,9 @@ import type {
   OfflineBenchmarkRun,
   OfflineDatasetCard,
   OfflineModelReviewQueueItem,
+  OfflineModelMonitoringStatus,
+  OfflineModelMonitorRun,
+  OfflineModelRuntimeControl,
   OfflineModelShadowRun,
   OfflineModelVersion,
   OfflineSplitReport,
@@ -1158,6 +1161,24 @@ export class SafeHomeApiClient {
 
   listOfflineModelReviewQueue(): Promise<ListResponse<OfflineModelReviewQueueItem> & { raw_text_included: false; participant_identifiers_included: false }> {
     return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/shadow-review-queue`);
+  }
+
+  getOfflineModelMonitoring(): Promise<OfflineModelMonitoringStatus> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/monitoring`);
+  }
+
+  runOfflineModelMonitorDrill(scenario: string, modelVersionId?: string): Promise<OfflineModelMonitorRun & { runtime_control: OfflineModelRuntimeControl; boundary_notice: string }> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/monitoring/drills`, {
+      method: "POST",
+      body: { scenario, model_version_id: modelVersionId },
+    });
+  }
+
+  applyOfflineModelRuntimeAction(action: "model_rollback" | "threshold_rollback" | "readonly_degrade" | "full_disable", input: { reason: string; model_version_id?: string; threshold_hash?: string }): Promise<OfflineModelRuntimeControl> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/runtime-actions/${action}`, {
+      method: "POST",
+      body: input,
+    });
   }
 
   getOfflineAgreement(): Promise<OfflineAgreementSummary> {

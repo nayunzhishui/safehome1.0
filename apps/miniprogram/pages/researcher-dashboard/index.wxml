@@ -295,6 +295,11 @@
         </view>
         <text wx:else class="state-copy">尚无影子运行；请在 Web 受控工作台登记版本并执行。</text>
         <text class="boundary-line">人工复核队列 {{affectShadowReviewCount}} 条，仅显示合成案例代号，不显示原文。</text>
+        <view wx:if="{{affectMonitoring}}" class="analysis-gate">
+          <text>模型运行：{{affectMonitoring.runtime_control.mode}} · 控制版本 {{affectMonitoring.runtime_control.version}}</text>
+          <text>{{affectMonitoring.recent_runs.length ? affectMonitoring.recent_runs[0].gate_status : '尚未演练'}}</text>
+        </view>
+        <text wx:if="{{affectMonitoring}}" class="boundary-line">{{affectMonitoring.boundary_notice}}</text>
       </view>
       <view wx:if="{{analysisLoading}}" class="empty-state"><text class="state-copy">正在读取任务摘要…</text></view>
       <view wx:elif="{{analysisError}}" class="error-card">

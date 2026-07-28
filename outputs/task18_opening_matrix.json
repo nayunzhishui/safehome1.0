@@ -1091,7 +1091,7 @@
       "title": "小程序页面",
       "governance_status": "implemented",
       "enabled_flag": true,
-      "technical_chain": "50页已注册",
+      "technical_chain": "51页已注册",
       "opening_category": "开放",
       "reason": "页面注册完整，具体内容仍受后端治理",
       "evidence": "apps/miniprogram/app.json"

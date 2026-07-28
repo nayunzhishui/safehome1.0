@@ -1,0 +1,34 @@
+{
+  "schema": "safehome.affect-monitoring-policy.v1",
+  "version": "2026-07-28-t37-a06-v1",
+  "status": "engineering_synthetic_drill_ready",
+  "metrics": {
+    "mean_input_length_delta": {"yellow": 0.25, "red": 0.5, "direction": "absolute"},
+    "label_distribution_jsd": {"yellow": 0.12, "red": 0.25, "direction": "higher"},
+    "colloquial_style_rate_delta": {"yellow": 0.15, "red": 0.3, "direction": "absolute"},
+    "missing_rate": {"yellow": 0.1, "red": 0.25, "direction": "higher"},
+    "abstention_rate": {"yellow": 0.25, "red": 0.45, "direction": "higher"},
+    "maximum_subgroup_error_gap": {"yellow": 0.12, "red": 0.25, "direction": "higher"},
+    "human_overturn_rate": {"yellow": 0.15, "red": 0.3, "direction": "higher"},
+    "provider_exception_rate": {"yellow": 0.02, "red": 0.1, "direction": "higher"}
+  },
+  "red_action": "disable_model_runtime",
+  "yellow_action": "readonly_degraded_review",
+  "supported_drills": [
+    "baseline",
+    "input_length_shift",
+    "label_distribution_shift",
+    "colloquial_style_shift",
+    "missingness_spike",
+    "abstention_spike",
+    "subgroup_error_gap",
+    "human_overturn_spike",
+    "provider_exception"
+  ],
+  "runtime_modes": ["shadow", "readonly_degraded", "off"],
+  "rollback_actions": ["model_rollback", "threshold_rollback", "readonly_degrade", "full_disable"],
+  "participant_feedback_dependency": false,
+  "training_card_dependency": false,
+  "group_difference_interpretation": "aggregate_model_performance_only_not_individual_psychology",
+  "boundary_notice": "群体差异只用于检查模型误差，不解释个体心理、能力、关系质量或诊断风险。"
+}

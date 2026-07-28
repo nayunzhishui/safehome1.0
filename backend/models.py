@@ -1291,6 +1291,32 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS offline_model_monitor_runs (
+        id TEXT PRIMARY KEY,
+        scenario TEXT NOT NULL,
+        model_version_id TEXT,
+        metrics_json TEXT NOT NULL DEFAULT '{}',
+        triggers_json TEXT NOT NULL DEFAULT '[]',
+        gate_status TEXT NOT NULL,
+        artifact_hash TEXT NOT NULL,
+        contains_real_data INTEGER NOT NULL DEFAULT 0,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_model_runtime_controls (
+        id TEXT PRIMARY KEY,
+        mode TEXT NOT NULL,
+        active_model_version_id TEXT,
+        active_threshold_hash TEXT,
+        version INTEGER NOT NULL DEFAULT 0,
+        reason TEXT NOT NULL,
+        changed_by TEXT NOT NULL,
+        changed_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS research_methodology_versions (
         id TEXT PRIMARY KEY,
         version TEXT NOT NULL UNIQUE,
@@ -2305,6 +2331,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_offline_model_versions_created ON offline_model_versions(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_model_shadow_runs_created ON offline_model_shadow_runs(model_version_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_model_review_queue_status ON offline_model_review_queue(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_model_monitor_runs_created ON offline_model_monitor_runs(gate_status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_checks_version_created ON research_methodology_checks(version_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_simulations_version_created ON research_methodology_simulation_runs(version_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_evidence_version_created ON research_methodology_evidence_packages(version_id, created_at)",

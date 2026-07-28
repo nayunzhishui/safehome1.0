@@ -2847,6 +2847,45 @@ export interface OfflineModelReviewQueueItem {
   created_at: ISODateTime;
 }
 
+export interface OfflineModelRuntimeControl {
+  id: "global";
+  mode: "shadow" | "readonly_degraded" | "off";
+  active_model_version_id?: ID | null;
+  active_threshold_hash?: string | null;
+  version: number;
+  reason: string;
+  changed_by: ID;
+  changed_at?: ISODateTime | null;
+}
+
+export interface OfflineModelMonitorRun {
+  id: ID;
+  scenario: string;
+  model_version_id?: ID | null;
+  metrics: Record<string, number>;
+  triggers: Array<{
+    metric: string;
+    value: number;
+    level: "yellow" | "red";
+    threshold: number;
+  }>;
+  gate_status: "green" | "yellow_review" | "red_stopped";
+  artifact_hash: string;
+  contains_real_data: 0;
+  created_by: ID;
+  created_at: ISODateTime;
+}
+
+export interface OfflineModelMonitoringStatus {
+  policy_version: string;
+  runtime_control: OfflineModelRuntimeControl;
+  recent_runs: OfflineModelMonitorRun[];
+  participant_feedback_dependency: false;
+  training_card_dependency: false;
+  group_difference_interpretation: "aggregate_model_performance_only_not_individual_psychology";
+  boundary_notice: string;
+}
+
 export interface OfflineAgreementSummary {
   complete_double_annotated_cases: number;
   required_cases: 200;
