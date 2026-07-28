@@ -7,6 +7,9 @@ import type {
   AiQaEvaluationRun,
   AiQaReviewEvidence,
   AiQaSession,
+  AiProviderContractEvidence,
+  AiProviderEvidenceType,
+  AiProviderSelection,
   AdminWorksheet,
   AdminWorksheetInput,
   AssessmentProfilePosition,
@@ -1065,6 +1068,43 @@ export class SafeHomeApiClient {
 
   getAiQaConfig(): Promise<AiQaConfig> {
     return this.requestData(API_ENDPOINTS.aiQaConfig);
+  }
+
+  getAiProviderSelection(): Promise<AiProviderSelection> {
+    return this.requestData(API_ENDPOINTS.aiQaProviders);
+  }
+
+  getAiProviderEvidence(): Promise<ListResponse<AiProviderContractEvidence>> {
+    return this.requestData(API_ENDPOINTS.aiQaProviderEvidence);
+  }
+
+  recordAiProviderEvidence(input: {
+    provider_id: "deepseek" | "openai";
+    evidence_type: AiProviderEvidenceType;
+    artifact_ref: string;
+    artifact_sha256: string;
+    notes?: string;
+  }, idempotencyKey: string): Promise<AiProviderContractEvidence> {
+    return this.requestData(API_ENDPOINTS.aiQaProviderEvidence, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: input,
+    });
+  }
+
+  verifyAiProviderEvidence(
+    evidenceId: string,
+    input: { decision: "verified" | "rejected"; expected_version: number },
+    idempotencyKey: string,
+  ): Promise<AiProviderContractEvidence> {
+    return this.requestData(
+      `${API_ENDPOINTS.aiQaProviderEvidence}/${encodeURIComponent(evidenceId)}/verify`,
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+        body: input,
+      },
+    );
   }
 
   listAiQaSessions(): Promise<ListResponse<AiQaSession>> {

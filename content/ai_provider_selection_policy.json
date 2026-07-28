@@ -1,0 +1,146 @@
+{
+  "schema_version": "safehome.ai-provider-selection-policy.v1",
+  "policy_version": "2026.07-t37-c02-v1",
+  "reviewed_at": "2026-07-28",
+  "status": "blocked_external_contract_evidence",
+  "selected_provider": null,
+  "external_provider_enabled": false,
+  "selection_rule": {
+    "all_required_evidence_must_be_independently_verified": true,
+    "public_web_documents_count_as_contract_approval": false,
+    "automatic_provider_selection_allowed": false,
+    "owner_approval_must_be_external": true,
+    "mainland_china_participant_data_required": true,
+    "identifiable_participant_data_cross_border_allowed": false
+  },
+  "required_evidence": [
+    "service_contract",
+    "data_processing_agreement",
+    "privacy_impact_assessment",
+    "data_residency_commitment",
+    "provider_training_non_use",
+    "retention_deletion_commitment",
+    "subprocessor_register",
+    "security_audit",
+    "sla_support",
+    "content_policy_approval",
+    "pricing_snapshot",
+    "owner_approval"
+  ],
+  "outbound_policy": {
+    "activated": false,
+    "candidate_hosts": [
+      "api.deepseek.com",
+      "api.openai.com"
+    ],
+    "allowlist_activation_task": "T37-C03",
+    "client_side_calls_allowed": false
+  },
+  "candidates": [
+    {
+      "id": "deepseek",
+      "display_name": "DeepSeek API",
+      "base_url_host": "api.deepseek.com",
+      "secret_env_names": [
+        "DEEPSEEK_API_KEY"
+      ],
+      "public_document_findings": {
+        "data_region": "公开条款适用中国大陆法律，但API处理位置、备份位置和子处理商仍需合同证据确认。",
+        "training_use": "公开通用条款允许在去标识等前提下最小化用于改进，并提供关闭改进模型选项；生产使用必须取得明确不训练承诺。",
+        "retention_deletion": "公开条款不足以证明项目所需的原文保留期限、备份删除期限和删除证明。",
+        "subprocessors": "公开材料不足以形成项目可审计的子处理商清单。",
+        "audit": "公开材料不足以替代安全审计或合规证明。",
+        "sla": "公开条款不保证不中断，仍需书面SLA和事件通知承诺。",
+        "content_policy": "高影响用途要求人工复核；不得把模型输出当作专业意见。",
+        "price": "按token计费，价格可能调整；正式比较必须归档带日期的价格快照。"
+      },
+      "official_sources": [
+        {
+          "kind": "platform_terms",
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+          "reviewed_at": "2026-07-28"
+        },
+        {
+          "kind": "terms",
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html",
+          "reviewed_at": "2026-07-28"
+        },
+        {
+          "kind": "privacy",
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html",
+          "reviewed_at": "2026-07-28"
+        },
+        {
+          "kind": "pricing",
+          "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "reviewed_at": "2026-07-28"
+        }
+      ],
+      "public_document_status": "candidate_only_contract_evidence_pending",
+      "production_eligible": false
+    },
+    {
+      "id": "openai",
+      "display_name": "OpenAI API",
+      "base_url_host": "api.openai.com",
+      "secret_env_names": [
+        "OPENAI_API_KEY"
+      ],
+      "public_document_findings": {
+        "data_region": "公开数据驻留区域未列出中国大陆；当前不得发送可识别参与者数据。",
+        "training_use": "API数据默认不用于训练，除非明确选择共享；仍需合同/DPA及账户配置证据。",
+        "retention_deletion": "默认滥用监测日志最长可保留30天；零数据保留或修改监测需要资格审批和附加条件。",
+        "subprocessors": "需归档适用于项目合同实体和区域的最新子处理商清单。",
+        "audit": "需归档适用的安全与合规证明，公开网页不能替代项目审查。",
+        "sla": "需取得适用服务等级、事件通知和支持升级路径的合同证据。",
+        "content_policy": "必须遵守使用政策并保留SafeHome自身的人工复核和停机门禁。",
+        "price": "价格动态更新且数据驻留可能加价；正式比较必须归档带日期的价格快照。"
+      },
+      "official_sources": [
+        {
+          "kind": "data_controls",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_at": "2026-07-28"
+        },
+        {
+          "kind": "services_agreement",
+          "url": "https://cdn.openai.com/osa/openai-services-agreement.pdf",
+          "reviewed_at": "2026-07-28"
+        },
+        {
+          "kind": "pricing",
+          "url": "https://openai.com/api/pricing/",
+          "reviewed_at": "2026-07-28"
+        }
+      ],
+      "public_document_status": "candidate_only_mainland_residency_and_contract_evidence_pending",
+      "production_eligible": false
+    }
+  ],
+  "continuity_plans": {
+    "provider_failure": {
+      "trigger": "连续失败、超时、错误率或安全事件达到T37-C09阈值",
+      "action": "立即停用真实Provider，回退固定安全响应和人工队列，不自动切换到未批准供应商。"
+    },
+    "price_increase": {
+      "trigger": "单位成本上涨或月度预测达到预算预警线",
+      "action": "冻结新增真实调用，重新归档价格快照并由负责人复核，不以降低安全门禁换取成本。"
+    },
+    "service_discontinuation": {
+      "trigger": "产品、模型、地区或合同停止服务",
+      "action": "停止出网，保留最小审计元数据，执行删除/导出请求并启动迁移演练。"
+    },
+    "provider_migration": {
+      "steps": [
+        "冻结目标用例、结构化输出契约和评测集",
+        "在合成数据上完成适配与红队",
+        "取得新供应商全部独立证据",
+        "执行影子比较与成本核对",
+        "负责人单独批准后小流量切换",
+        "保留旧供应商停用、删除和回滚证据"
+      ],
+      "automatic_cutover_allowed": false
+    }
+  },
+  "boundary_notice": "公开网页只形成候选比较，不等于合同、DPA、隐私影响评估或负责人批准；当前真实供应商和对外出网均关闭。"
+}

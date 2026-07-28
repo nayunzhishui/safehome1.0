@@ -2347,4 +2347,12 @@ relationship_initiation_intention_action
 - `GET /api/ai-qa/config`：新增`use_case_policy`，与用例目录使用同一版本。
 - `POST /api/ai-qa/sessions`：除合成标记外必须提交允许的`use_case_id`；参与者角色仍返回403。
 - `POST /api/ai-qa/sessions/<id>/messages`：若提交的`use_case_id`与会话不同则返回`ai_qa_use_case_mismatch`；旧无范围会话不能继续执行。
+
+### T37-C02 AI供应商遴选和合同证据
+
+- `GET /api/ai-qa/providers`：`researcher/supervisor/admin`查看DeepSeek、OpenAI公开材料比较、待补证据、出网状态和故障/涨价/停服/迁移预案。公开材料不计作合同批准，接口不返回密钥值。
+- `GET /api/ai-qa/providers/evidence`：正式研究角色只读取证据元数据、哈希与复核状态，不返回合同正文。
+- `POST /api/ai-qa/providers/evidence`：仅`supervisor/admin`登记脱敏证据引用和SHA-256；要求`Idempotency-Key`，新证据固定为`pending`。
+- `POST /api/ai-qa/providers/evidence/<id>/verify`：仅`supervisor/admin`独立复核，登记人与复核人必须不同，并使用`expected_version`防止并发覆盖。
+- `GET /api/ai-qa/config`仅增加候选ID和门禁摘要；`selected_provider=null`、`external_provider_enabled=false`。真实适配器、出网白名单和密钥管理属于T37-C03，当前未开启。
 - 当前只开放研究者、督导和管理员的合成沙盒。参与者自由问答、自动训练卡处方、自动发布和写工具仍关闭。

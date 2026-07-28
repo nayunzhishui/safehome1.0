@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { AiQaAnswer, AiQaConfig, AiQaEvaluationRun, AiQaReviewEvidence, AiQaSession } from "../../../../shared/types/api";
+import type {
+  AiProviderContractEvidence,
+  AiProviderEvidenceType,
+  AiProviderSelection,
+  AiQaAnswer,
+  AiQaConfig,
+  AiQaEvaluationRun,
+  AiQaReviewEvidence,
+  AiQaSession,
+} from "../../../../shared/types/api";
 import { getStoredAuthUser } from "../services/authState";
 import { safeHomeApi } from "../services/safehomeApi";
 
@@ -13,6 +22,20 @@ const USE_CASE_EXAMPLES: Record<string, string> = {
   discussion_checklist: "请把已批准材料整理为不下结论的团队讨论清单。",
   format_spelling_deidentification_terminology_candidate: "请提出格式、错别字、去标识化和术语一致性候选修改。",
 };
+const PROVIDER_EVIDENCE_TYPES: AiProviderEvidenceType[] = [
+  "service_contract",
+  "data_processing_agreement",
+  "privacy_impact_assessment",
+  "data_residency_commitment",
+  "provider_training_non_use",
+  "retention_deletion_commitment",
+  "subprocessor_register",
+  "security_audit",
+  "sla_support",
+  "content_policy_approval",
+  "pricing_snapshot",
+  "owner_approval",
+];
 
 function errorText(error: unknown): string {
   return error instanceof Error ? error.message : "操作失败，请核对权限与沙盒状态。";
@@ -29,15 +52,23 @@ export function AiQaSandboxPage() {
   const [answer, setAnswer] = useState<AiQaAnswer | null>(null);
   const [evidence, setEvidence] = useState<AiQaReviewEvidence | null>(null);
   const [evaluation, setEvaluation] = useState<AiQaEvaluationRun | null>(null);
+  const [providerSelection, setProviderSelection] = useState<AiProviderSelection | null>(null);
+  const [providerEvidence, setProviderEvidence] = useState<AiProviderContractEvidence[]>([]);
+  const [providerId, setProviderId] = useState<"deepseek" | "openai">("deepseek");
+  const [evidenceType, setEvidenceType] = useState<AiProviderEvidenceType>("service_contract");
+  const [artifactRef, setArtifactRef] = useState("");
+  const [artifactSha256, setArtifactSha256] = useState("");
   const [selectedUseCaseId, setSelectedUseCaseId] = useState(DEFAULT_USE_CASE_ID);
   const [question, setQuestion] = useState(USE_CASE_EXAMPLES[DEFAULT_USE_CASE_ID]);
   const [status, setStatus] = useState("正在读取受控沙盒状态…");
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const [nextConfig, nextEvidence] = await Promise.all([
+    const [nextConfig, nextEvidence, nextProviderSelection, nextProviderEvidence] = await Promise.all([
       safeHomeApi.getAiQaConfig(),
       safeHomeApi.getAiQaReviewEvidence(),
+      safeHomeApi.getAiProviderSelection(),
+      safeHomeApi.getAiProviderEvidence(),
     ]);
     setConfig(nextConfig);
     const allowedIds = new Set(nextConfig.use_case_policy.allowed_use_cases.map((item) => item.id));
@@ -48,6 +79,8 @@ export function AiQaSandboxPage() {
       return fallback;
     });
     setEvidence(nextEvidence);
+    setProviderSelection(nextProviderSelection);
+    setProviderEvidence(nextProviderEvidence.items);
     if (canChat) {
       const listed = await safeHomeApi.listAiQaSessions();
       setSessions(listed.items);
@@ -135,6 +168,34 @@ export function AiQaSandboxPage() {
       await safeHomeApi.activateAiQaKillSwitch("T28 研究沙盒人工停用");
       setConfig(await safeHomeApi.getAiQaConfig());
       setActiveSession(null);
+    });
+  }
+
+  function recordProviderEvidence() {
+    if (!artifactRef.trim() || artifactSha256.trim().length !== 64) return;
+    void run("登记供应商证据元数据", async () => {
+      await safeHomeApi.recordAiProviderEvidence({
+        provider_id: providerId,
+        evidence_type: evidenceType,
+        artifact_ref: artifactRef.trim(),
+        artifact_sha256: artifactSha256.trim().toLowerCase(),
+      }, `provider-evidence:${providerId}:${evidenceType}:${Date.now()}`);
+      setProviderEvidence((await safeHomeApi.getAiProviderEvidence()).items);
+      setProviderSelection(await safeHomeApi.getAiProviderSelection());
+      setArtifactRef("");
+      setArtifactSha256("");
+    });
+  }
+
+  function verifyProviderEvidence(item: AiProviderContractEvidence, decision: "verified" | "rejected") {
+    void run("独立复核供应商证据", async () => {
+      await safeHomeApi.verifyAiProviderEvidence(
+        item.id,
+        { decision, expected_version: item.version },
+        `provider-evidence-review:${item.id}:${decision}:${Date.now()}`,
+      );
+      setProviderEvidence((await safeHomeApi.getAiProviderEvidence()).items);
+      setProviderSelection(await safeHomeApi.getAiProviderSelection());
     });
   }
 
@@ -267,6 +328,76 @@ export function AiQaSandboxPage() {
         <div className="panelHeading"><div><span className="panelKicker">不能自动签字</span><h2>待人工冻结事项</h2></div>{isAdmin ? <button className="textButton dangerText" disabled={busy || Boolean(config?.runtime_control.killed)} type="button" onClick={killSandbox}>立即停用沙盒</button> : null}</div>
         <div className="gateList">
           {gateItems.map(([key, item]) => <div key={key}><strong>{key}</strong><span>{String(item.proposed)}</span><em>{item.status}</em></div>)}
+        </div>
+      </section>
+
+      <section className="panel" aria-label="AI供应商遴选与合同证据">
+        <div className="panelHeading">
+          <div>
+            <span className="panelKicker">T37-C02 · 公开材料仅作候选比较</span>
+            <h2>供应商与合同证据</h2>
+          </div>
+          <span className="gateBadge gateBlocked">{providerSelection?.status || "读取中"}</span>
+        </div>
+        <p className="boundaryCallout">
+          {providerSelection?.boundary_notice || "真实供应商保持关闭，不能把公开网页或模拟审阅当成合同批准。"}
+        </p>
+        <div className="aiQaColumns">
+          {(providerSelection?.candidates || []).map((candidate) => (
+            <article className="evaluationCard" key={candidate.id}>
+              <h3>{candidate.display_name}</h3>
+              <p>{candidate.public_document_findings.data_region}</p>
+              <p>{candidate.public_document_findings.training_use}</p>
+              <dl className="aiQaFacts">
+                <div><dt>已核验证据</dt><dd>{candidate.verified_evidence.length}</dd></div>
+                <div><dt>待补证据</dt><dd>{candidate.missing_evidence.length}</dd></div>
+                <div><dt>出网</dt><dd>关闭</dd></div>
+                <div><dt>生产资格</dt><dd>未取得</dd></div>
+              </dl>
+            </article>
+          ))}
+        </div>
+        {canReview ? (
+          <div className="formGrid" aria-label="登记脱敏合同证据元数据">
+            <label>
+              供应商
+              <select value={providerId} onChange={(event) => setProviderId(event.target.value as "deepseek" | "openai")}>
+                <option value="deepseek">DeepSeek</option>
+                <option value="openai">OpenAI</option>
+              </select>
+            </label>
+            <label>
+              证据类型
+              <select value={evidenceType} onChange={(event) => setEvidenceType(event.target.value as AiProviderEvidenceType)}>
+                {PROVIDER_EVIDENCE_TYPES.map((item) => <option key={item} value={item}>{item}</option>)}
+              </select>
+            </label>
+            <label>
+              脱敏证据引用
+              <input value={artifactRef} maxLength={500} onChange={(event) => setArtifactRef(event.target.value)} placeholder="evidence://contracts/..." />
+            </label>
+            <label>
+              SHA-256
+              <input value={artifactSha256} maxLength={64} onChange={(event) => setArtifactSha256(event.target.value)} />
+            </label>
+            <button className="secondaryButton" type="button" disabled={busy || !artifactRef.trim() || artifactSha256.trim().length !== 64} onClick={recordProviderEvidence}>登记为待复核</button>
+          </div>
+        ) : null}
+        <div className="gateList" aria-label="供应商证据清单">
+          {providerEvidence.map((item) => (
+            <div key={item.id}>
+              <strong>{item.provider_id} · {item.evidence_type}</strong>
+              <span>{item.status} · v{item.version}</span>
+              <em>{item.artifact_ref}</em>
+              {canReview && item.status === "pending" && item.recorded_by !== actor?.id ? (
+                <span className="inlineActions">
+                  <button type="button" className="chipButton" onClick={() => verifyProviderEvidence(item, "verified")}>核验通过</button>
+                  <button type="button" className="chipButton" onClick={() => verifyProviderEvidence(item, "rejected")}>退回</button>
+                </span>
+              ) : null}
+            </div>
+          ))}
+          {!providerEvidence.length ? <p className="emptyState">尚未归档任何合同证据；供应商保持不可用。</p> : null}
         </div>
       </section>
     </section>

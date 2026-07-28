@@ -84,8 +84,7 @@ def test_schema_050_adds_non_destructive_session_scope_columns(
                 row["name"]
                 for row in conn.execute("PRAGMA table_info(ai_qa_sessions)").fetchall()
             }
-    assert database.CURRENT_SCHEMA_VERSION == "2026_07_28_050"
-    assert database.CURRENT_SCHEMA_NAME == "ai_use_case_freeze"
+    assert database.CURRENT_SCHEMA_VERSION >= "2026_07_28_050"
     assert {"use_case_id", "use_case_policy_version"}.issubset(columns)
 
 

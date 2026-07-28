@@ -545,6 +545,27 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS ai_provider_contract_evidence (
+        id TEXT PRIMARY KEY,
+        provider_id TEXT NOT NULL,
+        evidence_type TEXT NOT NULL,
+        artifact_ref TEXT NOT NULL,
+        artifact_sha256 TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        recorded_by TEXT NOT NULL,
+        verified_by TEXT,
+        verified_at TEXT,
+        verification_idempotency_key TEXT,
+        notes TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(recorded_by, idempotency_key),
+        UNIQUE(verified_by, verification_idempotency_key)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS ai_qa_evaluation_runs (
         id TEXT PRIMARY KEY,
         suite_version TEXT NOT NULL,
@@ -2554,6 +2575,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_messages_session_created ON ai_qa_messages(session_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_safety_created ON ai_qa_safety_events(category, severity, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_provider_created ON ai_qa_provider_events(provider, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_provider_evidence_provider_status ON ai_provider_contract_evidence(provider_id, status, evidence_type)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_evaluation_status_created ON ai_qa_evaluation_runs(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_dataset_ingest_status ON offline_dataset_cards(ingest_status, updated_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_runs_type_created ON offline_benchmark_runs(benchmark_type, created_at)",

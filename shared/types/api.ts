@@ -2747,6 +2747,75 @@ export interface AiQaUseCaseCatalog {
   boundary_notice: string;
 }
 
+export type AiProviderEvidenceType =
+  | "service_contract"
+  | "data_processing_agreement"
+  | "privacy_impact_assessment"
+  | "data_residency_commitment"
+  | "provider_training_non_use"
+  | "retention_deletion_commitment"
+  | "subprocessor_register"
+  | "security_audit"
+  | "sla_support"
+  | "content_policy_approval"
+  | "pricing_snapshot"
+  | "owner_approval";
+
+export interface AiProviderContractEvidence {
+  id: ID;
+  provider_id: "deepseek" | "openai";
+  evidence_type: AiProviderEvidenceType;
+  artifact_ref: string;
+  artifact_sha256: string;
+  status: "pending" | "verified" | "rejected";
+  recorded_by: ID;
+  verified_by?: ID | null;
+  verified_at?: ISODateTime | null;
+  notes?: string | null;
+  version: number;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+  qualifies_for_selection: boolean;
+}
+
+export interface AiProviderCandidate {
+  id: "deepseek" | "openai";
+  display_name: string;
+  base_url_host: string;
+  secret_env_names: string[];
+  public_document_findings: Record<
+    "data_region" | "training_use" | "retention_deletion" | "subprocessors" | "audit" | "sla" | "content_policy" | "price",
+    string
+  >;
+  official_sources: Array<{
+    kind: string;
+    url: string;
+    reviewed_at: string;
+  }>;
+  public_document_status: string;
+  verified_evidence: AiProviderEvidenceType[];
+  missing_evidence: AiProviderEvidenceType[];
+  production_eligible: false;
+}
+
+export interface AiProviderSelection {
+  policy_version: string;
+  reviewed_at: string;
+  status: "blocked_external_contract_evidence";
+  selected_provider: null;
+  external_provider_enabled: false;
+  required_evidence: AiProviderEvidenceType[];
+  outbound_policy: {
+    activated: false;
+    candidate_hosts: string[];
+    allowlist_activation_task: "T37-C03";
+    client_side_calls_allowed: false;
+  };
+  candidates: AiProviderCandidate[];
+  continuity_plans: Record<string, unknown>;
+  boundary_notice: string;
+}
+
 export interface AiQaConfig {
   service_name: string;
   participant_enabled: false;
@@ -2773,6 +2842,13 @@ export interface AiQaConfig {
     circuit_failure_threshold: number;
     budget_micros_per_day: number;
     external_provider_enabled: false;
+  };
+  provider_selection: {
+    policy_version: string;
+    status: "blocked_external_contract_evidence";
+    selected_provider: null;
+    external_provider_enabled: false;
+    candidate_ids: Array<"deepseek" | "openai">;
   };
   use_case_policy: AiQaUseCaseCatalog;
   boundary_notice: string;

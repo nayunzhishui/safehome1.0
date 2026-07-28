@@ -4,6 +4,12 @@ from flask import Blueprint, request
 
 from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.utils import fail, ok
+from services.ai_provider_governance_service import (
+    list_provider_candidates,
+    list_provider_evidence,
+    record_provider_evidence,
+    verify_provider_evidence,
+)
 from services.ai_qa_service import (
     AiQaError,
     activate_kill_switch,
@@ -34,7 +40,14 @@ def _actor(*roles: str):
 
 def _response(callback):
     try:
-        return ok(callback())
+        result = callback()
+        if (
+            isinstance(result, tuple)
+            and len(result) == 2
+            and isinstance(result[1], int)
+        ):
+            return ok(result[0], status=result[1])
+        return ok(result)
     except AiQaError as exc:
         return fail(exc.code, str(exc), status=exc.status, details=exc.details or None)
 
@@ -47,6 +60,44 @@ def ai_qa_config():
 @bp.get("/use-cases")
 def ai_qa_use_cases():
     return _response(get_use_case_catalog)
+
+
+@bp.get("/providers")
+def ai_qa_providers():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: list_provider_candidates(actor))
+
+
+@bp.get("/providers/evidence")
+def ai_qa_provider_evidence():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: list_provider_evidence(actor))
+
+
+@bp.post("/providers/evidence")
+def ai_qa_provider_evidence_create():
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    key = str(request.headers.get("Idempotency-Key") or "").strip()
+    return _response(lambda: record_provider_evidence(actor, payload, key))
+
+
+@bp.post("/providers/evidence/<evidence_id>/verify")
+def ai_qa_provider_evidence_verify(evidence_id: str):
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    key = str(request.headers.get("Idempotency-Key") or "").strip()
+    return _response(
+        lambda: verify_provider_evidence(actor, evidence_id, payload, key)
+    )
 
 
 @bp.get("/sessions")

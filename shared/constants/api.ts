@@ -77,6 +77,8 @@ export const API_ENDPOINTS = {
   contentGovernanceActive: "/api/content-review/active",
   aiQaConfig: "/api/ai-qa/config",
   aiQaUseCases: "/api/ai-qa/use-cases",
+  aiQaProviders: "/api/ai-qa/providers",
+  aiQaProviderEvidence: "/api/ai-qa/providers/evidence",
   aiQaSessions: "/api/ai-qa/sessions",
   aiQaEvaluation: "/api/ai-qa/evaluation",
   aiQaReviewEvidence: "/api/ai-qa/review/evidence",

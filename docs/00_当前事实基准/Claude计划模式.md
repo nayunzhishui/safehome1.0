@@ -11783,3 +11783,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - schema为`2026_07_28_050 / ai_use_case_freeze`；Web、小程序、shared和API机器契约已同步。
 - 专项及受影响回归25项、迁移apply/verify/rollback、内容/API契约、Web类型检查和小程序审计通过。
 - 未执行生产迁移、真实Provider、真实参与者流量、人工签字或生产发布。下一项：`T37-C02`。
+
+## 2026-07-28：T37-C02执行记录
+
+- 状态：`engineering_complete / external_contract_and_owner_gates_pending / release_not_approved`。
+- 已建立DeepSeek/OpenAI版本化候选比较，覆盖数据区域、训练使用、保留删除、子处理商、审计、SLA、内容政策和动态价格。
+- 公开网页只作为候选事实，不计作合同、DPA、PIA或负责人批准；OpenAI中国大陆数据驻留、DeepSeek明确不训练/删除/子处理商承诺均仍待书面证据。
+- 新增供应商证据账本：只保存脱敏引用和SHA-256，登记为`pending`，必须由不同督导/管理员使用版本锁独立复核；不允许自动选中或自动打开真实Provider。
+- Web提供候选比较和证据元数据工作台；小程序API层同步；普通参与者无权访问。所有密钥仅登记环境变量名称，不保存值。
+- schema为`2026_07_28_051 / ai_provider_selection_evidence`；故障、涨价、停服和迁移均先停用，不自动切换未批准供应商。
+- 专项及受影响回归31项、迁移四态、内容/API契约、Web和小程序检查通过；真实合同证据、出网、生产迁移和发布未执行。下一项：`T37-C03`。

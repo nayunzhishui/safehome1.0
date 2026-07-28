@@ -108,6 +108,10 @@ def _require_allowed_use_case(use_case_id: object) -> tuple[str, dict]:
 
 
 def get_config_status() -> dict:
+    from services.ai_provider_governance_service import (
+        get_provider_selection_summary,
+    )
+
     governance = json.loads((current_app.config["CONTENT_DIR"] / "ai_qa_governance.json").read_text(encoding="utf-8"))
     runtime = _runtime_killed()
     return {
@@ -138,6 +142,7 @@ def get_config_status() -> dict:
             "budget_micros_per_day": int(current_app.config.get("AI_QA_DAILY_BUDGET_MICROS", 0)),
             "external_provider_enabled": False,
         },
+        "provider_selection": get_provider_selection_summary(),
         "use_case_policy": get_use_case_catalog(),
         "boundary_notice": governance.get("boundary_notice"),
     }

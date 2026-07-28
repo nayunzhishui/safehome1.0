@@ -60,6 +60,7 @@ REQUIRED_HEALTH_TABLES = [
     "ai_qa_feedback",
     "ai_qa_safety_events",
     "ai_qa_provider_events",
+    "ai_provider_contract_evidence",
     "ai_qa_evaluation_runs",
     "ai_qa_evaluation_reviews",
     "ai_qa_runtime_control",
@@ -147,8 +148,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_050"
-CURRENT_SCHEMA_NAME = "ai_use_case_freeze"
+CURRENT_SCHEMA_VERSION = "2026_07_28_051"
+CURRENT_SCHEMA_NAME = "ai_provider_selection_evidence"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {

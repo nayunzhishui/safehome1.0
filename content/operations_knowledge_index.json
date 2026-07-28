@@ -161,7 +161,7 @@
     {
       "source_file": "operations_capability_registry.json",
       "source_version": "2026-07-21-t34-v1",
-      "source_sha256": "1ae129498b32cfe0dcab757c8a37fe38ff0b3e2cb932641317cd709ade2ef495",
+      "source_sha256": "5ff4f685b4b46dd760db18dfa89a9a2e6d7f22d7a944ed99e72e607f2d6de13f",
       "content_types": [
         "capability_registry",
         "release_gate",
@@ -233,7 +233,7 @@
     {
       "source_file": "security_privacy_abuse_registry.json",
       "source_version": "2026-07-20-t31-security-v1",
-      "source_sha256": "e5e34d2a9176a72a5651631c538303c16200cdd42753f8e6ebe05d343d1eb67c",
+      "source_sha256": "334cfb1f49041888d84883d3dc75d8c4aec9433e32882c8171cdc8b4767041ef",
       "content_types": [
         "security_asset_inventory",
         "authorization_matrix",
@@ -283,5 +283,5 @@
   "draft_or_internal_notes_indexed": false,
   "participant_text_indexed": false,
   "production_release_approved": false,
-  "index_hash": "839527037d6eda40090caa516321c438b3980847bfd44e76b07d977d45c4d4f1"
+  "index_hash": "304111d2e497f8872f41069d9f4a2ef43f8560eb56ad47c2d1a0645a840ffb64"
 }
