@@ -479,6 +479,8 @@ SCHEMA_SQL = [
         synthetic_data INTEGER NOT NULL DEFAULT 1,
         context_policy TEXT NOT NULL DEFAULT 'current_session_only',
         research_use_allowed INTEGER NOT NULL DEFAULT 0,
+        use_case_id TEXT NOT NULL DEFAULT 'legacy_unscoped',
+        use_case_policy_version TEXT NOT NULL DEFAULT 'legacy',
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         deleted_at TEXT

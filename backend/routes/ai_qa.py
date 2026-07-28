@@ -10,6 +10,7 @@ from services.ai_qa_service import (
     create_session,
     delete_session,
     get_config_status,
+    get_use_case_catalog,
     get_session,
     list_review_evidence,
     list_sessions,
@@ -41,6 +42,11 @@ def _response(callback):
 @bp.get("/config")
 def ai_qa_config():
     return _response(get_config_status)
+
+
+@bp.get("/use-cases")
+def ai_qa_use_cases():
+    return _response(get_use_case_catalog)
 
 
 @bp.get("/sessions")

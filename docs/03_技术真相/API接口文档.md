@@ -2341,3 +2341,10 @@ relationship_initiation_intention_action
 - `GET/POST /api/therapeutic-assessment/production-gate/evidence`：正式研究角色读取或登记证据；登记后状态始终为`pending`，客户端不能自报通过。
 - `POST /api/therapeutic-assessment/production-gate/evidence/<evidence_id>/verify`：督导或管理员按版本核验或拒绝证据；记录人不能核验自己的材料。
 - 只有`production`环境、64位SHA-256且记录人与核验人不同的`verified`材料才可计入正式门禁。接口始终返回`production_release_approved=false`，不执行发布。
+## 2026-07-28：T37-C01 AI用例冻结
+
+- `GET /api/ai-qa/use-cases`：公开返回版本、当前阶段、5个允许用例、7类禁止用例、参与者入口阶段和边界说明；不返回内部提示模板、密钥或供应商配置。
+- `GET /api/ai-qa/config`：新增`use_case_policy`，与用例目录使用同一版本。
+- `POST /api/ai-qa/sessions`：除合成标记外必须提交允许的`use_case_id`；参与者角色仍返回403。
+- `POST /api/ai-qa/sessions/<id>/messages`：若提交的`use_case_id`与会话不同则返回`ai_qa_use_case_mismatch`；旧无范围会话不能继续执行。
+- 当前只开放研究者、督导和管理员的合成沙盒。参与者自由问答、自动训练卡处方、自动发布和写工具仍关闭。

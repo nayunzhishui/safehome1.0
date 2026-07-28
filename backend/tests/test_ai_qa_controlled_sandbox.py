@@ -41,7 +41,15 @@ def _actors(app):
 
 
 def _create_session(client, headers):
-    response = client.post("/api/ai-qa/sessions", json={"synthetic_data": True, "research_use_allowed": False}, headers=headers)
+    response = client.post(
+        "/api/ai-qa/sessions",
+        json={
+            "synthetic_data": True,
+            "research_use_allowed": False,
+            "use_case_id": "evidence_gap_check",
+        },
+        headers=headers,
+    )
     assert response.status_code == 200
     return response.get_json()["data"]
 
@@ -245,7 +253,11 @@ def test_kill_switch_can_stop_but_cannot_reactivate_without_human_gate(tmp_path,
     client = app.test_client()
     stopped = client.post("/api/ai-qa/kill-switch", json={"killed": True, "reason": "合成停用演练"}, headers=headers["admin-a"])
     restart = client.post("/api/ai-qa/kill-switch", json={"killed": False, "reason": "尝试恢复"}, headers=headers["admin-a"])
-    blocked = client.post("/api/ai-qa/sessions", json={"synthetic_data": True}, headers=headers["researcher-a"])
+    blocked = client.post(
+        "/api/ai-qa/sessions",
+        json={"synthetic_data": True, "use_case_id": "evidence_gap_check"},
+        headers=headers["researcher-a"],
+    )
     assert stopped.status_code == 200
     assert restart.status_code == 409
     assert blocked.status_code == 503

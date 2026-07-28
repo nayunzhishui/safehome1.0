@@ -149,6 +149,7 @@ const API_ENDPOINTS = {
   researchDeliveries: "/api/research/deliveries",
   contentGovernanceActive: "/api/content-review/active",
   aiQaConfig: "/api/ai-qa/config",
+  aiQaUseCases: "/api/ai-qa/use-cases",
   offlineBenchmarks: "/api/research/benchmarks",
   researchMethodology: "/api/research/methodology",
   computationContract: "/api/research/computation-contract",
@@ -1574,6 +1575,10 @@ function createSafeHomeApi(options = {}) {
 
     getAiQaConfig() {
       return request(API_ENDPOINTS.aiQaConfig);
+    },
+
+    getAiQaUseCases() {
+      return request(API_ENDPOINTS.aiQaUseCases);
     },
 
     getOfflineBenchmarkConfig() {

@@ -1071,8 +1071,15 @@ export class SafeHomeApiClient {
     return this.requestData(API_ENDPOINTS.aiQaSessions);
   }
 
-  createAiQaSession(): Promise<AiQaSession> {
-    return this.requestData(API_ENDPOINTS.aiQaSessions, { method: "POST", body: { synthetic_data: true, research_use_allowed: false } });
+  createAiQaSession(useCaseId: string): Promise<AiQaSession> {
+    return this.requestData(API_ENDPOINTS.aiQaSessions, {
+      method: "POST",
+      body: {
+        synthetic_data: true,
+        research_use_allowed: false,
+        use_case_id: useCaseId,
+      },
+    });
   }
 
   getAiQaSession(id: string): Promise<AiQaSession> {

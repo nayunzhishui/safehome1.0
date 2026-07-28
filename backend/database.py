@@ -147,8 +147,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_049"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_production_gate"
+CURRENT_SCHEMA_VERSION = "2026_07_28_050"
+CURRENT_SCHEMA_NAME = "ai_use_case_freeze"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1171,6 +1171,12 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in therapeutic_action_columns.items():
         ensure_column(conn, "therapeutic_assessment_actions", column, definition)
+    ai_qa_session_columns = {
+        "use_case_id": "TEXT NOT NULL DEFAULT 'legacy_unscoped'",
+        "use_case_policy_version": "TEXT NOT NULL DEFAULT 'legacy'",
+    }
+    for column, definition in ai_qa_session_columns.items():
+        ensure_column(conn, "ai_qa_sessions", column, definition)
     ensure_column(conn, "therapeutic_assessment_authorizations", "status_reason", "TEXT")
     conn.execute(
         """

@@ -1,0 +1,69 @@
+{
+  "schema_version": "safehome.ai-use-case-policy.v1",
+  "policy_version": "2026.07-t37-c01-v1",
+  "stage": "research_synthetic_frozen",
+  "actor_roles": [
+    "researcher",
+    "supervisor",
+    "admin"
+  ],
+  "allowed_use_cases": [
+    {
+      "id": "approved_material_organization",
+      "title": "整理已批准材料",
+      "description": "仅对已批准、可追溯材料做结构化整理，不补写未提供的事实。",
+      "input_pattern": "approved_sources_plus_scope",
+      "output_contract": "draft_with_source_references",
+      "human_verification_required": true
+    },
+    {
+      "id": "question_version_drafting",
+      "title": "草拟问题版本",
+      "description": "基于已批准材料生成供研究者比较的问题候选，不自动采用。",
+      "input_pattern": "approved_sources_plus_question_goal",
+      "output_contract": "versioned_question_candidates",
+      "human_verification_required": true
+    },
+    {
+      "id": "evidence_gap_check",
+      "title": "提示证据缺口",
+      "description": "标出当前材料未覆盖或相互矛盾的位置，不推断缺失内容。",
+      "input_pattern": "approved_sources_plus_review_scope",
+      "output_contract": "evidence_gap_candidates",
+      "human_verification_required": true
+    },
+    {
+      "id": "discussion_checklist",
+      "title": "生成讨论清单",
+      "description": "把已批准材料整理为研究团队内部讨论清单，不形成结论。",
+      "input_pattern": "approved_sources_plus_discussion_goal",
+      "output_contract": "non_conclusive_discussion_checklist",
+      "human_verification_required": true
+    },
+    {
+      "id": "format_spelling_deidentification_terminology_candidate",
+      "title": "格式与去标识化候选检查",
+      "description": "提出格式、错别字、去标识化和术语一致性候选，原文不自动覆盖。",
+      "input_pattern": "approved_text_plus_check_types",
+      "output_contract": "reviewable_change_candidates",
+      "human_verification_required": true
+    }
+  ],
+  "prohibited_categories": [
+    "participant_free_qa",
+    "mechanism_level_hypothesis",
+    "diagnosis",
+    "crisis_conclusion",
+    "standardized_test_interpretation",
+    "automatic_training_card_prescription",
+    "automatic_publication"
+  ],
+  "participant_entry": {
+    "current_stage_enabled": false,
+    "development_target_recorded": true,
+    "earliest_review_task": "T37-C10"
+  },
+  "write_actions_allowed": false,
+  "automatic_adoption_allowed": false,
+  "boundary_notice": "当前只冻结研究者合成沙盒用例。输出均为待核对候选，不能自动发布、写回参与者记录或替代专业判断。"
+}

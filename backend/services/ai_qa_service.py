@@ -19,6 +19,7 @@ from services.ai_qa_safety_service import fixed_response, post_check, pre_route
 PROMPT_VERSION = "safehome-ai-qa-prompt-v2"
 SAFETY_VERSION = "safehome-ai-qa-safety-v1"
 FEEDBACK_VALUES = {"helpful", "neutral", "does_not_match", "uncomfortable"}
+USE_CASE_POLICY_SCHEMA = "safehome.ai-use-case-policy.v1"
 
 
 class AiQaError(ValueError):
@@ -38,6 +39,72 @@ def _runtime_killed() -> dict:
     with get_connection() as conn:
         row = conn.execute("SELECT killed, reason, changed_by, changed_at FROM ai_qa_runtime_control WHERE id = 'global'").fetchone()
     return dict(row) if row else {"killed": 0, "reason": None, "changed_by": None, "changed_at": None}
+
+
+def _load_use_case_policy() -> dict:
+    path = current_app.config["CONTENT_DIR"] / "ai_use_case_policy.json"
+    try:
+        policy = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise AiQaError("ai_qa_use_case_policy_unavailable", "AI用例策略不可用", 503) from exc
+    use_cases = policy.get("allowed_use_cases")
+    if (
+        policy.get("schema_version") != USE_CASE_POLICY_SCHEMA
+        or not isinstance(use_cases, list)
+        or not use_cases
+    ):
+        raise AiQaError("ai_qa_use_case_policy_invalid", "AI用例策略格式不兼容", 503)
+    ids = [str(item.get("id") or "") for item in use_cases if isinstance(item, dict)]
+    if not all(ids) or len(ids) != len(use_cases) or len(set(ids)) != len(ids):
+        raise AiQaError("ai_qa_use_case_policy_invalid", "AI用例标识缺失或重复", 503)
+    return policy
+
+
+def get_use_case_catalog() -> dict:
+    policy = _load_use_case_policy()
+    return {
+        "policy_version": policy["policy_version"],
+        "stage": policy["stage"],
+        "allowed_use_cases": [
+            {
+                key: item[key]
+                for key in (
+                    "id",
+                    "title",
+                    "description",
+                    "input_pattern",
+                    "output_contract",
+                    "human_verification_required",
+                )
+            }
+            for item in policy["allowed_use_cases"]
+        ],
+        "prohibited_categories": list(policy.get("prohibited_categories") or []),
+        "participant_entry": dict(policy.get("participant_entry") or {}),
+        "write_actions_allowed": bool(policy.get("write_actions_allowed", False)),
+        "automatic_adoption_allowed": bool(
+            policy.get("automatic_adoption_allowed", False)
+        ),
+        "boundary_notice": str(policy.get("boundary_notice") or ""),
+    }
+
+
+def _require_allowed_use_case(use_case_id: object) -> tuple[str, dict]:
+    normalized = str(use_case_id or "").strip()
+    if not normalized:
+        raise AiQaError("ai_qa_use_case_required", "请选择已冻结的AI用例", 422)
+    policy = _load_use_case_policy()
+    allowed = {
+        str(item["id"]): item for item in policy["allowed_use_cases"]
+    }
+    if normalized not in allowed:
+        raise AiQaError(
+            "ai_qa_use_case_not_allowed",
+            "当前AI用例不在首批冻结范围内",
+            409,
+            {"use_case_id": normalized},
+        )
+    return normalized, policy
 
 
 def get_config_status() -> dict:
@@ -71,6 +138,7 @@ def get_config_status() -> dict:
             "budget_micros_per_day": int(current_app.config.get("AI_QA_DAILY_BUDGET_MICROS", 0)),
             "external_provider_enabled": False,
         },
+        "use_case_policy": get_use_case_catalog(),
         "boundary_notice": governance.get("boundary_notice"),
     }
 
@@ -112,18 +180,19 @@ def create_session(actor: dict, payload: dict) -> dict:
         raise AiQaError("synthetic_data_required", "当前只允许明确标记的合成案例", 409)
     if payload.get("research_use_allowed") is True:
         raise AiQaError("research_use_not_authorized", "合成沙盒不会自动取得研究使用授权", 409)
+    use_case_id, use_case_policy = _require_allowed_use_case(payload.get("use_case_id"))
     session_id = new_id("aiqs")
     timestamp = now_iso()
     with get_connection() as conn:
-        conn.execute("INSERT INTO ai_qa_sessions (id, user_id, mode, status, synthetic_data, context_policy, research_use_allowed, created_at, updated_at) VALUES (?, ?, 'research_sandbox', 'active', 1, 'current_session_only', 0, ?, ?)", (session_id, actor["id"], timestamp, timestamp))
-        write_audit_log(conn, "ai_qa_session_created", actor["id"], "ai_qa_session", session_id, {"synthetic_data": True, "mode": "research_sandbox", "research_use_allowed": False})
+        conn.execute("INSERT INTO ai_qa_sessions (id, user_id, mode, status, synthetic_data, context_policy, research_use_allowed, use_case_id, use_case_policy_version, created_at, updated_at) VALUES (?, ?, 'research_sandbox', 'active', 1, 'current_session_only', 0, ?, ?, ?, ?)", (session_id, actor["id"], use_case_id, use_case_policy["policy_version"], timestamp, timestamp))
+        write_audit_log(conn, "ai_qa_session_created", actor["id"], "ai_qa_session", session_id, {"synthetic_data": True, "mode": "research_sandbox", "research_use_allowed": False, "use_case_id": use_case_id, "use_case_policy_version": use_case_policy["policy_version"]})
         conn.commit()
     return get_session(actor, session_id)
 
 
 def list_sessions(actor: dict) -> list[dict]:
     with get_connection() as conn:
-        rows = conn.execute("SELECT id, user_id, mode, status, synthetic_data, context_policy, research_use_allowed, created_at, updated_at, deleted_at FROM ai_qa_sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT 100", (actor["id"],)).fetchall()
+        rows = conn.execute("SELECT id, user_id, mode, status, synthetic_data, context_policy, research_use_allowed, use_case_id, use_case_policy_version, created_at, updated_at, deleted_at FROM ai_qa_sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT 100", (actor["id"],)).fetchall()
     return rows_to_dicts(rows)
 
 
@@ -215,7 +284,17 @@ def _fixed_message(actor: dict, session_id: str, text: str, route: str, precheck
 
 def send_message(actor: dict, session_id: str, payload: dict) -> dict:
     _require_sandbox()
-    _get_owned_session(actor, session_id)
+    session = _get_owned_session(actor, session_id)
+    _require_allowed_use_case(session.get("use_case_id"))
+    requested_use_case = payload.get("use_case_id")
+    if requested_use_case is not None and str(requested_use_case) != str(
+        session["use_case_id"]
+    ):
+        raise AiQaError(
+            "ai_qa_use_case_mismatch",
+            "消息不能改变会话已冻结的AI用例",
+            409,
+        )
     text = str(payload.get("text") or "").strip()
     if not text or len(text) > 2000:
         raise AiQaError("validation_error", "问题长度必须为1至2000字")

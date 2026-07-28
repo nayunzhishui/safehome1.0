@@ -24,6 +24,7 @@
 | DELETE | `/api/ai-qa/sessions/<session_id>` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
 | GET | `/api/ai-qa/sessions/<session_id>` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
 | POST | `/api/ai-qa/sessions/<session_id>/messages` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
+| GET | `/api/ai-qa/use-cases` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
 | GET | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | page/page_size | — | active |
 | POST | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | supported | active |
 | GET | `/api/assessment-results/<result_id>` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |

@@ -2715,10 +2715,36 @@ export interface AiQaSession {
   synthetic_data: boolean | 0 | 1;
   context_policy: "current_session_only";
   research_use_allowed: false | 0;
+  use_case_id: string;
+  use_case_policy_version: string;
   created_at: ISODateTime;
   updated_at: ISODateTime;
   deleted_at?: ISODateTime | null;
   messages?: AiQaMessage[];
+}
+
+export interface AiQaUseCase {
+  id: string;
+  title: string;
+  description: string;
+  input_pattern: string;
+  output_contract: string;
+  human_verification_required: true;
+}
+
+export interface AiQaUseCaseCatalog {
+  policy_version: string;
+  stage: "research_synthetic_frozen";
+  allowed_use_cases: AiQaUseCase[];
+  prohibited_categories: string[];
+  participant_entry: {
+    current_stage_enabled: false;
+    development_target_recorded: boolean;
+    earliest_review_task: string;
+  };
+  write_actions_allowed: false;
+  automatic_adoption_allowed: false;
+  boundary_notice: string;
 }
 
 export interface AiQaConfig {
@@ -2748,6 +2774,7 @@ export interface AiQaConfig {
     budget_micros_per_day: number;
     external_provider_enabled: false;
   };
+  use_case_policy: AiQaUseCaseCatalog;
   boundary_notice: string;
 }
 

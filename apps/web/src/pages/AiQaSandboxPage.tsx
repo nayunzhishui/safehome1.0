@@ -5,11 +5,14 @@ import { getStoredAuthUser } from "../services/authState";
 import { safeHomeApi } from "../services/safehomeApi";
 
 
-const SAFE_EXAMPLES = [
-  "训练卡在哪里查看？",
-  "情绪很强时为什么先暂停一下？",
-  "怎样把今天的记录写得更具体？",
-];
+const DEFAULT_USE_CASE_ID = "approved_material_organization";
+const USE_CASE_EXAMPLES: Record<string, string> = {
+  approved_material_organization: "请按来源整理这组已批准材料，不补充材料外事实。",
+  question_version_drafting: "请基于已批准材料草拟三个待研究者核对的问题版本。",
+  evidence_gap_check: "请标出当前已批准材料中尚未覆盖的证据缺口。",
+  discussion_checklist: "请把已批准材料整理为不下结论的团队讨论清单。",
+  format_spelling_deidentification_terminology_candidate: "请提出格式、错别字、去标识化和术语一致性候选修改。",
+};
 
 function errorText(error: unknown): string {
   return error instanceof Error ? error.message : "操作失败，请核对权限与沙盒状态。";
@@ -26,7 +29,8 @@ export function AiQaSandboxPage() {
   const [answer, setAnswer] = useState<AiQaAnswer | null>(null);
   const [evidence, setEvidence] = useState<AiQaReviewEvidence | null>(null);
   const [evaluation, setEvaluation] = useState<AiQaEvaluationRun | null>(null);
-  const [question, setQuestion] = useState(SAFE_EXAMPLES[0]);
+  const [selectedUseCaseId, setSelectedUseCaseId] = useState(DEFAULT_USE_CASE_ID);
+  const [question, setQuestion] = useState(USE_CASE_EXAMPLES[DEFAULT_USE_CASE_ID]);
   const [status, setStatus] = useState("正在读取受控沙盒状态…");
   const [busy, setBusy] = useState(false);
 
@@ -36,6 +40,13 @@ export function AiQaSandboxPage() {
       safeHomeApi.getAiQaReviewEvidence(),
     ]);
     setConfig(nextConfig);
+    const allowedIds = new Set(nextConfig.use_case_policy.allowed_use_cases.map((item) => item.id));
+    setSelectedUseCaseId((current) => {
+      if (allowedIds.has(current)) return current;
+      const fallback = nextConfig.use_case_policy.allowed_use_cases[0]?.id || "";
+      setQuestion(USE_CASE_EXAMPLES[fallback] || "");
+      return fallback;
+    });
     setEvidence(nextEvidence);
     if (canChat) {
       const listed = await safeHomeApi.listAiQaSessions();
@@ -69,8 +80,9 @@ export function AiQaSandboxPage() {
   }
 
   function createSession() {
+    if (!selectedUseCaseId) return;
     void run("创建合成会话", async () => {
-      const created = await safeHomeApi.createAiQaSession();
+      const created = await safeHomeApi.createAiQaSession(selectedUseCaseId);
       setActiveSession(created);
       setSessions((current) => [created, ...current]);
       setAnswer(null);
@@ -159,15 +171,37 @@ export function AiQaSandboxPage() {
         <section className="panel aiQaConversation" aria-label="合成问答测试">
           <div className="panelHeading">
             <div><span className="panelKicker">安全链路</span><h2>合成问答</h2></div>
-            {canChat ? <button className="secondaryButton" disabled={busy || !config?.sandbox_enabled} type="button" onClick={createSession}>新建会话</button> : null}
+            {canChat ? <button className="secondaryButton" disabled={busy || !config?.sandbox_enabled || !selectedUseCaseId} type="button" onClick={createSession}>按所选用例新建</button> : null}
           </div>
+          {canChat ? (
+            <>
+              <label className="fieldLabel" htmlFor="ai-qa-use-case">本次用例</label>
+              <select
+                id="ai-qa-use-case"
+                value={selectedUseCaseId}
+                disabled={busy}
+                onChange={(event) => {
+                  const next = event.target.value;
+                  setSelectedUseCaseId(next);
+                  setQuestion(USE_CASE_EXAMPLES[next] || "");
+                }}
+              >
+                {(config?.use_case_policy.allowed_use_cases || []).map((item) => (
+                  <option key={item.id} value={item.id}>{item.title}</option>
+                ))}
+              </select>
+              <p className="mutedText">
+                {config?.use_case_policy.allowed_use_cases.find((item) => item.id === selectedUseCaseId)?.description || "正在读取冻结用例。"}
+              </p>
+            </>
+          ) : null}
           {!canChat ? <p className="emptyState">当前角色不能创建或读取合成研究会话。</p> : null}
           {canChat && !activeSession ? <p className="emptyState">新建会话后，只输入团队编写的合成文本，不得粘贴真实参与者资料。</p> : null}
           {canChat && activeSession ? (
             <>
-              <div className="syntheticBanner"><strong>合成会话</strong><span>{activeSession.id}</span></div>
+              <div className="syntheticBanner"><strong>合成会话 · {activeSession.use_case_id}</strong><span>{activeSession.id}</span></div>
               <div className="promptChips" aria-label="安全示例">
-                {SAFE_EXAMPLES.map((item) => <button type="button" key={item} onClick={() => setQuestion(item)}>{item}</button>)}
+                <button type="button" onClick={() => setQuestion(USE_CASE_EXAMPLES[activeSession.use_case_id] || "")}>填入当前用例示例</button>
               </div>
               <label className="fieldLabel" htmlFor="ai-qa-question">合成测试问题</label>
               <textarea id="ai-qa-question" value={question} maxLength={500} onChange={(event) => setQuestion(event.target.value)} />

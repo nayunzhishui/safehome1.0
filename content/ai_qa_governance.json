@@ -17,6 +17,11 @@
   "required_external_gates": ["T24隐私", "T31安全", "T32可靠性", "T34发布治理", "心理审核", "伦理/法律审核", "生产值守"],
   "engineering_controls": {
     "roles": ["researcher", "supervisor", "admin"],
+    "use_case_policy": {
+      "version": "2026.07-t37-c01-v1",
+      "source": "content/ai_use_case_policy.json",
+      "session_scope_required": true
+    },
     "approved_knowledge_only": true,
     "citation_and_version_required": true,
     "uncertainty_required": true,
