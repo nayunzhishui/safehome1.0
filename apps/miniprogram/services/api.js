@@ -152,6 +152,11 @@ const API_ENDPOINTS = {
   aiQaUseCases: "/api/ai-qa/use-cases",
   aiQaProviders: "/api/ai-qa/providers",
   aiQaProviderEvidence: "/api/ai-qa/providers/evidence",
+  aiQaKnowledge: "/api/ai-qa/knowledge",
+  aiQaKnowledgeRebuild: "/api/ai-qa/knowledge/rebuild",
+  aiQaKnowledgeRetrieve: "/api/ai-qa/knowledge/retrieve",
+  aiQaKnowledgeCandidates: "/api/ai-qa/knowledge/candidates",
+  aiQaKnowledgeEvaluation: "/api/ai-qa/knowledge/evaluation/run",
   offlineBenchmarks: "/api/research/benchmarks",
   researchMethodology: "/api/research/methodology",
   computationContract: "/api/research/computation-contract",
@@ -1589,6 +1594,34 @@ function createSafeHomeApi(options = {}) {
 
     getAiProviderEvidence() {
       return request(API_ENDPOINTS.aiQaProviderEvidence, { requiresAuth: true });
+    },
+
+    getAiKnowledgeInventory() {
+      return request(API_ENDPOINTS.aiQaKnowledge, { requiresAuth: true });
+    },
+
+    rebuildAiKnowledge() {
+      return request(API_ENDPOINTS.aiQaKnowledgeRebuild, {
+        method: "POST",
+        requiresAuth: true,
+      });
+    },
+
+    retrieveAiKnowledge(query, method = "hybrid") {
+      return request(`${API_ENDPOINTS.aiQaKnowledgeRetrieve}${queryString({
+        query,
+        method,
+        audience: "researcher",
+      })}`, { requiresAuth: true });
+    },
+
+    registerAiKnowledgeCandidate(data, idempotencyKey) {
+      return request(API_ENDPOINTS.aiQaKnowledgeCandidates, {
+        method: "POST",
+        data,
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
     },
 
     recordAiProviderEvidence(data, idempotencyKey) {

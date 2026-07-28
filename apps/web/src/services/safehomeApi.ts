@@ -7,6 +7,10 @@ import type {
   AiQaEvaluationRun,
   AiQaReviewEvidence,
   AiQaSession,
+  AiKnowledgeInventory,
+  AiKnowledgeRebuildResult,
+  AiKnowledgeRetrievalMethod,
+  AiKnowledgeRetrievalResult,
   AiProviderContractEvidence,
   AiProviderEvidenceType,
   AiProviderSelection,
@@ -1076,6 +1080,30 @@ export class SafeHomeApiClient {
 
   getAiProviderEvidence(): Promise<ListResponse<AiProviderContractEvidence>> {
     return this.requestData(API_ENDPOINTS.aiQaProviderEvidence);
+  }
+
+  getAiKnowledgeInventory(): Promise<AiKnowledgeInventory> {
+    return this.requestData(API_ENDPOINTS.aiQaKnowledge);
+  }
+
+  rebuildAiKnowledge(): Promise<AiKnowledgeRebuildResult> {
+    return this.requestData(API_ENDPOINTS.aiQaKnowledgeRebuild, {
+      method: "POST",
+    });
+  }
+
+  retrieveAiKnowledge(
+    query: string,
+    method: AiKnowledgeRetrievalMethod,
+  ): Promise<AiKnowledgeRetrievalResult> {
+    const params = new URLSearchParams({
+      query,
+      method,
+      audience: "researcher",
+    });
+    return this.requestData(
+      `${API_ENDPOINTS.aiQaKnowledgeRetrieve}?${params.toString()}`,
+    );
   }
 
   recordAiProviderEvidence(input: {

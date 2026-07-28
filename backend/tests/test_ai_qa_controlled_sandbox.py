@@ -60,8 +60,28 @@ def _seed_published_card(app):
         with database.get_connection() as conn:
             now = database.now_iso()
             payload = {"id": "pause_card", "title": "三秒暂停", "purpose": "情绪升高时先暂停，注意身体信号，再选择一个低负担回应。", "steps": ["停一下", "慢呼气", "再选择"]}
-            conn.execute("INSERT INTO content_governance_versions (id, content_type, item_id, version, payload_json, payload_hash, metadata_json, status, created_by, created_at, updated_at, published_at) VALUES ('cgv-published', 'training_card', 'pause_card', 'v1', ?, 'hash-published', '{}', 'published', 'human-fixture', ?, ?, ?)", (json.dumps(payload, ensure_ascii=False), now, now, now))
+            metadata = {
+                "source": "safehome://tests/approved-card",
+                "source_version": "v1",
+                "copyright_status": "owned",
+                "age_scope": "adult",
+                "audience": ["researcher"],
+                "change_summary": "approved AI QA fixture",
+                "expires_at": "2099-12-31T23:59:59+00:00",
+            }
+            conn.execute("INSERT INTO content_governance_versions (id, content_type, item_id, version, payload_json, payload_hash, metadata_json, status, created_by, created_at, updated_at, published_at) VALUES ('cgv-published', 'training_card', 'pause_card', 'v1', ?, 'hash-published', ?, 'published', 'human-fixture', ?, ?, ?)", (json.dumps(payload, ensure_ascii=False), json.dumps(metadata, ensure_ascii=False), now, now, now))
             conn.execute("INSERT INTO content_governance_releases (id, version_id, content_type, item_id, payload_hash, package_json, release_reason, status, released_by, created_at) VALUES ('release-published', 'cgv-published', 'training_card', 'pause_card', 'hash-published', '{}', 'test fixture', 'active', 'human-fixture', ?)", (now,))
+            for index, discipline in enumerate(("research", "psychology", "ethics", "content")):
+                conn.execute(
+                    "INSERT INTO content_governance_reviews (id, version_id, discipline, decision, reviewer_id, reviewer_role, evidence_path, note, created_at) VALUES (?, 'cgv-published', ?, 'approved', ?, 'admin', ?, 'approved fixture', ?)",
+                    (
+                        f"review-published-{discipline}",
+                        discipline,
+                        f"reviewer-{index}",
+                        f"evidence://approved-card/{discipline}",
+                        now,
+                    ),
+                )
             conn.execute("INSERT INTO content_governance_versions (id, content_type, item_id, version, payload_json, payload_hash, metadata_json, status, created_by, created_at, updated_at) VALUES ('cgv-draft', 'training_card', 'secret_draft', 'v2', ?, 'hash-draft', '{}', 'draft', 'human-fixture', ?, ?)", (json.dumps({"id": "secret_draft", "title": "不可检索草稿", "purpose": "秘密草稿词"}, ensure_ascii=False), now, now))
             conn.commit()
 

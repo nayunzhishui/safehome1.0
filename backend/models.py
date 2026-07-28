@@ -549,6 +549,76 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS ai_knowledge_documents (
+        id TEXT PRIMARY KEY,
+        version_id TEXT NOT NULL UNIQUE,
+        release_id TEXT NOT NULL,
+        content_type TEXT NOT NULL,
+        item_id TEXT NOT NULL,
+        document_version TEXT NOT NULL,
+        source_ref TEXT NOT NULL,
+        source_version TEXT NOT NULL,
+        rights_status TEXT NOT NULL,
+        review_status TEXT NOT NULL,
+        valid_from TEXT,
+        expires_at TEXT,
+        audiences_json TEXT NOT NULL DEFAULT '[]',
+        status TEXT NOT NULL DEFAULT 'active',
+        payload_hash TEXT NOT NULL,
+        package_hash TEXT,
+        indexed_at TEXT,
+        withdrawn_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_knowledge_chunks (
+        id TEXT PRIMARY KEY,
+        document_id TEXT NOT NULL,
+        ordinal INTEGER NOT NULL,
+        location TEXT NOT NULL,
+        heading TEXT,
+        content_text TEXT NOT NULL,
+        content_hash TEXT NOT NULL,
+        token_count INTEGER NOT NULL DEFAULT 0,
+        lexical_terms_json TEXT NOT NULL DEFAULT '[]',
+        vector_json TEXT NOT NULL DEFAULT '[]',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(document_id, ordinal)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_knowledge_candidates (
+        id TEXT PRIMARY KEY,
+        source_url TEXT NOT NULL,
+        title TEXT NOT NULL,
+        source_hash TEXT NOT NULL,
+        rights_status TEXT NOT NULL DEFAULT 'unverified',
+        review_status TEXT NOT NULL DEFAULT 'not_reviewed',
+        status TEXT NOT NULL DEFAULT 'quarantined',
+        recorded_by TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(recorded_by, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_knowledge_evaluation_runs (
+        id TEXT PRIMARY KEY,
+        suite_version TEXT NOT NULL,
+        retrieval_method TEXT NOT NULL,
+        metrics_json TEXT NOT NULL,
+        result_json TEXT NOT NULL,
+        knowledge_snapshot_hash TEXT NOT NULL,
+        status TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS ai_provider_contract_evidence (
         id TEXT PRIMARY KEY,
         provider_id TEXT NOT NULL,
@@ -2579,6 +2649,12 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_messages_session_created ON ai_qa_messages(session_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_safety_created ON ai_qa_safety_events(category, severity, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_provider_created ON ai_qa_provider_events(provider, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_documents_status ON ai_knowledge_documents(status, content_type, updated_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_documents_release ON ai_knowledge_documents(release_id, status)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_chunks_document ON ai_knowledge_chunks(document_id, ordinal)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_ai_knowledge_candidate_actor_key ON ai_knowledge_candidates(recorded_by, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_candidates_status ON ai_knowledge_candidates(status, updated_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_evaluation_created ON ai_knowledge_evaluation_runs(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_provider_evidence_provider_status ON ai_provider_contract_evidence(provider_id, status, evidence_type)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_evaluation_status_created ON ai_qa_evaluation_runs(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_dataset_ingest_status ON offline_dataset_cards(ingest_status, updated_at)",

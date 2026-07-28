@@ -2689,6 +2689,114 @@ export interface AiQaCitation {
   excerpt: string;
   governance_status: "published";
   package_hash?: string | null;
+  document_id?: ID;
+  chunk_id?: ID;
+  location?: string;
+  source_ref?: string;
+  source_version?: string;
+  rights_status?: "owned" | "licensed" | "public_domain" | "permission_recorded";
+  review_status?: "approved";
+  valid_from?: ISODateTime | null;
+  expires_at?: ISODateTime | null;
+  audiences?: string[];
+  retrieval_method?: AiKnowledgeRetrievalMethod;
+  scores?: {
+    bm25: number;
+    vector: number;
+    rerank: number;
+    final: number;
+  };
+}
+
+export type AiKnowledgeRetrievalMethod = "bm25" | "vector" | "hybrid";
+
+export interface AiKnowledgeDocument {
+  id: ID;
+  version_id: ID;
+  release_id: ID;
+  content_type: string;
+  item_id: string;
+  document_version: string;
+  source_ref: string;
+  source_version: string;
+  rights_status: "owned" | "licensed" | "public_domain" | "permission_recorded";
+  review_status: "approved";
+  valid_from?: ISODateTime | null;
+  expires_at?: ISODateTime | null;
+  audiences: string[];
+  status: "active" | "withdrawn" | "expired";
+  payload_hash: string;
+  package_hash?: string | null;
+  indexed_at?: ISODateTime | null;
+  withdrawn_at?: ISODateTime | null;
+  chunk_count: number;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface AiKnowledgeCandidate {
+  id: ID;
+  source_url: string;
+  title: string;
+  source_hash: string;
+  rights_status: string;
+  review_status: "not_reviewed";
+  status: "quarantined";
+  recorded_by: ID;
+  indexed: false;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
+export interface AiKnowledgeInventory {
+  documents: AiKnowledgeDocument[];
+  candidates: AiKnowledgeCandidate[];
+  candidate_content_stored: false;
+  web_candidate_auto_approval: false;
+}
+
+export interface AiKnowledgeRetrievalResult {
+  citations: AiQaCitation[];
+  knowledge_snapshot_hash: string;
+  only_published: true;
+  retrieval_method: AiKnowledgeRetrievalMethod;
+  evidence_status: "sufficient" | "insufficient";
+  audience: string;
+}
+
+export interface AiKnowledgeRebuildResult {
+  indexed_documents: number;
+  active_documents: number;
+  active_chunks: number;
+  rejected_documents: number;
+  rejection_reasons: Record<string, number>;
+  only_governed_releases: true;
+  candidate_content_ingested: false;
+  human_release_approval: false;
+}
+
+export interface AiKnowledgeEvaluationRun {
+  id: ID;
+  suite_version: string;
+  retrieval_method: AiKnowledgeRetrievalMethod;
+  metrics: {
+    recall_at_k: number;
+    citation_accuracy: number;
+    no_evidence_accuracy: number;
+    case_pass_rate: number;
+  };
+  results: Array<{
+    case_id: string;
+    expected_content_ids: string[];
+    actual_content_ids: string[];
+    citation_locations: string[];
+    passed: boolean;
+  }>;
+  knowledge_snapshot_hash: string;
+  status: "engineering_threshold_passed" | "engineering_threshold_failed";
+  created_by: ID;
+  created_at: ISODateTime;
+  human_release_approval: false;
 }
 
 export interface AiQaMessage {

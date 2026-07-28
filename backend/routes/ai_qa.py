@@ -26,6 +26,14 @@ from services.ai_qa_service import (
     save_feedback,
     send_message,
 )
+from services.ai_qa_retrieval_service import (
+    KnowledgeError,
+    list_knowledge,
+    register_public_candidate,
+    retrieve_published_content,
+    run_retrieval_evaluation,
+    sync_approved_knowledge,
+)
 
 
 bp = Blueprint("ai_qa", __name__, url_prefix="/api/ai-qa")
@@ -48,7 +56,7 @@ def _response(callback):
         ):
             return ok(result[0], status=result[1])
         return ok(result)
-    except AiQaError as exc:
+    except (AiQaError, KnowledgeError) as exc:
         return fail(exc.code, str(exc), status=exc.status, details=exc.details or None)
 
 
@@ -68,6 +76,64 @@ def ai_qa_providers():
     if error:
         return error
     return _response(lambda: list_provider_candidates(actor))
+
+
+@bp.get("/knowledge")
+def ai_qa_knowledge():
+    _current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(list_knowledge)
+
+
+@bp.post("/knowledge/rebuild")
+def ai_qa_knowledge_rebuild():
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: sync_approved_knowledge(actor))
+
+
+@bp.get("/knowledge/retrieve")
+def ai_qa_knowledge_retrieve():
+    _current_actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    query = str(request.args.get("query") or "")
+    method = str(request.args.get("method") or "hybrid")
+    audience = str(request.args.get("audience") or "researcher")
+    limit = request.args.get("limit", 4)
+    try:
+        parsed_limit = int(limit)
+    except (TypeError, ValueError):
+        parsed_limit = 4
+    return _response(
+        lambda: retrieve_published_content(
+            query,
+            parsed_limit,
+            method=method,
+            audience=audience,
+        )
+    )
+
+
+@bp.post("/knowledge/candidates")
+def ai_qa_knowledge_candidate_create():
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    key = str(request.headers.get("Idempotency-Key") or "")
+    return _response(lambda: register_public_candidate(actor, payload, key))
+
+
+@bp.post("/knowledge/evaluation/run")
+def ai_qa_knowledge_evaluation_run():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(lambda: run_retrieval_evaluation(actor, payload))
 
 
 @bp.get("/providers/evidence")

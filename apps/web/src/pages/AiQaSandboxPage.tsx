@@ -9,6 +9,9 @@ import type {
   AiQaEvaluationRun,
   AiQaReviewEvidence,
   AiQaSession,
+  AiKnowledgeInventory,
+  AiKnowledgeRetrievalMethod,
+  AiKnowledgeRetrievalResult,
 } from "../../../../shared/types/api";
 import { getStoredAuthUser } from "../services/authState";
 import { safeHomeApi } from "../services/safehomeApi";
@@ -54,6 +57,10 @@ export function AiQaSandboxPage() {
   const [evaluation, setEvaluation] = useState<AiQaEvaluationRun | null>(null);
   const [providerSelection, setProviderSelection] = useState<AiProviderSelection | null>(null);
   const [providerEvidence, setProviderEvidence] = useState<AiProviderContractEvidence[]>([]);
+  const [knowledge, setKnowledge] = useState<AiKnowledgeInventory | null>(null);
+  const [knowledgeQuery, setKnowledgeQuery] = useState("情绪升高时怎样暂停");
+  const [knowledgeMethod, setKnowledgeMethod] = useState<AiKnowledgeRetrievalMethod>("hybrid");
+  const [knowledgeResult, setKnowledgeResult] = useState<AiKnowledgeRetrievalResult | null>(null);
   const [providerId, setProviderId] = useState<"deepseek" | "openai">("deepseek");
   const [evidenceType, setEvidenceType] = useState<AiProviderEvidenceType>("service_contract");
   const [artifactRef, setArtifactRef] = useState("");
@@ -64,11 +71,12 @@ export function AiQaSandboxPage() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const [nextConfig, nextEvidence, nextProviderSelection, nextProviderEvidence] = await Promise.all([
+    const [nextConfig, nextEvidence, nextProviderSelection, nextProviderEvidence, nextKnowledge] = await Promise.all([
       safeHomeApi.getAiQaConfig(),
       safeHomeApi.getAiQaReviewEvidence(),
       safeHomeApi.getAiProviderSelection(),
       safeHomeApi.getAiProviderEvidence(),
+      safeHomeApi.getAiKnowledgeInventory(),
     ]);
     setConfig(nextConfig);
     const allowedIds = new Set(nextConfig.use_case_policy.allowed_use_cases.map((item) => item.id));
@@ -81,6 +89,7 @@ export function AiQaSandboxPage() {
     setEvidence(nextEvidence);
     setProviderSelection(nextProviderSelection);
     setProviderEvidence(nextProviderEvidence.items);
+    setKnowledge(nextKnowledge);
     if (canChat) {
       const listed = await safeHomeApi.listAiQaSessions();
       setSessions(listed.items);
@@ -199,6 +208,24 @@ export function AiQaSandboxPage() {
     });
   }
 
+  function rebuildKnowledge() {
+    void run("重建批准知识索引", async () => {
+      await safeHomeApi.rebuildAiKnowledge();
+      setKnowledge(await safeHomeApi.getAiKnowledgeInventory());
+      setKnowledgeResult(null);
+    });
+  }
+
+  function compareKnowledgeRetrieval() {
+    const query = knowledgeQuery.trim();
+    if (!query) return;
+    void run(`运行${knowledgeMethod}检索`, async () => {
+      setKnowledgeResult(
+        await safeHomeApi.retrieveAiKnowledge(query, knowledgeMethod),
+      );
+    });
+  }
+
   return (
     <section className="dashboardShell aiQaWorkbench" aria-label="支持性内容助手研究沙盒">
       <div className="dashboardHeader">
@@ -228,6 +255,94 @@ export function AiQaSandboxPage() {
           <div><dt>合成原文保留</dt><dd>{config?.data_policy.synthetic_retention_days ? `${config.data_policy.synthetic_retention_days}天` : "待服务更新"}</dd></div>
           <div><dt>训练使用</dt><dd>禁止</dd></div>
         </dl>
+      </section>
+
+      <section className="panel" aria-label="批准知识库与检索验证">
+        <div className="panelHeading">
+          <div>
+            <span className="panelKicker">T37-C04 · 只读批准内容</span>
+            <h2>知识库与RAG验证</h2>
+          </div>
+          {canReview ? (
+            <button
+              className="secondaryButton"
+              disabled={busy}
+              type="button"
+              onClick={rebuildKnowledge}
+            >
+              重建批准索引
+            </button>
+          ) : null}
+        </div>
+        <p className="boundaryCallout">
+          只索引已完成四类审核、权利明确且处于有效期内的发布版本；网页候选只保留元数据并停留在隔离区。
+        </p>
+        <div className="metricGrid compactMetrics">
+          <div>
+            <strong>{knowledge?.documents.filter((item) => item.status === "active").length || 0}</strong>
+            <span>有效文档</span>
+          </div>
+          <div>
+            <strong>{knowledge?.documents.reduce((sum, item) => sum + Number(item.chunk_count || 0), 0) || 0}</strong>
+            <span>可追踪切片</span>
+          </div>
+          <div>
+            <strong>{knowledge?.candidates.length || 0}</strong>
+            <span>隔离候选</span>
+          </div>
+          <div>
+            <strong>{knowledge?.web_candidate_auto_approval ? "异常" : "关闭"}</strong>
+            <span>网页自动准入</span>
+          </div>
+        </div>
+        <div className="formGrid">
+          <label>
+            合成检索问题
+            <input
+              value={knowledgeQuery}
+              maxLength={500}
+              onChange={(event) => setKnowledgeQuery(event.target.value)}
+            />
+          </label>
+          <label>
+            检索方法
+            <select
+              value={knowledgeMethod}
+              onChange={(event) => setKnowledgeMethod(event.target.value as AiKnowledgeRetrievalMethod)}
+            >
+              <option value="bm25">BM25</option>
+              <option value="vector">本地向量基线</option>
+              <option value="hybrid">混合检索与重排</option>
+            </select>
+          </label>
+          <button
+            className="secondaryButton"
+            disabled={busy || !knowledgeQuery.trim()}
+            type="button"
+            onClick={compareKnowledgeRetrieval}
+          >
+            比较检索
+          </button>
+        </div>
+        {knowledgeResult ? (
+          <div className="gateList" aria-label="检索引用">
+            <div>
+              <strong>{knowledgeResult.retrieval_method}</strong>
+              <span>{knowledgeResult.evidence_status}</span>
+              <em>{knowledgeResult.citations.length}条引用</em>
+            </div>
+            {knowledgeResult.citations.map((item) => (
+              <div key={item.chunk_id || `${item.release_id}-${item.content_id}`}>
+                <strong>{item.title}</strong>
+                <span>{item.location || "未定位"} · {item.source_version || "未知版本"}</span>
+                <em>{item.source_ref || "无来源"}</em>
+              </div>
+            ))}
+            {!knowledgeResult.citations.length ? (
+              <p className="emptyState">没有足够的已批准证据，应返回“证据不足”，不调用生成回答。</p>
+            ) : null}
+          </div>
+        ) : null}
       </section>
 
       <div className="aiQaColumns">

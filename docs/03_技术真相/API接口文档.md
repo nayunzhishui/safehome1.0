@@ -2365,3 +2365,12 @@ relationship_initiation_intention_action
 - 传输层只允许固定HTTPS主机，分别执行`AI_QA_CONNECT_TIMEOUT_MS`、`AI_QA_READ_TIMEOUT_MS`和`AI_QA_TIMEOUT_MS`；超时或取消会关闭当前连接，内部不启动后台供应商线程。
 - 供应商事件只记录request id、模型版本、输入/输出token、总token、估算成本、币种、时延、状态和错误代码，不记录请求或回答原文。
 - `GET /api/ai-qa/config`只返回适配器候选、门禁状态、三类超时和密钥来源类型；`secret_values_exposed=false`。
+
+### T37-C04 批准知识库与RAG
+
+- `GET /api/ai-qa/knowledge`：研究者、督导和管理员读取已索引文档、切片数量及网页隔离候选的元数据；不返回候选网页正文。
+- `POST /api/ai-qa/knowledge/rebuild`：仅督导和管理员可从内容治理库重建索引。只有权利状态为`owned/licensed/public_domain/permission_recorded`、四类审核均通过、发布版本和发布记录均有效且未过期的内容可进入索引。
+- `GET /api/ai-qa/knowledge/retrieve`：内部角色使用`query`、`method=bm25|vector|hybrid`和`audience`比较检索。每条引用返回文档版本、发布版本、切片ID、字段位置、来源、权利、审核、有效期和分项分数。
+- `POST /api/ai-qa/knowledge/candidates`：仅督导和管理员登记HTTPS网页的标题、URL和SHA-256元数据；必须提供`Idempotency-Key`。接口拒绝正文、HTML和原始文本字段，候选固定进入`quarantined`且`indexed=false`。
+- `POST /api/ai-qa/knowledge/evaluation/run`：内部角色运行固定合成检索案例，记录召回率、引用正确率、无证据正确率和案例通过率；工程阈值通过不等于发布批准。
+- 任何检索都会先同步发布状态；材料暂停、撤回、替换或过期后立即不再返回。无足够证据时`citations=[]`且`evidence_status=insufficient`。

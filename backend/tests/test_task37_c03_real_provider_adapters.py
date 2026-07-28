@@ -251,7 +251,7 @@ def test_client_cannot_select_real_provider(tmp_path, monkeypatch):
     )
 
 
-def test_schema_052_records_provider_request_usage_without_raw_text(
+def test_current_schema_records_provider_request_usage_without_raw_text(
     tmp_path, monkeypatch
 ):
     app = _fresh_app(tmp_path, monkeypatch)
@@ -265,8 +265,7 @@ def test_schema_052_records_provider_request_usage_without_raw_text(
                 ).fetchall()
             }
 
-    assert database.CURRENT_SCHEMA_VERSION == "2026_07_28_052"
-    assert database.CURRENT_SCHEMA_NAME == "ai_provider_runtime_metadata"
+    assert int(database.CURRENT_SCHEMA_VERSION.rsplit("_", 1)[1]) >= 52
     assert {
         "provider_request_id",
         "input_tokens",

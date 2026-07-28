@@ -16,6 +16,11 @@
 | POST | `/api/ai-qa/evaluation/<run_id>/reviews` | role:supervisor,admin | internal_synthetic_evidence_role_scoped | — | — | active |
 | POST | `/api/ai-qa/evaluation/run` | role:researcher,supervisor,admin | internal_synthetic_evidence_role_scoped | — | — | active |
 | POST | `/api/ai-qa/kill-switch` | role:admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| GET | `/api/ai-qa/knowledge` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| POST | `/api/ai-qa/knowledge/candidates` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | supported | active |
+| POST | `/api/ai-qa/knowledge/evaluation/run` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| POST | `/api/ai-qa/knowledge/rebuild` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| GET | `/api/ai-qa/knowledge/retrieve` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
 | POST | `/api/ai-qa/messages/<message_id>/feedback` | role:researcher,admin | own_synthetic_research_sessions_only | — | — | active |
 | GET | `/api/ai-qa/providers` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
 | GET | `/api/ai-qa/providers/evidence` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |

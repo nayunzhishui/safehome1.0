@@ -60,6 +60,10 @@ REQUIRED_HEALTH_TABLES = [
     "ai_qa_feedback",
     "ai_qa_safety_events",
     "ai_qa_provider_events",
+    "ai_knowledge_documents",
+    "ai_knowledge_chunks",
+    "ai_knowledge_candidates",
+    "ai_knowledge_evaluation_runs",
     "ai_provider_contract_evidence",
     "ai_qa_evaluation_runs",
     "ai_qa_evaluation_reviews",
@@ -148,8 +152,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_052"
-CURRENT_SCHEMA_NAME = "ai_provider_runtime_metadata"
+CURRENT_SCHEMA_VERSION = "2026_07_28_053"
+CURRENT_SCHEMA_NAME = "approved_knowledge_rag"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -394,6 +398,11 @@ MYSQL_VARCHAR_COLUMNS = {
     "published_at",
     "retired_at",
     "version_id",
+    "release_id",
+    "document_id",
+    "document_version",
+    "rights_status",
+    "retrieval_method",
     "discipline",
     "reviewer_role",
     "evidence_path",
@@ -440,6 +449,41 @@ MYSQL_VARCHAR_COLUMNS = {
     "context_label",
     "reflex_node",
     "reviewer_id",
+    "recorded_by",
+    "evidence_type",
+    "provider_id",
+    "verification_idempotency_key",
+    "verified_by",
+    "group_hash",
+    "split_name",
+    "gate_status",
+    "evidence_hash",
+    "gate_id",
+    "recorded_at",
+    "generated_at",
+    "reason",
+    "shadow_run_id",
+    "model_version_id",
+    "asset_manifest_hash",
+    "candidate_id",
+    "subject_id",
+    "subject_type",
+    "gate_name",
+    "task_code",
+    "contract_hash",
+    "contract_version",
+    "provider_user_id",
+    "starts_at",
+    "author_id",
+    "kind",
+    "feedback_id",
+    "sent_by",
+    "draft_id",
+    "step_id",
+    "reporter_user_id",
+    "evaluated_by",
+    "researcher_user_id",
+    "detected_by",
 }
 
 
