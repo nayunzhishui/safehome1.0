@@ -150,6 +150,8 @@ import type {
   TherapeuticAssessmentSafetyEvent,
   TherapeuticAssessmentSafetyStatus,
   TherapeuticAssessmentFeedbackVersion,
+  TherapeuticAssessmentLifecycle,
+  TherapeuticAssessmentLifecycleMetrics,
   TherapeuticAssessmentQualityDimension,
   TherapeuticAssessmentQualityIncident,
   TherapeuticAssessmentQualityReview,
@@ -1717,6 +1719,16 @@ export class SafeHomeApiClient {
 
   getTherapeuticAssessmentCase(caseId: string): Promise<TherapeuticAssessmentCase> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}`);
+  }
+
+  getTherapeuticAssessmentLifecycle(caseId: string): Promise<TherapeuticAssessmentLifecycle> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/lifecycle`,
+    );
+  }
+
+  getTherapeuticAssessmentLifecycleMetrics(): Promise<TherapeuticAssessmentLifecycleMetrics> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/lifecycle/metrics`);
   }
 
   transitionTherapeuticAssessmentState(

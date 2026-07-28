@@ -80,6 +80,10 @@ from services.therapeutic_assessment_queue_service import (
     queue_runtime_status,
     run_queue_monitor,
 )
+from services.therapeutic_assessment_lifecycle_service import (
+    get_case_lifecycle,
+    get_lifecycle_metrics,
+)
 from services.publication_gate_service import (
     PublicationGateError,
     list_candidates,
@@ -281,6 +285,18 @@ def post_evidence_route(case_id: str):
 def get_researcher_workbench_route(case_id: str):
     actor, error = _actor()
     return error or _respond(get_workbench, actor, case_id, request.args.to_dict())
+
+
+@bp.get("/cases/<case_id>/lifecycle")
+def get_case_lifecycle_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(get_case_lifecycle, actor, case_id)
+
+
+@bp.get("/lifecycle/metrics")
+def get_lifecycle_metrics_route():
+    actor, error = _actor()
+    return error or _respond(get_lifecycle_metrics, actor)
 
 
 @bp.put("/cases/<case_id>/researcher-workbench/draft")

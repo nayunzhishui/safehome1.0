@@ -297,6 +297,7 @@
 | GET | `/api/therapeutic-assessment/cases/<case_id>/evidence` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/evidence` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/feedback-versions` | role:researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/cases/<case_id>/lifecycle` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | PUT | `/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/quality-incidents` | role:parent,student,researcher,supervisor,admin | participant_owned_or_authorized_case_quality_incident_append_only | — | — | active |
@@ -325,6 +326,7 @@
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/revise` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/send` | role:supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/lifecycle/metrics` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/production-contract` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/production-contract/check` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/production-contract/snapshots` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

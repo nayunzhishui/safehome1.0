@@ -48,6 +48,25 @@ SCOPE_TABLES = {
     ),
     "research_outputs": ("records", "profile_reviews"),
     "therapeutic_assessment": (
+        "publication_gate_checks",
+        "publication_candidate_events",
+        "publication_candidates",
+        "therapeutic_assessment_data_consents",
+        "therapeutic_assessment_participant_draft_events",
+        "therapeutic_assessment_researcher_workbench_draft_events",
+        "therapeutic_assessment_quality_events",
+        "therapeutic_assessment_queue_events",
+        "therapeutic_assessment_feedback_deliveries",
+        "therapeutic_assessment_feedback_responses",
+        "therapeutic_assessment_evidence_items",
+        "therapeutic_assessment_data_items",
+        "therapeutic_assessment_participant_drafts",
+        "therapeutic_assessment_responsibility_chains",
+        "therapeutic_assessment_safety_events",
+        "therapeutic_assessment_researcher_workbench_drafts",
+        "therapeutic_assessment_quality_reviews",
+        "therapeutic_assessment_quality_incidents",
+        "therapeutic_assessment_work_queue",
         "therapeutic_assessment_feedback_versions",
         "therapeutic_assessment_events",
         "therapeutic_assessment_actions",
@@ -554,10 +573,76 @@ def _table_count(conn, table: str, user_id: str) -> int:
         return _count(conn, "SELECT COUNT(*) AS count FROM profile_reviews WHERE profile_id IN (SELECT id FROM student_profiles WHERE user_id = ?)", (user_id,))
     if table == "relationship_research_notes":
         return _count(conn, "SELECT COUNT(*) AS count FROM relationship_research_notes WHERE enrollment_id IN (SELECT id FROM relationship_pilot_enrollments WHERE user_id = ?)", (user_id,))
-    if table in {"therapeutic_assessment_feedback_versions", "therapeutic_assessment_events"}:
+    case_linked_tables = {
+        "therapeutic_assessment_feedback_versions",
+        "therapeutic_assessment_feedback_deliveries",
+        "therapeutic_assessment_feedback_responses",
+        "therapeutic_assessment_evidence_items",
+        "therapeutic_assessment_data_items",
+        "therapeutic_assessment_participant_drafts",
+        "therapeutic_assessment_responsibility_chains",
+        "therapeutic_assessment_safety_events",
+        "therapeutic_assessment_researcher_workbench_drafts",
+        "therapeutic_assessment_quality_reviews",
+        "therapeutic_assessment_quality_incidents",
+        "therapeutic_assessment_work_queue",
+        "therapeutic_assessment_events",
+    }
+    if table in case_linked_tables:
         return _count(
             conn,
             f"SELECT COUNT(*) AS count FROM {table} WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)",
+            (user_id,),
+        )
+    if table == "therapeutic_assessment_data_consents":
+        return _count(
+            conn,
+            "SELECT COUNT(*) AS count FROM therapeutic_assessment_data_consents WHERE data_item_id IN (SELECT id FROM therapeutic_assessment_data_items WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        )
+    if table == "therapeutic_assessment_participant_draft_events":
+        return _count(
+            conn,
+            "SELECT COUNT(*) AS count FROM therapeutic_assessment_participant_draft_events WHERE draft_id IN (SELECT id FROM therapeutic_assessment_participant_drafts WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        )
+    if table == "therapeutic_assessment_researcher_workbench_draft_events":
+        return _count(
+            conn,
+            "SELECT COUNT(*) AS count FROM therapeutic_assessment_researcher_workbench_draft_events WHERE draft_id IN (SELECT id FROM therapeutic_assessment_researcher_workbench_drafts WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        )
+    if table == "therapeutic_assessment_queue_events":
+        return _count(
+            conn,
+            "SELECT COUNT(*) AS count FROM therapeutic_assessment_queue_events WHERE queue_item_id IN (SELECT id FROM therapeutic_assessment_work_queue WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        )
+    if table == "therapeutic_assessment_quality_events":
+        return _count(
+            conn,
+            """
+            SELECT COUNT(*) AS count FROM therapeutic_assessment_quality_events
+            WHERE (entity_type = 'quality_review' AND entity_id IN (
+                SELECT id FROM therapeutic_assessment_quality_reviews
+                WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)
+            )) OR (entity_type = 'quality_incident' AND entity_id IN (
+                SELECT id FROM therapeutic_assessment_quality_incidents
+                WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)
+            ))
+            """,
+            (user_id, user_id),
+        )
+    if table == "publication_candidates":
+        return _count(
+            conn,
+            "SELECT COUNT(*) AS count FROM publication_candidates WHERE channel = 'therapeutic_feedback' AND subject_id IN (SELECT id FROM therapeutic_assessment_feedback_versions WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        )
+    if table in {"publication_gate_checks", "publication_candidate_events"}:
+        return _count(
+            conn,
+            f"SELECT COUNT(*) AS count FROM {table} WHERE candidate_id IN (SELECT id FROM publication_candidates WHERE channel = 'therapeutic_feedback' AND subject_id IN (SELECT id FROM therapeutic_assessment_feedback_versions WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)))",
             (user_id,),
         )
     if table in {"therapeutic_assessment_actions", "therapeutic_assessment_cases"}:
@@ -660,9 +745,68 @@ def _delete_table_rows(conn, table: str, user_id: str) -> int:
         return conn.execute("DELETE FROM profile_reviews WHERE profile_id IN (SELECT id FROM student_profiles WHERE user_id = ?)", (user_id,)).rowcount
     if table == "relationship_research_notes":
         return conn.execute("DELETE FROM relationship_research_notes WHERE enrollment_id IN (SELECT id FROM relationship_pilot_enrollments WHERE user_id = ?)", (user_id,)).rowcount
-    if table in {"therapeutic_assessment_feedback_versions", "therapeutic_assessment_events"}:
+    case_linked_tables = {
+        "therapeutic_assessment_feedback_versions",
+        "therapeutic_assessment_feedback_deliveries",
+        "therapeutic_assessment_feedback_responses",
+        "therapeutic_assessment_evidence_items",
+        "therapeutic_assessment_data_items",
+        "therapeutic_assessment_participant_drafts",
+        "therapeutic_assessment_responsibility_chains",
+        "therapeutic_assessment_safety_events",
+        "therapeutic_assessment_researcher_workbench_drafts",
+        "therapeutic_assessment_quality_reviews",
+        "therapeutic_assessment_quality_incidents",
+        "therapeutic_assessment_work_queue",
+        "therapeutic_assessment_events",
+    }
+    if table in case_linked_tables:
         return conn.execute(
             f"DELETE FROM {table} WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)",
+            (user_id,),
+        ).rowcount
+    if table == "therapeutic_assessment_data_consents":
+        return conn.execute(
+            "DELETE FROM therapeutic_assessment_data_consents WHERE data_item_id IN (SELECT id FROM therapeutic_assessment_data_items WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        ).rowcount
+    if table == "therapeutic_assessment_participant_draft_events":
+        return conn.execute(
+            "DELETE FROM therapeutic_assessment_participant_draft_events WHERE draft_id IN (SELECT id FROM therapeutic_assessment_participant_drafts WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        ).rowcount
+    if table == "therapeutic_assessment_researcher_workbench_draft_events":
+        return conn.execute(
+            "DELETE FROM therapeutic_assessment_researcher_workbench_draft_events WHERE draft_id IN (SELECT id FROM therapeutic_assessment_researcher_workbench_drafts WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        ).rowcount
+    if table == "therapeutic_assessment_queue_events":
+        return conn.execute(
+            "DELETE FROM therapeutic_assessment_queue_events WHERE queue_item_id IN (SELECT id FROM therapeutic_assessment_work_queue WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        ).rowcount
+    if table == "therapeutic_assessment_quality_events":
+        return conn.execute(
+            """
+            DELETE FROM therapeutic_assessment_quality_events
+            WHERE (entity_type = 'quality_review' AND entity_id IN (
+                SELECT id FROM therapeutic_assessment_quality_reviews
+                WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)
+            )) OR (entity_type = 'quality_incident' AND entity_id IN (
+                SELECT id FROM therapeutic_assessment_quality_incidents
+                WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)
+            ))
+            """,
+            (user_id, user_id),
+        ).rowcount
+    if table == "publication_candidates":
+        return conn.execute(
+            "DELETE FROM publication_candidates WHERE channel = 'therapeutic_feedback' AND subject_id IN (SELECT id FROM therapeutic_assessment_feedback_versions WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?))",
+            (user_id,),
+        ).rowcount
+    if table in {"publication_gate_checks", "publication_candidate_events"}:
+        return conn.execute(
+            f"DELETE FROM {table} WHERE candidate_id IN (SELECT id FROM publication_candidates WHERE channel = 'therapeutic_feedback' AND subject_id IN (SELECT id FROM therapeutic_assessment_feedback_versions WHERE case_id IN (SELECT id FROM therapeutic_assessment_cases WHERE participant_user_id = ?)))",
             (user_id,),
         ).rowcount
     if table in {"therapeutic_assessment_actions", "therapeutic_assessment_cases"}:

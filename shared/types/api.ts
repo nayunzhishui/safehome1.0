@@ -698,6 +698,52 @@ export interface TherapeuticAssessmentCase {
   created_at: string;
 }
 
+export interface TherapeuticAssessmentLifecycleMetrics {
+  enabled: boolean;
+  process_quality: Record<string, number | string | null>;
+  implementation_quality: Record<string, number | boolean>;
+  harm_incidents: {
+    total: number;
+    open: number;
+    resolved?: number;
+    items?: Array<Record<string, unknown>>;
+    boundary?: string;
+  };
+  core_continuity: {
+    independent_routes: string[];
+    boundary: string;
+  };
+  boundary_notice?: string;
+}
+
+export interface TherapeuticAssessmentLifecycle
+  extends TherapeuticAssessmentLifecycleMetrics {
+  case_id: string;
+  case_version?: number;
+  workflow_state: TherapeuticAssessmentWorkflowState;
+  hypothesis_state?: TherapeuticAssessmentHypothesisState;
+  safety_state?: TherapeuticAssessmentSafetyState;
+  feedback_versions?: Array<Record<string, unknown>>;
+  delivery_receipts?: Array<Record<string, unknown>>;
+  participant_responses?: Array<Record<string, unknown>>;
+  actions?: TherapeuticAssessmentAction[];
+  events?: Array<{
+    id: string;
+    action: string;
+    actor_id: string;
+    before_version?: number | null;
+    after_version?: number | null;
+    metadata: Record<string, unknown>;
+    idempotency_key: string;
+    created_at: string;
+  }>;
+  recovery?: {
+    retryable_feedback_ids: string[];
+    withdrawal_propagation_ok: boolean;
+    privacy_deletion_request?: Record<string, unknown> | null;
+  };
+}
+
 export type PrivacyReviewAction = "start_processing" | "reject" | "return_to_pending";
 
 export interface PrivacyReviewRequest extends PrivacyRequest {

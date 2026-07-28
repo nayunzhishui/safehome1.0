@@ -72,6 +72,17 @@
       <text class="state-copy">待发布 {{publicationCandidateSummary.approved}} · 已发布 {{publicationCandidateSummary.published}}</text>
       <text class="boundary-line">反馈、AI候选、报告和消息逐门核对；失败内容会保留原因和版本，不会静默丢弃。</text>
     </view>
+    <view wx:if="{{assessmentLifecycleSummary}}" class="safe-card workspace-card queue-runtime-card">
+      <view class="section-heading">
+        <view>
+          <text class="section-eyebrow">反馈生命周期</text>
+          <text class="section-title">{{assessmentLifecycleSummary.enabled ? '流程记录可用' : '本模块已关闭'}}</text>
+        </view>
+        <text class="priority-pill priority-pill--routine">事件 {{assessmentLifecycleSummary.harm_incidents.open || 0}}</text>
+      </view>
+      <text class="state-copy">协作记录 {{assessmentLifecycleSummary.process_quality.case_count || 0}} · 交付回执 {{assessmentLifecycleSummary.process_quality.delivery_receipt_count || 0}} · 撤回传播异常 {{assessmentLifecycleSummary.implementation_quality.withdrawal_propagation_failures || 0}}</text>
+      <text class="boundary-line">{{assessmentLifecycleSummary.boundary_notice || assessmentLifecycleSummary.core_continuity.boundary}}</text>
+    </view>
     <view class="summary-grid">
       <view class="summary-card summary-card--primary">
         <text class="summary-value">{{pendingTotal}}</text>

@@ -2326,3 +2326,10 @@ relationship_initiation_intention_action
 - `PATCH /api/therapeutic-assessment/competency/authorizations/<authorization_id>/revoke`：按版本和原因撤销授权。
 - `GET /api/therapeutic-assessment/competency/effective?case_id=...&task_code=...`：按当前账号、case、任务、T级别、范围和有效期返回是否可写。
 - 工作台草稿、O/P/H证据、反馈起草、复核、发送、修订、撤回和重发均在服务端重新校验任务授权；普通账号的临时展示越权不会改变正式写权限。
+
+## 2026-07-28：T37-B04反馈生命周期API
+
+- `GET /api/therapeutic-assessment/cases/<case_id>/lifecycle`：参与者本人或对象范围内正式研究角色读取一个case的状态、反馈版本、交付回执、核对、小行动、事件、恢复状态及三类质量指标。
+- `GET /api/therapeutic-assessment/lifecycle/metrics`：正式研究角色读取对象范围内汇总；普通参与者返回403，researcher只统计分配给自己的case。
+- `THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED=0`时case接口返回关闭状态和核心链路清单；不会关闭目标、日记、训练卡、打卡、周报或消息接口。
+- 指标明确分为`process_quality`、`implementation_quality`和`harm_incidents`，不返回疗效、诊断、关系质量或个体风险分数。

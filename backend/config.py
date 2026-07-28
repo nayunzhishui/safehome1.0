@@ -136,6 +136,10 @@ class Config:
     OPERATIONS_PRODUCTION_RELEASE_ENABLED = os.environ.get(
         "OPERATIONS_PRODUCTION_RELEASE_ENABLED", "0"
     ).strip().lower() in {"1", "true", "yes"}
+    THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED = os.environ.get(
+        "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
 
     @classmethod
     def validate(cls) -> None:

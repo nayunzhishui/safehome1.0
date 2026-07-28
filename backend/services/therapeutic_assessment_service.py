@@ -622,6 +622,10 @@ def create_feedback(actor: dict, case_id: str, payload: dict, idempotency_key: s
             if version:
                 return row_to_dict(version), 200
         result = _insert_feedback_version(conn, case, actor, fields)
+        conn.execute(
+            "UPDATE therapeutic_assessment_cases SET workflow_state = 'feedback_draft', updated_at = ? WHERE id = ?",
+            (now_iso(), case_id),
+        )
         _event(conn, case_id, actor, "feedback_drafted", key, case["version"], case["version"], {"feedback_id": result["id"], "source": fields["source"], "layer": fields["feedback_layer"]})
         write_audit_log(conn, "therapeutic_assessment_feedback_drafted", str(actor["id"]), "therapeutic_assessment_feedback", result["id"], {"case_id": case_id, "source": fields["source"], "layer": fields["feedback_layer"]})
         conn.commit()
@@ -665,6 +669,10 @@ def review_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_ke
             raise TherapeuticAssessmentError("self_review_forbidden", "起草人不能复核自己撰写的反馈。", 403)
         status = "reviewed" if decision == "approved" else "draft"
         conn.execute("UPDATE therapeutic_assessment_feedback_versions SET status = ?, reviewed_by = ?, reviewed_at = ? WHERE id = ?", (status, str(actor["id"]), now_iso(), feedback_id))
+        conn.execute(
+            "UPDATE therapeutic_assessment_cases SET workflow_state = ?, updated_at = ? WHERE id = ?",
+            ("professional_review" if decision == "approved" else "feedback_draft", now_iso(), case["id"]),
+        )
         _event(conn, case["id"], actor, f"feedback_{decision}", key, case["version"], case["version"], {"feedback_id": feedback_id})
         write_audit_log(conn, f"therapeutic_assessment_feedback_{decision}", str(actor["id"]), "therapeutic_assessment_feedback", feedback_id, {"case_id": case["id"]})
         conn.commit()
@@ -792,7 +800,10 @@ def send_feedback(actor: dict, feedback_id: str, idempotency_key: str) -> dict:
         timestamp = now_iso()
         _insert_feedback_delivery(conn, feedback, case, actor, key)
         conn.execute("UPDATE therapeutic_assessment_feedback_versions SET status = 'sent', sent_at = ? WHERE id = ?", (timestamp, feedback_id))
-        conn.execute("UPDATE therapeutic_assessment_cases SET status = 'feedback_sent', updated_at = ? WHERE id = ?", (timestamp, case["id"]))
+        conn.execute(
+            "UPDATE therapeutic_assessment_cases SET status = 'feedback_sent', workflow_state = 'participant_check', updated_at = ? WHERE id = ?",
+            (timestamp, case["id"]),
+        )
         sent_feedback = row_to_dict(
             conn.execute(
                 "SELECT * FROM therapeutic_assessment_feedback_versions WHERE id = ?",
@@ -925,6 +936,10 @@ def revise_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_ke
         fields = _feedback_fields(case, merged)
         _assert_feedback_evidence_authorized(conn, actor, case, fields["evidence"])
         revised = _insert_feedback_version(conn, case, actor, fields, supersedes_feedback_id=feedback_id)
+        conn.execute(
+            "UPDATE therapeutic_assessment_cases SET workflow_state = 'feedback_draft', updated_at = ? WHERE id = ?",
+            (now_iso(), case["id"]),
+        )
         _event(conn, case["id"], actor, "feedback_revised", key, case["version"], case["version"], {"feedback_id": revised["id"], "supersedes_feedback_id": feedback_id, "revision_reason_present": bool(reason)})
         write_audit_log(conn, "therapeutic_assessment_feedback_revised", str(actor["id"]), "therapeutic_assessment_feedback", revised["id"], {"case_id": case["id"], "supersedes_feedback_id": feedback_id})
         conn.commit()
@@ -970,6 +985,11 @@ def withdraw_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_
             "UPDATE therapeutic_assessment_feedback_deliveries SET status = 'withdrawn', withdrawn_by = ?, withdrawn_at = ?, withdrawal_reason = ? WHERE feedback_id = ? AND status = 'sent'",
             (str(actor["id"]), timestamp, reason, feedback_id),
         )
+        if case.get("workflow_state") not in {"withdrawn", "archived"}:
+            conn.execute(
+                "UPDATE therapeutic_assessment_cases SET workflow_state = 'revision_requested', updated_at = ? WHERE id = ?",
+                (timestamp, case["id"]),
+            )
         _event(conn, case["id"], actor, "feedback_withdrawn", key, current, current + 1, {"feedback_id": feedback_id})
         write_audit_log(conn, "therapeutic_assessment_feedback_withdrawn", str(actor["id"]), "therapeutic_assessment_feedback", feedback_id, {"case_id": case["id"], "reason_present": True})
         conn.commit()
@@ -1116,6 +1136,10 @@ def create_action(actor: dict, case_id: str, payload: dict, idempotency_key: str
                 timestamp,
             ),
         )
+        conn.execute(
+            "UPDATE therapeutic_assessment_cases SET workflow_state = 'action_selected', updated_at = ? WHERE id = ?",
+            (timestamp, case_id),
+        )
         _event(conn, case_id, actor, "action_chosen", key, case["version"], case["version"], {"action_id": action_id})
         write_audit_log(conn, "therapeutic_assessment_action_chosen", str(actor["id"]), "therapeutic_assessment_action", action_id, {"case_id": case_id})
         conn.commit()
@@ -1173,6 +1197,10 @@ def update_action(actor: dict, action_id: str, payload: dict, idempotency_key: s
         )
         if cursor.rowcount != 1:
             raise TherapeuticAssessmentError("version_conflict", "行动记录已变化，请重新读取。", 409)
+        conn.execute(
+            "UPDATE therapeutic_assessment_cases SET workflow_state = ?, updated_at = ? WHERE id = ?",
+            ("followup" if status == "completed" else "participant_check", timestamp, action["case_id"]),
+        )
         _event(conn, action["case_id"], actor, f"action_{status}", key, None, None, {"action_id": action_id, "followup_present": bool(note)})
         write_audit_log(conn, f"therapeutic_assessment_action_{status}", str(actor["id"]), "therapeutic_assessment_action", action_id, {"case_id": action["case_id"]})
         conn.commit()

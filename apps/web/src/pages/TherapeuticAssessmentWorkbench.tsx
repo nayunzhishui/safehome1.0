@@ -6,6 +6,7 @@ import type {
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
+  TherapeuticAssessmentLifecycleMetrics,
   TherapeuticAssessmentProductionContract,
   TherapeuticAssessmentQueueRuntime,
   TherapeuticAssessmentWorkQueueItem,
@@ -106,6 +107,8 @@ export function TherapeuticAssessmentWorkbench() {
     useState<TherapeuticAssessmentQueueRuntime | null>(null);
   const [publicationCandidates, setPublicationCandidates] =
     useState<PublicationCandidate[]>([]);
+  const [lifecycleMetrics, setLifecycleMetrics] =
+    useState<TherapeuticAssessmentLifecycleMetrics | null>(null);
   const [filters, setFilters] = useState<Filters>({});
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -133,18 +136,20 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, queue, runtime, publications] = await Promise.all([
+      const [result, contract, queue, runtime, publications, lifecycle] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
         safeHomeApi.listPublicationCandidates(),
+        safeHomeApi.getTherapeuticAssessmentLifecycleMetrics(),
       ]);
       setCases(result.items);
       setProductionContract(contract);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
       setPublicationCandidates(publications.items);
+      setLifecycleMetrics(lifecycle);
       if (!selectedId && result.items[0]) setSelectedId(result.items[0].id);
     } catch (caught) {
       setError(caught instanceof SafeHomeApiError ? caught.message : "协作记录暂时无法读取。");
@@ -359,6 +364,18 @@ export function TherapeuticAssessmentWorkbench() {
         </p>
         <small>反馈、AI候选、报告和消息均由服务端逐门核对；失败内容保留为可解释候选，不会静默丢弃。</small>
       </section>
+      {lifecycleMetrics ? (
+        <section className="status" aria-label="反馈生命周期质量">
+          <strong>{lifecycleMetrics.enabled ? "反馈生命周期运行中" : "反馈生命周期已关闭"}</strong>
+          <p>
+            流程记录 {Number(lifecycleMetrics.process_quality.case_count || 0)} 项；
+            交付回执 {Number(lifecycleMetrics.process_quality.delivery_receipt_count || 0)} 条；
+            撤回传播异常 {Number(lifecycleMetrics.implementation_quality.withdrawal_propagation_failures || 0)} 项；
+            待处理伤害事件 {lifecycleMetrics.harm_incidents.open} 项。
+          </p>
+          <small>{lifecycleMetrics.boundary_notice || lifecycleMetrics.core_continuity.boundary}</small>
+        </section>
+      ) : null}
 
       <div className="taWorkspaceGrid">
         <aside className="panel taCaseRail" aria-label="参与者问题">

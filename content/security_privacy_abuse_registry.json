@@ -7323,6 +7323,30 @@
       }
     },
     {
+      "operation_id": "therapeutic_assessment.get_case_lifecycle_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/cases/<case_id>/lifecycle",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "therapeutic_assessment.get_participant_draft_route.get",
       "method": "GET",
       "path": "/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>",
@@ -7980,6 +8004,30 @@
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw",
       "object_type": "therapeutic_assessment",
       "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.get_lifecycle_metrics_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/lifecycle/metrics",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
       "object_scope": "role_scoped",
       "allowed_roles": [
         "parent",
@@ -8881,7 +8929,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 355,
+    "operation_count": 357,
     "showcase_bypass_operation_count": 10,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

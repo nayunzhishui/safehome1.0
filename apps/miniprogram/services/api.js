@@ -1322,6 +1322,19 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    getTherapeuticAssessmentLifecycle(caseId) {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/lifecycle`,
+        { requiresAuth: true },
+      );
+    },
+
+    getTherapeuticAssessmentLifecycleMetrics() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/lifecycle/metrics`, {
+        requiresAuth: true,
+      });
+    },
+
     listTherapeuticAssessmentEvidence(caseId) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/evidence`, {
         requiresAuth: true,

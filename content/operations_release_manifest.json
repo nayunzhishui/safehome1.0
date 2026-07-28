@@ -131,7 +131,7 @@
     {
       "artifact_type": "knowledge_index",
       "path": "content/operations_knowledge_index.json",
-      "sha256": "09ed271276ded7743dc6b314ebd403bac32fc28c0927f1fab7f9b0094aff9487",
+      "sha256": "91b598aae8328eb3f4ea97b3534fc82e0e4602e1d2a445d0302b0f0adad9bdcc",
       "size_bytes": 11911
     },
     {
@@ -143,8 +143,8 @@
     {
       "artifact_type": "capability_registry",
       "path": "content/operations_capability_registry.json",
-      "sha256": "2b68e13c27d6dd51719b39a317d46f68de1ca92d696239082d1fd9de7152f11d",
-      "size_bytes": 77766
+      "sha256": "980acb3083729414c972bf6dfdb18286c91ca9436211471e9ea55040a1146522",
+      "size_bytes": 77895
     }
   ],
   "fixed_replay_suites": [
@@ -160,5 +160,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "426872395f2de4fca10cefb3f28c88dde5a931bd16491449eb1d35d296829528"
+  "manifest_hash": "36a1996f06924b27d53a375204d039f4507802d2d36acd91dad0cbce662fad5d"
 }

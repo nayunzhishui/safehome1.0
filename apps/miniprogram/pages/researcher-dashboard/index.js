@@ -141,6 +141,7 @@ Page({
     assessmentQueueRuntime: null,
     assessmentDutyShifts: [],
     publicationCandidateSummary: null,
+    assessmentLifecycleSummary: null,
     partialFailures: [],
     participantLoading: false,
     participantError: "",
@@ -462,11 +463,13 @@ Page({
       api.getTherapeuticAssessmentQueueRuntime(),
       api.listTherapeuticAssessmentDutyShifts(),
       api.listPublicationCandidates(),
+      api.getTherapeuticAssessmentLifecycleMetrics(),
     ]);
     const queueResults = workbenchResults.slice(0, QUEUES.length);
     const runtimeResult = workbenchResults[QUEUES.length];
     const dutyResult = workbenchResults[QUEUES.length + 1];
     const publicationResult = workbenchResults[QUEUES.length + 2];
+    const lifecycleResult = workbenchResults[QUEUES.length + 3];
     const preview = queuePreview(queueResults);
     if (operationsResult.status === "rejected" && !preview.items.length && !this.data.operations) {
       this.setData({
@@ -500,6 +503,9 @@ Page({
             approved: (publicationResult.value.items || []).filter((item) => item.status === "approved").length,
             published: (publicationResult.value.items || []).filter((item) => item.status === "published").length,
           }
+        : null,
+      assessmentLifecycleSummary: lifecycleResult.status === "fulfilled"
+        ? lifecycleResult.value
         : null,
       partialFailures,
       lastSyncText: syncTimeLabel(),
