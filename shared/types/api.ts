@@ -2815,6 +2815,33 @@ export interface AiQaMessage {
   created_at: ISODateTime;
 }
 
+export interface AiQaStructuredOutput {
+  schema_version: "safehome.ai-qa-output.v1";
+  answer: string;
+  citation_refs: string[];
+  uncertainty: "low" | "medium" | "high";
+  evidence_status: "sufficient" | "insufficient";
+  boundary_notice: string;
+  human_verification_required: true;
+}
+
+export interface AiQaOutputGateSummary {
+  schema_version: "safehome.ai-qa-output.v1";
+  gates: [
+    "minimum_input",
+    "permission",
+    "source",
+    "language",
+    "responsibility",
+  ];
+  structured_validation: ["pydantic", "json_schema"];
+  retry_allowed: false;
+  fixed_degradation: true;
+  grounding_method: "lexical_overlap_heuristic_v1";
+  grounding_is_factuality_check: false;
+  human_verification_required: true;
+}
+
 export interface AiQaSession {
   id: ID;
   user_id: ID;
@@ -2982,6 +3009,7 @@ export interface AiQaConfig {
     arbitrary_paths_allowed: false;
     arbitrary_network_hosts_allowed: false;
   };
+  output_contract: AiQaOutputGateSummary;
   use_case_policy: AiQaUseCaseCatalog;
   boundary_notice: string;
 }

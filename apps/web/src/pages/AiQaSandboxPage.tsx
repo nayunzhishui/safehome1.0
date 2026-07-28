@@ -256,6 +256,9 @@ export function AiQaSandboxPage() {
           <div><dt>检索片段信任</dt><dd>{config?.input_security?.retrieved_content_trusted === false ? "不可信数据" : "等待新版本服务"}</dd></div>
           <div><dt>只读工具清单</dt><dd>{config?.input_security?.allowlist.join(" / ") || "无"}</dd></div>
           <div><dt>路径与外网参数</dt><dd>{config?.input_security?.arbitrary_paths_allowed === false && config?.input_security?.arbitrary_network_hosts_allowed === false ? "禁止" : "等待新版本服务"}</dd></div>
+          <div><dt>输出五道门</dt><dd>{config?.output_contract?.gates.join(" / ") || "等待新版本服务"}</dd></div>
+          <div><dt>不合格输出</dt><dd>{config?.output_contract?.fixed_degradation ? "固定降级，不自动重试修复" : "等待新版本服务"}</dd></div>
+          <div><dt>Grounding 边界</dt><dd>{config?.output_contract?.grounding_is_factuality_check === false ? "词面启发式，不等于事实正确" : "等待新版本服务"}</dd></div>
           <div><dt>合成原文保留</dt><dd>{config?.data_policy.synthetic_retention_days ? `${config.data_policy.synthetic_retention_days}天` : "待服务更新"}</dd></div>
           <div><dt>训练使用</dt><dd>禁止</dd></div>
         </dl>

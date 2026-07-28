@@ -2382,3 +2382,11 @@ relationship_initiation_intention_action
 - 模型请求只接受已发布、权利明确、审核通过、版本与发布记录完整且适用于当前角色的引用。检索片段被明确标记为不可信数据，与系统指令分区。
 - 工具策略默认拒绝；当前唯一允许项为服务端只读`knowledge.retrieve`，参数只允许`query/method/limit`，角色范围由服务端注入。路径、文件、URL、主机、身份和认证参数全部拒绝。
 - `GET /api/ai-qa/config`新增`input_security`，公开输入长度、去标识类别、只读工具清单和路径/网络边界，不返回规则词表、内部提示或敏感值。
+
+### T37-C06 输出五道门和结构化契约
+
+- Provider输出必须符合`safehome.ai-qa-output.v1`，字段固定为`answer`、`citation_refs`、`uncertainty`、`evidence_status`、`boundary_notice`和`human_verification_required=true`；额外字段、空字段和无效枚举均拒绝。
+- 服务端依次检查最小输入、权限、来源、语言和责任五道门；引用编号必须同时存在于回答和当前批准来源中，来源必须保持发布、权利明确、审核通过且版本完整。
+- 诊断、保证、责备、个体风险结论和关系/人格定性词均触发固定降级；不合格输出不进行自动修补或无界重试。
+- Grounding仅使用词面重叠启发式，接口明确返回`grounding_is_factuality_check=false`，不能据此声称事实正确。
+- `GET /api/ai-qa/config`新增`output_contract`，只公开schema版本、五道门名称、校验方式、固定降级、Grounding边界和人工核对要求。

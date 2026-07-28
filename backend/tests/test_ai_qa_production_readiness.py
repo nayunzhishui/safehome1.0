@@ -46,13 +46,38 @@ def test_grounding_degrades_unrelated_answer():
 
 
 def test_fake_provider_is_grounded_costed_and_has_hard_timeout_contract():
+    from services.ai_qa_output_gate_service import evaluate_ai_output
     from services.ai_qa_provider import FakeProvider
     from services.ai_qa_safety_service import post_check
 
-    citations = [{"title": "记录卡", "excerpt": "先写清具体事件，再选一个低负担、可暂停的小步骤。"}]
+    citations = [{
+        "content_id": "record-card",
+        "version_id": "v1",
+        "release_id": "r1",
+        "source_ref": "safehome://test/record-card",
+        "governance_status": "published",
+        "rights_status": "owned",
+        "review_status": "approved",
+        "title": "记录卡",
+        "excerpt": "先写清具体事件，再选一个低负担、可暂停的小步骤。",
+    }]
     provider = FakeProvider()
     result = provider.generate("我该怎么记录", citations, timeout_seconds=0.1)
+    gated = evaluate_ai_output(
+        result.text,
+        citations,
+        {
+            "permission_granted": True,
+            "consent_active": True,
+            "recipient_matches_scope": True,
+            "responsible_role": "test",
+            "publisher_id": "test",
+            "actor_id": "test",
+            "automatic_adoption_allowed": False,
+        },
+    )
     assert provider.supports_hard_timeout
-    assert post_check(result.text, citations)["ok"]
+    assert gated["ok"]
+    assert post_check(gated["candidate"]["answer"], citations)["ok"]
     assert result.cost_micros > 0
     assert result.token_estimate > 0

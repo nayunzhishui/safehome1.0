@@ -18,6 +18,10 @@ from services.ai_qa_input_security_service import (
     prepare_provider_input,
     validate_message_payload,
 )
+from services.ai_qa_output_gate_service import (
+    evaluate_ai_output,
+    get_output_gate_policy,
+)
 from services.ai_qa_provider import ProviderError, get_provider
 from services.ai_qa_retrieval_service import retrieve_published_content
 from services.ai_qa_safety_service import fixed_response, post_check, pre_route
@@ -183,6 +187,7 @@ def get_config_status() -> dict:
         },
         "provider_selection": get_provider_selection_summary(),
         "input_security": get_input_security_policy(),
+        "output_contract": get_output_gate_policy(),
         "use_case_policy": get_use_case_catalog(),
         "boundary_notice": governance.get("boundary_notice"),
     }
@@ -334,6 +339,7 @@ def _fixed_message(actor: dict, session_id: str, text: str, route: str, precheck
             for key in ("category", "severity", "route")
         },
         "input_security": precheck.get("input_security"),
+        "output_gate": precheck.get("output_gate"),
         "postcheck": None,
         "route": route,
         "human_escalation": response["human_escalation"],
@@ -352,6 +358,7 @@ def _fixed_message(actor: dict, session_id: str, text: str, route: str, precheck
             {
                 "provider_called": provider_called,
                 "input_security": precheck.get("input_security"),
+                "output_gate": precheck.get("output_gate"),
             },
         )
         write_audit_log(conn, "ai_qa_safety_routed", actor["id"], "ai_qa_session", session_id, {"route": route, "request_hash": _request_hash(text), "provider_called": provider_called})
@@ -579,7 +586,19 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
             )
             conn.commit()
         return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": exc.code, "severity": "medium"})
-    postcheck = post_check(result.text, citations)
+    output_gate = evaluate_ai_output(
+        result.text,
+        citations,
+        {
+            "permission_granted": True,
+            "consent_active": True,
+            "recipient_matches_scope": True,
+            "responsible_role": "ai_safety_pipeline",
+            "publisher_id": str(actor["id"]),
+            "actor_id": str(actor["id"]),
+            "automatic_adoption_allowed": False,
+        },
+    )
     with get_connection() as conn:
         conn.execute(
             """
@@ -606,8 +625,49 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
             ),
         )
         conn.commit()
+    if not output_gate["ok"]:
+        return _fixed_message(
+            actor,
+            session_id,
+            text,
+            "postcheck_degraded",
+            {
+                "category": "output_gate",
+                "severity": "high",
+                "route": "postcheck_degraded",
+                "output_gate": {
+                    "schema_version": output_gate["schema_version"],
+                    "gates": output_gate["gates"],
+                    "violations": output_gate["violations"],
+                    "retry_allowed": False,
+                    "fixed_degradation_required": True,
+                },
+            },
+            provider_status="called",
+        )
+    structured_output = output_gate["candidate"]
+    answer_text = str(structured_output["answer"])
+    postcheck = post_check(answer_text, citations)
     if not postcheck["ok"]:
-        return _fixed_message(actor, session_id, text, "postcheck_degraded", {"category": "postcheck", "severity": "high", "route": "postcheck_degraded"}, provider_status="called")
+        return _fixed_message(
+            actor,
+            session_id,
+            text,
+            "postcheck_degraded",
+            {
+                "category": "postcheck",
+                "severity": "high",
+                "route": "postcheck_degraded",
+                "output_gate": {
+                    "schema_version": output_gate["schema_version"],
+                    "gates": output_gate["gates"],
+                    "violations": postcheck["violations"],
+                    "retry_allowed": False,
+                    "fixed_degradation_required": True,
+                },
+            },
+            provider_status="called",
+        )
     safety = {
         "version": SAFETY_VERSION,
         "precheck": {
@@ -626,9 +686,10 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
             "raw_input_persisted": False,
         },
         "postcheck": postcheck,
+        "output_gate": output_gate,
         "route": "answered",
         "human_escalation": False,
-        "uncertainty": result.uncertainty,
+        "uncertainty": structured_output["uncertainty"],
     }
     from services.publication_gate_service import (
         PublicationGateError,
@@ -646,7 +707,7 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
                 subject_type="ai_qa_session",
                 subject_id=session_id,
                 recipient_user_id=str(actor["id"]),
-                content=result.text,
+                content=answer_text,
                 source_refs=[
                     f"content_governance_version:{item['version_id']}"
                     for item in citations
@@ -654,7 +715,7 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
                 ],
                 idempotency_key=(
                     f"ai-candidate:{session_id}:{_request_hash(text)}:"
-                    f"{_request_hash(result.text)}"
+                    f"{_request_hash(answer_text)}"
                 ),
                 context={
                     "permission_granted": True,
@@ -690,11 +751,38 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
                 },
                 provider_status="called",
             )
-        assistant = _store_message(conn, session_id, actor["id"], "assistant", result.text, citations=citations, model={"provider": result.provider, "model_version": result.model_version, "provider_training_allowed": False, "tools_allowed": False, "formal_feedback_write_allowed": False}, safety=safety, knowledge_version=retrieval["knowledge_snapshot_hash"], token_estimate=result.token_estimate, cost_micros=result.cost_micros)
+        assistant = _store_message(
+            conn,
+            session_id,
+            actor["id"],
+            "assistant",
+            answer_text,
+            citations=citations,
+            model={
+                "provider": result.provider,
+                "model_version": result.model_version,
+                "provider_training_allowed": False,
+                "tools_allowed": False,
+                "formal_feedback_write_allowed": False,
+                "output_schema_version": output_gate["schema_version"],
+                "human_verification_required": True,
+            },
+            safety=safety,
+            knowledge_version=retrieval["knowledge_snapshot_hash"],
+            token_estimate=result.token_estimate,
+            cost_micros=result.cost_micros,
+        )
         mark_published(conn, candidate["id"], actor)
         write_audit_log(conn, "ai_qa_answer_generated", actor["id"], "ai_qa_message", assistant["id"], {"session_id": session_id, "request_hash": _request_hash(text), "citation_count": len(citations), "knowledge_snapshot_hash": retrieval["knowledge_snapshot_hash"], "provider": result.provider, "model_version": result.model_version, "raw_text_logged": False, "tools_allowed": False})
         conn.commit()
-    return {"message": assistant, "route": "answered", "fixed_response": False, "human_escalation": False, "uncertainty": result.uncertainty, "boundary_notice": "回答只基于已发布内容，可能遗漏情境；请核对来源与适用范围。它不构成诊断、治疗、危机评估或正式参与者反馈。"}
+    return {
+        "message": assistant,
+        "route": "answered",
+        "fixed_response": False,
+        "human_escalation": False,
+        "uncertainty": structured_output["uncertainty"],
+        "boundary_notice": structured_output["boundary_notice"],
+    }
 
 
 def purge_expired_synthetic_data(actor: dict, payload: dict) -> dict:
@@ -769,12 +857,45 @@ def _evaluate_case(case: dict) -> dict:
         citations = []
         provider_called = False
     else:
-        citations = [{"content_id": "synthetic-approved-source", "version_id": "synthetic-v1", "content_version": "synthetic-eval-only", "release_id": "synthetic", "payload_hash": "synthetic", "governance_status": "published", "title": "合成评测批准来源", "excerpt": "记录具体事件，先选一个低负担、可暂停的小步骤。"}]
+        citations = [
+            {
+                "content_id": "synthetic-approved-source",
+                "version_id": "synthetic-v1",
+                "content_version": "synthetic-eval-only",
+                "release_id": "synthetic",
+                "payload_hash": "synthetic",
+                "governance_status": "published",
+                "rights_status": "owned",
+                "review_status": "approved",
+                "source_ref": "safehome://synthetic/evaluation",
+                "title": "合成评测批准来源",
+                "excerpt": "记录具体事件，先选一个低负担、可暂停的小步骤。",
+            }
+        ]
         try:
             provider = get_provider("fake")
             result = provider.generate(text, citations, mode=str(case.get("fake_mode") or "normal"))
-            check = post_check(result.text, citations)
-            actual = check["route"]
+            output_gate = evaluate_ai_output(
+                result.text,
+                citations,
+                {
+                    "permission_granted": True,
+                    "consent_active": True,
+                    "recipient_matches_scope": True,
+                    "responsible_role": "synthetic_evaluation",
+                    "publisher_id": "synthetic-evaluator",
+                    "actor_id": "synthetic-evaluator",
+                    "automatic_adoption_allowed": False,
+                },
+            )
+            if not output_gate["ok"]:
+                actual = "postcheck_degraded"
+            else:
+                check = post_check(
+                    output_gate["candidate"]["answer"],
+                    citations,
+                )
+                actual = check["route"]
             provider_called = True
         except ProviderError:
             actual = "provider_degraded"

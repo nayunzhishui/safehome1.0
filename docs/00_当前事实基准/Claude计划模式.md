@@ -11825,3 +11825,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 工具默认拒绝，仅保留服务端只读`knowledge.retrieve`，并限制参数schema、数量、路径、身份和网络边界。
 - 红队集补齐提示注入、权限提升、跨会话记忆、数据外带和工具滥用；专项6项及AI受影响56项通过，Web构建、内容校验、小程序审计和API契约检查通过。
 - 数据库复用现有安全事件和审计表，schema保持053；真实Provider、生产流量和发布批准未执行。下一项：`T37-C06`。
+
+## 2026-07-28｜T37-C06输出五道门和结构化契约执行记录
+
+- 状态：`engineering_complete / human_verification_and_release_gated / release_not_approved`。
+- 输出固定为`safehome.ai-qa-output.v1`，由Pydantic和JSON Schema双重校验；额外字段、空值、无效枚举和无效JSON均失败关闭。
+- 最小输入、权限、来源、语言和责任五道门全部由服务端执行；引用必须与本次批准来源一致，诊断、保证、责备、个体风险结论和定性结论均被阻断。
+- 不合格输出只走固定安全降级，不自动修补、不递归调用Provider；人工核对标记不可由模型关闭。
+- Grounding保留词面重叠启发式，并明确`grounding_is_factuality_check=false`，不能作为事实正确性证明。
+- shared与Web沙盒公开非敏感契约状态；小程序继续复用统一配置接口。专项及AI受影响回归68项、内容/API契约、Web typecheck/build和小程序审计通过。
+- 数据库复用schema 053；真实Provider、真人复核、生产迁移和发布批准未执行。下一项：`T37-C07`。

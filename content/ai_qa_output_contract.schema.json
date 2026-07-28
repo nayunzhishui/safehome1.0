@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "safehome.ai-qa-output.v1",
+  "title": "SafeHome AI QA output contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "answer",
+    "citation_refs",
+    "uncertainty",
+    "evidence_status",
+    "boundary_notice",
+    "human_verification_required"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "safehome.ai-qa-output.v1"
+    },
+    "answer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3000
+    },
+    "citation_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^S[1-9][0-9]*$"
+      }
+    },
+    "uncertainty": {
+      "enum": ["low", "medium", "high"]
+    },
+    "evidence_status": {
+      "enum": ["sufficient", "insufficient"]
+    },
+    "boundary_notice": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "human_verification_required": {
+      "const": true
+    }
+  }
+}

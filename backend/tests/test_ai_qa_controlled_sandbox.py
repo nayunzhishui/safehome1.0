@@ -104,6 +104,16 @@ def test_config_keeps_participant_feature_closed_and_exposes_no_real_provider(tm
     assert data["input_security"]["retrieved_content_trusted"] is False
     assert data["input_security"]["allowlist"] == ["knowledge.retrieve"]
     assert data["input_security"]["write_tools_allowed"] is False
+    assert data["output_contract"]["schema_version"] == "safehome.ai-qa-output.v1"
+    assert data["output_contract"]["gates"] == [
+        "minimum_input",
+        "permission",
+        "source",
+        "language",
+        "responsibility",
+    ]
+    assert data["output_contract"]["retry_allowed"] is False
+    assert data["output_contract"]["grounding_is_factuality_check"] is False
 
 
 def test_only_research_roles_can_create_synthetic_session(tmp_path, monkeypatch):
@@ -252,6 +262,43 @@ def test_postcheck_hides_unsafe_fake_output_and_provider_failure_degrades(tmp_pa
     assert unsafe["route"] == "postcheck_degraded"
     assert "确诊" not in unsafe["message"]["content"]
     assert failed["route"] == "provider_degraded"
+
+
+def test_invalid_structured_output_degrades_once_without_repair_retry(
+    tmp_path, monkeypatch
+):
+    app = _fresh_app(tmp_path, monkeypatch)
+    headers = _actors(app)
+    _seed_published_card(app)
+    client = app.test_client()
+    session = _create_session(client, headers["researcher-a"])
+
+    response = client.post(
+        f"/api/ai-qa/sessions/{session['id']}/messages",
+        json={
+            "text": "情绪升高时怎么暂停？",
+            "synthetic_data": True,
+            "fake_mode": "invalid_json",
+        },
+        headers=headers["researcher-a"],
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["route"] == "postcheck_degraded"
+    assert data["fixed_response"] is True
+    with app.app_context():
+        database = importlib.import_module("database")
+        with database.get_connection() as conn:
+            provider_events = conn.execute(
+                """
+                SELECT COUNT(*) AS count
+                FROM ai_qa_provider_events
+                WHERE session_id = ?
+                """,
+                (session["id"],),
+            ).fetchone()["count"]
+    assert provider_events == 1
 
 
 def test_provider_circuit_opens_after_three_failures(tmp_path, monkeypatch):
