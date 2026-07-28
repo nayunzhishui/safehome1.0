@@ -37,6 +37,8 @@ Page({
     errorMessage: "",
     evidenceItems: [],
     productionContract: null,
+    adultLaunchScope: null,
+    launchScreening: null,
     defaultServiceLevel: {
       id: "L0",
       display_name: "支持性评估准备",
@@ -73,10 +75,11 @@ Page({
   async loadCases() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const [result, levelStatus, productionContract] = await Promise.all([
+      const [result, levelStatus, productionContract, adultLaunchScope] = await Promise.all([
         api.listTherapeuticAssessmentCases(),
         api.getTherapeuticAssessmentServiceLevels(),
         api.getTherapeuticAssessmentProductionContract(),
+        api.getTherapeuticAssessmentAdultLaunchScope(),
       ]);
       const cases = (result.items || []).map((item) => ({
         ...item,
@@ -88,17 +91,53 @@ Page({
         activeCase: cases[0] || null,
         defaultServiceLevel: levelStatus.current_default || this.data.defaultServiceLevel,
         productionContract,
+        adultLaunchScope,
       });
       if (cases[0]) {
-        const evidence = await api.listTherapeuticAssessmentEvidence(cases[0].id);
-        this.setData({ evidenceItems: evidence.items || [] });
+        const [evidence, launchScreening] = await Promise.all([
+          api.listTherapeuticAssessmentEvidence(cases[0].id),
+          api.getTherapeuticAssessmentLaunchScreening(cases[0].id),
+        ]);
+        this.setData({ evidenceItems: evidence.items || [], launchScreening });
       } else {
-        this.setData({ evidenceItems: [] });
+        this.setData({ evidenceItems: [], launchScreening: null });
       }
     } catch (error) {
       this.setData({ errorMessage: error.message || "协作记录暂时无法读取。" });
     } finally {
       this.setData({ loading: false });
+    }
+  },
+
+  async confirmAdultLaunchScope() {
+    const activeCase = this.data.activeCase;
+    const scope = this.data.adultLaunchScope;
+    if (!activeCase || !scope) return;
+    this.setData({ saving: true, errorMessage: "", notice: "" });
+    try {
+      const launchScreening = await api.submitTherapeuticAssessmentLaunchScreening(
+        activeCase.id,
+        {
+          requested_level: "L1",
+          age_band: "adult",
+          voluntary_participation: true,
+          data_scope: "single_person",
+          urgency: "non_urgent",
+          concern_scope: "ordinary_relationship_stress",
+          excluded_signals: [],
+          acknowledged_notices: scope.required_notices,
+          expected_case_version: activeCase.version,
+        },
+        submissionKey("mini-ta-launch"),
+      );
+      this.setData({
+        launchScreening,
+        notice: "首发范围信息已记录；正式服务仍需真人与发布门禁确认。",
+      });
+    } catch (error) {
+      this.setData({ errorMessage: error.message || "首发范围暂时没有记录成功。" });
+    } finally {
+      this.setData({ saving: false });
     }
   },
 

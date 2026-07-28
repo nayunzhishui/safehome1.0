@@ -1,0 +1,51 @@
+{
+  "schema": "safehome.therapeutic-assessment.adult-launch.v1",
+  "version": "2026-07-29-f13-v1",
+  "allowed_levels": ["L1", "L2"],
+  "eligible_age_bands": ["adult"],
+  "allowed_data_scopes": ["single_person"],
+  "allowed_urgency": ["non_urgent"],
+  "allowed_concern_scopes": [
+    "ordinary_relationship_stress",
+    "emotion_regulation",
+    "communication_reflection",
+    "self_understanding"
+  ],
+  "excluded_methods": [
+    "AIS",
+    "FIS",
+    "layer_3",
+    "trauma_activation",
+    "family_confrontation"
+  ],
+  "excluded_signals": [
+    "self_harm",
+    "harm_other",
+    "violence",
+    "abuse",
+    "coercive_control",
+    "acute_crisis",
+    "retaliation_risk",
+    "custody_dispute"
+  ],
+  "required_notices": [
+    "waiting_time",
+    "withdrawal",
+    "privacy",
+    "confidentiality_exceptions",
+    "complaint_path"
+  ],
+  "notices": {
+    "waiting_time": "提交后由真人按队列复核；页面会显示当前状态，不承诺即时回复。",
+    "withdrawal": "你可以暂停、不同意或撤回；撤回后不再发送新的普通反馈。",
+    "privacy": "只处理你明确选择的单人资料；账号关联不会自动扩大共享范围。",
+    "confidentiality_exceptions": "如出现自伤、伤人、暴力、虐待或急性危机线索，将优先进入真人安全支持。",
+    "complaint_path": "你可以在记录内提出更正、投诉或要求说明处理范围。"
+  },
+  "outside_scope_route": "human_scope_review",
+  "unknown_default": "human_review_required",
+  "external_gates_required": true,
+  "production_release_approved": false,
+  "temporary_showcase_counts_as_release": false,
+  "boundary_notice": "首发筛查只判断是否符合低风险成人L1/L2工程范围，不构成诊断、治疗建议、服务承诺或生产发布批准。"
+}

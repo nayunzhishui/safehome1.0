@@ -15,6 +15,16 @@
     <text class="ta-meta">服务级别、人员胜任力、对象权限和安全状态分别判断；任一项未知都会暂停继续。</text>
   </view>
 
+  <view wx:if="{{adultLaunchScope}}" class="safe-card ta-card" aria-label="低风险成人首发范围">
+    <text class="ta-section-title">当前首发范围</text>
+    <text class="ta-meta">仅面向自愿参加、单人资料、非紧急议题的成年人，提供L1/L2真人支持性协作。</text>
+    <text class="ta-boundary">{{adultLaunchScope.boundary_notice}}</text>
+    <view wx:if="{{activeCase && (!launchScreening || launchScreening.decision === 'screening_required')}}">
+      <button class="safe-outline-button" loading="{{saving}}" disabled="{{saving}}" bindtap="confirmAdultLaunchScope">确认符合上述范围</button>
+    </view>
+    <text wx:elif="{{launchScreening}}" class="ta-kicker">范围记录：{{launchScreening.decision}}</text>
+  </view>
+
   <view class="safe-card ta-card ta-flow-entry">
     <view>
       <text class="ta-section-title">八步协作流程</text>

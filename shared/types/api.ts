@@ -368,6 +368,55 @@ export interface TherapeuticAssessmentServiceLevelStatus {
   boundary_notice: string;
 }
 
+export interface TherapeuticAssessmentAdultLaunchScope {
+  schema: "safehome.therapeutic-assessment.adult-launch.v1";
+  version: string;
+  allowed_levels: Array<"L1" | "L2">;
+  eligible_age_bands: ["adult"];
+  allowed_data_scopes: ["single_person"];
+  allowed_urgency: ["non_urgent"];
+  allowed_concern_scopes: string[];
+  excluded_methods: string[];
+  required_notices: Array<
+    "waiting_time" | "withdrawal" | "privacy" | "confidentiality_exceptions" | "complaint_path"
+  >;
+  notices: Record<string, string>;
+  external_gates_required: true;
+  production_release_approved: false;
+  temporary_showcase_counts_as_release: false;
+  boundary_notice: string;
+}
+
+export interface TherapeuticAssessmentLaunchScreening {
+  id?: ID;
+  case_id: ID;
+  participant_user_id?: ID;
+  requested_level?: "L1" | "L2";
+  age_band?: "adult" | "minor" | "unknown";
+  voluntary_participation?: boolean;
+  data_scope?: "single_person" | "multi_party" | "unknown";
+  urgency?: "non_urgent" | "urgent" | "unknown";
+  concern_scope?: string;
+  excluded_signals?: string[];
+  acknowledged_notices?: string[];
+  decision:
+    | "screening_required"
+    | "eligible_l1_l2"
+    | "human_review_required"
+    | "outside_first_release_scope";
+  reason_codes?: string[];
+  recommended_route?: string;
+  policy_version?: string;
+  case_version?: number;
+  version?: number;
+  external_gates_required: true;
+  production_release_approved: false;
+  temporary_showcase_counts_as_release: false;
+  boundary_notice: string;
+  created_at?: ISODateTime;
+  updated_at?: ISODateTime;
+}
+
 export interface TherapeuticAssessmentProductionContract {
   schema: "safehome.therapeutic-assessment.production-contract.v1";
   version: string;

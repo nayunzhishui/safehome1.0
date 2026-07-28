@@ -150,6 +150,8 @@ import type {
   SupervisionInput,
   TherapeuticAssessmentAuthorization,
   TherapeuticAssessmentAuthorizationStatus,
+  TherapeuticAssessmentAdultLaunchScope,
+  TherapeuticAssessmentLaunchScreening,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentCompetencyLevel,
   TherapeuticAssessmentEvidenceItem,
@@ -1766,6 +1768,37 @@ export class SafeHomeApiClient {
 
   getTherapeuticAssessmentServiceLevels(): Promise<TherapeuticAssessmentServiceLevelStatus> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`);
+  }
+
+  getTherapeuticAssessmentAdultLaunchScope(): Promise<TherapeuticAssessmentAdultLaunchScope> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/launch-scope`);
+  }
+
+  getTherapeuticAssessmentLaunchScreening(caseId: string): Promise<TherapeuticAssessmentLaunchScreening> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings/latest`,
+    );
+  }
+
+  submitTherapeuticAssessmentLaunchScreening(
+    caseId: string,
+    input: {
+      requested_level: "L1" | "L2";
+      age_band: "adult" | "minor" | "unknown";
+      voluntary_participation: boolean;
+      data_scope: "single_person" | "multi_party" | "unknown";
+      urgency: "non_urgent" | "urgent" | "unknown";
+      concern_scope: string;
+      excluded_signals: string[];
+      acknowledged_notices: string[];
+      expected_case_version: number;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentLaunchScreening> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings`,
+      { method: "POST", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
   }
 
   getTherapeuticAssessmentProductionContract(): Promise<TherapeuticAssessmentProductionContract> {

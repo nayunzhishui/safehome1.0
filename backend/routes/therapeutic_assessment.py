@@ -97,6 +97,11 @@ from services.publication_gate_service import (
     recover_candidate,
     withdraw_candidate,
 )
+from services.therapeutic_assessment_launch_service import (
+    latest_screening,
+    public_scope as adult_launch_scope,
+    record_screening,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -126,6 +131,24 @@ def _payload():
 
 def _key():
     return str(request.headers.get("Idempotency-Key") or "")
+
+
+@bp.get("/launch-scope")
+def get_launch_scope_route():
+    actor, error = _actor()
+    return error or _respond(adult_launch_scope)
+
+
+@bp.post("/cases/<case_id>/launch-screenings")
+def post_launch_screening_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(record_screening, actor, case_id, _payload(), _key())
+
+
+@bp.get("/cases/<case_id>/launch-screenings/latest")
+def get_latest_launch_screening_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(latest_screening, actor, case_id)
 
 
 @bp.get("/service-levels")

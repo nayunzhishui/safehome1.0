@@ -2424,3 +2424,10 @@ relationship_initiation_intention_action
 - `POST /api/ai-qa/release/rollback`：仅管理员可因无来源、越权、错误发布、供应商治理违约或kill switch不可用立即回退到较早阶段；回退同时启用AI kill switch，但不关闭消息、记录和人工反馈。
 - `POST /api/ai-qa/release/evidence-packages`：督导或管理员生成只读证据包，包含策略/运行/质量/供应商治理制品哈希、当前阶段和阻断项；不包含密钥或原始参与者文本，也不形成生产批准。
 - `GET /api/ai-qa/config`新增`release_plan`，公开当前工程阶段和门禁；`participant_entry_enabled`与`production_release_approved`保持服务端失败关闭。
+
+### T38-F13 低风险成人L1/L2首发范围
+
+- `GET /api/therapeutic-assessment/launch-scope`：登录用户读取首发范围、排除方法、必须知悉事项和发布边界。
+- `POST /api/therapeutic-assessment/cases/<case_id>/launch-screenings`：参与者本人或具备对象范围的正式研究角色登记范围筛查；要求`Idempotency-Key`、`expected_case_version`及五项知悉确认。
+- `GET /api/therapeutic-assessment/cases/<case_id>/launch-screenings/latest`：参与者本人、分配研究者、督导或管理员读取最新筛查；无记录时返回`screening_required`。
+- 决策只允许`eligible_l1_l2`、`human_review_required`和`outside_first_release_scope`。所有结果均保持`production_release_approved=false`，临时展示越权不改变对象权限或发布结论。

@@ -99,6 +99,7 @@ REQUIRED_CONTENT_FILES = [
     "publication_gate_policy.json",
     "therapeutic_assessment_release_gate_policy.json",
     "therapeutic_assessment_state_machine.json",
+    "therapeutic_assessment_adult_launch_policy.json",
     "researcher_capability_registry.json",
     "security_privacy_abuse_registry.json",
     "reliability_release_registry.json",

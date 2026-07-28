@@ -1243,6 +1243,29 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/service-levels`, { requiresAuth: true });
     },
 
+    getTherapeuticAssessmentAdultLaunchScope() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/launch-scope`, { requiresAuth: true });
+    },
+
+    getTherapeuticAssessmentLaunchScreening(caseId) {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings/latest`,
+        { requiresAuth: true },
+      );
+    },
+
+    submitTherapeuticAssessmentLaunchScreening(caseId, data, idempotencyKey) {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings`,
+        {
+          method: "POST",
+          data,
+          header: { "Idempotency-Key": idempotencyKey },
+          requiresAuth: true,
+        },
+      );
+    },
+
     getTherapeuticAssessmentProductionContract() {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/production-contract`, { requiresAuth: true });
     },

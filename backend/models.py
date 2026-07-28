@@ -2630,6 +2630,32 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_launch_screenings (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        participant_user_id TEXT NOT NULL,
+        requested_level TEXT NOT NULL,
+        age_band TEXT NOT NULL,
+        voluntary_participation INTEGER NOT NULL,
+        data_scope TEXT NOT NULL,
+        urgency TEXT NOT NULL,
+        concern_scope TEXT NOT NULL,
+        excluded_signals_json TEXT NOT NULL DEFAULT '[]',
+        acknowledged_notices_json TEXT NOT NULL DEFAULT '[]',
+        decision TEXT NOT NULL,
+        reason_codes_json TEXT NOT NULL DEFAULT '[]',
+        recommended_route TEXT NOT NULL,
+        policy_version TEXT NOT NULL,
+        case_version INTEGER NOT NULL,
+        recorded_by TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(recorded_by, idempotency_key)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS computation_datasets (
         id TEXT PRIMARY KEY,
         dataset_key TEXT NOT NULL,
@@ -2844,6 +2870,8 @@ INDEX_SQL = [
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_ta_release_runs_actor_idempotency ON therapeutic_assessment_release_gate_runs(evaluated_by, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_ta_release_checks_run_gate ON therapeutic_assessment_release_gate_checks(run_id, gate_name)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ta_launch_screenings_case ON therapeutic_assessment_launch_screenings(case_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ta_launch_screenings_participant ON therapeutic_assessment_launch_screenings(participant_user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_parent ON computation_lineage_edges(parent_resource_type, parent_resource_id)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_child ON computation_lineage_edges(child_resource_type, child_resource_id)",

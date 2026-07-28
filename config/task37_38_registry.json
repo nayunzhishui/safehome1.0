@@ -806,7 +806,38 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T38-F13", "title": "低风险成人L1/L2首发范围", "dependencies": ["T38-F12"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T38-F13",
+      "title": "低风险成人L1/L2首发范围",
+      "dependencies": ["T38-F12"],
+      "engineering_complete": true,
+      "status": "engineering_complete_external_human_and_production_gates_pending",
+      "evidence": [
+        "content/therapeutic_assessment_adult_launch_policy.json",
+        "backend/services/therapeutic_assessment_launch_service.py",
+        "backend/routes/therapeutic_assessment.py",
+        "backend/models.py",
+        "backend/database.py",
+        "backend/scripts/migrate_task38_f13_adult_launch_scope.py",
+        "backend/tests/test_task38_f13_adult_launch_scope.py",
+        "shared/types/api.ts",
+        "apps/web/src/pages/TherapeuticAssessmentWorkbench.tsx",
+        "apps/miniprogram/pages/therapeutic-assessment/index.wxml"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task38_f13_adult_launch_scope.py", "backend/tests/test_task38_f12_quality_supervision.py", "backend/tests/test_task38_f11_competency_authorization.py", "backend/tests/test_task38_f10_action_followup.py", "backend/tests/test_task38_f09_layered_feedback.py", "backend/tests/test_task38_f08_researcher_workbench.py", "backend/tests/test_task38_f07_safety_chain.py", "backend/tests/test_task38_f06_participant_flow.py", "backend/tests/test_task38_f05_dynamic_consent.py", "backend/tests/test_task38_f04_question_quality.py", "backend/tests/test_task38_f03_evidence_ledger.py", "backend/tests/test_task38_f02_state_machine.py", "backend/tests/test_task38_f01_service_levels.py", "backend/tests/test_task37_c10_ai_release_stages.py", "backend/tests/test_schema_migrations.py", "-q"],
+        ["python", "backend/scripts/migrate_task38_f13_adult_launch_scope.py", "plan", "--database-path", ".codex_tmp/t38_f13_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task38_f13_adult_launch_scope.py", "apply", "--database-path", ".codex_tmp/t38_f13_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task38_f13_adult_launch_scope.py", "verify", "--database-path", ".codex_tmp/t38_f13_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task38_f13_adult_launch_scope.py", "rollback", "--database-path", ".codex_tmp/t38_f13_registry.sqlite3"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["node", "--check", "apps/miniprogram/services/api.js"],
+        ["node", "--check", "apps/miniprogram/pages/therapeutic-assessment/index.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T38-F14", "title": "未成年人/亲子保护子线", "dependencies": ["T38-F13"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T38-F15", "title": "伴侣与多人资料保护子线", "dependencies": ["T38-F14"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T38-F16", "title": "AI辅助的五道门", "dependencies": ["T38-F15", "T37-C06"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

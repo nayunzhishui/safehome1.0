@@ -1097,6 +1097,38 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
         errors.append(
             f"{release_filename} 必须限定生产证据、双人核验且禁止模拟签字、展示越权和自动发布"
         )
+    adult_filename = "therapeutic_assessment_adult_launch_policy.json"
+    try:
+        adult_policy = load_json(content_dir / adult_filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{adult_filename} 不可读取：{exc}")
+        return errors
+    if (
+        adult_policy.get("schema")
+        != "safehome.therapeutic-assessment.adult-launch.v1"
+        or adult_policy.get("allowed_levels") != ["L1", "L2"]
+        or adult_policy.get("eligible_age_bands") != ["adult"]
+        or adult_policy.get("allowed_data_scopes") != ["single_person"]
+        or adult_policy.get("production_release_approved") is not False
+        or adult_policy.get("temporary_showcase_counts_as_release") is not False
+    ):
+        errors.append(f"{adult_filename} 必须仅覆盖低风险成人单人L1/L2且不得自动发布")
+    if not {
+        "AIS",
+        "FIS",
+        "layer_3",
+        "trauma_activation",
+        "family_confrontation",
+    }.issubset(set(adult_policy.get("excluded_methods", []))):
+        errors.append(f"{adult_filename} 缺少高挑战方法排除项")
+    if set(adult_policy.get("required_notices", [])) != {
+        "waiting_time",
+        "withdrawal",
+        "privacy",
+        "confidentiality_exceptions",
+        "complaint_path",
+    }:
+        errors.append(f"{adult_filename} 必须完整说明等待、退出、隐私、保密例外和投诉")
     return errors
 
 

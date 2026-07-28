@@ -3,10 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 import type {
   PublicationCandidate,
   TherapeuticAssessmentAuthorizationStatus,
+  TherapeuticAssessmentAdultLaunchScope,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
   TherapeuticAssessmentLifecycleMetrics,
+  TherapeuticAssessmentLaunchScreening,
   TherapeuticAssessmentProductionContract,
   TherapeuticAssessmentQueueRuntime,
   TherapeuticAssessmentWorkQueueItem,
@@ -102,6 +104,10 @@ export function TherapeuticAssessmentWorkbench() {
   const [workbench, setWorkbench] = useState<WorkbenchPayload | null>(null);
   const [productionContract, setProductionContract] =
     useState<TherapeuticAssessmentProductionContract | null>(null);
+  const [adultLaunchScope, setAdultLaunchScope] =
+    useState<TherapeuticAssessmentAdultLaunchScope | null>(null);
+  const [launchScreening, setLaunchScreening] =
+    useState<TherapeuticAssessmentLaunchScreening | null>(null);
   const [queueItems, setQueueItems] = useState<TherapeuticAssessmentWorkQueueItem[]>([]);
   const [queueRuntime, setQueueRuntime] =
     useState<TherapeuticAssessmentQueueRuntime | null>(null);
@@ -136,9 +142,10 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, queue, runtime, publications, lifecycle] = await Promise.all([
+      const [result, contract, launchScope, queue, runtime, publications, lifecycle] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
+        safeHomeApi.getTherapeuticAssessmentAdultLaunchScope(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
         safeHomeApi.listPublicationCandidates(),
@@ -146,6 +153,7 @@ export function TherapeuticAssessmentWorkbench() {
       ]);
       setCases(result.items);
       setProductionContract(contract);
+      setAdultLaunchScope(launchScope);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
       setPublicationCandidates(publications.items);
@@ -207,6 +215,17 @@ export function TherapeuticAssessmentWorkbench() {
 
   useEffect(() => {
     if (selectedId) void loadAuthorizations(selectedId);
+  }, [selectedId]);
+
+  useEffect(() => {
+    if (!selectedId) {
+      setLaunchScreening(null);
+      return;
+    }
+    void safeHomeApi
+      .getTherapeuticAssessmentLaunchScreening(selectedId)
+      .then(setLaunchScreening)
+      .catch(() => setLaunchScreening(null));
   }, [selectedId]);
 
   const changeFilter = (name: keyof Filters, value: string) => {
@@ -343,6 +362,16 @@ export function TherapeuticAssessmentWorkbench() {
             五道门 {productionContract.five_gates.length} 项。
           </p>
           <small>{productionContract.boundary_notice}</small>
+        </section>
+      ) : null}
+      {adultLaunchScope ? (
+        <section className="status" aria-label="低风险成人L1/L2首发范围">
+          <strong>低风险成人L1/L2首发范围</strong>
+          <p>
+            仅限自愿参加、单人资料、非紧急议题的成年人；
+            当前记录：{launchScreening?.decision || "尚未筛查"}。
+          </p>
+          <small>{adultLaunchScope.boundary_notice}</small>
         </section>
       ) : null}
       {queueRuntime ? (
