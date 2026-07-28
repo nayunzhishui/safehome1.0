@@ -540,6 +540,10 @@ SCHEMA_SQL = [
         latency_ms INTEGER NOT NULL DEFAULT 0,
         token_estimate INTEGER NOT NULL DEFAULT 0,
         cost_micros INTEGER NOT NULL DEFAULT 0,
+        provider_request_id TEXT,
+        input_tokens INTEGER NOT NULL DEFAULT 0,
+        output_tokens INTEGER NOT NULL DEFAULT 0,
+        cost_currency TEXT NOT NULL DEFAULT 'unknown',
         error_code TEXT,
         created_at TEXT NOT NULL
     )

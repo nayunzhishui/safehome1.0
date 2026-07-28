@@ -219,8 +219,10 @@ export function AiQaSandboxPage() {
           <p>{config?.boundary_notice || "正在读取治理状态。"}</p>
         </div>
         <dl className="aiQaFacts">
-          <div><dt>供应商</dt><dd>{config?.provider || "—"}（不出网）</dd></div>
-          <div><dt>超时与重试</dt><dd>{config?.provider_policy ? `${config.provider_policy.timeout_ms}ms / ${config.provider_policy.max_retries}次` : "等待新版本服务"}</dd></div>
+          <div><dt>服务端供应商</dt><dd>{config?.provider || "—"}（客户端不可指定）</dd></div>
+          <div><dt>真实适配器</dt><dd>{config?.provider_policy ? `${config.provider_policy.adapter_candidates.join(" / ")} · ${config.provider_policy.external_provider_enabled ? "门禁通过" : "保持关闭"}` : "等待新版本服务"}</dd></div>
+          <div><dt>连接 / 读取 / 总超时</dt><dd>{config?.provider_policy ? `${config.provider_policy.connect_timeout_ms} / ${config.provider_policy.read_timeout_ms} / ${config.provider_policy.timeout_ms}ms` : "等待新版本服务"}</dd></div>
+          <div><dt>密钥位置</dt><dd>仅云托管 Secret 或服务端环境变量</dd></div>
           <div><dt>跨会话记忆</dt><dd>关闭</dd></div>
           <div><dt>写操作工具</dt><dd>禁止</dd></div>
           <div><dt>合成原文保留</dt><dd>{config?.data_policy.synthetic_retention_days ? `${config.data_policy.synthetic_retention_days}天` : "待服务更新"}</dd></div>

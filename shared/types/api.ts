@@ -2820,7 +2820,7 @@ export interface AiQaConfig {
   service_name: string;
   participant_enabled: false;
   sandbox_enabled: boolean;
-  provider: "fake";
+  provider: "fake" | "deepseek" | "openai";
   stage: "synthetic_research_sandbox";
   governance_status: "blocked_human_review";
   participant_eligible: false;
@@ -2836,12 +2836,19 @@ export interface AiQaConfig {
     provider_metadata_contains_raw_text: false;
   };
   provider_policy: {
-    approved_providers: ["fake"];
+    approved_providers: Array<"fake" | "deepseek" | "openai">;
+    adapter_candidates: Array<"deepseek" | "openai">;
+    server_selected_only: true;
+    secret_source: "cloudbase_secret_or_server_environment";
+    secret_values_exposed: false;
+    connect_timeout_ms: number;
+    read_timeout_ms: number;
     timeout_ms: number;
     max_retries: number;
     circuit_failure_threshold: number;
     budget_micros_per_day: number;
-    external_provider_enabled: false;
+    external_provider_enabled: boolean;
+    runtime_admission_reason: string;
   };
   provider_selection: {
     policy_version: string;

@@ -79,9 +79,18 @@ class Config:
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
     ).strip().lower() in {"1", "true", "yes"}
     AI_QA_PROVIDER = os.environ.get("AI_QA_PROVIDER", "fake").strip().lower()
+    AI_QA_REAL_PROVIDER_ENABLED = os.environ.get(
+        "AI_QA_REAL_PROVIDER_ENABLED", "0"
+    ).strip().lower() in {"1", "true", "yes"}
     AI_QA_REQUESTS_PER_HOUR = int(os.environ.get("AI_QA_REQUESTS_PER_HOUR", "30"))
     AI_QA_DAILY_BUDGET_MICROS = int(os.environ.get("AI_QA_DAILY_BUDGET_MICROS", "0"))
     AI_QA_TIMEOUT_MS = int(os.environ.get("AI_QA_TIMEOUT_MS", "3000"))
+    AI_QA_CONNECT_TIMEOUT_MS = int(
+        os.environ.get("AI_QA_CONNECT_TIMEOUT_MS", "1000")
+    )
+    AI_QA_READ_TIMEOUT_MS = int(
+        os.environ.get("AI_QA_READ_TIMEOUT_MS", "2000")
+    )
     AI_QA_PROVIDER_RETRIES = int(os.environ.get("AI_QA_PROVIDER_RETRIES", "1"))
     AI_QA_SYNTHETIC_RETENTION_DAYS = int(os.environ.get("AI_QA_SYNTHETIC_RETENTION_DAYS", "7"))
     OFFLINE_BENCHMARK_ENABLED = os.environ.get(
@@ -155,8 +164,18 @@ class Config:
                 raise RuntimeError(f"MySQL 模式缺少环境变量：{', '.join(missing)}")
         if cls.WECHAT_SUBSCRIBE_MODE not in {"once", "long_term"}:
             raise RuntimeError("WECHAT_SUBSCRIBE_MODE 只能是 once 或 long_term")
-        if cls.AI_QA_PROVIDER != "fake":
-            raise RuntimeError("当前工程阶段 AI_QA_PROVIDER 只允许 fake；真实供应商需独立批准和适配")
+        if cls.AI_QA_PROVIDER not in {"fake", "deepseek", "openai"}:
+            raise RuntimeError("AI_QA_PROVIDER 只能是 fake、deepseek 或 openai")
+        if cls.AI_QA_PROVIDER != "fake" and not cls.AI_QA_REAL_PROVIDER_ENABLED:
+            raise RuntimeError(
+                "真实供应商必须由服务端显式开启 AI_QA_REAL_PROVIDER_ENABLED"
+            )
+        if min(
+            cls.AI_QA_TIMEOUT_MS,
+            cls.AI_QA_CONNECT_TIMEOUT_MS,
+            cls.AI_QA_READ_TIMEOUT_MS,
+        ) <= 0:
+            raise RuntimeError("AI供应商连接、读取和总超时必须为正整数")
         if cls.AI_QA_ENABLED:
             raise RuntimeError("参与者AI问答门禁尚未批准，AI_QA_ENABLED 必须保持关闭")
         if cls.OFFLINE_EXTERNAL_INGEST_ENABLED:

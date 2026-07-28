@@ -2356,3 +2356,12 @@ relationship_initiation_intention_action
 - `POST /api/ai-qa/providers/evidence/<id>/verify`：仅`supervisor/admin`独立复核，登记人与复核人必须不同，并使用`expected_version`防止并发覆盖。
 - `GET /api/ai-qa/config`仅增加候选ID和门禁摘要；`selected_provider=null`、`external_provider_enabled=false`。真实适配器、出网白名单和密钥管理属于T37-C03，当前未开启。
 - 当前只开放研究者、督导和管理员的合成沙盒。参与者自由问答、自动训练卡处方、自动发布和写工具仍关闭。
+
+### T37-C03 真实Provider适配器与密钥管理
+
+- DeepSeek与OpenAI均通过服务端OpenAI兼容适配器接入；供应商只能由`AI_QA_PROVIDER`选择，消息接口提交`provider`会返回`ai_qa_provider_override_forbidden`。
+- 真实调用同时要求`AI_QA_REAL_PROVIDER_ENABLED=1`、C02供应商已选中、12类证据齐全且独立复核、外部供应商与出网白名单已开启。任一条件不满足时失败关闭。
+- 密钥只从CloudBase Secret或服务端环境变量`DEEPSEEK_API_KEY`、`OPENAI_API_KEY`读取；模型分别由`DEEPSEEK_MODEL`、`OPENAI_MODEL`指定。接口、前端、数据库和日志均不返回密钥值。
+- 传输层只允许固定HTTPS主机，分别执行`AI_QA_CONNECT_TIMEOUT_MS`、`AI_QA_READ_TIMEOUT_MS`和`AI_QA_TIMEOUT_MS`；超时或取消会关闭当前连接，内部不启动后台供应商线程。
+- 供应商事件只记录request id、模型版本、输入/输出token、总token、估算成本、币种、时延、状态和错误代码，不记录请求或回答原文。
+- `GET /api/ai-qa/config`只返回适配器候选、门禁状态、三类超时和密钥来源类型；`secret_values_exposed=false`。

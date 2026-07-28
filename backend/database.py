@@ -148,8 +148,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_051"
-CURRENT_SCHEMA_NAME = "ai_provider_selection_evidence"
+CURRENT_SCHEMA_VERSION = "2026_07_28_052"
+CURRENT_SCHEMA_NAME = "ai_provider_runtime_metadata"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1093,6 +1093,15 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in privacy_request_columns.items():
         ensure_column(conn, "privacy_requests", column, definition)
+
+    provider_event_columns = {
+        "provider_request_id": "TEXT",
+        "input_tokens": "INTEGER NOT NULL DEFAULT 0",
+        "output_tokens": "INTEGER NOT NULL DEFAULT 0",
+        "cost_currency": "TEXT NOT NULL DEFAULT 'unknown'",
+    }
+    for column, definition in provider_event_columns.items():
+        ensure_column(conn, "ai_qa_provider_events", column, definition)
     ensure_column(conn, "privacy_deletion_tombstones", "scope_json", "TEXT NOT NULL DEFAULT '[]'")
     ensure_column(conn, "users", "auth_epoch", "INTEGER NOT NULL DEFAULT 0")
     ensure_column(conn, "users", "must_change_password", "INTEGER NOT NULL DEFAULT 0")

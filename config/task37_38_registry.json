@@ -512,7 +512,41 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T37-C03", "title": "真实Provider适配器和密钥管理", "dependencies": ["T37-C02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-C03",
+      "title": "真实Provider适配器和密钥管理",
+      "dependencies": ["T37-C02"],
+      "engineering_complete": true,
+      "status": "engineering_complete_real_provider_gates_blocked",
+      "evidence": [
+        "backend/services/ai_qa_provider.py",
+        "backend/services/ai_provider_governance_service.py",
+        "backend/services/ai_qa_service.py",
+        "backend/config.py",
+        "backend/models.py",
+        "backend/database.py",
+        "backend/scripts/migrate_task37_c03_provider_runtime.py",
+        "backend/tests/test_task37_c03_real_provider_adapters.py",
+        "shared/types/api.ts",
+        "apps/web/src/pages/AiQaSandboxPage.tsx",
+        "apps/miniprogram/services/api.js",
+        "docs/03_技术真相/API接口文档.md",
+        "docs/03_技术真相/数据库字段说明.md"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_c03_real_provider_adapters.py", "backend/tests/test_task37_c02_provider_selection.py", "backend/tests/test_task37_c01_ai_use_case_freeze.py", "backend/tests/test_ai_qa_controlled_sandbox.py", "backend/tests/test_ai_qa_production_readiness.py", "-q"],
+        ["python", "backend/scripts/migrate_task37_c03_provider_runtime.py", "plan", "--database-path", ".codex_tmp/t37_c03_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c03_provider_runtime.py", "apply", "--database-path", ".codex_tmp/t37_c03_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c03_provider_runtime.py", "verify", "--database-path", ".codex_tmp/t37_c03_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c03_provider_runtime.py", "rollback", "--database-path", ".codex_tmp/t37_c03_registry.sqlite3"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["python", "backend/scripts/audit_miniprogram_frontend.py"],
+        ["node", "--check", "apps/miniprogram/services/api.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T37-C04", "title": "批准知识库和RAG", "dependencies": ["T37-C03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-C05", "title": "输入安全、隐私最小化和提示注入防护", "dependencies": ["T37-C03"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-C06", "title": "输出五道门和结构化契约", "dependencies": ["T37-C04", "T37-C05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

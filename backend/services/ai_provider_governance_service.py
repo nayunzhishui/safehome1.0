@@ -131,6 +131,38 @@ def get_provider_selection_summary() -> dict:
     }
 
 
+def get_runtime_provider_admission(provider_id: str) -> dict:
+    """Return a fail-closed runtime decision without exposing contract details."""
+    normalized = str(provider_id or "").strip().lower()
+    if normalized == "fake":
+        return {
+            "allowed": True,
+            "provider_id": "fake",
+            "reason": "local_fake_provider",
+        }
+    policy = _policy()
+    required = set(str(item) for item in policy["required_evidence"])
+    verified = _verified_by_provider().get(normalized, set())
+    outbound = policy.get("outbound_policy")
+    outbound = outbound if isinstance(outbound, dict) else {}
+    allowed = bool(
+        normalized in {str(item["id"]) for item in policy["candidates"]}
+        and policy.get("selected_provider") == normalized
+        and policy.get("external_provider_enabled") is True
+        and outbound.get("activated") is True
+        and required.issubset(verified)
+    )
+    return {
+        "allowed": allowed,
+        "provider_id": normalized,
+        "reason": (
+            "all_provider_gates_passed"
+            if allowed
+            else "provider_selection_or_contract_gate_blocked"
+        ),
+    }
+
+
 def list_provider_candidates(actor: dict) -> dict:
     policy = _policy()
     verified = _verified_by_provider()

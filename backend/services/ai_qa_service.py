@@ -110,15 +110,20 @@ def _require_allowed_use_case(use_case_id: object) -> tuple[str, dict]:
 def get_config_status() -> dict:
     from services.ai_provider_governance_service import (
         get_provider_selection_summary,
+        get_runtime_provider_admission,
     )
 
     governance = json.loads((current_app.config["CONTENT_DIR"] / "ai_qa_governance.json").read_text(encoding="utf-8"))
     runtime = _runtime_killed()
+    configured_provider = str(
+        current_app.config.get("AI_QA_PROVIDER", "fake")
+    ).strip().lower()
+    provider_admission = get_runtime_provider_admission(configured_provider)
     return {
         "service_name": governance.get("decisions", {}).get("service_name", {}).get("proposed", "支持性内容助手"),
         "participant_enabled": False,
         "sandbox_enabled": bool(current_app.config.get("AI_QA_SANDBOX_ENABLED")) and not bool(runtime["killed"]),
-        "provider": "fake",
+        "provider": configured_provider,
         "stage": "synthetic_research_sandbox",
         "governance_status": governance.get("status"),
         "participant_eligible": False,
@@ -134,13 +139,40 @@ def get_config_status() -> dict:
             "provider_metadata_contains_raw_text": False,
         },
         "provider_policy": {
-            "approved_providers": ["fake"],
+            "approved_providers": (
+                [configured_provider]
+                if provider_admission["allowed"]
+                and (
+                    configured_provider == "fake"
+                    or current_app.config.get(
+                        "AI_QA_REAL_PROVIDER_ENABLED", False
+                    )
+                )
+                else ["fake"]
+            ),
+            "adapter_candidates": ["deepseek", "openai"],
+            "server_selected_only": True,
+            "secret_source": "cloudbase_secret_or_server_environment",
+            "secret_values_exposed": False,
+            "connect_timeout_ms": int(
+                current_app.config.get("AI_QA_CONNECT_TIMEOUT_MS", 1000)
+            ),
+            "read_timeout_ms": int(
+                current_app.config.get("AI_QA_READ_TIMEOUT_MS", 2000)
+            ),
             "timeout_ms": int(current_app.config.get("AI_QA_TIMEOUT_MS", 3000)),
             "max_retries": max(0, min(int(current_app.config.get("AI_QA_PROVIDER_RETRIES", 1)), 2)),
             "circuit_failure_threshold": int(current_app.config.get("AI_QA_CIRCUIT_THRESHOLD", 3)),
             "hard_timeout_enforced_by_provider": True,
             "budget_micros_per_day": int(current_app.config.get("AI_QA_DAILY_BUDGET_MICROS", 0)),
-            "external_provider_enabled": False,
+            "external_provider_enabled": bool(
+                configured_provider != "fake"
+                and provider_admission["allowed"]
+                and current_app.config.get(
+                    "AI_QA_REAL_PROVIDER_ENABLED", False
+                )
+            ),
+            "runtime_admission_reason": provider_admission["reason"],
         },
         "provider_selection": get_provider_selection_summary(),
         "use_case_policy": get_use_case_catalog(),
@@ -250,7 +282,15 @@ def _circuit_open(user_id: str, provider: str) -> bool:
     return int(row["count"]) >= threshold
 
 
-def _generate_with_deadline(provider, text: str, citations: list[dict], mode: str, timeout_ms: int):
+def _generate_with_deadline(
+    provider,
+    text: str,
+    citations: list[dict],
+    mode: str,
+    timeout_ms: int,
+    connect_timeout_ms: int,
+    read_timeout_ms: int,
+):
     """要求供应商在传输层执行超时；不把线程提前返回误称为上游调用已取消。"""
     if not getattr(provider, "supports_hard_timeout", False):
         raise ProviderError("provider_timeout_contract_missing", "供应商未实现传输层硬超时")
@@ -259,6 +299,8 @@ def _generate_with_deadline(provider, text: str, citations: list[dict], mode: st
         citations,
         mode=mode,
         timeout_seconds=max(0.001, timeout_ms / 1000),
+        connect_timeout_seconds=max(0.001, connect_timeout_ms / 1000),
+        read_timeout_seconds=max(0.001, read_timeout_ms / 1000),
     )
 
 
@@ -307,6 +349,12 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
         raise AiQaError("synthetic_data_required", "当前只允许合成问题", 409)
     if payload.get("tools"):
         raise AiQaError("ai_qa_tools_forbidden", "首轮内容助手不允许调用写操作工具", 409)
+    if payload.get("provider") is not None:
+        raise AiQaError(
+            "ai_qa_provider_override_forbidden",
+            "供应商只能由服务端配置，客户端不能指定",
+            409,
+        )
     _rate_and_budget_guard(actor["id"])
     with get_connection() as conn:
         _store_message(conn, session_id, actor["id"], "user", text, safety={"synthetic_data": True})
@@ -321,8 +369,36 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
     provider_name = str(current_app.config.get("AI_QA_PROVIDER", "fake"))
     if _circuit_open(actor["id"], provider_name):
         return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": "circuit_open", "severity": "medium"})
-    provider = get_provider(provider_name)
+    from services.ai_provider_governance_service import (
+        get_runtime_provider_admission,
+    )
+
+    admission = get_runtime_provider_admission(provider_name)
+    allow_real = bool(
+        current_app.config.get("AI_QA_REAL_PROVIDER_ENABLED", False)
+        and admission["allowed"]
+    )
+    try:
+        provider = get_provider(provider_name, allow_real=allow_real)
+    except ProviderError as provider_setup_error:
+        return _fixed_message(
+            actor,
+            session_id,
+            text,
+            "provider_degraded",
+            {
+                **precheck,
+                "category": provider_setup_error.code,
+                "severity": "medium",
+            },
+        )
     timeout_ms = int(current_app.config.get("AI_QA_TIMEOUT_MS", 3000))
+    connect_timeout_ms = int(
+        current_app.config.get("AI_QA_CONNECT_TIMEOUT_MS", 1000)
+    )
+    read_timeout_ms = int(
+        current_app.config.get("AI_QA_READ_TIMEOUT_MS", 2000)
+    )
     mode = str(payload.get("fake_mode") or "normal")
     if str(current_app.config.get("APP_ENV", "")).lower() not in {"development", "testing"}:
         mode = "normal"
@@ -333,20 +409,32 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
     for _attempt in range(attempts):
         started = time.perf_counter()
         try:
-            result = _generate_with_deadline(provider, text, citations, mode, timeout_ms)
+            result = _generate_with_deadline(
+                provider,
+                text,
+                citations,
+                mode,
+                timeout_ms,
+                connect_timeout_ms,
+                read_timeout_ms,
+            )
             elapsed_ms = int((time.perf_counter() - started) * 1000)
             exc = None
             break
         except ProviderError as caught:
             elapsed_ms = int((time.perf_counter() - started) * 1000)
             exc = caught
+            if caught.code in {"provider_timeout", "provider_cancelled"}:
+                break
     if exc is not None or result is None:
         with get_connection() as conn:
             conn.execute(
                 """
                 INSERT INTO ai_qa_provider_events
-                (id, session_id, user_id, provider, model_version, status, latency_ms, cost_micros, error_code, created_at)
-                VALUES (?, ?, ?, ?, ?, 'failed', ?, 0, ?, ?)
+                (id, session_id, user_id, provider, model_version, status,
+                 latency_ms, cost_micros, error_code, created_at,
+                 provider_request_id, input_tokens, output_tokens, cost_currency)
+                VALUES (?, ?, ?, ?, ?, 'failed', ?, 0, ?, ?, NULL, 0, 0, 'unknown')
                 """,
                 (
                     new_id("aiqpe"),
@@ -363,7 +451,30 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
         return _fixed_message(actor, session_id, text, "provider_degraded", {**precheck, "category": exc.code, "severity": "medium"})
     postcheck = post_check(result.text, citations)
     with get_connection() as conn:
-        conn.execute("INSERT INTO ai_qa_provider_events (id, session_id, user_id, provider, model_version, status, latency_ms, token_estimate, cost_micros, created_at) VALUES (?, ?, ?, ?, ?, 'succeeded', ?, ?, ?, ?)", (new_id("aiqpe"), session_id, actor["id"], result.provider, result.model_version, elapsed_ms, result.token_estimate, result.cost_micros, now_iso()))
+        conn.execute(
+            """
+            INSERT INTO ai_qa_provider_events (
+                id, session_id, user_id, provider, model_version, status,
+                latency_ms, token_estimate, cost_micros, created_at,
+                provider_request_id, input_tokens, output_tokens, cost_currency
+            ) VALUES (?, ?, ?, ?, ?, 'succeeded', ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                new_id("aiqpe"),
+                session_id,
+                actor["id"],
+                result.provider,
+                result.model_version,
+                elapsed_ms,
+                result.token_estimate,
+                result.cost_micros,
+                now_iso(),
+                result.provider_request_id,
+                result.input_tokens,
+                result.output_tokens,
+                result.cost_currency,
+            ),
+        )
         conn.commit()
     if not postcheck["ok"]:
         return _fixed_message(actor, session_id, text, "postcheck_degraded", {"category": "postcheck", "severity": "high", "route": "postcheck_degraded"}, provider_status="called")

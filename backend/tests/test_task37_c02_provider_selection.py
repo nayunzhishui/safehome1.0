@@ -203,8 +203,7 @@ def test_schema_051_adds_provider_evidence_table(tmp_path, monkeypatch):
                     "PRAGMA table_info(ai_provider_contract_evidence)"
                 ).fetchall()
             }
-    assert database.CURRENT_SCHEMA_VERSION == "2026_07_28_051"
-    assert database.CURRENT_SCHEMA_NAME == "ai_provider_selection_evidence"
+    assert int(database.CURRENT_SCHEMA_VERSION.rsplit("_", 1)[-1]) >= 51
     assert "ai_provider_contract_evidence" in tables
     assert {
         "provider_id",
