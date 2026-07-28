@@ -1,0 +1,42 @@
+{
+  "schema": "safehome.affect-release-gate-policy.v1",
+  "version": "2026-07-28-t37-a07-v1",
+  "status": "engineering_gate_ready_external_evidence_pending",
+  "gate_order": [
+    "data_rights_approval",
+    "annotation_manual_and_double_annotation",
+    "independent_test_and_local_validity",
+    "abstention_review_and_rollback",
+    "non_diagnostic_output_boundary",
+    "test_cloud_shadow",
+    "accountable_owner_approval"
+  ],
+  "machine_gates": [
+    "abstention_review_and_rollback",
+    "non_diagnostic_output_boundary"
+  ],
+  "human_or_external_gates": [
+    "data_rights_approval",
+    "annotation_manual_and_double_annotation",
+    "independent_test_and_local_validity",
+    "test_cloud_shadow",
+    "accountable_owner_approval"
+  ],
+  "prohibited_outputs": [
+    "clinical_diagnosis",
+    "participant_visible_individual_risk_prediction",
+    "personality_labeling",
+    "relationship_quality_ranking"
+  ],
+  "evidence_requirements": {
+    "data_rights_approval": ["rights_document_hash", "legal_or_data_owner"],
+    "annotation_manual_and_double_annotation": ["human_gold_hash", "adjudicator"],
+    "independent_test_and_local_validity": ["independent_test_hash", "validity_reviewer"],
+    "test_cloud_shadow": ["cloud_environment", "observation_window", "report_hash"],
+    "accountable_owner_approval": ["named_owner", "approval_document_hash"]
+  },
+  "runtime_activation_allowed": false,
+  "temporary_showcase_privilege_counts_as_approval": false,
+  "simulated_agent_counts_as_human_signoff": false,
+  "boundary_notice": "工程门禁和合成演练不构成数据权利、伦理、测试云或负责人批准；未满足全部门禁时情感模型不得进入参与者生产反馈。"
+}

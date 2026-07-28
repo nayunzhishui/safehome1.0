@@ -300,7 +300,32 @@
     {"id": "T37-A04", "title": "群体级社会网络分析", "dependencies": ["T37-A02"], "engineering_complete": true, "status": "engineering_complete_real_group_data_gated", "evidence": ["content/network_analysis_policy.json", "content/synthetic_group_network_suite.json", "backend/services/group_network_analysis_service.py", "backend/scripts/generate_task37_a04_synthetic_network.py", "backend/tests/test_task37_a04_group_network_analysis.py", "shared/types/api.ts"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task37_a04_group_network_analysis.py", "backend/tests/test_task29_offline_benchmarks.py", "backend/tests/test_task29_offline_benchmark_contract.py", "-q"], ["python", "backend/scripts/generate_task37_a04_synthetic_network.py", "--check"], ["python", "backend/scripts/validate_content.py"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"], ["npm.cmd", "run", "build", "--prefix", "apps/web"]]},
     {"id": "T37-A05", "title": "模型注册、影子执行和研究者界面", "dependencies": ["T37-A03", "T37-A04"], "engineering_complete": true, "status": "engineering_complete_shadow_only_release_gated", "evidence": ["content/affect_shadow_execution_policy.json", "backend/services/affect_shadow_service.py", "backend/scripts/migrate_task37_a05_model_registry.py", "backend/tests/test_task37_a05_model_registry_shadow.py", "apps/web/src/pages/OfflineBenchmarkWorkbench.tsx", "apps/miniprogram/pages/researcher-dashboard/index.wxml", "shared/types/api.ts"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task37_a05_model_registry_shadow.py", "backend/tests/test_task37_a03_model_baselines.py", "backend/tests/test_task37_a04_group_network_analysis.py", "backend/tests/test_task29_offline_benchmarks.py", "-q"], ["python", "backend/scripts/migrate_task37_a05_model_registry.py", "--apply"], ["python", "backend/scripts/migrate_task37_a05_model_registry.py"], ["python", "backend/scripts/migrate_task37_a05_model_registry.py", "--rollback-plan"], ["python", "backend/scripts/validate_content.py"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"], ["npm.cmd", "run", "build", "--prefix", "apps/web"]]},
     {"id": "T37-A06", "title": "漂移、公平性、异常和回滚", "dependencies": ["T37-A05"], "engineering_complete": true, "status": "engineering_complete_synthetic_drills_only", "evidence": ["content/affect_monitoring_policy.json", "backend/services/affect_monitor_service.py", "backend/scripts/migrate_task37_a06_monitoring.py", "backend/tests/test_task37_a06_monitoring_rollback.py", "apps/web/src/pages/OfflineBenchmarkWorkbench.tsx", "apps/miniprogram/pages/researcher-dashboard/index.wxml", "shared/types/api.ts"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task37_a06_monitoring_rollback.py", "backend/tests/test_task37_a05_model_registry_shadow.py", "backend/tests/test_feedback_route.py", "backend/tests/test_user_id_policy.py", "backend/tests/test_task18_opening_matrix.py", "-q"], ["python", "backend/scripts/migrate_task37_a06_monitoring.py", "--apply"], ["python", "backend/scripts/migrate_task37_a06_monitoring.py"], ["python", "backend/scripts/migrate_task37_a06_monitoring.py", "--rollback-plan"], ["python", "backend/scripts/validate_content.py"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"], ["npm.cmd", "run", "build", "--prefix", "apps/web"]]},
-    {"id": "T37-A07", "title": "情感计算发布门禁", "dependencies": ["T37-A06"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-A07",
+      "title": "情感计算发布门禁",
+      "dependencies": ["T37-A06"],
+      "engineering_complete": true,
+      "status": "engineering_complete_release_blocked_external_gates",
+      "evidence": [
+        "content/affect_release_gate_policy.json",
+        "backend/services/affect_release_gate_service.py",
+        "backend/scripts/migrate_task37_a07_release_gate.py",
+        "backend/tests/test_task37_a07_release_gate.py",
+        "apps/web/src/pages/OfflineBenchmarkWorkbench.tsx",
+        "apps/miniprogram/pages/researcher-dashboard/index.wxml",
+        "shared/types/api.ts"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_a07_release_gate.py", "backend/tests/test_task37_a06_monitoring_rollback.py", "-q"],
+        ["python", "backend/scripts/migrate_task37_a07_release_gate.py", "--apply"],
+        ["python", "backend/scripts/migrate_task37_a07_release_gate.py"],
+        ["python", "backend/scripts/migrate_task37_a07_release_gate.py", "--rollback-plan"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T37-B01", "title": "协作式评估生产契约桥接", "dependencies": ["T38-F12", "T37-P04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-B02", "title": "人工队列、对象范围与值守基础", "dependencies": ["T37-B01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-B03", "title": "五道门发布流水线", "dependencies": ["T37-B02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

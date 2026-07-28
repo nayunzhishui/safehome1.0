@@ -2651,6 +2651,9 @@ ul {
 .monitoringStrip div { display: grid; gap: 4px; padding: 12px; border-radius: 13px; background: #f0f6f3; text-align: center; }
 .monitoringStrip span { color: #687a73; font-size: .76rem; }
 .monitoringStrip strong { color: #214d3d; overflow-wrap: anywhere; }
+.releaseGateSummary { display: grid; gap: 12px; padding: 16px; border: 1px solid #e3cf9d; border-radius: 16px; background: #fff9ea; }
+.releaseGateSummary h3,.releaseGateSummary p { margin: 0; }
+.releaseGateFacts { display: flex; flex-wrap: wrap; gap: 8px 14px; color: #687a73; font-size: .82rem; }
 .benchmarkResult { padding: 18px; border: 1px solid #d4e4dc; border-radius: 18px; background: #f8fbf9; }
 .benchmarkResult h3 { margin: 12px 0; }
 .benchmarkResult code { overflow-wrap: anywhere; }

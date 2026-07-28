@@ -775,6 +775,7 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
         "affect_model_candidate_registry.json",
         "affect_shadow_execution_policy.json",
         "affect_monitoring_policy.json",
+        "affect_release_gate_policy.json",
         "network_analysis_policy.json",
         "synthetic_group_network_suite.json",
     ]
@@ -902,6 +903,24 @@ def validate_offline_benchmark_content(content_dir: Path) -> list[str]:
         or monitor_policy.get("red_action") != "disable_model_runtime"
     ):
         errors.append("情感模型停机必须独立于参与者反馈和训练卡核心链路")
+    release_policy = payloads["affect_release_gate_policy.json"]
+    required_release_gates = {
+        "data_rights_approval",
+        "annotation_manual_and_double_annotation",
+        "independent_test_and_local_validity",
+        "abstention_review_and_rollback",
+        "non_diagnostic_output_boundary",
+        "test_cloud_shadow",
+        "accountable_owner_approval",
+    }
+    if set(release_policy.get("gate_order", [])) != required_release_gates:
+        errors.append("情感计算发布门禁必须覆盖权利、标注、效度、弃答复核回滚、输出边界、测试云和负责人")
+    if (
+        release_policy.get("runtime_activation_allowed") is not False
+        or release_policy.get("temporary_showcase_privilege_counts_as_approval") is not False
+        or release_policy.get("simulated_agent_counts_as_human_signoff") is not False
+    ):
+        errors.append("情感计算工程门禁不得激活运行、接受展示越权或模拟签字")
     network_policy = payloads["network_analysis_policy.json"]
     if any(
         network_policy.get(key) is not False

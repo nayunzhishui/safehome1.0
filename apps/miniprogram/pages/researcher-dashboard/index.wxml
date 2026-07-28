@@ -300,6 +300,11 @@
           <text>{{affectMonitoring.recent_runs.length ? affectMonitoring.recent_runs[0].gate_status : '尚未演练'}}</text>
         </view>
         <text wx:if="{{affectMonitoring}}" class="boundary-line">{{affectMonitoring.boundary_notice}}</text>
+        <view wx:if="{{affectReleaseGate}}" class="analysis-gate">
+          <text>发布门禁：{{affectReleaseGate.latest ? affectReleaseGate.latest.status : '尚未生成证据包'}}</text>
+          <text>阻断项 {{affectReleaseGate.latest ? affectReleaseGate.latest.blockers.length : 0}} · 生产批准：否</text>
+        </view>
+        <text wx:if="{{affectReleaseGate}}" class="boundary-line">{{affectReleaseGate.boundary_notice}}</text>
       </view>
       <view wx:if="{{analysisLoading}}" class="empty-state"><text class="state-copy">正在读取任务摘要…</text></view>
       <view wx:elif="{{analysisError}}" class="error-card">

@@ -1511,6 +1511,10 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/monitoring`, { requiresAuth: true });
     },
 
+    getOfflineModelReleaseGate() {
+      return request(`${API_ENDPOINTS.offlineBenchmarks}/release-gate`, { requiresAuth: true });
+    },
+
     getGroupNetworkAnalysisPolicy() {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/network-policy`, { requiresAuth: true });
     },

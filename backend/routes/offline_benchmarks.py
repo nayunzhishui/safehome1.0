@@ -39,6 +39,11 @@ from services.affect_monitor_service import (
     get_monitoring_status,
     run_monitor_drill,
 )
+from services.affect_release_gate_service import (
+    build_release_gate,
+    record_external_evidence,
+    release_gate_status,
+)
 
 
 bp = Blueprint("offline_benchmarks", __name__, url_prefix="/api/research/benchmarks")
@@ -214,6 +219,31 @@ def runtime_action_create(action: str):
         return error
     payload = request.get_json(silent=True) or {}
     return _response(lambda: apply_runtime_action(actor, action, payload))
+
+
+@bp.get("/release-gate")
+def release_gate_get():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(release_gate_status)
+
+
+@bp.post("/release-gate/packages")
+def release_gate_package_create():
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: build_release_gate(actor))
+
+
+@bp.post("/release-gate/evidence")
+def release_gate_evidence_create():
+    actor, error = _actor("admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(lambda: record_external_evidence(actor, payload))
 
 
 @bp.post("/cases/<case_id>/annotations")

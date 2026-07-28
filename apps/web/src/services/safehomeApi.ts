@@ -61,6 +61,8 @@ import type {
   OfflineModelReviewQueueItem,
   OfflineModelMonitoringStatus,
   OfflineModelMonitorRun,
+  OfflineModelReleaseGateRun,
+  OfflineModelReleaseGateStatus,
   OfflineModelRuntimeControl,
   OfflineModelShadowRun,
   OfflineModelVersion,
@@ -1178,6 +1180,20 @@ export class SafeHomeApiClient {
     return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/runtime-actions/${action}`, {
       method: "POST",
       body: input,
+    });
+  }
+
+  getOfflineModelReleaseGate(): Promise<OfflineModelReleaseGateStatus> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/release-gate`);
+  }
+
+  buildOfflineModelReleaseGate(): Promise<OfflineModelReleaseGateRun & {
+    boundary_notice: string;
+    temporary_showcase_privilege_counts_as_approval: false;
+    simulated_agent_counts_as_human_signoff: false;
+  }> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/release-gate/packages`, {
+      method: "POST",
     });
   }
 

@@ -88,6 +88,7 @@ REQUIRED_CONTENT_FILES = [
     "affect_model_candidate_registry.json",
     "affect_shadow_execution_policy.json",
     "affect_monitoring_policy.json",
+    "affect_release_gate_policy.json",
     "research_methodology_registry.json",
     "task37_data_use_governance.json",
     "task37_computation_contract.json",

@@ -2886,6 +2886,43 @@ export interface OfflineModelMonitoringStatus {
   boundary_notice: string;
 }
 
+export interface OfflineModelReleaseGateCheck {
+  gate_id: string;
+  passed: boolean;
+  source: "machine_contract" | "external_evidence";
+  evidence_count: number;
+}
+
+export interface OfflineModelReleaseGateRun {
+  id: ID;
+  status: "blocked_external_gates" | "ready_for_separate_release_decision";
+  checks: OfflineModelReleaseGateCheck[];
+  blockers: string[];
+  artifact_hash: string;
+  runtime_activation_allowed: false;
+  production_release_approved: false;
+  generated_by: ID;
+  generated_at: ISODateTime;
+}
+
+export interface OfflineModelReleaseGateStatus {
+  policy_version: string;
+  latest?: OfflineModelReleaseGateRun | null;
+  evidence: Record<string, Array<{
+    id: ID;
+    gate_id: string;
+    evidence_hash: string;
+    evidence_type: string;
+    signer_name: string;
+    source_environment: string;
+    simulated_agent: false;
+    recorded_at: ISODateTime;
+  }>>;
+  runtime_activation_allowed: false;
+  production_release_approved: false;
+  boundary_notice: string;
+}
+
 export interface OfflineAgreementSummary {
   complete_double_annotated_cases: number;
   required_cases: 200;

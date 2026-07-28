@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { OfflineAdjudicationQueueItem, OfflineAgreementSummary, OfflineAnnotationGovernance, OfflineBenchmarkConfig, OfflineBenchmarkRun, OfflineBlindCase, OfflineDatasetCard, OfflineEmotionLabel, OfflineModelMonitoringStatus, OfflineModelReviewQueueItem, OfflineModelShadowRun, OfflineModelVersion, OfflineSplitReport } from "../../../../shared/types/api";
+import type { OfflineAdjudicationQueueItem, OfflineAgreementSummary, OfflineAnnotationGovernance, OfflineBenchmarkConfig, OfflineBenchmarkRun, OfflineBlindCase, OfflineDatasetCard, OfflineEmotionLabel, OfflineModelMonitoringStatus, OfflineModelReleaseGateStatus, OfflineModelReviewQueueItem, OfflineModelShadowRun, OfflineModelVersion, OfflineSplitReport } from "../../../../shared/types/api";
 import { getStoredAuthUser } from "../services/authState";
 import { safeHomeApi } from "../services/safehomeApi";
 
@@ -28,6 +28,7 @@ export function OfflineBenchmarkWorkbench() {
   const [shadowQueue, setShadowQueue] = useState<OfflineModelReviewQueueItem[]>([]);
   const [codeCommit, setCodeCommit] = useState("");
   const [monitoring, setMonitoring] = useState<OfflineModelMonitoringStatus | null>(null);
+  const [releaseGate, setReleaseGate] = useState<OfflineModelReleaseGateStatus | null>(null);
   const [selectedCase, setSelectedCase] = useState<OfflineBlindCase | null>(null);
   const [labels, setLabels] = useState<OfflineEmotionLabel[]>(["unknown"]);
   const [intensity, setIntensity] = useState<0 | 1 | 2 | 3 | 4>(0);
@@ -40,7 +41,7 @@ export function OfflineBenchmarkWorkbench() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const [nextConfig, cardList, runList, blindCases, nextGovernance, versionList, shadowRunList, shadowQueueList, monitorStatus] = await Promise.all([
+    const [nextConfig, cardList, runList, blindCases, nextGovernance, versionList, shadowRunList, shadowQueueList, monitorStatus, releaseGateStatus] = await Promise.all([
       safeHomeApi.getOfflineBenchmarkConfig(),
       safeHomeApi.listOfflineDatasetCards(),
       safeHomeApi.listOfflineBenchmarkRuns(),
@@ -50,11 +51,13 @@ export function OfflineBenchmarkWorkbench() {
       safeHomeApi.listOfflineModelShadowRuns(),
       safeHomeApi.listOfflineModelReviewQueue(),
       safeHomeApi.getOfflineModelMonitoring(),
+      safeHomeApi.getOfflineModelReleaseGate(),
     ]);
     setGovernance(nextGovernance);
     setConfig(nextConfig); setCards(cardList.items); setRuns(runList.items); setCases(blindCases.items);
     setModelVersions(versionList.items); setShadowRuns(shadowRunList.items); setShadowQueue(shadowQueueList.items);
     setMonitoring(monitorStatus);
+    setReleaseGate(releaseGateStatus);
     setSelectedCase((current) => current || blindCases.items[0] || null);
     if (canReview) {
       const [nextAgreement, nextQueue, nextSplit] = await Promise.all([
@@ -112,6 +115,18 @@ export function OfflineBenchmarkWorkbench() {
         {canReview && modelVersions[0] ? <div className="benchmarkRunActions"><button className="secondaryButton" disabled={busy} type="button" onClick={() => void runAction("运行基线监测", async () => { await safeHomeApi.runOfflineModelMonitorDrill("baseline", modelVersions[0].id); await load(); })}>基线监测</button><button className="secondaryButton" disabled={busy} type="button" onClick={() => void runAction("注入弃答漂移", async () => { await safeHomeApi.runOfflineModelMonitorDrill("abstention_spike", modelVersions[0].id); await load(); })}>合成漂移演练</button>{isAdmin ? <button className="secondaryButton" disabled={busy} type="button" onClick={() => void runAction("降级为只读", async () => { await safeHomeApi.applyOfflineModelRuntimeAction("readonly_degrade", { reason: "研究者工作台人工降级演练" }); await load(); })}>只读降级</button> : null}</div> : null}
         <p className="boundaryCallout">{monitoring?.boundary_notice || "群体差异只用于检查模型误差，不解释个体心理。"}</p>
         <div className="boundaryCallout">人工复核队列 {shadowQueue.length} 条；仅含合成案例代号和弃答原因，不含原文或参与者身份。影子结果不会写入反馈、训练卡或参与者页面。</div>
+        <section className="releaseGateSummary" aria-label="情感计算发布门禁">
+          <div>
+            <span className="panelKicker">A07 · 工程完成不等于发布</span>
+            <h3>{releaseGate?.latest?.status === "ready_for_separate_release_decision" ? "可进入独立发布决策" : "外部门禁尚未完成"}</h3>
+            <p>{releaseGate?.boundary_notice || "正在读取发布门禁。"}</p>
+          </div>
+          <div className="releaseGateFacts">
+            <span>阻断项 {releaseGate?.latest?.blockers.length ?? "未生成"}</span>
+            <span>生产批准：否</span>
+          </div>
+          {canReview ? <button className="secondaryButton" disabled={busy} type="button" onClick={() => void runAction("生成门禁证据包", async () => { await safeHomeApi.buildOfflineModelReleaseGate(); await load(); })}>生成只读证据包</button> : null}
+        </section>
       </section>
 
       <div className="benchmarkColumns">

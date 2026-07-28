@@ -232,6 +232,9 @@
 | POST | `/api/research/benchmarks/monitoring/drills` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/network-policy` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/network/analyze` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/benchmarks/release-gate` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/release-gate/evidence` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/release-gate/packages` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/runs` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/<run_id>/reviews` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/affect` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |

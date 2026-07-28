@@ -14162,6 +14162,192 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "offline_benchmarks.release_gate_get.get",
+    "method": "GET",
+    "path": "/api/research/benchmarks/release-gate",
+    "handler": "offline_benchmarks.release_gate_get",
+    "module": "routes.offline_benchmarks",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.offline_benchmarks.release_gate_get.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "benchmark_content_invalid",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "offline_benchmark_disabled",
+      "offline_benchmark_killed",
+      "unauthorized"
+    ],
+    "enum_refs": [
+      "offline_benchmark_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "offline_benchmarks.release_gate_evidence_create.post",
+    "method": "POST",
+    "path": "/api/research/benchmarks/release-gate/evidence",
+    "handler": "offline_benchmarks.release_gate_evidence_create",
+    "module": "routes.offline_benchmarks",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.offline_benchmarks.release_gate_evidence_create.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "benchmark_content_invalid",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "offline_benchmark_disabled",
+      "offline_benchmark_killed",
+      "unauthorized"
+    ],
+    "enum_refs": [
+      "offline_benchmark_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "offline_benchmarks.release_gate_package_create.post",
+    "method": "POST",
+    "path": "/api/research/benchmarks/release-gate/packages",
+    "handler": "offline_benchmarks.release_gate_package_create",
+    "module": "routes.offline_benchmarks",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.offline_benchmarks.release_gate_package_create.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "benchmark_content_invalid",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "offline_benchmark_disabled",
+      "offline_benchmark_killed",
+      "unauthorized"
+    ],
+    "enum_refs": [
+      "offline_benchmark_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "offline_benchmarks.runs.get",
     "method": "GET",
     "path": "/api/research/benchmarks/runs",
