@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 372,
+  "operation_count": 379,
   "capability_count": 44,
   "capabilities": [
     {
@@ -114,9 +114,9 @@
         "AI_QA_ENABLED",
         "AI_QA_SANDBOX_ENABLED"
       ],
-      "version": "2026-07-28.1",
+      "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 25)",
+        "backend/tests (operation coverage: 29)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -139,6 +139,10 @@
         "ai_qa.ai_qa_provider_evidence_create.post",
         "ai_qa.ai_qa_provider_evidence_verify.post",
         "ai_qa.ai_qa_providers.get",
+        "ai_qa.ai_qa_release_evidence_package.post",
+        "ai_qa.ai_qa_release_rollback.post",
+        "ai_qa.ai_qa_release_status.get",
+        "ai_qa.ai_qa_release_transition.post",
         "ai_qa.ai_qa_retention_purge.post",
         "ai_qa.ai_qa_review_case_decision.post",
         "ai_qa.ai_qa_review_case_detail.get",

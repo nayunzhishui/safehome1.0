@@ -2416,3 +2416,11 @@ relationship_initiation_intention_action
 - `GET /api/ai-qa/config`新增`runtime_limits`，公开范围、熔断参数、降级模式、分层保留期限和核心服务隔离边界，不公开预算使用明细或密钥。
 - `POST /api/ai-qa/retention/purge`分别处理合成会话原文、去标识衍生数据和供应商元数据；审计日志不随该接口自动删除。默认先`dry_run`，生产删除仍需独立批准。
 - kill switch关闭后不能通过普通API重新打开；工程完成不等于真实Provider或生产发布批准。
+
+### T37-C10 AI分阶段发布
+
+- `GET /api/ai-qa/release/status`：内部研究角色读取当前阶段、下一阶段、未通过门禁和最近事件；参与者不可访问。
+- `POST /api/ai-qa/release/transition`：仅管理员可按`local_fake → synthetic_real_provider → test_cloud_shadow → researcher_read_only → researcher_editable_candidate → restricted_participant_evaluation`顺序申请晋级，要求幂等键和版本锁。不能跳级、不能用模拟Agent签字、不能自动进入参与者阶段。
+- `POST /api/ai-qa/release/rollback`：仅管理员可因无来源、越权、错误发布、供应商治理违约或kill switch不可用立即回退到较早阶段；回退同时启用AI kill switch，但不关闭消息、记录和人工反馈。
+- `POST /api/ai-qa/release/evidence-packages`：督导或管理员生成只读证据包，包含策略/运行/质量/供应商治理制品哈希、当前阶段和阻断项；不包含密钥或原始参与者文本，也不形成生产批准。
+- `GET /api/ai-qa/config`新增`release_plan`，公开当前工程阶段和门禁；`participant_entry_enabled`与`production_release_approved`保持服务端失败关闭。

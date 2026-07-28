@@ -1360,6 +1360,48 @@ def validate_ai_runtime_policy_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_ai_release_policy_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        policy = load_json(content_dir / "ai_qa_release_policy.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"AI分阶段发布策略不可读取：{exc}"]
+    if policy.get("schema_version") != "safehome.ai-qa-release-policy.v1":
+        errors.append("AI分阶段发布策略版本不兼容")
+    stages = policy.get("stages", [])
+    expected_ids = [
+        "local_fake",
+        "synthetic_real_provider",
+        "test_cloud_shadow",
+        "researcher_read_only",
+        "researcher_editable_candidate",
+        "restricted_participant_evaluation",
+    ]
+    if [item.get("id") for item in stages] != expected_ids:
+        errors.append("AI发布阶段缺失或顺序不正确")
+    if [item.get("order") for item in stages] != list(range(6)):
+        errors.append("AI发布阶段序号必须连续")
+    required_triggers = {
+        "missing_source",
+        "unauthorized_access",
+        "incorrect_publication",
+        "provider_governance_breach",
+        "kill_switch_unavailable",
+    }
+    if not required_triggers.issubset(
+        set(policy.get("immediate_rollback_triggers") or [])
+    ):
+        errors.append("AI立即回退触发器不完整")
+    if (
+        policy.get("automatic_advance_allowed") is not False
+        or policy.get("simulated_signoffs_counted") is not False
+        or policy.get("participant_entry_enabled") is not False
+        or policy.get("production_release_approved") is not False
+    ):
+        errors.append("AI发布策略不得自动晋级、模拟签字或批准参与者入口")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -1382,6 +1424,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_operations_governance_content(content_dir))
     errors.extend(validate_ai_continuous_quality_content(content_dir))
     errors.extend(validate_ai_runtime_policy_content(content_dir))
+    errors.extend(validate_ai_release_policy_content(content_dir))
     return errors
 
 

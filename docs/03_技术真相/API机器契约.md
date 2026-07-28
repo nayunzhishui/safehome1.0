@@ -26,6 +26,10 @@
 | GET | `/api/ai-qa/providers/evidence` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
 | POST | `/api/ai-qa/providers/evidence` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | supported | active |
 | POST | `/api/ai-qa/providers/evidence/<evidence_id>/verify` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | supported | active |
+| POST | `/api/ai-qa/release/evidence-packages` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| POST | `/api/ai-qa/release/rollback` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | supported | active |
+| GET | `/api/ai-qa/release/status` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
+| POST | `/api/ai-qa/release/transition` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | supported | active |
 | POST | `/api/ai-qa/retention/purge` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
 | GET | `/api/ai-qa/review-cases` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |
 | GET | `/api/ai-qa/review-cases/<case_id>` | role:researcher,admin | internal_synthetic_evidence_role_scoped | — | — | active |

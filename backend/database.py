@@ -144,6 +144,9 @@ REQUIRED_HEALTH_TABLES = [
     "ai_qa_review_cases",
     "ai_qa_review_actions",
     "ai_qa_circuit_states",
+    "ai_qa_release_state",
+    "ai_qa_release_events",
+    "ai_qa_release_evidence_packages",
     "therapeutic_assessment_release_evidence",
     "therapeutic_assessment_release_gate_runs",
     "therapeutic_assessment_release_gate_checks",
@@ -155,8 +158,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_055"
-CURRENT_SCHEMA_NAME = "ai_runtime_controls"
+CURRENT_SCHEMA_VERSION = "2026_07_29_056"
+CURRENT_SCHEMA_NAME = "ai_staged_release"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {

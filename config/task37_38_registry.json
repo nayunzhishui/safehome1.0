@@ -775,7 +775,37 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T37-C10", "title": "AI分阶段发布", "dependencies": ["T37-C09"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-C10",
+      "title": "AI分阶段发布",
+      "dependencies": ["T37-C09"],
+      "engineering_complete": true,
+      "status": "engineering_complete_staged_release_external_gates_blocked",
+      "evidence": [
+        "backend/services/ai_qa_release_service.py",
+        "backend/routes/ai_qa.py",
+        "backend/models.py",
+        "backend/database.py",
+        "backend/scripts/migrate_task37_c10_ai_staged_release.py",
+        "backend/tests/test_task37_c10_ai_release_stages.py",
+        "content/ai_qa_release_policy.json",
+        "shared/types/api.ts",
+        "apps/web/src/pages/AiQaSandboxPage.tsx",
+        "apps/miniprogram/services/api.js"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_c10_ai_release_stages.py", "backend/tests/test_task37_c09_runtime_controls.py", "backend/tests/test_task37_c08_ai_quality.py", "backend/tests/test_task37_c07_ai_review_workbench.py", "backend/tests/test_ai_qa_controlled_sandbox.py", "backend/tests/test_ai_qa_production_readiness.py", "backend/tests/test_task28_ai_qa_contract.py", "backend/tests/test_healthz.py", "backend/tests/test_mysql_database_adapter.py", "backend/tests/test_schema_migrations.py", "backend/tests/test_task31_security_contract.py", "backend/tests/test_task31_security_privacy_abuse.py", "backend/tests/test_task34_operations_contract.py", "backend/tests/test_task34_operations_governance.py", "-q"],
+        ["python", "backend/scripts/migrate_task37_c10_ai_staged_release.py", "plan", "--database-path", ".codex_tmp/t37_c10_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c10_ai_staged_release.py", "apply", "--database-path", ".codex_tmp/t37_c10_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c10_ai_staged_release.py", "verify", "--database-path", ".codex_tmp/t37_c10_registry.sqlite3"],
+        ["python", "backend/scripts/migrate_task37_c10_ai_staged_release.py", "rollback", "--database-path", ".codex_tmp/t37_c10_registry.sqlite3"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["node", "--check", "apps/miniprogram/services/api.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T38-F13", "title": "低风险成人L1/L2首发范围", "dependencies": ["T38-F12"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T38-F14", "title": "未成年人/亲子保护子线", "dependencies": ["T38-F13"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T38-F15", "title": "伴侣与多人资料保护子线", "dependencies": ["T38-F14"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

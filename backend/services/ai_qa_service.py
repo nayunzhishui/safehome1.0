@@ -135,6 +135,8 @@ def _require_allowed_use_case(use_case_id: object) -> tuple[str, dict]:
 
 
 def get_config_status() -> dict:
+    from services.ai_qa_release_service import get_release_plan_summary
+
     from services.ai_provider_governance_service import (
         get_provider_selection_summary,
         get_runtime_provider_admission,
@@ -205,6 +207,7 @@ def get_config_status() -> dict:
         "input_security": get_input_security_policy(),
         "output_contract": get_output_gate_policy(),
         "runtime_limits": runtime_policy_summary(),
+        "release_plan": get_release_plan_summary(),
         "use_case_policy": get_use_case_catalog(),
         "boundary_notice": governance.get("boundary_notice"),
     }

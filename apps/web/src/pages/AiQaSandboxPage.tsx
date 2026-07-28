@@ -315,6 +315,8 @@ export function AiQaSandboxPage() {
           <div><dt>Grounding 边界</dt><dd>{config?.output_contract?.grounding_is_factuality_check === false ? "词面启发式，不等于事实正确" : "等待新版本服务"}</dd></div>
           <div><dt>预算与限流范围</dt><dd>{config?.runtime_limits?.scopes.join(" / ") || "等待新版本服务"}</dd></div>
           <div><dt>故障降级</dt><dd>{config?.runtime_limits?.degradation.mode === "read_only_fixed_response" ? "只读固定回执，核心记录链路不受影响" : "等待新版本服务"}</dd></div>
+          <div><dt>当前发布阶段</dt><dd>{config?.release_plan?.current_stage || "等待新版本服务"}</dd></div>
+          <div><dt>下一阶段门禁</dt><dd>{config?.release_plan?.next_stage_blockers.length ? `${config.release_plan.next_stage_blockers.length}项未通过` : "无自动发布许可"}</dd></div>
           <div><dt>合成原文保留</dt><dd>{config?.data_policy.synthetic_retention_days ? `${config.data_policy.synthetic_retention_days}天` : "待服务更新"}</dd></div>
           <div><dt>训练使用</dt><dd>禁止</dd></div>
         </dl>

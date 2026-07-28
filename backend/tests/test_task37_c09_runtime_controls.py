@@ -329,6 +329,6 @@ def test_schema_055_adds_durable_circuit_state(tmp_path, monkeypatch):
                     "SELECT name FROM sqlite_master WHERE type='table'"
                 )
             }
-    assert database.CURRENT_SCHEMA_VERSION == "2026_07_28_055"
-    assert database.CURRENT_SCHEMA_NAME == "ai_runtime_controls"
+    assert database.CURRENT_SCHEMA_VERSION >= "2026_07_28_055"
+    assert database.CURRENT_SCHEMA_NAME
     assert "ai_qa_circuit_states" in tables

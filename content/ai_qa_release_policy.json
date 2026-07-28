@@ -1,0 +1,87 @@
+{
+  "schema_version": "safehome.ai-qa-release-policy.v1",
+  "policy_version": "2026.07-task37-c10-v1",
+  "stages": [
+    {
+      "id": "local_fake",
+      "order": 0,
+      "provider_mode": "fake",
+      "audience": "internal_research",
+      "write_mode": "none",
+      "required_gates": []
+    },
+    {
+      "id": "synthetic_real_provider",
+      "order": 1,
+      "provider_mode": "real_provider_synthetic_only",
+      "audience": "internal_research",
+      "write_mode": "none",
+      "required_gates": [
+        "verified_provider_governance",
+        "approved_synthetic_quality_run"
+      ]
+    },
+    {
+      "id": "test_cloud_shadow",
+      "order": 2,
+      "provider_mode": "real_provider_synthetic_only",
+      "audience": "internal_research",
+      "write_mode": "shadow_only",
+      "required_gates": [
+        "test_cloud_evidence",
+        "rollback_drill_evidence"
+      ]
+    },
+    {
+      "id": "researcher_read_only",
+      "order": 3,
+      "provider_mode": "controlled",
+      "audience": "qualified_researcher",
+      "write_mode": "read_only_suggestion",
+      "required_gates": [
+        "qualified_researcher_scope",
+        "monitoring_window_evidence"
+      ]
+    },
+    {
+      "id": "researcher_editable_candidate",
+      "order": 4,
+      "provider_mode": "controlled",
+      "audience": "qualified_researcher",
+      "write_mode": "editable_candidate_only",
+      "required_gates": [
+        "review_workbench_ready",
+        "draft_review_separation",
+        "monitoring_window_evidence"
+      ]
+    },
+    {
+      "id": "restricted_participant_evaluation",
+      "order": 5,
+      "provider_mode": "controlled",
+      "audience": "separately_approved_participant_cohort",
+      "write_mode": "restricted_question_answer",
+      "required_gates": [
+        "task38_related_gates",
+        "human_release_approval",
+        "production_recovery_evidence"
+      ]
+    }
+  ],
+  "immediate_rollback_triggers": [
+    "missing_source",
+    "unauthorized_access",
+    "incorrect_publication",
+    "provider_governance_breach",
+    "kill_switch_unavailable"
+  ],
+  "core_services_unaffected": [
+    "messages",
+    "records",
+    "human_feedback"
+  ],
+  "automatic_advance_allowed": false,
+  "simulated_signoffs_counted": false,
+  "participant_entry_enabled": false,
+  "production_release_approved": false
+}

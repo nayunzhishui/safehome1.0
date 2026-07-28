@@ -3038,8 +3038,63 @@ export interface AiQaConfig {
     kill_switch_reactivation_via_api: false;
     production_release_approved: false;
   };
+  release_plan: AiQaReleaseStatus;
   use_case_policy: AiQaUseCaseCatalog;
   boundary_notice: string;
+}
+
+export type AiQaReleaseStageId =
+  | "local_fake"
+  | "synthetic_real_provider"
+  | "test_cloud_shadow"
+  | "researcher_read_only"
+  | "researcher_editable_candidate"
+  | "restricted_participant_evaluation";
+
+export interface AiQaReleaseStage {
+  id: AiQaReleaseStageId;
+  order: number;
+  provider_mode: string;
+  audience: string;
+  write_mode: string;
+  required_gates: string[];
+}
+
+export interface AiQaReleaseStatus {
+  policy_version: string;
+  current_stage: AiQaReleaseStageId;
+  current_order: number;
+  state_version: number;
+  next_stage: AiQaReleaseStageId | null;
+  next_stage_blockers: string[];
+  stages: AiQaReleaseStage[];
+  automatic_advance_allowed: false;
+  participant_entry_enabled: boolean;
+  production_release_approved: false;
+  simulated_signoffs_counted: false;
+  core_services_unaffected: Array<
+    "messages" | "records" | "human_feedback"
+  >;
+  recent_events?: Array<Record<string, unknown>>;
+}
+
+export interface AiQaReleaseEvidencePackage {
+  id: ID;
+  policy_version: string;
+  current_stage: AiQaReleaseStageId;
+  state_version: number;
+  next_stage_blockers: string[];
+  artifact_fingerprints: Record<string, string>;
+  artifact_sha256: string;
+  automatic_advance_allowed: false;
+  participant_entry_enabled: false;
+  production_release_approved: false;
+  simulated_signoffs_counted: false;
+  core_services_unaffected: Array<
+    "messages" | "records" | "human_feedback"
+  >;
+  generated_by: ID;
+  generated_at: ISODateTime;
 }
 
 export interface AiQaAnswer {

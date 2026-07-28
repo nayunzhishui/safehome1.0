@@ -40,6 +40,13 @@ from services.ai_qa_review_service import (
     get_review_case,
     list_review_cases,
 )
+from services.ai_qa_release_service import (
+    AiQaReleaseError,
+    create_release_evidence_package,
+    release_status,
+    rollback_release,
+    transition_release,
+)
 
 
 bp = Blueprint("ai_qa", __name__, url_prefix="/api/ai-qa")
@@ -62,7 +69,12 @@ def _response(callback):
         ):
             return ok(result[0], status=result[1])
         return ok(result)
-    except (AiQaError, KnowledgeError, AiQaReviewError) as exc:
+    except (
+        AiQaError,
+        KnowledgeError,
+        AiQaReviewError,
+        AiQaReleaseError,
+    ) as exc:
         return fail(exc.code, str(exc), status=exc.status, details=exc.details or None)
 
 
@@ -292,3 +304,39 @@ def ai_qa_retention_purge():
         return error
     payload = request.get_json(silent=True) or {}
     return _response(lambda: purge_expired_synthetic_data(actor, payload))
+
+
+@bp.get("/release/status")
+def ai_qa_release_status():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: release_status(actor))
+
+
+@bp.post("/release/transition")
+def ai_qa_release_transition():
+    actor, error = _actor("admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    key = str(request.headers.get("Idempotency-Key") or "")
+    return _response(lambda: transition_release(actor, payload, key))
+
+
+@bp.post("/release/rollback")
+def ai_qa_release_rollback():
+    actor, error = _actor("admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    key = str(request.headers.get("Idempotency-Key") or "")
+    return _response(lambda: rollback_release(actor, payload, key))
+
+
+@bp.post("/release/evidence-packages")
+def ai_qa_release_evidence_package():
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    return _response(lambda: create_release_evidence_package(actor))

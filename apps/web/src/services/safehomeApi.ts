@@ -8,6 +8,9 @@ import type {
   AiQaReviewCase,
   AiQaReviewDecisionInput,
   AiQaReviewEvidence,
+  AiQaReleaseEvidencePackage,
+  AiQaReleaseStageId,
+  AiQaReleaseStatus,
   AiQaSession,
   AiKnowledgeInventory,
   AiKnowledgeRebuildResult,
@@ -1074,6 +1077,53 @@ export class SafeHomeApiClient {
 
   getAiQaConfig(): Promise<AiQaConfig> {
     return this.requestData(API_ENDPOINTS.aiQaConfig);
+  }
+
+  getAiQaReleaseStatus(): Promise<AiQaReleaseStatus> {
+    return this.requestData(API_ENDPOINTS.aiQaReleaseStatus);
+  }
+
+  transitionAiQaRelease(
+    input: {
+      target_stage: AiQaReleaseStageId;
+      expected_version: number;
+      simulated_agent: false;
+      reason?: string;
+    },
+    idempotencyKey: string,
+  ): Promise<AiQaReleaseStatus> {
+    return this.requestData(API_ENDPOINTS.aiQaReleaseTransition, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  rollbackAiQaRelease(
+    input: {
+      trigger:
+        | "missing_source"
+        | "unauthorized_access"
+        | "incorrect_publication"
+        | "provider_governance_breach"
+        | "kill_switch_unavailable";
+      target_stage: AiQaReleaseStageId;
+      expected_version: number;
+      reason: string;
+    },
+    idempotencyKey: string,
+  ): Promise<AiQaReleaseStatus> {
+    return this.requestData(API_ENDPOINTS.aiQaReleaseRollback, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  createAiQaReleaseEvidencePackage(): Promise<AiQaReleaseEvidencePackage> {
+    return this.requestData(API_ENDPOINTS.aiQaReleaseEvidencePackages, {
+      method: "POST",
+    });
   }
 
   getAiProviderSelection(): Promise<AiProviderSelection> {

@@ -691,6 +691,45 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS ai_qa_release_state (
+        singleton_key TEXT PRIMARY KEY,
+        current_stage TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1,
+        changed_by TEXT NOT NULL,
+        changed_at TEXT NOT NULL,
+        production_release_approved INTEGER NOT NULL DEFAULT 0
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_release_events (
+        id TEXT PRIMARY KEY,
+        action TEXT NOT NULL,
+        from_stage TEXT NOT NULL,
+        to_stage TEXT NOT NULL,
+        trigger_code TEXT,
+        reason TEXT,
+        evidence_json TEXT NOT NULL DEFAULT '[]',
+        idempotency_key TEXT NOT NULL,
+        request_hash TEXT NOT NULL,
+        state_version INTEGER NOT NULL,
+        actor_id TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(actor_id, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS ai_qa_release_evidence_packages (
+        id TEXT PRIMARY KEY,
+        current_stage TEXT NOT NULL,
+        policy_version TEXT NOT NULL,
+        payload_json TEXT NOT NULL DEFAULT '{}',
+        artifact_sha256 TEXT NOT NULL,
+        generated_by TEXT NOT NULL,
+        generated_at TEXT NOT NULL,
+        production_release_approved INTEGER NOT NULL DEFAULT 0
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS family_links (
         id TEXT PRIMARY KEY,
         parent_user_id TEXT NOT NULL,
@@ -2714,6 +2753,8 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_safety_created ON ai_qa_safety_events(category, severity, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_provider_created ON ai_qa_provider_events(provider, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_circuit_state ON ai_qa_circuit_states(state, next_probe_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_release_events_created ON ai_qa_release_events(created_at, action)",
+    "CREATE INDEX IF NOT EXISTS idx_ai_qa_release_packages_created ON ai_qa_release_evidence_packages(generated_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_documents_status ON ai_knowledge_documents(status, content_type, updated_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_documents_release ON ai_knowledge_documents(release_id, status)",
     "CREATE INDEX IF NOT EXISTS idx_ai_knowledge_chunks_document ON ai_knowledge_chunks(document_id, ordinal)",

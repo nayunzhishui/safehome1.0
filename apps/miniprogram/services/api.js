@@ -149,6 +149,10 @@ const API_ENDPOINTS = {
   researchDeliveries: "/api/research/deliveries",
   contentGovernanceActive: "/api/content-review/active",
   aiQaConfig: "/api/ai-qa/config",
+  aiQaReleaseStatus: "/api/ai-qa/release/status",
+  aiQaReleaseTransition: "/api/ai-qa/release/transition",
+  aiQaReleaseRollback: "/api/ai-qa/release/rollback",
+  aiQaReleaseEvidencePackages: "/api/ai-qa/release/evidence-packages",
   aiQaUseCases: "/api/ai-qa/use-cases",
   aiQaProviders: "/api/ai-qa/providers",
   aiQaProviderEvidence: "/api/ai-qa/providers/evidence",
@@ -1583,6 +1587,35 @@ function createSafeHomeApi(options = {}) {
 
     getAiQaConfig() {
       return request(API_ENDPOINTS.aiQaConfig);
+    },
+
+    getAiQaReleaseStatus() {
+      return request(API_ENDPOINTS.aiQaReleaseStatus, { requiresAuth: true });
+    },
+
+    transitionAiQaRelease(data, idempotencyKey) {
+      return request(API_ENDPOINTS.aiQaReleaseTransition, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+        header: { "Idempotency-Key": idempotencyKey },
+      });
+    },
+
+    rollbackAiQaRelease(data, idempotencyKey) {
+      return request(API_ENDPOINTS.aiQaReleaseRollback, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+        header: { "Idempotency-Key": idempotencyKey },
+      });
+    },
+
+    createAiQaReleaseEvidencePackage() {
+      return request(API_ENDPOINTS.aiQaReleaseEvidencePackages, {
+        method: "POST",
+        requiresAuth: true,
+      });
     },
 
     getAiQaUseCases() {

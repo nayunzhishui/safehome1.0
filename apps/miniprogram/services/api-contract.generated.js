@@ -1248,6 +1248,254 @@ const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "ai_qa.ai_qa_release_evidence_package.post",
+    "method": "POST",
+    "path": "/api/ai-qa/release/evidence-packages",
+    "handler": "ai_qa.ai_qa_release_evidence_package",
+    "module": "routes.ai_qa",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_synthetic_evidence_role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.ai_qa.ai_qa_release_evidence_package.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "ai_qa_killed",
+      "ai_qa_sandbox_disabled",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [
+      "ai_qa_route"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "ai_qa.ai_qa_release_rollback.post",
+    "method": "POST",
+    "path": "/api/ai-qa/release/rollback",
+    "handler": "ai_qa.ai_qa_release_rollback",
+    "module": "routes.ai_qa",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_synthetic_evidence_role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [
+        "Idempotency-Key"
+      ],
+      "pagination": null,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.ai_qa.ai_qa_release_rollback.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "ai_qa_killed",
+      "ai_qa_sandbox_disabled",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [
+      "ai_qa_route"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "ai_qa.ai_qa_release_status.get",
+    "method": "GET",
+    "path": "/api/ai-qa/release/status",
+    "handler": "ai_qa.ai_qa_release_status",
+    "module": "routes.ai_qa",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_synthetic_evidence_role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.ai_qa.ai_qa_release_status.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "ai_qa_killed",
+      "ai_qa_sandbox_disabled",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [
+      "ai_qa_route"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "ai_qa.ai_qa_release_transition.post",
+    "method": "POST",
+    "path": "/api/ai-qa/release/transition",
+    "handler": "ai_qa.ai_qa_release_transition",
+    "module": "routes.ai_qa",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "researcher",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "internal_synthetic_evidence_role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [
+        "Idempotency-Key"
+      ],
+      "pagination": null,
+      "idempotency": {
+        "supported": true,
+        "required": false,
+        "header": "Idempotency-Key",
+        "max_length": 120
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.ai_qa.ai_qa_release_transition.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "ai_qa_killed",
+      "ai_qa_sandbox_disabled",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [
+      "ai_qa_route"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "ai_qa.ai_qa_retention_purge.post",
     "method": "POST",
     "path": "/api/ai-qa/retention/purge",
