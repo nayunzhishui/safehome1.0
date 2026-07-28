@@ -66,6 +66,8 @@ REQUIRED_HEALTH_TABLES = [
     "offline_dataset_cards",
     "offline_benchmark_runs",
     "offline_benchmark_annotations",
+    "offline_annotation_adjudications",
+    "offline_annotation_group_splits",
     "offline_benchmark_reviews",
     "offline_benchmark_runtime_control",
     "research_methodology_versions",
@@ -126,8 +128,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_28_041"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_quality_supervision"
+CURRENT_SCHEMA_VERSION = "2026_07_28_042"
+CURRENT_SCHEMA_NAME = "offline_annotation_rights_and_adjudication"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1087,6 +1089,20 @@ def ensure_schema_columns(conn) -> None:
     ensure_column(conn, "data_claims", "version", "INTEGER NOT NULL DEFAULT 0")
     ensure_column(conn, "identity_merge_record_links", "source_value", "TEXT")
     ensure_column(conn, "identity_merge_record_links", "target_value", "TEXT")
+    offline_annotation_columns = {
+        "emotion_labels_json": "TEXT NOT NULL DEFAULT '[]'",
+        "intensity": "INTEGER NOT NULL DEFAULT 0",
+        "polarity_status": "TEXT NOT NULL DEFAULT 'uncertain'",
+        "evidence_excerpt": "TEXT",
+        "rationale": "TEXT",
+        "needs_human_understanding": "INTEGER NOT NULL DEFAULT 0",
+        "human_review_reason": "TEXT",
+        "manual_version": "TEXT NOT NULL DEFAULT 'legacy-t29-v1'",
+        "group_hash": "TEXT",
+        "data_split": "TEXT",
+    }
+    for column, definition in offline_annotation_columns.items():
+        ensure_column(conn, "offline_benchmark_annotations", column, definition)
     therapeutic_state_columns = {
         "workflow_state": "TEXT NOT NULL DEFAULT 'draft_local'",
         "hypothesis_state": "TEXT NOT NULL DEFAULT 'observations_only'",

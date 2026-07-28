@@ -69,6 +69,28 @@
       "raw_participant_text_included": false
     },
     {
+      "source_file": "emotion_annotation_examples.json",
+      "source_version": "2026-07-28-t37-a01-v1",
+      "source_sha256": "4d35a7c4d9c4f44bb2b472ba608668cfbdc3c6b80915649c3b632c876336f51c",
+      "content_types": [
+        "emotion_annotation_examples"
+      ],
+      "governance_status": "engineering_complete_expert_review_pending",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "emotion_annotation_ontology.json",
+      "source_version": "2026-07-28-t37-a01-v1",
+      "source_sha256": "6885d03c526d23a3cd0de3b0d8643fb63c6d797e6cd2bfcb035050f563caa331",
+      "content_types": [
+        "emotion_annotation_ontology"
+      ],
+      "governance_status": "engineering_complete_expert_review_pending",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
       "source_file": "feedback_rules.json",
       "source_version": "2026.07-feedback-rules-v3",
       "source_sha256": "fdc285f2ae7d0a6eda1978ed0d103b1ec374fc1ef581f64109000ccae4cd6db0",
@@ -80,9 +102,20 @@
       "raw_participant_text_included": false
     },
     {
+      "source_file": "offline_annotation_data_policy.json",
+      "source_version": "2026-07-28-t37-a02-v1",
+      "source_sha256": "5389194cc4564188ee714f16fc5d9a0acecd8fb2a8bb986fcd55a25d3d26f286",
+      "content_types": [
+        "annotation_data_rights_policy"
+      ],
+      "governance_status": "engineering_complete_real_data_rights_gated",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
       "source_file": "offline_benchmark_annotation_manual.json",
-      "source_version": "2026.07-task29-annotation-v1",
-      "source_sha256": "5748abd840de0eb1280f7e5bc63a2b8bea5fc194e31106fdfa2e5ee18fd2d974",
+      "source_version": "2026-07-28-t37-a01-bridge-v1",
+      "source_sha256": "fd453f41f145066e1ca18fcd674631be8a5ba86b80d1197191cdc4bdbddda1a7",
       "content_types": [
         "research_annotation_manual"
       ],
@@ -128,7 +161,7 @@
     {
       "source_file": "operations_capability_registry.json",
       "source_version": "2026-07-21-t34-v1",
-      "source_sha256": "edfab03ed572c0c48cae8404db3415e01fd0264de0c18d48474d411c8862d44b",
+      "source_sha256": "6e70d65c6d42b4812a4288600a027179066efbcbd9f8349bb3112eacd6ed1415",
       "content_types": [
         "capability_registry",
         "release_gate",
@@ -200,7 +233,7 @@
     {
       "source_file": "security_privacy_abuse_registry.json",
       "source_version": "2026-07-20-t31-security-v1",
-      "source_sha256": "e1e3db10210ab9a7a5712fd3692d6035844c9a1e6640367155e5074b4b484e28",
+      "source_sha256": "abee7c762f10679e7020783ea09e0a0e69f74991595c8d068100f3ce13a29caa",
       "content_types": [
         "security_asset_inventory",
         "authorization_matrix",
@@ -250,5 +283,5 @@
   "draft_or_internal_notes_indexed": false,
   "participant_text_indexed": false,
   "production_release_approved": false,
-  "index_hash": "f22017a2f2f5410a8ad20cfd00e5232c58174fd04022c28d8adbb21ec0bebc5a"
+  "index_hash": "560a13bc251d7608890e1053c890632fa3ff9a12f19b660816c0faa2b7736ba6"
 }

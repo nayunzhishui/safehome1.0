@@ -1,0 +1,65 @@
+{
+  "schema": "safehome.offline-annotation-data-policy.v1",
+  "version": "2026-07-28-t37-a02-v1",
+  "status": "engineering_complete_real_data_rights_gated",
+  "active_dataset_id": "safehome_synthetic_affect_240_v1",
+  "active_data_class": "synthetic",
+  "purpose": "中文情绪线索标注流程、模型比较和一致性方法演练",
+  "minimum_necessary_fields": [
+    "case_id",
+    "text",
+    "synthetic",
+    "group_hash",
+    "annotation_fields"
+  ],
+  "identity_fields_hidden": [
+    "participant_user_id",
+    "family_id",
+    "project_member_id",
+    "nickname",
+    "wechat_openid",
+    "phone",
+    "email",
+    "source_record_id"
+  ],
+  "deidentification": {
+    "group_key_storage": "sha256_with_project_domain_separator",
+    "raw_group_key_persisted": false,
+    "annotator_identity_visible_to_peer": false,
+    "free_text_export_allowed": false
+  },
+  "retention": {
+    "synthetic_cases_days": 0,
+    "annotations_days": 730,
+    "adjudications_days": 730,
+    "audit_logs_days": 1095,
+    "zero_means_project_owned_synthetic_fixture": true
+  },
+  "split_policy": {
+    "version": "group-hash-70-15-15-v1",
+    "group_levels": ["user", "family", "project"],
+    "train_percent": 70,
+    "validation_percent": 15,
+    "test_percent": 15,
+    "same_group_cross_split_allowed": false
+  },
+  "annotation_policy": {
+    "minimum_independent_annotators": 2,
+    "peer_answers_visible_before_submit": false,
+    "model_prediction_visible_before_submit": false,
+    "adjudicator_must_be_independent": true,
+    "original_annotations_preserved": true
+  },
+  "real_data_gate": {
+    "allowed": false,
+    "required_evidence": [
+      "purpose_specific_consent",
+      "rights_evidence",
+      "ethics_approval",
+      "deidentification_verification",
+      "retention_and_deletion_plan"
+    ],
+    "automatic_approval_allowed": false,
+    "fallback": "synthetic_only"
+  }
+}

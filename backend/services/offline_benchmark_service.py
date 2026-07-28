@@ -24,11 +24,16 @@ ALLOWED_LABELS = {
     "calm",
     "positive",
     "crisis_expression",
+    "unknown",
     "unmapped",
 }
+ANNOTATION_EMOTION_LABELS = ALLOWED_LABELS - {"crisis_expression"}
 ALLOWED_REFLEX_NODES = {"trigger", "thought", "body_feeling", "emotion", "reaction", "behavior", "outcome", "unmapped"}
 REVIEW_DECISIONS = {"engineering_reviewed", "changes_required", "stop"}
 ALGORITHM_VERSION = "safehome-offline-affect-network-v1"
+ANNOTATION_DATASET_ID = "safehome_synthetic_affect_240_v1"
+ANNOTATION_MANUAL_VERSION = "2026-07-28-t37-a01-v1"
+SPLIT_POLICY_VERSION = "group-hash-70-15-15-v1"
 
 
 class OfflineBenchmarkError(ValueError):
@@ -73,6 +78,23 @@ def get_config() -> dict:
         "synthetic_case_count": manual["target_case_count"],
         "runtime_control": {"disabled": int(_control().get("disabled") or 0), "changed_at": _control().get("changed_at")},
         "boundary_notice": registry["boundary_notice"],
+    }
+
+
+def get_annotation_governance() -> dict:
+    policy = _content_json("offline_annotation_data_policy.json")
+    return {
+        "version": policy["version"],
+        "active_dataset_id": policy["active_dataset_id"],
+        "active_data_class": policy["active_data_class"],
+        "purpose": policy["purpose"],
+        "minimum_necessary_fields": policy["minimum_necessary_fields"],
+        "identity_fields_hidden": policy["identity_fields_hidden"],
+        "deidentification": policy["deidentification"],
+        "retention": policy["retention"],
+        "split_policy": policy["split_policy"],
+        "annotation_policy": policy["annotation_policy"],
+        "real_data_gate": policy["real_data_gate"],
     }
 
 
@@ -133,14 +155,91 @@ def list_blind_cases(actor: dict, offset: int = 0, limit: int = 20) -> dict:
     return {"items": items, "offset": offset, "limit": limit, "total": 240, "blind": True, "generator_labels_included": False}
 
 
+def _annotation_fields(data: dict, case_text: str) -> dict:
+    raw_labels = data.get("emotion_labels")
+    if raw_labels is None:
+        raw_labels = [data.get("emotion_label")]
+    if not isinstance(raw_labels, list):
+        raise OfflineBenchmarkError("annotation_labels_invalid", "情绪标签必须为数组")
+    labels = list(dict.fromkeys(str(item or "").strip() for item in raw_labels))
+    if not 1 <= len(labels) <= 3 or any(label not in ANNOTATION_EMOTION_LABELS for label in labels):
+        raise OfflineBenchmarkError("annotation_label_invalid", "情绪标签需为一至三个已登记标签")
+    polarity = str(data.get("polarity_status") or ("uncertain" if labels == ["unknown"] else "affirmed"))
+    if polarity not in {"affirmed", "negated", "uncertain"}:
+        raise OfflineBenchmarkError("annotation_polarity_invalid", "否定状态无效")
+    try:
+        intensity = int(data.get("intensity", 0 if polarity != "affirmed" else 2))
+    except (TypeError, ValueError) as exc:
+        raise OfflineBenchmarkError("annotation_intensity_invalid", "强度必须为0至4整数") from exc
+    if not 0 <= intensity <= 4:
+        raise OfflineBenchmarkError("annotation_intensity_invalid", "强度必须为0至4整数")
+    evidence_excerpt = str(data.get("evidence_excerpt") or "").strip()
+    if evidence_excerpt and (len(evidence_excerpt) > 160 or evidence_excerpt not in case_text):
+        raise OfflineBenchmarkError("annotation_evidence_invalid", "证据片段必须来自当前文本且不超过160字")
+    rationale = str(data.get("rationale") or "").strip()
+    if len(rationale) > 400:
+        raise OfflineBenchmarkError("annotation_rationale_invalid", "标注理由不得超过400字")
+    needs_human = bool(data.get("needs_human_understanding"))
+    review_reason = str(data.get("human_review_reason") or "").strip() or None
+    valid_reasons = set(_content_json("emotion_annotation_ontology.json")["human_review_reasons"])
+    if review_reason and review_reason not in valid_reasons:
+        raise OfflineBenchmarkError("annotation_review_reason_invalid", "真人了解原因未登记")
+    if review_reason and not needs_human:
+        raise OfflineBenchmarkError("annotation_review_reason_invalid", "填写真人了解原因时必须开启需真人了解")
+    return {
+        "labels": labels,
+        "primary_label": labels[0],
+        "intensity": intensity,
+        "polarity_status": polarity,
+        "evidence_excerpt": evidence_excerpt or None,
+        "rationale": rationale or None,
+        "needs_human_understanding": int(needs_human),
+        "human_review_reason": review_reason,
+    }
+
+
+def _split_for_group(group_hash: str) -> str:
+    bucket = int(group_hash[:8], 16) % 100
+    if bucket < 70:
+        return "train"
+    if bucket < 85:
+        return "validation"
+    return "test"
+
+
+def _ensure_group_split(conn, case: dict, timestamp: str) -> tuple[str, str]:
+    group_key = f"synthetic-project:{case.get('subgroup') or 'unmapped'}"
+    group_hash = hashlib.sha256(f"safehome-annotation-group-v1:{group_key}".encode("utf-8")).hexdigest()
+    row = conn.execute(
+        "SELECT split_name FROM offline_annotation_group_splits WHERE dataset_card_id = ? AND group_hash = ?",
+        (ANNOTATION_DATASET_ID, group_hash),
+    ).fetchone()
+    split_name = row["split_name"] if row else _split_for_group(group_hash)
+    if not row:
+        conn.execute(
+            "INSERT INTO offline_annotation_group_splits (id, dataset_card_id, group_hash, split_name, split_policy_version, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                f"oas_{group_hash[:24]}",
+                ANNOTATION_DATASET_ID,
+                group_hash,
+                split_name,
+                SPLIT_POLICY_VERSION,
+                timestamp,
+            ),
+        )
+    return group_hash, split_name
+
+
 def save_annotation(actor: dict, case_id: str, data: dict) -> dict:
     _require_enabled()
     payload = _synthetic_payload()
-    if case_id not in {item["id"] for item in payload["cases"]}:
+    case = next((item for item in payload["cases"] if item["id"] == case_id), None)
+    if not case:
         raise OfflineBenchmarkError("case_not_found", "合成案例不存在", 404)
-    emotion = str(data.get("emotion_label") or "")
+    fields = _annotation_fields(data, case["text"])
+    emotion = fields["primary_label"]
     reflex = str(data.get("reflex_node") or "")
-    if emotion not in ALLOWED_LABELS or reflex not in ALLOWED_REFLEX_NODES:
+    if reflex not in ALLOWED_REFLEX_NODES:
         raise OfflineBenchmarkError("annotation_label_invalid", "标注标签不在允许范围")
     try:
         valence, arousal = float(data.get("valence")), float(data.get("arousal"))
@@ -155,15 +254,46 @@ def save_annotation(actor: dict, case_id: str, data: dict) -> dict:
     timestamp = now_iso()
     annotation_id = new_id("oba")
     with get_connection() as conn:
-        existing = conn.execute("SELECT id, created_at FROM offline_benchmark_annotations WHERE dataset_card_id = ? AND case_id = ? AND annotator_id = ? AND blind_round = ?", ("safehome_synthetic_affect_240_v1", case_id, actor["id"], blind_round)).fetchone()
+        cross_round = conn.execute(
+            "SELECT blind_round FROM offline_benchmark_annotations WHERE dataset_card_id = ? AND case_id = ? AND annotator_id = ? AND blind_round != ?",
+            (ANNOTATION_DATASET_ID, case_id, actor["id"], blind_round),
+        ).fetchone()
+        if cross_round:
+            raise OfflineBenchmarkError("annotation_independence_violation", "同一标注者不能以另一轮次充当第二名标注者", 409)
+        group_hash, split_name = _ensure_group_split(conn, case, timestamp)
+        existing = conn.execute("SELECT id, created_at FROM offline_benchmark_annotations WHERE dataset_card_id = ? AND case_id = ? AND annotator_id = ? AND blind_round = ?", (ANNOTATION_DATASET_ID, case_id, actor["id"], blind_round)).fetchone()
+        values = (
+            emotion,
+            valence,
+            arousal,
+            context_label,
+            reflex,
+            int(bool(data.get("uncertain"))),
+            json_dumps(fields["labels"]),
+            fields["intensity"],
+            fields["polarity_status"],
+            fields["evidence_excerpt"],
+            fields["rationale"],
+            fields["needs_human_understanding"],
+            fields["human_review_reason"],
+            ANNOTATION_MANUAL_VERSION,
+            group_hash,
+            split_name,
+        )
         if existing:
             annotation_id = existing["id"]
-            conn.execute("UPDATE offline_benchmark_annotations SET emotion_label = ?, valence = ?, arousal = ?, context_label = ?, reflex_node = ?, uncertain = ?, updated_at = ? WHERE id = ?", (emotion, valence, arousal, context_label, reflex, int(bool(data.get("uncertain"))), timestamp, annotation_id))
+            conn.execute(
+                "UPDATE offline_benchmark_annotations SET emotion_label = ?, valence = ?, arousal = ?, context_label = ?, reflex_node = ?, uncertain = ?, emotion_labels_json = ?, intensity = ?, polarity_status = ?, evidence_excerpt = ?, rationale = ?, needs_human_understanding = ?, human_review_reason = ?, manual_version = ?, group_hash = ?, data_split = ?, updated_at = ? WHERE id = ?",
+                (*values, timestamp, annotation_id),
+            )
         else:
-            conn.execute("INSERT INTO offline_benchmark_annotations (id, dataset_card_id, case_id, annotator_id, blind_round, emotion_label, valence, arousal, context_label, reflex_node, uncertain, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (annotation_id, "safehome_synthetic_affect_240_v1", case_id, actor["id"], blind_round, emotion, valence, arousal, context_label, reflex, int(bool(data.get("uncertain"))), timestamp, timestamp))
-        write_audit_log(conn, "offline_blind_annotation_saved", actor["id"], "offline_benchmark_case", case_id, {"blind_round": blind_round, "generator_label_visible": False, "synthetic": True})
+            conn.execute(
+                "INSERT INTO offline_benchmark_annotations (id, dataset_card_id, case_id, annotator_id, blind_round, emotion_label, valence, arousal, context_label, reflex_node, uncertain, emotion_labels_json, intensity, polarity_status, evidence_excerpt, rationale, needs_human_understanding, human_review_reason, manual_version, group_hash, data_split, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (annotation_id, ANNOTATION_DATASET_ID, case_id, actor["id"], blind_round, *values, timestamp, timestamp),
+            )
+        write_audit_log(conn, "offline_blind_annotation_saved", actor["id"], "offline_benchmark_case", case_id, {"blind_round": blind_round, "generator_label_visible": False, "peer_annotation_visible": False, "synthetic": True, "manual_version": ANNOTATION_MANUAL_VERSION, "data_split": split_name})
         conn.commit()
-    return {"id": annotation_id, "case_id": case_id, "blind_round": blind_round, "saved": True, "generator_label_visible": False}
+    return {"id": annotation_id, "case_id": case_id, "blind_round": blind_round, "saved": True, "labels": fields["labels"], "data_split": split_name, "generator_label_visible": False, "peer_annotation_visible": False}
 
 
 def _cohen_kappa(pairs: list[tuple[str, str]]) -> float | None:
@@ -180,7 +310,15 @@ def agreement_summary() -> dict:
     manual = _content_json("offline_benchmark_annotation_manual.json")
     thresholds = manual["agreement_thresholds"]
     with get_connection() as conn:
-        rows = rows_to_dicts(conn.execute("SELECT case_id, annotator_id, emotion_label, valence, arousal FROM offline_benchmark_annotations WHERE dataset_card_id = ? AND blind_round = 'round_1' ORDER BY case_id, created_at", ("safehome_synthetic_affect_240_v1",)).fetchall())
+        rows = rows_to_dicts(conn.execute("SELECT case_id, annotator_id, emotion_label, emotion_labels_json, intensity, polarity_status, valence, arousal FROM offline_benchmark_annotations WHERE dataset_card_id = ? AND blind_round = 'round_1' ORDER BY case_id, created_at", (ANNOTATION_DATASET_ID,)).fetchall())
+        adjudicated_rows = conn.execute(
+            "SELECT DISTINCT case_id FROM offline_annotation_adjudications WHERE dataset_card_id = ?",
+            (ANNOTATION_DATASET_ID,),
+        ).fetchall()
+    for row in rows:
+        row["emotion_labels"] = json_loads(row.get("emotion_labels_json"), []) or [
+            row["emotion_label"]
+        ]
     by_case: dict[str, list[dict]] = defaultdict(list)
     for row in rows:
         if row["annotator_id"] not in {item["annotator_id"] for item in by_case[row["case_id"]]}:
@@ -188,6 +326,20 @@ def agreement_summary() -> dict:
     complete = [items[:2] for items in by_case.values() if len(items) >= 2]
     pairs = [(items[0]["emotion_label"], items[1]["emotion_label"]) for items in complete]
     kappa = _cohen_kappa(pairs)
+    exact_multilabel_agreement = (
+        round(
+            sum(set(items[0]["emotion_labels"]) == set(items[1]["emotion_labels"]) for items in complete)
+            / len(complete),
+            4,
+        )
+        if complete
+        else None
+    )
+    label_distribution = Counter(label for row in rows for label in row["emotion_labels"])
+    disagreement_matrix: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    for left, right in pairs:
+        if left != right:
+            disagreement_matrix[left][right] += 1
     mean_valence_gap = round(sum(abs(float(a[0]["valence"]) - float(a[1]["valence"])) for a in complete) / len(complete), 4) if complete else None
     mean_arousal_gap = round(sum(abs(float(a[0]["arousal"]) - float(a[1]["arousal"])) for a in complete) / len(complete), 4) if complete else None
     distinct_annotators = len({row["annotator_id"] for row in rows})
@@ -201,7 +353,198 @@ def agreement_summary() -> dict:
         and mean_arousal_gap is not None
         and mean_arousal_gap <= float(thresholds["maximum_mean_arousal_gap"])
     )
-    return {"complete_double_annotated_cases": len(complete), "required_cases": int(thresholds["minimum_complete_cases"]), "distinct_annotators": distinct_annotators, "emotion_cohen_kappa": kappa, "mean_valence_gap": mean_valence_gap, "mean_arousal_gap": mean_arousal_gap, "agreement_thresholds": thresholds, "human_gold_release_eligible": release_eligible, "human_gold_released": False, "boundary_notice": "系统不把生成标签或工程阈值自动升级为人工金标准。"}
+    adjudicated = {row["case_id"] for row in adjudicated_rows}
+    conflicts = {
+        case_id
+        for case_id, items in by_case.items()
+        if len(items) >= 2
+        and (
+            set(items[0]["emotion_labels"]) != set(items[1]["emotion_labels"])
+            or abs(int(items[0]["intensity"]) - int(items[1]["intensity"])) >= 2
+            or items[0]["polarity_status"] != items[1]["polarity_status"]
+        )
+    }
+    return {
+        "complete_double_annotated_cases": len(complete),
+        "required_cases": int(thresholds["minimum_complete_cases"]),
+        "distinct_annotators": distinct_annotators,
+        "emotion_cohen_kappa": kappa,
+        "exact_multilabel_agreement": exact_multilabel_agreement,
+        "mean_valence_gap": mean_valence_gap,
+        "mean_arousal_gap": mean_arousal_gap,
+        "label_distribution": dict(sorted(label_distribution.items())),
+        "missing_annotation_slots": max(0, 240 * int(manual["minimum_annotators"]) - len(rows)),
+        "disagreement_matrix": {
+            left: dict(sorted(values.items()))
+            for left, values in sorted(disagreement_matrix.items())
+        },
+        "pending_adjudication_cases": len(conflicts - adjudicated),
+        "adjudicated_cases": len(adjudicated),
+        "agreement_thresholds": thresholds,
+        "human_gold_release_eligible": release_eligible and not bool(conflicts - adjudicated),
+        "human_gold_released": False,
+        "limitations": [
+            "Kappa受类别分布和低基率影响，不能单独证明标注质量。",
+            "当前240例为合成文本，不能代表真实中文参与者表达。",
+            "一致性达标不等于心理学有效性或产品有效性。",
+        ],
+        "boundary_notice": "系统不把生成标签、工程阈值或自动裁决升级为人工金标准。",
+    }
+
+
+def list_adjudication_queue() -> dict:
+    payload = _synthetic_payload()
+    texts = {item["id"]: item["text"] for item in payload["cases"]}
+    with get_connection() as conn:
+        rows = rows_to_dicts(
+            conn.execute(
+                "SELECT * FROM offline_benchmark_annotations WHERE dataset_card_id = ? AND blind_round = 'round_1' ORDER BY case_id, created_at",
+                (ANNOTATION_DATASET_ID,),
+            ).fetchall()
+        )
+        adjudicated = {
+            row["case_id"]
+            for row in conn.execute(
+                "SELECT case_id FROM offline_annotation_adjudications WHERE dataset_card_id = ?",
+                (ANNOTATION_DATASET_ID,),
+            ).fetchall()
+        }
+    by_case: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        if row["annotator_id"] not in {item["annotator_id"] for item in by_case[row["case_id"]]}:
+            row["emotion_labels"] = json_loads(row.pop("emotion_labels_json"), []) or [
+                row["emotion_label"]
+            ]
+            by_case[row["case_id"]].append(row)
+    items = []
+    for case_id, annotations in by_case.items():
+        if len(annotations) < 2 or case_id in adjudicated:
+            continue
+        left, right = annotations[:2]
+        conflict = (
+            set(left["emotion_labels"]) != set(right["emotion_labels"])
+            or abs(int(left["intensity"]) - int(right["intensity"])) >= 2
+            or left["polarity_status"] != right["polarity_status"]
+        )
+        if not conflict:
+            continue
+        def public_annotation(item: dict, slot: str) -> dict:
+            return {
+                "slot": slot,
+                "annotation_id": item["id"],
+                "emotion_labels": item["emotion_labels"],
+                "intensity": item["intensity"],
+                "polarity_status": item["polarity_status"],
+                "evidence_excerpt": item["evidence_excerpt"],
+                "rationale": item["rationale"],
+                "needs_human_understanding": bool(item["needs_human_understanding"]),
+                "human_review_reason": item["human_review_reason"],
+                "manual_version": item["manual_version"],
+            }
+        items.append(
+            {
+                "case_id": case_id,
+                "text": texts.get(case_id, ""),
+                "annotations": [public_annotation(left, "A"), public_annotation(right, "B")],
+                "annotator_identity_included": False,
+                "model_prediction_included": False,
+            }
+        )
+    return {"items": items, "total": len(items), "blind_identity": True}
+
+
+def adjudicate_case(actor: dict, case_id: str, data: dict) -> dict:
+    queue_item = next(
+        (item for item in list_adjudication_queue()["items"] if item["case_id"] == case_id),
+        None,
+    )
+    if not queue_item:
+        raise OfflineBenchmarkError("adjudication_case_unavailable", "当前案例不在待裁决队列", 409)
+    annotation_ids = [item["annotation_id"] for item in queue_item["annotations"]]
+    with get_connection() as conn:
+        authors = {
+            row["annotator_id"]
+            for row in conn.execute(
+                "SELECT annotator_id FROM offline_benchmark_annotations WHERE id IN (?, ?)",
+                tuple(annotation_ids),
+            ).fetchall()
+        }
+    if actor["id"] in authors:
+        raise OfflineBenchmarkError("adjudicator_not_independent", "前两轮标注者不能裁决自己的案例", 403)
+    fields = _annotation_fields(data, queue_item["text"])
+    rationale = str(data.get("rationale") or "").strip()
+    manual_clause = str(data.get("manual_clause") or "").strip()
+    if len(rationale) < 5 or len(manual_clause) < 3:
+        raise OfflineBenchmarkError("adjudication_evidence_required", "裁决必须填写理由和手册条款")
+    timestamp, adjudication_id = now_iso(), new_id("oadj")
+    with get_connection() as conn:
+        conn.execute(
+            "INSERT INTO offline_annotation_adjudications (id, dataset_card_id, case_id, annotation_a_id, annotation_b_id, adjudicator_id, final_labels_json, final_intensity, final_polarity_status, needs_human_understanding, human_review_reason, rationale, manual_clause, manual_version, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                adjudication_id,
+                ANNOTATION_DATASET_ID,
+                case_id,
+                annotation_ids[0],
+                annotation_ids[1],
+                actor["id"],
+                json_dumps(fields["labels"]),
+                fields["intensity"],
+                fields["polarity_status"],
+                fields["needs_human_understanding"],
+                fields["human_review_reason"],
+                rationale,
+                manual_clause,
+                ANNOTATION_MANUAL_VERSION,
+                timestamp,
+            ),
+        )
+        write_audit_log(
+            conn,
+            "offline_annotation_adjudicated",
+            actor["id"],
+            "offline_benchmark_case",
+            case_id,
+            {
+                "annotation_ids": annotation_ids,
+                "manual_version": ANNOTATION_MANUAL_VERSION,
+                "original_annotations_preserved": True,
+            },
+        )
+        conn.commit()
+    return {
+        "id": adjudication_id,
+        "case_id": case_id,
+        "final_labels": fields["labels"],
+        "manual_version": ANNOTATION_MANUAL_VERSION,
+        "original_annotations_preserved": True,
+    }
+
+
+def split_report() -> dict:
+    with get_connection() as conn:
+        rows = rows_to_dicts(
+            conn.execute(
+                "SELECT dataset_card_id, group_hash, split_name FROM offline_annotation_group_splits ORDER BY split_name, group_hash"
+            ).fetchall()
+        )
+    by_group: dict[tuple[str, str], set[str]] = defaultdict(set)
+    counts = Counter()
+    for row in rows:
+        by_group[(row["dataset_card_id"], row["group_hash"])].add(row["split_name"])
+        counts[row["split_name"]] += 1
+    leakage = [
+        {"dataset_card_id": key[0], "group_hash": key[1], "splits": sorted(splits)}
+        for key, splits in by_group.items()
+        if len(splits) > 1
+    ]
+    return {
+        "policy_version": SPLIT_POLICY_VERSION,
+        "group_key_persisted": False,
+        "group_hash_persisted": True,
+        "split_group_counts": dict(sorted(counts.items())),
+        "cross_split_group_leakage": leakage,
+        "passed": not leakage,
+    }
 
 
 def _dictionary_terms() -> dict[str, list[str]]:

@@ -667,6 +667,7 @@ def validate_emotion_annotation_content(content_dir: Path) -> list[str]:
     try:
         ontology = load_json(content_dir / "emotion_annotation_ontology.json")
         examples = load_json(content_dir / "emotion_annotation_examples.json")
+        data_policy = load_json(content_dir / "offline_annotation_data_policy.json")
     except (OSError, json.JSONDecodeError) as exc:
         return [f"情绪标注体系不可读取：{exc}"]
 
@@ -738,6 +739,29 @@ def validate_emotion_annotation_content(content_dir: Path) -> list[str]:
     adjudication = examples.get("adjudication", {})
     if adjudication.get("automatic_adjudication_allowed") is not False:
         errors.append("情绪标注分歧不得自动裁决")
+    if data_policy.get("active_data_class") != "synthetic":
+        errors.append("真实数据权利未核验前标注数据必须保持synthetic")
+    if data_policy.get("real_data_gate", {}).get("allowed") is not False:
+        errors.append("真实标注数据入口必须保持关闭")
+    if data_policy.get("real_data_gate", {}).get("automatic_approval_allowed") is not False:
+        errors.append("标注数据权利和伦理不得自动批准")
+    hidden = set(data_policy.get("identity_fields_hidden", []))
+    if not {"participant_user_id", "family_id", "wechat_openid", "phone", "email"}.issubset(hidden):
+        errors.append("标注工具必须隐藏参与者、家庭和直接联系身份字段")
+    split_policy = data_policy.get("split_policy", {})
+    if (
+        sum(int(split_policy.get(key, 0)) for key in ("train_percent", "validation_percent", "test_percent")) != 100
+        or split_policy.get("same_group_cross_split_allowed") is not False
+    ):
+        errors.append("标注数据分组切分比例必须合计100且禁止同组跨集合")
+    annotation_policy = data_policy.get("annotation_policy", {})
+    if (
+        int(annotation_policy.get("minimum_independent_annotators", 0)) < 2
+        or annotation_policy.get("peer_answers_visible_before_submit") is not False
+        or annotation_policy.get("model_prediction_visible_before_submit") is not False
+        or annotation_policy.get("adjudicator_must_be_independent") is not True
+    ):
+        errors.append("标注流程必须双人独立、盲标且由独立第三人裁决")
     return errors
 
 

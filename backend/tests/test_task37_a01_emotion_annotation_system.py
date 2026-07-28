@@ -54,6 +54,10 @@ def test_validator_rejects_missing_unknown_and_automatic_expert_signoff(tmp_path
     (tmp_path / "emotion_annotation_examples.json").write_text(
         json.dumps(examples, ensure_ascii=False), encoding="utf-8"
     )
+    (tmp_path / "offline_annotation_data_policy.json").write_text(
+        (ROOT / "content" / "offline_annotation_data_policy.json").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
     errors = validate_emotion_annotation_content(tmp_path)
     assert any("unknown" in error for error in errors)
     assert any("自动专家签字" in error for error in errors)

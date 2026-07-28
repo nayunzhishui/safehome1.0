@@ -2658,8 +2658,14 @@ export interface OfflineAgreementSummary {
   required_cases: 200;
   distinct_annotators: number;
   emotion_cohen_kappa: number | null;
+  exact_multilabel_agreement: number | null;
   mean_valence_gap: number | null;
   mean_arousal_gap: number | null;
+  label_distribution: Record<string, number>;
+  missing_annotation_slots: number;
+  disagreement_matrix: Record<string, Record<string, number>>;
+  pending_adjudication_cases: number;
+  adjudicated_cases: number;
   agreement_thresholds: {
     emotion_cohen_kappa: number;
     maximum_mean_valence_gap: number;
@@ -2668,6 +2674,7 @@ export interface OfflineAgreementSummary {
   };
   human_gold_release_eligible: boolean;
   human_gold_released: false;
+  limitations: string[];
   boundary_notice: string;
 }
 
@@ -2676,6 +2683,81 @@ export interface OfflineBlindCase {
   text: string;
   synthetic: true;
   already_annotated: boolean;
+}
+
+export type OfflineEmotionLabel =
+  | "anxiety"
+  | "fear"
+  | "anger"
+  | "irritation"
+  | "sadness"
+  | "helplessness"
+  | "guilt"
+  | "shame"
+  | "calm"
+  | "positive"
+  | "unknown"
+  | "unmapped";
+
+export interface OfflineAnnotationInput {
+  emotion_labels: OfflineEmotionLabel[];
+  intensity: 0 | 1 | 2 | 3 | 4;
+  polarity_status: "affirmed" | "negated" | "uncertain";
+  valence: number;
+  arousal: number;
+  context: string;
+  reflex_node: string;
+  evidence_excerpt?: string;
+  rationale?: string;
+  needs_human_understanding?: boolean;
+  human_review_reason?: string;
+}
+
+export interface OfflineAnnotationGovernance {
+  version: string;
+  active_dataset_id: ID;
+  active_data_class: "synthetic";
+  purpose: string;
+  minimum_necessary_fields: string[];
+  identity_fields_hidden: string[];
+  deidentification: {
+    group_key_storage: string;
+    raw_group_key_persisted: false;
+    annotator_identity_visible_to_peer: false;
+    free_text_export_allowed: false;
+  };
+  retention: Record<string, number | boolean>;
+  split_policy: Record<string, string | number | boolean | string[]>;
+  annotation_policy: Record<string, string | number | boolean>;
+  real_data_gate: { allowed: false; required_evidence: string[]; automatic_approval_allowed: false; fallback: "synthetic_only" };
+}
+
+export interface OfflineAdjudicationQueueItem {
+  case_id: ID;
+  text: string;
+  annotations: Array<{
+    slot: "A" | "B";
+    annotation_id: ID;
+    emotion_labels: OfflineEmotionLabel[];
+    intensity: number;
+    polarity_status: "affirmed" | "negated" | "uncertain";
+    evidence_excerpt?: string | null;
+    rationale?: string | null;
+    needs_human_understanding: boolean;
+    human_review_reason?: string | null;
+    manual_version: string;
+  }>;
+  annotator_identity_included: false;
+  model_prediction_included: false;
+}
+
+export interface OfflineSplitReport {
+  policy_version: string;
+  group_key_persisted: false;
+  group_hash_persisted: true;
+  split_group_counts: Record<"train" | "validation" | "test", number>;
+  cross_split_group_leakage: Array<{ dataset_card_id: ID; group_hash: string; splits: string[] }>;
+  passed: boolean;
 }
 
 export interface ResearchMethodologyPublicStatus {

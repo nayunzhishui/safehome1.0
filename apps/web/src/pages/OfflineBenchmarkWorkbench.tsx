@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { OfflineAgreementSummary, OfflineBenchmarkConfig, OfflineBenchmarkRun, OfflineBlindCase, OfflineDatasetCard } from "../../../../shared/types/api";
+import type { OfflineAdjudicationQueueItem, OfflineAgreementSummary, OfflineAnnotationGovernance, OfflineBenchmarkConfig, OfflineBenchmarkRun, OfflineBlindCase, OfflineDatasetCard, OfflineEmotionLabel, OfflineSplitReport } from "../../../../shared/types/api";
 import { getStoredAuthUser } from "../services/authState";
 import { safeHomeApi } from "../services/safehomeApi";
 
 
-const LABELS = ["anxiety", "fear", "anger", "irritation", "sadness", "helplessness", "guilt", "shame", "calm", "positive", "unmapped"];
+const LABELS: OfflineEmotionLabel[] = ["anxiety", "fear", "anger", "irritation", "sadness", "helplessness", "guilt", "shame", "calm", "positive", "unknown", "unmapped"];
 
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : "操作失败，请核对权限和离线门禁。";
@@ -20,21 +20,41 @@ export function OfflineBenchmarkWorkbench() {
   const [runs, setRuns] = useState<OfflineBenchmarkRun[]>([]);
   const [cases, setCases] = useState<OfflineBlindCase[]>([]);
   const [agreement, setAgreement] = useState<OfflineAgreementSummary | null>(null);
+  const [governance, setGovernance] = useState<OfflineAnnotationGovernance | null>(null);
+  const [adjudicationQueue, setAdjudicationQueue] = useState<OfflineAdjudicationQueueItem[]>([]);
+  const [splitReport, setSplitReport] = useState<OfflineSplitReport | null>(null);
   const [selectedCase, setSelectedCase] = useState<OfflineBlindCase | null>(null);
-  const [label, setLabel] = useState("unmapped");
+  const [labels, setLabels] = useState<OfflineEmotionLabel[]>(["unknown"]);
+  const [intensity, setIntensity] = useState<0 | 1 | 2 | 3 | 4>(0);
+  const [polarity, setPolarity] = useState<"affirmed" | "negated" | "uncertain">("uncertain");
+  const [needsHuman, setNeedsHuman] = useState(false);
+  const [rationale, setRationale] = useState("");
+  const [adjudicationLabel, setAdjudicationLabel] = useState<OfflineEmotionLabel>("unknown");
+  const [adjudicationRationale, setAdjudicationRationale] = useState("");
   const [status, setStatus] = useState("正在读取离线基准门禁…");
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const [nextConfig, cardList, runList, blindCases] = await Promise.all([
+    const [nextConfig, cardList, runList, blindCases, nextGovernance] = await Promise.all([
       safeHomeApi.getOfflineBenchmarkConfig(),
       safeHomeApi.listOfflineDatasetCards(),
       safeHomeApi.listOfflineBenchmarkRuns(),
       safeHomeApi.listOfflineBlindCases(),
+      safeHomeApi.getOfflineAnnotationGovernance(),
     ]);
+    setGovernance(nextGovernance);
     setConfig(nextConfig); setCards(cardList.items); setRuns(runList.items); setCases(blindCases.items);
     setSelectedCase((current) => current || blindCases.items[0] || null);
-    if (canReview) setAgreement(await safeHomeApi.getOfflineAgreement());
+    if (canReview) {
+      const [nextAgreement, nextQueue, nextSplit] = await Promise.all([
+        safeHomeApi.getOfflineAgreement(),
+        safeHomeApi.listOfflineAdjudicationQueue(),
+        safeHomeApi.getOfflineSplitReport(),
+      ]);
+      setAgreement(nextAgreement);
+      setAdjudicationQueue(nextQueue.items);
+      setSplitReport(nextSplit);
+    }
     setStatus("离线基准状态已更新。外部数据仍未下载。");
   }, [canReview]);
 
@@ -47,6 +67,11 @@ export function OfflineBenchmarkWorkbench() {
 
   const blockedCards = useMemo(() => cards.filter((card) => card.ingest_status.startsWith("blocked_")), [cards]);
   const latest = runs[0];
+  function toggleLabel(item: OfflineEmotionLabel) {
+    setLabels((current) => current.includes(item)
+      ? current.filter((label) => label !== item)
+      : current.length < 3 ? [...current.filter((label) => label !== "unknown"), item] : current);
+  }
 
   return (
     <section className="dashboardShell benchmarkWorkbench" aria-label="公开数据与离线算法基准">
@@ -83,10 +108,14 @@ export function OfflineBenchmarkWorkbench() {
         <p className="mutedText">标注者看不到生成标签或他人答案。至少200例、两名独立标注者、一致性达标和督导裁决后，才可申请人工金标准发布。</p>
         <div className="blindAnnotationGrid">
           <div className="blindCaseList" role="listbox" aria-label="合成案例">{cases.map((item) => <button className={selectedCase?.id === item.id ? "selected" : ""} type="button" key={item.id} onClick={() => setSelectedCase(item)}><span>{item.id}</span><strong>{item.text}</strong><em>{item.already_annotated ? "已标" : "待标"}</em></button>)}</div>
-          <div className="annotationForm">{selectedCase ? <><h3>{selectedCase.id}</h3><p>{selectedCase.text}</p><label className="fieldLabel" htmlFor="benchmark-label">主要情绪标签</label><select id="benchmark-label" value={label} onChange={(event) => setLabel(event.target.value)}>{LABELS.map((item) => <option key={item}>{item}</option>)}</select><button className="primaryButton" disabled={busy} type="button" onClick={() => void runAction("保存盲标", async () => { await safeHomeApi.saveOfflineAnnotation(selectedCase.id, { emotion_label: label, valence: label === "positive" || label === "calm" ? 0.7 : label === "unmapped" ? 0 : -0.7, arousal: label === "calm" ? 0.2 : 0.7, context: "synthetic_daily_reflection", reflex_node: "emotion" }); await load(); })}>保存当前标注</button></> : <p className="emptyState">没有可标注案例。</p>}</div>
+          <div className="annotationForm">{selectedCase ? <><h3>{selectedCase.id}</h3><p>{selectedCase.text}</p><fieldset><legend>情绪线索（最多三个）</legend><div className="annotationLabelGrid">{LABELS.map((item) => <label key={item}><input type="checkbox" checked={labels.includes(item)} onChange={() => toggleLabel(item)} />{item}</label>)}</div></fieldset><label className="fieldLabel" htmlFor="benchmark-intensity">强度0—4</label><select id="benchmark-intensity" value={intensity} onChange={(event) => setIntensity(Number(event.target.value) as 0 | 1 | 2 | 3 | 4)}>{[0, 1, 2, 3, 4].map((item) => <option key={item}>{item}</option>)}</select><label className="fieldLabel" htmlFor="benchmark-polarity">表达状态</label><select id="benchmark-polarity" value={polarity} onChange={(event) => setPolarity(event.target.value as typeof polarity)}><option value="affirmed">肯定</option><option value="negated">否定</option><option value="uncertain">不确定</option></select><label className="checkboxField"><input type="checkbox" checked={needsHuman} onChange={(event) => setNeedsHuman(event.target.checked)} />需真人进一步了解</label><label className="fieldLabel" htmlFor="benchmark-rationale">可复核理由</label><textarea id="benchmark-rationale" value={rationale} onChange={(event) => setRationale(event.target.value)} maxLength={400} /><button className="primaryButton" disabled={busy || labels.length === 0} type="button" onClick={() => void runAction("保存盲标", async () => { const positive = labels.some((item) => item === "positive" || item === "calm"); await safeHomeApi.saveOfflineAnnotation(selectedCase.id, { emotion_labels: labels, intensity, polarity_status: polarity, valence: positive ? 0.7 : labels.includes("unknown") ? 0 : -0.7, arousal: labels.includes("calm") ? 0.2 : intensity / 4, context: "synthetic_daily_reflection", reflex_node: "emotion", rationale, needs_human_understanding: needsHuman, human_review_reason: needsHuman ? "context_missing" : undefined }); await load(); })}>保存当前标注</button></> : <p className="emptyState">没有可标注案例。</p>}</div>
         </div>
-        {canReview ? <p className="boundaryCallout">双人完整案例 {agreement?.complete_double_annotated_cases || 0}/200；情绪κ {agreement?.emotion_cohen_kappa ?? "待计算"}；人工金标准仍未发布。</p> : null}
+        {canReview ? <div className="boundaryCallout"><p>双人完整案例 {agreement?.complete_double_annotated_cases || 0}/200；情绪κ {agreement?.emotion_cohen_kappa ?? "待计算"}；待裁决 {agreement?.pending_adjudication_cases || 0}；缺失标注位 {agreement?.missing_annotation_slots ?? "—"}。</p><p>分组切分：{splitReport?.passed ? "未发现跨集合泄漏" : "需停止并修复"}；原始组键不会保存。</p></div> : null}
       </section>
+
+      {canReview ? <section className="panel" aria-label="分歧裁决"><div className="panelHeading"><div><span className="panelKicker">第三人独立裁决</span><h2>待裁决分歧</h2></div><span className="gateBadge gateBlocked">{adjudicationQueue.length} 条</span></div>{adjudicationQueue.length ? adjudicationQueue.map((item) => <article className="benchmarkResult" key={item.case_id}><h3>{item.case_id}</h3><p>{item.text}</p><div className="adjudicationCompare">{item.annotations.map((annotation) => <div key={annotation.annotation_id}><strong>标注{annotation.slot}</strong><span>{annotation.emotion_labels.join("、")} · 强度{annotation.intensity} · {annotation.polarity_status}</span><p>{annotation.rationale || "未填写理由"}</p></div>)}</div><label className="fieldLabel" htmlFor={`adjudication-${item.case_id}`}>裁决标签</label><select id={`adjudication-${item.case_id}`} value={adjudicationLabel} onChange={(event) => setAdjudicationLabel(event.target.value as OfflineEmotionLabel)}>{LABELS.map((label) => <option key={label}>{label}</option>)}</select><label className="fieldLabel" htmlFor={`adjudication-reason-${item.case_id}`}>裁决理由</label><textarea id={`adjudication-reason-${item.case_id}`} value={adjudicationRationale} onChange={(event) => setAdjudicationRationale(event.target.value)} /><button className="primaryButton" type="button" disabled={busy || adjudicationRationale.trim().length < 5} onClick={() => void runAction("保存独立裁决", async () => { await safeHomeApi.adjudicateOfflineCase(item.case_id, { emotion_labels: [adjudicationLabel], intensity: 2, polarity_status: adjudicationLabel === "unknown" ? "uncertain" : "affirmed", valence: adjudicationLabel === "positive" || adjudicationLabel === "calm" ? 0.7 : adjudicationLabel === "unknown" ? 0 : -0.7, arousal: adjudicationLabel === "calm" ? 0.2 : 0.5, context: "synthetic_daily_reflection", reflex_node: "emotion", rationale: adjudicationRationale, manual_clause: `标签边界：${adjudicationLabel}` }); setAdjudicationRationale(""); await load(); })}>保存裁决并保留原标注</button></article>) : <p className="emptyState">当前没有待裁决分歧。</p>}</section> : null}
+
+      <section className="panel" aria-label="标注数据边界"><div className="panelHeading"><div><span className="panelKicker">数据最小化</span><h2>当前只使用合成数据</h2></div><span className="gateBadge gatePassed">{governance?.active_data_class || "读取中"}</span></div><p>{governance?.purpose}</p><p className="boundaryCallout">隐藏直接身份字段；同一用户、家庭或项目组不得跨训练集和测试集。真实资料仍需独立用途同意、权利证据、伦理批准、去标识核验和删除计划。</p></section>
     </section>
   );
 }

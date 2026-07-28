@@ -6,9 +6,12 @@ from routes.auth_utils import AuthError, auth_error_response, require_role
 from routes.utils import fail, ok
 from services.offline_benchmark_service import (
     OfflineBenchmarkError,
+    adjudicate_case,
     agreement_summary,
     disable_runtime,
+    get_annotation_governance,
     get_config,
+    list_adjudication_queue,
     list_blind_cases,
     list_dataset_cards,
     list_runs,
@@ -16,6 +19,7 @@ from services.offline_benchmark_service import (
     run_affect_benchmark,
     run_network_benchmark,
     save_annotation,
+    split_report,
     sync_registry,
 )
 
@@ -69,6 +73,14 @@ def cases():
     return _response(lambda: list_blind_cases(actor, request.args.get("offset", 0), request.args.get("limit", 20)))
 
 
+@bp.get("/annotation-governance")
+def annotation_governance():
+    actor, error = _actor("researcher", "supervisor", "admin")
+    if error:
+        return error
+    return _response(get_annotation_governance)
+
+
 @bp.post("/cases/<case_id>/annotations")
 def annotation_create(case_id: str):
     actor, error = _actor("researcher", "supervisor", "admin")
@@ -84,6 +96,31 @@ def agreement():
     if error:
         return error
     return _response(agreement_summary)
+
+
+@bp.get("/adjudication-queue")
+def adjudication_queue():
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    return _response(list_adjudication_queue)
+
+
+@bp.post("/cases/<case_id>/adjudications")
+def adjudication_create(case_id: str):
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    payload = request.get_json(silent=True) or {}
+    return _response(lambda: adjudicate_case(actor, case_id, payload))
+
+
+@bp.get("/split-report")
+def annotation_split_report():
+    actor, error = _actor("supervisor", "admin")
+    if error:
+        return error
+    return _response(split_report)
 
 
 @bp.post("/runs/affect")

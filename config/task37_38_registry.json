@@ -271,7 +271,31 @@
         ["python", "backend/scripts/validate_content.py"]
       ]
     },
-    {"id": "T37-A02", "title": "数据权利、双人标注与裁决", "dependencies": ["T37-A01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-A02",
+      "title": "数据权利、双人标注与裁决",
+      "dependencies": ["T37-A01"],
+      "engineering_complete": true,
+      "status": "engineering_complete_real_data_rights_gated",
+      "evidence": [
+        "content/offline_annotation_data_policy.json",
+        "backend/services/offline_benchmark_service.py",
+        "backend/tests/test_task37_a02_annotation_governance.py",
+        "backend/scripts/migrate_task37_a02_annotation_governance.py",
+        "apps/web/src/pages/OfflineBenchmarkWorkbench.tsx",
+        "shared/types/api.ts"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_a02_annotation_governance.py", "backend/tests/test_task37_a01_emotion_annotation_system.py", "backend/tests/test_task29_offline_benchmarks.py", "-q"],
+        ["python", "backend/scripts/migrate_task37_a02_annotation_governance.py", "apply"],
+        ["python", "backend/scripts/migrate_task37_a02_annotation_governance.py", "verify"],
+        ["python", "backend/scripts/migrate_task37_a02_annotation_governance.py", "rollback"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T37-A03", "title": "透明基线、候选模型和校准", "dependencies": ["T37-A02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-A04", "title": "群体级社会网络分析", "dependencies": ["T37-A02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-A05", "title": "模型注册、影子执行和研究者界面", "dependencies": ["T37-A03", "T37-A04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},

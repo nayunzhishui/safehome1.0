@@ -46,11 +46,15 @@ import type {
   GrowthOverview,
   ListResponse,
   ModelInfo,
+  OfflineAdjudicationQueueItem,
   OfflineAgreementSummary,
+  OfflineAnnotationGovernance,
+  OfflineAnnotationInput,
   OfflineBlindCase,
   OfflineBenchmarkConfig,
   OfflineBenchmarkRun,
   OfflineDatasetCard,
+  OfflineSplitReport,
   ResearchMethodologyCheck,
   ResearchMethodologyConfig,
   ResearchMethodologyEvidence,
@@ -1109,8 +1113,24 @@ export class SafeHomeApiClient {
     return this.requestData(this.withQuery(`${API_ENDPOINTS.offlineBenchmarks}/cases`, { offset, limit }));
   }
 
-  saveOfflineAnnotation(caseId: string, input: { emotion_label: string; valence: number; arousal: number; context: string; reflex_node: string; uncertain?: boolean }): Promise<Record<string, unknown>> {
+  getOfflineAnnotationGovernance(): Promise<OfflineAnnotationGovernance> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/annotation-governance`);
+  }
+
+  saveOfflineAnnotation(caseId: string, input: OfflineAnnotationInput): Promise<Record<string, unknown>> {
     return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/cases/${encodeURIComponent(caseId)}/annotations`, { method: "POST", body: input });
+  }
+
+  listOfflineAdjudicationQueue(): Promise<{ items: OfflineAdjudicationQueueItem[]; total: number; blind_identity: true }> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/adjudication-queue`);
+  }
+
+  adjudicateOfflineCase(caseId: string, input: OfflineAnnotationInput & { rationale: string; manual_clause: string }): Promise<Record<string, unknown>> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/cases/${encodeURIComponent(caseId)}/adjudications`, { method: "POST", body: input });
+  }
+
+  getOfflineSplitReport(): Promise<OfflineSplitReport> {
+    return this.requestData(`${API_ENDPOINTS.offlineBenchmarks}/split-report`);
   }
 
   reviewOfflineBenchmark(runId: string, input: { decision: "engineering_reviewed" | "changes_required" | "stop"; evidence_path: string; notes?: string }): Promise<Record<string, unknown>> {

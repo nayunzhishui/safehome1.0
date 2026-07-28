@@ -2646,8 +2646,13 @@ ul {
 .annotationForm { display: grid; gap: 12px; padding: 20px; border-radius: 18px; background: #f6faf8; }
 .annotationForm h3,.annotationForm p { margin: 0; }
 .annotationForm select { min-height: 46px; border: 1px solid #c9d9d1; border-radius: 12px; padding: 0 12px; background: #fff; }
+.annotationLabelGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 10px 0 16px; }
+.annotationLabelGrid label,.checkboxField { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.adjudicationCompare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0 16px; }
+.adjudicationCompare > div { padding: 14px; border: 1px solid #dce6e1; border-radius: 14px; background: #fff; }
+.adjudicationCompare span { display: block; margin-top: 6px; color: #61736d; }
 @media (max-width: 900px) { .benchmarkBoundary,.benchmarkColumns,.blindAnnotationGrid { grid-template-columns: 1fr; } .benchmarkBoundary .aiQaFacts { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 540px) { .benchmarkBoundary { padding: 20px; } .datasetCardList article { grid-template-columns: 1fr; } .datasetCardList article .gateBadge { justify-self: start; } .benchmarkRunActions > * { width: 100%; } .blindCaseList button { grid-template-columns: 1fr auto; } .blindCaseList button span { grid-column: 1 / -1; } }
+@media (max-width: 540px) { .benchmarkBoundary { padding: 20px; } .datasetCardList article { grid-template-columns: 1fr; } .datasetCardList article .gateBadge { justify-self: start; } .benchmarkRunActions > * { width: 100%; } .blindCaseList button { grid-template-columns: 1fr auto; } .blindCaseList button span { grid-column: 1 / -1; } .annotationLabelGrid,.adjudicationCompare { grid-template-columns: 1fr; } }
 
 /* T30 research methodology pre-freeze workbench */
 .methodologyWorkbench { --method-ink: #17332f; --method-green: #3f7569; --method-wash: #eef6f2; }

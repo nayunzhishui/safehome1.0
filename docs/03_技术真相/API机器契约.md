@@ -215,8 +215,11 @@
 | POST | `/api/research/analysis/jobs/<job_id>/recover` | role:admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | POST | `/api/research/analysis/jobs/<job_id>/suspend` | role:admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | POST | `/api/research/analysis/snapshots` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
+| GET | `/api/research/benchmarks/adjudication-queue` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/agreement` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/benchmarks/annotation-governance` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/cases` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| POST | `/api/research/benchmarks/cases/<case_id>/adjudications` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/cases/<case_id>/annotations` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/config` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/benchmarks/dataset-cards` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
@@ -226,6 +229,7 @@
 | POST | `/api/research/benchmarks/runs/<run_id>/reviews` | role:supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/affect` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | POST | `/api/research/benchmarks/runs/network` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
+| GET | `/api/research/benchmarks/split-report` | role:researcher,supervisor,admin | internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher | — | — | active |
 | GET | `/api/research/computation-contract/public-status` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | — | active |
 | GET | `/api/research/deliveries` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | page/page_size | — | active |
 | POST | `/api/research/deliveries` | role:researcher,supervisor,admin | assigned_participants_for_researcher_full_for_supervisor_admin | — | supported | active |

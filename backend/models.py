@@ -1177,9 +1177,49 @@ SCHEMA_SQL = [
         context_label TEXT NOT NULL,
         reflex_node TEXT NOT NULL,
         uncertain INTEGER NOT NULL DEFAULT 0,
+        emotion_labels_json TEXT NOT NULL DEFAULT '[]',
+        intensity INTEGER NOT NULL DEFAULT 0,
+        polarity_status TEXT NOT NULL DEFAULT 'uncertain',
+        evidence_excerpt TEXT,
+        rationale TEXT,
+        needs_human_understanding INTEGER NOT NULL DEFAULT 0,
+        human_review_reason TEXT,
+        manual_version TEXT NOT NULL DEFAULT 'legacy-t29-v1',
+        group_hash TEXT,
+        data_split TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         UNIQUE(dataset_card_id, case_id, annotator_id, blind_round)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_annotation_adjudications (
+        id TEXT PRIMARY KEY,
+        dataset_card_id TEXT NOT NULL,
+        case_id TEXT NOT NULL,
+        annotation_a_id TEXT NOT NULL,
+        annotation_b_id TEXT NOT NULL,
+        adjudicator_id TEXT NOT NULL,
+        final_labels_json TEXT NOT NULL,
+        final_intensity INTEGER NOT NULL,
+        final_polarity_status TEXT NOT NULL,
+        needs_human_understanding INTEGER NOT NULL DEFAULT 0,
+        human_review_reason TEXT,
+        rationale TEXT NOT NULL,
+        manual_clause TEXT NOT NULL,
+        manual_version TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS offline_annotation_group_splits (
+        id TEXT PRIMARY KEY,
+        dataset_card_id TEXT NOT NULL,
+        group_hash TEXT NOT NULL,
+        split_name TEXT NOT NULL,
+        split_policy_version TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(dataset_card_id, group_hash)
     )
     """,
     """
@@ -2211,6 +2251,8 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_offline_dataset_ingest_status ON offline_dataset_cards(ingest_status, updated_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_runs_type_created ON offline_benchmark_runs(benchmark_type, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_annotations_case ON offline_benchmark_annotations(dataset_card_id, case_id, blind_round)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_annotation_adjudications_case ON offline_annotation_adjudications(dataset_card_id, case_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_offline_annotation_group_splits_name ON offline_annotation_group_splits(dataset_card_id, split_name)",
     "CREATE INDEX IF NOT EXISTS idx_offline_benchmark_reviews_run ON offline_benchmark_reviews(run_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_checks_version_created ON research_methodology_checks(version_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_methodology_simulations_version_created ON research_methodology_simulation_runs(version_id, created_at)",
