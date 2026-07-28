@@ -4554,6 +4554,37 @@ ul {
   color: var(--color-text-secondary, #5c6863);
 }
 
+.productionGatePanel {
+  margin-bottom: 24px;
+}
+
+.productionGateChecks {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.productionGateCheck {
+  display: grid;
+  gap: 6px;
+  min-height: 88px;
+  padding: 16px;
+  border: 1px solid #ead4cc;
+  border-radius: 18px;
+  background: #fff8f5;
+}
+
+.productionGateCheck.isPassed {
+  border-color: #bfd6ca;
+  background: #f2f8f4;
+}
+
+.productionGateCheck span {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
 .qualityRuntime,
 .qualityNotice {
   display: flex;
@@ -4712,6 +4743,10 @@ ul {
 }
 
 @media (max-width: 960px) {
+  .productionGateChecks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .qualityColumns {
     grid-template-columns: 1fr;
   }

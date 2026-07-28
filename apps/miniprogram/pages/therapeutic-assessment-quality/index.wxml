@@ -23,6 +23,23 @@
     <text class="state-copy">只加载当前账号可查看的对象范围。</text>
   </view>
 
+  <view wx:if="{{productionGate}}" class="quality-card production-gate-card">
+    <view class="section-heading">
+      <view>
+        <text class="section-kicker">生产门禁</text>
+        <text class="section-title">{{productionGate.status === 'blocked' ? '当前不可发布' : '等待负责人最终批准'}}</text>
+      </view>
+      <text class="count-pill">{{productionGate.policy_version}}</text>
+    </view>
+    <view class="gate-grid">
+      <view wx:for="{{productionGateChecks}}" wx:key="key" class="gate-item {{item.passed ? 'is-passed' : ''}}">
+        <text class="gate-label">{{item.label}}</text>
+        <text class="item-meta">{{item.passed ? '已具备证据' : '缺少 ' + item.missingCount + ' 项'}}</text>
+      </view>
+    </view>
+    <text class="boundary-copy">{{productionGate.boundary_notice}}</text>
+  </view>
+
   <view wx:if="{{!loading && cases.length}}" class="quality-card">
     <text class="section-kicker">更正与投诉</text>
     <text class="section-title">记录哪里不像，或希望如何处理</text>

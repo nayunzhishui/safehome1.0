@@ -1,0 +1,69 @@
+{
+  "version": "2026-07-28-b05-v1",
+  "gate_order": [
+    "engineering_content",
+    "human_evidence",
+    "workforce_duty",
+    "privacy_recovery",
+    "infrastructure_release"
+  ],
+  "engineering_tasks": [
+    "T38-F00",
+    "T38-F01",
+    "T38-F02",
+    "T38-F03",
+    "T38-F04",
+    "T38-F05",
+    "T38-F06",
+    "T38-F07",
+    "T38-F08",
+    "T38-F09",
+    "T38-F10",
+    "T38-F11",
+    "T38-F12",
+    "T38-F13",
+    "T38-F14",
+    "T38-F15",
+    "T38-F16",
+    "T38-F17",
+    "T38-F18"
+  ],
+  "required_evidence": {
+    "human_evidence": [
+      "human_a0_expert_review",
+      "human_a1_cognitive_interview",
+      "human_a2_low_risk_prototype",
+      "human_a3_formative_pilot",
+      "human_a4_feasibility_pilot"
+    ],
+    "workforce_duty": [
+      "workforce_t1",
+      "workforce_t2",
+      "workforce_t3",
+      "workforce_duty_roster"
+    ],
+    "privacy_recovery": [
+      "privacy_multi_party",
+      "privacy_withdrawal",
+      "privacy_stop",
+      "privacy_incident_repair"
+    ],
+    "infrastructure_release": [
+      "infra_test_cloud",
+      "infra_dual_account",
+      "infra_device",
+      "infra_migration_restore",
+      "infra_owner_approval"
+    ]
+  },
+  "evidence_rules": {
+    "production_environment_only": true,
+    "distinct_recorder_and_verifier": true,
+    "artifact_sha256_required": true,
+    "simulation_counts_as_approval": false,
+    "automated_test_counts_as_human_evidence": false
+  },
+  "production_release_approved": false,
+  "temporary_showcase_counts_as_permission": false,
+  "boundary_notice": "工程完成与生产发布批准分开。自动化只能生成、索引和核验材料，不能代替专家、参与者、督导、伦理、真机或负责人签字。"
+}

@@ -84,6 +84,13 @@ from services.therapeutic_assessment_lifecycle_service import (
     get_case_lifecycle,
     get_lifecycle_metrics,
 )
+from services.therapeutic_assessment_release_gate_service import (
+    evaluate_release_gate,
+    list_release_evidence,
+    record_release_evidence,
+    release_gate_status,
+    verify_release_evidence,
+)
 from services.publication_gate_service import (
     PublicationGateError,
     list_candidates,
@@ -297,6 +304,42 @@ def get_case_lifecycle_route(case_id: str):
 def get_lifecycle_metrics_route():
     actor, error = _actor()
     return error or _respond(get_lifecycle_metrics, actor)
+
+
+@bp.get("/production-gate")
+def get_production_gate_route():
+    actor, error = _actor()
+    return error or _respond(release_gate_status, actor)
+
+
+@bp.post("/production-gate/evaluate")
+def post_production_gate_evaluate_route():
+    actor, error = _actor()
+    return error or _respond(evaluate_release_gate, actor, _key())
+
+
+@bp.get("/production-gate/evidence")
+def get_production_gate_evidence_route():
+    actor, error = _actor()
+    return error or _respond(list_release_evidence, actor)
+
+
+@bp.post("/production-gate/evidence")
+def post_production_gate_evidence_route():
+    actor, error = _actor()
+    return error or _respond(record_release_evidence, actor, _payload(), _key())
+
+
+@bp.post("/production-gate/evidence/<evidence_id>/verify")
+def post_production_gate_evidence_verify_route(evidence_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        verify_release_evidence,
+        actor,
+        evidence_id,
+        _payload(),
+        _key(),
+    )
 
 
 @bp.put("/cases/<case_id>/researcher-workbench/draft")

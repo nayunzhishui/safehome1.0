@@ -47,6 +47,39 @@
   line-height: 1.7;
 }
 
+.production-gate-card {
+  border-color: #d9ded8;
+}
+
+.gate-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
+  margin-top: 22rpx;
+}
+
+.gate-item {
+  display: flex;
+  min-height: 104rpx;
+  padding: 18rpx;
+  flex-direction: column;
+  justify-content: center;
+  border: 1rpx solid #ead4cc;
+  border-radius: 20rpx;
+  background: #fff8f5;
+}
+
+.gate-item.is-passed {
+  border-color: #bfd6ca;
+  background: #f2f8f4;
+}
+
+.gate-label {
+  color: #22342e;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
 .quality-copy {
   margin-top: 16rpx;
 }

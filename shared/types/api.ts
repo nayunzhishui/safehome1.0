@@ -744,6 +744,56 @@ export interface TherapeuticAssessmentLifecycle
   };
 }
 
+export type TherapeuticAssessmentReleaseGateName =
+  | "engineering_content"
+  | "human_evidence"
+  | "workforce_duty"
+  | "privacy_recovery"
+  | "infrastructure_release";
+
+export interface TherapeuticAssessmentReleaseEvidence {
+  id: string;
+  evidence_type: string;
+  artifact_ref: string;
+  artifact_sha256: string;
+  environment: string;
+  status: "pending" | "verified" | "rejected";
+  recorded_by: string;
+  verified_by?: string | null;
+  verified_at?: string | null;
+  notes?: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+  qualifies_for_production: boolean;
+}
+
+export interface TherapeuticAssessmentProductionGate {
+  policy_version: string;
+  registry_hash: string;
+  status: "blocked" | "ready_for_owner_release";
+  checks: Record<
+    TherapeuticAssessmentReleaseGateName,
+    {
+      passed: boolean;
+      missing: string[];
+      evidence_ids: string[];
+    }
+  >;
+  engineering_ready: boolean;
+  human_evidence_ready: boolean;
+  workforce_ready: boolean;
+  privacy_recovery_ready: boolean;
+  infrastructure_ready: boolean;
+  production_release_approved: false;
+  temporary_showcase_counts_as_permission: false;
+  simulated_signoffs_counted: false;
+  boundary_notice: string;
+  latest_run?: Record<string, unknown> | null;
+  run?: Record<string, unknown>;
+  already_processed?: boolean;
+}
+
 export type PrivacyReviewAction = "start_processing" | "reject" | "return_to_pending";
 
 export interface PrivacyReviewRequest extends PrivacyRequest {

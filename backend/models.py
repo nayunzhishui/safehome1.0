@@ -2353,6 +2353,57 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_release_evidence (
+        id TEXT PRIMARY KEY,
+        evidence_type TEXT NOT NULL,
+        artifact_ref TEXT NOT NULL,
+        artifact_sha256 TEXT NOT NULL,
+        environment TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        recorded_by TEXT NOT NULL,
+        verified_by TEXT,
+        verified_at TEXT,
+        verification_idempotency_key TEXT,
+        notes TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(recorded_by, idempotency_key),
+        UNIQUE(verified_by, verification_idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_release_gate_runs (
+        id TEXT PRIMARY KEY,
+        policy_version TEXT NOT NULL,
+        registry_hash TEXT NOT NULL,
+        status TEXT NOT NULL,
+        engineering_ready INTEGER NOT NULL DEFAULT 0,
+        human_evidence_ready INTEGER NOT NULL DEFAULT 0,
+        workforce_ready INTEGER NOT NULL DEFAULT 0,
+        privacy_recovery_ready INTEGER NOT NULL DEFAULT 0,
+        infrastructure_ready INTEGER NOT NULL DEFAULT 0,
+        production_release_approved INTEGER NOT NULL DEFAULT 0,
+        evaluated_by TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(evaluated_by, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_release_gate_checks (
+        id TEXT PRIMARY KEY,
+        run_id TEXT NOT NULL,
+        gate_name TEXT NOT NULL,
+        decision TEXT NOT NULL,
+        missing_json TEXT NOT NULL DEFAULT '[]',
+        evidence_ids_json TEXT NOT NULL DEFAULT '[]',
+        checked_at TEXT NOT NULL,
+        UNIQUE(run_id, gate_name)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS therapeutic_assessment_quality_runtime (
         id TEXT PRIMARY KEY,
         paused INTEGER NOT NULL DEFAULT 0,
@@ -2575,6 +2626,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_publication_candidates_subject ON publication_candidates(subject_type, subject_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_publication_gate_checks_candidate ON publication_gate_checks(candidate_id, attempt_no)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_publication_events_actor_idempotency ON publication_candidate_events(actor_id, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_ta_release_evidence_type_status ON therapeutic_assessment_release_evidence(evidence_type, environment, status)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_ta_release_runs_actor_idempotency ON therapeutic_assessment_release_gate_runs(evaluated_by, idempotency_key)",
+    "CREATE INDEX IF NOT EXISTS idx_ta_release_checks_run_gate ON therapeutic_assessment_release_gate_checks(run_id, gate_name)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_events_case_created ON therapeutic_assessment_events(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_parent ON computation_lineage_edges(parent_resource_type, parent_resource_id)",

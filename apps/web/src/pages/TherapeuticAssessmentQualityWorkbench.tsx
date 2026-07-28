@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
+  TherapeuticAssessmentProductionGate,
   TherapeuticAssessmentQualityDimension,
   TherapeuticAssessmentQualityIncident,
   TherapeuticAssessmentQualityReview,
@@ -39,6 +40,7 @@ export function TherapeuticAssessmentQualityWorkbench() {
   const [reviews, setReviews] = useState<TherapeuticAssessmentQualityReview[]>([]);
   const [incidents, setIncidents] = useState<TherapeuticAssessmentQualityIncident[]>([]);
   const [runtime, setRuntime] = useState<TherapeuticAssessmentQualityRuntime | null>(null);
+  const [productionGate, setProductionGate] = useState<TherapeuticAssessmentProductionGate | null>(null);
   const [selectedReviewId, setSelectedReviewId] = useState("");
   const [selectedIncidentId, setSelectedIncidentId] = useState("");
   const [dimensionDraft, setDimensionDraft] = useState<DimensionDraft>(newDimensionDraft);
@@ -55,13 +57,15 @@ export function TherapeuticAssessmentQualityWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [reviewResult, incidentResult] = await Promise.all([
+      const [reviewResult, incidentResult, gateResult] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentQualityReviews({ page_size: 100 }),
         safeHomeApi.listTherapeuticAssessmentQualityIncidents(),
+        safeHomeApi.getTherapeuticAssessmentProductionGate(),
       ]);
       setReviews(reviewResult.items);
       setRuntime(reviewResult.runtime);
       setIncidents(incidentResult.items);
+      setProductionGate(gateResult);
       setSelectedReviewId((current) =>
         reviewResult.items.some((item) => item.id === current)
           ? current
@@ -213,6 +217,43 @@ export function TherapeuticAssessmentQualityWorkbench() {
       ) : null}
       {error ? <div className="formError" role="alert">{error}</div> : null}
       {notice ? <div className="qualityNotice" role="status">{notice}</div> : null}
+
+      {productionGate ? (
+        <section className="qualityPanel productionGatePanel" aria-labelledby="production-gate-title">
+          <div className="qualitySectionHeading">
+            <div>
+              <p className="pageEyebrow">生产门禁</p>
+              <h2 id="production-gate-title">
+                {productionGate.status === "blocked" ? "当前不可发布" : "等待负责人最终批准"}
+              </h2>
+            </div>
+            <span>{productionGate.policy_version}</span>
+          </div>
+          <div className="productionGateChecks" role="list">
+            {([
+              ["engineering_content", "工程与内容"],
+              ["human_evidence", "人工证据"],
+              ["workforce_duty", "人员与值守"],
+              ["privacy_recovery", "隐私与恢复"],
+              ["infrastructure_release", "基础设施"],
+            ] as const).map(([name, label]) => (
+              <div
+                key={name}
+                className={`productionGateCheck ${productionGate.checks[name].passed ? "isPassed" : ""}`}
+                role="listitem"
+              >
+                <strong>{label}</strong>
+                <span>
+                  {productionGate.checks[name].passed
+                    ? "已具备证据"
+                    : `缺少 ${productionGate.checks[name].missing.length} 项`}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="boundaryNotice">{productionGate.boundary_notice}</p>
+        </section>
+      ) : null}
 
       <div className="qualityColumns">
         <section className="qualityPanel" aria-labelledby="review-queue-title">

@@ -1065,6 +1065,38 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
         or publication_policy.get("production_release_approved") is not False
     ):
         errors.append(f"{publication_filename} 必须失败关闭、可解释保留且禁止绕过")
+    release_filename = "therapeutic_assessment_release_gate_policy.json"
+    try:
+        release_policy = load_json(content_dir / release_filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{release_filename} 不可读取：{exc}")
+        return errors
+    expected_release_gates = {
+        "engineering_content",
+        "human_evidence",
+        "workforce_duty",
+        "privacy_recovery",
+        "infrastructure_release",
+    }
+    if set(release_policy.get("gate_order", [])) != expected_release_gates:
+        errors.append(f"{release_filename} 必须完整登记五类生产证据门禁")
+    if set(release_policy.get("engineering_tasks", [])) != {
+        f"T38-F{index:02d}" for index in range(19)
+    }:
+        errors.append(f"{release_filename} 工程门必须覆盖T38-F00至F18")
+    evidence_rules = release_policy.get("evidence_rules", {})
+    if (
+        evidence_rules.get("production_environment_only") is not True
+        or evidence_rules.get("distinct_recorder_and_verifier") is not True
+        or evidence_rules.get("artifact_sha256_required") is not True
+        or evidence_rules.get("simulation_counts_as_approval") is not False
+        or evidence_rules.get("automated_test_counts_as_human_evidence") is not False
+        or release_policy.get("production_release_approved") is not False
+        or release_policy.get("temporary_showcase_counts_as_permission") is not False
+    ):
+        errors.append(
+            f"{release_filename} 必须限定生产证据、双人核验且禁止模拟签字、展示越权和自动发布"
+        )
     return errors
 
 

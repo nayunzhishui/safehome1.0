@@ -8119,6 +8119,126 @@
       }
     },
     {
+      "operation_id": "therapeutic_assessment.get_production_gate_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/production-gate",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_production_gate_evaluate_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/production-gate/evaluate",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.get_production_gate_evidence_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/production-gate/evidence",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_production_gate_evidence_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/production-gate/evidence",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_production_gate_evidence_verify_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/production-gate/evidence/<evidence_id>/verify",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "therapeutic_assessment.get_publication_candidates_route.get",
       "method": "GET",
       "path": "/api/therapeutic-assessment/publication-candidates",
@@ -8929,7 +9049,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 357,
+    "operation_count": 362,
     "showcase_bypass_operation_count": 10,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

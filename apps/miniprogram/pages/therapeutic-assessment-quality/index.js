@@ -32,7 +32,10 @@ Page({
     notice: "",
     userRole: "",
     isReviewRole: false,
+    isFormalRole: false,
     runtime: null,
+    productionGate: null,
+    productionGateChecks: [],
     cases: [],
     selectedCaseId: "",
     selectedCaseIndex: 0,
@@ -61,6 +64,7 @@ Page({
     this.setData({
       userRole: user.role || "",
       isReviewRole: ["supervisor", "admin"].includes(user.role),
+      isFormalRole: ["researcher", "supervisor", "admin"].includes(user.role),
       selectedCaseId: options.caseId || "",
     });
     await this.loadData();
@@ -77,12 +81,15 @@ Page({
   async loadData() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const [caseResult, incidentResult, reviewResult] = await Promise.all([
+      const [caseResult, incidentResult, reviewResult, gateResult] = await Promise.all([
         api.listTherapeuticAssessmentCases(),
         api.listTherapeuticAssessmentQualityIncidents(),
         this.data.isReviewRole
           ? api.listTherapeuticAssessmentQualityReviews({ page_size: 100 })
           : Promise.resolve({ items: [], runtime: null }),
+        this.data.isFormalRole
+          ? api.getTherapeuticAssessmentProductionGate()
+          : Promise.resolve(null),
       ]);
       const cases = (caseResult.items || []).map((item) => ({
         ...item,
@@ -111,6 +118,21 @@ Page({
           resolved: "已处理",
         }[item.status] || item.status,
       }));
+      const gateLabels = {
+        engineering_content: "工程与内容",
+        human_evidence: "人工证据",
+        workforce_duty: "人员与值守",
+        privacy_recovery: "隐私与恢复",
+        infrastructure_release: "基础设施",
+      };
+      const productionGateChecks = gateResult
+        ? Object.keys(gateLabels).map((key) => ({
+            key,
+            label: gateLabels[key],
+            passed: !!gateResult.checks[key].passed,
+            missingCount: (gateResult.checks[key].missing || []).length,
+          }))
+        : [];
       this.setData({
         cases,
         selectedCaseId,
@@ -118,6 +140,8 @@ Page({
         reviews,
         incidents,
         runtime: reviewResult.runtime || null,
+        productionGate: gateResult,
+        productionGateChecks,
         selectedReview: reviews.find((item) => item.id === (this.data.selectedReview && this.data.selectedReview.id)) || reviews[0] || null,
         selectedIncident: incidents.find((item) => item.id === (this.data.selectedIncident && this.data.selectedIncident.id)) || incidents[0] || null,
       });

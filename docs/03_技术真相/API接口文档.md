@@ -2333,3 +2333,11 @@ relationship_initiation_intention_action
 - `GET /api/therapeutic-assessment/lifecycle/metrics`：正式研究角色读取对象范围内汇总；普通参与者返回403，researcher只统计分配给自己的case。
 - `THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED=0`时case接口返回关闭状态和核心链路清单；不会关闭目标、日记、训练卡、打卡、周报或消息接口。
 - 指标明确分为`process_quality`、`implementation_quality`和`harm_incidents`，不返回疗效、诊断、关系质量或个体风险分数。
+
+## 2026-07-28：T37-B05协作式评估生产门禁API
+
+- `GET /api/therapeutic-assessment/production-gate`：正式研究角色读取五类门禁、缺失项和最近运行；普通参与者返回403。
+- `POST /api/therapeutic-assessment/production-gate/evaluate`：督导或管理员按当前注册表和正式证据生成门禁运行快照，需要`Idempotency-Key`。
+- `GET/POST /api/therapeutic-assessment/production-gate/evidence`：正式研究角色读取或登记证据；登记后状态始终为`pending`，客户端不能自报通过。
+- `POST /api/therapeutic-assessment/production-gate/evidence/<evidence_id>/verify`：督导或管理员按版本核验或拒绝证据；记录人不能核验自己的材料。
+- 只有`production`环境、64位SHA-256且记录人与核验人不同的`verified`材料才可计入正式门禁。接口始终返回`production_release_approved=false`，不执行发布。

@@ -1335,6 +1335,26 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    getTherapeuticAssessmentProductionGate() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/production-gate`, {
+        requiresAuth: true,
+      });
+    },
+
+    evaluateTherapeuticAssessmentProductionGate(idempotencyKey) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/production-gate/evaluate`, {
+        method: "POST",
+        header: { "Idempotency-Key": idempotencyKey },
+        requiresAuth: true,
+      });
+    },
+
+    listTherapeuticAssessmentReleaseEvidence() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/production-gate/evidence`, {
+        requiresAuth: true,
+      });
+    },
+
     listTherapeuticAssessmentEvidence(caseId) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/evidence`, {
         requiresAuth: true,

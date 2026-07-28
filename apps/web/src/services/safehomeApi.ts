@@ -152,9 +152,11 @@ import type {
   TherapeuticAssessmentFeedbackVersion,
   TherapeuticAssessmentLifecycle,
   TherapeuticAssessmentLifecycleMetrics,
+  TherapeuticAssessmentProductionGate,
   TherapeuticAssessmentQualityDimension,
   TherapeuticAssessmentQualityIncident,
   TherapeuticAssessmentQualityReview,
+  TherapeuticAssessmentReleaseEvidence,
   TherapeuticAssessmentQualityRuntime,
   TherapeuticAssessmentProductionContract,
   TherapeuticAssessmentDutyShift,
@@ -1729,6 +1731,27 @@ export class SafeHomeApiClient {
 
   getTherapeuticAssessmentLifecycleMetrics(): Promise<TherapeuticAssessmentLifecycleMetrics> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/lifecycle/metrics`);
+  }
+
+  getTherapeuticAssessmentProductionGate(): Promise<TherapeuticAssessmentProductionGate> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/production-gate`);
+  }
+
+  evaluateTherapeuticAssessmentProductionGate(
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentProductionGate> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/production-gate/evaluate`, {
+      method: "POST",
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  listTherapeuticAssessmentReleaseEvidence(): Promise<{
+    items: TherapeuticAssessmentReleaseEvidence[];
+    count: number;
+    boundary_notice: string;
+  }> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/production-gate/evidence`);
   }
 
   transitionTherapeuticAssessmentState(

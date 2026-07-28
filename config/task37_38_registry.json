@@ -445,7 +445,36 @@
         ["npm.cmd", "run", "build", "--prefix", "apps/web"]
       ]
     },
-    {"id": "T37-B05", "title": "协作式评估生产门禁", "dependencies": ["T37-B04"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
+    {
+      "id": "T37-B05",
+      "title": "协作式评估生产门禁",
+      "dependencies": ["T37-B04"],
+      "engineering_complete": true,
+      "status": "engineering_complete_external_release_gated",
+      "evidence": [
+        "content/therapeutic_assessment_release_gate_policy.json",
+        "backend/services/therapeutic_assessment_release_gate_service.py",
+        "backend/scripts/migrate_task37_b05_production_gate.py",
+        "backend/tests/test_task37_b05_production_gate.py",
+        "shared/types/api.ts",
+        "apps/web/src/pages/TherapeuticAssessmentQualityWorkbench.tsx",
+        "apps/miniprogram/pages/therapeutic-assessment-quality/index.js"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests/test_task37_b05_production_gate.py", "backend/tests/test_task37_b04_feedback_lifecycle.py", "backend/tests/test_task37_b03_publication_gate.py", "-q"],
+        ["python", "backend/scripts/migrate_task37_b05_production_gate.py", "plan"],
+        ["python", "backend/scripts/migrate_task37_b05_production_gate.py", "apply"],
+        ["python", "backend/scripts/migrate_task37_b05_production_gate.py", "verify"],
+        ["python", "backend/scripts/migrate_task37_b05_production_gate.py", "rollback"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["python", "backend/scripts/audit_miniprogram_frontend.py"],
+        ["python", "scripts/audit_miniprogram_ui_governance.py"],
+        ["node", "--check", "apps/miniprogram/pages/therapeutic-assessment-quality/index.js"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"]
+      ]
+    },
     {"id": "T37-C01", "title": "AI用例冻结", "dependencies": ["T37-P04", "T38-F05"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-C02", "title": "供应商遴选和合同证据", "dependencies": ["T37-C01"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
     {"id": "T37-C03", "title": "真实Provider适配器和密钥管理", "dependencies": ["T37-C02"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []},
