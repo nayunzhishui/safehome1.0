@@ -2447,3 +2447,11 @@ relationship_initiation_intention_action
 - `PATCH .../multi-party-safeguards/consent`：各参与方只处理自己的同意、拒绝或撤回；任一拒绝阻断共同反馈。
 - `PATCH .../multi-party-safeguards/safety-screen`：各参与方独立完成六类布尔预检；其他参与方只读取聚合安全状态。
 - `PATCH .../multi-party-safeguards/gates`：登记T3、伦理和专项试点证据；共同反馈还要求全员同意、全员完成无信号预检。
+
+### T38-F16治疗性评估AI辅助五道门
+
+- `GET /api/therapeutic-assessment/ai-assist`：返回允许任务、真人专属任务、五道门和禁止自动发布边界。
+- `POST /api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates`：已分配研究者、督导或管理员为低风险单人成年人记录生成可审阅候选；要求`Idempotency-Key`和`expected_case_version`。
+- `GET /api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates`：按对象范围读取原话、候选、五道门结果和人工决定。
+- `PATCH /api/therapeutic-assessment/ai-assist/candidates/<candidate_id>`：保存采纳、修改、拒绝或“都不符合”；要求乐观版本和幂等键。
+- 所有接口均禁止由AI创建/发送正式反馈、解除安全信号、生成H或伪造人工复核。

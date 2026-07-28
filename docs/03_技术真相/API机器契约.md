@@ -304,10 +304,14 @@
 | GET | `/api/text-analysis/summary` | role:admin,researcher | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/actions/<action_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/actions/<action_id>/followups` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/ai-assist` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| PATCH | `/api/therapeutic-assessment/ai-assist/candidates/<candidate_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/actions` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/assign` | role:supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>/child-safeguards` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/child-safeguards` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

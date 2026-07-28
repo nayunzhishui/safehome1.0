@@ -37,6 +37,12 @@
     <text class="ta-boundary">{{multiPartyPolicy.boundary_notice}}</text>
   </view>
 
+  <view wx:if="{{aiAssistPolicy}}" class="safe-card ta-card" aria-label="AI辅助边界">
+    <text class="ta-section-title">AI只提供可拒绝的整理候选</text>
+    <text class="ta-meta">原话、候选、人工修改入口和“都不符合”会同时保留；AI不能发送反馈或冒充人工复核。</text>
+    <text class="ta-boundary">{{aiAssistPolicy.boundary_notice}}</text>
+  </view>
+
   <view class="safe-card ta-card ta-flow-entry">
     <view>
       <text class="ta-section-title">八步协作流程</text>

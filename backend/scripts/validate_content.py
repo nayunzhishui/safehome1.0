@@ -1183,6 +1183,41 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
         "shared_device_risk",
     }:
         errors.append(f"{multi_filename} 必须完整登记六类共同反馈前安全检查")
+    ai_filename = "therapeutic_assessment_ai_assist_policy.json"
+    try:
+        ai_policy = load_json(content_dir / ai_filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{ai_filename} 不可读取：{exc}")
+        return errors
+    if (
+        ai_policy.get("schema") != "safehome.therapeutic-assessment.ai-assist.v1"
+        or ai_policy.get("auto_publish") is not False
+        or ai_policy.get("may_clear_safety_signal") is not False
+        or ai_policy.get("may_create_hypothesis_h") is not False
+        or ai_policy.get("may_claim_human_review") is not False
+    ):
+        errors.append(f"{ai_filename} 必须禁止自动发布、解除安全信号、生成H或冒充真人审核")
+    if set(ai_policy.get("five_gates", [])) != {
+        "minimum_input",
+        "permission",
+        "source",
+        "language",
+        "responsibility",
+    }:
+        errors.append(f"{ai_filename} 必须完整登记五道门")
+    if not {
+        "hypothesis_h",
+        "assessment_interpretation",
+        "minor_feedback",
+        "couple_feedback",
+        "trauma_feedback",
+        "violence_response",
+        "self_harm_response",
+        "applicability_decision",
+        "referral",
+        "safety_disposition",
+    }.issubset(set(ai_policy.get("human_only_tasks", []))):
+        errors.append(f"{ai_filename} 必须完整登记真人专属任务")
     return errors
 
 

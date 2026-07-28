@@ -1269,6 +1269,10 @@ function createSafeHomeApi(options = {}) {
       );
     },
 
+    getTherapeuticAssessmentAiAssistPolicy() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/ai-assist`, { requiresAuth: true });
+    },
+
     getTherapeuticAssessmentLaunchScreening(caseId) {
       return request(
         `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings/latest`,

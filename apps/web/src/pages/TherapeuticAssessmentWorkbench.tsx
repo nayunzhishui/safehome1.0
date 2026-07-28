@@ -6,6 +6,9 @@ import type {
   TherapeuticAssessmentAdultLaunchScope,
   TherapeuticAssessmentChildPolicy,
   TherapeuticAssessmentMultiPartyPolicy,
+  TherapeuticAssessmentAiAssistPolicy,
+  TherapeuticAssessmentAiAssistCandidate,
+  TherapeuticAssessmentAiAssistTask,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
@@ -112,6 +115,13 @@ export function TherapeuticAssessmentWorkbench() {
     useState<TherapeuticAssessmentChildPolicy | null>(null);
   const [multiPartyPolicy, setMultiPartyPolicy] =
     useState<TherapeuticAssessmentMultiPartyPolicy | null>(null);
+  const [aiAssistPolicy, setAiAssistPolicy] =
+    useState<TherapeuticAssessmentAiAssistPolicy | null>(null);
+  const [aiCandidates, setAiCandidates] =
+    useState<TherapeuticAssessmentAiAssistCandidate[]>([]);
+  const [aiTask, setAiTask] =
+    useState<TherapeuticAssessmentAiAssistTask>("question_candidates");
+  const [aiEditedText, setAiEditedText] = useState("");
   const [launchScreening, setLaunchScreening] =
     useState<TherapeuticAssessmentLaunchScreening | null>(null);
   const [queueItems, setQueueItems] = useState<TherapeuticAssessmentWorkQueueItem[]>([]);
@@ -148,12 +158,13 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, queue, runtime, publications, lifecycle] = await Promise.all([
+      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, aiPolicy, queue, runtime, publications, lifecycle] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
         safeHomeApi.getTherapeuticAssessmentAdultLaunchScope(),
         safeHomeApi.getTherapeuticAssessmentChildPolicy(),
         safeHomeApi.getTherapeuticAssessmentMultiPartyPolicy(),
+        safeHomeApi.getTherapeuticAssessmentAiAssistPolicy(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
         safeHomeApi.listPublicationCandidates(),
@@ -164,6 +175,7 @@ export function TherapeuticAssessmentWorkbench() {
       setAdultLaunchScope(launchScope);
       setChildPolicy(childSafeguards);
       setMultiPartyPolicy(multiPartySafeguards);
+      setAiAssistPolicy(aiPolicy);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
       setPublicationCandidates(publications.items);
@@ -225,6 +237,17 @@ export function TherapeuticAssessmentWorkbench() {
 
   useEffect(() => {
     if (selectedId) void loadAuthorizations(selectedId);
+  }, [selectedId]);
+
+  useEffect(() => {
+    if (!selectedId) {
+      setAiCandidates([]);
+      return;
+    }
+    void safeHomeApi
+      .listTherapeuticAssessmentAiAssistCandidates(selectedId)
+      .then((result) => setAiCandidates(result.items))
+      .catch(() => setAiCandidates([]));
   }, [selectedId]);
 
   useEffect(() => {
@@ -349,6 +372,58 @@ export function TherapeuticAssessmentWorkbench() {
     }
   };
 
+  const createAiCandidates = async () => {
+    if (!selected) return;
+    setSaving(true);
+    setError("");
+    try {
+      const item = await safeHomeApi.createTherapeuticAssessmentAiAssistCandidates(
+        selected.id,
+        {
+          task_type: aiTask,
+          source_field: selected.working_question ? "working_question" : "assessment_question",
+          expected_case_version: selected.version,
+        },
+        `web-ta-ai-${selected.id}-${Date.now()}`,
+      );
+      setAiCandidates((current) => [item, ...current]);
+      setAiEditedText(item.candidates[0]?.text || "");
+      setNotice("AI整理候选已生成；尚未发布，也不代表人工复核。");
+    } catch (caught) {
+      setError(caught instanceof SafeHomeApiError ? caught.message : "AI整理候选生成失败。");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const decideAiCandidate = async (
+    item: TherapeuticAssessmentAiAssistCandidate,
+    decision: "modified" | "none_fit",
+  ) => {
+    setSaving(true);
+    setError("");
+    try {
+      const updated = await safeHomeApi.decideTherapeuticAssessmentAiAssistCandidate(
+        item.id,
+        {
+          decision,
+          selected_candidate_index: decision === "modified" ? 0 : undefined,
+          modified_text: decision === "modified" ? aiEditedText : undefined,
+          expected_version: item.version,
+        },
+        `web-ta-ai-decision-${item.id}-${Date.now()}`,
+      );
+      setAiCandidates((current) => current.map((candidate) => (
+        candidate.id === item.id ? updated : candidate
+      )));
+      setNotice(decision === "none_fit" ? "已记录“都不符合”，原话仍保留。" : "人工修改已记录；不会自动发送。");
+    } catch (caught) {
+      setError(caught instanceof SafeHomeApiError ? caught.message : "人工决定保存失败。");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <section className="dashboardShell therapeuticAssessmentWorkbench" aria-labelledby="ta-title">
       <header className="dashboardHeader taWorkbenchHeader">
@@ -396,6 +471,13 @@ export function TherapeuticAssessmentWorkbench() {
           <strong>伴侣与多人子线未开放</strong>
           <p>个别披露默认不进入共同反馈；安全信号会转为单独支持。</p>
           <small>{multiPartyPolicy.boundary_notice}</small>
+        </section>
+      ) : null}
+      {aiAssistPolicy ? (
+        <section className="status" aria-label="AI辅助五道门">
+          <strong>AI只提供候选，不拥有发布权</strong>
+          <p>最小输入、权限、来源、语言和责任五道门均由服务端执行。</p>
+          <small>{aiAssistPolicy.boundary_notice}</small>
         </section>
       ) : null}
       {queueRuntime ? (
@@ -468,6 +550,43 @@ export function TherapeuticAssessmentWorkbench() {
                 </p>
                 {authorizationNotice ? <p>{authorizationNotice}</p> : null}
                 <small>账号角色和临时展示权限都不能代替任务级、对象级和限期授权。</small>
+              </section>
+
+              <section className="taFeedbackLifecycle" aria-label="AI整理候选">
+                <div className="sectionHeader">
+                  <div><p className="eyebrow">可拒绝 · 不自动发布</p><h2>AI整理候选</h2></div>
+                </div>
+                <label>辅助类型
+                  <select value={aiTask} onChange={(event) => setAiTask(event.target.value as TherapeuticAssessmentAiAssistTask)}>
+                    <option value="question_candidates">问题候选</option>
+                    <option value="formatting">格式整理</option>
+                    <option value="deidentification_reminder">去标识提醒</option>
+                    <option value="timeline_sort">时间线排序</option>
+                    <option value="missing_field_prompt">缺字段提示</option>
+                    <option value="low_risk_review_questions">低风险复盘问题</option>
+                  </select>
+                </label>
+                <button className="secondaryButton" type="button" disabled={saving} onClick={() => void createAiCandidates()}>
+                  生成可审阅候选
+                </button>
+                {aiCandidates[0] ? (
+                  <article className="evidenceCard">
+                    <p><strong>原话</strong></p>
+                    <p>{aiCandidates[0].original_text}</p>
+                    <p><strong>候选</strong></p>
+                    {aiCandidates[0].candidates.map((candidate, index) => (
+                      <p key={`${candidate.kind}-${index}`}>{index + 1}. {candidate.text}</p>
+                    ))}
+                    <label>人工修改入口
+                      <textarea rows={4} value={aiEditedText} onChange={(event) => setAiEditedText(event.target.value)} />
+                    </label>
+                    <div className="dashboardActions">
+                      <button className="secondaryButton" type="button" disabled={saving || !aiEditedText.trim()} onClick={() => void decideAiCandidate(aiCandidates[0], "modified")}>保存人工修改</button>
+                      <button className="secondaryButton" type="button" disabled={saving} onClick={() => void decideAiCandidate(aiCandidates[0], "none_fit")}>都不符合</button>
+                    </div>
+                    <small>当前状态：{aiCandidates[0].status}。任何选择都不会自动创建或发送反馈。</small>
+                  </article>
+                ) : <p>尚未生成候选；原话不会因AI处理而被覆盖。</p>}
               </section>
 
               <section className="taFilterBar" aria-label="证据过滤">

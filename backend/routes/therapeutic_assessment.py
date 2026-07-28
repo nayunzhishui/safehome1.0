@@ -117,6 +117,12 @@ from services.therapeutic_assessment_multi_party_service import (
     update_gates as update_multi_party_gates,
     update_safety_screen as update_multi_party_safety_screen,
 )
+from services.therapeutic_assessment_ai_assist_service import (
+    create_candidates as create_ai_assist_candidates,
+    decide_candidate as decide_ai_assist_candidate,
+    list_candidates as list_ai_assist_candidates,
+    public_policy as ai_assist_policy,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -164,6 +170,34 @@ def get_child_safeguards_policy_route():
 def get_multi_party_policy_route():
     actor, error = _actor()
     return error or _respond(multi_party_policy)
+
+
+@bp.get("/ai-assist")
+def get_ai_assist_policy_route():
+    actor, error = _actor()
+    return error or _respond(ai_assist_policy)
+
+
+@bp.post("/cases/<case_id>/ai-assist/candidates")
+def post_ai_assist_candidates_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        create_ai_assist_candidates, actor, case_id, _payload(), _key()
+    )
+
+
+@bp.get("/cases/<case_id>/ai-assist/candidates")
+def get_ai_assist_candidates_route(case_id: str):
+    actor, error = _actor()
+    return error or _respond(list_ai_assist_candidates, actor, case_id)
+
+
+@bp.patch("/ai-assist/candidates/<candidate_id>")
+def patch_ai_assist_candidate_route(candidate_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        decide_ai_assist_candidate, actor, candidate_id, _payload(), _key()
+    )
 
 
 @bp.post("/cases/<case_id>/multi-party-safeguards")

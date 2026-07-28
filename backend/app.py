@@ -102,6 +102,7 @@ REQUIRED_CONTENT_FILES = [
     "therapeutic_assessment_adult_launch_policy.json",
     "therapeutic_assessment_child_policy.json",
     "therapeutic_assessment_multi_party_policy.json",
+    "therapeutic_assessment_ai_assist_policy.json",
     "researcher_capability_registry.json",
     "security_privacy_abuse_registry.json",
     "reliability_release_registry.json",

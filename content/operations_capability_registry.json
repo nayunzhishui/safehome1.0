@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 393,
+  "operation_count": 397,
   "capability_count": 44,
   "capabilities": [
     {
@@ -1927,7 +1927,7 @@
       "feature_flags": [],
       "version": "2026-07-21.2",
       "tests": [
-        "backend/tests (operation coverage: 83)",
+        "backend/tests (operation coverage: 87)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1935,6 +1935,8 @@
       "technical_implementation_complete": true,
       "production_release_approved": false,
       "operation_ids": [
+        "therapeutic_assessment.get_ai_assist_candidates_route.get",
+        "therapeutic_assessment.get_ai_assist_policy_route.get",
         "therapeutic_assessment.get_case_lifecycle_route.get",
         "therapeutic_assessment.get_case_route.get",
         "therapeutic_assessment.get_cases_route.get",
@@ -1964,6 +1966,7 @@
         "therapeutic_assessment.get_work_queue_route.get",
         "therapeutic_assessment.get_work_queue_runtime_route.get",
         "therapeutic_assessment.patch_action_route.patch",
+        "therapeutic_assessment.patch_ai_assist_candidate_route.patch",
         "therapeutic_assessment.patch_child_safeguard_decision_route.patch",
         "therapeutic_assessment.patch_child_safeguard_gates_route.patch",
         "therapeutic_assessment.patch_competency_authorization_revoke_route.patch",
@@ -1975,6 +1978,7 @@
         "therapeutic_assessment.patch_scope_route.patch",
         "therapeutic_assessment.post_action_followup_route.post",
         "therapeutic_assessment.post_action_route.post",
+        "therapeutic_assessment.post_ai_assist_candidates_route.post",
         "therapeutic_assessment.post_assign_route.post",
         "therapeutic_assessment.post_case_route.post",
         "therapeutic_assessment.post_child_safeguard_route.post",

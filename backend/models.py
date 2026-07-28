@@ -2701,6 +2701,28 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_ai_assist_candidates (
+        id TEXT PRIMARY KEY,
+        case_id TEXT NOT NULL,
+        task_type TEXT NOT NULL,
+        source_field TEXT NOT NULL,
+        original_text_sha256 TEXT NOT NULL,
+        candidate_payload_json TEXT NOT NULL DEFAULT '[]',
+        five_gate_results_json TEXT NOT NULL DEFAULT '{}',
+        provider_mode TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending_human_decision',
+        selected_candidate_index INTEGER,
+        reviewer_text TEXT,
+        reviewed_by TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        created_by TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(created_by, idempotency_key)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS computation_datasets (
         id TEXT PRIMARY KEY,
         dataset_key TEXT NOT NULL,
@@ -2920,6 +2942,7 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_ta_child_safeguards_guardian ON therapeutic_assessment_child_safeguards(guardian_user_id, status)",
     "CREATE INDEX IF NOT EXISTS idx_ta_child_safeguards_child ON therapeutic_assessment_child_safeguards(child_user_id, status)",
     "CREATE INDEX IF NOT EXISTS idx_ta_multi_party_status ON therapeutic_assessment_multi_party_safeguards(status, updated_at)",
+    "CREATE INDEX IF NOT EXISTS idx_ta_ai_assist_case_status ON therapeutic_assessment_ai_assist_candidates(case_id, status, updated_at)",
     "CREATE INDEX IF NOT EXISTS idx_computation_auth_dataset_subject ON computation_authorization_snapshots(dataset_id, subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_parent ON computation_lineage_edges(parent_resource_type, parent_resource_id)",
     "CREATE INDEX IF NOT EXISTS idx_computation_lineage_child ON computation_lineage_edges(child_resource_type, child_resource_id)",

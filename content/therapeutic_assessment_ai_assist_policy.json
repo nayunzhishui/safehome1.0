@@ -1,0 +1,45 @@
+{
+  "schema": "safehome.therapeutic-assessment.ai-assist.v1",
+  "version": "2026-07-29-f16-v1",
+  "enabled_roles": ["researcher", "supervisor", "admin"],
+  "allowed_tasks": [
+    "formatting",
+    "deidentification_reminder",
+    "timeline_sort",
+    "question_candidates",
+    "missing_field_prompt",
+    "low_risk_review_questions"
+  ],
+  "human_only_tasks": [
+    "hypothesis_h",
+    "assessment_interpretation",
+    "minor_feedback",
+    "couple_feedback",
+    "trauma_feedback",
+    "violence_response",
+    "self_harm_response",
+    "applicability_decision",
+    "referral",
+    "safety_disposition"
+  ],
+  "five_gates": [
+    "minimum_input",
+    "permission",
+    "source",
+    "language",
+    "responsibility"
+  ],
+  "allowed_case_scope": {
+    "risk_level": "low",
+    "safety_state": "low_risk",
+    "complexity_scope": "individual_adult_low_risk"
+  },
+  "decisions": ["accepted", "modified", "rejected", "none_fit"],
+  "auto_publish": false,
+  "may_clear_safety_signal": false,
+  "may_create_hypothesis_h": false,
+  "may_claim_human_review": false,
+  "provider_mode": "deterministic_candidate_scaffold",
+  "grounding_note": "候选只引用当前记录中的授权原话；词面一致不等于事实正确。",
+  "boundary_notice": "AI只提供可拒绝、可修改的整理候选；不能发布反馈、解释测验、解除安全信号或代替真人复核。"
+}

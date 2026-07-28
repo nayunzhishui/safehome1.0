@@ -155,14 +155,15 @@ REQUIRED_HEALTH_TABLES = [
     "therapeutic_assessment_launch_screenings",
     "therapeutic_assessment_child_safeguards",
     "therapeutic_assessment_multi_party_safeguards",
+    "therapeutic_assessment_ai_assist_candidates",
     "computation_datasets",
     "computation_authorization_snapshots",
     "computation_lineage_edges",
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_29_059"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_multi_party_safeguards"
+CURRENT_SCHEMA_VERSION = "2026_07_29_060"
+CURRENT_SCHEMA_NAME = "therapeutic_assessment_ai_assist_candidates"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {

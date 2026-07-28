@@ -155,6 +155,9 @@ import type {
   TherapeuticAssessmentChildSafeguard,
   TherapeuticAssessmentMultiPartyPolicy,
   TherapeuticAssessmentMultiPartySafeguard,
+  TherapeuticAssessmentAiAssistPolicy,
+  TherapeuticAssessmentAiAssistCandidate,
+  TherapeuticAssessmentAiAssistTask,
   TherapeuticAssessmentLaunchScreening,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentCompetencyLevel,
@@ -1795,6 +1798,50 @@ export class SafeHomeApiClient {
   getTherapeuticAssessmentMultiPartySafeguard(caseId: string): Promise<TherapeuticAssessmentMultiPartySafeguard> {
     return this.requestData(
       `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/multi-party-safeguards`,
+    );
+  }
+
+  getTherapeuticAssessmentAiAssistPolicy(): Promise<TherapeuticAssessmentAiAssistPolicy> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/ai-assist`);
+  }
+
+  listTherapeuticAssessmentAiAssistCandidates(caseId: string): Promise<{
+    items: TherapeuticAssessmentAiAssistCandidate[];
+    count: number;
+  }> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/ai-assist/candidates`,
+    );
+  }
+
+  createTherapeuticAssessmentAiAssistCandidates(
+    caseId: string,
+    input: {
+      task_type: TherapeuticAssessmentAiAssistTask;
+      source_field: "assessment_question" | "working_question";
+      expected_case_version: number;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentAiAssistCandidate> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/ai-assist/candidates`,
+      { method: "POST", body: input, headers: { "Idempotency-Key": idempotencyKey } },
+    );
+  }
+
+  decideTherapeuticAssessmentAiAssistCandidate(
+    candidateId: string,
+    input: {
+      decision: "accepted" | "modified" | "rejected" | "none_fit";
+      selected_candidate_index?: number;
+      modified_text?: string;
+      expected_version: number;
+    },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentAiAssistCandidate> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/ai-assist/candidates/${encodeURIComponent(candidateId)}`,
+      { method: "PATCH", body: input, headers: { "Idempotency-Key": idempotencyKey } },
     );
   }
 

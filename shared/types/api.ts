@@ -501,6 +501,55 @@ export interface TherapeuticAssessmentMultiPartySafeguard {
   updated_at: ISODateTime;
 }
 
+export type TherapeuticAssessmentAiAssistTask =
+  | "formatting"
+  | "deidentification_reminder"
+  | "timeline_sort"
+  | "question_candidates"
+  | "missing_field_prompt"
+  | "low_risk_review_questions";
+
+export interface TherapeuticAssessmentAiAssistPolicy {
+  schema: "safehome.therapeutic-assessment.ai-assist.v1";
+  version: string;
+  allowed_tasks: TherapeuticAssessmentAiAssistTask[];
+  human_only_tasks: string[];
+  five_gates: Array<"minimum_input" | "permission" | "source" | "language" | "responsibility">;
+  auto_publish: false;
+  may_clear_safety_signal: false;
+  may_create_hypothesis_h: false;
+  may_claim_human_review: false;
+  provider_mode: "deterministic_candidate_scaffold";
+  grounding_note: string;
+  boundary_notice: string;
+}
+
+export interface TherapeuticAssessmentAiAssistCandidate {
+  id: ID;
+  case_id: ID;
+  task_type: TherapeuticAssessmentAiAssistTask;
+  source_field: "assessment_question" | "working_question";
+  original_text_sha256: string;
+  original_text: string;
+  candidates: Array<{ text: string; kind: string }>;
+  five_gate_results: Record<
+    "minimum_input" | "permission" | "source" | "language" | "responsibility",
+    boolean
+  >;
+  provider_mode: string;
+  status: "pending_human_decision" | "accepted" | "modified" | "rejected" | "none_fit";
+  selected_candidate_index?: number | null;
+  reviewer_text?: string | null;
+  reviewed_by?: ID | null;
+  version: number;
+  auto_publish: false;
+  may_clear_safety_signal: false;
+  human_review_completed: false;
+  boundary_notice: string;
+  created_at: ISODateTime;
+  updated_at: ISODateTime;
+}
+
 export interface TherapeuticAssessmentProductionContract {
   schema: "safehome.therapeutic-assessment.production-contract.v1";
   version: string;
