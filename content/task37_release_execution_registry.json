@@ -1,6 +1,6 @@
 {
   "schema": "safehome.task37.release-execution.v1",
-  "version": "2026-07-29-r02-v1",
+  "version": "2026-07-29-r03-v1",
   "stages": [
     {
       "id": "R01",
@@ -111,6 +111,75 @@
       "command_generation_only": true,
       "production_migration_executed": false,
       "production_restore_executed": false,
+      "production_release_approved": false
+    },
+    {
+      "id": "R03",
+      "title": "Canary与事件演练",
+      "status": "engineering_evidence_ready_real_canary_and_incident_drills_pending",
+      "entry_dependencies": ["R02_production_migration_evidence_complete", "A3_formative_pilot_complete"],
+      "canary_steps_percent": [1, 5, 10],
+      "canary_promotion_requires": [
+        "health_ready_green",
+        "error_rate_below_threshold",
+        "latency_below_threshold",
+        "queue_age_below_threshold",
+        "no_critical_safety_miss",
+        "no_scope_violation",
+        "kill_switch_verified",
+        "human_owner_decision"
+      ],
+      "shadow_comparison": {
+        "required": true,
+        "participant_visible": false,
+        "compare_fields": [
+          "decision_category",
+          "abstention",
+          "human_review_required",
+          "citation_coverage",
+          "policy_gate_result"
+        ],
+        "raw_text_in_evidence": false
+      },
+      "load_thresholds": {
+        "api_error_rate_max": 0.01,
+        "api_p95_ms_max": 1500,
+        "worker_queue_age_seconds_max": 300,
+        "dead_letter_rate_max": 0.001
+      },
+      "drill_scenarios": [
+        {"id": "service_overload", "expected_response": "stop_promotion_and_read_only"},
+        {"id": "provider_failure", "expected_response": "disable_provider_and_fixed_fallback"},
+        {"id": "model_drift", "expected_response": "rollback_model_and_shadow_only"},
+        {"id": "duty_interruption", "expected_response": "pause_human_required_flows"},
+        {"id": "participant_withdrawal", "expected_response": "propagate_withdrawal_and_stop_delivery"},
+        {"id": "privacy_incident", "expected_response": "isolate_access_and_start_privacy_response"},
+        {"id": "object_scope_violation", "expected_response": "deny_access_and_open_security_event"},
+        {"id": "unsafe_output", "expected_response": "block_publish_and_kill_ai_stage"}
+      ],
+      "required_evidence_fields": [
+        "source_commit",
+        "canary_environment",
+        "canary_percent",
+        "traffic_is_synthetic_or_real",
+        "health_ready_snapshot",
+        "load_snapshot",
+        "shadow_comparison_hash",
+        "scenario_id",
+        "trigger_evidence",
+        "expected_response",
+        "observed_response",
+        "kill_switch_result",
+        "recovery_result",
+        "incident_owner_reference",
+        "independent_verifier_reference",
+        "closed_at"
+      ],
+      "synthetic_drill_may_sign": false,
+      "simulated_agent_may_be_incident_owner": false,
+      "real_canary_execution_complete": false,
+      "real_incident_drills_complete": false,
+      "production_traffic_used": false,
       "production_release_approved": false
     }
   ],

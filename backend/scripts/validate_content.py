@@ -1476,6 +1476,18 @@ def validate_task37_release_execution(content_dir: Path) -> list[str]:
         or (r02.get("rollback_policy") or {}).get("delete_audit_automatically") is not False
     ):
         errors.append(f"{filename} R02只能生成证据且不得自动破坏数据或审计")
+    r03 = next((item for item in payload.get("stages") or [] if item.get("id") == "R03"), None)
+    if not r03 or r03.get("canary_steps_percent") != [1, 5, 10] or len(r03.get("drill_scenarios") or []) != 8:
+        errors.append(f"{filename} R03缺少分步canary或八类事件演练")
+    elif (
+        r03.get("synthetic_drill_may_sign") is not False
+        or r03.get("simulated_agent_may_be_incident_owner") is not False
+        or r03.get("real_canary_execution_complete") is not False
+        or r03.get("real_incident_drills_complete") is not False
+        or r03.get("production_traffic_used") is not False
+        or (r03.get("shadow_comparison") or {}).get("participant_visible") is not False
+    ):
+        errors.append(f"{filename} R03合成演练不得计真实canary、责任人或参与者可见输出")
     return errors
 
 
