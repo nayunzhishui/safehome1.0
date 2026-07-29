@@ -1378,6 +1378,15 @@ def validate_therapeutic_pilot_evidence(content_dir: Path) -> list[str]:
         or a0.get("production_release_approved") is not False
     ):
         errors.append(f"{filename} 模拟角色和自动测试不得计作真人签字")
+    a1 = next((item for item in stages if item.get("id") == "A1"), None)
+    if not a1 or len(a1.get("screen_prompts") or []) != 3 or len(a1.get("coverage_domains") or []) != 7:
+        errors.append(f"{filename} A1必须包含逐屏三问和七类理解检查")
+    elif (
+        a1.get("usability_is_efficacy_research") is not False
+        or a1.get("synthetic_interview_may_sign") is not False
+        or a1.get("human_interviews_complete") is not False
+    ):
+        errors.append(f"{filename} A1不得把合成访谈或可用性测试当作真人疗效证据")
     return errors
 
 

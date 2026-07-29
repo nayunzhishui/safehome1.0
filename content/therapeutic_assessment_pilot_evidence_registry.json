@@ -45,6 +45,48 @@
       "simulated_role_may_sign": false,
       "automatic_test_may_sign": false,
       "production_release_approved": false
+    },
+    {
+      "id": "A1",
+      "title": "认知访谈",
+      "status": "evidence_template_ready_human_interviews_pending",
+      "entry_dependencies": ["T38-F19_human_signoff_complete"],
+      "screen_prompts": [
+        "你以为这句话是什么意思？",
+        "你以为谁会看到这里的内容？",
+        "你觉得自己能否拒绝、暂停或撤回？"
+      ],
+      "coverage_domains": [
+        "诊断感",
+        "被迫感",
+        "隐私理解",
+        "按钮层级",
+        "等待状态",
+        "撤回理解",
+        "风险提示"
+      ],
+      "screen_inventory": [
+        {"id": "boundary", "label": "边界与知情", "evidence_ref": "apps/miniprogram/pages/therapeutic-assessment-boundary/index.wxml"},
+        {"id": "question", "label": "本人问题与共享范围", "evidence_ref": "apps/miniprogram/pages/therapeutic-assessment/index.wxml"},
+        {"id": "feedback", "label": "反馈核对与异议", "evidence_ref": "apps/miniprogram/pages/therapeutic-assessment/index.wxml"},
+        {"id": "withdrawal", "label": "暂停与撤回", "evidence_ref": "apps/miniprogram/pages/therapeutic-assessment/index.wxml"},
+        {"id": "safety", "label": "风险提示与人工支持", "evidence_ref": "content/therapeutic_assessment_contract.json"}
+      ],
+      "required_interview_fields": [
+        "participant_code",
+        "screen_id",
+        "verbatim_understanding",
+        "visibility_expectation",
+        "refusal_expectation",
+        "observed_confusion",
+        "revision_decision",
+        "unresolved_disagreement"
+      ],
+      "severe_issue_blocks_next_stage": true,
+      "usability_is_efficacy_research": false,
+      "synthetic_interview_may_sign": false,
+      "human_interviews_complete": false,
+      "production_release_approved": false
     }
   ],
   "boundary_notice": "自动化只生成问题和证据索引；专家结论、分歧、资质核验与签字必须由真实人员完成。"
