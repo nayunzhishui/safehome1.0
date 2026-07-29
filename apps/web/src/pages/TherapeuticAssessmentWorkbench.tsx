@@ -9,6 +9,7 @@ import type {
   TherapeuticAssessmentAiAssistPolicy,
   TherapeuticAssessmentAiAssistCandidate,
   TherapeuticAssessmentAiAssistTask,
+  TherapeuticAssessmentMethodCatalog,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
@@ -117,6 +118,8 @@ export function TherapeuticAssessmentWorkbench() {
     useState<TherapeuticAssessmentMultiPartyPolicy | null>(null);
   const [aiAssistPolicy, setAiAssistPolicy] =
     useState<TherapeuticAssessmentAiAssistPolicy | null>(null);
+  const [methodCatalog, setMethodCatalog] =
+    useState<TherapeuticAssessmentMethodCatalog | null>(null);
   const [aiCandidates, setAiCandidates] =
     useState<TherapeuticAssessmentAiAssistCandidate[]>([]);
   const [aiTask, setAiTask] =
@@ -158,13 +161,14 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, aiPolicy, queue, runtime, publications, lifecycle] = await Promise.all([
+      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, aiPolicy, methods, queue, runtime, publications, lifecycle] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
         safeHomeApi.getTherapeuticAssessmentAdultLaunchScope(),
         safeHomeApi.getTherapeuticAssessmentChildPolicy(),
         safeHomeApi.getTherapeuticAssessmentMultiPartyPolicy(),
         safeHomeApi.getTherapeuticAssessmentAiAssistPolicy(),
+        safeHomeApi.getTherapeuticAssessmentMethodLibrary(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
         safeHomeApi.listPublicationCandidates(),
@@ -176,6 +180,7 @@ export function TherapeuticAssessmentWorkbench() {
       setChildPolicy(childSafeguards);
       setMultiPartyPolicy(multiPartySafeguards);
       setAiAssistPolicy(aiPolicy);
+      setMethodCatalog(methods);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
       setPublicationCandidates(publications.items);
@@ -478,6 +483,13 @@ export function TherapeuticAssessmentWorkbench() {
           <strong>AI只提供候选，不拥有发布权</strong>
           <p>最小输入、权限、来源、语言和责任五道门均由服务端执行。</p>
           <small>{aiAssistPolicy.boundary_notice}</small>
+        </section>
+      ) : null}
+      {methodCatalog ? (
+        <section className="status" aria-label="受控方法内容库">
+          <strong>方法内容由独立审核控制</strong>
+          <p>已登记 {methodCatalog.count} 项；目录仅显示适用范围与治理状态，不公开专业模板正文。</p>
+          <small>{methodCatalog.boundary}</small>
         </section>
       ) : null}
       {queueRuntime ? (

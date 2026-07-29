@@ -1,0 +1,194 @@
+{
+  "schema": "safehome.therapeutic-assessment.method-library.v1",
+  "version": "2026-07-29-f17-v1",
+  "governance": {
+    "content_type": "therapeutic_method",
+    "required_independent_disciplines": ["research", "psychology", "ethics", "content"],
+    "minimum_distinct_reviewers": 2,
+    "automatic_release_allowed": false,
+    "ordinary_recommendation_allowed_for_professional_templates": false
+  },
+  "items": [
+    {
+      "id": "service_level_guidance",
+      "title": "L0—L3服务级别说明",
+      "artifact_type": "service_level_guidance",
+      "source": "项目自研协作式评估服务分层",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L0", "L1", "L2", "L3"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["未知对象权限", "未知安全状态", "无人承担责任"],
+      "access_tier": "research_team",
+      "ordinary_recommendation": false,
+      "body": {
+        "L0": "仅做边界说明、问题准备和自主记录。",
+        "L1": "在真人协作下澄清问题与资料范围。",
+        "L2": "在有效授权和督导下整理低风险成人单人资料及可讨论反馈。",
+        "L3": "仅由具备T3专项授权的人员承担正式测验解释或复杂对象工作。"
+      }
+    },
+    {
+      "id": "assessment_question_rubric",
+      "title": "评估问题量规",
+      "artifact_type": "assessment_question_rubric",
+      "source": "项目自研治疗性评估问题框架",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L0", "L1", "L2"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["问题要求诊断结论", "紧急安全处置", "非自愿参与"],
+      "access_tier": "research_team",
+      "ordinary_recommendation": false,
+      "body": {
+        "checks": ["来自参与者本人关切", "可被当前资料逐步理解", "不预设病因或人格标签", "允许暂停、修改或撤回"],
+        "result_options": ["可继续澄清", "需要补资料", "需要真人安全支持", "本轮不适用"]
+      }
+    },
+    {
+      "id": "ophu_evidence_templates",
+      "title": "O/P/H/U证据模板",
+      "artifact_type": "evidence_templates",
+      "source": "项目自研可追溯证据结构",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L1", "L2", "L3"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["来源不可核对", "共享权限已撤回", "把H写成事实"],
+      "access_tier": "research_team",
+      "ordinary_recommendation": false,
+      "body": {
+        "O": ["具体观察", "来源", "时间", "情境"],
+        "P": ["模式候选", "支持依据", "反例", "其它可能"],
+        "H": ["仅真人起草", "支持与反证", "参与者识别", "不确定性"],
+        "U": ["尚不知道什么", "为什么未知", "下一步如何核对"]
+      }
+    },
+    {
+      "id": "feedback_review_checklist",
+      "title": "反馈检查表",
+      "artifact_type": "feedback_checklist",
+      "source": "项目自研非诊断反馈质量规则",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L1", "L2", "L3"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["缺少可核对依据", "没有其它可能", "无人承担复核"],
+      "access_tier": "research_team",
+      "ordinary_recommendation": false,
+      "body": {
+        "checks": ["回答参与者问题", "区分观察与理解", "保留不确定性", "避免诊断/责备/保证", "给出可拒绝的小行动", "说明撤回和投诉入口"]
+      }
+    },
+    {
+      "id": "written_letter_framework",
+      "title": "书面信反馈框架",
+      "artifact_type": "written_letter_framework",
+      "source": "项目自研支持性书面反馈结构",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L1", "L2"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["高风险未接管", "未经独立复核", "参与者已撤回"],
+      "access_tier": "research_team",
+      "ordinary_recommendation": false,
+      "body": {
+        "sections": ["回应本人问题", "可核对的观察", "一种以上可能理解", "当前未知", "邀请核对", "自选下一小步", "边界与支持入口"]
+      }
+    },
+    {
+      "id": "applicability_checklist",
+      "title": "适用性清单",
+      "artifact_type": "applicability_checklist",
+      "source": "项目自研协作式评估准入边界",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L0", "L1", "L2", "L3"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["信息不足仍强行判断", "把服务级别当诊断等级"],
+      "access_tier": "research_team",
+      "ordinary_recommendation": false,
+      "body": {
+        "dimensions": ["参与是否自愿", "对象与资料范围", "安全状态", "人员胜任力", "值守与督导", "投诉/撤回/恢复能力"]
+      }
+    },
+    {
+      "id": "stop_rules",
+      "title": "停止规则",
+      "artifact_type": "stop_rules",
+      "source": "项目自研安全与质量停止条件",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L0", "L1", "L2", "L3"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["停止后仍继续自动生成或发送"],
+      "access_tier": "research_team",
+      "ordinary_recommendation": false,
+      "body": {
+        "immediate_stop": ["安全披露未进入真人链", "对象或共享越权", "参与者撤回", "AI生成H或自动发布", "队列超过承诺SLA", "系统性隐私事件"],
+        "resume_requires": ["影响范围", "支持安排", "数据保全", "根因", "修复验证", "独立审核", "具名批准"]
+      }
+    },
+    {
+      "id": "ais_professional_scaffold",
+      "title": "AIS专业访谈受控脚手架",
+      "artifact_type": "professional_interview_scaffold",
+      "source": "项目自研受控专业工作区；不复制外部正式量表题项",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L3"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["普通内容推荐", "参与者自助解释", "无T3专项授权", "无督导"],
+      "access_tier": "t3_professional",
+      "ordinary_recommendation": false,
+      "body": {
+        "notice": "仅用于具备专项资质人员的受控专业记录，不提供正式工具题项或自动解释。",
+        "fields": ["授权证据", "适用性决定", "使用版本", "专业记录位置", "督导复核", "停止与转介"]
+      }
+    },
+    {
+      "id": "fis_professional_scaffold",
+      "title": "FIS专业访谈受控脚手架",
+      "artifact_type": "professional_interview_scaffold",
+      "source": "项目自研受控专业工作区；不复制外部正式量表题项",
+      "source_version": "2026-07-29-f17-v1",
+      "version": "1.0.0",
+      "applicable_levels": ["L3"],
+      "reviewers": [],
+      "review_status": "pending_independent_review",
+      "valid_from": "2026-07-29",
+      "expires_at": "2027-07-29",
+      "disabled_scenarios": ["普通内容推荐", "参与者自助解释", "无T3专项授权", "无督导"],
+      "access_tier": "t3_professional",
+      "ordinary_recommendation": false,
+      "body": {
+        "notice": "仅用于具备专项资质人员的受控专业记录，不提供正式工具题项或自动解释。",
+        "fields": ["授权证据", "适用性决定", "使用版本", "专业记录位置", "督导复核", "停止与转介"]
+      }
+    }
+  ]
+}

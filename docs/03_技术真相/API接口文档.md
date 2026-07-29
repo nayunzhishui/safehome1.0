@@ -2455,3 +2455,9 @@ relationship_initiation_intention_action
 - `GET /api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates`：按对象范围读取原话、候选、五道门结果和人工决定。
 - `PATCH /api/therapeutic-assessment/ai-assist/candidates/<candidate_id>`：保存采纳、修改、拒绝或“都不符合”；要求乐观版本和幂等键。
 - 所有接口均禁止由AI创建/发送正式反馈、解除安全信号、生成H或伪造人工复核。
+
+### T38-F17受控方法内容库
+
+- `GET /api/therapeutic-assessment/method-library`：登录用户读取非敏感目录摘要；不返回方法正文、来源或审核者明细。
+- `GET /api/therapeutic-assessment/method-library/<item_id>`：researcher、supervisor或admin读取普通受控方法正文；AIS/FIS专业脚手架仅允许supervisor或admin读取。
+- 所有详情读取检查内容有效期并写入审计；目录固定声明禁止自动发布。内容修改仍通过现有`therapeutic_method`四专业治理目标完成，不提供绕过审核的直接写接口。

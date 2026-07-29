@@ -31,6 +31,11 @@ CONTENT_TARGETS = {
     "consent_text": ("consent.md", None, None),
     "privacy_text": ("privacy.md", None, None),
     "ai_safety_text": ("ai_qa_safety_responses.json", "responses", "id"),
+    "therapeutic_method": (
+        "therapeutic_assessment_method_library.json",
+        "items",
+        "id",
+    ),
 }
 REQUIRED_METADATA = ("source", "source_version", "copyright_status", "age_scope", "audience", "change_summary")
 REQUIRED_DISCIPLINES = ("research", "psychology", "ethics", "content")

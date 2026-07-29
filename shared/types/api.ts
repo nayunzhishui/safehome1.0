@@ -550,6 +550,38 @@ export interface TherapeuticAssessmentAiAssistCandidate {
   updated_at: ISODateTime;
 }
 
+export interface TherapeuticAssessmentMethodSummary {
+  id: ID;
+  title: string;
+  artifact_type: string;
+  version: string;
+  applicable_levels: string[];
+  review_status: string;
+  valid_from: string;
+  expires_at: string;
+  access_tier: "research_team" | "t3_professional";
+  ordinary_recommendation: boolean;
+}
+
+export interface TherapeuticAssessmentMethodCatalog {
+  schema: "safehome.therapeutic-assessment.method-library.v1";
+  version: string;
+  count: number;
+  items: TherapeuticAssessmentMethodSummary[];
+  automatic_release_allowed: false;
+  boundary: string;
+}
+
+export interface TherapeuticAssessmentMethodItem extends TherapeuticAssessmentMethodSummary {
+  source: string;
+  source_version: string;
+  reviewers: Array<Record<string, unknown>>;
+  disabled_scenarios: string[];
+  body: Record<string, unknown>;
+  automatic_release_allowed: false;
+  publication_status: "human_review_required";
+}
+
 export interface TherapeuticAssessmentProductionContract {
   schema: "safehome.therapeutic-assessment.production-contract.v1";
   version: string;

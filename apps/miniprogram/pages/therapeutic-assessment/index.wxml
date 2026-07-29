@@ -43,6 +43,12 @@
     <text class="ta-boundary">{{aiAssistPolicy.boundary_notice}}</text>
   </view>
 
+  <view wx:if="{{methodCatalog}}" class="safe-card ta-card" aria-label="受控方法内容库">
+    <text class="ta-section-title">方法内容由独立审核控制</text>
+    <text class="ta-meta">已登记 {{methodCatalog.count}} 项；这里只显示适用范围和治理状态，不公开专业模板正文。</text>
+    <text class="ta-boundary">{{methodCatalog.boundary}}</text>
+  </view>
+
   <view class="safe-card ta-card ta-flow-entry">
     <view>
       <text class="ta-section-title">八步协作流程</text>

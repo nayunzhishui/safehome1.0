@@ -123,6 +123,10 @@ from services.therapeutic_assessment_ai_assist_service import (
     list_candidates as list_ai_assist_candidates,
     public_policy as ai_assist_policy,
 )
+from services.therapeutic_assessment_method_service import (
+    get_method as get_method_library_item,
+    public_catalog as method_library_catalog,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -176,6 +180,18 @@ def get_multi_party_policy_route():
 def get_ai_assist_policy_route():
     actor, error = _actor()
     return error or _respond(ai_assist_policy)
+
+
+@bp.get("/method-library")
+def get_method_library_route():
+    actor, error = _actor()
+    return error or _respond(method_library_catalog, actor)
+
+
+@bp.get("/method-library/<item_id>")
+def get_method_library_item_route(item_id: str):
+    actor, error = _actor()
+    return error or _respond(get_method_library_item, actor, item_id)
 
 
 @bp.post("/cases/<case_id>/ai-assist/candidates")

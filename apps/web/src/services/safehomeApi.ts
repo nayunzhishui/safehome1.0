@@ -158,6 +158,8 @@ import type {
   TherapeuticAssessmentAiAssistPolicy,
   TherapeuticAssessmentAiAssistCandidate,
   TherapeuticAssessmentAiAssistTask,
+  TherapeuticAssessmentMethodCatalog,
+  TherapeuticAssessmentMethodItem,
   TherapeuticAssessmentLaunchScreening,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentCompetencyLevel,
@@ -1803,6 +1805,16 @@ export class SafeHomeApiClient {
 
   getTherapeuticAssessmentAiAssistPolicy(): Promise<TherapeuticAssessmentAiAssistPolicy> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/ai-assist`);
+  }
+
+  getTherapeuticAssessmentMethodLibrary(): Promise<TherapeuticAssessmentMethodCatalog> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/method-library`);
+  }
+
+  getTherapeuticAssessmentMethod(itemId: string): Promise<TherapeuticAssessmentMethodItem> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/method-library/${encodeURIComponent(itemId)}`,
+    );
   }
 
   listTherapeuticAssessmentAiAssistCandidates(caseId: string): Promise<{

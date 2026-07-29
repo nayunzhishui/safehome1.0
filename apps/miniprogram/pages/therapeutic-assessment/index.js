@@ -41,6 +41,7 @@ Page({
     childPolicy: null,
     multiPartyPolicy: null,
     aiAssistPolicy: null,
+    methodCatalog: null,
     launchScreening: null,
     defaultServiceLevel: {
       id: "L0",
@@ -78,7 +79,7 @@ Page({
   async loadCases() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const [result, levelStatus, productionContract, adultLaunchScope, childPolicy, multiPartyPolicy, aiAssistPolicy] = await Promise.all([
+      const [result, levelStatus, productionContract, adultLaunchScope, childPolicy, multiPartyPolicy, aiAssistPolicy, methodCatalog] = await Promise.all([
         api.listTherapeuticAssessmentCases(),
         api.getTherapeuticAssessmentServiceLevels(),
         api.getTherapeuticAssessmentProductionContract(),
@@ -86,6 +87,7 @@ Page({
         api.getTherapeuticAssessmentChildPolicy(),
         api.getTherapeuticAssessmentMultiPartyPolicy(),
         api.getTherapeuticAssessmentAiAssistPolicy(),
+        api.getTherapeuticAssessmentMethodLibrary(),
       ]);
       const cases = (result.items || []).map((item) => ({
         ...item,
@@ -101,6 +103,7 @@ Page({
         childPolicy,
         multiPartyPolicy,
         aiAssistPolicy,
+        methodCatalog,
       });
       if (cases[0]) {
         const [evidence, launchScreening] = await Promise.all([

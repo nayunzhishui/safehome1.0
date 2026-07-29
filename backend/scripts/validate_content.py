@@ -1221,6 +1221,99 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_therapeutic_method_library(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    filename = "therapeutic_assessment_method_library.json"
+    try:
+        payload = load_json(content_dir / filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{filename} 不可读取：{exc}"]
+    governance = payload.get("governance") or {}
+    if payload.get("schema") != "safehome.therapeutic-assessment.method-library.v1":
+        errors.append(f"{filename} schema不兼容")
+    if governance.get("required_independent_disciplines") != [
+        "research",
+        "psychology",
+        "ethics",
+        "content",
+    ]:
+        errors.append(f"{filename} 必须经过研究、心理、伦理和内容四专业独立审核")
+    if (
+        governance.get("automatic_release_allowed") is not False
+        or int(governance.get("minimum_distinct_reviewers", 0)) < 2
+    ):
+        errors.append(f"{filename} 不得自动发布，且必须至少两名独立审核者")
+    items = payload.get("items") or []
+    ids = [str(item.get("id") or "") for item in items]
+    if len(items) < 9 or len(ids) != len(set(ids)) or not all(ids):
+        errors.append(f"{filename} 条目不足、缺少id或存在重复id")
+    required_types = {
+        "service_level_guidance",
+        "assessment_question_rubric",
+        "evidence_templates",
+        "feedback_checklist",
+        "written_letter_framework",
+        "applicability_checklist",
+        "stop_rules",
+        "professional_interview_scaffold",
+    }
+    if not required_types.issubset(
+        {str(item.get("artifact_type") or "") for item in items}
+    ):
+        errors.append(f"{filename} 缺少计划要求的方法制品")
+    required_fields = {
+        "source",
+        "source_version",
+        "version",
+        "applicable_levels",
+        "reviewers",
+        "review_status",
+        "valid_from",
+        "expires_at",
+        "disabled_scenarios",
+        "access_tier",
+        "ordinary_recommendation",
+        "body",
+    }
+    for item in items:
+        missing = sorted(required_fields - set(item))
+        if missing:
+            errors.append(
+                f"{filename}:{item.get('id') or 'unknown'} 缺少字段：{','.join(missing)}"
+            )
+            continue
+        if (
+            not item.get("source")
+            or not item.get("source_version")
+            or not item.get("applicable_levels")
+            or not isinstance(item.get("reviewers"), list)
+            or not item.get("review_status")
+            or not item.get("valid_from")
+            or not item.get("expires_at")
+            or not item.get("disabled_scenarios")
+            or not item.get("body")
+        ):
+            errors.append(f"{filename}:{item.get('id')} 内容治理元数据不能为空")
+        if str(item.get("expires_at")) <= str(item.get("valid_from")):
+            errors.append(f"{filename}:{item.get('id')} 有效期不正确")
+    controlled = {
+        item.get("id"): item
+        for item in items
+        if item.get("id")
+        in {"ais_professional_scaffold", "fis_professional_scaffold"}
+    }
+    if set(controlled) != {
+        "ais_professional_scaffold",
+        "fis_professional_scaffold",
+    } or any(
+        item.get("access_tier") != "t3_professional"
+        or item.get("ordinary_recommendation") is not False
+        for item in controlled.values()
+    ):
+        errors.append(f"{filename} AIS/FIS只能作为T3受控专业材料")
+    return errors
+
+
 def validate_research_methodology_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -1538,6 +1631,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_emotion_annotation_content(content_dir))
     errors.extend(validate_offline_benchmark_content(content_dir))
     errors.extend(validate_therapeutic_assessment_contract(content_dir))
+    errors.extend(validate_therapeutic_method_library(content_dir))
     errors.extend(validate_research_methodology_content(content_dir))
     errors.extend(validate_security_registry_content(content_dir))
     errors.extend(validate_reliability_registry_content(content_dir))

@@ -161,7 +161,7 @@
     {
       "source_file": "operations_capability_registry.json",
       "source_version": "2026-07-21-t34-v1",
-      "source_sha256": "ab4324fe1e42de41a9b0a97de159be9f95cbc743aac01aedb89f809347f8683a",
+      "source_sha256": "1db59672b04eb572e007f1903c6e38e2880912e4c61b075407c0e503a2da70a3",
       "content_types": [
         "capability_registry",
         "release_gate",
@@ -233,7 +233,7 @@
     {
       "source_file": "security_privacy_abuse_registry.json",
       "source_version": "2026-07-20-t31-security-v1",
-      "source_sha256": "309bfd01a218305c3d0f968f12587feed4a459f59457829ae8078cf35d3d9e52",
+      "source_sha256": "34ace92107ea72a1643bee8429412ae468bf3ccc7131bc84df458283cb488981",
       "content_types": [
         "security_asset_inventory",
         "authorization_matrix",
@@ -251,6 +251,17 @@
         "student_profile_rule"
       ],
       "governance_status": "draft_requires_psychology_review",
+      "runtime_admission": "requires_t27_published_version_and_active_release",
+      "raw_participant_text_included": false
+    },
+    {
+      "source_file": "therapeutic_assessment_method_library.json",
+      "source_version": "2026-07-29-f17-v1",
+      "source_sha256": "b8d18a255a714c9941cc7ea7fd6df331c014e0285106630ffc34ba6671ecf9cb",
+      "content_types": [
+        "therapeutic_method"
+      ],
+      "governance_status": "engineering_complete_four_discipline_review_pending",
       "runtime_admission": "requires_t27_published_version_and_active_release",
       "raw_participant_text_included": false
     },
@@ -283,5 +294,5 @@
   "draft_or_internal_notes_indexed": false,
   "participant_text_indexed": false,
   "production_release_approved": false,
-  "index_hash": "f0da8976f124453580a5c11782f4ca2e1982698d14fa337399eae3184e51c9d7"
+  "index_hash": "f07dc79dd8988b8f0365afff6f342b00d4b5b748f0b43d8bc7252cefa6744673"
 }

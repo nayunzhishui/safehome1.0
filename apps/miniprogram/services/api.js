@@ -1273,6 +1273,10 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/ai-assist`, { requiresAuth: true });
     },
 
+    getTherapeuticAssessmentMethodLibrary() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/method-library`, { requiresAuth: true });
+    },
+
     getTherapeuticAssessmentLaunchScreening(caseId) {
       return request(
         `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings/latest`,
