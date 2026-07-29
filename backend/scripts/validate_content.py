@@ -1442,6 +1442,30 @@ def validate_therapeutic_pilot_evidence(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_task37_release_execution(content_dir: Path) -> list[str]:
+    filename = "task37_release_execution_registry.json"
+    try:
+        payload = load_json(content_dir / filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{filename} 不可读取：{exc}"]
+    errors: list[str] = []
+    if payload.get("schema") != "safehome.task37.release-execution.v1":
+        errors.append(f"{filename} schema不兼容")
+        return errors
+    r01 = next((item for item in payload.get("stages") or [] if item.get("id") == "R01"), None)
+    if not r01 or len(r01.get("probes") or []) < 4 or len(r01.get("worker_checks") or []) < 4:
+        errors.append(f"{filename} R01缺少health/ready、worker或监控检查")
+    elif (
+        r01.get("local_automation_is_test_cloud_evidence") is not False
+        or r01.get("test_cloud_execution_complete") is not False
+        or r01.get("production_mutation_executed") is not False
+        or r01.get("production_release_approved") is not False
+        or (r01.get("read_only_fallback") or {}).get("production_promotion_allowed") is not False
+    ):
+        errors.append(f"{filename} R01不得把本地演练计为测试云或自动晋级生产")
+    return errors
+
+
 def validate_research_methodology_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -1762,6 +1786,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_therapeutic_method_library(content_dir))
     errors.extend(validate_therapeutic_research_protocol(content_dir))
     errors.extend(validate_therapeutic_pilot_evidence(content_dir))
+    errors.extend(validate_task37_release_execution(content_dir))
     errors.extend(validate_research_methodology_content(content_dir))
     errors.extend(validate_security_registry_content(content_dir))
     errors.extend(validate_reliability_registry_content(content_dir))

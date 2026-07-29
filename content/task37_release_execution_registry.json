@@ -1,0 +1,66 @@
+{
+  "schema": "safehome.task37.release-execution.v1",
+  "version": "2026-07-29-r01-v1",
+  "stages": [
+    {
+      "id": "R01",
+      "title": "测试云部署与只读故障演练",
+      "status": "engineering_evidence_ready_test_cloud_execution_pending",
+      "environment_scope": "isolated_test_cloud_only",
+      "entry_dependencies": ["T37-A07", "T37-B05", "T37-C10", "T38-F18"],
+      "deployment_artifacts": ["Dockerfile", "backend/requirements.txt", "backend/app.py", "content"],
+      "probes": [
+        {"id": "health", "method": "GET", "path": "/healthz", "expected_status": 200},
+        {"id": "deep_health", "method": "GET", "path": "/healthz/deep", "expected_status": 200},
+        {"id": "ready", "method": "GET", "path": "/readyz", "expected_status": 200},
+        {"id": "public_monitoring", "method": "GET", "path": "/api/reliability/public-status", "expected_status": 200}
+      ],
+      "worker_checks": [
+        "computation_worker_heartbeat",
+        "job_idempotency",
+        "lease_timeout",
+        "retry_backoff",
+        "dead_letter_recovery",
+        "metrics_without_payload"
+      ],
+      "synthetic_replay_suites": [
+        "content/synthetic_content_replay_cases.json",
+        "content/ai_qa_synthetic_safety_suite.json"
+      ],
+      "fault_scenarios": [
+        "database_timeout",
+        "provider_failure",
+        "network_timeout",
+        "duplicate_message",
+        "artifact_corrupted"
+      ],
+      "read_only_fallback": {
+        "required": true,
+        "disable_writes_first": true,
+        "core_records_remain_readable": true,
+        "participant_feedback_auto_publish": false,
+        "production_promotion_allowed": false
+      },
+      "required_evidence_fields": [
+        "test_cloud_environment_reference",
+        "source_commit",
+        "image_digest",
+        "schema_version",
+        "content_contract_hash",
+        "probe_results",
+        "worker_results",
+        "monitoring_snapshot",
+        "synthetic_replay_results",
+        "fault_drill_results",
+        "read_only_fallback_result",
+        "operator_reference",
+        "executed_at"
+      ],
+      "local_automation_is_test_cloud_evidence": false,
+      "test_cloud_execution_complete": false,
+      "production_mutation_executed": false,
+      "production_release_approved": false
+    }
+  ],
+  "boundary_notice": "本注册表只编排测试云和发布证据；本地自动测试不等于测试云完成，也不得自动晋级生产。"
+}
