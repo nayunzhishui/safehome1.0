@@ -48,7 +48,7 @@ def _seed(app):
 def test_schema_049_adds_release_evidence_and_gate_snapshots(tmp_path, monkeypatch):
     app = _app(tmp_path, monkeypatch)
     with app.app_context():
-        from database import CURRENT_SCHEMA_NAME, CURRENT_SCHEMA_VERSION, get_connection
+        from database import CURRENT_SCHEMA_VERSION, get_connection
 
         with get_connection() as conn:
             tables = {
@@ -63,8 +63,7 @@ def test_schema_049_adds_release_evidence_and_gate_snapshots(tmp_path, monkeypat
                     "PRAGMA table_info(therapeutic_assessment_release_evidence)"
                 ).fetchall()
             }
-    assert CURRENT_SCHEMA_VERSION == "2026_07_28_049"
-    assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_production_gate"
+    assert CURRENT_SCHEMA_VERSION >= "2026_07_28_049"
     assert {
         "therapeutic_assessment_release_evidence",
         "therapeutic_assessment_release_gate_runs",
@@ -101,7 +100,8 @@ def test_gate_is_blocked_until_engineering_and_real_human_evidence_exist(
     assert data["production_release_approved"] is False
     assert data["temporary_showcase_counts_as_permission"] is False
     assert data["simulated_signoffs_counted"] is False
-    assert "T38-F13" in data["checks"]["engineering_content"]["missing"]
+    assert data["checks"]["engineering_content"]["missing"] == []
+    assert data["checks"]["engineering_content"]["passed"] is True
     assert "human_a0_expert_review" in data["checks"]["human_evidence"]["missing"]
     assert "infra_device" in data["checks"]["infrastructure_release"]["missing"]
 

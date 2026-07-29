@@ -1,6 +1,6 @@
 {
   "schema": "safehome.task37.release-execution.v1",
-  "version": "2026-07-29-r03-v1",
+  "version": "2026-07-29-r04-v1",
   "stages": [
     {
       "id": "R01",
@@ -180,6 +180,77 @@
       "real_canary_execution_complete": false,
       "real_incident_drills_complete": false,
       "production_traffic_used": false,
+      "production_release_approved": false
+    },
+    {
+      "id": "R04",
+      "title": "全量收口与发布观察",
+      "status": "engineering_evidence_ready_owner_approval_and_observation_pending",
+      "entry_dependencies": ["R03_real_canary_complete", "A4_feasibility_pilot_complete"],
+      "fingerprint_artifacts": [
+        "content/affect_model_candidate_registry.json",
+        "content/offline_benchmark_registry.json",
+        "content/ai_qa_governance.json",
+        "content/ai_qa_output_contract.schema.json",
+        "content/ai_qa_safety_responses.json",
+        "content/ai_qa_runtime_policy.json",
+        "content/ai_qa_release_policy.json",
+        "content/ai_qa_continuous_quality_policy.json",
+        "content/operations_knowledge_index.json",
+        "content/therapeutic_assessment_production_contract.json",
+        "content/therapeutic_assessment_method_library.json",
+        "config/task37_38_registry.json"
+      ],
+      "release_note_sections": [
+        "engineering_changes",
+        "features_kept_closed",
+        "external_gates",
+        "migration_and_rollback",
+        "known_limitations",
+        "observation_plan",
+        "owner_decision"
+      ],
+      "observation_windows": [
+        {"id": "first_30m", "start_minutes": 0, "end_minutes": 30},
+        {"id": "first_2h", "start_minutes": 30, "end_minutes": 120},
+        {"id": "first_24h", "start_minutes": 120, "end_minutes": 1440},
+        {"id": "first_72h", "start_minutes": 1440, "end_minutes": 4320}
+      ],
+      "observation_metrics": [
+        "health_ready",
+        "api_error_rate",
+        "api_p95_ms",
+        "worker_queue_age",
+        "dead_letter_rate",
+        "critical_safety_miss",
+        "object_scope_violation",
+        "privacy_incident",
+        "withdrawal_propagation_failure",
+        "kill_switch_health"
+      ],
+      "automatic_rollback_thresholds": [
+        {"metric": "health_ready", "operator": "equals", "value": false},
+        {"metric": "api_error_rate", "operator": "greater_than", "value": 0.01},
+        {"metric": "api_p95_ms", "operator": "greater_than", "value": 1500},
+        {"metric": "worker_queue_age", "operator": "greater_than", "value": 300},
+        {"metric": "critical_safety_miss", "operator": "greater_or_equal", "value": 1},
+        {"metric": "object_scope_violation", "operator": "greater_or_equal", "value": 1},
+        {"metric": "privacy_incident", "operator": "greater_or_equal", "value": 1},
+        {"metric": "withdrawal_propagation_failure", "operator": "greater_or_equal", "value": 1},
+        {"metric": "kill_switch_health", "operator": "equals", "value": false}
+      ],
+      "rollback_actions": [
+        "stop_rollout",
+        "disable_ai_sentiment_sna_independently",
+        "pause_human_required_delivery",
+        "switch_to_read_only",
+        "restore_previous_verified_image",
+        "preserve_audit_and_incident_evidence"
+      ],
+      "owner_approval_required": true,
+      "owner_approval_complete": false,
+      "post_release_observation_complete": false,
+      "production_release_executed": false,
       "production_release_approved": false
     }
   ],

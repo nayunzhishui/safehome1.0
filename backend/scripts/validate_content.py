@@ -1488,6 +1488,18 @@ def validate_task37_release_execution(content_dir: Path) -> list[str]:
         or (r03.get("shadow_comparison") or {}).get("participant_visible") is not False
     ):
         errors.append(f"{filename} R03合成演练不得计真实canary、责任人或参与者可见输出")
+    r04 = next((item for item in payload.get("stages") or [] if item.get("id") == "R04"), None)
+    if not r04 or len(r04.get("fingerprint_artifacts") or []) < 10 or len(r04.get("observation_windows") or []) != 4:
+        errors.append(f"{filename} R04缺少制品指纹或发布观察窗口")
+    elif (
+        len(r04.get("automatic_rollback_thresholds") or []) < 8
+        or r04.get("owner_approval_required") is not True
+        or r04.get("owner_approval_complete") is not False
+        or r04.get("post_release_observation_complete") is not False
+        or r04.get("production_release_executed") is not False
+        or r04.get("production_release_approved") is not False
+    ):
+        errors.append(f"{filename} R04必须保留负责人批准、发布观察和自动回滚门禁")
     return errors
 
 

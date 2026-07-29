@@ -50,6 +50,8 @@ def _build_info(content_dir=None):
 def test_healthz_exposes_safe_build_identity_and_response_headers(tmp_path, monkeypatch):
     info = _build_info()
     app = _fresh_app(tmp_path, monkeypatch, build_info=info)
+    from database import CURRENT_SCHEMA_NAME, CURRENT_SCHEMA_VERSION
+
     response = app.test_client().get("/healthz", headers={"X-Request-ID": "f09-health-001"})
     body = response.get_json()
 
@@ -58,7 +60,10 @@ def test_healthz_exposes_safe_build_identity_and_response_headers(tmp_path, monk
     assert body["build"]["build_time"] == "2026-07-22T12:00:00+00:00"
     assert len(body["build"]["api_contract_hash"]) == 64
     assert len(body["build"]["content_manifest_hash"]) == 64
-    assert body["build"]["schema_expected"]["version"] == "2026_07_27_038"
+    assert body["build"]["schema_expected"] == {
+        "name": CURRENT_SCHEMA_NAME,
+        "version": CURRENT_SCHEMA_VERSION,
+    }
     assert response.headers["X-SafeHome-Build-ID"] == body["build"]["build_id"]
     assert response.headers["X-SafeHome-Service-Version"] == body["version"]
     serialized = response.get_data(as_text=True)

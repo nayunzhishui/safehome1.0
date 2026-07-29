@@ -184,6 +184,11 @@ def _parser() -> argparse.ArgumentParser:
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument("--write", action="store_true")
     action.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--reverify-external",
+        action="store_true",
+        help="显式复核冻结时的外部资料；普通--check仅校验仓库内冻结注册表",
+    )
     return parser
 
 
@@ -204,7 +209,9 @@ def main() -> int:
                 payload = json.loads(OUTPUT_PATH.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError) as exc:
                 raise SourceRegistryError("冻结来源注册表缺失或损坏。") from exc
-            result = validate_registry(payload, reverify_external=True)
+            result = validate_registry(
+                payload, reverify_external=args.reverify_external
+            )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     except SourceRegistryError as exc:

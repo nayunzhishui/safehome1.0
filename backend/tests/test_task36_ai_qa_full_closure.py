@@ -23,7 +23,8 @@ def test_f15_source_contains_provider_and_deletion_guards():
     service = (ROOT / "backend" / "services" / "ai_qa_service.py").read_text(encoding="utf-8")
     assert "AI_QA_PROVIDER_RETRIES" in service
     assert "AI_QA_TIMEOUT_MS" in service
-    assert "_circuit_open" in service
+    assert "claim_circuit_permission" in service
+    assert "record_circuit_outcome" in service
     assert "AI_QA_DAILY_BUDGET_MICROS" in service
     assert "purge_expired_synthetic_data" in service
     assert "formal_feedback_write_allowed" in service
