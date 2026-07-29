@@ -1,6 +1,6 @@
 {
   "schema": "safehome.therapeutic-assessment.pilot-evidence.v1",
-  "version": "2026-07-29-f19-v1",
+  "version": "2026-07-29-f22-v1",
   "stages": [
     {
       "id": "A0",
@@ -124,6 +124,82 @@
       "severe_issue_blocks_next_stage": true,
       "real_cases_completed": false,
       "human_supervision_complete": false,
+      "production_release_approved": false
+    },
+    {
+      "id": "A3",
+      "title": "小程序形成性试点",
+      "status": "evidence_template_ready_formative_pilot_pending",
+      "entry_dependencies": [
+        "A0_human_signoff_complete",
+        "A1_human_interviews_complete",
+        "A2_real_cases_and_supervision_complete",
+        "all_severe_issues_closed"
+      ],
+      "verification_domains": [
+        {
+          "id": "workflow_state_machine",
+          "label": "状态机",
+          "required_evidence": ["状态转换结果", "非法转换拦截", "版本冲突恢复"],
+          "evidence_refs": ["backend/tests/test_task38_f02_state_machine.py"]
+        },
+        {
+          "id": "permission_and_shared_scope",
+          "label": "权限与共享范围",
+          "required_evidence": ["服务端对象范围", "逐项共享快照", "越权拦截"],
+          "evidence_refs": ["backend/tests/test_task38_f08_researcher_workbench.py", "shared/types/api.ts"]
+        },
+        {
+          "id": "reminders_and_privacy",
+          "label": "提醒与隐私",
+          "required_evidence": ["提醒最小内容", "同意快照", "共享设备检查"],
+          "evidence_refs": ["backend/tests/test_task38_f05_dynamic_consent.py", "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js"]
+        },
+        {
+          "id": "weak_network_and_recovery",
+          "label": "弱网与异常恢复",
+          "required_evidence": ["超时状态", "幂等重试", "恢复点", "重复提交拦截"],
+          "evidence_refs": ["backend/tests/test_task25_migration_recovery.py", "apps/miniprogram/services/api.js"]
+        },
+        {
+          "id": "researcher_queue_and_workload",
+          "label": "研究者工作量与队列",
+          "required_evidence": ["队列积压", "SLA暂停", "交接", "无人值守关闭"],
+          "evidence_refs": ["backend/tests/test_task37_b02_queue_duty.py"]
+        },
+        {
+          "id": "cross_client_consistency",
+          "label": "跨端一致",
+          "required_evidence": ["API契约", "Web状态", "小程序状态", "字段映射"],
+          "evidence_refs": ["shared/types/api.ts", "apps/web/src/pages/TherapeuticAssessmentWorkbench.tsx", "apps/miniprogram/pages/therapeutic-assessment/index.js"]
+        },
+        {
+          "id": "participant_correction_withdrawal_complaint",
+          "label": "用户核对、撤回与投诉",
+          "required_evidence": ["核对入口", "撤回传播", "投诉流转", "删除范围"],
+          "evidence_refs": ["backend/tests/test_task38_f06_participant_flow.py", "backend/tests/test_task24_privacy_lifecycle_complete.py"]
+        }
+      ],
+      "required_runtime_evidence_fields": [
+        "test_cloud_build_reference",
+        "mini_program_version",
+        "backend_version",
+        "shared_contract_hash",
+        "device_and_os",
+        "network_condition",
+        "actor_role_and_object_scope",
+        "observed_result",
+        "error_or_negative_event",
+        "recovery_result",
+        "issue_owner",
+        "closure_evidence"
+      ],
+      "required_device_matrix": ["wechat_devtools", "ios_real_device", "android_real_device"],
+      "real_device_required": true,
+      "synthetic_or_automation_may_sign": false,
+      "severe_issue_blocks_next_stage": true,
+      "formative_pilot_complete": false,
+      "human_entry_dependencies_complete": false,
       "production_release_approved": false
     }
   ],

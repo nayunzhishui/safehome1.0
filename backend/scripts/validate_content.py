@@ -1397,6 +1397,26 @@ def validate_therapeutic_pilot_evidence(content_dir: Path) -> list[str]:
         or a2.get("human_supervision_complete") is not False
     ):
         errors.append(f"{filename} A2必须逐例督导且系统不得生成H或发布反馈")
+    a3 = next((item for item in stages if item.get("id") == "A3"), None)
+    expected_a3_domains = {
+        "workflow_state_machine",
+        "permission_and_shared_scope",
+        "reminders_and_privacy",
+        "weak_network_and_recovery",
+        "researcher_queue_and_workload",
+        "cross_client_consistency",
+        "participant_correction_withdrawal_complaint",
+    }
+    if not a3 or {item.get("id") for item in a3.get("verification_domains") or []} != expected_a3_domains:
+        errors.append(f"{filename} A3必须覆盖七类形成性试点验证")
+    elif (
+        a3.get("real_device_required") is not True
+        or a3.get("synthetic_or_automation_may_sign") is not False
+        or a3.get("severe_issue_blocks_next_stage") is not True
+        or a3.get("formative_pilot_complete") is not False
+        or a3.get("human_entry_dependencies_complete") is not False
+    ):
+        errors.append(f"{filename} A3必须保留真人前置、真机和严重问题阻断")
     return errors
 
 
