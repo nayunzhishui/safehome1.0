@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request
 
-from routes.auth_utils import AuthError, auth_error_response, require_role
+from routes.auth_utils import route_actor as _actor
 from routes.utils import fail, ok
 from services.security_control_service import (
     SecurityControlError,
@@ -15,13 +15,6 @@ from services.security_control_service import (
 
 
 bp = Blueprint("security_controls", __name__, url_prefix="/api/security")
-
-
-def _actor(*roles: str):
-    try:
-        return require_role(*roles, allow_legacy_admin=True), None
-    except AuthError as exc:
-        return None, auth_error_response(exc)
 
 
 def _response(callback):

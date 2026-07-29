@@ -47,13 +47,29 @@ def _sha256_bytes(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
-def _source_commit() -> str:
+def _git_text(root: Path, *arguments: str) -> str:
     try:
         return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+            ["git", *arguments],
+            cwd=root,
+            text=True,
+            stderr=subprocess.DEVNULL,
         ).strip()
-    except (OSError, subprocess.CalledProcessError):
-        return "unavailable"
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise AcceptanceError("验收源码必须位于可读取的Git仓库") from exc
+
+
+def _source_snapshot(root: Path) -> dict[str, str]:
+    commit = _git_text(root, "rev-parse", "HEAD")
+    tree = _git_text(root, "rev-parse", "HEAD^{tree}")
+    status = _git_text(root, "status", "--porcelain=v1", "--untracked-files=all")
+    if not re.fullmatch(r"[a-f0-9]{40}", commit) or not re.fullmatch(
+        r"[a-f0-9]{40}", tree
+    ):
+        raise AcceptanceError("验收源码Git提交或源码树无效")
+    if status:
+        raise AcceptanceError("验收源码工作区必须干净，请先提交或移走未提交文件")
+    return {"commit": commit, "tree": tree}
 
 
 def _f25_task(registry: dict[str, Any]) -> dict[str, Any]:
@@ -235,7 +251,9 @@ def verify(
     *,
     policy_path: Path = POLICY,
     registry_path: Path = REGISTRY,
+    source_root: Path = ROOT,
 ) -> dict[str, Any]:
+    source_before = _source_snapshot(source_root)
     policy_sha256 = _sha256(policy_path)
     registry_sha256 = _sha256(registry_path)
     policy = _load(policy_path)
@@ -264,13 +282,18 @@ def verify(
         )
     if _sha256(policy_path) != policy_sha256 or _sha256(registry_path) != registry_sha256:
         raise AcceptanceError("验收期间政策或注册表发生变化，请重新执行")
+    source_after = _source_snapshot(source_root)
+    if source_after != source_before:
+        raise AcceptanceError("验收期间源码提交或源码树发生变化，请重新执行")
     artifacts, missing = _collect_artifacts(categories)
     canonical = json.dumps(artifacts, sort_keys=True, separators=(",", ":"))
     result = {
         "schema": "safehome.tasks37-38.final-acceptance-evidence.v2",
         "action": "verify",
         "task_id": "T38-F25",
-        "source_commit": _source_commit(),
+        "source_commit": source_before["commit"],
+        "source_tree": source_before["tree"],
+        "source_worktree_clean": True,
         "automatic_acceptance": category_results,
         "automatic_acceptance_complete": not missing,
         "executed_commands": list(outcomes_by_digest.values()),

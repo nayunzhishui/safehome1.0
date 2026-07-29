@@ -15,16 +15,6 @@ class SandplayInputError(ValueError):
         self.errors = errors
 
 
-def get_sandplay_task(profile_code: str | None) -> dict[str, Any]:
-    payload = load_sandplay_tasks()
-    task = dict(payload.get("default", {}))
-    if profile_code:
-        task.update(payload.get("profiles", {}).get(profile_code, {}))
-    task["symbols"] = payload.get("symbols", [])
-    task["boundary_notice"] = "沙盘式表达只作为体验整理和访谈线索，不用于诊断。"
-    return task
-
-
 def validate_sandplay_scene(scene: dict[str, Any]) -> None:
     payload = load_sandplay_tasks()
     allowed_types = {symbol.get("type") for symbol in payload.get("symbols", [])}

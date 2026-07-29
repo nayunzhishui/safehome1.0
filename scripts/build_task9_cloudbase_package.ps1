@@ -12,6 +12,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 $CodexTmp = Join-Path $Root ".codex_tmp"
 $StagingRoot = Join-Path $CodexTmp "task9-cloudbase-package"
 $SourceArchive = Join-Path $CodexTmp "task9-source-head.zip"
+. (Join-Path $PSScriptRoot "cloudbase_package_source.ps1")
 
 if ([string]::IsNullOrWhiteSpace($PackageLabel) -or $PackageLabel -match "[`r`n]") {
   throw "PackageLabel must be one non-empty line."
@@ -50,55 +51,6 @@ function Copy-RequiredPath {
     New-Item -ItemType Directory -Path $targetParent | Out-Null
   }
   Copy-Item -LiteralPath $source -Destination $target -Recurse -Force
-}
-
-function Remove-PackageArtifacts {
-  $artifactPatterns = @(
-    "__pycache__",
-    ".pytest_cache",
-    ".mypy_cache",
-    "*.pyc",
-    "*.pyo",
-    "*.sqlite3",
-    "*.sqlite",
-    "*.db",
-    "*.log",
-    ".env",
-    ".env.*",
-    "node_modules",
-    "dist",
-    "build",
-    ".venv",
-    "venv",
-    "backups",
-    "exports"
-  )
-
-  foreach ($pattern in $artifactPatterns) {
-    Get-ChildItem -LiteralPath $StagingRoot -Recurse -Force -ErrorAction SilentlyContinue |
-      Where-Object { $_.Name -like $pattern } |
-      Remove-Item -Recurse -Force
-  }
-}
-
-function Rename-ProfileModelsForCloudBase {
-  $profileDir = Join-Path $StagingRoot "content\profiles"
-  if (-not (Test-Path -LiteralPath $profileDir)) {
-    return
-  }
-
-  $index = 1
-  Get-ChildItem -LiteralPath $profileDir -Filter "*.json" -File |
-    Sort-Object Name |
-    ForEach-Object {
-      $hash = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.Substring(0, 12).ToLowerInvariant()
-      $targetName = "profile_{0:D3}_{1}.json" -f $index, $hash
-      $targetPath = Join-Path $profileDir $targetName
-      if ($_.FullName -ne $targetPath) {
-        Move-Item -LiteralPath $_.FullName -Destination $targetPath -Force
-      }
-      $index += 1
-    }
 }
 
 function Invoke-Native {
@@ -174,8 +126,8 @@ try {
   )
   Expand-Archive -LiteralPath $SourceArchive -DestinationPath $StagingRoot -Force
 
-  Remove-PackageArtifacts
-  Rename-ProfileModelsForCloudBase
+  Remove-CloudBasePackageArtifacts -SourceRoot $StagingRoot
+  Rename-CloudBaseProfileModels -SourceRoot $StagingRoot
 
   $buildTime = (Get-Date).ToUniversalTime().ToString("o")
   Invoke-Native "python" @(
@@ -203,9 +155,18 @@ try {
     Remove-Item -LiteralPath $OutputPath -Force
   }
 
-  New-ZipWithPortablePaths -SourceDir $StagingRoot -ZipPath $OutputPath
+  $compileTargets = @(
+    (Join-Path $StagingRoot "backend\app.py"),
+    (Join-Path $StagingRoot "backend\database.py"),
+    (Join-Path $StagingRoot "backend\config.py")
+  )
+  $compileArguments = @(
+    "-c",
+    "from pathlib import Path; import sys; [compile(Path(p).read_text(encoding='utf-8'), p, 'exec') for p in sys.argv[1:]]"
+  ) + $compileTargets
+  Invoke-Native "python" $compileArguments
 
-  Invoke-Native "python" @("-c", "from pathlib import Path; [compile(Path(p).read_text(encoding='utf-8'), p, 'exec') for p in ['backend/app.py','backend/database.py','backend/config.py']]")
+  New-ZipWithPortablePaths -SourceDir $StagingRoot -ZipPath $OutputPath
 
   $zipInfo = Get-Item -LiteralPath $OutputPath
   $latestPath = Join-Path $CodexTmp $LatestFile

@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict
+from services.assessment_profile_position_store import backfill_profile_position
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
@@ -105,7 +106,7 @@ def submit_assessment(
                 result_row["answers"] = answers
                 try:
                     position = build_assessment_profile_position(result_row, worksheet)
-                    _backfill_profile_position(conn, result_id, position)
+                    backfill_profile_position(conn, result_id, position)
                     row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
                 except ProfilePositionUnavailable:
                     pass
@@ -431,36 +432,3 @@ def _dimension_labels(worksheet: dict) -> dict[str, str]:
             if code and label:
                 labels[code] = label
     return labels
-
-
-def _profile_cluster_value(position: dict | None) -> int | None:
-    cluster_id = (position or {}).get("cluster_id")
-    if cluster_id is None or cluster_id == "":
-        return None
-    try:
-        return int(cluster_id)
-    except (TypeError, ValueError):
-        return None
-
-
-def _backfill_profile_position(conn, result_id: str, position: dict) -> None:
-    position_data = position.get("position") or {}
-    conn.execute(
-        """
-        UPDATE assessment_results SET
-            profile_model_id = ?,
-            profile_cluster_id = ?,
-            profile_pc1 = ?,
-            profile_pc2 = ?,
-            profile_confidence = ?
-        WHERE id = ?
-        """,
-        (
-            position.get("model_id"),
-            _profile_cluster_value(position_data),
-            position_data.get("pc1"),
-            position_data.get("pc2"),
-            position_data.get("confidence"),
-            result_id,
-        ),
-    )

@@ -24,10 +24,6 @@ def load_showcase_access() -> dict:
     return {**DEFAULTS, **payload}
 
 
-def showcase_enabled() -> bool:
-    return bool(load_showcase_access().get("enabled"))
-
-
 def allow_showcase_read_bypass() -> bool:
     payload = load_showcase_access()
     return bool(payload.get("enabled") and payload.get("read_only_role_bypass"))

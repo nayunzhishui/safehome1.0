@@ -9,6 +9,79 @@ $ErrorActionPreference = "Stop"
 
 $Root = Split-Path -Parent $PSScriptRoot
 $CodexTmp = Join-Path $Root ".codex_tmp"
+. (Join-Path $PSScriptRoot "cloudbase_package_source.ps1")
+
+function Get-ArchiveEntrySha256 {
+  param([Parameter(Mandatory = $true)]$Entry)
+
+  $stream = $Entry.Open()
+  try {
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    try {
+      return ([BitConverter]::ToString($sha256.ComputeHash($stream))).Replace("-", "")
+    } finally {
+      $sha256.Dispose()
+    }
+  } finally {
+    $stream.Dispose()
+  }
+}
+
+function Assert-PackageSourceMatchesCommit {
+  param(
+    [Parameter(Mandatory = $true)]$Archive,
+    [Parameter(Mandatory = $true)][string]$Commit,
+    [Parameter(Mandatory = $true)][string]$ManifestEntry
+  )
+
+  $referenceId = [Guid]::NewGuid().ToString("N")
+  $referenceRoot = Join-Path $CodexTmp "task9-source-reference-$referenceId"
+  $referenceArchive = Join-Path $CodexTmp "task9-source-reference-$referenceId.zip"
+  try {
+    & git -C $Root archive --format=zip "--output=$referenceArchive" $Commit Dockerfile .dockerignore backend content shared
+    if ($LASTEXITCODE -ne 0) {
+      throw "Unable to regenerate the recorded Git source archive."
+    }
+    Expand-Archive -LiteralPath $referenceArchive -DestinationPath $referenceRoot -Force
+    Remove-CloudBasePackageArtifacts -SourceRoot $referenceRoot
+    Rename-CloudBaseProfileModels -SourceRoot $referenceRoot
+
+    $referencePrefix = [System.IO.Path]::GetFullPath($referenceRoot).TrimEnd("\", "/") + [System.IO.Path]::DirectorySeparatorChar
+    $expected = @{}
+    Get-ChildItem -LiteralPath $referenceRoot -Recurse -File -Force | ForEach-Object {
+      $relative = $_.FullName.Substring($referencePrefix.Length).Replace("\", "/")
+      $expected[$relative] = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+    }
+
+    $actual = @{}
+    $Archive.Entries |
+      Where-Object {
+        $_.FullName -and
+        -not $_.FullName.EndsWith("/") -and
+        $_.FullName -ne $ManifestEntry -and
+        $_.FullName -ne "backend/build_info.json"
+      } |
+      ForEach-Object {
+        $actual[$_.FullName] = Get-ArchiveEntrySha256 -Entry $_
+      }
+
+    $expectedNames = @($expected.Keys | Sort-Object)
+    $actualNames = @($actual.Keys | Sort-Object)
+    if (
+      (Compare-Object -ReferenceObject $expectedNames -DifferenceObject $actualNames) -or
+      @($expectedNames | Where-Object { $expected[$_] -ne $actual[$_] }).Count -gt 0
+    ) {
+      throw "Source package content does not match the recorded Git commit."
+    }
+  } finally {
+    if (Test-Path -LiteralPath $referenceArchive) {
+      Remove-Item -LiteralPath $referenceArchive -Force
+    }
+    if (Test-Path -LiteralPath $referenceRoot) {
+      Remove-Item -LiteralPath $referenceRoot -Recurse -Force
+    }
+  }
+}
 
 if ([string]::IsNullOrWhiteSpace($PackageLabel) -or $PackageLabel -match "[`r`n]") {
   throw "PackageLabel must be one non-empty line."
@@ -159,6 +232,7 @@ try {
   if ($LASTEXITCODE -ne 0 -or $resolvedTree -ne $manifestTree) {
     throw "Manifest source tree does not match the recorded Git commit."
   }
+  Assert-PackageSourceMatchesCommit -Archive $archive -Commit $manifestHead -ManifestEntry $ManifestFile
 
   $buildInfoEntry = $archive.GetEntry("backend/build_info.json")
   if (-not $buildInfoEntry) {

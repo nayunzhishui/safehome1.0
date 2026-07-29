@@ -8,6 +8,7 @@ from database import get_connection, json_loads, load_content_json, row_to_dict,
 from routes.auth_utils import AuthError, auth_error_response, get_current_actor, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int, require_fields
 from services.assessment_execution_service import AssessmentSubmissionError, submit_assessment
+from services.assessment_profile_position_store import backfill_profile_position, profile_cluster_value
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
@@ -120,22 +121,8 @@ def _db_row_to_worksheet(row: dict) -> dict:
     }
 
 
-def _active_worksheet_ids() -> list[str]:
-    return [worksheet["id"] for worksheet in _worksheets() if worksheet.get("id") and _is_governed_for_user(worksheet)]
-
-
 def _known_worksheet_ids() -> list[str]:
     return [worksheet["id"] for worksheet in _worksheets() if worksheet.get("id")]
-
-
-def _profile_cluster_value(position: dict | None) -> int | None:
-    cluster_id = (position or {}).get("cluster_id")
-    if cluster_id is None or cluster_id == "":
-        return None
-    try:
-        return int(cluster_id)
-    except (TypeError, ValueError):
-        return None
 
 
 def _expand_result_row(row: dict) -> dict:
@@ -149,31 +136,8 @@ def _expand_result_row(row: dict) -> dict:
         if row.get("transformation_version")
         else "当前结果按问卷原始量尺保存；没有模型兼容转换。"
     )
-    row["profile_cluster_id"] = _profile_cluster_value({"cluster_id": row.get("profile_cluster_id")})
+    row["profile_cluster_id"] = profile_cluster_value({"cluster_id": row.get("profile_cluster_id")})
     return row
-
-
-def _backfill_profile_position(conn, result_id: str, position: dict) -> None:
-    position_data = position.get("position") or {}
-    conn.execute(
-        """
-        UPDATE assessment_results SET
-            profile_model_id = ?,
-            profile_cluster_id = ?,
-            profile_pc1 = ?,
-            profile_pc2 = ?,
-            profile_confidence = ?
-        WHERE id = ?
-        """,
-        (
-            position.get("model_id"),
-            _profile_cluster_value(position_data),
-            position_data.get("pc1"),
-            position_data.get("pc2"),
-            position_data.get("confidence"),
-            result_id,
-        ),
-    )
 
 
 def _find_worksheet(worksheet_id: str, include_disabled: bool = False, include_unapproved: bool = False) -> dict | None:
@@ -439,7 +403,7 @@ def get_assessment_profile_position(result_id: str):
                 worksheet,
                 requested_model_id=request.args.get("model_id"),
             )
-            _backfill_profile_position(conn, result_id, position)
+            backfill_profile_position(conn, result_id, position)
             conn.commit()
         except ProfilePositionUnavailable as exc:
             return ok({"available": False, "reason": exc.reason})

@@ -12002,3 +12002,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - CloudBase正式包改从`git archive HEAD`构建，并核对commit、source tree和build fingerprint，未提交源码不会冒充HEAD进入包。
 - 自动视觉证据只声明公共组件四视口渲染与12个实际页面源码检查；实际整页大字体、读屏、微信开发者工具和真机继续保持外部门禁。
 - 主计划状态已收口为`engineering_complete_local / T38-F25_acceptance_hardened / release_not_approved`。
+### 2026-07-29 T38-F25审查问题修复与冗余核验
+
+- [x] F25验收拒绝脏工作区，并绑定实际源码commit与Git tree。
+- [x] CloudBase编译检查改为暂存包内源码。
+- [x] ZIP允许范围逐文件与记录提交的Git归档比较，篡改测试失败关闭。
+- [x] 画像位置回填重复实现收拢并补测试。
+- [x] 8个完全相同的Flask角色认证helper收拢；5个无调用符号删除。
+- [x] 核验测试初始化、Web展示helper、响应helper和生成契约；对非等价或外部用途未明部分保守保留。
+- [x] 定向回归161项及CloudBase正常包构建/核验通过。
+- 工程状态：完成；生产发布状态：未批准。本轮没有生产迁移、生产恢复、真实流量或权限放开。

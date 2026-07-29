@@ -1,8 +1,5 @@
 """Signed-token auth helpers for the formal pilot account MVP."""
 
-from functools import wraps
-from typing import Callable
-
 from flask import current_app, request
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
@@ -198,16 +195,10 @@ def auth_error_response(exc: AuthError):
     )
 
 
-def role_required(*roles: str, allow_legacy_admin: bool = True):
-    def decorator(fn: Callable):
-        @wraps(fn)
-        def wrapper(*args, **kwargs):
-            try:
-                require_role(*roles, allow_legacy_admin=allow_legacy_admin)
-            except AuthError as exc:
-                return auth_error_response(exc)
-            return fn(*args, **kwargs)
+def route_actor(*roles: str):
+    """Resolve a role-gated route actor and its Flask error response."""
 
-        return wrapper
-
-    return decorator
+    try:
+        return require_role(*roles, allow_legacy_admin=True), None
+    except AuthError as exc:
+        return None, auth_error_response(exc)

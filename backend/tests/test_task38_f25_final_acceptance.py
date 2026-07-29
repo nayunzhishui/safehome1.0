@@ -1,6 +1,8 @@
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
+import zipfile
 
 import pytest
 
@@ -72,6 +74,26 @@ def _execution_registry(tmp_path: Path, *, failing: bool = False) -> Path:
     return path
 
 
+def _clean_source_repo(tmp_path: Path) -> Path:
+    path = tmp_path / "source"
+    path.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "acceptance@example.invalid"],
+        cwd=path,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "Acceptance Test"],
+        cwd=path,
+        check=True,
+    )
+    (path / "source.txt").write_text("accepted\n", encoding="utf-8")
+    subprocess.run(["git", "add", "source.txt"], cwd=path, check=True)
+    subprocess.run(["git", "commit", "-qm", "fixture"], cwd=path, check=True)
+    return path
+
+
 def test_f25_policy_covers_all_automatic_and_external_gate_categories():
     policy = json.loads(POLICY.read_text(encoding="utf-8"))
     assert [item["id"] for item in policy["automatic_acceptance_categories"]] == [
@@ -108,9 +130,11 @@ def test_f25_registry_marks_all_engineering_tasks_complete_after_acceptance():
 
 
 def test_f25_executes_registered_commands_before_building_evidence(tmp_path):
+    source_repo = _clean_source_repo(tmp_path)
     result = _module().verify(
         policy_path=POLICY,
         registry_path=_execution_registry(tmp_path),
+        source_root=source_repo,
     )
     assert result["ok"] is True
     assert result["missing_artifacts"] == []
@@ -126,6 +150,20 @@ def test_f25_executes_registered_commands_before_building_evidence(tmp_path):
     assert result["production_restore_executed"] is False
     assert result["real_device_acceptance_complete"] is False
     assert result["production_release_approved"] is False
+    assert result["source_worktree_clean"] is True
+    assert len(result["source_tree"]) == 40
+
+
+def test_f25_rejects_dirty_source_worktree(tmp_path):
+    source_repo = _clean_source_repo(tmp_path)
+    (source_repo / "source.txt").write_text("uncommitted\n", encoding="utf-8")
+    module = _module()
+    with pytest.raises(module.AcceptanceError, match="源码工作区必须干净"):
+        module.verify(
+            policy_path=POLICY,
+            registry_path=_execution_registry(tmp_path),
+            source_root=source_repo,
+        )
 
 
 def test_f25_rejects_failed_registered_command_instead_of_trusting_a_receipt(tmp_path):
@@ -134,6 +172,7 @@ def test_f25_rejects_failed_registered_command_instead_of_trusting_a_receipt(tmp
         module.verify(
             policy_path=POLICY,
             registry_path=_execution_registry(tmp_path, failing=True),
+            source_root=_clean_source_repo(tmp_path),
         )
 
 
@@ -152,7 +191,11 @@ def test_f25_rejects_policy_or_registry_drift_during_execution(tmp_path, monkeyp
 
     monkeypatch.setattr(module, "_execute", execute_and_mutate)
     with pytest.raises(module.AcceptanceError, match="验收期间政策或注册表发生变化"):
-        module.verify(policy_path=POLICY, registry_path=registry_path)
+        module.verify(
+            policy_path=POLICY,
+            registry_path=registry_path,
+            source_root=_clean_source_repo(tmp_path),
+        )
 
 
 def test_f25_plan_and_rollback_never_mutate_production():
@@ -185,9 +228,77 @@ def test_f25_visual_and_cloudbase_delivery_support_final_acceptance():
     assert "SourceTree=" in builder
     assert '$ManifestFile = "TASK9_PACKAGE_MANIFEST.txt"' in builder
     assert "WorkingTreeDirty=" in builder
+    assert "Join-Path $StagingRoot \"backend\\app.py\"" in builder
+    assert "for p in ['backend/app.py','backend/database.py','backend/config.py']" not in builder
     assert "SourceMode=git_archive_head" in verifier
     assert "SourceTree=" in verifier
+    assert "Source package content does not match the recorded Git commit." in verifier
     assert "$PackageLabel" in verifier and "$ManifestFile" in verifier
+
+
+def test_cloudbase_verifier_rejects_tampered_archived_source(tmp_path):
+    package = tmp_path / "package.zip"
+    label = "SafeHome acceptance tamper test"
+    manifest = "ACCEPTANCE_MANIFEST.txt"
+    latest = "acceptance-latest.zip"
+    subprocess.run(
+        [
+            "pwsh",
+            "-NoProfile",
+            "-File",
+            str(ROOT / "scripts" / "build_task9_cloudbase_package.ps1"),
+            "-OutputPath",
+            str(package),
+            "-PackageLabel",
+            label,
+            "-ManifestFile",
+            manifest,
+            "-LatestFile",
+            latest,
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    with zipfile.ZipFile(package, "r") as archive:
+        entries = {
+            item.filename: archive.read(item.filename)
+            for item in archive.infolist()
+        }
+    entries["backend/app.py"] += b"\n# tampered-source\n"
+    with zipfile.ZipFile(package, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, payload in entries.items():
+            archive.writestr(name, payload)
+    package.with_suffix(".zip.sha256").unlink(missing_ok=True)
+    result = subprocess.run(
+        [
+            "pwsh",
+            "-NoProfile",
+            "-File",
+            str(ROOT / "scripts" / "verify_task9_cloudbase_package.ps1"),
+            "-PackagePath",
+            str(package),
+            "-PackageLabel",
+            label,
+            "-ManifestFile",
+            manifest,
+            "-LatestFile",
+            latest,
+        ],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    assert result.returncode != 0
+    assert "Source package content does not match the recorded Git commit." in (
+        result.stdout + result.stderr
+    )
 
 
 def test_f25_registry_invokes_trusted_verify_instead_of_plan_only():

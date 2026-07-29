@@ -75,14 +75,6 @@ def _anonymous_id(user_id: str) -> str:
     return f"anon_{digest}"
 
 
-def _actor_id(payload: dict | None = None) -> str:
-    if request.headers.get("X-Admin-Token"):
-        return "admin-token"
-    if payload and payload.get("reviewer_id"):
-        return str(payload.get("reviewer_id"))
-    return "web-admin"
-
-
 def _input_scores(payload: dict) -> dict:
     raw_scores = payload.get("scores") if isinstance(payload.get("scores"), dict) else payload
     fields = [
