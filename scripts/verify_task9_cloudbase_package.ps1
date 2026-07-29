@@ -1,5 +1,8 @@
 param(
-  [string]$PackagePath = ""
+  [string]$PackagePath = "",
+  [string]$PackageLabel = "SafeHome task 9 CloudBase package",
+  [string]$ManifestFile = "TASK9_PACKAGE_MANIFEST.txt",
+  [string]$LatestFile = "safehome-cloudbase-task9-latest.zip"
 )
 
 $ErrorActionPreference = "Stop"
@@ -7,8 +10,17 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 $CodexTmp = Join-Path $Root ".codex_tmp"
 
+if ([string]::IsNullOrWhiteSpace($PackageLabel) -or $PackageLabel -match "[`r`n]") {
+  throw "PackageLabel must be one non-empty line."
+}
+foreach ($leafName in @($ManifestFile, $LatestFile)) {
+  if ([string]::IsNullOrWhiteSpace($leafName) -or [System.IO.Path]::GetFileName($leafName) -ne $leafName) {
+    throw "ManifestFile and LatestFile must be leaf filenames."
+  }
+}
+
 if (-not $PackagePath) {
-  $stableLatest = Join-Path $CodexTmp "safehome-cloudbase-task9-latest.zip"
+  $stableLatest = Join-Path $CodexTmp $LatestFile
   if (Test-Path -LiteralPath $stableLatest) {
     $latestPackage = Get-Item -LiteralPath $stableLatest
   } else {
@@ -61,7 +73,7 @@ try {
     "content/risk_keywords.json",
     "shared/constants/api.ts",
     "shared/types/api.ts",
-    "TASK9_PACKAGE_MANIFEST.txt"
+    $ManifestFile
   )
 
   foreach ($entry in $requiredEntries) {
@@ -118,9 +130,9 @@ try {
     }
   }
 
-  $manifest = $archive.GetEntry("TASK9_PACKAGE_MANIFEST.txt")
+  $manifest = $archive.GetEntry($ManifestFile)
   if (-not $manifest) {
-    throw "Package missing TASK9_PACKAGE_MANIFEST.txt"
+    throw "Package missing $ManifestFile"
   }
   $stream = $manifest.Open()
   try {
@@ -129,8 +141,8 @@ try {
   } finally {
     $stream.Dispose()
   }
-  if ($manifestText -notmatch "SafeHome task 9 CloudBase package") {
-    throw "Manifest does not identify the task 9 CloudBase package."
+  if ($manifestText -notmatch [regex]::Escape($PackageLabel)) {
+    throw "Manifest does not identify the expected CloudBase package."
   }
   if ($manifestText -notmatch "Included=Dockerfile,.dockerignore,backend,content,shared") {
     throw "Manifest does not list the expected included paths."

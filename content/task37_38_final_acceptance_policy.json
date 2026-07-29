@@ -1,0 +1,135 @@
+{
+  "schema": "safehome.tasks37-38.final-acceptance-policy.v1",
+  "version": "2026-07-29-f25-v1",
+  "task_id": "T38-F25",
+  "engineering_status": "acceptance_candidate",
+  "automatic_acceptance_categories": [
+    {
+      "id": "backend",
+      "title": "后端全量回归",
+      "required": true
+    },
+    {
+      "id": "schema_migration_recovery_rollback",
+      "title": "Schema、迁移、恢复与回滚",
+      "required": true
+    },
+    {
+      "id": "shared_api",
+      "title": "Shared与API合同",
+      "required": true
+    },
+    {
+      "id": "web_miniprogram",
+      "title": "Web与小程序",
+      "required": true
+    },
+    {
+      "id": "permission_scope_audit",
+      "title": "权限、对象范围与审计",
+      "required": true
+    },
+    {
+      "id": "idempotency_concurrency_withdrawal_recovery",
+      "title": "幂等、并发、撤回与异常恢复",
+      "required": true
+    },
+    {
+      "id": "content_boundary",
+      "title": "内容与心理伦理边界",
+      "required": true
+    },
+    {
+      "id": "accessibility_four_viewports",
+      "title": "大字体、四视口与自动无障碍",
+      "required": true
+    },
+    {
+      "id": "full_regression",
+      "title": "全量工程回归",
+      "required": true
+    },
+    {
+      "id": "machine_registry",
+      "title": "任务机器注册表",
+      "required": true
+    }
+  ],
+  "external_gates": [
+    {
+      "id": "a0_a4_real_evidence",
+      "title": "A0—A4真人证据",
+      "status": "external_gate_pending"
+    },
+    {
+      "id": "t1_t3_competence_and_supervision",
+      "title": "T1—T3资质、督导和值守",
+      "status": "external_gate_pending"
+    },
+    {
+      "id": "ethics_legal_privacy_security",
+      "title": "伦理、法律、隐私与数据安全审核",
+      "status": "external_gate_pending"
+    },
+    {
+      "id": "cloudbase_mysql_production",
+      "title": "CloudBase与MySQL生产迁移恢复",
+      "status": "external_gate_pending"
+    },
+    {
+      "id": "wechat_real_device",
+      "title": "微信开发者工具与iOS/Android真机",
+      "status": "external_gate_pending"
+    },
+    {
+      "id": "production_owner",
+      "title": "生产负责人批准",
+      "status": "external_gate_pending"
+    }
+  ],
+  "completion_definitions": [
+    "l0_l3_and_t1_t3_consistent",
+    "o_p_h_u_traceable_refutable_revisable",
+    "participant_controls_question_data_sharing_objection_withdrawal",
+    "no_automatic_formal_ta_high_challenge_ais_fis",
+    "a0_a4_only_from_real_evidence"
+  ],
+  "evidence_rules": {
+    "all_automatic_categories_required": true,
+    "receipt_must_use_relative_paths": true,
+    "receipt_must_not_contain_secrets_or_participant_text": true,
+    "artifact_sha256_required": true,
+    "dirty_worktree_must_not_be_reverted": true,
+    "temporary_showcase_bypass_counts_as_formal_permission_evidence": false,
+    "simulated_agent_may_sign_external_gate": false,
+    "automated_test_may_sign_external_gate": false,
+    "engineering_completion_equals_service_approval": false,
+    "engineering_completion_equals_production_release": false
+  },
+  "release_package_rules": {
+    "include": [
+      "Dockerfile",
+      ".dockerignore",
+      "backend",
+      "content",
+      "shared"
+    ],
+    "exclude": [
+      "secrets",
+      "environment_files",
+      "databases",
+      "participant_exports",
+      "logs",
+      "caches",
+      "virtual_environments",
+      "node_build_outputs"
+    ],
+    "portable_paths_required": true,
+    "build_fingerprint_required": true,
+    "sha256_sidecar_required": true
+  },
+  "production_migration_executed": false,
+  "production_restore_executed": false,
+  "real_device_acceptance_complete": false,
+  "production_release_approved": false
+}

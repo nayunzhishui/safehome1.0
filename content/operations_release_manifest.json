@@ -70,6 +70,12 @@
     },
     {
       "artifact_type": "rule",
+      "path": "content/task37_38_final_acceptance_policy.json",
+      "sha256": "aafa1de5cca38b1c6cbfad8ff8eec331ad3e51f108093e602045fa64f3431eca",
+      "size_bytes": 3757
+    },
+    {
+      "artifact_type": "rule",
       "path": "content/readfeedback/parent_report_rules.json",
       "sha256": "42748fb62aae4dd6f676c6284949a4ff893ed824394796a45b505134bcd18896",
       "size_bytes": 3302
@@ -160,5 +166,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "910dcc915f26982e5025bd664cefc570f4cab8b3d2dc55ebf82816719491d94f"
+  "manifest_hash": "1e3f74d67cea498c5d7c3a3c952f0d919cb722397ef3d65fb456e321113f60a0"
 }

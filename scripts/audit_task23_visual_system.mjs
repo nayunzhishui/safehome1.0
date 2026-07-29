@@ -8,6 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const requireFromWeb = createRequire(path.join(ROOT, "apps", "web", "package.json"));
 const { chromium } = requireFromWeb("playwright");
 const VIEWPORTS = [375, 430, 768, 1440];
+const FONT_SCALES = [1, 2];
 
 
 function rpxToPx(source) {
@@ -52,29 +53,41 @@ async function run() {
 
   const browser = await chromium.launch({ headless: true, channel: "chrome" });
   for (const width of VIEWPORTS) {
-    const page = await browser.newPage({ viewport: { width, height: 900 } });
-    await page.goto(pathToFileURL(htmlPath).href);
-    await page.waitForLoadState("networkidle");
-    const dimensions = await page.evaluate(() => ({ clientWidth: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
-    if (dimensions.scrollWidth > dimensions.clientWidth + 1) throw new Error(`horizontal overflow at ${width}px: ${JSON.stringify(dimensions)}`);
+    for (const fontScale of FONT_SCALES) {
+      const page = await browser.newPage({ viewport: { width, height: 900 } });
+      await page.goto(pathToFileURL(htmlPath).href);
+      await page.waitForLoadState("networkidle");
+      await page.evaluate((scale) => {
+        if (scale === 1) return;
+        for (const element of document.querySelectorAll("body, body *")) {
+          const style = getComputedStyle(element);
+          const fontSize = Number.parseFloat(style.fontSize);
+          const lineHeight = Number.parseFloat(style.lineHeight);
+          if (Number.isFinite(fontSize) && fontSize > 0) element.style.fontSize = `${fontSize * scale}px`;
+          if (Number.isFinite(lineHeight) && lineHeight > 0) element.style.lineHeight = `${lineHeight * scale}px`;
+        }
+      }, fontScale);
+      const dimensions = await page.evaluate(() => ({ clientWidth: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
+      if (dimensions.scrollWidth > dimensions.clientWidth + 1) throw new Error(`horizontal overflow at ${width}px/${fontScale * 100}%: ${JSON.stringify(dimensions)}`);
 
-    const buttons = page.locator("button");
-    for (let index = 0; index < await buttons.count(); index += 1) {
-      const button = buttons.nth(index);
-      const box = await button.boundingBox();
-      const name = ((await button.getAttribute("aria-label")) || (await button.innerText())).trim();
-      if (!name) throw new Error(`button ${index} has no accessible name at ${width}px`);
-      if (!box || box.height < 44) throw new Error(`button ${name} is below 44px at ${width}px: ${JSON.stringify(box)}`);
+      const buttons = page.locator("button");
+      for (let index = 0; index < await buttons.count(); index += 1) {
+        const button = buttons.nth(index);
+        const box = await button.boundingBox();
+        const name = ((await button.getAttribute("aria-label")) || (await button.innerText())).trim();
+        if (!name) throw new Error(`button ${index} has no accessible name at ${width}px/${fontScale * 100}%`);
+        if (!box || box.height < 44) throw new Error(`button ${name} is below 44px at ${width}px/${fontScale * 100}%: ${JSON.stringify(box)}`);
+      }
+
+      await page.keyboard.press("Tab");
+      const focused = await page.evaluate(() => ({ tag: document.activeElement?.tagName, name: document.activeElement?.getAttribute("aria-label") || document.activeElement?.textContent?.trim() }));
+      if (focused.tag !== "BUTTON" || !focused.name) throw new Error(`keyboard focus did not reach a named action at ${width}px/${fontScale * 100}%: ${JSON.stringify(focused)}`);
+      await page.screenshot({ path: path.join(outputDir, `viewport-${width}-font-${fontScale * 100}.png`), fullPage: true });
+      await page.close();
     }
-
-    await page.keyboard.press("Tab");
-    const focused = await page.evaluate(() => ({ tag: document.activeElement?.tagName, name: document.activeElement?.getAttribute("aria-label") || document.activeElement?.textContent?.trim() }));
-    if (focused.tag !== "BUTTON" || !focused.name) throw new Error(`keyboard focus did not reach a named action at ${width}px: ${JSON.stringify(focused)}`);
-    await page.screenshot({ path: path.join(outputDir, `viewport-${width}.png`), fullPage: true });
-    await page.close();
   }
   await browser.close();
-  console.log(`T23 visual audit passed: ${VIEWPORTS.join(", ")}`);
+  console.log(`T23 visual audit passed: ${VIEWPORTS.join(", ")} at ${FONT_SCALES.map((item) => `${item * 100}%`).join(", ")}`);
   console.log(`Evidence: ${outputDir}`);
 }
 

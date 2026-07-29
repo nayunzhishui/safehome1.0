@@ -1,6 +1,9 @@
 param(
   [string]$OutputPath = "",
-  [switch]$KeepStaging
+  [switch]$KeepStaging,
+  [string]$PackageLabel = "SafeHome task 9 CloudBase package",
+  [string]$ManifestFile = "TASK9_PACKAGE_MANIFEST.txt",
+  [string]$LatestFile = "safehome-cloudbase-task9-latest.zip"
 )
 
 $ErrorActionPreference = "Stop"
@@ -8,6 +11,15 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 $CodexTmp = Join-Path $Root ".codex_tmp"
 $StagingRoot = Join-Path $CodexTmp "task9-cloudbase-package"
+
+if ([string]::IsNullOrWhiteSpace($PackageLabel) -or $PackageLabel -match "[`r`n]") {
+  throw "PackageLabel must be one non-empty line."
+}
+foreach ($leafName in @($ManifestFile, $LatestFile)) {
+  if ([string]::IsNullOrWhiteSpace($leafName) -or [System.IO.Path]::GetFileName($leafName) -ne $leafName) {
+    throw "ManifestFile and LatestFile must be leaf filenames."
+  }
+}
 
 if (-not $OutputPath) {
   $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
@@ -150,7 +162,7 @@ try {
 
   $branch = (git branch --show-current 2>$null)
   $head = (git rev-parse HEAD 2>$null)
-  $status = (git status --short 2>$null)
+  $workingTreeDirty = [bool](git status --short 2>$null)
   $buildTime = (Get-Date).ToUniversalTime().ToString("o")
   Invoke-Native "python" @(
     "scripts\generate_build_fingerprint.py",
@@ -160,18 +172,16 @@ try {
     "--build-time", $buildTime
   )
   $manifest = @(
-    "SafeHome task 9 CloudBase package",
+    $PackageLabel,
     "GeneratedAt=$buildTime",
     "Branch=$branch",
     "Head=$head",
     "Included=Dockerfile,.dockerignore,backend,content,shared",
     "Excluded=env files, databases, logs, caches, virtualenvs, node build outputs, backups",
     "CloudBaseCompatibility=content/profiles JSON filenames are shortened in the package only; model_id inside each JSON is preserved.",
-    "",
-    "WorkingTreeStatus:",
-    $status
+    "WorkingTreeDirty=$($workingTreeDirty.ToString().ToLowerInvariant())"
   )
-  Set-Content -LiteralPath (Join-Path $StagingRoot "TASK9_PACKAGE_MANIFEST.txt") -Value $manifest -Encoding UTF8
+  Set-Content -LiteralPath (Join-Path $StagingRoot $ManifestFile) -Value $manifest -Encoding UTF8
 
   if (Test-Path -LiteralPath $OutputPath) {
     Remove-Item -LiteralPath $OutputPath -Force
@@ -182,7 +192,7 @@ try {
   Invoke-Native "python" @("-c", "from pathlib import Path; [compile(Path(p).read_text(encoding='utf-8'), p, 'exec') for p in ['backend/app.py','backend/database.py','backend/config.py']]")
 
   $zipInfo = Get-Item -LiteralPath $OutputPath
-  $latestPath = Join-Path $CodexTmp "safehome-cloudbase-task9-latest.zip"
+  $latestPath = Join-Path $CodexTmp $LatestFile
   Copy-Item -LiteralPath $OutputPath -Destination $latestPath -Force
 
   $hash = Get-FileHash -LiteralPath $OutputPath -Algorithm SHA256

@@ -1881,6 +1881,54 @@ def validate_therapeutic_stop_recovery_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_task37_38_final_acceptance_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    filename = "task37_38_final_acceptance_policy.json"
+    try:
+        policy = load_json(content_dir / filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{filename} 不可读取：{exc}"]
+    if policy.get("schema") != "safehome.tasks37-38.final-acceptance-policy.v1":
+        errors.append("任务37/38最终验收策略版本不兼容")
+        return errors
+    expected_categories = [
+        "backend",
+        "schema_migration_recovery_rollback",
+        "shared_api",
+        "web_miniprogram",
+        "permission_scope_audit",
+        "idempotency_concurrency_withdrawal_recovery",
+        "content_boundary",
+        "accessibility_four_viewports",
+        "full_regression",
+        "machine_registry",
+    ]
+    if [
+        item.get("id") for item in policy.get("automatic_acceptance_categories") or []
+    ] != expected_categories:
+        errors.append("任务37/38十类自动验收项缺失或顺序漂移")
+    external = policy.get("external_gates") or []
+    if len(external) != 6 or any(
+        item.get("status") != "external_gate_pending" for item in external
+    ):
+        errors.append("任务37/38六类外部门禁必须保持待真人证据")
+    evidence = policy.get("evidence_rules") or {}
+    if (
+        evidence.get("all_automatic_categories_required") is not True
+        or evidence.get("simulated_agent_may_sign_external_gate") is not False
+        or evidence.get("automated_test_may_sign_external_gate") is not False
+        or evidence.get(
+            "temporary_showcase_bypass_counts_as_formal_permission_evidence"
+        )
+        is not False
+        or evidence.get("engineering_completion_equals_production_release")
+        is not False
+        or policy.get("production_release_approved") is not False
+    ):
+        errors.append("最终验收不得用模拟、自动测试或展示旁路替代外部门禁")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -1909,6 +1957,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_ai_runtime_policy_content(content_dir))
     errors.extend(validate_ai_release_policy_content(content_dir))
     errors.extend(validate_therapeutic_stop_recovery_content(content_dir))
+    errors.extend(validate_task37_38_final_acceptance_content(content_dir))
     return errors
 
 

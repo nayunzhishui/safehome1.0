@@ -946,7 +946,38 @@
     {"id": "T37-R03", "title": "Canary和事件演练", "dependencies": ["T37-R02", "T38-F22"], "engineering_complete": true, "status": "engineering_complete_synthetic_drills_passed_real_canary_pending", "evidence": ["content/task37_release_execution_registry.json", "backend/scripts/task37_r03_canary_drills.py", "backend/tests/test_task37_r03_canary_drills.py", "backend/tests/test_task24_privacy_lifecycle_complete.py"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task37_r03_canary_drills.py", "backend/tests/test_task32_reliability_release.py", "backend/tests/test_task37_a06_monitoring_rollback.py", "backend/tests/test_task37_b02_queue_duty.py", "backend/tests/test_task37_b04_feedback_lifecycle.py", "backend/tests/test_task24_privacy_lifecycle_complete.py", "backend/tests/test_task37_c10_ai_release_stages.py", "-q"], ["python", "backend/scripts/validate_content.py"], ["python", "backend/scripts/task37_r03_canary_drills.py", "plan"], ["python", "backend/scripts/task37_r03_canary_drills.py", "rehearse"], ["python", "backend/scripts/task37_r03_canary_drills.py", "verify"], ["python", "backend/scripts/task37_r03_canary_drills.py", "rollback-plan"]]},
     {"id": "T37-R04", "title": "全量收口与发布观察", "dependencies": ["T37-R03", "T38-F23"], "engineering_complete": true, "status": "engineering_complete_full_regression_passed_owner_approval_and_post_release_observation_pending", "evidence": ["content/task37_release_execution_registry.json", "backend/scripts/task37_r04_release_closure.py", "backend/tests/test_task37_r04_release_closure.py", "scripts/generate_task38_source_registry.py", "backend/tests/test_task37_b05_production_gate.py", "backend/tests/test_task23_full_implementation.py", "backend/tests/test_task32_reliability_contract.py", "backend/tests/test_task33_ux_contract.py", "backend/tests/test_task36_ai_qa_full_closure.py", "backend/tests/test_task36_credentials.py", "backend/tests/test_task36_deployment_fingerprint.py", "backend/tests/test_task36_identity_lifecycle.py", "backend/tests/test_task36_research_access.py", "backend/tests/test_task37_p03_data_lineage.py"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task37_r04_release_closure.py", "backend/tests/test_task37_r03_canary_drills.py", "backend/tests/test_task37_r02_migration_evidence.py", "backend/tests/test_task37_r01_test_cloud.py", "backend/tests/test_task37_a07_release_gate.py", "backend/tests/test_task37_b05_production_gate.py", "backend/tests/test_task37_c10_ai_release_stages.py", "-q"], ["python", "backend/scripts/validate_content.py"], ["python", "scripts/generate_task38_source_registry.py", "--check"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["python", "backend/scripts/check_api_compatibility.py"], ["python", "backend/scripts/audit_miniprogram_frontend.py"], ["python", "backend/scripts/task37_r04_release_closure.py", "plan"], ["python", "backend/scripts/task37_r04_release_closure.py", "build"], ["python", "backend/scripts/task37_r04_release_closure.py", "verify"], ["python", "backend/scripts/task37_r04_release_closure.py", "rollback-plan"]]},
     {"id": "T38-F24", "title": "停止规则、恢复和回滚", "dependencies": ["T38-F23", "T37-R04"], "engineering_complete": true, "status": "engineering_complete_stop_recovery_rehearsal_passed_external_human_and_production_restore_pending", "evidence": ["content/therapeutic_assessment_stop_recovery_policy.json", "backend/services/therapeutic_assessment_stop_recovery_service.py", "backend/scripts/migrate_task38_f24_stop_recovery.py", "backend/tests/test_task38_f24_stop_recovery.py", "backend/models.py", "backend/routes/therapeutic_assessment.py", "shared/types/api.ts", "apps/web/src/pages/TherapeuticAssessmentWorkbench.tsx", "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js", "docs/03_技术真相/API接口文档.md", "docs/03_技术真相/数据库字段说明.md"], "verify_commands": [["python", "-m", "pytest", "backend/tests/test_task38_f24_stop_recovery.py", "backend/tests/test_task38_f07_safety_chain.py", "backend/tests/test_task38_f10_action_followup.py", "backend/tests/test_task38_f13_adult_launch_scope.py", "backend/tests/test_task38_f14_child_safeguards.py", "backend/tests/test_task38_f15_multi_party_safeguards.py", "backend/tests/test_task38_f16_ai_assist_gates.py", "backend/tests/test_task37_b02_queue_duty.py", "backend/tests/test_task37_b04_feedback_lifecycle.py", "backend/tests/test_task24_privacy_lifecycle_complete.py", "backend/tests/test_schema_migrations.py", "-q"], ["python", "backend/scripts/migrate_task38_f24_stop_recovery.py", "plan", "--database-path", ".codex_tmp/task38_f24_registry.sqlite3"], ["python", "backend/scripts/migrate_task38_f24_stop_recovery.py", "apply", "--database-path", ".codex_tmp/task38_f24_registry.sqlite3"], ["python", "backend/scripts/migrate_task38_f24_stop_recovery.py", "verify", "--database-path", ".codex_tmp/task38_f24_registry.sqlite3"], ["python", "backend/scripts/migrate_task38_f24_stop_recovery.py", "rollback", "--database-path", ".codex_tmp/task38_f24_registry.sqlite3"], ["python", "backend/scripts/generate_task31_security_registry.py", "--check"], ["python", "backend/scripts/generate_task34_operations_registry.py", "--check"], ["python", "backend/scripts/validate_content.py"], ["python", "backend/scripts/build_api_contract.py", "--check"], ["python", "backend/scripts/check_api_compatibility.py"], ["python", "backend/scripts/audit_miniprogram_frontend.py"], ["node", "--check", "apps/miniprogram/services/api.js"], ["node", "--check", "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js"], ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"], ["npm.cmd", "run", "build", "--prefix", "apps/web"]]},
-    {"id": "T38-F25", "title": "全量验收和发布证据包", "dependencies": ["T38-F24"], "engineering_complete": false, "status": "planned", "evidence": [], "verify_commands": []}
+    {
+      "id": "T38-F25",
+      "title": "全量验收和发布证据包",
+      "dependencies": ["T38-F24"],
+      "engineering_complete": true,
+      "status": "engineering_complete_full_automatic_acceptance_passed_external_gates_pending",
+      "evidence": [
+        "content/task37_38_final_acceptance_policy.json",
+        "backend/scripts/task38_f25_final_acceptance.py",
+        "backend/tests/test_task38_f25_final_acceptance.py",
+        "scripts/audit_task23_visual_system.mjs",
+        "scripts/build_task9_cloudbase_package.ps1",
+        "scripts/verify_task9_cloudbase_package.ps1",
+        "content/operations_release_manifest.json"
+      ],
+      "verify_commands": [
+        ["python", "-m", "pytest", "backend/tests", "-q"],
+        ["python", "backend/scripts/validate_content.py"],
+        ["python", "backend/scripts/generate_task31_security_registry.py", "--check"],
+        ["python", "backend/scripts/generate_task34_operations_registry.py", "--check"],
+        ["python", "scripts/generate_task38_source_registry.py", "--check"],
+        ["python", "backend/scripts/build_api_contract.py", "--check"],
+        ["python", "backend/scripts/check_api_compatibility.py"],
+        ["python", "backend/scripts/audit_miniprogram_frontend.py"],
+        ["python", "backend/scripts/audit_task33_experience.py"],
+        ["node", "scripts/audit_task23_visual_system.mjs"],
+        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
+        ["npm.cmd", "run", "build", "--prefix", "apps/web"],
+        ["python", "backend/scripts/task38_f25_final_acceptance.py", "plan"],
+        ["python", "backend/scripts/task38_f25_final_acceptance.py", "rollback-plan"]
+      ]
+    }
   ],
   "full_acceptance_commands": [
     {"cwd": ".", "command": ["python", "-m", "pytest", "backend/tests", "-q"]},

@@ -92,6 +92,7 @@ ARTIFACTS = [
     ("rule", "content/assessment_training_map.json"),
     ("rule", "content/diary_training_map.json"),
     ("rule", "content/student_profile_rules.json"),
+    ("rule", "content/task37_38_final_acceptance_policy.json"),
     ("rule", "content/readfeedback/parent_report_rules.json"),
     ("dictionary", "content/risk_keywords.json"),
     ("dictionary", "content/offline_benchmark_label_mapping.json"),
