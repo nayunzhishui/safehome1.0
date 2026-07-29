@@ -127,6 +127,10 @@ from services.therapeutic_assessment_method_service import (
     get_method as get_method_library_item,
     public_catalog as method_library_catalog,
 )
+from services.therapeutic_assessment_research_protocol_service import (
+    get_protocol as get_research_protocol,
+    preview_export as preview_research_export,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -192,6 +196,18 @@ def get_method_library_route():
 def get_method_library_item_route(item_id: str):
     actor, error = _actor()
     return error or _respond(get_method_library_item, actor, item_id)
+
+
+@bp.get("/research-protocol")
+def get_research_protocol_route():
+    actor, error = _actor()
+    return error or _respond(get_research_protocol, actor)
+
+
+@bp.post("/research-export/preview")
+def post_research_export_preview_route():
+    actor, error = _actor()
+    return error or _respond(preview_research_export, actor, _payload())
 
 
 @bp.post("/cases/<case_id>/ai-assist/candidates")

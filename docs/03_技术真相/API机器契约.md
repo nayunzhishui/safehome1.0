@@ -382,6 +382,8 @@
 | POST | `/api/therapeutic-assessment/quality/reviews/<review_id>/claim` | role:supervisor,admin | task_authorized_case_scoped_quality_review_with_version_and_independence_gates | — | — | active |
 | POST | `/api/therapeutic-assessment/quality/reviews/<review_id>/complete` | role:supervisor,admin | task_authorized_case_scoped_quality_review_with_version_and_independence_gates | — | — | active |
 | GET | `/api/therapeutic-assessment/quality/runtime` | role:parent,student,researcher,supervisor,admin | authenticated_quality_queue_counts_and_pause_state_no_participant_text | — | — | active |
+| POST | `/api/therapeutic-assessment/research-export/preview` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/research-protocol` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/safety-events/<event_id>/resolve` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/safety/runtime/restore` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/safety/status` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

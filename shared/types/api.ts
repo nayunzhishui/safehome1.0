@@ -582,6 +582,60 @@ export interface TherapeuticAssessmentMethodItem extends TherapeuticAssessmentMe
   publication_status: "human_review_required";
 }
 
+export interface TherapeuticAssessmentResearchMetric {
+  id: string;
+  label: string;
+  priority: "primary" | "secondary" | "critical";
+  denominator: string;
+  timepoint: string;
+  missing_data: string;
+  analysis_method: string;
+}
+
+export interface TherapeuticAssessmentResearchProtocol {
+  schema: "safehome.therapeutic-assessment.research-protocol.v1";
+  version: string;
+  title: string;
+  metrics: {
+    process: TherapeuticAssessmentResearchMetric[];
+    implementation: TherapeuticAssessmentResearchMetric[];
+    harm: TherapeuticAssessmentResearchMetric[];
+  };
+  symptom_scales: {
+    role: "exploratory_outcome_only";
+    primary_endpoint: false;
+    interpretation: string;
+  };
+  analysis_rules: Record<string, boolean>;
+  export_policy: {
+    allowed_purposes: string[];
+    default_deidentified: true;
+    minimum_necessary: true;
+    raw_text_in_default_export: false;
+    direct_identifiers_in_default_export: false;
+    audit_required: true;
+  };
+  release_status: string;
+  production_release_approved: false;
+  boundary_notice: string;
+}
+
+export interface TherapeuticAssessmentResearchExportPreview {
+  schema: "safehome.therapeutic-assessment.research-export.v1";
+  protocol_version: string;
+  purpose: string;
+  count: number;
+  rows: Array<Record<string, string | number | boolean | null>>;
+  deidentified: true;
+  minimum_necessary: true;
+  raw_text_included: false;
+  harm_metrics_separate: true;
+  symptom_outcomes_role: "exploratory_outcome_only";
+  preview_only: true;
+  production_export_executed: false;
+  boundary_notice: string;
+}
+
 export interface TherapeuticAssessmentProductionContract {
   schema: "safehome.therapeutic-assessment.production-contract.v1";
   version: string;

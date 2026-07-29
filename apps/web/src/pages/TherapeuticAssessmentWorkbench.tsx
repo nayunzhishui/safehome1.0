@@ -10,6 +10,7 @@ import type {
   TherapeuticAssessmentAiAssistCandidate,
   TherapeuticAssessmentAiAssistTask,
   TherapeuticAssessmentMethodCatalog,
+  TherapeuticAssessmentResearchProtocol,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
@@ -120,6 +121,8 @@ export function TherapeuticAssessmentWorkbench() {
     useState<TherapeuticAssessmentAiAssistPolicy | null>(null);
   const [methodCatalog, setMethodCatalog] =
     useState<TherapeuticAssessmentMethodCatalog | null>(null);
+  const [researchProtocol, setResearchProtocol] =
+    useState<TherapeuticAssessmentResearchProtocol | null>(null);
   const [aiCandidates, setAiCandidates] =
     useState<TherapeuticAssessmentAiAssistCandidate[]>([]);
   const [aiTask, setAiTask] =
@@ -161,7 +164,7 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, aiPolicy, methods, queue, runtime, publications, lifecycle] = await Promise.all([
+      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, aiPolicy, methods, protocol, queue, runtime, publications, lifecycle] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
         safeHomeApi.getTherapeuticAssessmentAdultLaunchScope(),
@@ -169,6 +172,7 @@ export function TherapeuticAssessmentWorkbench() {
         safeHomeApi.getTherapeuticAssessmentMultiPartyPolicy(),
         safeHomeApi.getTherapeuticAssessmentAiAssistPolicy(),
         safeHomeApi.getTherapeuticAssessmentMethodLibrary(),
+        safeHomeApi.getTherapeuticAssessmentResearchProtocol(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
         safeHomeApi.listPublicationCandidates(),
@@ -181,6 +185,7 @@ export function TherapeuticAssessmentWorkbench() {
       setMultiPartyPolicy(multiPartySafeguards);
       setAiAssistPolicy(aiPolicy);
       setMethodCatalog(methods);
+      setResearchProtocol(protocol);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
       setPublicationCandidates(publications.items);
@@ -490,6 +495,16 @@ export function TherapeuticAssessmentWorkbench() {
           <strong>方法内容由独立审核控制</strong>
           <p>已登记 {methodCatalog.count} 项；目录仅显示适用范围与治理状态，不公开专业模板正文。</p>
           <small>{methodCatalog.boundary}</small>
+        </section>
+      ) : null}
+      {researchProtocol ? (
+        <section className="status" aria-label="研究协议和统计计划">
+          <strong>研究指标已预先定义</strong>
+          <p>
+            过程 {researchProtocol.metrics.process.length} 项；实施 {researchProtocol.metrics.implementation.length} 项；
+            伤害 {researchProtocol.metrics.harm.length} 项并独立报告。
+          </p>
+          <small>{researchProtocol.boundary_notice}</small>
         </section>
       ) : null}
       {queueRuntime ? (

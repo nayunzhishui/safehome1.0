@@ -160,6 +160,8 @@ import type {
   TherapeuticAssessmentAiAssistTask,
   TherapeuticAssessmentMethodCatalog,
   TherapeuticAssessmentMethodItem,
+  TherapeuticAssessmentResearchProtocol,
+  TherapeuticAssessmentResearchExportPreview,
   TherapeuticAssessmentLaunchScreening,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentCompetencyLevel,
@@ -1814,6 +1816,19 @@ export class SafeHomeApiClient {
   getTherapeuticAssessmentMethod(itemId: string): Promise<TherapeuticAssessmentMethodItem> {
     return this.requestData(
       `${API_ENDPOINTS.therapeuticAssessment}/method-library/${encodeURIComponent(itemId)}`,
+    );
+  }
+
+  getTherapeuticAssessmentResearchProtocol(): Promise<TherapeuticAssessmentResearchProtocol> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/research-protocol`);
+  }
+
+  previewTherapeuticAssessmentResearchExport(
+    purpose: string,
+  ): Promise<TherapeuticAssessmentResearchExportPreview> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/research-export/preview`,
+      { method: "POST", body: { purpose } },
     );
   }
 

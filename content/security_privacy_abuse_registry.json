@@ -9389,6 +9389,54 @@
       }
     },
     {
+      "operation_id": "therapeutic_assessment.post_research_export_preview_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/research-export/preview",
+      "object_type": "therapeutic_assessment",
+      "action": "export",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.get_research_protocol_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/research-protocol",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "therapeutic_assessment.post_safety_resolution_route.post",
       "method": "POST",
       "path": "/api/therapeutic-assessment/safety-events/<event_id>/resolve",
@@ -9954,7 +10002,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 399,
+    "operation_count": 401,
     "showcase_bypass_operation_count": 10,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

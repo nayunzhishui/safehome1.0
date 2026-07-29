@@ -2461,3 +2461,10 @@ relationship_initiation_intention_action
 - `GET /api/therapeutic-assessment/method-library`：登录用户读取非敏感目录摘要；不返回方法正文、来源或审核者明细。
 - `GET /api/therapeutic-assessment/method-library/<item_id>`：researcher、supervisor或admin读取普通受控方法正文；AIS/FIS专业脚手架仅允许supervisor或admin读取。
 - 所有详情读取检查内容有效期并写入审计；目录固定声明禁止自动发布。内容修改仍通过现有`therapeutic_method`四专业治理目标完成，不提供绕过审核的直接写接口。
+
+### T38-F18研究协议与导出预览
+
+- `GET /api/therapeutic-assessment/research-protocol`：researcher、supervisor或admin读取冻结的指标、统计分析和导出政策。
+- `POST /api/therapeutic-assessment/research-export/preview`：以`purpose`请求用途受控的去标识最小数据预览。允许用途为`implementation_monitoring`、`safety_review`和`protocol_analysis`。
+- researcher仅返回分配给本人的case；supervisor/admin可按正式对象权限查看汇总。返回HMAC化`case_key`、流程状态、服务级别、时间和计数，不返回case ID、参与者ID、原始问题或自由文本。
+- 本接口只生成预览，不执行生产导出；伤害指标与过程指标分开，所有读取写入审计。

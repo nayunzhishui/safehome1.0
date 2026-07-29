@@ -1277,6 +1277,18 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/method-library`, { requiresAuth: true });
     },
 
+    getTherapeuticAssessmentResearchProtocol() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/research-protocol`, { requiresAuth: true });
+    },
+
+    previewTherapeuticAssessmentResearchExport(purpose) {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/research-export/preview`, {
+        method: "POST",
+        data: { purpose },
+        requiresAuth: true,
+      });
+    },
+
     getTherapeuticAssessmentLaunchScreening(caseId) {
       return request(
         `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings/latest`,

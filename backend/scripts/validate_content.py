@@ -1314,6 +1314,49 @@ def validate_therapeutic_method_library(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_therapeutic_research_protocol(content_dir: Path) -> list[str]:
+    filename = "therapeutic_assessment_research_protocol.json"
+    errors: list[str] = []
+    try:
+        payload = load_json(content_dir / filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{filename} 不可读取：{exc}"]
+    if payload.get("schema") != "safehome.therapeutic-assessment.research-protocol.v1":
+        errors.append(f"{filename} schema不兼容")
+    groups = payload.get("metrics") or {}
+    if not {"process", "implementation", "harm"}.issubset(groups):
+        errors.append(f"{filename} 缺少过程、实施或伤害指标")
+        return errors
+    required = {
+        "id",
+        "priority",
+        "denominator",
+        "timepoint",
+        "missing_data",
+        "analysis_method",
+    }
+    all_metrics = [item for group in groups.values() for item in group]
+    if not all(required.issubset(item) for item in all_metrics):
+        errors.append(f"{filename} 指标缺少预先定义的分母、时间点、缺失或分析方法")
+    ids = [str(item.get("id") or "") for item in all_metrics]
+    if not all(ids) or len(ids) != len(set(ids)):
+        errors.append(f"{filename} 指标id缺失或重复")
+    if payload.get("symptom_scales", {}).get("role") != "exploratory_outcome_only":
+        errors.append(f"{filename} 症状量表只能作为探索性结局")
+    rules = payload.get("analysis_rules") or {}
+    if rules.get("satisfaction_may_offset_serious_harm") is not False:
+        errors.append(f"{filename} 不得用满意度抵消严重伤害事件")
+    policy = payload.get("export_policy") or {}
+    if (
+        policy.get("default_deidentified") is not True
+        or policy.get("minimum_necessary") is not True
+        or policy.get("raw_text_in_default_export") is not False
+        or not policy.get("allowed_purposes")
+    ):
+        errors.append(f"{filename} 研究导出必须默认脱敏、最小必要且用途受控")
+    return errors
+
+
 def validate_research_methodology_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -1632,6 +1675,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_offline_benchmark_content(content_dir))
     errors.extend(validate_therapeutic_assessment_contract(content_dir))
     errors.extend(validate_therapeutic_method_library(content_dir))
+    errors.extend(validate_therapeutic_research_protocol(content_dir))
     errors.extend(validate_research_methodology_content(content_dir))
     errors.extend(validate_security_registry_content(content_dir))
     errors.extend(validate_reliability_registry_content(content_dir))

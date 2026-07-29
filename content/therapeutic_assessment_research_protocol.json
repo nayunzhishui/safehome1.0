@@ -1,0 +1,64 @@
+{
+  "schema": "safehome.therapeutic-assessment.research-protocol.v1",
+  "version": "2026-07-29-f18-v1",
+  "title": "协作式治疗性评估研究协议与统计分析计划",
+  "population": "经独立门禁批准后进入相应服务级别的参与者",
+  "timepoints": {
+    "baseline": "建立本人问题和共享范围时",
+    "first_human_review": "首次真人复核完成时",
+    "feedback_check": "参与者核对反馈时",
+    "action_followup": "共同选择行动后的随访时",
+    "closeout": "归档、撤回或停止时"
+  },
+  "metrics": {
+    "process": [
+      {"id": "participant_question_retained", "label": "保留本人问题", "priority": "primary", "denominator": "所有建立协作case", "timepoint": "feedback_check", "missing_data": "缺失单列，不按否处理", "analysis_method": "比例及Wilson 95%区间"},
+      {"id": "source_understood", "label": "理解资料来源", "priority": "primary", "denominator": "收到可核对反馈的case", "timepoint": "feedback_check", "missing_data": "未核对单列", "analysis_method": "比例及分层描述"},
+      {"id": "disagreement_available", "label": "可以表达异议", "priority": "primary", "denominator": "收到反馈的case", "timepoint": "feedback_check", "missing_data": "界面未呈现视为实施缺失", "analysis_method": "比例、严重失败逐例复核"},
+      {"id": "accurately_understood", "label": "被准确理解", "priority": "secondary", "denominator": "完成反馈核对的case", "timepoint": "feedback_check", "missing_data": "拒答与未完成分别报告", "analysis_method": "分布和置信区间"},
+      {"id": "feedback_answers_question", "label": "反馈回应本人议题", "priority": "primary", "denominator": "完成反馈核对的case", "timepoint": "feedback_check", "missing_data": "不插补", "analysis_method": "比例及开放异议主题描述"},
+      {"id": "action_jointly_selected", "label": "共同选择行动", "priority": "secondary", "denominator": "反馈核对后可继续的case", "timepoint": "action_followup", "missing_data": "停止或撤回不计失败，单独报告", "analysis_method": "比例和时间分布"}
+    ],
+    "implementation": [
+      {"id": "time_to_first_review", "label": "首次复核时间", "priority": "primary", "denominator": "进入人工队列的case", "timepoint": "first_human_review", "missing_data": "尚未复核按删失报告", "analysis_method": "中位数、IQR和P95"},
+      {"id": "risk_escalation_completed", "label": "风险进入真人链", "priority": "primary", "denominator": "出现安全信号的case", "timepoint": "closeout", "missing_data": "未知按失败关闭", "analysis_method": "比例且逐例核查"},
+      {"id": "required_field_missingness", "label": "关键字段缺失", "priority": "primary", "denominator": "所有case", "timepoint": "各时间点", "missing_data": "字段级缺失矩阵", "analysis_method": "总体和字段级比例"},
+      {"id": "feedback_revision_rate", "label": "反馈修订率", "priority": "secondary", "denominator": "产生反馈草稿的case", "timepoint": "closeout", "missing_data": "草稿未生成单列", "analysis_method": "比例和修订原因分类"},
+      {"id": "professional_workload", "label": "专业人员负荷", "priority": "secondary", "denominator": "值守时段内任务", "timepoint": "closeout", "missing_data": "缺少领取/交接时间不插补", "analysis_method": "人均任务、中位处理时间、积压"},
+      {"id": "recovery_success", "label": "异常恢复", "priority": "primary", "denominator": "发生可恢复异常的case", "timepoint": "closeout", "missing_data": "无恢复证据按未恢复", "analysis_method": "恢复率和恢复时间"},
+      {"id": "cross_client_consistency", "label": "跨端一致", "priority": "primary", "denominator": "同时使用Web和小程序的case", "timepoint": "closeout", "missing_data": "单端case不进入分母", "analysis_method": "一致率和差异清单"}
+    ],
+    "harm": [
+      {"id": "diagnostic_misunderstanding", "label": "诊断化误解", "priority": "critical", "denominator": "所有进入反馈阶段的case", "timepoint": "即时及closeout", "missing_data": "未知进入人工复核", "analysis_method": "事件数、发生率、严重度及逐例复盘"},
+      {"id": "shame_or_blame", "label": "羞耻或责备", "priority": "critical", "denominator": "所有反馈或消息接收", "timepoint": "即时及closeout", "missing_data": "投诉未结案保持开放", "analysis_method": "事件独立报告"},
+      {"id": "conflict_escalation", "label": "冲突升级", "priority": "critical", "denominator": "所有多人或关系议题case", "timepoint": "即时及closeout", "missing_data": "未知不判无事件", "analysis_method": "逐例描述和停止次数"},
+      {"id": "unauthorized_sharing", "label": "越权共享", "priority": "critical", "denominator": "所有共享操作", "timepoint": "即时", "missing_data": "审计缺口按严重失败", "analysis_method": "零容忍事件计数"},
+      {"id": "irreversible_withdrawal_error", "label": "不可撤回错误", "priority": "critical", "denominator": "所有撤回请求", "timepoint": "closeout", "missing_data": "传播状态未知按失败", "analysis_method": "零容忍事件计数"},
+      {"id": "risk_human_chain_failure", "label": "风险未进入真人链", "priority": "critical", "denominator": "所有安全信号", "timepoint": "即时", "missing_data": "未知按失败关闭", "analysis_method": "零容忍事件计数和逐例复盘"}
+    ]
+  },
+  "symptom_scales": {
+    "role": "exploratory_outcome_only",
+    "primary_endpoint": false,
+    "interpretation": "仅描述探索性变化，不用于证明疗效、诊断或个体风险预测"
+  },
+  "analysis_rules": {
+    "pre_specified_before_first_real_case": true,
+    "primary_secondary_separated": true,
+    "missingness_reported_by_timepoint": true,
+    "satisfaction_may_offset_serious_harm": false,
+    "serious_harm_requires_separate_review": true,
+    "subgroup_claims_require_pre_specification": true
+  },
+  "export_policy": {
+    "allowed_purposes": ["implementation_monitoring", "safety_review", "protocol_analysis"],
+    "default_deidentified": true,
+    "minimum_necessary": true,
+    "raw_text_in_default_export": false,
+    "direct_identifiers_in_default_export": false,
+    "audit_required": true
+  },
+  "release_status": "protocol_frozen_engineering_only",
+  "production_release_approved": false,
+  "boundary_notice": "本协议评估实施过程与安全性，不证明治疗有效，也不以满意度抵消严重负面事件。"
+}
