@@ -1387,6 +1387,16 @@ def validate_therapeutic_pilot_evidence(content_dir: Path) -> list[str]:
         or a1.get("human_interviews_complete") is not False
     ):
         errors.append(f"{filename} A1不得把合成访谈或可用性测试当作真人疗效证据")
+    a2 = next((item for item in stages if item.get("id") == "A2"), None)
+    if not a2 or len(a2.get("sequence") or []) != 5:
+        errors.append(f"{filename} A2必须按五步低风险人工原型顺序执行")
+    elif (
+        a2.get("system_may_generate_h") is not False
+        or a2.get("system_may_publish_feedback") is not False
+        or a2.get("case_supervision_required") is not True
+        or a2.get("human_supervision_complete") is not False
+    ):
+        errors.append(f"{filename} A2必须逐例督导且系统不得生成H或发布反馈")
     return errors
 
 

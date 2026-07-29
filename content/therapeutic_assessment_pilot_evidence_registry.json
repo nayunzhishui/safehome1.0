@@ -87,6 +87,44 @@
       "synthetic_interview_may_sign": false,
       "human_interviews_complete": false,
       "production_release_approved": false
+    },
+    {
+      "id": "A2",
+      "title": "低风险人工原型",
+      "status": "evidence_template_ready_human_prototype_pending",
+      "entry_dependencies": ["T38-F20_human_interviews_complete", "A1_severe_issues_closed"],
+      "sequence": [
+        "synthetic_cases",
+        "expert_role_rehearsal",
+        "small_real_low_risk_adult_sample",
+        "case_by_case_supervision",
+        "error_harm_revision_review"
+      ],
+      "allowed_scope": {
+        "adult_only": true,
+        "single_person_only": true,
+        "low_risk_only": true,
+        "voluntary_only": true
+      },
+      "case_evidence_fields": [
+        "case_code",
+        "scope_screening_reference",
+        "consent_reference",
+        "assigned_researcher_reference",
+        "supervisor_reference",
+        "source_and_permission_snapshot",
+        "version_history",
+        "participant_correction_or_withdrawal",
+        "error_or_negative_event",
+        "revision_decision"
+      ],
+      "system_may_generate_h": false,
+      "system_may_publish_feedback": false,
+      "case_supervision_required": true,
+      "severe_issue_blocks_next_stage": true,
+      "real_cases_completed": false,
+      "human_supervision_complete": false,
+      "production_release_approved": false
     }
   ],
   "boundary_notice": "自动化只生成问题和证据索引；专家结论、分歧、资质核验与签字必须由真实人员完成。"
