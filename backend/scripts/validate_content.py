@@ -1463,6 +1463,19 @@ def validate_task37_release_execution(content_dir: Path) -> list[str]:
         or (r01.get("read_only_fallback") or {}).get("production_promotion_allowed") is not False
     ):
         errors.append(f"{filename} R01不得把本地演练计为测试云或自动晋级生产")
+    r02 = next((item for item in payload.get("stages") or [] if item.get("id") == "R02"), None)
+    if not r02 or len(r02.get("ordered_steps") or []) < 10:
+        errors.append(f"{filename} R02缺少生产迁移、备份、恢复或核验顺序")
+    elif (
+        r02.get("privacy_tombstone_required") is not True
+        or r02.get("checksum_and_row_count_required") is not True
+        or r02.get("command_generation_only") is not True
+        or r02.get("production_migration_executed") is not False
+        or r02.get("production_restore_executed") is not False
+        or (r02.get("rollback_policy") or {}).get("drop_tables_automatically") is not False
+        or (r02.get("rollback_policy") or {}).get("delete_audit_automatically") is not False
+    ):
+        errors.append(f"{filename} R02只能生成证据且不得自动破坏数据或审计")
     return errors
 
 

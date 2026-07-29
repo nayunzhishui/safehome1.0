@@ -174,6 +174,8 @@ MYSQL_VARCHAR_COLUMNS = {
     "target_user_id",
     "source_user_id",
     "participant_user_id",
+    "guardian_user_id",
+    "child_user_id",
     "merged_into_user_id",
     "requested_by",
     "confirmed_by",

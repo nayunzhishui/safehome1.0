@@ -1,6 +1,6 @@
 {
   "schema": "safehome.task37.release-execution.v1",
-  "version": "2026-07-29-r01-v1",
+  "version": "2026-07-29-r02-v1",
   "stages": [
     {
       "id": "R01",
@@ -59,6 +59,58 @@
       "local_automation_is_test_cloud_evidence": false,
       "test_cloud_execution_complete": false,
       "production_mutation_executed": false,
+      "production_release_approved": false
+    },
+    {
+      "id": "R02",
+      "title": "生产迁移证据包",
+      "status": "engineering_evidence_ready_production_migration_pending",
+      "entry_dependencies": ["R01_test_cloud_evidence_complete"],
+      "ordered_steps": [
+        "freeze_source_commit_and_contracts",
+        "verify_approved_maintenance_window",
+        "switch_runtime_to_read_only",
+        "create_backup",
+        "verify_backup_readable_and_checksum",
+        "apply_additive_migration",
+        "verify_schema_integrity_and_row_counts",
+        "verify_privacy_tombstones",
+        "restore_backup_in_isolated_environment",
+        "repeat_health_ready_and_core_journeys",
+        "run_canary_before_owner_decision"
+      ],
+      "required_evidence_fields": [
+        "source_commit",
+        "source_schema_version",
+        "target_schema_version",
+        "migration_script_hashes",
+        "backup_location_reference",
+        "backup_sha256",
+        "backup_integrity_check",
+        "pre_migration_row_counts",
+        "post_migration_row_counts",
+        "schema_hash_before",
+        "schema_hash_after",
+        "restore_sha256",
+        "restore_row_counts",
+        "privacy_tombstone_result",
+        "health_ready_result",
+        "rollback_rehearsal_result",
+        "operator_reference",
+        "independent_verifier_reference"
+      ],
+      "rollback_policy": {
+        "disable_new_writes_first": true,
+        "restore_only_from_verified_backup": true,
+        "preserve_additive_tables_and_audit_by_default": true,
+        "drop_tables_automatically": false,
+        "delete_audit_automatically": false
+      },
+      "privacy_tombstone_required": true,
+      "checksum_and_row_count_required": true,
+      "command_generation_only": true,
+      "production_migration_executed": false,
+      "production_restore_executed": false,
       "production_release_approved": false
     }
   ],
