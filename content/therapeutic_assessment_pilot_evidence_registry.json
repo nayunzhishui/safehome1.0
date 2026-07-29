@@ -1,6 +1,6 @@
 {
   "schema": "safehome.therapeutic-assessment.pilot-evidence.v1",
-  "version": "2026-07-29-f22-v1",
+  "version": "2026-07-29-f23-v1",
   "stages": [
     {
       "id": "A0",
@@ -200,6 +200,96 @@
       "severe_issue_blocks_next_stage": true,
       "formative_pilot_complete": false,
       "human_entry_dependencies_complete": false,
+      "production_release_approved": false
+    },
+    {
+      "id": "A4",
+      "title": "可行性试点",
+      "status": "evidence_template_ready_feasibility_pilot_pending",
+      "entry_dependencies": ["A3_formative_pilot_complete", "A3_severe_issues_closed"],
+      "purpose": "safe_implementation_feasibility_only",
+      "metrics": [
+        {
+          "id": "completion_rate",
+          "label": "完成率",
+          "denominator": "all_eligible_enrolled_cases",
+          "timepoint": "pilot_close",
+          "missing_data": "count_as_not_completed"
+        },
+        {
+          "id": "time_to_first_review",
+          "label": "首次复核时间",
+          "denominator": "cases_entering_researcher_queue",
+          "timepoint": "per_case_and_weekly",
+          "missing_data": "report_missing_as_not_reviewed"
+        },
+        {
+          "id": "revision_rate",
+          "label": "修订率",
+          "denominator": "feedback_candidates_receiving_human_review",
+          "timepoint": "per_case_and_pilot_close",
+          "missing_data": "separate_unknown"
+        },
+        {
+          "id": "queue_load",
+          "label": "队列负荷",
+          "denominator": "active_duty_window",
+          "timepoint": "daily_and_weekly",
+          "missing_data": "report_monitoring_gap"
+        },
+        {
+          "id": "refusal_or_withdrawal",
+          "label": "不同意或撤回",
+          "denominator": "all_invited_or_enrolled_people",
+          "timepoint": "event_and_pilot_close",
+          "missing_data": "do_not_impute_consent"
+        },
+        {
+          "id": "negative_events",
+          "label": "负面事件",
+          "denominator": "all_enrolled_cases",
+          "timepoint": "immediate_and_pilot_close",
+          "missing_data": "independent_missingness_review"
+        },
+        {
+          "id": "severe_issues",
+          "label": "严重问题",
+          "denominator": "all_pilot_sessions",
+          "timepoint": "immediate_and_pilot_close",
+          "missing_data": "treat_unknown_as_unresolved"
+        },
+        {
+          "id": "stop_count",
+          "label": "停止次数",
+          "denominator": "all_pilot_sessions",
+          "timepoint": "event_and_pilot_close",
+          "missing_data": "reconcile_with_audit_and_incident_logs"
+        }
+      ],
+      "stop_reasons": [
+        "serious_harm_or_safety_signal",
+        "unresolved_severe_issue",
+        "privacy_or_security_incident",
+        "role_or_object_scope_violation",
+        "queue_without_qualified_duty"
+      ],
+      "required_analysis_fields": [
+        "metric_id",
+        "numerator",
+        "denominator",
+        "missing_count",
+        "time_window",
+        "source_snapshot_hash",
+        "analysis_version",
+        "reviewer_reference",
+        "limitations"
+      ],
+      "efficacy_claim_allowed": false,
+      "treatment_effect_estimation_allowed": false,
+      "symptom_change_claim_allowed": false,
+      "severe_issue_blocks_release": true,
+      "synthetic_or_automation_may_sign": false,
+      "feasibility_pilot_complete": false,
       "production_release_approved": false
     }
   ],

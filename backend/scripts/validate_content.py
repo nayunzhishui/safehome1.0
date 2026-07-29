@@ -1417,6 +1417,28 @@ def validate_therapeutic_pilot_evidence(content_dir: Path) -> list[str]:
         or a3.get("human_entry_dependencies_complete") is not False
     ):
         errors.append(f"{filename} A3必须保留真人前置、真机和严重问题阻断")
+    a4 = next((item for item in stages if item.get("id") == "A4"), None)
+    expected_a4_metrics = {
+        "completion_rate",
+        "time_to_first_review",
+        "revision_rate",
+        "queue_load",
+        "refusal_or_withdrawal",
+        "negative_events",
+        "severe_issues",
+        "stop_count",
+    }
+    if not a4 or {item.get("id") for item in a4.get("metrics") or []} != expected_a4_metrics:
+        errors.append(f"{filename} A4必须预定义八类安全实施可行性指标")
+    elif (
+        a4.get("purpose") != "safe_implementation_feasibility_only"
+        or a4.get("efficacy_claim_allowed") is not False
+        or a4.get("treatment_effect_estimation_allowed") is not False
+        or a4.get("symptom_change_claim_allowed") is not False
+        or a4.get("severe_issue_blocks_release") is not True
+        or a4.get("feasibility_pilot_complete") is not False
+    ):
+        errors.append(f"{filename} A4不得宣称疗效且严重问题必须阻断发布")
     return errors
 
 
