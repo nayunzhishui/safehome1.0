@@ -636,6 +636,33 @@ export interface TherapeuticAssessmentResearchExportPreview {
   boundary_notice: string;
 }
 
+export interface TherapeuticAssessmentPilotEvidencePackage {
+  schema: "safehome.therapeutic-assessment.pilot-evidence-package.v1";
+  registry_version: string;
+  stage: {
+    id: string;
+    title: string;
+    status: string;
+    roles: Array<{
+      id: string;
+      label: string;
+      questions: string[];
+      evidence_refs: string[];
+    }>;
+    required_human_fields: string[];
+    simulated_role_may_sign: false;
+    automatic_test_may_sign: false;
+    production_release_approved: false;
+  };
+  human_reviews: Array<Record<string, unknown>>;
+  unresolved_critical_issues: Array<Record<string, unknown>>;
+  human_signoff_complete: false;
+  simulated_signoffs_counted: false;
+  production_release_approved: false;
+  sha256: string;
+  boundary_notice: string;
+}
+
 export interface TherapeuticAssessmentProductionContract {
   schema: "safehome.therapeutic-assessment.production-contract.v1";
   version: string;

@@ -1357,6 +1357,30 @@ def validate_therapeutic_research_protocol(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_therapeutic_pilot_evidence(content_dir: Path) -> list[str]:
+    filename = "therapeutic_assessment_pilot_evidence_registry.json"
+    try:
+        payload = load_json(content_dir / filename)
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{filename} 不可读取：{exc}"]
+    errors: list[str] = []
+    if payload.get("schema") != "safehome.therapeutic-assessment.pilot-evidence.v1":
+        errors.append(f"{filename} schema不兼容")
+    stages = payload.get("stages") or []
+    a0 = next((item for item in stages if item.get("id") == "A0"), None)
+    if not a0 or len(a0.get("roles") or []) != 5:
+        errors.append(f"{filename} A0必须覆盖五类专家职责")
+    elif not all(item.get("questions") and item.get("evidence_refs") for item in a0["roles"]):
+        errors.append(f"{filename} A0每类职责必须包含问题和证据索引")
+    if a0 and (
+        a0.get("simulated_role_may_sign") is not False
+        or a0.get("automatic_test_may_sign") is not False
+        or a0.get("production_release_approved") is not False
+    ):
+        errors.append(f"{filename} 模拟角色和自动测试不得计作真人签字")
+    return errors
+
+
 def validate_research_methodology_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -1676,6 +1700,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_therapeutic_assessment_contract(content_dir))
     errors.extend(validate_therapeutic_method_library(content_dir))
     errors.extend(validate_therapeutic_research_protocol(content_dir))
+    errors.extend(validate_therapeutic_pilot_evidence(content_dir))
     errors.extend(validate_research_methodology_content(content_dir))
     errors.extend(validate_security_registry_content(content_dir))
     errors.extend(validate_reliability_registry_content(content_dir))

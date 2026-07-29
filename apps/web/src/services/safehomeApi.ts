@@ -162,6 +162,7 @@ import type {
   TherapeuticAssessmentMethodItem,
   TherapeuticAssessmentResearchProtocol,
   TherapeuticAssessmentResearchExportPreview,
+  TherapeuticAssessmentPilotEvidencePackage,
   TherapeuticAssessmentLaunchScreening,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentCompetencyLevel,
@@ -1829,6 +1830,14 @@ export class SafeHomeApiClient {
     return this.requestData(
       `${API_ENDPOINTS.therapeuticAssessment}/research-export/preview`,
       { method: "POST", body: { purpose } },
+    );
+  }
+
+  getTherapeuticAssessmentPilotEvidence(
+    stageId: string,
+  ): Promise<TherapeuticAssessmentPilotEvidencePackage> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/pilot-evidence/${encodeURIComponent(stageId)}`,
     );
   }
 

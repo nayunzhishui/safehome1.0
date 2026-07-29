@@ -364,6 +364,7 @@
 | GET | `/api/therapeutic-assessment/method-library` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/method-library/<item_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/multi-party-safeguards` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/pilot-evidence/<stage_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/production-contract` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/production-contract/check` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/production-contract/snapshots` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

@@ -1,0 +1,51 @@
+{
+  "schema": "safehome.therapeutic-assessment.pilot-evidence.v1",
+  "version": "2026-07-29-f19-v1",
+  "stages": [
+    {
+      "id": "A0",
+      "title": "五类专家走查",
+      "status": "evidence_template_ready_human_review_pending",
+      "entry_dependencies": ["T38-F18", "T37-A07", "T37-B05", "T37-C10"],
+      "roles": [
+        {
+          "id": "therapeutic_assessment",
+          "label": "治疗性评估与心理评估",
+          "questions": ["问题是否真正来自参与者本人", "O/P/H/U是否保持证据层级", "反馈是否回答议题且不下诊断结论"],
+          "evidence_refs": ["therapeutic_assessment_research_protocol.json", "therapeutic_assessment_method_library.json"]
+        },
+        {
+          "id": "child_couple",
+          "label": "儿童、亲子与伴侣",
+          "questions": ["儿童拒绝是否优先", "逐人同意和个别披露是否隔离", "高冲突或恐惧是否进入单独支持"],
+          "evidence_refs": ["therapeutic_assessment_child_policy.json", "therapeutic_assessment_multi_party_policy.json"]
+        },
+        {
+          "id": "ethics_legal",
+          "label": "伦理与法律",
+          "questions": ["知情同意是否覆盖用途和撤回", "研究导出是否最小必要", "投诉、纠错和删除责任是否明确"],
+          "evidence_refs": ["therapeutic_assessment_research_protocol.json", "privacy.md", "consent.md"]
+        },
+        {
+          "id": "product_accessibility",
+          "label": "产品体验与无障碍",
+          "questions": ["用户是否理解谁能看到资料", "拒绝、暂停、撤回是否与主操作同等可达", "等待、错误和恢复状态是否可理解"],
+          "evidence_refs": ["apps/miniprogram/pages/therapeutic-assessment/index.wxml", "apps/web/src/pages/TherapeuticAssessmentWorkbench.tsx"]
+        },
+        {
+          "id": "data_security_engineering",
+          "label": "数据安全与工程",
+          "questions": ["对象权限是否服务端执行", "版本、幂等、审计和恢复是否可验证", "Secret、生产迁移和发布是否与工程完成分离"],
+          "evidence_refs": ["content/security_privacy_abuse_registry.json", "content/operations_release_manifest.json", "config/task37_38_registry.json"]
+        }
+      ],
+      "required_human_fields": ["expert_identity_reference", "qualification_reference", "decision", "findings", "disagreements", "signed_at"],
+      "allowed_decisions": ["approved", "changes_required", "blocked"],
+      "critical_issue_blocks_next_stage": true,
+      "simulated_role_may_sign": false,
+      "automatic_test_may_sign": false,
+      "production_release_approved": false
+    }
+  ],
+  "boundary_notice": "自动化只生成问题和证据索引；专家结论、分歧、资质核验与签字必须由真实人员完成。"
+}

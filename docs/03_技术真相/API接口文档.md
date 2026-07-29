@@ -2468,3 +2468,8 @@ relationship_initiation_intention_action
 - `POST /api/therapeutic-assessment/research-export/preview`：以`purpose`请求用途受控的去标识最小数据预览。允许用途为`implementation_monitoring`、`safety_review`和`protocol_analysis`。
 - researcher仅返回分配给本人的case；supervisor/admin可按正式对象权限查看汇总。返回HMAC化`case_key`、流程状态、服务级别、时间和计数，不返回case ID、参与者ID、原始问题或自由文本。
 - 本接口只生成预览，不执行生产导出；伤害指标与过程指标分开，所有读取写入审计。
+
+### T38-F19—F23试点证据包
+
+- `GET /api/therapeutic-assessment/pilot-evidence/<stage_id>`：正式研究角色生成对应A0—A4阶段的只读证据包；返回阶段问题、证据索引、空白真人复核字段、SHA-256和发布边界。
+- 当前F19登记A0五类专家走查。参与者无权读取；模拟角色和自动测试固定不计真人签字。

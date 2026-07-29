@@ -131,6 +131,9 @@ from services.therapeutic_assessment_research_protocol_service import (
     get_protocol as get_research_protocol,
     preview_export as preview_research_export,
 )
+from services.therapeutic_assessment_pilot_evidence_service import (
+    build_package as build_pilot_evidence_package,
+)
 
 
 bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-assessment")
@@ -208,6 +211,12 @@ def get_research_protocol_route():
 def post_research_export_preview_route():
     actor, error = _actor()
     return error or _respond(preview_research_export, actor, _payload())
+
+
+@bp.get("/pilot-evidence/<stage_id>")
+def get_pilot_evidence_route(stage_id: str):
+    actor, error = _actor()
+    return error or _respond(build_pilot_evidence_package, actor, stage_id)
 
 
 @bp.post("/cases/<case_id>/ai-assist/candidates")

@@ -1289,6 +1289,13 @@ function createSafeHomeApi(options = {}) {
       });
     },
 
+    getTherapeuticAssessmentPilotEvidence(stageId) {
+      return request(
+        `${API_ENDPOINTS.therapeuticAssessment}/pilot-evidence/${encodeURIComponent(stageId)}`,
+        { requiresAuth: true },
+      );
+    },
+
     getTherapeuticAssessmentLaunchScreening(caseId) {
       return request(
         `${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/launch-screenings/latest`,
