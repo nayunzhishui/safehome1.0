@@ -9557,6 +9557,126 @@
       }
     },
     {
+      "operation_id": "therapeutic_assessment.post_stop_recovery_evidence_verify_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/stop-recovery/evidence/<evidence_id>/verify",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_stop_recovery_incident_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/stop-recovery/incidents",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_stop_recovery_evidence_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/evidence",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.post_stop_recovery_restore_route.post",
+      "method": "POST",
+      "path": "/api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/restore",
+      "object_type": "therapeutic_assessment",
+      "action": "create",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "therapeutic_assessment.get_stop_recovery_status_route.get",
+      "method": "GET",
+      "path": "/api/therapeutic-assessment/stop-recovery/status",
+      "object_type": "therapeutic_assessment",
+      "action": "read",
+      "object_scope": "role_scoped",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "therapeutic_assessment.get_work_queue_route.get",
       "method": "GET",
       "path": "/api/therapeutic-assessment/work-queue",
@@ -10026,7 +10146,7 @@
     }
   ],
   "authorization_summary": {
-    "operation_count": 402,
+    "operation_count": 407,
     "showcase_bypass_operation_count": 10,
     "formal_permission_acceptance_passed": false,
     "reason": "临时展示越权按负责人要求保留，不能作为正式权限验收证据。"

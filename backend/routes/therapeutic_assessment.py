@@ -91,6 +91,13 @@ from services.therapeutic_assessment_release_gate_service import (
     release_gate_status,
     verify_release_evidence,
 )
+from services.therapeutic_assessment_stop_recovery_service import (
+    record_recovery_evidence,
+    report_stop_incident,
+    restore_after_incident,
+    stop_recovery_status,
+    verify_recovery_evidence,
+)
 from services.publication_gate_service import (
     PublicationGateError,
     list_candidates,
@@ -530,6 +537,54 @@ def post_production_gate_evidence_verify_route(evidence_id: str):
         verify_release_evidence,
         actor,
         evidence_id,
+        _payload(),
+        _key(),
+    )
+
+
+@bp.get("/stop-recovery/status")
+def get_stop_recovery_status_route():
+    actor, error = _actor()
+    return error or _respond(stop_recovery_status, actor)
+
+
+@bp.post("/stop-recovery/incidents")
+def post_stop_recovery_incident_route():
+    actor, error = _actor()
+    return error or _respond(report_stop_incident, actor, _payload(), _key())
+
+
+@bp.post("/stop-recovery/incidents/<incident_id>/evidence")
+def post_stop_recovery_evidence_route(incident_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        record_recovery_evidence,
+        actor,
+        incident_id,
+        _payload(),
+        _key(),
+    )
+
+
+@bp.post("/stop-recovery/evidence/<evidence_id>/verify")
+def post_stop_recovery_evidence_verify_route(evidence_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        verify_recovery_evidence,
+        actor,
+        evidence_id,
+        _payload(),
+        _key(),
+    )
+
+
+@bp.post("/stop-recovery/incidents/<incident_id>/restore")
+def post_stop_recovery_restore_route(incident_id: str):
+    actor, error = _actor()
+    return error or _respond(
+        restore_after_incident,
+        actor,
+        incident_id,
         _payload(),
         _key(),
     )

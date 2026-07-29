@@ -179,6 +179,10 @@ import type {
   TherapeuticAssessmentLifecycle,
   TherapeuticAssessmentLifecycleMetrics,
   TherapeuticAssessmentProductionGate,
+  TherapeuticAssessmentRecoveryEvidence,
+  TherapeuticAssessmentStopIncident,
+  TherapeuticAssessmentStopRecoveryStatus,
+  TherapeuticAssessmentStopTrigger,
   TherapeuticAssessmentQualityDimension,
   TherapeuticAssessmentQualityIncident,
   TherapeuticAssessmentQualityReview,
@@ -2045,6 +2049,66 @@ export class SafeHomeApiClient {
     boundary_notice: string;
   }> {
     return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/production-gate/evidence`);
+  }
+
+  getTherapeuticAssessmentStopRecoveryStatus(): Promise<TherapeuticAssessmentStopRecoveryStatus> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/stop-recovery/status`);
+  }
+
+  reportTherapeuticAssessmentStopIncident(
+    input: { trigger_code: TherapeuticAssessmentStopTrigger; reason_summary: string; scopes?: string[] },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentStopIncident> {
+    return this.requestData(`${API_ENDPOINTS.therapeuticAssessment}/stop-recovery/incidents`, {
+      method: "POST",
+      body: input,
+      headers: { "Idempotency-Key": idempotencyKey },
+    });
+  }
+
+  recordTherapeuticAssessmentRecoveryEvidence(
+    incidentId: string,
+    input: { evidence_type: string; artifact_ref: string; artifact_sha256: string },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentRecoveryEvidence> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/stop-recovery/incidents/${encodeURIComponent(incidentId)}/evidence`,
+      {
+        method: "POST",
+        body: input,
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
+    );
+  }
+
+  verifyTherapeuticAssessmentRecoveryEvidence(
+    evidenceId: string,
+    input: { decision: "verified" | "rejected"; expected_version: number },
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentRecoveryEvidence> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/stop-recovery/evidence/${encodeURIComponent(evidenceId)}/verify`,
+      {
+        method: "POST",
+        body: input,
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
+    );
+  }
+
+  restoreTherapeuticAssessmentAfterIncident(
+    incidentId: string,
+    expectedVersion: number,
+    idempotencyKey: string,
+  ): Promise<TherapeuticAssessmentStopIncident> {
+    return this.requestData(
+      `${API_ENDPOINTS.therapeuticAssessment}/stop-recovery/incidents/${encodeURIComponent(incidentId)}/restore`,
+      {
+        method: "POST",
+        body: { expected_version: expectedVersion },
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
+    );
   }
 
   transitionTherapeuticAssessmentState(

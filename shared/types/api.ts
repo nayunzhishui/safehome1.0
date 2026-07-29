@@ -1089,6 +1089,60 @@ export interface TherapeuticAssessmentProductionGate {
   already_processed?: boolean;
 }
 
+export type TherapeuticAssessmentStopTrigger =
+  | "risk_disclosure_missed_human_chain"
+  | "multi_party_retaliation_or_safety_risk"
+  | "minor_or_couple_scope_violation"
+  | "ai_auto_h_diagnosis_or_risk_conclusion"
+  | "correction_or_withdrawal_unavailable"
+  | "systemic_privacy_incident"
+  | "queue_sla_breach";
+
+export interface TherapeuticAssessmentStopIncident {
+  id: string;
+  trigger_code: TherapeuticAssessmentStopTrigger;
+  severity: "high" | "critical";
+  scopes: string[];
+  status: "open" | "recovery_pending" | "restored";
+  reason_digest: string;
+  reason_text_stored: false;
+  detected_by: string;
+  version: number;
+  restored_by?: string | null;
+  restored_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TherapeuticAssessmentRecoveryEvidence {
+  id: string;
+  incident_id: string;
+  evidence_type: string;
+  artifact_ref: string;
+  artifact_sha256: string;
+  status: "pending" | "verified" | "rejected";
+  recorded_by: string;
+  verified_by?: string | null;
+  verified_at?: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TherapeuticAssessmentStopRecoveryStatus {
+  ordinary_flow_enabled: boolean;
+  participant_message: string;
+  reactivation_requires_all_human_gates: true;
+  internal_reason_exposed: false;
+  policy_version?: string;
+  runtime_reason?: string | null;
+  incidents?: TherapeuticAssessmentStopIncident[];
+  recovery_gates?: string[];
+  rollback_matrix?: Array<{ layer: string; action: string }>;
+  production_release_approved?: false;
+  temporary_showcase_counts_as_recovery?: false;
+}
+
 export type PrivacyReviewAction = "start_processing" | "reject" | "return_to_pending";
 
 export interface PrivacyReviewRequest extends PrivacyRequest {

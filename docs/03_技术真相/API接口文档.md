@@ -2473,3 +2473,12 @@ relationship_initiation_intention_action
 
 - `GET /api/therapeutic-assessment/pilot-evidence/<stage_id>`：正式研究角色生成对应A0—A4阶段的只读证据包；返回阶段问题、证据索引、空白真人复核字段、SHA-256和发布边界。
 - 当前F19登记A0五类专家走查。参与者无权读取；模拟角色和自动测试固定不计真人签字。
+
+### T38-F24停止、恢复和回滚
+
+- `GET /api/therapeutic-assessment/stop-recovery/status`：所有登录用户读取当前是否可继续；参与者只收到安全暂停说明，不返回事件、内部原因或证据。正式研究角色可读取停止事件、七项恢复门禁和八层回滚矩阵。
+- `POST /api/therapeutic-assessment/stop-recovery/incidents`：正式研究角色按七类条件上报停止事件，要求`Idempotency-Key`；服务端只保存内部原因的SHA-256，不保存原因原文，并立即关闭协作式评估普通流程。
+- `POST /api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/evidence`：正式研究角色为七项恢复门禁逐项登记证据引用与SHA-256；不接受空引用或无效哈希。
+- `POST /api/therapeutic-assessment/stop-recovery/evidence/<evidence_id>/verify`：仅督导或管理员使用版本锁独立核验；证据记录人不能核验自己的证据。
+- `POST /api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/restore`：仅督导或管理员可申请恢复。七类独立核验证据必须全部齐全，且不能存在其它未关闭事件；临时展示越权、模拟Agent和自动测试均不计恢复批准。
+- 恢复接口只恢复受控运行开关，不构成生产发布批准。迁移、内容版本、供应商和对外沟通仍按各自回滚层处理。

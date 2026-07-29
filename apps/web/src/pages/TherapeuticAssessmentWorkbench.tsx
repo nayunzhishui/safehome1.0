@@ -11,6 +11,7 @@ import type {
   TherapeuticAssessmentAiAssistTask,
   TherapeuticAssessmentMethodCatalog,
   TherapeuticAssessmentResearchProtocol,
+  TherapeuticAssessmentStopRecoveryStatus,
   TherapeuticAssessmentCase,
   TherapeuticAssessmentEvidenceItem,
   TherapeuticAssessmentEvidenceKind,
@@ -123,6 +124,8 @@ export function TherapeuticAssessmentWorkbench() {
     useState<TherapeuticAssessmentMethodCatalog | null>(null);
   const [researchProtocol, setResearchProtocol] =
     useState<TherapeuticAssessmentResearchProtocol | null>(null);
+  const [stopRecoveryStatus, setStopRecoveryStatus] =
+    useState<TherapeuticAssessmentStopRecoveryStatus | null>(null);
   const [aiCandidates, setAiCandidates] =
     useState<TherapeuticAssessmentAiAssistCandidate[]>([]);
   const [aiTask, setAiTask] =
@@ -164,7 +167,7 @@ export function TherapeuticAssessmentWorkbench() {
     setLoading(true);
     setError("");
     try {
-      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, aiPolicy, methods, protocol, queue, runtime, publications, lifecycle] = await Promise.all([
+      const [result, contract, launchScope, childSafeguards, multiPartySafeguards, aiPolicy, methods, protocol, stopRecovery, queue, runtime, publications, lifecycle] = await Promise.all([
         safeHomeApi.listTherapeuticAssessmentCases(),
         safeHomeApi.getTherapeuticAssessmentProductionContract(),
         safeHomeApi.getTherapeuticAssessmentAdultLaunchScope(),
@@ -173,6 +176,7 @@ export function TherapeuticAssessmentWorkbench() {
         safeHomeApi.getTherapeuticAssessmentAiAssistPolicy(),
         safeHomeApi.getTherapeuticAssessmentMethodLibrary(),
         safeHomeApi.getTherapeuticAssessmentResearchProtocol(),
+        safeHomeApi.getTherapeuticAssessmentStopRecoveryStatus(),
         safeHomeApi.listTherapeuticAssessmentWorkQueue(),
         safeHomeApi.getTherapeuticAssessmentQueueRuntime(),
         safeHomeApi.listPublicationCandidates(),
@@ -186,6 +190,7 @@ export function TherapeuticAssessmentWorkbench() {
       setAiAssistPolicy(aiPolicy);
       setMethodCatalog(methods);
       setResearchProtocol(protocol);
+      setStopRecoveryStatus(stopRecovery);
       setQueueItems(queue.items);
       setQueueRuntime(runtime);
       setPublicationCandidates(publications.items);
@@ -447,6 +452,23 @@ export function TherapeuticAssessmentWorkbench() {
 
       {error ? <div className="status error" role="alert">{error}</div> : null}
       {notice ? <div className="status success" role="status">{notice}</div> : null}
+      {stopRecoveryStatus ? (
+        <section
+          className={`status ${stopRecoveryStatus.ordinary_flow_enabled ? "" : "error"}`}
+          aria-label="停止、恢复和回滚状态"
+        >
+          <strong>
+            {stopRecoveryStatus.ordinary_flow_enabled
+              ? "停止与恢复门禁正常"
+              : "相关流程已按保护规则暂停"}
+          </strong>
+          <p>{stopRecoveryStatus.participant_message}</p>
+          <small>
+            恢复必须完成全部真人证据门禁；当前未关闭事件
+            {stopRecoveryStatus.incidents?.filter((item) => item.status !== "restored").length || 0}项。
+          </small>
+        </section>
+      ) : null}
       {productionContract ? (
         <section className="status" aria-label="协作式评估机器契约">
           <strong>机器契约 {productionContract.version}</strong>

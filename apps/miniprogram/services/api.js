@@ -1529,6 +1529,10 @@ function createSafeHomeApi(options = {}) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/safety/status`, { requiresAuth: true });
     },
 
+    getTherapeuticAssessmentStopRecoveryStatus() {
+      return request(`${API_ENDPOINTS.therapeuticAssessment}/stop-recovery/status`, { requiresAuth: true });
+    },
+
     configureTherapeuticAssessmentResponsibilityChain(caseId, data, idempotencyKey) {
       return request(`${API_ENDPOINTS.therapeuticAssessment}/cases/${encodeURIComponent(caseId)}/responsibility-chain`, {
         method: "PUT",

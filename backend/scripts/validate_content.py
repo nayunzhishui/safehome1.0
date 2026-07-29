@@ -1805,6 +1805,82 @@ def validate_ai_release_policy_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_therapeutic_stop_recovery_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        policy = load_json(
+            content_dir / "therapeutic_assessment_stop_recovery_policy.json"
+        )
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"治疗性评估停止恢复策略不可读取：{exc}"]
+    if (
+        policy.get("schema")
+        != "safehome.therapeutic-assessment.stop-recovery-policy.v1"
+    ):
+        errors.append("治疗性评估停止恢复策略版本不兼容")
+    expected_triggers = {
+        "risk_disclosure_missed_human_chain",
+        "multi_party_retaliation_or_safety_risk",
+        "minor_or_couple_scope_violation",
+        "ai_auto_h_diagnosis_or_risk_conclusion",
+        "correction_or_withdrawal_unavailable",
+        "systemic_privacy_incident",
+        "queue_sla_breach",
+    }
+    trigger_ids = {
+        str(item.get("id") or "")
+        for item in policy.get("immediate_pause_triggers") or []
+    }
+    if trigger_ids != expected_triggers:
+        errors.append("治疗性评估七类立即暂停条件不完整")
+    expected_gates = [
+        "impact_scope_assessed",
+        "affected_people_supported",
+        "data_preserved",
+        "root_cause_completed",
+        "fix_verified",
+        "independent_review_verified",
+        "named_owner_approved",
+    ]
+    if policy.get("recovery_gates") != expected_gates:
+        errors.append("治疗性评估七项恢复证据门禁不完整或顺序漂移")
+    rollback_layers = {
+        str(item.get("layer") or "")
+        for item in policy.get("rollback_matrix") or []
+    }
+    if rollback_layers != {
+        "participant_access",
+        "data_write",
+        "service",
+        "feature",
+        "model_provider",
+        "migration",
+        "content_version",
+        "communications",
+    }:
+        errors.append("治疗性评估八层回滚矩阵不完整")
+    pause = policy.get("pause_behavior") or {}
+    rules = policy.get("recovery_rules") or {}
+    if (
+        pause.get("fail_closed") is not True
+        or pause.get("preserve_existing_records") is not True
+        or pause.get("preserve_audit_evidence") is not True
+        or pause.get("internal_reason_exposed_to_participant") is not False
+    ):
+        errors.append("治疗性评估停止策略必须失败关闭、保留证据且隐藏内部原因")
+    if (
+        rules.get("all_gates_required") is not True
+        or rules.get("independent_verifier_required") is not True
+        or rules.get("self_verification_allowed") is not False
+        or rules.get("simulated_agent_may_approve") is not False
+        or rules.get("automated_test_counts_as_human_approval") is not False
+        or rules.get("temporary_showcase_bypass_counts_as_recovery") is not False
+        or policy.get("production_release_approved") is not False
+    ):
+        errors.append("恢复不得由模拟、自动测试或临时展示越权替代真人批准")
+    return errors
+
+
 def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path = DEFAULT_SCHEMA_DIR) -> list[str]:
     if not schema_dir.exists():
         return [f"schema 目录不存在：{schema_dir}"]
@@ -1832,6 +1908,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_ai_continuous_quality_content(content_dir))
     errors.extend(validate_ai_runtime_policy_content(content_dir))
     errors.extend(validate_ai_release_policy_content(content_dir))
+    errors.extend(validate_therapeutic_stop_recovery_content(content_dir))
     return errors
 
 

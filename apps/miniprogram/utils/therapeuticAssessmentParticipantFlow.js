@@ -182,7 +182,7 @@ function registerTherapeuticAssessmentStepPage(stepId) {
     async loadStep() {
       this.setData({ loading: true, stateKind: "", stateTitle: "", stateDescription: "" });
       try {
-        const safetyStatus = await api.getTherapeuticAssessmentSafetyStatus();
+        const safetyStatus = await api.getTherapeuticAssessmentStopRecoveryStatus();
         if (!safetyStatus.ordinary_flow_enabled) {
           this.setData({
             loading: false,

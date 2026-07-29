@@ -1,0 +1,55 @@
+{
+  "schema": "safehome.therapeutic-assessment.stop-recovery-policy.v1",
+  "version": "2026-07-29-f24-v1",
+  "status": "engineering_complete_external_human_recovery_approval_pending",
+  "immediate_pause_triggers": [
+    {"id": "risk_disclosure_missed_human_chain", "severity": "critical", "default_scopes": ["participant_feedback", "training_recommendation", "ai_qa"]},
+    {"id": "multi_party_retaliation_or_safety_risk", "severity": "critical", "default_scopes": ["multi_party_feedback", "shared_delivery"]},
+    {"id": "minor_or_couple_scope_violation", "severity": "critical", "default_scopes": ["minor_service", "couple_service", "shared_delivery"]},
+    {"id": "ai_auto_h_diagnosis_or_risk_conclusion", "severity": "critical", "default_scopes": ["ai_qa", "ai_assist", "participant_feedback"]},
+    {"id": "correction_or_withdrawal_unavailable", "severity": "critical", "default_scopes": ["participant_write", "research_export", "model_input"]},
+    {"id": "systemic_privacy_incident", "severity": "critical", "default_scopes": ["participant_write", "research_export", "ai_qa", "model_input"]},
+    {"id": "queue_sla_breach", "severity": "high", "default_scopes": ["human_required_feedback", "new_case_intake"]}
+  ],
+  "pause_behavior": {
+    "fail_closed": true,
+    "global_runtime_kill_switch": true,
+    "preserve_existing_records": true,
+    "preserve_audit_evidence": true,
+    "participant_message": "相关服务暂时暂停，已有记录仍会保留。需要时请联系项目人工支持。",
+    "internal_reason_exposed_to_participant": false
+  },
+  "recovery_gates": [
+    "impact_scope_assessed",
+    "affected_people_supported",
+    "data_preserved",
+    "root_cause_completed",
+    "fix_verified",
+    "independent_review_verified",
+    "named_owner_approved"
+  ],
+  "recovery_rules": {
+    "all_gates_required": true,
+    "evidence_sha256_required": true,
+    "independent_verifier_required": true,
+    "self_verification_allowed": false,
+    "optimistic_lock_required": true,
+    "idempotency_required": true,
+    "other_open_incident_blocks_global_restore": true,
+    "simulated_agent_may_approve": false,
+    "automated_test_counts_as_human_approval": false,
+    "temporary_showcase_bypass_counts_as_recovery": false
+  },
+  "rollback_matrix": [
+    {"layer": "participant_access", "action": "show_safe_pause_state_and_support_path"},
+    {"layer": "data_write", "action": "switch_affected_writes_to_read_only"},
+    {"layer": "service", "action": "pause_human_required_delivery_and_new_intake"},
+    {"layer": "feature", "action": "disable_ai_sentiment_sna_and_shared_feedback_independently"},
+    {"layer": "model_provider", "action": "disable_provider_and_restore_previous_verified_version"},
+    {"layer": "migration", "action": "restore_verified_backup_or_apply_forward_fix"},
+    {"layer": "content_version", "action": "restore_previous_reviewed_content_release"},
+    {"layer": "communications", "action": "notify_affected_people_and_record_support_actions"}
+  ],
+  "production_release_approved": false,
+  "boundary_notice": "停止与恢复规则用于保护参与者和保存证据；工程验证不等于真人批准或生产恢复。"
+}

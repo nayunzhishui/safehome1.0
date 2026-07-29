@@ -389,6 +389,11 @@
 | POST | `/api/therapeutic-assessment/safety/runtime/restore` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/safety/status` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/service-levels` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/stop-recovery/evidence/<evidence_id>/verify` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/stop-recovery/incidents` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/evidence` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/restore` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/therapeutic-assessment/stop-recovery/status` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/therapeutic-assessment/work-queue` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/work-queue/<item_id>/claim` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/work-queue/<item_id>/handoff` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

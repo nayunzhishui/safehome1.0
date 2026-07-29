@@ -106,6 +106,7 @@ REQUIRED_CONTENT_FILES = [
     "therapeutic_assessment_method_library.json",
     "therapeutic_assessment_research_protocol.json",
     "therapeutic_assessment_pilot_evidence_registry.json",
+    "therapeutic_assessment_stop_recovery_policy.json",
     "researcher_capability_registry.json",
     "security_privacy_abuse_registry.json",
     "reliability_release_registry.json",

@@ -2723,6 +2723,44 @@ SCHEMA_SQL = [
     )
     """,
     """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_stop_incidents (
+        id TEXT PRIMARY KEY,
+        trigger_code TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        scope_json TEXT NOT NULL DEFAULT '[]',
+        status TEXT NOT NULL,
+        reason_digest TEXT NOT NULL,
+        detected_by TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT NOT NULL,
+        restore_idempotency_key TEXT,
+        restored_by TEXT,
+        restored_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(detected_by, idempotency_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS therapeutic_assessment_recovery_evidence (
+        id TEXT PRIMARY KEY,
+        incident_id TEXT NOT NULL,
+        evidence_type TEXT NOT NULL,
+        artifact_ref TEXT NOT NULL,
+        artifact_sha256 TEXT NOT NULL,
+        status TEXT NOT NULL,
+        recorded_by TEXT NOT NULL,
+        verified_by TEXT,
+        verified_at TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        idempotency_key TEXT NOT NULL,
+        verification_idempotency_key TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(recorded_by, idempotency_key)
+    )
+    """,
+    """
     CREATE TABLE IF NOT EXISTS computation_datasets (
         id TEXT PRIMARY KEY,
         dataset_key TEXT NOT NULL,
@@ -2918,6 +2956,9 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_quality_reviews_case ON therapeutic_assessment_quality_reviews(case_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_quality_incidents_status_created ON therapeutic_assessment_quality_incidents(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_quality_incidents_case ON therapeutic_assessment_quality_incidents(case_id, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_stop_incidents_status_created ON therapeutic_assessment_stop_incidents(status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_therapeutic_recovery_evidence_incident_status ON therapeutic_assessment_recovery_evidence(incident_id, status, created_at)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_recovery_verifier_idempotency ON therapeutic_assessment_recovery_evidence(verified_by, verification_idempotency_key)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_therapeutic_quality_event_idempotency ON therapeutic_assessment_quality_events(actor_id, idempotency_key)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_contract_snapshots_created ON therapeutic_assessment_contract_snapshots(status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_therapeutic_work_queue_status_due ON therapeutic_assessment_work_queue(status, due_at)",
