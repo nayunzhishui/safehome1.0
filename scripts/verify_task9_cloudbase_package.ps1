@@ -147,6 +147,18 @@ try {
   if ($manifestText -notmatch "Included=Dockerfile,.dockerignore,backend,content,shared") {
     throw "Manifest does not list the expected included paths."
   }
+  if ($manifestText -notmatch "SourceMode=git_archive_head") {
+    throw "Manifest source mode is not bound to Git HEAD."
+  }
+  $manifestHead = [regex]::Match($manifestText, "(?m)^Head=([a-f0-9]{40})\r?$").Groups[1].Value
+  $manifestTree = [regex]::Match($manifestText, "(?m)^SourceTree=([a-f0-9]{40})\r?$").Groups[1].Value
+  if (-not $manifestHead -or -not $manifestTree) {
+    throw "Manifest is missing the source commit or source tree."
+  }
+  $resolvedTree = (& git -C $Root rev-parse "$manifestHead^{tree}" 2>$null)
+  if ($LASTEXITCODE -ne 0 -or $resolvedTree -ne $manifestTree) {
+    throw "Manifest source tree does not match the recorded Git commit."
+  }
 
   $buildInfoEntry = $archive.GetEntry("backend/build_info.json")
   if (-not $buildInfoEntry) {
@@ -165,6 +177,9 @@ try {
   }
   if ($buildInfo.commit_sha -notmatch '^[a-f0-9]{40}$') {
     throw "Build info commit SHA is invalid."
+  }
+  if ($buildInfo.commit_sha -ne $manifestHead) {
+    throw "Build info commit SHA does not match the archived source commit."
   }
   if ($buildInfo.api_contract_hash -notmatch '^[a-f0-9]{64}$') {
     throw "Build info API contract hash is invalid."

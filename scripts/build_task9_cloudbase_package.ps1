@@ -11,6 +11,7 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 $CodexTmp = Join-Path $Root ".codex_tmp"
 $StagingRoot = Join-Path $CodexTmp "task9-cloudbase-package"
+$SourceArchive = Join-Path $CodexTmp "task9-source-head.zip"
 
 if ([string]::IsNullOrWhiteSpace($PackageLabel) -or $PackageLabel -match "[`r`n]") {
   throw "PackageLabel must be one non-empty line."
@@ -149,20 +150,33 @@ New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 
 Push-Location $Root
 try {
-  @(
+  $branch = (git branch --show-current 2>$null)
+  $head = (git rev-parse HEAD 2>$null)
+  $sourceTree = (git rev-parse "$head^{tree}" 2>$null)
+  if ($head -notmatch "^[a-f0-9]{40}$" -or $sourceTree -notmatch "^[a-f0-9]{40}$") {
+    throw "A valid Git HEAD and source tree are required for a release package."
+  }
+  $workingTreeDirty = [bool](git status --short 2>$null)
+  if (Test-Path -LiteralPath $SourceArchive) {
+    Remove-Item -LiteralPath $SourceArchive -Force
+  }
+  # git archive makes the package source exactly match the recorded commit.
+  Invoke-Native "git" @(
+    "archive",
+    "--format=zip",
+    "--output=$SourceArchive",
+    $head,
     "Dockerfile",
     ".dockerignore",
     "backend",
     "content",
     "shared"
-  ) | ForEach-Object { Copy-RequiredPath $_ }
+  )
+  Expand-Archive -LiteralPath $SourceArchive -DestinationPath $StagingRoot -Force
 
   Remove-PackageArtifacts
   Rename-ProfileModelsForCloudBase
 
-  $branch = (git branch --show-current 2>$null)
-  $head = (git rev-parse HEAD 2>$null)
-  $workingTreeDirty = [bool](git status --short 2>$null)
   $buildTime = (Get-Date).ToUniversalTime().ToString("o")
   Invoke-Native "python" @(
     "scripts\generate_build_fingerprint.py",
@@ -176,6 +190,8 @@ try {
     "GeneratedAt=$buildTime",
     "Branch=$branch",
     "Head=$head",
+    "SourceMode=git_archive_head",
+    "SourceTree=$sourceTree",
     "Included=Dockerfile,.dockerignore,backend,content,shared",
     "Excluded=env files, databases, logs, caches, virtualenvs, node build outputs, backups",
     "CloudBaseCompatibility=content/profiles JSON filenames are shortened in the package only; model_id inside each JSON is preserved.",
@@ -209,6 +225,9 @@ try {
   Write-Host "LatestPackage=$latestPath"
 } finally {
   Pop-Location
+  if (Test-Path -LiteralPath $SourceArchive) {
+    Remove-Item -LiteralPath $SourceArchive -Force
+  }
   if (-not $KeepStaging -and (Test-Path -LiteralPath $StagingRoot)) {
     Remove-Item -LiteralPath $StagingRoot -Recurse -Force
   }

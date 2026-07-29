@@ -1,6 +1,6 @@
 {
   "schema": "safehome.tasks37_38.registry.v1",
-  "version": "2026-07-27-p00-f00-v1",
+  "version": "2026-07-29-f25-hardening-v2",
   "scope": [
     "T37-P00", "T37-P01", "T37-P02", "T37-P03", "T37-P04",
     "T38-F00", "T38-F01", "T38-F02", "T38-F03", "T38-F04", "T38-F05",
@@ -952,6 +952,7 @@
       "dependencies": ["T38-F24"],
       "engineering_complete": true,
       "status": "engineering_complete_full_automatic_acceptance_passed_external_gates_pending",
+      "verify_includes_full_acceptance": true,
       "evidence": [
         "content/task37_38_final_acceptance_policy.json",
         "backend/scripts/task38_f25_final_acceptance.py",
@@ -961,20 +962,90 @@
         "scripts/verify_task9_cloudbase_package.ps1",
         "content/operations_release_manifest.json"
       ],
+      "acceptance_categories": [
+        {
+          "id": "backend",
+          "commands": [
+            {"cwd": ".", "command": ["python", "-m", "pytest", "backend/tests", "-q"], "timeout_seconds": 3600}
+          ],
+          "artifact_paths": ["backend/tests/test_task38_f25_final_acceptance.py"]
+        },
+        {
+          "id": "schema_migration_recovery_rollback",
+          "commands": [
+            {"cwd": ".", "command": ["python", "backend/scripts/migrate_task38_f24_stop_recovery.py", "plan", "--database-path", ".codex_tmp/task38_f25_migration_20260729.sqlite3"]},
+            {"cwd": ".", "command": ["python", "backend/scripts/migrate_task38_f24_stop_recovery.py", "apply", "--database-path", ".codex_tmp/task38_f25_migration_20260729.sqlite3"]},
+            {"cwd": ".", "command": ["python", "backend/scripts/migrate_task38_f24_stop_recovery.py", "verify", "--database-path", ".codex_tmp/task38_f25_migration_20260729.sqlite3"]},
+            {"cwd": ".", "command": ["python", "backend/scripts/migrate_task38_f24_stop_recovery.py", "rollback", "--database-path", ".codex_tmp/task38_f25_migration_20260729.sqlite3"]}
+          ],
+          "artifact_paths": ["backend/scripts/migrate_task38_f24_stop_recovery.py"]
+        },
+        {
+          "id": "shared_api",
+          "commands": [
+            {"cwd": ".", "command": ["python", "backend/scripts/build_api_contract.py", "--check"]},
+            {"cwd": ".", "command": ["python", "backend/scripts/check_api_compatibility.py"]}
+          ],
+          "artifact_paths": ["shared/types/api.ts", "docs/03_技术真相/API接口文档.md"]
+        },
+        {
+          "id": "web_miniprogram",
+          "commands": [
+            {"cwd": ".", "command": ["python", "backend/scripts/audit_miniprogram_frontend.py"]},
+            {"cwd": ".", "command": ["node", "--check", "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js"]},
+            {"cwd": ".", "command": ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"]},
+            {"cwd": ".", "command": ["npm.cmd", "run", "build", "--prefix", "apps/web"], "timeout_seconds": 600}
+          ],
+          "artifact_paths": ["apps/web/src/pages/TherapeuticAssessmentWorkbench.tsx", "apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js"]
+        },
+        {
+          "id": "permission_scope_audit",
+          "commands": [
+            {"cwd": ".", "command": ["python", "backend/scripts/generate_task31_security_registry.py", "--check"]},
+            {"cwd": ".", "command": ["python", "backend/scripts/generate_task34_operations_registry.py", "--check"]}
+          ],
+          "artifact_paths": ["content/security_privacy_abuse_registry.json"]
+        },
+        {
+          "id": "idempotency_concurrency_withdrawal_recovery",
+          "commands": [
+            {"cwd": ".", "command": ["python", "-m", "pytest", "backend/tests/test_task38_f24_stop_recovery.py", "-q"]}
+          ],
+          "artifact_paths": ["backend/services/therapeutic_assessment_stop_recovery_service.py"]
+        },
+        {
+          "id": "content_boundary",
+          "commands": [
+            {"cwd": ".", "command": ["python", "backend/scripts/validate_content.py"]}
+          ],
+          "artifact_paths": ["content/task37_38_final_acceptance_policy.json"]
+        },
+        {
+          "id": "accessibility_four_viewports",
+          "commands": [
+            {"cwd": ".", "command": ["python", "backend/scripts/audit_task33_experience.py"]},
+            {"cwd": ".", "command": ["node", "scripts/audit_task23_visual_system.mjs"], "timeout_seconds": 600}
+          ],
+          "artifact_paths": ["scripts/audit_task23_visual_system.mjs", "backend/scripts/audit_task33_experience.py"]
+        },
+        {
+          "id": "full_regression",
+          "commands": [
+            {"cwd": ".", "command": ["python", "-m", "pytest", "backend/tests", "-q"], "timeout_seconds": 3600}
+          ],
+          "artifact_paths": ["backend/scripts/task38_f25_final_acceptance.py"]
+        },
+        {
+          "id": "machine_registry",
+          "commands": [
+            {"cwd": ".", "command": ["python", "scripts/run_tasks_37_38.py", "report"]}
+          ],
+          "artifact_paths": ["config/task37_38_registry.json"]
+        }
+      ],
       "verify_commands": [
-        ["python", "-m", "pytest", "backend/tests", "-q"],
-        ["python", "backend/scripts/validate_content.py"],
-        ["python", "backend/scripts/generate_task31_security_registry.py", "--check"],
-        ["python", "backend/scripts/generate_task34_operations_registry.py", "--check"],
-        ["python", "scripts/generate_task38_source_registry.py", "--check"],
-        ["python", "backend/scripts/build_api_contract.py", "--check"],
-        ["python", "backend/scripts/check_api_compatibility.py"],
-        ["python", "backend/scripts/audit_miniprogram_frontend.py"],
-        ["python", "backend/scripts/audit_task33_experience.py"],
-        ["node", "scripts/audit_task23_visual_system.mjs"],
-        ["npm.cmd", "run", "typecheck", "--prefix", "apps/web"],
-        ["npm.cmd", "run", "build", "--prefix", "apps/web"],
         ["python", "backend/scripts/task38_f25_final_acceptance.py", "plan"],
+        ["python", "backend/scripts/task38_f25_final_acceptance.py", "verify"],
         ["python", "backend/scripts/task38_f25_final_acceptance.py", "rollback-plan"]
       ]
     }

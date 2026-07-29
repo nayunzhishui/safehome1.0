@@ -189,7 +189,7 @@ def command_specs(
         {"cwd": ".", "command": command}
         for command in task.get("verify_commands", [])
     ]
-    if full:
+    if full and not task.get("verify_includes_full_acceptance"):
         specs.extend(registry.get("full_acceptance_commands", []))
     for spec in specs:
         _validate_command(registry, spec["command"])

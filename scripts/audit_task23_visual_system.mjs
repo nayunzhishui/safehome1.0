@@ -9,6 +9,20 @@ const requireFromWeb = createRequire(path.join(ROOT, "apps", "web", "package.jso
 const { chromium } = requireFromWeb("playwright");
 const VIEWPORTS = [375, 430, 768, 1440];
 const FONT_SCALES = [1, 2];
+const TASK37_38_MINIPROGRAM_PAGES = [
+  "researcher-dashboard",
+  "therapeutic-assessment",
+  "therapeutic-assessment-issue",
+  "therapeutic-assessment-recent-event",
+  "therapeutic-assessment-resources",
+  "therapeutic-assessment-sharing",
+  "therapeutic-assessment-boundary",
+  "therapeutic-assessment-summary",
+  "therapeutic-assessment-feedback-check",
+  "therapeutic-assessment-action-followup",
+  "therapeutic-assessment-action-review",
+  "therapeutic-assessment-quality",
+];
 
 
 function rpxToPx(source) {
@@ -43,11 +57,61 @@ async function previewHtml() {
 </div></main></body></html>`;
 }
 
+async function auditActualPageSources(outputDir) {
+  const findings = [];
+  for (const pageName of TASK37_38_MINIPROGRAM_PAGES) {
+    const pageDir = path.join(ROOT, "apps", "miniprogram", "pages", pageName);
+    const required = ["index.wxml", "index.js", "index.json"];
+    for (const filename of required) {
+      try {
+        await fs.access(path.join(pageDir, filename));
+      } catch {
+        findings.push(`${pageName}:missing:${filename}`);
+      }
+    }
+    let markup = "";
+    try {
+      markup = await fs.readFile(path.join(pageDir, "index.wxml"), "utf8");
+    } catch {
+      continue;
+    }
+    for (const tag of markup.match(/<(button|navigator)\b[\s\S]*?<\/\1>/g) || []) {
+      const visibleText = tag.replace(/<[^>]+>/g, "").trim();
+      if (!visibleText && !/\baria-label=/.test(tag)) {
+        findings.push(`${pageName}:unnamed-action`);
+      }
+    }
+    for (const canvas of markup.match(/<canvas\b[^>]*>/g) || []) {
+      if (!/\baria-(label|hidden)=/.test(canvas)) {
+        findings.push(`${pageName}:unlabelled-canvas`);
+      }
+    }
+  }
+  const report = {
+    schema: "safehome.task37-38.actual-page-source-audit.v1",
+    environment: "source_static",
+    rendered_matrix_scope: "shared-component-rendered-matrix",
+    pages_checked: TASK37_38_MINIPROGRAM_PAGES,
+    findings,
+    actual_device_rendering_complete: false,
+    manual_gate: "wechat_actual_pages_large_text_screen_reader_and_real_device",
+  };
+  await fs.writeFile(
+    path.join(outputDir, "actual-page-source-audit.json"),
+    `${JSON.stringify(report, null, 2)}\n`,
+    "utf8",
+  );
+  if (findings.length) {
+    throw new Error(`actual task37/38 page source audit failed: ${findings.join(", ")}`);
+  }
+}
+
 
 async function run() {
   const outputArg = process.argv.find((item) => item.startsWith("--output-dir="));
   const outputDir = path.resolve(outputArg ? outputArg.slice("--output-dir=".length) : path.join(ROOT, ".codex_tmp", "task23-05-visual-audit"));
   await fs.mkdir(outputDir, { recursive: true });
+  await auditActualPageSources(outputDir);
   const htmlPath = path.join(outputDir, "preview.html");
   await fs.writeFile(htmlPath, await previewHtml(), "utf8");
 
@@ -87,7 +151,8 @@ async function run() {
     }
   }
   await browser.close();
-  console.log(`T23 visual audit passed: ${VIEWPORTS.join(", ")} at ${FONT_SCALES.map((item) => `${item * 100}%`).join(", ")}`);
+  console.log(`T23 shared-component-rendered-matrix passed: ${VIEWPORTS.join(", ")} at ${FONT_SCALES.map((item) => `${item * 100}%`).join(", ")}`);
+  console.log(`Actual task37/38 page source audit passed: ${TASK37_38_MINIPROGRAM_PAGES.length} pages`);
   console.log(`Evidence: ${outputDir}`);
 }
 

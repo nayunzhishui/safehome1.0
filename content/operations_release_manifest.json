@@ -71,8 +71,8 @@
     {
       "artifact_type": "rule",
       "path": "content/task37_38_final_acceptance_policy.json",
-      "sha256": "aafa1de5cca38b1c6cbfad8ff8eec331ad3e51f108093e602045fa64f3431eca",
-      "size_bytes": 3757
+      "sha256": "1969c032527bd40418a9f0f44c7dc1e5793d38a718bebe854bc88bee7986afdb",
+      "size_bytes": 3821
     },
     {
       "artifact_type": "rule",
@@ -166,5 +166,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "1e3f74d67cea498c5d7c3a3c952f0d919cb722397ef3d65fb456e321113f60a0"
+  "manifest_hash": "0d00bafe34425614985f61c21af8449aefc36e6adc99964adc391a9c68adb73b"
 }

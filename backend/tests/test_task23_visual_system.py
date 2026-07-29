@@ -79,7 +79,12 @@ def test_key_participant_pages_keep_bottom_safe_area_and_one_primary_action():
 def test_visual_audit_covers_required_viewports_overflow_touch_and_names():
     source = _read("scripts/audit_task23_visual_system.mjs")
     assert "const VIEWPORTS = [375, 430, 768, 1440]" in source
+    assert "TASK37_38_MINIPROGRAM_PAGES" in source
+    assert "therapeutic-assessment-feedback-check" in source
+    assert "researcher-dashboard" in source
+    assert "auditActualPageSources" in source
     assert "scrollWidth" in source
     assert "44" in source
     assert "aria-label" in source
     assert "screenshot" in source
+    assert "shared-component-rendered-matrix" in source

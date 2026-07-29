@@ -1,6 +1,6 @@
 {
   "schema": "safehome.tasks37-38.final-acceptance-policy.v1",
-  "version": "2026-07-29-f25-v1",
+  "version": "2026-07-29-f25-hardening-v2",
   "task_id": "T38-F25",
   "engineering_status": "acceptance_candidate",
   "automatic_acceptance_categories": [
@@ -41,7 +41,7 @@
     },
     {
       "id": "accessibility_four_viewports",
-      "title": "大字体、四视口与自动无障碍",
+      "title": "公共组件四视口、任务页面源码与自动无障碍",
       "required": true
     },
     {
@@ -78,7 +78,7 @@
     },
     {
       "id": "wechat_real_device",
-      "title": "微信开发者工具与iOS/Android真机",
+      "title": "实际页面大字体、读屏、微信开发者工具与iOS/Android真机",
       "status": "external_gate_pending"
     },
     {
