@@ -3,9 +3,16 @@
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
 
-from database import get_connection, init_db
-from services.referential_integrity_service import audit_referential_integrity
+
+BACKEND = Path(__file__).resolve().parents[1]
+if str(BACKEND) not in sys.path:
+    sys.path.insert(0, str(BACKEND))
+
+from database import get_connection, init_db  # noqa: E402
+from services.referential_integrity_service import audit_referential_integrity  # noqa: E402
 
 
 def main() -> int:
