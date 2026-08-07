@@ -127,7 +127,7 @@ def test_task37_data_purposes_have_separate_consent_records(tmp_path, monkeypatc
     }
 
 
-def test_production_consent_requires_user_id(tmp_path, monkeypatch):
+def test_production_consent_requires_authenticated_actor(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")
     client = app.test_client()
 
@@ -139,8 +139,8 @@ def test_production_consent_requires_user_id(tmp_path, monkeypatch):
         },
     )
 
-    assert response.status_code == 400
-    assert response.get_json()["error"]["code"] == "validation_error"
+    assert response.status_code == 401
+    assert response.get_json()["error"]["code"] == "unauthorized"
 
 
 def test_profile_records_consent_summary_and_exports_status(tmp_path, monkeypatch):
