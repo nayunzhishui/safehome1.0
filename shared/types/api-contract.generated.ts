@@ -2529,7 +2529,6 @@ export const GENERATED_API_ENDPOINTS = [
       "query_parameters": [
         "audience_class",
         "category",
-        "enabled",
         "q",
         "query",
         "reflex_node"
@@ -4317,7 +4316,7 @@ export const GENERATED_API_ENDPOINTS = [
       "legacy_admin_token": true,
       "showcase_read_bypass": false
     },
-    "object_scope": "role_scoped",
+    "object_scope": "self_or_authorized_role",
     "request": {
       "content_type": null,
       "path_parameters": [],
@@ -4351,8 +4350,7 @@ export const GENERATED_API_ENDPOINTS = [
       "forbidden",
       "http_error",
       "internal_error",
-      "unauthorized",
-      "validation_error"
+      "unauthorized"
     ],
     "enum_refs": [],
     "deprecation": {
@@ -4379,7 +4377,7 @@ export const GENERATED_API_ENDPOINTS = [
       "legacy_admin_token": true,
       "showcase_read_bypass": false
     },
-    "object_scope": "role_scoped",
+    "object_scope": "self_or_authorized_role",
     "request": {
       "content_type": "application/json",
       "path_parameters": [],
@@ -5539,6 +5537,7 @@ export const GENERATED_API_ENDPOINTS = [
       "content_type": null,
       "path_parameters": [],
       "query_parameters": [
+        "date",
         "limit",
         "user_id"
       ],
@@ -5571,7 +5570,8 @@ export const GENERATED_API_ENDPOINTS = [
       "forbidden",
       "http_error",
       "internal_error",
-      "unauthorized"
+      "unauthorized",
+      "validation_error"
     ],
     "enum_refs": [],
     "deprecation": {
@@ -5842,6 +5842,7 @@ export const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
+      "age_verification_required",
       "bind_code_expired",
       "forbidden",
       "http_error",
@@ -6939,6 +6940,302 @@ export const GENERATED_API_ENDPOINTS = [
     "enum_refs": [
       "message_status"
     ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "minor_safeguards.confirm_age.post",
+    "method": "POST",
+    "path": "/api/minor-safeguards/age-confirmation",
+    "handler": "minor_safeguards.confirm_age",
+    "module": "routes.minor_safeguards",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "student"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "age_band"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.minor_safeguards.confirm_age.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "minor_safeguards.supervised_age_override.post",
+    "method": "POST",
+    "path": "/api/minor-safeguards/age-override",
+    "handler": "minor_safeguards.supervised_age_override",
+    "module": "routes.minor_safeguards",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "age_band",
+        "user_id"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.minor_safeguards.supervised_age_override.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "missing_fields",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "minor_safeguards.child_assent.post",
+    "method": "POST",
+    "path": "/api/minor-safeguards/child-assent",
+    "handler": "minor_safeguards.child_assent",
+    "module": "routes.minor_safeguards",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "student"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "assented",
+        "withdraw"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.minor_safeguards.child_assent.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "missing_fields",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "minor_safeguards.guardian_consent.post",
+    "method": "POST",
+    "path": "/api/minor-safeguards/guardian-consent",
+    "handler": "minor_safeguards.guardian_consent",
+    "module": "routes.minor_safeguards",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "parent"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [],
+      "query_parameters": [],
+      "body_fields": [
+        "agreed",
+        "child_user_id"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.minor_safeguards.guardian_consent.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "missing_fields",
+      "unauthorized"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "minor_safeguards.status.get",
+    "method": "GET",
+    "path": "/api/minor-safeguards/status",
+    "handler": "minor_safeguards.status",
+    "module": "routes.minor_safeguards",
+    "access": {
+      "mode": "authenticated",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [],
+      "query_parameters": [
+        "child_user_id"
+      ],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.minor_safeguards.status.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "unauthorized"
+    ],
+    "enum_refs": [],
     "deprecation": {
       "status": "active",
       "remove_after": null,
@@ -17858,7 +18155,8 @@ export const GENERATED_API_ENDPOINTS = [
       "forbidden",
       "http_error",
       "internal_error",
-      "unauthorized"
+      "unauthorized",
+      "validation_error"
     ],
     "enum_refs": [
       "risk_level"
@@ -17926,6 +18224,7 @@ export const GENERATED_API_ENDPOINTS = [
       "http_error",
       "internal_error",
       "not_found",
+      "reviewer_identity_mismatch",
       "unauthorized",
       "validation_error"
     ],
@@ -18512,6 +18811,132 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "supervision.get_supervision_request.get",
+    "method": "GET",
+    "path": "/api/supervision/<request_id>",
+    "handler": "supervision.get_supervision_request",
+    "module": "routes.supervision",
+    "access": {
+      "mode": "owner_or_authorized",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "self_or_authorized_role",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "request_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supervision.get_supervision_request.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized"
+    ],
+    "enum_refs": [
+      "supervision_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "supervision.acknowledge_supervision_request.post",
+    "method": "POST",
+    "path": "/api/supervision/<request_id>/acknowledge",
+    "handler": "supervision.acknowledge_supervision_request",
+    "module": "routes.supervision",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "request_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supervision.acknowledge_supervision_request.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "invalid_status_transition",
+      "not_found",
+      "unauthorized"
+    ],
+    "enum_refs": [
+      "supervision_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "supervision.reply_supervision_request.post",
     "method": "POST",
     "path": "/api/supervision/<request_id>/reply",
@@ -18520,8 +18945,8 @@ export const GENERATED_API_ENDPOINTS = [
     "access": {
       "mode": "role",
       "roles": [
-        "admin",
-        "supervisor"
+        "supervisor",
+        "admin"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false
@@ -18563,7 +18988,133 @@ export const GENERATED_API_ENDPOINTS = [
       "forbidden",
       "http_error",
       "internal_error",
-      "missing_fields",
+      "invalid_status_transition",
+      "not_found",
+      "unauthorized"
+    ],
+    "enum_refs": [
+      "supervision_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "supervision.resolve_supervision_request.post",
+    "method": "POST",
+    "path": "/api/supervision/<request_id>/resolve",
+    "handler": "supervision.resolve_supervision_request",
+    "module": "routes.supervision",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "request_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [
+        "resolution_code"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supervision.resolve_supervision_request.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "invalid_status_transition",
+      "not_found",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [
+      "supervision_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "supervision.get_supervision_request_for_reviewer.get",
+    "method": "GET",
+    "path": "/api/supervision/<request_id>/reviewer",
+    "handler": "supervision.get_supervision_request_for_reviewer",
+    "module": "routes.supervision",
+    "access": {
+      "mode": "role",
+      "roles": [
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "role_scoped",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "request_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.supervision.get_supervision_request_for_reviewer.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
       "not_found",
       "unauthorized"
     ],
