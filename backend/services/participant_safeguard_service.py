@@ -307,6 +307,9 @@ def record_guardian_consent(conn, parent_user_id: str, child_user_id: str, agree
     timestamp = now_iso()
     consent_status = "active" if agreed else "withdrawn"
     child_assent = str(item.get("child_assent_status") or "pending")
+    child_assent_reset = bool(not agreed and child_assent == "assented")
+    if child_assent_reset:
+        child_assent = "pending"
     status = _derive_status("under_14", parent_user_id, consent_status, child_assent)
     consent_id = new_id("consent")
     conn.execute(
@@ -330,11 +333,20 @@ def record_guardian_consent(conn, parent_user_id: str, child_user_id: str, agree
         """
         UPDATE participant_minor_safeguards
         SET guardian_user_id = ?, guardian_consent_status = ?,
-            guardian_consent_record_id = ?, status = ?, policy_version = ?,
-            version = version + 1, updated_at = ?
+            guardian_consent_record_id = ?, child_assent_status = ?,
+            status = ?, policy_version = ?, version = version + 1, updated_at = ?
         WHERE user_id = ?
         """,
-        (parent_user_id, consent_status, consent_id, status, POLICY_VERSION, timestamp, child_user_id),
+        (
+            parent_user_id,
+            consent_status,
+            consent_id,
+            child_assent,
+            status,
+            POLICY_VERSION,
+            timestamp,
+            child_user_id,
+        ),
     )
     write_audit_log(
         conn,
@@ -342,7 +354,12 @@ def record_guardian_consent(conn, parent_user_id: str, child_user_id: str, agree
         actor_id=parent_user_id,
         target_type="user",
         target_id=child_user_id,
-        metadata={"agreed": bool(agreed), "status": status, "policy_version": POLICY_VERSION},
+        metadata={
+            "agreed": bool(agreed),
+            "status": status,
+            "child_assent_reset": child_assent_reset,
+            "policy_version": POLICY_VERSION,
+        },
     )
     return public_status(conn, child_user_id)
 
