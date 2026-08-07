@@ -1,0 +1,106 @@
+name: SafeHome Engineering Infrastructure
+
+on:
+  pull_request:
+  push:
+    branches:
+      - codex/safehome-engineering-ai-upgrade-20260807
+
+jobs:
+  mysql-redis-runtime:
+    runs-on: ubuntu-24.04
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: safehome-ci
+          MYSQL_DATABASE: safehome
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -psafehome-ci --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=12
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt
+          python -m pip check
+
+      - name: MySQL Redis RAG infrastructure smoke
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: mysql
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: "3306"
+          MYSQL_USER: root
+          MYSQL_PASSWORD: safehome-ci
+          MYSQL_DATABASE: safehome
+          MYSQL_POOL_ENABLED: "1"
+          MYSQL_POOL_MIN_CACHED: "1"
+          MYSQL_POOL_MAX_CACHED: "3"
+          MYSQL_POOL_MAX_CONNECTIONS: "5"
+          REDIS_ENABLED: "1"
+          REDIS_URL: redis://127.0.0.1:6379/0
+          REDIS_NAMESPACE: safehome-ci
+          RAG_EMBEDDING_PROVIDER: hash
+          CONTENT_DIR: ${{ github.workspace }}/content
+        run: python backend/scripts/infrastructure_smoke.py
+
+      - name: Agent and RAG unit tests
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: sqlite
+          DATABASE_PATH: /tmp/safehome-engineering-ai.sqlite3
+          CONTENT_DIR: ${{ github.workspace }}/content
+          REDIS_ENABLED: "0"
+          RAG_EMBEDDING_PROVIDER: hash
+        run: python -m pytest backend/tests/test_engineering_ai_runtime_20260807.py -q
+
+      - name: Inherited security compatibility regressions
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: sqlite
+          CONTENT_DIR: ${{ github.workspace }}/content
+          REDIS_ENABLED: "0"
+          RAG_EMBEDDING_PROVIDER: hash
+        run: >-
+          python -m pytest
+          backend/tests/test_config.py
+          backend/tests/test_consent_route.py
+          backend/tests/test_healthz.py
+          backend/tests/test_risk_review_route.py
+          backend/tests/test_risk_routing_consistency.py
+          backend/tests/test_risk_service.py
+          backend/tests/test_task18_opening_matrix.py
+          backend/tests/test_task18_program_opening.py
+          backend/tests/test_task31_security_contract.py
+          backend/tests/test_task31_security_privacy_abuse.py
+          backend/tests/test_task38_f25_final_acceptance.py
+          backend/tests/test_tasks_23_34_orchestrator.py
+          -q
+
+      - name: Non-UI client engineering guard
+        run: python scripts/audit_non_ui_client_engineering.py
