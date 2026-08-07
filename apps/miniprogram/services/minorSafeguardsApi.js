@@ -60,6 +60,9 @@ module.exports = {
     const query = childUserId ? `?child_user_id=${encodeURIComponent(childUserId)}` : "";
     return request(`/api/minor-safeguards/status${query}`);
   },
+  listFamilyMembers() {
+    return request("/api/family/members");
+  },
   confirmAge(ageBand) {
     return request("/api/minor-safeguards/age-confirmation", "POST", { age_band: ageBand });
   },
