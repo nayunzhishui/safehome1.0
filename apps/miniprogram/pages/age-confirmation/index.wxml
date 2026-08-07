@@ -1,0 +1,61 @@
+<view class="page">
+  <view class="hero">
+    <text class="eyebrow">参与者保护</text>
+    <text class="title">先确认年龄范围</text>
+    <text class="description">我们只记录“未满14周岁 / 已满14周岁”这个范围，不需要填写生日。这个信息只用于决定是否需要监护人同意。</text>
+  </view>
+
+  <page-state wx:if="{{loading}}" state="loading" title="正在读取保护状态" />
+
+  <view wx:elif="{{errorMessage}}" class="card error-card">
+    <text class="card-title">暂时没有完成</text>
+    <text class="card-text">{{errorMessage}}</text>
+    <button class="secondary-button" bindtap="refresh">重新读取</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{step === 'age'}}" class="card">
+      <text class="card-title">请选择符合你的情况</text>
+      <button class="primary-button" loading="{{submitting}}" bindtap="choose14OrOver">我已满14周岁</button>
+      <button class="secondary-button" loading="{{submitting}}" bindtap="chooseUnder14">我未满14周岁</button>
+      <text class="hint">如果之前误选为“未满14周岁”，之后改为“已满14周岁”需要督导或管理员核验，避免绕过保护门禁。</text>
+    </view>
+
+    <view wx:if="{{step === 'guardian_link'}}" class="card">
+      <text class="card-title">下一步：绑定监护人</text>
+      <text class="card-text">未满14周岁的参与者需要先和家长账号建立绑定。绑定本身不会自动视为监护人已经同意敏感数据处理。</text>
+      <button class="primary-button" bindtap="goBindGuardian">去“我的”完成绑定</button>
+      <button class="text-button" bindtap="refresh">我已经绑定，重新检查</button>
+    </view>
+
+    <view wx:if="{{step === 'guardian_consent'}}" class="card">
+      <text class="card-title">等待监护人确认</text>
+      <text class="card-text">家长需要在自己的账号中确认是否同意继续使用测评、研究参与、自由文本和画像等受保护功能。</text>
+      <text class="hint">监护人同意不会替代你的选择；你仍然可以拒绝或撤回。</text>
+      <button class="secondary-button" bindtap="refresh">重新检查</button>
+    </view>
+
+    <view wx:if="{{step === 'child_assent'}}" class="card">
+      <text class="card-title">你自己也需要确认</text>
+      <text class="card-text">即使监护人已经同意，你仍然可以自己决定是否继续使用受保护功能。</text>
+      <button class="primary-button" loading="{{submitting}}" bindtap="acceptChildAssent">我愿意继续</button>
+      <button class="secondary-button" loading="{{submitting}}" bindtap="refuseChildAssent">我暂时不继续</button>
+    </view>
+
+    <view wx:if="{{step === 'blocked'}}" class="card">
+      <text class="card-title">受保护功能已暂停</text>
+      <text class="card-text">参与者本人或监护人已经拒绝/撤回。测评、研究参与和画像等受保护功能不会继续。</text>
+      <button class="secondary-button" bindtap="goHome">返回首页</button>
+    </view>
+
+    <view wx:if="{{step === 'complete'}}" class="card success-card">
+      <text class="card-title">保护设置已完成</text>
+      <text class="card-text">你可以继续使用当前账号允许的功能。</text>
+      <button class="primary-button" bindtap="goHome">返回首页</button>
+    </view>
+  </block>
+
+  <view class="boundary">
+    <text>{{boundaryNotice}}</text>
+  </view>
+</view>
