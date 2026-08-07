@@ -28,7 +28,7 @@ def test_runtime_architecture_guard_passes_current_repository():
     spec.loader.exec_module(module)
 
     result = module.audit()
-    assert result["ok"] is True
+    assert result["ok"] is True, result
     assert result["architecture_style"] == "modular_monolith"
 
 
