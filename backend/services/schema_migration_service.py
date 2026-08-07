@@ -85,6 +85,22 @@ def _record(conn, migration: Migration) -> None:
         )
 
 
+def _create_index_if_missing(conn, name: str, table: str, columns: str) -> None:
+    if _provider(conn) == "mysql":
+        exists = conn.execute(
+            """
+            SELECT index_name FROM information_schema.statistics
+            WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?
+            LIMIT 1
+            """,
+            (table, name),
+        ).fetchone()
+        if exists is None:
+            conn.execute(f"CREATE INDEX {name} ON {table} ({columns})")
+    else:
+        conn.execute(f"CREATE INDEX IF NOT EXISTS {name} ON {table} ({columns})")
+
+
 def _apply_2026_08_07_062(conn) -> None:
     # Age confirmation is intentionally minimal-data: SafeHome stores the age
     # band used by the legal/product gate, not date of birth.
@@ -154,27 +170,71 @@ def _apply_2026_08_07_062(conn) -> None:
         """,
     )
 
-    index_specs = [
+    for name, table, columns in [
         ("idx_minor_safeguards_user", "participant_minor_safeguards", "user_id"),
         ("idx_minor_safeguards_guardian", "participant_minor_safeguards", "guardian_user_id"),
         ("idx_risk_review_due", "risk_review_records", "review_status, due_at"),
         ("idx_supervision_due", "supervision_requests", "status, due_at"),
         ("idx_supervision_events_request", "supervision_request_events", "request_id, created_at"),
-    ]
-    for name, table, columns in index_specs:
-        if _provider(conn) == "mysql":
-            exists = conn.execute(
-                """
-                SELECT index_name FROM information_schema.statistics
-                WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?
-                LIMIT 1
-                """,
-                (table, name),
-            ).fetchone()
-            if exists is None:
-                conn.execute(f"CREATE INDEX {name} ON {table} ({columns})")
-        else:
-            conn.execute(f"CREATE INDEX IF NOT EXISTS {name} ON {table} ({columns})")
+    ]:
+        _create_index_if_missing(conn, name, table, columns)
+
+
+def _apply_2026_08_07_063(conn) -> None:
+    # Real embeddings remain optional.  Existing deterministic vector_json is
+    # preserved as the zero-dependency fallback and for reproducible tests.
+    for column, definition in {
+        "embedding_json": "TEXT",
+        "embedding_model": "TEXT",
+        "embedding_dimensions": "INTEGER",
+        "embedding_updated_at": "TEXT",
+        "retrieval_metadata_json": "TEXT NOT NULL DEFAULT '{}'",
+    }.items():
+        ensure_column(conn, "ai_knowledge_chunks", column, definition)
+
+    _execute_schema(
+        conn,
+        """
+        CREATE TABLE IF NOT EXISTS agent_runs (
+            id TEXT PRIMARY KEY,
+            actor_id TEXT NOT NULL,
+            actor_role TEXT NOT NULL,
+            objective_hash TEXT NOT NULL,
+            status TEXT NOT NULL,
+            planner TEXT NOT NULL,
+            policy_version TEXT NOT NULL,
+            tool_budget INTEGER NOT NULL DEFAULT 0,
+            tool_count INTEGER NOT NULL DEFAULT 0,
+            synthetic_data INTEGER NOT NULL DEFAULT 1,
+            metadata_json TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL,
+            completed_at TEXT
+        )
+        """,
+    )
+    _execute_schema(
+        conn,
+        """
+        CREATE TABLE IF NOT EXISTS agent_tool_calls (
+            id TEXT PRIMARY KEY,
+            run_id TEXT NOT NULL,
+            tool_name TEXT NOT NULL,
+            status TEXT NOT NULL,
+            input_hash TEXT NOT NULL,
+            output_hash TEXT,
+            latency_ms DOUBLE,
+            error_code TEXT,
+            created_at TEXT NOT NULL
+        )
+        """,
+    )
+
+    for name, table, columns in [
+        ("idx_agent_runs_actor_created", "agent_runs", "actor_id, created_at"),
+        ("idx_agent_runs_status_created", "agent_runs", "status, created_at"),
+        ("idx_agent_tool_calls_run_created", "agent_tool_calls", "run_id, created_at"),
+    ]:
+        _create_index_if_missing(conn, name, table, columns)
 
 
 MIGRATIONS = (
@@ -187,6 +247,17 @@ MIGRATIONS = (
             "Export participant_minor_safeguards and supervision_request_events for audit retention.",
             "Drop additive indexes/tables only after confirming no pilot records depend on them.",
             "Age/risk/supervision columns are additive and should normally remain during rollback; removing columns is a separate reviewed migration.",
+        ),
+    ),
+    Migration(
+        version="2026_08_07_063",
+        name="engineering_ai_runtime_foundation",
+        apply=_apply_2026_08_07_063,
+        rollback_notes=(
+            "Disable RAG_V2_ENABLED and all Agent execution before rollback.",
+            "Keep embedding columns in place unless a separate destructive migration is approved; legacy vector_json remains valid.",
+            "Export agent_runs and agent_tool_calls if they contain audit evidence before dropping them.",
+            "Agent tables contain hashes/metadata only and must never be repurposed as a participant-text store.",
         ),
     ),
 )
