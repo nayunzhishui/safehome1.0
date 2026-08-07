@@ -69,6 +69,11 @@ def _direct_target_user(actor: dict) -> str:
     return str(payload.get("user_id") or actor["id"])
 
 
+def _actor_may_access_profile_target(actor: dict, owner_user_id: str) -> bool:
+    role = str(actor.get("role") or "")
+    return role in BACKEND_TARGET_ROLES or str(actor.get("id") or "") == str(owner_user_id)
+
+
 @bp.before_app_request
 def enforce_general_minor_processing_gate():
     """Protect ordinary sensitive writes while keeping safety/consent exits open.
@@ -76,6 +81,9 @@ def enforce_general_minor_processing_gate():
     This is a defense-in-depth gate above individual feature routes. It applies
     only in pilot/production enforcement mode and deliberately excludes risk
     checks, family binding, consent/withdrawal and human-support endpoints.
+    Object authorization always happens before a profile owner's safeguard
+    status is evaluated so unauthorized callers cannot infer age/consent state
+    from different safeguard error codes.
     """
 
     if not safeguards_enforced():
@@ -93,10 +101,14 @@ def enforce_general_minor_processing_gate():
         profile_id = _profile_id_from_path(request.path)
         if profile_id:
             try:
-                require_login(allow_legacy_admin=False)
+                actor = require_login(allow_legacy_admin=False)
             except AuthError as exc:
                 return auth_error_response(exc)
             target_user_id = _profile_owner(profile_id)
+            if target_user_id and not _actor_may_access_profile_target(actor, target_user_id):
+                # Preserve the profile route's normal authorization response.
+                # Do not inspect or expose the target's minor-safeguard state.
+                return None
             if target_user_id:
                 capability = "sensitive_text"
 
