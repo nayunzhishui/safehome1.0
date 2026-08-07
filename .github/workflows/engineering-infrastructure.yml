@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - codex/safehome-engineering-ai-upgrade-20260807
+      - codex/safehome-engineering-ai-upgrade-v2-20260807
 
 jobs:
   mysql-redis-runtime:
@@ -100,6 +100,12 @@ jobs:
           backend/tests/test_task31_security_privacy_abuse.py
           backend/tests/test_task38_f25_final_acceptance.py
           backend/tests/test_tasks_23_34_orchestrator.py
+          backend/tests/test_minor_safeguard_input_types_20260807.py
+          backend/tests/test_minor_sensitive_write_gate_20260807.py
+          backend/tests/test_minor_consent_cycle_20260807.py
+          backend/tests/test_minor_profile_scope_privacy_20260807.py
+          backend/tests/test_supervision_contact_privacy_20260807.py
+          backend/tests/test_schema_migration_concurrency_20260807.py
           -q
 
       - name: Non-UI client engineering guard
