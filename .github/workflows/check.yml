@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -22,6 +22,7 @@ jobs:
           python -m pip install -r backend/requirements.txt
           python -m pip install -r analysis/text_analysis/requirements.txt
           python -m pip install -r analysis/profiling/requirements.txt
+          python -m pip check
 
       - name: Inspect release artifact hashes
         run: python backend/scripts/print_release_artifact_hashes.py
