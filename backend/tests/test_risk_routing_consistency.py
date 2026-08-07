@@ -10,6 +10,11 @@ BACKEND_ROOT = PROJECT_ROOT / "backend"
 ADMIN_HEADERS = {"X-Admin-Token": "safehome-local-admin-token"}
 
 
+def _high_signal() -> str:
+    payload = json.loads((PROJECT_ROOT / "content" / "risk_keywords.json").read_text(encoding="utf-8"))
+    return str(payload["categories"][0]["keywords"][0])
+
+
 def _fresh_app(tmp_path):
     sys.path.insert(0, str(BACKEND_ROOT))
     for name in list(sys.modules):
@@ -67,6 +72,7 @@ def test_low_feedback_text_does_not_create_risk_review_record(tmp_path):
 def test_medium_and_high_text_create_risk_review_records(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    signal = _high_signal()
 
     medium = client.post(
         "/api/feedback/generate",
@@ -80,8 +86,8 @@ def test_medium_and_high_text_create_risk_review_records(tmp_path):
         "/api/feedback/generate",
         json={
             "user_id": "risk-high-parent",
-            "event_description": "我不想活了，感觉活不下去。",
-            "behavior": "一直哭。",
+            "event_description": f"当前直接表达：{signal}。",
+            "behavior": "需要人工复核。",
         },
     )
 
@@ -99,6 +105,7 @@ def test_medium_and_high_text_create_risk_review_records(tmp_path):
 def test_high_profile_parent_assessment_and_supervision_use_boundary_routing(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    signal = _high_signal()
     supervision_user_id, supervision_token = _wechat_login(client, "risk-high-supervision")
 
     profile = client.post(
@@ -106,7 +113,7 @@ def test_high_profile_parent_assessment_and_supervision_use_boundary_routing(tmp
         json={
             "user_id": "risk-high-student",
             "scores": {"test_anxiety": 4.2, "iu_score": 4.0, "f_score": 2.8, "self_compassion": 2.7},
-            "free_text": "我不想活了，需要现实支持。",
+            "free_text": f"当前直接表达：{signal}。需要现实支持。",
         },
     )
     parent = client.post(
@@ -114,13 +121,13 @@ def test_high_profile_parent_assessment_and_supervision_use_boundary_routing(tmp
         json={
             "user_id": "risk-high-parent-assessment",
             "answers": _parent_answers(),
-            "question_answers": {"open": "最近撑不住，也出现不想活的念头。"},
+            "question_answers": {"open": f"最近撑不住，也出现{signal}相关表达。"},
         },
     )
     supervision = client.post(
         "/api/supervision",
         headers={"Authorization": f"Bearer {supervision_token}"},
-        json={"user_id": supervision_user_id, "message": "我不想活了，需要人工支持。"},
+        json={"user_id": supervision_user_id, "message": f"当前直接表达：{signal}。需要人工支持。"},
     )
 
     assert profile.status_code == 201
@@ -139,6 +146,7 @@ def test_high_profile_parent_assessment_and_supervision_use_boundary_routing(tmp
 def test_multiple_fields_use_highest_risk_and_quoted_or_negated_text_is_conservative(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
+    signal = _high_signal()
 
     mixed = client.post(
         "/api/feedback/generate",
@@ -146,16 +154,18 @@ def test_multiple_fields_use_highest_risk_and_quoted_or_negated_text_is_conserva
             "user_id": "risk-mixed-parent",
             "event_description": "今天只是普通冲突。",
             "automatic_thought": "最近连续失眠。",
-            "raw_text": "也出现过不想活的念头。",
+            "raw_text": f"也出现过{signal}相关表达。",
         },
     )
-    quoted = client.post("/api/risk/check", json={"text": "孩子引用同学的话：他说“不想活”。"})
-    negated = client.post("/api/risk/check", json={"text": "我没有不想活，只是压力很大。"})
+    quoted = client.post("/api/risk/check", json={"text": f"孩子引用同学的话：他说“{signal}”。"})
+    negated = client.post("/api/risk/check", json={"text": f"我明确否认该表达：没有{signal}，只是压力很大。"})
 
     assert mixed.status_code == 201
     assert mixed.get_json()["data"]["risk_level"] == "high"
     assert mixed.get_json()["data"]["recommended_card_ids"] == []
     assert quoted.status_code == 200
     assert negated.status_code == 200
-    assert quoted.get_json()["data"]["risk_level"] == "high"
-    assert negated.get_json()["data"]["risk_level"] == "high"
+    assert quoted.get_json()["data"]["risk_level"] == "medium"
+    assert quoted.get_json()["data"]["safety_route"] == "human_review"
+    assert negated.get_json()["data"]["risk_level"] == "medium"
+    assert negated.get_json()["data"]["safety_route"] == "human_review"

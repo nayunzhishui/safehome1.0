@@ -33,6 +33,7 @@ def test_production_showcase_opens_cards_and_courses_without_changing_review_sta
     monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
     monkeypatch.setenv("SECRET_KEY", "task18-opening-production-secret")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "task18-opening-admin")
+    monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "1")
     app = __import__("app").app
     client = app.test_client()
 
