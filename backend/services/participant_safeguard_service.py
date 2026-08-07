@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 from config import Config
 from database import get_connection, new_id, now_iso, row_to_dict, write_audit_log
+from services.schema_migration_service import apply_pending_schema_migrations
 
 AGE_BANDS = {"under_14", "14_or_over"}
 PROTECTED_CAPABILITIES = {"assessment", "research", "sensitive_text", "profile"}
@@ -38,10 +39,17 @@ class Eligibility:
 
 
 def safeguards_enforced() -> bool:
-    return bool(getattr(Config, "MINOR_SAFEGUARDS_ENFORCED", False))
+    configured = getattr(Config, "MINOR_SAFEGUARDS_ENFORCED", None)
+    if configured is not None:
+        return bool(configured)
+    return str(getattr(Config, "APP_ENV", "development") or "").strip().lower() in {
+        "pilot",
+        "production",
+    }
 
 
 def _row(conn, user_id: str) -> dict | None:
+    apply_pending_schema_migrations(conn)
     row = conn.execute(
         "SELECT * FROM participant_minor_safeguards WHERE user_id = ?",
         (user_id,),
@@ -50,6 +58,7 @@ def _row(conn, user_id: str) -> dict | None:
 
 
 def _user(conn, user_id: str) -> dict:
+    apply_pending_schema_migrations(conn)
     row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
     if row is None:
         raise ParticipantSafeguardError("user_not_found", "没有找到对应参与者账号。", 404)
@@ -131,6 +140,7 @@ def confirm_age_for_user(
     actor_id: str | None = None,
     allow_under14_upgrade: bool = False,
 ) -> dict:
+    apply_pending_schema_migrations(conn)
     age_band = str(age_band or "").strip()
     if age_band not in AGE_BANDS:
         raise ParticipantSafeguardError(
@@ -219,6 +229,7 @@ def confirm_age_for_user(
 
 
 def attach_guardian_from_family_link(conn, child_user_id: str, guardian_user_id: str) -> dict:
+    apply_pending_schema_migrations(conn)
     user = _user(conn, child_user_id)
     if user.get("role") != "student" or str(user.get("age_band") or "") != "under_14":
         return public_status(conn, child_user_id)
@@ -281,6 +292,7 @@ def _assert_active_family_link(conn, parent_user_id: str, child_user_id: str) ->
 
 
 def record_guardian_consent(conn, parent_user_id: str, child_user_id: str, agreed: bool) -> dict:
+    apply_pending_schema_migrations(conn)
     _assert_active_family_link(conn, parent_user_id, child_user_id)
     user = _user(conn, child_user_id)
     if str(user.get("age_band") or "") != "under_14":
@@ -336,6 +348,7 @@ def record_guardian_consent(conn, parent_user_id: str, child_user_id: str, agree
 
 
 def record_child_assent(conn, child_user_id: str, assented: bool, *, withdraw: bool = False) -> dict:
+    apply_pending_schema_migrations(conn)
     user = _user(conn, child_user_id)
     if user.get("role") != "student" or str(user.get("age_band") or "") != "under_14":
         raise ParticipantSafeguardError("child_assent_not_required", "该账号当前不需要未满14周岁儿童确认。", 400)
@@ -367,6 +380,7 @@ def record_child_assent(conn, child_user_id: str, assented: bool, *, withdraw: b
 
 
 def eligibility_for(conn, user_id: str, capability: str) -> Eligibility:
+    apply_pending_schema_migrations(conn)
     status = public_status(conn, user_id)
     if status.get("role") != "student" or capability not in PROTECTED_CAPABILITIES:
         return Eligibility(True, "not_applicable", status)
