@@ -1,0 +1,33 @@
+{
+  "version": "2026.08-runtime-architecture-v1",
+  "architecture_style": "modular_monolith",
+  "domains": {
+    "participant": {
+      "purpose": "家长/学生直接使用的支持、记录、测评、训练、家庭与隐私能力",
+      "examples": ["auth", "consent", "family", "diaries", "feedback", "assessments", "checkins", "reports", "supervision"]
+    },
+    "research": {
+      "purpose": "研究工作流、关系试点、分析、画像和受控数据使用",
+      "examples": ["research_workspace", "research_analysis", "relationship_pilot", "text_analysis", "computation_contract"]
+    },
+    "safety_governance": {
+      "purpose": "风险分流、内容治理、隐私、安全、可靠性、运营与治疗性评估治理",
+      "examples": ["risk_review", "content_review", "privacy", "security_controls", "reliability", "operations_governance", "therapeutic_assessment"]
+    },
+    "internal_rd": {
+      "purpose": "仅供内部研发与合成研究使用的能力，不直接进入参与者主链",
+      "examples": ["ai_qa", "offline_benchmarks", "integration_test"]
+    }
+  },
+  "runtime_rules": {
+    "new_task_numbered_runtime_modules_forbidden_after_task": 37,
+    "historical_task37_runtime_modules_are_legacy_only": true,
+    "routes_must_not_import_tests_or_migration_scripts": true,
+    "services_must_not_import_tests_or_migration_scripts": true,
+    "task_ids_allowed_in": ["tests", "scripts", "docs", "migration metadata", "compatibility shims"]
+  },
+  "migration_direction": {
+    "task37_contract_service": "computation_contract_service",
+    "task37_contracts_route": "compatibility shim only"
+  }
+}
