@@ -279,7 +279,7 @@ def acknowledge_supervision_request(request_id: str):
         write_audit_log(conn, "supervision_acknowledged", str(actor["id"]), "supervision_request", request_id, {"previous_status": before["status"]})
         conn.commit()
         updated = conn.execute("SELECT * FROM supervision_requests WHERE id = ?", (request_id,)).fetchone()
-    return ok(_public_item(row_to_dict(updated), include_contact=True))
+    return ok(_public_item(row_to_dict(updated)))
 
 
 @bp.post("/<request_id>/reply")
@@ -330,7 +330,7 @@ def reply_supervision_request(request_id: str):
         conn.commit()
         updated = conn.execute("SELECT * FROM supervision_requests WHERE id = ?", (request_id,)).fetchone()
 
-    return ok(_public_item(row_to_dict(updated), include_contact=True))
+    return ok(_public_item(row_to_dict(updated)))
 
 
 @bp.post("/<request_id>/resolve")
@@ -365,4 +365,4 @@ def resolve_supervision_request(request_id: str):
         write_audit_log(conn, "supervision_resolved", str(actor["id"]), "supervision_request", request_id, {"resolution_code": resolution_code})
         conn.commit()
         updated = conn.execute("SELECT * FROM supervision_requests WHERE id = ?", (request_id,)).fetchone()
-    return ok(_public_item(row_to_dict(updated), include_contact=True))
+    return ok(_public_item(row_to_dict(updated)))
