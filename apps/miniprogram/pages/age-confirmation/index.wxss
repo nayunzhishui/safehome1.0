@@ -1,0 +1,101 @@
+.page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 40rpx 32rpx 72rpx;
+  background: #fff7f0;
+  color: #2f3834;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-bottom: 30rpx;
+}
+
+.eyebrow {
+  font-size: 24rpx;
+  color: #607a6f;
+  letter-spacing: 2rpx;
+}
+
+.title {
+  font-size: 44rpx;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.description,
+.card-text,
+.hint,
+.boundary {
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: #66706b;
+}
+
+.card {
+  padding: 34rpx;
+  border-radius: 24rpx;
+  background: #fffdf8;
+  box-shadow: 0 8rpx 28rpx rgba(64, 80, 71, 0.07);
+}
+
+.card-title {
+  display: block;
+  margin-bottom: 20rpx;
+  font-size: 34rpx;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.card-text {
+  display: block;
+  margin-bottom: 26rpx;
+}
+
+.hint {
+  display: block;
+  margin-top: 20rpx;
+  font-size: 25rpx;
+}
+
+.primary-button,
+.secondary-button,
+.text-button {
+  margin-top: 20rpx;
+  min-height: 92rpx;
+  border-radius: 18rpx;
+  font-size: 30rpx;
+}
+
+.primary-button {
+  background: #4f7c6b;
+  color: #ffffff;
+}
+
+.secondary-button {
+  background: #edf3ee;
+  color: #3f6859;
+}
+
+.text-button {
+  background: transparent;
+  color: #4f7c6b;
+}
+
+.error-card {
+  border: 2rpx solid #e4b8aa;
+}
+
+.success-card {
+  border: 2rpx solid #c7ddcf;
+}
+
+.boundary {
+  margin-top: 30rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 18rpx;
+  background: #f4efe8;
+  font-size: 24rpx;
+}
