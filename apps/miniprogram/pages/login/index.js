@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { getMinorSafeguardStatus } = require("../../services/minorSafeguardsApi");
 
 const api = createSafeHomeApi();
 
@@ -19,6 +20,33 @@ function navigateAfterAuth(redirectUrl) {
     return;
   }
   wx.switchTab({ url: "/pages/home/index" });
+}
+
+function needsMinorSafeguardFlow(status) {
+  if (!status) return true;
+  if (status.age_verification_required) return true;
+  if (!status.minor_safeguards_required) return false;
+  return status.status !== "active";
+}
+
+function navigateAfterParticipantGate(user, redirectUrl) {
+  if (!user || user.role !== "student") {
+    navigateAfterAuth(redirectUrl);
+    return;
+  }
+  getMinorSafeguardStatus()
+    .then((status) => {
+      if (needsMinorSafeguardFlow(status)) {
+        wx.redirectTo({ url: "/pages/age-confirmation/index" });
+        return;
+      }
+      navigateAfterAuth(redirectUrl);
+    })
+    .catch(() => {
+      // For a student account, fail toward the protection flow. The page can
+      // show a retry state without exposing protected functions.
+      wx.redirectTo({ url: "/pages/age-confirmation/index" });
+    });
 }
 
 Page({
@@ -109,7 +137,7 @@ Page({
       return;
     }
     wx.showToast({ title: toastTitle, icon: "success" });
-    navigateAfterAuth(this.data.redirectUrl);
+    navigateAfterParticipantGate(result.user, this.data.redirectUrl);
   },
 
   onCurrentPasswordInput(event) {
@@ -141,7 +169,7 @@ Page({
         const app = getApp();
         if (app && app.setAuthSession) app.setAuthSession(result.token, result.user);
         wx.showToast({ title: "密码已更新", icon: "success" });
-        navigateAfterAuth(this.data.redirectUrl);
+        navigateAfterParticipantGate(result.user, this.data.redirectUrl);
       })
       .catch((error) => {
         this.setData({ status: "error", message: error.message || "密码更新失败，请检查后重试。" });
