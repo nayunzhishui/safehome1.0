@@ -45,7 +45,6 @@ function request(path, method = "GET", data = {}) {
     }
     wx.cloud.callContainer({
       config: { env: cloudConfig.cloudEnvId },
-      service: cloudConfig.containerService,
       path,
       method,
       data,
