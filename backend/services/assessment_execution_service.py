@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict
 from services.assessment_profile_position_store import backfill_profile_position
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
+from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
 from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
@@ -13,10 +14,12 @@ from services.training_recommendation_service import evaluate_training_rules, fl
 class AssessmentSubmissionError(ValueError):
     """A client-visible assessment answer validation failure."""
 
-    def __init__(self, code: str, message: str):
+    def __init__(self, code: str, message: str, status: int = 400, details: dict | None = None):
         super().__init__(message)
         self.code = code
         self.message = message
+        self.status = status
+        self.details = details or {}
 
 
 @dataclass(frozen=True)
@@ -38,6 +41,11 @@ def submit_assessment(
 ) -> dict:
     """Validate, score, risk-check, save, profile, and recommend in one module."""
 
+    try:
+        minor_safeguards = assert_participant_capability(user_id, "assessment")
+    except ParticipantSafeguardError as exc:
+        raise AssessmentSubmissionError(exc.code, exc.message, exc.status, exc.details) from exc
+
     execution = execute_assessment(worksheet, submitted_answers)
     answers = execution.answers
     scores = execution.scores
@@ -46,6 +54,7 @@ def submit_assessment(
     if risk_result:
         scores["risk"] = {
             "risk_level": risk_result.get("risk_level"),
+            "safety_route": risk_result.get("safety_route"),
             "requires_review": risk_result.get("requires_review"),
             "allow_recommended_training_cards": risk_result.get("allow_recommended_training_cards"),
         }
@@ -66,7 +75,7 @@ def submit_assessment(
             ).fetchone()
         if existing is not None:
             if existing["worksheet_id"] != worksheet["id"] or json_loads(existing["answers_json"], []) != answers:
-                raise AssessmentSubmissionError("idempotency_conflict", "该提交标识已用于另一份测评记录。")
+                raise AssessmentSubmissionError("idempotency_conflict", "该提交标识已用于另一份测评记录。", 409)
             row = existing
             replayed = True
         else:
@@ -135,6 +144,7 @@ def submit_assessment(
     result["recommended_card_ids"] = recommended_card_ids
     result["training_recommendation_rules"] = training_rules
     result["risk"] = risk_result
+    result["minor_safeguards"] = minor_safeguards
     result["boundary_notice"] = worksheet.get("boundary_notice")
     result["result_disclaimer"] = worksheet.get("result_disclaimer")
     result["idempotency_replayed"] = replayed
