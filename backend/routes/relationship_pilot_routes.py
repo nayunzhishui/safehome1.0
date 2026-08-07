@@ -12,9 +12,9 @@ from routes.auth_utils import (
     elevate_actor_for_showcase_researcher_platform,
     require_capability,
     require_login,
-    require_role,
 )
 from routes.utils import fail, ok
+from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability
 from services.relationship_enrollment_service import create_enrollment, get_enrollment, list_enrollments
 from services.relationship_growth_service import create_longitudinal_entry, get_growth, researcher_dashboard
 from services.relationship_pilot_common import RelationshipPilotError, ServiceResult
@@ -41,6 +41,18 @@ def _researcher(capability_id: str):
         return None, auth_error_response(exc)
 
 
+def _participant_research_guard(actor: dict):
+    """Apply the ordinary participant safeguard even if showcase changes role."""
+    participant_role = str(actor.get("original_role") or actor.get("role") or "")
+    if participant_role != "student":
+        return None
+    try:
+        assert_participant_capability(str(actor["id"]), "research")
+    except ParticipantSafeguardError as exc:
+        return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
+    return None
+
+
 def _respond(callable_, *args, **kwargs):
     try:
         result: ServiceResult = callable_(*args, **kwargs)
@@ -58,6 +70,9 @@ def create_enrollment_route():
     actor, error = _actor()
     if error:
         return error
+    guard_error = _participant_research_guard(actor)
+    if guard_error:
+        return guard_error
     return _respond(create_enrollment, actor, request.get_json(silent=True) or {})
 
 
@@ -106,6 +121,9 @@ def save_hypothesis_feedback_route(report_id: str, hypothesis_index: int):
     actor, error = _actor()
     if error:
         return error
+    guard_error = _participant_research_guard(actor)
+    if guard_error:
+        return guard_error
     response = str((request.get_json(silent=True) or {}).get("response") or "").strip()
     return _respond(save_hypothesis_feedback, actor, report_id, hypothesis_index, response)
 
@@ -139,6 +157,9 @@ def create_task_route(enrollment_id: str):
     actor, error = _actor()
     if error:
         return error
+    guard_error = _participant_research_guard(actor)
+    if guard_error:
+        return guard_error
     return _respond(
         create_task,
         actor,
@@ -153,6 +174,9 @@ def create_longitudinal_entry_route(enrollment_id: str):
     actor, error = _actor()
     if error:
         return error
+    guard_error = _participant_research_guard(actor)
+    if guard_error:
+        return guard_error
     return _respond(
         create_longitudinal_entry,
         actor,
