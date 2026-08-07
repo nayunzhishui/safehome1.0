@@ -59,7 +59,7 @@ jobs:
         run: python -m pytest backend/tests/test_task37_c08_ai_quality.py -q
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
           cache: npm
@@ -68,6 +68,10 @@ jobs:
       - name: Install web dependencies
         working-directory: apps/web
         run: npm ci
+
+      - name: Audit web dependencies
+        working-directory: apps/web
+        run: npm audit --audit-level=high
 
       - name: Typecheck web
         working-directory: apps/web
