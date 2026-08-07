@@ -2,6 +2,7 @@ const { createSafeHomeApi } = require("../../services/api");
 const { getMinorSafeguardStatus } = require("../../services/minorSafeguardsApi");
 
 const api = createSafeHomeApi();
+const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function normalizeRedirect(rawRedirect) {
   if (!rawRedirect) return "";
@@ -37,7 +38,7 @@ function navigateAfterParticipantGate(user, redirectUrl) {
   getMinorSafeguardStatus()
     .then((status) => {
       if (needsMinorSafeguardFlow(status)) {
-        wx.redirectTo({ url: "/pages/age-confirmation/index" });
+        wx.redirectTo({ url: PROTECTION_URL });
         return;
       }
       navigateAfterAuth(redirectUrl);
@@ -45,7 +46,7 @@ function navigateAfterParticipantGate(user, redirectUrl) {
     .catch(() => {
       // For a student account, fail toward the protection flow. The page can
       // show a retry state without exposing protected functions.
-      wx.redirectTo({ url: "/pages/age-confirmation/index" });
+      wx.redirectTo({ url: PROTECTION_URL });
     });
 }
 
