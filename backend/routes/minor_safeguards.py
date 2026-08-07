@@ -21,6 +21,20 @@ def _error(exc: ParticipantSafeguardError):
     return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
 
 
+def _strict_bool(payload: dict, field: str, *, default=None):
+    if field not in payload:
+        return default
+    value = payload.get(field)
+    if type(value) is not bool:
+        raise ParticipantSafeguardError(
+            "invalid_boolean",
+            f"{field} 必须是 JSON 布尔值 true 或 false。",
+            400,
+            {"field": field},
+        )
+    return value
+
+
 @bp.get("/status")
 def status():
     try:
@@ -91,8 +105,8 @@ def guardian_consent():
     child_user_id = str(payload.get("child_user_id") or "").strip()
     if not child_user_id or "agreed" not in payload:
         return fail("missing_fields", "需要 child_user_id 和 agreed。", status=400)
-    agreed = payload.get("agreed") is True
     try:
+        agreed = _strict_bool(payload, "agreed")
         with get_connection() as conn:
             apply_pending_schema_migrations(conn)
             result = record_guardian_consent(conn, str(actor["id"]), child_user_id, agreed)
@@ -110,16 +124,18 @@ def child_assent():
         return auth_error_response(exc)
 
     payload = request.get_json(silent=True) or {}
-    if "assented" not in payload and not payload.get("withdraw"):
-        return fail("missing_fields", "需要 assented 或 withdraw。", status=400)
     try:
+        assented = _strict_bool(payload, "assented")
+        withdraw = _strict_bool(payload, "withdraw", default=False)
+        if not withdraw and assented is None:
+            return fail("missing_fields", "需要 assented 或 withdraw=true。", status=400)
         with get_connection() as conn:
             apply_pending_schema_migrations(conn)
             result = record_child_assent(
                 conn,
                 str(actor["id"]),
-                bool(payload.get("assented")),
-                withdraw=bool(payload.get("withdraw")),
+                bool(assented) if assented is not None else False,
+                withdraw=withdraw,
             )
             conn.commit()
             return ok(result)
