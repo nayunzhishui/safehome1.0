@@ -76,3 +76,6 @@ jobs:
           REDIS_ENABLED: "0"
           RAG_EMBEDDING_PROVIDER: hash
         run: python -m pytest backend/tests/test_engineering_ai_runtime_20260807.py -q
+
+      - name: Non-UI client engineering guard
+        run: python scripts/audit_non_ui_client_engineering.py
