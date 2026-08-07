@@ -30,10 +30,9 @@ def _error(exc: ParticipantSafeguardError):
     return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
 
 
-def _strict_bool(payload: dict, field: str, *, default=None):
-    if field not in payload:
+def _strict_bool_value(value, field: str, *, present: bool = True, default=None):
+    if not present:
         return default
-    value = payload.get(field)
     if type(value) is not bool:
         raise ParticipantSafeguardError(
             "invalid_boolean",
@@ -44,13 +43,16 @@ def _strict_bool(payload: dict, field: str, *, default=None):
     return value
 
 
-def _profile_owner_from_path(path: str) -> str | None:
+def _profile_id_from_path(path: str) -> str | None:
     parts = [part for part in path.split("/") if part]
     if len(parts) != 4 or parts[0] != "api" or parts[1] != "profile-results":
         return None
     if parts[3] not in PROFILE_TEXT_WRITE_SUFFIXES:
         return None
-    profile_id = parts[2]
+    return parts[2]
+
+
+def _profile_owner(profile_id: str) -> str | None:
     with get_connection() as conn:
         apply_pending_schema_migrations(conn)
         row = conn.execute(
@@ -88,13 +90,15 @@ def enforce_general_minor_processing_gate():
             return auth_error_response(exc)
         target_user_id = _direct_target_user(actor)
     elif request.method == "POST":
-        target_user_id = _profile_owner_from_path(request.path)
-        if target_user_id:
-            capability = "sensitive_text"
+        profile_id = _profile_id_from_path(request.path)
+        if profile_id:
             try:
                 require_login(allow_legacy_admin=False)
             except AuthError as exc:
                 return auth_error_response(exc)
+            target_user_id = _profile_owner(profile_id)
+            if target_user_id:
+                capability = "sensitive_text"
 
     if not capability or not target_user_id:
         return None
@@ -176,7 +180,11 @@ def guardian_consent():
     if not child_user_id or "agreed" not in payload:
         return fail("missing_fields", "需要 child_user_id 和 agreed。", status=400)
     try:
-        agreed = _strict_bool(payload, "agreed")
+        agreed = _strict_bool_value(
+            payload.get("agreed"),
+            "agreed",
+            present="agreed" in payload,
+        )
         with get_connection() as conn:
             apply_pending_schema_migrations(conn)
             result = record_guardian_consent(conn, str(actor["id"]), child_user_id, agreed)
@@ -195,12 +203,27 @@ def child_assent():
 
     payload = request.get_json(silent=True) or {}
     try:
-        assented = _strict_bool(payload, "assented")
-        withdraw = _strict_bool(payload, "withdraw", default=False)
+        assented = _strict_bool_value(
+            payload.get("assented"),
+            "assented",
+            present="assented" in payload,
+        )
+        withdraw = _strict_bool_value(
+            payload.get("withdraw"),
+            "withdraw",
+            present="withdraw" in payload,
+            default=False,
+        )
         if not withdraw and assented is None:
             return fail("missing_fields", "需要 assented 或 withdraw=true。", status=400)
         with get_connection() as conn:
             apply_pending_schema_migrations(conn)
+            if assented is True and not withdraw:
+                current = public_status(conn, str(actor["id"]))
+                if not current.get("guardian_linked"):
+                    return fail("guardian_link_required", "未满14岁参与者需要先完成监护人绑定。", status=403)
+                if current.get("guardian_consent_status") != "active":
+                    return fail("guardian_consent_required", "需要监护人先完成单独同意。", status=403)
             result = record_child_assent(
                 conn,
                 str(actor["id"]),
