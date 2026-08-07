@@ -12,6 +12,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 $CodexTmp = Join-Path $Root ".codex_tmp"
 $StagingRoot = Join-Path $CodexTmp "task9-cloudbase-package"
 $SourceArchive = Join-Path $CodexTmp "task9-source-head.zip"
+$FingerprintScript = Join-Path $Root "scripts/generate_build_fingerprint.py"
 . (Join-Path $PSScriptRoot "cloudbase_package_source.ps1")
 
 if ([string]::IsNullOrWhiteSpace($PackageLabel) -or $PackageLabel -match "[`r`n]") {
@@ -130,8 +131,9 @@ try {
   Rename-CloudBaseProfileModels -SourceRoot $StagingRoot
 
   $buildTime = (Get-Date).ToUniversalTime().ToString("o")
+  Assert-Exists $FingerprintScript
   Invoke-Native "python" @(
-    "scripts\generate_build_fingerprint.py",
+    $FingerprintScript,
     "--root", $StagingRoot,
     "--output", (Join-Path $StagingRoot "backend\build_info.json"),
     "--commit-sha", $head,
