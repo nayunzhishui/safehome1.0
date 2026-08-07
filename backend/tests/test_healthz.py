@@ -28,10 +28,11 @@ def test_healthz_returns_lightweight_status_without_secret(tmp_path, monkeypatch
 
     assert response.status_code == 200
     data = response.get_json()
+    app_module = importlib.import_module("app")
     assert data["ok"] is True
     assert data["service"] == "safehome-backend"
     assert data["env"] == "development"
-    assert data["version"] == "safehome-2026-07-10-task12-login"
+    assert data["version"] == app_module.SERVICE_VERSION
     assert "test-secret-token" not in response.get_data(as_text=True)
 
 
