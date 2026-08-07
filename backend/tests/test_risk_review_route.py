@@ -7,6 +7,12 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_ROOT = PROJECT_ROOT / "backend"
 ADMIN_HEADERS = {"X-Admin-Token": "safehome-local-admin-token"}
+LEGACY_ADMIN_ACTOR_ID = "admin-token"
+
+
+def _high_signal() -> str:
+    payload = json.loads((PROJECT_ROOT / "content" / "risk_keywords.json").read_text(encoding="utf-8"))
+    return str(payload["categories"][0]["keywords"][0])
 
 
 def _fresh_app(tmp_path, monkeypatch):
@@ -32,13 +38,14 @@ def _wechat_login(client, code: str):
 def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    signal = _high_signal()
 
     feedback_response = client.post(
         "/api/feedback/generate",
         json={
             "user_id": "parent-risk-review",
-            "event_description": "我不想活了，感觉撑不下去。",
-            "behavior": "一直哭",
+            "event_description": f"当前直接表达：{signal}。",
+            "behavior": "需要人工复核",
         },
     )
 
@@ -56,7 +63,6 @@ def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_pat
     update_response = client.post(
         f"/api/risk-review/{review['id']}/review",
         json={
-            "reviewer_id": "teacher-1",
             "review_status": "follow_up_needed",
             "review_note": "建议人工进一步确认现实支持资源。",
             "action_taken": "已提醒人工跟进现实支持资源",
@@ -68,7 +74,7 @@ def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_pat
     assert update_response.status_code == 200
     updated = update_response.get_json()["data"]
     assert updated["review_status"] == "follow_up_needed"
-    assert updated["reviewer_id"] == "teacher-1"
+    assert updated["reviewer_id"] == LEGACY_ADMIN_ACTOR_ID
     assert updated["action_taken"] == "已提醒人工跟进现实支持资源"
     assert updated["closed_reason"] == "暂不关闭"
 
@@ -76,11 +82,12 @@ def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_pat
 
     with database.get_connection() as conn:
         audit = conn.execute(
-            "SELECT metadata_json FROM audit_logs WHERE action = 'review_risk' AND target_id = ?",
+            "SELECT actor_id, metadata_json FROM audit_logs WHERE action = 'review_risk' AND target_id = ?",
             (review["id"],),
         ).fetchone()
 
     assert audit is not None
+    assert audit["actor_id"] == LEGACY_ADMIN_ACTOR_ID
     metadata = json.loads(audit["metadata_json"])
     assert metadata["source_type"] == "feedback"
     assert metadata["action_taken"] == "已提醒人工跟进现实支持资源"
@@ -90,6 +97,7 @@ def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_pat
 def test_high_risk_profile_creates_pending_risk_review(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    signal = _high_signal()
 
     profile_response = client.post(
         "/api/profile",
@@ -101,7 +109,7 @@ def test_high_risk_profile_creates_pending_risk_review(tmp_path, monkeypatch):
                 "f_score": 2.8,
                 "self_compassion": 2.7,
             },
-            "free_text": "我最近不想活，需要现实中的可信成年人帮助。",
+            "free_text": f"当前直接表达：{signal}。需要现实支持。",
         },
     )
 
@@ -119,6 +127,7 @@ def test_high_risk_profile_creates_pending_risk_review(tmp_path, monkeypatch):
 def test_followup_and_sandplay_high_risk_text_create_pending_reviews(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    signal = _high_signal()
 
     profile_response = client.post(
         "/api/profile",
@@ -137,14 +146,14 @@ def test_followup_and_sandplay_high_risk_text_create_pending_reviews(tmp_path, m
 
     followup_response = client.post(
         f"/api/profile-results/{profile_id}/followups",
-        json={"user_id": "student-followup-risk", "round_no": 1, "text": "最近又出现不想活的念头，需要现实支持。"},
+        json={"user_id": "student-followup-risk", "round_no": 1, "text": f"最近又出现{signal}相关表达，需要现实支持。"},
     )
     sandplay_response = client.post(
         f"/api/profile-results/{profile_id}/sandplay",
         json={
             "user_id": "student-followup-risk",
             "scene": {"symbols": [{"type": "stone", "x": 30, "y": 40}]},
-            "reflection_text": "我觉得撑不住，也不想活了。",
+            "reflection_text": f"当前直接表达：{signal}。",
         },
     )
 
@@ -163,12 +172,13 @@ def test_followup_and_sandplay_high_risk_text_create_pending_reviews(tmp_path, m
 def test_supervision_high_risk_message_creates_pending_review(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    signal = _high_signal()
     user_id, token = _wechat_login(client, "parent-supervision-risk")
 
     response = client.post(
         "/api/supervision",
         headers={"Authorization": f"Bearer {token}"},
-        json={"user_id": user_id, "message": "我不想活了，需要人工支持。"},
+        json={"user_id": user_id, "message": f"当前直接表达：{signal}。需要人工支持。"},
     )
 
     assert response.status_code == 201
@@ -196,6 +206,7 @@ def _parent_answers() -> dict:
 def test_parent_assessment_open_text_high_risk_creates_pending_review(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    signal = _high_signal()
 
     response = client.post(
         "/api/parent-assessments",
@@ -208,7 +219,7 @@ def test_parent_assessment_open_text_high_risk_creates_pending_review(tmp_path, 
                 "q3": "early",
                 "q4": "balanced",
                 "q5": "some",
-                "q6": "最近压力很大，出现过不想活的念头。",
+                "q6": f"最近压力很大，出现过{signal}相关表达。",
                 "q7": "clear",
                 "q8": "pause",
             },
