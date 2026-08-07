@@ -18,6 +18,9 @@ from services.embedding_service import EmbeddingError, embed_text, embedding_mod
 from services.redis_service import get_json, set_json
 
 
+HASH_MODEL = "safehome-hash-96-v1"
+
+
 def _int(name: str, default: int, minimum: int, maximum: int) -> int:
     try:
         value = int(os.environ.get(name, str(default)))
@@ -72,28 +75,54 @@ def _bm25_scores(rows: list[dict], query_terms: list[str]) -> dict[str, float]:
     return scores
 
 
-def _stored_embedding(item: dict) -> list[float] | None:
-    raw = item.get("embedding_json")
-    if raw:
-        try:
-            values = json.loads(raw) if isinstance(raw, str) else raw
-            if isinstance(values, list) and values:
-                return [float(value) for value in values]
-        except (TypeError, ValueError, json.JSONDecodeError):
-            return None
+def _legacy_vector(item: dict) -> list[float] | None:
     values = item.get("vector")
     return [float(value) for value in values] if isinstance(values, list) and values else None
 
 
-def _query_vector(query: str, rows: list[dict]) -> tuple[list[float], str, bool]:
-    has_external_embeddings = any(str(item.get("embedding_model") or "").strip() for item in rows)
-    if has_external_embeddings:
+def _external_embedding(item: dict, query_model: str, query_dimensions: int) -> list[float] | None:
+    if query_model == HASH_MODEL:
+        return None
+    if str(item.get("embedding_model") or "").strip() != query_model:
+        return None
+    try:
+        dimensions = int(item.get("embedding_dimensions") or 0)
+    except (TypeError, ValueError):
+        return None
+    if dimensions != query_dimensions:
+        return None
+    raw = item.get("embedding_json")
+    if not raw:
+        return None
+    try:
+        values = json.loads(raw) if isinstance(raw, str) else raw
+        if isinstance(values, list) and len(values) == query_dimensions:
+            return [float(value) for value in values]
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return None
+    return None
+
+
+def _query_vector(query: str) -> tuple[list[float], str, bool]:
+    status = embedding_status()
+    if status["provider"] != "hash":
         try:
-            return embed_text(query), embedding_model(), False
+            values = embed_text(query)
+            return values, embedding_model(), False
         except EmbeddingError:
             pass
     terms = legacy._terms(query)
-    return [float(value) for value in legacy._vector(terms)], "safehome-hash-96-v1", True
+    return [float(value) for value in legacy._vector(terms)], HASH_MODEL, status["provider"] != "hash"
+
+
+def _vector_for_item(item: dict, query_model: str, query_dimensions: int) -> tuple[list[float] | None, str]:
+    external = _external_embedding(item, query_model, query_dimensions)
+    if external is not None:
+        return external, query_model
+    legacy_vector = _legacy_vector(item)
+    if legacy_vector is not None and query_model == HASH_MODEL:
+        return legacy_vector, HASH_MODEL
+    return None, "unavailable"
 
 
 def _rerank(query: str, query_terms: list[str], item: dict) -> float:
@@ -107,8 +136,10 @@ def _rerank(query: str, query_terms: list[str], item: dict) -> float:
     return min(1.0, heading_overlap * 0.7 + phrase_bonus + source_bonus)
 
 
-def _cache_key(query: str, audience: str, snapshot_hash: str, limit: int) -> str:
-    digest = hashlib.sha256(f"{query}|{audience}|{snapshot_hash}|{limit}|rag-v2".encode("utf-8")).hexdigest()
+def _cache_key(query: str, audience: str, snapshot_hash: str, limit: int, method: str, query_model: str) -> str:
+    digest = hashlib.sha256(
+        f"{query}|{audience}|{snapshot_hash}|{limit}|{method}|{query_model}|rag-v2".encode("utf-8")
+    ).hexdigest()
     return f"rag:v2:{digest}"
 
 
@@ -137,7 +168,8 @@ def retrieve_published_content_v2(
     rows = legacy._active_rows(audience)
     query_terms = legacy._terms(query)
     snapshot_hash = legacy._knowledge_snapshot(rows)
-    cache_key = _cache_key(query, audience, snapshot_hash, limit)
+    query_vector, query_model, embedding_fallback = _query_vector(query)
+    cache_key = _cache_key(query, audience, snapshot_hash, limit, method, query_model)
     cached = get_json(cache_key)
     if isinstance(cached, dict):
         cached["cache"] = "redis_hit"
@@ -157,13 +189,14 @@ def retrieve_published_content_v2(
     bm25 = _bm25_scores(rows, query_terms)
     lexical_rank = sorted(bm25, key=lambda item_id: (bm25[item_id], item_id), reverse=True)[: cfg["lexical_top_k"]]
 
-    query_vector, query_model, embedding_fallback = _query_vector(query, rows)
-    vector_scores = {}
+    vector_scores: dict[str, float] = {}
+    vector_models: dict[str, str] = {}
     for item in rows:
-        vector = _stored_embedding(item)
+        vector, model_used = _vector_for_item(item, query_model, len(query_vector))
         score = _cosine(query_vector, vector or [])
         if score > 0:
             vector_scores[item["id"]] = score
+            vector_models[item["id"]] = model_used
     vector_rank = sorted(vector_scores, key=lambda item_id: (vector_scores[item_id], item_id), reverse=True)[: cfg["vector_top_k"]]
 
     if method == "bm25":
@@ -223,7 +256,7 @@ def retrieve_published_content_v2(
                 "audiences": item["audiences"],
                 "package_hash": item.get("package_hash"),
                 "retrieval_method": "rag_v2_rrf",
-                "embedding_model": item.get("embedding_model") or query_model,
+                "embedding_model": vector_models.get(item_id, "not_used"),
                 "scores": {
                     "bm25": round(bm25.get(item_id, 0.0), 6),
                     "vector": round(vector_scores.get(item_id, 0.0), 6),
@@ -244,7 +277,13 @@ def retrieve_published_content_v2(
         "requested_method": method,
         "evidence_status": "sufficient" if citations else "insufficient",
         "audience": audience,
-        "embedding": {**embedding_status(), "query_model": query_model, "fallback_used": embedding_fallback},
+        "embedding": {
+            **embedding_status(),
+            "query_model": query_model,
+            "query_dimensions": len(query_vector),
+            "fallback_used": embedding_fallback,
+            "compatible_vector_chunks": len(vector_scores),
+        },
         "pipeline": cfg,
         "cache": "miss",
     }
