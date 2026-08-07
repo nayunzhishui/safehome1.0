@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - codex/safehome-dependency-governance-20260807
+  pull_request:
 
 jobs:
   audit:
