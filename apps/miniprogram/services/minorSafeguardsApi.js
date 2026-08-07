@@ -21,7 +21,7 @@ function request(path, method = "GET", data = {}) {
       const error = payload.error || {};
       reject({
         code: error.code || "minor_safeguard_error",
-        message: error.message || "年龄保护设置暂未完成，请稍后重试。",
+        message: error.message || "参与者保护设置暂未完成，请稍后重试。",
         status: res.statusCode || 0,
         details: error.details || null,
       });
@@ -62,6 +62,12 @@ module.exports = {
   },
   listFamilyMembers() {
     return request("/api/family/members");
+  },
+  createFamilyBindCode(relationLabel = "家长") {
+    return request("/api/family/create-bind-code", "POST", { relation_label: relationLabel });
+  },
+  bindStudent(bindCode) {
+    return request("/api/family/bind-student", "POST", { bind_code: String(bindCode || "").trim() });
   },
   confirmAge(ageBand) {
     return request("/api/minor-safeguards/age-confirmation", "POST", { age_band: ageBand });
