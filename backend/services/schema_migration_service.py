@@ -17,6 +17,9 @@ from typing import Callable
 
 from database import ensure_column, mysqlize_schema_statement, now_iso
 
+MYSQL_MIGRATION_LOCK_NAME = "safehome_explicit_schema_migrations"
+MYSQL_MIGRATION_LOCK_TIMEOUT_SECONDS = 15
+
 
 @dataclass(frozen=True)
 class Migration:
@@ -83,6 +86,26 @@ def _record(conn, migration: Migration) -> None:
             """,
             (migration.version, migration.name, rollback_json, now_iso()),
         )
+
+
+def _acquire_mysql_migration_lock(conn) -> None:
+    row = conn.execute(
+        "SELECT GET_LOCK(?, ?) AS acquired",
+        (MYSQL_MIGRATION_LOCK_NAME, MYSQL_MIGRATION_LOCK_TIMEOUT_SECONDS),
+    ).fetchone()
+    acquired = row["acquired"] if row is not None else None
+    if acquired not in {1, True, "1"}:
+        raise RuntimeError(
+            "Could not acquire the SafeHome MySQL schema migration lock within "
+            f"{MYSQL_MIGRATION_LOCK_TIMEOUT_SECONDS} seconds."
+        )
+
+
+def _release_mysql_migration_lock(conn) -> None:
+    conn.execute(
+        "SELECT RELEASE_LOCK(?) AS released",
+        (MYSQL_MIGRATION_LOCK_NAME,),
+    ).fetchone()
 
 
 def _apply_2026_08_07_062(conn) -> None:
@@ -192,17 +215,47 @@ MIGRATIONS = (
 )
 
 
-def apply_pending_schema_migrations(conn) -> list[str]:
-    """Apply all known migrations in version order and return applied versions."""
-    applied: list[str] = []
+def _pending_migrations(conn) -> list[Migration]:
     _ensure_registry(conn)
-    for migration in sorted(MIGRATIONS, key=lambda item: item.version):
-        if _applied(conn, migration.version):
-            continue
-        migration.apply(conn)
-        _record(conn, migration)
-        applied.append(migration.version)
-    return applied
+    return [
+        migration
+        for migration in sorted(MIGRATIONS, key=lambda item: item.version)
+        if not _applied(conn, migration.version)
+    ]
+
+
+def apply_pending_schema_migrations(conn) -> list[str]:
+    """Apply all known migrations in version order and return applied versions.
+
+    MySQL deployments use a named advisory lock only when work is pending. This
+    prevents two CloudBase/Gunicorn instances from racing on additive columns or
+    the check-then-create index sequence during a rolling start. The migration
+    record is still written only after the migration body completes.
+    """
+
+    pending = _pending_migrations(conn)
+    if not pending:
+        return []
+
+    mysql_locked = False
+    if _provider(conn) == "mysql":
+        _acquire_mysql_migration_lock(conn)
+        mysql_locked = True
+
+    applied: list[str] = []
+    try:
+        # Another instance may have completed the migration while this
+        # connection was waiting for the advisory lock, so re-check each item.
+        for migration in pending:
+            if _applied(conn, migration.version):
+                continue
+            migration.apply(conn)
+            _record(conn, migration)
+            applied.append(migration.version)
+        return applied
+    finally:
+        if mysql_locked:
+            _release_mysql_migration_lock(conn)
 
 
 def migration_manifest() -> list[dict]:
