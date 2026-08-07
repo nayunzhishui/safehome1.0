@@ -31,7 +31,19 @@ def update_review(review_id: str):
         return auth_error_response(exc)
 
     payload = request.get_json(silent=True) or {}
-    reviewer_id = str(payload.get("reviewer_id") or actor["id"])
+    # Security invariant: the reviewer/audit actor always comes from the
+    # authenticated session.  A client-supplied reviewer_id can never select
+    # the audit identity.  Keep a strict compatibility check so stale clients
+    # fail visibly instead of silently attributing work to another person.
+    supplied_reviewer_id = str(payload.get("reviewer_id") or "").strip()
+    authenticated_reviewer_id = str(actor["id"])
+    if supplied_reviewer_id and supplied_reviewer_id != authenticated_reviewer_id:
+        return fail(
+            "reviewer_identity_mismatch",
+            "复核人身份必须与当前登录账号一致。",
+            status=403,
+        )
+
     review_status = str(payload.get("review_status") or "reviewed")
     review_note = payload.get("review_note") or payload.get("note")
     action_taken = payload.get("action_taken")
@@ -42,7 +54,8 @@ def update_review(review_id: str):
             row = update_risk_review_record(
                 conn,
                 review_id=review_id,
-                reviewer_id=reviewer_id,
+                reviewer_id=authenticated_reviewer_id,
+                reviewer_role=str(actor.get("role") or "supervisor"),
                 review_status=review_status,
                 review_note=review_note,
                 action_taken=action_taken,
