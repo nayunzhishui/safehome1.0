@@ -1,9 +1,13 @@
 """Explicit additive schema migrations introduced after the legacy ensure_column era.
 
-The project historically evolved schema through `ensure_schema_columns()`.  That
-mechanism remains for backwards compatibility, but new production-facing
-changes should be represented as named migrations with an idempotent apply
-function and a documented rollback plan.  Rollbacks are never run on startup.
+The historical `schema_migrations` table is also used by SafeHome readiness
+checks as a single legacy schema-version marker.  New migrations therefore use
+`explicit_schema_migrations` so adding a migration cannot accidentally make an
+otherwise healthy deployment fail `/readyz` merely because the legacy marker
+has not been bumped in `database.py`.
+
+Migrations are additive, idempotent and carry a reviewed rollback plan.
+Rollbacks are never executed automatically on startup.
 """
 
 from __future__ import annotations
@@ -30,29 +34,54 @@ def _execute_schema(conn, statement: str) -> None:
     conn.execute(mysqlize_schema_statement(statement) if _provider(conn) == "mysql" else statement)
 
 
+def _ensure_registry(conn) -> None:
+    _execute_schema(
+        conn,
+        """
+        CREATE TABLE IF NOT EXISTS explicit_schema_migrations (
+            version TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            rollback_notes_json TEXT NOT NULL DEFAULT '[]',
+            applied_at TEXT NOT NULL
+        )
+        """,
+    )
+
+
 def _applied(conn, version: str) -> bool:
-    row = conn.execute("SELECT version FROM schema_migrations WHERE version = ?", (version,)).fetchone()
+    _ensure_registry(conn)
+    row = conn.execute(
+        "SELECT version FROM explicit_schema_migrations WHERE version = ?",
+        (version,),
+    ).fetchone()
     return row is not None
 
 
 def _record(conn, migration: Migration) -> None:
+    import json
+
+    _ensure_registry(conn)
+    rollback_json = json.dumps(list(migration.rollback_notes), ensure_ascii=False)
     if _provider(conn) == "mysql":
         conn.execute(
             """
-            INSERT INTO schema_migrations (version, name, applied_at)
-            VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE name = VALUES(name)
+            INSERT INTO explicit_schema_migrations (version, name, rollback_notes_json, applied_at)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                name = VALUES(name), rollback_notes_json = VALUES(rollback_notes_json)
             """,
-            (migration.version, migration.name, now_iso()),
+            (migration.version, migration.name, rollback_json, now_iso()),
         )
     else:
         conn.execute(
             """
-            INSERT INTO schema_migrations (version, name, applied_at)
-            VALUES (?, ?, ?)
-            ON CONFLICT(version) DO UPDATE SET name = excluded.name
+            INSERT INTO explicit_schema_migrations (version, name, rollback_notes_json, applied_at)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(version) DO UPDATE SET
+                name = excluded.name,
+                rollback_notes_json = excluded.rollback_notes_json
             """,
-            (migration.version, migration.name, now_iso()),
+            (migration.version, migration.name, rollback_json, now_iso()),
         )
 
 
@@ -125,8 +154,6 @@ def _apply_2026_08_07_062(conn) -> None:
         """,
     )
 
-    # Helpful lookup indexes.  MySQL lacks CREATE INDEX IF NOT EXISTS, so query
-    # metadata first; SQLite can use the native syntax directly.
     index_specs = [
         ("idx_minor_safeguards_user", "participant_minor_safeguards", "user_id"),
         ("idx_minor_safeguards_guardian", "participant_minor_safeguards", "guardian_user_id"),
@@ -168,6 +195,7 @@ MIGRATIONS = (
 def apply_pending_schema_migrations(conn) -> list[str]:
     """Apply all known migrations in version order and return applied versions."""
     applied: list[str] = []
+    _ensure_registry(conn)
     for migration in sorted(MIGRATIONS, key=lambda item: item.version):
         if _applied(conn, migration.version):
             continue
