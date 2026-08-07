@@ -84,13 +84,6 @@ def _event(conn, request_id: str, actor_id: str, actor_role: str, action: str, f
     )
 
 
-def _reviewer_actor():
-    try:
-        return require_role("admin", "supervisor", allow_legacy_admin=True), None
-    except AuthError as exc:
-        return None, auth_error_response(exc)
-
-
 @bp.post("")
 def create_supervision_request():
     raw_payload = request.get_json(silent=True) or {}
@@ -237,9 +230,10 @@ def get_supervision_request(request_id: str):
 
 @bp.get("/<request_id>/reviewer")
 def get_supervision_request_for_reviewer(request_id: str):
-    actor, error = _reviewer_actor()
-    if error:
-        return error
+    try:
+        actor = require_role("supervisor", "admin", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
     with get_connection() as conn:
         apply_pending_schema_migrations(conn)
         row = conn.execute("SELECT * FROM supervision_requests WHERE id = ?", (request_id,)).fetchone()
@@ -259,9 +253,10 @@ def get_supervision_request_for_reviewer(request_id: str):
 
 @bp.post("/<request_id>/acknowledge")
 def acknowledge_supervision_request(request_id: str):
-    actor, error = _reviewer_actor()
-    if error:
-        return error
+    try:
+        actor = require_role("supervisor", "admin", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
     timestamp = now_iso()
     with get_connection() as conn:
         apply_pending_schema_migrations(conn)
@@ -289,9 +284,10 @@ def acknowledge_supervision_request(request_id: str):
 
 @bp.post("/<request_id>/reply")
 def reply_supervision_request(request_id: str):
-    actor, error = _reviewer_actor()
-    if error:
-        return error
+    try:
+        actor = require_role("supervisor", "admin", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
 
     payload = request.get_json(silent=True) or {}
     try:
@@ -339,9 +335,10 @@ def reply_supervision_request(request_id: str):
 
 @bp.post("/<request_id>/resolve")
 def resolve_supervision_request(request_id: str):
-    actor, error = _reviewer_actor()
-    if error:
-        return error
+    try:
+        actor = require_role("supervisor", "admin", allow_legacy_admin=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
     payload = request.get_json(silent=True) or {}
     resolution_code = str(payload.get("resolution_code") or "support_completed").strip()[:80]
     if not resolution_code:
