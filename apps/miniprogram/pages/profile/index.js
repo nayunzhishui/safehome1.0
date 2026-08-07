@@ -72,6 +72,12 @@ Page({
     ],
     settingsEntries: [
       {
+        title: "参与者保护",
+        subtitle: "年龄确认、家长绑定与未满14周岁保护",
+        url: "/pages/settings-detail/index?type=protection",
+        private: true,
+      },
+      {
         title: "知情与边界",
         subtitle: "了解本工具能做什么",
         url: "/pages/settings-detail/index?type=consent",
