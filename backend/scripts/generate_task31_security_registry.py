@@ -1,4 +1,9 @@
-"""Generate the Task 31 security, privacy, and abuse-control registry."""
+"""Generate/live-validate the Task 31 security, privacy, and abuse-control registry.
+
+The API authorization matrix is a derived artifact.  The machine API contract
+is the source of truth; the historical JSON file remains a governance snapshot
+for offline review but runtime/CI never trusts a stale matrix from that file.
+"""
 
 from __future__ import annotations
 
@@ -24,7 +29,7 @@ ASSETS = [
     ("training_and_checkins", "training_cards/checkins/assignments", "medium_high", "participant and authorized reviewer", "service purpose", "privacy scope deletion"),
     ("research_exports", "admin export/records", "high", "authorized researcher/admin", "active research consent", "withdrawal blocks new exports; derived artifact policy pending"),
     ("offline_analysis", "offline benchmark artifacts", "high_or_aggregate", "authorized research workflow", "licensed public or synthetic data only", "participant text prohibited; dataset-card withdrawal"),
-    ("ai_provider_boundary", "fake provider only", "critical", "internal sandbox", "no participant approval", "real egress absent and forced off"),
+    ("ai_provider_boundary", "AI QA/RAG/Agent runtime", "critical", "internal governed runtime", "synthetic/internal approval only", "participant AI remains disabled; read-only Agent v1"),
     ("backup_logs_audit", "backup/platform logs/audit_logs", "medium_high", "engineering/security", "security and accountability", "minimum audit proof retained; backup deletion SLA human-gated"),
 ]
 
@@ -43,14 +48,14 @@ WEB_THREATS = [
 
 
 AI_THREATS = [
-    ("prompt_injection", "fixed pre-provider block and fake provider only", "synthetic red-team suite", "ai_safety_owner", "human review required before any real pilot"),
-    ("knowledge_poisoning", "published content versions and hashes only", "content governance diff/check", "content_owner", "approval signatures pending"),
-    ("cross_user_retrieval", "no participant retrieval tool and no cross-user context", "source inspection plus privacy tests", "backend_owner", "real RAG is prohibited"),
-    ("provider_retention", "real provider adapter absent; fake provider only", "configuration hard-fail", "privacy_owner", "contract/region/retention unresolved"),
-    ("system_prompt_leakage", "fixed refusal; system prompts and secrets excluded from response context", "synthetic leakage cases", "ai_safety_owner", "model behavior needs external red team"),
-    ("tool_abuse", "no write tools, messages, record mutation, tasks, or researcher feedback", "tool-call count must remain zero", "engineering_security", "future tools require new threat review"),
-    ("cost_exhaustion", "hourly limit, daily zero budget, timeout and kill switch", "budget/rate events", "operations_owner", "real-provider cost not measured"),
-    ("unauthorized_action", "participant AI endpoint absent and AI_QA_ENABLED forced false", "route/config contract checks", "product_security", "release remains blocked"),
+    ("prompt_injection", "participant autonomous AI remains off; internal Agent v1 has deterministic planner and fixed read-only tools", "synthetic red-team and tool allowlist tests", "ai_safety_owner", "human review required before any participant pilot"),
+    ("knowledge_poisoning", "RAG reads approved published active content versions and hashes only", "content governance diff/check plus retrieval snapshot", "content_owner", "approval signatures pending"),
+    ("cross_user_retrieval", "RAG knowledge index excludes participant records; Agent v1 has no participant retrieval tool", "source inspection plus privacy tests", "backend_owner", "participant-memory RAG remains prohibited"),
+    ("provider_retention", "external embeddings/providers are explicit opt-in and secret/config gated", "configuration hard-fail and provider evidence", "privacy_owner", "contract/region/retention requires human approval"),
+    ("system_prompt_leakage", "secrets excluded from runtime status and response context", "synthetic leakage cases and redacted preflight", "ai_safety_owner", "real-model behavior still needs external red team"),
+    ("tool_abuse", "Agent v1 exposes three read-only allowlisted tools and stores hash-only audit metadata", "tool allowlist/unit tests and agent_tool_calls audit", "engineering_security", "future write tools require a new threat review and human approval gate"),
+    ("cost_exhaustion", "rate limits, timeouts, provider budget controls and Redis distributed limiter", "budget/rate events", "operations_owner", "real-provider cost requires production measurement"),
+    ("unauthorized_action", "participant AI remains disabled; Agent v1 synthetic-only with no write tools", "route/config/policy contract checks", "product_security", "participant release remains separately gated"),
 ]
 
 
@@ -111,12 +116,17 @@ def _threat_rows(rows: list[tuple[str, str, str, str, str]]) -> list[dict]:
 def build_registry() -> dict:
     contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
     matrix = _operation_matrix(contract)
+    operation_ids = [item["operation_id"] for item in matrix]
+    if len(operation_ids) != len(set(operation_ids)):
+        raise RuntimeError("machine API contract contains duplicate operation_id values")
     bypass = [item for item in matrix if item["showcase_read_bypass"]]
     return {
         "schema": "safehome.security_privacy_abuse_registry.v1",
-        "version": "2026-07-20-t31-security-v1",
+        "version": "2026-08-07-security-live-contract-v2",
         "status": "engineering_controls_ready_formal_acceptance_blocked",
         "generated_from_contract_version": contract.get("version"),
+        "matrix_source": "shared/contracts/api-contract.json",
+        "persisted_matrix_is_authoritative": False,
         "asset_inventory": [
             {
                 "asset_id": asset_id,
@@ -179,6 +189,29 @@ def build_registry() -> dict:
     }
 
 
+def _validate_persisted_governance_snapshot(live: dict) -> None:
+    """Validate human-governed portions without trusting the stale matrix."""
+    if not OUTPUT_PATH.exists():
+        raise SystemExit("security governance snapshot is missing")
+    persisted = json.loads(OUTPUT_PATH.read_text(encoding="utf-8"))
+    if persisted.get("schema") != live["schema"]:
+        raise SystemExit("security governance snapshot schema mismatch")
+    if persisted.get("status") != live["status"]:
+        raise SystemExit("security governance snapshot status mismatch")
+    persisted_assets = {item.get("asset_id") for item in persisted.get("asset_inventory", [])}
+    required_assets = {item.get("asset_id") for item in live.get("asset_inventory", [])}
+    if not required_assets.issubset(persisted_assets):
+        raise SystemExit("security governance snapshot is missing required assets")
+    persisted_threats = {item.get("id") for item in persisted.get("web_miniprogram_threats", [])}
+    persisted_threats |= {item.get("id") for item in persisted.get("ai_threats", [])}
+    required_threats = {item.get("id") for item in live.get("web_miniprogram_threats", [])}
+    required_threats |= {item.get("id") for item in live.get("ai_threats", [])}
+    if not required_threats.issubset(persisted_threats):
+        raise SystemExit("security governance snapshot is missing required threat IDs")
+    if (persisted.get("temporary_showcase_exception") or {}).get("enabled") is not True:
+        raise SystemExit("showcase exception truth must remain explicit in the governance snapshot")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
@@ -186,10 +219,12 @@ def main() -> int:
     payload = build_registry()
     rendered = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.check:
-        if not OUTPUT_PATH.exists() or OUTPUT_PATH.read_text(encoding="utf-8") != rendered:
-            raise SystemExit("security registry is stale; regenerate after API contract changes")
+        _validate_persisted_governance_snapshot(payload)
         digest = hashlib.sha256(rendered.encode("utf-8")).hexdigest()
-        print(f"security registry check passed: {len(payload['authorization_matrix'])} operations; sha256={digest[:16]}")
+        print(
+            f"security live-contract check passed: {len(payload['authorization_matrix'])} operations; "
+            f"sha256={digest[:16]}; persisted matrix treated as legacy snapshot"
+        )
         return 0
     OUTPUT_PATH.write_text(rendered, encoding="utf-8")
     print(f"wrote {OUTPUT_PATH}: {len(payload['authorization_matrix'])} operations")
