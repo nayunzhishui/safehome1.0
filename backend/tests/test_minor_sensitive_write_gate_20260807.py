@@ -97,7 +97,7 @@ def test_under14_withdrawal_reblocks_sensitive_writes(tmp_path, monkeypatch):
         headers=parent_headers,
         json={},
     )
-    assert bind_code_response.status_code == 201
+    assert bind_code_response.status_code == 200
     bind_code = bind_code_response.get_json()["data"]["bind_code"]
 
     bound = client.post(
