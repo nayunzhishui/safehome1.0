@@ -32,6 +32,7 @@ from routes.general_growth import bp as general_growth_bp
 from routes.goals import bp as goals_bp
 from routes.journey import bp as journey_bp
 from routes.messages import bp as messages_bp
+from routes.minor_safeguards import bp as minor_safeguards_bp
 from routes.notifications import bp as notifications_bp
 from routes.offline_benchmarks import bp as offline_benchmarks_bp
 from routes.research_methodology import bp as research_methodology_bp
@@ -66,9 +67,10 @@ from services.build_fingerprint_service import (
     load_build_identity,
     public_build_identity,
 )
+from services.schema_migration_service import apply_pending_schema_migrations
 
 
-SERVICE_VERSION = os.environ.get("SERVICE_VERSION", "safehome-2026-07-10-task12-login").strip() or "safehome-2026-07-10-task12-login"
+SERVICE_VERSION = os.environ.get("SERVICE_VERSION", "safehome-2026-08-07-safety-convergence").strip() or "safehome-2026-08-07-safety-convergence"
 REQUIRED_CONTENT_FILES = [
     "training_cards.json",
     "feedback_rules.json",
@@ -76,6 +78,7 @@ REQUIRED_CONTENT_FILES = [
     "programs.json",
     "courses.json",
     "showcase_access.json",
+    "participant_minor_policy.json",
     "privacy_retention_policy.json",
     "content_governance_manifest.json",
     "ai_qa_governance.json",
@@ -247,6 +250,12 @@ def create_app(
     configure_logging(app)
     if init_database:
         init_db()
+        # New changes use explicit named migrations.  Keep the historical
+        # init_db/ensure_column path intact, then apply additive migrations in
+        # a separate transaction so rollback/review remains possible.
+        with get_connection() as conn:
+            apply_pending_schema_migrations(conn)
+            conn.commit()
     app.extensions["safehome_build_identity"] = load_build_identity(app.config["CONTENT_DIR"])
 
     app.register_blueprint(auth_bp)
@@ -258,6 +267,7 @@ def create_app(
     app.register_blueprint(feedback_bp)
     app.register_blueprint(feedback_ledger_bp)
     app.register_blueprint(family_bp)
+    app.register_blueprint(minor_safeguards_bp)
     app.register_blueprint(general_growth_bp)
     app.register_blueprint(messages_bp)
     app.register_blueprint(notifications_bp)
@@ -350,8 +360,17 @@ def create_app(
         response.headers.setdefault("X-Frame-Options", "DENY")
         response.headers.setdefault("Referrer-Policy", "no-referrer")
         response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+        response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
         if request.path.startswith("/api/"):
             response.headers.setdefault("Cache-Control", "no-store")
+            response.headers.setdefault(
+                "Content-Security-Policy",
+                "default-src 'none'; frame-ancestors 'none'; base-uri 'none'",
+            )
+        forwarded_proto = str(request.headers.get("X-Forwarded-Proto") or "").lower()
+        if str(app.config.get("APP_ENV") or "").lower() == "production" and (request.is_secure or forwarded_proto == "https"):
+            response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
         if request.method == "GET" and request.path in LEGACY_LIMIT_PATHS and "limit" in request.args:
             response.headers["Deprecation"] = "true"
             response.headers["Sunset"] = "Sat, 31 Oct 2026 00:00:00 GMT"
