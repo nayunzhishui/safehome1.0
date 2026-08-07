@@ -1,5 +1,5 @@
 {
-  "version": "2026.08-runtime-architecture-v3",
+  "version": "2026.08-runtime-architecture-v4",
   "architecture_style": "modular_monolith",
   "domains": {
     "participant": {
@@ -23,7 +23,10 @@
     "new_task_numbered_runtime_modules_forbidden": true,
     "legacy_task_runtime_allowlist": [
       "backend/routes/task37_contracts.py",
-      "backend/services/task37_contract_service.py"
+      "backend/services/task37_contract_service.py",
+      "backend/services/task37_data_use_service.py",
+      "backend/services/task37_harness_service.py",
+      "backend/services/task37_lineage_service.py"
     ],
     "historical_task_runtime_modules_are_legacy_only": true,
     "routes_must_not_import_tests_or_migration_scripts": true,
@@ -36,6 +39,9 @@
   "migration_direction": {
     "task37_contract_service": "computation_contract_service",
     "task37_contracts_route": "compatibility shim only",
+    "task37_data_use_service": "frozen historical runtime debt; migrate only when its owning domain is next modified",
+    "task37_harness_service": "frozen historical runtime debt; migrate only when its owning domain is next modified",
+    "task37_lineage_service": "frozen historical runtime debt; migrate only when its owning domain is next modified",
     "security_control_service_script_import": "legacy warning; migrate scanner to domain service before removing this exception"
   }
 }
