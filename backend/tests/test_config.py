@@ -55,12 +55,13 @@ def test_production_sqlite_requires_explicit_override(tmp_path, monkeypatch):
         importlib.import_module("app")
 
 
-def test_production_accepts_explicit_admin_export_token(tmp_path, monkeypatch):
+def test_production_accepts_explicit_admin_export_token_only_with_legacy_opt_in(tmp_path, monkeypatch):
     _clear_backend_modules()
     monkeypatch.setenv("APP_ENV", "production")
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
     monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
+    monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "1")
     monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
