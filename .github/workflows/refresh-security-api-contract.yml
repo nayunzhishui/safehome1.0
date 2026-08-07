@@ -1,0 +1,49 @@
+name: Refresh Security API Contract
+
+on:
+  push:
+    branches:
+      - codex/safehome-security-enhancement-20260807
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/safehome-security-enhancement-20260807
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r backend/requirements.txt
+          python -m pip install -r analysis/text_analysis/requirements.txt
+          python -m pip install -r analysis/profiling/requirements.txt
+
+      - name: Generate contract artifacts
+        run: python backend/scripts/build_api_contract.py
+
+      - name: Commit generated artifacts only
+        run: |
+          git add \
+            shared/contracts/api-contract.json \
+            shared/types/api-contract.generated.ts \
+            apps/miniprogram/services/api-contract.generated.js \
+            docs/03_技术真相/API机器契约.md
+          if git diff --cached --quiet; then
+            echo "No API contract artifact changes."
+            exit 0
+          fi
+          git config user.name "safehome-contract-bot"
+          git config user.email "safehome-contract-bot@users.noreply.github.com"
+          git commit -m "chore(contract-generated): refresh security API contract artifacts"
+          git push origin HEAD:codex/safehome-security-enhancement-20260807
