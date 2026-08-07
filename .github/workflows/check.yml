@@ -23,6 +23,9 @@ jobs:
           python -m pip install -r analysis/text_analysis/requirements.txt
           python -m pip install -r analysis/profiling/requirements.txt
 
+      - name: Inspect release artifact hashes
+        run: python backend/scripts/print_release_artifact_hashes.py
+
       - name: Validate content
         run: python backend/scripts/validate_content.py
 
