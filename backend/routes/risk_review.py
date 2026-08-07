@@ -31,7 +31,18 @@ def update_review(review_id: str):
         return auth_error_response(exc)
 
     payload = request.get_json(silent=True) or {}
-    reviewer_id = str(payload.get("reviewer_id") or actor["id"])
+    # The authenticated actor is the only source of truth for audit identity.
+    # A client-supplied reviewer_id is accepted only as an equality assertion
+    # for backwards compatibility; it can never nominate another reviewer.
+    claimed_reviewer_id = str(payload.get("reviewer_id") or "").strip()
+    actor_id = str(actor["id"])
+    if claimed_reviewer_id and claimed_reviewer_id != actor_id:
+        return fail(
+            "forbidden_reviewer_identity",
+            "reviewer_id 必须与当前认证账号一致，不能代替其他复核人写入审计记录。",
+            status=403,
+        )
+
     review_status = str(payload.get("review_status") or "reviewed")
     review_note = payload.get("review_note") or payload.get("note")
     action_taken = payload.get("action_taken")
@@ -42,7 +53,7 @@ def update_review(review_id: str):
             row = update_risk_review_record(
                 conn,
                 review_id=review_id,
-                reviewer_id=reviewer_id,
+                actor_id=actor_id,
                 review_status=review_status,
                 review_note=review_note,
                 action_taken=action_taken,
