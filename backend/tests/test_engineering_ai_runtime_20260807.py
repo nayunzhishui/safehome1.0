@@ -1,8 +1,15 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pytest
+
+
+ROOT = Path(__file__).resolve().parents[2]
+BACKEND = ROOT / "backend"
+if str(BACKEND) not in sys.path:
+    sys.path.insert(0, str(BACKEND))
 
 from config import Config
 from database import get_connection, init_db, list_database_columns, list_database_tables
@@ -12,9 +19,6 @@ from services.mysql_pool_runtime import install_mysql_pool
 from services.rag_v2_service import settings as rag_settings
 from services.redis_service import rate_limit
 from services.schema_migration_service import apply_pending_schema_migrations, migration_manifest
-
-
-ROOT = Path(__file__).resolve().parents[2]
 
 
 def _sqlite_runtime(tmp_path, monkeypatch):
