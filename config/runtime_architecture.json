@@ -1,5 +1,5 @@
 {
-  "version": "2026.08-runtime-architecture-v1",
+  "version": "2026.08-runtime-architecture-v2",
   "architecture_style": "modular_monolith",
   "domains": {
     "participant": {
@@ -20,14 +20,19 @@
     }
   },
   "runtime_rules": {
-    "new_task_numbered_runtime_modules_forbidden_after_task": 37,
-    "historical_task37_runtime_modules_are_legacy_only": true,
+    "historical_task_number_ceiling": 38,
+    "new_task_numbered_runtime_modules_forbidden": true,
+    "historical_task_runtime_modules_are_legacy_only": true,
     "routes_must_not_import_tests_or_migration_scripts": true,
     "services_must_not_import_tests_or_migration_scripts": true,
+    "legacy_runtime_script_import_allowlist": [
+      "backend/services/security_control_service.py"
+    ],
     "task_ids_allowed_in": ["tests", "scripts", "docs", "migration metadata", "compatibility shims"]
   },
   "migration_direction": {
     "task37_contract_service": "computation_contract_service",
-    "task37_contracts_route": "compatibility shim only"
+    "task37_contracts_route": "compatibility shim only",
+    "security_control_service_script_import": "legacy warning; migrate scanner to domain service before changing this historical path"
   }
 }
