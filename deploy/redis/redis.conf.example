@@ -1,0 +1,25 @@
+# SafeHome optional Redis cache/coordination profile.
+# Redis is NOT the source of truth for consent, safety review, assessments,
+# research authorization, audit records, or participant content.
+
+protected-mode yes
+port 6379
+tcp-keepalive 60
+timeout 0
+
+# Cache/coordination keys are expected to have TTLs.  Keeping persistence off
+# prevents operators from mistaking Redis for a durable participant datastore.
+save ""
+appendonly no
+
+maxmemory 256mb
+maxmemory-policy volatile-lfu
+
+# Operational safeguards.
+rename-command FLUSHALL ""
+rename-command FLUSHDB ""
+rename-command CONFIG ""
+
+# In production use a private network plus ACL/TLS or the managed Tencent Redis
+# controls. Passwords/ACL secrets belong in the platform secret store, never in
+# this repository.
