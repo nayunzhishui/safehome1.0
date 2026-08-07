@@ -60,8 +60,10 @@ def _worksheets() -> list[dict]:
             worksheets = _worksheets_from_db(conn)
             if worksheets:
                 return worksheets
-    except Exception:
-        pass
+    except Exception as exc:
+        current_app.logger.exception("assessment_worksheet_db_load_failed")
+        if _governance_enforced():
+            raise RuntimeError("测评内容数据库不可用；治理环境禁止静默回退到另一数据源") from exc
     return _load_payload().get("worksheets", [])
 
 
@@ -75,7 +77,10 @@ def _worksheets_from_db(conn, include_disabled: bool = True) -> list[dict]:
             ORDER BY display_title
             """
         ).fetchall()
-    except Exception:
+    except Exception as exc:
+        if _governance_enforced():
+            raise RuntimeError("测评内容查询失败") from exc
+        current_app.logger.warning("assessment_worksheet_db_query_failed error_type=%s", type(exc).__name__)
         return []
     return [_db_row_to_worksheet(row_to_dict(row)) for row in rows]
 
@@ -198,7 +203,6 @@ def list_assessments():
     category = request.args.get("category")
     audience_class = request.args.get("audience_class")
     reflex_node = request.args.get("reflex_node")
-    enabled = request.args.get("enabled")
     query = (request.args.get("q") or request.args.get("query") or "").strip().lower()
     include_unapproved = _reviewer_preview_requested()
     items = [
@@ -300,7 +304,7 @@ def create_assessment_result():
             client_submission_id=submission_id or None,
         )
     except AssessmentSubmissionError as exc:
-        return fail(exc.code, exc.message, status=409 if exc.code == "idempotency_conflict" else 400)
+        return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
     return ok(result, status=200 if result.get("idempotency_replayed") else 201)
 
 
