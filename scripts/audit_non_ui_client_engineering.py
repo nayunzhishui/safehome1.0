@@ -7,8 +7,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 WEB_AUTH = ROOT / "apps" / "web" / "src" / "services" / "authState.ts"
 MINIPROGRAM = ROOT / "apps" / "miniprogram"
+# api.js is the primary transport. minorSafeguardsApi.js is an inherited,
+# intentionally narrow safety transport kept separate until the large api.js
+# can be refactored safely; CI enforces the same request/auth/error invariants.
 ALLOWED_CONTAINER_CALLERS = {
     "services/api.js",
+    "services/minorSafeguardsApi.js",
     "pages/debug/index.js",
 }
 
@@ -33,21 +37,29 @@ def main() -> int:
             direct_callers.append(relative)
     if direct_callers:
         failures.append(
-            "Mini-program CloudBase calls must use services/api.js; unexpected callers: "
+            "Mini-program CloudBase calls must stay inside reviewed transport modules; unexpected callers: "
             + ", ".join(sorted(direct_callers))
         )
 
-    api_source = (MINIPROGRAM / "services" / "api.js").read_text(encoding="utf-8")
-    for required in ["X-Request-ID", "Authorization", "normalizeApiError", "callContainer"]:
-        if required not in api_source:
-            failures.append(f"Mini-program central transport missing invariant: {required}")
+    transport_invariants = {
+        "services/api.js": ["X-Request-ID", "Authorization", "normalizeApiError", "callContainer"],
+        "services/minorSafeguardsApi.js": ["X-Request-ID", "Authorization", "normalizeError", "callContainer", "clearAuthSession"],
+    }
+    for relative, required_values in transport_invariants.items():
+        source = (MINIPROGRAM / relative).read_text(encoding="utf-8")
+        for required in required_values:
+            if required not in source:
+                failures.append(f"Mini-program transport {relative} missing invariant: {required}")
 
     if failures:
         print("Non-UI client engineering audit failed:")
         for failure in failures:
             print(f"- {failure}")
         return 1
-    print("Non-UI client engineering audit passed: Web session auth + centralized mini-program transport")
+    print(
+        "Non-UI client engineering audit passed: Web session auth + "
+        "reviewed mini-program transport allowlist/invariants"
+    )
     return 0
 
 
