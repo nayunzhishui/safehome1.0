@@ -1,112 +1,118 @@
-# 安心陪伴 / ReadFeedback
+# 安心陪伴 / SafeHome / ReadFeedback
 
-更新时间：2026-06-04
+更新时间：2026-08-07
 
-本项目是“安心陪伴：家长情绪管理支持系统”的本地开发与试点准备项目。
+SafeHome 是一个面向家长与学生的**非诊断心理支持与研究协作系统**。项目以情绪调节、支持性反馈、行为练习和人工支持为主线，同时包含受控心理测评、研究工作流、画像分析、隐私/安全治理和仅限合成数据的 AI 研究沙盒。
 
-项目定位：基于 UP 跨诊断情绪调节框架的家长非评判陪伴训练系统，通过目标设定、情绪事件记录、互动模式识别、非诊断反馈、UP 训练卡、练习打卡、周度报告和人工督导补充，帮助家长在亲子冲突场景中形成更支持性的回应方式。
+## 当前事实入口
 
-## 核心闭环
+新会话、Codex 或 Claude 开始工作前优先读取：
 
-```text
-目标设定 → 情绪事件记录 → 情绪与互动模式识别 → 非诊断反馈
-→ UP训练卡推送 → 家长练习与打卡 → 周度报告 → 人工督导补充
-```
+1. `PROJECT_STATUS.md` — 当前项目与发布状态
+2. `ARCHITECTURE.md` — 当前架构、身份、安全和数据边界
+3. `docs/00_当前事实基准/项目进度统一口径.md` — 历史任务与事实基准
+4. `docs/03_技术真相/当前项目代码总体解释与功能衔接说明.md` — 代码与功能解释
 
-底层逻辑主线：
+历史任务文档用于追溯，不应覆盖当前源码事实。
 
-```text
-记录 → 识别 → 反馈 → 练习 → 追踪 → 支持
-```
+## 产品边界
 
-## 当前统一进度
+SafeHome 可以做：
 
-最新进度以 `docs/项目进度统一口径.md` 和 `docs/当前进度交接.md` 为准。
+- 情绪/互动事件记录；
+- 规则式、支持性、非评判反馈；
+- 情绪调节与亲子沟通练习；
+- 周期性回顾与人工支持；
+- 受控心理测评与非诊断结果解释；
+- 研究者工作流、去标识分析和受控导出；
+- 安全信号保守分流与人工复核。
 
-截至 2026-06-04：
+SafeHome 不应被解释为：
 
-- MVP 1.0 已完成并完成封版验收。
-- MVP 1.1 家长端主闭环和网站后台第一版已完成。
-- 0版网页/学生画像已完成 P0 内容准备、P1 画像 API、P2 小程序画像报告和 Web 画像列表/导出、P3 人工复核与周报画像趋势、P4 研究平台化表、`records` 统一导出和高风险导出二次确认。
-- `docs/6.3日问题清单解决逐步开发书.md` 中 P0/P1/P2 已完成。
-- `docs/6.4日问题处理逐步开发清单.md` 中 P0/P1/P2 已完成，已补后台敏感接口 token、深度健康检查、schema_migrations、SQLite 备份恢复、小程序 debug 页面、匿名 ID、更多文本风险筛查、知情同意绑定、风险复核处置字段、导出 limit、数据库索引、部署文档和 Web 401 提示。
-- 当前待办：学生画像模块仍需 1.2-5 试点前人工验收；正式上线尚未开始。
-- 正式上线尚未开始，`docs/后续上线措施.md` 仅作为后续部署路线。
+- 心理或精神疾病诊断系统；
+- 自杀/自伤概率预测器；
+- 自动危机处置系统；
+- 固定人格分类系统；
+- 自由聊天式心理治疗 AI；
+- 可以替代专业人员和现实紧急支持的系统。
 
-当前下一步如果继续，应进入试点前人工验收和真实环境联调。
-
-## 开发原则
-
-- 小程序端与网页端并行开发。
-- 两端共用同一个 `backend`、`content`、`shared` 和 API 文档。
-- 第一版只做能跑通闭环的 MVP，不做复杂 AI、视频分析、语音上传、社群和完整咨询系统。
-- 所有反馈保持非诊断、非评判、支持性表达。
-- 当前阶段优先保持本地可运行、文档口径一致，并按 `docs/6.3日问题清单解决逐步开发书.md` 和 `docs/1.2逐步开发任务清单.md` 推进试用前整改。
-
-## 项目目录
+## 核心支持闭环
 
 ```text
-safehome1.0/
-├─ README.md
-├─ docs/
-├─ backend/
-│  ├─ routes/
-│  ├─ services/
-│  ├─ seed_data/
-│  └─ tests/
-├─ apps/
-│  ├─ miniprogram/
-│  └─ web/
-│     └─ src/
-├─ shared/
-└─ content/
+记录 → 识别 → 支持性反馈 → 练习 → 追踪 → 人工支持
 ```
 
-## 当前阶段
+研究与治理能力围绕该主线服务，不应反向挤占参与者端核心任务。
 
-当前不是“只完成项目骨架”的阶段。后端、小程序端、网站端和内容库已经形成本地 MVP 闭环；后续重点是：
+## 技术架构
 
-1. 维护 MVP 1.1 已完成链路稳定；
-2. 按 `docs/6.3日问题清单解决逐步开发书.md` 推进安全、审计、内容和测试整改；
-3. 按 `docs/1.2逐步开发任务清单.md` 完成学生画像试点前人工验收；
-4. 按 `docs/后续上线措施.md` 准备小范围试用和正式上线条件。
+```text
+apps/miniprogram  微信小程序参与者端
+apps/web          Web 研究/管理后台
+backend           Flask API + domain services
+content           版本化心理内容/策略/治理注册表
+shared            共享 API 常量与类型
+analysis          离线研究与画像分析
+scripts           构建、审计、验收工具
+```
 
-## 重要文档
+架构风格：模块化单体。详见 `ARCHITECTURE.md`。
 
-- `docsold/安心陪伴_Codex项目说明与执行任务书1.0.md`
-- `docs/MVP1.0功能边界.md`
-- `docs/MVP1.1功能迭代方案.md`
-- `docs/0版网页整合与GitHub参考优化路线.md`
-- `docsold/并行开发任务清单.md`
-- `docs/API接口文档.md`
-- `docs/数据库字段说明.md`
-- `docs/开发日志.md`
-- `docs/项目进度统一口径.md`
-- `docs/1.2逐步开发任务清单.md`
-- `docs/后续上线措施.md`
-- `docs/6.4日问题处理逐步开发清单.md`
-- `docs/服务器与数据库部署检查清单.md`
-- `docs/数据库备份与恢复说明.md`
-- `docs/小程序云托管调试说明.md`
-- `docs/匿名用户ID与试用数据隔离方案.md`
-- `docs/知情同意与隐私授权流程.md`
+## 身份与安全
 
-## 常用验证命令
+- 正式身份：Bearer token / CloudBase / 正式后台账号。
+- `X-Admin-Token`：仅 development/testing 兼容，production 停用。
+- 风险复核审计 actor 必须来自认证身份。
+- student 普通心理数据处理需要先完成年龄段确认；未满14岁还需要有效监护人绑定、监护人同意和学生本人 assent。
+- 风险规则只做人工安全分流，不构成临床风险分层。
 
-内容库校验：
+## AI
+
+AI QA 仍是**内部合成研究沙盒**：
+
+- participant entry = off；
+- real participant data = forbidden；
+- 每个会话和每条消息必须明确 synthetic；
+- 输入去标识；
+- 只读受控检索；
+- 无跨会话记忆；
+- 无写工具；
+- provider/use case 由服务端冻结。
+
+## 验证
+
+基础全量检查由：
+
+```text
+.github/workflows/check.yml
+```
+
+执行。
+
+2026-08-07 定向加固额外检查：
+
+```text
+.github/workflows/targeted-hardening.yml
+```
+
+覆盖：风险/审计身份、未成年人保护、AI 沙盒、运行时架构、SQLite/MySQL 关系完整性、Web 分域边界、Web build/typecheck 与 WCAG 2.2 Playwright 基线。
+
+常用本地命令：
 
 ```powershell
 python backend\scripts\validate_content.py
-```
-
-后端测试：
-
-```powershell
 python -m pytest backend\tests -q
+python backend\scripts\audit_runtime_architecture.py
+python backend\scripts\audit_referential_integrity.py
+node scripts\audit_web_domain_boundaries.mjs
+cd apps\web
+npm run typecheck
+npm run build
+npm run test:e2e
 ```
 
-## 本阶段不包含
+## 发布说明
 
-- 登录权限系统。
-- 正式公网部署、域名、备案和小程序正式发布。
-- 复杂 AI、视频、语音、社群和完整咨询系统。
+“源码完成”“自动测试通过”“engineering complete”均不等于正式上线批准。正式试点/上线仍需要真实 CloudBase/MySQL、微信开发者工具/真机、心理学人工审核、伦理/隐私/安全审核与负责人批准等独立证据。
+
+当前定向修复分支不得自动合并，必须先由本地 Codex 查看完整 diff 和测试结果，再由负责人决定是否进入 `main`。

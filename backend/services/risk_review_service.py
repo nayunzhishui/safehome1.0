@@ -22,14 +22,24 @@ def create_risk_review_record(
     source_id: str,
     risk_result: dict | None,
 ) -> dict | None:
-    """Create a pending review record for medium/high risk routing."""
+    """Create a pending review record for safety-routing cases."""
 
     if not should_create_risk_review(risk_result):
         return None
 
     timestamp = now_iso()
     review_id = new_id("risk_review")
-    matched_categories = risk_result.get("matched_categories", []) if risk_result else []
+    matched_categories = []
+    for category in (risk_result or {}).get("matched_categories", []):
+        matched_categories.append(
+            {
+                **category,
+                "safety_route": (risk_result or {}).get("safety_route", "human_review"),
+                "review_priority": (risk_result or {}).get("review_priority", "normal"),
+                "context_flags": (risk_result or {}).get("context_flags", {}),
+                "engine_version": (risk_result or {}).get("engine_version"),
+            }
+        )
     conn.execute(
         """
         INSERT INTO risk_review_records (
@@ -64,7 +74,9 @@ def list_risk_review_records(conn: sqlite3.Connection, status: str | None = None
         f"""
         SELECT * FROM risk_review_records
         {where_sql}
-        ORDER BY created_at DESC
+        ORDER BY
+            CASE risk_level WHEN 'high' THEN 0 WHEN 'medium' THEN 1 ELSE 2 END,
+            created_at ASC
         LIMIT ?
         """,
         params,
@@ -75,14 +87,17 @@ def list_risk_review_records(conn: sqlite3.Connection, status: str | None = None
 def update_risk_review_record(
     conn: sqlite3.Connection,
     review_id: str,
-    reviewer_id: str,
+    actor_id: str,
     review_status: str,
     review_note: str | None = None,
     action_taken: str | None = None,
     closed_reason: str | None = None,
 ) -> dict | None:
+    """Persist a review using the authenticated actor as immutable audit identity."""
     if review_status not in REVIEW_STATUSES:
         raise ValueError("review_status 不在支持范围内")
+    if not str(actor_id or "").strip():
+        raise ValueError("缺少认证复核人身份")
 
     timestamp = now_iso()
     conn.execute(
@@ -93,7 +108,7 @@ def update_risk_review_record(
             reviewed_at = ?, updated_at = ?
         WHERE id = ?
         """,
-        (reviewer_id, review_status, review_note, action_taken, closed_reason, timestamp, timestamp, review_id),
+        (actor_id, review_status, review_note, action_taken, closed_reason, timestamp, timestamp, review_id),
     )
     row = conn.execute("SELECT * FROM risk_review_records WHERE id = ?", (review_id,)).fetchone()
     if row is None:
@@ -102,7 +117,7 @@ def update_risk_review_record(
     write_audit_log(
         conn,
         action="review_risk",
-        actor_id=reviewer_id,
+        actor_id=actor_id,
         target_type="risk_review",
         target_id=review_id,
         metadata={
@@ -112,6 +127,7 @@ def update_risk_review_record(
             "risk_level": row["risk_level"],
             "action_taken": action_taken,
             "closed_reason": closed_reason,
+            "audit_identity_source": "authenticated_actor",
         },
     )
     return row_to_dict(row)

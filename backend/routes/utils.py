@@ -2,6 +2,7 @@
 
 from flask import current_app, g, has_request_context, jsonify, request
 
+
 def ok(data=None, status: int = 200):
     request_id = getattr(g, "request_id", None) if has_request_context() else None
     return jsonify({"ok": True, "data": data if data is not None else {}, "request_id": request_id}), status
@@ -16,6 +17,8 @@ def fail(code: str, message: str, status: int = 400, details: dict | list | None
 
 
 def require_admin_token() -> str:
+    if str(current_app.config.get("APP_ENV", "development")).lower() == "production":
+        raise ValueError("生产环境已停用 X-Admin-Token，请使用正式后台账号登录")
     admin_token = current_app.config.get("ADMIN_EXPORT_TOKEN")
     request_token = request.headers.get("X-Admin-Token", "")
     if not admin_token or request_token != admin_token:
@@ -35,6 +38,20 @@ def get_request_user_id() -> str | None:
     return str(user_id) if user_id else None
 
 
+def _enforce_owner_safeguard(actor: dict) -> None:
+    if str(actor.get("role") or "") != "student":
+        return
+    exempt_prefixes = ("/api/auth/", "/api/consent", "/api/family/", "/api/risk/", "/api/supervision", "/healthz")
+    if request.path.startswith(exempt_prefixes):
+        return
+    from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_data_access
+
+    try:
+        assert_participant_data_access(actor)
+    except ParticipantSafeguardError as exc:
+        raise ValueError(str(exc)) from exc
+
+
 def require_admin_or_owner(record_user_id: str | None) -> str:
     from routes.auth_utils import AuthError, get_current_actor
 
@@ -46,6 +63,7 @@ def require_admin_or_owner(record_user_id: str | None) -> str:
         if actor.get("role") in {"admin", "supervisor", "researcher"}:
             return str(actor["id"])
         if record_user_id and str(actor.get("id")) == str(record_user_id):
+            _enforce_owner_safeguard(actor)
             return str(actor["id"])
         raise ValueError("只能访问自己的数据")
 
