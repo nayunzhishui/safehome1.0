@@ -34,6 +34,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v7
         with:
@@ -76,6 +78,29 @@ jobs:
           REDIS_ENABLED: "0"
           RAG_EMBEDDING_PROVIDER: hash
         run: python -m pytest backend/tests/test_engineering_ai_runtime_20260807.py -q
+
+      - name: Inherited security compatibility regressions
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: sqlite
+          CONTENT_DIR: ${{ github.workspace }}/content
+          REDIS_ENABLED: "0"
+          RAG_EMBEDDING_PROVIDER: hash
+        run: >-
+          python -m pytest
+          backend/tests/test_config.py
+          backend/tests/test_consent_route.py
+          backend/tests/test_healthz.py
+          backend/tests/test_risk_review_route.py
+          backend/tests/test_risk_routing_consistency.py
+          backend/tests/test_risk_service.py
+          backend/tests/test_task18_opening_matrix.py
+          backend/tests/test_task18_program_opening.py
+          backend/tests/test_task31_security_contract.py
+          backend/tests/test_task31_security_privacy_abuse.py
+          backend/tests/test_task38_f25_final_acceptance.py
+          backend/tests/test_tasks_23_34_orchestrator.py
+          -q
 
       - name: Non-UI client engineering guard
         run: python scripts/audit_non_ui_client_engineering.py
