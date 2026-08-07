@@ -1,4 +1,14 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { getAuthUser, isLoggedIn } = require("../../utils/authGuard");
+const {
+  bindStudent,
+  confirmAge,
+  createFamilyBindCode,
+  getMinorSafeguardStatus,
+  listFamilyMembers,
+  updateChildAssent,
+  updateGuardianConsent,
+} = require("../../services/minorSafeguardsApi");
 
 const api = createSafeHomeApi();
 
@@ -80,6 +90,28 @@ const NOTICE_MAP = {
       },
     ],
   },
+  protection: {
+    kicker: "参与者保护",
+    title: "年龄与监护人保护设置",
+    subtitle: "学生先确认年龄范围；未满14周岁时，再分别完成监护人同意和学生本人确认。",
+    sections: [
+      {
+        title: "最少收集",
+        items: [
+          "只记录“未满14周岁 / 已满14周岁”的年龄范围，不要求填写生日。",
+          "年龄信息只用于保护门禁，不用于诊断、能力判断或人格标签。",
+        ],
+      },
+      {
+        title: "未满14周岁",
+        items: [
+          "先绑定家长账号，再由家长确认是否同意受保护的数据处理。",
+          "监护人同意不能替代学生本人意愿；学生仍可拒绝或撤回。",
+          "绑定关系本身不等于监护人已经同意敏感数据处理。",
+        ],
+      },
+    ],
+  },
   about: {
     kicker: "关于",
     title: "安心陪伴",
@@ -103,6 +135,20 @@ const PRIVACY_STATUS_LABELS = {
   cancelled: "已取消",
 };
 
+function protectionStatusLabel(status) {
+  const map = {
+    age_verification_required: "待确认年龄",
+    age_verified: "年龄已确认",
+    guardian_link_required: "待绑定监护人",
+    guardian_consent_required: "待监护人同意",
+    child_assent_required: "待学生本人确认",
+    active: "保护设置已完成",
+    blocked_withdrawn_or_refused: "受保护功能已暂停",
+    not_applicable: "无需此项保护",
+  };
+  return map[status] || status || "待确认";
+}
+
 Page({
   data: {
     notice: NOTICE_MAP.boundary,
@@ -112,6 +158,16 @@ Page({
     privacyNeedsLogin: false,
     privacyRequests: [],
     privacySubmitting: false,
+    protectionLoading: false,
+    protectionError: "",
+    protectionNeedsLogin: false,
+    protectionBusy: false,
+    protectionRole: "",
+    protectionStatus: null,
+    guardianChildren: [],
+    bindCodeInput: "",
+    generatedBindCode: "",
+    generatedBindExpiresAt: "",
   },
 
   onLoad(options = {}) {
@@ -126,6 +182,159 @@ Page({
     if (this.data.noticeType === "privacy") {
       this.loadPrivacyRequests();
     }
+    if (this.data.noticeType === "protection") {
+      this.loadProtectionStatus();
+    }
+  },
+
+  async loadProtectionStatus() {
+    if (!isLoggedIn()) {
+      this.setData({
+        protectionLoading: false,
+        protectionNeedsLogin: true,
+        protectionError: "登录后才能确认年龄或管理未成年人保护设置。",
+        protectionRole: "",
+        protectionStatus: null,
+        guardianChildren: [],
+      });
+      return;
+    }
+    const user = getAuthUser() || {};
+    const role = user.role || "";
+    this.setData({ protectionLoading: true, protectionNeedsLogin: false, protectionError: "", protectionRole: role });
+    try {
+      if (role === "student") {
+        const status = await getMinorSafeguardStatus();
+        this.setData({
+          protectionLoading: false,
+          protectionStatus: { ...status, statusLabel: protectionStatusLabel(status.status) },
+          guardianChildren: [],
+        });
+        return;
+      }
+      if (role === "parent") {
+        const family = await listFamilyMembers();
+        const activeLinks = (family.items || []).filter((item) => item.status === "active" && item.student_user_id);
+        const children = await Promise.all(
+          activeLinks.map(async (link) => {
+            try {
+              const status = await getMinorSafeguardStatus(link.student_user_id);
+              return {
+                ...link,
+                safeguard: { ...status, statusLabel: protectionStatusLabel(status.status) },
+              };
+            } catch (error) {
+              return {
+                ...link,
+                safeguard: {
+                  status: "unavailable",
+                  statusLabel: "状态暂不可用",
+                  errorMessage: error.message || "请稍后重试",
+                },
+              };
+            }
+          }),
+        );
+        this.setData({ protectionLoading: false, guardianChildren: children, protectionStatus: null });
+        return;
+      }
+      this.setData({
+        protectionLoading: false,
+        protectionStatus: { status: "not_applicable", statusLabel: "当前后台角色不使用参与者保护设置" },
+        guardianChildren: [],
+      });
+    } catch (error) {
+      this.setData({ protectionLoading: false, protectionError: error.message || "参与者保护状态暂时没有读取成功。" });
+    }
+  },
+
+  chooseAge(event) {
+    if (this.data.protectionBusy) return;
+    const ageBand = event.currentTarget.dataset.age;
+    if (!ageBand) return;
+    this.setData({ protectionBusy: true, protectionError: "" });
+    confirmAge(ageBand)
+      .then(() => this.loadProtectionStatus())
+      .catch((error) => this.setData({ protectionError: error.message || "年龄确认没有完成。" }))
+      .finally(() => this.setData({ protectionBusy: false }));
+  },
+
+  onBindCodeInput(event) {
+    this.setData({ bindCodeInput: String(event.detail.value || "").replace(/\D/g, "").slice(0, 6) });
+  },
+
+  submitStudentBinding() {
+    const bindCode = String(this.data.bindCodeInput || "").trim();
+    if (bindCode.length !== 6 || this.data.protectionBusy) {
+      this.setData({ protectionError: "请输入家长提供的6位绑定码。" });
+      return;
+    }
+    this.setData({ protectionBusy: true, protectionError: "" });
+    bindStudent(bindCode)
+      .then(() => {
+        this.setData({ bindCodeInput: "" });
+        wx.showToast({ title: "已完成绑定", icon: "success" });
+        return this.loadProtectionStatus();
+      })
+      .catch((error) => this.setData({ protectionError: error.message || "绑定没有完成，请检查绑定码。" }))
+      .finally(() => this.setData({ protectionBusy: false }));
+  },
+
+  createGuardianBindCode() {
+    if (this.data.protectionBusy) return;
+    this.setData({ protectionBusy: true, protectionError: "" });
+    createFamilyBindCode("家长")
+      .then((result) => {
+        this.setData({
+          generatedBindCode: result.bind_code || "",
+          generatedBindExpiresAt: result.expires_at || "",
+        });
+      })
+      .catch((error) => this.setData({ protectionError: error.message || "绑定码暂时没有生成成功。" }))
+      .finally(() => this.setData({ protectionBusy: false }));
+  },
+
+  updateGuardianDecision(event) {
+    if (this.data.protectionBusy) return;
+    const childUserId = event.currentTarget.dataset.child;
+    const agreed = String(event.currentTarget.dataset.agreed) === "true";
+    if (!childUserId) return;
+    const actionText = agreed ? "同意" : "撤回同意";
+    wx.showModal({
+      title: `${actionText}受保护功能`,
+      content: agreed
+        ? "确认后，仍需要学生本人确认愿意继续；你的同意不能替代学生本人选择。"
+        : "撤回后，测评、研究参与、自由文本和画像等受保护功能将停止。",
+      confirmText: actionText,
+      success: (result) => {
+        if (!result.confirm) return;
+        this.setData({ protectionBusy: true, protectionError: "" });
+        updateGuardianConsent(childUserId, agreed)
+          .then(() => this.loadProtectionStatus())
+          .catch((error) => this.setData({ protectionError: error.message || "监护人确认没有完成。" }))
+          .finally(() => this.setData({ protectionBusy: false }));
+      },
+    });
+  },
+
+  updateChildDecision(event) {
+    if (this.data.protectionBusy) return;
+    const assented = String(event.currentTarget.dataset.assented) === "true";
+    wx.showModal({
+      title: assented ? "确认继续" : "确认暂不继续",
+      content: assented
+        ? "确认后可以继续当前账号允许的受保护功能。"
+        : "选择暂不继续后，测评、研究参与和画像等受保护功能会停止。",
+      confirmText: assented ? "我愿意继续" : "暂不继续",
+      success: (result) => {
+        if (!result.confirm) return;
+        this.setData({ protectionBusy: true, protectionError: "" });
+        updateChildAssent(assented)
+          .then(() => this.loadProtectionStatus())
+          .catch((error) => this.setData({ protectionError: error.message || "本人确认没有完成。" }))
+          .finally(() => this.setData({ protectionBusy: false }));
+      },
+    });
   },
 
   async loadPrivacyRequests() {
@@ -235,6 +444,10 @@ Page({
       return;
     }
     this.loadPrivacyRequests();
+  },
+
+  goProtectionLogin() {
+    wx.navigateTo({ url: "/pages/login/index?redirect=%2Fpages%2Fsettings-detail%2Findex%3Ftype%3Dprotection" });
   },
 
   goBack() {
