@@ -7110,6 +7110,8 @@ const GENERATED_API_ENDPOINTS = [
     },
     "error_codes": [
       "forbidden",
+      "guardian_consent_required",
+      "guardian_link_required",
       "http_error",
       "internal_error",
       "missing_fields",
