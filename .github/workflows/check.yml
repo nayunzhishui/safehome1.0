@@ -32,7 +32,16 @@ jobs:
         run: python backend/scripts/validate_content.py
 
       - name: Check API contract drift
-        run: python backend/scripts/build_api_contract.py --check
+        run: |
+          if ! python backend/scripts/build_api_contract.py --check; then
+            python backend/scripts/build_api_contract.py
+            git diff -- \
+              shared/contracts/api-contract.json \
+              shared/types/api-contract.generated.ts \
+              apps/miniprogram/services/api-contract.generated.js \
+              docs/03_技术真相/API机器契约.md
+            exit 1
+          fi
 
       - name: Check API query boundaries
         run: python backend/scripts/audit_api_boundaries.py --check
