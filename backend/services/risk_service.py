@@ -21,7 +21,24 @@ DEFAULT_CONTEXT_WINDOW = 18
 # presence of danger.  Contextual high-risk mentions still enter human review.
 NEGATION_MARKERS = ("没有", "并没有", "从未", "从没", "不是", "不会", "并不", "否认", "未曾")
 HISTORICAL_MARKERS = ("以前", "曾经", "过去", "之前", "小时候", "那时候", "曾有")
-HYPOTHETICAL_MARKERS = ("如果", "假如", "比如", "例如", "举例", "新闻", "故事里", "朋友说", "别人说")
+HYPOTHETICAL_MARKERS = (
+    "如果",
+    "假如",
+    "比如",
+    "例如",
+    "举例",
+    "新闻",
+    "故事里",
+    "引用",
+    "朋友说",
+    "别人说",
+    "同学说",
+    "孩子说",
+    "家长说",
+    "他说",
+    "她说",
+    "对方说",
+)
 IMMEDIACY_MARKERS = ("现在", "马上", "立刻", "今晚", "今天", "此刻", "已经准备", "已经计划", "控制不住")
 
 
@@ -70,7 +87,11 @@ def _match_context(text: str, keyword: str, start: int, end: int) -> dict:
     hypothetical = _marker_in(surrounding, HYPOTHETICAL_MARKERS)
     immediacy = _marker_in(surrounding, IMMEDIACY_MARKERS)
 
-    if immediacy and not negation and not hypothetical:
+    # Immediate wording only escalates when the matched safety phrase itself is
+    # not simultaneously framed as negated, historical or quoted/hypothetical.
+    # Example: "以前曾经有过自残的念头，现在在回顾" contains "现在", but
+    # "现在" describes the act of reviewing the past rather than current intent.
+    if immediacy and not (negation or historical or hypothetical):
         status = "immediate_signal"
     elif negation or historical or hypothetical:
         status = "contextual_signal"
@@ -193,6 +214,6 @@ def check_text_risk(text: str | list[str] | None, source: str = "student_profile
         "allow_recommended_training_cards": allow_cards,
         "export_raw_text_by_default": False,
         "safe_response": safe_response,
-        "context_engine_version": "context-v2",
+        "context_engine_version": "context-v2.1",
         "boundary_notice": "安全信号只用于人工复核分流，不构成诊断、危机评估、风险概率或处置结论。",
     }
