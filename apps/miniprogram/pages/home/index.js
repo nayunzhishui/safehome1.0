@@ -1,6 +1,7 @@
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
+const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function trackJourneyEvent(eventName, journey, status, extra = {}) {
   if (!journey) return;
@@ -272,7 +273,7 @@ Page({
         });
         return;
       }
-      if (error && ["age_verification_required", "guardian_link_required", "guardian_consent_required", "child_assent_required"].includes(error.code)) {
+      if (error && ["age_verification_required", "guardian_link_required", "guardian_consent_required", "child_assent_required", "blocked_withdrawn_or_refused"].includes(error.code)) {
         this.setData({
           todayJourney: formatTodayJourney({
             state: "ready",
@@ -281,7 +282,7 @@ Page({
               title: "先完成参与者保护设置",
               description: "完成年龄确认和必要的监护人/本人确认后，再继续受保护功能。",
               button_label: "去完成",
-              url: "/pages/age-confirmation/index",
+              url: PROTECTION_URL,
               source_type: "minor_safeguards",
               estimated_minutes: 2,
             },
