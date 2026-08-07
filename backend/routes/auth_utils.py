@@ -20,6 +20,16 @@ SHOWCASE_RESEARCHER_PLATFORM_PATH_PREFIXES = (
 SHOWCASE_RESEARCHER_PLATFORM_OPERATIONS = {
     ("POST", "/api/messages"),
 }
+# Under-14 safeguards must never block the routes needed to establish or
+# withdraw the safeguard itself, nor the direct safety/help paths.
+PARTICIPANT_SAFEGUARD_EXEMPT_PREFIXES = (
+    "/api/auth/",
+    "/api/consent",
+    "/api/family/",
+    "/api/risk/",
+    "/api/supervision",
+    "/healthz",
+)
 
 
 class AuthError(ValueError):
@@ -69,6 +79,14 @@ def verify_auth_token(token: str) -> dict:
 
 def get_current_actor(allow_legacy_admin: bool = True) -> dict | None:
     if allow_legacy_admin and request.headers.get("X-Admin-Token"):
+        # Production authorization is converged on formal identities. The
+        # legacy static token remains available only for local/dev tooling.
+        if str(current_app.config.get("APP_ENV", Config.APP_ENV)).lower() == "production":
+            raise AuthError(
+                "生产环境已停用 X-Admin-Token，请使用正式后台账号登录。",
+                status=401,
+                code="legacy_admin_disabled",
+            )
         try:
             require_admin_token()
         except ValueError as exc:
@@ -95,6 +113,21 @@ def require_login(allow_legacy_admin: bool = True) -> dict:
     if actor is None:
         raise AuthError("需要先登录", status=401)
     return actor
+
+
+def _participant_safeguard_exempt() -> bool:
+    return request.path.startswith(PARTICIPANT_SAFEGUARD_EXEMPT_PREFIXES)
+
+
+def _assert_participant_safeguard(actor: dict) -> None:
+    if str(actor.get("role") or "") != "student" or _participant_safeguard_exempt():
+        return
+    from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_data_access
+
+    try:
+        assert_participant_data_access(actor)
+    except ParticipantSafeguardError as exc:
+        raise AuthError(str(exc), status=exc.status, code=exc.code, details=exc.details) from exc
 
 
 def elevate_actor_for_showcase_researcher_platform(actor: dict) -> dict:
@@ -160,7 +193,9 @@ def resolve_actor_user_id(
     """Resolve private-data ownership from the signed token before request data.
 
     Normal users can only act as themselves. Admin, supervisor and researcher
-    actors may target an explicit user_id for review/debug workflows.
+    actors may target an explicit user_id for review/debug workflows. Signed-in
+    students must also satisfy the participant age/guardian safeguard before
+    ordinary psychological data processing routes can resolve ownership.
     """
 
     payload_user_id = (payload or {}).get("user_id")
@@ -173,6 +208,7 @@ def resolve_actor_user_id(
                 return str(explicit_user_id)
             if actor.get("source") == "legacy_admin_token":
                 raise AuthError("后台查询需要指定 user_id", status=400)
+        _assert_participant_safeguard(actor)
         return str(actor["id"])
 
     if allow_dev_fallback and str(Config.APP_ENV).lower() == "development":
@@ -186,6 +222,7 @@ def auth_error_response(exc: AuthError):
         400: "validation_error",
         401: "unauthorized",
         403: "forbidden",
+        428: "precondition_required",
     }
     return fail(
         exc.code or code_by_status.get(exc.status, "auth_error"),
