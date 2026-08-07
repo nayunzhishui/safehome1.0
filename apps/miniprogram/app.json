@@ -2,7 +2,6 @@
   "pages": [
     "pages/home/index",
     "pages/login/index",
-    "pages/age-confirmation/index",
     "pages/register/index",
     "pages/messages/index",
     "pages/message-detail/index",
