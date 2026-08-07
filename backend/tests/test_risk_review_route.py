@@ -51,12 +51,25 @@ def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_pat
     review = next(item for item in reviews if item["source_id"] == feedback_id)
     assert review["source_type"] == "feedback"
     assert review["risk_level"] == "high"
-    assert json.loads(review["matched_categories_json"])[0]["id"] == "self_harm"
+    categories = json.loads(review["matched_categories_json"])
+    assert categories[0]["id"] == "self_harm"
+    assert categories[0]["safety_route"] in {"human_review", "urgent_human_review"}
+
+    spoofed = client.post(
+        f"/api/risk-review/{review['id']}/review",
+        json={
+            "reviewer_id": "teacher-1",
+            "review_status": "follow_up_needed",
+            "review_note": "建议人工进一步确认现实支持资源。",
+        },
+        headers=ADMIN_HEADERS,
+    )
+    assert spoofed.status_code == 403
+    assert spoofed.get_json()["error"]["code"] == "forbidden_reviewer_identity"
 
     update_response = client.post(
         f"/api/risk-review/{review['id']}/review",
         json={
-            "reviewer_id": "teacher-1",
             "review_status": "follow_up_needed",
             "review_note": "建议人工进一步确认现实支持资源。",
             "action_taken": "已提醒人工跟进现实支持资源",
@@ -68,7 +81,7 @@ def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_pat
     assert update_response.status_code == 200
     updated = update_response.get_json()["data"]
     assert updated["review_status"] == "follow_up_needed"
-    assert updated["reviewer_id"] == "teacher-1"
+    assert updated["reviewer_id"] == "admin-token"
     assert updated["action_taken"] == "已提醒人工跟进现实支持资源"
     assert updated["closed_reason"] == "暂不关闭"
 
@@ -76,15 +89,17 @@ def test_high_risk_feedback_creates_pending_risk_review_and_review_audit(tmp_pat
 
     with database.get_connection() as conn:
         audit = conn.execute(
-            "SELECT metadata_json FROM audit_logs WHERE action = 'review_risk' AND target_id = ?",
+            "SELECT actor_id, metadata_json FROM audit_logs WHERE action = 'review_risk' AND target_id = ?",
             (review["id"],),
         ).fetchone()
 
     assert audit is not None
+    assert audit["actor_id"] == "admin-token"
     metadata = json.loads(audit["metadata_json"])
     assert metadata["source_type"] == "feedback"
     assert metadata["action_taken"] == "已提醒人工跟进现实支持资源"
     assert metadata["closed_reason"] == "暂不关闭"
+    assert metadata["audit_identity_source"] == "authenticated_actor"
 
 
 def test_high_risk_profile_creates_pending_risk_review(tmp_path, monkeypatch):
