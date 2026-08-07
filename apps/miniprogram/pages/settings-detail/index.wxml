@@ -15,6 +15,131 @@
     </view>
   </view>
 
+  <view wx:if="{{noticeType === 'protection'}}" class="safe-section">
+    <section-title title="保护状态" subtitle="年龄确认和未满14周岁保护以服务器状态为准。" />
+
+    <page-state
+      wx:if="{{protectionLoading}}"
+      kind="loading"
+      title="正在读取保护状态"
+      description="请稍候。"
+    />
+
+    <page-state
+      wx:elif="{{protectionNeedsLogin}}"
+      kind="error"
+      title="需要先登录"
+      description="{{protectionError}}"
+      action-label="去登录"
+      bind:action="goProtectionLogin"
+    />
+
+    <view wx:else>
+      <view wx:if="{{protectionError}}" class="notice-card">
+        <text class="notice-text">{{protectionError}}</text>
+        <button class="safe-secondary-button" bindtap="loadProtectionStatus">重新读取</button>
+      </view>
+
+      <view wx:if="{{protectionRole === 'student' && protectionStatus}}" class="notice-card">
+        <view class="privacy-request-heading">
+          <text class="privacy-request-title">学生保护状态</text>
+          <status-pill label="{{protectionStatus.statusLabel}}" tone="{{protectionStatus.status === 'active' || protectionStatus.status === 'age_verified' ? 'success' : 'warning'}}" />
+        </view>
+
+        <view wx:if="{{protectionStatus.age_verification_required}}">
+          <text class="notice-text">请选择符合你的年龄范围。系统不会要求填写出生日期。</text>
+          <button class="safe-primary-button" data-age="14_or_over" disabled="{{protectionBusy}}" bindtap="chooseAge">我已满14周岁</button>
+          <button class="safe-secondary-button" data-age="under_14" disabled="{{protectionBusy}}" bindtap="chooseAge">我未满14周岁</button>
+        </view>
+
+        <view wx:if="{{protectionStatus.status === 'guardian_link_required'}}">
+          <text class="notice-text">请向家长获取6位绑定码。完成绑定后，仍需家长单独确认是否同意受保护的数据处理。</text>
+          <input
+            class="safe-input"
+            type="number"
+            maxlength="6"
+            value="{{bindCodeInput}}"
+            placeholder="输入6位绑定码"
+            bindinput="onBindCodeInput"
+          />
+          <button class="safe-primary-button" disabled="{{protectionBusy || bindCodeInput.length !== 6}}" bindtap="submitStudentBinding">完成家长绑定</button>
+        </view>
+
+        <view wx:if="{{protectionStatus.status === 'guardian_consent_required'}}">
+          <text class="notice-text">已完成家长账号绑定，正在等待监护人确认。绑定关系本身不等于监护人同意。</text>
+        </view>
+
+        <view wx:if="{{protectionStatus.status === 'child_assent_required'}}">
+          <text class="notice-text">监护人已经同意，但你自己仍可以决定是否继续使用测评、研究参与、自由文本和画像等受保护功能。</text>
+          <button class="safe-primary-button" data-assented="true" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我愿意继续</button>
+          <button class="safe-secondary-button" data-assented="false" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我暂时不继续</button>
+        </view>
+
+        <view wx:if="{{protectionStatus.status === 'blocked_withdrawn_or_refused'}}">
+          <text class="notice-text">参与者本人或监护人已经拒绝/撤回，受保护功能已暂停。需要再次继续时，应重新完成相应确认。</text>
+        </view>
+
+        <view wx:if="{{protectionStatus.status === 'active'}}">
+          <text class="notice-text">未满14周岁保护条件已经满足。监护人和学生本人仍可撤回。</text>
+          <button class="safe-secondary-button" data-assented="false" disabled="{{protectionBusy}}" bindtap="updateChildDecision">我想暂停受保护功能</button>
+        </view>
+
+        <view wx:if="{{protectionStatus.status === 'age_verified'}}">
+          <text class="notice-text">年龄范围已确认，本账号不需要未满14周岁的监护人数据处理门禁。</text>
+        </view>
+      </view>
+
+      <view wx:if="{{protectionRole === 'parent'}}" class="notice-card">
+        <text class="privacy-request-title">家长绑定与监护人确认</text>
+        <text class="notice-text">先生成绑定码给学生。学生完成绑定后，如果其年龄为未满14周岁，你可以在下方单独同意或撤回受保护的数据处理。</text>
+        <button class="safe-primary-button" disabled="{{protectionBusy}}" bindtap="createGuardianBindCode">生成6位绑定码</button>
+        <view wx:if="{{generatedBindCode}}" class="privacy-request-card">
+          <text class="privacy-request-title">绑定码：{{generatedBindCode}}</text>
+          <text class="privacy-request-meta">有效期至：{{generatedBindExpiresAt}}</text>
+          <text class="privacy-boundary">绑定码只用于建立家庭账号关系，不代表已经同意敏感数据处理。</text>
+        </view>
+
+        <view wx:if="{{guardianChildren.length}}" class="privacy-request-list">
+          <view wx:for="{{guardianChildren}}" wx:key="id" class="privacy-request-card">
+            <view class="privacy-request-heading">
+              <text class="privacy-request-title">已绑定学生</text>
+              <status-pill label="{{item.safeguard.statusLabel}}" tone="{{item.safeguard.status === 'active' || item.safeguard.status === 'age_verified' ? 'success' : 'warning'}}" />
+            </view>
+            <text class="privacy-request-meta">关系：{{item.relation_label || '家长'}}</text>
+            <text wx:if="{{item.safeguard.age_band === 'under_14'}}" class="privacy-request-meta">年龄范围：未满14周岁</text>
+            <text wx:elif="{{item.safeguard.age_band === '14_or_over'}}" class="privacy-request-meta">年龄范围：已满14周岁</text>
+            <text wx:else class="privacy-request-meta">年龄范围：待学生确认</text>
+
+            <view wx:if="{{item.safeguard.age_band === 'under_14'}}">
+              <button
+                wx:if="{{item.safeguard.guardian_consent_status !== 'active'}}"
+                class="safe-primary-button"
+                data-child="{{item.student_user_id}}"
+                data-agreed="true"
+                disabled="{{protectionBusy}}"
+                bindtap="updateGuardianDecision"
+              >同意受保护数据处理</button>
+              <button
+                wx:else
+                class="safe-secondary-button"
+                data-child="{{item.student_user_id}}"
+                data-agreed="false"
+                disabled="{{protectionBusy}}"
+                bindtap="updateGuardianDecision"
+              >撤回监护人同意</button>
+              <text class="privacy-boundary">你的同意不会替代学生本人选择；学生拒绝或撤回时，受保护功能仍会停止。</text>
+            </view>
+          </view>
+        </view>
+        <text wx:else class="privacy-boundary">当前还没有已绑定学生。可先生成绑定码。</text>
+      </view>
+
+      <view wx:if="{{protectionRole && protectionRole !== 'student' && protectionRole !== 'parent'}}" class="notice-card">
+        <text class="notice-text">后台研究/督导/管理员账号不在普通参与者年龄门禁中。</text>
+      </view>
+    </view>
+  </view>
+
   <view wx:if="{{noticeType === 'privacy'}}" class="safe-section privacy-control-section">
     <section-title title="我的删除申请" subtitle="查看当前进度；尚未开始处理时可以主动取消。" />
 
