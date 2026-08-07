@@ -29,7 +29,17 @@ def create_risk_review_record(
 
     timestamp = now_iso()
     review_id = new_id("risk_review")
-    matched_categories = risk_result.get("matched_categories", []) if risk_result else []
+    matched_categories = []
+    for category in (risk_result or {}).get("matched_categories", []):
+        matched_categories.append(
+            {
+                **category,
+                "safety_route": (risk_result or {}).get("safety_route", "human_review"),
+                "review_priority": (risk_result or {}).get("review_priority", "normal"),
+                "context_flags": (risk_result or {}).get("context_flags", {}),
+                "engine_version": (risk_result or {}).get("engine_version"),
+            }
+        )
     conn.execute(
         """
         INSERT INTO risk_review_records (
@@ -44,15 +54,7 @@ def create_risk_review_record(
             source_type,
             source_id,
             risk_result.get("risk_level", "low") if risk_result else "low",
-            json_dumps(
-                {
-                    "categories": matched_categories,
-                    "safety_route": (risk_result or {}).get("safety_route", "human_review"),
-                    "review_priority": (risk_result or {}).get("review_priority", "normal"),
-                    "context_flags": (risk_result or {}).get("context_flags", {}),
-                    "engine_version": (risk_result or {}).get("engine_version"),
-                }
-            ),
+            json_dumps(matched_categories),
             timestamp,
             timestamp,
         ),
