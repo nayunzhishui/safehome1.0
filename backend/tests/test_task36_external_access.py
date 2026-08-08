@@ -143,8 +143,46 @@ def test_manager_cli_exposes_only_controlled_lifecycle_commands():
         check=False,
     )
     assert completed.returncode == 0
-    for command in ("prepare", "start", "verify", "stop", "status"):
+    for command in ("prepare", "start-local", "start", "verify", "stop", "status"):
         assert command in completed.stdout
+
+
+def test_local_start_never_starts_tunnel_or_claims_public_access(
+    tmp_path, monkeypatch
+):
+    module = _load_script("manage_researcher_external_access.py")
+    config = json.loads(
+        (ROOT / "config/task36_external_access.example.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    config["web_root"] = str(tmp_path / "dist")
+    config["runtime"]["log_dir"] = str(tmp_path / "logs")
+    (tmp_path / "dist").mkdir()
+    (tmp_path / "dist/index.html").write_text("ok", encoding="utf-8")
+    config_path = tmp_path / "local.json"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    calls = []
+
+    class Process:
+        pid = 43210
+
+    monkeypatch.setattr(
+        module.subprocess,
+        "Popen",
+        lambda command, **kwargs: calls.append((command, kwargs)) or Process(),
+    )
+    state_path = tmp_path / "state.json"
+    result = module.start_local(config_path, state_path=state_path)
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+
+    assert result["status"] == "local_started"
+    assert result["public_access_started"] is False
+    assert state["mode"] == "local_verification"
+    assert state["tunnel_pid"] == 0
+    assert state["public_access_started"] is False
+    assert len(calls) == 1
+    assert "cloudflared" not in " ".join(str(item) for item in calls[0][0])
 
 
 def test_proxy_serves_deep_link_and_forwards_only_allowlisted_headers(tmp_path):

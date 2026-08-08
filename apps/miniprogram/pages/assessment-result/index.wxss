@@ -231,11 +231,57 @@
   background: var(--safe-card);
 }
 
-.dimension-row {
+.dimension-chart-card {
+  margin-top: 16rpx;
+  padding: 10rpx 14rpx 18rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-lg);
+  background: #fffdf8;
+  box-shadow: var(--safe-shadow-float);
+}
+
+.dimension-radar-canvas {
+  width: 100%;
+  height: 500rpx;
+}
+
+.dimension-chart-legend {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16rpx 20rpx;
+  justify-content: center;
+  gap: 28rpx;
+  color: var(--safe-text);
+  font-size: 22rpx;
+}
+
+.dimension-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.dimension-legend-swatch {
+  width: 30rpx;
+  height: 8rpx;
+  border-radius: var(--safe-radius-pill);
+}
+
+.dimension-legend-swatch.current { background: var(--safe-primary); }
+.dimension-legend-swatch.midpoint { background: #74add7; }
+
+.dimension-chart-note {
+  margin-top: 14rpx;
+  padding: 14rpx 16rpx;
+  border-radius: var(--safe-radius-sm);
+  background: #f3f7f4;
+  color: var(--safe-muted);
+  font-size: 22rpx;
+  line-height: 1.55;
+}
+
+.dimension-row {
+  display: block;
+  padding: 20rpx;
   border-bottom: 1rpx solid var(--safe-border);
 }
 
@@ -257,6 +303,57 @@
   color: var(--safe-primary-deep);
   font-size: 26rpx;
   font-weight: 800;
+}
+
+.dimension-row-head,
+.dimension-meta-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.dimension-progress {
+  position: relative;
+  height: 14rpx;
+  margin-top: 16rpx;
+  overflow: hidden;
+  border-radius: var(--safe-radius-pill);
+  background: #e8eeea;
+}
+
+.dimension-progress-value {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary);
+}
+
+.dimension-progress-midpoint {
+  position: absolute;
+  z-index: 2;
+  top: -3rpx;
+  bottom: -3rpx;
+  left: 50%;
+  width: 3rpx;
+  background: #74add7;
+}
+
+.dimension-meta-row {
+  margin-top: 10rpx;
+  color: var(--safe-muted);
+  font-size: 20rpx;
+  line-height: 1.45;
+}
+
+.dimension-summary {
+  display: block;
+  margin-top: 10rpx;
+  color: var(--safe-text);
+  font-size: 22rpx;
+  line-height: 1.55;
 }
 
 .recommendation-block { margin-top: 16rpx; }

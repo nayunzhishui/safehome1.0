@@ -35,14 +35,14 @@
     {
       "artifact_type": "content",
       "path": "content/consent.md",
-      "sha256": "c300cd05a346d5d456369c3c07143c16e052625545f633b7b7919e64201c846d",
-      "size_bytes": 1661
+      "sha256": "184f80029f6cff602ccc847da743f3bbbeb7d699a6cc13b7eb2211e9db521994",
+      "size_bytes": 3326
     },
     {
       "artifact_type": "content",
       "path": "content/privacy.md",
-      "sha256": "11927fe33ba3685c4a72ebb59216ed93b5e633aa49a47560ef06d01da24b4e95",
-      "size_bytes": 1390
+      "sha256": "8021cb639acfba388c33a0a32f6d36c6c596b8d475c2b7f0c4c22cc053f269e7",
+      "size_bytes": 3995
     },
     {
       "artifact_type": "rule",
@@ -135,9 +135,15 @@
       "size_bytes": 2522
     },
     {
+      "artifact_type": "prompt",
+      "path": "content/ai_participant_use_case_policy.json",
+      "sha256": "e6f3b454799adb28b5dd8121c27f75f9ac2d3345f71cb68ae56b9e6d07666502",
+      "size_bytes": 1140
+    },
+    {
       "artifact_type": "knowledge_index",
       "path": "content/operations_knowledge_index.json",
-      "sha256": "dac494e19fffc0ed8a07fed91aa17ba575f60f1300dd6eccc7e1bbaa128b6abc",
+      "sha256": "b6059b718394a1e893674950de592c5277859dbbb631345f8d9c74febd35a111",
       "size_bytes": 12397
     },
     {
@@ -166,5 +172,5 @@
   "revision_policy": "never_edit_verified_package_create_new_version",
   "atomic_runtime_switch": true,
   "production_release_approved": false,
-  "manifest_hash": "0d00bafe34425614985f61c21af8449aefc36e6adc99964adc391a9c68adb73b"
+  "manifest_hash": "d359c3f512169de4fffa5c0a73e209a5240f55f6e0def9f1da4a1b886f742f56"
 }

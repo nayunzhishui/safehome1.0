@@ -82,11 +82,38 @@
     </view>
 
     <view wx:if="{{!profileSummary && scaleDimensions.length}}" class="safe-section">
-      <section-title title="维度得分" subtitle="各维度分开看，不相加、不比高低" />
+      <section-title title="维度位置" subtitle="各维度按自身量尺展示，不相加、不比高低" />
+      <view wx:if="{{scaleVisualization.showRadar}}" class="dimension-chart-card">
+        <canvas canvas-id="dimensionRadarCanvas" class="dimension-radar-canvas" aria-label="本次填写与各维度量尺中点的雷达图，具体分数和范围见下方维度卡片"></canvas>
+        <view class="dimension-chart-legend" aria-label="图例">
+          <view class="dimension-legend-item">
+            <text class="dimension-legend-swatch current"></text>
+            <text>{{scaleVisualization.currentLabel}}</text>
+          </view>
+          <view class="dimension-legend-item">
+            <text class="dimension-legend-swatch midpoint"></text>
+            <text>{{scaleVisualization.referenceLabel}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="dimension-chart-note">
+        <text>{{scaleVisualization.chartNote}}</text>
+      </view>
       <view class="dimension-list">
-        <view wx:for="{{scaleDimensions}}" wx:key="key" class="dimension-row">
-          <text class="dimension-label">{{item.label}}</text>
-          <text class="dimension-score">{{item.score}} 分</text>
+        <view wx:for="{{scaleVisualization.dimensions}}" wx:key="key" class="dimension-row">
+          <view class="dimension-row-head">
+            <text class="dimension-label">{{item.label}}</text>
+            <text class="dimension-score">{{item.score}} 分</text>
+          </view>
+          <view wx:if="{{item.hasComparableRange}}" class="dimension-progress" aria-label="{{item.label}} {{item.positionText}}">
+            <view class="dimension-progress-midpoint"></view>
+            <view class="dimension-progress-value" style="{{item.progressStyle}}"></view>
+          </view>
+          <view class="dimension-meta-row">
+            <text>{{item.rangeText}}</text>
+            <text>{{item.positionText}}</text>
+          </view>
+          <text class="dimension-summary">{{item.summary}}</text>
         </view>
       </view>
     </view>

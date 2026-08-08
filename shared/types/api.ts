@@ -3195,7 +3195,7 @@ export interface AiQaOutputGateSummary {
 export interface AiQaSession {
   id: ID;
   user_id: ID;
-  mode: "research_sandbox";
+  mode: "research_sandbox" | "participant_support";
   status: "active" | "deleted";
   synthetic_data: boolean | 0 | 1;
   context_policy: "current_session_only";
@@ -3214,21 +3214,28 @@ export interface AiQaUseCase {
   description: string;
   input_pattern: string;
   output_contract: string;
-  human_verification_required: true;
+  human_verification_required: boolean;
 }
 
 export interface AiQaUseCaseCatalog {
   policy_version: string;
-  stage: "research_synthetic_frozen";
+  stage: "research_synthetic_frozen" | "controlled_participant_support";
   allowed_use_cases: AiQaUseCase[];
   prohibited_categories: string[];
   participant_entry: {
-    current_stage_enabled: false;
+    current_stage_enabled: boolean;
     development_target_recorded: boolean;
     earliest_review_task: string;
   };
   write_actions_allowed: false;
   automatic_adoption_allowed: false;
+  boundary_notice: string;
+}
+
+export interface AiParticipantUseCasePolicy {
+  policy_version: string;
+  allowed_use_cases: AiQaUseCase[];
+  required_consent_type: "ai_assistance";
   boundary_notice: string;
 }
 
@@ -3303,18 +3310,18 @@ export interface AiProviderSelection {
 
 export interface AiQaConfig {
   service_name: string;
-  participant_enabled: false;
+  participant_enabled: boolean;
   sandbox_enabled: boolean;
   provider: "fake" | "deepseek" | "openai";
-  stage: "synthetic_research_sandbox";
-  governance_status: "blocked_human_review";
-  participant_eligible: false;
+  stage: "synthetic_research_sandbox" | "controlled_participant_support";
+  governance_status: string;
+  participant_eligible: boolean;
   gate_decisions: Record<string, { proposed: unknown; status: string }>;
   runtime_control: { killed: 0 | 1; changed_at?: ISODateTime | null };
   data_policy: {
     cross_session_memory: false;
     provider_training: false;
-    real_participant_data: false;
+    real_participant_data: boolean;
     write_tools: false;
     formal_participant_feedback_write: false;
     synthetic_retention_days: number;
@@ -3360,6 +3367,7 @@ export interface AiQaConfig {
     arbitrary_network_hosts_allowed: false;
   };
   output_contract: AiQaOutputGateSummary;
+  participant_use_case_policy: AiParticipantUseCasePolicy;
   runtime_limits: {
     policy_version: string;
     scopes: Array<"user" | "role" | "provider" | "project">;

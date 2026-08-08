@@ -2,7 +2,9 @@ const { createSafeHomeApi } = require("../../services/api");
 const { getAuthUser, requireLogin } = require("../../utils/authGuard");
 const { buildErrorDiagnostic, copyErrorDiagnostic } = require("../../utils/errorDiagnostics");
 
-const api = createSafeHomeApi();
+const api = createSafeHomeApi({
+  defaultHeaders: { "X-SafeHome-Researcher-Workspace": "1" },
+});
 
 const WORKSPACES = [
   { id: "pending", label: "待处理", capability: "research.dashboard.read" },

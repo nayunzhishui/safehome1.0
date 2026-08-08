@@ -1,4 +1,4 @@
-"""Prepare and apply a one-time researcher credential without committing secrets."""
+"""Prepare and apply one-time account credentials without committing secrets."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_USERNAME = "safehome_researcher_01"
 DEFAULT_BASE_URL = "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com"
-ALLOWED_BOOTSTRAP_ROLES = {"researcher", "supervisor", "admin"}
+ALLOWED_BOOTSTRAP_ROLES = {"parent", "student", "researcher", "supervisor", "admin"}
 ALLOWED_TARGET_ENVIRONMENTS = {"local", "test_cloud", "production"}
 ALLOWED_OPERATIONS = {"create", "rotate"}
 
@@ -59,14 +59,21 @@ def prepare(
     if len(username) < 3:
         raise ValueError("账号名至少需要3个字符。")
     if role not in ALLOWED_BOOTSTRAP_ROLES:
-        raise ValueError("初始化脚本只允许researcher、supervisor或admin角色。")
+        raise ValueError("账号角色必须是parent、student、researcher、supervisor或admin。")
     if target_environment not in ALLOWED_TARGET_ENVIRONMENTS:
         raise ValueError("目标环境只能是local、test_cloud或production。")
     if operation not in ALLOWED_OPERATIONS:
         raise ValueError("凭据操作只能是create或rotate。")
     now = datetime.now(timezone.utc)
     timestamp = now.astimezone().strftime("%Y%m%d_%H%M%S")
-    account_kind = "admin" if role == "admin" else role
+    account_kind = role
+    default_nicknames = {
+        "parent": "安心陪伴参与者",
+        "student": "安心陪伴参与者",
+        "researcher": "安心陪伴研究者",
+        "supervisor": "安心陪伴督导",
+        "admin": "安心陪伴管理员",
+    }
     target = receipt_path or ROOT / ".codex_tmp" / f"{account_kind}-account-{timestamp}.json"
     payload = {
         "schema": "safehome.one_time_credential.v1",
@@ -74,7 +81,7 @@ def prepare(
         "username": username,
         "password": secrets.token_urlsafe(20),
         "role": role,
-        "nickname": nickname or ("安心陪伴管理员" if role == "admin" else "安心陪伴研究者"),
+        "nickname": nickname or default_nicknames[role],
         "target_environment": target_environment,
         "operation": operation,
         "status": "pending_cloud_provision",
@@ -137,7 +144,7 @@ def rotate(receipt_path: Path, base_url: str, admin_token: str) -> dict:
 
 def _account_request(username: str, base_url: str, admin_token: str, *, action: str | None = None) -> dict:
     if not admin_token:
-        raise ValueError("缺少 ADMIN_EXPORT_TOKEN，不能核验或撤销账号。")
+        raise ValueError("缺少 ADMIN_EXPORT_TOKEN，不能核验、解锁或撤销账号。")
     normalized = str(username or "").strip()
     if len(normalized) < 3:
         raise ValueError("账号名至少需要3个字符。")
@@ -161,6 +168,10 @@ def verify(username: str, base_url: str, admin_token: str) -> dict:
     return _account_request(username, base_url, admin_token)
 
 
+def unlock(username: str, base_url: str, admin_token: str) -> dict:
+    return _account_request(username, base_url, admin_token, action="unlock")
+
+
 def revoke(username: str, base_url: str, admin_token: str) -> dict:
     return _account_request(username, base_url, admin_token, action="revoke")
 
@@ -181,7 +192,7 @@ def main() -> None:
     rotate_parser = subparsers.add_parser("rotate")
     rotate_parser.add_argument("--receipt", type=Path, required=True)
     rotate_parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
-    for command in ("verify", "revoke"):
+    for command in ("verify", "unlock", "revoke"):
         account_parser = subparsers.add_parser(command)
         account_parser.add_argument("--username", default=DEFAULT_USERNAME)
         account_parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
@@ -213,9 +224,8 @@ def main() -> None:
         print(f"credentials_rotated={result['data'].get('credentials_rotated', False)}")
         return
 
-    result = verify(args.username, args.base_url, admin_token) if args.command == "verify" else revoke(
-        args.username, args.base_url, admin_token
-    )
+    account_operations = {"verify": verify, "unlock": unlock, "revoke": revoke}
+    result = account_operations[args.command](args.username, args.base_url, admin_token)
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 

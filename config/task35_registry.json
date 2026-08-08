@@ -1,0 +1,25 @@
+{
+  "schema": "safehome.task35.registry.v1",
+  "version": "2026-07-30-t35-closure-v1",
+  "authoritative_plan": "docs/01_当前执行入口/任务三十五公开数据验证与模型优化完整实现计划_20260722.md",
+  "state_path": ".codex_tmp/task35_state.json",
+  "production_replacement_allowed": false,
+  "tasks": [
+    {"id": "T35-F00", "status": "engineering_complete", "evidence": ["content/offline_benchmark_protocol.json", "content/offline_baseline_manifest.json"]},
+    {"id": "T35-F01", "status": "engineering_complete_external_rights_review_pending", "evidence": ["content/offline_benchmark_registry.json"]},
+    {"id": "T35-F02", "status": "engineering_complete_external_ingest_blocked_by_dataset_gate", "evidence": ["backend/services/offline_benchmark_service.py", "content/task37_data_use_governance.json"]},
+    {"id": "T35-F03", "status": "engineering_complete_synthetic_adapters_only", "evidence": ["backend/services/affect_model_benchmark_service.py"]},
+    {"id": "T35-F04", "status": "engineering_complete_external_dual_review_pending", "evidence": ["content/offline_benchmark_label_mapping.json"]},
+    {"id": "T35-F05", "status": "engineering_complete_synthetic_baseline_only", "evidence": ["backend/services/affect_model_benchmark_service.py"]},
+    {"id": "T35-F06", "status": "blocked_human_gold_standard_pending", "evidence": ["content/offline_benchmark_annotation_manual.json"]},
+    {"id": "T35-F07", "status": "engineering_complete_candidate_only", "evidence": ["content/affect_model_candidate_registry.json"]},
+    {"id": "T35-F08", "status": "engineering_complete_synthetic_candidate_only", "evidence": ["backend/services/affect_model_benchmark_service.py"]},
+    {"id": "T35-F09", "status": "not_started_by_gate", "evidence": ["content/affect_model_candidate_registry.json"]},
+    {"id": "T35-F10", "status": "engineering_complete_synthetic_decision_only", "evidence": ["backend/services/affect_release_gate_service.py"]},
+    {"id": "T35-F11", "status": "engineering_complete_synthetic_network_only", "evidence": ["backend/services/group_network_analysis_service.py", "content/synthetic_group_network_suite.json"]},
+    {"id": "T35-F12", "status": "engineering_complete_shadow_only", "evidence": ["backend/services/affect_shadow_service.py", "apps/web/src/pages/OfflineBenchmarkWorkbench.tsx"]},
+    {"id": "T35-F13", "status": "engineering_complete", "evidence": ["backend/routes/offline_benchmarks.py", "shared/types/api.ts"]},
+    {"id": "T35-F14", "status": "engineering_complete_production_drill_pending", "evidence": ["backend/services/affect_monitor_service.py", "backend/scripts/migrate_task37_a05_model_registry.py"]},
+    {"id": "T35-F15", "status": "engineering_complete_external_and_production_gates_pending", "evidence": ["scripts/run_task35.py", "backend/tests/test_task35_registry.py"]}
+  ]
+}

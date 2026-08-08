@@ -47,6 +47,12 @@ Page({
     ],
     supportEntries: [
       {
+        title: "支持性问答",
+        subtitle: "基于已审核内容整理一个可暂停的小步骤",
+        url: "/pages/support-assistant/index",
+        private: true,
+      },
+      {
         title: "人工督导",
         subtitle: "获得专业补充反馈",
         url: "/pages/supervision/index",

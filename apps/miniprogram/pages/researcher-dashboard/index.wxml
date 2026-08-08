@@ -17,7 +17,7 @@
   </view>
   <view wx:if="{{developmentFullAccess}}" class="development-access-banner">
     <text class="development-access-title">开发全权限模式</text>
-    <text class="development-access-copy">普通测试账号临时可进入研究者工作区；这不是正式权限验收，正式发布前必须关闭。</text>
+    <text class="development-access-copy">普通测试账号临时可读写研究平台，包括权限配置、治疗性评估、AI、情感计算、网络分析、发布与生产门禁。业务状态机和证据约束仍然生效；正式发布前必须关闭此模式。</text>
   </view>
   <view wx:if="{{capabilityScope}}" class="capability-scope-card">
     <text class="capability-scope-title">当前身份：{{capabilityScope.formal_role}} · 能力矩阵 {{capabilityScope.registry_version}}</text>
@@ -374,7 +374,7 @@
       <view class="mine-row"><text>待处理事项</text><text>{{pendingTotal}} 项</text></view>
       <view class="mine-row"><text>最后同步</text><text>{{lastSyncText}}</text></view>
       <button class="safe-outline-button" bindtap="loadWorkbench">重新同步</button>
-      <text class="boundary-line">开发全权限仅用于联调，不代表当前普通账号拥有正式研究角色。</text>
+      <text class="boundary-line">开发全权限仅用于联调，所有操作仍记录原始账号；不代表普通账号获得正式研究角色。</text>
     </view>
   </view>
 

@@ -50,6 +50,10 @@ const ERROR_MESSAGES_BY_CODE = {
   validation_error: "提交内容还不完整，请检查后再试一次。",
   auth_required: "登录状态已过期，请重新登录后再继续。",
   unauthorized: "登录状态已过期，请重新登录后再继续。",
+  invalid_credentials: "用户名或密码不正确，请重新输入。",
+  account_locked: "该账号因多次登录失败已暂时锁定，请稍后再试。",
+  account_inactive: "该账号当前不可用，请联系管理员核对账号状态。",
+  temporary_credential_expired: "该账号的临时密码已过期，请联系管理员重置密码。",
   forbidden: "当前账号没有权限执行这个操作。",
   not_found: "没有找到对应内容，可能已经更新或不可访问。",
   network_error: "现在没能连上，请检查网络后再试一次。",
@@ -180,6 +184,7 @@ function createSafeHomeApi(options = {}) {
   const localHttpBaseUrl = cloudConfig.localHttpBaseUrl;
   const useLocalHttp = cloudConfig.useLocalHttp;
   const defaultUserId = options.defaultUserId || getAnonymousUserId();
+  const defaultHeaders = options.defaultHeaders || {};
 
   function getCurrentDefaultUserId() {
     try {
@@ -258,6 +263,7 @@ function createSafeHomeApi(options = {}) {
           header: {
             "content-type": "application/json",
             ...authHeader,
+            ...defaultHeaders,
             ...(options.header || {}),
           },
           success(res) {
@@ -305,6 +311,7 @@ function createSafeHomeApi(options = {}) {
         header: {
           "content-type": "application/json",
           ...authHeader,
+          ...defaultHeaders,
           ...(options.header || {}),
           "X-WX-SERVICE": containerService,
         },

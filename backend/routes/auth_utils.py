@@ -13,15 +13,28 @@ AUTH_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7
 ALLOWED_ROLES = {"parent", "student", "researcher", "supervisor", "admin"}
 PUBLIC_REGISTER_ROLES = {"parent", "student"}
 # Formal researcher data never uses the generic showcase read bypass. The
-# separate development exception below stays exact-path and visibly labelled.
+# separate development exception below is limited to named research-platform
+# namespaces and must be disabled before formal authorization acceptance.
 SHOWCASE_READ_PATH_PREFIXES: tuple[str, ...] = ()
 SHOWCASE_RESEARCHER_PLATFORM_PATH_PREFIXES = (
+    "/api/research/",
+    "/api/therapeutic-assessment/",
+    "/api/ai-qa/",
     "/api/relationship-pilot/",
-    "/api/text-analysis/summary",
+    "/api/text-analysis/",
+    "/api/operations-governance/",
+    "/api/reliability/",
+    "/api/content-review/",
+    "/api/security/",
+    "/api/ux-governance/",
+    "/api/risk-review/",
+    "/api/supervision/",
 )
 SHOWCASE_RESEARCHER_PLATFORM_OPERATIONS = {
+    # Researcher-to-participant messaging lives outside a research namespace.
     ("POST", "/api/messages"),
 }
+SHOWCASE_RESEARCHER_WORKSPACE_HEADER = "X-SafeHome-Researcher-Workspace"
 
 
 class AuthError(ValueError):
@@ -132,17 +145,21 @@ def require_login(allow_legacy_admin: bool = True) -> dict:
 
 
 def elevate_actor_for_showcase_researcher_platform(actor: dict) -> dict:
-    """Temporarily elevate signed-in users inside the researcher platform only.
+    """Temporarily elevate signed-in users for research-platform operations.
 
-    P0-01 is intentionally not changed in this branch per project-owner scope.
-    New minor safeguards read original_role before trusting an elevated role so
-    showcase cannot accidentally count as guardian/minor permission.
+    This development exception covers reads and writes, including research
+    permission configuration and module-specific release gates. It does not
+    cover generic account administration or unrelated participant APIs.
+    Downstream services still enforce payload, state-machine, evidence and
+    ownership invariants. ``original_role`` prevents the elevation from being
+    mistaken for guardian/minor authorization.
     """
 
     from services.showcase_access_service import allow_showcase_researcher_platform_full_access
 
     if (
         allow_showcase_researcher_platform_full_access()
+        and request.headers.get(SHOWCASE_RESEARCHER_WORKSPACE_HEADER) == "1"
         and (
             request.path.startswith(SHOWCASE_RESEARCHER_PLATFORM_PATH_PREFIXES)
             or (request.method, request.path) in SHOWCASE_RESEARCHER_PLATFORM_OPERATIONS

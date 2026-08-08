@@ -38,7 +38,7 @@
     {
       "source_file": "consent.md",
       "source_version": "2026.07-task24",
-      "source_sha256": "c300cd05a346d5d456369c3c07143c16e052625545f633b7b7919e64201c846d",
+      "source_sha256": "184f80029f6cff602ccc847da743f3bbbeb7d699a6cc13b7eb2211e9db521994",
       "content_types": [
         "consent_text"
       ],
@@ -174,7 +174,7 @@
     {
       "source_file": "privacy.md",
       "source_version": "2026.07-task24",
-      "source_sha256": "11927fe33ba3685c4a72ebb59216ed93b5e633aa49a47560ef06d01da24b4e95",
+      "source_sha256": "8021cb639acfba388c33a0a32f6d36c6c596b8d475c2b7f0c4c22cc053f269e7",
       "content_types": [
         "privacy_text"
       ],
@@ -279,7 +279,7 @@
     {
       "source_file": "ux_experience_registry.json",
       "source_version": "2026.07-task33-v1",
-      "source_sha256": "a41b64073a139fc078ce57a0bb09af124895ffa3604b7737513ea0bedd8d45f1",
+      "source_sha256": "a157a0e541fa10f5235f633db86120d585a2c780823a71ac94b08074aa050cf7",
       "content_types": [
         "page_inventory",
         "information_architecture",
@@ -294,5 +294,5 @@
   "draft_or_internal_notes_indexed": false,
   "participant_text_indexed": false,
   "production_release_approved": false,
-  "index_hash": "f7972d85a85d6c2418c94805e1ee24d23a941c495f2b8cc96a4dcb38ef8a9963"
+  "index_hash": "0193f996f8ec1ff8ad822f5ec4ec9e52ccdc4c321c8e1de954a7e27081e90126"
 }

@@ -1,0 +1,41 @@
+{
+  "schema": "safehome.task35.offline-baseline-manifest.v1",
+  "version": "2026-07-30-t35-closure-v1",
+  "git_commit": "1fc556da9c12948132e8e77c0f14bd7776d53d4b",
+  "random_seed": 37,
+  "artifacts": [
+    {
+      "path": "content/offline_benchmark_registry.json",
+      "sha256": "754dfc66732901f330f0b0684e496550221f839c266e9d8036a023ed8e228cdd"
+    },
+    {
+      "path": "content/offline_benchmark_label_mapping.json",
+      "sha256": "26d6c370703262519f994c12e2e2de9b4676d553c6673e417382076840227d22"
+    },
+    {
+      "path": "content/offline_benchmark_annotation_manual.json",
+      "sha256": "fd453f41f145066e1ca18fcd674631be8a5ba86b80d1197191cdc4bdbddda1a7"
+    },
+    {
+      "path": "content/synthetic_affect_benchmark_240.json",
+      "sha256": "cf87c21162b260301b8332eb190e71a8c3b809c4047dbdcd019a6782f744d1cd"
+    },
+    {
+      "path": "content/synthetic_group_network_suite.json",
+      "sha256": "fd3c1c0f0b4dfe8f6b7ce777af0be97ace1fa581807a6432f6844a68e2fc1ce3"
+    },
+    {
+      "path": "content/affect_model_candidate_registry.json",
+      "sha256": "3ea908597c5baa380794382eaea20016ffd126d25bc9f5b250772cd5480974f5"
+    },
+    {
+      "path": "content/affect_shadow_execution_policy.json",
+      "sha256": "da6c720472ae83188cc0352364bf4f7656e7f3bdbff07cdc27b2f162dd4af9c7"
+    },
+    {
+      "path": "content/network_analysis_policy.json",
+      "sha256": "8e1b9096c9cac0739f5230892c88f8432364809055005accbb6c9c1b8bf24010"
+    }
+  ],
+  "boundary_notice": "该清单冻结工程基线，不表示外部数据权利、人工金标准、生产替换或发布获批。"
+}

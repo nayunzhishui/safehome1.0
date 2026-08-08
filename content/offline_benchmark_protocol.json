@@ -1,0 +1,48 @@
+{
+  "schema": "safehome.task35.offline-benchmark-protocol.v1",
+  "version": "2026-07-30-t35-closure-v1",
+  "status": "frozen_engineering_protocol",
+  "research_questions": [
+    "中文情绪表达线索在合成项目域样本上的覆盖率、弃答率和严重错误率如何",
+    "域外、低信息和冲突表达能否被稳定拒绝并转入人工复核",
+    "群体级网络指标在节点重命名、边顺序和权重扰动下是否保持可复现"
+  ],
+  "primary_metrics": [
+    "macro_f1",
+    "per_label_precision_recall_f1",
+    "coverage_rate",
+    "abstention_rate",
+    "severe_error_rate"
+  ],
+  "secondary_metrics": [
+    "calibration_error",
+    "bootstrap_confidence_interval",
+    "top_k_jaccard",
+    "community_ari",
+    "community_nmi"
+  ],
+  "stop_conditions": [
+    "测试集进入调参输入",
+    "原始文本进入普通日志、数据库或API",
+    "严重错误率高于冻结基线",
+    "权利状态不允许当前用途",
+    "候选结果影响参与者反馈、风险判断或训练卡推荐"
+  ],
+  "fixed_boundaries": {
+    "clinical_diagnosis_allowed": false,
+    "relationship_quality_inference_allowed": false,
+    "training_effectiveness_claim_allowed": false,
+    "participant_effect_allowed": false,
+    "production_replacement_automatic": false
+  },
+  "data_split_policy": {
+    "group_leakage_allowed": false,
+    "test_used_for_tuning": false,
+    "random_seed": 37
+  },
+  "change_policy": {
+    "in_place_overwrite_allowed": false,
+    "new_version_required": true,
+    "test_results_may_change_mapping": false
+  }
+}

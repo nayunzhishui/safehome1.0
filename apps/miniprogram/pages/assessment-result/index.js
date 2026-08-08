@@ -1,4 +1,5 @@
 const { createSafeHomeApi } = require("../../services/api");
+const { buildDimensionVisualization } = require("../../utils/assessment-dimension-visualization");
 
 const api = createSafeHomeApi();
 const LATEST_TRAINING_RECOMMENDATION_KEY = "safehome:latestTrainingRecommendation";
@@ -61,6 +62,7 @@ function buildScaleDimensions(result, profileSummary) {
         label: item.label || item.key,
         score: item.score,
         itemCount: item.item_count,
+        scoreMethod: item.score_method || "sum",
         summary: `${countText}（仅本维度内观察，不与其它维度相加比较）`,
       };
     });
@@ -420,6 +422,7 @@ Page({
     sourceNotice: null,
     trainingRecommendation: null,
     scaleDimensions: [],
+    scaleVisualization: null,
     riskSummary: null,
     profilePosition: null,
   },
@@ -434,6 +437,7 @@ Page({
 
   onReady() {
     this.drawProfilePositionCharts();
+    this.drawScaleDimensionChart();
   },
 
   async loadResult() {
@@ -451,6 +455,7 @@ Page({
         profilePosition = buildProfilePositionSummary(positionPayload);
       }
       const scaleDimensions = buildScaleDimensions(result, profileSummary);
+      const scaleVisualization = buildDimensionVisualization(scaleDimensions, worksheet);
       const sourceNotice = buildSourceNotice(worksheet, profileSummary);
       const riskSummary = buildRiskSummary(result);
       const trainingRecommendation = buildTrainingRecommendation(worksheet, profileSummary, cards);
@@ -468,12 +473,16 @@ Page({
               : "暂无固定推荐",
           profileSummary,
           scaleDimensions,
+          scaleVisualization,
           sourceNotice,
           trainingRecommendation,
           riskSummary,
           profilePosition,
         },
-        () => this.drawProfilePositionCharts(),
+        () => {
+          this.drawProfilePositionCharts();
+          this.drawScaleDimensionChart();
+        },
       );
     } catch (error) {
       this.setData({
@@ -594,6 +603,82 @@ Page({
         const x = centerX + Math.cos(angle) * (radius + 18);
         const y = centerY + Math.sin(angle) * (radius + 18);
         ctx.fillText(item.axisLabel || String(index + 1), Math.max(12, Math.min(x, width - 12)), Math.max(12, Math.min(y + 4, height - 8)));
+      });
+      ctx.draw();
+    });
+  },
+
+  drawScaleDimensionChart() {
+    const visualization = this.data.scaleVisualization;
+    const features = visualization && visualization.radarFeatures ? visualization.radarFeatures : [];
+    if (!visualization || !visualization.showRadar || features.length < 3) return;
+    this.withCanvasSize(".dimension-radar-canvas", { width: 320, height: 300 }, ({ width, height }) => {
+      const ctx = wx.createCanvasContext("dimensionRadarCanvas", this);
+      const centerX = width / 2;
+      const centerY = height / 2 + 4;
+      const radius = Math.min(width * 0.32, height * 0.31);
+      const pointAt = (index, ratio, extra = 0) => {
+        const angle = (Math.PI * 2 * index) / features.length - Math.PI / 2;
+        return {
+          angle,
+          x: centerX + Math.cos(angle) * (radius * ratio + extra),
+          y: centerY + Math.sin(angle) * (radius * ratio + extra),
+        };
+      };
+      const drawPolygon = (valueKey, stroke, fill, lineWidth) => {
+        ctx.setStrokeStyle(stroke);
+        ctx.setFillStyle(fill);
+        ctx.setLineWidth(lineWidth);
+        ctx.beginPath();
+        features.forEach((item, index) => {
+          const point = pointAt(index, Number(item[valueKey]));
+          if (index === 0) ctx.moveTo(point.x, point.y);
+          else ctx.lineTo(point.x, point.y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      };
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.setFillStyle("#fffdf8");
+      ctx.fillRect(0, 0, width, height);
+
+      [0.25, 0.5, 0.75, 1].forEach((ratio) => {
+        ctx.setStrokeStyle(ratio === 0.5 ? "#b8d4e8" : "#dde5df");
+        ctx.setLineWidth(ratio === 0.5 ? 1.5 : 1);
+        ctx.beginPath();
+        features.forEach((_item, index) => {
+          const point = pointAt(index, ratio);
+          if (index === 0) ctx.moveTo(point.x, point.y);
+          else ctx.lineTo(point.x, point.y);
+        });
+        ctx.closePath();
+        ctx.stroke();
+      });
+
+      ctx.setStrokeStyle("#e5e9e4");
+      ctx.setLineWidth(1);
+      features.forEach((_item, index) => {
+        const point = pointAt(index, 1);
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
+      });
+
+      drawPolygon("referenceValue", "#74add7", "rgba(116, 173, 215, 0.10)", 2);
+      drawPolygon("value", "#4f7c6b", "rgba(79, 124, 107, 0.20)", 2.5);
+
+      ctx.setFillStyle("#23473c");
+      ctx.setFontSize(11);
+      features.forEach((item, index) => {
+        const point = pointAt(index, 1, 22);
+        const cos = Math.cos(point.angle);
+        ctx.setTextAlign(cos > 0.25 ? "left" : cos < -0.25 ? "right" : "center");
+        const safeX = Math.max(8, Math.min(point.x, width - 8));
+        const safeY = Math.max(14, Math.min(point.y + 4, height - 8));
+        ctx.fillText(item.axisLabel, safeX, safeY);
       });
       ctx.draw();
     });

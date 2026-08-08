@@ -2,7 +2,7 @@
 
 from flask import Blueprint, request
 
-from routes.auth_utils import AuthError, auth_error_response, require_login
+from routes.auth_utils import AuthError, auth_error_response, elevate_actor_for_showcase_researcher_platform, require_login
 from routes.utils import fail, ok
 from services.therapeutic_assessment_service import (
     TherapeuticAssessmentError,
@@ -148,7 +148,9 @@ bp = Blueprint("therapeutic_assessment", __name__, url_prefix="/api/therapeutic-
 
 def _actor():
     try:
-        return require_login(allow_legacy_admin=True), None
+        return elevate_actor_for_showcase_researcher_platform(
+            require_login(allow_legacy_admin=True)
+        ), None
     except AuthError as exc:
         return None, auth_error_response(exc)
 

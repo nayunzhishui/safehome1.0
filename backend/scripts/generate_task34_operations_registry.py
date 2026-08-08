@@ -105,6 +105,7 @@ ARTIFACTS = [
     ("model", "content/profiles/task12_relationship_initiation_intention_action_profile_model.json"),
     ("prompt", "content/ai_qa_safety_responses.json"),
     ("prompt", "content/ai_qa_governance.json"),
+    ("prompt", "content/ai_participant_use_case_policy.json"),
     ("knowledge_index", "content/operations_knowledge_index.json"),
     ("governance_card", "content/operations_asset_cards.json"),
     ("capability_registry", "content/operations_capability_registry.json"),

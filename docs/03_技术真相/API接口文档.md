@@ -229,8 +229,8 @@
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `user_id` | string | 否 | 匿名用户 ID；开发环境缺省为 `demo-parent`，生产环境必填 |
-| `consent_type` | string | 是 | `user_agreement`、`privacy_policy`、`non_diagnostic_notice`、`research_authorization`、`contact_permission` |
-| `consent_version` | string | 否 | 同意文本版本，缺省为 `2026.06-consent-v1` |
+| `consent_type` | string | 是 | `user_agreement`、`privacy_policy`、`non_diagnostic_notice`、`research_authorization`、`contact_permission`、`ai_assistance`、`relationship_analysis` |
+| `consent_version` | string | 否 | 同意文本版本，缺省为 `2026.07-consent-v2` |
 | `agreed` | boolean | 是 | 是否同意；`research_authorization` 允许为 `false` |
 
 响应字段：
@@ -1410,9 +1410,9 @@ Invoke-WebRequest `
 
 ### `POST /api/auth/admin-create-account`
 
-用途：由持有 `X-Admin-Token` 的负责人创建研究者、督导或管理员等后台角色账号。可传 `rotate_existing=true` 显式轮换同名账号凭据，但轮换不能同时改变角色；未显式传该字段时，同名账号返回 `409 username_exists`。
+用途：由持有 `X-Admin-Token` 的负责人创建或恢复任意受支持角色账号。可传 `rotate_existing=true` 为同名账号设置新密码并清除锁定、停用理由和临时凭据状态；轮换保留原用户 ID、历史数据和角色，且不能同时改变角色。未显式传该字段时，同名账号返回 `409 username_exists`。
 
-生产研究者用户名固定为 `safehome_researcher_01`。一次性密码由 `backend/scripts/bootstrap_researcher.py prepare` 生成到 `.codex_tmp`，再由 `apply` 子命令调用本接口；密码不得写入 Git、API 文档或普通运行日志。
+生产研究者用户名固定为 `safehome_researcher_01`。一次性密码由 `backend/scripts/bootstrap_researcher.py prepare` 生成到 `.codex_tmp`，再由 `apply` 或 `rotate` 子命令调用本接口；脚本也支持为既有 `parent`、`student` 账号生成恢复凭据，并提供`verify`、`unlock`和`revoke`账号状态操作。密码不得写入 Git、API 文档或普通运行日志。
 
 一次性凭据还必须传 `temporary_credential=true`、唯一 `credential_receipt_id` 和不超过24小时的 `credential_expires_at`。同一账号重复应用同一receipt为幂等成功；receipt跨账号复用返回`409 credential_receipt_reused`。一次性密码至少12位并包含四类字符中的三类。
 
@@ -2042,7 +2042,7 @@ relationship_initiation_intention_action
 
 ## 2026-07-20：受控AI合成研究沙盒
 
-`GET /api/ai-qa/config`公开返回“参与者未开放”、fake provider、沙盒是否停用和未决治理状态，不返回停用原因、操作者、密钥或内部提示。小程序只接入这一状态接口，没有参与者问答、创建会话或发送消息方法。
+本节记录2026-07-20的历史合成沙盒基线。2026-07-30参与者受控问答链路已补齐，当前口径见本节末“参与者支持性问答增量”；历史记录不删除。
 
 | 接口 | 权限与用途 |
 |---|---|
@@ -2173,7 +2173,9 @@ relationship_initiation_intention_action
 - `PATCH /api/research/access/assignments/{id}`：admin-only，使用`expected_version`撤销或转交；必须提供`Idempotency-Key`，相同键和载荷重放第一次结果，不同载荷复用同一键返回409；
 - `POST /api/research/access/enrollments/{id}/claim`：researcher领取活动且未分配报名，必须提供`Idempotency-Key`。
 
-正式对象范围为researcher=明确分配、supervisor=监督分配、admin=全部。拒绝包络为`403 forbidden`，`error.details.required_capability`只说明所需能力，不返回敏感对象内容；顶层始终带`request_id`。临时`researcher_platform_full_access`仍只用于既有精确开发路径，不能授权导出、账号、安全或生产操作。
+正式对象范围为researcher=明确分配、supervisor=监督分配、admin=全部。拒绝包络为`403 forbidden`，`error.details.required_capability`只说明所需能力，不返回敏感对象内容；顶层始终带`request_id`。
+
+2026-08-08临时开发例外：当`researcher_platform_full_access=true`且请求显式携带`X-SafeHome-Researcher-Workspace: 1`时，任意已登录账号在已列入研究平台的命名空间内临时按admin能力执行读写操作，范围包含研究权限、治疗性评估、AI、情感计算、网络分析、内容/可靠性/安全/体验/运营治理及其发布或生产门禁。该例外不覆盖`/api/auth/*`账号管理、通用后台管理或普通参与者接口；业务状态机、证据约束、高风险阻断和审计仍生效。正式发布前必须关闭配置，且不得据此通过正式权限验收。
 
 ## 2026-07-22：任务36 F04研究者移动工作台契约
 
@@ -2424,6 +2426,15 @@ relationship_initiation_intention_action
 - `POST /api/ai-qa/release/rollback`：仅管理员可因无来源、越权、错误发布、供应商治理违约或kill switch不可用立即回退到较早阶段；回退同时启用AI kill switch，但不关闭消息、记录和人工反馈。
 - `POST /api/ai-qa/release/evidence-packages`：督导或管理员生成只读证据包，包含策略/运行/质量/供应商治理制品哈希、当前阶段和阻断项；不包含密钥或原始参与者文本，也不形成生产批准。
 - `GET /api/ai-qa/config`新增`release_plan`，公开当前工程阶段和门禁；`participant_entry_enabled`与`production_release_approved`保持服务端失败关闭。
+
+### 2026-07-30 参与者支持性问答增量
+
+- `GET /api/ai-qa/config`动态返回`participant_enabled`、`participant_eligible`、`stage`和`participant_use_case_policy`。只有服务端`AI_QA_ENABLED=1`且全局kill switch未触发时，参与者入口才可用。
+- `GET/POST /api/ai-qa/sessions`、`GET/DELETE /api/ai-qa/sessions/<id>`、`POST /api/ai-qa/sessions/<id>/messages`与`POST /api/ai-qa/messages/<id>/feedback`允许`parent/student`访问本人会话。
+- 参与者必须先提交当前有效的`ai_assistance`独立同意；撤回同意后，新建会话、发送消息和评价均失败关闭。
+- 参与者会话固定为`participant_support`、`synthetic_data=0`、`research_use_allowed=0`，不允许跨会话记忆、写工具、自动采用、诊断、危机结论、量表正式解释或关系质量判断。
+- 小程序`pages/support-assistant/index`提供同意、会话、提问、引用和删除入口；它不直接选择供应商，不持有密钥，也不能把回答写成正式研究者反馈。
+- `PRODUCTION_FEATURES_UNLOCKED=1`只使受控生产开关可操作；`APP_ENV=production`下启用参与者问答时禁止使用fake供应商。平台审核、真实供应商证据、Secret、数据区域、真机和发布负责人批准仍是独立门禁。
 
 ### T38-F13 低风险成人L1/L2首发范围
 

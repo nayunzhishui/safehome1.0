@@ -92,26 +92,84 @@ def _load_gate(gate_receipt: Path | None, config: dict) -> dict:
     return gate
 
 
+def _proxy_command(config: dict) -> list[str]:
+    proxy = config["local_proxy"]
+    return [
+        sys.executable,
+        str(ROOT / "scripts/researcher_access_proxy.py"),
+        "--listen-host",
+        str(proxy["host"]),
+        "--port",
+        str(proxy["port"]),
+        "--web-root",
+        str(_resolve_project_path(config["web_root"])),
+        "--api-base-url",
+        str(config["api_base_url"]),
+        "--max-request-bytes",
+        str(proxy.get("max_request_bytes") or 1048576),
+    ]
+
+
+def start_local(
+    config_path: Path, *, state_path: Path = DEFAULT_STATE
+) -> dict:
+    """Start only the loopback proxy for build/login verification.
+
+    This command never starts a public tunnel and therefore cannot be presented
+    as external-access approval.
+    """
+
+    config = _load_config(config_path)
+    log_dir = _resolve_project_path(config["runtime"]["log_dir"])
+    log_dir.mkdir(parents=True, exist_ok=True)
+    proxy_log = (log_dir / "proxy-local.log").open("ab")
+    proxy_process = subprocess.Popen(
+        _proxy_command(config),
+        cwd=ROOT,
+        stdout=proxy_log,
+        stderr=subprocess.STDOUT,
+    )
+    state = {
+        "schema": "safehome.external_access_state.v1",
+        "mode": "local_verification",
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "public_host": None,
+        "data_scope": "local_only",
+        "gate_receipt_sha256": None,
+        "gate_expires_at": None,
+        "proxy_pid": proxy_process.pid,
+        "tunnel_pid": 0,
+        "public_access_started": False,
+    }
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = state_path.with_suffix(".tmp")
+    temporary.write_text(
+        json.dumps(state, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    os.replace(temporary, state_path)
+    return {
+        "status": "local_started",
+        "local_url": (
+            f"http://{config['local_proxy']['host']}:"
+            f"{config['local_proxy']['port']}"
+        ),
+        "public_access_started": False,
+        "state_path": str(state_path),
+    }
+
+
 def start(config_path: Path, *, gate_receipt: Path | None, state_path: Path = DEFAULT_STATE) -> dict:
     config = _load_config(config_path)
     if config.get("enabled") is not True:
         raise PermissionError("配置enabled=false，禁止启动外部访问")
     gate = _load_gate(gate_receipt, config)
     proxy = config["local_proxy"]
-    web_root = _resolve_project_path(config["web_root"])
     log_dir = _resolve_project_path(config["runtime"]["log_dir"])
     log_dir.mkdir(parents=True, exist_ok=True)
     proxy_log = (log_dir / "proxy.log").open("ab")
     tunnel_log = (log_dir / "tunnel.log").open("ab")
-    proxy_command = [
-        sys.executable,
-        str(ROOT / "scripts/researcher_access_proxy.py"),
-        "--listen-host", str(proxy["host"]),
-        "--port", str(proxy["port"]),
-        "--web-root", str(web_root),
-        "--api-base-url", str(config["api_base_url"]),
-        "--max-request-bytes", str(proxy.get("max_request_bytes") or 1048576),
-    ]
+    proxy_command = _proxy_command(config)
     tunnel = config["tunnel"]
     tunnel_binary = str(tunnel.get("binary") or "cloudflared")
     if shutil.which(tunnel_binary) is None:
@@ -148,6 +206,7 @@ def start(config_path: Path, *, gate_receipt: Path | None, state_path: Path = DE
         "gate_expires_at": gate["expires_at"],
         "proxy_pid": proxy_process.pid,
         "tunnel_pid": tunnel_process.pid,
+        "public_access_started": True,
     }
     state_path.parent.mkdir(parents=True, exist_ok=True)
     temporary = state_path.with_suffix(".tmp")
@@ -195,7 +254,8 @@ def status(state_path: Path = DEFAULT_STATE) -> dict:
     state = json.loads(state_path.read_text(encoding="utf-8"))
     return {
         "status": "state_present",
-        "public_access_started": True,
+        "public_access_started": bool(state.get("public_access_started")),
+        "mode": state.get("mode", "public_tunnel"),
         "public_host": state.get("public_host"),
         "data_scope": state.get("data_scope"),
         "gate_expires_at": state.get("gate_expires_at"),
@@ -205,7 +265,7 @@ def status(state_path: Path = DEFAULT_STATE) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description="SafeHome controlled external access lifecycle")
     subparsers = parser.add_subparsers(dest="command", required=True)
-    for command in ("prepare", "verify"):
+    for command in ("prepare", "verify", "start-local"):
         command_parser = subparsers.add_parser(command)
         command_parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     start_parser = subparsers.add_parser("start")
@@ -219,6 +279,8 @@ def main() -> None:
         result = prepare(args.config, dry_run=True)
     elif args.command == "start":
         result = start(args.config, gate_receipt=args.gate_receipt)
+    elif args.command == "start-local":
+        result = start_local(args.config)
     elif args.command == "verify":
         result = verify(args.config)
     elif args.command == "stop":
