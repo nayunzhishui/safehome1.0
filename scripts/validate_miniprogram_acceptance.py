@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APP_JSON_PATH = ROOT / "apps/miniprogram/app.json"
 SCENARIO_PATH = ROOT / "tools/miniprogram-acceptance/scenarios.json"
 TASK36_PATH = ROOT / "config/task36_registry.json"
+TASK36_WECHAT_AUDIT_PATH = ROOT / "scripts/audit_task36_wechat_login.py"
 RUNNER_PATH = ROOT / "tools/miniprogram-acceptance/run.js"
 PACKAGE_PATH = ROOT / "tools/miniprogram-acceptance/package.json"
 
@@ -33,7 +34,6 @@ def load_json(path: Path) -> dict:
 def main() -> int:
     app = load_json(APP_JSON_PATH)
     manifest = load_json(SCENARIO_PATH)
-    task36 = load_json(TASK36_PATH)
     package = load_json(PACKAGE_PATH)
     runner_text = RUNNER_PATH.read_text(encoding="utf-8")
     manifest_text = SCENARIO_PATH.read_text(encoding="utf-8")
@@ -74,21 +74,26 @@ def main() -> int:
             + ", ".join(uncovered)
         )
 
-    external_gates = set()
-    for task in task36.get("tasks", []):
-        for gate in task.get("external_gates_pending", []):
-            external_gates.add(gate)
-    # T36-F10 audit also encodes these gates directly in source; registry versions
-    # may represent them at task or policy level, so the harness requires the
-    # canonical acceptance concepts rather than a brittle exact task layout.
-    combined_task_text = TASK36_PATH.read_text(encoding="utf-8")
-    for required in (
-        "wechat_devtools",
-        "android",
-        "ios",
-    ):
-        if required.lower() not in combined_task_text.lower():
-            warnings.append(f"Task36 registry does not visibly contain expected external gate token: {required}")
+    # Task36 keeps the executable external-gate declaration in the dedicated
+    # WeChat audit source. Validate the registry + audit as one acceptance truth
+    # instead of assuming every gate is duplicated into task36_registry.json.
+    combined_task_text = "\n".join(
+        [
+            TASK36_PATH.read_text(encoding="utf-8"),
+            TASK36_WECHAT_AUDIT_PATH.read_text(encoding="utf-8"),
+        ]
+    ).lower()
+    required_external_gates = (
+        "wechat_devtools_first_and_repeat_login",
+        "android_ios_real_device",
+        "disabled_account_and_token_expiry",
+    )
+    external_gate_tokens_seen: list[str] = []
+    for required in required_external_gates:
+        if required in combined_task_text:
+            external_gate_tokens_seen.append(required)
+        else:
+            failures.append(f"Task36 acceptance truth is missing required external gate: {required}")
 
     if "miniprogram-automator" not in package.get("dependencies", {}):
         failures.append("package.json must pin miniprogram-automator")
@@ -117,7 +122,7 @@ def main() -> int:
         "referenced_page_count": len(referenced_pages),
         "failures": failures,
         "warnings": warnings,
-        "external_gate_tokens_seen": sorted(external_gates),
+        "external_gate_tokens_seen": external_gate_tokens_seen,
     }
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 1 if failures else 0
