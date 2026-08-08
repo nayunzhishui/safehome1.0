@@ -83,6 +83,22 @@ def build_snapshot() -> dict:
     }
 
 
+def _without_line_number(location: str) -> str:
+    path, separator, line = str(location or "").rpartition(":")
+    return path if separator and line.isdigit() else str(location or "")
+
+
+def _semantic_snapshot(snapshot: dict) -> dict:
+    normalized = json.loads(json.dumps(snapshot))
+    for finding in normalized.get("findings", []):
+        finding["location"] = _without_line_number(finding.get("location", ""))
+    return normalized
+
+
+def snapshots_semantically_equal(saved: dict, current: dict) -> bool:
+    return _semantic_snapshot(saved) == _semantic_snapshot(current)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
@@ -93,9 +109,19 @@ def main() -> int:
         print(f"API boundary audit blockers: {snapshot['counts']['blocker']}")
         return 1
     if args.check:
-        if not SNAPSHOT_PATH.exists() or SNAPSHOT_PATH.read_text(encoding="utf-8") != rendered:
+        if not SNAPSHOT_PATH.exists():
             print("API boundary audit drift: regenerate shared/contracts/api-boundary-audit.json")
             return 1
+        try:
+            saved = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            print("API boundary audit drift: regenerate shared/contracts/api-boundary-audit.json")
+            return 1
+        if not snapshots_semantically_equal(saved, snapshot):
+            print("API boundary audit drift: regenerate shared/contracts/api-boundary-audit.json")
+            return 1
+        if saved != snapshot:
+            print("API boundary audit note: source line numbers moved; semantic findings are unchanged")
         print(f"API boundary audit passed: {snapshot['counts']['warning']} review warnings, 0 blockers")
         return 0
     SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)

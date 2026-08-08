@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 
 from flask import current_app
 
 from database import get_connection, json_dumps, new_id, now_iso, row_to_dict, write_audit_log
+from services.artifact_integrity_service import artifact_sha256
 from services.therapeutic_assessment_service import TherapeuticAssessmentError
 
 
@@ -20,8 +20,9 @@ EXPECTED = {
 
 
 def _read(name: str) -> tuple[dict, str]:
-    raw = (current_app.config["CONTENT_DIR"] / name).read_bytes()
-    return json.loads(raw.decode("utf-8")), hashlib.sha256(raw).hexdigest()
+    path = current_app.config["CONTENT_DIR"] / name
+    raw = path.read_bytes()
+    return json.loads(raw.decode("utf-8")), artifact_sha256(path)
 
 
 def contract_status() -> dict:

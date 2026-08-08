@@ -8,6 +8,12 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BACKEND_DIR = PROJECT_ROOT / "backend"
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
+
+from services.artifact_integrity_service import artifact_sha256  # noqa: E402
+
 DEFAULT_CONTENT_DIR = PROJECT_ROOT / "content"
 DEFAULT_SCHEMA_DIR = DEFAULT_CONTENT_DIR / "schemas"
 
@@ -1007,7 +1013,7 @@ def validate_therapeutic_assessment_contract(content_dir: Path) -> list[str]:
         if not source_path.exists():
             errors.append(f"{filename} 指向不存在的来源契约：{source_name}")
             continue
-        if hashlib.sha256(source_path.read_bytes()).hexdigest() != expected_hash:
+        if artifact_sha256(source_path) != expected_hash:
             errors.append(f"{filename} 来源契约哈希漂移：{source_name}")
     queue_filename = "therapeutic_assessment_queue_policy.json"
     try:
@@ -1674,7 +1680,7 @@ def validate_operations_governance_content(content_dir: Path) -> list[str]:
     for item in manifest.get("artifacts", []):
         relative = str(item.get("path") or "")
         target = content_dir / relative.removeprefix("content/")
-        if not target.is_file() or hashlib.sha256(target.read_bytes()).hexdigest() != item.get("sha256"):
+        if not target.is_file() or artifact_sha256(target) != item.get("sha256"):
             errors.append(f"运营发布制品哈希无效：{relative}")
     return errors
 

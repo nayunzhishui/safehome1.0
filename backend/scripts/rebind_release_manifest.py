@@ -12,11 +12,17 @@ Examples:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+BACKEND = ROOT / "backend"
+if str(BACKEND) not in sys.path:
+    sys.path.insert(0, str(BACKEND))
+
+from services.artifact_integrity_service import artifact_sha256, artifact_size_bytes  # noqa: E402
+
 MANIFEST = ROOT / "content" / "operations_release_manifest.json"
 
 
@@ -28,9 +34,8 @@ def _bound_payload(payload: dict) -> tuple[dict, list[dict]]:
         target = ROOT / relative
         if not target.is_file():
             raise FileNotFoundError(f"发布制品不存在: {relative}")
-        raw = target.read_bytes()
-        new_hash = hashlib.sha256(raw).hexdigest()
-        new_size = len(raw)
+        new_hash = artifact_sha256(target)
+        new_size = artifact_size_bytes(target)
         if artifact.get("sha256") != new_hash or artifact.get("size_bytes") != new_size:
             changes.append(
                 {

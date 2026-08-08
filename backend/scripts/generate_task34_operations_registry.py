@@ -15,6 +15,8 @@ CONTENT = ROOT / "content"
 if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
+from services.artifact_integrity_service import artifact_sha256, artifact_size_bytes  # noqa: E402
+
 VERSION = "2026-07-21-t34-v1"
 CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 REGISTRY_PATH = CONTENT / "operations_capability_registry.json"
@@ -118,7 +120,7 @@ def _hash(value: object) -> str:
 
 
 def _file_hash(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return artifact_sha256(path)
 
 
 def _module_key(module: str) -> str:
@@ -309,7 +311,7 @@ def build_release_manifest() -> dict:
         path = ROOT / relative
         if not path.is_file():
             raise FileNotFoundError(relative)
-        artifacts.append({"artifact_type": artifact_type, "path": relative.replace("\\", "/"), "sha256": _file_hash(path), "size_bytes": path.stat().st_size})
+        artifacts.append({"artifact_type": artifact_type, "path": relative.replace("\\", "/"), "sha256": _file_hash(path), "size_bytes": artifact_size_bytes(path)})
     payload = {
         "schema_version": "safehome.operations-release-manifest.v1",
         "version": VERSION,

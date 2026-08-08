@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
 from pathlib import Path
@@ -17,6 +16,7 @@ if str(BACKEND) not in sys.path:
 
 import scripts.generate_task34_operations_registry as generator  # noqa: E402
 from config import Config  # noqa: E402
+from services.artifact_integrity_service import artifact_sha256  # noqa: E402
 from services.operations_governance_service import execute_fixed_replay  # noqa: E402
 
 
@@ -60,7 +60,7 @@ def audit() -> dict:
     for artifact in manifest.get("artifacts", []):
         artifact_types.add(artifact.get("artifact_type"))
         path = ROOT / artifact.get("path", "")
-        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != artifact.get("sha256"):
+        if not path.is_file() or artifact_sha256(path) != artifact.get("sha256"):
             issues.append({"code": "release_artifact_integrity", "path": artifact.get("path")})
     required_types = {"content", "rule", "model", "dictionary", "prompt", "knowledge_index"}
     if not required_types <= artifact_types:

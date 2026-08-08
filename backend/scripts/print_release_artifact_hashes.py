@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+BACKEND = ROOT / "backend"
+if str(BACKEND) not in sys.path:
+    sys.path.insert(0, str(BACKEND))
+
+from services.artifact_integrity_service import artifact_sha256, artifact_size_bytes  # noqa: E402
+
 CONTENT = ROOT / "content"
 MANIFEST = CONTENT / "operations_release_manifest.json"
 
@@ -20,14 +26,14 @@ def main() -> int:
         if not target.is_file():
             rows.append({"path": relative, "exists": False})
             continue
-        raw = target.read_bytes()
+        digest = artifact_sha256(target)
         rows.append(
             {
                 "path": relative,
                 "exists": True,
-                "sha256": hashlib.sha256(raw).hexdigest(),
-                "size_bytes": len(raw),
-                "matches_manifest": hashlib.sha256(raw).hexdigest() == item.get("sha256"),
+                "sha256": digest,
+                "size_bytes": artifact_size_bytes(target),
+                "matches_manifest": digest == item.get("sha256"),
             }
         )
     print("SAFEHOME_RELEASE_HASHES=" + json.dumps(rows, ensure_ascii=False, separators=(",", ":")))
