@@ -1,6 +1,7 @@
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
+const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function trackJourneyEvent(eventName, journey, status, extra = {}) {
   if (!journey) return;
@@ -19,18 +20,6 @@ function formatLocalDate(date) {
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const day = `${date.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
-}
-
-function getDiaryDateKey(item) {
-  const raw = item.event_time || item.created_at || "";
-  if (!raw) {
-    return "";
-  }
-  const parsed = new Date(raw);
-  if (Number.isNaN(parsed.getTime())) {
-    return raw.slice(0, 10);
-  }
-  return formatLocalDate(parsed);
 }
 
 function formatProgressSummary(summary) {
@@ -179,81 +168,20 @@ Page({
     todayJourneyLoading: true,
     todayJourneyError: "",
     hotTopics: [
-      {
-        id: "exam-setback",
-        title: "孩子考试失利后，家长第一句话怎么说？",
-        tag: "考试压力",
-        readTime: "4分钟阅读",
-      },
-      {
-        id: "emotion-outburst",
-        title: "孩子发脾气时，为什么讲道理没用？",
-        tag: "情绪爆发",
-        readTime: "4分钟阅读",
-      },
-      {
-        id: "repair-after-conflict",
-        title: "亲子冲突后，如何重新连接？",
-        tag: "关系修复",
-        readTime: "5分钟阅读",
-      },
+      { id: "exam-setback", title: "孩子考试失利后，家长第一句话怎么说？", tag: "考试压力", readTime: "4分钟阅读" },
+      { id: "emotion-outburst", title: "孩子发脾气时，为什么讲道理没用？", tag: "情绪爆发", readTime: "4分钟阅读" },
+      { id: "repair-after-conflict", title: "亲子冲突后，如何重新连接？", tag: "关系修复", readTime: "5分钟阅读" },
     ],
     startSteps: [
-      {
-        key: "diary",
-        title: "第一步",
-        text: "记录一次具体事件",
-        detail: "写下发生了什么、我的情绪和当时回应。",
-        actionText: "去记录",
-      },
-      {
-        key: "feedback",
-        title: "第二步",
-        text: "查看支持性反馈",
-        detail: "看看这次记录中的互动线索和可调整位置。",
-        actionText: "了解反馈",
-      },
-      {
-        key: "training",
-        title: "第三步",
-        text: "选择一个小练习并打卡",
-        detail: "从推荐训练卡里选一个动作，记录一次尝试。",
-        actionText: "去练习",
-      },
+      { key: "diary", title: "第一步", text: "记录一次具体事件", detail: "写下发生了什么、我的情绪和当时回应。", actionText: "去记录" },
+      { key: "feedback", title: "第二步", text: "查看支持性反馈", detail: "看看这次记录中的互动线索和可调整位置。", actionText: "了解反馈" },
+      { key: "training", title: "第三步", text: "选择一个小练习并打卡", detail: "从推荐训练卡里选一个动作，记录一次尝试。", actionText: "去练习" },
     ],
     coreEntries: [
-      {
-        key: "assessment",
-        title: "测一测",
-        subtitle: "先了解自己",
-        iconText: "测",
-        accentColor: "#6A86B4",
-        accentBg: "#E9F0FA",
-      },
-      {
-        key: "diary",
-        title: "情绪日记",
-        subtitle: "记录一次",
-        iconText: "记",
-        accentColor: "#4E7C6B",
-        accentBg: "#E7F0E2",
-      },
-      {
-        key: "training",
-        title: "训练中心",
-        subtitle: "选择练习",
-        iconText: "练",
-        accentColor: "#4E7C6B",
-        accentBg: "#EEF4E8",
-      },
-      {
-        key: "feedback",
-        title: "支持性反馈",
-        subtitle: "记录后查看",
-        iconText: "馈",
-        accentColor: "#8069A8",
-        accentBg: "#F1ECF8",
-      },
+      { key: "assessment", title: "测一测", subtitle: "先了解自己", iconText: "测", accentColor: "#6A86B4", accentBg: "#E9F0FA" },
+      { key: "diary", title: "情绪日记", subtitle: "记录一次", iconText: "记", accentColor: "#4E7C6B", accentBg: "#E7F0E2" },
+      { key: "training", title: "训练中心", subtitle: "选择练习", iconText: "练", accentColor: "#4E7C6B", accentBg: "#EEF4E8" },
+      { key: "feedback", title: "支持性反馈", subtitle: "记录后查看", iconText: "馈", accentColor: "#8069A8", accentBg: "#F1ECF8" },
     ],
   },
 
@@ -265,19 +193,20 @@ Page({
     this.loadTodayJourney();
     try {
       const todayKey = formatLocalDate(new Date());
-      const [result, stats, thermometerDay, progressSummary] = await Promise.all([
-        api.listDiaries({ limit: 20 }).catch(() => ({ items: [] })),
+      const [todayResult, latestResult, stats, thermometerDay, progressSummary] = await Promise.all([
+        api.listDiaries({ date: todayKey, limit: 100 }).catch(() => ({ items: [] })),
+        api.listDiaries({ limit: 1 }).catch(() => ({ items: [] })),
         api.getProfileStats().catch(() => null),
         api.getEmotionThermometerDay({ date: todayKey }).catch(() => null),
         api.getProgressSummary({ range: "7d" }).catch((error) => ({ __error: error })),
       ]);
-      const items = result && Array.isArray(result.items) ? result.items : [];
-      const todayRecordCount = items.filter((item) => getDiaryDateKey(item) === todayKey).length;
+      const todayItems = todayResult && Array.isArray(todayResult.items) ? todayResult.items : [];
+      const latestItems = latestResult && Array.isArray(latestResult.items) ? latestResult.items : [];
       const thermometerRecordCount = thermometerDay && thermometerDay.summary ? thermometerDay.summary.count || 0 : 0;
-      const latest = items[0] || null;
+      const latest = latestItems[0] || null;
       const progressError = progressSummary && progressSummary.__error ? progressSummary.__error : null;
       this.setData({
-        todayRecordCount,
+        todayRecordCount: todayItems.length,
         todayRecordCountReady: true,
         thermometerRecordCount,
         thermometerRecordReady: !!thermometerDay,
@@ -308,42 +237,21 @@ Page({
     }
   },
 
-  startGoalSetting() {
-    wx.navigateTo({ url: "/pages/goal-setting/index" });
-  },
-
-  startDiary() {
-    wx.navigateTo({ url: "/pages/diary-form/index" });
-  },
-
-  openThermometer() {
-    wx.navigateTo({ url: "/pages/thermometer/index" });
-  },
-
-  openWeeklyReport() {
-    wx.navigateTo({ url: "/pages/weekly-report/index" });
-  },
+  startGoalSetting() { wx.navigateTo({ url: "/pages/goal-setting/index" }); },
+  startDiary() { wx.navigateTo({ url: "/pages/diary-form/index" }); },
+  openThermometer() { wx.navigateTo({ url: "/pages/thermometer/index" }); },
+  openWeeklyReport() { wx.navigateTo({ url: "/pages/weekly-report/index" }); },
 
   async loadTodayJourney() {
     this.setData({ todayJourneyLoading: true, todayJourneyError: "" });
     try {
       const payload = await api.getTodayJourney();
-      const protectedTypes = new Set([
-        "read_feedback",
-        "read_message",
-        "training_paused",
-        "training_stage_completed",
-        "today_completed",
-      ]);
+      const protectedTypes = new Set(["read_feedback", "read_message", "training_paused", "training_stage_completed", "today_completed"]);
       const localDraft = findLocalDraftAction();
       const serverType = payload && payload.primary_action ? payload.primary_action.type : "";
       const selectedPayload = localDraft && !protectedTypes.has(serverType) ? localDraft : payload;
       const todayJourney = formatTodayJourney(selectedPayload);
-      this.setData({
-        todayJourney,
-        todayJourneyLoading: false,
-        todayJourneyError: "",
-      });
+      this.setData({ todayJourney, todayJourneyLoading: false, todayJourneyError: "" });
       trackJourneyEvent("journey_action_impression", todayJourney, "shown");
     } catch (error) {
       if (error && error.code === "auth_required") {
@@ -365,114 +273,77 @@ Page({
         });
         return;
       }
-      this.setData({
-        todayJourney: null,
-        todayJourneyLoading: false,
-        todayJourneyError: error && error.message ? error.message : "暂时没能整理今天的一小步。",
-      });
+      if (error && ["age_verification_required", "guardian_link_required", "guardian_consent_required", "child_assent_required", "blocked_withdrawn_or_refused"].includes(error.code)) {
+        this.setData({
+          todayJourney: formatTodayJourney({
+            state: "ready",
+            primary_action: {
+              type: "participant_safeguard",
+              title: "先完成参与者保护设置",
+              description: "完成年龄确认和必要的监护人/本人确认后，再继续受保护功能。",
+              button_label: "去完成",
+              url: PROTECTION_URL,
+              source_type: "minor_safeguards",
+              estimated_minutes: 2,
+            },
+            boundary_notice: "年龄信息只用于保护门禁，不用于诊断或能力判断。",
+          }),
+          todayJourneyLoading: false,
+          todayJourneyError: "",
+        });
+        return;
+      }
+      this.setData({ todayJourney: null, todayJourneyLoading: false, todayJourneyError: error && error.message ? error.message : "暂时没能整理今天的一小步。" });
     }
   },
 
   retryTodayJourney() {
     const journey = this.data.todayJourney;
-    if (journey) {
-      trackJourneyEvent("journey_action_recovery", journey, "recovered", { recovery_mode: "manual_retry" });
-    }
+    if (journey) trackJourneyEvent("journey_action_recovery", journey, "recovered", { recovery_mode: "manual_retry" });
     this.loadTodayJourney();
   },
 
   openTodayAction() {
-    if (this.data.todayJourneyError) {
-      this.retryTodayJourney();
-      return;
-    }
+    if (this.data.todayJourneyError) { this.retryTodayJourney(); return; }
     const url = this.data.todayJourney ? this.data.todayJourney.url : "";
     if (!url) return;
     trackJourneyEvent("journey_action_clicked", this.data.todayJourney, "clicked");
-    if (url.startsWith("/pages/training/index")) {
-      wx.switchTab({ url: "/pages/training/index" });
-      return;
-    }
+    if (url.startsWith("/pages/training/index")) { wx.switchTab({ url: "/pages/training/index" }); return; }
     wx.navigateTo({ url });
   },
 
-  openAssessment() {
-    wx.navigateTo({ url: "/pages/assessment/index" });
-  },
-
-  openMessages() {
-    wx.navigateTo({ url: "/pages/messages/index" });
-  },
-
-  openIntegrationTest() {
-    wx.navigateTo({ url: "/pages/integration-test/index" });
-  },
-
-  openGettingStarted() {
-    wx.navigateTo({ url: "/pages/getting-started/index" });
-  },
+  openAssessment() { wx.navigateTo({ url: "/pages/assessment/index" }); },
+  openMessages() { wx.navigateTo({ url: "/pages/messages/index" }); },
+  openIntegrationTest() { wx.navigateTo({ url: "/pages/integration-test/index" }); },
+  openGettingStarted() { wx.navigateTo({ url: "/pages/getting-started/index" }); },
 
   openStartStep(event) {
     const key = event.currentTarget.dataset.key;
-    if (key === "diary") {
-      this.startDiary();
-      return;
-    }
-    if (key === "training") {
-      wx.switchTab({ url: "/pages/training/index" });
-      return;
-    }
+    if (key === "diary") { this.startDiary(); return; }
+    if (key === "training") { wx.switchTab({ url: "/pages/training/index" }); return; }
     wx.navigateTo({ url: "/pages/getting-started/index" });
   },
 
   openCoreEntry(event) {
     const key = event.currentTarget.dataset.key;
-    if (key === "diary") {
-      this.startDiary();
-      return;
-    }
-    if (key === "training") {
-      wx.switchTab({ url: "/pages/training/index" });
-      return;
-    }
+    if (key === "diary") { this.startDiary(); return; }
+    if (key === "training") { wx.switchTab({ url: "/pages/training/index" }); return; }
     if (key === "feedback") {
-      wx.showToast({
-        title: "请先记录一次事件",
-        icon: "none",
-      });
+      wx.showToast({ title: "请先记录一次事件", icon: "none" });
       wx.navigateTo({ url: "/pages/diary-form/index" });
       return;
     }
-    if (key === "supervision") {
-      wx.navigateTo({ url: "/pages/supervision/index" });
-      return;
-    }
-    if (key === "assessment") {
-      wx.navigateTo({ url: "/pages/assessment/index" });
-    }
+    if (key === "supervision") { wx.navigateTo({ url: "/pages/supervision/index" }); return; }
+    if (key === "assessment") wx.navigateTo({ url: "/pages/assessment/index" });
   },
 
   openRecommendedTraining() {
-    wx.navigateTo({
-      url: `/pages/training-card/index?tags=${encodeURIComponent("high_demand_language,emotional_behavior")}`,
-    });
+    wx.navigateTo({ url: `/pages/training-card/index?tags=${encodeURIComponent("high_demand_language,emotional_behavior")}` });
   },
-
-  openHotTopics() {
-    wx.navigateTo({ url: "/pages/hot-topics/index" });
-  },
-
+  openHotTopics() { wx.navigateTo({ url: "/pages/hot-topics/index" }); },
   openHotTopic(event) {
     const id = event.currentTarget.dataset.id || "";
-    wx.navigateTo({
-      url: `/pages/hot-topics/index?id=${encodeURIComponent(id)}`,
-    });
+    wx.navigateTo({ url: `/pages/hot-topics/index?id=${encodeURIComponent(id)}` });
   },
-
-  showComingSoon(title) {
-    wx.showToast({
-      title,
-      icon: "none",
-    });
-  },
+  showComingSoon(title) { wx.showToast({ title, icon: "none" }); },
 });

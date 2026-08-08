@@ -2121,6 +2121,55 @@
         "ux_governance.public_status.get",
         "ux_governance.registry.get"
       ]
+    },
+    {
+      "id": "participant_safety_identity_convergence_20260807",
+      "name": "参与者安全、年龄保护、认证收敛与督导增强",
+      "intended_use": "覆盖本分支新增的年龄/监护人保护、风险复核身份、人工督导状态和相关机器API；仅用于受控试点与工程验收。",
+      "owner": "SafeHome project owner + security/supervision reviewer",
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "participant_minor_policy.json",
+        "risk_keywords.json",
+        "explicit_schema_migrations",
+        "named Bearer actor authentication"
+      ],
+      "data": [
+        "age_band (under_14 / 14_or_over only; no DOB)",
+        "guardian/child safeguard decisions",
+        "risk-review operational metadata",
+        "supervision operational metadata and restricted contact"
+      ],
+      "open_roles": [
+        "parent",
+        "student",
+        "supervisor",
+        "admin"
+      ],
+      "feature_flags": [
+        "MINOR_SAFEGUARDS_ENFORCED",
+        "LEGACY_ADMIN_TOKEN_ENABLED (compatibility only)"
+      ],
+      "version": "2026-08-07-security-convergence-v1",
+      "tests": [
+        "backend/tests/test_security_convergence_20260807.py",
+        "backend/tests/test_risk_service.py",
+        ".github/workflows/check.yml"
+      ],
+      "rollback": "revert branch commits before merge; if already piloted, stop writes, retain audit evidence, then follow explicit_schema_migrations rollback notes and restore prior route adapters",
+      "governance_status": "engineering_ready_human_and_pilot_acceptance_required",
+      "contract_version": "2026-07-21.2",
+      "operation_ids": [
+        "minor_safeguards.child_assent.post",
+        "minor_safeguards.confirm_age.post",
+        "minor_safeguards.guardian_consent.post",
+        "minor_safeguards.status.get",
+        "minor_safeguards.supervised_age_override.post",
+        "supervision.acknowledge_supervision_request.post",
+        "supervision.get_supervision_request.get",
+        "supervision.get_supervision_request_for_reviewer.get",
+        "supervision.resolve_supervision_request.post"
+      ]
     }
   ],
   "temporary_showcase_exception": {
@@ -2149,5 +2198,6 @@
     "production_dual_control"
   ],
   "production_release_approved": false,
-  "boundary_notice": "工程登记与本地合成回放不等于人工、伦理、云、真机或生产发布批准。"
+  "boundary_notice": "工程登记与本地合成回放不等于人工、伦理、云、真机或生产发布批准。",
+  "api_contract_version": "2026-07-21.2"
 }

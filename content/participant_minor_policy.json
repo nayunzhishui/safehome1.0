@@ -1,0 +1,25 @@
+{
+  "schema": "safehome.participant-minor-safeguards.v1",
+  "version": "2026.08-participant-minor-safeguards-v1",
+  "age_gate": {
+    "required_for_roles": ["student"],
+    "bands": ["under_14", "14_or_over"],
+    "store_date_of_birth": false,
+    "reason": "只保存执行年龄门禁所需的年龄区间，避免额外收集出生日期。"
+  },
+  "under_14": {
+    "guardian_link_required": true,
+    "guardian_consent_required": true,
+    "child_assent_required": true,
+    "guardian_consent_does_not_override_child_refusal": true,
+    "temporary_showcase_counts_as_permission": false,
+    "protected_capabilities": ["assessment", "research", "sensitive_text", "profile"],
+    "family_binding_allowed_before_guardian_consent": true
+  },
+  "withdrawal": {
+    "guardian_may_withdraw": true,
+    "child_may_refuse_or_withdraw": true,
+    "effect": "protected_capabilities_blocked"
+  },
+  "boundary_notice": "年龄确认只用于参与者保护和数据处理门禁，不用于诊断、能力判断或人格标签。未满14周岁的参与者需要完成监护人同意，并保留本人拒绝或撤回的权利。"
+}

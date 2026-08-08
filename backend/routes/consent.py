@@ -2,8 +2,9 @@
 
 from flask import Blueprint, request
 
-from database import get_connection, new_id, now_iso, row_to_dict, rows_to_dicts
-from routes.utils import fail, ok, parse_bool, require_user_id
+from database import get_connection, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
+from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
+from routes.utils import fail, ok, parse_bool
 
 bp = Blueprint("consent", __name__, url_prefix="/api/consent")
 
@@ -40,9 +41,11 @@ def get_latest_consent(conn, user_id: str, consent_type: str) -> dict | None:
 def create_consent_record():
     payload = request.get_json(silent=True) or {}
     try:
-        user_id = require_user_id(payload)
-    except ValueError as exc:
-        return fail("validation_error", str(exc))
+        # The token actor is authoritative.  user_id in a participant payload
+        # is compatibility metadata only and cannot impersonate another user.
+        user_id = resolve_actor_user_id(payload=payload, allow_legacy_admin=False, allow_dev_fallback=True)
+    except AuthError as exc:
+        return auth_error_response(exc)
 
     consent_type = str(payload.get("consent_type") or "").strip()
     if consent_type not in ALLOWED_CONSENT_TYPES:
@@ -53,8 +56,8 @@ def create_consent_record():
 
     agreed = parse_bool(payload.get("agreed"), False)
     consent_version = str(payload.get("consent_version") or DEFAULT_CONSENT_VERSION).strip()
-    if not consent_version:
-        return fail("validation_error", "缺少 consent_version 字段")
+    if not consent_version or len(consent_version) > 120:
+        return fail("validation_error", "consent_version 无效")
 
     timestamp = now_iso()
     record_id = new_id("consent")
@@ -80,6 +83,14 @@ def create_consent_record():
                 timestamp,
             ),
         )
+        write_audit_log(
+            conn,
+            action="consent_recorded",
+            actor_id=user_id,
+            target_type="consent_record",
+            target_id=record_id,
+            metadata={"consent_type": consent_type, "agreed": bool(agreed), "consent_version": consent_version},
+        )
         conn.commit()
         row = conn.execute("SELECT * FROM consent_records WHERE id = ?", (record_id,)).fetchone()
 
@@ -89,9 +100,13 @@ def create_consent_record():
 @bp.get("")
 def list_consent_records():
     try:
-        user_id = require_user_id({"user_id": request.args.get("user_id")})
-    except ValueError as exc:
-        return fail("validation_error", str(exc))
+        user_id = resolve_actor_user_id(
+            requested_user_id=request.args.get("user_id"),
+            allow_legacy_admin=False,
+            allow_dev_fallback=True,
+        )
+    except AuthError as exc:
+        return auth_error_response(exc)
 
     with get_connection() as conn:
         rows = conn.execute(

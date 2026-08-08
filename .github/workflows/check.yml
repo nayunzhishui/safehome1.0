@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -23,11 +25,23 @@ jobs:
           python -m pip install -r analysis/text_analysis/requirements.txt
           python -m pip install -r analysis/profiling/requirements.txt
 
+      - name: Inspect release artifact hashes
+        run: python backend/scripts/print_release_artifact_hashes.py
+
       - name: Validate content
         run: python backend/scripts/validate_content.py
 
       - name: Check API contract drift
-        run: python backend/scripts/build_api_contract.py --check
+        run: |
+          if ! python backend/scripts/build_api_contract.py --check; then
+            python backend/scripts/build_api_contract.py
+            git diff -- \
+              shared/contracts/api-contract.json \
+              shared/types/api-contract.generated.ts \
+              apps/miniprogram/services/api-contract.generated.js \
+              docs/03_技术真相/API机器契约.md
+            exit 1
+          fi
 
       - name: Check API query boundaries
         run: python backend/scripts/audit_api_boundaries.py --check

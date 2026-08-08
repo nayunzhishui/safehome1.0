@@ -74,8 +74,8 @@
 | GET | `/api/cards/recommend` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/checkins` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | page/page_size | — | active |
 | POST | `/api/checkins` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | supported | active |
-| GET | `/api/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
-| POST | `/api/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
+| POST | `/api/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | GET | `/api/content-review/active/<content_type>/<item_id>` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/content-review/inventory` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/content-review/inventory/register` | public:public | not_applicable_or_development_legacy | — | — | active |
@@ -117,6 +117,11 @@
 | GET | `/api/messages/<message_id>` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin | — | — | active |
 | POST | `/api/messages/<message_id>/read` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin | — | — | active |
 | POST | `/api/messages/read-all` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin | — | — | active |
+| POST | `/api/minor-safeguards/age-confirmation` | role:student | role_scoped | — | — | active |
+| POST | `/api/minor-safeguards/age-override` | role:supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/minor-safeguards/child-assent` | role:student | role_scoped | — | — | active |
+| POST | `/api/minor-safeguards/guardian-consent` | role:parent | role_scoped | — | — | active |
+| GET | `/api/minor-safeguards/status` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/model/info` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/notifications/config` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
 | POST | `/api/notifications/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
@@ -300,7 +305,11 @@
 | GET | `/api/showcase-access` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/student-assessment` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/supervision` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | supported | active |
-| POST | `/api/supervision/<request_id>/reply` | role:admin,supervisor | role_scoped | — | — | active |
+| GET | `/api/supervision/<request_id>` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_authorized_role | — | — | active |
+| POST | `/api/supervision/<request_id>/acknowledge` | role:supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/supervision/<request_id>/reply` | role:supervisor,admin | role_scoped | — | — | active |
+| POST | `/api/supervision/<request_id>/resolve` | role:supervisor,admin | role_scoped | — | — | active |
+| GET | `/api/supervision/<request_id>/reviewer` | role:supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/text-analysis/summary` | role:admin,researcher | role_scoped | — | — | active |
 | PATCH | `/api/therapeutic-assessment/actions/<action_id>` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/therapeutic-assessment/actions/<action_id>/followups` | role:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |

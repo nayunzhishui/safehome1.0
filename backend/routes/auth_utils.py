@@ -1,5 +1,7 @@
 """Signed-token auth helpers for the formal pilot account MVP."""
 
+import os
+
 from flask import current_app, request
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
@@ -28,6 +30,21 @@ class AuthError(ValueError):
         self.status = status
         self.code = code
         self.details = details
+
+
+def legacy_admin_token_enabled() -> bool:
+    """Return whether the compatibility X-Admin-Token path is allowed.
+
+    The old static token remains available for local/test migration work, but
+    pilot and production converge on named authenticated actors by default.
+    A deployment that still needs the compatibility path must opt in explicitly
+    with LEGACY_ADMIN_TOKEN_ENABLED=1 and should treat that as temporary debt.
+    """
+
+    configured = os.environ.get("LEGACY_ADMIN_TOKEN_ENABLED")
+    if configured is not None:
+        return configured.strip().lower() in {"1", "true", "yes"}
+    return str(Config.APP_ENV or "development").strip().lower() in {"development", "testing"}
 
 
 def _serializer() -> URLSafeTimedSerializer:
@@ -69,11 +86,22 @@ def verify_auth_token(token: str) -> dict:
 
 def get_current_actor(allow_legacy_admin: bool = True) -> dict | None:
     if allow_legacy_admin and request.headers.get("X-Admin-Token"):
+        if not legacy_admin_token_enabled():
+            raise AuthError(
+                "当前环境已停用 X-Admin-Token，请使用具名后台账号登录。",
+                status=401,
+                code="legacy_admin_token_disabled",
+            )
         try:
             require_admin_token()
         except ValueError as exc:
             raise AuthError("后台操作需要有效的 X-Admin-Token", status=401) from exc
-        return {"id": "admin-token", "role": "admin", "source": "legacy_admin_token"}
+        return {
+            "id": "admin-token",
+            "role": "admin",
+            "source": "legacy_admin_token",
+            "legacy_auth": True,
+        }
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
         return None
@@ -87,7 +115,13 @@ def get_current_actor(allow_legacy_admin: bool = True) -> dict | None:
         "/api/auth/logout",
     }:
         raise AuthError("首次登录需要先修改一次性密码", status=403, code="password_change_required")
-    return {"id": user["id"], "role": user.get("role") or "parent", "source": "auth_token", "user": user}
+    return {
+        "id": user["id"],
+        "role": user.get("role") or "parent",
+        "source": "auth_token",
+        "legacy_auth": False,
+        "user": user,
+    }
 
 
 def require_login(allow_legacy_admin: bool = True) -> dict:
@@ -98,7 +132,12 @@ def require_login(allow_legacy_admin: bool = True) -> dict:
 
 
 def elevate_actor_for_showcase_researcher_platform(actor: dict) -> dict:
-    """Temporarily elevate signed-in users inside the researcher platform only."""
+    """Temporarily elevate signed-in users inside the researcher platform only.
+
+    P0-01 is intentionally not changed in this branch per project-owner scope.
+    New minor safeguards read original_role before trusting an elevated role so
+    showcase cannot accidentally count as guardian/minor permission.
+    """
 
     from services.showcase_access_service import allow_showcase_researcher_platform_full_access
 
@@ -157,10 +196,12 @@ def resolve_actor_user_id(
     allow_legacy_admin: bool = False,
     allow_dev_fallback: bool = False,
 ) -> str:
-    """Resolve private-data ownership from the signed token before request data.
+    """Resolve private-data ownership from the authenticated actor first.
 
-    Normal users can only act as themselves. Admin, supervisor and researcher
-    actors may target an explicit user_id for review/debug workflows.
+    Participant request fields can no longer choose identity once a signed
+    actor exists.  Explicit user_id is only a target selector for authorized
+    backend roles.  Anonymous/user-id fallback is development-only legacy
+    compatibility and must never become a pilot/production identity source.
     """
 
     payload_user_id = (payload or {}).get("user_id")

@@ -1,4 +1,9 @@
-"""Generate the Task 31 security, privacy, and abuse-control registry."""
+"""Generate and live-validate the Task 31 security/privacy registry.
+
+The machine API contract is the source of truth for the authorization matrix.
+The persisted JSON remains a human-governed snapshot and must not silently
+become the runtime authority when the contract evolves.
+"""
 
 from __future__ import annotations
 
@@ -111,12 +116,17 @@ def _threat_rows(rows: list[tuple[str, str, str, str, str]]) -> list[dict]:
 def build_registry() -> dict:
     contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
     matrix = _operation_matrix(contract)
+    operation_ids = [item["operation_id"] for item in matrix]
+    if len(operation_ids) != len(set(operation_ids)):
+        raise RuntimeError("machine API contract contains duplicate operation_id values")
     bypass = [item for item in matrix if item["showcase_read_bypass"]]
     return {
         "schema": "safehome.security_privacy_abuse_registry.v1",
         "version": "2026-07-20-t31-security-v1",
         "status": "engineering_controls_ready_formal_acceptance_blocked",
         "generated_from_contract_version": contract.get("version"),
+        "matrix_source": "shared/contracts/api-contract.json",
+        "persisted_matrix_is_authoritative": False,
         "asset_inventory": [
             {
                 "asset_id": asset_id,
@@ -179,6 +189,28 @@ def build_registry() -> dict:
     }
 
 
+def _validate_persisted_governance_snapshot(live: dict) -> None:
+    if not OUTPUT_PATH.exists():
+        raise SystemExit("security governance snapshot is missing")
+    persisted = json.loads(OUTPUT_PATH.read_text(encoding="utf-8"))
+    if persisted.get("schema") != live["schema"]:
+        raise SystemExit("security governance snapshot schema mismatch")
+    if persisted.get("status") != live["status"]:
+        raise SystemExit("security governance snapshot status mismatch")
+    persisted_assets = {item.get("asset_id") for item in persisted.get("asset_inventory", [])}
+    required_assets = {item.get("asset_id") for item in live.get("asset_inventory", [])}
+    if not required_assets.issubset(persisted_assets):
+        raise SystemExit("security governance snapshot is missing required assets")
+    persisted_threats = {item.get("id") for item in persisted.get("web_miniprogram_threats", [])}
+    persisted_threats |= {item.get("id") for item in persisted.get("ai_threats", [])}
+    required_threats = {item.get("id") for item in live.get("web_miniprogram_threats", [])}
+    required_threats |= {item.get("id") for item in live.get("ai_threats", [])}
+    if not required_threats.issubset(persisted_threats):
+        raise SystemExit("security governance snapshot is missing required threat IDs")
+    if (persisted.get("temporary_showcase_exception") or {}).get("enabled") is not True:
+        raise SystemExit("showcase exception truth must remain explicit in the governance snapshot")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
@@ -186,10 +218,12 @@ def main() -> int:
     payload = build_registry()
     rendered = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.check:
-        if not OUTPUT_PATH.exists() or OUTPUT_PATH.read_text(encoding="utf-8") != rendered:
-            raise SystemExit("security registry is stale; regenerate after API contract changes")
+        _validate_persisted_governance_snapshot(payload)
         digest = hashlib.sha256(rendered.encode("utf-8")).hexdigest()
-        print(f"security registry check passed: {len(payload['authorization_matrix'])} operations; sha256={digest[:16]}")
+        print(
+            f"security live-contract check passed: {len(payload['authorization_matrix'])} operations; "
+            f"sha256={digest[:16]}; persisted matrix treated as governance snapshot"
+        )
         return 0
     OUTPUT_PATH.write_text(rendered, encoding="utf-8")
     print(f"wrote {OUTPUT_PATH}: {len(payload['authorization_matrix'])} operations")

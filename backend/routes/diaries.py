@@ -12,16 +12,21 @@ from routes.utils import (
     require_admin_token,
     require_fields,
 )
+from services.input_validation_service import InputValidationError, validate_diary_payload
 
 bp = Blueprint("diaries", __name__, url_prefix="/api/diaries")
 
 
 @bp.post("")
 def create_diary():
-    payload = request.get_json(silent=True) or {}
-    missing = require_fields(payload, ["scene", "event_description", "parent_emotion"])
+    raw_payload = request.get_json(silent=True) or {}
+    missing = require_fields(raw_payload, ["scene", "event_description", "parent_emotion"])
     if missing:
         return fail("missing_fields", f"缺少必填字段：{', '.join(missing)}")
+    try:
+        payload = validate_diary_payload(raw_payload)
+    except InputValidationError as exc:
+        return fail(exc.code, exc.message, status=400, details={"field": exc.field})
 
     try:
         user_id = resolve_actor_user_id(payload=payload)
@@ -36,12 +41,15 @@ def create_diary():
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
         if submission_id:
-            existing = conn.execute("SELECT * FROM emotion_diaries WHERE user_id = ? AND client_submission_id = ?", (user_id, submission_id)).fetchone()
+            existing = conn.execute(
+                "SELECT * FROM emotion_diaries WHERE user_id = ? AND client_submission_id = ?",
+                (user_id, submission_id),
+            ).fetchone()
             if existing is not None:
                 expected = (
                     payload.get("goal_id"), payload.get("event_time"), payload["scene"], payload["event_description"],
-                    payload["parent_emotion"], parse_int(payload.get("parent_emotion_intensity"), 5),
-                    payload.get("child_emotion"), parse_int(payload.get("child_emotion_intensity"), None),
+                    payload["parent_emotion"], payload["parent_emotion_intensity"],
+                    payload.get("child_emotion"), payload.get("child_emotion_intensity"),
                     payload.get("automatic_thought"), payload.get("body_sensation"), payload.get("behavior"), payload.get("raw_text"),
                 )
                 actual = (
@@ -71,9 +79,9 @@ def create_diary():
                 payload["scene"],
                 payload["event_description"],
                 payload["parent_emotion"],
-                parse_int(payload.get("parent_emotion_intensity"), 5),
+                payload["parent_emotion_intensity"],
                 payload.get("child_emotion"),
-                parse_int(payload.get("child_emotion_intensity"), None),
+                payload.get("child_emotion_intensity"),
                 payload.get("automatic_thought"),
                 payload.get("body_sensation"),
                 payload.get("behavior"),
@@ -103,35 +111,61 @@ def list_diaries():
         user_id = None if admin_actor else resolve_actor_user_id(requested_user_id)
     except AuthError as exc:
         return auth_error_response(exc)
-    limit = parse_int(request.args.get("limit"), 50)
+    limit = max(1, min(parse_int(request.args.get("limit"), 50) or 50, 200))
+    date_filter = str(request.args.get("date") or "").strip()
+    if date_filter and (len(date_filter) != 10 or date_filter[4:5] != "-" or date_filter[7:8] != "-"):
+        return fail("validation_error", "date 必须使用 YYYY-MM-DD 格式。", status=400)
 
     with get_connection() as conn:
         if admin_actor:
-            rows = conn.execute(
-                """
-                SELECT * FROM emotion_diaries
-                ORDER BY created_at DESC
-                LIMIT ?
-                """,
-                (limit,),
-            ).fetchall()
+            if date_filter:
+                rows = conn.execute(
+                    """
+                    SELECT * FROM emotion_diaries
+                    WHERE substr(COALESCE(event_time, created_at), 1, 10) = ?
+                    ORDER BY created_at DESC
+                    LIMIT ?
+                    """,
+                    (date_filter, limit),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    """
+                    SELECT * FROM emotion_diaries
+                    ORDER BY created_at DESC
+                    LIMIT ?
+                    """,
+                    (limit,),
+                ).fetchall()
             write_audit_log(
                 conn,
                 action="list_diaries_admin",
                 actor_id=admin_actor,
                 target_type="emotion_diaries",
                 target_id="all",
-                metadata={"route": "/api/diaries", "limit": limit, "row_count": len(rows)},
+                metadata={"route": "/api/diaries", "limit": limit, "date": date_filter or None, "row_count": len(rows)},
             )
         else:
-            rows = conn.execute(
-                """
-                SELECT * FROM emotion_diaries
-                WHERE user_id = ?
-                ORDER BY created_at DESC
-                LIMIT ?
-                """,
-                (user_id, limit),
-            ).fetchall()
+            if date_filter:
+                rows = conn.execute(
+                    """
+                    SELECT * FROM emotion_diaries
+                    WHERE user_id = ?
+                      AND substr(COALESCE(event_time, created_at), 1, 10) = ?
+                    ORDER BY created_at DESC
+                    LIMIT ?
+                    """,
+                    (user_id, date_filter, limit),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    """
+                    SELECT * FROM emotion_diaries
+                    WHERE user_id = ?
+                    ORDER BY created_at DESC
+                    LIMIT ?
+                    """,
+                    (user_id, limit),
+                ).fetchall()
 
     return ok({"items": rows_to_dicts(rows)})

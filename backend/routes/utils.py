@@ -1,6 +1,9 @@
 """Small response and parsing helpers for route modules."""
 
+import os
+
 from flask import current_app, g, has_request_context, jsonify, request
+
 
 def ok(data=None, status: int = 200):
     request_id = getattr(g, "request_id", None) if has_request_context() else None
@@ -15,7 +18,16 @@ def fail(code: str, message: str, status: int = 400, details: dict | list | None
     return jsonify({"ok": False, "error": error, "request_id": request_id}), status
 
 
+def _legacy_admin_token_enabled() -> bool:
+    configured = os.environ.get("LEGACY_ADMIN_TOKEN_ENABLED")
+    if configured is not None:
+        return configured.strip().lower() in {"1", "true", "yes"}
+    return str(current_app.config.get("APP_ENV", "development")).lower() in {"development", "testing"}
+
+
 def require_admin_token() -> str:
+    if not _legacy_admin_token_enabled():
+        raise ValueError("当前环境已停用 X-Admin-Token，请使用具名后台账号登录")
     admin_token = current_app.config.get("ADMIN_EXPORT_TOKEN")
     request_token = request.headers.get("X-Admin-Token", "")
     if not admin_token or request_token != admin_token:
@@ -28,6 +40,9 @@ def admin_token_error_response(exc: ValueError):
 
 
 def get_request_user_id() -> str | None:
+    """Development-only compatibility accessor for pre-auth endpoints."""
+    if str(current_app.config.get("APP_ENV", "development")).lower() != "development":
+        return None
     payload = None
     if request.method in {"POST", "PUT", "PATCH"}:
         payload = request.get_json(silent=True) or {}
@@ -54,7 +69,7 @@ def require_admin_or_owner(record_user_id: str | None) -> str:
     request_user_id = get_request_user_id()
     if record_user_id and request_user_id and str(record_user_id) == str(request_user_id):
         return str(request_user_id)
-    raise ValueError("需要后台令牌或匹配的匿名 user_id")
+    raise ValueError("需要登录；匿名 user_id 兼容仅允许本地开发环境")
 
 
 def auth_error_response(exc: ValueError):
@@ -66,6 +81,7 @@ def require_fields(payload: dict, fields: list[str]) -> list[str]:
 
 
 def require_user_id(payload: dict) -> str:
+    """Compatibility wrapper; authenticated actor remains authoritative."""
     from routes.auth_utils import AuthError, resolve_actor_user_id
 
     try:

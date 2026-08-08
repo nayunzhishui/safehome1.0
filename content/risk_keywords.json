@@ -1,23 +1,28 @@
 {
-  "version": "2026.06-risk-keywords-v1-draft",
-  "module": "risk_check",
-  "review_status": "draft",
+  "version": "2026.08-safety-signals-v2-engineering",
+  "module": "safety_signal_routing",
+  "review_status": "engineering_enhanced_pending_clinical_review",
+  "terminology": {
+    "preferred": "safety_route",
+    "legacy_field": "risk_level",
+    "notice": "risk_level 仅为旧接口兼容字段；不得解释为自杀、自伤或他伤概率分层。"
+  },
   "categories": [
     {
       "id": "self_harm",
-      "label": "自伤或自杀风险",
+      "label": "自伤或自杀相关安全信号",
       "risk_level": "high",
       "keywords": ["不想活", "自杀", "自残", "伤害自己", "想消失", "活不下去"],
       "action": "requires_human_review",
-      "safe_response": "如果你正在经历强烈危险，请立即联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。"
+      "safe_response": "如果你此刻担心自己会伤害自己，请优先联系现实中的可信成年人、学校老师、专业机构或当地紧急服务，不要只依赖小程序。"
     },
     {
       "id": "harm_to_others",
-      "label": "伤害他人风险",
+      "label": "伤害他人相关安全信号",
       "risk_level": "high",
       "keywords": ["伤害别人", "报复", "打死", "弄死", "控制不住想伤人"],
       "action": "requires_human_review",
-      "safe_response": "如果你担心自己或他人的安全，请立刻离开危险场景，并联系现实中的可信成年人、学校老师或当地紧急服务。"
+      "safe_response": "如果你担心自己可能伤害他人，请尽快离开危险场景，避免接触可能造成伤害的物品，并联系现实中的可信成年人、学校老师、专业机构或当地紧急服务。"
     },
     {
       "id": "abuse_or_safety_threat",
@@ -25,15 +30,54 @@
       "risk_level": "high",
       "keywords": ["被打", "被威胁", "家暴", "被侵犯", "不敢回家", "有人伤害我"],
       "action": "requires_human_review",
-      "safe_response": "如果你正在遭遇现实安全威胁，请优先联系可信成年人、学校老师、专业机构或当地紧急服务。"
+      "safe_response": "如果你正在遭遇现实安全威胁，请优先去安全地点，并联系可信成年人、学校老师、专业机构或当地紧急服务。"
     },
     {
       "id": "extreme_distress",
-      "label": "极端痛苦或明显功能受损",
+      "label": "明显痛苦或功能受影响信号",
       "risk_level": "medium",
       "keywords": ["撑不住", "崩溃", "完全睡不着", "连续失眠", "什么都做不了", "无法上学"],
       "action": "suggest_human_support",
       "safe_response": "这些表达提示你可能正在承受较大压力。建议尽快联系现实中的可信成年人、学校老师或专业支持资源。"
+    }
+  ],
+  "context_rules": {
+    "engine_version": "context-v2",
+    "window_chars": 18,
+    "negation_markers": ["没有", "并没有", "从未", "从没", "不是", "不会", "并不", "否认", "未曾"],
+    "historical_markers": ["以前", "曾经", "过去", "之前", "小时候", "那时候", "曾有"],
+    "hypothetical_markers": ["如果", "假如", "比如", "例如", "举例", "新闻", "故事里", "朋友说", "别人说"],
+    "immediacy_markers": ["现在", "马上", "立刻", "今晚", "今天", "此刻", "已经准备", "已经计划", "控制不住"],
+    "policy": [
+      "上下文规则只能调整人工复核优先级，不能证明没有危险。",
+      "高风险关键词在否定、历史或假设语境中仍进入人工复核，但不自动升级为紧急复核。",
+      "高风险关键词与即时性表达同时出现时进入 urgent_human_review。",
+      "不向用户展示模型式概率、低中高临床风险标签或自动处置结论。"
+    ]
+  },
+  "routing": [
+    {
+      "safety_route": "urgent_human_review",
+      "target_review_minutes": 15,
+      "allow_auto_feedback": false,
+      "allow_recommended_training_cards": false,
+      "export_raw_text_by_default": false,
+      "notice": "目标复核时间用于内部排班，不构成紧急服务承诺。"
+    },
+    {
+      "safety_route": "human_review",
+      "target_review_minutes": 240,
+      "allow_auto_feedback": true,
+      "allow_recommended_training_cards": true,
+      "export_raw_text_by_default": false,
+      "notice": "如同时命中高危配置，用户端安全提示优先于普通训练建议。"
+    },
+    {
+      "safety_route": "standard",
+      "target_review_minutes": null,
+      "allow_auto_feedback": true,
+      "allow_recommended_training_cards": true,
+      "export_raw_text_by_default": false
     }
   ],
   "handling_rules": [
@@ -59,9 +103,20 @@
       "export_raw_text_by_default": false
     }
   ],
+  "validation_plan": {
+    "required_before_real_participant_freeze": [
+      "心理/精神卫生专业人员双人独立标注",
+      "至少报告 precision、recall、F1、Cohen kappa",
+      "分别分析自伤/自杀、他伤、侵害威胁、极端痛苦的假阳性和假阴性",
+      "单独检查否定、历史、引用、假设、讽刺和隐喻表达",
+      "对漏检的直接危险表达建立强制人工复盘和词库版本升级流程"
+    ],
+    "status": "pending_human_validation"
+  },
   "safety_notes": [
-    "风险关键词只用于初筛和人工复核提示，不构成诊断或危机评估结论。",
-    "命中 high 风险时，不应生成普通学生画像反馈或普通训练卡建议。",
-    "自由文本原文默认不进入研究导出；如确需查看，应由管理员确认并记录审计。"
+    "安全信号用于人工复核分流，不构成诊断、危机评估、风险概率或出院/治疗决策。",
+    "urgent_human_review 只表示内部优先队列；小程序本身不是紧急服务。",
+    "自由文本原文默认不进入研究导出；确需查看时必须通过授权角色并留下审计记录。",
+    "本版本完成工程增强但尚未替代专业人工验证。"
   ]
 }

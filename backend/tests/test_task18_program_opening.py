@@ -23,6 +23,8 @@ def _fresh_app(tmp_path, monkeypatch, app_env="production"):
     monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
     monkeypatch.setenv("SECRET_KEY", "task18-program-production-secret-key")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", ADMIN_TOKEN)
+    if app_env == "production":
+        monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "1")
     return importlib.import_module("app").app
 
 
