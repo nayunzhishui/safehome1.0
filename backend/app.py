@@ -82,6 +82,7 @@ REQUIRED_CONTENT_FILES = [
     "privacy_retention_policy.json",
     "content_governance_manifest.json",
     "ai_qa_governance.json",
+    "ai_participant_use_case_policy.json",
     "ai_qa_safety_responses.json",
     "ai_qa_synthetic_safety_suite.json",
     "offline_benchmark_registry.json",

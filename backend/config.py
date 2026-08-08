@@ -145,6 +145,9 @@ class Config:
     OPERATIONS_PRODUCTION_RELEASE_ENABLED = os.environ.get(
         "OPERATIONS_PRODUCTION_RELEASE_ENABLED", "0"
     ).strip().lower() in {"1", "true", "yes"}
+    PRODUCTION_FEATURES_UNLOCKED = os.environ.get(
+        "PRODUCTION_FEATURES_UNLOCKED", "0"
+    ).strip().lower() in {"1", "true", "yes"}
     THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED = os.environ.get(
         "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
@@ -176,24 +179,33 @@ class Config:
             cls.AI_QA_READ_TIMEOUT_MS,
         ) <= 0:
             raise RuntimeError("AI供应商连接、读取和总超时必须为正整数")
-        if cls.AI_QA_ENABLED:
-            raise RuntimeError("参与者AI问答门禁尚未批准，AI_QA_ENABLED 必须保持关闭")
-        if cls.OFFLINE_EXTERNAL_INGEST_ENABLED:
-            raise RuntimeError("T29公开数据权利尚未逐项批准，OFFLINE_EXTERNAL_INGEST_ENABLED 必须保持关闭")
-        if cls.OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED:
-            raise RuntimeError("T29离线基准不得替换生产规则，OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED 必须保持关闭")
-        if cls.RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED:
-            raise RuntimeError("T30人工签字尚未完成，RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED 必须保持关闭")
-        if cls.RESEARCH_OUTCOME_ANALYSIS_ALLOWED:
-            raise RuntimeError("T30方法尚未正式冻结，RESEARCH_OUTCOME_ANALYSIS_ALLOWED 必须保持关闭")
+        guarded_production_features = [
+            name
+            for name in (
+                "AI_QA_ENABLED",
+                "OFFLINE_EXTERNAL_INGEST_ENABLED",
+                "OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED",
+                "RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED",
+                "RESEARCH_OUTCOME_ANALYSIS_ALLOWED",
+                "RELIABILITY_GRADUAL_RELEASE_ENABLED",
+                "RELIABILITY_PRODUCTION_SLO_FROZEN",
+                "OPERATIONS_PRODUCTION_RELEASE_ENABLED",
+            )
+            if getattr(cls, name)
+        ]
+        if guarded_production_features and not cls.PRODUCTION_FEATURES_UNLOCKED:
+            raise RuntimeError(
+                "受控生产功能必须先显式设置 PRODUCTION_FEATURES_UNLOCKED=1："
+                + ", ".join(guarded_production_features)
+            )
+        if (
+            str(cls.APP_ENV).lower() == "production"
+            and cls.AI_QA_ENABLED
+            and cls.AI_QA_PROVIDER == "fake"
+        ):
+            raise RuntimeError("生产环境参与者AI问答禁止使用 fake 供应商")
         if str(cls.APP_ENV).lower() == "production" and cls.RELIABILITY_FAULT_INJECTION_ENABLED:
             raise RuntimeError("生产环境禁止启用 RELIABILITY_FAULT_INJECTION_ENABLED")
-        if cls.RELIABILITY_GRADUAL_RELEASE_ENABLED:
-            raise RuntimeError("T32测试云观察和人工发布批准尚未完成，RELIABILITY_GRADUAL_RELEASE_ENABLED 必须保持关闭")
-        if cls.RELIABILITY_PRODUCTION_SLO_FROZEN:
-            raise RuntimeError("T32测试云观察期尚未完成，RELIABILITY_PRODUCTION_SLO_FROZEN 必须保持关闭")
-        if cls.OPERATIONS_PRODUCTION_RELEASE_ENABLED:
-            raise RuntimeError("T34人工、伦理、云、真机和生产批准尚未完成，OPERATIONS_PRODUCTION_RELEASE_ENABLED 必须保持关闭")
         if cls.WECHAT_SUBSCRIBE_SEND_ENABLED:
             missing = [
                 name

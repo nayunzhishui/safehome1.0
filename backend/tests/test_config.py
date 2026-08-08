@@ -102,3 +102,56 @@ def test_production_rejects_short_secret_key(tmp_path, monkeypatch):
 
     with pytest.raises(RuntimeError, match="SECRET_KEY 长度不能少于 32 个字符"):
         importlib.import_module("app")
+
+
+def test_guarded_production_features_require_explicit_unlock(tmp_path, monkeypatch):
+    _clear_backend_modules()
+    monkeypatch.setenv("APP_ENV", "testing")
+    monkeypatch.setenv("AI_QA_ENABLED", "1")
+    monkeypatch.delenv("PRODUCTION_FEATURES_UNLOCKED", raising=False)
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
+    monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
+
+    with pytest.raises(RuntimeError, match="PRODUCTION_FEATURES_UNLOCKED"):
+        importlib.import_module("app")
+
+
+def test_guarded_production_features_can_be_opened_with_explicit_unlock(
+    tmp_path, monkeypatch
+):
+    _clear_backend_modules()
+    monkeypatch.setenv("APP_ENV", "testing")
+    monkeypatch.setenv("PRODUCTION_FEATURES_UNLOCKED", "1")
+    monkeypatch.setenv("AI_QA_ENABLED", "1")
+    monkeypatch.setenv("AI_QA_SANDBOX_ENABLED", "1")
+    monkeypatch.setenv("OFFLINE_EXTERNAL_INGEST_ENABLED", "1")
+    monkeypatch.setenv("RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED", "1")
+    monkeypatch.setenv("RESEARCH_OUTCOME_ANALYSIS_ALLOWED", "1")
+    monkeypatch.setenv("RELIABILITY_GRADUAL_RELEASE_ENABLED", "1")
+    monkeypatch.setenv("RELIABILITY_PRODUCTION_SLO_FROZEN", "1")
+    monkeypatch.setenv("OPERATIONS_PRODUCTION_RELEASE_ENABLED", "1")
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
+    monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
+
+    module = importlib.import_module("app")
+
+    assert module.app.config["PRODUCTION_FEATURES_UNLOCKED"] is True
+    assert module.app.config["AI_QA_ENABLED"] is True
+    assert module.app.config["OPERATIONS_PRODUCTION_RELEASE_ENABLED"] is True
+
+
+def test_production_ai_cannot_use_fake_provider(tmp_path, monkeypatch):
+    _clear_backend_modules()
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("DB_PROVIDER", "sqlite")
+    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
+    monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
+    monkeypatch.setenv("PRODUCTION_FEATURES_UNLOCKED", "1")
+    monkeypatch.setenv("AI_QA_ENABLED", "1")
+    monkeypatch.setenv("AI_QA_PROVIDER", "fake")
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
+    monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
+
+    with pytest.raises(RuntimeError, match="生产环境参与者AI问答禁止使用 fake"):
+        importlib.import_module("app")

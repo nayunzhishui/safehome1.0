@@ -4,6 +4,7 @@
     "pages/login/index",
     "pages/register/index",
     "pages/messages/index",
+    "pages/support-assistant/index",
     "pages/message-detail/index",
     "pages/emergency-guide/index",
     "pages/emergency-resources/index",

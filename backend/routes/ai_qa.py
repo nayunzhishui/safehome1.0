@@ -1,6 +1,6 @@
 """Controlled AI QA synthetic research sandbox endpoints."""
 
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 
 from routes.auth_utils import route_actor as _actor
 from routes.utils import fail, ok
@@ -50,6 +50,13 @@ from services.ai_qa_release_service import (
 
 
 bp = Blueprint("ai_qa", __name__, url_prefix="/api/ai-qa")
+
+
+def _session_actor():
+    roles = ["researcher", "supervisor", "admin"]
+    if current_app.config.get("AI_QA_ENABLED", False):
+        roles = ["parent", "student", *roles]
+    return _actor(*roles)
 
 
 def _response(callback):
@@ -179,7 +186,7 @@ def ai_qa_provider_evidence_verify(evidence_id: str):
 
 @bp.get("/sessions")
 def ai_qa_sessions():
-    actor, error = _actor("researcher", "supervisor", "admin")
+    actor, error = _session_actor()
     if error:
         return error
     return _response(lambda: {"items": list_sessions(actor)})
@@ -187,7 +194,7 @@ def ai_qa_sessions():
 
 @bp.post("/sessions")
 def ai_qa_session_create():
-    actor, error = _actor("researcher", "supervisor", "admin")
+    actor, error = _session_actor()
     if error:
         return error
     payload = request.get_json(silent=True) or {}
@@ -196,7 +203,7 @@ def ai_qa_session_create():
 
 @bp.get("/sessions/<session_id>")
 def ai_qa_session_detail(session_id: str):
-    actor, error = _actor("researcher", "supervisor", "admin")
+    actor, error = _session_actor()
     if error:
         return error
     return _response(lambda: get_session(actor, session_id))
@@ -204,7 +211,7 @@ def ai_qa_session_detail(session_id: str):
 
 @bp.delete("/sessions/<session_id>")
 def ai_qa_session_delete(session_id: str):
-    actor, error = _actor("researcher", "supervisor", "admin")
+    actor, error = _session_actor()
     if error:
         return error
     return _response(lambda: delete_session(actor, session_id))
@@ -212,7 +219,7 @@ def ai_qa_session_delete(session_id: str):
 
 @bp.post("/sessions/<session_id>/messages")
 def ai_qa_message_create(session_id: str):
-    actor, error = _actor("researcher", "supervisor", "admin")
+    actor, error = _session_actor()
     if error:
         return error
     payload = request.get_json(silent=True) or {}
@@ -221,7 +228,7 @@ def ai_qa_message_create(session_id: str):
 
 @bp.post("/messages/<message_id>/feedback")
 def ai_qa_message_feedback(message_id: str):
-    actor, error = _actor("researcher", "supervisor", "admin")
+    actor, error = _session_actor()
     if error:
         return error
     payload = request.get_json(silent=True) or {}

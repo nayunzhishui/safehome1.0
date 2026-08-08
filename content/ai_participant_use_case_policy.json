@@ -1,0 +1,29 @@
+{
+  "schema_version": "safehome.ai-participant-use-case-policy.v1",
+  "policy_version": "2026.07-t37-p2-participant-v1",
+  "stage": "controlled_participant_support",
+  "allowed_roles": ["parent", "student"],
+  "allowed_use_cases": [
+    {
+      "id": "participant_support_navigation",
+      "title": "支持性自由问答",
+      "description": "围绕记录、练习、沟通和产品使用提供有来源的支持性说明。",
+      "input_pattern": "participant_question",
+      "output_contract": "grounded_non_diagnostic_answer",
+      "human_verification_required": false
+    }
+  ],
+  "required_consent_type": "ai_assistance",
+  "cross_session_memory": false,
+  "write_actions_allowed": false,
+  "automatic_adoption_allowed": false,
+  "prohibited_categories": [
+    "diagnosis",
+    "crisis_conclusion",
+    "standardized_test_interpretation",
+    "automatic_training_card_prescription",
+    "relationship_quality_judgment",
+    "legal_or_medical_decision"
+  ],
+  "boundary_notice": "回答只用于整理已有内容和提供可暂停的小步骤，可能遗漏情境，不构成诊断、治疗、危机处置或关系判断。"
+}

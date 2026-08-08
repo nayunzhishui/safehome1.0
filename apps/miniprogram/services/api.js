@@ -162,6 +162,7 @@ const API_ENDPOINTS = {
   aiQaKnowledgeCandidates: "/api/ai-qa/knowledge/candidates",
   aiQaKnowledgeEvaluation: "/api/ai-qa/knowledge/evaluation/run",
   aiQaReviewCases: "/api/ai-qa/review-cases",
+  aiQaSessions: "/api/ai-qa/sessions",
   offlineBenchmarks: "/api/research/benchmarks",
   researchMethodology: "/api/research/methodology",
   computationContract: "/api/research/computation-contract",
@@ -1696,6 +1697,42 @@ function createSafeHomeApi(options = {}) {
 
     getAiQaUseCases() {
       return request(API_ENDPOINTS.aiQaUseCases);
+    },
+
+    listAiQaSessions() {
+      return request(API_ENDPOINTS.aiQaSessions, { requiresAuth: true });
+    },
+
+    createAiQaSession(data) {
+      return request(API_ENDPOINTS.aiQaSessions, {
+        method: "POST",
+        data,
+        requiresAuth: true,
+      });
+    },
+
+    getAiQaSession(sessionId) {
+      return request(`${API_ENDPOINTS.aiQaSessions}/${encodeURIComponent(sessionId)}`, {
+        requiresAuth: true,
+      });
+    },
+
+    sendAiQaMessage(sessionId, data) {
+      return request(
+        `${API_ENDPOINTS.aiQaSessions}/${encodeURIComponent(sessionId)}/messages`,
+        {
+          method: "POST",
+          data,
+          requiresAuth: true,
+        }
+      );
+    },
+
+    deleteAiQaSession(sessionId) {
+      return request(`${API_ENDPOINTS.aiQaSessions}/${encodeURIComponent(sessionId)}`, {
+        method: "DELETE",
+        requiresAuth: true,
+      });
     },
 
     getAiProviderSelection() {

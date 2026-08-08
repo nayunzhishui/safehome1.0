@@ -39,7 +39,7 @@ def test_create_and_list_consent_records(tmp_path, monkeypatch):
         json={
             "user_id": "parent-consent",
             "consent_type": "user_agreement",
-            "consent_version": "2026.06-consent-v1",
+            "consent_version": "2026.07-consent-v2",
             "agreed": True,
         },
     )
@@ -48,7 +48,7 @@ def test_create_and_list_consent_records(tmp_path, monkeypatch):
     created = create_response.get_json()["data"]
     assert created["user_id"] == "parent-consent"
     assert created["consent_type"] == "user_agreement"
-    assert created["consent_version"] == "2026.06-consent-v1"
+    assert created["consent_version"] == "2026.07-consent-v2"
     assert created["agreed"] == 1
     assert created["revoked_at"] is None
 
@@ -75,7 +75,7 @@ def test_research_authorization_can_be_declined(tmp_path, monkeypatch):
     assert response.status_code == 201
     data = response.get_json()["data"]
     assert data["agreed"] == 0
-    assert data["consent_version"] == "2026.06-consent-v1"
+    assert data["consent_version"] == "2026.07-consent-v2"
     assert data["revoked_at"]
 
 

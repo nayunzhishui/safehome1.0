@@ -1,0 +1,158 @@
+.page-shell {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 32rpx 28rpx 56rpx;
+  background: #fffaf5;
+  color: #17342c;
+}
+
+.intro-card,
+.boundary-card,
+.notice-card,
+.composer,
+.message {
+  border: 1rpx solid rgba(69, 112, 94, 0.18);
+  border-radius: 28rpx;
+  background: #fffefd;
+  box-shadow: 0 12rpx 28rpx rgba(45, 73, 62, 0.07);
+}
+
+.intro-card {
+  padding: 36rpx 32rpx;
+}
+
+.eyebrow,
+.boundary-title,
+.message-label,
+.citation-title {
+  display: block;
+  color: #3e7764;
+  font-size: 24rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+.title {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 44rpx;
+  line-height: 1.25;
+  font-weight: 750;
+}
+
+.subtitle,
+.boundary-text,
+.notice-text,
+.message-content {
+  display: block;
+  margin-top: 14rpx;
+  color: #52645e;
+  font-size: 29rpx;
+  line-height: 1.7;
+}
+
+.boundary-card,
+.notice-card,
+.composer {
+  margin-top: 24rpx;
+  padding: 28rpx;
+}
+
+.consent-button,
+.send-button {
+  width: 100%;
+  min-height: 96rpx;
+  margin-top: 24rpx;
+  border: 0;
+  border-radius: 999rpx;
+  background: #4d836f;
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.consent-button[disabled],
+.send-button[disabled] {
+  background: #c8d2cc;
+  color: #f7faf8;
+}
+
+.consent-done {
+  display: block;
+  margin-top: 20rpx;
+  color: #3e7764;
+  font-size: 27rpx;
+  font-weight: 700;
+}
+
+.conversation {
+  margin-top: 24rpx;
+}
+
+.message {
+  margin-bottom: 18rpx;
+  padding: 26rpx 28rpx;
+}
+
+.message--user {
+  margin-left: 48rpx;
+  background: #edf6f1;
+}
+
+.message--assistant {
+  margin-right: 24rpx;
+}
+
+.citations {
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid #e4ebe7;
+}
+
+.citation-item {
+  display: block;
+  margin-top: 8rpx;
+  color: #65756f;
+  font-size: 25rpx;
+}
+
+.question-input {
+  width: 100%;
+  min-height: 220rpx;
+  box-sizing: border-box;
+  padding: 24rpx;
+  border: 1rpx solid #cdd8d2;
+  border-radius: 22rpx;
+  background: #ffffff;
+  color: #213b33;
+  font-size: 29rpx;
+  line-height: 1.6;
+}
+
+.composer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-bottom: 14rpx;
+}
+
+.composer-label {
+  color: #23473c;
+  font-size: 27rpx;
+  font-weight: 700;
+}
+
+.composer-counter {
+  flex: none;
+  color: #6b7b75;
+  font-size: 23rpx;
+}
+
+.inline-error {
+  display: block;
+  margin-top: 16rpx;
+  color: #a94f4b;
+  font-size: 26rpx;
+  line-height: 1.5;
+}

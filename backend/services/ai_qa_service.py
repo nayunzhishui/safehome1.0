@@ -134,6 +134,52 @@ def _require_allowed_use_case(use_case_id: object) -> tuple[str, dict]:
     return normalized, policy
 
 
+def _load_participant_use_case_policy() -> dict:
+    path = current_app.config["CONTENT_DIR"] / "ai_participant_use_case_policy.json"
+    try:
+        policy = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise AiQaError(
+            "ai_qa_participant_policy_unavailable",
+            "参与者问答策略不可用",
+            503,
+        ) from exc
+    if (
+        policy.get("schema_version")
+        != "safehome.ai-participant-use-case-policy.v1"
+        or not policy.get("allowed_use_cases")
+    ):
+        raise AiQaError(
+            "ai_qa_participant_policy_invalid",
+            "参与者问答策略格式不兼容",
+            503,
+        )
+    return policy
+
+
+def _require_use_case_for_actor(actor: dict, use_case_id: object) -> tuple[str, dict]:
+    if actor.get("role") not in {"parent", "student"}:
+        return _require_allowed_use_case(use_case_id)
+    normalized = str(use_case_id or "").strip()
+    policy = _load_participant_use_case_policy()
+    allowed = {
+        str(item["id"]): item
+        for item in policy["allowed_use_cases"]
+        if isinstance(item, dict) and item.get("id")
+    }
+    if normalized not in allowed:
+        raise AiQaError(
+            "ai_qa_use_case_not_allowed",
+            "当前问题不在参与者支持性问答范围内",
+            409,
+            {"use_case_id": normalized},
+        )
+    return normalized, {
+        "policy_version": policy["policy_version"],
+        "allowed_use_cases": policy["allowed_use_cases"],
+    }
+
+
 def get_config_status() -> dict:
     from services.ai_qa_release_service import get_release_plan_summary
 
@@ -148,20 +194,29 @@ def get_config_status() -> dict:
         current_app.config.get("AI_QA_PROVIDER", "fake")
     ).strip().lower()
     provider_admission = get_runtime_provider_admission(configured_provider)
+    participant_enabled = (
+        bool(current_app.config.get("AI_QA_ENABLED"))
+        and not bool(runtime["killed"])
+    )
+    participant_policy = _load_participant_use_case_policy()
     return {
         "service_name": governance.get("decisions", {}).get("service_name", {}).get("proposed", "支持性内容助手"),
-        "participant_enabled": False,
+        "participant_enabled": participant_enabled,
         "sandbox_enabled": bool(current_app.config.get("AI_QA_SANDBOX_ENABLED")) and not bool(runtime["killed"]),
         "provider": configured_provider,
-        "stage": "synthetic_research_sandbox",
+        "stage": (
+            "controlled_participant_support"
+            if participant_enabled
+            else "synthetic_research_sandbox"
+        ),
         "governance_status": governance.get("status"),
-        "participant_eligible": False,
+        "participant_eligible": participant_enabled,
         "gate_decisions": governance.get("decisions", {}),
         "runtime_control": {"killed": int(runtime.get("killed") or 0), "changed_at": runtime.get("changed_at")},
         "data_policy": {
             "cross_session_memory": False,
             "provider_training": False,
-            "real_participant_data": False,
+            "real_participant_data": participant_enabled,
             "write_tools": False,
             "formal_participant_feedback_write": False,
             "synthetic_retention_days": int(current_app.config.get("AI_QA_SYNTHETIC_RETENTION_DAYS", 7)),
@@ -209,6 +264,12 @@ def get_config_status() -> dict:
         "runtime_limits": runtime_policy_summary(),
         "release_plan": get_release_plan_summary(),
         "use_case_policy": get_use_case_catalog(),
+        "participant_use_case_policy": {
+            "policy_version": participant_policy["policy_version"],
+            "allowed_use_cases": participant_policy["allowed_use_cases"],
+            "required_consent_type": participant_policy["required_consent_type"],
+            "boundary_notice": participant_policy["boundary_notice"],
+        },
         "boundary_notice": governance.get("boundary_notice"),
     }
 
@@ -219,6 +280,44 @@ def _require_sandbox() -> None:
     runtime = _runtime_killed()
     if runtime["killed"]:
         raise AiQaError("ai_qa_killed", "内容助手已被停用", 503, {"reason": runtime.get("reason")})
+
+
+def _require_runtime_for_actor(actor: dict) -> None:
+    if actor.get("role") not in {"parent", "student"}:
+        _require_sandbox()
+        return
+    if not current_app.config.get("AI_QA_ENABLED", False):
+        raise AiQaError("ai_qa_participant_disabled", "支持性问答暂未开放", 409)
+    runtime = _runtime_killed()
+    if runtime["killed"]:
+        raise AiQaError(
+            "ai_qa_killed",
+            "支持性问答已暂停，请使用记录、训练或人工支持",
+            503,
+            {"reason": runtime.get("reason")},
+        )
+
+
+def _require_participant_ai_consent(actor: dict) -> None:
+    if actor.get("role") not in {"parent", "student"}:
+        return
+    with get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT agreed, revoked_at
+            FROM consent_records
+            WHERE user_id = ? AND consent_type = 'ai_assistance'
+            ORDER BY created_at DESC
+            LIMIT 1
+            """,
+            (actor["id"],),
+        ).fetchone()
+    if row is None or int(row["agreed"] or 0) != 1 or row["revoked_at"]:
+        raise AiQaError(
+            "ai_assistance_consent_required",
+            "请先阅读并同意AI辅助处理说明",
+            409,
+        )
 
 
 def _decode_message(row) -> dict:
@@ -245,17 +344,23 @@ def _get_owned_session(actor: dict, session_id: str, *, active_required: bool = 
 
 
 def create_session(actor: dict, payload: dict) -> dict:
-    _require_sandbox()
-    if payload.get("synthetic_data") is not True:
+    _require_runtime_for_actor(actor)
+    participant_mode = actor.get("role") in {"parent", "student"}
+    _require_participant_ai_consent(actor)
+    if not participant_mode and payload.get("synthetic_data") is not True:
         raise AiQaError("synthetic_data_required", "当前只允许明确标记的合成案例", 409)
     if payload.get("research_use_allowed") is True:
         raise AiQaError("research_use_not_authorized", "合成沙盒不会自动取得研究使用授权", 409)
-    use_case_id, use_case_policy = _require_allowed_use_case(payload.get("use_case_id"))
+    use_case_id, use_case_policy = _require_use_case_for_actor(
+        actor, payload.get("use_case_id")
+    )
     session_id = new_id("aiqs")
     timestamp = now_iso()
+    mode = "participant_support" if participant_mode else "research_sandbox"
+    synthetic_data = 0 if participant_mode else 1
     with get_connection() as conn:
-        conn.execute("INSERT INTO ai_qa_sessions (id, user_id, mode, status, synthetic_data, context_policy, research_use_allowed, use_case_id, use_case_policy_version, created_at, updated_at) VALUES (?, ?, 'research_sandbox', 'active', 1, 'current_session_only', 0, ?, ?, ?, ?)", (session_id, actor["id"], use_case_id, use_case_policy["policy_version"], timestamp, timestamp))
-        write_audit_log(conn, "ai_qa_session_created", actor["id"], "ai_qa_session", session_id, {"synthetic_data": True, "mode": "research_sandbox", "research_use_allowed": False, "use_case_id": use_case_id, "use_case_policy_version": use_case_policy["policy_version"]})
+        conn.execute("INSERT INTO ai_qa_sessions (id, user_id, mode, status, synthetic_data, context_policy, research_use_allowed, use_case_id, use_case_policy_version, created_at, updated_at) VALUES (?, ?, ?, 'active', ?, 'current_session_only', 0, ?, ?, ?, ?)", (session_id, actor["id"], mode, synthetic_data, use_case_id, use_case_policy["policy_version"], timestamp, timestamp))
+        write_audit_log(conn, "ai_qa_session_created", actor["id"], "ai_qa_session", session_id, {"synthetic_data": bool(synthetic_data), "mode": mode, "research_use_allowed": False, "use_case_id": use_case_id, "use_case_policy_version": use_case_policy["policy_version"]})
         conn.commit()
     return get_session(actor, session_id)
 
@@ -430,9 +535,10 @@ def _fixed_message(actor: dict, session_id: str, text: str, route: str, precheck
 
 
 def send_message(actor: dict, session_id: str, payload: dict) -> dict:
-    _require_sandbox()
+    _require_runtime_for_actor(actor)
+    _require_participant_ai_consent(actor)
     session = _get_owned_session(actor, session_id)
-    _require_allowed_use_case(session.get("use_case_id"))
+    _require_use_case_for_actor(actor, session.get("use_case_id"))
     if payload.get("tools"):
         raise AiQaError(
             "ai_qa_tools_forbidden",
@@ -481,7 +587,8 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
             exc.details,
         ) from exc
     text = initial_input["question"]
-    if payload.get("synthetic_data") is not True:
+    participant_mode = actor.get("role") in {"parent", "student"}
+    if not participant_mode and payload.get("synthetic_data") is not True:
         raise AiQaError("synthetic_data_required", "当前只允许合成问题", 409)
     provider_name = str(current_app.config.get("AI_QA_PROVIDER", "fake"))
     try:
@@ -496,7 +603,7 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
             "user",
             text,
             safety={
-                "synthetic_data": True,
+                "synthetic_data": not participant_mode,
                 "input_security_version": initial_input["security_version"],
                 "deidentified_count": initial_input["privacy"][
                     "deidentified_count"
@@ -1030,7 +1137,8 @@ def purge_expired_synthetic_data(actor: dict, payload: dict) -> dict:
 
 
 def save_feedback(actor: dict, message_id: str, payload: dict) -> dict:
-    _require_sandbox()
+    _require_runtime_for_actor(actor)
+    _require_participant_ai_consent(actor)
     evaluation = str(payload.get("evaluation") or "").strip()
     if evaluation not in FEEDBACK_VALUES:
         raise AiQaError("validation_error", "评价值无效")

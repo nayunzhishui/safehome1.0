@@ -18,10 +18,12 @@ ALLOWED_CONSENT_TYPES = {
     "service_data",
     "quality_evaluation",
     "model_training",
+    "ai_assistance",
+    "relationship_analysis",
     "secondary_research",
 }
 
-DEFAULT_CONSENT_VERSION = "2026.06-consent-v1"
+DEFAULT_CONSENT_VERSION = "2026.07-consent-v2"
 
 
 def get_latest_consent(conn, user_id: str, consent_type: str) -> dict | None:
