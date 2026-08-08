@@ -209,17 +209,17 @@ try {
   }
   $summary | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $OutputDirectory "deployment-summary.json") -Encoding UTF8
   @(
-    "SafeHome 全接口联调部署包使用说明",
+    "SafeHome all-interface deployment package instructions",
     "",
-    "1. 后端云托管：在 CloudBase 环境 prod-d3gl35otiaa7c8d24 的服务 flask-gh3l 新建版本，上传 safehome-cloudbase-all-interfaces-*.zip。",
-    "2. 云端变量：参考后端包根目录 CLOUDBASE_ENVIRONMENT_VARIABLES.txt，把占位符替换为 CloudBase 密钥管理中的真实值；不要把 Secret 写进 ZIP。",
-    "3. 必需既有变量：DB_PROVIDER/MySQL 连接、SECRET_KEY、ADMIN_EXPORT_TOKEN。缺少时生产容器会拒绝启动。",
-    "4. DeepSeek：参与者与研究者 AI 接口已开启；未配置 DEEPSEEK_API_KEY 时接口会安全降级，不会泄露密钥。",
-    "5. 微信订阅发送：必须同时配置 AppSecret、模板 ID、字段映射和调度令牌；否则不要在云端设置 WECHAT_SUBSCRIBE_SEND_ENABLED=1。",
-    "6. 小程序：解压 safehome-miniprogram-upload-*.zip，在微信开发者工具中导入解压目录，编译后点击上传按钮；微信开发者工具不能直接把 ZIP 当作代码版本提交。",
-    "7. 发布顺序：先发布后端并验证 /healthz、/readyz，再上传小程序；不要颠倒。",
-    "8. 安全边界：包未关闭身份认证、角色能力和对象范围校验；生产故障注入、自动外部数据摄取和模型自动替换仍关闭。",
-    "9. 完整性：上传前核对同目录 .sha256 和 deployment-summary.json。"
+    "1. CloudBase backend: create a version for prod-d3gl35otiaa7c8d24 / flask-gh3l and upload safehome-cloudbase-all-interfaces-*.zip.",
+    "2. Cloud variables: use CLOUDBASE_ENVIRONMENT_VARIABLES.txt as the key list and replace placeholders through CloudBase secret configuration. Never put secrets in the ZIP.",
+    "3. Required existing variables: DB_PROVIDER/MySQL settings, SECRET_KEY and ADMIN_EXPORT_TOKEN. Production startup fails closed when they are missing.",
+    "4. DeepSeek: participant and researcher AI routes are enabled. Without DEEPSEEK_API_KEY they fail safely.",
+    "5. WeChat subscribe delivery: configure AppSecret, template ID, field mapping and scheduler token before setting WECHAT_SUBSCRIBE_SEND_ENABLED=1 in CloudBase.",
+    "6. Mini Program: extract safehome-miniprogram-upload-*.zip, import the extracted directory into WeChat DevTools, compile, then use Upload. DevTools does not submit the ZIP directly.",
+    "7. Order: deploy backend and verify /healthz and /readyz before uploading the Mini Program.",
+    "8. Security: authentication, role capabilities and object scope remain enforced. Fault injection, automatic external ingest and model replacement remain disabled.",
+    "9. Integrity: verify the .sha256 files and deployment-summary.json before upload."
   ) | Set-Content -LiteralPath (Join-Path $OutputDirectory "UPLOAD_INSTRUCTIONS.txt") -Encoding UTF8
   $summary | ConvertTo-Json -Depth 6
 } finally {
