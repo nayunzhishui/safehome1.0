@@ -1,0 +1,148 @@
+{
+  "schema": "safehome.miniprogram.acceptance.v1",
+  "version": "2026-08-08",
+  "principles": {
+    "default_transport": "local-http",
+    "clear_auth_before_run": true,
+    "capture_raw_secrets": false,
+    "production_mutation_default": false
+  },
+  "route_groups": {
+    "public_entry": [
+      "pages/home/index",
+      "pages/login/index",
+      "pages/register/index",
+      "pages/getting-started/index"
+    ],
+    "core_participant_journey": [
+      "pages/goal-setting/index",
+      "pages/thermometer/index",
+      "pages/diary-form/index",
+      "pages/feedback-result/index",
+      "pages/training/index",
+      "pages/training-card/index",
+      "pages/checkin/index",
+      "pages/weekly-report/index",
+      "pages/profile/index"
+    ],
+    "assessment": [
+      "pages/assessment/index",
+      "pages/assessment-history/index",
+      "pages/assessment-detail/index",
+      "pages/assessment-result/index",
+      "pages/personalized-plan/index",
+      "pages/growth-dashboard/index"
+    ],
+    "relationship": [
+      "pages/relationship-pilot/index",
+      "pages/relationship-report/index",
+      "pages/relationship-task/index",
+      "pages/relationship-growth/index",
+      "pages/relationship-narrative/index"
+    ],
+    "therapeutic_assessment": [
+      "pages/therapeutic-assessment/index",
+      "pages/therapeutic-assessment-boundary/index",
+      "pages/therapeutic-assessment-issue/index",
+      "pages/therapeutic-assessment-recent-event/index",
+      "pages/therapeutic-assessment-resources/index",
+      "pages/therapeutic-assessment-sharing/index",
+      "pages/therapeutic-assessment-summary/index",
+      "pages/therapeutic-assessment-feedback-check/index",
+      "pages/therapeutic-assessment-action-review/index",
+      "pages/therapeutic-assessment-action-followup/index",
+      "pages/therapeutic-assessment-quality/index"
+    ],
+    "safety_and_support": [
+      "pages/support-assistant/index",
+      "pages/emergency-guide/index",
+      "pages/emergency-resources/index",
+      "pages/supervision/index",
+      "pages/messages/index",
+      "pages/message-detail/index"
+    ],
+    "researcher_and_diagnostics": [
+      "pages/researcher-dashboard/index",
+      "pages/debug/index",
+      "pages/integration-test/index"
+    ]
+  },
+  "automated_scenarios": [
+    {
+      "id": "AC-ROUTE-ALL",
+      "title": "全部已注册页面可启动并形成截图证据",
+      "runner": "routes",
+      "source": "apps/miniprogram/app.json",
+      "writes_allowed": false
+    },
+    {
+      "id": "AC-AUTH-01",
+      "title": "登录页三种登录能力与账号密码兜底可见",
+      "runner": "auth",
+      "page": "pages/login/index",
+      "required_selectors_any": [
+        ".wechat-action",
+        ".auth-unavailable"
+      ],
+      "required_selectors": [
+        ".primary-action",
+        ".ghost-action"
+      ],
+      "writes_allowed": false
+    },
+    {
+      "id": "AC-PROTECTED-01",
+      "title": "未登录访问受保护页面时安全失败而非展示真实数据",
+      "runner": "routes",
+      "pages": [
+        "pages/messages/index",
+        "pages/training-history/index",
+        "pages/researcher-dashboard/index"
+      ],
+      "writes_allowed": false
+    },
+    {
+      "id": "AC-SAFETY-01",
+      "title": "危机与现实支持资源页面可达",
+      "runner": "routes",
+      "pages": [
+        "pages/emergency-guide/index",
+        "pages/emergency-resources/index",
+        "pages/supervision/index"
+      ],
+      "writes_allowed": false
+    },
+    {
+      "id": "AC-INTEGRATION-01",
+      "title": "情绪事件记录→即时反馈→训练卡推荐三步真实联调",
+      "runner": "smoke",
+      "page": "pages/integration-test/index",
+      "trigger_selector": ".primary-button",
+      "expected_data": {
+        "status": "success"
+      },
+      "writes_allowed": true,
+      "requires_env": "SAFEHOME_ACCEPTANCE_ALLOW_TEST_WRITES=1"
+    },
+    {
+      "id": "AC-WECHAT-01",
+      "title": "微信一键登录首次与重复登录",
+      "runner": "manual_guarded",
+      "page": "pages/login/index",
+      "trigger_selector": ".wechat-action",
+      "writes_allowed": true,
+      "requires_env": "SAFEHOME_ACCEPTANCE_ALLOW_ACCOUNT_MUTATION=1",
+      "notes": "仅在明确的测试账号/测试环境中执行；不得把 code、token、openid、手机号写入证据。"
+    }
+  ],
+  "manual_device_matrix": [
+    "Android 微信正式客户端：首次启动、登录、返回、前后台切换、弱网恢复",
+    "iOS 微信正式客户端：首次启动、登录、返回、前后台切换、安全区与键盘",
+    "窄屏/大字体：表单、按钮、错误提示不截断、不遮挡",
+    "授权取消：微信登录/手机号授权取消后仍可账号密码登录",
+    "登录过期/账号停用：清理会话并回到安全登录态",
+    "风险路径：高风险内容不生成训练卡，现实支持资源持续可达",
+    "重复进入：日记、测评、打卡、周报不因重复点击产生异常重复提交",
+    "网络失败：超时/断网/恢复后不伪装为空数据，提供可理解重试状态"
+  ]
+}
