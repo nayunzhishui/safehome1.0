@@ -25,6 +25,15 @@
       "pages/weekly-report/index",
       "pages/profile/index"
     ],
+    "content_and_settings": [
+      "pages/course/index",
+      "pages/course-detail/index",
+      "pages/program-list/index",
+      "pages/program-detail/index",
+      "pages/hot-topics/index",
+      "pages/task-detail/index",
+      "pages/settings-detail/index"
+    ],
     "assessment": [
       "pages/assessment/index",
       "pages/assessment-history/index",
