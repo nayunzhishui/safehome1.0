@@ -1,0 +1,47 @@
+name: Miniprogram Acceptance Static Gate
+
+on:
+  pull_request:
+    paths:
+      - "apps/miniprogram/**"
+      - "config/task36_registry.json"
+      - "scripts/audit_task36_wechat_login.py"
+      - "scripts/validate_miniprogram_acceptance.py"
+      - "tools/miniprogram-acceptance/**"
+      - ".github/workflows/miniprogram-acceptance-static.yml"
+  push:
+    branches:
+      - "codex/quasi-device-acceptance-harness-20260808"
+    paths:
+      - "apps/miniprogram/**"
+      - "config/task36_registry.json"
+      - "scripts/audit_task36_wechat_login.py"
+      - "scripts/validate_miniprogram_acceptance.py"
+      - "tools/miniprogram-acceptance/**"
+      - ".github/workflows/miniprogram-acceptance-static.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-acceptance-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate acceptance manifest and safety guards
+        run: python scripts/validate_miniprogram_acceptance.py
+
+      - name: Validate Task36 WeChat login engineering gate
+        run: python scripts/audit_task36_wechat_login.py
+
+      - name: Syntax-check DevTools harness
+        run: node --check tools/miniprogram-acceptance/run.js
