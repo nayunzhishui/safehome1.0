@@ -42,6 +42,9 @@ coverage/
 miniprogram_npm/
 project.private.config.json
 
+# Local acceptance evidence may contain screenshots/runtime state. Never commit it.
+artifacts/miniprogram-acceptance/
+
 # IDE / OS
 .vscode/*
 !.vscode/extensions.json
