@@ -1,0 +1,56 @@
+{
+  "schema": "safehome.agent-runtime.v1",
+  "version": "2026-08-07-agent-v1",
+  "status": "internal_synthetic_only",
+  "enabled_roles": ["researcher", "supervisor", "admin"],
+  "synthetic_data_required": true,
+  "participant_data_allowed": false,
+  "planner": "deterministic_tool_router",
+  "max_tool_calls": 3,
+  "allowed_tools": [
+    {
+      "name": "knowledge.search",
+      "mode": "read_only",
+      "purpose": "检索已经通过内容治理并处于 active release 的知识块。"
+    },
+    {
+      "name": "runtime.config",
+      "mode": "read_only",
+      "purpose": "读取脱敏后的工程运行时配置状态，不返回密钥、密码或连接字符串。"
+    },
+    {
+      "name": "schema.migrations",
+      "mode": "read_only",
+      "purpose": "读取显式 migration 清单与回滚说明，不执行回滚。"
+    }
+  ],
+  "write_tools_allowed": false,
+  "automatic_publish_allowed": false,
+  "automatic_participant_message_allowed": false,
+  "automatic_risk_decision_allowed": false,
+  "automatic_research_export_approval_allowed": false,
+  "human_approval_required_for_future_writes": true,
+  "prohibited_actions": [
+    "diagnosis",
+    "treatment_decision",
+    "close_or_downgrade_risk_review",
+    "change_guardian_consent",
+    "change_child_assent",
+    "delete_participant_data",
+    "change_user_role",
+    "approve_research_export",
+    "publish_content",
+    "send_participant_message",
+    "execute_arbitrary_sql",
+    "execute_shell_command",
+    "browse_unapproved_web_content"
+  ],
+  "audit": {
+    "store_raw_objective": false,
+    "store_raw_tool_input": false,
+    "store_raw_tool_output": false,
+    "store_hashes": true,
+    "store_tool_name_status_latency": true
+  },
+  "boundary_notice": "Agent v1仅用于内部合成数据与只读工程/知识检索；不代替心理专业判断、风险复核、伦理审批或研究授权。"
+}

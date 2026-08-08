@@ -5,11 +5,14 @@ ENV PYTHONUNBUFFERED=1
 ENV APP_ENV=production
 ENV CONTENT_DIR=/app/content
 ENV DATABASE_PATH=/app/data/safehome.sqlite3
+ENV RAG_V2_ENABLED=1
+ENV MAX_REQUEST_BODY_BYTES=1048576
 
 WORKDIR /app
 
 COPY backend/requirements.txt /app/backend/requirements.txt
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt \
+    && pip check
 
 COPY backend /app/backend
 COPY content /app/content
@@ -24,4 +27,4 @@ WORKDIR /app/backend
 
 USER safehome
 
-CMD ["sh", "-c", "gunicorn -w ${WEB_CONCURRENCY:-2} -b 0.0.0.0:${PORT:-5050} app:app"]
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "wsgi:app"]

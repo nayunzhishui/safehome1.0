@@ -1,0 +1,71 @@
+# Optional self-hosted ingress for SafeHome.
+# CloudBase already provides ingress/TLS in the current deployment model; do
+# not add this layer unless the deployment topology actually needs it.
+
+upstream safehome_backend {
+    server 127.0.0.1:5050;
+    keepalive 32;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name safehome.example.com;
+
+    # Certificates are deployment secrets and must not be committed.
+    ssl_certificate     /etc/nginx/tls/fullchain.pem;
+    ssl_certificate_key /etc/nginx/tls/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    client_max_body_size 1m;
+    server_tokens off;
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy no-referrer always;
+
+    location / {
+        proxy_pass http://safehome_backend;
+        proxy_http_version 1.1;
+        proxy_connect_timeout 5s;
+        proxy_send_timeout 30s;
+        proxy_read_timeout 30s;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Request-ID $request_id;
+
+        # Never trust identity headers supplied by a public client.  A trusted
+        # CloudBase/private ingress may inject them on the protected hop only.
+        proxy_set_header X-WX-OPENID "";
+        proxy_set_header X-WX-UNIONID "";
+        proxy_set_header X-WX-FROM-OPENID "";
+    }
+
+    # AI endpoints are still synchronous today.  Give them a slightly larger
+    # read window without weakening timeout policy for every API route.
+    location /api/ai-qa/ {
+        proxy_pass http://safehome_backend;
+        proxy_http_version 1.1;
+        proxy_connect_timeout 5s;
+        proxy_send_timeout 45s;
+        proxy_read_timeout 45s;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Request-ID $request_id;
+        proxy_set_header X-WX-OPENID "";
+        proxy_set_header X-WX-UNIONID "";
+        proxy_set_header X-WX-FROM-OPENID "";
+    }
+
+    location = /healthz {
+        proxy_pass http://safehome_backend;
+        access_log off;
+    }
+
+    location = /readyz {
+        proxy_pass http://safehome_backend;
+        access_log off;
+    }
+}
