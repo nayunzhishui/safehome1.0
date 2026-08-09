@@ -51,6 +51,7 @@ STAGES = [
 
 ALLOWED_CHANGED_PREFIXES = (
     "AGENTS.md",
+    "UI设计与Codex分步开发指令.md",
     "apps/miniprogram/",
     "design/",
     "docs/",
@@ -78,7 +79,7 @@ def write_text(path: Path, value: str) -> None:
 
 def run_git(*args: str) -> str:
     result = subprocess.run(
-        ["git", *args],
+        ["git", "-c", "core.quotepath=false", *args],
         cwd=ROOT,
         check=True,
         capture_output=True,
@@ -93,7 +94,8 @@ def sha256_files(paths: list[Path]) -> str:
     for path in sorted(paths):
         digest.update(str(path.relative_to(ROOT)).replace("\\", "/").encode("utf-8"))
         digest.update(b"\0")
-        digest.update(path.read_bytes())
+        normalized = read_text(path).replace("\r\n", "\n").replace("\r", "\n")
+        digest.update(normalized.encode("utf-8"))
         digest.update(b"\0")
     return digest.hexdigest()
 
@@ -331,6 +333,8 @@ def local_js_dependencies(entry: Path) -> list[Path]:
             dependency = next((candidate for candidate in candidates if candidate.is_file()), None)
             if dependency is None or ROOT not in dependency.parents:
                 continue
+            if (MINI / "services") in dependency.parents:
+                continue
             if dependency not in found:
                 found.append(dependency)
             visit(dependency, depth + 1)
@@ -436,8 +440,8 @@ def render_auto_markdown(facts: dict[str, Any]) -> str:
         "",
         "## 全页面自动代码证据（UIproduct Harness）",
         "",
-        f"生成时间：`{facts['generated_at']}`  ",
-        f"分支：`{facts['branch']}`  ",
+        f"生成时间：`{facts['generated_at']}`",
+        f"分支：`{facts['branch']}`",
         f"页面数：`{facts['app_page_count']}`",
         "",
         "本节由 `scripts/ui_product_loop.py audit-truth` 从当前代码生成，覆盖 WXML 事件、JS 处理器、API 客户端方法、接口模板、路由、本地存储、页面状态、组件和上下游入口。自动证据是逐页人工冻结的底稿；任何未解析项都会阻断 ImageGen。",
