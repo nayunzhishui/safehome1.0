@@ -23,16 +23,53 @@
     "done"
   ],
   "active_route": "pages/home/index",
-  "updated_at": "2026-08-10T01:54:47+08:00",
+  "updated_at": "2026-08-10T01:59:13+08:00",
   "pages": [
     {
       "index": 1,
       "route": "pages/home/index",
       "title": "安心陪伴",
       "source_hash": "e1a5074f604e186dc4818ef512c8936a16df49a7c4804c616d6ca1a599252434",
-      "stage": "truth_auto_complete",
-      "evidence": {},
-      "updated_at": "2026-08-10T01:41:08+08:00"
+      "stage": "figma_blocked",
+      "evidence": {
+        "truth": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/page-facts.json"
+          ],
+          "note": "52页代码真值已生成，首页人工功能表与自动证据均已核对",
+          "recorded_at": "2026-08-10T01:55:40+08:00"
+        },
+        "freeze": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/context.md"
+          ],
+          "note": "首页功能边界与方案A视觉方向已冻结",
+          "recorded_at": "2026-08-10T01:55:42+08:00"
+        },
+        "imagegen": {
+          "items": [
+            "C:/Users/32257/.codex/generated_images/019fe695-ee6b-7143-9310-0612b3afeb40/exec-1185a562-53e9-40b1-b894-c39c414dbadd.png"
+          ],
+          "note": "方案A编辑手帐高保真概念稿",
+          "recorded_at": "2026-08-10T01:55:44+08:00"
+        },
+        "image_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ideate/homepage-20260809.md"
+          ],
+          "note": "用户确认方案A；功能语义复核通过，方案B不采用",
+          "recorded_at": "2026-08-10T01:55:46+08:00"
+        }
+      },
+      "updated_at": "2026-08-10T01:59:13+08:00",
+      "blockers": [
+        {
+          "stage": "figma",
+          "note": "Figma MCP whoami 连续两次远程传输失败；未创建文件，未进入代码实现",
+          "recorded_at": "2026-08-10T01:59:13+08:00"
+        }
+      ]
     },
     {
       "index": 2,

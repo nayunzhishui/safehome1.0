@@ -688,6 +688,7 @@ def record_stage(route: str, stage: str, evidence: list[str], note: str) -> None
         "note": note,
         "recorded_at": now_iso(),
     }
+    page["blockers"] = [item for item in page.get("blockers", []) if item.get("stage") != stage]
     page["stage"] = "complete" if stage == "done" else f"{stage}_complete"
     page["updated_at"] = now_iso()
     if stage == "done":
@@ -700,6 +701,24 @@ def record_stage(route: str, stage: str, evidence: list[str], note: str) -> None
     print(f"已记录 {route} / {stage}。")
 
 
+def record_blocker(route: str, stage: str, note: str) -> None:
+    assert_branch()
+    if stage not in STAGES:
+        raise SystemExit(f"未知阶段：{stage}")
+    registry = load_registry()
+    page = next((item for item in registry["pages"] if item["route"] == route), None)
+    if page is None:
+        raise SystemExit(f"页面未登记：{route}")
+    blocker = {"stage": stage, "note": note, "recorded_at": now_iso()}
+    page.setdefault("blockers", []).append(blocker)
+    page["stage"] = f"{stage}_blocked"
+    page["updated_at"] = now_iso()
+    registry["active_route"] = route
+    registry["updated_at"] = now_iso()
+    write_text(REGISTRY_JSON, json.dumps(registry, ensure_ascii=False, indent=2) + "\n")
+    print(f"已记录阻断 {route} / {stage}。")
+
+
 def status() -> None:
     assert_branch()
     registry = load_registry()
@@ -710,6 +729,12 @@ def status() -> None:
     print(f"main 起点：{registry['main_sha_at_start']}")
     print(f"视觉方向：{registry['visual_direction']}")
     print(f"当前页面：{registry['active_route']}")
+    blockers = [
+        (page["route"], blocker)
+        for page in registry["pages"]
+        for blocker in page.get("blockers", [])
+    ]
+    print(f"未清除阻断记录：{len(blockers)}")
     for key in sorted(counts):
         print(f"- {key}: {counts[key]}")
 
@@ -743,6 +768,10 @@ def build_parser() -> argparse.ArgumentParser:
     record.add_argument("--stage", required=True, choices=STAGES)
     record.add_argument("--evidence", action="append", default=[])
     record.add_argument("--note", default="")
+    block = sub.add_parser("block", help="记录真实阻断，不推进阶段")
+    block.add_argument("--page", required=True)
+    block.add_argument("--stage", required=True, choices=STAGES)
+    block.add_argument("--note", required=True)
     return parser
 
 
@@ -758,6 +787,8 @@ def main() -> None:
         harness()
     elif args.command == "record":
         record_stage(args.page, args.stage, args.evidence, args.note)
+    elif args.command == "block":
+        record_blocker(args.page, args.stage, args.note)
     else:
         raise SystemExit(f"未知命令：{args.command}")
 
