@@ -45,7 +45,7 @@ docs/03_技术真相/项目架构边界与后续开发规则.md
 
 ```text
 docs/10Claude协作/前端设计规范_Claude.md
-docs/07_UI设计/小程序设计系统.md
+docs/07_UI设计/UI美术与UX改造总指导.md
 docs/07_UI设计/网站端设计与并行开发方案.md
 docs/02_专项进度与验收/UI与伦理边界验收清单.md
 docs/05_伦理试用/文案低AI味与伦理表达检查.md

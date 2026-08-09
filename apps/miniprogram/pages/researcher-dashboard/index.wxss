@@ -11,7 +11,8 @@
     var(--safe-bg);
 }
 
-.researcher-dashboard-page > * {
+.researcher-dashboard-page > view,
+.researcher-dashboard-page > scroll-view {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;

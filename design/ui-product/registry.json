@@ -1,0 +1,497 @@
+{
+  "schema_version": 1,
+  "branch": "UIproduct",
+  "main_sha_at_start": "98fca029f3f97e13d7e787cd40cb939465a992d4",
+  "visual_direction": "A_编辑手帐",
+  "workflow": [
+    "truth",
+    "freeze",
+    "imagegen",
+    "image_review",
+    "figma",
+    "figma_review",
+    "implementation",
+    "loop_visual",
+    "loop_ui",
+    "loop_ux",
+    "loop_states",
+    "loop_device",
+    "harness_visual",
+    "harness_component",
+    "harness_ux",
+    "harness_engineering",
+    "done"
+  ],
+  "active_route": "pages/home/index",
+  "updated_at": "2026-08-10T01:47:19+08:00",
+  "pages": [
+    {
+      "index": 1,
+      "route": "pages/home/index",
+      "title": "安心陪伴",
+      "source_hash": "31c104e2e3191c051d38a2f4c1adc3c50615d5e319259a4183ab3af556f3a237",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 2,
+      "route": "pages/login/index",
+      "title": "登录",
+      "source_hash": "f69ab1447365abc7e7186144d6d224332ea8101e6718337e9a5b9c3fb5a8e021",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 3,
+      "route": "pages/register/index",
+      "title": "注册",
+      "source_hash": "f110e6a5c245978ed94480e36c4d07dfdc25134b35f06190b40fff426674eafb",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 4,
+      "route": "pages/messages/index",
+      "title": "消息",
+      "source_hash": "6fc75722196fb3858552bb01d0796eebdb019777e70528ca744d32ada4dd9b03",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 5,
+      "route": "pages/support-assistant/index",
+      "title": "支持性问答",
+      "source_hash": "9efaca379b2bb0bf355277a5ff6aa2ee1585f38415debc7c14e38ef931dd71f0",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 6,
+      "route": "pages/message-detail/index",
+      "title": "消息详情",
+      "source_hash": "1e08b0edf4c67164a6e0524c1305a4c16bf48cc4aaa9af4bdb1ac02602d3930f",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 7,
+      "route": "pages/emergency-guide/index",
+      "title": "紧急安全指引",
+      "source_hash": "8acb438006916021a723c1624769c5fed7e49e2664153045479a4775a72845c8",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 8,
+      "route": "pages/emergency-resources/index",
+      "title": "紧急帮助说明",
+      "source_hash": "e34d79312078b5bd7cde47fa9e2d5f2b41e48cc8ae2393d737696d14cb51a2ff",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 9,
+      "route": "pages/getting-started/index",
+      "title": "三步开始",
+      "source_hash": "a4a15b560cceb2e987e07c63579237bb6996850549b2cc91396a0e29c5cb20d8",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 10,
+      "route": "pages/thermometer/index",
+      "title": "情绪温度计",
+      "source_hash": "c8cfb693286c77b32f7ae992a3c599bd1881f18fd482233e67e436160ddaded3",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 11,
+      "route": "pages/training/index",
+      "title": "训练",
+      "source_hash": "42c2af8577666cc5ad432a3ed860678a2eff1110b41674f818e65fc11107f36d",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 12,
+      "route": "pages/training-history/index",
+      "title": "训练记录",
+      "source_hash": "d898076f09f5a70dd625ffb0c358797b24d9366b248362beac3a1b43a67a5198",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 13,
+      "route": "pages/personalized-plan/index",
+      "title": "个性化训练方案",
+      "source_hash": "04981fc9b01230edcddcdd7b4795b2b728fe921c6f83608eb83504593f30f16d",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 14,
+      "route": "pages/program-list/index",
+      "title": "项目测试",
+      "source_hash": "af85f02ae4c74a4ed827cf7be6a9bf2bc436c0a84a762ff2bddb56f7b3d00a29",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 15,
+      "route": "pages/program-detail/index",
+      "title": "项目详情",
+      "source_hash": "cabb403361d47c3fa0ac5a6d7e08bee3d045d18dcf49c490474c401ba548d4d9",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 16,
+      "route": "pages/relationship-pilot/index",
+      "title": "关系探索试点",
+      "source_hash": "7a7e4a3a6d0539c7411e32b10ff01d7e6baeb0c600fab9f79fd2aa2610a94dc8",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 17,
+      "route": "pages/relationship-report/index",
+      "title": "关系健康初筛报告",
+      "source_hash": "6af2d45c018233b03b12a5966d5a89a4554d02fe8cee33de9b3e42a652353757",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 18,
+      "route": "pages/relationship-task/index",
+      "title": "关系探索任务",
+      "source_hash": "f23c49dde3d3f73c7c7d52cd1d2b01b1855053c6ed179930bdcf5e5246dd6e88",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 19,
+      "route": "pages/relationship-growth/index",
+      "title": "关系探索成长仪表盘",
+      "source_hash": "3977efd960deaa3a2be77a3a407e143f71183d3e3956310a605cf21a97716586",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 20,
+      "route": "pages/therapeutic-assessment/index",
+      "title": "共同理解",
+      "source_hash": "eab4d026a08ba3500f6b7902a21e913e3e41bf38133087da623bf8e1c1877fcd",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 21,
+      "route": "pages/therapeutic-assessment-boundary/index",
+      "title": "开始前了解",
+      "source_hash": "0c3a23929509baa253143004581492e2e350e65f389a743a750143a4465b1cf1",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 22,
+      "route": "pages/therapeutic-assessment-issue/index",
+      "title": "我的议题",
+      "source_hash": "581ca59aef54afe673be6b32cffd9a7ada80fff4e0c0dafb8c9a41fdda875583",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 23,
+      "route": "pages/therapeutic-assessment-recent-event/index",
+      "title": "最近一次事件",
+      "source_hash": "53de130f7854b178af6647584ea28b059041278298fb37d1042ba00334945b93",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 24,
+      "route": "pages/therapeutic-assessment-resources/index",
+      "title": "例外与资源",
+      "source_hash": "cd40b49e9421ee92df3a65e454594708de9a06992439dc182688cf9b638cde38",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 25,
+      "route": "pages/therapeutic-assessment-sharing/index",
+      "title": "资料与共享",
+      "source_hash": "a67ea60cc4af1422fa90d031ea0daa7521cace07d9b08bf04a41b6cc5227d8e8",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 26,
+      "route": "pages/therapeutic-assessment-summary/index",
+      "title": "提交前摘要",
+      "source_hash": "6edf3c0aac21680174facea3426c92068508355877265176a7f4cb0513bfa856",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 27,
+      "route": "pages/therapeutic-assessment-feedback-check/index",
+      "title": "反馈核对",
+      "source_hash": "2d0a0a41ef85d211d1552d6453dbd58137558da75e271c8fc257d313c4676971",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 28,
+      "route": "pages/therapeutic-assessment-action-review/index",
+      "title": "一个小行动",
+      "source_hash": "36adda01f7ad3db58cf98ca20c0d9bd91a9f7adf6f9e02657860682936ca7a6c",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 29,
+      "route": "pages/therapeutic-assessment-action-followup/index",
+      "title": "行动回看",
+      "source_hash": "b87646ac64e9240ebf37c16b3a90d3bc7d83b108a431dd6b31e552803257000f",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 30,
+      "route": "pages/therapeutic-assessment-quality/index",
+      "title": "评估质量与更正",
+      "source_hash": "89db4df8b0e78c20c0cf5baadead705598e4441d66fbd8465f3bfabd79217be4",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 31,
+      "route": "pages/growth-dashboard/index",
+      "title": "我的成长仪表盘",
+      "source_hash": "ac2994e27bbea2f3bb1fe82256ca21fa0d08b30235dfe730a48afdcb3ca5354c",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 32,
+      "route": "pages/relationship-narrative/index",
+      "title": "关系探索手记",
+      "source_hash": "c110dfa6f77082d73c1b8bc2f8983eb608dd3320e95a0c0119bb249a7751be35",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 33,
+      "route": "pages/researcher-dashboard/index",
+      "title": "研究者移动工作台",
+      "source_hash": "d4420b223a6e4e11dbe20d4e9be36c67dd5e251dee5d87f8ad618ace729d6909",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 34,
+      "route": "pages/course/index",
+      "title": "课程",
+      "source_hash": "509585f2c49e2868d8d90ecf43eb3cdcfa507bb0a428bcc41d4ad2e10b19cd73",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 35,
+      "route": "pages/course-detail/index",
+      "title": "课程内容",
+      "source_hash": "85be52c1df9c96690e6812a507afafe73a75b0ac6266789bb340e7a16b61e330",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 36,
+      "route": "pages/profile/index",
+      "title": "我的",
+      "source_hash": "4106c5642d0d7969ce6ca06528893b4c930808f66ab5339fc06be5a1148350de",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 37,
+      "route": "pages/settings-detail/index",
+      "title": "设置与说明",
+      "source_hash": "0eac4d44b763061649a9ded63a138923043c067722ede09fd683c53eead8c447",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 38,
+      "route": "pages/goal-setting/index",
+      "title": "本周小目标",
+      "source_hash": "bce5fd9948576f33252bf06c6d82a6abb43a5b1a260868790918f045b6e8cbc6",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 39,
+      "route": "pages/diary-form/index",
+      "title": "记录情绪事件",
+      "source_hash": "44c18f96b0789f09c97fe2a144af991ced26ea076caabe5ee222d2d3d8834130",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 40,
+      "route": "pages/feedback-result/index",
+      "title": "本次反馈",
+      "source_hash": "54b80958824749f223f8ed944a00b05717f9b3413dff50d66ec090ba4e190e43",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 41,
+      "route": "pages/assessment/index",
+      "title": "家庭关系测一测",
+      "source_hash": "21f4d347f34e9fc8a9e2dcab77704f47cd30e95d3d9deefcd039c5d587b994bf",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 42,
+      "route": "pages/assessment-history/index",
+      "title": "全部测评记录",
+      "source_hash": "61b3d85dcdb7a63dfc9b1e48a44350e99651633b16403c81411c124abbf065a3",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 43,
+      "route": "pages/assessment-detail/index",
+      "title": "填写测评",
+      "source_hash": "2736d02f98e759f2b95d80e5d58933ea50bf9103cec1fc52f5675fa565007186",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 44,
+      "route": "pages/assessment-result/index",
+      "title": "测一测结果",
+      "source_hash": "e27c0dd8656cfbc493623cbbba92671eb13ef03c0221f91cef1a397dd75d5394",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 45,
+      "route": "pages/hot-topics/index",
+      "title": "教育热榜",
+      "source_hash": "064f3acc65965fcae7e84e21ff8aaaf626cdf6c0025d0657d5477670e1fa3492",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 46,
+      "route": "pages/task-detail/index",
+      "title": "UP任务卡",
+      "source_hash": "0561119521c7446178a1afd1c79baf8d49214f258962216335566fe0f212cfd0",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 47,
+      "route": "pages/training-card/index",
+      "title": "推荐训练卡",
+      "source_hash": "1794ca65afaf455646f246c51e080057d524a32b29f5b3c704714325303548a0",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 48,
+      "route": "pages/checkin/index",
+      "title": "记录尝试",
+      "source_hash": "a347071a89e245e66ad0c2de1cb5a1fa2844080c760ff4b648dc869be12468e7",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 49,
+      "route": "pages/weekly-report/index",
+      "title": "本周复盘",
+      "source_hash": "c1bd944d2460b79cc7b89308a5712813c453e13c95116c9b1d8c16cf2cf6b950",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 50,
+      "route": "pages/supervision/index",
+      "title": "人工督导入口",
+      "source_hash": "49205bdcb9665fc560ff518b43f164f59b91f79bfa455621c3b3e8c5d8c5ea44",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 51,
+      "route": "pages/debug/index",
+      "title": "云托管诊断",
+      "source_hash": "97923436330e8915dc200ffb43cd71076254846d53debec19419e7ca6efbcc94",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    },
+    {
+      "index": 52,
+      "route": "pages/integration-test/index",
+      "title": "联调测试",
+      "source_hash": "805d2144f9fc0ed2849b3f205c77c31adfce127a4f330c539df2df36609d55b1",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T01:41:08+08:00"
+    }
+  ]
+}
