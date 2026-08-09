@@ -4,11 +4,11 @@
   "fileKey": null,
   "fileUrl": null,
   "phase": "phase0_blocked",
-  "step": "figma_transport_whoami",
+  "step": "figma_reauthentication_required",
   "blocker": {
-    "type": "figma_mcp_transport",
-    "message": "Figma MCP whoami 连续失败，尚未创建文件",
-    "attempts": 4,
+    "type": "figma_reauthentication_required",
+    "message": "Figma 应用明确要求重新认证，尚未创建文件",
+    "attempts": 5,
     "lastObserved": "2026-08-10"
   },
   "entities": {
