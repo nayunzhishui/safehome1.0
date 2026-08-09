@@ -709,8 +709,20 @@ def record_blocker(route: str, stage: str, note: str) -> None:
     page = next((item for item in registry["pages"] if item["route"] == route), None)
     if page is None:
         raise SystemExit(f"页面未登记：{route}")
-    blocker = {"stage": stage, "note": note, "recorded_at": now_iso()}
-    page.setdefault("blockers", []).append(blocker)
+    blockers = page.setdefault("blockers", [])
+    existing = next((item for item in blockers if item.get("stage") == stage), None)
+    if existing:
+        existing.update(
+            {
+                "note": note,
+                "recorded_at": now_iso(),
+                "attempt_count": int(existing.get("attempt_count", 1)) + 1,
+            }
+        )
+    else:
+        blockers.append(
+            {"stage": stage, "note": note, "recorded_at": now_iso(), "attempt_count": 1}
+        )
     page["stage"] = f"{stage}_blocked"
     page["updated_at"] = now_iso()
     registry["active_route"] = route

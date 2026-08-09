@@ -23,7 +23,7 @@
     "done"
   ],
   "active_route": "pages/home/index",
-  "updated_at": "2026-08-10T01:59:13+08:00",
+  "updated_at": "2026-08-10T02:01:52+08:00",
   "pages": [
     {
       "index": 1,
@@ -62,12 +62,13 @@
           "recorded_at": "2026-08-10T01:55:46+08:00"
         }
       },
-      "updated_at": "2026-08-10T01:59:13+08:00",
+      "updated_at": "2026-08-10T02:01:52+08:00",
       "blockers": [
         {
           "stage": "figma",
-          "note": "Figma MCP whoami 连续两次远程传输失败；未创建文件，未进入代码实现",
-          "recorded_at": "2026-08-10T01:59:13+08:00"
+          "note": "Figma MCP whoami 连续三次远程传输失败；未创建文件，未进入代码实现",
+          "recorded_at": "2026-08-10T02:01:52+08:00",
+          "attempt_count": 2
         }
       ]
     },
