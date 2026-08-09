@@ -27,6 +27,8 @@ python scripts/ui_product_loop.py record --page pages/home/index --stage truth -
 
 Figma 可使用文件或 Figma 链接作为证据。ImageGen、Figma 和真机结果必须先经过对应审查，不能直接记录为通过。
 
+Figma 长流程状态单独保存在 `design/ui-product/figma-state.json`。每次 Figma 调用前先读取该文件；所有返回的 fileKey、Page ID、Component ID、Variable ID 和 Screen ID 必须立即写回，禁止猜测节点 ID。
+
 ## 硬门禁
 
 - 当前分支必须是 `UIproduct`。

@@ -1,0 +1,32 @@
+{
+  "runId": "safehome-ui-product-20260810",
+  "fileName": "安心陪伴 UIproduct",
+  "fileKey": null,
+  "fileUrl": null,
+  "phase": "phase0_blocked",
+  "step": "figma_transport_whoami",
+  "blocker": {
+    "type": "figma_mcp_transport",
+    "message": "Figma MCP whoami 连续失败，尚未创建文件",
+    "attempts": 4,
+    "lastObserved": "2026-08-10"
+  },
+  "entities": {
+    "collections": {},
+    "variables": {},
+    "styles": {},
+    "pages": {},
+    "components": {},
+    "screens": {}
+  },
+  "pendingValidations": [
+    "P0.b inspect target file",
+    "P0.c inspect libraries",
+    "P0.f gap analysis"
+  ],
+  "completedSteps": [
+    "P0.a code discovery",
+    "P0.d local scope lock",
+    "P0.e code-image conflict map"
+  ]
+}
