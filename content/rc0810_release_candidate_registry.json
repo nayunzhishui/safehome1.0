@@ -1,0 +1,4692 @@
+{
+  "schema": "safehome.rc0810.registry.v1",
+  "version": "2026-08-10.f00",
+  "frozen_baseline": {
+    "captured_at": "2026-08-09T15:13:59.4299089Z",
+    "branch": "main",
+    "head": "77bb5c2643e029693afd8088d74dd563d9480c12",
+    "head_tree": "17e2383da3261ac87855d2abc61e16d240f57228",
+    "origin_main_local": "77bb5c2643e029693afd8088d74dd563d9480c12",
+    "origin_main_remote": null,
+    "origin_main_remote_status": "external_error_tls_handshake",
+    "pr8": {
+      "number": 8,
+      "state": "draft",
+      "head": "272b397bfaf678eb12e76bd8712f7e5e8a3d4a94",
+      "head_tree": "94f464ad16dbffcf746d50b5fb6f1c2de6a1e8b0",
+      "base": "77bb5c2643e029693afd8088d74dd563d9480c12",
+      "source": "local_tracking_ref_and_read_only_browser",
+      "observed_at": "2026-08-09T15:00:00Z"
+    },
+    "source_tree": "563b3cd00209aa8350fa5d883f632663ce5802e6",
+    "source_inventory_sha256": "029f0864917d833dbc6eb31c6d7d44376059469bfe1acb0fc16aa12cc8ab3489",
+    "dirty_diff": {
+      "algorithm": "sha256(git_diff_binary_HEAD || sorted(untracked_path_nul_file_bytes))",
+      "sha256": "711e9e9fce45674df81747ff9496eda3210c95fe484f91e5e17349b9d84437ba",
+      "status_sha256": "56ad422c1b72140f2ab2d0dad252436ece8518d59595e3ac710b7b86f11bdd84",
+      "status_entries": 20,
+      "staged_entries": 0,
+      "unstaged_entries": 17,
+      "untracked_entries": 3,
+      "inherited_dirty": true
+    }
+  },
+  "preflight_documents": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 21986,
+      "sha256": "efcad7ecdc45c983cda26bfe64d8ba748c9b499859c737e8501bc37a881107d8"
+    },
+    {
+      "path": "docs/01_当前执行入口/0810bug修改计划.md",
+      "bytes": 85223,
+      "sha256": "e9c5e49067b9ebf19d6d15ef99d245a287b569abb4d2d10222d0ba74e4133b2c"
+    },
+    {
+      "path": "docs/00_当前事实基准/项目进度统一口径.md",
+      "bytes": 112343,
+      "sha256": "14243d77232cc7fa6d6696d4125cf91c49d4c358f72c1e39c1d4c93295b7fb88"
+    },
+    {
+      "path": "docs/00_当前事实基准/当前进度交接.md",
+      "bytes": 749599,
+      "sha256": "b6bee003201ea5bd1e2453e05c5bd6b79ee3a714f334e13cf40c61d1920dc43d"
+    },
+    {
+      "path": "docs/00_当前事实基准/Claude计划模式.md",
+      "bytes": 677578,
+      "sha256": "82d4673bfe9bc4801dc957a35762126ebe6e3e1fcb3b164f3606c442fb6a279a"
+    },
+    {
+      "path": "docs/00_当前事实基准/开发日志.md",
+      "bytes": 707031,
+      "sha256": "14acb64b03700746b9d345d0f1d32170a43601c8c4e96ab446908d99439d3b0e"
+    },
+    {
+      "path": "docs/00_当前事实基准/开发说明.md",
+      "bytes": 614456,
+      "sha256": "fc6836d134979c9cdcb7a396526b4de910b9beeb3a6a16502a90ec55b9eb7352"
+    },
+    {
+      "path": ".codex_tmp/pr8-review/全功能模拟验收_只读_20260808.md",
+      "bytes": 15514,
+      "sha256": "6e30cd9103909ccd19527f809df105e0dc5d1f2816aae28f21a499be0002eea3"
+    },
+    {
+      "path": ".codex_tmp/pr8-review/多轮对抗性代码审查_20260808.md",
+      "bytes": 71653,
+      "sha256": "0583d981248708d29ee21f5c48686a00a808d93dece994cb71679e44592f9a09"
+    },
+    {
+      "path": ".codex_tmp/pr8-review/微信小程序正式上线差距矩阵_20260809.md",
+      "bytes": 29624,
+      "sha256": "f1b00d69012ce1d5b2ed0d36ec6a8159aac839cee32ce0ac226097332ca82536"
+    }
+  ],
+  "registry_policy": {
+    "task_count": 27,
+    "subtask_count": 225,
+    "runtime_root": ".codex_tmp/rc0810",
+    "active_state_pointer": ".codex_tmp/rc0810/state.json",
+    "run_state_pattern": ".codex_tmp/rc0810/<run_id>/state.json",
+    "complete_logs_must_not_be_committed": true,
+    "inherited_dirty_policy": "observe_hash_preserve_never_attribute_to_head",
+    "destructive_git_commands_allowed": false,
+    "production_mutations_authorized": false,
+    "secrets_may_be_recorded": false,
+    "external_or_human_gate_may_be_auto_approved": false
+  },
+  "subtask_record_schema": {
+    "required": [
+      "id",
+      "status",
+      "input_baseline",
+      "allowed_scope",
+      "actual_modified_files",
+      "commands",
+      "started_at",
+      "finished_at",
+      "exit_codes",
+      "test_count",
+      "failure_summary",
+      "source_tree",
+      "dirty_diff_sha256",
+      "evidence_dir",
+      "rollback_point",
+      "review_decision"
+    ],
+    "statuses": [
+      "pending",
+      "running",
+      "verified",
+      "review_failed",
+      "blocked_external",
+      "complete"
+    ]
+  },
+  "command_policy": {
+    "allowed_executables": [
+      "python",
+      "node",
+      "npm",
+      "git"
+    ],
+    "shell_must_be_false": true,
+    "cwd_must_be_within_repository": true,
+    "default_timeout_seconds": 300,
+    "max_timeout_seconds": 1800,
+    "forbidden_terms": [
+      "reset --hard",
+      "git clean",
+      "stash pop",
+      "checkout --",
+      "rm -rf",
+      "Remove-Item -Recurse",
+      "production deploy",
+      "secret="
+    ]
+  },
+  "state_machine": {
+    "statuses": [
+      "planned",
+      "in_progress",
+      "implemented",
+      "plan_backfilled",
+      "reviewing",
+      "review_failed",
+      "fixing",
+      "verified",
+      "committed",
+      "pushed",
+      "blocked_external",
+      "engineering_complete",
+      "stale"
+    ],
+    "review_pass_requires_independent_reviewer": true,
+    "verify_may_not_self_approve_review": true,
+    "resume_from": "last_verified_checkpoint",
+    "repeated_commands_must_not_repeat_verified_side_effects": true
+  },
+  "independent_review_policy": {
+    "decision_artifact_required": true,
+    "reviewer_must_differ_from_operator": true,
+    "allowed_reviewer_kinds": [
+      "human",
+      "separate_agent"
+    ],
+    "packet_nonce_required": true,
+    "valid_until_required": true
+  },
+  "artifact_profiles": {
+    "f00_harness_sources": {
+      "artifact_kind": "engineering_evidence",
+      "source_kind": "git_tree",
+      "expected_files": [
+        "content/rc0810_release_candidate_registry.json",
+        "scripts/run_rc0810.py",
+        "backend/tests/test_rc0810_harness.py",
+        "backend/tests/fixtures/rc0810_command_fixture.py",
+        "docs/01_当前执行入口/0810bug修改计划.md"
+      ]
+    }
+  },
+  "claim_classes": {
+    "current_code_fact": {
+      "source_required": true,
+      "evidence_hash_required": true,
+      "observed_at_required": true,
+      "stale_if_required": true
+    },
+    "external_rule": {
+      "source_required": true,
+      "evidence_hash_required": true,
+      "observed_at_required": true,
+      "stale_if_required": true
+    },
+    "project_decision": {
+      "source_required": true,
+      "evidence_hash_required": true,
+      "observed_at_required": true,
+      "stale_if_required": true
+    },
+    "recommendation": {
+      "source_required": true,
+      "evidence_hash_required": true,
+      "observed_at_required": true,
+      "stale_if_required": true
+    },
+    "todo": {
+      "source_required": true,
+      "evidence_hash_required": true,
+      "observed_at_required": true,
+      "stale_if_required": true
+    }
+  },
+  "claim_register": [
+    {
+      "id": "CLAIM-F00-01",
+      "class": "current_code_fact",
+      "statement": "F00启动时HEAD与本地origin/main均为77bb5c2，工作区含20项继承脏改动。",
+      "source": "git_snapshot",
+      "evidence_sha256": "56ad422c1b72140f2ab2d0dad252436ece8518d59595e3ac710b7b86f11bdd84",
+      "observed_at": "2026-08-09T15:13:59.4299089Z",
+      "stale_if": [
+        "git_ref_changes",
+        "worktree_changes"
+      ]
+    },
+    {
+      "id": "CLAIM-F00-02",
+      "class": "external_rule",
+      "statement": "微信平台、类目、备案和审核要求必须按提审时官方状态重新核验。",
+      "source": ".codex_tmp/pr8-review/微信小程序正式上线差距矩阵_20260809.md",
+      "evidence_sha256": "f1b00d69012ce1d5b2ed0d36ec6a8159aac839cee32ce0ac226097332ca82536",
+      "observed_at": "2026-08-09T15:00:00Z",
+      "stale_if": [
+        "rule_expiry",
+        "platform_rule_changes"
+      ]
+    },
+    {
+      "id": "CLAIM-F00-03",
+      "class": "project_decision",
+      "statement": "development/validation保留研发能力，production参与者制品强制关闭未批准能力。",
+      "source": "docs/01_当前执行入口/0810bug修改计划.md",
+      "evidence_sha256": "e9c5e49067b9ebf19d6d15ef99d245a287b569abb4d2d10222d0ba74e4133b2c",
+      "observed_at": "2026-08-09T15:00:00Z",
+      "stale_if": [
+        "owner_decision_changes"
+      ]
+    },
+    {
+      "id": "CLAIM-F00-04",
+      "class": "recommendation",
+      "statement": "按风险与依赖顺序逐个执行F01至F26，不在F00提前修业务。",
+      "source": "docs/01_当前执行入口/0810bug修改计划.md",
+      "evidence_sha256": "e9c5e49067b9ebf19d6d15ef99d245a287b569abb4d2d10222d0ba74e4133b2c",
+      "observed_at": "2026-08-09T15:00:00Z",
+      "stale_if": [
+        "plan_changes"
+      ]
+    },
+    {
+      "id": "CLAIM-F00-05",
+      "class": "todo",
+      "statement": "F01建立环境与制品Profile；F00完成后停止，不自动开始。",
+      "source": "docs/01_当前执行入口/0810bug修改计划.md",
+      "evidence_sha256": "e9c5e49067b9ebf19d6d15ef99d245a287b569abb4d2d10222d0ba74e4133b2c",
+      "observed_at": "2026-08-09T15:00:00Z",
+      "stale_if": [
+        "task_status_changes"
+      ]
+    }
+  ],
+  "risk_priority_model": {
+    "schema": "safehome.rc0810.risk.v1",
+    "score_range": [
+      1,
+      5
+    ],
+    "weights": {
+      "irreversibility": 1,
+      "affected_people_or_sensitivity": 1,
+      "exploitability": 1,
+      "detectability": 1,
+      "recovery_difficulty": 1
+    },
+    "dimensions": {
+      "irreversibility": {
+        "high_score_means": "more_irreversible"
+      },
+      "affected_people_or_sensitivity": {
+        "high_score_means": "more_people_or_more_sensitive"
+      },
+      "exploitability": {
+        "high_score_means": "easier_to_exploit"
+      },
+      "detectability": {
+        "high_score_means": "harder_to_detect"
+      },
+      "recovery_difficulty": {
+        "high_score_means": "harder_to_recover"
+      }
+    },
+    "thresholds": {
+      "P0": [
+        20,
+        25
+      ],
+      "P1": [
+        14,
+        19
+      ],
+      "P2": [
+        8,
+        13
+      ],
+      "P3": [
+        5,
+        7
+      ]
+    },
+    "forced_p0_categories": [
+      "cross_object_disclosure",
+      "data_loss",
+      "incorrect_high_risk_feedback",
+      "incorrect_release",
+      "credential_exposure"
+    ],
+    "formula": "sum(weight * score); forced_p0_categories override thresholds"
+  },
+  "risk_register": [
+    {
+      "id": "RISK-AUTH",
+      "category": "cross_object_disclosure",
+      "scores": {
+        "irreversibility": 4,
+        "affected_people_or_sensitivity": 5,
+        "exploitability": 5,
+        "detectability": 4,
+        "recovery_difficulty": 4
+      },
+      "computed": 22,
+      "priority": "P0",
+      "pr_ids": [
+        "AUTH-01",
+        "AUTH-02",
+        "AUTH-03",
+        "AUTH-05"
+      ],
+      "tasks": [
+        "RC0810-F05",
+        "RC0810-F06",
+        "RC0810-F07"
+      ]
+    },
+    {
+      "id": "RISK-DATA",
+      "category": "data_loss",
+      "scores": {
+        "irreversibility": 5,
+        "affected_people_or_sensitivity": 5,
+        "exploitability": 3,
+        "detectability": 4,
+        "recovery_difficulty": 5
+      },
+      "computed": 22,
+      "priority": "P0",
+      "pr_ids": [
+        "DB-02",
+        "PRIV-01",
+        "PRIV-02"
+      ],
+      "tasks": [
+        "RC0810-F09",
+        "RC0810-F14",
+        "RC0810-F16"
+      ]
+    },
+    {
+      "id": "RISK-SAFETY",
+      "category": "incorrect_high_risk_feedback",
+      "scores": {
+        "irreversibility": 5,
+        "affected_people_or_sensitivity": 5,
+        "exploitability": 3,
+        "detectability": 5,
+        "recovery_difficulty": 5
+      },
+      "computed": 23,
+      "priority": "P0",
+      "pr_ids": [
+        "SAFE-01",
+        "SAFE-02",
+        "SAFE-03",
+        "SAFE-04"
+      ],
+      "tasks": [
+        "RC0810-F15",
+        "RC0810-F20"
+      ]
+    },
+    {
+      "id": "RISK-RELEASE",
+      "category": "incorrect_release",
+      "scores": {
+        "irreversibility": 4,
+        "affected_people_or_sensitivity": 5,
+        "exploitability": 4,
+        "detectability": 4,
+        "recovery_difficulty": 4
+      },
+      "computed": 21,
+      "priority": "P0",
+      "pr_ids": [
+        "REL-01",
+        "REL-02",
+        "REL-03",
+        "REL-04"
+      ],
+      "tasks": [
+        "RC0810-F01",
+        "RC0810-F02",
+        "RC0810-F03",
+        "RC0810-F05",
+        "RC0810-F26"
+      ]
+    },
+    {
+      "id": "RISK-CREDENTIAL",
+      "category": "credential_exposure",
+      "scores": {
+        "irreversibility": 5,
+        "affected_people_or_sensitivity": 5,
+        "exploitability": 5,
+        "detectability": 4,
+        "recovery_difficulty": 4
+      },
+      "computed": 23,
+      "priority": "P0",
+      "pr_ids": [
+        "CI-05",
+        "M-03"
+      ],
+      "tasks": [
+        "RC0810-F22"
+      ]
+    }
+  ],
+  "evidence_policy": {
+    "hash_algorithm": "sha256",
+    "required_bindings": [
+      "commit",
+      "head_tree",
+      "source_tree",
+      "source_manifest_sha256",
+      "dirty_diff_sha256",
+      "argv",
+      "cwd",
+      "started_at",
+      "finished_at",
+      "timezone",
+      "timeout_seconds",
+      "timed_out",
+      "exit_code",
+      "stdout_summary",
+      "stdout_sha256",
+      "stderr_summary",
+      "stderr_sha256",
+      "python_version",
+      "node_version",
+      "os",
+      "owner",
+      "reviewer",
+      "valid_until",
+      "stale_if"
+    ],
+    "raw_stdout_or_stderr_may_be_committed": false,
+    "dirty_worktree_may_claim_head_verified": false,
+    "tamper_detection": "hash_chain_and_file_sha256",
+    "invalidation": {
+      "triggers": [
+        "source_code",
+        "artifact",
+        "cloudbase_critical_config",
+        "database_migration",
+        "base_library",
+        "privacy_text",
+        "test_account_permission"
+      ],
+      "propagation": "recursive_dependents",
+      "stale_status": "stale",
+      "retest_required": true
+    }
+  },
+  "pr_mapping": {
+    "task_to_pr": {
+      "RC0810-F00": [
+        "PR8-BASELINE"
+      ],
+      "RC0810-F01": [
+        "REL-01",
+        "ENV-01",
+        "ENV-03",
+        "RES-01"
+      ],
+      "RC0810-F02": [
+        "REL-02",
+        "RES-01",
+        "QA-01"
+      ],
+      "RC0810-F03": [
+        "REL-03",
+        "REL-04",
+        "AI-01",
+        "CONTENT-02"
+      ],
+      "RC0810-F04": [
+        "ENV-02",
+        "ENV-03",
+        "WX-02"
+      ],
+      "RC0810-F05": [
+        "REL-04",
+        "AUTH-01"
+      ],
+      "RC0810-F06": [
+        "AUTH-02",
+        "AUTH-05"
+      ],
+      "RC0810-F07": [
+        "AUTH-03",
+        "PRIV-03"
+      ],
+      "RC0810-F08": [
+        "AUTH-04"
+      ],
+      "RC0810-F09": [
+        "DB-02"
+      ],
+      "RC0810-F10": [
+        "CI-01",
+        "CI-02",
+        "CI-03",
+        "CI-04"
+      ],
+      "RC0810-F11": [
+        "DB-01"
+      ],
+      "RC0810-F12": [
+        "WX-02",
+        "WX-03",
+        "QA-01",
+        "QA-02",
+        "QA-03"
+      ],
+      "RC0810-F13": [
+        "AUTH-06"
+      ],
+      "RC0810-F14": [
+        "PRIV-01",
+        "PRIV-02",
+        "PRIV-05"
+      ],
+      "RC0810-F15": [
+        "SAFE-01",
+        "SAFE-02",
+        "SAFE-03",
+        "SAFE-04"
+      ],
+      "RC0810-F16": [
+        "DB-03",
+        "DB-04",
+        "DB-05"
+      ],
+      "RC0810-F17": [
+        "CONTENT-01",
+        "CONTENT-02"
+      ],
+      "RC0810-F18": [
+        "RES-02",
+        "RES-03"
+      ],
+      "RC0810-F19": [
+        "PRIV-04",
+        "AI-01",
+        "AI-02",
+        "AI-03"
+      ],
+      "RC0810-F20": [
+        "PSY-01",
+        "PSY-02",
+        "PSY-03",
+        "CONTENT-03"
+      ],
+      "RC0810-F21": [
+        "OPS-01",
+        "OPS-02",
+        "OPS-03",
+        "OPS-04",
+        "OPS-05"
+      ],
+      "RC0810-F22": [
+        "CI-05",
+        "M-03"
+      ],
+      "RC0810-F23": [
+        "M-02",
+        "M-06",
+        "M-07"
+      ],
+      "RC0810-F24": [
+        "M-04",
+        "M-05",
+        "M-08",
+        "M-09",
+        "M-10",
+        "M-11",
+        "M-12",
+        "M-13",
+        "M-14"
+      ],
+      "RC0810-F25": [
+        "WX-01",
+        "WX-02",
+        "WX-03",
+        "WX-04",
+        "WX-05",
+        "WX-06",
+        "WX-07",
+        "WX-08",
+        "QA-01",
+        "QA-02",
+        "QA-03",
+        "QA-04",
+        "QA-05"
+      ],
+      "RC0810-F26": [
+        "PR8-DOD"
+      ]
+    },
+    "pr_to_tasks": {
+      "PR8-BASELINE": [
+        "RC0810-F00"
+      ],
+      "REL-01": [
+        "RC0810-F01"
+      ],
+      "ENV-01": [
+        "RC0810-F01"
+      ],
+      "ENV-03": [
+        "RC0810-F01",
+        "RC0810-F04"
+      ],
+      "RES-01": [
+        "RC0810-F01",
+        "RC0810-F02"
+      ],
+      "REL-02": [
+        "RC0810-F02"
+      ],
+      "QA-01": [
+        "RC0810-F02",
+        "RC0810-F12",
+        "RC0810-F25"
+      ],
+      "REL-03": [
+        "RC0810-F03"
+      ],
+      "REL-04": [
+        "RC0810-F03",
+        "RC0810-F05"
+      ],
+      "AI-01": [
+        "RC0810-F03",
+        "RC0810-F19"
+      ],
+      "CONTENT-02": [
+        "RC0810-F03",
+        "RC0810-F17"
+      ],
+      "ENV-02": [
+        "RC0810-F04"
+      ],
+      "WX-02": [
+        "RC0810-F04",
+        "RC0810-F12",
+        "RC0810-F25"
+      ],
+      "AUTH-01": [
+        "RC0810-F05"
+      ],
+      "AUTH-02": [
+        "RC0810-F06"
+      ],
+      "AUTH-05": [
+        "RC0810-F06"
+      ],
+      "AUTH-03": [
+        "RC0810-F07"
+      ],
+      "PRIV-03": [
+        "RC0810-F07"
+      ],
+      "AUTH-04": [
+        "RC0810-F08"
+      ],
+      "DB-02": [
+        "RC0810-F09"
+      ],
+      "CI-01": [
+        "RC0810-F10"
+      ],
+      "CI-02": [
+        "RC0810-F10"
+      ],
+      "CI-03": [
+        "RC0810-F10"
+      ],
+      "CI-04": [
+        "RC0810-F10"
+      ],
+      "DB-01": [
+        "RC0810-F11"
+      ],
+      "WX-03": [
+        "RC0810-F12",
+        "RC0810-F25"
+      ],
+      "QA-02": [
+        "RC0810-F12",
+        "RC0810-F25"
+      ],
+      "QA-03": [
+        "RC0810-F12",
+        "RC0810-F25"
+      ],
+      "AUTH-06": [
+        "RC0810-F13"
+      ],
+      "PRIV-01": [
+        "RC0810-F14"
+      ],
+      "PRIV-02": [
+        "RC0810-F14"
+      ],
+      "PRIV-05": [
+        "RC0810-F14"
+      ],
+      "SAFE-01": [
+        "RC0810-F15"
+      ],
+      "SAFE-02": [
+        "RC0810-F15"
+      ],
+      "SAFE-03": [
+        "RC0810-F15"
+      ],
+      "SAFE-04": [
+        "RC0810-F15"
+      ],
+      "DB-03": [
+        "RC0810-F16"
+      ],
+      "DB-04": [
+        "RC0810-F16"
+      ],
+      "DB-05": [
+        "RC0810-F16"
+      ],
+      "CONTENT-01": [
+        "RC0810-F17"
+      ],
+      "RES-02": [
+        "RC0810-F18"
+      ],
+      "RES-03": [
+        "RC0810-F18"
+      ],
+      "PRIV-04": [
+        "RC0810-F19"
+      ],
+      "AI-02": [
+        "RC0810-F19"
+      ],
+      "AI-03": [
+        "RC0810-F19"
+      ],
+      "PSY-01": [
+        "RC0810-F20"
+      ],
+      "PSY-02": [
+        "RC0810-F20"
+      ],
+      "PSY-03": [
+        "RC0810-F20"
+      ],
+      "CONTENT-03": [
+        "RC0810-F20"
+      ],
+      "OPS-01": [
+        "RC0810-F21"
+      ],
+      "OPS-02": [
+        "RC0810-F21"
+      ],
+      "OPS-03": [
+        "RC0810-F21"
+      ],
+      "OPS-04": [
+        "RC0810-F21"
+      ],
+      "OPS-05": [
+        "RC0810-F21"
+      ],
+      "CI-05": [
+        "RC0810-F22"
+      ],
+      "M-03": [
+        "RC0810-F22"
+      ],
+      "M-02": [
+        "RC0810-F23"
+      ],
+      "M-06": [
+        "RC0810-F23"
+      ],
+      "M-07": [
+        "RC0810-F23"
+      ],
+      "M-04": [
+        "RC0810-F24"
+      ],
+      "M-05": [
+        "RC0810-F24"
+      ],
+      "M-08": [
+        "RC0810-F24"
+      ],
+      "M-09": [
+        "RC0810-F24"
+      ],
+      "M-10": [
+        "RC0810-F24"
+      ],
+      "M-11": [
+        "RC0810-F24"
+      ],
+      "M-12": [
+        "RC0810-F24"
+      ],
+      "M-13": [
+        "RC0810-F24"
+      ],
+      "M-14": [
+        "RC0810-F24"
+      ],
+      "WX-01": [
+        "RC0810-F25"
+      ],
+      "WX-04": [
+        "RC0810-F25"
+      ],
+      "WX-05": [
+        "RC0810-F25"
+      ],
+      "WX-06": [
+        "RC0810-F25"
+      ],
+      "WX-07": [
+        "RC0810-F25"
+      ],
+      "WX-08": [
+        "RC0810-F25"
+      ],
+      "QA-04": [
+        "RC0810-F25"
+      ],
+      "QA-05": [
+        "RC0810-F25"
+      ],
+      "PR8-DOD": [
+        "RC0810-F26"
+      ]
+    }
+  },
+  "execution_order": [
+    "RC0810-F00",
+    "RC0810-F10-A",
+    "RC0810-F12-A",
+    "RC0810-F14-A",
+    "RC0810-F22-A",
+    "RC0810-F25-A",
+    "RC0810-F01",
+    "RC0810-F02",
+    "RC0810-F03",
+    "RC0810-F04",
+    "RC0810-F05",
+    "RC0810-F06",
+    "RC0810-F07",
+    "RC0810-F08",
+    "RC0810-F09",
+    "RC0810-F10-B",
+    "RC0810-F11",
+    "RC0810-F12-B",
+    "RC0810-F13",
+    "RC0810-F15",
+    "RC0810-F16",
+    "RC0810-F17",
+    "RC0810-F18",
+    "RC0810-F19",
+    "RC0810-F14-B",
+    "RC0810-F20",
+    "RC0810-F21",
+    "RC0810-F22-B",
+    "RC0810-F23",
+    "RC0810-F24",
+    "RC0810-F25-B",
+    "RC0810-F26"
+  ],
+  "execution_units": [
+    {
+      "id": "RC0810-F00",
+      "task": "RC0810-F00",
+      "phase": "complete",
+      "dependencies": []
+    },
+    {
+      "id": "RC0810-F10-A",
+      "task": "RC0810-F10",
+      "phase": "phase_a",
+      "dependencies": [
+        "RC0810-F00"
+      ]
+    },
+    {
+      "id": "RC0810-F12-A",
+      "task": "RC0810-F12",
+      "phase": "phase_a",
+      "dependencies": [
+        "RC0810-F10-A"
+      ]
+    },
+    {
+      "id": "RC0810-F14-A",
+      "task": "RC0810-F14",
+      "phase": "phase_a",
+      "dependencies": [
+        "RC0810-F12-A"
+      ]
+    },
+    {
+      "id": "RC0810-F22-A",
+      "task": "RC0810-F22",
+      "phase": "phase_a",
+      "dependencies": [
+        "RC0810-F14-A"
+      ]
+    },
+    {
+      "id": "RC0810-F25-A",
+      "task": "RC0810-F25",
+      "phase": "phase_a",
+      "dependencies": [
+        "RC0810-F22-A"
+      ]
+    },
+    {
+      "id": "RC0810-F01",
+      "task": "RC0810-F01",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F25-A"
+      ]
+    },
+    {
+      "id": "RC0810-F02",
+      "task": "RC0810-F02",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F01"
+      ]
+    },
+    {
+      "id": "RC0810-F03",
+      "task": "RC0810-F03",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F02"
+      ]
+    },
+    {
+      "id": "RC0810-F04",
+      "task": "RC0810-F04",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F03"
+      ]
+    },
+    {
+      "id": "RC0810-F05",
+      "task": "RC0810-F05",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F04"
+      ]
+    },
+    {
+      "id": "RC0810-F06",
+      "task": "RC0810-F06",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F05"
+      ]
+    },
+    {
+      "id": "RC0810-F07",
+      "task": "RC0810-F07",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F06"
+      ]
+    },
+    {
+      "id": "RC0810-F08",
+      "task": "RC0810-F08",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F07"
+      ]
+    },
+    {
+      "id": "RC0810-F09",
+      "task": "RC0810-F09",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F08"
+      ]
+    },
+    {
+      "id": "RC0810-F10-B",
+      "task": "RC0810-F10",
+      "phase": "phase_b",
+      "dependencies": [
+        "RC0810-F09",
+        "RC0810-F10-A"
+      ]
+    },
+    {
+      "id": "RC0810-F11",
+      "task": "RC0810-F11",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F10-B"
+      ]
+    },
+    {
+      "id": "RC0810-F12-B",
+      "task": "RC0810-F12",
+      "phase": "phase_b",
+      "dependencies": [
+        "RC0810-F11",
+        "RC0810-F12-A"
+      ]
+    },
+    {
+      "id": "RC0810-F13",
+      "task": "RC0810-F13",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F12-B"
+      ]
+    },
+    {
+      "id": "RC0810-F15",
+      "task": "RC0810-F15",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F13"
+      ]
+    },
+    {
+      "id": "RC0810-F16",
+      "task": "RC0810-F16",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F15"
+      ]
+    },
+    {
+      "id": "RC0810-F17",
+      "task": "RC0810-F17",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F16",
+        "RC0810-F14-A"
+      ]
+    },
+    {
+      "id": "RC0810-F18",
+      "task": "RC0810-F18",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F17"
+      ]
+    },
+    {
+      "id": "RC0810-F19",
+      "task": "RC0810-F19",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F18"
+      ]
+    },
+    {
+      "id": "RC0810-F14-B",
+      "task": "RC0810-F14",
+      "phase": "phase_b",
+      "dependencies": [
+        "RC0810-F19",
+        "RC0810-F14-A"
+      ]
+    },
+    {
+      "id": "RC0810-F20",
+      "task": "RC0810-F20",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F14-B"
+      ]
+    },
+    {
+      "id": "RC0810-F21",
+      "task": "RC0810-F21",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F20"
+      ]
+    },
+    {
+      "id": "RC0810-F22-B",
+      "task": "RC0810-F22",
+      "phase": "phase_b",
+      "dependencies": [
+        "RC0810-F21",
+        "RC0810-F22-A"
+      ]
+    },
+    {
+      "id": "RC0810-F23",
+      "task": "RC0810-F23",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F22-B"
+      ]
+    },
+    {
+      "id": "RC0810-F24",
+      "task": "RC0810-F24",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F23"
+      ]
+    },
+    {
+      "id": "RC0810-F25-B",
+      "task": "RC0810-F25",
+      "phase": "phase_b",
+      "dependencies": [
+        "RC0810-F24",
+        "RC0810-F25-A"
+      ]
+    },
+    {
+      "id": "RC0810-F26",
+      "task": "RC0810-F26",
+      "phase": "complete",
+      "dependencies": [
+        "RC0810-F25-B"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "RC0810-F00",
+      "title": "冻结基线、建立机器注册表与可恢复Harness",
+      "dependencies": [],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "PR8-BASELINE"
+      ],
+      "allowed_files": [
+        "content/rc0810_release_candidate_registry.json",
+        "scripts/run_rc0810.py",
+        "backend/tests/test_rc0810_harness.py",
+        "backend/tests/fixtures/rc0810_command_fixture.py",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/00_当前事实基准/开发说明.md"
+      ],
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/00_当前事实基准/开发说明.md"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 180,
+          "shell": false,
+          "expected_test_count": 6,
+          "status": "active"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "content/rc0810_release_candidate_registry.json",
+          "scripts/run_rc0810.py",
+          "backend/tests/test_rc0810_harness.py",
+          "backend/tests/fixtures/rc0810_command_fixture.py",
+          "docs/01_当前执行入口/0810bug修改计划.md",
+          "docs/00_当前事实基准/Claude计划模式.md",
+          "docs/00_当前事实基准/开发日志.md",
+          "docs/00_当前事实基准/当前进度交接.md",
+          "docs/00_当前事实基准/开发说明.md"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 10,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F00.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.8",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.9",
+          "default_status": "pending"
+        },
+        {
+          "id": "F00.10",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F01",
+      "title": "建立development/validation/production构建配置",
+      "dependencies": [
+        "RC0810-F00"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "REL-01",
+        "ENV-01",
+        "ENV-03",
+        "RES-01"
+      ],
+      "allowed_files": [
+        "config/rc0810/**",
+        "scripts/**",
+        "backend/config.py",
+        "apps/miniprogram/**",
+        "apps/web/**",
+        "shared/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f01.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "config/rc0810/**",
+          "scripts/**",
+          "backend/config.py",
+          "apps/miniprogram/**",
+          "apps/web/**",
+          "shared/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 14,
+        "expected_migrations": 1,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F01.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.8",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.9",
+          "default_status": "pending"
+        },
+        {
+          "id": "F01.10",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F02",
+      "title": "正式小程序页面清单与内部入口剥离",
+      "dependencies": [
+        "RC0810-F01"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "REL-02",
+        "RES-01",
+        "QA-01"
+      ],
+      "allowed_files": [
+        "apps/miniprogram/**",
+        "scripts/**",
+        "config/rc0810/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f02.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "apps/miniprogram/**",
+          "scripts/**",
+          "config/rc0810/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 14,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 4,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F02.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F02.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F02.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F02.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F02.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F02.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F02.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F02.8",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F03",
+      "title": "拆分正式镜像与验证镜像",
+      "dependencies": [
+        "RC0810-F01"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "REL-03",
+        "REL-04",
+        "AI-01",
+        "CONTENT-02"
+      ],
+      "allowed_files": [
+        "Dockerfile",
+        "deploy/**",
+        "backend/**",
+        "config/rc0810/**",
+        "scripts/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f03.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "Dockerfile",
+          "deploy/**",
+          "backend/**",
+          "config/rc0810/**",
+          "scripts/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 12,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F03.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F03.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F03.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F03.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F03.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F03.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F03.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F03.8",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F04",
+      "title": "锁定正式小程序CloudBase配置",
+      "dependencies": [
+        "RC0810-F01",
+        "RC0810-F02"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "ENV-02",
+        "ENV-03",
+        "WX-02"
+      ],
+      "allowed_files": [
+        "apps/miniprogram/**",
+        "config/rc0810/**",
+        "scripts/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f04.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "apps/miniprogram/**",
+          "config/rc0810/**",
+          "scripts/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 10,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 4,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F04.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F04.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F04.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F04.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F04.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F04.6",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F05",
+      "title": "Showcase正式制品硬关闭",
+      "dependencies": [
+        "RC0810-F01",
+        "RC0810-F03"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "REL-04",
+        "AUTH-01"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "content/showcase_access.json",
+        "config/rc0810/**",
+        "scripts/**",
+        "apps/miniprogram/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f05.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "content/showcase_access.json",
+          "config/rc0810/**",
+          "scripts/**",
+          "apps/miniprogram/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 12,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F05.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F05.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F05.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F05.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F05.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F05.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F05.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F06",
+      "title": "跨用户对象授权统一收口",
+      "dependencies": [
+        "RC0810-F05"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "AUTH-02",
+        "AUTH-05"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "shared/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f06.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "shared/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 24,
+        "expected_migrations": 1,
+        "expected_interfaces": 4,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F06.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F06.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F06.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F06.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F06.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F06.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F06.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F06.8",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F07",
+      "title": "Consent self-only与provenance",
+      "dependencies": [
+        "RC0810-F06"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "AUTH-03",
+        "PRIV-03"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "shared/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f07.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "shared/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 18,
+        "expected_migrations": 2,
+        "expected_interfaces": 4,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F07.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F07.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F07.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F07.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F07.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F07.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F07.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F08",
+      "title": "客户端安全退出与Token撤销",
+      "dependencies": [
+        "RC0810-F01"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "AUTH-04"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "shared/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f08.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "shared/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 14,
+        "expected_migrations": 0,
+        "expected_interfaces": 4,
+        "expected_pages": 4,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F08.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F08.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F08.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F08.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F08.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F08.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F08.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F09",
+      "title": "核心写操作原子幂等",
+      "dependencies": [
+        "RC0810-F01"
+      ],
+      "phase_dependencies": [
+        "RC0810-F11:final_database_verification"
+      ],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "DB-02"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "shared/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f09.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "shared/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 24,
+        "expected_migrations": 3,
+        "expected_interfaces": 4,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F09.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F09.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F09.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F09.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F09.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F09.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F09.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F10",
+      "title": "修复红CI并拆分Release Gate",
+      "dependencies": [
+        "RC0810-F00"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "CI-01",
+        "CI-02",
+        "CI-03",
+        "CI-04"
+      ],
+      "allowed_files": [
+        ".github/workflows/**",
+        "backend/tests/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "scripts/**",
+        "config/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f10.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          ".github/workflows/**",
+          "backend/tests/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "scripts/**",
+          "config/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 18,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F10.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F10.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F10.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F10.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F10.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F10.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F10.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F10.8",
+          "default_status": "pending"
+        },
+        {
+          "id": "F10.9",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F11",
+      "title": "正式数据库profile与无SQLite fallback",
+      "dependencies": [
+        "RC0810-F01",
+        "RC0810-F03"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "DB-01"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "deploy/**",
+        "config/**",
+        "scripts/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f11.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "deploy/**",
+          "config/**",
+          "scripts/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 14,
+        "expected_migrations": 1,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F11.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F11.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F11.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F11.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F11.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F11.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F11.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F12",
+      "title": "微信RC外部证据框架",
+      "dependencies": [
+        "RC0810-F00"
+      ],
+      "phase_dependencies": [
+        "RC0810-F01:phase_b"
+      ],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "WX-02",
+        "WX-03",
+        "QA-01",
+        "QA-02",
+        "QA-03"
+      ],
+      "allowed_files": [
+        "config/rc0810/**",
+        "scripts/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f12.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [
+        {
+          "owner": "wechat_platform_operator",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "device_operator",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
+      "change_budget": {
+        "allowed_modules": [
+          "config/rc0810/**",
+          "scripts/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 10,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F12.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F12.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F12.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F12.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F12.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F12.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F12.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F12.8",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F13",
+      "title": "家庭绑定防爆破与原子单次兑换",
+      "dependencies": [
+        "RC0810-F06",
+        "RC0810-F11"
+      ],
+      "phase_dependencies": [],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "AUTH-06"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "shared/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f13.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "shared/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 16,
+        "expected_migrations": 2,
+        "expected_interfaces": 4,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F13.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F13.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F13.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F13.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F13.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F13.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F13.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F14",
+      "title": "隐私数据血缘与删除覆盖",
+      "dependencies": [
+        "RC0810-F00"
+      ],
+      "phase_dependencies": [
+        "RC0810-F07:phase_b",
+        "RC0810-F09:phase_b",
+        "RC0810-F17:phase_b",
+        "RC0810-F18:phase_b",
+        "RC0810-F19:phase_b"
+      ],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "PRIV-01",
+        "PRIV-02",
+        "PRIV-05"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "config/rc0810/**",
+        "scripts/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f14.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [
+        {
+          "owner": "privacy_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "config/rc0810/**",
+          "scripts/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 20,
+        "expected_migrations": 2,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F14.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.8",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.9",
+          "default_status": "pending"
+        },
+        {
+          "id": "F14.10",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F15",
+      "title": "主动Risk SLA与治疗性评估时钟",
+      "dependencies": [
+        "RC0810-F09",
+        "RC0810-F11"
+      ],
+      "phase_dependencies": [],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "SAFE-01",
+        "SAFE-02",
+        "SAFE-03",
+        "SAFE-04"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "deploy/**",
+        "config/**",
+        "scripts/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f15.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [
+        {
+          "owner": "psychology_safety_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "on_call_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "deploy/**",
+          "config/**",
+          "scripts/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 18,
+        "expected_migrations": 2,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F15.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F15.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F15.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F15.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F15.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F15.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F15.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F15.8",
+          "default_status": "pending"
+        },
+        {
+          "id": "F15.9",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F16",
+      "title": "MySQL TLS、关系完整性与备份恢复Harness",
+      "dependencies": [
+        "RC0810-F11"
+      ],
+      "phase_dependencies": [],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "DB-03",
+        "DB-04",
+        "DB-05"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "deploy/**",
+        "config/**",
+        "scripts/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f16.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "deploy/**",
+          "config/**",
+          "scripts/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 18,
+        "expected_migrations": 3,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F16.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F16.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F16.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F16.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F16.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F16.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F16.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F16.8",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F17",
+      "title": "内容发布改为持久化不可变制品",
+      "dependencies": [
+        "RC0810-F01",
+        "RC0810-F11"
+      ],
+      "phase_dependencies": [
+        "RC0810-F14:phase_a"
+      ],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "CONTENT-01",
+        "CONTENT-02"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "content/**",
+        "deploy/**",
+        "config/**",
+        "scripts/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f17.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "content/**",
+          "deploy/**",
+          "config/**",
+          "scripts/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 18,
+        "expected_migrations": 2,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F17.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F17.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F17.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F17.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F17.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F17.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F17.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F18",
+      "title": "研究来源服务器验证与算法执行Manifest",
+      "dependencies": [
+        "RC0810-F14",
+        "RC0810-F17"
+      ],
+      "phase_dependencies": [],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "RES-02",
+        "RES-03"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "config/**",
+        "scripts/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f18.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "config/**",
+          "scripts/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 18,
+        "expected_migrations": 2,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F18.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F18.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F18.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F18.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F18.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F18.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F18.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F19",
+      "title": "正式AI关闭与治理事实源统一",
+      "dependencies": [
+        "RC0810-F01",
+        "RC0810-F03",
+        "RC0810-F14"
+      ],
+      "phase_dependencies": [],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "PRIV-04",
+        "AI-01",
+        "AI-02",
+        "AI-03"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "content/**",
+        "config/**",
+        "shared/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f19.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [
+        {
+          "owner": "ai_governance_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "content/**",
+          "config/**",
+          "shared/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 22,
+        "expected_migrations": 1,
+        "expected_interfaces": 4,
+        "expected_pages": 4,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F19.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F19.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F19.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F19.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F19.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F19.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F19.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F20",
+      "title": "心理测评版本、内容双轨与文案收口",
+      "dependencies": [
+        "RC0810-F17"
+      ],
+      "phase_dependencies": [],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "PSY-01",
+        "PSY-02",
+        "PSY-03",
+        "CONTENT-03"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "content/**",
+        "shared/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f20.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [
+        {
+          "owner": "psychology_reviewer",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "content_rights_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "content/**",
+          "shared/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 24,
+        "expected_migrations": 1,
+        "expected_interfaces": 0,
+        "expected_pages": 4,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F20.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F20.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F20.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F20.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F20.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F20.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F20.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F20.8",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F21",
+      "title": "Public Health、监控、告警和事故恢复",
+      "dependencies": [
+        "RC0810-F03",
+        "RC0810-F11",
+        "RC0810-F15",
+        "RC0810-F16",
+        "RC0810-F17"
+      ],
+      "phase_dependencies": [],
+      "priority": "P1",
+      "default_status": "planned",
+      "pr_ids": [
+        "OPS-01",
+        "OPS-02",
+        "OPS-03",
+        "OPS-04",
+        "OPS-05"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "deploy/**",
+        "config/**",
+        "scripts/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f21.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [
+        {
+          "owner": "operations_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "deploy/**",
+          "config/**",
+          "scripts/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 22,
+        "expected_migrations": 1,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F21.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.8",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.9",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.10",
+          "default_status": "pending"
+        },
+        {
+          "id": "F21.11",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F22",
+      "title": "独立安全工具Gate",
+      "dependencies": [
+        "RC0810-F00"
+      ],
+      "phase_dependencies": [
+        "RC0810-F10:phase_b"
+      ],
+      "priority": "P2",
+      "default_status": "planned",
+      "pr_ids": [
+        "CI-05",
+        "M-03"
+      ],
+      "allowed_files": [
+        ".github/workflows/**",
+        "config/rc0810/**",
+        "scripts/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f22.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          ".github/workflows/**",
+          "config/rc0810/**",
+          "scripts/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 12,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F22.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F22.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F22.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F22.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F22.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F22.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F22.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F22.8",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F23",
+      "title": "Schema、权限Fuzz与关键规则Mutation",
+      "dependencies": [
+        "RC0810-F06",
+        "RC0810-F07",
+        "RC0810-F09",
+        "RC0810-F15"
+      ],
+      "phase_dependencies": [],
+      "priority": "P2",
+      "default_status": "planned",
+      "pr_ids": [
+        "M-02",
+        "M-06",
+        "M-07"
+      ],
+      "allowed_files": [
+        "backend/tests/**",
+        "scripts/**",
+        "config/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f23.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/tests/**",
+          "scripts/**",
+          "config/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 14,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F23.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F23.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F23.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F23.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F23.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F23.6",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F24",
+      "title": "配置单一事实源、审计防篡改和遗留质量项",
+      "dependencies": [
+        "RC0810-F06",
+        "RC0810-F10",
+        "RC0810-F21"
+      ],
+      "phase_dependencies": [],
+      "priority": "P2",
+      "default_status": "planned",
+      "pr_ids": [
+        "M-04",
+        "M-05",
+        "M-08",
+        "M-09",
+        "M-10",
+        "M-11",
+        "M-12",
+        "M-13",
+        "M-14"
+      ],
+      "allowed_files": [
+        "backend/**",
+        "apps/web/**",
+        "apps/miniprogram/**",
+        "config/**",
+        "scripts/**",
+        "docs/**",
+        "backend/migrations/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f24.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [],
+      "change_budget": {
+        "allowed_modules": [
+          "backend/**",
+          "apps/web/**",
+          "apps/miniprogram/**",
+          "config/**",
+          "scripts/**",
+          "docs/**",
+          "backend/migrations/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 22,
+        "expected_migrations": 2,
+        "expected_interfaces": 4,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F24.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F24.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F24.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F24.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F24.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F24.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F24.7",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F25",
+      "title": "微信平台材料与真机矩阵",
+      "dependencies": [
+        "RC0810-F00"
+      ],
+      "phase_dependencies": [
+        "RC0810-F02:phase_b",
+        "RC0810-F03:phase_b",
+        "RC0810-F04:phase_b",
+        "RC0810-F05:phase_b",
+        "RC0810-F08:phase_b",
+        "RC0810-F11:phase_b",
+        "RC0810-F12:phase_b",
+        "RC0810-F19:phase_b",
+        "RC0810-F20:phase_b",
+        "RC0810-F21:phase_b"
+      ],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "WX-01",
+        "WX-02",
+        "WX-03",
+        "WX-04",
+        "WX-05",
+        "WX-06",
+        "WX-07",
+        "WX-08",
+        "QA-01",
+        "QA-02",
+        "QA-03",
+        "QA-04",
+        "QA-05"
+      ],
+      "allowed_files": [
+        "config/rc0810/**",
+        "scripts/**",
+        "docs/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f25.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [
+        {
+          "owner": "wechat_platform_operator",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "ios_device_operator",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "android_device_operator",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "release_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
+      "change_budget": {
+        "allowed_modules": [
+          "config/rc0810/**",
+          "scripts/**",
+          "docs/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 16,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F25.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.8",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.9",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.10",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.11",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.12",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.13",
+          "default_status": "pending"
+        },
+        {
+          "id": "F25.14",
+          "default_status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "RC0810-F26",
+      "title": "最终RC收口、打包与发布建议",
+      "dependencies": [
+        "RC0810-F00",
+        "RC0810-F01",
+        "RC0810-F02",
+        "RC0810-F03",
+        "RC0810-F04",
+        "RC0810-F05",
+        "RC0810-F06",
+        "RC0810-F07",
+        "RC0810-F08",
+        "RC0810-F09",
+        "RC0810-F10",
+        "RC0810-F11",
+        "RC0810-F12",
+        "RC0810-F13",
+        "RC0810-F14",
+        "RC0810-F15",
+        "RC0810-F16",
+        "RC0810-F17",
+        "RC0810-F18",
+        "RC0810-F19",
+        "RC0810-F20",
+        "RC0810-F21",
+        "RC0810-F22",
+        "RC0810-F23",
+        "RC0810-F24",
+        "RC0810-F25"
+      ],
+      "phase_dependencies": [],
+      "priority": "P0",
+      "default_status": "planned",
+      "pr_ids": [
+        "PR8-DOD"
+      ],
+      "allowed_files": [
+        "config/rc0810/**",
+        "scripts/**",
+        "docs/**",
+        ".github/workflows/**",
+        "Dockerfile",
+        "deploy/**"
+      ],
+      "forbidden_files": [
+        "backend/migrations/** when expected_migrations=0",
+        "backend/runtime/**",
+        "*.sqlite",
+        "*.sqlite3",
+        "*.db",
+        ".env*",
+        "**/*secret*",
+        "production resources"
+      ],
+      "acceptance_commands": [
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_f26.py",
+            "-q"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "planned_contract_file_not_created"
+        }
+      ],
+      "external_gates": [
+        {
+          "owner": "product_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "platform_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "engineering_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "professional_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "release_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
+      "change_budget": {
+        "allowed_modules": [
+          "config/rc0810/**",
+          "scripts/**",
+          "docs/**",
+          ".github/workflows/**",
+          "Dockerfile",
+          "deploy/**"
+        ],
+        "forbidden_modules": [
+          "backend/migrations/** when expected_migrations=0",
+          "backend/runtime/**",
+          "*.sqlite",
+          "*.sqlite3",
+          "*.db",
+          ".env*",
+          "**/*secret*",
+          "production resources"
+        ],
+        "expected_files": 18,
+        "expected_migrations": 0,
+        "expected_interfaces": 0,
+        "expected_pages": 0,
+        "actual_delta_baseline": "task_start_snapshot",
+        "pause_when_actual_exceeds_percent": 50,
+        "pause_on_second_unrelated_root_cause": true,
+        "pause_on_crossing_unfinished_dependency": true,
+        "on_exceeded": [
+          "pause",
+          "plan_backfill",
+          "split_subtask"
+        ]
+      },
+      "rollback": {
+        "strategy": "task_registered_only_no_destructive_reset",
+        "command": null,
+        "requires_dry_run": true,
+        "preserves_business_data": true
+      },
+      "subtasks": [
+        {
+          "id": "F26.1",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.2",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.3",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.4",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.5",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.6",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.7",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.8",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.9",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.10",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.11",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.12",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.13",
+          "default_status": "pending"
+        },
+        {
+          "id": "F26.14",
+          "default_status": "pending"
+        }
+      ]
+    }
+  ]
+}
