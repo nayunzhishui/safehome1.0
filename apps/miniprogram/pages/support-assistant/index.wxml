@@ -1,42 +1,49 @@
 <view class="page-shell" aria-label="支持性问答页面">
-  <view class="intro-card">
-    <text class="eyebrow">支持性问答</text>
-    <text class="title">把问题缩小到下一步</text>
-    <text class="subtitle">只检索已审核内容，不评价你、孩子或关系的好坏。</text>
+  <view class="page-header">
+    <text class="page-kicker">支持性问答</text>
+    <text class="page-title">把问题缩小到下一步</text>
+    <text class="page-summary">只检索已审核内容，不评价你、孩子或关系的好坏。</text>
   </view>
 
   <page-state
     wx:if="{{loading}}"
-    state="loading"
+    kind="loading"
     title="正在读取问答状态"
+    description="正在确认当前是否开放支持性问答。"
   />
 
   <page-state
     wx:elif="{{error && !enabled}}"
-    state="error"
+    kind="error"
     title="暂时无法打开支持性问答"
     description="{{error}}"
-    actionText="重新读取"
+    actionLabel="重新读取"
+    actionAriaLabel="重新读取支持性问答状态"
     bind:action="loadStatus"
   />
 
-  <view wx:elif="{{!enabled}}" class="notice-card">
-    <text class="notice-title">当前未开放</text>
-    <text class="notice-text">你仍可使用记录、训练卡和人工支持。</text>
+  <view wx:elif="{{!enabled}}" class="unavailable" role="status">
+    <text class="section-title">当前未开放</text>
+    <text class="section-copy">你仍可使用情绪记录、训练卡和人工支持。</text>
   </view>
 
   <block wx:else>
-    <view class="boundary-card">
-      <text class="boundary-title">使用边界</text>
-      <text class="boundary-text">{{boundary}}</text>
+    <view class="boundary-note">
+      <text class="section-title">使用边界</text>
+      <text class="section-copy">{{boundary}}</text>
       <button
         wx:if="{{!consented}}"
         class="consent-button"
+        hover-class="button-pressed"
         aria-label="确认已阅读使用边界并同意AI辅助处理"
         disabled="{{sending}}"
         bindtap="enableConsent"
-      >我已阅读并同意AI辅助处理</button>
-      <text wx:else class="consent-done">已记录本次选择</text>
+      >{{sending ? '正在记录' : '阅读并同意 AI 辅助处理'}}</button>
+      <view wx:else class="consent-status" role="status">
+        <view class="consent-check" aria-hidden="true">✓</view>
+        <text>已记录本次选择</text>
+      </view>
+      <text wx:if="{{error && !consented}}" class="inline-error">{{error}}</text>
     </view>
 
     <view wx:if="{{messages.length}}" class="conversation" aria-live="polite">
@@ -45,11 +52,11 @@
         wx:key="id"
         class="message message--{{item.role}}"
       >
-        <text class="message-label">{{item.role === 'user' ? '你' : '支持性内容助手'}}</text>
+        <text class="message-label">{{item.role === 'user' ? '你' : '支持性整理'}}</text>
         <text class="message-content">{{item.content}}</text>
         <view wx:if="{{item.citations && item.citations.length}}" class="citations">
-          <text class="citation-title">参考内容</text>
-          <text wx:for="{{item.citations}}" wx:key="version_id" class="citation-item">• {{item.title}}</text>
+          <text class="citation-title">参考来源</text>
+          <text wx:for="{{item.citations}}" wx:key="version_id" class="citation-item">{{index + 1}}. {{item.title}}</text>
         </view>
       </view>
     </view>
@@ -65,12 +72,14 @@
         value="{{question}}"
         maxlength="1000"
         placeholder="例如：情绪升高时，我可以先做什么？"
+        placeholder-class="question-placeholder"
         bindinput="onQuestionInput"
         disabled="{{sending}}"
       />
-      <text wx:if="{{error}}" class="inline-error">{{error}}</text>
+      <text wx:if="{{error && consented}}" class="inline-error">{{error}}</text>
       <button
         class="send-button"
+        hover-class="button-pressed"
         aria-label="整理一个小步骤"
         disabled="{{sending || !question || !consented}}"
         bindtap="sendQuestion"

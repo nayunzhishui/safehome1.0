@@ -39,8 +39,8 @@
     "harness_engineering",
     "done"
   ],
-  "active_route": "pages/support-assistant/index",
-  "updated_at": "2026-08-10T19:15:42+08:00",
+  "active_route": "pages/message-detail/index",
+  "updated_at": "2026-08-10T21:42:33+08:00",
   "pages": [
     {
       "index": 1,
@@ -545,17 +545,140 @@
           "recorded_at": "2026-08-10T19:15:42+08:00"
         }
       },
-      "updated_at": "2026-08-10T19:15:42+08:00",
-      "blockers": []
+      "updated_at": "2026-08-10T19:15:42+08:00"
     },
     {
       "index": 5,
       "route": "pages/support-assistant/index",
       "title": "支持性问答",
-      "source_hash": "5390969296d92e196fe7a8cddc46aa81f62287fa5c859c1cee32ab84dc77a220",
-      "stage": "truth_auto_complete",
-      "evidence": {},
-      "updated_at": "2026-08-10T01:41:08+08:00"
+      "source_hash": "d16c31b154e8c48fa407b59289606bac6f1f9675fb11e399534ef8f4c5192bc1",
+      "stage": "complete",
+      "evidence": {
+        "truth": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md"
+          ],
+          "note": "",
+          "recorded_at": "2026-08-10T19:25:15+08:00"
+        },
+        "freeze": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/context.md"
+          ],
+          "note": "",
+          "recorded_at": "2026-08-10T19:25:16+08:00"
+        },
+        "imagegen": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/assets/imagegen-default-v1.png"
+          ],
+          "note": "",
+          "recorded_at": "2026-08-10T19:28:03+08:00"
+        },
+        "image_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/image-review.md"
+          ],
+          "note": "",
+          "recorded_at": "2026-08-10T19:28:04+08:00"
+        },
+        "figma": {
+          "items": [
+            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/figma-review.md"
+          ],
+          "note": "BoundaryNote、ConversationEntry、QuestionComposer 和 10 个页面状态完成；字体、实色、尺寸、裁切与长内容审查通过。",
+          "recorded_at": "2026-08-10T21:26:35+08:00"
+        },
+        "figma_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/figma-review.md"
+          ],
+          "note": "10个Figma状态、三组件集、字体、token、实色、裁切和长内容审查通过",
+          "recorded_at": "2026-08-10T21:31:23+08:00"
+        },
+        "implementation": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "仅修改WXML/WXSS，JS/API/后端未改，Preview通过",
+          "recorded_at": "2026-08-10T21:42:28+08:00"
+        },
+        "loop_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "ImageGen、Figma、代码结构和token映射通过",
+          "recorded_at": "2026-08-10T21:42:29+08:00"
+        },
+        "loop_ui": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "字号、间距、圆角、按钮、长文本和引用检查通过",
+          "recorded_at": "2026-08-10T21:42:29+08:00"
+        },
+        "loop_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "能力边界、知情同意、恢复路径和非聊天预期通过",
+          "recorded_at": "2026-08-10T21:42:30+08:00"
+        },
+        "loop_states": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "十个真实页面状态覆盖通过，真机状态统一后置",
+          "recorded_at": "2026-08-10T21:42:30+08:00"
+        },
+        "harness_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "Figma十态与代码映射通过",
+          "recorded_at": "2026-08-10T21:42:31+08:00"
+        },
+        "harness_component": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "复用Button/PageStateInline并新增三组件集，无样式分叉",
+          "recorded_at": "2026-08-10T21:42:31+08:00"
+        },
+        "harness_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "可读性、触控、状态反馈和可访问性自动项通过",
+          "recorded_at": "2026-08-10T21:42:32+08:00"
+        },
+        "harness_engineering": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "truth、Preview、token、T23和工程范围检查通过",
+          "recorded_at": "2026-08-10T21:42:32+08:00"
+        },
+        "done": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/code-review.md"
+          ],
+          "note": "支持性问答页本地闭环完成，真机验收统一后置",
+          "recorded_at": "2026-08-10T21:42:33+08:00"
+        }
+      },
+      "updated_at": "2026-08-10T21:42:33+08:00",
+      "blockers": [
+        {
+          "stage": "figma",
+          "note": "用户恢复目标后连续第三个目标轮次，Figma whoami 仍返回相同 MCP transport send error；保留 BoundaryNote 骨架与 93:61 恢复点，未写画布或前端。",
+          "recorded_at": "2026-08-10T19:58:57+08:00",
+          "attempt_count": 5,
+          "resolved_at": "2026-08-10T20:20:00+08:00",
+          "resolution": "连接恢复后已完成 Phase 0、两个组件集和 10 个页面骨架；该记录保留为历史。"
+        }
+      ]
     },
     {
       "index": 6,

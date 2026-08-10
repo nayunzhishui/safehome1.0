@@ -12200,3 +12200,19 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 微信开发者工具 Preview、T23、资产、前端、真值与工程 Harness 通过；本地 Loop 1–4 与四类 Harness 已登记。
 - [ ] 当前进入 `pages/support-assistant/index`，继续执行同一单页流程。
 - [ ] 真机、main 合并、Android/iOS、大字体和读屏仍待全部页面本地完成后统一处理。
+
+## 2026-08-10 UIproduct 支持性问答页状态
+
+- [x] 对照页面代码、登录守卫、AI 配置、同意、会话与发送接口完成详细功能真值和需求冻结。
+- [x] 使用 UI skills 完成现状审查与三个结构方向；采用 A1 编辑式支持便笺。
+- [x] ImageGen v1 通过自审，保留边界、问答、引用和输入，不新增聊天或诊断能力。
+- [x] Figma Phase 0 已在连接恢复后完成；变量、样式、页面、组件与外部库状态均已实读。
+- [x] 已补齐本地 P0.a/P0.d/P0.e 和组件缺口清单；P0.b/P0.c 明确等待 Figma 当前状态复核。
+- [x] 连续第三个目标轮次仍为同一传输错误，已按阻断规则登记 blocked；恢复条件为 Figma MCP `whoami` 成功。
+- [x] Figma 曾短暂恢复并完成 P0.b/P0.c；`BoundaryNote` 文档区与两态空骨架已创建，精确节点为 `93:57`、`93:61`、`93:62`。
+- [x] `BoundaryNote` 两态组件集与属性完成；`ConversationEntry` 两态组件集与属性完成。
+- [x] 用户恢复后的连续三轮检查仍为同一传输错误，任务再次按规则标记 blocked。
+- [x] 已创建并审核 10 个页面状态，Disabled、同意、就绪、发送、对话、错误与长内容均完成。
+- [x] 支持性问答 10 个 Figma 状态、三组件集、前端实现、Preview、本地 Loop 1–4 与四类 Harness 全部完成。
+- [ ] 当前进入 `pages/message-detail/index`；继续执行真值复核、UI skills、冻结、ImageGen、Figma、实现和本地审核。
+- [ ] main 合并和 Android/iOS 真机继续统一后置，不因 Figma 阻断改变顺序。

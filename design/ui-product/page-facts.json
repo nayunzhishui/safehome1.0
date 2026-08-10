@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-10T18:46:13+08:00",
+  "generated_at": "2026-08-10T21:41:46+08:00",
   "branch": "UIproduct",
   "main_sha": "4a17b9faf9187a5d414f92e84ff7b08e60802d49",
   "app_page_count": 53,
@@ -1075,18 +1075,17 @@
         "apps/miniprogram/pages/support-assistant/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "5390969296d92e196fe7a8cddc46aa81f62287fa5c859c1cee32ab84dc77a220",
+      "source_hash": "d16c31b154e8c48fa407b59289606bac6f1f9675fb11e399534ef8f4c5192bc1",
       "missing_files": [],
       "visible_text": [
         "支持性问答",
         "把问题缩小到下一步",
         "只检索已审核内容，不评价你、孩子或关系的好坏。",
         "当前未开放",
-        "你仍可使用记录、训练卡和人工支持。",
+        "你仍可使用情绪记录、训练卡和人工支持。",
         "使用边界",
-        "我已阅读并同意AI辅助处理",
         "已记录本次选择",
-        "参考内容",
+        "参考来源",
         "你的问题或想法"
       ],
       "events": [
@@ -1096,7 +1095,7 @@
           "tag": "page-state",
           "label": "当前未开放",
           "data": {},
-          "line": 14
+          "line": 15
         },
         {
           "event": "bindtap",
@@ -1104,7 +1103,7 @@
           "tag": "button",
           "label": "确认已阅读使用边界并同意AI辅助处理",
           "data": {},
-          "line": 32
+          "line": 34
         },
         {
           "event": "bindinput",
@@ -1112,7 +1111,7 @@
           "tag": "textarea",
           "label": "输入你的问题或想法，最多一千字",
           "data": {},
-          "line": 62
+          "line": 69
         },
         {
           "event": "bindtap",
@@ -1120,7 +1119,7 @@
           "tag": "button",
           "label": "整理一个小步骤",
           "data": {},
-          "line": 72
+          "line": 80
         }
       ],
       "page_methods": [
@@ -1236,6 +1235,7 @@
           "sending",
           "messages",
           "item",
+          "index",
           "question"
         ],
         "branches": [

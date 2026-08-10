@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase13_messages_local_complete",
-  "step": "messages_complete_next_page_pending",
+  "phase": "phase14_support_assistant_local_complete",
+  "step": "message_detail_next_page_pending",
   "blocker": null,
   "entities": {
     "collections": {
@@ -85,6 +85,9 @@
       "QA/Home/Checks": "39:658",
       "QA/DiaryHistory": "52:178",
       "Components/AuthField": "56:53"
+      ,"Components/BoundaryNote": "93:57"
+      ,"Components/ConversationEntry": "101:61"
+      ,"Components/QuestionComposer": "115:61"
     },
     "components": {
       "Button": "18:59",
@@ -102,6 +105,13 @@
       "__Icon/ChevronDown": "73:55",
       "SelectField": "77:57",
       "MessageRow": "88:57"
+      ,"BoundaryNote/ConsentPendingBase": "93:61"
+      ,"BoundaryNote/ConsentedBase": "93:62"
+      ,"BoundaryNote": "99:61"
+      ,"ConversationEntry/UserBase": "101:65"
+      ,"ConversationEntry/AssistantBase": "101:66"
+      ,"ConversationEntry": "105:61"
+      ,"QuestionComposer": "120:69"
     },
     "componentVariants": {
       "AuthField/Default": "56:56",
@@ -116,6 +126,14 @@
       "MessageRow/Unread": "87:61",
       "MessageRow/Read": "87:72",
       "MessageRow/Withdrawn": "87:83"
+      ,"BoundaryNote/ConsentPending": "93:61"
+      ,"BoundaryNote/Consented": "93:62"
+      ,"ConversationEntry/User": "101:65"
+      ,"ConversationEntry/Assistant": "101:66"
+      ,"QuestionComposer/Disabled": "116:63"
+      ,"QuestionComposer/Ready": "116:64"
+      ,"QuestionComposer/Sending": "116:65"
+      ,"QuestionComposer/Error": "116:66"
     },
     "componentProperties": {
       "AuthField/Label": "Label#59:0",
@@ -130,6 +148,18 @@
       "MessageRow/Meta": "Meta#88:8",
       "MessageRow/Status": "Status#88:12",
       "MessageRow/ShowDivider": "Show Divider#88:16"
+      ,"BoundaryNote/Title": "Title#100:0"
+      ,"BoundaryNote/Body": "Body#100:3"
+      ,"BoundaryNote/Status": "Status#100:6"
+      ,"ConversationEntry/RoleLabel": "RoleLabel#106:0"
+      ,"ConversationEntry/Body": "Body#106:3"
+      ,"ConversationEntry/ShowSources": "ShowSources#106:6"
+      ,"ConversationEntry/Sources": "Sources#106:9"
+      ,"QuestionComposer/Label": "Label#121:0"
+      ,"QuestionComposer/Counter": "Counter#121:5"
+      ,"QuestionComposer/Text": "Text#121:10"
+      ,"QuestionComposer/Error": "Error#121:15"
+      ,"QuestionComposer/ShowError": "ShowError#121:20"
     },
     "screens": {
       "Home/Default": "30:2",
@@ -163,6 +193,16 @@
       "Messages/LoginRequired": "90:1119",
       "Messages/LongContent": "90:1135",
       "Messages/NetworkFailure": "90:1178"
+      ,"SupportAssistant/Loading": "107:1109"
+      ,"SupportAssistant/ConfigError": "107:1111"
+      ,"SupportAssistant/Disabled": "107:1113"
+      ,"SupportAssistant/ConsentPending": "107:1115"
+      ,"SupportAssistant/Ready": "107:1117"
+      ,"SupportAssistant/Sending": "107:1119"
+      ,"SupportAssistant/Conversation": "107:1121"
+      ,"SupportAssistant/InlineError": "107:1123"
+      ,"SupportAssistant/LongContent": "107:1125"
+      ,"SupportAssistant/NetworkFailure": "107:1127"
     },
     "screenNodes": {
       "Login/Default/Content": "61:804",
@@ -205,6 +245,82 @@
       "Messages/Error/Diagnostic": "90:1113",
       "Messages/LoginRequired/Diagnostic": "90:1129",
       "Messages/NetworkFailure/Diagnostic": "90:1188"
+      ,"BoundaryNote/Pending/Title": "94:57"
+      ,"BoundaryNote/Pending/Body": "94:58"
+      ,"BoundaryNote/Pending/Action": "94:59"
+      ,"BoundaryNote/Consented/Title": "97:61"
+      ,"BoundaryNote/Consented/Body": "97:62"
+      ,"BoundaryNote/Consented/Status": "98:61"
+      ,"BoundaryNote/Consented/Check": "98:62"
+      ,"BoundaryNote/Consented/StatusText": "98:65"
+      ,"ConversationEntry/User/RoleLabel": "102:61"
+      ,"ConversationEntry/User/Body": "102:62"
+      ,"ConversationEntry/User/Divider": "102:63"
+      ,"ConversationEntry/Assistant/RoleLabel": "103:61"
+      ,"ConversationEntry/Assistant/Body": "103:62"
+      ,"ConversationEntry/Assistant/Sources": "104:61"
+      ,"ConversationEntry/Assistant/SourcesDivider": "104:62"
+      ,"ConversationEntry/Assistant/SourcesLabel": "104:63"
+      ,"ConversationEntry/Assistant/SourcesText": "104:64"
+      ,"ConversationEntry/Assistant/Divider": "104:65"
+      ,"SupportAssistant/Loading/Content": "107:1110"
+      ,"SupportAssistant/ConfigError/Content": "107:1112"
+      ,"SupportAssistant/Disabled/Content": "107:1114"
+      ,"SupportAssistant/ConsentPending/Content": "107:1116"
+      ,"SupportAssistant/Ready/Content": "107:1118"
+      ,"SupportAssistant/Sending/Content": "107:1120"
+      ,"SupportAssistant/Conversation/Content": "107:1122"
+      ,"SupportAssistant/InlineError/Content": "107:1124"
+      ,"SupportAssistant/LongContent/Content": "107:1126"
+      ,"SupportAssistant/NetworkFailure/Content": "107:1128"
+      ,"SupportAssistant/Loading/Header": "108:1109"
+      ,"SupportAssistant/ConfigError/Header": "108:1113"
+      ,"SupportAssistant/Disabled/Header": "108:1117"
+      ,"SupportAssistant/ConsentPending/Header": "108:1121"
+      ,"SupportAssistant/Ready/Header": "108:1125"
+      ,"SupportAssistant/Sending/Header": "109:1109"
+      ,"SupportAssistant/Conversation/Header": "109:1113"
+      ,"SupportAssistant/InlineError/Header": "109:1117"
+      ,"SupportAssistant/LongContent/Header": "109:1121"
+      ,"SupportAssistant/NetworkFailure/Header": "109:1125"
+      ,"SupportAssistant/Loading/State": "111:1109"
+      ,"SupportAssistant/ConfigError/State": "111:1113"
+      ,"SupportAssistant/NetworkFailure/State": "111:1120"
+      ,"SupportAssistant/Disabled/Notice": "112:1118"
+      ,"SupportAssistant/Disabled/NoticeTitle": "113:1118"
+      ,"SupportAssistant/Disabled/NoticeBody": "113:1119"
+      ,"QuestionComposer/Stage": "115:62"
+      ,"QuestionComposer/DisabledBase": "116:63"
+      ,"QuestionComposer/ReadyBase": "116:64"
+      ,"QuestionComposer/SendingBase": "116:65"
+      ,"QuestionComposer/ErrorBase": "116:66"
+      ,"QuestionComposer/Ready/Header": "117:61"
+      ,"QuestionComposer/Ready/Label": "117:62"
+      ,"QuestionComposer/Ready/Counter": "117:63"
+      ,"QuestionComposer/Ready/Textarea": "117:64"
+      ,"QuestionComposer/Ready/Text": "117:65"
+      ,"QuestionComposer/Ready/Submit": "117:66"
+      ,"QuestionComposer/Error/Message": "119:69"
+      ,"QuestionComposer/Sending/Counter": "118:77"
+      ,"QuestionComposer/Sending/Text": "118:79"
+      ,"SupportAssistant/ConsentPending/Boundary": "122:1118"
+      ,"SupportAssistant/Ready/Boundary": "122:1132"
+      ,"SupportAssistant/Sending/Boundary": "122:1147"
+      ,"SupportAssistant/Conversation/Boundary": "122:1162"
+      ,"SupportAssistant/InlineError/Boundary": "122:1177"
+      ,"SupportAssistant/LongContent/Boundary": "122:1192"
+      ,"SupportAssistant/ConsentPending/Composer": "123:1166"
+      ,"SupportAssistant/Ready/Composer": "123:1187"
+      ,"SupportAssistant/Sending/Composer": "123:1216"
+      ,"SupportAssistant/Conversation/Composer": "123:1235"
+      ,"SupportAssistant/InlineError/Composer": "123:1260"
+      ,"SupportAssistant/LongContent/Composer": "123:1290"
+      ,"SupportAssistant/Conversation/List": "124:1223"
+      ,"SupportAssistant/Conversation/User": "124:1224"
+      ,"SupportAssistant/Conversation/Assistant": "124:1228"
+      ,"SupportAssistant/LongContent/List": "124:1239"
+      ,"SupportAssistant/LongContent/User": "124:1240"
+      ,"SupportAssistant/LongContent/Assistant": "124:1244"
     }
   },
   "pendingValidations": [
@@ -264,5 +380,12 @@
     "Messages WXML/WXSS/JSON implemented without changing JS, APIs or navigation",
     "Messages WeChat DevTools preview compilation passed at 1,487,732 bytes",
     "Messages local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    ,"SupportAssistant BoundaryNote, ConversationEntry and QuestionComposer component sets completed"
+    ,"SupportAssistant ten 390x844 states completed and visually reviewed"
+    ,"SupportAssistant Figma harness passed: Noto Sans SC only and zero raw solid paints"
+    ,"SupportAssistant get_design_context captured from Conversation state 107:1121"
+    ,"SupportAssistant WXML and WXSS implemented without changing JS, APIs, navigation, backend, database or shared"
+    ,"SupportAssistant WeChat DevTools preview passed at 1490034 bytes"
+    ,"SupportAssistant local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
   ]
 }

@@ -1,158 +1,253 @@
 .page-shell {
   min-height: 100vh;
   box-sizing: border-box;
-  padding: 32rpx 28rpx 56rpx;
-  background: #fffaf5;
-  color: #17342c;
+  padding: 80rpx 48rpx calc(56rpx + env(safe-area-inset-bottom));
+  background: var(--safe-bg);
+  color: var(--safe-title);
 }
 
-.intro-card,
-.boundary-card,
-.notice-card,
-.composer,
-.message {
-  border: 1rpx solid rgba(69, 112, 94, 0.18);
-  border-radius: 28rpx;
-  background: #fffefd;
-  box-shadow: 0 12rpx 28rpx rgba(45, 73, 62, 0.07);
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: 48rpx;
 }
 
-.intro-card {
-  padding: 36rpx 32rpx;
-}
-
-.eyebrow,
-.boundary-title,
+.page-kicker,
+.page-title,
+.page-summary,
+.section-title,
+.section-copy,
 .message-label,
-.citation-title {
+.message-content,
+.citation-title,
+.citation-item,
+.inline-error {
   display: block;
-  color: #3e7764;
+}
+
+.page-kicker {
+  color: var(--safe-primary-deep);
   font-size: 24rpx;
-  font-weight: 700;
-  letter-spacing: 2rpx;
+  line-height: 36rpx;
 }
 
-.title {
-  display: block;
-  margin-top: 10rpx;
-  font-size: 44rpx;
-  line-height: 1.25;
-  font-weight: 750;
+.page-title {
+  color: var(--safe-title);
+  font-size: 40rpx;
+  font-weight: 600;
+  line-height: 56rpx;
 }
 
-.subtitle,
-.boundary-text,
-.notice-text,
-.message-content {
-  display: block;
-  margin-top: 14rpx;
-  color: #52645e;
-  font-size: 29rpx;
-  line-height: 1.7;
+.page-summary {
+  color: var(--safe-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
-.boundary-card,
-.notice-card,
+.boundary-note,
+.unavailable,
 .composer {
+  box-sizing: border-box;
+  border: 1rpx solid var(--safe-border);
+  border-radius: 24rpx;
+  background: var(--safe-card);
+  box-shadow: none;
+}
+
+.boundary-note,
+.unavailable {
+  padding: 48rpx;
+}
+
+.section-title {
+  color: var(--safe-title);
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 44rpx;
+}
+
+.section-copy {
   margin-top: 24rpx;
-  padding: 28rpx;
+  color: var(--safe-muted);
+  font-size: 28rpx;
+  line-height: 44rpx;
 }
 
 .consent-button,
 .send-button {
   width: 100%;
-  min-height: 96rpx;
-  margin-top: 24rpx;
+  min-height: var(--safe-touch);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0 32rpx;
   border: 0;
-  border-radius: 999rpx;
-  background: #4d836f;
-  color: #ffffff;
-  font-size: 30rpx;
-  font-weight: 700;
+  border-radius: var(--safe-radius-md);
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 40rpx;
+}
+
+.consent-button {
+  margin-top: 48rpx;
+  background: var(--safe-orange);
+  color: var(--safe-title);
+}
+
+.send-button {
+  background: var(--safe-primary);
+  color: var(--safe-card);
 }
 
 .consent-button[disabled],
 .send-button[disabled] {
-  background: #c8d2cc;
-  color: #f7faf8;
+  background: #b8cbc4;
+  color: rgba(255, 255, 255, 0.9);
+  opacity: 1;
 }
 
-.consent-done {
-  display: block;
-  margin-top: 20rpx;
-  color: #3e7764;
-  font-size: 27rpx;
+.button-pressed {
+  transform: scale(0.985);
+  opacity: 0.92;
+}
+
+.consent-status {
+  min-height: 40rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 24rpx;
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+
+.consent-check {
+  width: 36rpx;
+  height: 36rpx;
+  flex: 0 0 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 2rpx solid var(--safe-primary);
+  border-radius: 50%;
+  color: var(--safe-primary);
+  font-size: 24rpx;
   font-weight: 700;
+  line-height: 1;
 }
 
 .conversation {
-  margin-top: 24rpx;
+  margin-top: 48rpx;
 }
 
 .message {
-  margin-bottom: 18rpx;
-  padding: 26rpx 28rpx;
+  padding-bottom: 32rpx;
+  border-bottom: 1rpx solid var(--safe-border);
 }
 
-.message--user {
-  margin-left: 48rpx;
-  background: #edf6f1;
+.message + .message {
+  margin-top: 32rpx;
 }
 
-.message--assistant {
-  margin-right: 24rpx;
+.message-label {
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+
+.message-content {
+  margin-top: 16rpx;
+  color: var(--safe-title);
+  font-size: 28rpx;
+  line-height: 44rpx;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .citations {
-  margin-top: 20rpx;
-  padding-top: 18rpx;
-  border-top: 1rpx solid #e4ebe7;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--safe-border);
+}
+
+.citation-title {
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 36rpx;
 }
 
 .citation-item {
-  display: block;
   margin-top: 8rpx;
-  color: #65756f;
-  font-size: 25rpx;
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  line-height: 36rpx;
+  word-break: break-word;
 }
 
-.question-input {
-  width: 100%;
-  min-height: 220rpx;
-  box-sizing: border-box;
-  padding: 24rpx;
-  border: 1rpx solid #cdd8d2;
-  border-radius: 22rpx;
-  background: #ffffff;
-  color: #213b33;
-  font-size: 29rpx;
-  line-height: 1.6;
+.composer {
+  min-height: 600rpx;
+  margin-top: 48rpx;
+  padding: 48rpx;
 }
 
 .composer-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 20rpx;
-  margin-bottom: 14rpx;
+  gap: 24rpx;
 }
 
 .composer-label {
-  color: #23473c;
-  font-size: 27rpx;
-  font-weight: 700;
+  min-width: 0;
+  color: var(--safe-title);
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 44rpx;
 }
 
 .composer-counter {
   flex: none;
-  color: #6b7b75;
-  font-size: 23rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+
+.question-input {
+  width: 100%;
+  height: 224rpx;
+  min-height: 224rpx;
+  box-sizing: border-box;
+  margin: 24rpx 0;
+  padding: 32rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-card);
+  color: var(--safe-title);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}
+
+.question-placeholder {
+  color: var(--safe-muted);
 }
 
 .inline-error {
-  display: block;
-  margin-top: 16rpx;
-  color: #a94f4b;
-  font-size: 26rpx;
-  line-height: 1.5;
+  margin: 0 0 24rpx;
+  color: var(--experience-danger);
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+
+.boundary-note > .inline-error {
+  margin: 24rpx 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button-pressed {
+    transform: none;
+  }
 }

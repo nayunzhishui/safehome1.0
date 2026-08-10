@@ -23,7 +23,7 @@
 
 ## 页面登记
 
-页面清单以 `apps/miniprogram/app.json` 为准。当前 52 个页面已全部登记；严格一次只核对一个页面。
+页面清单以 `apps/miniprogram/app.json` 为准。当前 53 个页面已全部登记；严格一次只核对一个页面。
 
 | 页面路由 | 当前导航标题 | 真值状态 |
 |---|---|---|
@@ -118,6 +118,53 @@
 ### 当前代码中的非展示事实
 
 - `todayRecordCount` 已读取但当前 WXML 未展示，设计不得自行增加，除非用户确认。
+
+## 05：支持性问答 `pages/support-assistant/index`
+
+核对来源：
+
+- `apps/miniprogram/pages/support-assistant/index.wxml`
+- `apps/miniprogram/pages/support-assistant/index.wxss`
+- `apps/miniprogram/pages/support-assistant/index.js`
+- `apps/miniprogram/pages/support-assistant/index.json`
+- `apps/miniprogram/pages/profile/index.js`
+- `apps/miniprogram/utils/authGuard.js`
+- `apps/miniprogram/services/api.js`
+- `content/ai_participant_use_case_policy.json`（只读）
+- `content/ai_qa_governance.json`（只读）
+- `backend/routes/ai_qa.py`（只读）
+- `backend/services/ai_qa_service.py`（只读）
+
+### 功能映射
+
+| 页面区域 | 当前前端事件 | 数据或目标 | 真实用户任务 | 正式设计约束 |
+|---|---|---|---|---|
+| 登录门禁 | `onLoad` + `isLoggedIn` | 未登录 `redirectTo /pages/login/index?redirect=...` | 登录后使用个人化受控问答 | 不画游客可直接发送状态，不新增本页登录表单 |
+| 能力状态 | `loadStatus` | `GET /api/ai-qa/config`；读取 `participant_enabled` 与参与者边界 | 确认问答当前是否开放 | Loading、读取 Error、Disabled 必须独立；关闭时不得出现输入或发送 |
+| 使用边界与同意 | `enableConsent` | `POST /api/consent`；`ai_assistance`、版本 `2026.07-consent-v2`、`agreed=true` | 阅读边界并记录本次同意 | 未同意时同意是唯一主行动；不伪造撤回、拒绝或历史同意读取能力 |
+| 问题输入 | `onQuestionInput` | 本地 `question`，最多 1000 字 | 写下一个具体问题或想法 | 保留字数、禁用和原占位语义；不新增语音、图片、推荐问题 |
+| 会话创建 | `ensureSession` | `POST /api/ai-qa/sessions`；固定 `participant_support_navigation` | 为本次打开建立受控问答会话 | 不展示跨会话记忆、历史会话或其他用例选择 |
+| 发送与回答 | `sendQuestion` | `POST /api/ai-qa/sessions/:sessionId/messages`；读取 `message.content` 与 `citations` | 获得基于已审核内容、非诊断的支持性整理 | 保留不足内容兜底与发送错误；不包装为实时咨询或确定结论 |
+| 引用 | 无独立事件 | `answer.citations[].title/version_id` | 了解回答参考了哪些已审核内容 | 只展示真实返回标题，不新增可点击来源或外链 |
+
+### 页面状态真值
+
+- `Loading`：正在读取问答开关。
+- `Config Error / Network Failure`：配置读取失败，原动作只允许重新读取。
+- `Disabled`：服务当前未开放，只展示现有替代能力说明，无按钮。
+- `Consent Pending`：开放但未同意，输入和发送不可用。
+- `Ready`：同意完成，可输入；空问题时发送禁用。
+- `Sending`：同意、输入和发送均受 `sending` 保护。
+- `Conversation`：只展示本次打开后本地追加的用户问题、助手回答和真实引用。
+- `Inline Error`：同意或发送失败；保留问题文本，允许按原按钮重试。
+- `Long Content`：问题最多 1000 字；回答和引用数量由真实返回决定，自然滚动。
+
+### 禁止的视觉推断
+
+- 不新增实时在线、输入中、已读回执、头像、人工客服、紧急处置或自动诊断含义。
+- 不新增历史会话、删除、复制、点赞、重试单条回答、引用跳转或跨会话记忆。
+- 不将治理文件的拟议服务名、生产状态或外部模型包装为已批准上线事实。
+- 本页只允许修改 UI 前端文件；后端、API、数据库、content、shared、认证和开关均禁止修改。
 - `coreEntries`、`hotTopics` 以及若干 handler 当前没有对应 WXML 展示，不能因为 JS 中存在就自动加入首页。
 - `journey-action-card` 是真实动态主行动组件，应保留状态和恢复能力；视觉可以重做，语义不能改。
 
@@ -194,7 +241,7 @@
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-10T18:46:13+08:00`
+生成时间：`2026-08-10T21:41:46+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -396,20 +443,20 @@
 ### 05：支持性问答 `pages/support-assistant/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`5390969296d92e196fe7a8cddc46aa81f62287fa5c859c1cee32ab84dc77a220`
+- 源码指纹：`d16c31b154e8c48fa407b59289606bac6f1f9675fb11e399534ef8f4c5192bc1`
 - 核对文件：`apps/miniprogram/pages/support-assistant/index.wxml`、`apps/miniprogram/pages/support-assistant/index.wxss`、`apps/miniprogram/pages/support-assistant/index.js`、`apps/miniprogram/pages/support-assistant/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/profile/index`
 - 页面组件：—
-- 主要可见内容：支持性问答、把问题缩小到下一步、只检索已审核内容，不评价你、孩子或关系的好坏。、当前未开放、你仍可使用记录、训练卡和人工支持。、使用边界、我已阅读并同意AI辅助处理、已记录本次选择、参考内容、你的问题或想法
+- 主要可见内容：支持性问答、把问题缩小到下一步、只检索已审核内容，不评价你、孩子或关系的好坏。、当前未开放、你仍可使用情绪记录、训练卡和人工支持。、使用边界、已记录本次选择、参考来源、你的问题或想法
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 14 | 当前未开放 | `bindaction` | `loadStatus` | — |
-| 32 | 确认已阅读使用边界并同意AI辅助处理 | `bindtap` | `enableConsent` | — |
-| 62 | 输入你的问题或想法，最多一千字 | `bindinput` | `onQuestionInput` | — |
-| 72 | 整理一个小步骤 | `bindtap` | `sendQuestion` | — |
+| 15 | 当前未开放 | `bindaction` | `loadStatus` | — |
+| 34 | 确认已阅读使用边界并同意AI辅助处理 | `bindtap` | `enableConsent` | — |
+| 69 | 输入你的问题或想法，最多一千字 | `bindinput` | `onQuestionInput` | — |
+| 80 | 整理一个小步骤 | `bindtap` | `sendQuestion` | — |
 
 #### 接口真值
 
@@ -424,7 +471,7 @@
 
 - 下游路由：`redirectTo` → `/pages/login/index?redirect=%2Fpages%2Fsupport-assistant%2Findex`（js:21）、`navigateTo` → `/pages/login/index:dynamic`（js:138）
 - 本地存储：`getStorageSync` `auth_token`（JS:114）、`getStorageSync` `auth_user`（JS:118）、`removeStorageSync` `auth_token`（JS:144）、`removeStorageSync` `auth_user`（JS:145）
-- WXML 数据绑定：`loading`、`error`、`boundary`、`sending`、`messages`、`item`、`question`
+- WXML 数据绑定：`loading`、`error`、`boundary`、`sending`、`messages`、`item`、`index`、`question`
 - 条件状态：`loading`、`error`、`enabled`、`consented`、`messages`、`item`
 - `setData` 状态：`loading`、`error`、`enabled`、`boundary`、`sending`、`consented`、`question`、`sessionId`、`messages`、`role`、`content`、`citations`
 - 未解析事件：—
