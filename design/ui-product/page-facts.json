@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-10T01:54:47+08:00",
+  "generated_at": "2026-08-10T13:38:54+08:00",
   "branch": "UIproduct",
-  "main_sha": "98fca029f3f97e13d7e787cd40cb939465a992d4",
-  "app_page_count": 52,
+  "main_sha": "65fcef4b876fbcec05b9eeddfe4cf37eb5e0789d",
+  "app_page_count": 53,
   "pages": [
     {
       "index": 1,
@@ -15,62 +15,62 @@
         "apps/miniprogram/pages/home/index.js",
         "apps/miniprogram/pages/home/index.json"
       ],
-      "source_hash": "e1a5074f604e186dc4818ef512c8936a16df49a7c4804c616d6ca1a599252434",
+      "source_hash": "bd415ce490b07944b4092edba730027b54281cbc901a2ecf42eb107aaa46971b",
       "missing_files": [],
       "visible_text": [
         "安心陪伴",
-        "选择今天的一小步",
-        "情绪天气",
+        "情绪温度计",
         "今天已记录 次",
-        "记录 ›",
         "测一测",
-        "了解当前状态",
+        "了解此刻状态",
         "情绪日记",
-        "记录一次具体事件",
+        "记录具体小事",
+        "如何开始",
+        "记录 · 反馈 · 练习",
+        "更多",
         "支持性反馈",
-        "查看上次记录的互动线索",
+        "记录后获得对应反馈",
         "训练中心",
-        "选择今天的小练习",
+        "查看训练计划与练习",
         "人工支持",
-        "提交补充反馈请求，非实时危机服务",
-        "还没有记录",
+        "提交非实时支持请求",
+        "最近记录",
+        "还没有保存的记录",
         "可以先写下一件刚发生的小事",
-        "去记录 ›",
-        "测评记录",
-        "练习打卡",
-        "情绪温度",
-        "常见场景：",
-        "常见情绪：",
-        "还不能归纳"
+        "去记录",
+        "阶段性反馈",
+        "· 测评 · 练习 · 温度",
+        "常见场景： · 常见情绪：",
+        "记录还不够，继续观察"
       ],
       "events": [
         {
           "event": "bindtap",
           "handler": "openThermometer",
           "tag": "button",
-          "label": "情绪天气",
+          "label": "",
           "data": {},
-          "line": 20
+          "line": 16
         },
         {
           "event": "bindtap",
           "handler": "openCoreEntry",
           "tag": "button",
-          "label": "测一测",
+          "label": "",
           "data": {
             "key": "assessment"
           },
-          "line": 31
+          "line": 29
         },
         {
           "event": "bindtap",
           "handler": "openCoreEntry",
           "tag": "button",
-          "label": "情绪日记",
+          "label": "",
           "data": {
             "key": "diary"
           },
-          "line": 35
+          "line": 37
         },
         {
           "event": "bindaction",
@@ -78,7 +78,7 @@
           "tag": "journey-action-card",
           "label": "{{todayJourney ? todayJourney.actionAriaLabel : ",
           "data": {},
-          "line": 42
+          "line": 46
         },
         {
           "event": "bindretry",
@@ -86,103 +86,93 @@
           "tag": "journey-action-card",
           "label": "{{todayJourney ? todayJourney.actionAriaLabel : ",
           "data": {},
-          "line": 42
-        },
-        {
-          "event": "bindmore",
-          "handler": "openGettingStarted",
-          "tag": "section-title",
-          "label": "",
-          "data": {},
-          "line": 60
+          "line": 46
         },
         {
           "event": "bindtap",
-          "handler": "openStartStep",
+          "handler": "openGettingStarted",
           "tag": "button",
-          "label": "",
-          "data": {
-            "key": "{{item.key}}"
-          },
+          "label": "›",
+          "data": {},
           "line": 62
         },
         {
           "event": "bindtap",
           "handler": "openCoreEntry",
           "tag": "button",
-          "label": "支持性反馈",
+          "label": "",
           "data": {
             "key": "feedback"
           },
-          "line": 80
+          "line": 73
         },
         {
           "event": "bindtap",
           "handler": "openCoreEntry",
           "tag": "button",
-          "label": "训练中心",
+          "label": "",
           "data": {
             "key": "training"
           },
-          "line": 87
+          "line": 81
         },
         {
           "event": "bindtap",
           "handler": "openCoreEntry",
           "tag": "button",
-          "label": "人工支持",
+          "label": "",
           "data": {
             "key": "supervision"
           },
-          "line": 94
+          "line": 89
         },
         {
-          "event": "bindmore",
-          "handler": "openWeeklyReport",
-          "tag": "section-title",
-          "label": "",
-          "data": {},
-          "line": 106
-        },
-        {
-          "event": "bindtap",
-          "handler": "openWeeklyReport",
-          "tag": "button",
+          "event": "bindaction",
+          "handler": "retryHomeData",
+          "tag": "page-state",
           "label": "",
           "data": {},
           "line": 107
         },
         {
           "event": "bindtap",
-          "handler": "startDiary",
+          "handler": "openDiaryHistory",
           "tag": "button",
-          "label": "还没有记录",
-          "data": {},
-          "line": 114
-        },
-        {
-          "event": "bindmore",
-          "handler": "openWeeklyReport",
-          "tag": "section-title",
           "label": "",
           "data": {},
-          "line": 125
+          "line": 115
         },
         {
           "event": "bindtap",
-          "handler": "openAssessment",
+          "handler": "startDiary",
           "tag": "button",
-          "label": "去测一测",
+          "label": "",
           "data": {},
-          "line": 160
+          "line": 124
         },
         {
           "event": "bindtap",
           "handler": "openWeeklyReport",
           "tag": "button",
-          "label": "看本周复盘",
+          "label": "",
           "data": {},
-          "line": 161
+          "line": 143
+        },
+        {
+          "event": "bindaction",
+          "handler": "retryHomeData",
+          "tag": "page-state",
+          "label": "",
+          "data": {},
+          "line": 154
+        },
+        {
+          "event": "bindtap",
+          "handler": "openWeeklyReport",
+          "tag": "button",
+          "label": "",
+          "data": {},
+          "line": 162
         },
         {
           "event": "bindtap",
@@ -190,7 +180,7 @@
           "tag": "button",
           "label": "进入联调测试页",
           "data": {},
-          "line": 167
+          "line": 174
         }
       ],
       "page_methods": [
@@ -200,8 +190,10 @@
         "refreshHomeData",
         "startGoalSetting",
         "startDiary",
+        "openDiaryHistory",
         "openThermometer",
         "openWeeklyReport",
+        "retryHomeData",
         "loadTodayJourney",
         "retryTodayJourney",
         "openTodayAction",
@@ -229,7 +221,7 @@
         },
         {
           "method": "listDiaries",
-          "line": 197,
+          "line": 199,
           "resolved": true,
           "http_method": "GET",
           "endpoint_templates": [
@@ -238,7 +230,7 @@
         },
         {
           "method": "listDiaries",
-          "line": 198,
+          "line": 200,
           "resolved": true,
           "http_method": "GET",
           "endpoint_templates": [
@@ -247,7 +239,7 @@
         },
         {
           "method": "getProfileStats",
-          "line": 199,
+          "line": 201,
           "resolved": true,
           "http_method": "GET",
           "endpoint_templates": [
@@ -256,7 +248,7 @@
         },
         {
           "method": "getEmotionThermometerDay",
-          "line": 200,
+          "line": 202,
           "resolved": true,
           "http_method": "GET",
           "endpoint_templates": [
@@ -265,7 +257,7 @@
         },
         {
           "method": "getProgressSummary",
-          "line": 201,
+          "line": 203,
           "resolved": true,
           "http_method": "GET",
           "endpoint_templates": [
@@ -274,7 +266,7 @@
         },
         {
           "method": "getTodayJourney",
-          "line": 248,
+          "line": 257,
           "resolved": true,
           "http_method": "GET",
           "endpoint_templates": [
@@ -305,109 +297,115 @@
         {
           "type": "navigateTo",
           "target": "/pages/goal-setting/index",
-          "line": 240,
+          "line": 247,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/diary-form/index",
-          "line": 241,
+          "line": 248,
+          "source": "js"
+        },
+        {
+          "type": "navigateTo",
+          "target": "/pages/diary-history/index",
+          "line": 249,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/thermometer/index",
-          "line": 242,
+          "line": 250,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/weekly-report/index",
-          "line": 243,
+          "line": 251,
           "source": "js"
         },
         {
           "type": "switchTab",
           "target": "/pages/training/index",
-          "line": 311,
+          "line": 320,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/assessment/index",
-          "line": 312,
+          "line": 321,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/messages/index",
-          "line": 316,
+          "line": 325,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/integration-test/index",
-          "line": 317,
+          "line": 326,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/getting-started/index",
-          "line": 318,
+          "line": 327,
           "source": "js"
         },
         {
           "type": "switchTab",
           "target": "/pages/training/index",
-          "line": 323,
+          "line": 332,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/getting-started/index",
-          "line": 324,
+          "line": 333,
           "source": "js"
         },
         {
           "type": "switchTab",
           "target": "/pages/training/index",
-          "line": 330,
+          "line": 339,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/diary-form/index",
-          "line": 333,
+          "line": 342,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/supervision/index",
-          "line": 336,
+          "line": 345,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/assessment/index",
-          "line": 337,
+          "line": 346,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/training-card/index?tags=:dynamic",
-          "line": 341,
+          "line": 350,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/hot-topics/index",
-          "line": 343,
+          "line": 352,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/hot-topics/index?id=:dynamic",
-          "line": 346,
+          "line": 355,
           "source": "js"
         }
       ],
@@ -423,11 +421,6 @@
         "pages/supervision/index"
       ],
       "components": {
-        "welcome-card": "/components/welcome-card/index",
-        "section-title": "/components/section-title/index",
-        "function-entry-card": "/components/function-entry-card/index",
-        "training-task-card": "/components/training-task-card/index",
-        "bottom-tip-card": "/components/bottom-tip-card/index",
         "journey-action-card": "/components/journey-action-card/index"
       },
       "storage": [
@@ -450,9 +443,7 @@
           "todayJourneyLoading",
           "todayJourneyError",
           "todayJourney",
-          "startSteps",
-          "item",
-          "index",
+          "latestRecordError",
           "latestRecord",
           "progressSummary",
           "progressSummaryError",
@@ -460,8 +451,12 @@
         ],
         "branches": [
           "unreadMessageCount",
+          "latestRecordReady",
+          "latestRecordError",
           "latestRecord",
+          "progressSummaryReady",
           "progressSummary",
+          "progressSummaryError",
           "showDevEntry"
         ],
         "set_data": [
@@ -469,6 +464,8 @@
           "todayRecordCountReady",
           "thermometerRecordReady",
           "unreadMessageCount",
+          "latestRecordReady",
+          "latestRecordError",
           "progressSummary",
           "progressSummaryReady",
           "progressSummaryError",
@@ -10712,6 +10709,7 @@
         "pages/getting-started/index",
         "pages/growth-dashboard/index",
         "pages/goal-setting/index",
+        "pages/diary-history/index",
         "pages/feedback-result/index",
         "pages/training-card/index"
       ],
@@ -10801,6 +10799,150 @@
     },
     {
       "index": 40,
+      "route": "pages/diary-history/index",
+      "title": "情绪记录",
+      "source_files": [
+        "apps/miniprogram/pages/diary-history/index.wxml",
+        "apps/miniprogram/pages/diary-history/index.wxss",
+        "apps/miniprogram/pages/diary-history/index.js",
+        "apps/miniprogram/pages/diary-history/index.json",
+        "apps/miniprogram/utils/authGuard.js"
+      ],
+      "source_hash": "53ea7d3211dceed7b879631cd2cb941b51cecafda9c5ce148cdb0061d176fb58",
+      "missing_files": [],
+      "visible_text": [
+        "最近保存的记录",
+        "按保存时间查看已经记录的具体情绪事件。",
+        "记录一件事",
+        "这里只展示已经保存的记录，用于支持性观察，不替代专业诊断。"
+      ],
+      "events": [
+        {
+          "event": "bindaction",
+          "handler": "retry",
+          "tag": "page-state",
+          "label": "重新加载情绪记录",
+          "data": {},
+          "line": 15
+        },
+        {
+          "event": "bindtap",
+          "handler": "startDiary",
+          "tag": "button",
+          "label": "记录一件事",
+          "data": {},
+          "line": 53
+        },
+        {
+          "event": "bindaction",
+          "handler": "startDiary",
+          "tag": "page-state",
+          "label": "新建一条情绪事件记录",
+          "data": {},
+          "line": 56
+        }
+      ],
+      "page_methods": [
+        "if",
+        "onLoad",
+        "onShow",
+        "loadRecords",
+        "retry",
+        "startDiary"
+      ],
+      "unresolved_event_handlers": [],
+      "api_calls": [
+        {
+          "method": "listDiaries",
+          "line": 79,
+          "resolved": true,
+          "http_method": "GET",
+          "endpoint_templates": [
+            "/api/diaries"
+          ]
+        }
+      ],
+      "unresolved_api_methods": [],
+      "endpoint_templates": [
+        "/api/diaries"
+      ],
+      "backend_evidence": [
+        "backend/app.py",
+        "backend/database.py",
+        "backend/models.py",
+        "backend/routes/admin.py",
+        "backend/routes/diaries.py",
+        "backend/routes/feedback.py",
+        "backend/routes/general_growth.py",
+        "backend/routes/minor_safeguards.py"
+      ],
+      "navigations": [
+        {
+          "type": "navigateTo",
+          "target": "/pages/diary-form/index",
+          "line": 103,
+          "source": "js"
+        },
+        {
+          "type": "navigateTo",
+          "target": "/pages/login/index:dynamic",
+          "line": 132,
+          "source": "js"
+        }
+      ],
+      "invalid_navigation_targets": [],
+      "upstream_pages": [
+        "pages/home/index"
+      ],
+      "components": {},
+      "storage": [
+        {
+          "operation": "getStorageSync",
+          "key": "auth_token",
+          "line": 108
+        },
+        {
+          "operation": "getStorageSync",
+          "key": "auth_user",
+          "line": 112
+        },
+        {
+          "operation": "removeStorageSync",
+          "key": "auth_token",
+          "line": 138
+        },
+        {
+          "operation": "removeStorageSync",
+          "key": "auth_user",
+          "line": 139
+        }
+      ],
+      "state": {
+        "bindings": [
+          "loading",
+          "errorMessage",
+          "errorTitle",
+          "records",
+          "item",
+          "mark"
+        ],
+        "branches": [
+          "loading",
+          "errorMessage",
+          "records"
+        ],
+        "set_data": [
+          "loading",
+          "errorMessage",
+          "errorTitle",
+          "errorKind",
+          "records"
+        ]
+      },
+      "review_status": "auto_evidence_complete"
+    },
+    {
+      "index": 41,
       "route": "pages/feedback-result/index",
       "title": "本次反馈",
       "source_files": [
@@ -11053,7 +11195,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 41,
+      "index": 42,
       "route": "pages/assessment/index",
       "title": "家庭关系测一测",
       "source_files": [
@@ -11297,7 +11439,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 42,
+      "index": 43,
       "route": "pages/assessment-history/index",
       "title": "全部测评记录",
       "source_files": [
@@ -11472,7 +11614,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 43,
+      "index": 44,
       "route": "pages/assessment-detail/index",
       "title": "填写测评",
       "source_files": [
@@ -11691,7 +11833,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 44,
+      "index": 45,
       "route": "pages/assessment-result/index",
       "title": "测一测结果",
       "source_files": [
@@ -11891,7 +12033,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 45,
+      "index": 46,
       "route": "pages/hot-topics/index",
       "title": "教育热榜",
       "source_files": [
@@ -12014,7 +12156,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 46,
+      "index": 47,
       "route": "pages/task-detail/index",
       "title": "UP任务卡",
       "source_files": [
@@ -12152,7 +12294,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 47,
+      "index": 48,
       "route": "pages/training-card/index",
       "title": "推荐训练卡",
       "source_files": [
@@ -12357,7 +12499,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 48,
+      "index": 49,
       "route": "pages/checkin/index",
       "title": "记录尝试",
       "source_files": [
@@ -12594,7 +12736,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 49,
+      "index": 50,
       "route": "pages/weekly-report/index",
       "title": "本周复盘",
       "source_files": [
@@ -12784,7 +12926,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 50,
+      "index": 51,
       "route": "pages/supervision/index",
       "title": "人工督导入口",
       "source_files": [
@@ -13026,7 +13168,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 51,
+      "index": 52,
       "route": "pages/debug/index",
       "title": "云托管诊断",
       "source_files": [
@@ -13200,7 +13342,7 @@
       "review_status": "auto_evidence_complete"
     },
     {
-      "index": 52,
+      "index": 53,
       "route": "pages/integration-test/index",
       "title": "联调测试",
       "source_files": [

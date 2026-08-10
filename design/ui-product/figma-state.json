@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase5_figma_qa_complete",
-  "step": "code_blocked_by_recent_record_dependency",
+  "phase": "phase6_frontend_local_loops_complete",
+  "step": "device_visual_review_pending",
   "blocker": null,
   "entities": {
     "collections": {
@@ -82,7 +82,8 @@
       "Foundations/Shadows": "15:2",
       "QA/Home": "39:2",
       "QA/Home/Verdict": "39:5",
-      "QA/Home/Checks": "39:658"
+      "QA/Home/Checks": "39:658",
+      "QA/DiaryHistory": "52:178"
     },
     "components": {
       "Button": "18:59",
@@ -92,7 +93,9 @@
       "JourneyActionCard": "24:94",
       "SectionHeading": "26:46",
       "TabBarItem": "27:46",
-      "PageStateInline": "28:56"
+      "PageStateInline": "28:56",
+      "IntensityScale": "42:150",
+      "TimelineRecord": "45:40"
     },
     "screens": {
       "Home/Default": "30:2",
@@ -100,13 +103,19 @@
       "Home/Empty": "34:175",
       "Home/Error": "34:203",
       "Home/LongContent": "34:231",
-      "Home/NetworkFailure": "34:259"
+      "Home/NetworkFailure": "34:259",
+      "DiaryHistory/Default": "47:631",
+      "DiaryHistory/Loading": "50:717",
+      "DiaryHistory/Empty": "50:744",
+      "DiaryHistory/Error": "50:774",
+      "DiaryHistory/LongContent": "50:834",
+      "DiaryHistory/NetworkFailure": "50:804"
     }
   },
   "pendingValidations": [
-    "Complete the real recent-record page through its own single-page UI process",
-    "Implement the homepage frontend after the recent-record dependency is ready",
-    "Run WeChat DevTools, Android, iOS and accessibility checks after code implementation"
+    "Capture WeChat DevTools simulator screenshots for homepage and diary-history states",
+    "Run Android and iOS visual checks",
+    "Run large-font and screen-reader checks"
   ],
   "completedSteps": [
     "P0.a code discovery",
@@ -125,6 +134,9 @@
     "P3 Harness passed: Noto Sans SC only, zero raw solid paints, 44px button and icon-button touch targets",
     "P4.a-P4.f homepage states completed: Default, Loading, Empty, Error, LongContent and NetworkFailure",
     "P5 visual harness passed: module order, state semantics, typography, contrast, variables and component instances checked",
-    "P5 QA page completed: root 39:2, verdict 39:5, checks 39:658"
+    "P5 QA page completed: root 39:2, verdict 39:5, checks 39:658",
+    "Diary-history truth, ImageGen, Figma, code and local loops completed",
+    "Homepage frontend implemented against Figma after dependency completion",
+    "WeChat DevTools preview compilation passed"
   ]
 }

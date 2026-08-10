@@ -122,3 +122,15 @@ source: `design/context.md`、`design/audit.md`、任务二十计划、问题截
 ### 结论
 
 首页 Figma 为 READY；小程序代码为 NOT STARTED。待真实记录页依赖完成后，再进入首页前端复现、微信开发者工具、Android/iOS、大字体、读屏与真机 Loop。
+
+## 2026-08-10：首页与情绪记录页前端复现 QA
+
+- PASS：新增只读情绪记录页并复用 `GET /api/diaries?limit=50`；无后端、API、数据库、content 或 shared 改动。
+- PASS：首页“最近记录”有数据时进入真实记录页，空状态仍进入日记表单；阶段性反馈仍进入周报。
+- PASS：首页已纠正“情绪天气”为“情绪温度计”，保留真实次数、跳转和既有接口。
+- PASS：首页模块顺序、消息入口、双入口、今天的一小步、如何开始、更多、最近记录和阶段性反馈均保留。
+- PASS：JS、JSON、设计令牌、53 页 UI governance、非 UI client audit 与 `git diff --check` 通过。
+- PASS：微信开发者工具 `preview` 编译成功，包体约 1.4 MB，未复现 WXSS 编译错误。
+- MANUAL：桌面控制运行时不可用，未取得模拟器视觉截图；Android/iOS 真机、大字体和读屏仍待人工证据。
+
+结论：代码与本地工程门禁通过；设备视觉 Loop 尚未签字，不能将首页登记为最终完成。

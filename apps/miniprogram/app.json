@@ -39,6 +39,7 @@
     "pages/settings-detail/index",
     "pages/goal-setting/index",
     "pages/diary-form/index",
+    "pages/diary-history/index",
     "pages/feedback-result/index",
     "pages/assessment/index",
     "pages/assessment-history/index",

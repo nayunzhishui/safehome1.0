@@ -128,66 +128,94 @@
 
 首页状态更新为 `visual_concept_ready_with_frontend_dependency`：可以重新生成严格按功能真值表约束的 ImageGen 概念稿；用户确认视觉方案前不进入 Figma、不修改前端。“最近记录”真实跳转的前端页面依赖需在实现前按单页流程补齐。
 
+## 首页依赖：情绪记录 `pages/diary-history/index`（实现前真值）
+
+状态：`requirements_frozen_before_imagegen`。该页面当前尚未加入 `app.json`，必须先完成 ImageGen 与 Figma 审查，再创建前端文件。
+
+核对来源：
+
+- `apps/miniprogram/pages/home/index.js` 与 `index.wxml`；
+- `apps/miniprogram/pages/diary-form/index.*`；
+- `apps/miniprogram/pages/assessment-history/index.*`；
+- `apps/miniprogram/services/api.js` 的 `listDiaries`；
+- `backend/routes/diaries.py` 的 `GET /api/diaries`（只读核对）。
+
+| 页面元素 | 事件处理 | 路由/API/状态 | 真实用户任务 | 正式设计约束 |
+|---|---|---|---|---|
+| 页面进入 | `onLoad`、`onShow` | `requireLogin`；`api.listDiaries({limit: 50})` → `GET /api/diaries` | 登录后读取自己最近保存的情绪记录 | 只显示当前账号数据；未登录沿用认证守卫，不改认证体系 |
+| 记录列表 | 无点击事件 | 返回项包含 `event_time`、`created_at`、`scene`、`event_description`、`parent_emotion`、`parent_emotion_intensity` 及可选补充字段 | 回看具体事件、当时感受和强度 | 使用真实字段；按接口返回顺序展示，不宣称按事件时间排序，不伪造分析结论 |
+| 当前显示数量 | 无点击事件 | 仅使用本次 `items.length` | 知道当前页面加载了多少条 | 文案使用“当前显示”，不得称为全部记录或总数 |
+| 记录一件事 | `startDiary` | `navigateTo('/pages/diary-form/index')` | 新建一条情绪事件记录 | 页面唯一主行动；不在列表页复制表单 |
+| 重新加载 | `retry` | 重新调用 `listDiaries({limit: 50})` | 从加载失败或断网中恢复 | 错误必须给出恢复动作，不自动无限重试 |
+| 返回 | 微信原生导航 | 返回首页或上游页面 | 继续原路径 | 不增加自定义返回栈或底部 tabBar |
+
+接口边界：
+
+- `GET /api/diaries` 当前只有 `limit` 与精确 `date=YYYY-MM-DD`，没有分页游标、详情、编辑、删除或总数。
+- 本页 v1 固定读取最近 50 条；不新增筛选器、分页、“查看全部”、记录详情页、编辑或删除。
+- 列表直接显示真实 `scene`、`event_description`、家长主要情绪与强度；可选字段为空时不显示，不用占位内容补齐。
+- Default、Loading、Empty、Error、Network Failure、Long Content 必须设计；Selected/Disabled 不适用于只读列表，不伪造交互态。
+- 文件分类：未来新增页面 WXML/WXSS/JSON 属 A；页面 JS 与首页跳转属 B，限于读取现有接口与导航；后端、数据库、API、`content`、`shared` 属 C，禁止修改。
+
 <!-- UI_PRODUCT_AUTO_FACTS:BEGIN -->
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-10T01:54:47+08:00`
+生成时间：`2026-08-10T13:38:54+08:00`
 分支：`UIproduct`
-页面数：`52`
+页面数：`53`
 
 本节由 `scripts/ui_product_loop.py audit-truth` 从当前代码生成，覆盖 WXML 事件、JS 处理器、API 客户端方法、接口模板、路由、本地存储、页面状态、组件和上下游入口。自动证据是逐页人工冻结的底稿；任何未解析项都会阻断 ImageGen。
 
 ### 01：安心陪伴 `pages/home/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`e1a5074f604e186dc4818ef512c8936a16df49a7c4804c616d6ca1a599252434`
+- 源码指纹：`bd415ce490b07944b4092edba730027b54281cbc901a2ecf42eb107aaa46971b`
 - 核对文件：`apps/miniprogram/pages/home/index.wxml`、`apps/miniprogram/pages/home/index.wxss`、`apps/miniprogram/pages/home/index.js`、`apps/miniprogram/pages/home/index.json`
 - 上游页面：`pages/login/index`、`pages/register/index`、`pages/messages/index`、`pages/emergency-guide/index`、`pages/hot-topics/index`、`pages/checkin/index`、`pages/weekly-report/index`、`pages/supervision/index`
-- 页面组件：`welcome-card` → `/components/welcome-card/index`、`section-title` → `/components/section-title/index`、`function-entry-card` → `/components/function-entry-card/index`、`training-task-card` → `/components/training-task-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`journey-action-card` → `/components/journey-action-card/index`
-- 主要可见内容：安心陪伴、选择今天的一小步、情绪天气、今天已记录 次、记录 ›、测一测、了解当前状态、情绪日记、记录一次具体事件、支持性反馈、查看上次记录的互动线索、训练中心、选择今天的小练习、人工支持、提交补充反馈请求，非实时危机服务、还没有记录、可以先写下一件刚发生的小事、去记录 ›、测评记录、练习打卡、情绪温度、常见场景：、常见情绪：、还不能归纳
+- 页面组件：`journey-action-card` → `/components/journey-action-card/index`
+- 主要可见内容：安心陪伴、情绪温度计、今天已记录 次、测一测、了解此刻状态、情绪日记、记录具体小事、如何开始、记录 · 反馈 · 练习、更多、支持性反馈、记录后获得对应反馈、训练中心、查看训练计划与练习、人工支持、提交非实时支持请求、最近记录、还没有保存的记录、可以先写下一件刚发生的小事、去记录、阶段性反馈、· 测评 · 练习 · 温度、常见场景： · 常见情绪：、记录还不够，继续观察
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 20 | 情绪天气 | `bindtap` | `openThermometer` | — |
-| 31 | 测一测 | `bindtap` | `openCoreEntry` | {'key': 'assessment'} |
-| 35 | 情绪日记 | `bindtap` | `openCoreEntry` | {'key': 'diary'} |
-| 42 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindaction` | `openTodayAction` | — |
-| 42 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindretry` | `retryTodayJourney` | — |
-| 60 | — | `bindmore` | `openGettingStarted` | — |
-| 62 | — | `bindtap` | `openStartStep` | {'key': '{{item.key}}'} |
-| 80 | 支持性反馈 | `bindtap` | `openCoreEntry` | {'key': 'feedback'} |
-| 87 | 训练中心 | `bindtap` | `openCoreEntry` | {'key': 'training'} |
-| 94 | 人工支持 | `bindtap` | `openCoreEntry` | {'key': 'supervision'} |
-| 106 | — | `bindmore` | `openWeeklyReport` | — |
-| 107 | — | `bindtap` | `openWeeklyReport` | — |
-| 114 | 还没有记录 | `bindtap` | `startDiary` | — |
-| 125 | — | `bindmore` | `openWeeklyReport` | — |
-| 160 | 去测一测 | `bindtap` | `openAssessment` | — |
-| 161 | 看本周复盘 | `bindtap` | `openWeeklyReport` | — |
-| 167 | 进入联调测试页 | `bindtap` | `openIntegrationTest` | — |
+| 16 | — | `bindtap` | `openThermometer` | — |
+| 29 | — | `bindtap` | `openCoreEntry` | {'key': 'assessment'} |
+| 37 | — | `bindtap` | `openCoreEntry` | {'key': 'diary'} |
+| 46 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindaction` | `openTodayAction` | — |
+| 46 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindretry` | `retryTodayJourney` | — |
+| 62 | › | `bindtap` | `openGettingStarted` | — |
+| 73 | — | `bindtap` | `openCoreEntry` | {'key': 'feedback'} |
+| 81 | — | `bindtap` | `openCoreEntry` | {'key': 'training'} |
+| 89 | — | `bindtap` | `openCoreEntry` | {'key': 'supervision'} |
+| 107 | — | `bindaction` | `retryHomeData` | — |
+| 115 | — | `bindtap` | `openDiaryHistory` | — |
+| 124 | — | `bindtap` | `startDiary` | — |
+| 143 | — | `bindtap` | `openWeeklyReport` | — |
+| 154 | — | `bindaction` | `retryHomeData` | — |
+| 162 | — | `bindtap` | `openWeeklyReport` | — |
+| 174 | 进入联调测试页 | `bindtap` | `openIntegrationTest` | — |
 
 #### 接口真值
 
 | JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
 |---:|---|---|---|---|
 | 9 | `trackProductEvent` | `POST` | `/api/product-events` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 197 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 198 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 199 | `getProfileStats` | `GET` | `/api/profile/stats` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 200 | `getEmotionThermometerDay` | `GET` | `/api/emotion-thermometer/day` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 201 | `getProgressSummary` | `GET` | `/api/progress-summary` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 248 | `getTodayJourney` | `GET` | `/api/journey/today` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
+| 199 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
+| 200 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
+| 201 | `getProfileStats` | `GET` | `/api/profile/stats` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
+| 202 | `getEmotionThermometerDay` | `GET` | `/api/emotion-thermometer/day` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
+| 203 | `getProgressSummary` | `GET` | `/api/progress-summary` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
+| 257 | `getTodayJourney` | `GET` | `/api/journey/today` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
 
 #### 路由、本地状态与页面状态
 
-- 下游路由：`navigateTo` → `/pages/goal-setting/index`（js:240）、`navigateTo` → `/pages/diary-form/index`（js:241）、`navigateTo` → `/pages/thermometer/index`（js:242）、`navigateTo` → `/pages/weekly-report/index`（js:243）、`switchTab` → `/pages/training/index`（js:311）、`navigateTo` → `/pages/assessment/index`（js:312）、`navigateTo` → `/pages/messages/index`（js:316）、`navigateTo` → `/pages/integration-test/index`（js:317）、`navigateTo` → `/pages/getting-started/index`（js:318）、`switchTab` → `/pages/training/index`（js:323）、`navigateTo` → `/pages/getting-started/index`（js:324）、`switchTab` → `/pages/training/index`（js:330）、`navigateTo` → `/pages/diary-form/index`（js:333）、`navigateTo` → `/pages/supervision/index`（js:336）、`navigateTo` → `/pages/assessment/index`（js:337）、`navigateTo` → `/pages/training-card/index?tags=:dynamic`（js:341）、`navigateTo` → `/pages/hot-topics/index`（js:343）、`navigateTo` → `/pages/hot-topics/index?id=:dynamic`（js:346）
+- 下游路由：`navigateTo` → `/pages/goal-setting/index`（js:247）、`navigateTo` → `/pages/diary-form/index`（js:248）、`navigateTo` → `/pages/diary-history/index`（js:249）、`navigateTo` → `/pages/thermometer/index`（js:250）、`navigateTo` → `/pages/weekly-report/index`（js:251）、`switchTab` → `/pages/training/index`（js:320）、`navigateTo` → `/pages/assessment/index`（js:321）、`navigateTo` → `/pages/messages/index`（js:325）、`navigateTo` → `/pages/integration-test/index`（js:326）、`navigateTo` → `/pages/getting-started/index`（js:327）、`switchTab` → `/pages/training/index`（js:332）、`navigateTo` → `/pages/getting-started/index`（js:333）、`switchTab` → `/pages/training/index`（js:339）、`navigateTo` → `/pages/diary-form/index`（js:342）、`navigateTo` → `/pages/supervision/index`（js:345）、`navigateTo` → `/pages/assessment/index`（js:346）、`navigateTo` → `/pages/training-card/index?tags=:dynamic`（js:350）、`navigateTo` → `/pages/hot-topics/index`（js:352）、`navigateTo` → `/pages/hot-topics/index?id=:dynamic`（js:355）
 - 本地存储：`getStorageSync` `key`（JS:110）、`getStorageSync` `key`（JS:132）
-- WXML 数据绑定：`unreadMessageCount`、`thermometerRecordCount`、`thermometerRecordReady`、`todayJourneyLoading`、`todayJourneyError`、`todayJourney`、`startSteps`、`item`、`index`、`latestRecord`、`progressSummary`、`progressSummaryError`、`showDevEntry`
-- 条件状态：`unreadMessageCount`、`latestRecord`、`progressSummary`、`showDevEntry`
-- `setData` 状态：`todayRecordCount`、`todayRecordCountReady`、`thermometerRecordReady`、`unreadMessageCount`、`progressSummary`、`progressSummaryReady`、`progressSummaryError`、`latestRecord`、`time`、`trigger`、`status`、`thermometerRecordCount`、`todayJourneyLoading`、`todayJourneyError`、`todayJourney`、`primary_action`、`title`、`description`、`button_label`、`url`、`source_type`、`boundary_notice`、`estimated_minutes`
+- WXML 数据绑定：`unreadMessageCount`、`thermometerRecordCount`、`thermometerRecordReady`、`todayJourneyLoading`、`todayJourneyError`、`todayJourney`、`latestRecordError`、`latestRecord`、`progressSummary`、`progressSummaryError`、`showDevEntry`
+- 条件状态：`unreadMessageCount`、`latestRecordReady`、`latestRecordError`、`latestRecord`、`progressSummaryReady`、`progressSummary`、`progressSummaryError`、`showDevEntry`
+- `setData` 状态：`todayRecordCount`、`todayRecordCountReady`、`thermometerRecordReady`、`unreadMessageCount`、`latestRecordReady`、`latestRecordError`、`progressSummary`、`progressSummaryReady`、`progressSummaryError`、`latestRecord`、`time`、`trigger`、`status`、`thermometerRecordCount`、`todayJourneyLoading`、`todayJourneyError`、`todayJourney`、`primary_action`、`title`、`description`、`button_label`、`url`、`source_type`、`boundary_notice`、`estimated_minutes`
 - 未解析事件：—
 - 未解析 API：—
 - 无效目标路由：—
@@ -2051,7 +2079,7 @@
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`23759aee97bea20b7da727a103e489979b2330bd5e009940ba2fe34b3253b4a0`
 - 核对文件：`apps/miniprogram/pages/diary-form/index.wxml`、`apps/miniprogram/pages/diary-form/index.wxss`、`apps/miniprogram/pages/diary-form/index.js`、`apps/miniprogram/pages/diary-form/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：`pages/home/index`、`pages/getting-started/index`、`pages/growth-dashboard/index`、`pages/goal-setting/index`、`pages/feedback-result/index`、`pages/training-card/index`
+- 上游页面：`pages/home/index`、`pages/getting-started/index`、`pages/growth-dashboard/index`、`pages/goal-setting/index`、`pages/diary-history/index`、`pages/feedback-result/index`、`pages/training-card/index`
 - 页面组件：—
 - 主要可见内容：记录刚才发生的一小段、先从一个具体片段开始，写清当时发生了什么、有什么感受。、已关联本周小目标、1 分钟写事件、选一个情绪、保存后看反馈、请不要填写姓名、学校、电话等可识别身份的信息。、发生了什么、选一个场景，再写下刚才最清楚的一小段。、其他场景、具体经过、我和孩子当时的感受、只需要按当时看起来最接近的状态选择。、家长当时的主要情绪、强度 / 10、孩子当时看起来的情绪、想法与做法（可选）、如果愿意，可以补充当时脑中闪过的话和能看到的动作。、当时心里的第一反应、我当时的做法、身体与后续（可选）、身体感受、后续结果和担心可以帮助复盘；不填也能提交。、身体感觉、孩子后来的反应
 
@@ -2099,7 +2127,47 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 40：本次反馈 `pages/feedback-result/index`
+### 40：情绪记录 `pages/diary-history/index`
+
+- 真值状态：`auto_evidence_complete`
+- 源码指纹：`53ea7d3211dceed7b879631cd2cb941b51cecafda9c5ce148cdb0061d176fb58`
+- 核对文件：`apps/miniprogram/pages/diary-history/index.wxml`、`apps/miniprogram/pages/diary-history/index.wxss`、`apps/miniprogram/pages/diary-history/index.js`、`apps/miniprogram/pages/diary-history/index.json`、`apps/miniprogram/utils/authGuard.js`
+- 上游页面：`pages/home/index`
+- 页面组件：—
+- 主要可见内容：最近保存的记录、按保存时间查看已经记录的具体情绪事件。、记录一件事、这里只展示已经保存的记录，用于支持性观察，不替代专业诊断。
+
+#### 交互与用户任务证据
+
+| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
+|---:|---|---|---|---|
+| 15 | 重新加载情绪记录 | `bindaction` | `retry` | — |
+| 53 | 记录一件事 | `bindtap` | `startDiary` | — |
+| 56 | 新建一条情绪事件记录 | `bindaction` | `startDiary` | — |
+
+#### 接口真值
+
+| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
+|---:|---|---|---|---|
+| 79 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/diaries.py`、`backend/routes/feedback.py`、`backend/routes/general_growth.py`、`backend/routes/minor_safeguards.py` |
+
+#### 路由、本地状态与页面状态
+
+- 下游路由：`navigateTo` → `/pages/diary-form/index`（js:103）、`navigateTo` → `/pages/login/index:dynamic`（js:132）
+- 本地存储：`getStorageSync` `auth_token`（JS:108）、`getStorageSync` `auth_user`（JS:112）、`removeStorageSync` `auth_token`（JS:138）、`removeStorageSync` `auth_user`（JS:139）
+- WXML 数据绑定：`loading`、`errorMessage`、`errorTitle`、`records`、`item`、`mark`
+- 条件状态：`loading`、`errorMessage`、`records`
+- `setData` 状态：`loading`、`errorMessage`、`errorTitle`、`errorKind`、`records`
+- 未解析事件：—
+- 未解析 API：—
+- 无效目标路由：—
+
+#### 设计与实现边界
+
+- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
+- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
+- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
+
+### 41：本次反馈 `pages/feedback-result/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`fa7b241ee1ff0a970bdf80a6418cf0e3e3188a9e81dcbda8aa9b5ad6248e0c9e`
@@ -2145,7 +2213,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 41：家庭关系测一测 `pages/assessment/index`
+### 42：家庭关系测一测 `pages/assessment/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`d94940c5ba489650b8e04144c45c483e80b387f81c3bc7d0a35173601ec3e7db`
@@ -2191,7 +2259,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 42：全部测评记录 `pages/assessment-history/index`
+### 43：全部测评记录 `pages/assessment-history/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`bb6bee733ebd359c0d81f384945090cae46a19a3ce2bdde61b0ed5b62e7b771a`
@@ -2232,7 +2300,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 43：填写测评 `pages/assessment-detail/index`
+### 44：填写测评 `pages/assessment-detail/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`97ff124bf47cc85a2385bc16586e39e1b1cb3880969504c7e8a2d4933f590975`
@@ -2275,7 +2343,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 44：测一测结果 `pages/assessment-result/index`
+### 45：测一测结果 `pages/assessment-result/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`7fa07c828e5e24fe2d96f7296edd241cf586443fff0d3916169765e7b6d5108c`
@@ -2317,7 +2385,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 45：教育热榜 `pages/hot-topics/index`
+### 46：教育热榜 `pages/hot-topics/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`8cc4888c555ce4261c88d5299b6f44aa001fe3f7142b4a0d96b03d11aee1e23f`
@@ -2359,7 +2427,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 46：UP任务卡 `pages/task-detail/index`
+### 47：UP任务卡 `pages/task-detail/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`55cddbb4dec6f9f2e8ecd5b4575949b48d864325db6849757a8ab80fa076b6e6`
@@ -2402,7 +2470,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 47：推荐训练卡 `pages/training-card/index`
+### 48：推荐训练卡 `pages/training-card/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`82570b1f1701b12b7091e309f8fed428c81cc029b31a13e189dcbce29efa5351`
@@ -2446,7 +2514,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 48：记录尝试 `pages/checkin/index`
+### 49：记录尝试 `pages/checkin/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`f2215043c4c9399f21c1098f06327f6bbaa3f48e83bedc6c8acac59ad10a232d`
@@ -2490,7 +2558,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 49：本周复盘 `pages/weekly-report/index`
+### 50：本周复盘 `pages/weekly-report/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`acec77c6673381bf663cbb2ec28401fbf0aae1f8a6c0af7d6853c16e50b80410`
@@ -2530,7 +2598,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 50：人工督导入口 `pages/supervision/index`
+### 51：人工督导入口 `pages/supervision/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`b8778ea13aa862fbd2a22b280c23a0478b5d323b3f77ce2bf7242f664e87937d`
@@ -2575,7 +2643,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 51：云托管诊断 `pages/debug/index`
+### 52：云托管诊断 `pages/debug/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`9b39ec433b7785a60f6c703ff45f05e10078659995898c33e3cda4cd044f7674`
@@ -2622,7 +2690,7 @@
 - API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
 - 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
 
-### 52：联调测试 `pages/integration-test/index`
+### 53：联调测试 `pages/integration-test/index`
 
 - 真值状态：`auto_evidence_complete`
 - 源码指纹：`1694d5a44905c951bd601e119896649af12fba5b91324d65f39bdfe6bd3f2df7`

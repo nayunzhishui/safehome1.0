@@ -12137,3 +12137,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 第二次独立复审仍为 `fix_required`（decision SHA-256=`2155492ef0e2661309423c5633764633bb313b38842b1151afcca5c8a45568f2`）：完整失败日志违反运行态保存规则。已将完整 gzip 日志移至 `.codex_tmp/rc0810`，tracked 只保留脱敏结构化证据和 hash；离线验证为 `runtime_log_verified=true`，F10 专项 `7 passed in 3.20s`，完整 F00+F10 `13 passed in 167.95s`，待再次独立复审。
 - 第三次独立复审仍为 `fix_required`（decision SHA-256=`64ff922cafd71979ff08b1a5bd8d4833a9f15f2d9a21aba8e73eb0c6941c257e`）：只剩 clean checkout 测试强制 runtime gzip 存在。已改为同时验收“本地存在则复算=true”和“干净 checkout 缺失=false/NO-GO”，F10 专项 `7 passed in 8.75s`，完整 F00+F10 `13 passed in 218.22s`，待再次独立复审。
 - 第四次独立复审已 `pass`、无剩余 finding，decision SHA-256=`d7fb698d96b7233f60ae8300a7f8189c0c460308064758d7de6fd1de80e380c5`；独立复验 F10 `7 passed in 4.09s`、F00+F10 `13 passed in 167.66s`。本条属于通过后事实同步，需重建最终 packet 做一致性复审；最终通过后提交推送并停止于 F10-A。
+
+## 2026-08-10 UIproduct 首页实现状态
+
+- [x] 情绪记录依赖页完成真值、ImageGen、Figma、代码与本地 Loop。
+- [x] 首页完成方案 A 代码复现，真实功能和模块顺序保持不变。
+- [x] 微信开发者工具 Preview 编译通过。
+- [ ] 开发者工具模拟器截图、Android/iOS、大字体和读屏人工验收。
+- [ ] 设备视觉证据通过后登记首页最终 Harness、提交恢复点并进入下一页。

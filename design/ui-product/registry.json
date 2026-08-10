@@ -33,14 +33,14 @@
     "done"
   ],
   "active_route": "pages/home/index",
-  "updated_at": "2026-08-10T12:41:43+08:00",
+  "updated_at": "2026-08-10T13:42:37+08:00",
   "pages": [
     {
       "index": 1,
       "route": "pages/home/index",
       "title": "安心陪伴",
-      "source_hash": "e1a5074f604e186dc4818ef512c8936a16df49a7c4804c616d6ca1a599252434",
-      "stage": "implementation_blocked",
+      "source_hash": "bd415ce490b07944b4092edba730027b54281cbc901a2ecf42eb107aaa46971b",
+      "stage": "loop_device_blocked",
       "evidence": {
         "truth": {
           "items": [
@@ -86,14 +86,54 @@
           ],
           "note": "ImageGen到Figma视觉、状态、组件、对比度与功能语义审查通过；代码等待真实记录页依赖",
           "recorded_at": "2026-08-10T12:40:47+08:00"
+        },
+        "implementation": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/apps/miniprogram/pages/home/index.wxml",
+            "D:/codex/workspace/safehome1.0-UIproduct/apps/miniprogram/pages/home/index.wxss",
+            "D:/codex/workspace/safehome1.0-UIproduct/apps/miniprogram/pages/home/index.js",
+            "D:/codex/workspace/safehome1.0-UIproduct/apps/miniprogram/pages/diary-history/index.wxml"
+          ],
+          "note": "首页与真实记录依赖页已按 Figma 实现，业务接口与跳转语义保持不变",
+          "recorded_at": "2026-08-10T13:42:35+08:00"
+        },
+        "loop_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/code-review.md"
+          ],
+          "note": "ImageGen、Figma 与代码结构/色彩/层级本地对照通过",
+          "recorded_at": "2026-08-10T13:42:35+08:00"
+        },
+        "loop_ui": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/code-review.md"
+          ],
+          "note": "字号、间距、触控、长文本与开放式排版本地审查通过",
+          "recorded_at": "2026-08-10T13:42:35+08:00"
+        },
+        "loop_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/code-review.md"
+          ],
+          "note": "核心任务、功能入口和错误恢复路径审查通过",
+          "recorded_at": "2026-08-10T13:42:36+08:00"
+        },
+        "loop_states": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/qa.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/code-review.md"
+          ],
+          "note": "默认、加载、空、错误、长文本和弱网代码状态审查通过",
+          "recorded_at": "2026-08-10T13:42:36+08:00"
         }
       },
-      "updated_at": "2026-08-10T12:41:43+08:00",
+      "updated_at": "2026-08-10T13:42:37+08:00",
       "blockers": [
         {
-          "stage": "implementation",
-          "note": "首页最近记录必须进入真实记录页；该依赖页需先走独立真值、冻结、ImageGen、Figma与QA并复用GET /api/diaries。main@65fcef4 已按用户指令合并并核对，不再构成阻断。",
-          "recorded_at": "2026-08-10T12:41:43+08:00",
+          "stage": "loop_device",
+          "note": "微信开发者工具 Preview 编译通过；桌面视觉控制不可用，Android/iOS、大字体、读屏与模拟器截图仍待人工证据",
+          "recorded_at": "2026-08-10T13:42:37+08:00",
           "attempt_count": 1
         }
       ]
@@ -442,6 +482,15 @@
     },
     {
       "index": 40,
+      "route": "pages/diary-history/index",
+      "title": "情绪记录",
+      "source_hash": "53ea7d3211dceed7b879631cd2cb941b51cecafda9c5ce148cdb0061d176fb58",
+      "stage": "truth_auto_complete",
+      "evidence": {},
+      "updated_at": "2026-08-10T13:28:11+08:00"
+    },
+    {
+      "index": 41,
       "route": "pages/feedback-result/index",
       "title": "本次反馈",
       "source_hash": "fa7b241ee1ff0a970bdf80a6418cf0e3e3188a9e81dcbda8aa9b5ad6248e0c9e",
@@ -450,7 +499,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 41,
+      "index": 42,
       "route": "pages/assessment/index",
       "title": "家庭关系测一测",
       "source_hash": "d94940c5ba489650b8e04144c45c483e80b387f81c3bc7d0a35173601ec3e7db",
@@ -459,7 +508,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 42,
+      "index": 43,
       "route": "pages/assessment-history/index",
       "title": "全部测评记录",
       "source_hash": "bb6bee733ebd359c0d81f384945090cae46a19a3ce2bdde61b0ed5b62e7b771a",
@@ -468,7 +517,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 43,
+      "index": 44,
       "route": "pages/assessment-detail/index",
       "title": "填写测评",
       "source_hash": "97ff124bf47cc85a2385bc16586e39e1b1cb3880969504c7e8a2d4933f590975",
@@ -477,7 +526,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 44,
+      "index": 45,
       "route": "pages/assessment-result/index",
       "title": "测一测结果",
       "source_hash": "7fa07c828e5e24fe2d96f7296edd241cf586443fff0d3916169765e7b6d5108c",
@@ -486,7 +535,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 45,
+      "index": 46,
       "route": "pages/hot-topics/index",
       "title": "教育热榜",
       "source_hash": "8cc4888c555ce4261c88d5299b6f44aa001fe3f7142b4a0d96b03d11aee1e23f",
@@ -495,7 +544,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 46,
+      "index": 47,
       "route": "pages/task-detail/index",
       "title": "UP任务卡",
       "source_hash": "55cddbb4dec6f9f2e8ecd5b4575949b48d864325db6849757a8ab80fa076b6e6",
@@ -504,7 +553,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 47,
+      "index": 48,
       "route": "pages/training-card/index",
       "title": "推荐训练卡",
       "source_hash": "82570b1f1701b12b7091e309f8fed428c81cc029b31a13e189dcbce29efa5351",
@@ -513,7 +562,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 48,
+      "index": 49,
       "route": "pages/checkin/index",
       "title": "记录尝试",
       "source_hash": "f2215043c4c9399f21c1098f06327f6bbaa3f48e83bedc6c8acac59ad10a232d",
@@ -522,7 +571,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 49,
+      "index": 50,
       "route": "pages/weekly-report/index",
       "title": "本周复盘",
       "source_hash": "acec77c6673381bf663cbb2ec28401fbf0aae1f8a6c0af7d6853c16e50b80410",
@@ -531,7 +580,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 50,
+      "index": 51,
       "route": "pages/supervision/index",
       "title": "人工督导入口",
       "source_hash": "b8778ea13aa862fbd2a22b280c23a0478b5d323b3f77ce2bf7242f664e87937d",
@@ -540,7 +589,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 51,
+      "index": 52,
       "route": "pages/debug/index",
       "title": "云托管诊断",
       "source_hash": "9b39ec433b7785a60f6c703ff45f05e10078659995898c33e3cda4cd044f7674",
@@ -549,7 +598,7 @@
       "updated_at": "2026-08-10T01:41:08+08:00"
     },
     {
-      "index": 52,
+      "index": 53,
       "route": "pages/integration-test/index",
       "title": "联调测试",
       "source_hash": "1694d5a44905c951bd601e119896649af12fba5b91324d65f39bdfe6bd3f2df7",
