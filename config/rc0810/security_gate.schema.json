@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "safehome.rc0810.security-baseline.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "phase", "captured_at", "head", "head_tree", "source_tree",
+    "dirty_diff_sha256", "source_manifest_sha256", "policy_sha256",
+    "exception_registry_sha256", "dependency_inputs", "raw_reports", "negative_gate_evidence", "blocking_findings",
+    "finding_summary", "open_gate_findings", "container_scan",
+    "sbom_status", "license_status", "supply_chain_attestation",
+    "production_gate_eligible", "status"
+  ],
+  "properties": {
+    "schema": {"const": "safehome.rc0810.security-baseline.v1"},
+    "phase": {"const": "F22-A"},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "head_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "dirty_diff_sha256": {"$ref": "#/$defs/sha256"},
+    "source_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "policy_sha256": {"$ref": "#/$defs/sha256"},
+    "exception_registry_sha256": {"$ref": "#/$defs/sha256"},
+    "dependency_inputs": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/sha256"},
+      "required": ["backend/requirements.txt", "analysis/profiling/requirements.txt", "analysis/text_analysis/requirements.txt", "apps/web/package-lock.json", "Dockerfile"]
+    },
+    "raw_reports": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/raw_report"}
+    },
+    "negative_gate_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_tree", "reports", "checks"],
+      "properties": {
+        "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "reports": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {"$ref": "#/$defs/raw_report"}
+        },
+        "checks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fake_secret_fixture_rejected", "high_sast_fixture_rejected", "high_dependency_fixture_rejected"],
+          "properties": {
+            "fake_secret_fixture_rejected": {"const": true},
+            "high_sast_fixture_rejected": {"const": true},
+            "high_dependency_fixture_rejected": {"const": true}
+          }
+        }
+      }
+    },
+    "blocking_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "category", "severity", "fingerprint", "source_tree"],
+        "properties": {
+          "finding_id": {"type": "string", "pattern": "^(secret|sast|python_dependency|node_dependency):[0-9a-f]{24}$"},
+          "category": {"enum": ["secret", "sast", "python_dependency", "node_dependency"]},
+          "severity": {"enum": ["unknown", "high", "critical"]},
+          "fingerprint": {"$ref": "#/$defs/sha256"},
+          "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+        }
+      }
+    },
+    "finding_summary": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0},
+      "required": ["secret", "sast_high", "sast_medium", "sast_low", "python_vulnerability", "node_critical", "node_high", "node_moderate", "node_low"]
+    },
+    "open_gate_findings": {"type": "integer", "minimum": 0},
+    "container_scan": {"$ref": "#/$defs/pending_gate"},
+    "sbom_status": {"$ref": "#/$defs/pending_gate"},
+    "license_status": {"$ref": "#/$defs/pending_gate"},
+    "supply_chain_attestation": {"$ref": "#/$defs/pending_gate"},
+    "production_gate_eligible": {"const": false},
+    "status": {"const": "frozen_findings"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "raw_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "version", "path", "sha256", "bytes", "exit_code", "command", "source_tree", "captured_at"],
+      "properties": {
+        "tool": {"enum": ["bandit", "detect-secrets", "npm-audit", "pip-audit"]},
+        "version": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 2},
+        "exit_code": {"type": "integer"},
+        "command": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "captured_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "pending_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "production_blocking"],
+      "properties": {
+        "status": {"type": "string", "pattern": "^pending_"},
+        "production_blocking": {"const": true}
+      }
+    },
+    "exception": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["finding_id", "fingerprint", "owner", "reason", "compensating_control", "created_at", "expires_at", "review_status", "reviewer_id"],
+      "properties": {
+        "finding_id": {"type": "string", "minLength": 1},
+        "fingerprint": {"$ref": "#/$defs/sha256"},
+        "owner": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 12},
+        "compensating_control": {"type": "string", "minLength": 12},
+        "created_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "review_status": {"const": "approved"},
+        "reviewer_id": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

@@ -1,0 +1,2006 @@
+{
+  "schema": "safehome.rc0810.security-baseline.v1",
+  "phase": "F22-A",
+  "captured_at": "2026-08-10T13:43:15.885770+00:00",
+  "head": "4a17b9faf9187a5d414f92e84ff7b08e60802d49",
+  "head_tree": "259930bae3a4baf2cbac53e01d6806ab8cbce1f0",
+  "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+  "dirty_diff_sha256": "f38ac2e8c6131a418fc137a9a1b4fbb23411bb42b7dcee23972ddd89b21476db",
+  "source_manifest_sha256": "ac8280c1b8ee03ab332d7dd34023a54e7a26219e3d2a3008ed20131a5f8ffae4",
+  "policy_sha256": "2acb7003d6314c86a0095be80c34db55d9694bd3ffb2aa5f03f903835d679914",
+  "exception_registry_sha256": "980783bd924cbaf21048f34ef646a1a3fc5091d45e3a2d60f2ebaad7d7e9f9b9",
+  "dependency_inputs": {
+    "backend/requirements.txt": "e15a0bd5832f476c7d863c3c672de993462af34bc20083cf56eb6429807190ef",
+    "analysis/profiling/requirements.txt": "868f7575d70370908aa327a850dd9a45c64c28a88b96ae195acb6ae7cb0c6ba1",
+    "analysis/text_analysis/requirements.txt": "c3b8dce819af68270508b17ca4d1d6ce4f026fea864e839803010e1be2002641",
+    "apps/web/package-lock.json": "99ac985d93c62e2b4d69da0b5201ef160e517533dbebd2066822a1a9e93b92a5",
+    "Dockerfile": "a9637bc2c4e3fbf15c4ed273806d5ef26c069cbb5336a2f6ca5d8a953d56c988"
+  },
+  "raw_reports": [
+    {
+      "tool": "detect-secrets",
+      "version": "1.5.0",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\reports\\detect-secrets.json",
+      "sha256": "0ad4187fc26efb03662da03aa623913ea755a3b5b48ebb0b2fc1700548104da0",
+      "bytes": 69597,
+      "exit_code": 0,
+      "command": [
+        "D:\\python\\anada\\python.exe",
+        "-m",
+        "detect_secrets",
+        "scan",
+        "--all-files",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\staging"
+      ],
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+      "captured_at": "2026-08-10T13:43:15.885770+00:00"
+    },
+    {
+      "tool": "bandit",
+      "version": "1.9.4",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\reports\\bandit.json",
+      "sha256": "8a5a8eb67a81c036f572eb5d0b628ef240a3714cd4090ecac6483ff75859e029",
+      "bytes": 6189666,
+      "exit_code": 1,
+      "command": [
+        "D:\\python\\anada\\python.exe",
+        "-m",
+        "bandit",
+        "-r",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\staging\\backend",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\staging\\scripts",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\staging\\analysis",
+        "-f",
+        "json"
+      ],
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+      "captured_at": "2026-08-10T13:43:15.885770+00:00"
+    },
+    {
+      "tool": "pip-audit",
+      "version": "2.10.1",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\reports\\pip-audit.json",
+      "sha256": "ad94c7e31bdadb2d7b0749c94201306b5d00f8f1430db0a684429c041bf6339a",
+      "bytes": 2101,
+      "exit_code": 0,
+      "command": [
+        "D:\\python\\anada\\python.exe",
+        "-m",
+        "pip_audit",
+        "-r",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\staging\\backend\\requirements.txt",
+        "-r",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\staging\\analysis\\profiling\\requirements.txt",
+        "-r",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\staging\\analysis\\text_analysis\\requirements.txt",
+        "--format",
+        "json",
+        "--progress-spinner",
+        "off"
+      ],
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+      "captured_at": "2026-08-10T13:43:15.885770+00:00"
+    },
+    {
+      "tool": "npm-audit",
+      "version": "11.13.0",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\reports\\npm-audit.json",
+      "sha256": "fe256bf6f2a79e95dcabddc7516df1e38f2a050efd18b9fa2ed71300760f2791",
+      "bytes": 363,
+      "exit_code": 0,
+      "command": [
+        "npm.cmd",
+        "audit",
+        "--json",
+        "--package-lock-only"
+      ],
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+      "captured_at": "2026-08-10T13:43:15.885770+00:00"
+    }
+  ],
+  "negative_gate_evidence": {
+    "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+    "reports": [
+      {
+        "tool": "detect-secrets",
+        "version": "1.5.0",
+        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\reports\\negative-detect-secrets.json",
+        "sha256": "24fbd9d584e0f1cfb8797761085b2d619db432787dc01b1826e4810b650c580a",
+        "bytes": 2816,
+        "exit_code": 0,
+        "command": [
+          "D:\\python\\anada\\python.exe",
+          "-m",
+          "detect_secrets",
+          "scan",
+          "--all-files",
+          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\negative-fixtures\\fake-secret.txt"
+        ],
+        "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+        "captured_at": "2026-08-10T13:43:15.885770+00:00"
+      },
+      {
+        "tool": "bandit",
+        "version": "1.9.4",
+        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\reports\\negative-bandit.json",
+        "sha256": "aa47087ac778f2a98e379b34243ae716351275269100d31d2a0575981b1ea196",
+        "bytes": 2614,
+        "exit_code": 1,
+        "command": [
+          "D:\\python\\anada\\python.exe",
+          "-m",
+          "bandit",
+          "-r",
+          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\negative-fixtures\\dangerous.py",
+          "-f",
+          "json"
+        ],
+        "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+        "captured_at": "2026-08-10T13:43:15.885770+00:00"
+      },
+      {
+        "tool": "pip-audit",
+        "version": "2.10.1",
+        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\reports\\negative-pip-audit.json",
+        "sha256": "c40988c0c8ec1cd25e71a3b623af10f5a1cd8b356595a4e9a4ee9d3461b32603",
+        "bytes": 222,
+        "exit_code": 1,
+        "command": [
+          "D:\\python\\anada\\python.exe",
+          "-m",
+          "pip_audit",
+          "-r",
+          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\security\\f22a\\e76b3ff3ebd0d91624832d62f69b7fc344da84f7\\negative-fixtures\\requirements.txt",
+          "--format",
+          "json",
+          "--progress-spinner",
+          "off",
+          "--no-deps",
+          "--disable-pip",
+          "--vulnerability-service",
+          "osv",
+          "--osv-url",
+          "http://127.0.0.1:63630/v1/query"
+        ],
+        "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7",
+        "captured_at": "2026-08-10T13:43:15.885770+00:00"
+      }
+    ],
+    "checks": {
+      "fake_secret_fixture_rejected": true,
+      "high_sast_fixture_rejected": true,
+      "high_dependency_fixture_rejected": true
+    }
+  },
+  "blocking_findings": [
+    {
+      "finding_id": "sast:152943a77fe5a384b4157aad",
+      "category": "sast",
+      "severity": "high",
+      "fingerprint": "152943a77fe5a384b4157aad8187e60e763a85cf3c5f19ce549b18b80ba8fd37",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "sast:471b4fd40b1b9880310584a4",
+      "category": "sast",
+      "severity": "high",
+      "fingerprint": "471b4fd40b1b9880310584a46744fea34da260c91983561a036630d451ecb396",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "sast:c6d20cde7a9ec12adc1f4121",
+      "category": "sast",
+      "severity": "high",
+      "fingerprint": "c6d20cde7a9ec12adc1f41216eb0921bc7c645efc70ee5ba01391aecf0ccd293",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:01b577ec1b1fda53a5a52f4c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "01b577ec1b1fda53a5a52f4cb9224e3b03ea0dcf94c4c04dd2037fca96efabec",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:03896e6da6d2d42ced5ee1c7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "03896e6da6d2d42ced5ee1c78004d2194110afa95229c31bfc289fe0a71a5f01",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:043f75767525b68d7369ed88",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "043f75767525b68d7369ed881bf470e76944465e8b4e3863c2daca55bf108c68",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:04ccc9a9f7a0d33ee14e12e8",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "04ccc9a9f7a0d33ee14e12e81cf1c3b73507a91c45d216e66e80313250e47b18",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0505a8111fb7dcf43fbb2b50",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0505a8111fb7dcf43fbb2b5004253b6249d24a5ba10f5d1cb057ba3067a94b85",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:05cc9584f1019d8380847d73",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "05cc9584f1019d8380847d73714e9398a52ced2af177091b3ddbf3a2a5e29a26",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:060e90593c1f66e8310be9ba",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "060e90593c1f66e8310be9baec47800b55172d9eea33d4916afc10d02bef5742",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:06515c817ec8080cc31aa1c0",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "06515c817ec8080cc31aa1c008ad8251e5e3ab67fa8f1e3e0089a360011523f9",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:080434bd558fc62f7b8d6d5b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "080434bd558fc62f7b8d6d5b4f0a684d2a181909fda7d1231dd0b5bfc557d144",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:082e0d717a0b1c3d62932423",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "082e0d717a0b1c3d6293242311dcd8c3794edb624137d8313a172b2f99972aee",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:08e8ccd920e0ba025ce5e083",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "08e8ccd920e0ba025ce5e0832e1bfaa17b5b3d05e1ab07bfc28036f017f95f1b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0c098babaa51ed9aa5d796a7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0c098babaa51ed9aa5d796a7e768fdcc8003c057faeb7125da71cbb9bcdfcf72",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0c978039aea0b4ea77a4f1bc",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0c978039aea0b4ea77a4f1bcbcc142cd5e60dc66881b8ea3615967f343da241f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0d242cb173c5f26f8422f41c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0d242cb173c5f26f8422f41c3a995f0d9d26e666f12b5b04beece070aee385bf",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0e0f628cde6d6364f7db2a93",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0e0f628cde6d6364f7db2a93a1102e3285aed178d0de4800e8f6ad799a06e7b0",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0e245d80614b36546f2242e8",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0e245d80614b36546f2242e89f5e7594a1914b66175b8abf60a2f2856cc60276",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0f50a7c4122a2bb30545d404",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0f50a7c4122a2bb30545d4048bd29f37a4ba1c6acedcd9ea9dfbcdb0c584d546",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0f72dbb3fe3b28f0f76bbcdb",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0f72dbb3fe3b28f0f76bbcdb627ef8e149f0882ef76a7274481ab71619ad1a9b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:0f81b1c47437bb96c821a444",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "0f81b1c47437bb96c821a444a93515f49250de717eb18caa07edfd6a1bf089f6",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:109962398792dbcf5fbcb28c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "109962398792dbcf5fbcb28c6869087cab875d2e930f608e4459157ce634b3b6",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:111d0e72f1fc828bb6e265c8",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "111d0e72f1fc828bb6e265c8bbd08bc5e9f6b4cae89901235ced6f5bc4e45352",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:117573a4fc71ab147b0dea38",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "117573a4fc71ab147b0dea389196e6c0a506271b96d213af848bbadaa2ffaa8a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:11803b4eb2f98cc9565772dd",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "11803b4eb2f98cc9565772dde163ba01c04893fed15287feb9aa53a593c9f555",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:1217b515cad7008860904667",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "1217b515cad7008860904667421bb6462bec889733a4ef3c8b05f7969b7ad9b9",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:1261eed773f7275b27e62e5e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "1261eed773f7275b27e62e5ed569023fdd0847a77015a954ad82247768de7909",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:129a7551f00d1984edc2f4b9",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "129a7551f00d1984edc2f4b9b7041dc47d10ffe17f4c0ca10bd1289313f0edce",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:145e233ba53fdd5ff412bacc",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "145e233ba53fdd5ff412bacc4853256b74e189e102f5086dda532a941c23170e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:14970a50c14154798c042070",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "14970a50c14154798c0420701523cb93adfb845b3543bdf54d2b0ac86ccbe0bd",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:159dabfbd8d86b8d1abfc741",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "159dabfbd8d86b8d1abfc7410d95df4c0fabfbe4e3550861313b984939a01acf",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:1643c34f433e35a9c1756e4c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "1643c34f433e35a9c1756e4c1443758f8ad5b3ff5d91384e82a4566d2382dbc2",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:16da8d1f81c2d8eeb77d9e1f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "16da8d1f81c2d8eeb77d9e1f166ce7896a9ef27f5cd786aedc9b397acf14570c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:17edbb71c2b7225383858eb5",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "17edbb71c2b7225383858eb5c578be45fab12b64c285880751a342b53d6abf3f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:1a9ab63fa112f1a9923b3494",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "1a9ab63fa112f1a9923b34942e222a3f90f4db576fadcc1faea5f72d38ecbbb5",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:1ddda94764019d98e21a85da",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "1ddda94764019d98e21a85dafeeaebd2397ba3267b3a39b88aa13ffa9c18c42b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:1e62df3ce6d0179bf918899e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "1e62df3ce6d0179bf918899e2d521279702c381e2cea270a7a251043137f6d25",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:218d4b68c338707ffc3d8248",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "218d4b68c338707ffc3d8248f164159c244d4784e1c759e16bea2305e5ada9a3",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:2296ae125d76d44439465e18",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "2296ae125d76d44439465e18f4742e1bc90b3fef4c717d1178707c06314975d7",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:22bf6b97e93aaadcc030efed",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "22bf6b97e93aaadcc030efedc3a9d79a4c28f84b0c5d75b242ee3fbc46a42b10",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:26f3185a68e0687369985156",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "26f3185a68e0687369985156c7b4ea15204be5feea4438d59df513c07c27b21d",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:295d18af80e4b840b27e1195",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "295d18af80e4b840b27e1195456eaf3ad7cb89ee81dbae7aacfa2b6e7db75ed8",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:2b9e2d46d1fd2634c419dac4",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "2b9e2d46d1fd2634c419dac432a925967171d57f775b3e4f9d154680ab573a3a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:2ba1dbfb284305d9ae005051",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "2ba1dbfb284305d9ae0050515b16bbb6f79872961b7a8bd942bc9885864fb353",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:2c89466caf57ed48c9603bb9",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "2c89466caf57ed48c9603bb9ff1296d72dbb5bdff4cb5619db53cc77bd0736b5",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:2cdc81ba328de1c4decd804b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "2cdc81ba328de1c4decd804b8e28e88225613c8a78e15aabab44369e26dd02b5",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:2d9db69261fec6fb1bd11da7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "2d9db69261fec6fb1bd11da7562619f2393fe2ef0ee885f5aae4129b1f421702",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:30434f6d48493660668a48da",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "30434f6d48493660668a48da1fac4c77ac099775c5c0d2deaa9e8d858d4d13d0",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:30464eaaf45478e6871917b7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "30464eaaf45478e6871917b7bd8ebf15ce0406e25e2b67dd737d19833f47fba0",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:306285bb5bcf4057b33d5443",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "306285bb5bcf4057b33d544328ef263520c043cede4955342f0cd7b02c971390",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:3313904a9b7b1640954c69c3",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "3313904a9b7b1640954c69c30846f33387d35cf504a141b50d39061d96b51433",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:34b720d3e7e23c85b969e85d",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "34b720d3e7e23c85b969e85d131be525115e5bc7dd0b9fc469d23831ed3441a9",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:34f894228be299f2abd2abe7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "34f894228be299f2abd2abe7bfaedfc64d9c3b88db89bcf5493a18af4835a6fa",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:364957461dcbdc26759fafdc",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "364957461dcbdc26759fafdc31bedca0403aaed9a0d1193b5acf536dab89e23c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:36900838ff81fe5923152398",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "36900838ff81fe59231523982efc6a8856b6187684de101e41fceb2cab1e1b11",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:36ea1e90459b1b1b715714b1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "36ea1e90459b1b1b715714b1543b95cba1a963d6124c4191b2cc9db5e372d53f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:3829ca8dded63a173aba4c90",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "3829ca8dded63a173aba4c90e6d8c3791a7a14f0db60703d36cba63b60855366",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:399dc5fc7f521482aad1dac9",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "399dc5fc7f521482aad1dac9eb28e7ed7a6d509bc4cb688365d70bf9f95112f0",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:3dac7d778e4690b80c113986",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "3dac7d778e4690b80c113986cfae39aae3cde0a5d5ce8bfaf7f687d8de453e0c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:3e5a2e52319c1bf3a310136b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "3e5a2e52319c1bf3a310136b264c27a6c51db84581eb68758a7b2a4c6f9195e2",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:415a7c3b2a46b1d00cc2e816",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "415a7c3b2a46b1d00cc2e81664393163407851a80a1e25ea0732018a2620aad2",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:47424a392204b5403f2f6f8b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "47424a392204b5403f2f6f8bdd38993575399d7176042cdc895df5d2d401ae9d",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:495102796edcd81a6e50eb78",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "495102796edcd81a6e50eb78f21e87900cdc3a0938af074127e8d887fecb2d45",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:4a03c5b28f19bbea441d3b6d",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "4a03c5b28f19bbea441d3b6dac3d0a8c7d622e869c2f8402915e27d2fb2f4e8a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:4a8982c6ff359fac1debd1bc",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "4a8982c6ff359fac1debd1bc46ba0e005713e288571336df2e32a6e8ca19c499",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:4aae9dc383624f49e6e5d933",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "4aae9dc383624f49e6e5d93365a0873af5a41e78eb7f43d8ffa1ab4f7a773635",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:4b4aee9f1433194f1eef2b96",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "4b4aee9f1433194f1eef2b96330119e5dc6ae368c06d8c3afa2bb21dc02d25e1",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:4b98b054d51218a3dcd8cff9",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "4b98b054d51218a3dcd8cff9fe49408ce535da0150b38efd723132837af1b9b8",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:4e2177589b0fa902a4d444a2",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "4e2177589b0fa902a4d444a2fac086692747544ee60855101919b56d68e8df85",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:4f42b7d6c979c071ef568492",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "4f42b7d6c979c071ef56849267a096c7363179f55152cd757e51e7a579546be5",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:51663ebfbce31a3b06695018",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "51663ebfbce31a3b06695018f5ca365320c6f43b61ea1ea43bb930a7fd1f1bfc",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:52624d7313735da73d23e4f1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "52624d7313735da73d23e4f17a5619edf26db0be86d99e5a4c394572eeae6b1d",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:5390119578d39ae4100e6f0d",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "5390119578d39ae4100e6f0d47c9d66a588065a05f07c2f6600dff37650b001c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:543d9f61865280fb43971d18",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "543d9f61865280fb43971d18630b06defb2432e1f5da4904e04a802156ab312f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:56b5ac430e760af55e5a87f1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "56b5ac430e760af55e5a87f15ea8d07395148a08a440304097aacba46409ea9e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:576f6e540324a65f61b6db65",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "576f6e540324a65f61b6db65c6db6f98b1885349597d90b00a840028d0665590",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:57c3a4de15cd47f83ad158ab",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "57c3a4de15cd47f83ad158abef85ff0bb1a0c5eb70da82a62b80263f09ba77cb",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:59ba1763f45aee060e1cda09",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "59ba1763f45aee060e1cda09da9242c67190f938d46bb2bf4becf926e730a952",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:5ad5cd79ede9ddca4550547a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "5ad5cd79ede9ddca4550547a3e94b2f105c1c5b899e26b3a47593e9d064e8329",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:5ce22772cfd7fcfa77807a35",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "5ce22772cfd7fcfa77807a3575c9949a1ed9844c571bf4c6ae449ac67d82ac87",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:60fba3b9db23fe287f6d3033",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "60fba3b9db23fe287f6d3033f52b5705a4c83bdefd5adbc5ec6829e81985cb1f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6154b410d5b14aa037a73c10",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6154b410d5b14aa037a73c10417179d7d1c6c3c4a9e1084cb42cc8b59245e045",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6171e4207a42ee780be8619a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6171e4207a42ee780be8619ae926545aaa5039a4252c71820b5ab47bf2db2ccb",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:61994f703a22137d6cdcbe5b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "61994f703a22137d6cdcbe5b720f607c2136872b66e8116ae3f0cad99318aaf8",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:619debaea41a61dd6e8764af",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "619debaea41a61dd6e8764af8f77411b34cbdcc8aafca5b412a91ca452ac786c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:61cb9d5350759c803bef68c2",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "61cb9d5350759c803bef68c2fec8183ff415d27a147cb153f2d87f3c06194483",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:648c8b107fd5183f6946843e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "648c8b107fd5183f6946843ef24fbe3d8e995178ffc08ef740cfefbbcc387b96",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:64de17012debaf5bfca542f2",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "64de17012debaf5bfca542f2cbc702bb8718298a0c4dc6c84de55020612557cb",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:666eb039bda44b6bf50eee47",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "666eb039bda44b6bf50eee475b20a757920ace81322d86c8c7f89ddc6ee2d6e0",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:676cdd6790fca36fceca5908",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "676cdd6790fca36fceca5908da29bc5e632c2906c20c347f0757b480bcc8db87",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6942a3aa0ba82c87e08bd4bd",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6942a3aa0ba82c87e08bd4bdfdb1c10eb382d0d5687cc14583a2985467d7d574",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6985c63ed1817ee293ee79d1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6985c63ed1817ee293ee79d1d582e905830c58e74f16a7e68ec67f0428dbf25a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6a132dc005e2fb6e7dc45183",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6a132dc005e2fb6e7dc451838e670ba5f8f2b2664c0cbe1a5f5948b7da97ad16",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6b786d00aa4ec935b636cb02",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6b786d00aa4ec935b636cb023b18f1d0dc64919143828ed60d1d7c159a3d4f75",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6bc1e681a79957bda32e4c33",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6bc1e681a79957bda32e4c33c82d2da16a2a8a467d14957c58d2e1b141c2159b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6cc5d01f823aec6aac7a22ba",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6cc5d01f823aec6aac7a22ba81eac544675c0de51eb45ff6fde5b5efb8670a49",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6e716a9b11403680fcbdf510",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6e716a9b11403680fcbdf5102ee627461a8bae4355b5887962468216697c5113",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6e9bf513dd256ff21ea1b506",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6e9bf513dd256ff21ea1b506c082a05529f69866097e6e154a299314353c689a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6f540febb165c7d0a966a63d",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6f540febb165c7d0a966a63da9d4b8faf0dec5dc93d63fea9e34748fc8dd6280",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:6fda9c77e5bedcd25e60bf3f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "6fda9c77e5bedcd25e60bf3f2d97f00d896da8bc82dccd60a082c6a88f7310fe",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7201dedbeac9162bf7bea056",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7201dedbeac9162bf7bea056475f9efae6dda7a2ae2e05f9fdea28ad3e36b618",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:72ed082a61350f04debcfb1e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "72ed082a61350f04debcfb1e9d8821cc6f3a9ba8055174c2dcd3bc3edefcfc93",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:731b9ac14b8f0b0ca538b9fa",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "731b9ac14b8f0b0ca538b9fa07aee0cdff28d4908c4a29f2ef8e10cec915795c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7529a7a660867c2a79572101",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7529a7a660867c2a79572101bc35823bf96fd94fef2adf6607cb7f482a80a97a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7609d6b30013b34f9c008db7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7609d6b30013b34f9c008db76a4e73b3b16b8a4606046bd191ca0b15cd27f46a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:769d97f5a40f2fec821e5afc",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "769d97f5a40f2fec821e5afc00739ff1fad1808f36bdaf8a4be5f50fcc45dda6",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7844832abe613460100bf4fb",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7844832abe613460100bf4fbb40c7cfc7c1a764196d2fd9d329065b2120be605",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:78af0382b01c60ad366a88f4",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "78af0382b01c60ad366a88f41c40f7a21966711b6f41a101a1fe5305dbb15cfa",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:78cef9f45d6ebb04e3b80435",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "78cef9f45d6ebb04e3b80435b84a949e7c3fb56c4cf676e23db34836ef270167",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:79bc9b586b0ad9f3d8b3b47a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "79bc9b586b0ad9f3d8b3b47a98fe8a1b2cd339b4880733ac3e3a6c045dfd1ffb",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7a017f99f61538dd9a3dd91c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7a017f99f61538dd9a3dd91cfa7fd5e15a47d1fd7adee0ba66e5961bafb9caef",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7aaebc34ecca40ae934e135e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7aaebc34ecca40ae934e135e996a97fb7567283bf04156028efb2af77bea1fd3",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7abe8868cc40bb6c85b1a26e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7abe8868cc40bb6c85b1a26ea71314cfbe83160f95f8bfcb3169e816160a746b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7bf1464f02c50678e86046ff",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7bf1464f02c50678e86046ff8dda34fcde0eb274b22014d3c26f58bbf751f295",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7dc5f880a3c22bf3f51fb3be",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7dc5f880a3c22bf3f51fb3be9b71d9f60c9c2fc0bfb9c23c4be6f67587f0b8ef",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7e21910dcbb3bfce19658cdb",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7e21910dcbb3bfce19658cdbc470564a07bdbe7f496caec5877695ef707fae7b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7e6b6d652e93e337fe4a1417",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7e6b6d652e93e337fe4a1417611174252bd532f25aa94d74328687b879e198d5",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:7e9fe3112fe89765a3acd31e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "7e9fe3112fe89765a3acd31e6ebd9022d666a786347b17f246c8e37b8ed819f5",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:8238b05a2ff36376efcb1789",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "8238b05a2ff36376efcb178915a298449b010a21767bc45e42c6f27b168ade34",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:858892eb943ce349f1fe8196",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "858892eb943ce349f1fe81964fd275066d50b548cf2a8e8c26ac860b3469d968",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:8689ad271dc34c30d98f4c80",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "8689ad271dc34c30d98f4c80e2f55874d2fd5de9e29235b5b162933a5465485e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:873e2c89c8848a8b0d63fad2",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "873e2c89c8848a8b0d63fad2ce5b018941fb84c69438be208acccfc9b306c8c6",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:882b27477d539ba0c5e6d20c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "882b27477d539ba0c5e6d20c51e02217cbd536e1b535b17d1508d10f105025b6",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:886661fff9314e756a9bc65f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "886661fff9314e756a9bc65f414872306c7323577361cf7ea8822faf5e690330",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:88b197d28673fad1e074fe22",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "88b197d28673fad1e074fe227c7b2cdc41eb24c7b0f3b7cd31ae5adcaae855bd",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:88b2653c4ab532d04b537001",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "88b2653c4ab532d04b537001ff729e1b0f6eaf79a57338bb4bb771b3441ae537",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:8a22b579e38d5c1c91f37a4e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "8a22b579e38d5c1c91f37a4e3d754bd70095c808d9fc8cc406969625e6e27864",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:8a62843715ed9059041f8d97",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "8a62843715ed9059041f8d9788990dbea66b005cd1f72629481e6f7fcf4185cd",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:8a8883619515c49cda029acf",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "8a8883619515c49cda029acf2d4d7244e2e07b4fcde169a114a7714c14e1491e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:8cf4a275e879e5dc8d0bc09c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "8cf4a275e879e5dc8d0bc09cec67f5c8aba9eac93f774a1729f1e0b8efe17cdd",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:8eefbfd69d8c6dc3a2b44ede",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "8eefbfd69d8c6dc3a2b44ede1ad62ca61c161f1d0e9d05f7466414f3432e12bd",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:8f2e93b9f640f6f20b1dd3e6",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "8f2e93b9f640f6f20b1dd3e60d77051c365519759bb2ce8a51395f754e77d901",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:907807d9df6343b5bb08a212",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "907807d9df6343b5bb08a212486203790da015116f09d7b3361df642185d0e3a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:954848174e8b5231e9861020",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "954848174e8b5231e98610208adc2363bda87fb21b6edb8bf03043ec68f0a843",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:95ecc4783e628a8012cd0ebc",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "95ecc4783e628a8012cd0ebc6b57102e34531fed07ff135d297c875ebfe0df9f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:97fd329fb215e95f091b19ae",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "97fd329fb215e95f091b19aec413fd28e0de1f679a8b29be4b40461e66b23d25",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:982d2f9a6b7ee1e35cdf6362",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "982d2f9a6b7ee1e35cdf636255d80055935f1446d250bf3aaf824bac9b81f234",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:983c12418c1d922505ac5fad",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "983c12418c1d922505ac5fad03a440f34327bc02cc7c853ffc5d114db3324f8c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9921f586ef5bdea2b8f34b95",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9921f586ef5bdea2b8f34b958f9facef0d34afafb8ac23aa5bac60d0c3af7487",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:99dd09f462a895dfe89eaaa2",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "99dd09f462a895dfe89eaaa282e25cb1967f3b5b0b3849dcead00f72e3bfb814",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:99f110d92ec019cac4d0b422",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "99f110d92ec019cac4d0b422d39edeab3f93c9c65d130e9d775e1478d5d4c408",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9a3468d3a02ff0d0f31f2604",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9a3468d3a02ff0d0f31f2604860e8db01e71f94615c2fb1f821925c024940fd9",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9c289a5b430a636f9800317d",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9c289a5b430a636f9800317d4df814b4a950973264459c3f771eadcf7ac40149",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9cdbdd023fd5f195bb6cf43a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9cdbdd023fd5f195bb6cf43a2e297df1ec538256ff91e5d732f38383e2b73677",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9d30fb07cd2754acbcc24971",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9d30fb07cd2754acbcc249711044df6acb37a2b3b6fffcce6203fa1b41f06f53",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9ecff8f2d5142ad3445ea6df",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9ecff8f2d5142ad3445ea6dfedbfae2b11385319598ad017eca675eeabe94fec",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9f15c450a5b8ad64b2d20860",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9f15c450a5b8ad64b2d20860fb29106ffdd444c1bb48011605e0f26bf9390b1e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9f27058b3701ff8796591f61",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9f27058b3701ff8796591f61fc89bbe2ad112b696362a6530b65e4e6c90fbb44",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9f27c9d1183ae76514c2b84b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9f27c9d1183ae76514c2b84ba0ba90e89021cc2e0287cf96056472bf1bbeac42",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9f839546d8e48d3ce40e33dd",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9f839546d8e48d3ce40e33dd8443d8884320a305b9b0669a7b0af183f8d405ae",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:9ffb77833c315f71ffeee500",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "9ffb77833c315f71ffeee5007a8f0fb87ecb86b136bb793403d124e3002f58b8",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:a05b8eff5847026dbc945ccd",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "a05b8eff5847026dbc945ccd2022411c142943e8c146253a301617efaddcd208",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:a10392ac745e9acd94613a25",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "a10392ac745e9acd94613a25bcaed880028f8861917f12ef77a8c8908c057a21",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:a2b4a9205f471f55240b9bdb",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "a2b4a9205f471f55240b9bdb9bd7807997167781f768c24621e75d94fafd0a90",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:a38480320a28e59c22d5b85e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "a38480320a28e59c22d5b85e4ad56a6ade1e8d6bcc967569121e17a11cb495a4",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:a38aeb36f228f04606203be6",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "a38aeb36f228f04606203be670022ec139668253a6c4f7193d63c2c2d918bf90",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:a68857388ac40bb0826328a2",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "a68857388ac40bb0826328a273c7b881b34c3d9a35f982d4fed488a587440818",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:a6f1e294fff8983eec37fb06",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "a6f1e294fff8983eec37fb060cf7ba8383dee4d9017f3a44f0fba95ac95f1be2",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:a914bdd05c9bee2f8c0aecc8",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "a914bdd05c9bee2f8c0aecc85af56c17e40d551a5929424931110b1a2c3aa821",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:aa296cc2a1e311cf7f22ebb7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "aa296cc2a1e311cf7f22ebb7602e69b060bbe7eaa3c4cd6b5cf84f1e61389698",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:aac26723623ac72f748e5fef",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "aac26723623ac72f748e5fefba8826919faf504ac3a1280320dd0fcf85608487",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ab609b35739167d72af1bd3c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ab609b35739167d72af1bd3cdb7f2afdbaf836d705300af46de0732fb183b29b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:abff6a80bef711c2f185805a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "abff6a80bef711c2f185805ac379494d8a8b79e6a8f676896f57b0d588242a01",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ac05f358c8ee55f754e787ba",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ac05f358c8ee55f754e787ba478e00eeff0c327057640136133fcd596a95411c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ac519f21129b835c4fc0e9df",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ac519f21129b835c4fc0e9dfa2243be95cf512feb8434caa5eba87aeb61b3a6b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ac7fbc76a9c3cca05cd08e58",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ac7fbc76a9c3cca05cd08e5808a4933b93610133e33fc7319cfe88879be3f758",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:acd312e6df5d6d1e0196846b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "acd312e6df5d6d1e0196846b95ceb0660ed2ee3ca26912facce5de8c87419981",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:af248dc2551e32b09f8bf5ae",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "af248dc2551e32b09f8bf5ae92f7e9899beb85aedfe4d5ee2c5216a27479d1bd",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:af71d2219e520c71de8c4b5f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "af71d2219e520c71de8c4b5f30d93b8c2348fb92b8fa1c1a4247d0be75a263da",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:af7e84e605046ea838023176",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "af7e84e605046ea8380231761debe7145a875c49366586fa2d40ccfd98014ace",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:aff1c472a24115cef74e3b0b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "aff1c472a24115cef74e3b0bf2b77ed1adfcba3bbb1f06a94994a927a0672899",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b0828b577a7b0f5caf68db5a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b0828b577a7b0f5caf68db5ad5d81c90ea1e4473791ff68c6947733f799b5c8e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b085a06583ecbfe13b2fde14",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b085a06583ecbfe13b2fde143893e5381434ef850658b10fcfa11e6c37c04822",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b0bba0e5fb9d34279d169d3f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b0bba0e5fb9d34279d169d3fd8b046ea7e256ebb805d3096237f1ce6b3e8362d",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b1682e0f868f0ebcbc44ba2a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b1682e0f868f0ebcbc44ba2a357d658dd418f84c16b45d4b1aa45384987c931a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b17699c888a3994ff5b4cd42",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b17699c888a3994ff5b4cd422f80b0a269ceec8382c0e6cc44690e40f7c75ab9",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b2e05b101e197e46a04f4ce4",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b2e05b101e197e46a04f4ce41f5750c26ac905e4b12249bc9f21b267c36e028e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b3699092368a8368f1e9ee34",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b3699092368a8368f1e9ee34ca74b794685b6df4336c0b3a7eb40242423631e1",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b4609eb0ea43cf7833a901f1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b4609eb0ea43cf7833a901f1d77efe29cc43cb514cf873128df5a0c8ddada914",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b4ad1e8a52eecdca9ba72f62",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b4ad1e8a52eecdca9ba72f62aa92fc69fd2d9d0706dc2db322ca75803a416609",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b7be4166982a5b21d2e10ba5",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b7be4166982a5b21d2e10ba589dbd51aa11b194447f49251998d6bd162e2d7de",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b87bb93262531df8ddbd8cb3",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b87bb93262531df8ddbd8cb3b6da85c375bedf8f85786e7370e2662ea7f9896d",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b9153772dc026b488111e955",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b9153772dc026b488111e95569ede411077c5fbe9646ecae2054c1c358c8804d",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:b99478aba7e07ce3cef562ee",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "b99478aba7e07ce3cef562eeaa5eacb56be039192ec7aa77e1663ce33babc77d",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:baddc21c2aefddd59a49d20e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "baddc21c2aefddd59a49d20ec4b9101c18aa258cfae97ad5d610b87288b2022b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:bb66f0c7d3d7bddbb5181158",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "bb66f0c7d3d7bddbb5181158dea09dc5e4d6501ba9e022602b2b0744e31a6a55",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:bb97e059500c15a893789d8f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "bb97e059500c15a893789d8f2cba684261682c93263617d4ec68673654d9a702",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:bd9dffee98fe1019ee3f2039",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "bd9dffee98fe1019ee3f2039f23810b89b41280c4ca9caa7b7c2917781db59bc",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:be5d1855237918e25ffcb02c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "be5d1855237918e25ffcb02cc9b6e39f143671ad7833a3c53c6f4433f173be69",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:bee6c1686e6fa06b737ca8df",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "bee6c1686e6fa06b737ca8dfd740688424b3e1da30d3cc90f696ecd11ac7e154",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:bf6d219b23851133274cd2c4",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "bf6d219b23851133274cd2c42620765bc5b8bf8258f9263e3bc78a055dda2445",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c0731a79b8090b0962842768",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c0731a79b8090b0962842768b7c1958996b70d0f480dffcdc3e8709c11c24518",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c108d3556e2f08f6677d90a5",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c108d3556e2f08f6677d90a563a13c0b95a5af29701c07c50af313720c3f636c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c1c4a4277d60d79be84cfc06",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c1c4a4277d60d79be84cfc066399cfecf9d5c7b5dd1bdefce109601d6df0d82e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c340592bba02d62367b5e1f7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c340592bba02d62367b5e1f75269885e12b8c1577505150b49d91a78a5c99654",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c3fc47b672694ba586ce954f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c3fc47b672694ba586ce954fcb74d7011c456f62240199e44393d1a066c6ed90",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c5570dbd7a993b15a802f7f1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c5570dbd7a993b15a802f7f176ca7249e03184b7473913912856933758627b9b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c5d19a348f7c940a71546942",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c5d19a348f7c940a71546942f4b61df1790b3bcffd7a6c5e0cd86f48f59a0488",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c5ff5bd156cc7edef28ba235",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c5ff5bd156cc7edef28ba2357b4d077fa69d89533661400f23ad20fde7d04b9e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c67d4954bb7cdcf3f25e8e6f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c67d4954bb7cdcf3f25e8e6f1bd91374cbf1a1b14b82aeb68387a650b1c48ae6",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c687ab075193db985c36f10b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c687ab075193db985c36f10bf2d21282b8ca05f663feb7898d720838df1ceeb2",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c6f58391b2008c3803a45238",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c6f58391b2008c3803a45238d1de065100047ee52c8adbaf3ab7da66af1e825e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:c9816bd72a68d078e3ff9316",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "c9816bd72a68d078e3ff9316b6116ae074054bdd904a113741f121474bf61a6b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:cab1c87033e9a71fbea98654",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "cab1c87033e9a71fbea986540e6ea056acd72fd1b2d316f3f56ac56da14ed9a9",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:cabeeb21d1476fcf31c3a23b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "cabeeb21d1476fcf31c3a23bddb345164739dcb04897f9411e83e1f42e1b71d5",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:cae4fd5c96f9d5b0052c9b8e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "cae4fd5c96f9d5b0052c9b8efb7ea91553ad49448ed0a80135f3f8670d528ebb",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:cd6113f4c583c01b0f778a19",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "cd6113f4c583c01b0f778a199cf3159a947a9d6741e92a6e5414b8f4f70cc4a8",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ce4ed10cd64e847ce738d004",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ce4ed10cd64e847ce738d00484f9aafe583ec027365afad958259c5ab8e2fdeb",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:cecac6e8f5700260c078699e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "cecac6e8f5700260c078699e8e75a2122d455540727479b6f619393434394ff2",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:cf26c9ed2fd3da314e12815e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "cf26c9ed2fd3da314e12815e0036bc9de865f146c7f3c01a3cd9d808a05cf5d4",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d008a9dae662ca0e521a6bb1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d008a9dae662ca0e521a6bb1865ce6f0fccbb0644089ffbee834afb2346a1bd0",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d065b454d429e4cd08e08250",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d065b454d429e4cd08e08250709971df1e3f2323269731d184c019b9f557fc24",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d0be61cccae4f9e42f3da185",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d0be61cccae4f9e42f3da185e87dc31cb5e2af274e99e4c0cc551c997ce320f6",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d1e8df0b88e7e1a2032c1927",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d1e8df0b88e7e1a2032c192710048477c2a7d4472820becdff22b81e7787ec01",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d28f2afb3006aeab6c2439e9",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d28f2afb3006aeab6c2439e9057e48e833902f3e01683aa3fc74c14a867cf36f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d2e9a9cc455681ab8c6ab1d7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d2e9a9cc455681ab8c6ab1d733ae0a467dd41d93fe972c76e1fb4df8f09e11cc",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d428e1f2252e39236e74d1fa",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d428e1f2252e39236e74d1fa780343264c33d2e0b862fdfb9492f7b649b41373",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d5917bb706bc46e2e5ef0cc5",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d5917bb706bc46e2e5ef0cc586ea9d0a24fd073f08607b6b2652654970516f49",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d615cf0f8b2478392ddb853a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d615cf0f8b2478392ddb853a5adc5a4230c77458b78b71c02561525a508416b0",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d6a4b71d9a79b1ba2ae462dc",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d6a4b71d9a79b1ba2ae462dcdb7437490b39091cf4bf9b1f4a9695237ce6a040",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d946dcbf04ece2fc3a02e833",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d946dcbf04ece2fc3a02e83319c4c0e48e4fcc32630c497b2d563188a9e2ec3f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d95f56980d4144caaa81a1d7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d95f56980d4144caaa81a1d71cd55c14475c863abddb4b972f10630ebf19e8bc",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:d9d862f80438c0aa95cd7105",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "d9d862f80438c0aa95cd7105e18e522d296f90ab833ba90174acd49f7d2c0914",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:daafd905c860f50d12e2af82",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "daafd905c860f50d12e2af826820d780210906f976042a2fa7e9f6f34837f25e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:dcf887f1f0c4abfcfcaa370a",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "dcf887f1f0c4abfcfcaa370a9b6c9864414fc2a1810bf9d95e9da6e09850af96",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:dcff5e2de9c6dbccdceb4363",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "dcff5e2de9c6dbccdceb4363ac706c3425354e90ca71133c5f3eb3a4e9d1cf64",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:dde178c4d7c686989cbf84ce",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "dde178c4d7c686989cbf84cee0121f28217fbadab6aa68559dcf71a4d44e0de3",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ddf30b19410fd742f5350a95",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ddf30b19410fd742f5350a957b0adb5869eaf4d7dc0ad08b4926b36954e2383c",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e25cb6132da6d28d6ed23094",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e25cb6132da6d28d6ed23094a002f6e90a8e46242fb24e99bcf7fcc8f53dfe68",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e355d9d51c4a9e6f56aa20d9",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e355d9d51c4a9e6f56aa20d98d92f3ab279c1cb9e5a27a68defa4edfcfbe3458",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e3acad7a85aac37d1fa34c32",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e3acad7a85aac37d1fa34c32ebe89c75befa21558733ac02e6b3ac62e4cf93bc",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e3b1a9bdc2e14f949c4c282b",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e3b1a9bdc2e14f949c4c282b07bef6fe6d5ced26a0f2ccbe8183920aaa7afcac",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e4579bf8649587054aed9863",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e4579bf8649587054aed9863799fd99dc515ed8a98f03ce716c4c5b391758a1f",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e5922132dfba74594179a249",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e5922132dfba74594179a249698842e0a1a18f85759ec8505bdc96c4c41c86f1",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e696057b55652aac2bb45d57",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e696057b55652aac2bb45d57fba38842203638dedf25c230011f4f19fcef3a97",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e8a2c09d350202aaee62e2b1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e8a2c09d350202aaee62e2b1c9f8d3c2bd056e531c25bab3dbbda42f8b0c569e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:e967d051b1b42307a61d274e",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "e967d051b1b42307a61d274ec211c4fc5b8862d1e9c40f916264417530ad6ab4",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ed1a993ed056ce99cef3e98f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ed1a993ed056ce99cef3e98f9f24e57d6e45dfa2c6b96bdc19fa835dcbbb7be3",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:f028267899675b9e4122b136",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "f028267899675b9e4122b136a9ae1bf52758a78b2a295a6943fa04a5e0bc1f2e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:f14203187dacccf037f3a7f3",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "f14203187dacccf037f3a7f30bae8ba3353e43168298ef955f0820dbe2495d5b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:f1b45e0402eda90814bd64c6",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "f1b45e0402eda90814bd64c6c3d07a514a6e15c67a9dc1c993574d294d5df954",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:f451e1a60dc32d8a76a1f7c9",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "f451e1a60dc32d8a76a1f7c98d958650d1094c9906858c09e97927015e9671b0",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:f7c8cf34eb6bfe8025bfb493",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "f7c8cf34eb6bfe8025bfb493517b70e1f41e693fec9c64f4e4ad614b24f89d40",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:f95b60043b13f5794eb0cae4",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "f95b60043b13f5794eb0cae4c0dd6eabca2e2a2fe1dc8fef108efc445a95115e",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fb1c0b23acdd9b60ac8c30e6",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fb1c0b23acdd9b60ac8c30e658620b8fa35ace210d399095b1b39740fadb812a",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fc1d0e3578fe5fddfe93e1b1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fc1d0e3578fe5fddfe93e1b1bd51fb57ea97c5135d2c64607f5df2f403e2f394",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fc96fd1b84f3d1ac2f273f23",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fc96fd1b84f3d1ac2f273f2303d36f530958afbbde44e00dfbb4c7892303b8bd",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fcaa6399ca535c49eab537f1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fcaa6399ca535c49eab537f1297376c5c5ef1ca989d7538ac47ef2598eb3b4c4",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fcaff58c250ab225c5c3cd77",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fcaff58c250ab225c5c3cd776699eaf2e2c37a47c8ba08d91e153d2cff52f5c7",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fd365ad5ff0ac5d614ded2f1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fd365ad5ff0ac5d614ded2f1603b5b3d3f26b9bdee95e07cb62bdccf041914c7",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fdd3c923a2e21b3c3f60e43c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fdd3c923a2e21b3c3f60e43c85b7d1887398bc55ae9a9ff894b9c058983d935b",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fe133b8314bd9117218d817c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fe133b8314bd9117218d817c8446024d58bbd01b1a885ae1984e09aad75dba09",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:fe41666d5ad47a0ab7b4468f",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "fe41666d5ad47a0ab7b4468fdc53753d8cd50b951505e578743cbc9549f17c12",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ff35dd3788745f9a3f15cfb1",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ff35dd3788745f9a3f15cfb190fe9d23a8d1bd8c61d8452254f303ecf381a691",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ffafd4c689c0dacea6103ce7",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ffafd4c689c0dacea6103ce72832911c9a8b448934977936745ec54e78235c82",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    },
+    {
+      "finding_id": "secret:ffd6d2cf7f9eed655424246c",
+      "category": "secret",
+      "severity": "unknown",
+      "fingerprint": "ffd6d2cf7f9eed655424246c565332d12226e0741bea4db11096127c3eec6bce",
+      "source_tree": "e76b3ff3ebd0d91624832d62f69b7fc344da84f7"
+    }
+  ],
+  "finding_summary": {
+    "secret": 254,
+    "sast_high": 3,
+    "sast_medium": 160,
+    "sast_low": 5751,
+    "python_vulnerability": 0,
+    "node_critical": 0,
+    "node_high": 0,
+    "node_moderate": 0,
+    "node_low": 0
+  },
+  "open_gate_findings": 257,
+  "container_scan": {
+    "status": "pending_f22b_image",
+    "production_blocking": true
+  },
+  "sbom_status": {
+    "status": "pending_f22b_final_dependencies",
+    "production_blocking": true
+  },
+  "license_status": {
+    "status": "pending_f22b_isolated_install",
+    "production_blocking": true
+  },
+  "supply_chain_attestation": {
+    "status": "pending_external",
+    "production_blocking": true
+  },
+  "production_gate_eligible": false,
+  "status": "frozen_findings"
+}

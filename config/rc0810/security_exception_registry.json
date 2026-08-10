@@ -1,0 +1,6 @@
+{
+  "schema": "safehome.rc0810.security-exceptions.v1",
+  "updated_at": "2026-08-10T00:00:00+08:00",
+  "automation_may_approve": false,
+  "exceptions": []
+}

@@ -1,0 +1,69 @@
+name: RC0810 Security Baseline
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  f22a-security-baseline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout immutable source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install pinned F22-A scanners
+        run: |
+          python -m pip install --disable-pip-version-check \
+            bandit==1.9.4 \
+            detect-secrets==1.5.0 \
+            pip-audit==2.10.1 \
+            pip-licenses==5.5.5
+          npm install --global npm@11.13.0
+
+      - name: Run independent source and dependency scans
+        run: python scripts/run_rc0810_f22_scans.py
+
+      - name: Validate current runtime reports
+        run: python scripts/verify_rc0810_f22_security.py --require-runtime
+
+      - name: Prove negative gates fail closed
+        run: python scripts/verify_rc0810_f22_security.py --self-check
+
+      - name: Preserve F22-A as release NO-GO
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/02_专项进度与验收/rc0810_f22a_security_baseline.json")
+          baseline = json.loads(path.read_text(encoding="utf-8"))
+          if baseline["production_gate_eligible"] is not False:
+              raise SystemExit("F22-A must not approve production")
+          if not all(
+              baseline[key]["production_blocking"]
+              for key in (
+                  "container_scan",
+                  "sbom_status",
+                  "license_status",
+                  "supply_chain_attestation",
+              )
+          ):
+              raise SystemExit("F22-A pending gates must stay blocking")
+          PY

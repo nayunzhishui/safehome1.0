@@ -1,6 +1,6 @@
 {
   "schema": "safehome.rc0810.registry.v1",
-  "version": "2026-08-10.f14a",
+  "version": "2026-08-10.f22a",
   "frozen_baseline": {
     "captured_at": "2026-08-09T15:13:59.4299089Z",
     "branch": "main",
@@ -1063,7 +1063,43 @@
       "phase": "phase_a",
       "dependencies": [
         "RC0810-F14-A"
-      ]
+      ],
+      "subtasks": [
+        "F22.1",
+        "F22.2",
+        "F22.3",
+        "F22.4",
+        "F22.5",
+        "F22.6",
+        "F22.7",
+        "F22.8"
+      ],
+      "allowed_files": [
+        ".github/workflows/security-gate.yml",
+        "backend/tests/test_rc0810_f22.py",
+        "config/rc0810/security_gate.schema.json",
+        "config/rc0810/security_gate_policy.json",
+        "config/rc0810/security_exception_registry.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+        "scripts/verify_rc0810_f22_security.py",
+        "scripts/run_rc0810_f22_scans.py"
+      ],
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
+      ],
+      "change_budget": {
+        "expected_files": 14,
+        "pause_when_actual_exceeds_percent": 50
+      }
     },
     {
       "id": "RC0810-F25-A",
@@ -4202,7 +4238,9 @@
       ],
       "allowed_files": [
         ".github/workflows/**",
+        "backend/tests/test_rc0810_f22.py",
         "config/rc0810/**",
+        "content/rc0810_release_candidate_registry.json",
         "scripts/**",
         "docs/**"
       ],
@@ -4223,19 +4261,77 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f22.py",
-            "-q"
+            "-q",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 12
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "backend/tests/test_rc0810_f22.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 19
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f22_security.py",
+            "--self-check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 180,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f22_security.py",
+            "--require-runtime"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 180,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
         }
       ],
       "external_gates": [],
       "change_budget": {
         "allowed_modules": [
           ".github/workflows/**",
+          "backend/tests/test_rc0810_f22.py",
           "config/rc0810/**",
+          "content/rc0810_release_candidate_registry.json",
           "scripts/**",
           "docs/**"
         ],
@@ -4249,7 +4345,7 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 12,
+        "expected_files": 14,
         "expected_migrations": 0,
         "expected_interfaces": 0,
         "expected_pages": 0,

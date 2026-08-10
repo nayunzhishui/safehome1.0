@@ -12108,3 +12108,16 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 首轮独立审查为 `fix_required`：修复遗漏 5 表、同 host 接口合并及 start 后全局注册表合同绕过；decision SHA-256=`38a61a9621d5530e0f3b3e5d292901d190bb9957142898d9161ffab65fc965d2`。
 - Fix Loop 1 独立复审 `pass`，decision SHA-256=`689614a98ceb0ac8c8fb50437158ed93ebbdfc34b089f0470419210e31116010`；独立复验 F14 `12 passed`、组合 `19 passed`、default/self-check/diff check 通过。
 - 本轮没有业务、数据库、迁移、删除、CloudBase、Secret 或生产操作。当前文档同步后须重验并做最终文档一致性复审；通过后下一入口是 `RC0810-F22-A`。
+
+## 2026-08-10 RC0810-F22-A 安全扫描基线（待独立审查）
+
+- [x] 冻结 14 文件范围与启动 commit/source tree/dirty diff/任务合同；未修改业务、数据库、迁移、CloudBase、Secret 或 production 配置。
+- [x] 建立固定版本工具、固定 Action commit、安全策略/例外 schema、隔离扫描器、脱敏机器基线、运行态报告复算和 12 项负向合同。
+- [x] Fix Loop 2 后真实扫描：Secret 候选 254、SAST high 3/medium 160/low 5751、Python 与 Node 已知漏洞 0；候选未人工甄别，不等同于已确认泄露。
+- [x] 完整报告只在 `.codex_tmp/rc0810/security`；tracked 文件不保存 Secret 内容或完整扫描日志。
+- [ ] 容器镜像、最终 SBOM、隔离许可证和供应链 attestation 留待 F22-B；当前 open gate 257，`production_gate_eligible=false`。
+- [ ] 文档回填后必须重扫、执行 Harness 5 条验收并由子智能体独立审查；未通过前不得提交或进入 F25-A。
+- 独立审查 iteration 1 为 `fix_required`（SHA-256=`ea4239b0521d06fae2fced69dc0c8c31756fe6c78d43169298b7897ba8fd1b9b`）；已补 `analysis/`/两份 requirements、raw report 严格合同、禁止 owner 自审和三类真实负向扫描。修复后 F22 `12 passed`、运行态/自检通过，待重建最终证据复审。
+- Fix Loop 1 复审仍 `fix_required`（SHA-256=`a383c45e611dbb9c4ea932c42a827dce37ad5aabdb3ed4bc404572766cb1b03d`）；Fix Loop 2 已拒绝尾随 JSON，并建立 257 条哈希 finding 索引与空的 trusted reviewer 表。运行态、8 项自检和 F22 `12 passed`，待最终重验复审。
+- Fix Loop 2 独立复审 `pass`、无剩余 finding（SHA-256=`7d1f0a9cb8870618d33f654984afa13ffc52b2f554b3710f9664c3b51fce2faa`）；F22 `12 passed`、组合 `19 passed`、8 项自检、运行态和 diff check 通过。Harness 已接受 pass，但最终文档同步后仍需一致性复审。
+- F22-A 只进入 `phase_a_verified`；257 条 finding、空 trusted reviewer 表和 F22-B 四项制品/供应链门禁继续 NO-GO。最终复审、提交、推送成功后下一入口为 `RC0810-F25-A`。
