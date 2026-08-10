@@ -12171,3 +12171,12 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 当前自动流程推进到 `pages/register/index`，但尚未开始注册页设计。
 - [ ] 主 worktree 的 main 已外部推进到 `9c7d77c`，与 UIproduct 核准基线 `65fcef4` 不一致；需负责人明确授权新的合并或基线处理后，才能恢复全局 Harness 并开始注册页。
 - [ ] 全部页面完成后统一执行 Android/iOS、读屏和大字体真机验收。
+
+## 2026-08-10 UIproduct 延后合并 main 决定
+
+- [x] 用户明确决定先完成全部 UI，再统一合并 main。
+- [x] Harness 范围比较改为固定核准基线 `65fcef4`；外部 main `9c7d77c` 仅记录为最终集成待办。
+- [x] 53 页功能真值、truth Harness 与工程 Harness 重新通过，当前恢复到注册页。
+- [ ] 逐页完成剩余 51 页的 ImageGen、Figma、前端、本地 Loop 1–4 与 Harness。
+- [ ] 全部页面本地完成后，在 UIproduct worktree 统一合并当时 main；冲突同时保留两侧记录，更新基线并全量回归。
+- [ ] 合并与回归通过后，再启动统一真机验收和修正。

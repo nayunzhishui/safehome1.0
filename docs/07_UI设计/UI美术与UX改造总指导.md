@@ -433,6 +433,14 @@ Android 和 iOS 真机检查统一放在全部页面本地完成后的最终批�
 - 没有无关重构、新增依赖和重复 WXSS；
 - 页面 JS 语法和 JSON 可解析；
 - 核心跳转、表单和数据加载未破坏；
+
+### UIproduct 分支与统一合并门禁
+
+- 逐页 UI 生产只在 `safehome1.0-UIproduct` worktree 的 `UIproduct` 分支进行，不切换或修改主 worktree 的 `main`，禁止 reset/clean。
+- 按 2026-08-10 用户冻结决定，全部页面本地完成前固定使用注册表 `main_sha_baseline` 作为工程范围基线；外部 main 后续推进只登记为待集成，不得将 main 新增的后端、内容或配置文件误判为本轮 UI 改动。
+- 逐页范围检查必须比较“核准基线 → UIproduct 当前状态”，仍严格禁止 UI 分支新增或修改后端、API、数据库、content 和 shared 文件。
+- 全部页面本地完成后，才在 UIproduct worktree 一次性合并当时的 main；文档冲突同时保留 UI 记录和 main 记录，不得覆盖任一侧事实。
+- 合并完成后更新 `main_sha_baseline` 与 `baseline_history`，重新生成 53 页功能真值，执行全量工程 Harness 和已完成页面最小回归；通过后才进入统一真机验收。
 - `git diff --check` 通过；
 - 本轮文档已按项目规则更新。
 

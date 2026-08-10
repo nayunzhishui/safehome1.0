@@ -42,6 +42,8 @@ Figma 长流程状态单独保存在 `design/ui-product/figma-state.json`。每�
 
 - 当前分支必须是 `UIproduct`。
 - `main_sha_at_start` 永久保存创建分支时的提交；Harness 比较 `main_sha_baseline`。只有用户明确要求在 UI worktree 合并并核对新的 `main` 后，才允许推进核准基线，同时把变更写入 `baseline_history`。
+- 用户已于 2026-08-10 明确冻结“先完成全部 UI、再统一合并 main”：逐页阶段的范围 Harness 固定比较 `main_sha_baseline`，外部 main 继续推进只记录为待集成，不阻断 UI 页面生产，也不得提前修改、切换或合并主 worktree。
+- 全部页面本地完成后，在 UIproduct worktree 一次性合并当时的 main；冲突必须同时保留 UI 记录与 main 记录。合并后更新核准基线，重跑全量真值与工程 Harness，再开放统一真机批次。
 - `backend/`、`content/`、`shared/` 不得在本 UI 任务中产生改动。
 - 全部 `app.json` 页面必须出现在功能真值表中。
 - WXML 事件必须能解析到页面处理器；页面 API 调用必须能解析到现有 API client。

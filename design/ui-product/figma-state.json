@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase9_register_waiting_main_baseline",
-  "step": "login_local_complete_global_harness_blocked_by_main_drift",
+  "phase": "phase9_register_truth_and_freeze",
+  "step": "register_truth_review_pending",
   "blocker": null,
   "entities": {
     "collections": {
@@ -157,7 +157,7 @@
     }
   },
   "pendingValidations": [
-    "Before starting Register, reconcile externally advanced main pointer with explicit user authorization",
+    "Review Register source truth and freeze its UI direction before ImageGen",
     "After all pages are locally complete, capture device screenshots for every page",
     "After all pages are locally complete, run Android and iOS visual checks",
     "During final device batch, run large-font and screen-reader checks"

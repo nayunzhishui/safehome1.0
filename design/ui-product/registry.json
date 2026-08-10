@@ -12,6 +12,14 @@
       "recorded_at": "2026-08-10T13:00:00+08:00"
     }
   ],
+  "main_integration": {
+    "mode": "deferred_until_all_pages_local_complete",
+    "observed_main_sha": "9c7d77ceb6e9c13e679381a628ea755bcfcdf5c3",
+    "merge_gate": "after_all_pages_local_complete_before_device_review",
+    "conflict_policy": "preserve_ui_and_main_records",
+    "reason": "用户明确要求先完成全部 UI，再统一合并 main",
+    "recorded_at": "2026-08-10T17:30:00+08:00"
+  },
   "visual_direction": "A_编辑手帐",
   "workflow": [
     "truth",
@@ -32,7 +40,7 @@
     "done"
   ],
   "active_route": "pages/register/index",
-  "updated_at": "2026-08-10T17:16:35+08:00",
+  "updated_at": "2026-08-10T17:28:50+08:00",
   "pages": [
     {
       "index": 1,

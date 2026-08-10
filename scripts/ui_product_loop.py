@@ -2,6 +2,7 @@
 
 本脚本只读取业务代码并写入 design/ui-product 与功能真值表自动证据区。
 它不调用后端、不修改 API，也不替代 ImageGen、Figma 和最终批次真机人工审查。
+范围检查固定比较注册表中的核准 main 基线；外部 main 后续推进按登记策略延期集成。
 """
 
 from __future__ import annotations
@@ -606,6 +607,14 @@ def init_registry(facts: dict[str, Any]) -> dict[str, Any]:
             "main_sha_baseline", existing.get("main_sha_at_start", facts["main_sha"])
         ),
         "baseline_history": existing.get("baseline_history", []),
+        "main_integration": existing.get(
+            "main_integration",
+            {
+                "mode": "require_current_main_match",
+                "observed_main_sha": facts["main_sha"],
+                "merge_gate": "manual_authorization",
+            },
+        ),
         "visual_direction": "A_编辑手帐",
         "workflow": STAGES,
         "active_route": existing.get("active_route", pages[0]["route"] if pages else None),
@@ -647,9 +656,10 @@ def assert_branch() -> None:
 
 def check_scope() -> list[str]:
     assert_branch()
+    registry = load_registry()
+    approved_main_sha = registry.get("main_sha_baseline", registry["main_sha_at_start"])
     changed = unique(
-        run_git("diff", "--name-only", "main").splitlines()
-        + run_git("diff", "--name-only").splitlines()
+        run_git("diff", "--name-only", approved_main_sha).splitlines()
         + run_git("ls-files", "--others", "--exclude-standard").splitlines()
     )
     failures: list[str] = []
@@ -778,6 +788,11 @@ def status() -> None:
     print(f"分支：{run_git('branch', '--show-current')}")
     print(f"main 起点：{registry['main_sha_at_start']}")
     print(f"main 当前核准基线：{registry.get('main_sha_baseline', registry['main_sha_at_start'])}")
+    print(f"main 当前观察指针：{run_git('rev-parse', 'main')}")
+    print(
+        "main 集成策略："
+        f"{registry.get('main_integration', {}).get('mode', 'require_current_main_match')}"
+    )
     print(f"视觉方向：{registry['visual_direction']}")
     print(f"当前页面：{registry['active_route']}")
     device = registry.get("device_acceptance", {})
@@ -850,7 +865,10 @@ def harness() -> None:
     main_sha = run_git("rev-parse", "main")
     registry = load_registry()
     approved_main_sha = registry.get("main_sha_baseline", registry["main_sha_at_start"])
-    if main_sha != approved_main_sha:
+    integration_mode = registry.get("main_integration", {}).get(
+        "mode", "require_current_main_match"
+    )
+    if main_sha != approved_main_sha and integration_mode != "deferred_until_all_pages_local_complete":
         failures.append("main 分支指针已变化；停止 UI 自动流程并人工核对。")
     diff_check = subprocess.run(
         ["git", "diff", "--check"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8"
@@ -859,7 +877,12 @@ def harness() -> None:
         failures.append("git diff --check 未通过。")
     if failures:
         raise SystemExit("UIproduct 工程 Harness 失败：\n- " + "\n- ".join(failures))
-    print("UIproduct 工程 Harness 通过：分支、范围、main 指针、真值覆盖和 diff 格式均合格。")
+    print("UIproduct 工程 Harness 通过：分支、核准基线范围、真值覆盖和 diff 格式均合格。")
+    if main_sha != approved_main_sha:
+        print(
+            "提示：main 已推进但按用户冻结策略延期集成；"
+            f"核准基线={approved_main_sha}，当前 main={main_sha}。"
+        )
 
 
 def build_parser() -> argparse.ArgumentParser:
