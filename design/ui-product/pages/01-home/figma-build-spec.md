@@ -1,12 +1,20 @@
 # 首页 Figma 组件化复现规格
 
-状态：`blocked_pending_product_font_confirmation`
+状态：`figma_ready_code_blocked_by_recent_record_dependency`
 页面：`pages/home/index`
 视觉基准：方案 A“编辑手帐”
 功能基准：`design/function-truth-table.md`
 ImageGen：`C:/Users/32257/.codex/generated_images/019fe695-ee6b-7143-9310-0612b3afeb40/exec-1185a562-53e9-40b1-b894-c39c414dbadd.png`
 
-本规格用于 Figma 连接恢复后直接执行。它不表示 Figma 已完成，也不授权修改前端。
+本规格已在 Figma 中完成组件化复现与视觉审查；它仍不授权跳过“最近记录”真实页面依赖直接修改首页前端。
+
+Figma 结果：
+
+- 文件：`https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs`
+- 首页状态：Default `30:2`、Loading `34:147`、Empty `34:175`、Error `34:203`、LongContent `34:231`、NetworkFailure `34:259`
+- QA：`39:2`
+- 设计系统：3 个变量集合、41 个变量、7 个文本样式、2 个阴影样式、8 个组件集、37 个变体、10 个私有图标
+- 当前门禁：首页代码实现前，先按单页流程完成“最近记录”真实页面；继续复用 `GET /api/diaries`，不改后端。
 
 ## P0 Phase 0 Checklist：Discovery
 
@@ -19,7 +27,7 @@ ImageGen：`C:/Users/32257/.codex/generated_images/019fe695-ee6b-7143-9310-0612b
 
 Figma 文件：`https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs`（fileKey `8vocq2yUvjQavYpaxGotPs`）。
 
-Phase 0 当前唯一阻断：Figma 可用字体只有 `Noto Sans SC`，冻结规格中的 `PingFang SC` 与 `Microsoft YaHei` 均不可用。用户确认字体替代前不得进入 P1 或绘制组件。
+Phase 0 已退出：用户确认 Figma 使用 `Noto Sans SC`，代码继续保留原字体栈。
 
 ## 1. 页面任务与固定模块
 
@@ -128,7 +136,7 @@ Figma Pages：
 
 ## 4. Typography
 
-产品字体：代码侧为 `PingFang SC`，Windows 回退为 `Microsoft YaHei`。Figma 实测两者均不可用，仅有 `Noto Sans SC` 的 Black、Bold、DemiLight、Light、Medium、Regular、Thin。当前已按门禁停止；若用户批准替代，则 Figma 使用 `Noto Sans SC Regular/Medium/Bold`，代码仍保留原字体栈，不修改全局字体。
+产品字体：代码侧为 `PingFang SC`，Windows 回退为 `Microsoft YaHei`。Figma 实测两者均不可用；用户已确认 Figma 使用 `Noto Sans SC Regular/Medium/Bold`，代码仍保留原字体栈，不修改全局字体。
 
 | Text Style | Size/Line | Weight | 用途 |
 |---|---|---:|---|

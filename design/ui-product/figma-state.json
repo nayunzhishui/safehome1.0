@@ -3,31 +3,110 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase0_blocked",
-  "step": "product_font_confirmation_required",
-  "blocker": {
-    "type": "product_font_unavailable",
-    "message": "Figma 不提供冻结规格中的 PingFang SC 或 Microsoft YaHei；仅发现 Noto Sans SC，替换前需用户确认",
-    "availableCandidate": "Noto Sans SC",
-    "lastObserved": "2026-08-10"
-  },
+  "phase": "phase5_figma_qa_complete",
+  "step": "code_blocked_by_recent_record_dependency",
+  "blocker": null,
   "entities": {
-    "collections": {},
-    "variables": {},
-    "styles": {},
-    "pages": {
-      "initial": {
-        "id": "0:1",
-        "name": "Page 1",
-        "children": 0
-      }
+    "collections": {
+      "Primitive": "VariableCollectionId:2:2",
+      "Semantic": "VariableCollectionId:2:3",
+      "Dimension": "VariableCollectionId:2:4"
     },
-    "components": {},
-    "screens": {}
+    "variables": {
+      "Primitive/neutral/0": "VariableID:3:2",
+      "Primitive/neutral/50": "VariableID:3:3",
+      "Primitive/neutral/100": "VariableID:3:4",
+      "Primitive/neutral/300": "VariableID:3:5",
+      "Primitive/neutral/600": "VariableID:3:6",
+      "Primitive/neutral/900": "VariableID:3:7",
+      "Primitive/green/100": "VariableID:3:8",
+      "Primitive/green/500": "VariableID:4:2",
+      "Primitive/green/700": "VariableID:4:3",
+      "Primitive/green/800": "VariableID:4:4",
+      "Primitive/orange/500": "VariableID:4:5",
+      "Primitive/warning/600": "VariableID:4:6",
+      "Primitive/danger/600": "VariableID:4:7",
+      "Dimension/space/2xs": "VariableID:5:2",
+      "Dimension/space/xs": "VariableID:5:3",
+      "Dimension/space/sm": "VariableID:5:4",
+      "Dimension/space/md": "VariableID:5:5",
+      "Dimension/space/lg": "VariableID:5:6",
+      "Dimension/space/xl": "VariableID:5:7",
+      "Dimension/space/2xl": "VariableID:5:8",
+      "Dimension/space/3xl": "VariableID:5:9",
+      "Dimension/radius/sm": "VariableID:6:2",
+      "Dimension/radius/md": "VariableID:6:3",
+      "Dimension/radius/lg": "VariableID:6:4",
+      "Dimension/radius/full": "VariableID:6:5",
+      "Dimension/size/touch/min": "VariableID:6:6",
+      "Dimension/size/icon/sm": "VariableID:6:7",
+      "Dimension/size/icon/md": "VariableID:6:8",
+      "Dimension/size/icon/lg": "VariableID:6:9",
+      "Semantic/color/bg/canvas": "VariableID:7:2",
+      "Semantic/color/bg/surface": "VariableID:7:3",
+      "Semantic/color/bg/subtle": "VariableID:7:4",
+      "Semantic/color/bg/action": "VariableID:7:5",
+      "Semantic/color/text/primary": "VariableID:7:6",
+      "Semantic/color/text/secondary": "VariableID:7:7",
+      "Semantic/color/text/inverse": "VariableID:8:2",
+      "Semantic/color/text/action": "VariableID:8:3",
+      "Semantic/color/border/default": "VariableID:8:4",
+      "Semantic/color/action/primary": "VariableID:8:5",
+      "Semantic/color/action/accent": "VariableID:8:6",
+      "Semantic/color/status/danger": "VariableID:8:7"
+    },
+    "styles": {
+      "Text/Display/Page": "S:a30ca4d4507ed937eaf58749b70ca814c8a74ef0,",
+      "Text/Title/Section": "S:1ebf82dce0881130754843c2b3bdf3b1929ab933,",
+      "Text/Title/Action": "S:9650a0efc14097455b768fb76a5bb0f72f2e8271,",
+      "Text/Title/Item": "S:cd57f817a9987755e0b3010cdc2b0e74a61e46bf,",
+      "Text/Body/Default": "S:96d6295b6c5bce2b9dd353837b9c83bf21a149db,",
+      "Text/Caption/Default": "S:97d2aaf036d6d7c3552101013282a316436997cb,",
+      "Text/Label/Action": "S:752338acb362bdf4f093cea4623205c13acd9b59,",
+      "Effect/Shadow/Subtle": "S:cad8ad7eef226add85528808adc430db7d87e7f6,",
+      "Effect/Shadow/Action": "S:00e3adc1ee54117646c17ccd569adfee3117bc58,"
+    },
+    "pages": {
+      "00 Cover": "0:1",
+      "01 Foundations": "11:2",
+      "02 Components": "11:3",
+      "03 Screens": "11:4",
+      "99 QA": "11:5"
+    },
+    "documentation": {
+      "Cover": "12:2",
+      "Foundations/Root": "12:6",
+      "Foundations/Colors": "13:2",
+      "Foundations/Typography": "13:59",
+      "Foundations/Dimensions": "14:2",
+      "Foundations/Shadows": "15:2",
+      "QA/Home": "39:2",
+      "QA/Home/Verdict": "39:5",
+      "QA/Home/Checks": "39:658"
+    },
+    "components": {
+      "Button": "18:59",
+      "IconButton": "19:39",
+      "EntryRow": "21:60",
+      "DualEntry": "22:48",
+      "JourneyActionCard": "24:94",
+      "SectionHeading": "26:46",
+      "TabBarItem": "27:46",
+      "PageStateInline": "28:56"
+    },
+    "screens": {
+      "Home/Default": "30:2",
+      "Home/Loading": "34:147",
+      "Home/Empty": "34:175",
+      "Home/Error": "34:203",
+      "Home/LongContent": "34:231",
+      "Home/NetworkFailure": "34:259"
+    }
   },
   "pendingValidations": [
-    "用户确认是否以 Noto Sans SC 作为 Figma 中文字体",
-    "字体确认后进入 P1 Foundations"
+    "Complete the real recent-record page through its own single-page UI process",
+    "Implement the homepage frontend after the recent-record dependency is ready",
+    "Run WeChat DevTools, Android, iOS and accessibility checks after code implementation"
   ],
   "completedSteps": [
     "P0.a code discovery",
@@ -37,6 +116,15 @@
     "Figma file created",
     "P0.b empty target file inspected",
     "P0.c Code Connect and libraries inspected",
-    "P0.f local design-system gap analysis"
+    "P0.f local design-system gap analysis",
+    "User approved Noto Sans SC for Figma only",
+    "P1.a-P1.h Foundations validated: 3 collections, 41 variables, 7 text styles, 2 effect styles",
+    "P2.a page skeleton created: 00 Cover, 01 Foundations, 02 Components, 03 Screens, 99 QA",
+    "P2.b Cover and Foundations documentation validated by metadata, design context and screenshots",
+    "P3.a-P3.e component library validated: 8 component sets, 37 variants, 10 private icons",
+    "P3 Harness passed: Noto Sans SC only, zero raw solid paints, 44px button and icon-button touch targets",
+    "P4.a-P4.f homepage states completed: Default, Loading, Empty, Error, LongContent and NetworkFailure",
+    "P5 visual harness passed: module order, state semantics, typography, contrast, variables and component instances checked",
+    "P5 QA page completed: root 39:2, verdict 39:5, checks 39:658"
   ]
 }

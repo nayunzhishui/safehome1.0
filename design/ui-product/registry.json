@@ -23,14 +23,14 @@
     "done"
   ],
   "active_route": "pages/home/index",
-  "updated_at": "2026-08-10T02:12:29+08:00",
+  "updated_at": "2026-08-10T12:41:43+08:00",
   "pages": [
     {
       "index": 1,
       "route": "pages/home/index",
       "title": "安心陪伴",
       "source_hash": "e1a5074f604e186dc4818ef512c8936a16df49a7c4804c616d6ca1a599252434",
-      "stage": "figma_blocked",
+      "stage": "implementation_blocked",
       "evidence": {
         "truth": {
           "items": [
@@ -60,20 +60,30 @@
           ],
           "note": "用户确认方案A；功能语义复核通过，方案B不采用",
           "recorded_at": "2026-08-10T01:55:46+08:00"
+        },
+        "figma": {
+          "items": [
+            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/figma-state.json"
+          ],
+          "note": "首页设计系统、8个组件集与六种页面状态已完成",
+          "recorded_at": "2026-08-10T12:40:47+08:00"
+        },
+        "figma_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/qa.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/figma-build-spec.md"
+          ],
+          "note": "ImageGen到Figma视觉、状态、组件、对比度与功能语义审查通过；代码等待真实记录页依赖",
+          "recorded_at": "2026-08-10T12:40:47+08:00"
         }
       },
-      "updated_at": "2026-08-10T03:00:00+08:00",
+      "updated_at": "2026-08-10T12:41:43+08:00",
       "blockers": [
         {
-          "stage": "figma",
-          "note": "Figma 应用明确返回 requires reauthentication；需用户重新认证后才能创建文件，未进入代码实现",
-          "recorded_at": "2026-08-10T02:12:29+08:00",
-          "attempt_count": 4
-        },
-        {
-          "stage": "figma",
-          "note": "Figma 授权已恢复并创建文件 8vocq2yUvjQavYpaxGotPs；Phase 0 发现 PingFang SC 与 Microsoft YaHei 均不可用，仅有 Noto Sans SC，等待用户确认字体替代",
-          "recorded_at": "2026-08-10T03:00:00+08:00",
+          "stage": "implementation",
+          "note": "首页最近记录必须进入真实记录页；该依赖页需先走独立真值、冻结、ImageGen、Figma与QA并复用GET /api/diaries。另检测到main由外部任务从98fca02推进到65fcef4，工程Harness按规则停止等待人工核对。",
+          "recorded_at": "2026-08-10T12:41:43+08:00",
           "attempt_count": 1
         }
       ]
