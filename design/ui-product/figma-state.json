@@ -4,7 +4,7 @@
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
   "phase": "phase6_frontend_local_loops_complete",
-  "step": "device_visual_review_pending",
+  "step": "local_harness_pending_device_review_deferred",
   "blocker": null,
   "entities": {
     "collections": {
@@ -113,9 +113,9 @@
     }
   },
   "pendingValidations": [
-    "Capture WeChat DevTools simulator screenshots for homepage and diary-history states",
-    "Run Android and iOS visual checks",
-    "Run large-font and screen-reader checks"
+    "After all pages are locally complete, capture device screenshots for every page",
+    "After all pages are locally complete, run Android and iOS visual checks",
+    "During final device batch, run large-font and screen-reader checks"
   ],
   "completedSteps": [
     "P0.a code discovery",

@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "branch": "UIproduct",
   "main_sha_at_start": "98fca029f3f97e13d7e787cd40cb939465a992d4",
   "main_sha_baseline": "65fcef4b876fbcec05b9eeddfe4cf37eb5e0789d",
@@ -25,22 +25,21 @@
     "loop_ui",
     "loop_ux",
     "loop_states",
-    "loop_device",
     "harness_visual",
     "harness_component",
     "harness_ux",
     "harness_engineering",
     "done"
   ],
-  "active_route": "pages/home/index",
-  "updated_at": "2026-08-10T13:42:37+08:00",
+  "active_route": "pages/login/index",
+  "updated_at": "2026-08-10T14:12:12+08:00",
   "pages": [
     {
       "index": 1,
       "route": "pages/home/index",
       "title": "安心陪伴",
       "source_hash": "bd415ce490b07944b4092edba730027b54281cbc901a2ecf42eb107aaa46971b",
-      "stage": "loop_device_blocked",
+      "stage": "complete",
       "evidence": {
         "truth": {
           "items": [
@@ -126,17 +125,47 @@
           ],
           "note": "默认、加载、空、错误、长文本和弱网代码状态审查通过",
           "recorded_at": "2026-08-10T13:42:36+08:00"
+        },
+        "harness_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/qa.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/code-review.md"
+          ],
+          "note": "ImageGen、Figma 与前端本地视觉证据可追溯；真机统一延期",
+          "recorded_at": "2026-08-10T14:12:11+08:00"
+        },
+        "harness_component": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/code-review.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/figma-build-spec.md"
+          ],
+          "note": "组件复用、尺寸与样式分叉审查通过",
+          "recorded_at": "2026-08-10T14:12:11+08:00"
+        },
+        "harness_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/code-review.md"
+          ],
+          "note": "功能真值、主任务、触控与状态恢复审查通过",
+          "recorded_at": "2026-08-10T14:12:12+08:00"
+        },
+        "harness_engineering": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/qa.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/01-home/code-review.md"
+          ],
+          "note": "前端范围、语法、编译、业务保护与 diff 检查通过",
+          "recorded_at": "2026-08-10T14:12:12+08:00"
+        },
+        "done": {
+          "items": [],
+          "note": "首页本地阶段完成；全量真机验收延期至所有页面本地完成后",
+          "recorded_at": "2026-08-10T14:12:12+08:00"
         }
       },
-      "updated_at": "2026-08-10T13:42:37+08:00",
-      "blockers": [
-        {
-          "stage": "loop_device",
-          "note": "微信开发者工具 Preview 编译通过；桌面视觉控制不可用，Android/iOS、大字体、读屏与模拟器截图仍待人工证据",
-          "recorded_at": "2026-08-10T13:42:37+08:00",
-          "attempt_count": 1
-        }
-      ]
+      "updated_at": "2026-08-10T14:12:12+08:00",
+      "blockers": []
     },
     {
       "index": 2,
@@ -606,5 +635,12 @@
       "evidence": {},
       "updated_at": "2026-08-10T01:41:08+08:00"
     }
-  ]
+  ],
+  "device_acceptance": {
+    "required": true,
+    "gate": "all_pages_local_complete",
+    "status": "deferred_until_all_pages_local_complete",
+    "pages": {},
+    "updated_at": "2026-08-10T14:11:55+08:00"
+  }
 }

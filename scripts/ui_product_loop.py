@@ -1,7 +1,7 @@
 """SafeHome 小程序 UIproduct 可恢复逐页 Loop 与 Harness。
 
 本脚本只读取业务代码并写入 design/ui-product 与功能真值表自动证据区。
-它不调用后端、不修改 API，也不替代 ImageGen、Figma 和真机人工审查。
+它不调用后端、不修改 API，也不替代 ImageGen、Figma 和最终批次真机人工审查。
 """
 
 from __future__ import annotations
@@ -41,13 +41,18 @@ STAGES = [
     "loop_ui",
     "loop_ux",
     "loop_states",
-    "loop_device",
     "harness_visual",
     "harness_component",
     "harness_ux",
     "harness_engineering",
     "done",
 ]
+
+DEVICE_ACCEPTANCE_DEFERRED = "deferred_until_all_pages_local_complete"
+DEVICE_ACCEPTANCE_READY = "ready_for_user_device_review"
+DEVICE_ACCEPTANCE_IN_PROGRESS = "in_progress"
+DEVICE_ACCEPTANCE_FIX_REQUIRED = "fix_required"
+DEVICE_ACCEPTANCE_COMPLETE = "complete"
 
 ALLOWED_CHANGED_PREFIXES = (
     "AGENTS.md",
@@ -553,26 +558,48 @@ def init_registry(facts: dict[str, Any]) -> dict[str, Any]:
     if REGISTRY_JSON.exists():
         existing = json.loads(read_text(REGISTRY_JSON))
     old_pages = {page["route"]: page for page in existing.get("pages", [])}
+    device_acceptance = existing.get("device_acceptance", {})
+    device_pages = device_acceptance.get("pages", {})
     pages = []
     for page in facts["pages"]:
         old = old_pages.get(page["route"], {})
-        evidence = old.get("evidence", {})
+        evidence = dict(old.get("evidence", {}))
+        legacy_device_evidence = evidence.pop("loop_device", None)
+        if legacy_device_evidence and page["route"] not in device_pages:
+            device_pages[page["route"]] = {
+                "result": "legacy_evidence",
+                "evidence": legacy_device_evidence.get("items", []),
+                "note": legacy_device_evidence.get("note", "迁移自旧逐页真机阶段"),
+                "recorded_at": legacy_device_evidence.get("recorded_at", facts["generated_at"]),
+            }
         stage = old.get("stage", "truth_pending")
+        blockers = [
+            item for item in old.get("blockers", []) if item.get("stage") != "loop_device"
+        ]
+        if stage == "loop_device_blocked":
+            stage = "loop_states_complete"
         if page["review_status"] == "auto_evidence_complete" and stage == "truth_pending":
             stage = "truth_auto_complete"
-        pages.append(
-            {
-                "index": page["index"],
-                "route": page["route"],
-                "title": page["title"],
-                "source_hash": page["source_hash"],
-                "stage": stage,
-                "evidence": evidence,
-                "updated_at": old.get("updated_at", facts["generated_at"]),
-            }
-        )
+        item = {
+            "index": page["index"],
+            "route": page["route"],
+            "title": page["title"],
+            "source_hash": page["source_hash"],
+            "stage": stage,
+            "evidence": evidence,
+            "updated_at": old.get("updated_at", facts["generated_at"]),
+        }
+        if blockers:
+            item["blockers"] = blockers
+        pages.append(item)
+    all_local_complete = bool(pages) and all(page["stage"] == "complete" for page in pages)
+    device_status = device_acceptance.get("status", DEVICE_ACCEPTANCE_DEFERRED)
+    if all_local_complete and device_status == DEVICE_ACCEPTANCE_DEFERRED:
+        device_status = DEVICE_ACCEPTANCE_READY
+    elif not all_local_complete and device_status != DEVICE_ACCEPTANCE_DEFERRED:
+        device_status = DEVICE_ACCEPTANCE_DEFERRED
     registry = {
-        "schema_version": 1,
+        "schema_version": 2,
         "branch": REQUIRED_BRANCH,
         "main_sha_at_start": existing.get("main_sha_at_start", facts["main_sha"]),
         "main_sha_baseline": existing.get(
@@ -584,6 +611,13 @@ def init_registry(facts: dict[str, Any]) -> dict[str, Any]:
         "active_route": existing.get("active_route", pages[0]["route"] if pages else None),
         "updated_at": facts["generated_at"],
         "pages": pages,
+        "device_acceptance": {
+            "required": True,
+            "gate": "all_pages_local_complete",
+            "status": device_status,
+            "pages": device_pages,
+            "updated_at": device_acceptance.get("updated_at", facts["generated_at"]),
+        },
     }
     write_text(REGISTRY_JSON, json.dumps(registry, ensure_ascii=False, indent=2) + "\n")
     return registry
@@ -746,6 +780,9 @@ def status() -> None:
     print(f"main 当前核准基线：{registry.get('main_sha_baseline', registry['main_sha_at_start'])}")
     print(f"视觉方向：{registry['visual_direction']}")
     print(f"当前页面：{registry['active_route']}")
+    device = registry.get("device_acceptance", {})
+    print(f"全量真机验收：{device.get('status', DEVICE_ACCEPTANCE_DEFERRED)}")
+    print(f"真机已记录页面：{len(device.get('pages', {}))}/{len(registry['pages'])}")
     blockers = [
         (page["route"], blocker)
         for page in registry["pages"]
@@ -754,6 +791,57 @@ def status() -> None:
     print(f"未清除阻断记录：{len(blockers)}")
     for key in sorted(counts):
         print(f"- {key}: {counts[key]}")
+
+
+def device_status() -> None:
+    assert_branch()
+    registry = load_registry()
+    device = registry.get("device_acceptance", {})
+    incomplete = [page["route"] for page in registry["pages"] if page["stage"] != "complete"]
+    print(f"全量真机验收：{device.get('status', DEVICE_ACCEPTANCE_DEFERRED)}")
+    print(f"本地未完成页面：{len(incomplete)}")
+    print(f"真机已记录页面：{len(device.get('pages', {}))}/{len(registry['pages'])}")
+    if incomplete:
+        print("门禁：必须先完成全部页面的本地设计、实现、Loop 1-4 与 Harness。")
+
+
+def record_device_acceptance(route: str, result: str, evidence: list[str], note: str) -> None:
+    assert_branch()
+    registry = load_registry()
+    incomplete = [page["route"] for page in registry["pages"] if page["stage"] != "complete"]
+    if incomplete:
+        raise SystemExit(
+            f"全量真机门禁未开放：仍有 {len(incomplete)} 页未完成本地流程；"
+            "完成全部页面后再统一记录真机验收。"
+        )
+    if not any(page["route"] == route for page in registry["pages"]):
+        raise SystemExit(f"页面未登记：{route}")
+    resolved = [resolve_evidence(item) for item in evidence]
+    if not resolved:
+        raise SystemExit("真机验收必须提供截图或录屏证据。")
+    device = registry.setdefault(
+        "device_acceptance",
+        {"required": True, "gate": "all_pages_local_complete", "pages": {}},
+    )
+    device.setdefault("pages", {})[route] = {
+        "result": result,
+        "evidence": resolved,
+        "note": note,
+        "recorded_at": now_iso(),
+    }
+    results = [item.get("result") for item in device["pages"].values()]
+    if "fix_required" in results:
+        device["status"] = DEVICE_ACCEPTANCE_FIX_REQUIRED
+    elif len(device["pages"]) == len(registry["pages"]) and all(
+        item == "pass" for item in results
+    ):
+        device["status"] = DEVICE_ACCEPTANCE_COMPLETE
+    else:
+        device["status"] = DEVICE_ACCEPTANCE_IN_PROGRESS
+    device["updated_at"] = now_iso()
+    registry["updated_at"] = now_iso()
+    write_text(REGISTRY_JSON, json.dumps(registry, ensure_ascii=False, indent=2) + "\n")
+    print(f"已记录全量真机验收 {route} / {result}。")
 
 
 def harness() -> None:
@@ -780,6 +868,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("audit-truth", help="扫描全部页面并更新真值证据与注册表")
     sub.add_parser("check-truth", help="检查页面覆盖、解析完整性与源码漂移")
     sub.add_parser("status", help="显示可恢复逐页状态")
+    sub.add_parser("device-status", help="显示全部页面完成后的统一真机验收状态")
     sub.add_parser("harness", help="执行分支、范围、真值与工程门禁")
     record = sub.add_parser("record", help="按顺序记录一页的阶段证据")
     record.add_argument("--page", required=True)
@@ -790,6 +879,11 @@ def build_parser() -> argparse.ArgumentParser:
     block.add_argument("--page", required=True)
     block.add_argument("--stage", required=True, choices=STAGES)
     block.add_argument("--note", required=True)
+    device = sub.add_parser("device-record", help="全部页面本地完成后记录逐页真机证据")
+    device.add_argument("--page", required=True)
+    device.add_argument("--result", required=True, choices=("pass", "fix_required"))
+    device.add_argument("--evidence", action="append", default=[])
+    device.add_argument("--note", default="")
     return parser
 
 
@@ -801,12 +895,16 @@ def main() -> None:
         check_truth()
     elif args.command == "status":
         status()
+    elif args.command == "device-status":
+        device_status()
     elif args.command == "harness":
         harness()
     elif args.command == "record":
         record_stage(args.page, args.stage, args.evidence, args.note)
     elif args.command == "block":
         record_blocker(args.page, args.stage, args.note)
+    elif args.command == "device-record":
+        record_device_acceptance(args.page, args.result, args.evidence, args.note)
     else:
         raise SystemExit(f"未知命令：{args.command}")
 

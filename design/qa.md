@@ -131,6 +131,6 @@ source: `design/context.md`、`design/audit.md`、任务二十计划、问题截
 - PASS：首页模块顺序、消息入口、双入口、今天的一小步、如何开始、更多、最近记录和阶段性反馈均保留。
 - PASS：JS、JSON、设计令牌、53 页 UI governance、非 UI client audit 与 `git diff --check` 通过。
 - PASS：微信开发者工具 `preview` 编译成功，包体约 1.4 MB，未复现 WXSS 编译错误。
-- MANUAL：桌面控制运行时不可用，未取得模拟器视觉截图；Android/iOS 真机、大字体和读屏仍待人工证据。
+- DEFERRED：桌面控制运行时不可用，未取得模拟器视觉截图；Android/iOS 真机、大字体和读屏按用户冻结规则延期到全部页面本地完成后统一验收。
 
-结论：代码与本地工程门禁通过；设备视觉 Loop 尚未签字，不能将首页登记为最终完成。
+结论：代码与本地工程门禁通过；首页可登记为“本地完成”并进入下一页。设备视觉 Loop 尚未签字，项目最终真机验收仍未完成。

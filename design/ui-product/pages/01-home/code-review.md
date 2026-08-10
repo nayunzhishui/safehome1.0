@@ -1,6 +1,6 @@
 # 首页代码复现与 Loop 审查
 
-状态：`local_loops_passed_device_visual_pending`
+状态：`local_loops_passed_device_review_deferred`
 日期：2026-08-10
 基准：Figma `Screen/Home/Default`（`30:2`）及其五种状态。
 
@@ -27,4 +27,4 @@
 - 设计令牌、UI governance、非 UI client audit：通过。
 - 微信开发者工具 `preview`：通过，AppID `wxd548597e78862269`，包体约 1.4 MB。
 - 自动模拟器截图：未完成；桌面控制运行时不可用。
-- Android/iOS 真机、大字体、读屏：待人工证据，不标记通过。
+- Android/iOS 真机、大字体、读屏：按用户冻结规则延期到全部页面本地完成后统一验收，不标记通过。

@@ -1,7 +1,7 @@
 {
   "route": "pages/diary-history/index",
   "title": "情绪记录",
-  "status": "local_code_loops_complete_device_visual_pending",
+  "status": "local_code_loops_complete_device_review_deferred",
   "source": {
     "truth": "design/function-truth-table.md",
     "context": "design/context.md",
@@ -22,7 +22,7 @@
     "NetworkFailure",
     "LongContent"
   ],
-  "nextGate": "device_visual_review",
+  "nextGate": "local_harness",
   "evidence": {
     "imagegen": "design/ui-product/pages/02-diary-history/assets/imagegen-default-v1.png",
     "imageReview": "design/ui-product/pages/02-diary-history/image-review.md",

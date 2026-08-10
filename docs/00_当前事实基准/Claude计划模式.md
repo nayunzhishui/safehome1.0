@@ -12143,5 +12143,7 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 情绪记录依赖页完成真值、ImageGen、Figma、代码与本地 Loop。
 - [x] 首页完成方案 A 代码复现，真实功能和模块顺序保持不变。
 - [x] 微信开发者工具 Preview 编译通过。
-- [ ] 开发者工具模拟器截图、Android/iOS、大字体和读屏人工验收。
-- [ ] 设备视觉证据通过后登记首页最终 Harness、提交恢复点并进入下一页。
+- [x] 首页四类本地 Harness 已登记，逐页本地状态为 `complete`。
+- [ ] Android/iOS、大字体和读屏统一延期到全部页面本地完成后的最终批次。
+- [ ] 当前按单页流程进入 `pages/login/index`；不得因延期而跳过 ImageGen、Figma、本地 Loop 1–4 或 Harness。
+- [ ] 53 页本地完成后启动全量真机 Loop 5，逐页记录 `pass` 或 `fix_required` 并完成修正回归。
