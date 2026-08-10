@@ -12190,3 +12190,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 微信开发者工具 Preview、T23、资产和前端审计通过；本地 Loop 1–4 与四类 Harness 已登记。
 - [ ] 当前进入 `pages/messages/index`，继续执行同一单页流程。
 - [ ] 真机、Android/iOS、大字体和读屏仍待全部 53 页本地完成后统一验收。
+
+## 2026-08-10 UIproduct 消息页状态
+
+- [x] 对照 WXML/JS/API/后端只读消息能力完成消息页功能真值与需求冻结。
+- [x] ImageGen v2 修正重复标题和固定高列表空白，保持未读、已读、撤回与版本信息。
+- [x] Figma 新增 MessageRow 三态组件，完成七个 390×844 页面状态及视觉审查。
+- [x] 仅实现消息页 WXML/WXSS/JSON；消息 JS、接口、后端、数据库和自动已读语义未修改。
+- [x] 微信开发者工具 Preview、T23、资产、前端、真值与工程 Harness 通过；本地 Loop 1–4 与四类 Harness 已登记。
+- [ ] 当前进入 `pages/support-assistant/index`，继续执行同一单页流程。
+- [ ] 真机、main 合并、Android/iOS、大字体和读屏仍待全部页面本地完成后统一处理。

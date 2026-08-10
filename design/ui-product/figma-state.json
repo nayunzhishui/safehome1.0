@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase11_register_local_complete",
-  "step": "register_complete_next_page_pending",
+  "phase": "phase13_messages_local_complete",
+  "step": "messages_complete_next_page_pending",
   "blocker": null,
   "entities": {
     "collections": {
@@ -100,7 +100,8 @@
       "AuthField/Base": "56:56",
       "AuthField": "58:53",
       "__Icon/ChevronDown": "73:55",
-      "SelectField": "77:57"
+      "SelectField": "77:57",
+      "MessageRow": "88:57"
     },
     "componentVariants": {
       "AuthField/Default": "56:56",
@@ -111,7 +112,10 @@
       "SelectField/Default": "75:53",
       "SelectField/Focused": "76:54",
       "SelectField/Error": "76:59",
-      "SelectField/Disabled": "76:65"
+      "SelectField/Disabled": "76:65",
+      "MessageRow/Unread": "87:61",
+      "MessageRow/Read": "87:72",
+      "MessageRow/Withdrawn": "87:83"
     },
     "componentProperties": {
       "AuthField/Label": "Label#59:0",
@@ -120,7 +124,12 @@
       "SelectField/Label": "Label#77:0",
       "SelectField/Value": "Value#77:5",
       "SelectField/Message": "Message#77:10",
-      "SelectField/Icon": "Icon#77:15"
+      "SelectField/Icon": "Icon#77:15",
+      "MessageRow/Title": "Title#88:0",
+      "MessageRow/Body": "Body#88:4",
+      "MessageRow/Meta": "Meta#88:8",
+      "MessageRow/Status": "Status#88:12",
+      "MessageRow/ShowDivider": "Show Divider#88:16"
     },
     "screens": {
       "Home/Default": "30:2",
@@ -146,7 +155,14 @@
       "Register/Loading": "83:989",
       "Register/ValidationError": "83:1034",
       "Register/ApiError": "83:1081",
-      "Register/LongContent": "83:1132"
+      "Register/LongContent": "83:1132",
+      "Messages/Default": "90:1034",
+      "Messages/Loading": "90:1077",
+      "Messages/Empty": "90:1090",
+      "Messages/Error": "90:1103",
+      "Messages/LoginRequired": "90:1119",
+      "Messages/LongContent": "90:1135",
+      "Messages/NetworkFailure": "90:1178"
     },
     "screenNodes": {
       "Login/Default/Content": "61:804",
@@ -181,7 +197,14 @@
       "Register/Default/Login": "81:959",
       "Register/Loading/StatusMessage": "83:1029",
       "Register/ValidationError/StatusMessage": "83:1063",
-      "Register/ApiError/StatusMessage": "83:1118"
+      "Register/ApiError/StatusMessage": "83:1118",
+      "Messages/Default/Content": "90:1035",
+      "Messages/Default/Header": "90:1036",
+      "Messages/Default/List": "90:1040",
+      "Messages/Default/Boundary": "90:1074",
+      "Messages/Error/Diagnostic": "90:1113",
+      "Messages/LoginRequired/Diagnostic": "90:1129",
+      "Messages/NetworkFailure/Diagnostic": "90:1188"
     }
   },
   "pendingValidations": [
@@ -233,6 +256,13 @@
     "Register six 390x844 Figma states completed and visually reviewed against ImageGen v2",
     "Register WXML/WXSS and exact Figma chevron asset implemented without changing JS, APIs or navigation",
     "Register WeChat DevTools preview compilation passed at about 1.4 MB",
-    "Register local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    "Register local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred",
+    "Messages P0.a-P0.f discovery complete: current list, error diagnostics, withdrawn/version semantics and existing PageState reused",
+    "Messages MessageRow three-state component set created with text and divider properties",
+    "Messages seven 390x844 screen states created and visually reviewed against ImageGen v2",
+    "Messages get_design_context captured for WeChat mini-program implementation",
+    "Messages WXML/WXSS/JSON implemented without changing JS, APIs or navigation",
+    "Messages WeChat DevTools preview compilation passed at 1,487,732 bytes",
+    "Messages local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
   ]
 }

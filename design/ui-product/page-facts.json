@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-10T18:17:56+08:00",
+  "generated_at": "2026-08-10T18:46:13+08:00",
   "branch": "UIproduct",
   "main_sha": "4a17b9faf9187a5d414f92e84ff7b08e60802d49",
   "app_page_count": 53,
@@ -926,14 +926,15 @@
         "apps/miniprogram/pages/messages/index.json",
         "apps/miniprogram/utils/errorDiagnostics.js"
       ],
-      "source_hash": "d1afa19bc0aef8907c09724689e73aad5c6b341af2418180ad668de4a7db63c5",
+      "source_hash": "eea7732ad0d2aa4cb07bf038db557b82f091c81839ae2bb1c8d39fc027ec2b87",
       "missing_files": [],
       "visible_text": [
         "消息提醒",
         "需要你看看",
-        "这里主要放人工督导补充反馈和必要提醒，不做营销推送。",
+        "人工补充和必要提醒会按时间排列。",
         "请求编号： · 服务版本：",
-        "复制诊断信息"
+        "复制诊断信息",
+        "消息只用于补充说明和支持提醒，不替代紧急帮助。"
       ],
       "events": [
         {
@@ -942,25 +943,25 @@
           "tag": "page-state",
           "label": "{{needsLogin ? ",
           "data": {},
-          "line": 9
+          "line": 12
         },
         {
           "event": "bindtap",
           "handler": "copyDiagnostic",
           "tag": "button",
-          "label": "复制诊断信息",
+          "label": "复制本次错误的诊断信息",
           "data": {},
-          "line": 12
+          "line": 15
         },
         {
           "event": "bindtap",
           "handler": "openMessage",
           "tag": "button",
-          "label": "",
+          "label": "{{item.is_withdrawn ? ",
           "data": {
             "id": "{{item.id}}"
           },
-          "line": 16
+          "line": 20
         }
       ],
       "page_methods": [
@@ -1033,9 +1034,7 @@
         "pages/profile/index"
       ],
       "components": {
-        "bottom-tip-card": "/components/bottom-tip-card/index",
-        "page-state": "/components/page-state/index",
-        "status-pill": "/components/status-pill/index"
+        "page-state": "/components/page-state/index"
       },
       "storage": [],
       "state": {
@@ -1050,7 +1049,9 @@
         "branches": [
           "loading",
           "errorMessage",
-          "messages"
+          "errorDiagnostic",
+          "messages",
+          "item"
         ],
         "set_data": [
           "loading",

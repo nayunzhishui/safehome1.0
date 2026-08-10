@@ -157,11 +157,44 @@
 - Default、Loading、Empty、Error、Network Failure、Long Content 必须设计；Selected/Disabled 不适用于只读列表，不伪造交互态。
 - 文件分类：未来新增页面 WXML/WXSS/JSON 属 A；页面 JS 与首页跳转属 B，限于读取现有接口与导航；后端、数据库、API、`content`、`shared` 属 C，禁止修改。
 
+## 消息列表 `pages/messages/index`（逐页人工冻结）
+
+状态：`requirements_frozen_before_imagegen`。核对时间：2026-08-10。
+
+核对来源：
+
+- `apps/miniprogram/pages/messages/index.*`；
+- `apps/miniprogram/components/page-state/index.*`、`status-pill/index.*`、`bottom-tip-card/index.*`；
+- 上游 `pages/home/index`、`pages/growth-dashboard/index`、`pages/profile/index`；
+- 下游 `pages/message-detail/index.*`；
+- `apps/miniprogram/services/api.js` 的 `listMessages`；
+- `backend/routes/messages.py` 与 `backend/services/message_service.py`（只读核对）。
+
+| 页面元素 | 事件处理 | 路由/API/状态 | 真实用户任务 | 正式设计约束 |
+|---|---|---|---|---|
+| 页面进入/再次显示 | `onShow` → `loadMessages` | `GET /api/messages?page=1&page_size=50`，需要登录 | 读取当前账号最多 50 条消息 | 保留每次显示即刷新；不新增缓存、分页、筛选或排序开关 |
+| 消息列表 | `openMessage` | `navigateTo('/pages/message-detail/index?id=:id')` | 打开一条消息查看完整内容；详情读取时自动标记已读 | 整行保持可点击；列表页不伪造聊天、回复、删除或批量已读 |
+| 消息正文摘要 | 无独立事件 | `title`、`body`、`created_at`、`sender_role`、`delivery_version` | 快速判断消息内容、来源、时间和版本 | 使用接口原值；不改写为营销摘要，不隐藏版本号 |
+| 未读/已读状态 | 无独立事件 | `is_unread` | 区分尚未打开与已查看消息 | 必须同时使用文字和视觉差异，不能只靠颜色；不增加“全部标为已读”按钮 |
+| 撤回状态 | 仍可进入详情 | `is_withdrawn` | 知道研究者已撤回此前内容并忽略旧版本 | 列表固定显示撤回说明和“已撤回”；不继续展示已撤回正文，不伪造删除 |
+| 加载状态 | 无事件 | `loading` | 等待消息读取 | 使用现有 `page-state`；无装饰性循环动效，reduced motion 保持静态可理解 |
+| 空状态 | 无事件 | `messages.length === 0` | 确认当前没有消息 | 只说明后续人工补充会出现；不增加刷新、联系研究者或营销入口 |
+| 错误恢复 | `handleStateAction` | 登录失效时进入登录页并保留 redirect；其他错误重新调用列表接口 | 恢复登录或重试网络请求 | 一个明确恢复动作；不得把权限错误伪装为空状态 |
+| 诊断信息 | `copyDiagnostic` | 复制 `requestId` 与 `serviceVersion`，Toast 反馈结果 | 在服务异常时提供可交接诊断证据 | 仅错误状态展示；不得暴露 token、用户正文或其他敏感数据 |
+| 底部边界说明 | 无事件 | 本地静态文案 | 理解消息不是紧急帮助渠道 | 保留“补充说明和支持提醒，不替代紧急帮助”的边界，不改成实时客服承诺 |
+
+接口与产品边界：
+
+- 本页唯一数据接口为现有 `GET /api/messages`；`unread_count` 已写入页面状态但当前不展示，本轮不新增未读统计标题。
+- 当前列表不使用后端已有的 `read-all`、筛选和分页能力；视觉不得新增对应控件。
+- 状态矩阵为 Default（含未读、已读、撤回、版本）、Loading、Empty、Error、LoginRequired、NetworkFailure、LongContent。Disabled/Selected 不适用于该只读列表，不伪造。
+- 文件分类：目标页 WXML/WXSS 属 A；本页 JS 属 B 但本轮无需修改；组件、后端、数据库、API、`content`、`shared` 均不改。
+
 <!-- UI_PRODUCT_AUTO_FACTS:BEGIN -->
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-10T18:17:56+08:00`
+生成时间：`2026-08-10T18:46:13+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -323,19 +356,19 @@
 ### 04：消息 `pages/messages/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`d1afa19bc0aef8907c09724689e73aad5c6b341af2418180ad668de4a7db63c5`
+- 源码指纹：`eea7732ad0d2aa4cb07bf038db557b82f091c81839ae2bb1c8d39fc027ec2b87`
 - 核对文件：`apps/miniprogram/pages/messages/index.wxml`、`apps/miniprogram/pages/messages/index.wxss`、`apps/miniprogram/pages/messages/index.js`、`apps/miniprogram/pages/messages/index.json`、`apps/miniprogram/utils/errorDiagnostics.js`
 - 上游页面：`pages/home/index`、`pages/growth-dashboard/index`、`pages/profile/index`
-- 页面组件：`bottom-tip-card` → `/components/bottom-tip-card/index`、`page-state` → `/components/page-state/index`、`status-pill` → `/components/status-pill/index`
-- 主要可见内容：消息提醒、需要你看看、这里主要放人工督导补充反馈和必要提醒，不做营销推送。、请求编号： · 服务版本：、复制诊断信息
+- 页面组件：`page-state` → `/components/page-state/index`
+- 主要可见内容：消息提醒、需要你看看、人工补充和必要提醒会按时间排列。、请求编号： · 服务版本：、复制诊断信息、消息只用于补充说明和支持提醒，不替代紧急帮助。
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 9 | {{needsLogin ?  | `bindaction` | `handleStateAction` | — |
-| 12 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | — |
-| 16 | — | `bindtap` | `openMessage` | {'id': '{{item.id}}'} |
+| 12 | {{needsLogin ?  | `bindaction` | `handleStateAction` | — |
+| 15 | 复制本次错误的诊断信息 | `bindtap` | `copyDiagnostic` | — |
+| 20 | {{item.is_withdrawn ?  | `bindtap` | `openMessage` | {'id': '{{item.id}}'} |
 
 #### 接口真值
 
@@ -348,7 +381,7 @@
 - 下游路由：`navigateTo` → `/pages/message-detail/index?id=:dynamic`（js:50）、`reLaunch` → `/pages/home/index`（js:71）、`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fmessages%2Findex`（js:75）、`navigateTo` → `/pages/register/index?redirect=%2Fpages%2Fmessages%2Findex`（js:79）
 - 本地存储：—
 - WXML 数据绑定：`loading`、`errorMessage`、`needsLogin`、`errorDiagnostic`、`messages`、`item`
-- 条件状态：`loading`、`errorMessage`、`messages`
+- 条件状态：`loading`、`errorMessage`、`errorDiagnostic`、`messages`、`item`
 - `setData` 状态：`loading`、`errorMessage`、`errorDiagnostic`、`needsLogin`、`messages`、`unreadCount`
 - 未解析事件：—
 - 未解析 API：—

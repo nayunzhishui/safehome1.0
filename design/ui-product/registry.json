@@ -39,8 +39,8 @@
     "harness_engineering",
     "done"
   ],
-  "active_route": "pages/messages/index",
-  "updated_at": "2026-08-10T18:17:56+08:00",
+  "active_route": "pages/support-assistant/index",
+  "updated_at": "2026-08-10T19:15:42+08:00",
   "pages": [
     {
       "index": 1,
@@ -429,10 +429,124 @@
       "index": 4,
       "route": "pages/messages/index",
       "title": "消息",
-      "source_hash": "d1afa19bc0aef8907c09724689e73aad5c6b341af2418180ad668de4a7db63c5",
-      "stage": "truth_auto_complete",
-      "evidence": {},
-      "updated_at": "2026-08-10T01:41:08+08:00"
+      "source_hash": "eea7732ad0d2aa4cb07bf038db557b82f091c81839ae2bb1c8d39fc027ec2b87",
+      "stage": "complete",
+      "evidence": {
+        "truth": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md"
+          ],
+          "note": "消息列表接口、状态、诊断、撤回、版本与详情跳转已人工核对",
+          "recorded_at": "2026-08-10T18:26:26+08:00"
+        },
+        "freeze": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/context.md"
+          ],
+          "note": "方案A编辑式消息簿需求已冻结",
+          "recorded_at": "2026-08-10T18:26:26+08:00"
+        },
+        "imagegen": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/assets/imagegen-default-v2.png"
+          ],
+          "note": "方案A消息页ImageGen v2，连续列表与三类真实状态",
+          "recorded_at": "2026-08-10T18:30:12+08:00"
+        },
+        "image_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/image-review.md"
+          ],
+          "note": "首稿标题重复与空白已修正，v2通过功能和视觉自审",
+          "recorded_at": "2026-08-10T18:30:12+08:00"
+        },
+        "figma": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/figma-review.md"
+          ],
+          "note": "MessageRow三态组件和消息页七态画板已创建",
+          "recorded_at": "2026-08-10T18:42:59+08:00"
+        },
+        "figma_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/figma-review.md"
+          ],
+          "note": "ImageGen到Figma审核通过，字体和变量绑定检查通过",
+          "recorded_at": "2026-08-10T18:42:59+08:00"
+        },
+        "implementation": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/code-review.md"
+          ],
+          "note": "WXML WXSS JSON implemented; JS API and navigation unchanged",
+          "recorded_at": "2026-08-10T19:15:36+08:00"
+        },
+        "loop_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/code-review.md"
+          ],
+          "note": "ImageGen Figma and code mapping passed; device batch deferred",
+          "recorded_at": "2026-08-10T19:15:37+08:00"
+        },
+        "loop_ui": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/code-review.md"
+          ],
+          "note": "Typography spacing radius status and hierarchy passed",
+          "recorded_at": "2026-08-10T19:15:37+08:00"
+        },
+        "loop_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/code-review.md"
+          ],
+          "note": "Read-only message task and recovery paths preserved",
+          "recorded_at": "2026-08-10T19:15:38+08:00"
+        },
+        "loop_states": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/code-review.md"
+          ],
+          "note": "Default Loading Empty Error LoginRequired LongContent NetworkFailure covered",
+          "recorded_at": "2026-08-10T19:15:39+08:00"
+        },
+        "harness_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/code-review.md"
+          ],
+          "note": "ImageGen Figma and mini-program code reviewed",
+          "recorded_at": "2026-08-10T19:15:39+08:00"
+        },
+        "harness_component": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/figma-review.md"
+          ],
+          "note": "MessageRow and PageState semantics reused without global style fork",
+          "recorded_at": "2026-08-10T19:15:40+08:00"
+        },
+        "harness_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/code-review.md"
+          ],
+          "note": "Touch labels status feedback and readability reviewed",
+          "recorded_at": "2026-08-10T19:15:40+08:00"
+        },
+        "harness_engineering": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/code-review.md"
+          ],
+          "note": "Preview and static audits passed; backend and business logic unchanged",
+          "recorded_at": "2026-08-10T19:15:41+08:00"
+        },
+        "done": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/state.json"
+          ],
+          "note": "Messages local complete; device acceptance deferred",
+          "recorded_at": "2026-08-10T19:15:42+08:00"
+        }
+      },
+      "updated_at": "2026-08-10T19:15:42+08:00",
+      "blockers": []
     },
     {
       "index": 5,
