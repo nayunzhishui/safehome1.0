@@ -1,6 +1,6 @@
 # 首页 Figma 组件化复现规格
 
-状态：`blocked_before_figma_file_creation`
+状态：`blocked_pending_product_font_confirmation`
 页面：`pages/home/index`
 视觉基准：方案 A“编辑手帐”
 功能基准：`design/function-truth-table.md`
@@ -11,13 +11,15 @@ ImageGen：`C:/Users/32257/.codex/generated_images/019fe695-ee6b-7143-9310-0612b
 ## P0 Phase 0 Checklist：Discovery
 
 - `P0.a` 已读取首页 WXML、WXSS、JS、JSON、公共 `app.wxss`、`journey-action-card`、`section-title`、体验 token 和功能真值表。
-- `P0.b` 待 Figma 文件创建后检查页面、变量、组件和样式；空文件时明确记录 N/A。
-- `P0.c` 待文件创建后检查可用库；本项目没有 Code Connect 文件时，不把第三方组件作为默认来源。
+- `P0.b` 已检查新文件：仅有空白 `Page 1`（ID `0:1`），0 个节点、0 个本地变量、0 个样式、0 个组件。
+- `P0.c` 已检查：仓库没有 Code Connect 文件，目标文件没有已添加库；可用社区库仅有 Material、Simple Design System 与 Apple 平台库，不符合本项目中文小程序品牌语义，均不采用。
 - `P0.d` 首页 v1 范围锁定为本文件列出的变量、组件、状态和单张 390px 设计稿。
 - `P0.e` 代码与方案 A 的冲突已记录在“差异处理”。
-- `P0.f` Figma 文件未创建，无法完成 Figma 侧 gap analysis。
+- `P0.f` 已完成 gap analysis：目标文件无可复用设计系统，首页应按本规格建立本地 Variables、Styles 与 Components；设计系统搜索 `button`、`list`、`background`、`space` 均为空。
 
-Phase 0 退出条件：Figma MCP 恢复、文件创建成功、现有文件/库检查完成、gap analysis 写回本文件。
+Figma 文件：`https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs`（fileKey `8vocq2yUvjQavYpaxGotPs`）。
+
+Phase 0 当前唯一阻断：Figma 可用字体只有 `Noto Sans SC`，冻结规格中的 `PingFang SC` 与 `Microsoft YaHei` 均不可用。用户确认字体替代前不得进入 P1 或绘制组件。
 
 ## 1. 页面任务与固定模块
 
@@ -126,7 +128,7 @@ Figma Pages：
 
 ## 4. Typography
 
-产品字体：`PingFang SC`，Windows 代码回退为 `Microsoft YaHei`。Figma 创建前必须用可用字体列表确认真实 family/style；如果两者均不可用，停止并记录字体阻断，不得默认改用 Inter。
+产品字体：代码侧为 `PingFang SC`，Windows 回退为 `Microsoft YaHei`。Figma 实测两者均不可用，仅有 `Noto Sans SC` 的 Black、Bold、DemiLight、Light、Medium、Regular、Thin。当前已按门禁停止；若用户批准替代，则 Figma 使用 `Noto Sans SC Regular/Medium/Bold`，代码仍保留原字体栈，不修改全局字体。
 
 | Text Style | Size/Line | Weight | 用途 |
 |---|---|---:|---|

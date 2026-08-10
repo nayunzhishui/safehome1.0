@@ -1,32 +1,42 @@
 {
   "runId": "safehome-ui-product-20260810",
   "fileName": "安心陪伴 UIproduct",
-  "fileKey": null,
-  "fileUrl": null,
+  "fileKey": "8vocq2yUvjQavYpaxGotPs",
+  "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
   "phase": "phase0_blocked",
-  "step": "figma_reauthentication_required",
+  "step": "product_font_confirmation_required",
   "blocker": {
-    "type": "figma_reauthentication_required",
-    "message": "Figma 应用明确要求重新认证，尚未创建文件",
-    "attempts": 5,
+    "type": "product_font_unavailable",
+    "message": "Figma 不提供冻结规格中的 PingFang SC 或 Microsoft YaHei；仅发现 Noto Sans SC，替换前需用户确认",
+    "availableCandidate": "Noto Sans SC",
     "lastObserved": "2026-08-10"
   },
   "entities": {
     "collections": {},
     "variables": {},
     "styles": {},
-    "pages": {},
+    "pages": {
+      "initial": {
+        "id": "0:1",
+        "name": "Page 1",
+        "children": 0
+      }
+    },
     "components": {},
     "screens": {}
   },
   "pendingValidations": [
-    "P0.b inspect target file",
-    "P0.c inspect libraries",
-    "P0.f gap analysis"
+    "用户确认是否以 Noto Sans SC 作为 Figma 中文字体",
+    "字体确认后进入 P1 Foundations"
   ],
   "completedSteps": [
     "P0.a code discovery",
     "P0.d local scope lock",
-    "P0.e code-image conflict map"
+    "P0.e code-image conflict map",
+    "Figma authorization restored",
+    "Figma file created",
+    "P0.b empty target file inspected",
+    "P0.c Code Connect and libraries inspected",
+    "P0.f local design-system gap analysis"
   ]
 }

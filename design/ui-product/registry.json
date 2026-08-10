@@ -62,13 +62,19 @@
           "recorded_at": "2026-08-10T01:55:46+08:00"
         }
       },
-      "updated_at": "2026-08-10T02:12:29+08:00",
+      "updated_at": "2026-08-10T03:00:00+08:00",
       "blockers": [
         {
           "stage": "figma",
           "note": "Figma 应用明确返回 requires reauthentication；需用户重新认证后才能创建文件，未进入代码实现",
           "recorded_at": "2026-08-10T02:12:29+08:00",
           "attempt_count": 4
+        },
+        {
+          "stage": "figma",
+          "note": "Figma 授权已恢复并创建文件 8vocq2yUvjQavYpaxGotPs；Phase 0 发现 PingFang SC 与 Microsoft YaHei 均不可用，仅有 Noto Sans SC，等待用户确认字体替代",
+          "recorded_at": "2026-08-10T03:00:00+08:00",
+          "attempt_count": 1
         }
       ]
     },
