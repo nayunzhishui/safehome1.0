@@ -1,0 +1,315 @@
+{
+  "schema": "safehome.rc0810.wechat-external-evidence-catalog.v1",
+  "phase": "definition_only",
+  "release_gate_eligible": false,
+  "scope_note": "F12-A only freezes evidence definitions. It does not prove a real RC, device, platform review, or production approval.",
+  "external_gates": {
+    "wechat_platform_operator": "pending_external",
+    "device_operator": "pending_external"
+  },
+  "state_machine": {
+    "states": [
+      "machine_pass",
+      "evidence_ready",
+      "human_verified",
+      "platform_approved"
+    ],
+    "automation_max_state": "evidence_ready",
+    "human_signature_required_from": "human_verified",
+    "platform_signature_required_for": "platform_approved",
+    "synthetic_max_state": "machine_pass"
+  },
+  "binding_requirements": [
+    "commit",
+    "source_tree",
+    "package_sha256",
+    "appid_fingerprint",
+    "cloudbase_env_id",
+    "cloudbase_service"
+  ],
+  "environment_requirements": [
+    "base_library_version",
+    "devtools_version",
+    "device_model",
+    "os_version",
+    "wechat_version"
+  ],
+  "artifact_requirements": [
+    "path",
+    "sha256",
+    "captured_at",
+    "package_sha256",
+    "request_id",
+    "account_role"
+  ],
+  "artifact_policy": {
+    "real_evidence": "artifact_root_required_file_exists_and_sha256_recomputed",
+    "synthetic_evidence": "path_must_start_with_.codex_tmp/rc0810/synthetic_and_never_release_eligible",
+    "cross_evidence_duplicate_sha256": "reject"
+  },
+  "attestation_contract": {
+    "schema": "safehome.rc0810.external-attestation.v1",
+    "required_fields": [
+      "schema",
+      "state",
+      "actor_id",
+      "identity_source",
+      "challenge_nonce",
+      "evidence_core_sha256",
+      "previous_transition_sha256",
+      "issued_at",
+      "verification_method",
+      "source_reference",
+      "issuer",
+      "review_id",
+      "package_sha256",
+      "appid_fingerprint",
+      "signature_base64"
+    ],
+    "human_verification_method": "detached_human_decision",
+    "platform_verification_method": "wechat_platform_receipt"
+  },
+  "trusted_identity_policy": {
+    "status": "pending_external",
+    "signature_algorithm": "rsa_pkcs1_v1_5_sha256",
+    "identities": {},
+    "f12a_max_state_without_trusted_identity": "evidence_ready"
+  },
+  "account_role_policy": {
+    "health_ready_auth": ["authenticated_parent", "unauthenticated_probe"],
+    "wechat_login": ["parent"],
+    "phone_login": ["parent"],
+    "message_flow": ["parent"],
+    "foreground_background": ["parent"],
+    "cold_start": ["parent"]
+  },
+  "scenarios": [
+    {
+      "id": "health_ready_auth",
+      "steps": [
+        {"id": "healthz", "expected": "health endpoint succeeds"},
+        {"id": "readyz", "expected": "readiness endpoint succeeds"},
+        {"id": "authenticated_request", "expected": "authorization boundary and request trace are visible"}
+      ],
+      "expected": "health and readiness succeed; unauthenticated access is rejected; authenticated access is traceable"
+    },
+    {
+      "id": "wechat_login",
+      "steps": [
+        {"id": "launch", "expected": "bound package launches"},
+        {"id": "authorize", "expected": "WeChat authorization is requested"},
+        {"id": "exchange_session", "expected": "session exchange is traceable"},
+        {"id": "open_home", "expected": "bound account reaches home"}
+      ],
+      "expected": "WeChat login reaches the bound RC account without bypassing authorization"
+    },
+    {
+      "id": "phone_login",
+      "steps": [
+        {"id": "request_code", "expected": "verification request is traceable"},
+        {"id": "submit_code", "expected": "code is accepted only for the bound role"},
+        {"id": "open_home", "expected": "bound account reaches home"}
+      ],
+      "expected": "phone login succeeds only with the expected account role and traceable request identifiers"
+    },
+    {
+      "id": "message_flow",
+      "steps": [
+        {"id": "open_conversation", "expected": "conversation opens for the bound role"},
+        {"id": "send_message", "expected": "message request has a request identifier"},
+        {"id": "receive_result", "expected": "result maps to the same request identifier"}
+      ],
+      "expected": "message flow is bound to the RC package, request identifier, and account role"
+    },
+    {
+      "id": "foreground_background",
+      "steps": [
+        {"id": "enter_foreground", "expected": "foreground state is stable"},
+        {"id": "enter_background", "expected": "background transition preserves session"},
+        {"id": "resume_foreground", "expected": "foreground resume restores the expected state"}
+      ],
+      "expected": "session and visible state remain consistent after background and foreground transitions"
+    },
+    {
+      "id": "cold_start",
+      "steps": [
+        {"id": "terminate", "expected": "previous process is terminated"},
+        {"id": "cold_launch", "expected": "bound package cold launches"},
+        {"id": "open_home", "expected": "initial home state is stable"}
+      ],
+      "expected": "cold start uses the bound environment and reaches a stable initial state"
+    }
+  ],
+  "device_matrix": {
+    "phase": "definition_only_no_real_device_claim",
+    "required_dimensions": [
+      "device_model",
+      "os_version",
+      "wechat_version",
+      "base_library_version",
+      "account_role",
+      "package_sha256"
+    ],
+    "required_slots": [
+      {
+        "id": "ios_supported",
+        "platform": "iOS",
+        "coverage": "supported_real_device",
+        "status": "pending_external"
+      },
+      {
+        "id": "android_supported",
+        "platform": "Android",
+        "coverage": "supported_real_device",
+        "status": "pending_external"
+      }
+    ]
+  },
+  "evidence_classes": [
+    {
+      "id": "E01",
+      "name": "build_and_package",
+      "owner": "release_engineer",
+      "reviewer": "independent_release_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "human_verified",
+      "platform_approver": null,
+      "validity_days": 7,
+      "invalidation_dependencies": ["commit", "source_tree", "package_sha256"]
+    },
+    {
+      "id": "E02",
+      "name": "filing_and_category",
+      "owner": "compliance_owner",
+      "reviewer": "independent_compliance_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "human_verified",
+      "platform_approver": null,
+      "validity_days": 30,
+      "invalidation_dependencies": ["appid_fingerprint", "service_category", "filing_record"]
+    },
+    {
+      "id": "E03",
+      "name": "privacy_disclosure",
+      "owner": "privacy_owner",
+      "reviewer": "independent_privacy_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "human_verified",
+      "platform_approver": null,
+      "validity_days": 30,
+      "invalidation_dependencies": ["privacy_text_hash", "data_scope", "appid_fingerprint"]
+    },
+    {
+      "id": "E04",
+      "name": "cloud_and_domain",
+      "owner": "cloudbase_operator",
+      "reviewer": "independent_platform_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "human_verified",
+      "platform_approver": null,
+      "validity_days": 7,
+      "invalidation_dependencies": ["cloudbase_env_id", "cloudbase_service", "domain_allowlist"]
+    },
+    {
+      "id": "E05",
+      "name": "database_recovery",
+      "owner": "data_operator",
+      "reviewer": "independent_recovery_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "human_verified",
+      "platform_approver": null,
+      "validity_days": 14,
+      "invalidation_dependencies": ["backup_id", "schema_version", "recovery_procedure_hash"]
+    },
+    {
+      "id": "E06",
+      "name": "test_security_performance",
+      "owner": "qa_owner",
+      "reviewer": "independent_qa_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "human_verified",
+      "platform_approver": null,
+      "validity_days": 7,
+      "invalidation_dependencies": ["commit", "source_tree", "package_sha256", "test_plan_hash"]
+    },
+    {
+      "id": "E07",
+      "name": "real_device",
+      "owner": "device_operator",
+      "reviewer": "independent_device_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "platform_approved",
+      "platform_approver": "device_operator",
+      "validity_days": 7,
+      "invalidation_dependencies": ["package_sha256", "device_model", "os_version", "wechat_version"]
+    },
+    {
+      "id": "E08",
+      "name": "wechat_upload_and_review",
+      "owner": "wechat_platform_operator",
+      "reviewer": "independent_release_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "platform_approved",
+      "platform_approver": "wechat_platform_operator",
+      "validity_days": 7,
+      "invalidation_dependencies": ["upload_version", "package_sha256", "platform_review_id"]
+    },
+    {
+      "id": "E09",
+      "name": "ai_boundary",
+      "owner": "ai_governance_owner",
+      "reviewer": "independent_ai_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "human_verified",
+      "platform_approver": null,
+      "validity_days": 14,
+      "invalidation_dependencies": ["model_or_rule_version", "prompt_or_rule_hash", "risk_policy_hash"]
+    },
+    {
+      "id": "E10",
+      "name": "approval_gray_observation",
+      "owner": "release_owner",
+      "reviewer": "independent_release_reviewer",
+      "machine_actor_id": "rc0810-evidence-validator",
+      "max_state": "human_verified",
+      "platform_approver": null,
+      "validity_days": 7,
+      "invalidation_dependencies": ["approval_record", "gray_scope", "observation_window", "package_sha256"]
+    }
+  ],
+  "invalidation_propagation": {
+    "commit": ["E01", "E06"],
+    "source_tree": ["E01", "E06"],
+    "package_sha256": ["E01", "E06", "E07", "E08", "E10"],
+    "appid_fingerprint": ["E02", "E03", "E08"],
+    "service_category": ["E02", "E03", "E08"],
+    "filing_record": ["E02", "E08"],
+    "privacy_text_hash": ["E03", "E08"],
+    "data_scope": ["E03", "E08", "E09"],
+    "cloudbase_env_id": ["E04", "E07"],
+    "cloudbase_service": ["E04", "E07"],
+    "domain_allowlist": ["E04", "E07", "E08"],
+    "backup_id": ["E05"],
+    "schema_version": ["E05", "E06"],
+    "recovery_procedure_hash": ["E05"],
+    "test_plan_hash": ["E06", "E07"],
+    "device_model": ["E07"],
+    "os_version": ["E07"],
+    "wechat_version": ["E07"],
+    "upload_version": ["E08"],
+    "platform_review_id": ["E08", "E10"],
+    "model_or_rule_version": ["E09"],
+    "prompt_or_rule_hash": ["E09"],
+    "risk_policy_hash": ["E09"],
+    "approval_record": ["E10"],
+    "gray_scope": ["E10"],
+    "observation_window": ["E10"]
+  },
+  "recovery_policy": {
+    "retry": "new_attempt_id_and_new_artifact_hashes",
+    "evidence_invalidation": "mark_invalid_and_recollect",
+    "package_change": "invalidate_and_retest",
+    "device_replacement": "invalidate_device_evidence",
+    "resume": "resume_only_from_last_validated_state"
+  }
+}

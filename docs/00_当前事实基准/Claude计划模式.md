@@ -12091,3 +12091,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 第二次独立复审仍为 `fix_required`（decision SHA-256=`2155492ef0e2661309423c5633764633bb313b38842b1151afcca5c8a45568f2`）：完整失败日志违反运行态保存规则。已将完整 gzip 日志移至 `.codex_tmp/rc0810`，tracked 只保留脱敏结构化证据和 hash；离线验证为 `runtime_log_verified=true`，F10 专项 `7 passed in 3.20s`，完整 F00+F10 `13 passed in 167.95s`，待再次独立复审。
 - 第三次独立复审仍为 `fix_required`（decision SHA-256=`64ff922cafd71979ff08b1a5bd8d4833a9f15f2d9a21aba8e73eb0c6941c257e`）：只剩 clean checkout 测试强制 runtime gzip 存在。已改为同时验收“本地存在则复算=true”和“干净 checkout 缺失=false/NO-GO”，F10 专项 `7 passed in 8.75s`，完整 F00+F10 `13 passed in 218.22s`，待再次独立复审。
 - 第四次独立复审已 `pass`、无剩余 finding，decision SHA-256=`d7fb698d96b7233f60ae8300a7f8189c0c460308064758d7de6fd1de80e380c5`；独立复验 F10 `7 passed in 4.09s`、F00+F10 `13 passed in 167.66s`。本条属于通过后事实同步，需重建最终 packet 做一致性复审；最终通过后提交推送并停止于 F10-A。
+
+## 2026-08-10 RC0810-F12-A 微信外部证据定义合同
+
+- 本轮只完成 F12-A：冻结 E01—E10、六类场景、iOS/Android 设备槽位、四级证据状态、有效期、递归失效、制品/request_id/账户角色/时间线及 detached attestation 合同；未进入 F12-B 或业务修复。
+- F12-A 信任身份表保持空且为 `pending_external`，自动化与本地自报不能产生人工或平台批准；`release_gate_eligible=false`，正式上线仍为 NO-GO。
+- 独立审查经过两次 Fix Loop 后第三轮 `pass`，decision SHA-256=`c8a64dd1b3682209a6f1448416053c55cbfb453dd76707da1415c227089565a5`；复验 F12 `30 passed`、F00+F12 `37 passed`，定义校验、自检与 diff check 通过。
+- 本条同步后须重跑 Harness 并做最终文档一致性复审；通过后仅提交 F12-A 的 12 个允许文件并推送。下一入口为 `RC0810-F14-A`，本轮不自动开始。
+- 文档同步触发重验时修复了 Harness 过度失效：源码变化现在只把最新检查点及后继置 stale，已通过的历史依赖可恢复；注册表整体变化仍递归阻断。定向回归 `1 passed`，最终 Harness 验收需在本条后重新绑定。

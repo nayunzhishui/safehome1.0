@@ -356,12 +356,14 @@ def write_state(state: dict[str, Any]) -> None:
     atomic_write_json(pointer_path(), pointer)
 
 
-def _new_subtask_record(item: dict[str, Any], task: dict[str, Any]) -> dict[str, Any]:
+def _new_subtask_record(
+    item: dict[str, Any], task: dict[str, Any], allowed_scope: list[str]
+) -> dict[str, Any]:
     return {
         "id": item["id"],
         "status": "pending",
         "input_baseline": None,
-        "allowed_scope": task["allowed_files"],
+        "allowed_scope": allowed_scope,
         "actual_modified_files": [],
         "commands": [],
         "started_at": None,
@@ -938,6 +940,10 @@ def review_task(
                 raise HarnessError("源码、差异或注册表已变化；旧测试证据不得进入审查。")
             if task_state["status"] != "implemented":
                 raise HarnessError("只有implemented任务可生成独立审查包。")
+            current_contract_sha256 = _task_contract_sha256(task, unit)
+            start_contract_sha256 = task_state.get("start_task_contract_sha256")
+            if start_contract_sha256 != current_contract_sha256:
+                raise HarnessError("任务合同在start后发生漂移；必须重新冻结范围并重验。")
             delta = _task_delta(task_state["start_snapshot"], current_snapshot)
             packet = {
                 "schema": "safehome.rc0810.review-packet.v1",
@@ -946,7 +952,13 @@ def review_task(
                 "source_tree": current_snapshot["git"]["source_tree"],
                 "dirty_diff_sha256": current_snapshot["git"]["dirty_diff_sha256"],
                 "registry_sha256": sha256_bytes(REGISTRY_PATH.read_bytes()),
-                "task_contract_sha256": sha256_bytes(canonical_json(task)),
+                "task_contract_sha256": current_contract_sha256,
+                "initial_task_contract_sha256": task_state.get(
+                    "initial_task_contract_sha256"
+                ),
+                "start_task_contract_sha256": start_contract_sha256,
+                "current_task_contract_sha256": current_contract_sha256,
+                "start_registry_sha256": task_state.get("start_registry_sha256"),
                 "actual_modified_files": delta,
                 "concurrent_inherited_overlays": task_state.get(
                     "concurrent_inherited_overlays", []
@@ -1159,13 +1171,15 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
             )
             stale_reason.append("registry_changed")
         current_snapshot = collect_git_snapshot(registry)
-        roots.update(
-            task_id
-            for task_id, record in state["tasks"].items()
-            if record.get("outcomes")
-            and record["subtasks"][next(iter(record["subtasks"]))].get("source_tree")
-            != current_snapshot["git"]["source_tree"]
-        )
+        checkpoint = state.get("last_verified_checkpoint")
+        checkpoint_task_id = checkpoint.split(":", 1)[0] if checkpoint else None
+        checkpoint_record = state["tasks"].get(checkpoint_task_id or "")
+        if checkpoint_record and checkpoint_record.get("outcomes"):
+            bound_source_tree = checkpoint_record["subtasks"][
+                next(iter(checkpoint_record["subtasks"]))
+            ].get("source_tree")
+            if bound_source_tree != current_snapshot["git"]["source_tree"]:
+                roots.add(checkpoint_task_id)
         if roots and "registry_changed" not in stale_reason:
             stale_reason.append("source_tree_changed")
         if roots:
@@ -1185,6 +1199,18 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
                 }
                 for task_id in stale_tasks
             }
+            stale_unit_set = set(stale_units)
+            for unit_id, record in state["tasks"].items():
+                if unit_id in stale_unit_set or record.get("status") != "stale":
+                    continue
+                previous_status = record.get("previous_status")
+                if (
+                    previous_status
+                    in {"verified", "committed", "pushed", "engineering_complete"}
+                    and record.get("review", {}).get("decision") == "pass"
+                ):
+                    record["status"] = previous_status
+                    record["evidence_status"] = "current"
             for unit_id in stale_units:
                 if unit_id not in state["tasks"]:
                     continue
@@ -1379,6 +1405,10 @@ def _standard_start_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _task_contract_sha256(task: dict[str, Any], unit: dict[str, Any]) -> str:
+    return sha256_bytes(canonical_json({"task": task, "execution_unit": unit}))
+
+
 def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
     unit = unit_map(registry).get(task_id)
     if unit is None:
@@ -1423,6 +1453,14 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             existing["review"] = None
             existing["outcomes"] = []
             existing["evidence_status"] = "pending_retest"
+            contract_hash = _task_contract_sha256(task, unit)
+            existing.setdefault("initial_task_contract_sha256", contract_hash)
+            existing["start_task_contract_sha256"] = contract_hash
+            existing["start_registry_sha256"] = sha256_bytes(REGISTRY_PATH.read_bytes())
+            existing["iteration_started_at"] = utc_now()
+            allowed_scope = unit.get("allowed_files", task["allowed_files"])
+            for subtask_id in _unit_subtask_ids(unit, task):
+                existing["subtasks"][subtask_id]["allowed_scope"] = allowed_scope
             if task_id == "RC0810-F00":
                 existing["start_snapshot"] = _f00_start_snapshot(registry, task)
             state.setdefault("registry_history", []).append(state["registry_sha256"])
@@ -1439,9 +1477,15 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             "status": "in_progress",
             "started_at": utc_now(),
             "start_snapshot": frozen_start,
+            "initial_task_contract_sha256": _task_contract_sha256(task, unit),
+            "start_task_contract_sha256": _task_contract_sha256(task, unit),
+            "start_registry_sha256": sha256_bytes(REGISTRY_PATH.read_bytes()),
+            "iteration_started_at": utc_now(),
             "active_subtasks": _unit_subtask_ids(unit, task),
             "subtasks": {
-                item["id"]: _new_subtask_record(item, task)
+                item["id"]: _new_subtask_record(
+                    item, task, unit.get("allowed_files", task["allowed_files"])
+                )
                 for item in task["subtasks"]
             },
         }

@@ -385,6 +385,25 @@ def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_revie
         if index != 8
     )
 
+    state_path = runtime / pointer["state_path"]
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["tasks"]["RC0810-F00"]["status"] = "stale"
+    state["tasks"]["RC0810-F00"]["previous_status"] = "verified"
+    state["tasks"]["RC0810-F00"]["evidence_status"] = "stale"
+    state["tasks"]["RC0810-F10-A"]["subtasks"]["F10.1"]["source_tree"] = "0" * 40
+    state_path.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+    pointer["state_sha256"] = hashlib.sha256(state_path.read_bytes()).hexdigest()
+    (runtime / "state.json").write_text(
+        json.dumps(pointer, ensure_ascii=False), encoding="utf-8"
+    )
+
+    latest_only = run_cli("report", env=env)
+    assert latest_only.returncode == 0, latest_only.stderr
+    latest_report = json.loads(latest_only.stdout)
+    assert latest_report["tasks"]["RC0810-F00"]["status"] == "verified"
+    assert latest_report["tasks"]["RC0810-F10-A"]["status"] == "stale"
+    assert run_cli("start", "RC0810-F10-A", env=env).returncode == 0
+
 
 def test_timeout_and_tampered_evidence_fail_closed(tmp_path):
     failure_runtime = tmp_path / "failure-runtime"
@@ -518,3 +537,29 @@ def test_package_check_and_recursive_evidence_invalidation(tmp_path):
     assert json.loads(stale_report.stdout)["stale_tasks"] == [
         f"RC0810-F{index:02d}" for index in range(27)
     ]
+
+
+def test_review_rejects_task_contract_expanded_after_start(tmp_path):
+    runtime = tmp_path / "runtime-contract-drift"
+    registry_path = fixture_registry(tmp_path)
+    env = {
+        "RC0810_RUNTIME_ROOT": str(runtime),
+        "RC0810_REGISTRY_PATH": str(registry_path),
+        "RC0810_RUN_ID": "run-contract-drift",
+    }
+
+    started = run_cli("start", "RC0810-F00", env=env)
+    assert started.returncode == 0, started.stderr
+
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    registry["tasks"][0]["allowed_files"].append("docs/late-expansion/**")
+    registry["tasks"][0]["change_budget"]["allowed_modules"].append(
+        "docs/late-expansion/**"
+    )
+    registry_path.write_text(json.dumps(registry, ensure_ascii=False), encoding="utf-8")
+
+    verified = run_cli("verify", "RC0810-F00", env=env)
+    assert verified.returncode == 0, verified.stderr
+    reviewed = run_cli("review", "RC0810-F00", env=env)
+    assert reviewed.returncode == 2
+    assert "任务合同在start后发生漂移" in reviewed.stderr
