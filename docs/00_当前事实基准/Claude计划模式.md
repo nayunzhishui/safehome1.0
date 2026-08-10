@@ -12147,3 +12147,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [ ] Android/iOS、大字体和读屏统一延期到全部页面本地完成后的最终批次。
 - [ ] 当前按单页流程进入 `pages/login/index`；不得因延期而跳过 ImageGen、Figma、本地 Loop 1–4 或 Harness。
 - [ ] 53 页本地完成后启动全量真机 Loop 5，逐页记录 `pass` 或 `fix_required` 并完成修正回归。
+
+## 2026-08-10 UIproduct 登录页状态
+
+- [x] 登录页功能真值、需求冻结、现状审查与方案 A 方向完成。
+- [x] ImageGen v2 完成功能自审；v1 越界隐私卡已淘汰。
+- [ ] Figma Phase 0 只读发现：当前 MCP transport send error，未发生写入。
+- [ ] Figma 连接恢复后创建/复用组件、完成状态页与审查，再进入登录页代码。
+- [ ] 登录页前端、本地 Loop 1–4 和 Harness；真机继续留到 53 页本地完成后的最终批次。

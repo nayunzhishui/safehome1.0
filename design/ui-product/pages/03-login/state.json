@@ -1,0 +1,31 @@
+{
+  "route": "pages/login/index",
+  "title": "登录",
+  "status": "image_review_complete_figma_transport_blocked",
+  "scope": {
+    "frontendOnly": true,
+    "backendChanges": false,
+    "apiChanges": false,
+    "databaseChanges": false
+  },
+  "completed": [
+    "truth",
+    "freeze",
+    "imagegen",
+    "image_review"
+  ],
+  "nextGate": "figma_phase0_discovery",
+  "blocker": {
+    "type": "figma_transport",
+    "attemptCount": 2,
+    "note": "use_figma 与 whoami 均返回 MCP HTTP transport send error；未发生 Figma 写入"
+  },
+  "evidence": {
+    "truth": "design/function-truth-table.md",
+    "context": "design/ui-product/pages/03-login/context.md",
+    "audit": "design/ui-product/pages/03-login/audit.md",
+    "ideate": "design/ui-product/pages/03-login/ideate.md",
+    "imagegen": "design/ui-product/pages/03-login/assets/imagegen-default-v2.png",
+    "imageReview": "design/ui-product/pages/03-login/image-review.md"
+  }
+}

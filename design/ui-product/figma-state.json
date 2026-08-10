@@ -3,9 +3,14 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase6_frontend_local_loops_complete",
-  "step": "local_harness_pending_device_review_deferred",
-  "blocker": null,
+  "phase": "phase7_login_figma_discovery",
+  "step": "figma_transport_unavailable",
+  "blocker": {
+    "type": "figma_transport",
+    "message": "use_figma 与 whoami 均在 https://chatgpt.com/backend-api/ps/mcp 返回 HTTP transport send error",
+    "attemptCount": 2,
+    "recordedAt": "2026-08-10T14:35:00+08:00"
+  },
   "entities": {
     "collections": {
       "Primitive": "VariableCollectionId:2:2",
@@ -113,6 +118,7 @@
     }
   },
   "pendingValidations": [
+    "Retry Figma read-only Phase 0 discovery for Login after connector transport recovers",
     "After all pages are locally complete, capture device screenshots for every page",
     "After all pages are locally complete, run Android and iOS visual checks",
     "During final device batch, run large-font and screen-reader checks"

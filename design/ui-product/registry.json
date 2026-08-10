@@ -32,7 +32,7 @@
     "done"
   ],
   "active_route": "pages/login/index",
-  "updated_at": "2026-08-10T14:12:12+08:00",
+  "updated_at": "2026-08-10T14:26:18+08:00",
   "pages": [
     {
       "index": 1,
@@ -172,9 +172,49 @@
       "route": "pages/login/index",
       "title": "登录",
       "source_hash": "b538d4c872f4c64ddd4cf5292f20b0f417e0fbe065c79ac22a9042e656f79896",
-      "stage": "truth_auto_complete",
-      "evidence": {},
-      "updated_at": "2026-08-10T01:41:08+08:00"
+      "stage": "figma_blocked",
+      "evidence": {
+        "truth": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/page-facts.json"
+          ],
+          "note": "登录页事件、五个认证接口、跳转、强制改密与状态真值已核对",
+          "recorded_at": "2026-08-10T14:17:14+08:00"
+        },
+        "freeze": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/context.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/audit.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/ideate.md"
+          ],
+          "note": "方案A编辑式通行页已冻结，不新增认证能力",
+          "recorded_at": "2026-08-10T14:17:15+08:00"
+        },
+        "imagegen": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/assets/imagegen-default-v2.png"
+          ],
+          "note": "方案A编辑式登录页 ImageGen v2",
+          "recorded_at": "2026-08-10T14:20:23+08:00"
+        },
+        "image_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/image-review.md"
+          ],
+          "note": "v1越界隐私卡已淘汰；v2功能与视觉自审通过",
+          "recorded_at": "2026-08-10T14:20:24+08:00"
+        }
+      },
+      "updated_at": "2026-08-10T14:26:18+08:00",
+      "blockers": [
+        {
+          "stage": "figma",
+          "note": "Figma use_figma 与 whoami 均发生 MCP HTTP transport send error；原子失败，未写入节点",
+          "recorded_at": "2026-08-10T14:26:18+08:00",
+          "attempt_count": 1
+        }
+      ]
     },
     {
       "index": 3,
