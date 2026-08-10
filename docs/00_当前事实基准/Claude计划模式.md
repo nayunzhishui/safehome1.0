@@ -12180,3 +12180,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [ ] 逐页完成剩余 51 页的 ImageGen、Figma、前端、本地 Loop 1–4 与 Harness。
 - [ ] 全部页面本地完成后，在 UIproduct worktree 统一合并当时 main；冲突同时保留两侧记录，更新基线并全量回归。
 - [ ] 合并与回归通过后，再启动统一真机验收和修正。
+
+## 2026-08-10 UIproduct 注册页状态
+
+- [x] 对照 WXML/JS/API/后端公开角色限制完成注册页功能真值与需求冻结。
+- [x] ImageGen v2 通过，移除只依赖 placeholder 的长度规则与按钮渐变感。
+- [x] Figma 复用现有 token、AuthField、Button，新增 SelectField 四状态并完成六屏审查。
+- [x] 仅实现注册页 WXML/WXSS和 Figma 导出箭头；注册 JS、API、后端和数据库未修改。
+- [x] 微信开发者工具 Preview、T23、资产和前端审计通过；本地 Loop 1–4 与四类 Harness 已登记。
+- [ ] 当前进入 `pages/messages/index`，继续执行同一单页流程。
+- [ ] 真机、Android/iOS、大字体和读屏仍待全部 53 页本地完成后统一验收。

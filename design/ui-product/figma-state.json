@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase9_register_truth_and_freeze",
-  "step": "register_truth_review_pending",
+  "phase": "phase11_register_local_complete",
+  "step": "register_complete_next_page_pending",
   "blocker": null,
   "entities": {
     "collections": {
@@ -98,19 +98,29 @@
       "IntensityScale": "42:150",
       "TimelineRecord": "45:40",
       "AuthField/Base": "56:56",
-      "AuthField": "58:53"
+      "AuthField": "58:53",
+      "__Icon/ChevronDown": "73:55",
+      "SelectField": "77:57"
     },
     "componentVariants": {
       "AuthField/Default": "56:56",
       "AuthField/Focused": "57:53",
       "AuthField/Filled": "57:58",
       "AuthField/Error": "57:63",
-      "AuthField/Disabled": "57:68"
+      "AuthField/Disabled": "57:68",
+      "SelectField/Default": "75:53",
+      "SelectField/Focused": "76:54",
+      "SelectField/Error": "76:59",
+      "SelectField/Disabled": "76:65"
     },
     "componentProperties": {
       "AuthField/Label": "Label#59:0",
       "AuthField/Content": "Content#59:6",
-      "AuthField/Message": "Message#59:12"
+      "AuthField/Message": "Message#59:12",
+      "SelectField/Label": "Label#77:0",
+      "SelectField/Value": "Value#77:5",
+      "SelectField/Message": "Message#77:10",
+      "SelectField/Icon": "Icon#77:15"
     },
     "screens": {
       "Home/Default": "30:2",
@@ -130,7 +140,13 @@
       "Login/Unavailable": "64:843",
       "Login/Error": "65:861",
       "Login/LongContent": "66:877",
-      "Login/MustChangePassword": "67:893"
+      "Login/MustChangePassword": "67:893",
+      "Register/Default": "80:907",
+      "Register/StudentSelected": "83:929",
+      "Register/Loading": "83:989",
+      "Register/ValidationError": "83:1034",
+      "Register/ApiError": "83:1081",
+      "Register/LongContent": "83:1132"
     },
     "screenNodes": {
       "Login/Default/Content": "61:804",
@@ -153,11 +169,22 @@
       "Login/MustChangePassword/CurrentPassword": "67:922",
       "Login/MustChangePassword/NewPassword": "67:927",
       "Login/MustChangePassword/ConfirmPassword": "67:932",
-      "Login/MustChangePassword/Submit": "67:937"
+      "Login/MustChangePassword/Submit": "67:937",
+      "Register/Default/Content": "80:908",
+      "Register/Default/Header": "80:928",
+      "Register/Default/Form": "80:932",
+      "Register/Default/Username": "81:908",
+      "Register/Default/Password": "81:915",
+      "Register/Default/Role": "81:941",
+      "Register/Default/Nickname": "81:948",
+      "Register/Default/Submit": "81:954",
+      "Register/Default/Login": "81:959",
+      "Register/Loading/StatusMessage": "83:1029",
+      "Register/ValidationError/StatusMessage": "83:1063",
+      "Register/ApiError/StatusMessage": "83:1118"
     }
   },
   "pendingValidations": [
-    "Review Register source truth and freeze its UI direction before ImageGen",
     "After all pages are locally complete, capture device screenshots for every page",
     "After all pages are locally complete, run Android and iOS visual checks",
     "During final device batch, run large-font and screen-reader checks"
@@ -200,6 +227,12 @@
     "Login Figma review passed: five AuthField variants, zero raw solid paints, six 390x844 states within viewport",
     "Login WXML/WXSS implemented without changing authentication JS, APIs or navigation",
     "Login WeChat DevTools preview compilation passed at about 1.4 MB",
-    "Login local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    "Login local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred",
+    "Register P0.a-P0.f discovery complete: existing foundations/AuthField/Button reused; local SelectField gap locked",
+    "Register __Icon/ChevronDown and SelectField four-state component set created with token bindings",
+    "Register six 390x844 Figma states completed and visually reviewed against ImageGen v2",
+    "Register WXML/WXSS and exact Figma chevron asset implemented without changing JS, APIs or navigation",
+    "Register WeChat DevTools preview compilation passed at about 1.4 MB",
+    "Register local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
   ]
 }

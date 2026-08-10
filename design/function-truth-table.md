@@ -161,7 +161,7 @@
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-10T17:28:50+08:00`
+生成时间：`2026-08-10T18:17:56+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -280,22 +280,22 @@
 ### 03：注册 `pages/register/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`09d61dfceb7c927e8a1fd0c8dabf010be173292783ea5263a255cf105c9e117c`
+- 源码指纹：`4be0d519ee2c4c215ce3d5986c00ce47ef392760a655a06f4b3470aff206e956`
 - 核对文件：`apps/miniprogram/pages/register/index.wxml`、`apps/miniprogram/pages/register/index.wxss`、`apps/miniprogram/pages/register/index.js`、`apps/miniprogram/pages/register/index.json`
 - 上游页面：`pages/login/index`、`pages/messages/index`、`pages/profile/index`
 - 页面组件：—
-- 主要可见内容：注册、当前开放家长和学生账号。研究者、督导和管理员由项目负责人单独开通。、用户名、密码、角色、昵称（可选）、已有账号，去登录
+- 主要可见内容：创建账号、当前开放家长和学生账号。研究者、督导和管理员由项目负责人单独开通。、账号信息、用户名、至少 3 个字符、密码、至少 8 个字符、角色、昵称（可选）、注册、已有账号，去登录
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 9 | — | `bindinput` | `onUsernameInput` | — |
-| 13 | — | `bindinput` | `onPasswordInput` | — |
-| 17 | — | `bindchange` | `onRoleChange` | — |
-| 23 | — | `bindinput` | `onNicknameInput` | — |
-| 27 | 注册 | `bindtap` | `submitRegister` | — |
-| 28 | 已有账号，去登录 | `bindtap` | `goLogin` | — |
+| 14 | 至少 3 个字符 | `bindinput` | `onUsernameInput` | — |
+| 20 | 至少 8 个字符 | `bindinput` | `onPasswordInput` | — |
+| 26 | 选择角色，当前为{{roleOptions[roleIndex].label}} | `bindchange` | `onRoleChange` | — |
+| 42 | — | `bindinput` | `onNicknameInput` | — |
+| 46 | 注册 | `bindtap` | `submitRegister` | — |
+| 47 | 已有账号，去登录 | `bindtap` | `goLogin` | — |
 
 #### 接口真值
 

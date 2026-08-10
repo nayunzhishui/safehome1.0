@@ -39,8 +39,8 @@
     "harness_engineering",
     "done"
   ],
-  "active_route": "pages/register/index",
-  "updated_at": "2026-08-10T17:28:50+08:00",
+  "active_route": "pages/messages/index",
+  "updated_at": "2026-08-10T18:17:56+08:00",
   "pages": [
     {
       "index": 1,
@@ -305,10 +305,125 @@
       "index": 3,
       "route": "pages/register/index",
       "title": "注册",
-      "source_hash": "09d61dfceb7c927e8a1fd0c8dabf010be173292783ea5263a255cf105c9e117c",
-      "stage": "truth_auto_complete",
-      "evidence": {},
-      "updated_at": "2026-08-10T01:41:08+08:00"
+      "source_hash": "4be0d519ee2c4c215ce3d5986c00ce47ef392760a655a06f4b3470aff206e956",
+      "stage": "complete",
+      "evidence": {
+        "truth": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md"
+          ],
+          "note": "注册字段、角色、校验、POST /api/auth/register、会话写入与跳转已按当前代码核对",
+          "recorded_at": "2026-08-10T17:35:08+08:00"
+        },
+        "freeze": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/context.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/audit.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/ideate.md"
+          ],
+          "note": "方案A开放式单页表单已冻结，不新增认证能力或公开角色",
+          "recorded_at": "2026-08-10T17:35:08+08:00"
+        },
+        "imagegen": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/assets/imagegen-default-v2.png"
+          ],
+          "note": "方案A注册页 ImageGen v2，四字段、角色选择、注册与登录真实路径",
+          "recorded_at": "2026-08-10T17:39:50+08:00"
+        },
+        "image_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/image-review.md"
+          ],
+          "note": "v1持久提示与平面按钮偏差已修正，v2功能与视觉自审通过",
+          "recorded_at": "2026-08-10T17:39:50+08:00"
+        },
+        "figma": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/figma-review.md"
+          ],
+          "note": "SelectField 4 variants and 6 register screens created",
+          "recorded_at": "2026-08-10T18:16:21+08:00"
+        },
+        "figma_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/figma-review.md"
+          ],
+          "note": "ImageGen to Figma review passed",
+          "recorded_at": "2026-08-10T18:16:21+08:00"
+        },
+        "implementation": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/code-review.md"
+          ],
+          "note": "WXML WXSS and Figma chevron implemented; JS unchanged",
+          "recorded_at": "2026-08-10T18:16:22+08:00"
+        },
+        "loop_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/code-review.md"
+          ],
+          "note": "Figma and code-level visual mapping passed; device batch deferred",
+          "recorded_at": "2026-08-10T18:16:22+08:00"
+        },
+        "loop_ui": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/code-review.md"
+          ],
+          "note": "Spacing typography radius icon and hierarchy passed",
+          "recorded_at": "2026-08-10T18:16:23+08:00"
+        },
+        "loop_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/code-review.md"
+          ],
+          "note": "Single primary task and native picker semantics preserved",
+          "recorded_at": "2026-08-10T18:16:23+08:00"
+        },
+        "loop_states": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/code-review.md"
+          ],
+          "note": "Default StudentSelected Loading ValidationError ApiError LongContent covered",
+          "recorded_at": "2026-08-10T18:16:24+08:00"
+        },
+        "harness_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/code-review.md"
+          ],
+          "note": "ImageGen Figma code mapping reviewed",
+          "recorded_at": "2026-08-10T18:16:24+08:00"
+        },
+        "harness_component": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/figma-review.md"
+          ],
+          "note": "AuthField Button and SelectField reused without style fork",
+          "recorded_at": "2026-08-10T18:16:25+08:00"
+        },
+        "harness_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/code-review.md"
+          ],
+          "note": "Labels instructions live region and touch targets reviewed",
+          "recorded_at": "2026-08-10T18:16:25+08:00"
+        },
+        "harness_engineering": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/code-review.md"
+          ],
+          "note": "Preview and static audits passed; backend and business logic unchanged",
+          "recorded_at": "2026-08-10T18:16:26+08:00"
+        },
+        "done": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/state.json"
+          ],
+          "note": "Register local complete; device acceptance deferred",
+          "recorded_at": "2026-08-10T18:16:26+08:00"
+        }
+      },
+      "updated_at": "2026-08-10T18:16:26+08:00"
     },
     {
       "index": 4,
