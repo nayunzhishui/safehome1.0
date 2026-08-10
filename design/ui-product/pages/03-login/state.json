@@ -1,7 +1,7 @@
 {
   "route": "pages/login/index",
   "title": "登录",
-  "status": "image_review_complete_figma_reauthentication_blocked",
+  "status": "local_complete_device_review_deferred",
   "scope": {
     "frontendOnly": true,
     "backendChanges": false,
@@ -12,20 +12,33 @@
     "truth",
     "freeze",
     "imagegen",
-    "image_review"
+    "image_review",
+    "figma",
+    "figma_review",
+    "implementation",
+    "loop_visual",
+    "loop_ui",
+    "loop_ux",
+    "loop_states",
+    "harness_visual",
+    "harness_component",
+    "harness_ux",
+    "harness_engineering",
+    "done"
   ],
-  "nextGate": "figma_phase0_discovery",
-  "blocker": {
-    "type": "figma_reauthentication_required",
-    "attemptCount": 3,
-    "note": "连续三轮检查均要求重新认证，已达到工作流 blocked 门槛；未发生 Figma 写入，重新授权后从只读 Phase 0 继续"
-  },
+  "nextGate": "final_device_batch_after_all_pages_local_complete",
+  "blocker": null,
   "evidence": {
     "truth": "design/function-truth-table.md",
     "context": "design/ui-product/pages/03-login/context.md",
     "audit": "design/ui-product/pages/03-login/audit.md",
     "ideate": "design/ui-product/pages/03-login/ideate.md",
     "imagegen": "design/ui-product/pages/03-login/assets/imagegen-default-v2.png",
-    "imageReview": "design/ui-product/pages/03-login/image-review.md"
+    "imageReview": "design/ui-product/pages/03-login/image-review.md",
+    "figmaGapAnalysis": "design/ui-product/pages/03-login/figma-gap-analysis.md",
+    "figma": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
+    "figmaReview": "design/ui-product/pages/03-login/figma-review.md",
+    "implementation": "apps/miniprogram/pages/login/index.wxml",
+    "codeReview": "design/ui-product/pages/03-login/code-review.md"
   }
 }

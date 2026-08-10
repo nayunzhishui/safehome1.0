@@ -1,51 +1,66 @@
 <view class="safe-page auth-page">
-  <view class="safe-card auth-card">
-    <view class="safe-eyebrow">SafeHome</view>
-    <view class="safe-h1">登录</view>
-    <view class="safe-body">登录后可以查看消息、阶段性反馈和个人记录。选择一种方便的方式继续。</view>
+  <view class="auth-shell">
+    <view class="auth-header">
+      <text class="auth-brand">SafeHome</text>
+      <text class="auth-title">登录</text>
+      <view wx:if="{{mustChangePassword}}" class="auth-summary">首次登录，请先设置新密码。完成后才可继续。</view>
+      <view wx:else class="auth-summary">登录后可以查看消息、阶段性反馈和个人记录。选择一种方便的方式继续。</view>
+    </view>
 
     <block wx:if="{{mustChangePassword}}">
-      <view class="password-change-title">首次登录，请先设置新密码</view>
-      <view class="auth-note">新密码至少 12 位，并包含三类字符。更新后临时密码和旧会话立即失效。</view>
-      <view class="field">
-        <text>临时密码</text>
-        <input value="{{currentPassword}}" password placeholder="请输入临时密码" bindinput="onCurrentPasswordInput" />
+      <view class="password-change-panel">
+        <view class="password-change-title">首次登录，请先设置新密码</view>
+        <view class="auth-note">新密码至少 12 位，并包含三类字符。更新后临时密码和旧会话立即失效。</view>
+
+        <view class="field password-field-first">
+          <text>临时密码</text>
+          <input value="{{currentPassword}}" password placeholder="请输入临时密码" bindinput="onCurrentPasswordInput" />
+        </view>
+        <view class="field">
+          <text>新密码</text>
+          <input value="{{newPassword}}" password placeholder="请输入新密码" bindinput="onNewPasswordInput" />
+        </view>
+        <view class="field">
+          <text>再次输入新密码</text>
+          <input value="{{confirmPassword}}" password placeholder="请再次输入新密码" bindinput="onConfirmPasswordInput" />
+        </view>
+
+        <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
+        <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitPasswordChange">更新密码并继续</button>
       </view>
-      <view class="field">
-        <text>新密码</text>
-        <input value="{{newPassword}}" password placeholder="请输入新密码" bindinput="onNewPasswordInput" />
-      </view>
-      <view class="field">
-        <text>再次输入新密码</text>
-        <input value="{{confirmPassword}}" password placeholder="请再次输入新密码" bindinput="onConfirmPasswordInput" />
-      </view>
-      <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
-      <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitPasswordChange">更新密码并继续</button>
     </block>
 
     <block wx:else>
-    <view class="auth-methods" aria-label="快捷登录方式">
-      <button wx:if="{{wechatAvailable}}" class="wechat-action" loading="{{wechatLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitWechatLogin">微信一键登录</button>
-      <view wx:else class="auth-unavailable" aria-label="微信一键登录暂不可用">微信一键登录（暂不可用）</view>
-      <button wx:if="{{phoneAvailable}}" class="phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="handlePhoneLogin">手机号快捷登录</button>
-      <view wx:else class="auth-unavailable auth-unavailable-secondary" aria-label="手机号快捷登录暂不可用">手机号快捷登录（暂不可用）</view>
-    </view>
-    <view class="auth-note">手机号仅用于识别你的账号，系统只保存不可逆摘要，不保存完整号码。</view>
-    <view wx:if="{{capabilityMessage}}" class="capability-note" aria-live="polite">{{capabilityMessage}}</view>
-    <view class="divider"><text>或使用账号密码</text></view>
+      <view class="auth-methods" aria-label="快捷登录方式">
+        <view class="auth-section-title">快捷登录</view>
+        <button wx:if="{{wechatAvailable}}" class="wechat-action" loading="{{wechatLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitWechatLogin">微信一键登录</button>
+        <view wx:else class="auth-unavailable" aria-label="微信一键登录暂不可用">微信一键登录（暂不可用）</view>
+        <button wx:if="{{phoneAvailable}}" class="phone-action" open-type="getPhoneNumber" loading="{{phoneLoading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindgetphonenumber="handlePhoneLogin">手机号快捷登录</button>
+        <view wx:else class="auth-unavailable auth-unavailable-secondary" aria-label="手机号快捷登录暂不可用">手机号快捷登录（暂不可用）</view>
 
-    <view class="field">
-      <text>用户名</text>
-      <input value="{{username}}" placeholder="请输入用户名" bindinput="onUsernameInput" />
-    </view>
-    <view class="field">
-      <text>密码</text>
-      <input value="{{password}}" password placeholder="请输入密码" bindinput="onPasswordInput" />
-    </view>
+        <view class="auth-privacy-note">
+          <text class="auth-privacy-dot">•</text>
+          <text class="auth-privacy-copy">手机号仅用于识别你的账号，系统只保存不可逆摘要，不保存完整号码。</text>
+        </view>
+        <view wx:if="{{capabilityMessage}}" class="capability-note" aria-live="polite">{{capabilityMessage}}</view>
+      </view>
 
-    <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
-    <button class="primary-action" loading="{{loading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitLogin">登录</button>
-    <button class="ghost-action" bindtap="goRegister">注册新账号</button>
+      <view class="divider"><text>或使用账号密码</text></view>
+
+      <view class="auth-form">
+        <view class="field">
+          <text>用户名</text>
+          <input value="{{username}}" placeholder="请输入用户名" bindinput="onUsernameInput" />
+        </view>
+        <view class="field">
+          <text>密码</text>
+          <input value="{{password}}" password placeholder="请输入密码" bindinput="onPasswordInput" />
+        </view>
+
+        <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
+        <button class="primary-action" loading="{{loading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitLogin">登录</button>
+        <button class="ghost-action" bindtap="goRegister">注册新账号</button>
+      </view>
     </block>
   </view>
 </view>

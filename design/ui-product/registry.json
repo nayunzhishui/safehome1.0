@@ -31,8 +31,8 @@
     "harness_engineering",
     "done"
   ],
-  "active_route": "pages/login/index",
-  "updated_at": "2026-08-10T16:21:48+08:00",
+  "active_route": "pages/register/index",
+  "updated_at": "2026-08-10T17:16:35+08:00",
   "pages": [
     {
       "index": 1,
@@ -164,15 +164,14 @@
           "recorded_at": "2026-08-10T14:12:12+08:00"
         }
       },
-      "updated_at": "2026-08-10T14:12:12+08:00",
-      "blockers": []
+      "updated_at": "2026-08-10T14:12:12+08:00"
     },
     {
       "index": 2,
       "route": "pages/login/index",
       "title": "登录",
-      "source_hash": "b538d4c872f4c64ddd4cf5292f20b0f417e0fbe065c79ac22a9042e656f79896",
-      "stage": "figma_blocked",
+      "source_hash": "ef23a0d79ededeffe32ef980d96e85c726015071111b0e4a50835e1afff88759",
+      "stage": "complete",
       "evidence": {
         "truth": {
           "items": [
@@ -204,17 +203,95 @@
           ],
           "note": "v1越界隐私卡已淘汰；v2功能与视觉自审通过",
           "recorded_at": "2026-08-10T14:20:24+08:00"
+        },
+        "figma": {
+          "items": [
+            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/figma-state.json",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/assets/figma-login-default.png"
+          ],
+          "note": "复用现有 token 与 Button，新增 AuthField 五状态组件及登录六状态页面",
+          "recorded_at": "2026-08-10T17:02:06+08:00"
+        },
+        "figma_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/figma-review.md"
+          ],
+          "note": "组件 token、状态语义、视口、长文案与 ImageGen 对照审核通过",
+          "recorded_at": "2026-08-10T17:02:06+08:00"
+        },
+        "implementation": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "登录页 WXML/WXSS 已按审核后的 Figma 实现，业务 JS 与接口未改",
+          "recorded_at": "2026-08-10T17:16:10+08:00"
+        },
+        "loop_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "开放式布局、字体层级、间距、圆角与色彩已对照 Figma",
+          "recorded_at": "2026-08-10T17:16:10+08:00"
+        },
+        "loop_ui": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "按钮、输入框、分隔与长文案尺寸检查通过",
+          "recorded_at": "2026-08-10T17:16:11+08:00"
+        },
+        "loop_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "快捷登录、账号密码、注册和强制改密路径保持原语义",
+          "recorded_at": "2026-08-10T17:16:11+08:00"
+        },
+        "loop_states": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "六种真实状态与原代码条件核对通过",
+          "recorded_at": "2026-08-10T17:16:12+08:00"
+        },
+        "harness_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "ImageGen、Figma 与代码层级对照通过，真机视觉延期",
+          "recorded_at": "2026-08-10T17:16:12+08:00"
+        },
+        "harness_component": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "复用令牌和原生控件，无重复 JS 组件或新增依赖",
+          "recorded_at": "2026-08-10T17:16:13+08:00"
+        },
+        "harness_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "持久标签、状态文字、触控尺寸与可读性检查通过",
+          "recorded_at": "2026-08-10T17:16:13+08:00"
+        },
+        "harness_engineering": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "开发者工具 preview 通过，未改后端/API/数据库/业务逻辑",
+          "recorded_at": "2026-08-10T17:16:14+08:00"
+        },
+        "done": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/code-review.md"
+          ],
+          "note": "登录页本地闭环完成，真机验收延期至全部页面完成",
+          "recorded_at": "2026-08-10T17:16:14+08:00"
         }
       },
-      "updated_at": "2026-08-10T16:21:48+08:00",
-      "blockers": [
-        {
-          "stage": "figma",
-          "note": "连续三轮 Figma 检查均失败，最新 whoami 仍要求重新认证；工作流已阻断，未写入节点且未绕过 Figma 修改前端",
-          "recorded_at": "2026-08-10T16:21:48+08:00",
-          "attempt_count": 3
-        }
-      ]
+      "updated_at": "2026-08-10T17:16:14+08:00"
     },
     {
       "index": 3,

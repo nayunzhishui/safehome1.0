@@ -3,14 +3,9 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase7_login_figma_discovery",
-  "step": "figma_reauthentication_required",
-  "blocker": {
-    "type": "figma_reauthentication_required",
-    "message": "Figma whoami 明确返回 app connection requires reauthentication；需用户重新授权连接",
-    "attemptCount": 3,
-    "recordedAt": "2026-08-10T16:21:48+08:00"
-  },
+  "phase": "phase9_register_waiting_main_baseline",
+  "step": "login_local_complete_global_harness_blocked_by_main_drift",
+  "blocker": null,
   "entities": {
     "collections": {
       "Primitive": "VariableCollectionId:2:2",
@@ -88,7 +83,8 @@
       "QA/Home": "39:2",
       "QA/Home/Verdict": "39:5",
       "QA/Home/Checks": "39:658",
-      "QA/DiaryHistory": "52:178"
+      "QA/DiaryHistory": "52:178",
+      "Components/AuthField": "56:53"
     },
     "components": {
       "Button": "18:59",
@@ -100,7 +96,21 @@
       "TabBarItem": "27:46",
       "PageStateInline": "28:56",
       "IntensityScale": "42:150",
-      "TimelineRecord": "45:40"
+      "TimelineRecord": "45:40",
+      "AuthField/Base": "56:56",
+      "AuthField": "58:53"
+    },
+    "componentVariants": {
+      "AuthField/Default": "56:56",
+      "AuthField/Focused": "57:53",
+      "AuthField/Filled": "57:58",
+      "AuthField/Error": "57:63",
+      "AuthField/Disabled": "57:68"
+    },
+    "componentProperties": {
+      "AuthField/Label": "Label#59:0",
+      "AuthField/Content": "Content#59:6",
+      "AuthField/Message": "Message#59:12"
     },
     "screens": {
       "Home/Default": "30:2",
@@ -114,11 +124,40 @@
       "DiaryHistory/Empty": "50:744",
       "DiaryHistory/Error": "50:774",
       "DiaryHistory/LongContent": "50:834",
-      "DiaryHistory/NetworkFailure": "50:804"
+      "DiaryHistory/NetworkFailure": "50:804",
+      "Login/Default": "61:803",
+      "Login/Loading": "63:823",
+      "Login/Unavailable": "64:843",
+      "Login/Error": "65:861",
+      "Login/LongContent": "66:877",
+      "Login/MustChangePassword": "67:893"
+    },
+    "screenNodes": {
+      "Login/Default/Content": "61:804",
+      "Login/Default/Header": "61:805",
+      "Login/Default/QuickMethods": "61:809",
+      "Login/Default/Divider": "61:826",
+      "Login/Default/Form": "61:830",
+      "Login/Default/WechatButton": "61:811",
+      "Login/Default/PhoneButton": "61:816",
+      "Login/Default/Username": "61:831",
+      "Login/Default/Password": "61:836",
+      "Login/Default/Submit": "61:841",
+      "Login/Default/Register": "61:846",
+      "Login/Loading/StatusMessage": "63:885",
+      "Login/Unavailable/CapabilityMessage": "64:891",
+      "Login/Error/StatusMessage": "65:907",
+      "Login/LongContent/CapabilityMessage": "66:903",
+      "Login/LongContent/StatusMessage": "66:904",
+      "Login/MustChangePassword/Form": "67:919",
+      "Login/MustChangePassword/CurrentPassword": "67:922",
+      "Login/MustChangePassword/NewPassword": "67:927",
+      "Login/MustChangePassword/ConfirmPassword": "67:932",
+      "Login/MustChangePassword/Submit": "67:937"
     }
   },
   "pendingValidations": [
-    "After user reauthenticates Figma, retry read-only Phase 0 discovery for Login",
+    "Before starting Register, reconcile externally advanced main pointer with explicit user authorization",
     "After all pages are locally complete, capture device screenshots for every page",
     "After all pages are locally complete, run Android and iOS visual checks",
     "During final device batch, run large-font and screen-reader checks"
@@ -143,6 +182,24 @@
     "P5 QA page completed: root 39:2, verdict 39:5, checks 39:658",
     "Diary-history truth, ImageGen, Figma, code and local loops completed",
     "Homepage frontend implemented against Figma after dependency completion",
-    "WeChat DevTools preview compilation passed"
+    "WeChat DevTools preview compilation passed",
+    "Login P0.a-P0.f discovery complete: local foundations and Button reused; AuthField and six screen states locked",
+    "Login AuthField documentation section and Default base component created",
+    "Login AuthField five visual variants created",
+    "Login AuthField component set created and laid out",
+    "Login AuthField text properties wired across five variants",
+    "Login AuthField Filled and Disabled border preview corrected while retaining token binding",
+    "Login Default screen created from Button and AuthField instances",
+    "Login Loading screen created with disabled fields and loading actions",
+    "Login Unavailable screen created from real capability fallback copy",
+    "Login Error screen initially exposed field-local feedback, then was corrected to the existing overall error semantics",
+    "Login LongContent screen created from existing capability and credential error copy",
+    "Login MustChangePassword screen created from the existing forced-password-change branch",
+    "Login AuthField Error variant now hugs 114px content height without overlap",
+    "Login Loading shows one active authentication path; Error uses the existing overall message without inferred field errors",
+    "Login Figma review passed: five AuthField variants, zero raw solid paints, six 390x844 states within viewport",
+    "Login WXML/WXSS implemented without changing authentication JS, APIs or navigation",
+    "Login WeChat DevTools preview compilation passed at about 1.4 MB",
+    "Login local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
   ]
 }

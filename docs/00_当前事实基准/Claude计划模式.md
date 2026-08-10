@@ -12152,14 +12152,22 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 
 - [x] 登录页功能真值、需求冻结、现状审查与方案 A 方向完成。
 - [x] ImageGen v2 完成功能自审；v1 越界隐私卡已淘汰。
-- [ ] Figma Phase 0 只读发现：当前 MCP transport send error，未发生写入。
-- [ ] Figma 连接恢复后创建/复用组件、完成状态页与审查，再进入登录页代码。
-- [ ] 登录页前端、本地 Loop 1–4 和 Harness；真机继续留到 53 页本地完成后的最终批次。
+- [x] Figma Phase 0 只读发现完成，授权恢复且未遗留原子失败写入。
+- [x] 复用 token/Button，新增 AuthField 五状态组件，完成登录六态与 Figma 审查。
+- [x] 登录页前端、本地 Loop 1–4 和逐页 Harness 完成；真机继续留到 53 页本地完成后的最终批次。
 
 ## 2026-08-10 UIproduct 登录页 Figma 重新认证门禁
 
 - [x] 复核 `UIproduct` 分支、登录页真值与 ImageGen 审查结果。
 - [x] 第二轮调用 Figma `whoami`，明确阻断为连接需要重新认证。
-- [ ] 用户重新授权 Figma 后，先恢复登录页 Phase 0 只读发现，再执行组件化复现与审查。
-- [ ] Figma 通过后才允许修改登录页前端；本地 Loop 1–4 与 Harness 仍逐页执行，真机继续统一后置。
+- [x] 用户重新授权 Figma 后，已从 Phase 0 只读发现恢复并完成组件化复现与审查。
+- [x] Figma 通过后才修改登录页前端；本地 Loop 1–4 与逐页 Harness 已完成，真机继续统一后置。
 - [x] 连续第三轮 `whoami` 仍要求重新认证；当前任务按阻断规则登记为 blocked，等待外部授权状态变化后恢复。
+
+## 2026-08-10 UIproduct 登录页完成与下一门禁
+
+- [x] 登录页 ImageGen → Figma → WXML/WXSS → 本地 Loop/Harness 完整闭环，注册表状态 `complete`。
+- [x] 微信开发者工具 `preview` 编译通过，未出现 WXSS 编译错误；业务 JS、认证接口、后端和数据库均未修改。
+- [x] 当前自动流程推进到 `pages/register/index`，但尚未开始注册页设计。
+- [ ] 主 worktree 的 main 已外部推进到 `9c7d77c`，与 UIproduct 核准基线 `65fcef4` 不一致；需负责人明确授权新的合并或基线处理后，才能恢复全局 Harness 并开始注册页。
+- [ ] 全部页面完成后统一执行 Android/iOS、读屏和大字体真机验收。

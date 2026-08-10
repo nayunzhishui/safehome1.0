@@ -161,7 +161,7 @@
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-10T14:11:55+08:00`
+生成时间：`2026-08-10T17:16:35+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -229,26 +229,26 @@
 ### 02：登录 `pages/login/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`b538d4c872f4c64ddd4cf5292f20b0f417e0fbe065c79ac22a9042e656f79896`
+- 源码指纹：`ef23a0d79ededeffe32ef980d96e85c726015071111b0e4a50835e1afff88759`
 - 核对文件：`apps/miniprogram/pages/login/index.wxml`、`apps/miniprogram/pages/login/index.wxss`、`apps/miniprogram/pages/login/index.js`、`apps/miniprogram/pages/login/index.json`
 - 上游页面：`pages/home/index`、`pages/register/index`、`pages/messages/index`、`pages/support-assistant/index`、`pages/profile/index`、`pages/settings-detail/index`
 - 页面组件：—
-- 主要可见内容：登录、登录后可以查看消息、阶段性反馈和个人记录。选择一种方便的方式继续。、首次登录，请先设置新密码、新密码至少 12 位，并包含三类字符。更新后临时密码和旧会话立即失效。、临时密码、新密码、再次输入新密码、更新密码并继续、微信一键登录、微信一键登录（暂不可用）、手机号快捷登录、手机号快捷登录（暂不可用）、手机号仅用于识别你的账号，系统只保存不可逆摘要，不保存完整号码。、或使用账号密码、用户名、密码、注册新账号
+- 主要可见内容：登录、首次登录，请先设置新密码。完成后才可继续。、登录后可以查看消息、阶段性反馈和个人记录。选择一种方便的方式继续。、首次登录，请先设置新密码、新密码至少 12 位，并包含三类字符。更新后临时密码和旧会话立即失效。、临时密码、新密码、再次输入新密码、更新密码并继续、快捷登录、微信一键登录、微信一键登录（暂不可用）、手机号快捷登录、手机号快捷登录（暂不可用）、手机号仅用于识别你的账号，系统只保存不可逆摘要，不保存完整号码。、或使用账号密码、用户名、密码、注册新账号
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 12 | — | `bindinput` | `onCurrentPasswordInput` | — |
-| 16 | — | `bindinput` | `onNewPasswordInput` | — |
-| 20 | — | `bindinput` | `onConfirmPasswordInput` | — |
-| 23 | 更新密码并继续 | `bindtap` | `submitPasswordChange` | — |
-| 28 | 微信一键登录 | `bindtap` | `submitWechatLogin` | — |
-| 30 | 手机号快捷登录 | `bindgetphonenumber` | `handlePhoneLogin` | — |
-| 39 | — | `bindinput` | `onUsernameInput` | — |
-| 43 | — | `bindinput` | `onPasswordInput` | — |
-| 47 | 登录 | `bindtap` | `submitLogin` | — |
-| 48 | 注册新账号 | `bindtap` | `goRegister` | — |
+| 17 | — | `bindinput` | `onCurrentPasswordInput` | — |
+| 21 | — | `bindinput` | `onNewPasswordInput` | — |
+| 25 | — | `bindinput` | `onConfirmPasswordInput` | — |
+| 29 | 更新密码并继续 | `bindtap` | `submitPasswordChange` | — |
+| 36 | 微信一键登录 | `bindtap` | `submitWechatLogin` | — |
+| 38 | 手机号快捷登录 | `bindgetphonenumber` | `handlePhoneLogin` | — |
+| 53 | — | `bindinput` | `onUsernameInput` | — |
+| 57 | — | `bindinput` | `onPasswordInput` | — |
+| 61 | 登录 | `bindtap` | `submitLogin` | — |
+| 62 | 注册新账号 | `bindtap` | `goRegister` | — |
 
 #### 接口真值
 
