@@ -1,6 +1,6 @@
 {
   "schema": "safehome.rc0810.registry.v1",
-  "version": "2026-08-10.f00",
+  "version": "2026-08-10.f10a",
   "frozen_baseline": {
     "captured_at": "2026-08-09T15:13:59.4299089Z",
     "branch": "main",
@@ -941,7 +941,35 @@
       "phase": "phase_a",
       "dependencies": [
         "RC0810-F00"
-      ]
+      ],
+      "subtasks": [
+        "F10.1",
+        "F10.8"
+      ],
+      "allowed_files": [
+        "backend/tests/test_rc0810_f10.py",
+        "backend/tests/test_rc0810_harness.py",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f10a_ci_failure_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f10a_github_actions_evidence.json",
+        "scripts/run_rc0810.py",
+        "scripts/verify_rc0810_f10_baseline.py"
+      ],
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
+      ],
+      "change_budget": {
+        "expected_files": 12,
+        "pause_when_actual_exceeds_percent": 50
+      }
     },
     {
       "id": "RC0810-F12-A",
@@ -1054,6 +1082,16 @@
       "dependencies": [
         "RC0810-F09",
         "RC0810-F10-A"
+      ],
+      "subtasks": [
+        "F10.2",
+        "F10.3",
+        "F10.4",
+        "F10.5",
+        "F10.6",
+        "F10.7",
+        "F10.8",
+        "F10.9"
       ]
     },
     {
@@ -2427,6 +2465,7 @@
         "apps/miniprogram/**",
         "scripts/**",
         "config/**",
+        "content/rc0810_release_candidate_registry.json",
         "docs/**"
       ],
       "forbidden_files": [
@@ -2451,7 +2490,8 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "expected_test_count": 7,
+          "status": "active_f10a_contract"
         }
       ],
       "external_gates": [],
@@ -2463,6 +2503,7 @@
           "apps/miniprogram/**",
           "scripts/**",
           "config/**",
+          "content/rc0810_release_candidate_registry.json",
           "docs/**"
         ],
         "forbidden_modules": [

@@ -12119,3 +12119,21 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - Harness 已绑定 commit、HEAD tree、脏源码树、dirty diff、命令证据、change budget、递归失效、断点恢复、独立审查判定和受信 artifact profile；脏工作区不能冒充 HEAD 验收。
 - 独立审查经过 2 次 Fix Loop 后通过；最终独立复验为 `6 passed in 120.94s`，判定证据 SHA-256 为 `21508f595d41cc9512e31fe89777807bc6a3b234fba8d945041a71c31acec862`。
 - F00 不构成 production 发布批准；下一执行单元是 `RC0810-F10-A`，需在新任务中启动，本线程停止于 F00。
+
+## 2026-08-10 RC0810-F10-A 执行记录（待独立审查）
+
+- 已冻结当前 main Actions run `31325141640`：`9 failed, 988 passed, 1 warning`，后续 11 个步骤因单 job fail-fast 跳过；该结果只能作为失败基线，`release_gate_eligible=false`。
+- 9 个失败已分为真实缺陷 5、合同漂移 3、快照漂移 1；F10-A 未改旧测试、workflow 或业务代码，F10.2—F10.7、F10.9 仍 pending。
+- 新增机器可读失败基线、离线验证器和 F10 专项测试；Harness 只激活 `F10.1/F10.8`，并显式隔离并行 UI overlay。
+- 专项测试 `5 passed`，F00+F10 Harness Fix Loop 回归 `11 passed in 133.85s`；最终 Harness 验收需在本次回填后重跑，随后等待真实独立审查，不得自签 pass。
+- 独立审查通过并提交/推送后，下一入口才是 `RC0810-F12-A`；本轮不得自动进入。
+
+### F10-A 独立审查 Fix Loop 2
+
+- 独立 reviewer 判定 `fix_required`，decision evidence SHA-256 为 `5044fe9e28b63319447e6030711f3f7923d073d08ef979fef168a1e1912deba8`；未把该结论冒充 pass。
+- 已仅修四项 finding：decision 阶段拒绝 packet 后源码/dirty diff/registry 漂移；冻结原始 Actions run/job/failed-log 证据并离线复算；统一 12 文件 change budget；直接覆盖 F10.1/F10.8 分阶段验收状态。
+- 验证：F10 专项 `6 passed in 3.92s`；Harness 生命周期 `1 passed in 131.09s`；完整 F00+F10 回归 `12 passed in 173.84s`；离线基线、Python 编译和 `git diff --check` 通过。最终 Harness 证据和独立复审仍待执行。
+- 当前仍不是 Release GO，不提交、不推送；独立复审通过后停止于 F10-A，下一入口才是 `RC0810-F12-A`。
+- 第二次独立复审仍为 `fix_required`（decision SHA-256=`2155492ef0e2661309423c5633764633bb313b38842b1151afcca5c8a45568f2`）：完整失败日志违反运行态保存规则。已将完整 gzip 日志移至 `.codex_tmp/rc0810`，tracked 只保留脱敏结构化证据和 hash；离线验证为 `runtime_log_verified=true`，F10 专项 `7 passed in 3.20s`，完整 F00+F10 `13 passed in 167.95s`，待再次独立复审。
+- 第三次独立复审仍为 `fix_required`（decision SHA-256=`64ff922cafd71979ff08b1a5bd8d4833a9f15f2d9a21aba8e73eb0c6941c257e`）：只剩 clean checkout 测试强制 runtime gzip 存在。已改为同时验收“本地存在则复算=true”和“干净 checkout 缺失=false/NO-GO”，F10 专项 `7 passed in 8.75s`，完整 F00+F10 `13 passed in 218.22s`，待再次独立复审。
+- 第四次独立复审已 `pass`、无剩余 finding，decision SHA-256=`d7fb698d96b7233f60ae8300a7f8189c0c460308064758d7de6fd1de80e380c5`；独立复验 F10 `7 passed in 4.09s`、F00+F10 `13 passed in 167.66s`。本条属于通过后事实同步，需重建最终 packet 做一致性复审；最终通过后提交推送并停止于 F10-A。
