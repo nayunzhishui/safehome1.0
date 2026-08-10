@@ -1,7 +1,7 @@
 {
   "route": "pages/login/index",
   "title": "登录",
-  "status": "image_review_complete_figma_transport_blocked",
+  "status": "image_review_complete_figma_reauthentication_blocked",
   "scope": {
     "frontendOnly": true,
     "backendChanges": false,
@@ -16,9 +16,9 @@
   ],
   "nextGate": "figma_phase0_discovery",
   "blocker": {
-    "type": "figma_transport",
+    "type": "figma_reauthentication_required",
     "attemptCount": 2,
-    "note": "use_figma 与 whoami 均返回 MCP HTTP transport send error；未发生 Figma 写入"
+    "note": "第二轮 whoami 已明确连接需要重新认证；未发生 Figma 写入，重新授权后从只读 Phase 0 继续"
   },
   "evidence": {
     "truth": "design/function-truth-table.md",

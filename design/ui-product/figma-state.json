@@ -4,12 +4,12 @@
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
   "phase": "phase7_login_figma_discovery",
-  "step": "figma_transport_unavailable",
+  "step": "figma_reauthentication_required",
   "blocker": {
-    "type": "figma_transport",
-    "message": "use_figma 与 whoami 均在 https://chatgpt.com/backend-api/ps/mcp 返回 HTTP transport send error",
+    "type": "figma_reauthentication_required",
+    "message": "Figma whoami 明确返回 app connection requires reauthentication；需用户重新授权连接",
     "attemptCount": 2,
-    "recordedAt": "2026-08-10T14:35:00+08:00"
+    "recordedAt": "2026-08-10T16:18:23+08:00"
   },
   "entities": {
     "collections": {
@@ -118,7 +118,7 @@
     }
   },
   "pendingValidations": [
-    "Retry Figma read-only Phase 0 discovery for Login after connector transport recovers",
+    "After user reauthenticates Figma, retry read-only Phase 0 discovery for Login",
     "After all pages are locally complete, capture device screenshots for every page",
     "After all pages are locally complete, run Android and iOS visual checks",
     "During final device batch, run large-font and screen-reader checks"
