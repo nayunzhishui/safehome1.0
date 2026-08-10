@@ -32,7 +32,7 @@
     "done"
   ],
   "active_route": "pages/login/index",
-  "updated_at": "2026-08-10T16:18:23+08:00",
+  "updated_at": "2026-08-10T16:21:48+08:00",
   "pages": [
     {
       "index": 1,
@@ -206,13 +206,13 @@
           "recorded_at": "2026-08-10T14:20:24+08:00"
         }
       },
-      "updated_at": "2026-08-10T16:18:23+08:00",
+      "updated_at": "2026-08-10T16:21:48+08:00",
       "blockers": [
         {
           "stage": "figma",
-          "note": "第二轮 whoami 检查明确返回 Figma 连接需要重新认证；未写入节点，禁止绕过 Figma 进入前端",
-          "recorded_at": "2026-08-10T16:18:23+08:00",
-          "attempt_count": 2
+          "note": "连续三轮 Figma 检查均失败，最新 whoami 仍要求重新认证；工作流已阻断，未写入节点且未绕过 Figma 修改前端",
+          "recorded_at": "2026-08-10T16:21:48+08:00",
+          "attempt_count": 3
         }
       ]
     },

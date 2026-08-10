@@ -17,8 +17,8 @@
   "nextGate": "figma_phase0_discovery",
   "blocker": {
     "type": "figma_reauthentication_required",
-    "attemptCount": 2,
-    "note": "第二轮 whoami 已明确连接需要重新认证；未发生 Figma 写入，重新授权后从只读 Phase 0 继续"
+    "attemptCount": 3,
+    "note": "连续三轮检查均要求重新认证，已达到工作流 blocked 门槛；未发生 Figma 写入，重新授权后从只读 Phase 0 继续"
   },
   "evidence": {
     "truth": "design/function-truth-table.md",
