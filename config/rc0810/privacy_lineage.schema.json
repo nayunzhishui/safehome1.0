@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "safehome.rc0810.privacy-lineage.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "phase",
+    "generated_from",
+    "source_bindings",
+    "assets",
+    "external_processors",
+    "privacy_owner",
+    "release_gate_eligible"
+  ],
+  "properties": {
+    "schema": {"const": "safehome.rc0810.privacy-lineage.v1"},
+    "version": {"type": "string", "minLength": 1},
+    "phase": {"const": "phase_a_baseline"},
+    "generated_from": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["models", "migrations", "routes", "services"],
+      "properties": {
+        "models": {"type": "string"},
+        "migrations": {"type": "string"},
+        "routes": {"type": "string"},
+        "services": {"type": "string"}
+      }
+    },
+    "source_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "models_sha256",
+        "migration_manifest_sha256",
+        "route_manifest_sha256",
+        "service_manifest_sha256"
+      ],
+      "properties": {
+        "models_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "migration_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "route_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "service_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_id",
+          "table_name",
+          "schema_sources",
+          "columns_sha256",
+          "subject_keys",
+          "actor_keys",
+          "relationship_keys",
+          "access_paths",
+          "collection_purpose",
+          "retention_policy",
+          "export_policy",
+          "deletion_policy",
+          "anonymization_policy",
+          "tombstone_policy",
+          "external_processor_ids",
+          "review_status"
+        ],
+        "properties": {
+          "asset_id": {"type": "string", "pattern": "^table:[a-z_][a-z0-9_]*$"},
+          "table_name": {"type": "string", "pattern": "^[a-z_][a-z0-9_]*$"},
+          "schema_sources": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "columns_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "subject_keys": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "actor_keys": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "relationship_keys": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "access_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "collection_purpose": {"const": "pending_privacy_owner_confirmation"},
+          "retention_policy": {"const": "pending_privacy_owner_confirmation"},
+          "export_policy": {"const": "pending_privacy_owner_confirmation"},
+          "deletion_policy": {"const": "pending_privacy_owner_confirmation"},
+          "anonymization_policy": {"const": "pending_privacy_owner_confirmation"},
+          "tombstone_policy": {"type": "string", "minLength": 1},
+          "external_processor_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "review_status": {"const": "pending_external"}
+        }
+      }
+    },
+    "external_processors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "processor_id",
+          "endpoint_kind",
+          "endpoint",
+          "source_files",
+          "fields",
+          "purpose",
+          "necessity",
+          "sensitivity",
+          "retention",
+          "processor_role",
+          "export_capability",
+          "deletion_capability",
+          "privacy_notice_status",
+          "review_status"
+        ],
+        "properties": {
+          "processor_id": {"type": "string", "minLength": 1},
+          "endpoint_kind": {"enum": ["fixed_host", "fixed_endpoint", "dynamic_endpoint"]},
+          "endpoint": {"type": "string", "minLength": 1},
+          "source_files": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "fields": {"const": "pending_privacy_owner_confirmation"},
+          "purpose": {"const": "pending_privacy_owner_confirmation"},
+          "necessity": {"const": "pending_privacy_owner_confirmation"},
+          "sensitivity": {"const": "pending_privacy_owner_confirmation"},
+          "retention": {"const": "pending_privacy_owner_confirmation"},
+          "processor_role": {"const": "pending_privacy_owner_confirmation"},
+          "export_capability": {"const": "pending_privacy_owner_confirmation"},
+          "deletion_capability": {"const": "pending_privacy_owner_confirmation"},
+          "privacy_notice_status": {"const": "pending_external"},
+          "review_status": {"const": "pending_external"}
+        }
+      }
+    },
+    "privacy_owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "status"],
+      "properties": {
+        "owner": {"const": "privacy_owner"},
+        "status": {"const": "pending_external"}
+      }
+    },
+    "release_gate_eligible": {"const": false}
+  }
+}

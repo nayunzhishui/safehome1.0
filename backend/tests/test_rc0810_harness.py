@@ -385,6 +385,18 @@ def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_revie
         if index != 8
     )
 
+    evolved_registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    evolved_registry["version"] += ".next-phase"
+    registry_path.write_text(
+        json.dumps(evolved_registry, ensure_ascii=False), encoding="utf-8"
+    )
+    next_phase = run_cli("start", "RC0810-F12-A", env=env)
+    assert next_phase.returncode == 0, next_phase.stderr
+    state = json.loads((runtime / pointer["state_path"]).read_text(encoding="utf-8"))
+    assert state["registry_sha256"] == hashlib.sha256(
+        registry_path.read_bytes()
+    ).hexdigest()
+
     state_path = runtime / pointer["state_path"]
     state = json.loads(state_path.read_text(encoding="utf-8"))
     state["tasks"]["RC0810-F00"]["status"] = "stale"
@@ -563,3 +575,21 @@ def test_review_rejects_task_contract_expanded_after_start(tmp_path):
     reviewed = run_cli("review", "RC0810-F00", env=env)
     assert reviewed.returncode == 2
     assert "任务合同在start后发生漂移" in reviewed.stderr
+
+    global_dir = tmp_path / "global-contract"
+    global_dir.mkdir()
+    global_registry_path = fixture_registry(global_dir)
+    global_env = {
+        "RC0810_RUNTIME_ROOT": str(global_dir / "runtime"),
+        "RC0810_REGISTRY_PATH": str(global_registry_path),
+        "RC0810_RUN_ID": "run-global-contract-drift",
+    }
+    assert run_cli("start", "RC0810-F00", env=global_env).returncode == 0
+    global_registry = json.loads(global_registry_path.read_text(encoding="utf-8"))
+    global_registry["claim_register"][0]["statement"] += " post-start drift"
+    global_registry_path.write_text(
+        json.dumps(global_registry, ensure_ascii=False), encoding="utf-8"
+    )
+    global_verified = run_cli("verify", "RC0810-F00", env=global_env)
+    assert global_verified.returncode == 2
+    assert "全局注册表合同发生变化" in global_verified.stderr

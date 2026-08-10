@@ -1,0 +1,4813 @@
+{
+  "schema": "safehome.rc0810.privacy-lineage.v1",
+  "version": "2026-08-10.f14a",
+  "phase": "phase_a_baseline",
+  "generated_from": {
+    "models": "backend/models.py",
+    "migrations": "backend/scripts/migrate_*.py",
+    "routes": "backend/routes/*.py",
+    "services": "backend/services/*.py"
+  },
+  "assets": [
+    {
+      "asset_id": "table:agent_runs",
+      "table_name": "agent_runs",
+      "schema_sources": [
+        "backend/services/schema_migration_service.py"
+      ],
+      "columns_sha256": "316773d52a332172467ed98bb4aeef389103bb40f907f8be6c7cfb5eb67bb2bd",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/agent_runtime_service.py",
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:agent_tool_calls",
+      "table_name": "agent_tool_calls",
+      "schema_sources": [
+        "backend/services/schema_migration_service.py"
+      ],
+      "columns_sha256": "7b488a6e2511ffb0f6a7f1cdd575836f1a207677823518d8a4c26492456a3361",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "run_id"
+      ],
+      "access_paths": [
+        "backend/services/agent_runtime_service.py",
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_knowledge_candidates",
+      "table_name": "ai_knowledge_candidates",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "32333c700ebbad3d6fc394a72284b62ef3c88d2fa4b0e30114fa97e888299e6b",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ai_qa_retrieval_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_knowledge_chunks",
+      "table_name": "ai_knowledge_chunks",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "81da7c6db35c5ac1c06cc5a9e872186852c48ed572a4c8e9f1389767d9dc2e7e",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "document_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_retrieval_service.py",
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_knowledge_documents",
+      "table_name": "ai_knowledge_documents",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "0770709b666d021f96c464f05e88198a11ea4dc87a671ec16a8c1443e782a775",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "item_id",
+        "release_id",
+        "version_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_retrieval_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_knowledge_evaluation_runs",
+      "table_name": "ai_knowledge_evaluation_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d95821e506a922edca571fc02b8fda781aa056cfb91f9ca9f077e6627224013e",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ai_qa_retrieval_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_provider_contract_evidence",
+      "table_name": "ai_provider_contract_evidence",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "b263df28080dca3206a0fa14210a18cbb03eb378ee39f3c0c482959091514dab",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "provider_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_provider_governance_service.py",
+        "backend/services/ai_qa_release_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_circuit_states",
+      "table_name": "ai_qa_circuit_states",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "646252dab665fd70cbab1137b8f7d854f5745eecf13bcbb921a3528ce948f412",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "scope_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_runtime_control_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_evaluation_reviews",
+      "table_name": "ai_qa_evaluation_reviews",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "56dd9e908f3bb83b202d16e1e4c907ce611460dfdd8fbf3e2bddcfaa0e7b0f63",
+      "subject_keys": [],
+      "actor_keys": [
+        "reviewer_id"
+      ],
+      "relationship_keys": [
+        "run_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_release_service.py",
+        "backend/services/ai_qa_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_evaluation_runs",
+      "table_name": "ai_qa_evaluation_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "81fe5e3d430e5055fec1b9c70719c741c5bdeb5986fc5bf00f2a679d963fc147",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ai_qa_release_service.py",
+        "backend/services/ai_qa_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_feedback",
+      "table_name": "ai_qa_feedback",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "f951029f2daa219af47668d52eb08fa93ad2a7229063aaf86077d2b7fc704896",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "message_id",
+        "session_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_messages",
+      "table_name": "ai_qa_messages",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "de33d87d162ecba066b48da762ab93f8227a9c21d27278e448a39497cb426757",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "session_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_runtime_control_service.py",
+        "backend/services/ai_qa_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_provider_events",
+      "table_name": "ai_qa_provider_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "4b1962a9feb5f5a935f9b68253250fff397cecdf73acbceff71859b302477097",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "provider_request_id",
+        "session_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_runtime_control_service.py",
+        "backend/services/ai_qa_service.py",
+        "backend/services/operations_governance_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_release_events",
+      "table_name": "ai_qa_release_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "0cebde0c01d6d49a2bd1eb4a5f060679fe2824a8e33e5c40379ed71eed15b9a6",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ai_qa_release_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_release_evidence_packages",
+      "table_name": "ai_qa_release_evidence_packages",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "48e143b389c858715287a164d5e8901a7f7ec48d48156302e1454c9fa115880a",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ai_qa_release_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_release_state",
+      "table_name": "ai_qa_release_state",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "b312a5819fb2b34d6b8271fdc3f23b8cf0a8527be51f4377a11a649ddf676498",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ai_qa_release_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_review_actions",
+      "table_name": "ai_qa_review_actions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "652af3f8c6719aad3af4532cd4270cd313c3bd63b261e0fd2ae30a40d181b6e3",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "review_case_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_review_service.py",
+        "backend/services/ai_qa_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_review_cases",
+      "table_name": "ai_qa_review_cases",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "23ac3d6697333a66a2f139e271622f61e7c2b7cc28bf20a670f6a553a27c544e",
+      "subject_keys": [
+        "recipient_user_id",
+        "subject_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "draft_author_id",
+        "message_id",
+        "publication_candidate_id",
+        "session_id"
+      ],
+      "access_paths": [
+        "backend/routes/ai_qa.py",
+        "backend/services/ai_qa_review_service.py",
+        "backend/services/ai_qa_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_runtime_control",
+      "table_name": "ai_qa_runtime_control",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "22e621998bf55d34f72df4832462448430cece55c62f256aa0df02e4a77b93e5",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ai_qa_release_service.py",
+        "backend/services/ai_qa_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_safety_events",
+      "table_name": "ai_qa_safety_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "510d3cf6c00b45181b5080a2c600903f70ad968d7f2cbf894368ce7ac1f8a51b",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "session_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ai_qa_sessions",
+      "table_name": "ai_qa_sessions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "11c91a8002da3b044f7e0fbe58f07b22688efe4e5bc7fd77023e39d1714aee0c",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "use_case_id"
+      ],
+      "access_paths": [
+        "backend/routes/ai_qa.py",
+        "backend/services/ai_qa_runtime_control_service.py",
+        "backend/services/ai_qa_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:assessment_results",
+      "table_name": "assessment_results",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "c1ca175db7845d1debc37b3f5af44ce6fc4e7fdc7db8fc5843cdadc8e1b55e62",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "client_submission_id",
+        "profile_cluster_id",
+        "profile_model_id",
+        "worksheet_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/assessments.py",
+        "backend/routes/general_growth.py",
+        "backend/routes/profile.py",
+        "backend/routes/research_workspace.py",
+        "backend/routes/supervision.py",
+        "backend/routes/training_plan.py",
+        "backend/services/assessment_execution_service.py",
+        "backend/services/assessment_profile_position_store.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/operations_governance_service.py",
+        "backend/services/participant_action_planner.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/progress_summary_service.py",
+        "backend/services/relationship_enrollment_service.py",
+        "backend/services/report_service.py",
+        "backend/services/research_participant_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:assessment_worksheets",
+      "table_name": "assessment_worksheets",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "ed05cea95c321a5a28660da1a03626efbd25fdd55a134bdd02a5279f208067eb",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "profile_model_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/assessments.py",
+        "backend/routes/profile.py",
+        "backend/routes/training_plan.py",
+        "backend/services/content_governance_service.py",
+        "backend/services/relationship_pilot_common.py",
+        "backend/services/research_methodology_service.py",
+        "backend/services/training_recommendation_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:audit_logs",
+      "table_name": "audit_logs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "37fe2eb4af5e1c695698e490ad538afa15d166dbf52e9038adac409d929b3e76",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "target_id"
+      ],
+      "access_paths": [
+        "backend/routes/product_events.py",
+        "backend/routes/profile.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/research_participant_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:checkins",
+      "table_name": "checkins",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "ae2eaa538305ce07fa894973df46c4b64516ac4c4023b528e88f743503193645",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "after_thermometer_id",
+        "before_thermometer_id",
+        "card_id",
+        "client_submission_id",
+        "diary_id",
+        "source_recommendation_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/checkins.py",
+        "backend/routes/general_growth.py",
+        "backend/routes/profile.py",
+        "backend/routes/research_workspace.py",
+        "backend/routes/training_plan.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/notification_service.py",
+        "backend/services/participant_action_planner.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/progress_summary_service.py",
+        "backend/services/report_service.py",
+        "backend/services/research_participant_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py",
+        "backend/services/therapeutic_assessment_service.py",
+        "backend/services/training_recommendation_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:computation_authorization_snapshots",
+      "table_name": "computation_authorization_snapshots",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "ec3bbbe7b0a077259cf16bae4b25c0a105176aa0526b4050b643b7046c576d47",
+      "subject_keys": [
+        "subject_hash"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "dataset_id"
+      ],
+      "access_paths": [
+        "backend/services/task37_lineage_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:computation_datasets",
+      "table_name": "computation_datasets",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "5c8048a069a7930d35f9768b7640e745bdedb7c63da6b483d0bec7854ae5f397",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/task37_lineage_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:computation_deletion_tombstones",
+      "table_name": "computation_deletion_tombstones",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "852c1fc8ba829fb6a1dc430dc1d31fb6412ad0819f1d3c59a5d90e66fadeb40b",
+      "subject_keys": [
+        "subject_hash"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "root_resource_id"
+      ],
+      "access_paths": [
+        "backend/services/task37_lineage_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "native_minimal_tombstone",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:computation_legal_holds",
+      "table_name": "computation_legal_holds",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "79e067a2d5eb37e74dfa8f6fffc4a878014a835e8ff4fa9e236914185ed12a87",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "scope_id"
+      ],
+      "access_paths": [
+        "backend/services/task37_lineage_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:computation_lineage_edges",
+      "table_name": "computation_lineage_edges",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "93025833c31fd7be4d896ff6806ead700813c35a3cd84be441325abe1f56df65",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "child_resource_id",
+        "parent_resource_id"
+      ],
+      "access_paths": [
+        "backend/services/task37_lineage_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:consent_records",
+      "table_name": "consent_records",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "cb7bb1a6633b526f678e0834c4550bb7b24d9f09a35edd0dcc36f083aa596b7b",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/routes/consent.py",
+        "backend/routes/family.py",
+        "backend/routes/parent_assessments.py",
+        "backend/routes/research_workspace.py",
+        "backend/services/ai_qa_service.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/participant_safeguard_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/research_analysis_service.py",
+        "backend/services/research_queue_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:content_governance_releases",
+      "table_name": "content_governance_releases",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d13d3190a9c3d27f4c7cb717d7f65349fc586e2798b1b95831ac464c76f5828b",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "item_id",
+        "previous_release_id",
+        "version_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_retrieval_service.py",
+        "backend/services/content_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:content_governance_reviews",
+      "table_name": "content_governance_reviews",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "77bfe851e6a2b84905ed66b7c8c8fb6c92254294ce0a284b9e64ee1bbcec1dba",
+      "subject_keys": [],
+      "actor_keys": [
+        "reviewer_id"
+      ],
+      "relationship_keys": [
+        "version_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_retrieval_service.py",
+        "backend/services/content_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:content_governance_versions",
+      "table_name": "content_governance_versions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "6cd6a4e520644b3f47709dbe11c2d1b9f9c42247c29d78976ef021e91886aa13",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "item_id",
+        "parent_version_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_retrieval_service.py",
+        "backend/services/content_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:data_claims",
+      "table_name": "data_claims",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "b4d02fbd8abd89e24b8c3ea2ca1d7ab24016e9a4b3fbf19eb60d098445f3cf88",
+      "subject_keys": [
+        "anonymous_id",
+        "target_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/data_claim_service.py",
+        "backend/services/identity_lifecycle_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:emotion_diaries",
+      "table_name": "emotion_diaries",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "50061238de4aeee1e24603fd5d9d33697511a8e61b1d003872e67b8f8a10c7bd",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "client_submission_id",
+        "goal_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/diaries.py",
+        "backend/routes/feedback.py",
+        "backend/routes/general_growth.py",
+        "backend/routes/profile.py",
+        "backend/routes/research_workspace.py",
+        "backend/routes/supervision.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/operations_governance_service.py",
+        "backend/services/participant_action_planner.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/progress_summary_service.py",
+        "backend/services/report_service.py",
+        "backend/services/research_participant_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:emotion_thermometer",
+      "table_name": "emotion_thermometer",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "db4272756dc6358421f69946cff00b71b81536a3917ffbd77150a46e73c341c4",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/routes/emotion_thermometer.py",
+        "backend/routes/general_growth.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/progress_summary_service.py",
+        "backend/services/report_service.py",
+        "backend/services/research_participant_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:explicit_schema_migrations",
+      "table_name": "explicit_schema_migrations",
+      "schema_sources": [
+        "backend/services/schema_migration_service.py"
+      ],
+      "columns_sha256": "3cf5e415c58cd4f1d885a05247b21f0d02c2b173ba2602b64141772b2fe6fbf3",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:family_links",
+      "table_name": "family_links",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "b0d48e52e10a69f1423cdbe5aaae117c183a20c1cfd50717d5523fc76ccbd15e",
+      "subject_keys": [
+        "parent_user_id",
+        "student_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/routes/family.py",
+        "backend/routes/minor_safeguards.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/identity_lifecycle_service.py",
+        "backend/services/participant_safeguard_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:feature_flag_versions",
+      "table_name": "feature_flag_versions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "13c7b30ecf97c8ea3c7e24bfaffd0a6d77d8be6292bd138649ac592e6e390de5",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/reliability_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:feedback_ledger",
+      "table_name": "feedback_ledger",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "2da7144dbecca2f659886834aa9277fdc40726e3295fd5f591028808636f8028",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "source_id",
+        "supersedes_id"
+      ],
+      "access_paths": [
+        "backend/routes/feedback_ledger.py",
+        "backend/routes/product_events.py",
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/operations_governance_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/research_queue_service.py",
+        "backend/services/training_recommendation_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:feedback_ledger_actions",
+      "table_name": "feedback_ledger_actions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d06e91de816096af64e036b4f04de09722fc81293d20cd826d8cb452bc619ba9",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "entry_id",
+        "replacement_entry_id"
+      ],
+      "access_paths": [
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:feedback_results",
+      "table_name": "feedback_results",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "306671d46ec95077d9b582ba1b2d8d4c3b76926771481499014cc2766fb13417",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "diary_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/feedback.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/operations_governance_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/report_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:goals",
+      "table_name": "goals",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "7528d021634c0abedb3cdc072b544d9654dfa5d03751c6d28324b6665f3c088b",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "client_submission_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/goals.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:identity_merge_record_links",
+      "table_name": "identity_merge_record_links",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3510d8f1b9b53c2526a51948bcdbe0fa098d1dff52d76d936574b3a12d43c8ed",
+      "subject_keys": [
+        "source_user_id",
+        "target_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "record_id",
+        "workflow_id"
+      ],
+      "access_paths": [
+        "backend/services/identity_lifecycle_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:identity_merge_workflows",
+      "table_name": "identity_merge_workflows",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "757cee0d91e456a089708d490cf787c5e504e2b44608fc0d738d74fd06e26c8d",
+      "subject_keys": [
+        "source_user_id",
+        "target_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/identity_lifecycle_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:messages",
+      "table_name": "messages",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d8b2f91711e1d3d24c0214ebf0d69cf56fa2694abcd3851d73712984d57522f0",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "delivery_id",
+        "sender_id",
+        "source_id"
+      ],
+      "access_paths": [
+        "backend/routes/ai_qa.py",
+        "backend/routes/auth_utils.py",
+        "backend/routes/emotion_thermometer.py",
+        "backend/routes/general_growth.py",
+        "backend/routes/messages.py",
+        "backend/routes/profile.py",
+        "backend/routes/research_workspace.py",
+        "backend/services/ai_qa_provider.py",
+        "backend/services/ai_qa_service.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/message_service.py",
+        "backend/services/participant_action_planner.py",
+        "backend/services/participant_safeguard_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/relationship_report_service.py",
+        "backend/services/relationship_task_service.py",
+        "backend/services/research_delivery_service.py",
+        "backend/services/research_participant_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:notification_deliveries",
+      "table_name": "notification_deliveries",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "261dced8f9a6e39f64945ef19221cfa0ec12f4acf918179b36b84d5da061782c",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "preference_id",
+        "provider_message_id",
+        "template_id"
+      ],
+      "access_paths": [
+        "backend/routes/research_workspace.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/notification_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/research_queue_service.py",
+        "backend/services/research_work_item_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:notification_preferences",
+      "table_name": "notification_preferences",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "1a6e8643e8453e13c276ef8c4bb464a54cac3befac59d53649b3a3d778d34522",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "template_id"
+      ],
+      "access_paths": [
+        "backend/routes/research_workspace.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/notification_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:observability_events",
+      "table_name": "observability_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d79e313f8abfb5077f481080bcf7fc1c6d0dd3119a3e215501cb4c0a87091fe6",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "request_id"
+      ],
+      "access_paths": [
+        "backend/services/operations_governance_service.py",
+        "backend/services/reliability_service.py",
+        "backend/services/task37_harness_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_annotation_adjudications",
+      "table_name": "offline_annotation_adjudications",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "852f3d177b8026e7e4796c00881a2b3bf78b1f4ca55275188c01af2e7f9acc0f",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "adjudicator_id",
+        "annotation_a_id",
+        "annotation_b_id",
+        "case_id",
+        "dataset_card_id"
+      ],
+      "access_paths": [
+        "backend/services/offline_benchmark_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_annotation_group_splits",
+      "table_name": "offline_annotation_group_splits",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "002d1b05836a7fc05f91919159fa511c50b5af04a0c8151327a299a10475ea55",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "dataset_card_id"
+      ],
+      "access_paths": [
+        "backend/services/offline_benchmark_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_benchmark_annotations",
+      "table_name": "offline_benchmark_annotations",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "57ec5188a910b5f35b5b8f6a36ba56577153ee62c479f16ed59a660d9d202acf",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "annotator_id",
+        "case_id",
+        "dataset_card_id"
+      ],
+      "access_paths": [
+        "backend/services/offline_benchmark_service.py",
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_benchmark_reviews",
+      "table_name": "offline_benchmark_reviews",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "59e7baf862435f47c1aeacbfd11491fefaea30bdc9ca5fe9c9357e5634ec255a",
+      "subject_keys": [],
+      "actor_keys": [
+        "reviewer_id"
+      ],
+      "relationship_keys": [
+        "run_id"
+      ],
+      "access_paths": [
+        "backend/services/offline_benchmark_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_benchmark_runs",
+      "table_name": "offline_benchmark_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "6ec2495016ce1c0ca33f4ef15ab645f1ad855867915857fbb83aa85801d69820",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "dataset_card_id"
+      ],
+      "access_paths": [
+        "backend/services/offline_benchmark_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_benchmark_runtime_control",
+      "table_name": "offline_benchmark_runtime_control",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "4d490fcf5b623b9a8c998269138c2063cb45e96c76c9c29172fc18d3c78acea3",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/offline_benchmark_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_dataset_cards",
+      "table_name": "offline_dataset_cards",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "5117851eeb58611e839ef010b8d801eb2e65de147ef9adfb0b900397d3efedbc",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/offline_benchmark_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_model_monitor_runs",
+      "table_name": "offline_model_monitor_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "e2360d9fce15aa42700044880a6b357547400b3e78b650411190454f51f5c0f2",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "model_version_id"
+      ],
+      "access_paths": [
+        "backend/services/affect_monitor_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_model_release_evidence",
+      "table_name": "offline_model_release_evidence",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "1d255a27100de0d71cf7d5ecd7ff7d7a3e9d0bede0f62548ef40dfa2c690eeaa",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "gate_id"
+      ],
+      "access_paths": [
+        "backend/services/affect_release_gate_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_model_release_gate_runs",
+      "table_name": "offline_model_release_gate_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "23709163b963117e88106c59ded5df36cf1e699f2449c9812e49ed6a978abd6d",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/affect_release_gate_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_model_review_queue",
+      "table_name": "offline_model_review_queue",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "cfe20702b72c28df2c2afcda41a7af37780e4e4f6c048a8e9d4cb4c152792818",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id",
+        "shadow_run_id"
+      ],
+      "access_paths": [
+        "backend/services/affect_shadow_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_model_runtime_controls",
+      "table_name": "offline_model_runtime_controls",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "75aa82c56ea94c8393f59b58a30a984da53f0be7bb5e93008be7de6921b50474",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "active_model_version_id"
+      ],
+      "access_paths": [
+        "backend/services/affect_monitor_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_model_shadow_runs",
+      "table_name": "offline_model_shadow_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "b6361bac47280fdc8508a80787d6450efe2cceb806c2854e54127957576469c0",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "model_version_id",
+        "parent_run_id"
+      ],
+      "access_paths": [
+        "backend/services/affect_shadow_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:offline_model_versions",
+      "table_name": "offline_model_versions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "859e41e93eb081359a5e5db95ef397ec7e4d9549535797e70321aedc36e24096",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "candidate_id",
+        "dataset_id"
+      ],
+      "access_paths": [
+        "backend/services/affect_monitor_service.py",
+        "backend/services/affect_shadow_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:operations_evidence_packages",
+      "table_name": "operations_evidence_packages",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "260cff1c555e44e25ed2ac57e00d2ba04b92f6d7cd2c575de9f7e8039fd387b6",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:operations_incident_notifications",
+      "table_name": "operations_incident_notifications",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "b2c6e345633d09b7b851d0f4523035bf92bc5512b0970affe8319a23d8c2917f",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "incident_id"
+      ],
+      "access_paths": [
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:operations_incidents",
+      "table_name": "operations_incidents",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3babe82a38001fcc8d1d9d1375482f0b8e961eda06adad460431620dbce74060",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "capability_id",
+        "package_id"
+      ],
+      "access_paths": [
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:operations_monitor_snapshots",
+      "table_name": "operations_monitor_snapshots",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "471dce4b99af5efe4036bcf0059f4d01aea525d74582be88bdfce3ee64ff543e",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:operations_package_reviews",
+      "table_name": "operations_package_reviews",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "47da6180d12d756e3282d1c4b6412392ba35ee5bc1bdd69853bff20d74e8fc71",
+      "subject_keys": [],
+      "actor_keys": [
+        "reviewer_id"
+      ],
+      "relationship_keys": [
+        "package_id"
+      ],
+      "access_paths": [
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:operations_release_packages",
+      "table_name": "operations_release_packages",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "76eec7fad7a88e557177722a03a65343d9c1e4d841400399c672e734a5bdfb6f",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "previous_package_id"
+      ],
+      "access_paths": [
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:operations_replay_runs",
+      "table_name": "operations_replay_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "9cc464bd19f3cad2395adbddb436359c6bbf60d150fedfcb4ea0ab5e5de21822",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "package_id"
+      ],
+      "access_paths": [
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:operations_runtime_controls",
+      "table_name": "operations_runtime_controls",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3c91982be330fd9d5b5914bb37996983dc1bced8f845c67b057cde2312e8c727",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "active_package_id",
+        "capability_id",
+        "previous_package_id"
+      ],
+      "access_paths": [
+        "backend/services/operations_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:parent_assessment_submissions",
+      "table_name": "parent_assessment_submissions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "608b5c03f8590b3b388c64888d2094d763d0a4ebcd5fdb91c8b6bc70bffd7ae3",
+      "subject_keys": [
+        "anonymous_id",
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "client_submission_id",
+        "legacy_source_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/parent_assessments.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/identity_lifecycle_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:parent_report_actions",
+      "table_name": "parent_report_actions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "162257867508c076c4972357bc8670fc832b8ef4be4924ac8c321e8c9ff60e6d",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "submission_id"
+      ],
+      "access_paths": [
+        "backend/routes/parent_assessments.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:participant_minor_safeguards",
+      "table_name": "participant_minor_safeguards",
+      "schema_sources": [
+        "backend/services/schema_migration_service.py"
+      ],
+      "columns_sha256": "b27258da7e18937e5164026cefb25721134bdc36c895b0b1583a5b815a428af9",
+      "subject_keys": [
+        "guardian_user_id",
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "guardian_consent_record_id"
+      ],
+      "access_paths": [
+        "backend/routes/family.py",
+        "backend/services/participant_safeguard_service.py",
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:privacy_deletion_tombstones",
+      "table_name": "privacy_deletion_tombstones",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3f7df2b25ba6c53370dfec5d05e4702e5a39d92161184675d89e3edead787a28",
+      "subject_keys": [
+        "replacement_user_id",
+        "subject_hash"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "request_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "native_minimal_tombstone",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:privacy_deletion_verifications",
+      "table_name": "privacy_deletion_verifications",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "71ee299bbe5082d73f52f2845130c57ce63a29914576b4eca452ab43d4d08c8f",
+      "subject_keys": [
+        "subject_hash"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "execution_id",
+        "request_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/security_control_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "native_minimal_tombstone",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:privacy_request_actions",
+      "table_name": "privacy_request_actions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "617b5172d1055ad3b7ec02aff11e1826930e8c332ecb33b82f41f93314bd73e2",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "request_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:privacy_request_approvals",
+      "table_name": "privacy_request_approvals",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "fecaa0cc06729c7aff07ce9660fac3645d4cb737d8ec558d8711429a7c9c08e9",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "request_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:privacy_request_executions",
+      "table_name": "privacy_request_executions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "18686dc8a04ff492e3ba9aab35ccf7945ac077b16e15c1d27bf3b9a26331f6a1",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "request_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:privacy_requests",
+      "table_name": "privacy_requests",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "90a4836d8d23d4c1b5b6f96485df304f0ace25aa56eb7fda860c6936c2921fc7",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [
+        "handled_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/routes/research_workspace.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/research_queue_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:profile_reviews",
+      "table_name": "profile_reviews",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "247231374dc03b5db81cd6c23c9cc650e45529a61f1e0a94e0d36a2bfd054c99",
+      "subject_keys": [],
+      "actor_keys": [
+        "reviewer_id"
+      ],
+      "relationship_keys": [
+        "profile_id"
+      ],
+      "access_paths": [
+        "backend/routes/profile.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:publication_candidate_events",
+      "table_name": "publication_candidate_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "a4d80b6974335a316421b54d90bc0cc3985ccce05d092ab95837990e6936fd7f",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "candidate_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/publication_gate_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:publication_candidates",
+      "table_name": "publication_candidates",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "f2bffd9de12635878ada251e72ef4b2149a80a305750a789c252174f889124ec",
+      "subject_keys": [
+        "recipient_user_id",
+        "subject_id"
+      ],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "author_id"
+      ],
+      "access_paths": [
+        "backend/services/ai_qa_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/publication_gate_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:publication_gate_checks",
+      "table_name": "publication_gate_checks",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "6645e12b1fdc44ab262f3ebfdcf00e6531189a71bd96fe7c5056f3d693a848d8",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "candidate_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/publication_gate_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:recommendation_snapshots",
+      "table_name": "recommendation_snapshots",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3eb34986aa93858cfbaf945400212259746e301b4d507fc0d764beb403a36713",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "source_result_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/training_recommendation_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:records",
+      "table_name": "records",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "47bb1c44c6ca98c25017228a5cc81dbe7b9ca7f6c4af1d3707f1e22c4f5c5861",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "source_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/courses.py",
+        "backend/routes/general_growth.py",
+        "backend/routes/parent_assessments.py",
+        "backend/routes/profile.py",
+        "backend/routes/programs.py",
+        "backend/routes/research_workspace.py",
+        "backend/routes/training_plan.py",
+        "backend/services/ai_qa_service.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/notification_service.py",
+        "backend/services/operations_governance_service.py",
+        "backend/services/participant_action_planner.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/progress_summary_service.py",
+        "backend/services/redis_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/research_participant_service.py",
+        "backend/services/risk_review_service.py",
+        "backend/services/risk_service.py",
+        "backend/services/schema_migration_service.py",
+        "backend/services/text_analysis_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:relationship_hypothesis_feedback",
+      "table_name": "relationship_hypothesis_feedback",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "6f04f040b4298cae077ad3636c4faab7d2fc4d3006d002f0aaab834796f30fa3",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "enrollment_id",
+        "report_id"
+      ],
+      "access_paths": [
+        "backend/services/data_claim_service.py",
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_report_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:relationship_longitudinal_entries",
+      "table_name": "relationship_longitudinal_entries",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "a0656a33a12ee4b8380dc9e855c46ab52fc68b9afd8516c33e23beb5ba22f25c",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "enrollment_id"
+      ],
+      "access_paths": [
+        "backend/routes/general_growth.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_growth_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:relationship_narratives",
+      "table_name": "relationship_narratives",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "bd270beea6a648e0a8088d161bd044a39e54f21fee1f492e2296ac5fa9c015cc",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "enrollment_id"
+      ],
+      "access_paths": [
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_task_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:relationship_pilot_enrollments",
+      "table_name": "relationship_pilot_enrollments",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "5b745e2bf3301f7ba9cc2cceaa6dd243e529b225c34a504978b62f6c9d80b6ca",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "assessment_result_id",
+        "assigned_researcher_id",
+        "profile_cluster_id",
+        "profile_model_id",
+        "worksheet_id"
+      ],
+      "access_paths": [
+        "backend/routes/general_growth.py",
+        "backend/routes/research_workspace.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/message_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_enrollment_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/relationship_pilot_common.py",
+        "backend/services/research_access_service.py",
+        "backend/services/research_analysis_service.py",
+        "backend/services/research_delivery_service.py",
+        "backend/services/research_participant_service.py",
+        "backend/services/research_queue_service.py",
+        "backend/services/research_work_item_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:relationship_pilot_tasks",
+      "table_name": "relationship_pilot_tasks",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d95acd4b9cb3326bfda7c8c611580072c36fb463752e8c5ea835ccb44d7274b6",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "enrollment_id"
+      ],
+      "access_paths": [
+        "backend/routes/general_growth.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_enrollment_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/relationship_task_service.py",
+        "backend/services/research_participant_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:relationship_research_notes",
+      "table_name": "relationship_research_notes",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "c2a5ea13e5744bfc34c9e4bc96051fbd45106fb2c37e344c8bf4f72b982473a1",
+      "subject_keys": [],
+      "actor_keys": [
+        "researcher_id"
+      ],
+      "relationship_keys": [
+        "enrollment_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_enrollment_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/relationship_task_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:relationship_screening_reports",
+      "table_name": "relationship_screening_reports",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "1d1df820c04122096a8a88d510d76375e3c4e30e06ab0d3e5442107d3246e4cd",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "assessment_result_id",
+        "enrollment_id"
+      ],
+      "access_paths": [
+        "backend/routes/general_growth.py",
+        "backend/routes/research_workspace.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_enrollment_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/relationship_report_service.py",
+        "backend/services/research_delivery_service.py",
+        "backend/services/research_participant_service.py",
+        "backend/services/research_queue_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:reliability_drill_runs",
+      "table_name": "reliability_drill_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "f11a11d252f5b59b231835d7acd80a32678af0492a88d712ad13a1fedc384e6b",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/reliability_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:reliability_evidence_packages",
+      "table_name": "reliability_evidence_packages",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "b94e1c68049b2beee682b902a64eb8b310754b0250d9e5be9b77417a39b8f2f2",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/reliability_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:reliability_slo_snapshots",
+      "table_name": "reliability_slo_snapshots",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d5d838f4d9dc2295b2f09969f6fa68718ff18882f74ee05e63f03e85a7b1e43a",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/reliability_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:reliable_job_actions",
+      "table_name": "reliable_job_actions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "c74613b48e420a4bc52f67131b30d3468fc52713701cb59bc2a57b04cbf7dc48",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "job_id"
+      ],
+      "access_paths": [
+        "backend/services/reliability_service.py",
+        "backend/services/task37_harness_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:reliable_jobs",
+      "table_name": "reliable_jobs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d6f14b80a1e0354faf1ad004551b893c9394e6e9083a055ec0c621a8c1265a54",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "source_id"
+      ],
+      "access_paths": [
+        "backend/services/reliability_service.py",
+        "backend/services/task37_harness_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_analysis_artifacts",
+      "table_name": "research_analysis_artifacts",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "a794f81f84b70fb359f252d1174d908eb1bd8daab2bd340d077ff787e3d141a8",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "job_id",
+        "snapshot_id"
+      ],
+      "access_paths": [
+        "backend/services/research_analysis_service.py",
+        "backend/services/task37_harness_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_analysis_events",
+      "table_name": "research_analysis_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "c74613b48e420a4bc52f67131b30d3468fc52713701cb59bc2a57b04cbf7dc48",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "job_id"
+      ],
+      "access_paths": [
+        "backend/services/research_analysis_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_analysis_jobs",
+      "table_name": "research_analysis_jobs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "af8bed866a5712196f4202892b6557c27ba312982d56edc0a5cf365ce465e888",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "result_artifact_id",
+        "snapshot_id"
+      ],
+      "access_paths": [
+        "backend/services/research_analysis_service.py",
+        "backend/services/research_online_analysis_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_analysis_snapshot_links",
+      "table_name": "research_analysis_snapshot_links",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "fb919244b6f5e16e60e636042bf9b7ca9cf847dee533bd1e2ebda5af8349da5e",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "snapshot_id",
+        "source_id"
+      ],
+      "access_paths": [
+        "backend/services/research_analysis_service.py",
+        "backend/services/research_online_analysis_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_analysis_snapshots",
+      "table_name": "research_analysis_snapshots",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "09f2b36051c752b050dde344e028205762fcbd5543c8c8793691df35025270a7",
+      "subject_keys": [
+        "participant_user_id"
+      ],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "enrollment_id"
+      ],
+      "access_paths": [
+        "backend/services/research_analysis_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_delivery_events",
+      "table_name": "research_delivery_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "9083fe8165883b92a1e333893340a3bd5b508e1b3eeadde29e6f157fda077b7e",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "workflow_id"
+      ],
+      "access_paths": [
+        "backend/services/research_delivery_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_delivery_versions",
+      "table_name": "research_delivery_versions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3b9ae5bf9cc6256c39b7856fa831de286ec5615eeeb83b986319842004048ed6",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "workflow_id"
+      ],
+      "access_paths": [
+        "backend/services/research_delivery_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_delivery_workflows",
+      "table_name": "research_delivery_workflows",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "e304be08b64d619fe672a9bb9d5257b1aa7e2e5812ab215c0ab70ae6a2aceb68",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "active_version_id",
+        "enrollment_id",
+        "message_id",
+        "source_report_id"
+      ],
+      "access_paths": [
+        "backend/services/research_delivery_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_methodology_checks",
+      "table_name": "research_methodology_checks",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "e64215e820a1c5a5d42c3aada07aa22e338ae70e6173f9a1b513b0d22ac09859",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "version_id"
+      ],
+      "access_paths": [
+        "backend/services/research_methodology_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_methodology_evidence_packages",
+      "table_name": "research_methodology_evidence_packages",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "68c87c8ac184fb934d8c83442e74434a73f3f8c49931ebabd5c35761b8d500cb",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "version_id"
+      ],
+      "access_paths": [
+        "backend/services/research_methodology_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_methodology_runtime_control",
+      "table_name": "research_methodology_runtime_control",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "4d490fcf5b623b9a8c998269138c2063cb45e96c76c9c29172fc18d3c78acea3",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/research_methodology_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_methodology_simulation_runs",
+      "table_name": "research_methodology_simulation_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "7951a43f81eba53c99bff50daa0540574b9091457fa8c9b048862a449d19376b",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "version_id"
+      ],
+      "access_paths": [
+        "backend/services/research_methodology_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_methodology_versions",
+      "table_name": "research_methodology_versions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "9e1df953a0617ec1fd2ad26b2ed3b9f57092301e082df29ed539cda68969456a",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/research_methodology_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_scope_assignment_actions",
+      "table_name": "research_scope_assignment_actions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "ec6cdf241942ac81c9d2d984993ce8f356495686edc328bdded5d0e5e0222e09",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "assignment_id"
+      ],
+      "access_paths": [
+        "backend/services/research_access_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_scope_assignments",
+      "table_name": "research_scope_assignments",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "6c0084d7b4736a3c758aa06928b5265bdb3ae11fa9bf3b1cf0436df0d6f3d06e",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "enrollment_id"
+      ],
+      "access_paths": [
+        "backend/services/relationship_enrollment_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/research_access_service.py",
+        "backend/services/research_participant_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_work_item_actions",
+      "table_name": "research_work_item_actions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "0e074cef6254a3eb7917162e8718d9fd08f99d902cf0985485d325aa5de2e840",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "work_item_id"
+      ],
+      "access_paths": [
+        "backend/services/research_work_item_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_work_item_notes",
+      "table_name": "research_work_item_notes",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "0d56d71c74ed4aa75cc03019a09bd14c5999060b7a87bd4e42427e07770d6800",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "work_item_id"
+      ],
+      "access_paths": [
+        "backend/services/research_work_item_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:research_work_items",
+      "table_name": "research_work_items",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "5a43adfe93c89ca570a391215fe075ea7de5df271382f0969dbfd6798046c6b0",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "assignee_id",
+        "source_id"
+      ],
+      "access_paths": [
+        "backend/services/research_queue_service.py",
+        "backend/services/research_work_item_service.py",
+        "backend/services/task37_harness_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:risk_review_records",
+      "table_name": "risk_review_records",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "cbf629a268ad51a3a24e19f5ee3da83ead7342ef629142887608de8fbb40d050",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [
+        "reviewer_id"
+      ],
+      "relationship_keys": [
+        "source_id"
+      ],
+      "access_paths": [
+        "backend/routes/research_workspace.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/research_delivery_service.py",
+        "backend/services/research_queue_service.py",
+        "backend/services/risk_review_service.py",
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:schema_migrations",
+      "table_name": "schema_migrations",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "665acd33c97e653351ac1df91e82e3485446d08d8ce5c686ae7883b0db2f9a26",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:security_control_runs",
+      "table_name": "security_control_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "1e1de72fb36e10900d1729d0101754e91087e7ba447f5ab3d3b33aec9abf287f",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/security_control_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:security_events",
+      "table_name": "security_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "93e1529ade14a0548a1c15339dce9d8faf84e223ca7f720455a5097e3a90ac1b",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "request_id",
+        "target_id"
+      ],
+      "access_paths": [
+        "backend/services/security_control_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:student_profile_followups",
+      "table_name": "student_profile_followups",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "555eb9b59d8d5ac17e496a62966b284e3a66f3b5a4e4cdfc0ebcedfdfaf38a34",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "profile_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/profile.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:student_profiles",
+      "table_name": "student_profiles",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "c7ebf24880b2f4e6aedc050e9a6f8f4142af69c1d7cf573b32db87d4d7f9acd6",
+      "subject_keys": [
+        "anonymous_id",
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "assessment_result_id",
+        "cluster_id",
+        "legacy_source_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/minor_safeguards.py",
+        "backend/routes/profile.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/identity_lifecycle_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/report_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:student_sandplay_entries",
+      "table_name": "student_sandplay_entries",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "5c1ecce4237f48acd4dc72297d438e0de826fa4e16b60061dfb0a286a7cc727a",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "profile_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/profile.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:supervision_request_events",
+      "table_name": "supervision_request_events",
+      "schema_sources": [
+        "backend/services/schema_migration_service.py"
+      ],
+      "columns_sha256": "744240a3cddd1305c009e43ff90cb8638d525fdccea6f0cfbacdb30df2cdc5ef",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "request_id"
+      ],
+      "access_paths": [
+        "backend/routes/supervision.py",
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:supervision_requests",
+      "table_name": "supervision_requests",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "e69b70beccbeb1e4b2829efcee407e538c1c89c228ab4ae644b0d209964d0c96",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "client_submission_id",
+        "diary_id",
+        "source_id"
+      ],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/research_workspace.py",
+        "backend/routes/supervision.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/operations_governance_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/research_participant_service.py",
+        "backend/services/research_queue_service.py",
+        "backend/services/schema_migration_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_actions",
+      "table_name": "therapeutic_assessment_actions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "4c906a27b3cb86c0787145f44a8c59bbe843924cd0de43ac2e691ba2e5ae034b",
+      "subject_keys": [
+        "participant_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id",
+        "feedback_version_id",
+        "linked_checkin_id",
+        "training_card_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/report_service.py",
+        "backend/services/therapeutic_assessment_evidence_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py",
+        "backend/services/therapeutic_assessment_research_protocol_service.py",
+        "backend/services/therapeutic_assessment_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_ai_assist_candidates",
+      "table_name": "therapeutic_assessment_ai_assist_candidates",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "7399e4c40079c50e0d6dd55198d74255da327b179535eed9c602ebe259f885ec",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "case_id"
+      ],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_ai_assist_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_authorization_events",
+      "table_name": "therapeutic_assessment_authorization_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "cd2d35c3cc18ec76afaa212fa62475847059df72b59d374c8960fb569117e7a1",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "authorization_id"
+      ],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_competency_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_authorizations",
+      "table_name": "therapeutic_assessment_authorizations",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "5184a666f87b9ec13ff60e3a614c0c220522222596dc683a64c4f5d3b8684bd7",
+      "subject_keys": [
+        "supervisor_user_id",
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ai_qa_review_service.py",
+        "backend/services/therapeutic_assessment_competency_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_cases",
+      "table_name": "therapeutic_assessment_cases",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d21d25dcb1e3e0f5eccd5ed62f5d1546429c21a5d05dfa074b2cf6ae7f8b240c",
+      "subject_keys": [
+        "participant_user_id"
+      ],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "assigned_researcher_id",
+        "enrollment_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/therapeutic_assessment_competency_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py",
+        "backend/services/therapeutic_assessment_quality_service.py",
+        "backend/services/therapeutic_assessment_question_service.py",
+        "backend/services/therapeutic_assessment_research_protocol_service.py",
+        "backend/services/therapeutic_assessment_safety_service.py",
+        "backend/services/therapeutic_assessment_service.py",
+        "backend/services/therapeutic_assessment_transition_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_child_safeguards",
+      "table_name": "therapeutic_assessment_child_safeguards",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "09df29c3afa17f5ca856a766fc290b6bc2898c25bafab26ac44162f9650e4506",
+      "subject_keys": [
+        "child_user_id",
+        "guardian_user_id"
+      ],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "case_id",
+        "last_actor_id"
+      ],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_child_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_contract_snapshots",
+      "table_name": "therapeutic_assessment_contract_snapshots",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "c8cc3b708a1bc259f46c8b1f0f3a497a82083d660b49a85bca3385c9785770a3",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_contract_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_data_consents",
+      "table_name": "therapeutic_assessment_data_consents",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "f577ac88e75ab1fefa2e2d25b48895cb116eb3f1e1242c2dd3fd09086defc235",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "data_item_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_consent_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_data_items",
+      "table_name": "therapeutic_assessment_data_items",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "34d88e4cb501ea44b245231a844f35563a81c3f924f946d9ac516840e46adcc6",
+      "subject_keys": [
+        "controller_user_id",
+        "provider_user_id",
+        "subject_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_consent_service.py",
+        "backend/services/therapeutic_assessment_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_duty_events",
+      "table_name": "therapeutic_assessment_duty_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "eaeebab3a952a1c6a67b4add092cbf059888eea5d7851d3de8fe8619e229961f",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "duty_shift_id"
+      ],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_queue_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_duty_shifts",
+      "table_name": "therapeutic_assessment_duty_shifts",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "902c3f649717a9f7bcd8cc8f984c5140ef810850e16431a3169fdb9c7ee302f0",
+      "subject_keys": [
+        "supervisor_user_id",
+        "user_id"
+      ],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_queue_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_events",
+      "table_name": "therapeutic_assessment_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "67d34a8b2ed20fa68908307edeb502bff30ae9671db79d2cdc4f15602cfcfa6b",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "case_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_ai_assist_service.py",
+        "backend/services/therapeutic_assessment_child_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py",
+        "backend/services/therapeutic_assessment_multi_party_service.py",
+        "backend/services/therapeutic_assessment_question_service.py",
+        "backend/services/therapeutic_assessment_service.py",
+        "backend/services/therapeutic_assessment_transition_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_evidence_items",
+      "table_name": "therapeutic_assessment_evidence_items",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "e02a16c3cc614b8c4e776a195220528a91cca84e37b7f0edb6c804303eb40442",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "author_id",
+        "case_id",
+        "provider_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_evidence_service.py",
+        "backend/services/therapeutic_assessment_workbench_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_feedback_deliveries",
+      "table_name": "therapeutic_assessment_feedback_deliveries",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "7c04a1f843968bc94104f36aab084bd38bec2d44001ac075c700e8a49177f4f1",
+      "subject_keys": [
+        "recipient_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id",
+        "feedback_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py",
+        "backend/services/therapeutic_assessment_quality_service.py",
+        "backend/services/therapeutic_assessment_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_feedback_responses",
+      "table_name": "therapeutic_assessment_feedback_responses",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "9801d2f5b75d52648d1e7765b12abccd6487bf175aa1d9493f3d2a23e7593743",
+      "subject_keys": [
+        "participant_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id",
+        "feedback_id",
+        "supersedes_response_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py",
+        "backend/services/therapeutic_assessment_research_protocol_service.py",
+        "backend/services/therapeutic_assessment_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_feedback_versions",
+      "table_name": "therapeutic_assessment_feedback_versions",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "83a4eb0d67cfd4ffdd5a27289bf4f6512c5355cc0957afd46dc26bbe2596ef1c",
+      "subject_keys": [
+        "recipient_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "author_id",
+        "case_id",
+        "supersedes_feedback_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py",
+        "backend/services/therapeutic_assessment_quality_service.py",
+        "backend/services/therapeutic_assessment_research_protocol_service.py",
+        "backend/services/therapeutic_assessment_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_launch_screenings",
+      "table_name": "therapeutic_assessment_launch_screenings",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "7a094f9c8eb44d64b395b234fa6e4907d8cdb7079c97253c77ec8989b71c73bd",
+      "subject_keys": [
+        "participant_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id"
+      ],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_launch_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_multi_party_safeguards",
+      "table_name": "therapeutic_assessment_multi_party_safeguards",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "c17573742e1bf0df1d9daf89ffe51f6d9912829088e62ee62f6b85ab73575634",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "case_id",
+        "last_actor_id"
+      ],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_multi_party_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_participant_draft_events",
+      "table_name": "therapeutic_assessment_participant_draft_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "559c0138c0da0d2e8684594ace6672111ef39675ecf0b1010ec29c196a06945a",
+      "subject_keys": [
+        "participant_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "draft_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_draft_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_participant_drafts",
+      "table_name": "therapeutic_assessment_participant_drafts",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3a0f5cd28d0f259ab4aa85a0811629946a190ccae8a981acdc7aa9c79b0672e8",
+      "subject_keys": [
+        "participant_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id",
+        "step_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_draft_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_quality_events",
+      "table_name": "therapeutic_assessment_quality_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "a30f40bcb3e207dd297348f0ced82acbf980e9a28d35698f2288daa7c6a83b06",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "entity_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_quality_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_quality_incidents",
+      "table_name": "therapeutic_assessment_quality_incidents",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "88b406f1c634add20829c6b07e058114b09d0b74ff1c39432dbab6ca42606963",
+      "subject_keys": [
+        "reporter_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id",
+        "feedback_id",
+        "independent_reviewer_id",
+        "quality_review_id",
+        "replacement_feedback_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_lifecycle_service.py",
+        "backend/services/therapeutic_assessment_quality_service.py",
+        "backend/services/therapeutic_assessment_research_protocol_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_quality_reviews",
+      "table_name": "therapeutic_assessment_quality_reviews",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "680e6042f99da43938546b974b845e51302e707f55071cbbd35f643e5ac63390",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id",
+        "feedback_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_quality_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_quality_runtime",
+      "table_name": "therapeutic_assessment_quality_runtime",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "e4609f39be1b674c717f57d0c2bb015fe8e1f3960f2da28221481046e7aadac6",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_quality_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_queue_events",
+      "table_name": "therapeutic_assessment_queue_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "5c92faceb14976bcd497c0d856949c14e937889e1aa179816556560b6f5523cc",
+      "subject_keys": [],
+      "actor_keys": [
+        "actor_id"
+      ],
+      "relationship_keys": [
+        "queue_item_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_queue_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_queue_runtime",
+      "table_name": "therapeutic_assessment_queue_runtime",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "ae656b23be55cbbeb6f0ee0edf9db4c49d0f03ed68df08470ab7a7cb301b6d64",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_queue_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_recovery_evidence",
+      "table_name": "therapeutic_assessment_recovery_evidence",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3a84b025f6e010dc0331de08c2ddfad66f324664139556788a4619cad6d416b4",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "incident_id"
+      ],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_stop_recovery_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_release_evidence",
+      "table_name": "therapeutic_assessment_release_evidence",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "51586b6f4a101abac16248d87a93d7d26128d52d5a1c55c2361b8202a7c19cbf",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_release_gate_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_release_gate_checks",
+      "table_name": "therapeutic_assessment_release_gate_checks",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "3a63b33a725f7d6376ce1f954c45455d873f81d8c4e723c69ed81b2478997fe5",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "run_id"
+      ],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_release_gate_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_release_gate_runs",
+      "table_name": "therapeutic_assessment_release_gate_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "1cfb371c0ef3c758f4bab8361e61549eedfa32dc32db31f805a327ac3a598f78",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_release_gate_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_researcher_workbench_draft_events",
+      "table_name": "therapeutic_assessment_researcher_workbench_draft_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "1dc31e3252e39b61e04738ce44ce1d21a4d1b0228f4d550671637f057f2ebdb6",
+      "subject_keys": [
+        "researcher_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "draft_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_workbench_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_researcher_workbench_drafts",
+      "table_name": "therapeutic_assessment_researcher_workbench_drafts",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "362c0435edf82854cc990b0f0d674cee4fb9314218d7d0112fd19f8052a42f68",
+      "subject_keys": [
+        "researcher_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id",
+        "selected_evidence_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_workbench_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_responsibility_chains",
+      "table_name": "therapeutic_assessment_responsibility_chains",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "d58ae21b406a08780e3859d1466418c9745e4d1edf845104d987aac8f62e5eaa",
+      "subject_keys": [
+        "responsible_user_id",
+        "supervisor_user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_safety_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_runtime_control",
+      "table_name": "therapeutic_assessment_runtime_control",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "be00e6b4b90a582f479ad29c9197aca421e4a70369b34e9a1acec1bf04c9eb24",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_safety_service.py",
+        "backend/services/therapeutic_assessment_stop_recovery_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_safety_events",
+      "table_name": "therapeutic_assessment_safety_events",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "13799bcc0104ca1db897d14178273b6798769ce2da899872a18eaa7f4de94638",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "case_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_safety_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_stop_incidents",
+      "table_name": "therapeutic_assessment_stop_incidents",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "043f2b06698ee4e8870f13cbe11b8a373de866dca7a5b7eeb4a3ea8ad5a57837",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/therapeutic_assessment_stop_recovery_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:therapeutic_assessment_work_queue",
+      "table_name": "therapeutic_assessment_work_queue",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "ce913d76353f00785ea31750685aaf533067e95bacd4eed48ea22308da3fc9f2",
+      "subject_keys": [
+        "assigned_user_id"
+      ],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [
+        "case_id"
+      ],
+      "access_paths": [
+        "backend/services/privacy_request_service.py",
+        "backend/services/therapeutic_assessment_queue_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:training_cards",
+      "table_name": "training_cards",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "befb8b174b58efa0ce5e11e55fc85015a17783735af1cfa8bde08b34c856bd7e",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/checkins.py",
+        "backend/routes/content_review.py",
+        "backend/routes/general_growth.py",
+        "backend/routes/training_plan.py",
+        "backend/services/card_service.py",
+        "backend/services/content_governance_service.py",
+        "backend/services/content_loader.py",
+        "backend/services/feedback_ledger_service.py",
+        "backend/services/operations_governance_service.py",
+        "backend/services/therapeutic_assessment_service.py",
+        "backend/services/training_recommendation_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:users",
+      "table_name": "users",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "02b14a467f4c5d719336078cc5c1f8e1b2b32d6aafeef6c3c0d9f57c7b52fded",
+      "subject_keys": [
+        "anonymous_id",
+        "merged_into_user_id",
+        "phone_hash",
+        "wechat_openid"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [
+        "credential_receipt_id"
+      ],
+      "access_paths": [
+        "backend/routes/auth.py",
+        "backend/routes/auth_utils.py",
+        "backend/routes/family.py",
+        "backend/routes/research_workspace.py",
+        "backend/services/ai_qa_runtime_control_service.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/identity_lifecycle_service.py",
+        "backend/services/notification_service.py",
+        "backend/services/participant_safeguard_service.py",
+        "backend/services/privacy_request_service.py",
+        "backend/services/relationship_growth_service.py",
+        "backend/services/research_access_service.py",
+        "backend/services/research_participant_service.py",
+        "backend/services/research_work_item_service.py",
+        "backend/services/schema_migration_service.py",
+        "backend/services/security_control_service.py",
+        "backend/services/therapeutic_assessment_child_service.py",
+        "backend/services/therapeutic_assessment_competency_service.py",
+        "backend/services/therapeutic_assessment_multi_party_service.py",
+        "backend/services/therapeutic_assessment_queue_service.py",
+        "backend/services/therapeutic_assessment_safety_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ux_audit_runs",
+      "table_name": "ux_audit_runs",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "1752bcc89102e33bed3011e7c3242a4488c0bbe998dcb92957fb5ebca290d2f3",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ux_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:ux_evidence_packages",
+      "table_name": "ux_evidence_packages",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "52ce469dde0fff53c0a019a3a1e0265263166b260aad863541dd402b4023b344",
+      "subject_keys": [],
+      "actor_keys": [
+        "created_by"
+      ],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/services/ux_governance_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:weekly_reports",
+      "table_name": "weekly_reports",
+      "schema_sources": [
+        "backend/models.py"
+      ],
+      "columns_sha256": "2f30ddb8d4d921f8bcf181e10db908b65fb23a19c756b5535d3f199715a11199",
+      "subject_keys": [
+        "user_id"
+      ],
+      "actor_keys": [],
+      "relationship_keys": [],
+      "access_paths": [
+        "backend/routes/admin.py",
+        "backend/routes/general_growth.py",
+        "backend/routes/reports.py",
+        "backend/services/data_claim_service.py",
+        "backend/services/privacy_request_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    }
+  ],
+  "external_processors": [
+    {
+      "processor_id": "endpoint:https://api.deepseek.com/chat/completions",
+      "endpoint_kind": "fixed_endpoint",
+      "endpoint": "https://api.deepseek.com/chat/completions",
+      "source_files": [
+        "backend/services/ai_qa_provider.py"
+      ],
+      "fields": "pending_privacy_owner_confirmation",
+      "purpose": "pending_privacy_owner_confirmation",
+      "necessity": "pending_privacy_owner_confirmation",
+      "sensitivity": "pending_privacy_owner_confirmation",
+      "retention": "pending_privacy_owner_confirmation",
+      "processor_role": "pending_privacy_owner_confirmation",
+      "export_capability": "pending_privacy_owner_confirmation",
+      "deletion_capability": "pending_privacy_owner_confirmation",
+      "privacy_notice_status": "pending_external",
+      "review_status": "pending_external"
+    },
+    {
+      "processor_id": "endpoint:https://api.openai.com/v1/chat/completions",
+      "endpoint_kind": "fixed_endpoint",
+      "endpoint": "https://api.openai.com/v1/chat/completions",
+      "source_files": [
+        "backend/services/ai_qa_provider.py"
+      ],
+      "fields": "pending_privacy_owner_confirmation",
+      "purpose": "pending_privacy_owner_confirmation",
+      "necessity": "pending_privacy_owner_confirmation",
+      "sensitivity": "pending_privacy_owner_confirmation",
+      "retention": "pending_privacy_owner_confirmation",
+      "processor_role": "pending_privacy_owner_confirmation",
+      "export_capability": "pending_privacy_owner_confirmation",
+      "deletion_capability": "pending_privacy_owner_confirmation",
+      "privacy_notice_status": "pending_external",
+      "review_status": "pending_external"
+    },
+    {
+      "processor_id": "endpoint:https://api.weixin.qq.com/cgi-bin/message/subscribe/send",
+      "endpoint_kind": "fixed_endpoint",
+      "endpoint": "https://api.weixin.qq.com/cgi-bin/message/subscribe/send",
+      "source_files": [
+        "backend/services/notification_service.py"
+      ],
+      "fields": "pending_privacy_owner_confirmation",
+      "purpose": "pending_privacy_owner_confirmation",
+      "necessity": "pending_privacy_owner_confirmation",
+      "sensitivity": "pending_privacy_owner_confirmation",
+      "retention": "pending_privacy_owner_confirmation",
+      "processor_role": "pending_privacy_owner_confirmation",
+      "export_capability": "pending_privacy_owner_confirmation",
+      "deletion_capability": "pending_privacy_owner_confirmation",
+      "privacy_notice_status": "pending_external",
+      "review_status": "pending_external"
+    },
+    {
+      "processor_id": "endpoint:https://api.weixin.qq.com/cgi-bin/token",
+      "endpoint_kind": "fixed_endpoint",
+      "endpoint": "https://api.weixin.qq.com/cgi-bin/token",
+      "source_files": [
+        "backend/routes/auth.py",
+        "backend/services/notification_service.py"
+      ],
+      "fields": "pending_privacy_owner_confirmation",
+      "purpose": "pending_privacy_owner_confirmation",
+      "necessity": "pending_privacy_owner_confirmation",
+      "sensitivity": "pending_privacy_owner_confirmation",
+      "retention": "pending_privacy_owner_confirmation",
+      "processor_role": "pending_privacy_owner_confirmation",
+      "export_capability": "pending_privacy_owner_confirmation",
+      "deletion_capability": "pending_privacy_owner_confirmation",
+      "privacy_notice_status": "pending_external",
+      "review_status": "pending_external"
+    },
+    {
+      "processor_id": "endpoint:https://api.weixin.qq.com/sns/jscode2session",
+      "endpoint_kind": "fixed_endpoint",
+      "endpoint": "https://api.weixin.qq.com/sns/jscode2session",
+      "source_files": [
+        "backend/routes/auth.py"
+      ],
+      "fields": "pending_privacy_owner_confirmation",
+      "purpose": "pending_privacy_owner_confirmation",
+      "necessity": "pending_privacy_owner_confirmation",
+      "sensitivity": "pending_privacy_owner_confirmation",
+      "retention": "pending_privacy_owner_confirmation",
+      "processor_role": "pending_privacy_owner_confirmation",
+      "export_capability": "pending_privacy_owner_confirmation",
+      "deletion_capability": "pending_privacy_owner_confirmation",
+      "privacy_notice_status": "pending_external",
+      "review_status": "pending_external"
+    },
+    {
+      "processor_id": "endpoint:https://api.weixin.qq.com/wxa/business/getuserphonenumber",
+      "endpoint_kind": "fixed_endpoint",
+      "endpoint": "https://api.weixin.qq.com/wxa/business/getuserphonenumber",
+      "source_files": [
+        "backend/routes/auth.py"
+      ],
+      "fields": "pending_privacy_owner_confirmation",
+      "purpose": "pending_privacy_owner_confirmation",
+      "necessity": "pending_privacy_owner_confirmation",
+      "sensitivity": "pending_privacy_owner_confirmation",
+      "retention": "pending_privacy_owner_confirmation",
+      "processor_role": "pending_privacy_owner_confirmation",
+      "export_capability": "pending_privacy_owner_confirmation",
+      "deletion_capability": "pending_privacy_owner_confirmation",
+      "privacy_notice_status": "pending_external",
+      "review_status": "pending_external"
+    },
+    {
+      "processor_id": "dynamic:backend/services/embedding_service.py",
+      "endpoint_kind": "dynamic_endpoint",
+      "endpoint": "pending_runtime_value",
+      "source_files": [
+        "backend/services/embedding_service.py"
+      ],
+      "fields": "pending_privacy_owner_confirmation",
+      "purpose": "pending_privacy_owner_confirmation",
+      "necessity": "pending_privacy_owner_confirmation",
+      "sensitivity": "pending_privacy_owner_confirmation",
+      "retention": "pending_privacy_owner_confirmation",
+      "processor_role": "pending_privacy_owner_confirmation",
+      "export_capability": "pending_privacy_owner_confirmation",
+      "deletion_capability": "pending_privacy_owner_confirmation",
+      "privacy_notice_status": "pending_external",
+      "review_status": "pending_external"
+    }
+  ],
+  "privacy_owner": {
+    "owner": "privacy_owner",
+    "status": "pending_external"
+  },
+  "release_gate_eligible": false,
+  "source_bindings": {
+    "models_sha256": "9b79856e4828e7a8498ffb063b40b9e31a5fd5e86f3eaf1202190e19769c892e",
+    "migration_manifest_sha256": "44f86b5dc6c914f98a1990264bbb2095661f0b9e8a7ae38c94cbc7bc205310fd",
+    "route_manifest_sha256": "b436a8015f3d5142bcb8dc0787f010375b4c49cc0639742cc7067d268d21c30b",
+    "service_manifest_sha256": "63038e4c4c13c2a2550801318e8897afd17e6a3b4a0e1829b0b28266bfce07e8"
+  }
+}

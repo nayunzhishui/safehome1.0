@@ -1,6 +1,6 @@
 {
   "schema": "safehome.rc0810.registry.v1",
-  "version": "2026-08-10.f12a",
+  "version": "2026-08-10.f14a",
   "frozen_baseline": {
     "captured_at": "2026-08-09T15:13:59.4299089Z",
     "branch": "main",
@@ -1019,7 +1019,43 @@
       "phase": "phase_a",
       "dependencies": [
         "RC0810-F12-A"
-      ]
+      ],
+      "subtasks": [
+        "F14.1",
+        "F14.2",
+        "F14.3",
+        "F14.4",
+        "F14.5",
+        "F14.6",
+        "F14.7",
+        "F14.8",
+        "F14.9",
+        "F14.10"
+      ],
+      "allowed_files": [
+        "backend/tests/test_rc0810_harness.py",
+        "backend/tests/test_rc0810_f14.py",
+        "config/rc0810/privacy_lineage.schema.json",
+        "config/rc0810/privacy_lineage_catalog.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "scripts/run_rc0810.py",
+        "scripts/verify_rc0810_f14_lineage.py"
+      ],
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
+      ],
+      "change_budget": {
+        "expected_files": 12,
+        "pause_when_actual_exceeds_percent": 50
+      }
     },
     {
       "id": "RC0810-F22-A",
@@ -3063,6 +3099,7 @@
       "allowed_files": [
         "backend/**",
         "config/rc0810/**",
+        "content/rc0810_release_candidate_registry.json",
         "scripts/**",
         "docs/**",
         "backend/migrations/**"
@@ -3084,12 +3121,67 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f14.py",
-            "-q"
+            "-q",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 12
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "backend/tests/test_rc0810_f14.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 19
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f14_lineage.py",
+            "--self-check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f14_lineage.py"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
         }
       ],
       "external_gates": [
@@ -3103,6 +3195,7 @@
         "allowed_modules": [
           "backend/**",
           "config/rc0810/**",
+          "content/rc0810_release_candidate_registry.json",
           "scripts/**",
           "docs/**",
           "backend/migrations/**"

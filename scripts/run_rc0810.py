@@ -734,6 +734,32 @@ def verify_task(registry: dict[str, Any], task_id: str) -> tuple[int, dict[str, 
         task_state = state["tasks"][task_id]
         if task_state["status"] not in {"in_progress", "fixing"}:
             raise HarnessError(f"{task_id}当前状态不能verify。")
+        current_registry_sha256 = sha256_bytes(REGISTRY_PATH.read_bytes())
+        if current_registry_sha256 != state.get("registry_sha256"):
+            frozen_current_registry = (
+                task_state.get("start_registry_sha256")
+                == current_registry_sha256
+                and task_state.get("start_task_contract_sha256")
+                == _task_contract_sha256(task, unit)
+            )
+            previous_registry = _previous_registry_snapshot(state)
+            if frozen_current_registry:
+                if not _registry_transition_is_scoped(
+                    previous_registry, registry, task_id
+                ):
+                    raise HarnessError("注册表变化超出当前任务；拒绝verify采用。")
+                state.setdefault("registry_history", []).append(state["registry_sha256"])
+                state["registry_sha256"] = current_registry_sha256
+                state["registry_snapshot"] = registry
+            else:
+                if not _registry_transition_is_scoped(
+                    previous_registry, registry, task_id
+                ):
+                    raise HarnessError("任务启动后全局注册表合同发生变化；拒绝verify执行。")
+                if not _verification_commands_unchanged(
+                    previous_registry, registry, task_id
+                ):
+                    raise HarnessError("任务启动后验收命令发生变化；拒绝verify执行。")
         current_snapshot = collect_git_snapshot(registry)
         if task_state.get("start_snapshot") is None:
             task_state["start_snapshot"] = {
@@ -742,6 +768,17 @@ def verify_task(registry: dict[str, Any], task_id: str) -> tuple[int, dict[str, 
                 "dirty_diff_sha256": current_snapshot["git"]["dirty_diff_sha256"],
             }
         delta = _task_delta(task_state["start_snapshot"], current_snapshot)
+        registry_history = state.get("registry_history", [])
+        if (
+            registry_history
+            and task_state.get("start_registry_sha256") != registry_history[-1]
+        ):
+            try:
+                registry_relative = REGISTRY_PATH.relative_to(ROOT).as_posix()
+            except ValueError:
+                registry_relative = ""
+            if registry_relative and registry_relative not in delta:
+                delta = sorted([*delta, registry_relative])
         allowed_files = unit.get("allowed_files", task["allowed_files"])
         disallowed = [
             path
@@ -944,7 +981,22 @@ def review_task(
             start_contract_sha256 = task_state.get("start_task_contract_sha256")
             if start_contract_sha256 != current_contract_sha256:
                 raise HarnessError("任务合同在start后发生漂移；必须重新冻结范围并重验。")
+            if task_state.get("start_registry_sha256") != sha256_bytes(
+                REGISTRY_PATH.read_bytes()
+            ):
+                raise HarnessError("任务注册表在start后发生漂移；必须重新冻结范围并重验。")
             delta = _task_delta(task_state["start_snapshot"], current_snapshot)
+            registry_history = state.get("registry_history", [])
+            if (
+                registry_history
+                and task_state.get("start_registry_sha256") != registry_history[-1]
+            ):
+                try:
+                    registry_relative = REGISTRY_PATH.relative_to(ROOT).as_posix()
+                except ValueError:
+                    registry_relative = ""
+                if registry_relative and registry_relative not in delta:
+                    delta = sorted([*delta, registry_relative])
             packet = {
                 "schema": "safehome.rc0810.review-packet.v1",
                 "task": task_id,
@@ -1173,13 +1225,38 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
         current_snapshot = collect_git_snapshot(registry)
         checkpoint = state.get("last_verified_checkpoint")
         checkpoint_task_id = checkpoint.split(":", 1)[0] if checkpoint else None
-        checkpoint_record = state["tasks"].get(checkpoint_task_id or "")
-        if checkpoint_record and checkpoint_record.get("outcomes"):
-            bound_source_tree = checkpoint_record["subtasks"][
-                next(iter(checkpoint_record["subtasks"]))
+        nonterminal_statuses = {
+            "in_progress",
+            "fixing",
+            "implemented",
+            "reviewing",
+            "review_failed",
+            "stale",
+        }
+        execution_positions = {
+            unit_id: index
+            for index, unit_id in enumerate(registry["execution_order"])
+        }
+        checkpoint_position = execution_positions.get(checkpoint_task_id or "", -1)
+        active_task_id = next(
+            (
+                unit_id
+                for unit_id in reversed(registry["execution_order"])
+                if unit_id in state["tasks"]
+                and execution_positions[unit_id] >= checkpoint_position
+                and state["tasks"][unit_id].get("status") in nonterminal_statuses
+                and state["tasks"][unit_id].get("outcomes")
+            ),
+            None,
+        )
+        source_anchor_id = active_task_id or checkpoint_task_id
+        source_anchor = state["tasks"].get(source_anchor_id or "")
+        if source_anchor and source_anchor.get("outcomes"):
+            bound_source_tree = source_anchor["subtasks"][
+                next(iter(source_anchor["subtasks"]))
             ].get("source_tree")
             if bound_source_tree != current_snapshot["git"]["source_tree"]:
-                roots.add(checkpoint_task_id)
+                roots.add(source_anchor_id)
         if roots and "registry_changed" not in stale_reason:
             stale_reason.append("source_tree_changed")
         if roots:
@@ -1409,6 +1486,71 @@ def _task_contract_sha256(task: dict[str, Any], unit: dict[str, Any]) -> str:
     return sha256_bytes(canonical_json({"task": task, "execution_unit": unit}))
 
 
+def _registry_transition_is_scoped(
+    previous: dict[str, Any], current: dict[str, Any], task_id: str
+) -> bool:
+    current_unit = unit_map(current).get(task_id)
+    previous_unit = unit_map(previous).get(task_id)
+    if current_unit is None or previous_unit is None:
+        return False
+    parent_id = current_unit.get("task")
+    if parent_id != previous_unit.get("task"):
+        return False
+    ignored = {"version", "tasks", "execution_units"}
+    if {
+        key: value for key, value in previous.items() if key not in ignored
+    } != {key: value for key, value in current.items() if key not in ignored}:
+        return False
+    if {
+        item["id"]: item for item in previous["tasks"] if item["id"] != parent_id
+    } != {item["id"]: item for item in current["tasks"] if item["id"] != parent_id}:
+        return False
+    return {
+        item["id"]: item
+        for item in previous["execution_units"]
+        if item["id"] != task_id
+    } == {
+        item["id"]: item
+        for item in current["execution_units"]
+        if item["id"] != task_id
+    }
+
+
+def _verification_commands_unchanged(
+    previous: dict[str, Any], current: dict[str, Any], task_id: str
+) -> bool:
+    previous_unit = unit_map(previous).get(task_id)
+    current_unit = unit_map(current).get(task_id)
+    if previous_unit is None or current_unit is None:
+        return False
+    previous_task = task_map(previous).get(previous_unit.get("task"))
+    current_task = task_map(current).get(current_unit.get("task"))
+    if previous_task is None or current_task is None:
+        return False
+    return previous_task.get("acceptance_commands") == current_task.get(
+        "acceptance_commands"
+    )
+
+
+def _previous_registry_snapshot(state: dict[str, Any]) -> dict[str, Any]:
+    snapshot = state.get("registry_snapshot")
+    if isinstance(snapshot, dict):
+        return snapshot
+    try:
+        relative = REGISTRY_PATH.relative_to(ROOT).as_posix()
+    except ValueError as exc:
+        raise HarnessError("缺少上一版注册表快照，不能验证合同演进。") from exc
+    raw = _run_git("show", f"HEAD:{relative}")
+    checkpoint = str(state.get("last_verified_checkpoint") or "").split(":", 1)[0]
+    checkpoint_record = state.get("tasks", {}).get(checkpoint, {})
+    if checkpoint_record.get("review", {}).get("decision") != "pass":
+        raise HarnessError("上一版注册表缺少独立通过检查点；拒绝由HEAD恢复。")
+    try:
+        return json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise HarnessError("上一版注册表快照无效。") from exc
+
+
 def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
     unit = unit_map(registry).get(task_id)
     if unit is None:
@@ -1424,6 +1566,7 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
                 "operator_id": os.environ.get("RC0810_OPERATOR_ID", "runner"),
                 "created_at": utc_now(),
                 "updated_at": utc_now(),
+                "registry_snapshot": registry,
                 "tasks": {},
                 "evidence_chain": [],
                 "last_verified_checkpoint": None,
@@ -1463,11 +1606,31 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
                 existing["subtasks"][subtask_id]["allowed_scope"] = allowed_scope
             if task_id == "RC0810-F00":
                 existing["start_snapshot"] = _f00_start_snapshot(registry, task)
-            state.setdefault("registry_history", []).append(state["registry_sha256"])
-            state["registry_sha256"] = sha256_bytes(REGISTRY_PATH.read_bytes())
+            current_registry_sha256 = sha256_bytes(REGISTRY_PATH.read_bytes())
+            if current_registry_sha256 != state.get("registry_sha256"):
+                previous_registry = _previous_registry_snapshot(state)
+                if not _registry_transition_is_scoped(
+                    previous_registry, registry, task_id
+                ):
+                    raise HarnessError(
+                        "注册表变化超出当前执行单元；拒绝Fix Loop采用。"
+                    )
+                state.setdefault("registry_history", []).append(
+                    state["registry_sha256"]
+                )
+                state["registry_sha256"] = current_registry_sha256
+            state["registry_snapshot"] = registry
             state["updated_at"] = utc_now()
             write_state(state)
             return {"run_id": state["run_id"], "task": task_id, "status": "fixing"}
+        current_registry_sha256 = sha256_bytes(REGISTRY_PATH.read_bytes())
+        if current_registry_sha256 != state.get("registry_sha256"):
+            previous_registry = _previous_registry_snapshot(state)
+            if not _registry_transition_is_scoped(previous_registry, registry, task_id):
+                raise HarnessError("注册表变化超出当前新执行单元；必须先独立冻结。")
+            state.setdefault("registry_history", []).append(state["registry_sha256"])
+            state["registry_sha256"] = current_registry_sha256
+            state["registry_snapshot"] = registry
         frozen_start = (
             _f00_start_snapshot(registry, task)
             if task_id == "RC0810-F00"

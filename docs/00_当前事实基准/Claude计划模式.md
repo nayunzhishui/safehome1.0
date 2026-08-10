@@ -12099,3 +12099,12 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 独立审查经过两次 Fix Loop 后第三轮 `pass`，decision SHA-256=`c8a64dd1b3682209a6f1448416053c55cbfb453dd76707da1415c227089565a5`；复验 F12 `30 passed`、F00+F12 `37 passed`，定义校验、自检与 diff check 通过。
 - 本条同步后须重跑 Harness 并做最终文档一致性复审；通过后仅提交 F12-A 的 12 个允许文件并推送。下一入口为 `RC0810-F14-A`，本轮不自动开始。
 - 文档同步触发重验时修复了 Harness 过度失效：源码变化现在只把最新检查点及后继置 stale，已通过的历史依赖可恢复；注册表整体变化仍递归阻断。定向回归 `1 passed`，最终 Harness 验收需在本条后重新绑定。
+
+## 2026-08-10 RC0810-F14-A 数据血缘基线（独立复审通过，待最终文档复审）
+
+- 已从模型、迁移脚本、`schema_migration_service.py`、routes 和 services 冻结 168 张表、字段/访问路径和 7 个接口级外部端点/动态客户端的机器基线；所有源组均有 SHA-256 manifest。
+- 168 个资产、7 个处理端点和 privacy owner 共 176 个确认缺口全部显式保留，自动化没有填写人工结论；`release_gate_eligible=false`。
+- 新增/遗漏表、源漂移、目录篡改、处理方遗漏、重复资产和敏感值进入 catalog 均 fail-closed；专项 12 项、Harness 演进回归 1 项通过。
+- 首轮独立审查为 `fix_required`：修复遗漏 5 表、同 host 接口合并及 start 后全局注册表合同绕过；decision SHA-256=`38a61a9621d5530e0f3b3e5d292901d190bb9957142898d9161ffab65fc965d2`。
+- Fix Loop 1 独立复审 `pass`，decision SHA-256=`689614a98ceb0ac8c8fb50437158ed93ebbdfc34b089f0470419210e31116010`；独立复验 F14 `12 passed`、组合 `19 passed`、default/self-check/diff check 通过。
+- 本轮没有业务、数据库、迁移、删除、CloudBase、Secret 或生产操作。当前文档同步后须重验并做最终文档一致性复审；通过后下一入口是 `RC0810-F22-A`。
