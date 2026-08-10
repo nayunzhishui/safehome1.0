@@ -575,6 +575,10 @@ def init_registry(facts: dict[str, Any]) -> dict[str, Any]:
         "schema_version": 1,
         "branch": REQUIRED_BRANCH,
         "main_sha_at_start": existing.get("main_sha_at_start", facts["main_sha"]),
+        "main_sha_baseline": existing.get(
+            "main_sha_baseline", existing.get("main_sha_at_start", facts["main_sha"])
+        ),
+        "baseline_history": existing.get("baseline_history", []),
         "visual_direction": "A_编辑手帐",
         "workflow": STAGES,
         "active_route": existing.get("active_route", pages[0]["route"] if pages else None),
@@ -739,6 +743,7 @@ def status() -> None:
         counts[page["stage"]] = counts.get(page["stage"], 0) + 1
     print(f"分支：{run_git('branch', '--show-current')}")
     print(f"main 起点：{registry['main_sha_at_start']}")
+    print(f"main 当前核准基线：{registry.get('main_sha_baseline', registry['main_sha_at_start'])}")
     print(f"视觉方向：{registry['visual_direction']}")
     print(f"当前页面：{registry['active_route']}")
     blockers = [
@@ -756,7 +761,8 @@ def harness() -> None:
     failures = check_scope()
     main_sha = run_git("rev-parse", "main")
     registry = load_registry()
-    if main_sha != registry["main_sha_at_start"]:
+    approved_main_sha = registry.get("main_sha_baseline", registry["main_sha_at_start"])
+    if main_sha != approved_main_sha:
         failures.append("main 分支指针已变化；停止 UI 自动流程并人工核对。")
     diff_check = subprocess.run(
         ["git", "diff", "--check"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8"

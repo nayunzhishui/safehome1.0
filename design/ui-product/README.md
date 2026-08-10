@@ -32,7 +32,7 @@ Figma 长流程状态单独保存在 `design/ui-product/figma-state.json`。每�
 ## 硬门禁
 
 - 当前分支必须是 `UIproduct`。
-- `main` 指针必须保持为创建分支时的提交。
+- `main_sha_at_start` 永久保存创建分支时的提交；Harness 比较 `main_sha_baseline`。只有用户明确要求在 UI worktree 合并并核对新的 `main` 后，才允许推进核准基线，同时把变更写入 `baseline_history`。
 - `backend/`、`content/`、`shared/` 不得在本 UI 任务中产生改动。
 - 全部 `app.json` 页面必须出现在功能真值表中。
 - WXML 事件必须能解析到页面处理器；页面 API 调用必须能解析到现有 API client。

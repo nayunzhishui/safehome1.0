@@ -2,6 +2,16 @@
   "schema_version": 1,
   "branch": "UIproduct",
   "main_sha_at_start": "98fca029f3f97e13d7e787cd40cb939465a992d4",
+  "main_sha_baseline": "65fcef4b876fbcec05b9eeddfe4cf37eb5e0789d",
+  "baseline_history": [
+    {
+      "from": "98fca029f3f97e13d7e787cd40cb939465a992d4",
+      "to": "65fcef4b876fbcec05b9eeddfe4cf37eb5e0789d",
+      "merge_commit": "0abfb3885da873d732cc1979617efc23373087ab",
+      "reason": "用户明确要求在 safehome1.0-UIproduct worktree 合并 main；已核对 UI 与 F10-A 记录同时保留",
+      "recorded_at": "2026-08-10T13:00:00+08:00"
+    }
+  ],
   "visual_direction": "A_编辑手帐",
   "workflow": [
     "truth",
@@ -82,7 +92,7 @@
       "blockers": [
         {
           "stage": "implementation",
-          "note": "首页最近记录必须进入真实记录页；该依赖页需先走独立真值、冻结、ImageGen、Figma与QA并复用GET /api/diaries。另检测到main由外部任务从98fca02推进到65fcef4，工程Harness按规则停止等待人工核对。",
+          "note": "首页最近记录必须进入真实记录页；该依赖页需先走独立真值、冻结、ImageGen、Figma与QA并复用GET /api/diaries。main@65fcef4 已按用户指令合并并核对，不再构成阻断。",
           "recorded_at": "2026-08-10T12:41:43+08:00",
           "attempt_count": 1
         }
