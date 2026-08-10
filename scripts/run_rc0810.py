@@ -175,8 +175,38 @@ def validate_registry(registry: dict[str, Any]) -> None:
     for unit in units_by_id.values():
         if unit.get("task") not in tasks_by_id:
             raise HarnessError("执行单元引用未知父任务。")
+        parent_task = tasks_by_id[unit["task"]]
         if not set(unit.get("dependencies", [])).issubset(units_by_id):
             raise HarnessError("执行单元依赖不存在。")
+        declared_subtasks = unit.get("subtasks")
+        if declared_subtasks is not None:
+            task_subtasks = {item["id"] for item in parent_task.get("subtasks", [])}
+            if (
+                not isinstance(declared_subtasks, list)
+                or not declared_subtasks
+                or len(declared_subtasks) != len(set(declared_subtasks))
+                or not set(declared_subtasks).issubset(task_subtasks)
+            ):
+                raise HarnessError("分阶段执行单元的二级工单映射无效。")
+        unit_allowed = unit.get("allowed_files")
+        if unit_allowed is not None and (
+            not isinstance(unit_allowed, list)
+            or not unit_allowed
+            or any(
+                not _path_allowed(path, parent_task["allowed_files"])
+                for path in unit_allowed
+            )
+        ):
+            raise HarnessError("分阶段执行单元的允许范围必须收窄于父任务。")
+        inherited_shared = unit.get("inherited_shared_files", [])
+        if not set(inherited_shared).issubset(set(unit_allowed or [])):
+            raise HarnessError("分阶段共享文件必须属于该执行单元允许范围。")
+        unit_budget = unit.get("change_budget")
+        if unit_budget is not None and (
+            unit_budget.get("expected_files", 0) <= 0
+            or unit_budget.get("pause_when_actual_exceeds_percent") != 50
+        ):
+            raise HarnessError("分阶段change budget无效。")
     claim_classes = set(registry.get("claim_classes", {}))
     required_claim_classes = {
         "current_code_fact",
@@ -495,7 +525,60 @@ def collect_git_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def snapshot_command(registry: dict[str, Any]) -> dict[str, Any]:
+def _acknowledge_concurrent_overlay(
+    task_state: dict[str, Any],
+    current_snapshot: dict[str, Any],
+    inherited_paths: list[str],
+    reason: str,
+    allowed_files: list[str],
+    inherited_shared_files: list[str],
+) -> list[dict[str, Any]]:
+    start = task_state.get("start_snapshot")
+    if start is None:
+        raise HarnessError("任务尚未冻结启动快照，不能登记并行继承改动。")
+    if not reason.strip():
+        raise HarnessError("登记并行继承改动必须提供reason。")
+    manifest = start["source_manifest"]
+    current_manifest = current_snapshot["git"]["source_manifest"]
+    records: list[dict[str, Any]] = []
+    for raw_path in inherited_paths:
+        relative = Path(raw_path).as_posix()
+        path = Path(relative)
+        if path.is_absolute() or ".." in path.parts or relative in {"", "."}:
+            raise HarnessError("并行继承路径必须是仓库内相对文件路径。")
+        if _path_allowed(relative, allowed_files) and relative not in set(
+            inherited_shared_files
+        ):
+            raise HarnessError(f"任务专属文件不得登记为并行继承：{relative}")
+        before = manifest.get(relative)
+        after = current_manifest.get(relative)
+        if before == after:
+            raise HarnessError(f"并行继承路径没有启动后变化：{relative}")
+        if after is None:
+            manifest.pop(relative, None)
+        else:
+            manifest[relative] = after
+        records.append(
+            {
+                "path": relative,
+                "start_blob": before,
+                "inherited_blob": after,
+                "reason": reason.strip(),
+                "recorded_at": utc_now(),
+            }
+        )
+    task_state.setdefault("concurrent_inherited_overlays", []).extend(records)
+    task_state["concurrent_inherited_overlay_sha256"] = sha256_bytes(
+        canonical_json(task_state["concurrent_inherited_overlays"])
+    )
+    return records
+
+
+def snapshot_command(
+    registry: dict[str, Any],
+    inherited_paths: list[str] | None = None,
+    reason: str | None = None,
+) -> dict[str, Any]:
     with state_lock():
         state = read_state()
         if state is None:
@@ -505,14 +588,15 @@ def snapshot_command(registry: dict[str, Any]) -> dict[str, Any]:
         snapshot_path = run_dir / "snapshots" / f"snapshot-{uuid.uuid4().hex}.json"
         atomic_write_json(snapshot_path, snapshot)
         snapshot_hash = sha256_bytes(snapshot_path.read_bytes())
-        current = next(
+        current_item = next(
             (
-                record
-                for record in state["tasks"].values()
+                (task_id, record)
+                for task_id, record in state["tasks"].items()
                 if record.get("status") in {"in_progress", "fixing"}
             ),
             None,
         )
+        current = current_item[1] if current_item is not None else None
         if current is not None and current.get("start_snapshot") is None:
             current["start_snapshot"] = {
                 "path": str(snapshot_path),
@@ -521,6 +605,20 @@ def snapshot_command(registry: dict[str, Any]) -> dict[str, Any]:
                 "source_manifest": snapshot["git"]["source_manifest"],
                 "dirty_diff_sha256": snapshot["git"]["dirty_diff_sha256"],
             }
+        inherited_records: list[dict[str, Any]] = []
+        if inherited_paths:
+            if current is None:
+                raise HarnessError("没有进行中的任务可登记并行继承改动。")
+            active_unit = unit_map(registry)[current_item[0]]
+            active_task = task_map(registry)[active_unit["task"]]
+            inherited_records = _acknowledge_concurrent_overlay(
+                current,
+                snapshot,
+                inherited_paths,
+                reason or "",
+                active_unit.get("allowed_files", active_task["allowed_files"]),
+                active_unit.get("inherited_shared_files", []),
+            )
         state["latest_snapshot"] = {
             "path": str(snapshot_path),
             "sha256": snapshot_hash,
@@ -529,6 +627,7 @@ def snapshot_command(registry: dict[str, Any]) -> dict[str, Any]:
         write_state(state)
     snapshot["snapshot_path"] = str(snapshot_path)
     snapshot["snapshot_sha256"] = snapshot_hash
+    snapshot["concurrent_inherited_overlays"] = inherited_records
     return snapshot
 
 
@@ -594,6 +693,13 @@ def _task_delta(start: dict[str, Any], current: dict[str, Any]) -> list[str]:
     )
 
 
+def _unit_subtask_ids(unit: dict[str, Any], task: dict[str, Any]) -> list[str]:
+    declared = unit.get("subtasks")
+    if declared is not None:
+        return list(declared)
+    return [item["id"] for item in task["subtasks"]]
+
+
 def _path_allowed(path: str, allowed_files: list[str]) -> bool:
     return path in allowed_files or any(
         allowed.endswith("/**") and path.startswith(allowed[:-3] + "/")
@@ -634,10 +740,11 @@ def verify_task(registry: dict[str, Any], task_id: str) -> tuple[int, dict[str, 
                 "dirty_diff_sha256": current_snapshot["git"]["dirty_diff_sha256"],
             }
         delta = _task_delta(task_state["start_snapshot"], current_snapshot)
+        allowed_files = unit.get("allowed_files", task["allowed_files"])
         disallowed = [
             path
             for path in delta
-            if not _path_allowed(path, task["allowed_files"])
+            if not _path_allowed(path, allowed_files)
         ]
         if disallowed:
             raise HarnessError(f"任务实际差异超出允许范围：{disallowed}")
@@ -654,13 +761,16 @@ def verify_task(registry: dict[str, Any], task_id: str) -> tuple[int, dict[str, 
         ]
         if len(migration_delta) > expected_migrations:
             raise HarnessError("任务实际迁移数超过change budget。")
-        expected = task["change_budget"]["expected_files"]
+        expected = unit.get("change_budget", task["change_budget"])["expected_files"]
         if len(delta) > expected * 1.5:
             raise HarnessError("任务实际文件数超过change budget 50%；必须暂停回填并拆分。")
 
         outcomes: list[dict[str, Any]] = []
         ok = True
-        for subtask in task_state["subtasks"].values():
+        active_subtasks = _unit_subtask_ids(unit, task)
+        task_state["active_subtasks"] = active_subtasks
+        for subtask_id in active_subtasks:
+            subtask = task_state["subtasks"][subtask_id]
             subtask["status"] = "running"
             subtask["input_baseline"] = {
                 "source_tree": task_state["start_snapshot"]["source_tree"],
@@ -761,7 +871,8 @@ def verify_task(registry: dict[str, Any], task_id: str) -> tuple[int, dict[str, 
         task_state["actual_modified_files"] = delta
         task_state["outcomes"] = outcomes
         task_state["status"] = "implemented" if ok else "in_progress"
-        for subtask in task_state["subtasks"].values():
+        for subtask_id in active_subtasks:
+            subtask = task_state["subtasks"][subtask_id]
             subtask["status"] = "running" if ok else "review_failed"
             subtask["finished_at"] = utc_now()
             subtask["commands"] = [outcome["argv"] for outcome in outcomes]
@@ -804,14 +915,10 @@ def review_task(
         run_dir = RUNTIME_ROOT / state["run_id"]
         packet_path = run_dir / "reviews" / f"{task_id}.json"
         if decision is None:
-            if task_state["status"] != "implemented":
-                raise HarnessError("只有implemented任务可生成独立审查包。")
             unit = unit_map(registry)[task_id]
             task = task_map(registry)[unit["task"]]
             current_snapshot = collect_git_snapshot(registry)
-            if task_state.get("evidence_status") != "current" or not task_state.get(
-                "outcomes"
-            ):
+            if task_state.get("evidence_status") != "current" or not task_state.get("outcomes"):
                 raise HarnessError("测试证据缺失或已失效；必须重新verify。")
             latest_evidence_path = Path(
                 task_state["outcomes"][-1]["evidence"]["path"]
@@ -829,6 +936,8 @@ def review_task(
                 state["updated_at"] = utc_now()
                 write_state(state)
                 raise HarnessError("源码、差异或注册表已变化；旧测试证据不得进入审查。")
+            if task_state["status"] != "implemented":
+                raise HarnessError("只有implemented任务可生成独立审查包。")
             delta = _task_delta(task_state["start_snapshot"], current_snapshot)
             packet = {
                 "schema": "safehome.rc0810.review-packet.v1",
@@ -839,6 +948,10 @@ def review_task(
                 "registry_sha256": sha256_bytes(REGISTRY_PATH.read_bytes()),
                 "task_contract_sha256": sha256_bytes(canonical_json(task)),
                 "actual_modified_files": delta,
+                "concurrent_inherited_overlays": task_state.get(
+                    "concurrent_inherited_overlays", []
+                ),
+                "active_subtasks": task_state.get("active_subtasks", []),
                 "test_evidence": task_state.get("outcomes", []),
                 "rollback": task_state["subtasks"][next(iter(task_state["subtasks"]))]["rollback_point"],
                 "created_at": utc_now(),
@@ -877,6 +990,21 @@ def review_task(
         path = Path(packet["path"])
         if not path.is_file() or sha256_bytes(path.read_bytes()) != packet["sha256"]:
             raise HarnessError("审查包缺失或被篡改。")
+        packet_record = json.loads(path.read_text(encoding="utf-8"))
+        current_snapshot = collect_git_snapshot(registry)
+        if (
+            packet_record.get("source_tree")
+            != current_snapshot["git"]["source_tree"]
+            or packet_record.get("dirty_diff_sha256")
+            != current_snapshot["git"]["dirty_diff_sha256"]
+            or packet_record.get("registry_sha256")
+            != sha256_bytes(REGISTRY_PATH.read_bytes())
+        ):
+            task_state["evidence_status"] = "stale"
+            task_state["status"] = "stale"
+            state["updated_at"] = utc_now()
+            write_state(state)
+            raise HarnessError("源码、差异或注册表已变化；旧审查结论不得验收。")
         if not decision_evidence:
             raise HarnessError("独立审查必须提供decision evidence文件。")
         decision_path = Path(decision_evidence).resolve()
@@ -889,7 +1017,6 @@ def review_task(
             raise HarnessError("decision evidence不是有效JSON。") from exc
         if decision_record.get("schema") != "safehome.rc0810.review-decision.v1":
             raise HarnessError("decision evidence schema不兼容。")
-        packet_record = json.loads(path.read_text(encoding="utf-8"))
         if (
             decision_record.get("review_packet_sha256") != packet["sha256"]
             or decision_record.get("challenge_nonce")
@@ -927,8 +1054,17 @@ def review_task(
         }
         if decision == "pass":
             state["last_verified_checkpoint"] = f"{task_id}:verified"
-            for subtask in task_state["subtasks"].values():
-                subtask["status"] = "verified"
+            unit = unit_map(registry)[task_id]
+            for subtask_id in task_state.get("active_subtasks", []):
+                subtask = task_state["subtasks"][subtask_id]
+                shared_across_phases = sum(
+                    subtask_id in candidate.get("subtasks", [])
+                    for candidate in registry["execution_units"]
+                    if candidate["task"] == unit["task"]
+                ) > 1
+                subtask["status"] = (
+                    f"{unit['phase']}_verified" if shared_across_phases else "verified"
+                )
                 subtask["review_decision"] = "pass"
         state["updated_at"] = utc_now()
         write_state(state)
@@ -1233,6 +1369,16 @@ def _f00_start_snapshot(registry: dict[str, Any], task: dict[str, Any]) -> dict[
     }
 
 
+def _standard_start_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
+    snapshot = collect_git_snapshot(registry)
+    return {
+        "source_tree": snapshot["git"]["source_tree"],
+        "source_manifest": snapshot["git"]["source_manifest"],
+        "dirty_diff_sha256": snapshot["git"]["dirty_diff_sha256"],
+        "binding": "task_start_worktree",
+    }
+
+
 def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
     unit = unit_map(registry).get(task_id)
     if unit is None:
@@ -1284,13 +1430,16 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             state["updated_at"] = utc_now()
             write_state(state)
             return {"run_id": state["run_id"], "task": task_id, "status": "fixing"}
-        frozen_start = None
-        if task_id == "RC0810-F00":
-            frozen_start = _f00_start_snapshot(registry, task)
+        frozen_start = (
+            _f00_start_snapshot(registry, task)
+            if task_id == "RC0810-F00"
+            else _standard_start_snapshot(registry)
+        )
         state["tasks"][task_id] = {
             "status": "in_progress",
             "started_at": utc_now(),
             "start_snapshot": frozen_start,
+            "active_subtasks": _unit_subtask_ids(unit, task),
             "subtasks": {
                 item["id"]: _new_subtask_record(item, task)
                 for item in task["subtasks"]
@@ -1318,7 +1467,9 @@ def _parser() -> argparse.ArgumentParser:
     review.add_argument("--decision-evidence")
     sub.add_parser("resume")
     sub.add_parser("report")
-    sub.add_parser("snapshot")
+    snapshot = sub.add_parser("snapshot")
+    snapshot.add_argument("--inherit", action="append", default=[])
+    snapshot.add_argument("--reason")
     package = sub.add_parser("package-check")
     package.add_argument("artifact")
     return parser
@@ -1352,7 +1503,13 @@ def main() -> int:
             print(json.dumps(start_task(registry, args.task.upper()), ensure_ascii=False, indent=2))
             return 0
         if args.command == "snapshot":
-            print(json.dumps(snapshot_command(registry), ensure_ascii=False, indent=2))
+            print(
+                json.dumps(
+                    snapshot_command(registry, args.inherit, args.reason),
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
             return 0
         if args.command == "verify":
             exit_code, payload = verify_task(registry, args.task.upper())

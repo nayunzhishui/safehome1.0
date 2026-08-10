@@ -263,6 +263,18 @@ def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_revie
     packet = json.loads(packet_result.stdout)
     assert packet["status"] == "reviewing"
     assert packet["review_decision"] is None
+
+    reviewing_registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    reviewing_registry["claim_register"][0]["statement"] += " review drift"
+    registry_path.write_text(json.dumps(reviewing_registry), encoding="utf-8")
+    stale_while_reviewing = run_cli("review", "RC0810-F00", env=env)
+    assert stale_while_reviewing.returncode != 0
+    registry_path.write_text(original_registry, encoding="utf-8")
+    assert run_cli("start", "RC0810-F00", env=env).returncode == 0
+    assert run_cli("verify", "RC0810-F00", env=env).returncode == 0
+    packet_result = run_cli("review", "RC0810-F00", env=env)
+    assert packet_result.returncode == 0, packet_result.stderr
+    packet = json.loads(packet_result.stdout)
     self_decision = write_review_decision(packet, reviewer_id="automation")
 
     self_signed = run_cli(
@@ -277,6 +289,30 @@ def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_revie
         env=env,
     )
     assert self_signed.returncode != 0
+    accepted_decision = write_review_decision(
+        packet, reviewer_id="f00-independent-reviewer"
+    )
+
+    decision_registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    decision_registry["claim_register"][0]["statement"] += " decision drift"
+    registry_path.write_text(json.dumps(decision_registry), encoding="utf-8")
+    stale_decision = run_cli(
+        "review",
+        "RC0810-F00",
+        "--decision",
+        "pass",
+        "--reviewer-id",
+        "f00-independent-reviewer",
+        "--decision-evidence",
+        str(accepted_decision),
+        env=env,
+    )
+    assert stale_decision.returncode != 0
+
+    registry_path.write_text(original_registry, encoding="utf-8")
+    assert run_cli("start", "RC0810-F00", env=env).returncode == 0
+    assert run_cli("verify", "RC0810-F00", env=env).returncode == 0
+    packet = json.loads(run_cli("review", "RC0810-F00", env=env).stdout)
     accepted_decision = write_review_decision(
         packet, reviewer_id="f00-independent-reviewer"
     )
@@ -299,16 +335,55 @@ def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_revie
     assert next_task.returncode == 0, next_task.stderr
     assert json.loads(next_task.stdout)["task"] == "RC0810-F10-A"
 
+    phase_started = run_cli("start", "RC0810-F10-A", env=env)
+    assert phase_started.returncode == 0, phase_started.stderr
+    pointer = json.loads((runtime / "state.json").read_text(encoding="utf-8"))
+    state = json.loads((runtime / pointer["state_path"]).read_text(encoding="utf-8"))
+    phase_snapshot = state["tasks"]["RC0810-F10-A"]["start_snapshot"]
+    assert phase_snapshot["binding"] == "task_start_worktree"
+    assert phase_snapshot["source_tree"]
+    assert phase_snapshot["source_manifest"]
+    assert phase_snapshot["dirty_diff_sha256"]
+
     resumed = run_cli("resume", env=env)
     assert resumed.returncode == 0, resumed.stderr
     assert json.loads(resumed.stdout)["resume_from"] == "RC0810-F00:verified"
-    assert counter.read_text(encoding="utf-8") == "2"
+    assert counter.read_text(encoding="utf-8") == "4"
 
     reported = run_cli("report", env=env)
     assert reported.returncode == 0, reported.stderr
     report = json.loads(reported.stdout)
     assert report["tasks"]["RC0810-F00"]["status"] == "verified"
     assert Path(report["report_path"]).is_file()
+
+    phase_verified = run_cli("verify", "RC0810-F10-A", env=env)
+    assert phase_verified.returncode == 0, phase_verified.stderr
+    phase_packet = json.loads(run_cli("review", "RC0810-F10-A", env=env).stdout)
+    phase_decision = write_review_decision(
+        phase_packet, reviewer_id="f10a-independent-reviewer"
+    )
+    phase_accepted = run_cli(
+        "review",
+        "RC0810-F10-A",
+        "--decision",
+        "pass",
+        "--reviewer-id",
+        "f10a-independent-reviewer",
+        "--decision-evidence",
+        str(phase_decision),
+        env=env,
+    )
+    assert phase_accepted.returncode == 0, phase_accepted.stderr
+
+    state = json.loads((runtime / pointer["state_path"]).read_text(encoding="utf-8"))
+    subtasks = state["tasks"]["RC0810-F10-A"]["subtasks"]
+    assert subtasks["F10.1"]["status"] == "verified"
+    assert subtasks["F10.8"]["status"] == "phase_a_verified"
+    assert all(
+        subtasks[f"F10.{index}"]["status"] == "pending"
+        for index in range(2, 10)
+        if index != 8
+    )
 
 
 def test_timeout_and_tampered_evidence_fail_closed(tmp_path):

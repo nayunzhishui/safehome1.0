@@ -1,0 +1,257 @@
+{
+  "schema": "safehome.rc0810.github-actions-evidence.v1",
+  "task": "RC0810-F10-A",
+  "source": "GitHub Actions REST API and gh run view --log-failed",
+  "retrieved_at": "2026-08-10T03:40:20.922Z",
+  "run": {
+    "conclusion": "failure",
+    "created_at": "2026-08-09T16:57:30Z",
+    "event": "push",
+    "head_branch": "main",
+    "head_sha": "98fca029f3f97e13d7e787cd40cb939465a992d4",
+    "html_url": "https://github.com/nayunzhishui/safehome1.0/actions/runs/31325141640",
+    "id": 31325141640,
+    "jobs_url": "https://api.github.com/repos/nayunzhishui/safehome1.0/actions/runs/31325141640/jobs",
+    "logs_url": "https://api.github.com/repos/nayunzhishui/safehome1.0/actions/runs/31325141640/logs",
+    "name": "SafeHome Checks",
+    "status": "completed",
+    "updated_at": "2026-08-09T17:04:51Z"
+  },
+  "job": {
+    "completed_at": "2026-08-09T17:04:50Z",
+    "conclusion": "failure",
+    "head_sha": "98fca029f3f97e13d7e787cd40cb939465a992d4",
+    "html_url": "https://github.com/nayunzhishui/safehome1.0/actions/runs/31325141640/job/93274187305",
+    "id": 93274187305,
+    "name": "check",
+    "started_at": "2026-08-09T16:57:32Z",
+    "status": "completed",
+    "steps": [
+      {
+        "completed_at": "2026-08-09T16:57:33Z",
+        "conclusion": "success",
+        "name": "Set up job",
+        "number": 1,
+        "started_at": "2026-08-09T16:57:32Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T16:57:36Z",
+        "conclusion": "success",
+        "name": "Checkout",
+        "number": 2,
+        "started_at": "2026-08-09T16:57:33Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T16:57:36Z",
+        "conclusion": "success",
+        "name": "Setup Python",
+        "number": 3,
+        "started_at": "2026-08-09T16:57:36Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T16:58:03Z",
+        "conclusion": "success",
+        "name": "Install Python dependencies",
+        "number": 4,
+        "started_at": "2026-08-09T16:57:36Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T16:58:03Z",
+        "conclusion": "success",
+        "name": "Inspect release artifact hashes",
+        "number": 5,
+        "started_at": "2026-08-09T16:58:03Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T16:58:03Z",
+        "conclusion": "success",
+        "name": "Validate content",
+        "number": 6,
+        "started_at": "2026-08-09T16:58:03Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T16:58:04Z",
+        "conclusion": "success",
+        "name": "Check API contract drift",
+        "number": 7,
+        "started_at": "2026-08-09T16:58:03Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T16:58:04Z",
+        "conclusion": "success",
+        "name": "Check API query boundaries",
+        "number": 8,
+        "started_at": "2026-08-09T16:58:04Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T16:58:04Z",
+        "conclusion": "success",
+        "name": "Replay API compatibility snapshot",
+        "number": 9,
+        "started_at": "2026-08-09T16:58:04Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "failure",
+        "name": "Run backend tests",
+        "number": 10,
+        "started_at": "2026-08-09T16:58:04Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Run AI continuous quality gate",
+        "number": 11,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Setup Node",
+        "number": 12,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Install web dependencies",
+        "number": 13,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Audit web dependencies",
+        "number": 14,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Typecheck web",
+        "number": 15,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Build web",
+        "number": 16,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Check shared design tokens",
+        "number": 17,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Audit miniprogram UI governance",
+        "number": 18,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Audit participant visual states",
+        "number": 19,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Audit miniprogram structure",
+        "number": 20,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Validate miniprogram JavaScript and JSON",
+        "number": 21,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "skipped",
+        "name": "Post Setup Python",
+        "number": 41,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "success",
+        "name": "Post Checkout",
+        "number": 42,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-08-09T17:04:48Z",
+        "conclusion": "success",
+        "name": "Complete job",
+        "number": 43,
+        "started_at": "2026-08-09T17:04:48Z",
+        "status": "completed"
+      }
+    ]
+  },
+  "failed_log": {
+    "encoding": "runtime_gzip",
+    "command": "gh run view 31325141640 --log-failed",
+    "exit_code": 0,
+    "normalization": "utf8(lines_joined_with_lf_and_final_lf)",
+    "line_count": 1518,
+    "sha256": "32c4ce87898f9f5bdeec48e84bd4029aac7f00f4e6772f1e235971135b3515bf",
+    "runtime_artifact": {
+      "path": ".codex_tmp/rc0810/run-20260809T155319Z-4b73c9e9/evidence/RC0810-F10-A/github-actions-failed.log.gz",
+      "encoding": "gzip",
+      "sha256": "d8e0c90734c915c8ef0a68e1030fa495670b1ba7a236b198cd378429d70ea331",
+      "size_bytes": 18963,
+      "committed": false
+    },
+    "pytest_summary": {
+      "failed": 9,
+      "passed": 988,
+      "warnings": 1,
+      "duration": "402.75s (0:06:42)"
+    },
+    "failure_nodeids": [
+      "backend/tests/test_bootstrap_researcher.py::test_prepare_rejects_public_participant_roles",
+      "backend/tests/test_rc0810_harness.py::test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_review",
+      "backend/tests/test_rc0810_harness.py::test_timeout_and_tampered_evidence_fail_closed",
+      "backend/tests/test_rc0810_harness.py::test_package_check_and_recursive_evidence_invalidation",
+      "backend/tests/test_t8_routes.py::test_training_plan_assignment_drives_due_state_and_next_date",
+      "backend/tests/test_task26_api_contract.py::test_boundary_scan_has_no_blocker_and_snapshot_is_current",
+      "backend/tests/test_task28_ai_qa_contract.py::test_task28_shared_web_and_miniprogram_contracts_keep_participant_api_hidden",
+      "backend/tests/test_task31_security_contract.py::test_ai_security_boundary_has_no_real_provider_or_write_tools",
+      "backend/tests/test_task35_registry.py::test_task35_verifier_binds_frozen_artifact_hashes"
+    ],
+    "retention": "runtime_only_not_committed"
+  }
+}

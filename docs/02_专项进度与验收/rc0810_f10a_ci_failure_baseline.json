@@ -1,0 +1,279 @@
+{
+  "schema": "safehome.rc0810.ci-failure-baseline.v1",
+  "task": "RC0810-F10-A",
+  "captured_at": "2026-08-10T01:35:08+08:00",
+  "status": "frozen_failure_baseline",
+  "release_gate_eligible": false,
+  "source": {
+    "head": "98fca029f3f97e13d7e787cd40cb939465a992d4",
+    "origin_main": "98fca029f3f97e13d7e787cd40cb939465a992d4",
+    "source_tree": "dd2b037d84ede36bb1b054ceb536598692a85d6c",
+    "observed_branch": "UIproduct",
+    "remote_branch_under_test": "main",
+    "harness_start_snapshot": {
+      "source_tree": "c59ed257fd4c257ef8bc6fa38ecfa58bc06e138c",
+      "dirty_diff_sha256": "db629c684af68105f699556c79ba244f8b9625f1d106112a9b463f986a5222f2",
+      "snapshot_sha256": "e4082a43d76ac8a047f50228bb189b63a26ea46520a3c01088d410c93221fd05",
+      "binding": "task_start_worktree_with_exact_concurrent_overlays"
+    },
+    "workspace_at_task_start": {
+      "dirty": true,
+      "status_entries": 20,
+      "treatment": "inherited_overlay_excluded_from_ci_evidence"
+    }
+  },
+  "workflow_snapshot": [
+    {
+      "path": ".github/workflows/check.yml",
+      "git_blob": "d83331ce909dac6612f692ab82dbcafb29e24408",
+      "sha256": "e86c2bfdfb27aec81b2fab2bb82c54ccf18e4a07f024d459cca6967258b59ed0"
+    },
+    {
+      "path": ".github/workflows/engineering-infrastructure.yml",
+      "git_blob": "35f9d38bcce57684777b9866bdac74cc9aa6dab4",
+      "sha256": "53669d36ccd58a33fc8ba9c9d45053b55af48929491c2ae48128f66419110aba"
+    }
+  ],
+  "github_actions": {
+    "evidence_artifact": {
+      "path": "docs/02_专项进度与验收/rc0810_f10a_github_actions_evidence.json",
+      "sha256": "1f41f09536be551e905136dee77d14ab9375e4067918170f27af715e73342995",
+      "schema": "safehome.rc0810.github-actions-evidence.v1"
+    },
+    "authoritative_run": {
+      "database_id": 31325141640,
+      "workflow": "SafeHome Checks",
+      "event": "push",
+      "head_branch": "main",
+      "head_sha": "98fca029f3f97e13d7e787cd40cb939465a992d4",
+      "created_at": "2026-08-09T16:57:30Z",
+      "updated_at": "2026-08-09T17:04:51Z",
+      "conclusion": "failure",
+      "url": "https://github.com/nayunzhishui/safehome1.0/actions/runs/31325141640",
+      "job": {
+        "database_id": 93274187305,
+        "name": "check",
+        "failed_step": "Run backend tests",
+        "url": "https://github.com/nayunzhishui/safehome1.0/actions/runs/31325141640/job/93274187305"
+      },
+      "failed_log": {
+        "command": "gh run view 31325141640 --log-failed",
+        "normalization": "sha256(utf8(lines_joined_with_lf_and_final_lf))",
+        "line_count": 1518,
+        "sha256": "32c4ce87898f9f5bdeec48e84bd4029aac7f00f4e6772f1e235971135b3515bf"
+      },
+      "summary": {
+        "failed_tests": 9,
+        "passed_tests": 988,
+        "warnings": 1,
+        "executed_workflow_steps": 9,
+        "skipped_workflow_steps": 11
+      },
+      "failures": [
+        {
+          "id": "CI-MAIN-001",
+          "test_nodeid": "backend/tests/test_bootstrap_researcher.py::test_prepare_rejects_public_participant_roles",
+          "classification": "contract_drift",
+          "root_cause_group": "bootstrap_participant_policy",
+          "evidence": "bootstrap currently accepts participant roles while the old test requires rejection",
+          "disposition": "decision_required_in_f10_2",
+          "priority": "P0"
+        },
+        {
+          "id": "CI-MAIN-002",
+          "test_nodeid": "backend/tests/test_rc0810_harness.py::test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_review",
+          "classification": "true_defect",
+          "root_cause_group": "f00_unreachable_dirty_tree_object",
+          "evidence": "remote checkout cannot ls-tree frozen dirty source tree 563b3cd00209aa8350fa5d883f632663ce5802e6",
+          "disposition": "fix_after_f10a_before_dependent_wave",
+          "priority": "P0"
+        },
+        {
+          "id": "CI-MAIN-003",
+          "test_nodeid": "backend/tests/test_rc0810_harness.py::test_timeout_and_tampered_evidence_fail_closed",
+          "classification": "true_defect",
+          "root_cause_group": "f00_unreachable_dirty_tree_object",
+          "evidence": "fixture start fails before timeout evidence because the frozen dirty tree object is unavailable remotely",
+          "disposition": "fix_after_f10a_before_dependent_wave",
+          "priority": "P0"
+        },
+        {
+          "id": "CI-MAIN-004",
+          "test_nodeid": "backend/tests/test_rc0810_harness.py::test_package_check_and_recursive_evidence_invalidation",
+          "classification": "true_defect",
+          "root_cause_group": "f00_unreachable_dirty_tree_object",
+          "evidence": "fixture start fails before package checks because the frozen dirty tree object is unavailable remotely",
+          "disposition": "fix_after_f10a_before_dependent_wave",
+          "priority": "P0"
+        },
+        {
+          "id": "CI-MAIN-005",
+          "test_nodeid": "backend/tests/test_t8_routes.py::test_training_plan_assignment_drives_due_state_and_next_date",
+          "classification": "true_defect",
+          "root_cause_group": "timezone_dependent_date_contract",
+          "evidence": "UTC runner expected 2026-08-10 while application returned 2026-08-11; the same test passed locally in Asia/Shanghai",
+          "disposition": "fix_after_f10a",
+          "priority": "P1"
+        },
+        {
+          "id": "CI-MAIN-006",
+          "test_nodeid": "backend/tests/test_task26_api_contract.py::test_boundary_scan_has_no_blocker_and_snapshot_is_current",
+          "classification": "snapshot_drift",
+          "root_cause_group": "api_boundary_snapshot_drift",
+          "evidence": "generated boundary findings differ from shared/contracts/api-boundary-audit.json",
+          "disposition": "explain_diff_before_rebinding_in_f10_3",
+          "priority": "P1"
+        },
+        {
+          "id": "CI-MAIN-007",
+          "test_nodeid": "backend/tests/test_task28_ai_qa_contract.py::test_task28_shared_web_and_miniprogram_contracts_keep_participant_api_hidden",
+          "classification": "contract_drift",
+          "root_cause_group": "participant_ai_client_policy",
+          "evidence": "miniprogram API exposes sendAiQaMessage while the old contract forbids that method",
+          "disposition": "decision_required_in_f10_2",
+          "priority": "P0"
+        },
+        {
+          "id": "CI-MAIN-008",
+          "test_nodeid": "backend/tests/test_task31_security_contract.py::test_ai_security_boundary_has_no_real_provider_or_write_tools",
+          "classification": "contract_drift",
+          "root_cause_group": "production_ai_policy",
+          "evidence": "old test requires an unconditional AI_QA_ENABLED shutdown string that current profile-based configuration does not contain",
+          "disposition": "decision_required_in_f10_2",
+          "priority": "P0"
+        },
+        {
+          "id": "CI-MAIN-009",
+          "test_nodeid": "backend/tests/test_task35_registry.py::test_task35_verifier_binds_frozen_artifact_hashes",
+          "classification": "true_defect",
+          "root_cause_group": "task35_platform_dependent_artifact_hash",
+          "evidence": "two manifest hashes match Windows worktree bytes but not committed Git blob bytes, so Linux checkout fails verification",
+          "diagnostics": [
+            {
+              "path": "content/synthetic_affect_benchmark_240.json",
+              "manifest_and_windows_sha256": "cf87c21162b260301b8332eb190e71a8c3b809c4047dbdcd019a6782f744d1cd",
+              "committed_blob_sha256": "32cb76cbaf0ffce81bcb3f30445d1fa88c5541a520a8c124db46c0b2aed88cf3"
+            },
+            {
+              "path": "content/synthetic_group_network_suite.json",
+              "manifest_and_windows_sha256": "fd3c1c0f0b4dfe8f6b7ce777af0be97ace1fa581807a6432f6844a68e2fc1ce3",
+              "committed_blob_sha256": "f1c95fa2ba706d2ca07bb18072a30f13eeba405614e2560b469a0dce75bc6f85"
+            }
+          ],
+          "disposition": "explain_diff_before_rebinding_in_f10_3",
+          "priority": "P0"
+        }
+      ]
+    },
+    "reference_only": [
+      {
+        "kind": "pr8_head_check_rollup",
+        "pr": 8,
+        "head_sha": "272b397bfaf678eb12e76bd8712f7e5e8a3d4a94",
+        "run_database_id": 31310960199,
+        "conclusion": "failure",
+        "reason_not_authoritative": "different source tree from current main"
+      }
+    ]
+  },
+  "classification_counts": {
+    "true_defect": 5,
+    "contract_drift": 3,
+    "snapshot_drift": 1,
+    "environment_gap": 0
+  },
+  "workflow_findings": {
+    "single_job_fail_fast": true,
+    "independent_required_jobs": false,
+    "main_push_runs_engineering_infrastructure": false,
+    "f10_b_required": true,
+    "release_gate_interpretation": "NO-GO"
+  },
+  "risk_order": [
+    {
+      "rank": 1,
+      "group": "single_job_fail_fast",
+      "score": 25,
+      "reason": "one early backend failure hides eleven later checks"
+    },
+    {
+      "rank": 2,
+      "group": "f00_unreachable_dirty_tree_object",
+      "score": 25,
+      "reason": "the recovery harness cannot execute from a clean remote checkout"
+    },
+    {
+      "rank": 3,
+      "group": "production_and_participant_policy_drift",
+      "score": 24,
+      "reason": "security-sensitive behavior and tests currently state different policies"
+    },
+    {
+      "rank": 4,
+      "group": "artifact_and_snapshot_integrity",
+      "score": 20,
+      "reason": "stored evidence does not reproduce from committed bytes"
+    },
+    {
+      "rank": 5,
+      "group": "timezone_dependent_date_contract",
+      "score": 12,
+      "reason": "host timezone changes the result"
+    }
+  ],
+  "claim_register": [
+    {
+      "type": "current_code_fact",
+      "claim": "current main SafeHome Checks failed at backend tests with 9 failed and 988 passed",
+      "evidence": "actions_run_31325141640"
+    },
+    {
+      "type": "current_code_fact",
+      "claim": "eleven later checks were skipped by the single-job workflow",
+      "evidence": "actions_job_93274187305"
+    },
+    {
+      "type": "external_rule",
+      "claim": "GitHub check results from a different source SHA are reference-only for this baseline",
+      "evidence": "source_binding_rule"
+    },
+    {
+      "type": "project_decision",
+      "claim": "F10-A freezes failures and does not repair tests or workflows",
+      "evidence": "0810_plan_f10_8"
+    },
+    {
+      "type": "recommendation",
+      "claim": "F10-B should split required jobs and add an aggregate gate",
+      "evidence": "0810_plan_f10_4_to_f10_7"
+    },
+    {
+      "type": "todo",
+      "claim": "bootstrap and AI policy decisions must be completed in F10.2 before contract updates",
+      "evidence": "CI-MAIN-001,CI-MAIN-007,CI-MAIN-008"
+    }
+  ],
+  "local_reproduction": {
+    "command": "python -m pytest <six pre-F00 failing nodeids> -q -p no:cacheprovider",
+    "result": "4 failed, 2 passed in 14.20s",
+    "failed_groups": [
+      "bootstrap_participant_policy",
+      "api_boundary_snapshot_drift",
+      "participant_ai_client_policy",
+      "production_ai_policy"
+    ],
+    "passed_only_locally": [
+      "timezone_dependent_date_contract",
+      "task35_platform_dependent_artifact_hash"
+    ]
+  },
+  "safety": {
+    "workflow_modified": false,
+    "business_code_modified": false,
+    "database_modified": false,
+    "cloudbase_modified": false,
+    "secret_or_production_config_modified": false
+  },
+  "next_execution_unit": "RC0810-F12-A",
+  "rollback": "remove only the F10-A baseline, verifier, test, and exact documentation hunks; preserve inherited workspace changes"
+}
