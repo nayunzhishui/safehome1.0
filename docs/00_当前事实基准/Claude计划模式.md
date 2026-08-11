@@ -12131,3 +12131,12 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - 首轮独立审查 `fix_required`（SHA-256=`08b8bbf324713a0d8eb6e13a996e3f3ee31edaeafd21909a6b5b5537be2497f3`）；已按两项 blocker 完成 Fix Loop 1：源码推导 52 页 inventory/真实 API 校验，以及 strict schema、完整失效目标/零背景结果/发布标志和先验后原子写入。修复后 F25 `19 passed`、8 项 self-check 通过，待重建 Harness packet 复审。
 - Fix Loop 1 复审仍 `fix_required`（SHA-256=`98d8cbf7454bdc9ff76e955eb802a1c4a14920ac55eca48ebae25e9f3629cb10`）；功能 blocker 已关闭，仅因注册表/packet 仍登记 16/23 而实际为 19/26。Fix Loop 2 只校准真实计数并重跑，不删减测试。
 - Fix Loop 2 独立复审 `pass`（SHA-256=`4919cdfc4142b6926c56c5f3df297674e41ed363ad284e4fe85a06b86f88808c`），无 finding；专项/组合真实计数为 19/26，52 页、8 项自检、原子写与 NO-GO 无回退。Harness 仅把 F25-A 置 `phase_a_verified`；最终文档同步后须再做一致性复审。
+
+## 2026-08-11 RC0810 暂停交接
+
+- [x] F00 与 F10-A、F12-A、F14-A、F22-A、F25-A 已完成、独立复审并推送；这些只属于基线/定义阶段。
+- [ ] F01—F09、F10-B、F11、F12-B、F13、F14-B、F15—F21、F22-B、F23、F24、F25-B、F26 均未完成。
+- [ ] 真实 CloudBase、微信平台、iOS/Android、生产 MySQL、Secret、监控值守、专业/隐私/发布负责人签署和 production 发布仍为 pending/NO-GO。
+- F01 的未完成草稿未进入 main，已保存为本地 stash `rc0810-f01-paused-draft-20260811`（对象 `3bf30308d93f0f78a5fbdbb2cdc9d8061320d339`）；暂停前 RED 后已把测试合同整理为 18 项，但未重跑，不能记为验收证据。
+- 暂停期间可以执行其他 UI 任务，但必须建立独立范围、保留既有 Harness 状态，不得把 UI 完成写成 0810 上线整改完成。UI 若改动 F01/F02/F04/F25 所绑定的页面、配置或源码，恢复 RC0810 时必须使旧证据失效并重新冻结。
+- 恢复时从 F01 重新执行 Preflight → Scope Freeze → Failing Contract，不直接沿用暂停前 packet、source tree、dirty diff 或测试结论。
