@@ -39,8 +39,8 @@
     "harness_engineering",
     "done"
   ],
-  "active_route": "pages/emergency-resources/index",
-  "updated_at": "2026-08-11T13:24:24+08:00",
+  "active_route": "pages/getting-started/index",
+  "updated_at": "2026-08-11T15:12:01+08:00",
   "pages": [
     {
       "index": 1,
@@ -932,17 +932,130 @@
           "recorded_at": "2026-08-11T13:24:24+08:00"
         }
       },
-      "updated_at": "2026-08-11T13:24:24+08:00",
-      "blockers": []
+      "updated_at": "2026-08-11T13:24:24+08:00"
     },
     {
       "index": 8,
       "route": "pages/emergency-resources/index",
       "title": "紧急帮助说明",
-      "source_hash": "8be422f28c444a0bddc8b6a3440720bea7c11b8974f2197b63e96442eab69dbf",
-      "stage": "truth_auto_complete",
-      "evidence": {},
-      "updated_at": "2026-08-10T01:41:08+08:00"
+      "source_hash": "5576aea472b4af60969680cbb95a3b2e441c684ff1820d2c0f1f7c111710efac",
+      "stage": "complete",
+      "evidence": {
+        "truth": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md"
+          ],
+          "note": "已人工核对四类本地资源、使用边界、唯一返回安全指引事件和无 API 能力",
+          "recorded_at": "2026-08-11T13:30:35+08:00"
+        },
+        "freeze": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/context.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/audit.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/ideate.md"
+          ],
+          "note": "冻结方案 A 现实支持索引：静态说明非交互、返回安全指引为轮廓辅助行动",
+          "recorded_at": "2026-08-11T13:30:35+08:00"
+        },
+        "imagegen": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/assets/imagegen-default-v1.png"
+          ],
+          "note": "内置 ImageGen 生成方案 A 现实支持索引，高保真移动页面概念",
+          "recorded_at": "2026-08-11T13:35:03+08:00"
+        },
+        "image_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/image-review.md"
+          ],
+          "note": "功能真值与视觉审查通过，进入 Figma；需校正画板高度、标题尺度和项目字体",
+          "recorded_at": "2026-08-11T13:35:04+08:00"
+        },
+        "figma": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/assets/figma-default.png"
+          ],
+          "note": "ResourceChannelRow、Default 与 LongContentSmallScreen 已完成；用户要求的粗竖条改为开放角标",
+          "recorded_at": "2026-08-11T14:00:26+08:00"
+        },
+        "figma_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/figma-review.md"
+          ],
+          "note": "Figma 视觉与结构 Harness 通过，进入前端实现",
+          "recorded_at": "2026-08-11T14:00:27+08:00"
+        },
+        "implementation": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "WXML/WXSS 按 Figma 完成；JS、数据、事件、路由与接口未改",
+          "recorded_at": "2026-08-11T14:53:45+08:00"
+        },
+        "loop_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "ImageGen、Figma 与代码结构/token 对照通过；真实页面截图待用户手工提供",
+          "recorded_at": "2026-08-11T14:53:45+08:00"
+        },
+        "loop_ui": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "排版、间距、开放转角、分隔线、边界与小屏换行检查通过",
+          "recorded_at": "2026-08-11T14:53:46+08:00"
+        },
+        "loop_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "四项静态资源与唯一安全指引行动保持真实语义",
+          "recorded_at": "2026-08-11T14:53:46+08:00"
+        },
+        "loop_states": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "仅实现真实 Default、LongContent/SmallScreen、Pressed、ReducedMotion",
+          "recorded_at": "2026-08-11T14:53:47+08:00"
+        },
+        "harness_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "Figma 与代码 token/尺寸映射通过；等待用户真实页面截图复核",
+          "recorded_at": "2026-08-11T14:53:47+08:00"
+        },
+        "harness_component": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "四项资源复用同一行结构，按钮复用全局轮廓样式，无组件分叉",
+          "recorded_at": "2026-08-11T14:53:47+08:00"
+        },
+        "harness_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "主任务、静态内容边界、触控尺寸、支持性语言与信息层级通过",
+          "recorded_at": "2026-08-11T14:53:48+08:00"
+        },
+        "harness_engineering": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/code-review.md"
+          ],
+          "note": "Preview、truth、token、UI governance、non-UI client、T23、JSON/JS/Python 与范围门禁通过",
+          "recorded_at": "2026-08-11T14:53:48+08:00"
+        },
+        "done": {
+          "items": [],
+          "note": "功能真值、ImageGen、Figma、前端、Loop 1-4 与四类 Harness 均通过；按 2026-08-11 最新规则本地完成，统一待最终用户验收",
+          "recorded_at": "2026-08-11T15:12:01+08:00"
+        }
+      },
+      "updated_at": "2026-08-11T15:12:01+08:00",
+      "blockers": []
     },
     {
       "index": 9,

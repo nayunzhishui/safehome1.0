@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase20_emergency_resources_truth",
-  "step": "audit_function_truth",
+  "phase": "phase22_emergency_resources_awaiting_user_review",
+  "step": "frontend_local_harness_complete_waiting_user_manual_screenshot",
   "blocker": null,
   "entities": {
     "collections": {
@@ -92,6 +92,8 @@
       ,"Components/FeedbackRating/Stage": "134:72"
       ,"Components/SafetyActionRow": "156:75"
       ,"Components/SafetyActionRow/Stage": "156:78"
+      ,"Components/ResourceChannelRow": "168:75"
+      ,"Components/ResourceChannelRow/Stage": "168:78"
     },
     "components": {
       "Button": "18:59",
@@ -121,6 +123,7 @@
       ,"SafetyActionRow/PriorityBase": "156:79"
       ,"SafetyActionRow/GroundingBase": "157:75"
       ,"SafetyActionRow": "157:78"
+      ,"ResourceChannelRow": "169:75"
     },
     "componentVariants": {
       "FeedbackRating/Default": "135:69",
@@ -160,6 +163,8 @@
       "FeedbackRating/Prompt": "Prompt#138:0",
       "SafetyActionRow/Number": "Number#157:0",
       "SafetyActionRow/Body": "Body#157:3",
+      "ResourceChannelRow/Title": "Title#169:0",
+      "ResourceChannelRow/Body": "Body#169:1",
       "AuthField/Label": "Label#59:0",
       "AuthField/Content": "Content#59:6",
       "AuthField/Message": "Message#59:12",
@@ -239,6 +244,8 @@
       ,"SupportAssistant/InlineError": "107:1123"
       ,"SupportAssistant/LongContent": "107:1125"
       ,"SupportAssistant/NetworkFailure": "107:1127"
+      ,"EmergencyResources/Default": "170:1387"
+      ,"EmergencyResources/LongContentSmallScreen": "170:1389"
     },
     "screenNodes": {
       "EmergencyGuide/Default/Content": "162:1344",
@@ -379,6 +386,16 @@
       ,"SupportAssistant/Loading/State": "111:1109"
       ,"SupportAssistant/ConfigError/State": "111:1113"
       ,"SupportAssistant/NetworkFailure/State": "111:1120"
+      ,"EmergencyResources/Default/Content": "170:1388"
+      ,"EmergencyResources/Default/Header": "171:1387"
+      ,"EmergencyResources/Default/ResourceList": "174:1387"
+      ,"EmergencyResources/Default/Boundary": "176:1435"
+      ,"EmergencyResources/Default/OpenEmergencyGuide": "176:1439"
+      ,"EmergencyResources/LongContentSmallScreen/Content": "170:1390"
+      ,"EmergencyResources/LongContentSmallScreen/Header": "172:1387"
+      ,"EmergencyResources/LongContentSmallScreen/ResourceList": "174:1436"
+      ,"EmergencyResources/LongContentSmallScreen/Boundary": "177:1437"
+      ,"EmergencyResources/LongContentSmallScreen/OpenEmergencyGuide": "177:1441"
       ,"SupportAssistant/Disabled/Notice": "112:1118"
       ,"SupportAssistant/Disabled/NoticeTitle": "113:1118"
       ,"SupportAssistant/Disabled/NoticeBody": "113:1119"
@@ -493,8 +510,15 @@
     ,"EmergencyGuide Default and LongContentSmallScreen states completed and visually reviewed"
     ,"EmergencyGuide Figma harness passed: Noto Sans SC only, zero raw solid paints, no placeholders, 44px actions"
     ,"EmergencyGuide get_design_context captured from Default state 162:1343"
+    ,"EmergencyResources ResourceChannelRow component completed with user-requested lightweight editorial corner marker"
+    ,"EmergencyResources Default and LongContentSmallScreen states completed and visually reviewed"
+    ,"EmergencyResources Figma harness passed: Noto Sans SC only, zero raw solid paints, no placeholders, 44px action"
+    ,"EmergencyResources get_design_context captured from Default state 170:1387"
     ,"EmergencyGuide WXML/WXSS/JSON implemented without changing JS, APIs, navigation, backend, database, content or shared"
     ,"EmergencyGuide WeChat DevTools Preview passed at 1492220 bytes"
     ,"EmergencyGuide local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    ,"EmergencyResources WXML/WXSS implemented without changing JS, APIs, navigation, backend, database, content or shared"
+    ,"EmergencyResources WeChat DevTools Preview passed at 1493991 bytes"
+    ,"EmergencyResources local Loop 1-4 and four Harness reviews passed; waiting for user manual screenshot review"
   ]
 }

@@ -738,6 +738,7 @@ def record_stage(route: str, stage: str, evidence: list[str], note: str) -> None
     }
     page["blockers"] = [item for item in page.get("blockers", []) if item.get("stage") != stage]
     page["stage"] = "complete" if stage == "done" else f"{stage}_complete"
+    page.pop("user_review", None)
     page["updated_at"] = now_iso()
     if stage == "done":
         remaining = [item for item in registry["pages"] if item["stage"] != "complete"]

@@ -316,7 +316,7 @@
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-11T13:19:31+08:00`
+生成时间：`2026-08-11T14:09:11+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -643,7 +643,7 @@
 ### 08：紧急帮助说明 `pages/emergency-resources/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`8be422f28c444a0bddc8b6a3440720bea7c11b8974f2197b63e96442eab69dbf`
+- 源码指纹：`5576aea472b4af60969680cbb95a3b2e441c684ff1820d2c0f1f7c111710efac`
 - 核对文件：`apps/miniprogram/pages/emergency-resources/index.wxml`、`apps/miniprogram/pages/emergency-resources/index.wxss`、`apps/miniprogram/pages/emergency-resources/index.js`、`apps/miniprogram/pages/emergency-resources/index.json`
 - 上游页面：`pages/emergency-guide/index`、`pages/profile/index`
 - 页面组件：—
@@ -653,7 +653,7 @@
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 22 | 查看紧急安全指引 | `bindtap` | `goGuide` | — |
+| 28 | 查看紧急安全指引 | `bindtap` | `goGuide` | — |
 
 #### 接口真值
 

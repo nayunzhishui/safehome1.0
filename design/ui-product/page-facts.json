@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-11T13:19:31+08:00",
+  "generated_at": "2026-08-11T14:09:11+08:00",
   "branch": "UIproduct",
-  "main_sha": "e0fb7fd0bcde3e6ea6e485ec978d9663152831f9",
+  "main_sha": "3755f47686551e8a807510157fcdb57c9a0760c0",
   "app_page_count": 53,
   "pages": [
     {
@@ -1511,7 +1511,7 @@
         "apps/miniprogram/pages/emergency-resources/index.js",
         "apps/miniprogram/pages/emergency-resources/index.json"
       ],
-      "source_hash": "8be422f28c444a0bddc8b6a3440720bea7c11b8974f2197b63e96442eab69dbf",
+      "source_hash": "5576aea472b4af60969680cbb95a3b2e441c684ff1820d2c0f1f7c111710efac",
       "missing_files": [],
       "visible_text": [
         "现实资源",
@@ -1528,7 +1528,7 @@
           "tag": "button",
           "label": "查看紧急安全指引",
           "data": {},
-          "line": 22
+          "line": 28
         }
       ],
       "page_methods": [

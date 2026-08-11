@@ -8,7 +8,7 @@
 
 `truth → freeze → imagegen → image_review → figma → figma_review → implementation → loop_visual → loop_ui → loop_ux → loop_states → harness_visual → harness_component → harness_ux → harness_engineering → done`
 
-任一阶段没有证据，`scripts/ui_product_loop.py record` 都不会允许进入下一阶段。
+任一阶段没有证据，`scripts/ui_product_loop.py record` 都不会允许进入下一阶段。`harness_engineering` 完成后，代理完成本页证据复核即可记录 `done` 并连续进入下一页；不再逐页等待用户截图。
 
 第二阶段仅在全部页面第一阶段均为 `complete` 后开放：用户统一进行 Android/iOS 真机验收，逐页记录 `pass` 或 `fix_required`。发现问题后修正并回归，全部页面均有 `pass` 证据才完成最终验收。
 
@@ -30,6 +30,8 @@ python scripts/ui_product_loop.py record --page pages/home/index --stage truth -
 
 Figma 可使用文件或 Figma 链接作为证据。ImageGen 和 Figma 结果必须先经过对应审查，不能直接记录为通过。
 
+逐页本地自审仍必须执行“小字预算”门禁。全部页面本地完成后的统一用户验收中，出现小于 `24rpx`、连续三行及以上小字、重复免责声明、未经人类化的机器字段或 ISO 时间、关键操作或关键反馈使用 Caption 样式中的任一项，必须通过 `device-record --result fix_required` 登记并回修。完整规则见 `docs/07_UI设计/UI美术与UX改造总指导.md` 第 10.1 节；跨页截图审查证据见 `design/ui-product/small-copy-policy.md`。
+
 全部页面本地完成后记录真机结果：
 
 ```powershell
@@ -48,5 +50,7 @@ Figma 长流程状态单独保存在 `design/ui-product/figma-state.json`。每�
 - 全部 `app.json` 页面必须出现在功能真值表中。
 - WXML 事件必须能解析到页面处理器；页面 API 调用必须能解析到现有 API client。
 - 页面源码变化后必须重新生成并复核功能真值证据。
+- 每页的 ImageGen 提示词、Figma 审查和 `code-review.md` 必须记录小字预算；不得用缩小字号解决信息密度。
+- 每页完成 `harness_engineering` 后由代理依据本地证据自审并记录 `done`，连续切换 `active_route`；不再设置逐页用户截图门禁。
 - 真机验收统一延期到全部页面本地完成后；在门禁开放前 `device-record` 会拒绝写入。
 - 延期不等于通过；没有截图或录屏证据不得记录 `pass`。

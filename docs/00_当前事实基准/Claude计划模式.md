@@ -12226,3 +12226,29 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] Preview、53 页真值、token、UI governance、non-UI client、T23 与工程 Harness 通过。
 - [ ] 当前进入 `pages/emergency-resources/index`，继续执行同一单页流程。
 - [ ] main 合并、真机、大字体、读屏和 Android/iOS 继续统一后置。
+
+## 2026-08-11 UIproduct 紧急帮助说明页状态
+
+- [x] 对照页面 JS、四项静态资源、使用边界和安全指引路由完成功能真值与方案 A 冻结。
+- [x] 使用 UI skills 完成 ImageGen、`ResourceChannelRow`、Default 与 320px Figma 状态和视觉审查。
+- [x] 仅实现 WXML/WXSS；页面 JS、JSON、数据、事件、路由、API、后端、数据库、content 与 shared 未修改。
+- [x] 将重复粗侧线替换为 `4rpx` 开放式转角，并同步写入 UI 总指导。
+- [x] Preview、53 页真值、token、UI governance、non-UI client、T23 与工程 Harness 通过。
+- [x] Loop/Harness 已增加用户手工截图审查门禁；当前状态为 `awaiting_user_review`。
+- [ ] 等待用户手工截图，Codex 对照审查；通过后记录 `done` 并提交本页可恢复点。
+- [ ] 截图审查通过前不得进入 `pages/getting-started/index`；全量真机适配仍在所有页面本地完成后统一执行。
+
+## 2026-08-11 UIproduct 全页面小字门禁
+
+- [x] 审查用户提供的 8 张研究者端与用户端真实页面截图。
+- [x] 在 UI 总指导中冻结 `24rpx` 下限、`28rpx` 正文、单区小字通常不超过两行、免责声明去重和机器字段人类化规则。
+- [x] 将小字预算加入 ImageGen、Figma、代码审核、Loop 2、UX Harness 和用户截图 `fix_required` 条件。
+- [ ] 当前页仍等待专属手工截图；跨页截图不得用于越过 `pages/emergency-resources/index` 的用户验收门禁。
+
+## 2026-08-11 UIproduct 连续完成、最终统一验收
+
+- [x] 用户取消逐页手工截图等待，授权代理按既有文档门禁持续完成全部页面。
+- [x] 保留功能真值、UI skills、方案 A、ImageGen 自审、Figma、前端、Loop 1–4、四类 Harness 和小字预算。
+- [x] 最终用户视觉、功能与 Android/iOS 真机验收继续由 `device_acceptance` 控制，只在全部页面本地完成并完成 main 集成回归后开放。
+- [x] 登记紧急帮助说明页 `done`，活动页面进入 `pages/getting-started/index`。
+- [ ] 验证并提交紧急帮助说明页可恢复点，然后开始首次使用页功能审查。
