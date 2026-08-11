@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase16_message_detail_local_complete",
-  "step": "emergency_guide_truth_pending",
+  "phase": "phase20_emergency_resources_truth",
+  "step": "audit_function_truth",
   "blocker": null,
   "entities": {
     "collections": {
@@ -90,6 +90,8 @@
       ,"Components/QuestionComposer": "115:61"
       ,"Components/FeedbackRating": "134:69"
       ,"Components/FeedbackRating/Stage": "134:72"
+      ,"Components/SafetyActionRow": "156:75"
+      ,"Components/SafetyActionRow/Stage": "156:78"
     },
     "components": {
       "Button": "18:59",
@@ -116,6 +118,9 @@
       ,"QuestionComposer": "120:69"
       ,"FeedbackRating/DefaultBase": "135:69"
       ,"FeedbackRating": "138:69"
+      ,"SafetyActionRow/PriorityBase": "156:79"
+      ,"SafetyActionRow/GroundingBase": "157:75"
+      ,"SafetyActionRow": "157:78"
     },
     "componentVariants": {
       "FeedbackRating/Default": "135:69",
@@ -124,6 +129,8 @@
       "FeedbackRating/DoesNotMatch": "137:93",
       "FeedbackRating/Uncomfortable": "137:105",
       "FeedbackRating/Saving": "137:117",
+      "SafetyActionRow/Priority": "156:79",
+      "SafetyActionRow/Grounding": "157:75",
       "AuthField/Default": "56:56",
       "AuthField/Focused": "57:53",
       "AuthField/Filled": "57:58",
@@ -151,6 +158,8 @@
     },
     "componentProperties": {
       "FeedbackRating/Prompt": "Prompt#138:0",
+      "SafetyActionRow/Number": "Number#157:0",
+      "SafetyActionRow/Body": "Body#157:3",
       "AuthField/Label": "Label#59:0",
       "AuthField/Content": "Content#59:6",
       "AuthField/Message": "Message#59:12",
@@ -177,6 +186,8 @@
       ,"QuestionComposer/ShowError": "ShowError#121:20"
     },
     "screens": {
+      "EmergencyGuide/Default": "162:1343",
+      "EmergencyGuide/LongContentSmallScreen": "162:1346",
       "MessageDetail/Default": "139:1243",
       "MessageDetail/Loading": "141:1257",
       "MessageDetail/MissingId": "141:1271",
@@ -230,6 +241,18 @@
       ,"SupportAssistant/NetworkFailure": "107:1127"
     },
     "screenNodes": {
+      "EmergencyGuide/Default/Content": "162:1344",
+      "EmergencyGuide/Default/SafetyActionDock": "162:1345",
+      "EmergencyGuide/Default/Header": "163:1343",
+      "EmergencyGuide/Default/PrioritySection": "163:1348",
+      "EmergencyGuide/Default/GroundingSection": "163:1383",
+      "EmergencyGuide/Default/Boundary": "163:1401",
+      "EmergencyGuide/Default/OpenRealityResources": "163:1405",
+      "EmergencyGuide/Default/BackHome": "163:1410",
+      "EmergencyGuide/LongContentSmallScreen/Content": "162:1347",
+      "EmergencyGuide/LongContentSmallScreen/SafetyActionDock": "162:1348",
+      "EmergencyGuide/LongContentSmallScreen/OpenRealityResources": "163:1439",
+      "EmergencyGuide/LongContentSmallScreen/BackHome": "163:1444",
       "MessageDetail/Default/MessageType": "139:1244",
       "MessageDetail/Default/Title": "139:1245",
       "MessageDetail/Default/Meta": "139:1246",
@@ -271,6 +294,10 @@
       "FeedbackRating/PartlyMatches/Note": "137:92",
       "FeedbackRating/DoesNotMatch/Note": "137:104",
       "FeedbackRating/Uncomfortable/Note": "137:116",
+      "SafetyActionRow/Priority/Number": "156:80",
+      "SafetyActionRow/Priority/Body": "156:81",
+      "SafetyActionRow/Grounding/Number": "157:76",
+      "SafetyActionRow/Grounding/Body": "157:77",
       "Login/Default/Content": "61:804",
       "Login/Default/Header": "61:805",
       "Login/Default/QuickMethods": "61:809",
@@ -461,5 +488,13 @@
     ,"MessageDetail WXML/WXSS and opt-in FeedbackRating editorial variant implemented without changing page business JS or APIs"
     ,"MessageDetail WeChat DevTools preview passed at 1491164 bytes"
     ,"MessageDetail local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    ,"EmergencyGuide P0.a-P0.f complete: live Figma inventory matches local ledger; external list components rejected as incompatible"
+    ,"EmergencyGuide SafetyActionRow two-variant component set completed and small-screen text reflow fixed"
+    ,"EmergencyGuide Default and LongContentSmallScreen states completed and visually reviewed"
+    ,"EmergencyGuide Figma harness passed: Noto Sans SC only, zero raw solid paints, no placeholders, 44px actions"
+    ,"EmergencyGuide get_design_context captured from Default state 162:1343"
+    ,"EmergencyGuide WXML/WXSS/JSON implemented without changing JS, APIs, navigation, backend, database, content or shared"
+    ,"EmergencyGuide WeChat DevTools Preview passed at 1492220 bytes"
+    ,"EmergencyGuide local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
   ]
 }

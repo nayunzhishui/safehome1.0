@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-10T22:38:36+08:00",
+  "generated_at": "2026-08-11T13:19:31+08:00",
   "branch": "UIproduct",
   "main_sha": "e0fb7fd0bcde3e6ea6e485ec978d9663152831f9",
   "app_page_count": 53,
@@ -1425,12 +1425,16 @@
         "apps/miniprogram/pages/emergency-guide/index.js",
         "apps/miniprogram/pages/emergency-guide/index.json"
       ],
-      "source_hash": "0201d32712e3469fbf7421960d05e40969cda7084b9bc56a97f76c335d67a93f",
+      "source_hash": "9cce44d4bcf8494eb81075b33d7a95c659567e8380da9eb4a2c353b6cb19f17e",
       "missing_files": [],
       "visible_text": [
         "安全优先",
         "先找现实帮助",
         "如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。",
+        "现在先做",
+        "只用于稳定当下，不替代专业帮助",
+        "5-4-3-2-1 接地法",
+        "把注意力拉回此刻",
         "重要边界",
         "本小程序不能提供实时危机干预、医疗诊断或法律判断。遇到紧急安全风险时，请先使用现实资源。",
         "查看现实支持资源",
@@ -1443,7 +1447,7 @@
           "tag": "button",
           "label": "查看现实支持资源",
           "data": {},
-          "line": 36
+          "line": 38
         },
         {
           "event": "bindtap",
@@ -1451,7 +1455,7 @@
           "tag": "button",
           "label": "回到首页",
           "data": {},
-          "line": 37
+          "line": 39
         }
       ],
       "page_methods": [
@@ -1483,9 +1487,7 @@
         "pages/profile/index",
         "pages/feedback-result/index"
       ],
-      "components": {
-        "section-title": "/components/section-title/index"
-      },
+      "components": {},
       "storage": [],
       "state": {
         "bindings": [

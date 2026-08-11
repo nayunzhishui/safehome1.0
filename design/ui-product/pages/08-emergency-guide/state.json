@@ -1,0 +1,54 @@
+{
+  "route": "pages/emergency-guide/index",
+  "title": "紧急安全指引",
+  "status": "local_complete",
+  "scope": {
+    "frontendOnly": true,
+    "backendChanges": false,
+    "apiChanges": false,
+    "databaseChanges": false
+  },
+  "completed": [
+    "truth",
+    "freeze",
+    "imagegen",
+    "image_review",
+    "figma",
+    "figma_review",
+    "implementation",
+    "loop_visual",
+    "loop_ui",
+    "loop_ux",
+    "loop_states",
+    "harness_visual",
+    "harness_component",
+    "harness_ux",
+    "harness_engineering",
+    "done"
+  ],
+  "nextGate": "final_device_batch",
+  "blockerAttempts": 0,
+  "blocker": null,
+  "evidence": {
+    "truth": "design/function-truth-table.md",
+    "context": "design/ui-product/pages/08-emergency-guide/context.md",
+    "audit": "design/ui-product/pages/08-emergency-guide/audit.md",
+    "ideate": "design/ui-product/pages/08-emergency-guide/ideate.md",
+    "imagegen": "design/ui-product/pages/08-emergency-guide/assets/imagegen-default-v1.png",
+    "imageReview": "design/ui-product/pages/08-emergency-guide/image-review.md",
+    "figmaGapAnalysis": "design/ui-product/pages/08-emergency-guide/figma-gap-analysis.md",
+    "figmaReview": "design/ui-product/pages/08-emergency-guide/figma-review.md",
+    "figmaDefault": "design/ui-product/pages/08-emergency-guide/assets/figma-default.png",
+    "figmaLongContentSmallScreen": "design/ui-product/pages/08-emergency-guide/assets/figma-long-content-small-screen.png",
+    "figmaDefaultNode": "162:1343",
+    "figmaLongContentSmallScreenNode": "162:1346"
+    ,"codeReview": "design/ui-product/pages/08-emergency-guide/code-review.md"
+    ,"implementation": [
+      "apps/miniprogram/pages/emergency-guide/index.wxml",
+      "apps/miniprogram/pages/emergency-guide/index.wxss",
+      "apps/miniprogram/pages/emergency-guide/index.json"
+    ]
+    ,"previewBytes": 1492220
+  },
+  "deviceAcceptance": "deferred_until_all_pages_local_complete"
+}

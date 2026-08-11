@@ -277,11 +277,46 @@
 - 评价接口继续使用现有 `POST /api/feedback-ledger`；本轮不修改后端、数据库、API、shared、content、认证、消息已读逻辑或导航语义。
 - 前端实现只调整 WXML/WXSS，并给共用 `feedback-rating` 增加默认关闭的 `editorial` 视觉属性；页面 JS 和业务事件保持原样。
 
+## 紧急安全指引 `pages/emergency-guide/index`（逐页人工冻结）
+
+状态：`requirements_frozen_before_imagegen`。核对时间：2026-08-11。
+
+核对来源：
+
+- `apps/miniprogram/pages/emergency-guide/index.*`；
+- `apps/miniprogram/components/section-title/index.*`；
+- 上游 `pages/profile/index`、`pages/feedback-result/index`、`pages/emergency-resources/index`；
+- 下游 `pages/emergency-resources/index`、`pages/home/index`；
+- `apps/miniprogram/app.json`、`app.wxss` 与 `shared/design/experience-tokens.json`；
+- 当前页面无 API、后端、数据库、本地存储、登录或权限调用。
+
+| 页面元素 | 事件处理 | 路由/API/状态 | 真实用户任务 | 正式设计约束 |
+|---|---|---|---|---|
+| 安全情境与标题 | 无事件 | 本地固定文案 | 在出现自伤、自杀、暴力、失控或其他安全风险时，立即知道现实帮助优先 | 信息直接、可扫读；不使用库存人物图、庆祝动效、诊断标签或恐吓式视觉 |
+| 现在先做 | 无事件 | `supportSteps` 四项本地数组 | 依次离开危险物品或场景、联系可信赖的人、紧急时联系当地紧急服务或线下机构、涉及孩子时联系监护/学校/当地专业机构 | 四项顺序和原文保持；视觉优先级高于接地法，不新增拨号、定位、报警或自动转介 |
+| 5-4-3-2-1 接地法 | 无事件 | `groundingSteps` 五项本地数组 | 在联系现实帮助的同时，用感官与慢呼吸稳定当下 | 明确“不替代专业帮助”；显示顺序应与 5→4→3→2→1 一致，不能继续用 1→5 的视觉编号造成冲突 |
+| 重要边界 | 无事件 | 本地固定文案 | 理解小程序不能提供实时危机干预、医疗诊断或法律判断 | 保留完整边界，不包装为已连接专业人员、实时客服或风险评估结果 |
+| 查看现实支持资源 | `openResources` | `navigateTo('/pages/emergency-resources/index')` | 查看身边可信赖的人、当地紧急服务、学校/社区和专业机构四类现实资源说明 | 全页唯一实心主行动，应在阅读长内容时持续容易找到；不显示虚构号码或机构 |
+| 回到首页 | `goHome` | `reLaunch('/pages/home/index')` | 退出安全指引并回到首页根路由 | 保留 `reLaunch` 语义；降为次行动但保持 88rpx 可点击，不改成返回上一页 |
+
+页面状态真值：
+
+- 页面只由本地静态数组和路由驱动，无 Loading、Empty、Error、NetworkFailure、Disabled、Selected 或数据状态。
+- 正式设计覆盖 Default、LongContent / SmallScreen，以及按钮 Pressed 与 ReducedMotion；不得为凑状态伪造加载、联网失败或热线不可用。
+- 当前录屏文件在本机原路径已不可用，本页没有新的直接截图证据；按统一规则不阻断本地流程，真机视觉、读屏和大字体统一待全量验收。
+
+冻结方案 A：
+
+- 采用“安全行动清单”而非多层卡片：开放式标题，四项现实行动为主清单，接地法为次级 5→1 感官阶梯，边界使用细线与短段落。
+- 使用象牙白、深墨、克制危险色提示和森林绿主行动；无插画、无图标装饰、无循环动效。
+- 现实资源按钮固定在可达位置，回到首页为低强调次行动；只改变布局与视觉，不改变文案、数组、事件和路由。
+- 目标页 WXML/WXSS/JSON 属 A；页面 JS 属 B 但本轮预计不改；后端、API、数据库、content、shared、认证和无关文件属 C/D，禁止修改。
+
 <!-- UI_PRODUCT_AUTO_FACTS:BEGIN -->
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-10T22:38:36+08:00`
+生成时间：`2026-08-11T13:19:31+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -569,18 +604,18 @@
 ### 07：紧急安全指引 `pages/emergency-guide/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`0201d32712e3469fbf7421960d05e40969cda7084b9bc56a97f76c335d67a93f`
+- 源码指纹：`9cce44d4bcf8494eb81075b33d7a95c659567e8380da9eb4a2c353b6cb19f17e`
 - 核对文件：`apps/miniprogram/pages/emergency-guide/index.wxml`、`apps/miniprogram/pages/emergency-guide/index.wxss`、`apps/miniprogram/pages/emergency-guide/index.js`、`apps/miniprogram/pages/emergency-guide/index.json`
 - 上游页面：`pages/emergency-resources/index`、`pages/profile/index`、`pages/feedback-result/index`
-- 页面组件：`section-title` → `/components/section-title/index`
-- 主要可见内容：安全优先、先找现实帮助、如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。、重要边界、本小程序不能提供实时危机干预、医疗诊断或法律判断。遇到紧急安全风险时，请先使用现实资源。、查看现实支持资源、回到首页
+- 页面组件：—
+- 主要可见内容：安全优先、先找现实帮助、如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。、现在先做、只用于稳定当下，不替代专业帮助、5-4-3-2-1 接地法、把注意力拉回此刻、重要边界、本小程序不能提供实时危机干预、医疗诊断或法律判断。遇到紧急安全风险时，请先使用现实资源。、查看现实支持资源、回到首页
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 36 | 查看现实支持资源 | `bindtap` | `openResources` | — |
-| 37 | 回到首页 | `bindtap` | `goHome` | — |
+| 38 | 查看现实支持资源 | `bindtap` | `openResources` | — |
+| 39 | 回到首页 | `bindtap` | `goHome` | — |
 
 #### 接口真值
 

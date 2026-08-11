@@ -12216,3 +12216,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 支持性问答 10 个 Figma 状态、三组件集、前端实现、Preview、本地 Loop 1–4 与四类 Harness 全部完成。
 - [ ] 当前进入 `pages/message-detail/index`；继续执行真值复核、UI skills、冻结、ImageGen、Figma、实现和本地审核。
 - [ ] main 合并和 Android/iOS 真机继续统一后置，不因 Figma 阻断改变顺序。
+
+## 2026-08-11 UIproduct 紧急安全指引页状态
+
+- [x] 对照页面 JS、静态行动数组和上下游路由完成功能真值与方案 A 冻结。
+- [x] ImageGen、`SafetyActionRow` 两态组件、Default 与 320px 长内容 Figma 状态完成并审查。
+- [x] 仅实现 WXML/WXSS/JSON；页面 JS、接口、后端、数据库、content 与 shared 未修改。
+- [x] 接地编号修正为 5→1；现实资源仍走原 `navigateTo`，首页仍走原 `reLaunch`。
+- [x] Preview、53 页真值、token、UI governance、non-UI client、T23 与工程 Harness 通过。
+- [ ] 当前进入 `pages/emergency-resources/index`，继续执行同一单页流程。
+- [ ] main 合并、真机、大字体、读屏和 Android/iOS 继续统一后置。

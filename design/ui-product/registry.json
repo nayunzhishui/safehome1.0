@@ -39,8 +39,8 @@
     "harness_engineering",
     "done"
   ],
-  "active_route": "pages/emergency-guide/index",
-  "updated_at": "2026-08-11T12:12:30+08:00",
+  "active_route": "pages/emergency-resources/index",
+  "updated_at": "2026-08-11T13:24:24+08:00",
   "pages": [
     {
       "index": 1,
@@ -803,17 +803,137 @@
           "recorded_at": "2026-08-11T12:12:30+08:00"
         }
       },
-      "updated_at": "2026-08-11T12:12:30+08:00",
-      "blockers": []
+      "updated_at": "2026-08-11T12:12:30+08:00"
     },
     {
       "index": 7,
       "route": "pages/emergency-guide/index",
       "title": "紧急安全指引",
-      "source_hash": "0201d32712e3469fbf7421960d05e40969cda7084b9bc56a97f76c335d67a93f",
-      "stage": "truth_auto_complete",
-      "evidence": {},
-      "updated_at": "2026-08-10T01:41:08+08:00"
+      "source_hash": "9cce44d4bcf8494eb81075b33d7a95c659567e8380da9eb4a2c353b6cb19f17e",
+      "stage": "complete",
+      "evidence": {
+        "truth": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md"
+          ],
+          "note": "已人工核对本地安全步骤、5-4-3-2-1顺序、现实资源跳转和回首页语义",
+          "recorded_at": "2026-08-11T12:27:03+08:00"
+        },
+        "freeze": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/context.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/audit.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/ideate.md"
+          ],
+          "note": "冻结方案A安全行动清单：现实帮助优先、接地法辅助、无新增危机能力",
+          "recorded_at": "2026-08-11T12:27:03+08:00"
+        },
+        "imagegen": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/assets/imagegen-default-v1.png"
+          ],
+          "note": "",
+          "recorded_at": "2026-08-11T12:34:21+08:00"
+        },
+        "image_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/image-review.md"
+          ],
+          "note": "",
+          "recorded_at": "2026-08-11T12:34:22+08:00"
+        },
+        "figma": {
+          "items": [
+            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=162-1343",
+            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=162-1346"
+          ],
+          "note": "完成 Default 与 320px 长内容状态；复用 SafetyActionRow、Brand Button 与 Outline Button",
+          "recorded_at": "2026-08-11T13:05:11+08:00"
+        },
+        "figma_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/figma-review.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/assets/figma-default.png",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/assets/figma-long-content-small-screen.png"
+          ],
+          "note": "Figma 视觉、组件、字体、token、小屏换行与真实状态 Harness 通过",
+          "recorded_at": "2026-08-11T13:05:11+08:00"
+        },
+        "implementation": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/apps/miniprogram/pages/emergency-guide/index.wxml",
+            "D:/codex/workspace/safehome1.0-UIproduct/apps/miniprogram/pages/emergency-guide/index.wxss",
+            "D:/codex/workspace/safehome1.0-UIproduct/apps/miniprogram/pages/emergency-guide/index.json"
+          ],
+          "note": "WXML/WXSS/JSON 按 Figma 实现；JS、事件、数组和路由未修改",
+          "recorded_at": "2026-08-11T13:24:20+08:00"
+        },
+        "loop_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "ImageGen、Figma、代码结构和 token 对照通过；Preview 编译通过，真机后置",
+          "recorded_at": "2026-08-11T13:24:20+08:00"
+        },
+        "loop_ui": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "排版、间距、边界、编号、固定行动区和小屏换行检查通过",
+          "recorded_at": "2026-08-11T13:24:20+08:00"
+        },
+        "loop_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "现实帮助优先、接地法辅助、单主行动与能力边界检查通过",
+          "recorded_at": "2026-08-11T13:24:21+08:00"
+        },
+        "loop_states": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "仅实现真实 Default、LongContent/SmallScreen、Pressed、ReducedMotion；未伪造数据状态",
+          "recorded_at": "2026-08-11T13:24:21+08:00"
+        },
+        "harness_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "Figma 截图与代码 token/尺寸映射通过，设备截图统一后置",
+          "recorded_at": "2026-08-11T13:24:22+08:00"
+        },
+        "harness_component": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "行动行样式复用、按钮复用全局组件样式、无重复页面组件",
+          "recorded_at": "2026-08-11T13:24:22+08:00"
+        },
+        "harness_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "主任务、点击区域、可读性、安全文案与信息层级通过",
+          "recorded_at": "2026-08-11T13:24:23+08:00"
+        },
+        "harness_engineering": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "Preview、53 页真值、token、UI governance、非 UI client、T23、diff 和范围门禁通过",
+          "recorded_at": "2026-08-11T13:24:23+08:00"
+        },
+        "done": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/code-review.md"
+          ],
+          "note": "本页本地闭环完成；真机、大字体、读屏和 Android/iOS 统一后置",
+          "recorded_at": "2026-08-11T13:24:24+08:00"
+        }
+      },
+      "updated_at": "2026-08-11T13:24:24+08:00",
+      "blockers": []
     },
     {
       "index": 8,
