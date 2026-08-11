@@ -1,0 +1,13 @@
+{
+  "schema": "safehome.rc0810.wechat-raci.v1",
+  "phase": "F25-A",
+  "domains": [
+    "filing_and_category", "privacy", "psychology_content", "deployment",
+    "database", "ai_supplier", "device_acceptance", "incident_response"
+  ],
+  "assignments": [],
+  "required_roles": ["responsible", "accountable", "consulted", "informed"],
+  "status": "pending_external",
+  "automation_may_sign": false,
+  "production_gate_eligible": false
+}

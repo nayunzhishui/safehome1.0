@@ -1,0 +1,15 @@
+{
+  "schema": "safehome.rc0810.review-freeze.v1",
+  "phase": "F25-A",
+  "frozen_inputs": ["backend_contract", "test_accounts", "test_data", "miniprogram_package", "backend_image", "cloudbase_target", "privacy_text", "base_library"],
+  "current_snapshot": null,
+  "invalidation_rules": {
+    "package_or_image": ["artifact", "device", "journey", "materials", "platform"],
+    "cloudbase_target": ["platform", "journey", "device"],
+    "privacy_text": ["privacy", "materials", "platform"],
+    "base_library": ["devtools", "device", "journey"],
+    "test_account_or_data": ["zero_context", "journey", "messages"]
+  },
+  "status": "pending_external",
+  "production_gate_eligible": false
+}

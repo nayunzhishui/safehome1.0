@@ -12121,3 +12121,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - Fix Loop 1 复审仍 `fix_required`（SHA-256=`a383c45e611dbb9c4ea932c42a827dce37ad5aabdb3ed4bc404572766cb1b03d`）；Fix Loop 2 已拒绝尾随 JSON，并建立 257 条哈希 finding 索引与空的 trusted reviewer 表。运行态、8 项自检和 F22 `12 passed`，待最终重验复审。
 - Fix Loop 2 独立复审 `pass`、无剩余 finding（SHA-256=`7d1f0a9cb8870618d33f654984afa13ffc52b2f554b3710f9664c3b51fce2faa`）；F22 `12 passed`、组合 `19 passed`、8 项自检、运行态和 diff check 通过。Harness 已接受 pass，但最终文档同步后仍需一致性复审。
 - F22-A 只进入 `phase_a_verified`；257 条 finding、空 trusted reviewer 表和 F22-B 四项制品/供应链门禁继续 NO-GO。最终复审、提交、推送成功后下一入口为 `RC0810-F25-A`。
+
+## 2026-08-10 RC0810-F25-A 微信平台约束基线（待独立审查）
+
+- 本轮只建立 F25.1—F25.14 的定义合同：平台核对、账号/消息、DevTools、iOS/Android、旅程、送审材料、证据失效、能力映射、零背景审查、冻结窗口、RACI 和真实世界证据。
+- 8 项平台核对、2 个设备槽位、8 个责任域与 4 类真实世界证据均为 pending/unassigned；52 个注册页面已逐项分类，8 项核心能力/9 个页面已映射但仍缺类目/资质/隐私绑定，其余 43 页为 blocker，`production_gate_eligible=false`。
+- 未填写 AppID、Secret、人员、测试账号、包/镜像 hash 或平台结论，未修改业务、数据库、CloudBase 或生产配置。
+- F25 专项 `16 passed in 24.92s`，三类篡改自检通过；计划回填后仍须重建基线、运行 Harness 5 条验收并接受独立审查。通过前不得进入 F01。
+- 首轮独立审查 `fix_required`（SHA-256=`08b8bbf324713a0d8eb6e13a996e3f3ee31edaeafd21909a6b5b5537be2497f3`）；已按两项 blocker 完成 Fix Loop 1：源码推导 52 页 inventory/真实 API 校验，以及 strict schema、完整失效目标/零背景结果/发布标志和先验后原子写入。修复后 F25 `19 passed`、8 项 self-check 通过，待重建 Harness packet 复审。
+- Fix Loop 1 复审仍 `fix_required`（SHA-256=`98d8cbf7454bdc9ff76e955eb802a1c4a14920ac55eca48ebae25e9f3629cb10`）；功能 blocker 已关闭，仅因注册表/packet 仍登记 16/23 而实际为 19/26。Fix Loop 2 只校准真实计数并重跑，不删减测试。
+- Fix Loop 2 独立复审 `pass`（SHA-256=`4919cdfc4142b6926c56c5f3df297674e41ed363ad284e4fe85a06b86f88808c`），无 finding；专项/组合真实计数为 19/26，52 页、8 项自检、原子写与 NO-GO 无回退。Harness 仅把 F25-A 置 `phase_a_verified`；最终文档同步后须再做一致性复审。

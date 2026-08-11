@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "safehome.rc0810.wechat-platform-baseline.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "phase", "captured_at", "head", "head_tree", "source_tree",
+    "dirty_diff_sha256", "source_manifest_sha256", "definition_hashes",
+    "status_summary", "production_gate_eligible", "status"
+  ],
+  "properties": {
+    "schema": {"const": "safehome.rc0810.wechat-platform-baseline.v1"},
+    "phase": {"const": "F25-A"},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "head_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "dirty_diff_sha256": {"$ref": "#/$defs/sha256"},
+    "source_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "definition_hashes": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/sha256"},
+      "required": [
+        "config/rc0810/wechat_platform_acceptance.schema.json",
+        "config/rc0810/wechat_platform_catalog.json",
+        "config/rc0810/wechat_platform_capability_map.json",
+        "config/rc0810/wechat_platform_zero_context_review.json",
+        "config/rc0810/wechat_platform_review_freeze.json",
+        "config/rc0810/wechat_platform_raci.json",
+        "config/rc0810/wechat_platform_real_world_evidence.json"
+      ]
+    },
+    "status_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "platform_checks_total", "platform_checks_pending",
+        "device_slots_total", "device_slots_pending", "capabilities_total",
+        "capabilities_blocking", "raci_domains_total", "raci_unassigned",
+        "real_world_items_total", "real_world_items_pending"
+      ],
+      "properties": {
+        "platform_checks_total": {"type": "integer", "minimum": 1},
+        "platform_checks_pending": {"type": "integer", "minimum": 1},
+        "device_slots_total": {"type": "integer", "minimum": 2},
+        "device_slots_pending": {"type": "integer", "minimum": 2},
+        "capabilities_total": {"type": "integer", "minimum": 1},
+        "capabilities_blocking": {"type": "integer", "minimum": 1},
+        "raci_domains_total": {"type": "integer", "minimum": 1},
+        "raci_unassigned": {"type": "integer", "minimum": 1},
+        "real_world_items_total": {"type": "integer", "minimum": 1},
+        "real_world_items_pending": {"type": "integer", "minimum": 1}
+      }
+    },
+    "production_gate_eligible": {"const": false},
+    "status": {"const": "definition_ready"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

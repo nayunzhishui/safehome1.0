@@ -1,0 +1,10 @@
+{
+  "schema": "safehome.rc0810.zero-context-review.v1",
+  "phase": "F25-A",
+  "allowed_inputs": ["submitted_materials", "test_account", "frozen_release_candidate"],
+  "forbidden_assistance": ["oral_supplement", "database_mutation", "temporary_privilege", "live_debugging", "out_of_band_instruction"],
+  "required_outcomes": ["login_without_help", "find_core_journey", "understand_non_diagnostic_boundary", "recover_from_failure"],
+  "reviewer_id": null,
+  "status": "pending_external",
+  "automation_may_approve": false
+}

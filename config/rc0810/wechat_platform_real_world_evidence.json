@@ -1,0 +1,13 @@
+{
+  "schema": "safehome.rc0810.real-world-evidence.v1",
+  "phase": "F25-A",
+  "items": [
+    {"id": "core_funnel", "owner": null, "status": "pending_external"},
+    {"id": "failure_recovery", "owner": null, "status": "pending_external"},
+    {"id": "user_understanding_interview", "owner": null, "status": "pending_external"},
+    {"id": "human_processing_capacity", "owner": null, "status": "pending_external"}
+  ],
+  "allowed_terminal_states": ["evidence_ready", "human_verified"],
+  "automation_may_approve": false,
+  "production_gate_eligible": false
+}

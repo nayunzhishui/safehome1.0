@@ -1,0 +1,68 @@
+{
+  "schema": "safehome.rc0810.wechat-platform-catalog.v1",
+  "phase": "F25-A",
+  "subtasks": [
+    "F25.1", "F25.2", "F25.3", "F25.4", "F25.5", "F25.6", "F25.7",
+    "F25.8", "F25.9", "F25.10", "F25.11", "F25.12", "F25.13", "F25.14"
+  ],
+  "artifact_binding": {
+    "miniprogram_package_sha256": null,
+    "backend_image_digest": null,
+    "cloudbase_config_sha256": null,
+    "privacy_text_sha256": null,
+    "base_library_version": null,
+    "status": "pending_external"
+  },
+  "platform_checks": [
+    {"id": "appid_subject", "owner": "wechat_platform_operator", "status": "pending_external"},
+    {"id": "service_category", "owner": "wechat_platform_operator", "status": "pending_external"},
+    {"id": "interface_permissions", "owner": "wechat_platform_operator", "status": "pending_external"},
+    {"id": "legal_domains", "owner": "wechat_platform_operator", "status": "pending_external"},
+    {"id": "cloudbase_environment", "owner": "release_owner", "status": "pending_external"},
+    {"id": "privacy_guideline", "owner": "privacy_owner", "status": "pending_external"},
+    {"id": "filing_status", "owner": "wechat_platform_operator", "status": "pending_external"},
+    {"id": "qualification_materials", "owner": "release_owner", "status": "pending_external"}
+  ],
+  "account_scenarios": [
+    "wechat_one_tap_login", "phone_login", "account_login", "logout",
+    "legacy_account", "locked_account", "multi_device_session"
+  ],
+  "message_scenarios": [
+    "subscription_denied", "subscription_expired", "subscription_duplicate",
+    "training_record", "historical_feedback", "researcher_feedback_message"
+  ],
+  "devtools_checks": [
+    "compile", "subpackages", "package_size", "network", "base_library", "page_warnings"
+  ],
+  "device_slots": [
+    {
+      "platform": "ios",
+      "device_id": null,
+      "operator_id": null,
+      "scenarios": ["cold_start", "warm_start", "foreground_background", "weak_network", "offline_recovery", "large_font", "keyboard", "safe_area"],
+      "status": "pending_external"
+    },
+    {
+      "platform": "android",
+      "device_id": null,
+      "operator_id": null,
+      "scenarios": ["cold_start", "warm_start", "foreground_background", "weak_network", "offline_recovery", "large_font", "keyboard", "safe_area"],
+      "status": "pending_external"
+    }
+  ],
+  "journeys": {
+    "participant_core": ["goal", "diary", "feedback", "training", "checkin", "weekly_report", "supervision"],
+    "production_negative": ["internal_route_hidden", "temporary_privilege_disabled", "debug_entry_hidden"],
+    "status": "pending_external"
+  },
+  "review_materials": [
+    "review_notes", "test_account_guide", "feature_paths", "boundary_statement", "failure_recovery"
+  ],
+  "evidence_contract": {
+    "required_fields": ["owner", "reviewer", "captured_at", "valid_until", "invalidation_conditions", "artifact_sha256", "request_id"],
+    "states": ["pending_external", "evidence_ready", "human_verified", "platform_approved", "stale"],
+    "automation_max_state": "evidence_ready"
+  },
+  "external_identities": [],
+  "production_gate_eligible": false
+}

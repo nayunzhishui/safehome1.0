@@ -1,0 +1,33 @@
+{
+  "schema": "safehome.rc0810.wechat-platform-baseline.v1",
+  "phase": "F25-A",
+  "captured_at": "2026-08-11T05:18:31.381287+00:00",
+  "head": "e0fb7fd0bcde3e6ea6e485ec978d9663152831f9",
+  "head_tree": "c7cbd01e401f5c117a8741d1c9412838bf01dde5",
+  "source_tree": "de6fe089c85464650bbadd67204e917e30dc6eb8",
+  "dirty_diff_sha256": "9775e4474612e954780fecc1654f608ae71f2cd1ec3404684baee62072d31e2b",
+  "source_manifest_sha256": "882e32146bab5797fd2fbd0c26e29ed08c6de8023de0c06344095cd26a3556aa",
+  "definition_hashes": {
+    "config/rc0810/wechat_platform_acceptance.schema.json": "35ab51462fb890cd9f04a5e0cfb4f1e4b9540497356172bca56bd19da22363ab",
+    "config/rc0810/wechat_platform_catalog.json": "6af3052e98e0fc3942afc78306b3c0454abf5c806eee230153faa677417372e9",
+    "config/rc0810/wechat_platform_capability_map.json": "b3324bac628a4cc92515e0a942a176926c0189f59bfcaaead095ee81c1647961",
+    "config/rc0810/wechat_platform_zero_context_review.json": "69738f833870759a33e1afc410eacc57866c9f57078a5c6f9e20125ff483b8f6",
+    "config/rc0810/wechat_platform_review_freeze.json": "92ddcfcd2e6a4c39eeffdad64a15282464942a69eace9d1df1bbc57b97bdd186",
+    "config/rc0810/wechat_platform_raci.json": "362622d152dbe806fa7c50b6c8aa1825650e7cc39daeb71945f4f7528a0ad73f",
+    "config/rc0810/wechat_platform_real_world_evidence.json": "d4f9d082e67c565eca6f02066e51c964f057349253297ddef384481866378943"
+  },
+  "status_summary": {
+    "platform_checks_total": 8,
+    "platform_checks_pending": 8,
+    "device_slots_total": 2,
+    "device_slots_pending": 2,
+    "capabilities_total": 8,
+    "capabilities_blocking": 8,
+    "raci_domains_total": 8,
+    "raci_unassigned": 8,
+    "real_world_items_total": 4,
+    "real_world_items_pending": 4
+  },
+  "production_gate_eligible": false,
+  "status": "definition_ready"
+}

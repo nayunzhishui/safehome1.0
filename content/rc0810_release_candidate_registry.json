@@ -1,6 +1,6 @@
 {
   "schema": "safehome.rc0810.registry.v1",
-  "version": "2026-08-10.f22a",
+  "version": "2026-08-10.f25a",
   "frozen_baseline": {
     "captured_at": "2026-08-09T15:13:59.4299089Z",
     "branch": "main",
@@ -1107,7 +1107,45 @@
       "phase": "phase_a",
       "dependencies": [
         "RC0810-F22-A"
-      ]
+      ],
+      "subtasks": [
+        "F25.1",
+        "F25.2",
+        "F25.3",
+        "F25.4",
+        "F25.5",
+        "F25.6",
+        "F25.7",
+        "F25.8",
+        "F25.9",
+        "F25.10",
+        "F25.11",
+        "F25.12",
+        "F25.13",
+        "F25.14"
+      ],
+      "allowed_files": [
+        "backend/tests/test_rc0810_f25.py",
+        "config/rc0810/wechat_platform_acceptance.schema.json",
+        "config/rc0810/wechat_platform_catalog.json",
+        "config/rc0810/wechat_platform_capability_map.json",
+        "config/rc0810/wechat_platform_zero_context_review.json",
+        "config/rc0810/wechat_platform_review_freeze.json",
+        "config/rc0810/wechat_platform_raci.json",
+        "config/rc0810/wechat_platform_real_world_evidence.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+        "scripts/verify_rc0810_f25_platform.py"
+      ],
+      "change_budget": {
+        "expected_files": 16,
+        "pause_when_actual_exceeds_percent": 50
+      }
     },
     {
       "id": "RC0810-F01",
@@ -4677,9 +4715,22 @@
         "QA-05"
       ],
       "allowed_files": [
-        "config/rc0810/**",
-        "scripts/**",
-        "docs/**"
+        "backend/tests/test_rc0810_f25.py",
+        "config/rc0810/wechat_platform_acceptance.schema.json",
+        "config/rc0810/wechat_platform_catalog.json",
+        "config/rc0810/wechat_platform_capability_map.json",
+        "config/rc0810/wechat_platform_zero_context_review.json",
+        "config/rc0810/wechat_platform_review_freeze.json",
+        "config/rc0810/wechat_platform_raci.json",
+        "config/rc0810/wechat_platform_real_world_evidence.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+        "scripts/verify_rc0810_f25_platform.py"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -4698,12 +4749,62 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f25.py",
-            "-q"
+            "-q",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "expected_test_count": 19
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "backend/tests/test_rc0810_f25.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "expected_test_count": 26
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f25_platform.py"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f25_platform.py",
+            "--self-check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
         }
       ],
       "external_gates": [
@@ -4730,9 +4831,22 @@
       ],
       "change_budget": {
         "allowed_modules": [
-          "config/rc0810/**",
-          "scripts/**",
-          "docs/**"
+          "backend/tests/test_rc0810_f25.py",
+          "config/rc0810/wechat_platform_acceptance.schema.json",
+          "config/rc0810/wechat_platform_catalog.json",
+          "config/rc0810/wechat_platform_capability_map.json",
+          "config/rc0810/wechat_platform_zero_context_review.json",
+          "config/rc0810/wechat_platform_review_freeze.json",
+          "config/rc0810/wechat_platform_raci.json",
+          "config/rc0810/wechat_platform_real_world_evidence.json",
+          "content/rc0810_release_candidate_registry.json",
+          "docs/00_当前事实基准/Claude计划模式.md",
+          "docs/00_当前事实基准/开发日志.md",
+          "docs/00_当前事实基准/开发说明.md",
+          "docs/00_当前事实基准/当前进度交接.md",
+          "docs/01_当前执行入口/0810bug修改计划.md",
+          "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+          "scripts/verify_rc0810_f25_platform.py"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
