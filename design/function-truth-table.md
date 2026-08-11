@@ -237,11 +237,51 @@
 - 状态矩阵为 Default（含未读、已读、撤回、版本）、Loading、Empty、Error、LoginRequired、NetworkFailure、LongContent。Disabled/Selected 不适用于该只读列表，不伪造。
 - 文件分类：目标页 WXML/WXSS 属 A；本页 JS 属 B 但本轮无需修改；组件、后端、数据库、API、`content`、`shared` 均不改。
 
+## 消息详情 `pages/message-detail/index`（逐页人工冻结）
+
+状态：`requirements_frozen_and_locally_implemented`。核对时间：2026-08-10。
+
+核对来源：
+
+- `apps/miniprogram/pages/message-detail/index.*`；
+- `apps/miniprogram/components/feedback-rating/index.*`、`page-state/index.*`；
+- 上游 `pages/messages/index`；
+- 下游 `pages/relationship-report/index`、`pages/relationship-narrative/index`；
+- `apps/miniprogram/services/api.js` 的 `getMessage`、`createFeedbackLedgerEntry`；
+- `backend/routes/messages.py`、`backend/services/message_service.py`、`backend/routes/feedback_ledger.py`、`backend/services/feedback_ledger_service.py`（只读核对）。
+
+| 页面元素 | 事件处理 | 路由/API/状态 | 真实用户任务 | 正式设计约束 |
+|---|---|---|---|---|
+| 页面进入 | `onLoad` → `loadMessage` | `GET /api/messages/:message_id`，需要登录；读取未读消息时后端自动标为已读 | 打开当前账号的一条完整消息 | 只显示接口真实字段；不得误写为列表接口，也不额外调用 `POST /read` |
+| 消息标题与正文 | 无独立事件 | `message_type`、`title`、`body` | 阅读研究者补充或消息提醒 | 保留原文和换行，不改写为 AI 总结、诊断或行动处方 |
+| 来源、时间与版本 | 无独立事件 | `sender_role`、`created_at`、`delivery_version` | 理解消息来源和当前版本 | 仅有 `sender_role` 时显示研究者来源；版本存在才显示，不伪造头像、在线状态或已读回执 |
+| 撤回内容 | 无独立事件 | `is_withdrawn` 只替换正文为撤回说明 | 知道此前内容已撤回并忽略旧版本 | 撤回不等于删除；来源按钮和评价仍分别按自身条件判断，不擅自隐藏 |
+| 查看关系探索报告 | `openSource` | 仅 `source_type=relationship_screening_report` 且有 `source_id` 时进入 `/pages/relationship-report/index?id=:source_id` | 查看该消息对应的真实关系探索报告 | 不为其他消息画报告入口，不伪造报告摘要 |
+| 查看已确认探索手记 | `openSource` | 仅 `source_type=relationship_narrative` 且有 `source_id` 时进入 `/pages/relationship-narrative/index?id=:source_id` | 查看对应的已确认探索手记 | 不新增未确认手记、编辑或分享能力 |
+| 反馈核对 | `submitFeedbackEvaluation` | 仅 `researcher_message`、`relationship_stage_feedback`、`supervision_feedback`、`relationship_report` 可评价；`POST /api/feedback-ledger`，`source_type=message` | 选择符合、部分符合、不符合或让我不舒服，以共同修订反馈 | 只保存现有四值；不新增星级、文字评论、点赞或诊断推断 |
+| 不舒服反馈 | 同上 | `evaluation=uncomfortable` 后形成 `pending_review` / 人工复核信号 | 表达内容带来的不适并进入人工复核 | 明确“不据此推断风险或诊断”；不能包装为实时危机处置或自动风险识别 |
+| 保存中与结果 | `feedbackEvaluationSaving`、`feedbackEvaluation` | 保存时禁用重复提交；成功 Toast 与页内状态可见，失败 Toast 保留 | 知道评价是否正在保存或已记录，并可再次调整 | 不伪造撤销、历史评价读取或离线成功；状态不能只靠颜色 |
+| 错误恢复 | `handleStateAction` | 缺少 ID 时返回消息列表；有 ID 的加载错误重新调用详情接口 | 从参数错误、接口错误或弱网中恢复 | MissingId 与 LoadError / NetworkFailure 分开；不将权限或网络错误伪装为空消息 |
+| 使用边界 | 无事件 | 本地静态说明 | 理解消息内容不处理紧急安全风险 | 保留现实支持提示；不新增紧急电话或聊天入口 |
+| 返回消息列表 | `goMessages` | `wx.navigateBack()` | 返回原消息列表与原导航栈 | 不改成 `switchTab`、`redirectTo` 或新的消息首页 |
+
+页面状态真值：
+
+- Loading、MissingId、LoadError、NetworkFailure、Default、WithSource、Evaluable、Saving、Evaluated、Uncomfortable、Withdrawn、LongContent。
+- Withdrawn 只改变正文；WithSource 与 Evaluable 是由独立字段决定的可组合状态。
+- Disabled 只出现在反馈保存期间；本页没有 Empty、回复、聊天、删除、转发、收藏、复制、举报或紧急呼叫功能。
+
+接口与工程边界：
+
+- 详情接口的完整真值是 `GET /api/messages/:message_id`；自动证据中的 `/api/messages` 只是静态模板前缀，不能据此改变产品语义。
+- 评价接口继续使用现有 `POST /api/feedback-ledger`；本轮不修改后端、数据库、API、shared、content、认证、消息已读逻辑或导航语义。
+- 前端实现只调整 WXML/WXSS，并给共用 `feedback-rating` 增加默认关闭的 `editorial` 视觉属性；页面 JS 和业务事件保持原样。
+
 <!-- UI_PRODUCT_AUTO_FACTS:BEGIN -->
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-10T21:41:46+08:00`
+生成时间：`2026-08-10T22:38:36+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -487,20 +527,20 @@
 ### 06：消息详情 `pages/message-detail/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`d851499328f6240283a3f1bbb6e2a44b23ee8890ca5d07441cfe948c1ad5c644`
+- 源码指纹：`776baef11cbf0c6a144bfaedc98f31d4f32968f30615e0f495e743139d32926f`
 - 核对文件：`apps/miniprogram/pages/message-detail/index.wxml`、`apps/miniprogram/pages/message-detail/index.wxss`、`apps/miniprogram/pages/message-detail/index.js`、`apps/miniprogram/pages/message-detail/index.json`
 - 上游页面：`pages/messages/index`
 - 页面组件：`feedback-rating` → `/components/feedback-rating/index`、`page-state` → `/components/page-state/index`
-- 主要可见内容：先确认边界、这里的内容适合补充理解一条记录，不适合处理紧急安全风险。如正在经历自伤、自杀、暴力、失控或其他安全风险，请先找现实支持。、返回消息列表
+- 主要可见内容：使用边界、这里的内容适合补充理解一条记录，不适合处理紧急安全风险。如正在经历自伤、自杀、暴力、失控或其他安全风险，请先找现实支持。、返回消息列表
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
 | 3 | — | `bindaction` | `handleStateAction` | — |
-| 11 | — | `bindtap` | `openSource` | — |
-| 14 | — | `bindselect` | `submitFeedbackEvaluation` | — |
-| 24 | 返回消息列表 | `bindtap` | `goMessages` | — |
+| 14 | — | `bindtap` | `openSource` | — |
+| 17 | — | `bindselect` | `submitFeedbackEvaluation` | — |
+| 28 | 返回消息列表 | `bindtap` | `goMessages` | — |
 
 #### 接口真值
 
@@ -513,7 +553,7 @@
 
 - 下游路由：`navigateTo` → `/pages/relationship-report/index?id=:dynamic`（js:62）、`navigateTo` → `/pages/relationship-narrative/index?id=:dynamic`（js:66）
 - 本地存储：—
-- WXML 数据绑定：`loading`、`errorMessage`、`id`、`message`、`canOpenSource`、`sourceButtonLabel`、`canEvaluate`、`feedbackEvaluation`、`feedbackEvaluationSaving`
+- WXML 数据绑定：`loading`、`errorMessage`、`id`、`message`、`canOpenSource`、`sourceButtonLabel`、`canEvaluate`、`true`、`feedbackEvaluation`、`feedbackEvaluationSaving`
 - 条件状态：`loading`、`errorMessage`、`canOpenSource`、`canEvaluate`
 - `setData` 状态：`id`、`loading`、`errorMessage`、`canOpenSource`、`sourceButtonLabel`、`canEvaluate`、`message`、`feedbackEvaluationSaving`、`feedbackEvaluation`
 - 未解析事件：—

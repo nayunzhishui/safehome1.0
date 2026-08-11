@@ -802,6 +802,7 @@ def status() -> None:
         (page["route"], blocker)
         for page in registry["pages"]
         for blocker in page.get("blockers", [])
+        if not blocker.get("resolved_at")
     ]
     print(f"未清除阻断记录：{len(blockers)}")
     for key in sorted(counts):

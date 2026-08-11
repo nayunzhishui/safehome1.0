@@ -39,8 +39,8 @@
     "harness_engineering",
     "done"
   ],
-  "active_route": "pages/message-detail/index",
-  "updated_at": "2026-08-10T21:42:33+08:00",
+  "active_route": "pages/emergency-guide/index",
+  "updated_at": "2026-08-11T12:12:30+08:00",
   "pages": [
     {
       "index": 1,
@@ -684,10 +684,127 @@
       "index": 6,
       "route": "pages/message-detail/index",
       "title": "消息详情",
-      "source_hash": "d851499328f6240283a3f1bbb6e2a44b23ee8890ca5d07441cfe948c1ad5c644",
-      "stage": "truth_auto_complete",
-      "evidence": {},
-      "updated_at": "2026-08-10T01:41:08+08:00"
+      "source_hash": "776baef11cbf0c6a144bfaedc98f31d4f32968f30615e0f495e743139d32926f",
+      "stage": "complete",
+      "evidence": {
+        "truth": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/function-truth-table.md"
+          ],
+          "note": "已人工复核详情读取自动已读、来源跳转、撤回保护与反馈账本",
+          "recorded_at": "2026-08-10T21:56:18+08:00"
+        },
+        "freeze": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/context.md"
+          ],
+          "note": "冻结方案A编辑式来函，不新增回复或聊天能力",
+          "recorded_at": "2026-08-10T21:56:18+08:00"
+        },
+        "imagegen": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/assets/imagegen-default-v1.png"
+          ],
+          "note": "生成方案A编辑式来函默认态",
+          "recorded_at": "2026-08-10T21:58:39+08:00"
+        },
+        "image_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/image-review.md"
+          ],
+          "note": "功能真值通过；Figma需收小标题并使用纯色主按钮",
+          "recorded_at": "2026-08-10T21:58:40+08:00"
+        },
+        "figma": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/figma-state.json"
+          ],
+          "note": "完成FeedbackRating六态、Button Outline四态与10个页面状态",
+          "recorded_at": "2026-08-10T22:28:13+08:00"
+        },
+        "figma_review": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/figma-review.md"
+          ],
+          "note": "390x844、Noto Sans SC、0 raw solid paint；长文和属性透传已修正",
+          "recorded_at": "2026-08-10T22:28:14+08:00"
+        },
+        "implementation": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "按Figma完成WXML/WXSS并以默认关闭的editorial属性复用反馈组件，未改页面业务JS",
+          "recorded_at": "2026-08-11T12:12:21+08:00"
+        },
+        "loop_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/figma-review.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "ImageGen-Figma-代码视觉方向一致；评价提示字号已同步修正",
+          "recorded_at": "2026-08-11T12:12:22+08:00"
+        },
+        "loop_ui": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "字号、间距、圆角、对齐、长文换行与88rpx触控区通过",
+          "recorded_at": "2026-08-11T12:12:23+08:00"
+        },
+        "loop_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/accessibility-review.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "阅读顺序、非颜色状态、错误恢复、人工复核边界与可访问名称通过",
+          "recorded_at": "2026-08-11T12:12:24+08:00"
+        },
+        "loop_states": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/context.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "11类真实状态完成；Withdrawn、来源与评价条件保持独立",
+          "recorded_at": "2026-08-11T12:12:25+08:00"
+        },
+        "harness_visual": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/figma-review.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "390x844、Noto Sans SC、变量绑定与代码实现检查通过",
+          "recorded_at": "2026-08-11T12:12:26+08:00"
+        },
+        "harness_component": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "FeedbackRating editorial默认关闭，无重复组件或默认样式分叉",
+          "recorded_at": "2026-08-11T12:12:27+08:00"
+        },
+        "harness_ux": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/accessibility-review.md",
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "触控、文字、状态反馈、长文与非诊断边界静态审核通过",
+          "recorded_at": "2026-08-11T12:12:28+08:00"
+        },
+        "harness_engineering": {
+          "items": [
+            "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/code-review.md"
+          ],
+          "note": "编译、真值、令牌、UI治理、非UI保护、T23与范围门禁通过",
+          "recorded_at": "2026-08-11T12:12:29+08:00"
+        },
+        "done": {
+          "items": [],
+          "note": "消息详情页本地闭环完成；真机验收统一延期",
+          "recorded_at": "2026-08-11T12:12:30+08:00"
+        }
+      },
+      "updated_at": "2026-08-11T12:12:30+08:00",
+      "blockers": []
     },
     {
       "index": 7,

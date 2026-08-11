@@ -1,5 +1,5 @@
 .message-detail-page {
-  padding-bottom: calc(72rpx + env(safe-area-inset-bottom));
+  padding: 40rpx 48rpx calc(72rpx + env(safe-area-inset-bottom));
 }
 
 .detail-kicker,
@@ -14,50 +14,88 @@
 .detail-kicker {
   color: var(--safe-primary-deep);
   font-size: 24rpx;
-  font-weight: 850;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .detail-title {
-  margin-top: 12rpx;
+  margin-top: 16rpx;
   color: var(--safe-title);
-  font-size: 38rpx;
-  font-weight: 900;
-  line-height: 1.35;
+  font-size: 56rpx;
+  font-weight: 800;
+  line-height: 1.28;
 }
 
 .detail-time {
-  margin-top: 12rpx;
+  margin-top: 16rpx;
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.detail-body-layout {
+  display: grid;
+  grid-template-columns: 6rpx minmax(0, 1fr);
+  gap: 32rpx;
+  margin-top: 24rpx;
+  padding: 32rpx 0;
+}
+
+.detail-body-rule {
+  width: 6rpx;
+  min-height: 100%;
+  border-radius: 4rpx;
+  background: var(--safe-primary);
 }
 
 .detail-body {
-  margin-top: 28rpx;
   color: var(--safe-text);
-  font-size: 27rpx;
-  line-height: 1.8;
+  font-size: 30rpx;
+  line-height: 1.67;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-.boundary-card {
-  padding: 24rpx 28rpx;
-  border: 1rpx solid rgba(215, 111, 103, 0.26);
-  border-radius: var(--safe-radius-md);
-  background: rgba(255, 244, 240, 0.92);
+.source-action,
+.return-action {
+  border-radius: 32rpx;
+}
+
+.source-action {
+  margin-top: 32rpx;
+}
+
+.feedback-section {
+  margin-top: 24rpx;
+}
+
+.boundary-note {
+  margin-top: 32rpx;
+}
+
+.boundary-rule {
+  height: 1rpx;
+  background: var(--safe-border);
+}
+
+.boundary-copy {
+  padding-top: 32rpx;
 }
 
 .boundary-title {
-  color: #9F3E38;
-  font-size: 27rpx;
-  font-weight: 900;
+  color: var(--safe-title);
+  font-size: 26rpx;
+  font-weight: 700;
+  line-height: 1.54;
 }
 
 .boundary-text {
-  margin-top: 10rpx;
-  color: var(--safe-text);
-  font-size: 25rpx;
-  line-height: 1.75;
+  margin-top: 12rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.58;
 }
 
-.bottom-action {
+.return-action {
   margin-top: 32rpx;
 }

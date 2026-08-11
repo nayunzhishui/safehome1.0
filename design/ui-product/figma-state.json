@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase14_support_assistant_local_complete",
-  "step": "message_detail_next_page_pending",
+  "phase": "phase16_message_detail_local_complete",
+  "step": "emergency_guide_truth_pending",
   "blocker": null,
   "entities": {
     "collections": {
@@ -88,6 +88,8 @@
       ,"Components/BoundaryNote": "93:57"
       ,"Components/ConversationEntry": "101:61"
       ,"Components/QuestionComposer": "115:61"
+      ,"Components/FeedbackRating": "134:69"
+      ,"Components/FeedbackRating/Stage": "134:72"
     },
     "components": {
       "Button": "18:59",
@@ -112,8 +114,16 @@
       ,"ConversationEntry/AssistantBase": "101:66"
       ,"ConversationEntry": "105:61"
       ,"QuestionComposer": "120:69"
+      ,"FeedbackRating/DefaultBase": "135:69"
+      ,"FeedbackRating": "138:69"
     },
     "componentVariants": {
+      "FeedbackRating/Default": "135:69",
+      "FeedbackRating/Matches": "137:69",
+      "FeedbackRating/PartlyMatches": "137:81",
+      "FeedbackRating/DoesNotMatch": "137:93",
+      "FeedbackRating/Uncomfortable": "137:105",
+      "FeedbackRating/Saving": "137:117",
       "AuthField/Default": "56:56",
       "AuthField/Focused": "57:53",
       "AuthField/Filled": "57:58",
@@ -134,8 +144,13 @@
       ,"QuestionComposer/Ready": "116:64"
       ,"QuestionComposer/Sending": "116:65"
       ,"QuestionComposer/Error": "116:66"
+      ,"Button/Outline/Default": "146:69"
+      ,"Button/Outline/Pressed": "146:72"
+      ,"Button/Outline/Disabled": "146:75"
+      ,"Button/Outline/Loading": "146:78"
     },
     "componentProperties": {
+      "FeedbackRating/Prompt": "Prompt#138:0",
       "AuthField/Label": "Label#59:0",
       "AuthField/Content": "Content#59:6",
       "AuthField/Message": "Message#59:12",
@@ -162,6 +177,16 @@
       ,"QuestionComposer/ShowError": "ShowError#121:20"
     },
     "screens": {
+      "MessageDetail/Default": "139:1243",
+      "MessageDetail/Loading": "141:1257",
+      "MessageDetail/MissingId": "141:1271",
+      "MessageDetail/LoadError": "141:1285",
+      "MessageDetail/NetworkFailure": "141:1299",
+      "MessageDetail/Saving": "141:1313",
+      "MessageDetail/Evaluated": "141:1327",
+      "MessageDetail/Uncomfortable": "141:1341",
+      "MessageDetail/Withdrawn": "141:1355",
+      "MessageDetail/LongContent": "141:1369",
       "Home/Default": "30:2",
       "Home/Loading": "34:147",
       "Home/Empty": "34:175",
@@ -205,6 +230,47 @@
       ,"SupportAssistant/NetworkFailure": "107:1127"
     },
     "screenNodes": {
+      "MessageDetail/Default/MessageType": "139:1244",
+      "MessageDetail/Default/Title": "139:1245",
+      "MessageDetail/Default/Meta": "139:1246",
+      "MessageDetail/Default/EditorialBody": "139:1247",
+      "MessageDetail/Default/EditorialRule": "139:1248",
+      "MessageDetail/Default/Body": "139:1249",
+      "MessageDetail/Default/OpenSource": "140:1243",
+      "MessageDetail/Default/FeedbackRating": "140:1248",
+      "MessageDetail/Default/Boundary": "140:1259",
+      "MessageDetail/Default/BoundaryDivider": "140:1260",
+      "MessageDetail/Default/BoundaryTitle": "140:1261",
+      "MessageDetail/Default/BoundaryText": "140:1262",
+      "MessageDetail/Default/Back": "140:1263",
+      "MessageDetail/Loading/State": "142:1383",
+      "MessageDetail/MissingId/State": "142:1387",
+      "MessageDetail/LoadError/State": "142:1391",
+      "MessageDetail/NetworkFailure/State": "142:1395",
+      "MessageDetail/Saving/FeedbackRating": "141:1321",
+      "MessageDetail/Evaluated/FeedbackRating": "141:1335",
+      "MessageDetail/Uncomfortable/FeedbackRating": "141:1349",
+      "Button/Outline/Default/Icon": "146:70",
+      "Button/Outline/Default/Label": "146:71",
+      "Button/Outline/Pressed/Icon": "146:73",
+      "Button/Outline/Pressed/Label": "146:74",
+      "Button/Outline/Disabled/Icon": "146:76",
+      "Button/Outline/Disabled/Label": "146:77",
+      "Button/Outline/Loading/Label": "146:80",
+      "FeedbackRating/Default/Prompt": "135:70",
+      "FeedbackRating/Default/Options": "135:71",
+      "FeedbackRating/Default/Matches": "135:72",
+      "FeedbackRating/Default/PartlyMatches": "135:73",
+      "FeedbackRating/Default/DoesNotMatch": "135:74",
+      "FeedbackRating/Default/Uncomfortable": "135:75",
+      "FeedbackRating/Default/MatchesLabel": "136:69",
+      "FeedbackRating/Default/PartlyMatchesLabel": "136:70",
+      "FeedbackRating/Default/DoesNotMatchLabel": "136:71",
+      "FeedbackRating/Default/UncomfortableLabel": "136:72",
+      "FeedbackRating/Matches/Note": "137:80",
+      "FeedbackRating/PartlyMatches/Note": "137:92",
+      "FeedbackRating/DoesNotMatch/Note": "137:104",
+      "FeedbackRating/Uncomfortable/Note": "137:116",
       "Login/Default/Content": "61:804",
       "Login/Default/Header": "61:805",
       "Login/Default/QuickMethods": "61:809",
@@ -387,5 +453,13 @@
     ,"SupportAssistant WXML and WXSS implemented without changing JS, APIs, navigation, backend, database or shared"
     ,"SupportAssistant WeChat DevTools preview passed at 1490034 bytes"
     ,"SupportAssistant local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    ,"MessageDetail FeedbackRating six-state component set and Button Outline four-state variants completed"
+    ,"MessageDetail ten 390x844 states completed; long-content overlap and Outline property forwarding fixed"
+    ,"MessageDetail Figma harness passed: Noto Sans SC only and zero raw solid paints"
+    ,"MessageDetail get_design_context captured from Default state 139:1243"
+    ,"MessageDetail FeedbackRating result notes corrected to 12px/18px after accessibility review"
+    ,"MessageDetail WXML/WXSS and opt-in FeedbackRating editorial variant implemented without changing page business JS or APIs"
+    ,"MessageDetail WeChat DevTools preview passed at 1491164 bytes"
+    ,"MessageDetail local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
   ]
 }

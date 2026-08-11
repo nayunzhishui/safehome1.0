@@ -1,4 +1,4 @@
-<view class="feedback-rating {{compact ? 'feedback-rating--compact' : ''}}">
+<view class="feedback-rating {{compact ? 'feedback-rating--compact' : ''}} {{editorial ? 'feedback-rating--editorial' : ''}}">
   <text class="feedback-rating-prompt">{{prompt}}</text>
   <view class="feedback-rating-options">
     <button

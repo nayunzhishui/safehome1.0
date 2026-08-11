@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-10T21:41:46+08:00",
+  "generated_at": "2026-08-10T22:38:36+08:00",
   "branch": "UIproduct",
-  "main_sha": "4a17b9faf9187a5d414f92e84ff7b08e60802d49",
+  "main_sha": "e0fb7fd0bcde3e6ea6e485ec978d9663152831f9",
   "app_page_count": 53,
   "pages": [
     {
@@ -1273,10 +1273,10 @@
         "apps/miniprogram/pages/message-detail/index.js",
         "apps/miniprogram/pages/message-detail/index.json"
       ],
-      "source_hash": "d851499328f6240283a3f1bbb6e2a44b23ee8890ca5d07441cfe948c1ad5c644",
+      "source_hash": "776baef11cbf0c6a144bfaedc98f31d4f32968f30615e0f495e743139d32926f",
       "missing_files": [],
       "visible_text": [
-        "先确认边界",
+        "使用边界",
         "这里的内容适合补充理解一条记录，不适合处理紧急安全风险。如正在经历自伤、自杀、暴力、失控或其他安全风险，请先找现实支持。",
         "返回消息列表"
       ],
@@ -1295,7 +1295,7 @@
           "tag": "button",
           "label": "",
           "data": {},
-          "line": 11
+          "line": 14
         },
         {
           "event": "bindselect",
@@ -1303,7 +1303,7 @@
           "tag": "feedback-rating",
           "label": "",
           "data": {},
-          "line": 14
+          "line": 17
         },
         {
           "event": "bindtap",
@@ -1311,7 +1311,7 @@
           "tag": "button",
           "label": "返回消息列表",
           "data": {},
-          "line": 24
+          "line": 28
         }
       ],
       "page_methods": [
@@ -1391,6 +1391,7 @@
           "canOpenSource",
           "sourceButtonLabel",
           "canEvaluate",
+          "true",
           "feedbackEvaluation",
           "feedbackEvaluationSaving"
         ],

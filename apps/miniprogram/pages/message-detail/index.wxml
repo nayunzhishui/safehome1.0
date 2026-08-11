@@ -1,25 +1,29 @@
 <view class="safe-page message-detail-page" role="main" aria-label="消息详情">
   <page-state wx:if="{{loading}}" kind="loading" title="正在打开消息" description="内容只会在你的账号中显示。" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="消息暂时没有打开" description="{{errorMessage}}" action-label="{{id ? '重新打开' : '返回消息列表'}}" bind:action="handleStateAction" />
-  <view wx:else class="safe-card safe-card--hero">
+  <view wx:else class="detail-layout {{message.is_withdrawn ? 'detail-layout--withdrawn' : ''}}">
     <text class="detail-kicker">{{message.message_type === 'supervision_feedback' ? '人工补充反馈' : '消息提醒'}}</text>
     <text class="detail-title">{{message.title}}</text>
     <text class="detail-time">{{message.sender_role ? '来源：研究者补充 · ' : ''}}{{message.created_at}}{{message.delivery_version ? ' · 第 ' + message.delivery_version + ' 版' : ''}}</text>
-    <text class="detail-body">{{message.is_withdrawn ? '研究者已撤回这条内容，请忽略此前版本。' : (message.body || '暂无更多内容。')}}</text>
+    <view class="detail-body-layout">
+      <view class="detail-body-rule" aria-hidden="true"></view>
+      <text class="detail-body">{{message.is_withdrawn ? '研究者已撤回这条内容，请忽略此前版本。' : (message.body || '暂无更多内容。')}}</text>
+    </view>
   </view>
 
-  <button wx:if="{{canOpenSource}}" class="safe-primary-button bottom-action" bindtap="openSource">{{sourceButtonLabel}}</button>
+  <button wx:if="{{canOpenSource}}" class="safe-primary-button source-action" bindtap="openSource">{{sourceButtonLabel}}</button>
 
-  <view wx:if="{{canEvaluate}}" class="safe-section">
-    <feedback-rating value="{{feedbackEvaluation}}" disabled="{{feedbackEvaluationSaving}}" prompt="这条反馈与你的实际情况相符吗？" bind:select="submitFeedbackEvaluation" />
+  <view wx:if="{{canEvaluate}}" class="feedback-section">
+    <feedback-rating editorial="{{true}}" value="{{feedbackEvaluation}}" disabled="{{feedbackEvaluationSaving}}" prompt="这条反馈与你的实际情况相符吗？" bind:select="submitFeedbackEvaluation" />
   </view>
 
-  <view class="safe-section">
-    <view class="boundary-card">
-      <text class="boundary-title">先确认边界</text>
+  <view class="boundary-note">
+    <view class="boundary-rule" aria-hidden="true"></view>
+    <view class="boundary-copy">
+      <text class="boundary-title">使用边界</text>
       <text class="boundary-text">这里的内容适合补充理解一条记录，不适合处理紧急安全风险。如正在经历自伤、自杀、暴力、失控或其他安全风险，请先找现实支持。</text>
     </view>
   </view>
 
-  <button class="safe-outline-button bottom-action" bindtap="goMessages">返回消息列表</button>
+  <button class="safe-outline-button return-action" bindtap="goMessages">返回消息列表</button>
 </view>
