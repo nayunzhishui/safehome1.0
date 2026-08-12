@@ -12140,3 +12140,9 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - F01 的未完成草稿未进入 main，已保存为本地 stash `rc0810-f01-paused-draft-20260811`（对象 `3bf30308d93f0f78a5fbdbb2cdc9d8061320d339`）；暂停前 RED 后已把测试合同整理为 18 项，但未重跑，不能记为验收证据。
 - 暂停期间可以执行其他 UI 任务，但必须建立独立范围、保留既有 Harness 状态，不得把 UI 完成写成 0810 上线整改完成。UI 若改动 F01/F02/F04/F25 所绑定的页面、配置或源码，恢复 RC0810 时必须使旧证据失效并重新冻结。
 - 恢复时从 F01 重新执行 Preflight → Scope Freeze → Failing Contract，不直接沿用暂停前 packet、source tree、dirty diff 或测试结论。
+## 2026-08-12：RC0810-F01 恢复执行记录
+
+- F01 已从暂停草稿恢复并重新冻结；并行 UI 文件与四份事实文档作为 shared inherited overlay 保留。
+- F01 范围为 15 个文件，含环境/构建/能力/客户端合同、测试、验证器、基线、注册表、计划回填和 Harness 断点恢复最小修复。
+- F01 专项 18 passed，组合 25 passed，默认验证器、self-check、diff check 通过；生产门禁仍关闭，外部平台与生产证据 pending。
+- 当前入口：独立审查通过后提交 F01；若出现 finding 只修复该 finding，不提前进入生产或 F02。
