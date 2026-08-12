@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "关系探索成长仪表盘",
+  "navigationBarTitleText": "关系探索成长记录",
   "usingComponents": {
     "visualization-state": "/components/visualization-state/index"
   }

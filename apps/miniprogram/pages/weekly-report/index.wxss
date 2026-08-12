@@ -4,14 +4,15 @@
 
 .weekly-hero {
   position: relative;
-  min-height: 300rpx;
+  min-height: 92rpx;
   overflow: hidden;
+  text-align: center;
 }
 
 .hero-copy {
   position: relative;
   z-index: 1;
-  max-width: 480rpx;
+  max-width: none;
 }
 
 .hero-kicker,
@@ -50,7 +51,7 @@
 
 .hero-title {
   color: var(--safe-title);
-  font-size: 42rpx;
+  font-size: 46rpx;
   font-weight: 850;
   line-height: 1.28;
   letter-spacing: 0;

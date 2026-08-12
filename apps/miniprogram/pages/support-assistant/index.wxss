@@ -11,6 +11,7 @@
   flex-direction: column;
   gap: 16rpx;
   margin-bottom: 48rpx;
+  text-align: center;
 }
 
 .page-kicker,
@@ -37,6 +38,7 @@
   font-size: 40rpx;
   font-weight: 600;
   line-height: 56rpx;
+  text-align: center;
 }
 
 .page-summary {

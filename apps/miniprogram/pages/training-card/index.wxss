@@ -4,12 +4,13 @@
 
 .detail-hero {
   position: relative;
-  min-height: 252rpx;
+  min-height: 92rpx;
   overflow: hidden;
+  text-align: center;
 }
 
 .hero-copy {
-  max-width: 480rpx;
+  max-width: none;
 }
 
 .hero-title,
@@ -33,7 +34,7 @@
 
 .hero-title {
   color: var(--safe-title);
-  font-size: 42rpx;
+  font-size: 46rpx;
   font-weight: 800;
   line-height: 1.28;
   letter-spacing: 0;
@@ -72,7 +73,7 @@
 .hero-mark-sub {
   margin-top: 8rpx;
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
 }
 
 .card-content {
@@ -209,7 +210,7 @@
   min-height: 42rpx;
   padding: 0 18rpx;
   border-radius: var(--safe-radius-pill);
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 700;
   line-height: 1.35;
 }
@@ -300,7 +301,7 @@
   display: block;
   margin: 0 28rpx 22rpx;
   color: var(--safe-muted);
-  font-size: 23rpx;
+  font-size: 24rpx;
   line-height: 1.6;
 }
 
@@ -377,7 +378,7 @@
 
 .detail-label {
   color: var(--safe-primary-deep);
-  font-size: 23rpx;
+  font-size: 24rpx;
   font-weight: 850;
 }
 

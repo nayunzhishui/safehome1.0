@@ -1,41 +1,34 @@
 <view class="safe-page growth-page">
   <view class="growth-hero">
-    <text class="growth-title">关系探索成长仪表盘</text>
     <text class="growth-kicker">变化记录，不是疗效证明</text>
-    <text class="growth-copy growth-copy--center">把不同类型的变化分开看，保留可回顾的事实与阶段性反馈。</text>
+    <text class="growth-title">关系探索成长记录</text>
   </view>
 
   <view wx:if="{{loading}}" class="safe-card loading-card">正在读取成长记录...</view>
   <view wx:elif="{{growth}}" class="growth-content">
     <view class="growth-summary-grid" aria-label="成长记录摘要">
       <view class="growth-summary-item" aria-label="累计记录{{growth.timeline.length}}条">
-        <view class="growth-summary-icon"><icon type="success_no_circle" size="24" color="#3f7b60" /></view>
         <text class="growth-summary-value">{{growth.timeline.length}}</text>
         <text class="growth-summary-label">累计记录</text>
-        <text class="growth-summary-unit">条</text>
       </view>
       <view class="growth-summary-item" aria-label="可看指标组{{curveGroups.length}}组">
-        <view class="growth-summary-icon"><icon type="success" size="24" color="#3f7b60" /></view>
         <text class="growth-summary-value">{{curveGroups.length}}</text>
-        <text class="growth-summary-label">可看指标组</text>
-        <text class="growth-summary-unit">组</text>
+        <text class="growth-summary-label">指标组</text>
       </view>
       <view class="growth-summary-item" aria-label="阶段性反馈{{researcherConfirmations.length}}条">
-        <view class="growth-summary-icon"><icon type="waiting" size="24" color="#3f7b60" /></view>
         <text class="growth-summary-value">{{researcherConfirmations.length}}</text>
         <text class="growth-summary-label">阶段性反馈</text>
-        <text class="growth-summary-unit">条</text>
       </view>
     </view>
 
-    <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="section-nav" aria-label="成长仪表盘栏目">
+    <scroll-view scroll-x enhanced show-scrollbar="{{false}}" class="section-nav" aria-label="成长记录栏目">
       <view class="section-nav__row" role="tablist">
         <button wx:for="{{sectionTabs}}" wx:key="key" role="tab" aria-selected="{{activeSection === item.key}}" aria-label="查看{{item.label}}" class="section-nav__item {{activeSection === item.key ? 'section-nav__item--active' : ''}}" data-section="{{item.key}}" bindtap="selectSection">{{item.label}}</button>
       </view>
     </scroll-view>
 
     <view wx:if="{{activeSection === 'curve'}}" class="section-stack">
-      <view class="safe-card section-card chart-card">
+      <view class="section-card chart-card">
         <view class="section-heading">
           <view><text class="section-title">变化曲线</text><text class="section-note">每组数字含义不同，不合并成总分</text></view>
         </view>
@@ -59,7 +52,7 @@
         <visualization-state wx:else state="insufficient" message="还没有可绘制的数据。先完成一次测评或本周记录。"></visualization-state>
       </view>
 
-      <view class="safe-card section-card recent-card">
+      <view class="section-card recent-card">
         <view class="section-heading">
           <view><text class="section-title">最近时间线</text><text class="section-note">先看最近三条，再决定是否展开</text></view>
           <button class="text-action" bindtap="showAllTimeline">查看全部 ›</button>
@@ -74,7 +67,7 @@
       </view>
     </view>
 
-    <view wx:elif="{{activeSection === 'timeline'}}" class="safe-card section-card">
+    <view wx:elif="{{activeSection === 'timeline'}}" class="section-card">
       <view class="section-heading"><view><text class="section-title">成长时间线</text><text class="section-note">按记录类型查看，不急于解释趋势</text></view></view>
       <scroll-view scroll-x class="filter-scroll"><view class="filter-row"><button wx:for="{{timelineFilters}}" wx:key="key" class="filter-chip {{timelineFilter === item.key ? 'filter-chip--active' : ''}}" data-key="{{item.key}}" bindtap="selectTimelineFilter">{{item.label}}</button></view></scroll-view>
       <view wx:if="{{filteredTimeline.length}}" class="timeline-list timeline-list--full">
@@ -86,7 +79,7 @@
       <view wx:else class="empty-state">这一类还没有记录。</view>
     </view>
 
-    <view wx:elif="{{activeSection === 'feedback'}}" class="safe-card section-card source-card">
+    <view wx:elif="{{activeSection === 'feedback'}}" class="section-card source-card">
       <view class="section-heading"><view><text class="section-title">阶段性反馈</text><text class="section-note">系统汇总与研究者补充明确分开</text></view></view>
       <view class="source-block source-block--feedback"><text class="source-label">研究者补充</text><view wx:if="{{researcherConfirmations.length}}"><text wx:for="{{researcherConfirmations}}" wx:key="id" class="source-line">{{item.dateText}} · {{item.title}}</text></view><text wx:else class="source-empty">暂时还没有研究者阶段性反馈。</text></view>
       <view class="source-block source-block--system"><text class="source-label">系统汇总</text><text class="growth-copy">{{growth.growth_report.change_summary}}</text><text class="growth-copy">下一步建议：{{growth.growth_report.next_step}}</text></view>
@@ -101,7 +94,7 @@
         <button class="safe-primary-button" bindtap="goRelationshipPilot">前往关系探索</button>
       </view>
 
-      <view wx:if="{{canRecord}}" class="safe-card record-disclosure">
+      <view wx:if="{{canRecord}}" class="record-disclosure">
         <button class="record-disclosure__head" data-panel="weekly" bindtap="toggleRecordPanel"><view><text class="section-title">本周补充记录</text><text class="section-note">次数、感受和一段开放记录</text></view><text class="disclosure-icon">{{showWeeklyForm ? '−' : '+'}}</text></button>
         <view wx:if="{{showWeeklyForm}}" class="record-form">
           <label class="field-label">主动社交次数<input type="number" data-key="active_social_count" value="{{form.active_social_count}}" bindinput="onFieldInput" /></label>
@@ -117,7 +110,7 @@
         </view>
       </view>
 
-      <view wx:if="{{canRecord}}" class="safe-card record-disclosure">
+      <view wx:if="{{canRecord}}" class="record-disclosure">
         <button class="record-disclosure__head" data-panel="event" bindtap="toggleRecordPanel"><view><text class="section-title">记录一个关键事件</text><text class="section-note">只写一件具体发生的小事</text></view><text class="disclosure-icon">{{showEventForm ? '−' : '+'}}</text></button>
         <view wx:if="{{showEventForm}}" class="record-form">
           <textarea class="event-input" maxlength="500" data-key="event_summary" value="{{form.event_summary}}" bindinput="onFieldInput" placeholder="例如：一次靠近、被拒绝、表达边界或感到被理解的时刻"></textarea>

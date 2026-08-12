@@ -2,9 +2,10 @@
   <view class="emergency-header">
     <text class="page-kicker">安全优先</text>
     <text class="page-title">先找现实帮助</text>
-    <text class="page-summary">如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。</text>
     <view class="safety-rule" aria-hidden="true"></view>
   </view>
+
+  <view class="safety-intro" role="note">如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。</view>
 
   <view class="emergency-section">
     <text class="section-heading">现在先做</text>

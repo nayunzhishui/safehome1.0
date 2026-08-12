@@ -2,30 +2,37 @@
   <page-state wx:if="{{loading}}" kind="loading" title="正在整理阶段性报告" description="报告、研究者确认和你的核对会分开呈现。" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="阶段性报告暂时没有读取成功" description="{{errorMessage}}" action-label="重新读取" bind:action="loadReport" />
   <view wx:else>
-    <view wx:if="{{deliveryPending}}" class="safe-card safe-card--hero report-head">
+    <view wx:if="{{deliveryPending}}" class="report-head report-head--pending">
       <text class="section-eyebrow">正在人工核对</text>
       <text class="report-title">{{report.title}}</text>
-      <text class="report-copy">研究者完成核对并发送后，你会在消息列表收到提醒。当前不会展示画像、解释或机制假设。</text>
-      <view class="boundary-card">{{report.boundary_notice}}</view>
+      <view class="report-pending-body">
+        <text class="report-copy">研究者完成核对并发送后，你会在消息列表收到提醒。当前不会展示画像、解释或机制假设。</text>
+        <view class="boundary-note">{{report.boundary_notice}}</view>
+      </view>
     </view>
     <block wx:else>
-    <view class="safe-card safe-card--hero report-head">
-      <view class="report-status-row"><relationship-status status="{{record.status}}"></relationship-status><text class="version-chip">{{report.version}}</text></view>
+    <view class="report-head">
+      <view class="report-status-row">
+        <relationship-status status="{{record.status}}"></relationship-status>
+        <view class="report-meta-group"><text class="report-meta">{{report.generated_at}}</text><text class="version-chip">{{report.version}}</text></view>
+      </view>
       <text class="report-title">{{report.title}}</text>
-      <text class="report-meta">{{report.generated_at}}</text>
       <view class="status-track">
         <view wx:for="{{statusSteps}}" wx:key="key" class="status-step status-step--{{item.state}}"><text class="status-dot"></text><text>{{item.label}}</text></view>
       </view>
       <view wx:if="{{attentionNotice}}" class="attention-notice"><text class="attention-title">需要多一点人工核对</text><text>{{attentionNotice}}</text></view>
+      <view class="profile-excerpt">
+        <text class="section-eyebrow">当前阶段解释</text>
       <text class="report-profile">{{report.visible_profile_name}}</text>
       <text class="report-copy">{{report.profile_description}}</text>
+      </view>
     </view>
 
-    <view class="safe-section">
+    <view class="report-section report-feedback-section">
       <feedback-rating value="{{reportEvaluation}}" disabled="{{reportEvaluationSaving}}" prompt="这份阶段性报告与你的实际情况相符吗？" bind:select="submitReportEvaluation" />
     </view>
 
-    <view wx:if="{{radarRows.length}}" class="safe-section safe-card">
+    <view wx:if="{{radarRows.length}}" class="report-section">
       <text class="section-eyebrow">基础画像</text>
       <text class="section-title">本次维度轮廓</text>
       <text class="section-help">条形只表示本次在参考样本中的相对位置，不代表好坏或能力排名。</text>
@@ -37,14 +44,14 @@
       </view>
     </view>
 
-    <view wx:if="{{report.four_layer_profile.tension.clues.length}}" class="safe-section safe-card">
+    <view wx:if="{{report.four_layer_profile.tension.clues.length}}" class="report-section">
       <text class="section-eyebrow">矛盾画像</text>
       <text class="section-title">两种需要可能同时存在</text>
       <view class="tension-axis"><text>靠近与行动意愿</text><text class="axis-connector">同时</text><text>保护与现实节奏</text></view>
       <view wx:for="{{report.four_layer_profile.tension.clues}}" wx:key="*this" class="tension-clue">{{item}}</view>
     </view>
 
-    <view wx:if="{{mechanismCards.length}}" class="safe-section safe-card">
+    <view wx:if="{{mechanismCards.length}}" class="report-section">
       <text class="section-eyebrow">机制画像</text>
       <text class="section-title">待核对假设</text>
       <text class="section-help">这些只是讨论线索。请以你的真实经验为准，共同修订比“被系统定义”更重要。</text>
@@ -59,7 +66,7 @@
       </view>
     </view>
 
-    <view class="safe-section safe-card">
+    <view class="report-section">
       <text class="section-eyebrow">动态画像</text>
       <text class="section-title">连续记录</text>
       <view wx:if="{{report.four_layer_profile.dynamic.rounds_count >= 2}}">
@@ -69,25 +76,29 @@
       <text wx:else class="section-help">目前只有一次记录。完成两次以上后，才显示趋势箭头。</text>
     </view>
 
-    <view class="safe-section safe-card">
+    <view class="report-section">
       <text class="section-eyebrow">{{isStageFeedback ? '人工补充' : '支持性解释'}}</text>
       <text class="section-title">{{isStageFeedback ? '研究者阶段性反馈' : '怎样理解这份结果'}}</text>
       <text class="report-copy">{{report.personalized_interpretation}}</text>
     </view>
 
-    <view class="safe-section safe-card">
+    <view class="report-section">
+      <text class="section-eyebrow">讨论线索</text>
       <text class="section-title">可以带去讨论的问题</text>
       <text wx:for="{{report.suggested_assessment_questions}}" wx:key="*this" class="list-line">{{index + 1}}. {{item}}</text>
     </view>
 
-    <view class="safe-section safe-card">
+    <view class="report-section">
+      <text class="section-eyebrow">下一步</text>
       <text class="section-title">建议的项目任务</text>
       <text wx:for="{{report.recommended_project_tasks}}" wx:key="*this" class="list-line">• {{item}}</text>
     </view>
 
-    <view class="boundary-card">{{report.boundary_notice}}</view>
-    <button class="safe-primary-button" loading="{{exporting}}" disabled="{{exporting}}" bindtap="drawLongImage">生成脱敏报告长图</button>
-    <text class="download-help">长图只包含用户可见的支持性内容，不含模型中心、内部关联字段或研究备注。</text>
+    <view class="report-export">
+      <view class="boundary-note"><text class="boundary-title">边界说明</text>{{report.boundary_notice}}</view>
+      <button class="safe-primary-button" loading="{{exporting}}" disabled="{{exporting}}" bindtap="drawLongImage">生成脱敏报告长图</button>
+      <text class="download-help">长图只包含用户可见的支持性内容，不含模型中心、内部关联字段或研究备注。</text>
+    </view>
     </block>
   </view>
   <canvas canvas-id="reportShareCanvas" class="share-canvas" style="width:640px;height:{{shareCanvasHeight}}px;" width="640" height="{{shareCanvasHeight}}" aria-hidden="true"></canvas>

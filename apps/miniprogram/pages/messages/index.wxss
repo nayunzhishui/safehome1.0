@@ -10,6 +10,11 @@
   align-items: flex-start;
 }
 
+.messages-header {
+  align-items: stretch;
+  text-align: center;
+}
+
 .page-kicker,
 .page-title,
 .page-summary,
@@ -36,6 +41,7 @@
   font-weight: 700;
   line-height: 72rpx;
   letter-spacing: -1rpx;
+  text-align: center;
 }
 
 .page-summary {
@@ -46,7 +52,7 @@
 }
 
 .messages-content {
-  margin-top: 64rpx;
+  margin-top: 48rpx;
 }
 
 .message-list {

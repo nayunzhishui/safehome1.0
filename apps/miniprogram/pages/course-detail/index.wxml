@@ -9,15 +9,13 @@
   </view>
 
   <view wx:elif="{{course}}">
-    <view class="detail-hero safe-card safe-card--hero">
-      <text class="hero-kicker">{{course.theme}}</text>
+    <view class="detail-hero">
       <text class="hero-title">{{course.title}}</text>
-      <text class="hero-summary">{{course.scene}}</text>
-      <text class="hero-meta">{{course.durationText}} · {{course.sections.length}} 小节</text>
+      <text class="hero-meta">{{course.theme}} · {{course.durationText}} · {{course.sections.length}} 小节</text>
     </view>
 
     <view class="safe-section">
-      <section-title title="这节课会练什么" subtitle="先看目标，再决定今天学到哪一步" />
+      <section-title title="这节课会练什么" />
       <view class="learning-panel">
         <text class="core-concept">{{course.core_concept}}</text>
         <text wx:for="{{course.learning_objectives}}" wx:key="*this" class="learning-line">{{index + 1}}. {{item}}</text>
@@ -25,7 +23,7 @@
     </view>
 
     <view class="safe-section">
-      <section-title title="课程小节" subtitle="按顺序看一遍，也可以只看最需要的一节" />
+      <section-title title="课程小节" />
       <view class="section-list">
         <view wx:for="{{course.sections}}" wx:key="title" class="section-card">
           <text class="section-index">{{index + 1}}</text>
@@ -38,7 +36,7 @@
     </view>
 
     <view class="safe-section">
-      <section-title title="常见误区" subtitle="辨别看起来相近、实际不同的做法" />
+      <section-title title="常见误区" />
       <view wx:for="{{course.common_misconceptions}}" wx:key="statement" class="learning-panel">
         <text class="example-label">容易误解</text>
         <text class="learning-line">{{item.statement}}</text>
@@ -59,7 +57,7 @@
     </view>
 
     <view class="safe-section">
-      <section-title title="理解检查" subtitle="选择后会看到原因，不记录为能力评价" />
+      <section-title title="理解检查" />
       <view wx:for="{{course.knowledgeChecks}}" wx:key="id" wx:for-item="check" class="learning-panel">
         <text class="check-prompt">{{check.prompt}}</text>
         <button wx:for="{{check.options}}" wx:key="value" wx:for-item="option" class="answer-button {{check.selectedValue === option.value ? 'selected' : ''}}" data-check-id="{{check.id}}" data-value="{{option.value}}" bindtap="chooseKnowledgeAnswer">{{option.label}}</button>
@@ -68,7 +66,7 @@
     </view>
 
     <view class="safe-section practice-band">
-      <section-title title="现在练一次" subtitle="只完成一个足够小的动作" />
+      <section-title title="现在练一次" />
       <text class="learning-line">{{course.guided_practice.instruction}}</text>
       <text class="example-label">真实场景迁移</text>
       <text class="learning-line">{{course.transfer_task}}</text>

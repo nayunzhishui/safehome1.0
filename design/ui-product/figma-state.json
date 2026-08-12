@@ -3,8 +3,8 @@
   "fileName": "安心陪伴 UIproduct",
   "fileKey": "8vocq2yUvjQavYpaxGotPs",
   "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
-  "phase": "phase22_emergency_resources_awaiting_user_review",
-  "step": "frontend_local_harness_complete_waiting_user_manual_screenshot",
+  "phase": "phase30_therapeutic_assessment_action_followup_figma_complete",
+  "step": "continue_next_registered_page",
   "blocker": null,
   "entities": {
     "collections": {
@@ -71,7 +71,23 @@
       "01 Foundations": "11:2",
       "02 Components": "11:3",
       "03 Screens": "11:4",
-      "99 QA": "11:5"
+      "99 QA": "11:5",
+      "15 Program List": "196:2",
+      "16 Program Detail": "201:75",
+      "17 Relationship Pilot": "209:75",
+      "18 Relationship Report": "214:2",
+      "19 Relationship Task": "219:2",
+      "20 Relationship Growth": "224:2",
+      "21 Therapeutic Assessment": "246:6",
+      "22 Therapeutic Assessment Boundary": "253:6",
+      "23 Therapeutic Assessment Issue": "259:6",
+      "24 Therapeutic Assessment Recent Event": "261:6",
+      "25 Therapeutic Assessment Resources": "264:6",
+      "26 Therapeutic Assessment Sharing": "266:6",
+      "27 Therapeutic Assessment Summary": "275:77",
+      "28 Therapeutic Assessment Feedback Check": "285:6",
+      "29 Therapeutic Assessment Action Review": "288:6",
+      "30 Therapeutic Assessment Action Followup": "291:6"
     },
     "documentation": {
       "Cover": "12:2",
@@ -94,6 +110,9 @@
       ,"Components/SafetyActionRow/Stage": "156:78"
       ,"Components/ResourceChannelRow": "168:75"
       ,"Components/ResourceChannelRow/Stage": "168:78"
+      ,"Components/TherapeuticComparison": "272:77"
+      ,"Components/TherapeuticFeedbackLetter": "284:86"
+      ,"Components/TherapeuticCompactTextarea": "287:82"
     },
     "components": {
       "Button": "18:59",
@@ -124,6 +143,9 @@
       ,"SafetyActionRow/GroundingBase": "157:75"
       ,"SafetyActionRow": "157:78"
       ,"ResourceChannelRow": "169:75"
+      ,"TherapeuticComparison": "270:77"
+      ,"TherapeuticFeedbackLetter": "284:78"
+      ,"TherapeuticCompactTextarea": "287:81"
     },
     "componentVariants": {
       "FeedbackRating/Default": "135:69",
@@ -189,8 +211,67 @@
       ,"QuestionComposer/Text": "Text#121:10"
       ,"QuestionComposer/Error": "Error#121:15"
       ,"QuestionComposer/ShowError": "ShowError#121:20"
+      ,"TherapeuticComparison/OriginalText": "Original Text#272:0"
+      ,"TherapeuticComparison/SystemText": "System Text#272:1"
     },
     "screens": {
+      "RelationshipTask/Drawing": "219:3",
+      "RelationshipTask/Sentence": "220:8",
+      "RelationshipTask/States": "220:1600",
+      "RelationshipGrowth/Curve": "224:3",
+      "RelationshipGrowth/Timeline": "228:2",
+      "RelationshipGrowth/Feedback": "230:2",
+      "RelationshipGrowth/Records": "232:2",
+      "RelationshipGrowth/States": "233:1574",
+      "TherapeuticAssessment/Ready": "246:7",
+      "TherapeuticAssessment/Waiting": "246:74",
+      "TherapeuticAssessment/Feedback": "246:143",
+      "TherapeuticAssessment/States": "246:222",
+      "TherapeuticBoundary/Default": "253:7",
+      "TherapeuticBoundary/ContinueSelected": "254:66",
+      "TherapeuticBoundary/NotNowSelected": "254:93",
+      "TherapeuticBoundary/States": "254:125",
+      "TherapeuticIssue/Default": "259:7",
+      "TherapeuticIssue/DraftRestored": "259:47",
+      "TherapeuticIssue/States": "259:85",
+      "TherapeuticRecentEvent/Default": "261:7",
+      "TherapeuticRecentEvent/DraftRestored": "261:35",
+      "TherapeuticRecentEvent/States": "261:61",
+      "TherapeuticResources/Default": "264:7",
+      "TherapeuticResources/DraftRestored": "264:34",
+      "TherapeuticResources/States": "264:59",
+      "TherapeuticSharing/Default": "266:7",
+      "TherapeuticSharing/QuestionOnly": "266:63",
+      "TherapeuticSharing/QuestionAndEvent": "266:91",
+      "TherapeuticSharing/PauseSharing": "266:124",
+      "TherapeuticSharing/States": "266:162",
+      "TherapeuticSummary/Default": "275:78",
+      "TherapeuticSummary/LongContent": "279:28",
+      "TherapeuticSummary/ContentStates": "279:1822",
+      "TherapeuticSummary/States": "279:1861",
+      "TherapeuticFeedbackCheck/Default": "285:7",
+      "TherapeuticFeedbackCheck/NotLike": "285:60",
+      "TherapeuticFeedbackCheck/SystemStates": "285:113",
+      "TherapeuticFeedbackCheck/RecognitionStates": "285:131",
+      "TherapeuticActionReview/Empty": "288:7",
+      "TherapeuticActionReview/Filled": "288:63",
+      "TherapeuticActionReview/States": "288:116",
+      "TherapeuticActionFollowup/Default": "291:7",
+      "TherapeuticActionFollowup/Stopped": "291:67",
+      "TherapeuticActionFollowup/Declined": "291:125",
+      "TherapeuticActionFollowup/LongContent": "291:183",
+      "TherapeuticActionFollowup/States": "291:241",
+      "RelationshipReport/Delivered": "214:3",
+      "RelationshipReport/DeliveryPending": "214:140",
+      "RelationshipReport/States": "214:147",
+      "RelationshipPilot/EnrollmentRequired": "209:76",
+      "RelationshipPilot/Enrolled": "209:77",
+      "RelationshipPilot/States": "209:78",
+      "ProgramDetail/Default": "201:76",
+      "ProgramDetail/PreviewReadOnly": "205:1527",
+      "ProgramDetail/States": "201:78",
+      "ProgramList/Default": "196:3",
+      "ProgramList/States": "196:4",
       "EmergencyGuide/Default": "162:1343",
       "EmergencyGuide/LongContentSmallScreen": "162:1346",
       "MessageDetail/Default": "139:1243",
@@ -519,6 +600,93 @@
     ,"EmergencyGuide local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
     ,"EmergencyResources WXML/WXSS implemented without changing JS, APIs, navigation, backend, database, content or shared"
     ,"EmergencyResources WeChat DevTools Preview passed at 1493991 bytes"
-    ,"EmergencyResources local Loop 1-4 and four Harness reviews passed; waiting for user manual screenshot review"
+    ,"EmergencyResources local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"ProgramList ImageGen review corrected unsupported filters before Figma"
+    ,"ProgramList Default and Loading/Error/Empty states completed and visually reviewed"
+    ,"ProgramList Figma harness passed: Noto Sans SC only, zero raw solid fills, existing Chevron and PageState instances reused"
+    ,"ProgramList WXML/WXSS implemented without changing JS, APIs, permissions, navigation, backend or database"
+    ,"ProgramList WeChat DevTools Preview passed at 1495198 bytes"
+    ,"ProgramList local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"ProgramDetail ImageGen review corrected invented copy and separated measurement plan from sessions"
+    ,"ProgramDetail Default, PreviewReadOnly and seven local states completed and visually reviewed"
+    ,"ProgramDetail Figma harness passed: Noto Sans SC only, zero raw solid fills, minimal exact component reuse"
+    ,"ProgramDetail WXML/WXSS implemented without changing JS, APIs, review, permission, draft or submit semantics"
+    ,"ProgramDetail WeChat DevTools Preview passed at 1496039 bytes"
+    ,"ProgramDetail local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"RelationshipPilot ImageGen review removed invented profile data and separated enrollment from enrolled state"
+    ,"RelationshipPilot EnrollmentRequired, Enrolled and seven local states completed and visually reviewed"
+    ,"RelationshipPilot Figma harness passed: Noto Sans SC only, zero raw solid fills, minimal exact component reuse"
+    ,"RelationshipPilot WXML/WXSS implemented without changing JS, APIs, role gate, enrollment, tracking or navigation semantics"
+    ,"RelationshipPilot WeChat DevTools Preview passed at 1496466 bytes"
+    ,"RelationshipPilot local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"RelationshipReport ImageGen review removed invented dates, values and report content before Figma"
+    ,"RelationshipReport Delivered, DeliveryPending and eight local states completed and visually reviewed"
+    ,"RelationshipReport semantic paint binding fallback was corrected and revalidated at zero raw fills and strokes"
+    ,"RelationshipReport Figma harness passed: Noto Sans SC only and minimal exact component reuse"
+    ,"RelationshipReport WXML/WXSS/JSON implemented without changing JS, APIs, report gates, feedback or export semantics"
+    ,"RelationshipReport WeChat DevTools Preview passed at 1497248 bytes"
+    ,"RelationshipReport local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"RelationshipTask ImageGen produced drawing and sentence variants; unsupported tool icons and fixed draft state were removed"
+    ,"RelationshipTask Drawing, Sentence and ten local states completed and visually reviewed"
+    ,"RelationshipTask Figma harness passed: Noto Sans SC only, zero raw fills and strokes, minimal exact component reuse"
+    ,"RelationshipTask WXML/WXSS implemented without changing JS, local draft, drawing, consent, risk or submit semantics"
+    ,"RelationshipTask WeChat DevTools Preview passed at 1497926 bytes"
+    ,"RelationshipTask local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"RelationshipGrowth Curve, Timeline, Feedback, Records and twelve local states completed and visually reviewed"
+    ,"RelationshipGrowth Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders, minimal Button reuse"
+    ,"RelationshipGrowth WXML/WXSS/JSON implemented without changing JS, redirects, filters, drafts, idempotency or API semantics"
+    ,"RelationshipGrowth WeChat DevTools Preview passed at 1496960 bytes"
+    ,"RelationshipGrowth local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticAssessment Ready, Waiting, Feedback and eight local states completed and visually reviewed"
+    ,"TherapeuticAssessment Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders, minimal Button reuse"
+    ,"TherapeuticAssessment WXML/WXSS implemented without changing JS, APIs, scopes, consent, withdrawal or idempotency semantics"
+    ,"TherapeuticAssessment WeChat DevTools Preview passed at 1499842 bytes"
+    ,"TherapeuticAssessment local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticBoundary choice-option component set 252:89 created for simple two-state reuse"
+    ,"TherapeuticBoundary Default, ContinueSelected, NotNowSelected and six local states completed and visually reviewed"
+    ,"TherapeuticBoundary Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticBoundary shared WXML/WXSS styling implemented without changing JS, flow utility, APIs, drafts or navigation"
+    ,"TherapeuticBoundary WeChat DevTools Preview passed at 1500067 bytes"
+    ,"TherapeuticBoundary local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticIssue four-state Textarea component set 258:85 created for restrained text-step reuse"
+    ,"TherapeuticIssue Default, DraftRestored and six local states completed and visually reviewed"
+    ,"TherapeuticIssue Textarea Auto Layout height compression found in review and corrected at component source"
+    ,"TherapeuticIssue Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticIssue shared WXSS writing height calibrated without changing JS, flow utility, APIs, validation or drafts"
+    ,"TherapeuticIssue WeChat DevTools Preview passed at 1500067 bytes"
+    ,"TherapeuticIssue local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticIssue and RecentEvent repeated step-level boundary caption removed under the hardcoded-small-copy gate"
+    ,"TherapeuticRecentEvent Default, DraftRestored and five local states completed and visually reviewed"
+    ,"TherapeuticRecentEvent Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticRecentEvent reused existing Textarea and Buttons without changing evidence, API, scope, idempotency or draft semantics"
+    ,"TherapeuticRecentEvent WeChat DevTools Preview passed at 1500094 bytes"
+    ,"TherapeuticRecentEvent local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticResources Default, DraftRestored and five local states completed and visually reviewed"
+    ,"TherapeuticResources Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticResources reused existing Textarea and Buttons without adding cards, tags, recommendations or hardcoded captions"
+    ,"TherapeuticResources WeChat DevTools Preview passed at 1500094 bytes"
+    ,"TherapeuticResources local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticSharing Default, three selected states and local states completed and visually reviewed"
+    ,"TherapeuticSharing retained only consequence-bearing option descriptions and dynamic status copy"
+    ,"TherapeuticSharing WeChat DevTools Preview passed at 1500094 bytes"
+    ,"TherapeuticSharing local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticSummary component 270:77 created with equal-weight original and system text properties"
+    ,"TherapeuticSummary Default, LongContent, missing-content and system states completed and visually reviewed"
+    ,"TherapeuticSummary Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticSummary shared WXML/WXSS implemented without changing participant flow, APIs or navigation"
+    ,"TherapeuticSummary WeChat DevTools Preview passed at 1500973 bytes"
+    ,"TherapeuticSummary local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticFeedbackCheck component 284:78 and page 285:6 created with equal-weight recognition choices"
+    ,"TherapeuticFeedbackCheck removed redundant boundary caption, inherited button icons and decorative small copy"
+    ,"TherapeuticFeedbackCheck Figma harness passed: Noto Sans SC only, zero raw fills and strokes, minimum 12px auxiliary text"
+    ,"TherapeuticFeedbackCheck shared WXML/WXSS implemented without changing participant flow, APIs, validation or navigation"
+    ,"TherapeuticFeedbackCheck WeChat DevTools Preview passed at 1501710 bytes"
+    ,"TherapeuticFeedbackCheck local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticActionReview compact textarea component set 287:81 and page 288:6 created"
+    ,"TherapeuticActionReview retained all action fields and used three lightweight sections without fake counters"
+    ,"TherapeuticActionReview Figma harness passed: Noto Sans SC only, zero raw fills and strokes, minimum 12px auxiliary text"
+    ,"TherapeuticActionReview shared WXML/WXSS implemented without changing action values, defaults, validation, APIs or navigation"
+    ,"TherapeuticActionReview WeChat DevTools Preview passed at 1503106 bytes"
+    ,"TherapeuticActionReview local Loop 1-4 and four Harness reviews passed; device review deferred"
   ]
 }

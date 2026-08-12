@@ -2,7 +2,6 @@
   <view class="page-header">
     <text class="page-kicker">支持性问答</text>
     <text class="page-title">把问题缩小到下一步</text>
-    <text class="page-summary">只检索已审核内容，不评价你、孩子或关系的好坏。</text>
   </view>
 
   <page-state

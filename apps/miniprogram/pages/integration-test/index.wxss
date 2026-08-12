@@ -6,7 +6,7 @@
 .panel {
   padding: 32rpx;
   border: 1rpx solid #dce6db;
-  border-radius: 8rpx;
+  border-radius: 24rpx;
   background: #ffffff;
 }
 
@@ -22,8 +22,9 @@
   display: block;
   margin-bottom: 14rpx;
   color: #1d2b22;
-  font-size: 38rpx;
+  font-size: 46rpx;
   font-weight: 700;
+  text-align: center;
 }
 
 .summary,
@@ -38,14 +39,14 @@
   margin: 28rpx 0;
   background: #2f7d45;
   color: #ffffff;
-  border-radius: 8rpx;
+  border-radius: 999rpx;
 }
 
 .diagnostics {
   margin-top: 24rpx;
   padding: 18rpx;
   border: 1rpx solid #e1eadf;
-  border-radius: 8rpx;
+  border-radius: 18rpx;
   background: #f7faf6;
 }
 
@@ -77,9 +78,22 @@
 }
 
 .result-block {
+  position: relative;
   margin-top: 24rpx;
-  padding-top: 24rpx;
-  border-top: 1rpx solid #e6eee5;
+  padding: 24rpx;
+  border: 1rpx solid #e1eadf;
+  border-radius: 18rpx;
+  background: #ffffff;
+}
+
+.result-block::before {
+  content: "";
+  display: block;
+  width: 42rpx;
+  height: 6rpx;
+  margin-bottom: 14rpx;
+  border-radius: 999rpx;
+  background: #2f7d45;
 }
 
 .block-title {

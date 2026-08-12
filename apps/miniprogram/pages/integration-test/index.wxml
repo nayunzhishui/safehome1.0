@@ -1,8 +1,6 @@
 <view class="page" role="main" aria-label="接口联调测试">
   <view class="panel">
-    <text class="eyebrow">SafeHome MVP</text>
     <text class="title">最小联调测试</text>
-    <text class="summary">只验证三步数据流：创建情绪事件记录、生成即时反馈、获取训练卡推荐。</text>
 
     <view class="diagnostics">
       <text class="diagnostic-line">env：{{diagnostics.env}}</text>

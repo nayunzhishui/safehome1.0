@@ -7,7 +7,7 @@
 .panel {
   padding: 32rpx;
   border: 1rpx solid #dce6db;
-  border-radius: 8rpx;
+  border-radius: 24rpx;
   background: #ffffff;
 }
 
@@ -23,15 +23,16 @@
   display: block;
   margin-bottom: 24rpx;
   color: #1d2b22;
-  font-size: 38rpx;
+  font-size: 46rpx;
   font-weight: 700;
+  text-align: center;
 }
 
 .section {
   margin-bottom: 24rpx;
   padding: 20rpx;
   border: 1rpx solid #e1eadf;
-  border-radius: 8rpx;
+  border-radius: 18rpx;
   background: #f7faf6;
 }
 
@@ -63,7 +64,7 @@
 .primary-button,
 .secondary-button {
   width: 100%;
-  border-radius: 8rpx;
+  border-radius: 999rpx;
   font-size: 28rpx;
 }
 

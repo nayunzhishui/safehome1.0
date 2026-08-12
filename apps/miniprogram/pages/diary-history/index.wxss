@@ -5,7 +5,7 @@
 
 .history-header {
   display: grid;
-  gap: 12rpx;
+  gap: 18rpx;
   margin-bottom: 40rpx;
 }
 
@@ -24,20 +24,15 @@
 
 .history-title {
   color: var(--safe-title);
-  font-size: 52rpx;
-  font-weight: 850;
+  font-size: 46rpx;
+  font-weight: 900;
   line-height: 1.3;
-}
-
-.history-description {
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.6;
+  text-align: center;
 }
 
 .history-count {
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.5;
 }
 
@@ -59,7 +54,7 @@
 
 .record-date {
   color: var(--safe-title);
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.5;
   white-space: nowrap;
 }
@@ -67,7 +62,7 @@
 .record-clock {
   margin-top: 4rpx;
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.5;
   white-space: nowrap;
 }
@@ -79,11 +74,23 @@
 
 .record-axis-line {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 17rpx;
-  width: 2rpx;
-  background: var(--safe-border);
+  top: 42rpx;
+  left: 16rpx;
+  width: 4rpx;
+  height: 116rpx;
+  border-radius: 999rpx;
+  background: var(--safe-primary);
+}
+
+.record-axis-line::after {
+  content: "";
+  position: absolute;
+  top: 54rpx;
+  left: -4rpx;
+  width: 12rpx;
+  height: 4rpx;
+  border-radius: 999rpx;
+  background: var(--safe-primary-deep);
 }
 
 .record-axis-dot {
@@ -129,7 +136,7 @@
   flex-wrap: wrap;
   gap: 8rpx 16rpx;
   margin-top: 10rpx;
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.5;
 }
 
@@ -177,7 +184,7 @@
 .history-boundary {
   margin-top: 40rpx;
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.6;
 }
 

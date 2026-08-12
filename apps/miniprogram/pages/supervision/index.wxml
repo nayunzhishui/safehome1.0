@@ -1,9 +1,7 @@
 <view class="safe-page supervision-page" role="main" aria-label="人工支持">
   <view class="supervision-hero">
     <view class="hero-copy">
-      <text class="eyebrow">人工补充反馈</text>
-      <text class="title">请老师补充看看</text>
-      <text class="summary">如果这次记录让你有些拿不准，可以提交给老师，补充理解和练习建议。</text>
+      <text class="title">人工支持</text>
     </view>
   </view>
 
@@ -16,7 +14,6 @@
   <view class="form-card">
     <view class="field linked-record">
       <text class="label">选择想请老师一起看的记录</text>
-      <text class="meta-text">可选一条自己的情绪日记或测一测记录；不选择也可以提交。</text>
       <scroll-view scroll-y class="source-list">
         <button
           wx:for="{{sourceOptions}}"

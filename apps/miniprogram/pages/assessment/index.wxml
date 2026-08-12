@@ -1,7 +1,6 @@
 <view class="safe-page assessment-page" role="main" aria-label="支持性测评">
   <view class="assessment-head">
     <text class="page-title">支持性测评</text>
-    <text class="page-subtitle">按当前情况做一次自我观察。结果只用于理解线索和选择练习，不给人贴标签。</text>
   </view>
 
   <view class="safe-section">
@@ -32,7 +31,7 @@
   </view>
 
   <view wx:for="{{categories}}" wx:key="key" class="safe-section">
-    <section-title title="{{item.title}}" subtitle="{{item.subtitle}}" />
+    <section-title title="{{item.title}}" />
     <view wx:if="{{!item.items.length && item.emptyText}}" class="empty-section-card">
       <text>{{item.emptyText}}</text>
     </view>
@@ -59,7 +58,7 @@
   </view>
 
   <view wx:if="{{recentResults.length}}" class="safe-section">
-    <section-title title="最近记录" subtitle="只显示最近 3 条测一测记录" />
+    <section-title title="最近记录" />
     <view class="recent-list">
       <view
         wx:for="{{recentResults}}"
@@ -83,7 +82,7 @@
   </view>
 
   <view wx:elif="{{recentLoginTip}}" class="safe-section">
-    <section-title title="最近记录" subtitle="登录后显示你的测一测记录" />
+    <section-title title="最近记录" />
     <view class="recent-login-card">
       <text>{{recentLoginTip}}</text>
       <button class="login-link-button" bindtap="goLogin">去登录</button>

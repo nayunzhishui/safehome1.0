@@ -12252,3 +12252,44 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 最终用户视觉、功能与 Android/iOS 真机验收继续由 `device_acceptance` 控制，只在全部页面本地完成并完成 main 集成回归后开放。
 - [x] 登记紧急帮助说明页 `done`，活动页面进入 `pages/getting-started/index`。
 - [ ] 验证并提交紧急帮助说明页可恢复点，然后开始首次使用页功能审查。
+
+## 2026-08-11 UIproduct 网页版 GPT 生产与 Codex 修复审查
+
+- [x] 新增网页版 GPT 执行包，包含 UI 规则、Design 基础、ImageGen 模板、Figma 规则、GitHub 约束和远端证据格式。
+- [x] 冻结职责：网页版 GPT 先生产并推送 `UIproduct`；Codex 收到精确远端链接后独立审查。
+- [x] 冻结不可行处理：Codex 按 ImageGen → Figma → 代码顺序接管修正，完成 Loop/Harness 后提交新的 `UIproduct` 修复提交。
+- [x] 保留全部页面后统一视觉、功能与真机验收；远端 Codex 审查不能替代 Loop 5。
+- [x] `pages/getting-started/index` 保持冻结完成、Figma 与前端未开始；已有 ImageGen 仅作参考。
+- [x] 将 12 张现有截图复制到 `design/ui-product/references/current-ui/`，逐张写明可借鉴点、已知问题和功能真值边界。
+- [ ] 用户把执行包交给网页版 GPT，并在完成一页后把 ImageGen、Figma node 和 GitHub commit 链接交给 Codex。
+
+## 2026-08-11 Codex 本地连续 UI 执行续段
+
+- [x] 完成 `pages/getting-started/index`。
+- [x] 完成 `pages/thermometer/index`，保留情绪温度计真实语义。
+- [x] 完成 `pages/training/index`。
+- [x] 完成 `pages/training-history/index`。
+- [x] 完成 `pages/personalized-plan/index` 真值冻结、ImageGen 与图像审查。
+- [ ] 从个性化训练方案 Figma 门禁继续，随后持续处理剩余页面。
+
+## 2026-08-11 UIproduct 关系探索续段
+
+- [x] 完成 `pages/personalized-plan/index`。
+- [x] 完成 `pages/program-list/index`。
+- [x] 完成 `pages/program-detail/index`。
+- [x] 完成 `pages/relationship-pilot/index`。
+- [x] 完成 `pages/relationship-report/index`。
+- [x] 完成 `pages/relationship-task/index`。
+- [x] 完成 `pages/relationship-growth/index`。
+- [ ] 按注册表继续下一页面，全部页面本地完成后统一真机验收。
+
+- [x] 完成 `pages/therapeutic-assessment/index`。
+- [x] 完成 `pages/therapeutic-assessment-boundary/index`。
+- [x] 完成 `pages/therapeutic-assessment-issue/index`。
+- [x] 完成 `pages/therapeutic-assessment-recent-event/index`。
+- [x] 完成 `pages/therapeutic-assessment-resources/index`。
+- [x] 完成 `pages/therapeutic-assessment-sharing/index`。
+- [x] 完成 `pages/therapeutic-assessment-summary/index`。
+- [x] 完成 `pages/therapeutic-assessment-feedback-check/index`。
+- [x] 完成 `pages/therapeutic-assessment-action-review/index`。
+- [ ] 继续 `pages/therapeutic-assessment-action-followup/index`。

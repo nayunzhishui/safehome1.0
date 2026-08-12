@@ -2,7 +2,6 @@
   <view class="messages-header">
     <text class="page-kicker">消息提醒</text>
     <text class="page-title">需要你看看</text>
-    <text class="page-summary">人工补充和必要提醒会按时间排列。</text>
   </view>
 
   <view class="messages-content">

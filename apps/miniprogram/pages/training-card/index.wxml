@@ -1,12 +1,7 @@
 <view class="safe-page training-card-page" role="main" aria-label="训练卡">
   <view class="detail-hero safe-card safe-card--hero">
     <view class="hero-copy">
-      <text class="hero-title">今天先练这一小步</text>
-      <text class="hero-summary">每次选一张卡就可以。重点不是做完整，而是多一个能暂停、观察和回应的机会。</text>
-    </view>
-    <view class="hero-mark">
-      <text class="hero-mark-main">1</text>
-      <text class="hero-mark-sub">张即可</text>
+      <text class="hero-title">训练卡</text>
     </view>
   </view>
 
@@ -19,8 +14,6 @@
       <text class="match-label">这次推荐依据</text>
       <text class="match-text">{{tagsText}}</text>
     </view>
-
-    <view class="list-note"><text>先看第一张；不合适时，再从下面两张里换一张。</text></view>
 
     <view wx:for="{{cards}}" wx:key="id" class="task-card {{item.isPrimary ? 'task-card--primary' : 'task-card--alternative'}}">
       <view class="task-head">

@@ -16,6 +16,7 @@
   font-size: 24rpx;
   font-weight: 700;
   line-height: 1.5;
+  text-align: center;
 }
 
 .detail-title {
@@ -24,13 +25,19 @@
   font-size: 56rpx;
   font-weight: 800;
   line-height: 1.28;
+  text-align: center;
 }
 
 .detail-time {
-  margin-top: 16rpx;
   color: var(--safe-muted);
   font-size: 24rpx;
   line-height: 1.5;
+}
+
+.detail-body-copy {
+  min-width: 0;
+  display: grid;
+  gap: 20rpx;
 }
 
 .detail-body-layout {

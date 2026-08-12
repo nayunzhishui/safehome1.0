@@ -13,7 +13,8 @@
 .auth-header {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+  text-align: center;
 }
 
 .auth-brand {
@@ -31,6 +32,7 @@
   font-weight: 700;
   line-height: 72rpx;
   letter-spacing: -1rpx;
+  text-align: center;
 }
 
 .auth-summary {

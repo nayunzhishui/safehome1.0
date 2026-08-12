@@ -1,15 +1,18 @@
 <view class="safe-page researcher-dashboard-page">
   <view class="workbench-hero">
-    <view>
+    <view class="workbench-title-group">
       <text class="dashboard-kicker">研究者移动工作台</text>
       <text class="dashboard-title">先处理重要的一小步</text>
-      <text class="dashboard-copy">移动端用于查看摘要、处理提醒和进入试点；完整研究配置与批量工作仍在 Web 完成。</text>
     </view>
-    <view class="sync-chip" bindtap="refreshActiveWorkspace" role="button" aria-label="刷新当前工作区">
+  </view>
+  <view class="sync-row" bindtap="refreshActiveWorkspace" role="button" aria-label="刷新当前工作区">
+    <view>
       <text class="sync-label">最近同步</text>
       <text class="sync-time">{{lastSyncText}}</text>
     </view>
+    <text class="sync-action">重新同步</text>
   </view>
+  <view class="workbench-boundary">移动端用于查看摘要、处理提醒和进入试点；完整研究配置与批量工作仍在 Web 完成。</view>
 
   <view wx:if="{{offline}}" class="state-banner state-banner--offline">
     <text class="state-title">当前离线</text>

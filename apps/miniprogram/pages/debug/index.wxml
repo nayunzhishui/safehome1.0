@@ -1,6 +1,5 @@
 <view class="page" role="main" aria-label="开发调试">
   <view class="panel">
-    <text class="eyebrow">CloudBase Debug</text>
     <text class="title">云托管诊断</text>
 
     <view class="section">

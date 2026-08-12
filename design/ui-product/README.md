@@ -1,6 +1,6 @@
-# UIproduct 自动逐页改造控制
+# UIproduct 逐页改造与远端审查控制
 
-本目录记录 `UIproduct` 分支上的全小程序 UI 改造状态。它解决“逐页、可恢复、不可跳关”，不替代 ImageGen、Figma、微信开发者工具和最终批次真机人工验收。
+本目录记录 `UIproduct` 分支上的全小程序 UI 改造状态。网页版 GPT 先完成 ImageGen、Figma 和代码复现，Codex 再根据精确远端证据独立审查；不可行时由 Codex 按 ImageGen → Figma → 代码顺序修正。完整交接规则见 `docs/07_UI设计/网页版GPT_UIproduct执行与Codex审查规则.md`。
 
 ## 固定流程
 
@@ -8,7 +8,7 @@
 
 `truth → freeze → imagegen → image_review → figma → figma_review → implementation → loop_visual → loop_ui → loop_ux → loop_states → harness_visual → harness_component → harness_ux → harness_engineering → done`
 
-任一阶段没有证据，`scripts/ui_product_loop.py record` 都不会允许进入下一阶段。`harness_engineering` 完成后，代理完成本页证据复核即可记录 `done` 并连续进入下一页；不再逐页等待用户截图。
+任一阶段没有证据，`scripts/ui_product_loop.py record` 都不会允许进入下一阶段。网页版 GPT 完成 `harness_engineering` 后必须推送 `UIproduct`，返回 ImageGen、带 `node-id` 的 Figma Frame、精确 commit 和验证结果。Codex 审查为 `可行` 后才记录 `done`；结论为 `需修正` 或 `阻断` 时，Codex 接管当前页修复并重新审查。
 
 第二阶段仅在全部页面第一阶段均为 `complete` 后开放：用户统一进行 Android/iOS 真机验收，逐页记录 `pass` 或 `fix_required`。发现问题后修正并回归，全部页面均有 `pass` 证据才完成最终验收。
 
@@ -43,6 +43,8 @@ Figma 长流程状态单独保存在 `design/ui-product/figma-state.json`。每�
 ## 硬门禁
 
 - 当前分支必须是 `UIproduct`。
+- 网页版 GPT 只提供分支首页不算交付；必须提供精确 commit 或 Pull Request 和带 `node-id` 的 Figma Frame。
+- Codex 修复必须创建独立 `UIproduct` 提交，禁止与网页版 GPT 同时修改同一页面或同一 Figma Frame。
 - `main_sha_at_start` 永久保存创建分支时的提交；Harness 比较 `main_sha_baseline`。只有用户明确要求在 UI worktree 合并并核对新的 `main` 后，才允许推进核准基线，同时把变更写入 `baseline_history`。
 - 用户已于 2026-08-10 明确冻结“先完成全部 UI、再统一合并 main”：逐页阶段的范围 Harness 固定比较 `main_sha_baseline`，外部 main 继续推进只记录为待集成，不阻断 UI 页面生产，也不得提前修改、切换或合并主 worktree。
 - 全部页面本地完成后，在 UIproduct worktree 一次性合并当时的 main；冲突必须同时保留 UI 记录与 main 记录。合并后更新核准基线，重跑全量真值与工程 Harness，再开放统一真机批次。
@@ -51,6 +53,6 @@ Figma 长流程状态单独保存在 `design/ui-product/figma-state.json`。每�
 - WXML 事件必须能解析到页面处理器；页面 API 调用必须能解析到现有 API client。
 - 页面源码变化后必须重新生成并复核功能真值证据。
 - 每页的 ImageGen 提示词、Figma 审查和 `code-review.md` 必须记录小字预算；不得用缩小字号解决信息密度。
-- 每页完成 `harness_engineering` 后由代理依据本地证据自审并记录 `done`，连续切换 `active_route`；不再设置逐页用户截图门禁。
+- 每页完成 `harness_engineering` 后先执行远端 Codex 审查。只有 `可行` 才记录 `done`；不可行时完成 ImageGen、Figma、代码修复闭环后重新审查。
 - 真机验收统一延期到全部页面本地完成后；在门禁开放前 `device-record` 会拒绝写入。
 - 延期不等于通过；没有截图或录屏证据不得记录 `pass`。

@@ -4,10 +4,12 @@
   <view wx:else class="detail-layout {{message.is_withdrawn ? 'detail-layout--withdrawn' : ''}}">
     <text class="detail-kicker">{{message.message_type === 'supervision_feedback' ? '人工补充反馈' : '消息提醒'}}</text>
     <text class="detail-title">{{message.title}}</text>
-    <text class="detail-time">{{message.sender_role ? '来源：研究者补充 · ' : ''}}{{message.created_at}}{{message.delivery_version ? ' · 第 ' + message.delivery_version + ' 版' : ''}}</text>
     <view class="detail-body-layout">
       <view class="detail-body-rule" aria-hidden="true"></view>
-      <text class="detail-body">{{message.is_withdrawn ? '研究者已撤回这条内容，请忽略此前版本。' : (message.body || '暂无更多内容。')}}</text>
+      <view class="detail-body-copy">
+        <text class="detail-time">{{message.sender_role ? '来源：研究者补充 · ' : ''}}{{message.created_at}}{{message.delivery_version ? ' · 第 ' + message.delivery_version + ' 版' : ''}}</text>
+        <text class="detail-body">{{message.is_withdrawn ? '研究者已撤回这条内容，请忽略此前版本。' : (message.body || '暂无更多内容。')}}</text>
+      </view>
     </view>
   </view>
 

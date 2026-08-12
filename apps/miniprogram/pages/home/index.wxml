@@ -54,7 +54,6 @@
     meta-text="{{todayJourney ? todayJourney.metaText : ''}}"
     button-label="{{todayJourney ? todayJourney.buttonLabel : '继续'}}"
     action-aria-label="{{todayJourney ? todayJourney.actionAriaLabel : '继续今天的一小步'}}"
-    boundary-notice="{{todayJourney ? todayJourney.boundaryNotice : ''}}"
     bind:action="openTodayAction"
     bind:retry="retryTodayJourney"
   />

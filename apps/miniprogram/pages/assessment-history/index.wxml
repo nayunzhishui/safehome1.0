@@ -1,11 +1,8 @@
 <view class="safe-page history-page" role="main" aria-label="测评历史记录">
   <view class="history-head">
-    <text class="page-kicker">测评记录</text>
-    <text class="page-title">回看每一次阶段性观察</text>
-    <text class="page-summary">这里保留该账号完成过的全部支持性测评。结果用于自我了解，不构成诊断或固定判断。</text>
+    <text class="page-title">测评记录</text>
     <view class="history-total">
-      <text class="total-value">{{total}}</text>
-      <text class="total-label">份已保存记录</text>
+      <text class="total-label">共 <text class="total-value">{{total}}</text> 份记录</text>
     </view>
   </view>
 
@@ -22,7 +19,7 @@
 
   <view wx:elif="{{items.length}}" class="history-list">
     <button wx:for="{{items}}" wx:key="id" class="history-row" data-id="{{item.id}}" data-worksheet-id="{{item.worksheet_id}}" bindtap="openResult">
-      <view class="record-index">{{index + 1}}</view>
+      <view class="record-mark"></view>
       <view class="record-copy">
         <text class="record-title">{{item.worksheetTitle}}</text>
         <text class="record-summary">{{item.summaryText}}</text>

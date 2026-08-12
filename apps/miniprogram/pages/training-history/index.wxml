@@ -3,7 +3,6 @@
     <view>
       <text class="page-kicker">训练记录</text>
       <text class="page-title">看见已经完成的小练习</text>
-      <text class="page-summary">这里只记录真实打卡。已完成的训练卡不会继续出现在默认推荐中，但你仍可主动再次练习。</text>
     </view>
     <view class="total-badge">
       <text class="total-value">{{total}}</text>
@@ -11,11 +10,11 @@
     </view>
   </view>
 
-  <view wx:if="{{loading}}" class="safe-card state-card">
+  <view wx:if="{{loading}}" class="state-card">
     <text class="state-title">正在读取训练记录</text>
   </view>
 
-  <view wx:elif="{{errorMessage && !items.length}}" class="safe-card state-card state-card--error">
+  <view wx:elif="{{errorMessage && !items.length}}" class="state-card state-card--error">
     <text class="state-title">记录暂时没有加载成功</text>
     <text class="state-text">{{errorMessage}}</text>
     <text class="diagnostic-copy">请求编号：{{errorDiagnostic.requestId || '未返回'}} · 服务版本：{{errorDiagnostic.serviceVersion || '未知'}}</text>
@@ -43,7 +42,7 @@
     </view>
   </view>
 
-  <view wx:else class="safe-card state-card">
+  <view wx:else class="state-card">
     <text class="state-title">还没有训练记录</text>
     <text class="state-text">完成一张训练卡并打卡后，记录会出现在这里。</text>
     <button class="safe-primary-button state-action" bindtap="goTraining">去训练中心</button>

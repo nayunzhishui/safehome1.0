@@ -1,18 +1,19 @@
 <view class="safe-page relationship-pilot-page">
-  <view class="safe-card safe-card--hero">
+  <view class="pilot-hero">
     <text class="pilot-kicker">项目试点 · 大学生关系探索</text>
     <text class="pilot-title">一次只走好当前这一步</text>
-    <text class="pilot-text">从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。</text>
   </view>
 
-  <view wx:if="{{loading}}" class="safe-card loading-card">正在读取你的探索进度...</view>
+  <view class="pilot-boundary" role="note">从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。</view>
 
-  <view wx:elif="{{roleBlocked}}" class="safe-card unavailable-card">
+  <view wx:if="{{loading}}" class="pilot-section loading-section">正在读取你的探索进度...</view>
+
+  <view wx:elif="{{roleBlocked}}" class="pilot-section unavailable-section">
     <text class="section-heading">当前仅向学生试点账号开放</text>
     <text class="pilot-text">你仍可使用情绪记录、训练卡和其它支持功能。若需参加关系探索试点，请切换到已授权的学生账号。</text>
   </view>
 
-  <view wx:elif="{{!enrollment}}" class="safe-card enrollment-card">
+  <view wx:elif="{{!enrollment}}" class="pilot-section enrollment-section">
     <view class="stage-eyebrow">第一步 · 起点测评与报名</view>
     <text class="section-heading">确认是否进入第二阶段</text>
     <text class="pilot-text">报名会关联你最近一份关系探索测评的维度、阶段性画像与报告。逐行研究数据不会显示给其他用户。</text>
@@ -38,7 +39,7 @@
       bind:action="runPrimaryAction"
     />
 
-    <view class="safe-card journey-card">
+    <view class="pilot-section journey-section">
       <text class="section-heading">五阶段探索路径</text>
       <view class="journey-list">
         <view wx:for="{{journeySteps}}" wx:key="key" class="journey-step journey-step--{{item.state}}">
@@ -51,7 +52,7 @@
       </view>
     </view>
 
-    <view class="safe-card secondary-card">
+    <view class="pilot-section secondary-section">
       <text class="section-heading">其它入口</text>
       <text class="secondary-hint">不必一次完成，可以随时回来。</text>
       <button wx:for="{{secondaryActions}}" wx:key="key" class="secondary-row" data-action="{{item.key}}" bindtap="runSecondaryAction">
@@ -62,5 +63,5 @@
   </view>
 
   <text wx:if="{{errorMessage}}" class="error-text">{{errorMessage}}</text>
-  <view class="boundary-card">所有画像和报告都只作阶段性观察，不构成诊断、人格标签、关系能力评价或疗效证明。</view>
+  <view class="boundary-note">所有画像和报告都只作阶段性观察，不构成诊断、人格标签、关系能力评价或疗效证明。</view>
 </view>

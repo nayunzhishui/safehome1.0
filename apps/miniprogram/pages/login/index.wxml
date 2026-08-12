@@ -3,8 +3,6 @@
     <view class="auth-header">
       <text class="auth-brand">SafeHome</text>
       <text class="auth-title">登录</text>
-      <view wx:if="{{mustChangePassword}}" class="auth-summary">首次登录，请先设置新密码。完成后才可继续。</view>
-      <view wx:else class="auth-summary">登录后可以查看消息、阶段性反馈和个人记录。选择一种方便的方式继续。</view>
     </view>
 
     <block wx:if="{{mustChangePassword}}">

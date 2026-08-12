@@ -1,13 +1,7 @@
 <view class="safe-page feedback-page" role="main" aria-label="支持性反馈">
-  <view class="feedback-hero safe-card safe-card--hero">
+  <view class="feedback-hero">
     <view class="hero-copy">
-      <text class="hero-title">先看见发生了什么</text>
-      <text class="hero-summary">以下内容用于自我观察和练习参考，不评价谁对谁错。</text>
-      <view class="hero-steps">
-        <text>支持性总结</text>
-        <text>一个小练习</text>
-        <text>必要时找人看</text>
-      </view>
+      <text class="hero-title">本次反馈</text>
     </view>
   </view>
 
@@ -26,7 +20,7 @@
     </view>
 
     <view class="safe-section">
-      <section-title title="本次情绪概览" subtitle="先看见主要感受和强度，不急着下结论" />
+      <section-title title="本次情绪概览" />
       <view class="overview-grid">
         <view class="overview-item">
           <text class="overview-label">主要情绪</text>
@@ -40,14 +34,14 @@
     </view>
 
     <view class="safe-section">
-      <section-title title="可能触发点" subtitle="用“可能”来看这次互动的起点" />
+      <section-title title="可能触发点" />
       <view class="trigger-card safe-card">
         <text>{{emotionOverview.trigger}}</text>
       </view>
     </view>
 
     <view class="safe-section">
-      <section-title title="互动线索" subtitle="这些只是本次记录里可以复盘的位置" />
+      <section-title title="互动线索" />
       <view class="pattern-list">
         <view class="pattern-card" wx:for="{{patternCards}}" wx:key="title">
           <text class="pattern-title">{{item.title}}</text>
@@ -69,7 +63,7 @@
     </view>
 
     <view wx:if="{{canShowTraining}}" class="safe-section">
-      <section-title title="今天先做哪一步" subtitle="一个主练习，最多两个备用选择" />
+      <section-title title="今天先做哪一步" />
       <view wx:if="{{trainingRecommendation}}" class="today-suggestion-card safe-card">
         <text class="today-suggestion-label">主练习 · {{recommendedTrainings[0].title || "一个轻量练习"}}</text>
         <text class="today-suggestion-text">{{trainingRecommendation.today_suggestion}}</text>

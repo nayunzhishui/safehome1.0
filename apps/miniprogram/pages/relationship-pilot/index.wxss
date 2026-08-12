@@ -1,33 +1,265 @@
-.relationship-pilot-page { display: grid; gap: 24rpx; padding-bottom: 48rpx; }
-.pilot-kicker, .pilot-title, .pilot-text, .section-heading, .current-stage-title, .journey-title, .journey-description, .secondary-title, .secondary-description, .error-text { display: block; }
-.pilot-kicker, .stage-eyebrow { color: var(--safe-primary-deep); font-size: 22rpx; font-weight: 800; letter-spacing: 1rpx; }
-.pilot-title { margin-top: 10rpx; color: var(--safe-title); font-size: 38rpx; font-weight: 900; line-height: 1.3; }
-.pilot-text { margin-top: 10rpx; color: var(--safe-text); font-size: 25rpx; line-height: 1.65; }
-.loading-card, .unavailable-card, .enrollment-card, .journey-card, .secondary-card { display: grid; gap: 18rpx; }
-.section-heading { color: var(--safe-title); font-size: 30rpx; font-weight: 850; }
-.consent-row { display: flex; gap: 12rpx; min-height: 88rpx; align-items: flex-start; color: var(--safe-text); font-size: 24rpx; line-height: 1.6; }
-.text-action { min-height: 88rpx; padding: 16rpx 0; border: 0; background: transparent; color: var(--safe-primary-deep); font-size: 24rpx; }
-.text-action::after, .secondary-row::after { border: 0; }
-.current-action-entry { display: block; }
-.journey-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 18rpx; }
-.current-stage-title { margin-top: 6rpx; color: var(--safe-title); font-size: 34rpx; font-weight: 900; }
-.status-chip { flex: none; padding: 8rpx 16rpx; border-radius: 999rpx; background: var(--safe-orange-soft); color: #72552f; font-size: 21rpx; }
-.journey-list { display: grid; }
-.journey-step { position: relative; display: flex; gap: 18rpx; min-height: 108rpx; }
-.journey-step:not(:last-child)::after { position: absolute; top: 48rpx; bottom: 0; left: 23rpx; width: 2rpx; background: var(--safe-border); content: ""; }
-.journey-marker { position: relative; z-index: 1; display: flex; flex: none; align-items: center; justify-content: center; width: 48rpx; height: 48rpx; border: 2rpx solid var(--safe-border); border-radius: 50%; background: var(--safe-card); color: var(--safe-muted); font-size: 22rpx; font-weight: 800; }
-.journey-step--completed .journey-marker { border-color: var(--safe-primary); background: var(--safe-primary); color: #fff; }
-.journey-step--current .journey-marker { border-color: var(--safe-primary-deep); background: var(--safe-primary-soft); color: var(--safe-primary-deep); }
-.journey-content { flex: 1; padding: 3rpx 0 24rpx; }
-.journey-title { color: var(--safe-title); font-size: 26rpx; font-weight: 800; }
-.journey-state { flex: none; color: var(--safe-muted); font-size: 20rpx; }
-.journey-step--current .journey-state { color: var(--safe-primary-deep); font-weight: 800; }
-.journey-description { margin-top: 7rpx; color: var(--safe-muted); font-size: 22rpx; line-height: 1.5; }
-.secondary-hint { color: var(--safe-muted); font-size: 22rpx; }
-.secondary-row { display: flex; min-height: 96rpx; align-items: center; justify-content: space-between; gap: 16rpx; margin: 0; padding: 14rpx 0; border: 0; border-bottom: 1rpx solid var(--safe-border); border-radius: 0; background: transparent; text-align: left; line-height: 1.4; }
-.secondary-row:last-child { border-bottom: 0; }
-.secondary-title { color: var(--safe-title); font-size: 25rpx; font-weight: 800; }
-.secondary-description { margin-top: 5rpx; color: var(--safe-muted); font-size: 21rpx; }
-.secondary-arrow { color: var(--safe-primary-deep); font-size: 38rpx; font-weight: 400; }
-.boundary-card { padding: 20rpx; border: 1rpx solid rgba(184, 127, 45, 0.3); border-radius: var(--safe-radius-sm); background: var(--safe-orange-soft); color: var(--safe-text); font-size: 23rpx; line-height: 1.6; }
-.error-text { color: var(--safe-danger); font-size: 24rpx; }
+.relationship-pilot-page {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 56rpx;
+}
+
+.pilot-kicker,
+.pilot-title,
+.pilot-text,
+.section-heading,
+.journey-title,
+.journey-description,
+.secondary-title,
+.secondary-description,
+.error-text {
+  display: block;
+}
+
+.pilot-hero {
+  padding: 18rpx 0 38rpx;
+  border-bottom: 1rpx solid var(--safe-border);
+  text-align: center;
+}
+
+.pilot-kicker,
+.stage-eyebrow {
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+}
+
+.pilot-title {
+  margin-top: 14rpx;
+  color: var(--safe-title);
+  font-size: 42rpx;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.pilot-boundary {
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid var(--safe-border);
+  color: var(--safe-text);
+  font-size: 28rpx;
+  line-height: 1.65;
+}
+
+.pilot-text {
+  margin-top: 14rpx;
+  color: var(--safe-text);
+  font-size: 28rpx;
+  line-height: 1.65;
+}
+
+.pilot-section {
+  padding: 36rpx 0;
+  border-bottom: 1rpx solid var(--safe-border);
+}
+
+.loading-section {
+  color: var(--safe-text);
+  font-size: 28rpx;
+}
+
+.unavailable-section,
+.enrollment-section,
+.journey-section,
+.secondary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.section-heading {
+  color: var(--safe-title);
+  font-size: 32rpx;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.consent-row {
+  display: flex;
+  gap: 14rpx;
+  min-height: 88rpx;
+  align-items: flex-start;
+  color: var(--safe-text);
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.text-action {
+  min-height: 88rpx;
+  margin: 0;
+  padding: 18rpx 0;
+  border: 0;
+  background: transparent;
+  color: var(--safe-primary-deep);
+  font-size: 26rpx;
+  text-align: left;
+}
+
+.text-action::after,
+.secondary-row::after {
+  border: 0;
+}
+
+.current-action-entry {
+  display: block;
+  margin-top: 32rpx;
+}
+
+.journey-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.journey-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.journey-step {
+  position: relative;
+  display: flex;
+  gap: 20rpx;
+  min-height: 122rpx;
+}
+
+.journey-step:not(:last-child)::after {
+  position: absolute;
+  top: 54rpx;
+  bottom: 0;
+  left: 25rpx;
+  width: 4rpx;
+  border-radius: 4rpx;
+  background: var(--safe-border);
+  content: "";
+}
+
+.journey-step--completed:not(:last-child)::after,
+.journey-step--current:not(:last-child)::after {
+  background: rgba(43, 112, 89, 0.32);
+}
+
+.journey-marker {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 52rpx;
+  height: 52rpx;
+  border: 2rpx solid var(--safe-border);
+  border-radius: 18rpx;
+  background: var(--safe-bg);
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.journey-step--completed .journey-marker {
+  border-color: var(--safe-primary);
+  background: var(--safe-primary);
+  color: #fff;
+}
+
+.journey-step--current .journey-marker {
+  border: 4rpx solid var(--safe-primary-deep);
+  background: var(--safe-primary-soft);
+  color: var(--safe-primary-deep);
+  box-shadow: 0 0 0 8rpx rgba(55, 126, 102, 0.1);
+}
+
+.journey-content {
+  flex: 1;
+  padding: 5rpx 0 28rpx;
+}
+
+.journey-title {
+  color: var(--safe-title);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.journey-state {
+  flex: none;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+}
+
+.journey-step--current .journey-state {
+  color: var(--safe-primary-deep);
+  font-weight: 700;
+}
+
+.journey-description {
+  margin-top: 8rpx;
+  color: var(--safe-muted);
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.secondary-hint {
+  color: var(--safe-muted);
+  font-size: 25rpx;
+}
+
+.secondary-row {
+  display: flex;
+  min-height: 100rpx;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin: 0;
+  padding: 18rpx 0;
+  border: 0;
+  border-bottom: 1rpx solid var(--safe-border);
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+  line-height: 1.45;
+}
+
+.secondary-row:last-child {
+  border-bottom: 0;
+}
+
+.secondary-title {
+  color: var(--safe-title);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.secondary-description {
+  margin-top: 6rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+}
+
+.secondary-arrow {
+  color: var(--safe-primary-deep);
+  font-size: 40rpx;
+  font-weight: 400;
+}
+
+.boundary-note {
+  margin-top: 28rpx;
+  padding: 24rpx;
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-orange-soft);
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.error-text {
+  margin-top: 24rpx;
+  color: var(--safe-danger);
+  font-size: 26rpx;
+}

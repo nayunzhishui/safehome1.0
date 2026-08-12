@@ -1,22 +1,18 @@
 <view class="page" role="main" aria-label="训练打卡">
   <view class="hero">
-    <text class="eyebrow">第四步</text>
-    <text class="title">记录一次尝试</text>
-    <text class="summary">练完后简单复盘一下，帮助你观察练习前后的变化。</text>
+    <text class="title">练习打卡</text>
   </view>
 
   <view class="panel">
     <view class="tip-box">
       <text class="tip-title">这是一次轻复盘</text>
-      <text class="tip-text">只记录你有没有试着练一次，以及练习前后感受有没有一点变化。隔几天再练也可以，不需要评价自己做得好不好。</text>
+      <text class="tip-text">记录这次尝试和练习前后的感受变化即可。</text>
     </view>
 
     <view class="selected-card">
       <text class="label">本次练习</text>
       <text class="card-title">{{cardTitle}}</text>
       <view class="meta-row">
-        <text wx:if="{{cardId}}" class="meta-pill">训练卡：{{cardId}}</text>
-        <text wx:if="{{diaryId}}" class="meta-pill">关联记录：{{diaryId}}</text>
       </view>
     </view>
 

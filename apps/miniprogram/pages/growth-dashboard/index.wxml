@@ -1,9 +1,10 @@
 <view class="safe-page growth-dashboard-page">
-  <view class="safe-card growth-hero">
-    <text class="growth-kicker">四条线索，各自保留含义</text>
-    <text class="growth-title">我的成长仪表盘</text>
-    <text class="growth-copy">记录与练习、测评、关系探索和研究者反馈分开查看。这里不生成单一成长分数。</text>
+  <view class="growth-hero">
+    <text class="growth-kicker">四类线索</text>
+    <text class="growth-title">我的成长</text>
   </view>
+
+  <view class="meaning-boundary">四类线索分别查看，不合成总分</view>
 
   <page-state wx:if="{{loading}}" kind="loading" title="正在整理已保存的线索" description="四类信息会分别读取，不会合并成总分。" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="成长线索暂时没有读取成功" description="{{errorMessage}}" action-label="重新读取" action-aria-label="重新读取成长线索" bind:action="loadGrowth" />
@@ -20,12 +21,11 @@
       >
         <text class="rail-count">{{item.count}}</text>
         <text class="rail-label">{{item.label}}</text>
-        <text class="rail-hint">{{item.hint}}</text>
       </button>
     </view>
 
     <view wx:if="{{activeSection === 'activity'}}" class="section-stack">
-      <view class="safe-card next-step-card">
+      <view class="next-step-card">
         <text class="section-eyebrow">现在可以做什么</text>
         <text class="next-step-copy">{{growth.summary.next_step}}</text>
         <view class="action-row">
@@ -34,7 +34,7 @@
         </view>
       </view>
 
-      <view class="safe-card dashboard-section">
+      <view class="dashboard-section">
         <view class="section-heading">
           <view><text class="section-title">情绪温度</text><text class="section-copy">1—10分，只与同一量尺的记录比较</text></view>
           <status-pill label="{{thermometer.length}} 次" tone="info" aria-label="情绪温度记录{{thermometer.length}}次" />
@@ -48,7 +48,7 @@
         <page-state wx:else kind="empty" title="还没有温度记录" description="第一次记录只作为起点，不判断趋势。" />
       </view>
 
-      <view class="safe-card dashboard-section">
+      <view class="dashboard-section">
         <view class="section-heading"><view><text class="section-title">记录与练习时间线</text><text class="section-copy">只呈现做过的事情，不把次数写成改善</text></view></view>
         <view wx:if="{{activityTimeline.length}}" class="timeline-list">
           <view wx:for="{{activityTimeline}}" wx:key="id" class="timeline-item">
@@ -61,7 +61,7 @@
     </view>
 
     <view wx:elif="{{activeSection === 'assessments'}}" class="section-stack">
-      <view class="safe-card dashboard-section">
+      <view class="dashboard-section">
         <view class="section-heading"><view><text class="section-title">支持性测评</text><text class="section-copy">每份量表独立成组，不把不同分值放在同一条曲线上</text></view></view>
         <view wx:if="{{assessmentGroups.length}}" class="assessment-list">
           <view wx:for="{{assessmentGroups}}" wx:key="worksheet_id" class="assessment-group">
@@ -77,7 +77,7 @@
     </view>
 
     <view wx:elif="{{activeSection === 'relationship'}}" class="section-stack">
-      <view class="safe-card relationship-card">
+      <view class="relationship-card">
         <text class="section-eyebrow">关系探索单独呈现</text>
         <text class="relationship-title">不与日记次数或测评分值合并</text>
         <view class="relationship-facts">
@@ -87,7 +87,7 @@
         </view>
         <button class="section-action relationship-action" bindtap="openRelationship">{{relationshipSummary.available ? '查看关系探索详情' : '了解关系探索'}}</button>
       </view>
-      <view class="safe-card dashboard-section">
+      <view class="dashboard-section">
         <view class="section-heading"><view><text class="section-title">关系探索时间线</text><text class="section-copy">这里只显示任务、连续记录和阶段报告的事实</text></view></view>
         <view wx:if="{{relationshipTimeline.length}}" class="timeline-list">
           <view wx:for="{{relationshipTimeline}}" wx:key="id" class="timeline-item">
@@ -100,11 +100,11 @@
     </view>
 
     <view wx:else class="section-stack">
-      <view class="safe-card feedback-summary-card">
+      <view class="feedback-summary-card">
         <view><text class="section-eyebrow">共同核对</text><text class="relationship-title">研究者反馈 {{feedbackSummary.count || 0}} 条</text></view>
         <status-pill label="{{feedbackSummary.unread_count || 0}} 条未读" tone="warning" aria-label="研究者反馈未读{{feedbackSummary.unread_count || 0}}条" />
       </view>
-      <view class="safe-card dashboard-section">
+      <view class="dashboard-section">
         <view wx:if="{{feedbackTimeline.length}}" class="timeline-list">
           <view wx:for="{{feedbackTimeline}}" wx:key="id" class="timeline-item">
             <view class="timeline-dot timeline-dot--feedback"></view>

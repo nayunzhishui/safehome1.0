@@ -5,12 +5,8 @@
 }
 
 .diary-hero {
-  position: relative;
-  min-height: 230rpx;
-  overflow: hidden;
-  border-radius: 28rpx;
-  border-left: 8rpx solid var(--safe-primary);
-  background: linear-gradient(135deg, rgba(244, 249, 240, 0.98), rgba(255, 253, 248, 0.98));
+  padding: 24rpx 0 8rpx;
+  text-align: center;
 }
 
 .hero-copy {
@@ -22,18 +18,10 @@
 .hero-title {
   display: block;
   color: var(--safe-title);
-  font-size: 42rpx;
-  font-weight: 800;
+  font-size: 46rpx;
+  font-weight: 900;
   line-height: 1.28;
   letter-spacing: 0;
-}
-
-.hero-summary {
-  display: block;
-  margin-top: 14rpx;
-  color: var(--safe-text);
-  font-size: 27rpx;
-  line-height: 1.62;
 }
 
 .goal-hint {
@@ -49,32 +37,11 @@
   font-weight: 700;
 }
 
-.hero-steps {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12rpx;
-  margin-top: 24rpx;
-}
-
-.hero-steps text {
-  display: inline-flex;
-  align-items: center;
-  min-height: 46rpx;
-  padding: 0 16rpx;
-  border: 1rpx solid rgba(87, 139, 95, 0.16);
-  border-radius: var(--safe-radius-pill);
-  background: rgba(255, 253, 248, 0.76);
-  color: var(--safe-primary-deep);
-  font-size: 22rpx;
-  font-weight: 750;
-}
-
 .privacy-note {
   display: block;
   margin-top: 18rpx;
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.55;
 }
 
@@ -85,11 +52,22 @@
 }
 
 .diary-section {
+  position: relative;
   padding: 30rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 24rpx;
+  border-radius: 16rpx;
   background: rgba(255, 253, 248, 0.96);
-  box-shadow: 0 10rpx 24rpx rgba(52, 66, 58, 0.06);
+  box-shadow: none;
+}
+
+.diary-section::before {
+  content: "";
+  display: block;
+  width: 52rpx;
+  height: 8rpx;
+  margin-bottom: 18rpx;
+  border-radius: 999rpx;
+  background: var(--safe-primary-deep);
 }
 
 .more-section {
@@ -269,7 +247,7 @@
   display: block;
   margin-bottom: 14rpx;
   color: var(--safe-muted);
-  font-size: 23rpx;
+  font-size: 24rpx;
   line-height: 1.55;
 }
 

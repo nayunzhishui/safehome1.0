@@ -1,10 +1,9 @@
 .course-card {
   width: 100%;
-  display: flex;
-  gap: 18rpx;
-  padding: 24rpx;
+  display: block;
+  padding: 28rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
+  border-radius: 20rpx;
   background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
   text-align: left;
@@ -14,42 +13,42 @@
   transform: scale(0.99);
 }
 
-.course-cover {
+.course-content {
   position: relative;
-  width: 10rpx;
-  min-height: 142rpx;
-  flex: 0 0 auto;
-  overflow: hidden;
-  border-radius: 999rpx;
-  background: var(--safe-primary);
+  min-width: 0;
 }
 
-.course-content {
-  min-width: 0;
-  flex: 1;
+.course-bookmark {
+  width: 52rpx;
+  height: 10rpx;
+  margin-bottom: 18rpx;
+  border-radius: 999rpx;
+  background: var(--safe-primary-deep);
 }
 
 .course-title-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 12rpx;
 }
 
 .course-title {
+  flex: 1;
   color: var(--safe-title);
   font-size: 29rpx;
   font-weight: 800;
 }
 
 .course-category {
-  min-height: 38rpx;
+  min-height: 42rpx;
   display: inline-flex;
   align-items: center;
   padding: 0 12rpx;
   border-radius: var(--safe-radius-pill);
   background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
-  font-size: 20rpx;
+  font-size: 24rpx;
 }
 
 .course-description {
@@ -66,7 +65,7 @@
   gap: 12rpx;
   margin-top: 16rpx;
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
 }
 
 .progress-track {
@@ -85,7 +84,7 @@
 
 .course-action {
   display: inline-flex;
-  margin-top: 14rpx;
+  flex: 0 0 auto;
   color: var(--safe-primary-deep);
   font-size: 24rpx;
   font-weight: 700;

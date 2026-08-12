@@ -1,57 +1,74 @@
 <view class="safe-page getting-page" role="main" aria-label="三步开始">
-  <view class="intro-card">
-    <text class="intro-kicker">新手说明</text>
-    <text class="intro-title">用“三步”完成一次最小陪伴练习</text>
-    <text class="intro-text">当亲子互动里出现压力时，可以先把它看成一条“情绪反射弧”。这里不是给谁下结论，而是帮助你把反应链条看清楚，再选择一个可练习的小位置。</text>
-  </view>
+  <view class="intro-block">
+    <text class="intro-kicker">三步开始</text>
+    <text class="intro-title">从一件具体小事开始</text>
 
-  <view class="section-card">
-    <text class="section-kicker">它是什么</text>
-    <text class="section-title">情绪反射弧是一条可观察链路</text>
-    <text class="section-text">压力不是只来自事件本身，也会经过想法、身体感觉和行为反应。把这条链路拆开看，才更容易找到下一次能调整的一小步。</text>
-  </view>
-
-  <view class="section-card">
-    <text class="section-kicker">为什么先记录具体事件</text>
-    <view wx:for="{{eventReasons}}" wx:key="*this" class="reason-row">
-      <text class="reason-index">{{index + 1}}</text>
-      <text class="reason-text">{{item}}</text>
-    </view>
-  </view>
-
-  <view class="section-card">
-    <text class="section-kicker">视觉链路</text>
-    <text class="section-title">从触发到回应：把反应链条分步看清</text>
-    <view class="arc-chain">
-      <view wx:for="{{arcNodes}}" wx:key="*this" class="arc-step">
-        <text class="arc-index">{{index + 1}}</text>
-        <text class="arc-node">{{item}}</text>
+    <view class="path-summary" aria-label="写一个片段、标一个位置、做一个动作">
+      <view class="path-item">
+        <text class="path-number">01</text>
+        <text class="path-label">写一个片段</text>
+      </view>
+      <view class="path-item">
+        <text class="path-number">02</text>
+        <text class="path-label">标一个位置</text>
+      </view>
+      <view class="path-item">
+        <text class="path-number">03</text>
+        <text class="path-label">做一个动作</text>
       </view>
     </view>
   </view>
 
-  <view class="step-list">
-    <view wx:for="{{exerciseSteps}}" wx:key="title" class="step-card">
-      <text class="step-title">{{item.title}}</text>
-      <text class="step-text">{{item.text}}</text>
-      <view wx:if="{{index === 1}}" class="step-action-guide">
-        <text>在反馈里找到一个位置</text>
-        <text>记录一次</text>
-        <text>去训练中心练一个小动作</text>
+  <view class="practice-list">
+    <view class="practice-step">
+      <text class="step-number" aria-hidden="true">01</text>
+      <view class="step-content">
+        <text class="step-title">写一个片段</text>
+        <text class="step-text">{{exerciseSteps[0].text}}</text>
+        <view class="reason-list">
+          <view wx:for="{{eventReasons}}" wx:key="*this" class="reason-row">
+            <text class="reason-dot" aria-hidden="true">•</text>
+            <text class="reason-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="practice-step">
+      <text class="step-number" aria-hidden="true">02</text>
+      <view class="step-content">
+        <text class="step-title">标一个位置</text>
+        <text class="step-text">{{exerciseSteps[1].text}}</text>
+        <text class="arc-intro">把事件放进以下七个位置，梳理发生的全过程：</text>
+        <view class="arc-chain" role="list" aria-label="情绪反射弧七个位置">
+          <view wx:for="{{arcNodes}}" wx:key="*this" class="arc-row" role="listitem">
+            <text class="arc-index">{{index + 1}}</text>
+            <text class="arc-node">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="practice-step practice-step-last">
+      <text class="step-number" aria-hidden="true">03</text>
+      <view class="step-content">
+        <text class="step-title">做一个动作</text>
+        <text class="step-text">{{exerciseSteps[2].text}}</text>
+        <text class="step-route">记录一次 → 查看反馈线索 → 去训练中心练一个小动作</text>
       </view>
     </view>
   </view>
 
-  <view class="boundary-card">
+  <view class="boundary-block" aria-label="使用边界">
     <text class="boundary-title">使用边界</text>
     <view wx:for="{{boundaries}}" wx:key="*this" class="boundary-row">
-      <text class="boundary-dot"></text>
+      <text class="boundary-dot" aria-hidden="true">•</text>
       <text class="boundary-text">{{item}}</text>
     </view>
   </view>
 
   <view class="action-row">
-    <button class="primary-action" bindtap="startDiary">记录一次</button>
-    <button class="secondary-action" bindtap="openTraining">去训练中心</button>
+    <button class="safe-primary-button primary-action" bindtap="startDiary">记录一次</button>
+    <button class="safe-outline-button secondary-action" bindtap="openTraining">去训练中心</button>
   </view>
 </view>

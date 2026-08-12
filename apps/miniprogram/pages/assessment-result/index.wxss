@@ -3,8 +3,9 @@
 }
 
 .result-head {
-  padding: 4rpx 0 16rpx;
+  padding: 10rpx 0 18rpx;
   border-bottom: 1rpx solid var(--safe-border);
+  text-align: center;
 }
 
 .result-title,
@@ -15,7 +16,7 @@
 
 .result-title {
   color: var(--safe-title);
-  font-size: 34rpx;
+  font-size: 42rpx;
   font-weight: 800;
   line-height: 1.35;
 }
@@ -30,13 +31,13 @@
 .risk-strip {
   margin-top: 20rpx;
   padding: 18rpx 20rpx;
-  border-left: 5rpx solid var(--safe-warning);
+  border: 1rpx solid rgba(192, 131, 59, 0.3);
   border-radius: var(--safe-radius-sm);
   background: var(--safe-orange-soft);
 }
 
 .risk-strip.high {
-  border-left-color: var(--safe-danger);
+  border-color: rgba(196, 75, 75, 0.32);
   background: #fff0f0;
 }
 
@@ -81,7 +82,7 @@
 .profile-confidence {
   margin-top: 6rpx;
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
 }
 
 .profile-warning {
@@ -98,7 +99,7 @@
 .profile-meta {
   margin-top: 4rpx;
   color: var(--safe-muted);
-  font-size: 21rpx;
+  font-size: 24rpx;
 }
 
 .profile-explanation {
@@ -152,7 +153,7 @@
   border-radius: 50%;
   background: #e8f0ea;
   color: var(--safe-primary-deep);
-  font-size: 18rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }
 
@@ -168,7 +169,7 @@
 .legend-label {
   min-width: 0;
   color: var(--safe-text);
-  font-size: 21rpx;
+  font-size: 24rpx;
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
@@ -180,11 +181,22 @@
 }
 
 .profile-questions {
+  position: relative;
   margin-top: 20rpx;
   padding: 16rpx 18rpx;
-  border-left: 4rpx solid var(--safe-primary);
+  border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-sm);
   background: var(--safe-primary-soft);
+}
+
+.profile-questions::before {
+  content: "";
+  display: block;
+  width: 42rpx;
+  height: 6rpx;
+  margin-bottom: 12rpx;
+  border-radius: 999rpx;
+  background: var(--safe-primary);
 }
 
 .profile-question {
@@ -205,7 +217,7 @@
 
 .step-label {
   color: var(--safe-primary-deep);
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }
 
@@ -219,7 +231,7 @@
 .profile-boundary {
   margin-top: 16rpx;
   color: var(--safe-muted);
-  font-size: 21rpx;
+  font-size: 24rpx;
   line-height: 1.55;
 }
 
@@ -251,7 +263,7 @@
   justify-content: center;
   gap: 28rpx;
   color: var(--safe-text);
-  font-size: 22rpx;
+  font-size: 24rpx;
 }
 
 .dimension-legend-item {
@@ -275,7 +287,7 @@
   border-radius: var(--safe-radius-sm);
   background: #f3f7f4;
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.55;
 }
 
@@ -344,7 +356,7 @@
 .dimension-meta-row {
   margin-top: 10rpx;
   color: var(--safe-muted);
-  font-size: 20rpx;
+  font-size: 24rpx;
   line-height: 1.45;
 }
 
@@ -352,7 +364,7 @@
   display: block;
   margin-top: 10rpx;
   color: var(--safe-text);
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.55;
 }
 
@@ -384,7 +396,7 @@
   border-radius: var(--safe-radius-pill);
   background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
-  font-size: 20rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }
 
@@ -402,7 +414,7 @@
   display: block;
   margin-top: 4rpx;
   color: var(--safe-muted);
-  font-size: 23rpx;
+  font-size: 24rpx;
   line-height: 1.55;
 }
 

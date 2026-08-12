@@ -1,10 +1,6 @@
 <view class="safe-page safe-page--with-tabbar course-page" role="main" aria-label="课程列表">
-  <view class="course-hero safe-card safe-card--hero">
-    <view class="hero-copy">
-      <text class="hero-kicker">练习内容目录</text>
-      <text class="hero-title">按需要慢慢看</text>
-      <text class="hero-summary">这里整理一些陪伴练习相关内容。可以先选一个主题看一小节，不需要一次学完。</text>
-    </view>
+  <view class="course-hero">
+    <text class="hero-title">课程</text>
   </view>
 
   <view class="safe-section">
@@ -13,12 +9,12 @@
         <text class="progress-number">本周已查看 {{weeklyProgress.learnedLessons}} 小节</text>
         <text class="progress-text">{{weeklyProgress.suggestion}}</text>
       </view>
-      <view class="progress-mark">轻量</view>
+      <view class="progress-mark" aria-hidden="true"></view>
     </view>
   </view>
 
   <view class="safe-section">
-    <section-title title="内容主题" subtitle="按当前最需要的主题选择，不需要按顺序完成" />
+    <section-title title="内容主题" />
     <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="category-list">
         <button
@@ -48,7 +44,7 @@
   </view>
 
   <view wx:if="{{!loading && !errorMessage}}" class="safe-section">
-    <section-title title="可选内容" subtitle="更像说明和练习参考，不是必须完成的课程任务" />
+    <section-title title="可选内容" />
     <view class="course-list">
       <course-card
         wx:for="{{visibleCourses}}"

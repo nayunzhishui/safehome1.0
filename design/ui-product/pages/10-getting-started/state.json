@@ -1,0 +1,30 @@
+{
+  "route": "pages/getting-started/index",
+  "title": "三步开始",
+  "status": "freeze_complete",
+  "scope": {
+    "frontendOnly": true,
+    "backendChanges": false,
+    "apiChanges": false,
+    "databaseChanges": false
+  },
+  "completed": [
+    "truth",
+    "freeze"
+  ],
+  "nextGate": "imagegen",
+  "handoff": {
+    "executor": "web_chatgpt",
+    "reviewer": "codex",
+    "existingImagegenCandidate": "assets/imagegen-default-v1.png",
+    "candidateStatus": "reference_only_not_recorded_as_passed",
+    "requiredReturn": [
+      "imagegen_evidence",
+      "figma_node_url",
+      "github_commit_or_pr",
+      "verification_results"
+    ],
+    "codexRepairWhenNotFeasible": true
+  },
+  "deviceAcceptance": "deferred_until_all_pages_local_complete"
+}

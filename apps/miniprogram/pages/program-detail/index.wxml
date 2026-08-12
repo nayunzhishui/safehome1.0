@@ -2,11 +2,20 @@
   <view class="safe-card hero-card">
     <text class="program-kicker">项目测试</text>
     <text class="program-title">{{program.title}}</text>
-    <text class="program-summary">{{program.boundary_notice}}</text>
+  </view>
+
+  <view class="program-boundary" role="note">{{program.boundary_notice}}</view>
+
+  <view class="program-meta-row">
     <text class="protocol-status">{{program.previewLabel}} · 方案 {{program.protocol_version}}</text>
     <view class="construct-row">
       <text wx:for="{{program.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
     </view>
+  </view>
+
+  <view wx:if="{{previewMode}}" class="preview-readonly">
+    <view class="editorial-marker"></view>
+    <text class="preview-readonly-copy">研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。</text>
   </view>
 
   <view class="safe-card protocol-card">
@@ -56,7 +65,6 @@
   </scroll-view>
 
   <view class="safe-card session-card" wx:if="{{selectedSession}}">
-    <view wx:if="{{previewMode}}" class="preview-readonly">研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。</view>
     <text class="session-title">{{selectedSession.title}}</text>
     <text class="session-objective">{{selectedSession.objective}}</text>
     <text class="session-meta">预计 {{selectedSession.duration_minutes}} 分钟</text>

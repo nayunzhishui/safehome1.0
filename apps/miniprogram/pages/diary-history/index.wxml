@@ -1,7 +1,6 @@
 <view class="safe-page diary-history-page" role="main" aria-label="情绪记录">
   <view class="history-header">
-    <text class="history-title">最近保存的记录</text>
-    <text class="history-description">按保存时间查看已经记录的具体情绪事件。</text>
+    <text class="history-title">情绪记录</text>
     <text class="history-count">{{loading ? '正在读取' : (errorMessage ? (errorKind === 'network' ? '网络不可用' : '读取失败') : '当前显示 ' + records.length + ' 条')}}</text>
   </view>
 

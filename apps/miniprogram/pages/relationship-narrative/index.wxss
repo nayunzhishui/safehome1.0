@@ -1,9 +1,90 @@
-.narrative-page { display: grid; gap: 20rpx; padding-bottom: 48rpx; }
-.narrative-card { display: grid; gap: 12rpx; margin-bottom: 18rpx; }
-.narrative-kicker, .narrative-title, .narrative-copy, .section-title { display: block; }
-.narrative-kicker { color: var(--safe-primary-deep); font-size: 22rpx; font-weight: 800; }
-.narrative-title { color: var(--safe-title); font-size: 36rpx; font-weight: 900; }
-.section-title { margin-top: 8rpx; color: var(--safe-title); font-size: 28rpx; font-weight: 850; }
-.narrative-copy { color: var(--safe-text); font-size: 24rpx; line-height: 1.65; }
-.boundary-card { padding: 20rpx; border: 1rpx solid rgba(184, 127, 45, 0.3); border-radius: var(--safe-radius-sm); background: var(--safe-orange-soft); color: var(--safe-text); font-size: 23rpx; line-height: 1.6; }
-.error-card { color: var(--safe-danger); }
+.narrative-page {
+  display: grid;
+  gap: 0;
+  padding-bottom: 48rpx;
+}
+
+.narrative-kicker,
+.narrative-title,
+.narrative-copy,
+.section-title,
+.starting-label {
+  display: block;
+}
+
+.narrative-head {
+  padding: 18rpx 0 32rpx;
+  text-align: center;
+}
+
+.narrative-kicker {
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.narrative-title {
+  margin-top: 8rpx;
+  color: var(--safe-title);
+  font-size: 46rpx;
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.starting-profile {
+  padding: 24rpx;
+  border-radius: var(--safe-radius-sm);
+  background: var(--safe-primary-soft);
+}
+
+.starting-label {
+  margin-bottom: 8rpx;
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.narrative-card {
+  display: grid;
+  gap: 16rpx;
+  padding: 36rpx 0;
+  border-bottom: 1rpx solid var(--safe-border);
+}
+
+.section-title {
+  color: var(--safe-title);
+  font-size: 32rpx;
+  font-weight: 850;
+  line-height: 1.4;
+}
+
+.narrative-copy {
+  color: var(--safe-text);
+  font-size: 28rpx;
+  line-height: 1.7;
+}
+
+.next-task-heading {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.bamboo-corner {
+  width: 7rpx;
+  height: 40rpx;
+  flex: none;
+  border-radius: 6rpx;
+  background: var(--safe-primary);
+}
+
+.boundary-card {
+  margin-top: 32rpx;
+  padding: 24rpx;
+  border-top: 2rpx solid var(--safe-orange);
+  background: var(--safe-orange-soft);
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
