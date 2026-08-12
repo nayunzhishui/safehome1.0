@@ -1,7 +1,11 @@
 <view class="safe-page quality-page" role="main" aria-label="治疗性评估质量监督与更正">
   <view class="quality-hero">
-    <text class="quality-kicker">支持性评估 · 质量记录</text>
     <text class="quality-title">质量与更正</text>
+  </view>
+
+  <view wx:if="{{!loading && !runtime && !productionGate && !cases.length && !reviews.length && !incidents.length && !errorMessage}}" class="state-card">
+    <text class="state-title">当前没有可处理的质量记录</text>
+    <text class="state-copy">有可查看的评估或更正记录后，会显示在这里。</text>
   </view>
 
   <view wx:if="{{runtime}}" class="runtime-card {{runtime.paused ? 'runtime-card--paused' : ''}}">

@@ -4,8 +4,8 @@
 
 .weekly-hero {
   position: relative;
-  min-height: 92rpx;
   overflow: hidden;
+  padding: 8rpx 0 16rpx;
   text-align: center;
 }
 

@@ -1,6 +1,5 @@
 <view class="safe-page growth-page">
   <view class="growth-hero">
-    <text class="growth-kicker">变化记录，不是疗效证明</text>
     <text class="growth-title">关系探索成长记录</text>
   </view>
 
@@ -58,10 +57,7 @@
           <button class="text-action" bindtap="showAllTimeline">查看全部 ›</button>
         </view>
         <view wx:if="{{recentTimeline.length}}" class="timeline-list">
-          <view wx:for="{{recentTimeline}}" wx:key="id" class="timeline-row">
-            <text class="timeline-dot"></text>
-            <view class="timeline-content"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.typeLabel}}</text></view><text class="timeline-meta">{{item.dateText}} · {{item.summary}}</text></view>
-          </view>
+          <timeline-record wx:for="{{recentTimeline}}" wx:key="id" item="{{item}}" tone="relationship" />
         </view>
         <view wx:else class="empty-state">还没有时间线记录，可以先写下今天的一小步。</view>
       </view>
@@ -71,10 +67,7 @@
       <view class="section-heading"><view><text class="section-title">成长时间线</text><text class="section-note">按记录类型查看，不急于解释趋势</text></view></view>
       <scroll-view scroll-x class="filter-scroll"><view class="filter-row"><button wx:for="{{timelineFilters}}" wx:key="key" class="filter-chip {{timelineFilter === item.key ? 'filter-chip--active' : ''}}" data-key="{{item.key}}" bindtap="selectTimelineFilter">{{item.label}}</button></view></scroll-view>
       <view wx:if="{{filteredTimeline.length}}" class="timeline-list timeline-list--full">
-        <view wx:for="{{filteredTimeline}}" wx:key="id" class="timeline-row">
-          <text class="timeline-dot"></text>
-          <view class="timeline-content"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.typeLabel}}</text></view><text class="timeline-meta">{{item.dateText}} · {{item.summary}}</text></view>
-        </view>
+        <timeline-record wx:for="{{filteredTimeline}}" wx:key="id" item="{{item}}" tone="relationship" />
       </view>
       <view wx:else class="empty-state">这一类还没有记录。</view>
     </view>

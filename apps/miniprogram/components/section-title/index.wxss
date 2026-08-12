@@ -13,12 +13,35 @@
 }
 
 .section-accent {
-  width: 6rpx;
-  height: 30rpx;
+  width: 10rpx;
+  height: 38rpx;
   flex: 0 0 auto;
-  margin-top: 4rpx;
+  margin-top: 1rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-accent__segment {
+  width: 6rpx;
   border-radius: var(--safe-radius-pill);
   background: var(--safe-primary);
+}
+
+.section-accent__segment--top {
+  height: 13rpx;
+}
+
+.section-accent__joint {
+  width: 10rpx;
+  height: 4rpx;
+  margin: 2rpx 0;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary-deep);
+}
+
+.section-accent__segment--bottom {
+  height: 17rpx;
 }
 
 .section-title-text,

@@ -126,10 +126,7 @@
 }
 
 .entry-title,
-.entry-subtitle,
-.summary-detail,
-.summary-next,
-.summary-boundary {
+.entry-subtitle {
   display: block;
 }
 
@@ -374,25 +371,6 @@
 .summary-entry--expanded {
   align-items: flex-start;
   padding: 24rpx 0;
-}
-
-.summary-detail,
-.summary-next,
-.summary-boundary {
-  margin-top: 10rpx;
-  color: var(--safe-muted);
-  font-size: 22rpx;
-  line-height: 1.55;
-}
-
-.summary-next {
-  color: var(--safe-title);
-  font-weight: 700;
-}
-
-.summary-boundary {
-  padding-top: 10rpx;
-  border-top: 1rpx solid var(--safe-border);
 }
 
 .home-section > page-state {

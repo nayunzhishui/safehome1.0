@@ -7,7 +7,14 @@
 }
 
 .page-head {
+  min-height: 0;
+  display: block;
   padding: 22rpx 0 8rpx;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   text-align: center;
 }
 
@@ -95,82 +102,16 @@
   padding-bottom: 34rpx;
 }
 
-.thermometer-visual {
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  gap: 18rpx;
-  min-width: 0;
-}
-
-.thermometer-scale {
-  height: 396rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  color: var(--safe-muted);
-  font-size: 24rpx;
-  line-height: 1;
-}
-
-.thermometer-shell {
-  width: 108rpx;
-  min-height: 396rpx;
-  display: flex;
-  justify-content: center;
-  touch-action: none;
-}
-
-.thermometer-track {
-  position: relative;
-  width: 58rpx;
-  height: 396rpx;
-  overflow: visible;
-  border: 1rpx solid var(--safe-border);
-  border-radius: 30rpx;
-  background: var(--safe-bg-leaf);
-}
-
-.thermometer-fill {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  min-height: 10%;
-  border-radius: 30rpx;
-  background: var(--safe-primary);
-}
-
-.thermometer-marker {
-  position: absolute;
-  left: 50%;
-  width: 70rpx;
-  height: 70rpx;
-  margin-bottom: -35rpx;
-  margin-left: -35rpx;
-  border: 6rpx solid #ffffff;
-  border-radius: 50%;
-  background: var(--safe-primary);
-  box-shadow: 0 4rpx 12rpx rgba(52, 66, 58, 0.12);
-}
-
 .thermometer-actions {
   padding-left: 30rpx;
   border-left: 1rpx solid var(--safe-border);
-}
-
-.step-label {
-  color: var(--safe-muted);
-  font-size: 26rpx;
-  line-height: 1.5;
 }
 
 .step-button-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18rpx;
-  margin-top: 22rpx;
+  margin-top: 0;
 }
 
 .step-button {
@@ -290,6 +231,13 @@
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-sm);
   background: var(--safe-primary-pale);
+}
+
+.curve-empty {
+  min-height: 180rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .receipt-panel,

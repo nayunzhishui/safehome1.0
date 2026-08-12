@@ -2,6 +2,7 @@
   "navigationBarTitleText": "我的成长仪表盘",
   "usingComponents": {
     "page-state": "/components/page-state/index",
-    "status-pill": "/components/status-pill/index"
+    "status-pill": "/components/status-pill/index",
+    "timeline-record": "/components/timeline-record/index"
   }
 }

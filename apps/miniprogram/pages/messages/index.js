@@ -45,7 +45,7 @@ Page({
   },
 
   openMessage(event) {
-    const id = event.currentTarget.dataset.id;
+    const id = event.detail && event.detail.id;
     if (!id) return;
     wx.navigateTo({ url: `/pages/message-detail/index?id=${encodeURIComponent(id)}` });
   },

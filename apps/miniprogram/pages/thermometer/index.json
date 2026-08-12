@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "情绪温度计"
+  "navigationBarTitleText": "情绪温度计",
+  "usingComponents": {
+    "intensity-scale": "/components/intensity-scale/index"
+  }
 }

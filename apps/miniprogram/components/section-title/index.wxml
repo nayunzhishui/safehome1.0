@@ -1,6 +1,10 @@
 <view class="section-title-wrap">
   <view class="section-title-main">
-    <view class="section-accent"></view>
+    <view class="section-accent" aria-hidden="true">
+      <view class="section-accent__segment section-accent__segment--top"></view>
+      <view class="section-accent__joint"></view>
+      <view class="section-accent__segment section-accent__segment--bottom"></view>
+    </view>
     <view>
       <text class="section-title-text">{{title}}</text>
       <text wx:if="{{subtitle}}" class="section-subtitle-text">{{subtitle}}</text>

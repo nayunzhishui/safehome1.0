@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "关系探索成长记录",
   "usingComponents": {
-    "visualization-state": "/components/visualization-state/index"
+    "visualization-state": "/components/visualization-state/index",
+    "timeline-record": "/components/timeline-record/index"
   }
 }

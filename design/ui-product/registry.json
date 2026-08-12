@@ -40,13 +40,13 @@
     "done"
   ],
   "active_route": null,
-  "updated_at": "2026-08-12T18:38:05+08:00",
+  "updated_at": "2026-08-12T20:21:33+08:00",
   "pages": [
     {
       "index": 1,
       "route": "pages/home/index",
       "title": "安心陪伴",
-      "source_hash": "39dac10824cbfd81ca165530848fdcff30ddbfbe341f9942208abbdf44e6db18",
+      "source_hash": "755a8230f81978d8a65a1a266dae310f6f981f5ea09fa70efb06936ae226cd6b",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -430,7 +430,7 @@
       "index": 4,
       "route": "pages/messages/index",
       "title": "消息",
-      "source_hash": "b28793a6887095b616bbe278e991879387b411ee0922e0877cfce40d02fecdf5",
+      "source_hash": "c84098ba4693062570f72303b2351d50574c8aee19fe081f2a027ff335e0be81",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -553,7 +553,7 @@
       "index": 5,
       "route": "pages/support-assistant/index",
       "title": "支持性问答",
-      "source_hash": "17bfa2cf155cffc8a32ad592056c4fbf96120e4052e181af77d7b0ff6c54d965",
+      "source_hash": "2a5ae8ee425b686490a6701173f16ad47f6cc8422dbc3d0f69285e37a1cab7f4",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -812,7 +812,7 @@
       "index": 7,
       "route": "pages/emergency-guide/index",
       "title": "紧急安全指引",
-      "source_hash": "932b3b67f9519462f1307c77cbd3c90b0728caad121fc3d2f210b8231cc0ebd6",
+      "source_hash": "7bca534bdedb5a381b92fb5f64693acc8e659d88371fe4a52923791bcfd0dd3a",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -941,7 +941,7 @@
       "index": 8,
       "route": "pages/emergency-resources/index",
       "title": "紧急帮助说明",
-      "source_hash": "05725ad35cbddae7f0c8240ece5a4c41854a4dd4d98b93a7fc030d9572d15376",
+      "source_hash": "550e049641b205b2bd1f98af274d8dd5a85e414baea509a970522aca49e2231d",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -1064,7 +1064,7 @@
       "index": 9,
       "route": "pages/getting-started/index",
       "title": "三步开始",
-      "source_hash": "6918aa6be2f636a12989a93295531e61bfdbdd0a1e3c4cdb5b7f469e652279bf",
+      "source_hash": "51a242b663c9c40481b1d34b54d9021773b64e3f7a5eede9af2d712052c5c617",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -1189,7 +1189,7 @@
       "index": 10,
       "route": "pages/thermometer/index",
       "title": "情绪温度计",
-      "source_hash": "2152601e71ce56291683e33c18976cf394fe850f90d4499fdd72a37bcf74b112",
+      "source_hash": "1bb681dcd4258a11a426c15cbb5864bf20edddbe5e85318e11e9d3ae93e43c18",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -1435,7 +1435,7 @@
       "index": 12,
       "route": "pages/training-history/index",
       "title": "训练记录",
-      "source_hash": "407b6466607db32f9b9d031a1f626af5d566b83de09bf5e2e24c291c55caddbe",
+      "source_hash": "b4dfb91e1f68caf4b11dc478c977d372419a35957002ea78aaf1df1bc313d4f5",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -1558,7 +1558,7 @@
       "index": 13,
       "route": "pages/personalized-plan/index",
       "title": "个性化训练方案",
-      "source_hash": "6d7549c276304d1db64cb1a3601dc5c9ad3f4081c5d9166fb7586cd815c6bf98",
+      "source_hash": "eb25dc95a6bca76c8f6a85b762019a518227f2f25dec0b65de53a6b5f5b55c0e",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -1804,7 +1804,7 @@
       "index": 15,
       "route": "pages/program-detail/index",
       "title": "项目详情",
-      "source_hash": "71bdeae08112361f98bdad145e6c8d4007acb448f712285884994c52bf1dc5a7",
+      "source_hash": "33c52e7b39a59708ce6d5817fab3e9a5ff749bd6a2de73d219810e3a47cd10bd",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -1927,7 +1927,7 @@
       "index": 16,
       "route": "pages/relationship-pilot/index",
       "title": "关系探索试点",
-      "source_hash": "26122046a6eeed8dd283a3837e47130c4ec983175360af9f6c3bd712469e6378",
+      "source_hash": "300ac00b2054ea06e034e9795cc197cb4be7998c9d5c5d0a89f142a8bc2b6926",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -2296,7 +2296,7 @@
       "index": 19,
       "route": "pages/relationship-growth/index",
       "title": "关系探索成长记录",
-      "source_hash": "2924277ece6eb85ab7da1960d1775a33c7f90f54f1dbb9adc1dd2b029ac50850",
+      "source_hash": "4388cef02555be4749eac0923b1c3dffbc821507037495c757f10eaa4c17dcb4",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -3652,7 +3652,7 @@
       "index": 30,
       "route": "pages/therapeutic-assessment-quality/index",
       "title": "评估质量与更正",
-      "source_hash": "b546a84f1bcb787d92f99c7922e4f2a1ad88d6fb081232e76156a528fb0d1089",
+      "source_hash": "46858c7f0be5ea0f6caacad9108ed75caf0a0d6b3f15d48b06fc30cb7900e87e",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -3775,7 +3775,7 @@
       "index": 31,
       "route": "pages/growth-dashboard/index",
       "title": "我的成长仪表盘",
-      "source_hash": "f3a09a34f69333d195817eab4bfa87b3b9162e372ef83bf2d92df2b32fda3f89",
+      "source_hash": "c3bcf8ac1f6d12386398a265a702cd8bb89c60e71ccd70456462e76789a06e89",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -4021,7 +4021,7 @@
       "index": 33,
       "route": "pages/researcher-dashboard/index",
       "title": "研究者移动工作台",
-      "source_hash": "b6e650d47951dd12de94f1d01328c8d642d5ab21c3dcb9add45162bdc95d4314",
+      "source_hash": "454d5bec01a10b1b836e04f974184f63ac4cfe37af50aeb56ac85873a386b48b",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -5485,7 +5485,7 @@
       "index": 45,
       "route": "pages/assessment-result/index",
       "title": "测一测结果",
-      "source_hash": "b273897cb7cf88cd4eb662211217d95f764d7b6ed29025ea0d2f1acc237e353a",
+      "source_hash": "af04f4020287cd6adc3cc99273397a55efec0dc3b10b5c5ae6f5d61bbaa18680",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -5851,7 +5851,7 @@
       "index": 48,
       "route": "pages/training-card/index",
       "title": "推荐训练卡",
-      "source_hash": "e3afb72a2c7fb0d2cc55b4f9ebb4d3c0d04a8cdc31f5860e567ed515b8c3b571",
+      "source_hash": "be7c2a7b12a21c81ef53122ce5766806021b663dc52f57ae1987e495c7cf09b2",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -5973,7 +5973,7 @@
       "index": 49,
       "route": "pages/checkin/index",
       "title": "记录尝试",
-      "source_hash": "416d2f2e7509a79748df3a508889f436a5df4ee0882d797c66b818f7bb41bd09",
+      "source_hash": "557bfd2037614d909cb1102cd0026ccc88092bb6626306d2fcb113f25e8f6685",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -6095,7 +6095,7 @@
       "index": 50,
       "route": "pages/weekly-report/index",
       "title": "本周复盘",
-      "source_hash": "35c9715dbf997f6f6afb6abacfd85a044fcb065d6c56d0c0384b0d452fe81ea9",
+      "source_hash": "614297c9f7147dcb19c7a99f8a878624c5ea0e4309f38933218d9ee373e2b445",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -6217,7 +6217,7 @@
       "index": 51,
       "route": "pages/supervision/index",
       "title": "人工督导入口",
-      "source_hash": "7936b5e886a5d2e13b35e937e9807b8bd088a32286c216abc2b5d6fcb8256dbc",
+      "source_hash": "72ebdbd5c4380ba601919f70a9ab26baa52d8ce423b22db105e6c9daee769a0a",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -6583,8 +6583,177 @@
   "device_acceptance": {
     "required": true,
     "gate": "all_pages_local_complete",
-    "status": "ready_for_user_device_review",
-    "pages": {},
-    "updated_at": "2026-08-10T14:11:55+08:00"
+    "status": "fix_required",
+    "pages": {
+      "pages/home/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/bd57442772bb9bf8e073cf4ecf05adb.jpg"
+        ],
+        "note": "已压缩阶段反馈小字，待复测",
+        "recorded_at": "2026-08-12T20:07:01+08:00"
+      },
+      "pages/thermometer/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/ea9644e099e6198b1344294170b5ec2.jpg"
+        ],
+        "note": "量尺组件化并修正空状态布局，待复测",
+        "recorded_at": "2026-08-12T20:07:02+08:00"
+      },
+      "pages/messages/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/155f19f5d7e565fdb28e064a3ba9f8d.jpg"
+        ],
+        "note": "消息行组件化并简化页头，待复测",
+        "recorded_at": "2026-08-12T20:07:02+08:00"
+      },
+      "pages/assessment/index": {
+        "result": "pass",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/2e0eec25013bde1aa636c47209ec98a.jpg"
+        ],
+        "note": "信息层级与主要操作正常",
+        "recorded_at": "2026-08-12T20:07:03+08:00"
+      },
+      "pages/assessment-result/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/f7c7fee1ef9712feff93b3a17f1c452.jpg"
+        ],
+        "note": "移除标题下重复摘要，保留真实结果内容，待复测",
+        "recorded_at": "2026-08-12T20:07:03+08:00"
+      },
+      "pages/diary-form/index": {
+        "result": "pass",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/0f6615de4d630a3da8157871daa29f6.jpg"
+        ],
+        "note": "填写顺序和控件状态清晰",
+        "recorded_at": "2026-08-12T20:07:04+08:00"
+      },
+      "pages/getting-started/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/6df08ed8767d9d40f01d1c4c39cadd0.jpg"
+        ],
+        "note": "移除重复眉题，待复测",
+        "recorded_at": "2026-08-12T20:07:04+08:00"
+      },
+      "pages/task-detail/index": {
+        "result": "pass",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/ade23841c58f1954b5ef995a05dbaf9.jpg"
+        ],
+        "note": "任务步骤和主行动清晰",
+        "recorded_at": "2026-08-12T20:07:05+08:00"
+      },
+      "pages/checkin/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/8242bfbd1c8f5fcd76e24b9197ab18b.jpg"
+        ],
+        "note": "移除空白标题卡，待复测",
+        "recorded_at": "2026-08-12T20:07:06+08:00"
+      },
+      "pages/supervision/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/7ea6ac80a05a50a354093ca50c444da.jpg"
+        ],
+        "note": "移除空白标题卡，保留风险边界，待复测",
+        "recorded_at": "2026-08-12T20:07:06+08:00"
+      },
+      "pages/weekly-report/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/f29814b191e29186b5803542bc2dcc2.jpg"
+        ],
+        "note": "移除空白标题卡，待复测",
+        "recorded_at": "2026-08-12T20:07:07+08:00"
+      },
+      "pages/training/index": {
+        "result": "pass",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/f46b299aafc2cb78d256bb6c73d7273.jpg"
+        ],
+        "note": "训练主路径清晰",
+        "recorded_at": "2026-08-12T20:07:08+08:00"
+      },
+      "pages/training-card/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/1bd3cca2607b2f168fe43198b5f408a.jpg"
+        ],
+        "note": "移除空白标题卡，待复测",
+        "recorded_at": "2026-08-12T20:07:08+08:00"
+      },
+      "pages/personalized-plan/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/e2a4a633c599239d0adb83b1ab7fd5d.jpg"
+        ],
+        "note": "修正全局页头卡片影响，待复测",
+        "recorded_at": "2026-08-12T20:07:09+08:00"
+      },
+      "pages/program-list/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/baae332a147cf176ff6cc0038613a9c.jpg"
+        ],
+        "note": "修正全局页头卡片影响，待复测",
+        "recorded_at": "2026-08-12T20:07:10+08:00"
+      },
+      "pages/relationship-growth/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/a4475dffddfeec5bcad01e8d05a2410.jpg"
+        ],
+        "note": "时间线组件化并移除重复眉题，待复测",
+        "recorded_at": "2026-08-12T20:07:10+08:00"
+      },
+      "pages/course/index": {
+        "result": "pass",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/cc26c757bc06089f47db1ec0ee35375.jpg"
+        ],
+        "note": "内容分组与入口清晰",
+        "recorded_at": "2026-08-12T20:07:11+08:00"
+      },
+      "pages/profile/index": {
+        "result": "pass",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/60a03cdceb4cf7a0b81230bf26d12d2.jpg"
+        ],
+        "note": "分组和入口语义清晰",
+        "recorded_at": "2026-08-12T20:07:12+08:00"
+      },
+      "pages/growth-dashboard/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/d70545679442f664953b0913b7cf9e1.jpg"
+        ],
+        "note": "隐藏空值并组件化时间线，待复测",
+        "recorded_at": "2026-08-12T20:07:12+08:00"
+      },
+      "pages/researcher-dashboard/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/3f9356f6533dacb349518adacd6a4b3.jpg"
+        ],
+        "note": "压缩开发说明与页头，保持工作区功能，待复测",
+        "recorded_at": "2026-08-12T20:07:13+08:00"
+      },
+      "pages/therapeutic-assessment-quality/index": {
+        "result": "fix_required",
+        "evidence": [
+          "D:/codex/workspace/safehome1.0其他内容/文档图片/真机验收第一次/373e13722ddf4734417b2499cf0226f.jpg"
+        ],
+        "note": "补充无数据空状态，待复测",
+        "recorded_at": "2026-08-12T20:07:13+08:00"
+      }
+    },
+    "updated_at": "2026-08-12T20:07:13+08:00"
   }
 }

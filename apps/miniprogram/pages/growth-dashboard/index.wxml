@@ -1,6 +1,5 @@
 <view class="safe-page growth-dashboard-page">
   <view class="growth-hero">
-    <text class="growth-kicker">四类线索</text>
     <text class="growth-title">我的成长</text>
   </view>
 
@@ -51,10 +50,7 @@
       <view class="dashboard-section">
         <view class="section-heading"><view><text class="section-title">记录与练习时间线</text><text class="section-copy">只呈现做过的事情，不把次数写成改善</text></view></view>
         <view wx:if="{{activityTimeline.length}}" class="timeline-list">
-          <view wx:for="{{activityTimeline}}" wx:key="id" class="timeline-item">
-            <view class="timeline-dot"></view>
-            <view class="timeline-body"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.type_label}}</text></view><text class="timeline-summary">{{item.summary}}</text><text class="timeline-date">{{item.dateText}}</text></view>
-          </view>
+          <timeline-record wx:for="{{activityTimeline}}" wx:key="id" item="{{item}}" />
         </view>
         <page-state wx:else kind="empty" title="还没有记录或练习" description="可以先留下一件具体小事，形成第一条时间线。" action-label="开始记录" bind:action="startDiary" />
       </view>
@@ -67,7 +63,7 @@
           <view wx:for="{{assessmentGroups}}" wx:key="worksheet_id" class="assessment-group">
             <text class="assessment-title">{{item.title}}</text>
             <view class="assessment-values">
-              <text wx:for="{{item.items}}" wx:for-item="score" wx:key="id" class="assessment-value">{{score.dateText}} · 记录值 {{score.value}}</text>
+              <text wx:for="{{item.items}}" wx:for-item="score" wx:key="id" class="assessment-value">{{score.dateText}}{{score.hasValue ? ' · 记录值 ' + score.value : ''}}</text>
             </view>
             <text class="assessment-note">只在同一量尺再次填写后观察变化，不自动解释好坏。</text>
           </view>
@@ -90,10 +86,7 @@
       <view class="dashboard-section">
         <view class="section-heading"><view><text class="section-title">关系探索时间线</text><text class="section-copy">这里只显示任务、连续记录和阶段报告的事实</text></view></view>
         <view wx:if="{{relationshipTimeline.length}}" class="timeline-list">
-          <view wx:for="{{relationshipTimeline}}" wx:key="id" class="timeline-item">
-            <view class="timeline-dot timeline-dot--relationship"></view>
-            <view class="timeline-body"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.type_label}}</text></view><text class="timeline-summary">{{item.summary}}</text><text class="timeline-date">{{item.dateText}}</text></view>
-          </view>
+          <timeline-record wx:for="{{relationshipTimeline}}" wx:key="id" item="{{item}}" tone="relationship" />
         </view>
         <page-state wx:else kind="empty" title="还没有关系探索记录" description="是否参与由你决定；没有记录时不生成关系结论。" />
       </view>

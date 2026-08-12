@@ -1,3 +1,4 @@
 {
-  "navigationBarTitleText": "紧急安全指引"
+  "navigationBarTitleText": "紧急安全指引",
+  "usingComponents": {"safety-action-row": "/components/safety-action-row/index"}
 }

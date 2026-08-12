@@ -1,6 +1,5 @@
 <view class="safe-page relationship-pilot-page">
   <view class="pilot-hero">
-    <text class="pilot-kicker">项目试点 · 大学生关系探索</text>
     <text class="pilot-title">一次只走好当前这一步</text>
   </view>
 

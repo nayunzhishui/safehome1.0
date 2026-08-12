@@ -1,0 +1,11 @@
+<view class="record record--{{tone}}">
+  <view class="record-marker" aria-hidden="true"><view class="record-joint"></view></view>
+  <view class="record-body">
+    <view class="record-head">
+      <text class="record-title">{{item.title}}</text>
+      <text wx:if="{{item.type_label || item.typeLabel}}" class="record-type">{{item.type_label || item.typeLabel}}</text>
+    </view>
+    <text wx:if="{{item.summary}}" class="record-summary">{{item.summary}}</text>
+    <text wx:if="{{item.dateText}}" class="record-date">{{item.dateText}}</text>
+  </view>
+</view>

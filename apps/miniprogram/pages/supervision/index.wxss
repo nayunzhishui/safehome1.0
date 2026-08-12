@@ -6,12 +6,7 @@
   position: relative;
   overflow: hidden;
   margin-bottom: 28rpx;
-  padding: 32rpx;
-  border: 1rpx solid var(--safe-border);
-  border: 0;
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  box-shadow: var(--safe-shadow-card);
+  padding: 8rpx 0 4rpx;
   text-align: center;
 }
 
@@ -30,7 +25,6 @@
 
 .title {
   display: block;
-  margin-bottom: 14rpx;
   color: var(--safe-title);
   font-size: 46rpx;
   font-weight: 850;

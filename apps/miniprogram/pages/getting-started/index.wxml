@@ -1,6 +1,5 @@
 <view class="safe-page getting-page" role="main" aria-label="三步开始">
   <view class="intro-block">
-    <text class="intro-kicker">三步开始</text>
     <text class="intro-title">从一件具体小事开始</text>
 
     <view class="path-summary" aria-label="写一个片段、标一个位置、做一个动作">

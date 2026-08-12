@@ -1,5 +1,5 @@
 <view class="safe-page training-card-page" role="main" aria-label="训练卡">
-  <view class="detail-hero safe-card safe-card--hero">
+  <view class="detail-hero">
     <view class="hero-copy">
       <text class="hero-title">训练卡</text>
     </view>

@@ -77,7 +77,11 @@ Page({
         })),
         assessmentGroups: (growth.assessment_groups || []).map((group) => ({
           ...group,
-          items: (group.items || []).map((item) => ({ ...item, dateText: formatDate(item.created_at) })),
+          items: (group.items || []).map((item) => ({
+            ...item,
+            dateText: formatDate(item.created_at),
+            hasValue: item.value !== null && item.value !== undefined && item.value !== "",
+          })),
         })),
         activityTimeline: timeline.filter((item) => activityTypes.has(item.type)),
         relationshipTimeline: timeline.filter((item) => relationshipTypes.has(item.type)),

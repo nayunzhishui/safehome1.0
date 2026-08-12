@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-12T18:38:05+08:00",
+  "generated_at": "2026-08-12T20:21:33+08:00",
   "branch": "UIproduct",
-  "main_sha": "02ad104df7f361decebe1e6f08945a26340b5fea",
+  "main_sha": "f8bb8a0c03663fdb652eac9bc8b9b873d1875f76",
   "app_page_count": 53,
   "pages": [
     {
@@ -15,7 +15,7 @@
         "apps/miniprogram/pages/home/index.js",
         "apps/miniprogram/pages/home/index.json"
       ],
-      "source_hash": "39dac10824cbfd81ca165530848fdcff30ddbfbe341f9942208abbdf44e6db18",
+      "source_hash": "755a8230f81978d8a65a1a266dae310f6f981f5ea09fa70efb06936ae226cd6b",
       "missing_files": [],
       "visible_text": [
         "安心陪伴",
@@ -39,9 +39,9 @@
         "可以先写下一件刚发生的小事",
         "去记录",
         "阶段性反馈",
-        "· 测评 · 练习 · 温度",
-        "常见场景： · 常见情绪：",
-        "记录还不够，继续观察"
+        "记录还不够，继续观察",
+        "完成更多记录后，这里会呈现阶段摘要",
+        "查看说明"
       ],
       "events": [
         {
@@ -164,7 +164,7 @@
           "tag": "page-state",
           "label": "",
           "data": {},
-          "line": 153
+          "line": 150
         },
         {
           "event": "bindtap",
@@ -172,7 +172,7 @@
           "tag": "button",
           "label": "",
           "data": {},
-          "line": 161
+          "line": 158
         },
         {
           "event": "bindtap",
@@ -180,7 +180,7 @@
           "tag": "button",
           "label": "进入联调测试页",
           "data": {},
-          "line": 173
+          "line": 170
         }
       ],
       "page_methods": [
@@ -923,14 +923,12 @@
         "apps/miniprogram/pages/messages/index.json",
         "apps/miniprogram/utils/errorDiagnostics.js"
       ],
-      "source_hash": "b28793a6887095b616bbe278e991879387b411ee0922e0877cfce40d02fecdf5",
+      "source_hash": "c84098ba4693062570f72303b2351d50574c8aee19fe081f2a027ff335e0be81",
       "missing_files": [],
       "visible_text": [
-        "消息提醒",
-        "需要你看看",
+        "消息",
         "请求编号： · 服务版本：",
-        "复制诊断信息",
-        "消息只用于补充说明和支持提醒，不替代紧急帮助。"
+        "复制诊断信息"
       ],
       "events": [
         {
@@ -939,7 +937,7 @@
           "tag": "page-state",
           "label": "{{needsLogin ? ",
           "data": {},
-          "line": 11
+          "line": 10
         },
         {
           "event": "bindtap",
@@ -947,17 +945,15 @@
           "tag": "button",
           "label": "复制本次错误的诊断信息",
           "data": {},
-          "line": 14
+          "line": 13
         },
         {
-          "event": "bindtap",
+          "event": "bindopen",
           "handler": "openMessage",
-          "tag": "button",
-          "label": "{{item.is_withdrawn ? ",
-          "data": {
-            "id": "{{item.id}}"
-          },
-          "line": 19
+          "tag": "message-row",
+          "label": "",
+          "data": {},
+          "line": 18
         }
       ],
       "page_methods": [
@@ -1030,7 +1026,9 @@
         "pages/profile/index"
       ],
       "components": {
-        "page-state": "/components/page-state/index"
+        "page-state": "/components/page-state/index",
+        "bottom-tip-card": "/components/bottom-tip-card/index",
+        "message-row": "/components/message-row/index"
       },
       "storage": [],
       "state": {
@@ -1046,8 +1044,7 @@
           "loading",
           "errorMessage",
           "errorDiagnostic",
-          "messages",
-          "item"
+          "messages"
         ],
         "set_data": [
           "loading",
@@ -1071,17 +1068,12 @@
         "apps/miniprogram/pages/support-assistant/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "17bfa2cf155cffc8a32ad592056c4fbf96120e4052e181af77d7b0ff6c54d965",
+      "source_hash": "2a5ae8ee425b686490a6701173f16ad47f6cc8422dbc3d0f69285e37a1cab7f4",
       "missing_files": [],
       "visible_text": [
-        "支持性问答",
         "把问题缩小到下一步",
         "当前未开放",
-        "你仍可使用情绪记录、训练卡和人工支持。",
-        "使用边界",
-        "已记录本次选择",
-        "参考来源",
-        "你的问题或想法"
+        "你仍可使用情绪记录、训练卡和人工支持。"
       ],
       "events": [
         {
@@ -1090,31 +1082,31 @@
           "tag": "page-state",
           "label": "当前未开放",
           "data": {},
-          "line": 14
+          "line": 13
         },
         {
-          "event": "bindtap",
+          "event": "bindconfirm",
           "handler": "enableConsent",
-          "tag": "button",
-          "label": "确认已阅读使用边界并同意AI辅助处理",
+          "tag": "boundary-note",
+          "label": "",
           "data": {},
-          "line": 33
+          "line": 29
         },
         {
           "event": "bindinput",
           "handler": "onQuestionInput",
-          "tag": "textarea",
-          "label": "输入你的问题或想法，最多一千字",
+          "tag": "question-composer",
+          "label": "",
           "data": {},
-          "line": 68
+          "line": 35
         },
         {
-          "event": "bindtap",
+          "event": "bindsubmit",
           "handler": "sendQuestion",
-          "tag": "button",
-          "label": "整理一个小步骤",
+          "tag": "question-composer",
+          "label": "",
           "data": {},
-          "line": 79
+          "line": 35
         }
       ],
       "page_methods": [
@@ -1199,7 +1191,12 @@
       "upstream_pages": [
         "pages/profile/index"
       ],
-      "components": {},
+      "components": {
+        "page-state": "/components/page-state/index",
+        "boundary-note": "/components/boundary-note/index",
+        "conversation-entry": "/components/conversation-entry/index",
+        "question-composer": "/components/question-composer/index"
+      },
       "storage": [
         {
           "operation": "getStorageSync",
@@ -1227,19 +1224,17 @@
           "loading",
           "error",
           "boundary",
+          "consented",
           "sending",
           "messages",
           "item",
-          "index",
           "question"
         ],
         "branches": [
           "loading",
           "error",
           "enabled",
-          "consented",
-          "messages",
-          "item"
+          "messages"
         ],
         "set_data": [
           "loading",
@@ -1420,10 +1415,9 @@
         "apps/miniprogram/pages/emergency-guide/index.js",
         "apps/miniprogram/pages/emergency-guide/index.json"
       ],
-      "source_hash": "932b3b67f9519462f1307c77cbd3c90b0728caad121fc3d2f210b8231cc0ebd6",
+      "source_hash": "7bca534bdedb5a381b92fb5f64693acc8e659d88371fe4a52923791bcfd0dd3a",
       "missing_files": [],
       "visible_text": [
-        "安全优先",
         "先找现实帮助",
         "如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。",
         "现在先做",
@@ -1442,7 +1436,7 @@
           "tag": "button",
           "label": "查看现实支持资源",
           "data": {},
-          "line": 39
+          "line": 32
         },
         {
           "event": "bindtap",
@@ -1450,7 +1444,7 @@
           "tag": "button",
           "label": "回到首页",
           "data": {},
-          "line": 40
+          "line": 33
         }
       ],
       "page_methods": [
@@ -1482,7 +1476,9 @@
         "pages/profile/index",
         "pages/feedback-result/index"
       ],
-      "components": {},
+      "components": {
+        "safety-action-row": "/components/safety-action-row/index"
+      },
       "storage": [],
       "state": {
         "bindings": [
@@ -1506,10 +1502,9 @@
         "apps/miniprogram/pages/emergency-resources/index.js",
         "apps/miniprogram/pages/emergency-resources/index.json"
       ],
-      "source_hash": "05725ad35cbddae7f0c8240ece5a4c41854a4dd4d98b93a7fc030d9572d15376",
+      "source_hash": "550e049641b205b2bd1f98af274d8dd5a85e414baea509a970522aca49e2231d",
       "missing_files": [],
       "visible_text": [
-        "现实资源",
         "先把人连接上",
         "这里不提供热线号码库，也不判断你是否处于危机。紧急时，请优先找能真实到场或及时回应的帮助。",
         "使用边界",
@@ -1523,7 +1518,7 @@
           "tag": "button",
           "label": "查看紧急安全指引",
           "data": {},
-          "line": 29
+          "line": 19
         }
       ],
       "page_methods": [
@@ -1547,7 +1542,9 @@
         "pages/emergency-guide/index",
         "pages/profile/index"
       ],
-      "components": {},
+      "components": {
+        "resource-channel-row": "/components/resource-channel-row/index"
+      },
       "storage": [],
       "state": {
         "bindings": [
@@ -1569,10 +1566,9 @@
         "apps/miniprogram/pages/getting-started/index.js",
         "apps/miniprogram/pages/getting-started/index.json"
       ],
-      "source_hash": "6918aa6be2f636a12989a93295531e61bfdbdd0a1e3c4cdb5b7f469e652279bf",
+      "source_hash": "51a242b663c9c40481b1d34b54d9021773b64e3f7a5eede9af2d712052c5c617",
       "missing_files": [],
       "visible_text": [
-        "三步开始",
         "从一件具体小事开始",
         "写一个片段",
         "标一个位置",
@@ -1590,7 +1586,7 @@
           "tag": "button",
           "label": "记录一次",
           "data": {},
-          "line": 71
+          "line": 70
         },
         {
           "event": "bindtap",
@@ -1598,7 +1594,7 @@
           "tag": "button",
           "label": "去训练中心",
           "data": {},
-          "line": 72
+          "line": 71
         }
       ],
       "page_methods": [
@@ -1656,12 +1652,11 @@
         "apps/miniprogram/utils/chart.js",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "2152601e71ce56291683e33c18976cf394fe850f90d4499fdd72a37bcf74b112",
+      "source_hash": "1bb681dcd4258a11a426c15cbb5864bf20edddbe5e85318e11e9d3ae93e43c18",
       "missing_files": [],
       "visible_text": [
         "情绪温度计",
         "现在的强度",
-        "也可以点按调节",
         "补充观察（可保持默认）",
         "愉悦度",
         "身体唤起",
@@ -1685,20 +1680,12 @@
       ],
       "events": [
         {
-          "event": "bindtap",
-          "handler": "onThermometerTap",
-          "tag": "view",
-          "label": "调整情绪强度",
+          "event": "bindchange",
+          "handler": "onIntensityChange",
+          "tag": "intensity-scale",
+          "label": "−",
           "data": {},
-          "line": 26
-        },
-        {
-          "event": "bindtouchmove",
-          "handler": "onThermometerMove",
-          "tag": "view",
-          "label": "调整情绪强度",
-          "data": {},
-          "line": 26
+          "line": 13
         },
         {
           "event": "bindtap",
@@ -1706,7 +1693,7 @@
           "tag": "button",
           "label": "情绪强度减一",
           "data": {},
-          "line": 47
+          "line": 17
         },
         {
           "event": "bindtap",
@@ -1714,7 +1701,7 @@
           "tag": "button",
           "label": "情绪强度加一",
           "data": {},
-          "line": 48
+          "line": 18
         },
         {
           "event": "bindchange",
@@ -1722,7 +1709,7 @@
           "tag": "slider",
           "label": "调整愉悦度",
           "data": {},
-          "line": 60
+          "line": 30
         },
         {
           "event": "bindchanging",
@@ -1730,7 +1717,7 @@
           "tag": "slider",
           "label": "调整愉悦度",
           "data": {},
-          "line": 60
+          "line": 30
         },
         {
           "event": "bindchange",
@@ -1738,7 +1725,7 @@
           "tag": "slider",
           "label": "调整身体唤起",
           "data": {},
-          "line": 67
+          "line": 37
         },
         {
           "event": "bindchanging",
@@ -1746,7 +1733,7 @@
           "tag": "slider",
           "label": "调整身体唤起",
           "data": {},
-          "line": 67
+          "line": 37
         },
         {
           "event": "bindchange",
@@ -1754,7 +1741,7 @@
           "tag": "slider",
           "label": "调整可控感",
           "data": {},
-          "line": 74
+          "line": 44
         },
         {
           "event": "bindchanging",
@@ -1762,7 +1749,7 @@
           "tag": "slider",
           "label": "调整可控感",
           "data": {},
-          "line": 74
+          "line": 44
         },
         {
           "event": "bindinput",
@@ -1770,7 +1757,7 @@
           "tag": "input",
           "label": "/ 40",
           "data": {},
-          "line": 78
+          "line": 48
         },
         {
           "event": "bindinput",
@@ -1778,7 +1765,7 @@
           "tag": "textarea",
           "label": "/ 200",
           "data": {},
-          "line": 88
+          "line": 58
         },
         {
           "event": "bindtap",
@@ -1786,7 +1773,7 @@
           "tag": "button",
           "label": "",
           "data": {},
-          "line": 99
+          "line": 69
         },
         {
           "event": "bindtap",
@@ -1794,7 +1781,7 @@
           "tag": "button",
           "label": "收起记录回执",
           "data": {},
-          "line": 108
+          "line": 78
         },
         {
           "event": "bindtap",
@@ -1802,7 +1789,7 @@
           "tag": "button",
           "label": "去练一张卡",
           "data": {},
-          "line": 112
+          "line": 82
         },
         {
           "event": "bindtap",
@@ -1810,7 +1797,7 @@
           "tag": "button",
           "label": "刷新",
           "data": {},
-          "line": 121
+          "line": 91
         },
         {
           "event": "bindtouchstart",
@@ -1818,7 +1805,7 @@
           "tag": "canvas",
           "label": "今日情绪强度变化曲线，具体记录见下方列表",
           "data": {},
-          "line": 124
+          "line": 94
         },
         {
           "event": "bindtap",
@@ -1826,7 +1813,7 @@
           "tag": "button",
           "label": "重试读取",
           "data": {},
-          "line": 144
+          "line": 115
         }
       ],
       "page_methods": [
@@ -1834,9 +1821,7 @@
         "onReady",
         "clampIntensity",
         "syncIntensityVisual",
-        "setIntensityFromTouch",
-        "onThermometerTap",
-        "onThermometerMove",
+        "onIntensityChange",
         "decreaseIntensity",
         "increaseIntensity",
         "onValenceChange",
@@ -1864,13 +1849,13 @@
         {
           "type": "navigateTo",
           "target": "/pages/training-card/index",
-          "line": 171,
+          "line": 152,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/login/index:dynamic",
-          "line": 352,
+          "line": 333,
           "source": "js"
         }
       ],
@@ -1878,33 +1863,34 @@
       "upstream_pages": [
         "pages/home/index"
       ],
-      "components": {},
+      "components": {
+        "intensity-scale": "/components/intensity-scale/index"
+      },
       "storage": [
         {
           "operation": "getStorageSync",
           "key": "auth_token",
-          "line": 328
+          "line": 309
         },
         {
           "operation": "getStorageSync",
           "key": "auth_user",
-          "line": 332
+          "line": 313
         },
         {
           "operation": "removeStorageSync",
           "key": "auth_token",
-          "line": 358
+          "line": 339
         },
         {
           "operation": "removeStorageSync",
           "key": "auth_user",
-          "line": 359
+          "line": 340
         }
       ],
       "state": {
         "bindings": [
           "intensityLevel",
-          "intensityPercent",
           "valenceLevel",
           "arousalLevel",
           "controlLevel",
@@ -1923,8 +1909,8 @@
         "branches": [
           "receipt",
           "loading",
-          "selectedPoint",
           "summary",
+          "selectedPoint",
           "errorMessage",
           "item",
           "records"
@@ -2246,10 +2232,9 @@
         "apps/miniprogram/utils/authGuard.js",
         "apps/miniprogram/utils/errorDiagnostics.js"
       ],
-      "source_hash": "407b6466607db32f9b9d031a1f626af5d566b83de09bf5e2e24c291c55caddbe",
+      "source_hash": "b4dfb91e1f68caf4b11dc478c977d372419a35957002ea78aaf1df1bc313d4f5",
       "missing_files": [],
       "visible_text": [
-        "训练记录",
         "看见已经完成的小练习",
         "次记录",
         "正在读取训练记录",
@@ -2270,7 +2255,7 @@
           "tag": "button",
           "label": "重新加载",
           "data": {},
-          "line": 21
+          "line": 20
         },
         {
           "event": "bindtap",
@@ -2278,7 +2263,7 @@
           "tag": "button",
           "label": "复制诊断信息",
           "data": {},
-          "line": 22
+          "line": 21
         },
         {
           "event": "bindtap",
@@ -2288,7 +2273,7 @@
           "data": {
             "card-id": "{{item.card_id}}"
           },
-          "line": 35
+          "line": 34
         },
         {
           "event": "bindtap",
@@ -2296,7 +2281,7 @@
           "tag": "button",
           "label": "",
           "data": {},
-          "line": 38
+          "line": 37
         },
         {
           "event": "bindtap",
@@ -2304,7 +2289,7 @@
           "tag": "button",
           "label": "复制诊断信息",
           "data": {},
-          "line": 41
+          "line": 40
         },
         {
           "event": "bindtap",
@@ -2312,7 +2297,7 @@
           "tag": "button",
           "label": "去训练中心",
           "data": {},
-          "line": 48
+          "line": 47
         }
       ],
       "page_methods": [
@@ -2439,7 +2424,7 @@
         "apps/miniprogram/pages/personalized-plan/index.js",
         "apps/miniprogram/pages/personalized-plan/index.json"
       ],
-      "source_hash": "6d7549c276304d1db64cb1a3601dc5c9ad3f4081c5d9166fb7586cd815c6bf98",
+      "source_hash": "eb25dc95a6bca76c8f6a85b762019a518227f2f25dec0b65de53a6b5f5b55c0e",
       "missing_files": [],
       "visible_text": [
         "个性化训练方案",
@@ -2786,10 +2771,9 @@
         "apps/miniprogram/pages/program-detail/index.js",
         "apps/miniprogram/pages/program-detail/index.json"
       ],
-      "source_hash": "71bdeae08112361f98bdad145e6c8d4007acb448f712285884994c52bf1dc5a7",
+      "source_hash": "33c52e7b39a59708ce6d5817fab3e9a5ff749bd6a2de73d219810e3a47cd10bd",
       "missing_files": [],
       "visible_text": [
-        "项目测试",
         "· 方案",
         "研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。",
         "参与前先了解",
@@ -2812,7 +2796,8 @@
         "允许将本次内容用于脱敏聚合分析，不默认展示原文。",
         "登录后正式提交",
         "我已提交的项目记录",
-        "提交内容会保留在本人记录中，并按授权范围供研究者只读查看。"
+        "提交内容会保留在本人记录中，并按授权范围供研究者只读查看。",
+        "已提交"
       ],
       "events": [
         {
@@ -2823,7 +2808,7 @@
           "data": {
             "session-no": "{{item.session_no}}"
           },
-          "line": 56
+          "line": 55
         },
         {
           "event": "bindinput",
@@ -2831,7 +2816,7 @@
           "tag": "textarea",
           "label": "保存本机草稿",
           "data": {},
-          "line": 83
+          "line": 82
         },
         {
           "event": "bindtap",
@@ -2839,7 +2824,7 @@
           "tag": "button",
           "label": "保存本机草稿",
           "data": {},
-          "line": 84
+          "line": 83
         },
         {
           "event": "bindinput",
@@ -2849,7 +2834,7 @@
           "data": {
             "index": "{{index}}"
           },
-          "line": 91
+          "line": 90
         },
         {
           "event": "bindchange",
@@ -2857,7 +2842,7 @@
           "tag": "slider",
           "label": "练习后不适程度： / 10",
           "data": {},
-          "line": 108
+          "line": 107
         },
         {
           "event": "bindchange",
@@ -2865,7 +2850,7 @@
           "tag": "slider",
           "label": "这次练习出现了明显不适或负面体验，需要后续关注。",
           "data": {},
-          "line": 110
+          "line": 109
         },
         {
           "event": "bindchange",
@@ -2873,7 +2858,7 @@
           "tag": "checkbox-group",
           "label": "这次练习出现了明显不适或负面体验，需要后续关注。",
           "data": {},
-          "line": 111
+          "line": 110
         },
         {
           "event": "bindchange",
@@ -2881,7 +2866,7 @@
           "tag": "checkbox-group",
           "label": "允许将本次内容用于脱敏聚合分析，不默认展示原文。",
           "data": {},
-          "line": 117
+          "line": 116
         },
         {
           "event": "bindtap",
@@ -2889,7 +2874,7 @@
           "tag": "button",
           "label": "登录后正式提交",
           "data": {},
-          "line": 125
+          "line": 124
         },
         {
           "event": "bindtap",
@@ -2897,7 +2882,7 @@
           "tag": "button",
           "label": "重试",
           "data": {},
-          "line": 149
+          "line": 148
         }
       ],
       "page_methods": [
@@ -3039,10 +3024,9 @@
         "apps/miniprogram/pages/relationship-pilot/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "26122046a6eeed8dd283a3837e47130c4ec983175360af9f6c3bd712469e6378",
+      "source_hash": "300ac00b2054ea06e034e9795cc197cb4be7998c9d5c5d0a89f142a8bc2b6926",
       "missing_files": [],
       "visible_text": [
-        "项目试点 · 大学生关系探索",
         "一次只走好当前这一步",
         "从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。",
         "正在读取你的探索进度...",
@@ -3066,7 +3050,7 @@
           "tag": "checkbox-group",
           "label": "我已阅读并同意将本次测评用于关系探索试点的评估与复盘。",
           "data": {},
-          "line": 20
+          "line": 19
         },
         {
           "event": "bindtap",
@@ -3074,7 +3058,7 @@
           "tag": "button",
           "label": "确认报名",
           "data": {},
-          "line": 23
+          "line": 22
         },
         {
           "event": "bindtap",
@@ -3082,7 +3066,7 @@
           "tag": "button",
           "label": "还没测评？先完成关系测一测",
           "data": {},
-          "line": 24
+          "line": 23
         },
         {
           "event": "bindaction",
@@ -3090,7 +3074,7 @@
           "tag": "journey-action-card",
           "label": "关系探索当前步骤",
           "data": {},
-          "line": 28
+          "line": 27
         },
         {
           "event": "bindtap",
@@ -3100,7 +3084,7 @@
           "data": {
             "action": "{{item.key}}"
           },
-          "line": 58
+          "line": 57
         }
       ],
       "page_methods": [
@@ -3786,10 +3770,9 @@
         "apps/miniprogram/pages/relationship-growth/index.json",
         "apps/miniprogram/utils/resilientForm.js"
       ],
-      "source_hash": "2924277ece6eb85ab7da1960d1775a33c7f90f54f1dbb9adc1dd2b029ac50850",
+      "source_hash": "4388cef02555be4749eac0923b1c3dffbc821507037495c757f10eaa4c17dcb4",
       "missing_files": [],
       "visible_text": [
-        "变化记录，不是疗效证明",
         "关系探索成长记录",
         "正在读取成长记录...",
         "累计记录",
@@ -3812,7 +3795,8 @@
         "研究者补充",
         "暂时还没有研究者阶段性反馈。",
         "系统汇总",
-        "下一步建议："
+        "下一步建议：",
+        "用户原话（仅你可见）"
       ],
       "events": [
         {
@@ -3823,7 +3807,7 @@
           "data": {
             "section": "{{item.key}}"
           },
-          "line": 26
+          "line": 25
         },
         {
           "event": "bindtap",
@@ -3833,7 +3817,7 @@
           "data": {
             "key": "{{item.key}}"
           },
-          "line": 36
+          "line": 35
         },
         {
           "event": "bindtap",
@@ -3843,7 +3827,7 @@
           "data": {
             "key": "{{item.key}}"
           },
-          "line": 37
+          "line": 36
         },
         {
           "event": "bindtap",
@@ -3851,7 +3835,7 @@
           "tag": "button",
           "label": "查看全部 ›",
           "data": {},
-          "line": 58
+          "line": 57
         },
         {
           "event": "bindtap",
@@ -3861,7 +3845,7 @@
           "data": {
             "key": "{{item.key}}"
           },
-          "line": 72
+          "line": 68
         },
         {
           "event": "bindtap",
@@ -3869,7 +3853,7 @@
           "tag": "button",
           "label": "用户原话（仅你可见）",
           "data": {},
-          "line": 86
+          "line": 79
         },
         {
           "event": "bindtap",
@@ -3877,7 +3861,7 @@
           "tag": "button",
           "label": "前往关系探索",
           "data": {},
-          "line": 94
+          "line": 87
         },
         {
           "event": "bindtap",
@@ -3887,7 +3871,7 @@
           "data": {
             "panel": "weekly"
           },
-          "line": 98
+          "line": 91
         },
         {
           "event": "bindinput",
@@ -3897,7 +3881,7 @@
           "data": {
             "key": "active_social_count"
           },
-          "line": 100
+          "line": 93
         },
         {
           "event": "bindinput",
@@ -3907,7 +3891,7 @@
           "data": {
             "key": "authentic_expression_count"
           },
-          "line": 101
+          "line": 94
         },
         {
           "event": "bindinput",
@@ -3917,7 +3901,7 @@
           "data": {
             "key": "setback_coping"
           },
-          "line": 102
+          "line": 95
         },
         {
           "event": "bindchange",
@@ -3927,7 +3911,7 @@
           "data": {
             "key": "approach_willingness"
           },
-          "line": 103
+          "line": 96
         },
         {
           "event": "bindchange",
@@ -3937,7 +3921,7 @@
           "data": {
             "key": "worry_intensity"
           },
-          "line": 104
+          "line": 97
         },
         {
           "event": "bindinput",
@@ -3947,7 +3931,7 @@
           "data": {
             "key": "achievement"
           },
-          "line": 105
+          "line": 98
         },
         {
           "event": "bindinput",
@@ -3957,7 +3941,7 @@
           "data": {
             "key": "setback"
           },
-          "line": 106
+          "line": 99
         },
         {
           "event": "bindtap",
@@ -3965,7 +3949,7 @@
           "tag": "button",
           "label": "保存本周记录",
           "data": {},
-          "line": 109
+          "line": 102
         },
         {
           "event": "bindtap",
@@ -3975,7 +3959,7 @@
           "data": {
             "panel": "event"
           },
-          "line": 114
+          "line": 107
         },
         {
           "event": "bindinput",
@@ -3985,7 +3969,7 @@
           "data": {
             "key": "event_summary"
           },
-          "line": 116
+          "line": 109
         },
         {
           "event": "bindtap",
@@ -3993,7 +3977,7 @@
           "tag": "button",
           "label": "加入时间线",
           "data": {},
-          "line": 118
+          "line": 111
         },
         {
           "event": "bindtap",
@@ -4001,7 +3985,7 @@
           "tag": "button",
           "label": "共同理解一次关系体验",
           "data": {},
-          "line": 124
+          "line": 117
         },
         {
           "event": "bindtap",
@@ -4009,7 +3993,7 @@
           "tag": "button",
           "label": "记录今天的一小步",
           "data": {},
-          "line": 125
+          "line": 118
         },
         {
           "event": "bindtap",
@@ -4017,7 +4001,7 @@
           "tag": "button",
           "label": "查看阶段性反馈",
           "data": {},
-          "line": 126
+          "line": 119
         }
       ],
       "page_methods": [
@@ -4117,7 +4101,8 @@
         "pages/growth-dashboard/index"
       ],
       "components": {
-        "visualization-state": "/components/visualization-state/index"
+        "visualization-state": "/components/visualization-state/index",
+        "timeline-record": "/components/timeline-record/index"
       },
       "storage": [
         {
@@ -7262,11 +7247,12 @@
         "apps/miniprogram/pages/therapeutic-assessment-quality/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "b546a84f1bcb787d92f99c7922e4f2a1ad88d6fb081232e76156a528fb0d1089",
+      "source_hash": "46858c7f0be5ea0f6caacad9108ed75caf0a0d6b3f15d48b06fc30cb7900e87e",
       "missing_files": [],
       "visible_text": [
-        "支持性评估 · 质量记录",
         "质量与更正",
+        "当前没有可处理的质量记录",
+        "有可查看的评估或更正记录后，会显示在这里。",
         "待处理 · 已超时 · 规则",
         "暂时没有处理成功",
         "重新读取",
@@ -7287,8 +7273,7 @@
         "当前授权范围内没有复核任务",
         "抽检原因： · 截止：",
         "认领这项复核",
-        "结论：",
-        "修复说明（有修复项时必填）"
+        "结论："
       ],
       "events": [
         {
@@ -7297,7 +7282,7 @@
           "tag": "button",
           "label": "重新读取",
           "data": {},
-          "line": 15
+          "line": 19
         },
         {
           "event": "bindchange",
@@ -7305,7 +7290,7 @@
           "tag": "picker",
           "label": "",
           "data": {},
-          "line": 48
+          "line": 52
         },
         {
           "event": "bindchange",
@@ -7313,7 +7298,7 @@
           "tag": "picker",
           "label": "",
           "data": {},
-          "line": 53
+          "line": 57
         },
         {
           "event": "bindinput",
@@ -7323,7 +7308,7 @@
           "data": {
             "key": "incidentDescription"
           },
-          "line": 58
+          "line": 62
         },
         {
           "event": "bindinput",
@@ -7333,7 +7318,7 @@
           "data": {
             "key": "requestedResolution"
           },
-          "line": 62
+          "line": 66
         },
         {
           "event": "bindtap",
@@ -7341,7 +7326,7 @@
           "tag": "button",
           "label": "提交更正或投诉",
           "data": {},
-          "line": 64
+          "line": 68
         },
         {
           "event": "bindtap",
@@ -7351,7 +7336,7 @@
           "data": {
             "id": "{{item.id}}"
           },
-          "line": 80
+          "line": 84
         },
         {
           "event": "bindtap",
@@ -7359,7 +7344,7 @@
           "tag": "button",
           "label": "认领这项复核",
           "data": {},
-          "line": 94
+          "line": 98
         },
         {
           "event": "bindchange",
@@ -7368,17 +7353,6 @@
           "label": "结论：",
           "data": {
             "index": "{{index}}"
-          },
-          "line": 98
-        },
-        {
-          "event": "bindinput",
-          "handler": "onDimensionInput",
-          "tag": "input",
-          "label": "",
-          "data": {
-            "index": "{{index}}",
-            "key": "note"
           },
           "line": 102
         },
@@ -7389,9 +7363,20 @@
           "label": "",
           "data": {
             "index": "{{index}}",
+            "key": "note"
+          },
+          "line": 106
+        },
+        {
+          "event": "bindinput",
+          "handler": "onDimensionInput",
+          "tag": "input",
+          "label": "",
+          "data": {
+            "index": "{{index}}",
             "key": "evidenceRef"
           },
-          "line": 103
+          "line": 107
         },
         {
           "event": "bindinput",
@@ -7401,7 +7386,7 @@
           "data": {
             "key": "remediationSummary"
           },
-          "line": 108
+          "line": 112
         },
         {
           "event": "bindtap",
@@ -7409,7 +7394,7 @@
           "tag": "button",
           "label": "提交质量结论",
           "data": {},
-          "line": 110
+          "line": 114
         },
         {
           "event": "bindtap",
@@ -7419,7 +7404,7 @@
           "data": {
             "id": "{{item.id}}"
           },
-          "line": 127
+          "line": 131
         },
         {
           "event": "bindinput",
@@ -7429,7 +7414,7 @@
           "data": {
             "key": "impactSummary"
           },
-          "line": 138
+          "line": 142
         },
         {
           "event": "bindtap",
@@ -7437,7 +7422,7 @@
           "tag": "button",
           "label": "保存影响分析",
           "data": {},
-          "line": 140
+          "line": 144
         },
         {
           "event": "bindchange",
@@ -7445,7 +7430,7 @@
           "tag": "picker",
           "label": "处理动作：",
           "data": {},
-          "line": 143
+          "line": 147
         },
         {
           "event": "bindinput",
@@ -7455,7 +7440,7 @@
           "data": {
             "key": "resolutionSummary"
           },
-          "line": 148
+          "line": 152
         },
         {
           "event": "bindtap",
@@ -7463,7 +7448,7 @@
           "tag": "button",
           "label": "独立结案并通知参与者",
           "data": {},
-          "line": 150
+          "line": 154
         }
       ],
       "page_methods": [
@@ -7651,10 +7636,10 @@
           "resolutionSummary"
         ],
         "branches": [
+          "loading",
           "runtime",
           "errorMessage",
           "notice",
-          "loading",
           "productionGate",
           "isReviewRole",
           "reviews",
@@ -7704,10 +7689,9 @@
         "apps/miniprogram/pages/growth-dashboard/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "f3a09a34f69333d195817eab4bfa87b3b9162e372ef83bf2d92df2b32fda3f89",
+      "source_hash": "c3bcf8ac1f6d12386398a265a702cd8bb89c60e71ccd70456462e76789a06e89",
       "missing_files": [],
       "visible_text": [
-        "四类线索",
         "我的成长",
         "四类线索分别查看，不合成总分",
         "现在可以做什么",
@@ -7719,7 +7703,6 @@
         "只呈现做过的事情，不把次数写成改善",
         "支持性测评",
         "每份量表独立成组，不把不同分值放在同一条曲线上",
-        "· 记录值",
         "只在同一量尺再次填写后观察变化，不自动解释好坏。",
         "关系探索单独呈现",
         "不与日记次数或测评分值合并",
@@ -7739,7 +7722,7 @@
           "tag": "page-state",
           "label": "重新读取成长线索",
           "data": {},
-          "line": 10
+          "line": 9
         },
         {
           "event": "bindtap",
@@ -7749,7 +7732,7 @@
           "data": {
             "key": "{{item.key}}"
           },
-          "line": 14
+          "line": 13
         },
         {
           "event": "bindtap",
@@ -7757,7 +7740,7 @@
           "tag": "button",
           "label": "记录一件小事",
           "data": {},
-          "line": 32
+          "line": 31
         },
         {
           "event": "bindtap",
@@ -7765,7 +7748,7 @@
           "tag": "button",
           "label": "查看练习",
           "data": {},
-          "line": 33
+          "line": 32
         },
         {
           "event": "bindaction",
@@ -7773,7 +7756,7 @@
           "tag": "page-state",
           "label": "",
           "data": {},
-          "line": 59
+          "line": 55
         },
         {
           "event": "bindaction",
@@ -7781,7 +7764,7 @@
           "tag": "page-state",
           "label": "",
           "data": {},
-          "line": 75
+          "line": 71
         },
         {
           "event": "bindtap",
@@ -7789,7 +7772,7 @@
           "tag": "button",
           "label": "",
           "data": {},
-          "line": 88
+          "line": 84
         },
         {
           "event": "bindtap",
@@ -7797,7 +7780,7 @@
           "tag": "button",
           "label": "打开消息列表",
           "data": {},
-          "line": 115
+          "line": 108
         }
       ],
       "page_methods": [
@@ -7841,43 +7824,43 @@
         {
           "type": "navigateTo",
           "target": "/pages/diary-form/index",
-          "line": 104,
+          "line": 108,
           "source": "js"
         },
         {
           "type": "switchTab",
           "target": "/pages/training/index",
-          "line": 108,
-          "source": "js"
-        },
-        {
-          "type": "navigateTo",
-          "target": "/pages/assessment/index",
           "line": 112,
           "source": "js"
         },
         {
           "type": "navigateTo",
+          "target": "/pages/assessment/index",
+          "line": 116,
+          "source": "js"
+        },
+        {
+          "type": "navigateTo",
           "target": "/pages/relationship-pilot/index",
-          "line": 117,
+          "line": 121,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/relationship-growth/index?detail=1&enrollment_id=:dynamic",
-          "line": 120,
+          "line": 124,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/messages/index",
-          "line": 126,
+          "line": 130,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/login/index:dynamic",
-          "line": 155,
+          "line": 159,
           "source": "js"
         }
       ],
@@ -7888,28 +7871,29 @@
       ],
       "components": {
         "page-state": "/components/page-state/index",
-        "status-pill": "/components/status-pill/index"
+        "status-pill": "/components/status-pill/index",
+        "timeline-record": "/components/timeline-record/index"
       },
       "storage": [
         {
           "operation": "getStorageSync",
           "key": "auth_token",
-          "line": 131
+          "line": 135
         },
         {
           "operation": "getStorageSync",
           "key": "auth_user",
-          "line": 135
+          "line": 139
         },
         {
           "operation": "removeStorageSync",
           "key": "auth_token",
-          "line": 161
+          "line": 165
         },
         {
           "operation": "removeStorageSync",
           "key": "auth_user",
-          "line": 162
+          "line": 166
         }
       ],
       "state": {
@@ -8065,10 +8049,9 @@
         "apps/miniprogram/utils/authGuard.js",
         "apps/miniprogram/utils/errorDiagnostics.js"
       ],
-      "source_hash": "b6e650d47951dd12de94f1d01328c8d642d5ab21c3dcb9add45162bdc95d4314",
+      "source_hash": "454d5bec01a10b1b836e04f974184f63ac4cfe37af50aeb56ac85873a386b48b",
       "missing_files": [],
       "visible_text": [
-        "研究者移动工作台",
         "先处理重要的一小步",
         "最近同步",
         "重新同步",
@@ -8076,9 +8059,8 @@
         "当前离线",
         "已读取内容会保留；联网后下拉刷新或点“重新同步”。",
         "开发全权限模式",
-        "普通测试账号临时可读写研究平台，包括权限配置、治疗性评估、AI、情感计算、网络分析、发布与生产门禁。业务状态机和证据约束仍然生效；正式发布前必须关闭此模式。",
+        "测试账号临时开放研究能力；正式发布前必须关闭。",
         "当前身份： · 能力矩阵",
-        "页面导航按能力显示；每次深链访问仍由服务端重新授权并记录审计。",
         "正在同步工作台",
         "只读取必要摘要，不加载参与者长文本。",
         "工作台暂时没有读取成功",
@@ -8091,7 +8073,9 @@
         "个可见班次",
         "待处理 · 超时 · 无人值守紧急项",
         "没有匹配对象范围、胜任力、有效期和值守班次的接手人时，任务不会自动降级给普通角色。",
-        "服务端统一核对"
+        "服务端统一核对",
+        "五道门发布流水线",
+        "已拦截"
       ],
       "events": [
         {
@@ -8100,7 +8084,7 @@
           "tag": "view",
           "label": "刷新当前工作区",
           "data": {},
-          "line": 8
+          "line": 7
         },
         {
           "event": "bindtap",
@@ -8110,7 +8094,7 @@
           "data": {
             "id": "{{item.id}}"
           },
-          "line": 31
+          "line": 29
         },
         {
           "event": "bindtap",
@@ -8118,7 +8102,7 @@
           "tag": "button",
           "label": "重新同步",
           "data": {},
-          "line": 44
+          "line": 42
         },
         {
           "event": "bindtap",
@@ -8128,7 +8112,7 @@
           "data": {
             "scope": "workbench"
           },
-          "line": 45
+          "line": 43
         },
         {
           "event": "bindtap",
@@ -8136,7 +8120,7 @@
           "tag": "button",
           "label": "重试未完成同步",
           "data": {},
-          "line": 52
+          "line": 50
         },
         {
           "event": "bindtap",
@@ -8144,7 +8128,7 @@
           "tag": "button",
           "label": "刷新待处理列表",
           "data": {},
-          "line": 109
+          "line": 107
         },
         {
           "event": "bindtap",
@@ -8152,7 +8136,7 @@
           "tag": "button",
           "label": "继续查看",
           "data": {},
-          "line": 125
+          "line": 123
         },
         {
           "event": "bindinput",
@@ -8160,7 +8144,7 @@
           "tag": "input",
           "label": "搜索参与者",
           "data": {},
-          "line": 137
+          "line": 135
         },
         {
           "event": "bindtap",
@@ -8168,7 +8152,7 @@
           "tag": "button",
           "label": "重新加载",
           "data": {},
-          "line": 146
+          "line": 144
         },
         {
           "event": "bindtap",
@@ -8178,7 +8162,7 @@
           "data": {
             "scope": "participants"
           },
-          "line": 147
+          "line": 145
         },
         {
           "event": "bindtap",
@@ -8188,7 +8172,7 @@
           "data": {
             "id": "{{item.user_id}}"
           },
-          "line": 159
+          "line": 157
         },
         {
           "event": "bindtap",
@@ -8196,7 +8180,7 @@
           "tag": "button",
           "label": "加载下一页",
           "data": {},
-          "line": 168
+          "line": 166
         },
         {
           "event": "bindtap",
@@ -8204,7 +8188,7 @@
           "tag": "button",
           "label": "关闭参与者档案",
           "data": {},
-          "line": 177
+          "line": 175
         },
         {
           "event": "bindtap",
@@ -8214,7 +8198,7 @@
           "data": {
             "key": "{{item.key}}"
           },
-          "line": 180
+          "line": 178
         },
         {
           "event": "bindtap",
@@ -8225,7 +8209,7 @@
             "key": "{{participantModule.module}}",
             "page": "{{participantModule.page + 1}}"
           },
-          "line": 189
+          "line": 187
         },
         {
           "event": "bindtap",
@@ -8235,7 +8219,7 @@
           "data": {
             "id": "pilots"
           },
-          "line": 212
+          "line": 210
         },
         {
           "event": "bindtap",
@@ -8243,7 +8227,7 @@
           "tag": "button",
           "label": "刷新",
           "data": {},
-          "line": 224
+          "line": 222
         },
         {
           "event": "bindtap",
@@ -8253,7 +8237,7 @@
           "data": {
             "id": "{{item.id}}"
           },
-          "line": 228
+          "line": 226
         },
         {
           "event": "bindtap",
@@ -8261,7 +8245,7 @@
           "tag": "button",
           "label": "重新加载",
           "data": {},
-          "line": 233
+          "line": 231
         },
         {
           "event": "bindchange",
@@ -8271,7 +8255,7 @@
           "data": {
             "key": "kind"
           },
-          "line": 251
+          "line": 249
         },
         {
           "event": "bindchange",
@@ -8281,7 +8265,7 @@
           "data": {
             "key": "visibility"
           },
-          "line": 254
+          "line": 252
         },
         {
           "event": "bindinput",
@@ -8291,7 +8275,7 @@
           "data": {
             "key": "assessmentInternalNotes"
           },
-          "line": 284
+          "line": 282
         },
         {
           "event": "bindinput",
@@ -8301,7 +8285,7 @@
           "data": {
             "key": "assessmentParticipantDraft"
           },
-          "line": 289
+          "line": 287
         },
         {
           "event": "bindtap",
@@ -8309,7 +8293,7 @@
           "tag": "button",
           "label": "保存工作台草稿",
           "data": {},
-          "line": 291
+          "line": 289
         },
         {
           "event": "bindtap",
@@ -8317,7 +8301,7 @@
           "tag": "button",
           "label": "进入质量抽检与修复",
           "data": {},
-          "line": 293
+          "line": 291
         },
         {
           "event": "bindtap",
@@ -8325,7 +8309,7 @@
           "tag": "button",
           "label": "刷新",
           "data": {},
-          "line": 305
+          "line": 303
         },
         {
           "event": "bindtap",
@@ -8333,7 +8317,7 @@
           "tag": "button",
           "label": "重新加载",
           "data": {},
-          "line": 349
+          "line": 347
         },
         {
           "event": "bindtap",
@@ -8341,7 +8325,7 @@
           "tag": "button",
           "label": "重新同步",
           "data": {},
-          "line": 379
+          "line": 377
         },
         {
           "event": "bindtap",
@@ -8349,7 +8333,7 @@
           "tag": "button",
           "label": "重新加载",
           "data": {},
-          "line": 394
+          "line": 392
         },
         {
           "event": "bindtap",
@@ -8359,7 +8343,7 @@
           "data": {
             "scope": "pilot"
           },
-          "line": 395
+          "line": 393
         },
         {
           "event": "bindtap",
@@ -8369,7 +8353,7 @@
           "data": {
             "id": "{{item.id}}"
           },
-          "line": 405
+          "line": 403
         },
         {
           "event": "bindtap",
@@ -8377,7 +8361,7 @@
           "tag": "button",
           "label": "查看",
           "data": {},
-          "line": 427
+          "line": 425
         },
         {
           "event": "bindtap",
@@ -8385,7 +8369,7 @@
           "tag": "button",
           "label": "人工确认",
           "data": {},
-          "line": 428
+          "line": 426
         },
         {
           "event": "bindtap",
@@ -8393,7 +8377,7 @@
           "tag": "button",
           "label": "发送用户",
           "data": {},
-          "line": 429
+          "line": 427
         },
         {
           "event": "bindtap",
@@ -8401,7 +8385,7 @@
           "tag": "button",
           "label": "生成报告",
           "data": {},
-          "line": 432
+          "line": 430
         },
         {
           "event": "bindinput",
@@ -8411,7 +8395,7 @@
           "data": {
             "key": "observation"
           },
-          "line": 440
+          "line": 438
         },
         {
           "event": "bindinput",
@@ -8421,7 +8405,7 @@
           "data": {
             "key": "evidence"
           },
-          "line": 444
+          "line": 442
         },
         {
           "event": "bindinput",
@@ -8431,7 +8415,7 @@
           "data": {
             "key": "nextStep"
           },
-          "line": 448
+          "line": 446
         },
         {
           "event": "bindinput",
@@ -8441,7 +8425,7 @@
           "data": {
             "key": "openQuestion"
           },
-          "line": 452
+          "line": 450
         },
         {
           "event": "bindtap",
@@ -8449,7 +8433,7 @@
           "tag": "button",
           "label": "生成并核对预览",
           "data": {},
-          "line": 468
+          "line": 466
         },
         {
           "event": "bindtap",
@@ -8460,7 +8444,7 @@
             "kind": "stage",
             "action": "confirm"
           },
-          "line": 469
+          "line": 467
         },
         {
           "event": "bindtap",
@@ -8471,7 +8455,7 @@
             "kind": "stage",
             "action": "send"
           },
-          "line": 470
+          "line": 468
         },
         {
           "event": "bindinput",
@@ -8479,7 +8463,7 @@
           "tag": "input",
           "label": "",
           "data": {},
-          "line": 477
+          "line": 475
         },
         {
           "event": "bindinput",
@@ -8487,7 +8471,7 @@
           "tag": "textarea",
           "label": "",
           "data": {},
-          "line": 478
+          "line": 476
         },
         {
           "event": "bindtap",
@@ -8495,7 +8479,7 @@
           "tag": "button",
           "label": "生成并核对预览",
           "data": {},
-          "line": 492
+          "line": 490
         },
         {
           "event": "bindtap",
@@ -8506,7 +8490,7 @@
             "kind": "message",
             "action": "confirm"
           },
-          "line": 493
+          "line": 491
         },
         {
           "event": "bindtap",
@@ -8517,7 +8501,7 @@
             "kind": "message",
             "action": "send"
           },
-          "line": 494
+          "line": 492
         },
         {
           "event": "bindinput",
@@ -8525,7 +8509,7 @@
           "tag": "textarea",
           "label": "",
           "data": {},
-          "line": 512
+          "line": 510
         },
         {
           "event": "bindtap",
@@ -8533,7 +8517,7 @@
           "tag": "button",
           "label": "保存备注",
           "data": {},
-          "line": 513
+          "line": 511
         },
         {
           "event": "bindtap",
@@ -8541,7 +8525,7 @@
           "tag": "button",
           "label": "生成探索手记草稿",
           "data": {},
-          "line": 518
+          "line": 516
         },
         {
           "event": "bindtap",
@@ -8549,7 +8533,7 @@
           "tag": "button",
           "label": "确认后交付用户",
           "data": {},
-          "line": 522
+          "line": 520
         }
       ],
       "page_methods": [
@@ -11825,7 +11809,7 @@
         "apps/miniprogram/pages/assessment-result/index.json",
         "apps/miniprogram/utils/assessment-dimension-visualization.js"
       ],
-      "source_hash": "b273897cb7cf88cd4eb662211217d95f764d7b6ed29025ea0d2f1acc237e353a",
+      "source_hash": "af04f4020287cd6adc3cc99273397a55efec0dc3b10b5c5ae6f5d61bbaa18680",
       "missing_files": [],
       "visible_text": [
         "正在读取结果...",
@@ -11847,7 +11831,7 @@
           "tag": "button",
           "label": "查看可练习任务",
           "data": {},
-          "line": 138
+          "line": 137
         },
         {
           "event": "bindtap",
@@ -11855,7 +11839,7 @@
           "tag": "button",
           "label": "返回测一测",
           "data": {},
-          "line": 139
+          "line": 138
         }
       ],
       "page_methods": [
@@ -12281,7 +12265,7 @@
         "apps/miniprogram/pages/training-card/index.js",
         "apps/miniprogram/pages/training-card/index.json"
       ],
-      "source_hash": "e3afb72a2c7fb0d2cc55b4f9ebb4d3c0d04a8cdc31f5860e567ed515b8c3b571",
+      "source_hash": "be7c2a7b12a21c81ef53122ce5766806021b663dc52f57ae1987e495c7cf09b2",
       "missing_files": [],
       "visible_text": [
         "训练卡",
@@ -12485,7 +12469,7 @@
         "apps/miniprogram/utils/authGuard.js",
         "apps/miniprogram/utils/resilientForm.js"
       ],
-      "source_hash": "416d2f2e7509a79748df3a508889f436a5df4ee0882d797c66b818f7bb41bd09",
+      "source_hash": "557bfd2037614d909cb1102cd0026ccc88092bb6626306d2fcb113f25e8f6685",
       "missing_files": [],
       "visible_text": [
         "练习打卡",
@@ -12713,7 +12697,7 @@
         "apps/miniprogram/pages/weekly-report/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "35c9715dbf997f6f6afb6abacfd85a044fcb065d6c56d0c0384b0d452fe81ea9",
+      "source_hash": "614297c9f7147dcb19c7a99f8a878624c5ea0e4309f38933218d9ee373e2b445",
       "missing_files": [],
       "visible_text": [
         "本周复盘",
@@ -12904,7 +12888,7 @@
         "apps/miniprogram/utils/authGuard.js",
         "apps/miniprogram/utils/resilientForm.js"
       ],
-      "source_hash": "7936b5e886a5d2e13b35e937e9807b8bd088a32286c216abc2b5d6fcb8256dbc",
+      "source_hash": "72ebdbd5c4380ba601919f70a9ab26baa52d8ce423b22db105e6c9daee769a0a",
       "missing_files": [],
       "visible_text": [
         "人工支持",

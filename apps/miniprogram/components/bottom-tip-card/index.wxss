@@ -3,9 +3,28 @@
   overflow: hidden;
   padding: 26rpx 30rpx;
   border: 1rpx solid var(--safe-border);
-  border-left: 8rpx solid var(--safe-primary);
   border-radius: var(--safe-radius-md);
   background: var(--safe-card);
+}
+
+.bottom-tip-card::before,
+.bottom-tip-card::after {
+  position: absolute;
+  left: 0;
+  width: 7rpx;
+  border-radius: 0 var(--safe-radius-pill) var(--safe-radius-pill) 0;
+  background: var(--safe-primary);
+  content: "";
+}
+
+.bottom-tip-card::before {
+  top: 22rpx;
+  height: 24rpx;
+}
+
+.bottom-tip-card::after {
+  top: 52rpx;
+  height: 38rpx;
 }
 
 .tip-copy {

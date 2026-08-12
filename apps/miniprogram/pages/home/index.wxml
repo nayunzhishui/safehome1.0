@@ -143,10 +143,7 @@
       <view class="line-icon line-icon--feedback" aria-hidden="true"><view class="feedback-tail"></view></view>
       <view class="entry-copy">
         <text class="entry-title entry-title--wrap">{{progressSummary.summaryText}}</text>
-        <text class="entry-subtitle">{{progressSummary.statusText}} · 测评 {{progressSummary.assessmentCount}} · 练习 {{progressSummary.checkinCount}} · 温度 {{progressSummary.thermometerCount}}</text>
-        <text class="summary-detail">常见场景：{{progressSummary.topScene}} · 常见情绪：{{progressSummary.topEmotion}}</text>
-        <text class="summary-next">{{progressSummary.nextAction}}</text>
-        <text class="summary-boundary">{{progressSummary.boundaryNotice}}</text>
+        <text class="entry-subtitle">{{progressSummary.nextAction}}</text>
       </view>
       <text class="entry-arrow" aria-hidden="true">›</text>
     </button>

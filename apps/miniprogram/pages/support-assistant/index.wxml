@@ -1,6 +1,5 @@
 <view class="page-shell" aria-label="支持性问答页面">
   <view class="page-header">
-    <text class="page-kicker">支持性问答</text>
     <text class="page-title">把问题缩小到下一步</text>
   </view>
 
@@ -27,62 +26,12 @@
   </view>
 
   <block wx:else>
-    <view class="boundary-note">
-      <text class="section-title">使用边界</text>
-      <text class="section-copy">{{boundary}}</text>
-      <button
-        wx:if="{{!consented}}"
-        class="consent-button"
-        hover-class="button-pressed"
-        aria-label="确认已阅读使用边界并同意AI辅助处理"
-        disabled="{{sending}}"
-        bindtap="enableConsent"
-      >{{sending ? '正在记录' : '阅读并同意 AI 辅助处理'}}</button>
-      <view wx:else class="consent-status" role="status">
-        <view class="consent-check" aria-hidden="true">✓</view>
-        <text>已记录本次选择</text>
-      </view>
-      <text wx:if="{{error && !consented}}" class="inline-error">{{error}}</text>
-    </view>
+    <boundary-note text="{{boundary}}" consented="{{consented}}" sending="{{sending}}" error="{{error}}" bind:confirm="enableConsent" />
 
     <view wx:if="{{messages.length}}" class="conversation" aria-live="polite">
-      <view
-        wx:for="{{messages}}"
-        wx:key="id"
-        class="message message--{{item.role}}"
-      >
-        <text class="message-label">{{item.role === 'user' ? '你' : '支持性整理'}}</text>
-        <text class="message-content">{{item.content}}</text>
-        <view wx:if="{{item.citations && item.citations.length}}" class="citations">
-          <text class="citation-title">参考来源</text>
-          <text wx:for="{{item.citations}}" wx:key="version_id" class="citation-item">{{index + 1}}. {{item.title}}</text>
-        </view>
-      </view>
+      <conversation-entry wx:for="{{messages}}" wx:key="id" message="{{item}}" />
     </view>
 
-    <view class="composer">
-      <view class="composer-head">
-        <text class="composer-label">你的问题或想法</text>
-        <text class="composer-counter">{{question.length}}/1000</text>
-      </view>
-      <textarea
-        class="question-input"
-        aria-label="输入你的问题或想法，最多一千字"
-        value="{{question}}"
-        maxlength="1000"
-        placeholder="例如：情绪升高时，我可以先做什么？"
-        placeholder-class="question-placeholder"
-        bindinput="onQuestionInput"
-        disabled="{{sending}}"
-      />
-      <text wx:if="{{error && consented}}" class="inline-error">{{error}}</text>
-      <button
-        class="send-button"
-        hover-class="button-pressed"
-        aria-label="整理一个小步骤"
-        disabled="{{sending || !question || !consented}}"
-        bindtap="sendQuestion"
-      >{{sending ? '正在整理' : '整理一个小步骤'}}</button>
-    </view>
+    <question-composer value="{{question}}" sending="{{sending}}" disabled="{{!question || !consented}}" error="{{error && consented ? error : ''}}" bind:input="onQuestionInput" bind:submit="sendQuestion" />
   </block>
 </view>

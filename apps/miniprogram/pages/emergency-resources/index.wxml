@@ -1,6 +1,5 @@
 <view class="safe-page emergency-page" role="main" aria-label="现实支持资源">
   <view class="emergency-header">
-    <text class="page-kicker">现实资源</text>
     <text class="page-title">先把人连接上</text>
     <view class="header-rule" aria-hidden="true"></view>
   </view>
@@ -8,16 +7,7 @@
   <view class="resource-intro" role="note">这里不提供热线号码库，也不判断你是否处于危机。紧急时，请优先找能真实到场或及时回应的帮助。</view>
 
   <view class="resource-list" aria-label="现实支持方向">
-    <view wx:for="{{resources}}" wx:key="title" class="resource-row">
-      <view class="resource-corner" aria-hidden="true">
-        <view class="resource-corner__vertical"></view>
-        <view class="resource-corner__top"></view>
-      </view>
-      <view class="resource-copy">
-        <text class="resource-title">{{item.title}}</text>
-        <text class="resource-text">{{item.text}}</text>
-      </view>
-    </view>
+    <resource-channel-row wx:for="{{resources}}" wx:key="title" title="{{item.title}}" text="{{item.text}}" />
   </view>
 
   <view class="boundary-note">

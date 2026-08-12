@@ -1,7 +1,6 @@
 <view class="safe-page messages-page" role="main" aria-label="消息">
   <view class="messages-header">
-    <text class="page-kicker">消息提醒</text>
-    <text class="page-title">需要你看看</text>
+    <text class="page-title">消息</text>
   </view>
 
   <view class="messages-content">
@@ -16,31 +15,16 @@
     </block>
 
     <view wx:elif="{{messages.length}}" class="message-list">
-      <button
+      <message-row
         wx:for="{{messages}}"
         wx:key="id"
-        class="message-row {{item.is_unread ? 'message-row--unread' : ''}} {{item.is_withdrawn ? 'message-row--withdrawn' : ''}}"
-        aria-label="{{item.is_withdrawn ? '已撤回消息：' : (item.is_unread ? '未读消息：' : '已读消息：')}}{{item.title}}"
-        data-id="{{item.id}}"
-        bindtap="openMessage"
-      >
-        <view wx:if="{{item.is_unread}}" class="unread-marker" aria-hidden="true"></view>
-        <view class="message-copy">
-          <text class="message-title">{{item.title}}</text>
-          <text class="message-body">{{item.is_withdrawn ? '研究者已撤回这条内容，请忽略此前版本。' : (item.body || '打开查看详情。')}}</text>
-          <view class="message-meta">
-            <text class="message-time">{{item.sender_role ? '研究者补充 · ' : ''}}{{item.created_at}}{{item.delivery_version ? ' · 第 ' + item.delivery_version + ' 版' : ''}}</text>
-            <text class="message-status {{item.is_unread ? 'message-status--unread' : ''}}">{{item.is_withdrawn ? '已撤回' : (item.is_unread ? '未读' : '已读')}}</text>
-          </view>
-        </view>
-      </button>
+        message="{{item}}"
+        bind:open="openMessage"
+      />
     </view>
 
     <page-state wx:else kind="empty" title="暂时没有新消息" description="如果研究者后续补充反馈，会出现在这里。" />
   </view>
 
-  <view class="message-boundary">
-    <view class="message-boundary__rule" aria-hidden="true"></view>
-    <text class="message-boundary__text">消息只用于补充说明和支持提醒，不替代紧急帮助。</text>
-  </view>
+  <bottom-tip-card text="消息用于补充说明和支持提醒，不替代紧急帮助。" />
 </view>

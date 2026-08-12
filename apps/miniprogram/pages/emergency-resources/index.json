@@ -1,3 +1,4 @@
 {
-  "navigationBarTitleText": "紧急帮助说明"
+  "navigationBarTitleText": "紧急帮助说明",
+  "usingComponents": {"resource-channel-row": "/components/resource-channel-row/index"}
 }

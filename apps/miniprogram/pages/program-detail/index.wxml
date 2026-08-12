@@ -1,6 +1,5 @@
 <view class="safe-page program-detail-page" wx:if="{{program}}" role="main" aria-label="项目详情">
   <view class="safe-card hero-card">
-    <text class="program-kicker">项目测试</text>
     <text class="program-title">{{program.title}}</text>
   </view>
 

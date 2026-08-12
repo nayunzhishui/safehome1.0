@@ -353,7 +353,7 @@
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-12T18:38:05+08:00`
+生成时间：`2026-08-12T20:21:33+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -362,11 +362,11 @@
 ### 01：安心陪伴 `pages/home/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`39dac10824cbfd81ca165530848fdcff30ddbfbe341f9942208abbdf44e6db18`
+- 源码指纹：`755a8230f81978d8a65a1a266dae310f6f981f5ea09fa70efb06936ae226cd6b`
 - 核对文件：`apps/miniprogram/pages/home/index.wxml`、`apps/miniprogram/pages/home/index.wxss`、`apps/miniprogram/pages/home/index.js`、`apps/miniprogram/pages/home/index.json`
 - 上游页面：`pages/login/index`、`pages/register/index`、`pages/messages/index`、`pages/emergency-guide/index`、`pages/hot-topics/index`、`pages/checkin/index`、`pages/weekly-report/index`、`pages/supervision/index`
 - 页面组件：`journey-action-card` → `/components/journey-action-card/index`
-- 主要可见内容：安心陪伴、情绪温度计、今天已记录 次、测一测、了解此刻状态、情绪日记、记录具体小事、如何开始、记录 · 反馈 · 练习、更多、支持性反馈、记录后获得对应反馈、训练中心、查看训练计划与练习、人工支持、提交非实时支持请求、最近记录、还没有保存的记录、可以先写下一件刚发生的小事、去记录、阶段性反馈、· 测评 · 练习 · 温度、常见场景： · 常见情绪：、记录还不够，继续观察
+- 主要可见内容：安心陪伴、情绪温度计、今天已记录 次、测一测、了解此刻状态、情绪日记、记录具体小事、如何开始、记录 · 反馈 · 练习、更多、支持性反馈、记录后获得对应反馈、训练中心、查看训练计划与练习、人工支持、提交非实时支持请求、最近记录、还没有保存的记录、可以先写下一件刚发生的小事、去记录、阶段性反馈、记录还不够，继续观察、完成更多记录后，这里会呈现阶段摘要、查看说明
 
 #### 交互与用户任务证据
 
@@ -385,9 +385,9 @@
 | 114 | — | `bindtap` | `openDiaryHistory` | — |
 | 123 | — | `bindtap` | `startDiary` | — |
 | 142 | — | `bindtap` | `openWeeklyReport` | — |
-| 153 | — | `bindaction` | `retryHomeData` | — |
-| 161 | — | `bindtap` | `openWeeklyReport` | — |
-| 173 | 进入联调测试页 | `bindtap` | `openIntegrationTest` | — |
+| 150 | — | `bindaction` | `retryHomeData` | — |
+| 158 | — | `bindtap` | `openWeeklyReport` | — |
+| 170 | 进入联调测试页 | `bindtap` | `openIntegrationTest` | — |
 
 #### 接口真值
 
@@ -515,19 +515,19 @@
 ### 04：消息 `pages/messages/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`b28793a6887095b616bbe278e991879387b411ee0922e0877cfce40d02fecdf5`
+- 源码指纹：`c84098ba4693062570f72303b2351d50574c8aee19fe081f2a027ff335e0be81`
 - 核对文件：`apps/miniprogram/pages/messages/index.wxml`、`apps/miniprogram/pages/messages/index.wxss`、`apps/miniprogram/pages/messages/index.js`、`apps/miniprogram/pages/messages/index.json`、`apps/miniprogram/utils/errorDiagnostics.js`
 - 上游页面：`pages/home/index`、`pages/growth-dashboard/index`、`pages/profile/index`
-- 页面组件：`page-state` → `/components/page-state/index`
-- 主要可见内容：消息提醒、需要你看看、请求编号： · 服务版本：、复制诊断信息、消息只用于补充说明和支持提醒，不替代紧急帮助。
+- 页面组件：`page-state` → `/components/page-state/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`message-row` → `/components/message-row/index`
+- 主要可见内容：消息、请求编号： · 服务版本：、复制诊断信息
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 11 | {{needsLogin ?  | `bindaction` | `handleStateAction` | — |
-| 14 | 复制本次错误的诊断信息 | `bindtap` | `copyDiagnostic` | — |
-| 19 | {{item.is_withdrawn ?  | `bindtap` | `openMessage` | {'id': '{{item.id}}'} |
+| 10 | {{needsLogin ?  | `bindaction` | `handleStateAction` | — |
+| 13 | 复制本次错误的诊断信息 | `bindtap` | `copyDiagnostic` | — |
+| 18 | — | `bindopen` | `openMessage` | — |
 
 #### 接口真值
 
@@ -540,7 +540,7 @@
 - 下游路由：`navigateTo` → `/pages/message-detail/index?id=:dynamic`（js:50）、`reLaunch` → `/pages/home/index`（js:71）、`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fmessages%2Findex`（js:75）、`navigateTo` → `/pages/register/index?redirect=%2Fpages%2Fmessages%2Findex`（js:79）
 - 本地存储：—
 - WXML 数据绑定：`loading`、`errorMessage`、`needsLogin`、`errorDiagnostic`、`messages`、`item`
-- 条件状态：`loading`、`errorMessage`、`errorDiagnostic`、`messages`、`item`
+- 条件状态：`loading`、`errorMessage`、`errorDiagnostic`、`messages`
 - `setData` 状态：`loading`、`errorMessage`、`errorDiagnostic`、`needsLogin`、`messages`、`unreadCount`
 - 未解析事件：—
 - 未解析 API：—
@@ -555,20 +555,20 @@
 ### 05：支持性问答 `pages/support-assistant/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`17bfa2cf155cffc8a32ad592056c4fbf96120e4052e181af77d7b0ff6c54d965`
+- 源码指纹：`2a5ae8ee425b686490a6701173f16ad47f6cc8422dbc3d0f69285e37a1cab7f4`
 - 核对文件：`apps/miniprogram/pages/support-assistant/index.wxml`、`apps/miniprogram/pages/support-assistant/index.wxss`、`apps/miniprogram/pages/support-assistant/index.js`、`apps/miniprogram/pages/support-assistant/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/profile/index`
-- 页面组件：—
-- 主要可见内容：支持性问答、把问题缩小到下一步、当前未开放、你仍可使用情绪记录、训练卡和人工支持。、使用边界、已记录本次选择、参考来源、你的问题或想法
+- 页面组件：`page-state` → `/components/page-state/index`、`boundary-note` → `/components/boundary-note/index`、`conversation-entry` → `/components/conversation-entry/index`、`question-composer` → `/components/question-composer/index`
+- 主要可见内容：把问题缩小到下一步、当前未开放、你仍可使用情绪记录、训练卡和人工支持。
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 14 | 当前未开放 | `bindaction` | `loadStatus` | — |
-| 33 | 确认已阅读使用边界并同意AI辅助处理 | `bindtap` | `enableConsent` | — |
-| 68 | 输入你的问题或想法，最多一千字 | `bindinput` | `onQuestionInput` | — |
-| 79 | 整理一个小步骤 | `bindtap` | `sendQuestion` | — |
+| 13 | 当前未开放 | `bindaction` | `loadStatus` | — |
+| 29 | — | `bindconfirm` | `enableConsent` | — |
+| 35 | — | `bindinput` | `onQuestionInput` | — |
+| 35 | — | `bindsubmit` | `sendQuestion` | — |
 
 #### 接口真值
 
@@ -583,8 +583,8 @@
 
 - 下游路由：`redirectTo` → `/pages/login/index?redirect=%2Fpages%2Fsupport-assistant%2Findex`（js:21）、`navigateTo` → `/pages/login/index:dynamic`（js:138）
 - 本地存储：`getStorageSync` `auth_token`（JS:114）、`getStorageSync` `auth_user`（JS:118）、`removeStorageSync` `auth_token`（JS:144）、`removeStorageSync` `auth_user`（JS:145）
-- WXML 数据绑定：`loading`、`error`、`boundary`、`sending`、`messages`、`item`、`index`、`question`
-- 条件状态：`loading`、`error`、`enabled`、`consented`、`messages`、`item`
+- WXML 数据绑定：`loading`、`error`、`boundary`、`consented`、`sending`、`messages`、`item`、`question`
+- 条件状态：`loading`、`error`、`enabled`、`messages`
 - `setData` 状态：`loading`、`error`、`enabled`、`boundary`、`sending`、`consented`、`question`、`sessionId`、`messages`、`role`、`content`、`citations`
 - 未解析事件：—
 - 未解析 API：—
@@ -641,18 +641,18 @@
 ### 07：紧急安全指引 `pages/emergency-guide/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`932b3b67f9519462f1307c77cbd3c90b0728caad121fc3d2f210b8231cc0ebd6`
+- 源码指纹：`7bca534bdedb5a381b92fb5f64693acc8e659d88371fe4a52923791bcfd0dd3a`
 - 核对文件：`apps/miniprogram/pages/emergency-guide/index.wxml`、`apps/miniprogram/pages/emergency-guide/index.wxss`、`apps/miniprogram/pages/emergency-guide/index.js`、`apps/miniprogram/pages/emergency-guide/index.json`
 - 上游页面：`pages/emergency-resources/index`、`pages/profile/index`、`pages/feedback-result/index`
-- 页面组件：—
-- 主要可见内容：安全优先、先找现实帮助、如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。、现在先做、只用于稳定当下，不替代专业帮助、5-4-3-2-1 接地法、把注意力拉回此刻、重要边界、本小程序不能提供实时危机干预、医疗诊断或法律判断。遇到紧急安全风险时，请先使用现实资源。、查看现实支持资源、回到首页
+- 页面组件：`safety-action-row` → `/components/safety-action-row/index`
+- 主要可见内容：先找现实帮助、如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。、现在先做、只用于稳定当下，不替代专业帮助、5-4-3-2-1 接地法、把注意力拉回此刻、重要边界、本小程序不能提供实时危机干预、医疗诊断或法律判断。遇到紧急安全风险时，请先使用现实资源。、查看现实支持资源、回到首页
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 39 | 查看现实支持资源 | `bindtap` | `openResources` | — |
-| 40 | 回到首页 | `bindtap` | `goHome` | — |
+| 32 | 查看现实支持资源 | `bindtap` | `openResources` | — |
+| 33 | 回到首页 | `bindtap` | `goHome` | — |
 
 #### 接口真值
 
@@ -680,17 +680,17 @@
 ### 08：紧急帮助说明 `pages/emergency-resources/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`05725ad35cbddae7f0c8240ece5a4c41854a4dd4d98b93a7fc030d9572d15376`
+- 源码指纹：`550e049641b205b2bd1f98af274d8dd5a85e414baea509a970522aca49e2231d`
 - 核对文件：`apps/miniprogram/pages/emergency-resources/index.wxml`、`apps/miniprogram/pages/emergency-resources/index.wxss`、`apps/miniprogram/pages/emergency-resources/index.js`、`apps/miniprogram/pages/emergency-resources/index.json`
 - 上游页面：`pages/emergency-guide/index`、`pages/profile/index`
-- 页面组件：—
-- 主要可见内容：现实资源、先把人连接上、这里不提供热线号码库，也不判断你是否处于危机。紧急时，请优先找能真实到场或及时回应的帮助。、使用边界、本工具不能替代紧急服务、线下专业评估、法律判断或医疗诊断。安全风险出现时，请先停止独自处理。、查看紧急安全指引
+- 页面组件：`resource-channel-row` → `/components/resource-channel-row/index`
+- 主要可见内容：先把人连接上、这里不提供热线号码库，也不判断你是否处于危机。紧急时，请优先找能真实到场或及时回应的帮助。、使用边界、本工具不能替代紧急服务、线下专业评估、法律判断或医疗诊断。安全风险出现时，请先停止独自处理。、查看紧急安全指引
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 29 | 查看紧急安全指引 | `bindtap` | `goGuide` | — |
+| 19 | 查看紧急安全指引 | `bindtap` | `goGuide` | — |
 
 #### 接口真值
 
@@ -718,18 +718,18 @@
 ### 09：三步开始 `pages/getting-started/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`6918aa6be2f636a12989a93295531e61bfdbdd0a1e3c4cdb5b7f469e652279bf`
+- 源码指纹：`51a242b663c9c40481b1d34b54d9021773b64e3f7a5eede9af2d712052c5c617`
 - 核对文件：`apps/miniprogram/pages/getting-started/index.wxml`、`apps/miniprogram/pages/getting-started/index.wxss`、`apps/miniprogram/pages/getting-started/index.js`、`apps/miniprogram/pages/getting-started/index.json`
 - 上游页面：`pages/home/index`
 - 页面组件：—
-- 主要可见内容：三步开始、从一件具体小事开始、写一个片段、标一个位置、做一个动作、把事件放进以下七个位置，梳理发生的全过程：、记录一次 → 查看反馈线索 → 去训练中心练一个小动作、使用边界、记录一次、去训练中心
+- 主要可见内容：从一件具体小事开始、写一个片段、标一个位置、做一个动作、把事件放进以下七个位置，梳理发生的全过程：、记录一次 → 查看反馈线索 → 去训练中心练一个小动作、使用边界、记录一次、去训练中心
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 71 | 记录一次 | `bindtap` | `startDiary` | — |
-| 72 | 去训练中心 | `bindtap` | `openTraining` | — |
+| 70 | 记录一次 | `bindtap` | `startDiary` | — |
+| 71 | 去训练中心 | `bindtap` | `openTraining` | — |
 
 #### 接口真值
 
@@ -757,34 +757,33 @@
 ### 10：情绪温度计 `pages/thermometer/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`2152601e71ce56291683e33c18976cf394fe850f90d4499fdd72a37bcf74b112`
+- 源码指纹：`1bb681dcd4258a11a426c15cbb5864bf20edddbe5e85318e11e9d3ae93e43c18`
 - 核对文件：`apps/miniprogram/pages/thermometer/index.wxml`、`apps/miniprogram/pages/thermometer/index.wxss`、`apps/miniprogram/pages/thermometer/index.js`、`apps/miniprogram/pages/thermometer/index.json`、`apps/miniprogram/utils/chart.js`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/home/index`
-- 页面组件：—
-- 主要可见内容：情绪温度计、现在的强度、也可以点按调节、补充观察（可保持默认）、愉悦度、身体唤起、可控感、刚刚记录完成、先看见这一次、去练一张卡、今日曲线、共 次，平均、刷新、正在读取今天的记录…、· 强度 / 10、今天还没有记录、先记录一次，再看曲线。、暂时没能完成、重试读取、今天的记录、强度 / 10、· 愉悦 · 唤起 · 可控、记录后会按时间显示在这里。
+- 页面组件：`intensity-scale` → `/components/intensity-scale/index`
+- 主要可见内容：情绪温度计、现在的强度、补充观察（可保持默认）、愉悦度、身体唤起、可控感、刚刚记录完成、先看见这一次、去练一张卡、今日曲线、共 次，平均、刷新、正在读取今天的记录…、· 强度 / 10、今天还没有记录、先记录一次，再看曲线。、暂时没能完成、重试读取、今天的记录、强度 / 10、· 愉悦 · 唤起 · 可控、记录后会按时间显示在这里。
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 26 | 调整情绪强度 | `bindtap` | `onThermometerTap` | — |
-| 26 | 调整情绪强度 | `bindtouchmove` | `onThermometerMove` | — |
-| 47 | 情绪强度减一 | `bindtap` | `decreaseIntensity` | — |
-| 48 | 情绪强度加一 | `bindtap` | `increaseIntensity` | — |
-| 60 | 调整愉悦度 | `bindchange` | `onValenceChange` | — |
-| 60 | 调整愉悦度 | `bindchanging` | `onValenceChange` | — |
-| 67 | 调整身体唤起 | `bindchange` | `onArousalChange` | — |
-| 67 | 调整身体唤起 | `bindchanging` | `onArousalChange` | — |
-| 74 | 调整可控感 | `bindchange` | `onControlChange` | — |
-| 74 | 调整可控感 | `bindchanging` | `onControlChange` | — |
-| 78 | / 40 | `bindinput` | `onEmotionLabelInput` | — |
-| 88 | / 200 | `bindinput` | `onBriefInput` | — |
-| 99 | — | `bindtap` | `saveRecord` | — |
-| 108 | 收起记录回执 | `bindtap` | `dismissReceipt` | — |
-| 112 | 去练一张卡 | `bindtap` | `openPractice` | — |
-| 121 | 刷新 | `bindtap` | `loadDay` | — |
-| 124 | 今日情绪强度变化曲线，具体记录见下方列表 | `bindtouchstart` | `handleCanvasTap` | — |
-| 144 | 重试读取 | `bindtap` | `loadDay` | — |
+| 13 | − | `bindchange` | `onIntensityChange` | — |
+| 17 | 情绪强度减一 | `bindtap` | `decreaseIntensity` | — |
+| 18 | 情绪强度加一 | `bindtap` | `increaseIntensity` | — |
+| 30 | 调整愉悦度 | `bindchange` | `onValenceChange` | — |
+| 30 | 调整愉悦度 | `bindchanging` | `onValenceChange` | — |
+| 37 | 调整身体唤起 | `bindchange` | `onArousalChange` | — |
+| 37 | 调整身体唤起 | `bindchanging` | `onArousalChange` | — |
+| 44 | 调整可控感 | `bindchange` | `onControlChange` | — |
+| 44 | 调整可控感 | `bindchanging` | `onControlChange` | — |
+| 48 | / 40 | `bindinput` | `onEmotionLabelInput` | — |
+| 58 | / 200 | `bindinput` | `onBriefInput` | — |
+| 69 | — | `bindtap` | `saveRecord` | — |
+| 78 | 收起记录回执 | `bindtap` | `dismissReceipt` | — |
+| 82 | 去练一张卡 | `bindtap` | `openPractice` | — |
+| 91 | 刷新 | `bindtap` | `loadDay` | — |
+| 94 | 今日情绪强度变化曲线，具体记录见下方列表 | `bindtouchstart` | `handleCanvasTap` | — |
+| 115 | 重试读取 | `bindtap` | `loadDay` | — |
 
 #### 接口真值
 
@@ -794,10 +793,10 @@
 
 #### 路由、本地状态与页面状态
 
-- 下游路由：`navigateTo` → `/pages/training-card/index`（js:171）、`navigateTo` → `/pages/login/index:dynamic`（js:352）
-- 本地存储：`getStorageSync` `auth_token`（JS:328）、`getStorageSync` `auth_user`（JS:332）、`removeStorageSync` `auth_token`（JS:358）、`removeStorageSync` `auth_user`（JS:359）
-- WXML 数据绑定：`intensityLevel`、`intensityPercent`、`valenceLevel`、`arousalLevel`、`controlLevel`、`emotionLabel`、`briefText`、`saving`、`receipt`、`item`、`loading`、`summary`、`selectedPoint`、`errorMessage`、`records`、`boundaryNotice`
-- 条件状态：`receipt`、`loading`、`selectedPoint`、`summary`、`errorMessage`、`item`、`records`
+- 下游路由：`navigateTo` → `/pages/training-card/index`（js:152）、`navigateTo` → `/pages/login/index:dynamic`（js:333）
+- 本地存储：`getStorageSync` `auth_token`（JS:309）、`getStorageSync` `auth_user`（JS:313）、`removeStorageSync` `auth_token`（JS:339）、`removeStorageSync` `auth_user`（JS:340）
+- WXML 数据绑定：`intensityLevel`、`valenceLevel`、`arousalLevel`、`controlLevel`、`emotionLabel`、`briefText`、`saving`、`receipt`、`item`、`loading`、`summary`、`selectedPoint`、`errorMessage`、`records`、`boundaryNotice`
+- 条件状态：`receipt`、`loading`、`summary`、`selectedPoint`、`errorMessage`、`item`、`records`
 - `setData` 状态：`intensityLevel`、`intensityPercent`、`valenceLevel`、`arousalLevel`、`controlLevel`、`emotionLabel`、`briefText`、`loading`、`errorMessage`、`records`、`timeLabel`、`saving`、`receipt`、`selectedPoint`
 - 未解析事件：—
 - 未解析 API：—
@@ -858,22 +857,22 @@
 ### 12：训练记录 `pages/training-history/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`407b6466607db32f9b9d031a1f626af5d566b83de09bf5e2e24c291c55caddbe`
+- 源码指纹：`b4dfb91e1f68caf4b11dc478c977d372419a35957002ea78aaf1df1bc313d4f5`
 - 核对文件：`apps/miniprogram/pages/training-history/index.wxml`、`apps/miniprogram/pages/training-history/index.wxss`、`apps/miniprogram/pages/training-history/index.js`、`apps/miniprogram/pages/training-history/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/errorDiagnostics.js`
 - 上游页面：`pages/profile/index`
 - 页面组件：—
-- 主要可见内容：训练记录、看见已经完成的小练习、次记录、正在读取训练记录、记录暂时没有加载成功、请求编号： · 服务版本：、重新加载、复制诊断信息、再次练习、已显示全部 次记录、还没有训练记录、完成一张训练卡并打卡后，记录会出现在这里。、去训练中心
+- 主要可见内容：看见已经完成的小练习、次记录、正在读取训练记录、记录暂时没有加载成功、请求编号： · 服务版本：、重新加载、复制诊断信息、再次练习、已显示全部 次记录、还没有训练记录、完成一张训练卡并打卡后，记录会出现在这里。、去训练中心
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 21 | 重新加载 | `bindtap` | `retry` | — |
-| 22 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | — |
-| 35 | 再次练习 | `bindtap` | `openCard` | {'card-id': '{{item.card_id}}'} |
-| 38 | — | `bindtap` | `loadMore` | — |
-| 41 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | — |
-| 48 | 去训练中心 | `bindtap` | `goTraining` | — |
+| 20 | 重新加载 | `bindtap` | `retry` | — |
+| 21 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | — |
+| 34 | 再次练习 | `bindtap` | `openCard` | {'card-id': '{{item.card_id}}'} |
+| 37 | — | `bindtap` | `loadMore` | — |
+| 40 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | — |
+| 47 | 去训练中心 | `bindtap` | `goTraining` | — |
 
 #### 接口真值
 
@@ -901,7 +900,7 @@
 ### 13：个性化训练方案 `pages/personalized-plan/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`6d7549c276304d1db64cb1a3601dc5c9ad3f4081c5d9166fb7586cd815c6bf98`
+- 源码指纹：`eb25dc95a6bca76c8f6a85b762019a518227f2f25dec0b65de53a6b5f5b55c0e`
 - 核对文件：`apps/miniprogram/pages/personalized-plan/index.wxml`、`apps/miniprogram/pages/personalized-plan/index.wxss`、`apps/miniprogram/pages/personalized-plan/index.js`、`apps/miniprogram/pages/personalized-plan/index.json`
 - 上游页面：`pages/training/index`
 - 页面组件：—
@@ -988,26 +987,26 @@
 ### 15：项目详情 `pages/program-detail/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`71bdeae08112361f98bdad145e6c8d4007acb448f712285884994c52bf1dc5a7`
+- 源码指纹：`33c52e7b39a59708ce6d5817fab3e9a5ff749bd6a2de73d219810e3a47cd10bd`
 - 核对文件：`apps/miniprogram/pages/program-detail/index.wxml`、`apps/miniprogram/pages/program-detail/index.wxss`、`apps/miniprogram/pages/program-detail/index.js`、`apps/miniprogram/pages/program-detail/index.json`
 - 上游页面：`pages/home/index`、`pages/program-list/index`
 - 页面组件：—
-- 主要可见内容：项目测试、· 方案、研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。、参与前先了解、适合参加的基本条件、这些情况先不要继续、可选替代：、项目记录节奏、用于安排开始前、练习中和完成后的阶段记录。、第 节、预计 分钟、练习步骤、书写提示、保存本机草稿、反思问题、完成标准：、停止提示：、练习前不适程度： / 10、练习后不适程度： / 10、这次练习出现了明显不适或负面体验，需要后续关注。、允许将本次内容用于脱敏聚合分析，不默认展示原文。、登录后正式提交、我已提交的项目记录、提交内容会保留在本人记录中，并按授权范围供研究者只读查看。
+- 主要可见内容：· 方案、研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。、参与前先了解、适合参加的基本条件、这些情况先不要继续、可选替代：、项目记录节奏、用于安排开始前、练习中和完成后的阶段记录。、第 节、预计 分钟、练习步骤、书写提示、保存本机草稿、反思问题、完成标准：、停止提示：、练习前不适程度： / 10、练习后不适程度： / 10、这次练习出现了明显不适或负面体验，需要后续关注。、允许将本次内容用于脱敏聚合分析，不默认展示原文。、登录后正式提交、我已提交的项目记录、提交内容会保留在本人记录中，并按授权范围供研究者只读查看。、已提交
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 56 | 第 节 | `bindtap` | `selectSession` | {'session-no': '{{item.session_no}}'} |
-| 83 | 保存本机草稿 | `bindinput` | `onDraftInput` | — |
-| 84 | 保存本机草稿 | `bindtap` | `saveDraft` | — |
-| 91 | — | `bindinput` | `onReflectionInput` | {'index': '{{index}}'} |
-| 108 | 练习后不适程度： / 10 | `bindchange` | `onDistressBeforeChange` | — |
-| 110 | 这次练习出现了明显不适或负面体验，需要后续关注。 | `bindchange` | `onDistressAfterChange` | — |
-| 111 | 这次练习出现了明显不适或负面体验，需要后续关注。 | `bindchange` | `onAdverseResponseChange` | — |
-| 117 | 允许将本次内容用于脱敏聚合分析，不默认展示原文。 | `bindchange` | `onAnalysisConsentChange` | — |
-| 125 | 登录后正式提交 | `bindtap` | `submitEntry` | — |
-| 149 | 重试 | `bindtap` | `retryLoad` | — |
+| 55 | 第 节 | `bindtap` | `selectSession` | {'session-no': '{{item.session_no}}'} |
+| 82 | 保存本机草稿 | `bindinput` | `onDraftInput` | — |
+| 83 | 保存本机草稿 | `bindtap` | `saveDraft` | — |
+| 90 | — | `bindinput` | `onReflectionInput` | {'index': '{{index}}'} |
+| 107 | 练习后不适程度： / 10 | `bindchange` | `onDistressBeforeChange` | — |
+| 109 | 这次练习出现了明显不适或负面体验，需要后续关注。 | `bindchange` | `onDistressAfterChange` | — |
+| 110 | 这次练习出现了明显不适或负面体验，需要后续关注。 | `bindchange` | `onAdverseResponseChange` | — |
+| 116 | 允许将本次内容用于脱敏聚合分析，不默认展示原文。 | `bindchange` | `onAnalysisConsentChange` | — |
+| 124 | 登录后正式提交 | `bindtap` | `submitEntry` | — |
+| 148 | 重试 | `bindtap` | `retryLoad` | — |
 
 #### 接口真值
 
@@ -1036,21 +1035,21 @@
 ### 16：关系探索试点 `pages/relationship-pilot/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`26122046a6eeed8dd283a3837e47130c4ec983175360af9f6c3bd712469e6378`
+- 源码指纹：`300ac00b2054ea06e034e9795cc197cb4be7998c9d5c5d0a89f142a8bc2b6926`
 - 核对文件：`apps/miniprogram/pages/relationship-pilot/index.wxml`、`apps/miniprogram/pages/relationship-pilot/index.wxss`、`apps/miniprogram/pages/relationship-pilot/index.js`、`apps/miniprogram/pages/relationship-pilot/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/training/index`、`pages/relationship-growth/index`、`pages/growth-dashboard/index`
 - 页面组件：`journey-action-card` → `/components/journey-action-card/index`
-- 主要可见内容：项目试点 · 大学生关系探索、一次只走好当前这一步、从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。、正在读取你的探索进度...、当前仅向学生试点账号开放、你仍可使用情绪记录、训练卡和其它支持功能。若需参加关系探索试点，请切换到已授权的学生账号。、第一步 · 起点测评与报名、确认是否进入第二阶段、报名会关联你最近一份关系探索测评的维度、阶段性画像与报告。逐行研究数据不会显示给其他用户。、我已阅读并同意将本次测评用于关系探索试点的评估与复盘。、确认报名、还没测评？先完成关系测一测、五阶段探索路径、其它入口、不必一次完成，可以随时回来。、所有画像和报告都只作阶段性观察，不构成诊断、人格标签、关系能力评价或疗效证明。
+- 主要可见内容：一次只走好当前这一步、从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。、正在读取你的探索进度...、当前仅向学生试点账号开放、你仍可使用情绪记录、训练卡和其它支持功能。若需参加关系探索试点，请切换到已授权的学生账号。、第一步 · 起点测评与报名、确认是否进入第二阶段、报名会关联你最近一份关系探索测评的维度、阶段性画像与报告。逐行研究数据不会显示给其他用户。、我已阅读并同意将本次测评用于关系探索试点的评估与复盘。、确认报名、还没测评？先完成关系测一测、五阶段探索路径、其它入口、不必一次完成，可以随时回来。、所有画像和报告都只作阶段性观察，不构成诊断、人格标签、关系能力评价或疗效证明。
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 20 | 我已阅读并同意将本次测评用于关系探索试点的评估与复盘。 | `bindchange` | `toggleConsent` | — |
-| 23 | 确认报名 | `bindtap` | `enroll` | — |
-| 24 | 还没测评？先完成关系测一测 | `bindtap` | `goAssessment` | — |
-| 28 | 关系探索当前步骤 | `bindaction` | `runPrimaryAction` | — |
-| 58 | — | `bindtap` | `runSecondaryAction` | {'action': '{{item.key}}'} |
+| 19 | 我已阅读并同意将本次测评用于关系探索试点的评估与复盘。 | `bindchange` | `toggleConsent` | — |
+| 22 | 确认报名 | `bindtap` | `enroll` | — |
+| 23 | 还没测评？先完成关系测一测 | `bindtap` | `goAssessment` | — |
+| 27 | 关系探索当前步骤 | `bindaction` | `runPrimaryAction` | — |
+| 57 | — | `bindtap` | `runSecondaryAction` | {'action': '{{item.key}}'} |
 
 #### 接口真值
 
@@ -1178,38 +1177,38 @@
 ### 19：关系探索成长记录 `pages/relationship-growth/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`2924277ece6eb85ab7da1960d1775a33c7f90f54f1dbb9adc1dd2b029ac50850`
+- 源码指纹：`4388cef02555be4749eac0923b1c3dffbc821507037495c757f10eaa4c17dcb4`
 - 核对文件：`apps/miniprogram/pages/relationship-growth/index.wxml`、`apps/miniprogram/pages/relationship-growth/index.wxss`、`apps/miniprogram/pages/relationship-growth/index.js`、`apps/miniprogram/pages/relationship-growth/index.json`、`apps/miniprogram/utils/resilientForm.js`
 - 上游页面：`pages/relationship-pilot/index`、`pages/growth-dashboard/index`
-- 页面组件：`visualization-state` → `/components/visualization-state/index`
-- 主要可见内容：变化记录，不是疗效证明、关系探索成长记录、正在读取成长记录...、累计记录、指标组、阶段性反馈、变化曲线、每组数字含义不同，不合并成总分、再记录 次后可查看变化趋势、持续记录，帮助你看见同一指标在不同时间的变化。、数据不足、目前有 个记录点；这里不会根据单次记录判断变化。、最近时间线、先看最近三条，再决定是否展开、查看全部 ›、还没有时间线记录，可以先写下今天的一小步。、成长时间线、按记录类型查看，不急于解释趋势、这一类还没有记录。、系统汇总与研究者补充明确分开、研究者补充、暂时还没有研究者阶段性反馈。、系统汇总、下一步建议：
+- 页面组件：`visualization-state` → `/components/visualization-state/index`、`timeline-record` → `/components/timeline-record/index`
+- 主要可见内容：关系探索成长记录、正在读取成长记录...、累计记录、指标组、阶段性反馈、变化曲线、每组数字含义不同，不合并成总分、再记录 次后可查看变化趋势、持续记录，帮助你看见同一指标在不同时间的变化。、数据不足、目前有 个记录点；这里不会根据单次记录判断变化。、最近时间线、先看最近三条，再决定是否展开、查看全部 ›、还没有时间线记录，可以先写下今天的一小步。、成长时间线、按记录类型查看，不急于解释趋势、这一类还没有记录。、系统汇总与研究者补充明确分开、研究者补充、暂时还没有研究者阶段性反馈。、系统汇总、下一步建议：、用户原话（仅你可见）
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 26 | 查看{{item.label}} | `bindtap` | `selectSection` | {'section': '{{item.key}}'} |
-| 36 | — | `bindtap` | `selectCurveGroup` | {'key': '{{item.key}}'} |
-| 37 | — | `bindtap` | `selectMetric` | {'key': '{{item.key}}'} |
-| 58 | 查看全部 › | `bindtap` | `showAllTimeline` | — |
-| 72 | — | `bindtap` | `selectTimelineFilter` | {'key': '{{item.key}}'} |
-| 86 | 用户原话（仅你可见） | `bindtap` | `toggleSelfNarratives` | — |
-| 94 | 前往关系探索 | `bindtap` | `goRelationshipPilot` | — |
-| 98 | 本周补充记录 | `bindtap` | `toggleRecordPanel` | {'panel': 'weekly'} |
-| 100 | — | `bindinput` | `onFieldInput` | {'key': 'active_social_count'} |
-| 101 | — | `bindinput` | `onFieldInput` | {'key': 'authentic_expression_count'} |
-| 102 | — | `bindinput` | `onFieldInput` | {'key': 'setback_coping'} |
-| 103 | — | `bindchange` | `onSliderChange` | {'key': 'approach_willingness'} |
-| 104 | — | `bindchange` | `onSliderChange` | {'key': 'worry_intensity'} |
-| 105 | — | `bindinput` | `onFieldInput` | {'key': 'achievement'} |
-| 106 | — | `bindinput` | `onFieldInput` | {'key': 'setback'} |
-| 109 | 保存本周记录 | `bindtap` | `saveWeekly` | — |
-| 114 | 记录一个关键事件 | `bindtap` | `toggleRecordPanel` | {'panel': 'event'} |
-| 116 | — | `bindinput` | `onFieldInput` | {'key': 'event_summary'} |
-| 118 | 加入时间线 | `bindtap` | `saveEvent` | — |
-| 124 | 共同理解一次关系体验 | `bindtap` | `goTherapeuticAssessment` | — |
-| 125 | 记录今天的一小步 | `bindtap` | `openRecordSection` | — |
-| 126 | 查看阶段性反馈 | `bindtap` | `showFeedbackSection` | — |
+| 25 | 查看{{item.label}} | `bindtap` | `selectSection` | {'section': '{{item.key}}'} |
+| 35 | — | `bindtap` | `selectCurveGroup` | {'key': '{{item.key}}'} |
+| 36 | — | `bindtap` | `selectMetric` | {'key': '{{item.key}}'} |
+| 57 | 查看全部 › | `bindtap` | `showAllTimeline` | — |
+| 68 | — | `bindtap` | `selectTimelineFilter` | {'key': '{{item.key}}'} |
+| 79 | 用户原话（仅你可见） | `bindtap` | `toggleSelfNarratives` | — |
+| 87 | 前往关系探索 | `bindtap` | `goRelationshipPilot` | — |
+| 91 | 本周补充记录 | `bindtap` | `toggleRecordPanel` | {'panel': 'weekly'} |
+| 93 | — | `bindinput` | `onFieldInput` | {'key': 'active_social_count'} |
+| 94 | — | `bindinput` | `onFieldInput` | {'key': 'authentic_expression_count'} |
+| 95 | — | `bindinput` | `onFieldInput` | {'key': 'setback_coping'} |
+| 96 | — | `bindchange` | `onSliderChange` | {'key': 'approach_willingness'} |
+| 97 | — | `bindchange` | `onSliderChange` | {'key': 'worry_intensity'} |
+| 98 | — | `bindinput` | `onFieldInput` | {'key': 'achievement'} |
+| 99 | — | `bindinput` | `onFieldInput` | {'key': 'setback'} |
+| 102 | 保存本周记录 | `bindtap` | `saveWeekly` | — |
+| 107 | 记录一个关键事件 | `bindtap` | `toggleRecordPanel` | {'panel': 'event'} |
+| 109 | — | `bindinput` | `onFieldInput` | {'key': 'event_summary'} |
+| 111 | 加入时间线 | `bindtap` | `saveEvent` | — |
+| 117 | 共同理解一次关系体验 | `bindtap` | `goTherapeuticAssessment` | — |
+| 118 | 记录今天的一小步 | `bindtap` | `openRecordSection` | — |
+| 119 | 查看阶段性反馈 | `bindtap` | `showFeedbackSection` | — |
 
 #### 接口真值
 
@@ -1763,35 +1762,35 @@
 ### 30：评估质量与更正 `pages/therapeutic-assessment-quality/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`b546a84f1bcb787d92f99c7922e4f2a1ad88d6fb081232e76156a528fb0d1089`
+- 源码指纹：`46858c7f0be5ea0f6caacad9108ed75caf0a0d6b3f15d48b06fc30cb7900e87e`
 - 核对文件：`apps/miniprogram/pages/therapeutic-assessment-quality/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-quality/index.wxss`、`apps/miniprogram/pages/therapeutic-assessment-quality/index.js`、`apps/miniprogram/pages/therapeutic-assessment-quality/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/therapeutic-assessment/index`、`pages/researcher-dashboard/index`
 - 页面组件：—
-- 主要可见内容：支持性评估 · 质量记录、质量与更正、待处理 · 已超时 · 规则、暂时没有处理成功、重新读取、正在读取质量记录、只加载当前账号可查看的对象范围。、生产门禁、更正与投诉、记录哪里不像，或希望如何处理、协作记录、问题类型、具体哪里不像或发生了什么、希望怎样处理、提交更正或投诉、原记录会保留，反馈、异议和处理版本不会被覆盖。、抽检队列、逐项质量复核、项、当前授权范围内没有复核任务、抽检原因： · 截止：、认领这项复核、结论：、修复说明（有修复项时必填）
+- 主要可见内容：质量与更正、当前没有可处理的质量记录、有可查看的评估或更正记录后，会显示在这里。、待处理 · 已超时 · 规则、暂时没有处理成功、重新读取、正在读取质量记录、只加载当前账号可查看的对象范围。、生产门禁、更正与投诉、记录哪里不像，或希望如何处理、协作记录、问题类型、具体哪里不像或发生了什么、希望怎样处理、提交更正或投诉、原记录会保留，反馈、异议和处理版本不会被覆盖。、抽检队列、逐项质量复核、项、当前授权范围内没有复核任务、抽检原因： · 截止：、认领这项复核、结论：
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 15 | 重新读取 | `bindtap` | `loadData` | — |
-| 48 | — | `bindchange` | `onCaseChange` | — |
-| 53 | — | `bindchange` | `onIncidentCategory` | — |
-| 58 | — | `bindinput` | `onFieldInput` | {'key': 'incidentDescription'} |
-| 62 | — | `bindinput` | `onFieldInput` | {'key': 'requestedResolution'} |
-| 64 | 提交更正或投诉 | `bindtap` | `submitIncident` | — |
-| 80 | — | `bindtap` | `selectReview` | {'id': '{{item.id}}'} |
-| 94 | 认领这项复核 | `bindtap` | `claimReview` | — |
-| 98 | 结论： | `bindchange` | `onDimensionStatus` | {'index': '{{index}}'} |
-| 102 | — | `bindinput` | `onDimensionInput` | {'index': '{{index}}', 'key': 'note'} |
-| 103 | — | `bindinput` | `onDimensionInput` | {'index': '{{index}}', 'key': 'evidenceRef'} |
-| 108 | — | `bindinput` | `onFieldInput` | {'key': 'remediationSummary'} |
-| 110 | 提交质量结论 | `bindtap` | `completeReview` | — |
-| 127 | — | `bindtap` | `selectIncident` | {'id': '{{item.id}}'} |
-| 138 | — | `bindinput` | `onFieldInput` | {'key': 'impactSummary'} |
-| 140 | 保存影响分析 | `bindtap` | `analyzeIncident` | — |
-| 143 | 处理动作： | `bindchange` | `onResolutionAction` | — |
-| 148 | — | `bindinput` | `onFieldInput` | {'key': 'resolutionSummary'} |
-| 150 | 独立结案并通知参与者 | `bindtap` | `resolveIncident` | — |
+| 19 | 重新读取 | `bindtap` | `loadData` | — |
+| 52 | — | `bindchange` | `onCaseChange` | — |
+| 57 | — | `bindchange` | `onIncidentCategory` | — |
+| 62 | — | `bindinput` | `onFieldInput` | {'key': 'incidentDescription'} |
+| 66 | — | `bindinput` | `onFieldInput` | {'key': 'requestedResolution'} |
+| 68 | 提交更正或投诉 | `bindtap` | `submitIncident` | — |
+| 84 | — | `bindtap` | `selectReview` | {'id': '{{item.id}}'} |
+| 98 | 认领这项复核 | `bindtap` | `claimReview` | — |
+| 102 | 结论： | `bindchange` | `onDimensionStatus` | {'index': '{{index}}'} |
+| 106 | — | `bindinput` | `onDimensionInput` | {'index': '{{index}}', 'key': 'note'} |
+| 107 | — | `bindinput` | `onDimensionInput` | {'index': '{{index}}', 'key': 'evidenceRef'} |
+| 112 | — | `bindinput` | `onFieldInput` | {'key': 'remediationSummary'} |
+| 114 | 提交质量结论 | `bindtap` | `completeReview` | — |
+| 131 | — | `bindtap` | `selectIncident` | {'id': '{{item.id}}'} |
+| 142 | — | `bindinput` | `onFieldInput` | {'key': 'impactSummary'} |
+| 144 | 保存影响分析 | `bindtap` | `analyzeIncident` | — |
+| 147 | 处理动作： | `bindchange` | `onResolutionAction` | — |
+| 152 | — | `bindinput` | `onFieldInput` | {'key': 'resolutionSummary'} |
+| 154 | 独立结案并通知参与者 | `bindtap` | `resolveIncident` | — |
 
 #### 接口真值
 
@@ -1812,7 +1811,7 @@
 - 下游路由：`navigateTo` → `/pages/login/index:dynamic`（js:374）
 - 本地存储：`getStorageSync` `auth_token`（JS:350）、`getStorageSync` `auth_user`（JS:354）、`removeStorageSync` `auth_token`（JS:380）、`removeStorageSync` `auth_user`（JS:381）
 - WXML 数据绑定：`runtime`、`errorMessage`、`notice`、`loading`、`productionGate`、`productionGateChecks`、`item`、`cases`、`selectedCaseIndex`、`incidentCategoryOptions`、`incidentCategoryIndex`、`incidentDescription`、`requestedResolution`、`saving`、`isReviewRole`、`reviews`、`selectedReview`、`reviewDimensions`、`statusOptions`、`index`、`remediationSummary`、`incidents`、`selectedIncident`、`impactSummary`、`resolutionActionOptions`、`resolutionActionIndex`、`resolutionSummary`
-- 条件状态：`runtime`、`errorMessage`、`notice`、`loading`、`productionGate`、`isReviewRole`、`reviews`、`selectedReview`、`item`、`incidents`、`selectedIncident`
+- 条件状态：`loading`、`runtime`、`errorMessage`、`notice`、`productionGate`、`isReviewRole`、`reviews`、`selectedReview`、`item`、`incidents`、`selectedIncident`
 - `setData` 状态：`userRole`、`isReviewRole`、`isFormalRole`、`selectedCaseId`、`loading`、`errorMessage`、`runtime`、`productionGate`、`selectedReview`、`selectedIncident`、`cases`、`selectedCaseIndex`、`reviews`、`incidents`、`productionGateChecks`、`reviewDimensions`、`remediationSummary`、`saving`、`notice`、`incidentCategoryIndex`、`incidentDescription`、`requestedResolution`、`impactSummary`、`resolutionSummary`、`resolutionActionIndex`
 - 未解析事件：—
 - 未解析 API：—
@@ -1827,24 +1826,24 @@
 ### 31：我的成长仪表盘 `pages/growth-dashboard/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`f3a09a34f69333d195817eab4bfa87b3b9162e372ef83bf2d92df2b32fda3f89`
+- 源码指纹：`c3bcf8ac1f6d12386398a265a702cd8bb89c60e71ccd70456462e76789a06e89`
 - 核对文件：`apps/miniprogram/pages/growth-dashboard/index.wxml`、`apps/miniprogram/pages/growth-dashboard/index.wxss`、`apps/miniprogram/pages/growth-dashboard/index.js`、`apps/miniprogram/pages/growth-dashboard/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/relationship-growth/index`、`pages/profile/index`
-- 页面组件：`page-state` → `/components/page-state/index`、`status-pill` → `/components/status-pill/index`
-- 主要可见内容：四类线索、我的成长、四类线索分别查看，不合成总分、现在可以做什么、记录一件小事、查看练习、情绪温度、1—10分，只与同一量尺的记录比较、记录与练习时间线、只呈现做过的事情，不把次数写成改善、支持性测评、每份量表独立成组，不把不同分值放在同一条曲线上、· 记录值、只在同一量尺再次填写后观察变化，不自动解释好坏。、关系探索单独呈现、不与日记次数或测评分值合并、探索任务、连续记录、阶段报告、关系探索时间线、这里只显示任务、连续记录和阶段报告的事实、共同核对、研究者反馈 条、打开消息列表
+- 页面组件：`page-state` → `/components/page-state/index`、`status-pill` → `/components/status-pill/index`、`timeline-record` → `/components/timeline-record/index`
+- 主要可见内容：我的成长、四类线索分别查看，不合成总分、现在可以做什么、记录一件小事、查看练习、情绪温度、1—10分，只与同一量尺的记录比较、记录与练习时间线、只呈现做过的事情，不把次数写成改善、支持性测评、每份量表独立成组，不把不同分值放在同一条曲线上、只在同一量尺再次填写后观察变化，不自动解释好坏。、关系探索单独呈现、不与日记次数或测评分值合并、探索任务、连续记录、阶段报告、关系探索时间线、这里只显示任务、连续记录和阶段报告的事实、共同核对、研究者反馈 条、打开消息列表
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 10 | 重新读取成长线索 | `bindaction` | `loadGrowth` | — |
-| 14 | 查看{{item.label}}，当前{{item.count}}条线索 | `bindtap` | `selectSection` | {'key': '{{item.key}}'} |
-| 32 | 记录一件小事 | `bindtap` | `startDiary` | — |
-| 33 | 查看练习 | `bindtap` | `openTraining` | — |
-| 59 | — | `bindaction` | `startDiary` | — |
-| 75 | — | `bindaction` | `openAssessment` | — |
-| 88 | — | `bindtap` | `openRelationship` | — |
-| 115 | 打开消息列表 | `bindtap` | `openMessages` | — |
+| 9 | 重新读取成长线索 | `bindaction` | `loadGrowth` | — |
+| 13 | 查看{{item.label}}，当前{{item.count}}条线索 | `bindtap` | `selectSection` | {'key': '{{item.key}}'} |
+| 31 | 记录一件小事 | `bindtap` | `startDiary` | — |
+| 32 | 查看练习 | `bindtap` | `openTraining` | — |
+| 55 | — | `bindaction` | `startDiary` | — |
+| 71 | — | `bindaction` | `openAssessment` | — |
+| 84 | — | `bindtap` | `openRelationship` | — |
+| 108 | 打开消息列表 | `bindtap` | `openMessages` | — |
 
 #### 接口真值
 
@@ -1854,8 +1853,8 @@
 
 #### 路由、本地状态与页面状态
 
-- 下游路由：`navigateTo` → `/pages/diary-form/index`（js:104）、`switchTab` → `/pages/training/index`（js:108）、`navigateTo` → `/pages/assessment/index`（js:112）、`navigateTo` → `/pages/relationship-pilot/index`（js:117）、`navigateTo` → `/pages/relationship-growth/index?detail=1&enrollment_id=:dynamic`（js:120）、`navigateTo` → `/pages/messages/index`（js:126）、`navigateTo` → `/pages/login/index:dynamic`（js:155）
-- 本地存储：`getStorageSync` `auth_token`（JS:131）、`getStorageSync` `auth_user`（JS:135）、`removeStorageSync` `auth_token`（JS:161）、`removeStorageSync` `auth_user`（JS:162）
+- 下游路由：`navigateTo` → `/pages/diary-form/index`（js:108）、`switchTab` → `/pages/training/index`（js:112）、`navigateTo` → `/pages/assessment/index`（js:116）、`navigateTo` → `/pages/relationship-pilot/index`（js:121）、`navigateTo` → `/pages/relationship-growth/index?detail=1&enrollment_id=:dynamic`（js:124）、`navigateTo` → `/pages/messages/index`（js:130）、`navigateTo` → `/pages/login/index:dynamic`（js:159）
+- 本地存储：`getStorageSync` `auth_token`（JS:135）、`getStorageSync` `auth_user`（JS:139）、`removeStorageSync` `auth_token`（JS:165）、`removeStorageSync` `auth_user`（JS:166）
 - WXML 数据绑定：`loading`、`errorMessage`、`growth`、`sectionTabs`、`item`、`activeSection`、`thermometer`、`activityTimeline`、`assessmentGroups`、`score`、`relationshipSummary`、`relationshipTimeline`、`feedbackSummary`、`feedbackTimeline`
 - 条件状态：`loading`、`errorMessage`、`growth`、`activeSection`、`thermometer`、`activityTimeline`、`assessmentGroups`、`relationshipTimeline`、`feedbackTimeline`
 - `setData` 状态：`activeSection`、`requestedEnrollmentId`、`loading`、`errorMessage`、`sectionTabs`、`thermometer`、`dateText`、`width`、`growth`、`active`
@@ -1910,67 +1909,67 @@
 ### 33：研究者移动工作台 `pages/researcher-dashboard/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`b6e650d47951dd12de94f1d01328c8d642d5ab21c3dcb9add45162bdc95d4314`
+- 源码指纹：`454d5bec01a10b1b836e04f974184f63ac4cfe37af50aeb56ac85873a386b48b`
 - 核对文件：`apps/miniprogram/pages/researcher-dashboard/index.wxml`、`apps/miniprogram/pages/researcher-dashboard/index.wxss`、`apps/miniprogram/pages/researcher-dashboard/index.js`、`apps/miniprogram/pages/researcher-dashboard/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/errorDiagnostics.js`
 - 上游页面：`pages/profile/index`
 - 页面组件：—
-- 主要可见内容：研究者移动工作台、先处理重要的一小步、最近同步、重新同步、移动端用于查看摘要、处理提醒和进入试点；完整研究配置与批量工作仍在 Web 完成。、当前离线、已读取内容会保留；联网后下拉刷新或点“重新同步”。、开发全权限模式、普通测试账号临时可读写研究平台，包括权限配置、治疗性评估、AI、情感计算、网络分析、发布与生产门禁。业务状态机和证据约束仍然生效；正式发布前必须关闭此模式。、当前身份： · 能力矩阵、页面导航按能力显示；每次深链访问仍由服务端重新授权并记录审计。、正在同步工作台、只读取必要摘要，不加载参与者长文本。、工作台暂时没有读取成功、请求编号：、复制诊断信息、部分摘要暂未同步、其余工作区仍可使用。失败模块：、重试未完成同步、协作式评估人工队列、个可见班次、待处理 · 超时 · 无人值守紧急项、没有匹配对象范围、胜任力、有效期和值守班次的接手人时，任务不会自动降级给普通角色。、服务端统一核对
+- 主要可见内容：先处理重要的一小步、最近同步、重新同步、移动端用于查看摘要、处理提醒和进入试点；完整研究配置与批量工作仍在 Web 完成。、当前离线、已读取内容会保留；联网后下拉刷新或点“重新同步”。、开发全权限模式、测试账号临时开放研究能力；正式发布前必须关闭。、当前身份： · 能力矩阵、正在同步工作台、只读取必要摘要，不加载参与者长文本。、工作台暂时没有读取成功、请求编号：、复制诊断信息、部分摘要暂未同步、其余工作区仍可使用。失败模块：、重试未完成同步、协作式评估人工队列、个可见班次、待处理 · 超时 · 无人值守紧急项、没有匹配对象范围、胜任力、有效期和值守班次的接手人时，任务不会自动降级给普通角色。、服务端统一核对、五道门发布流水线、已拦截
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 8 | 刷新当前工作区 | `bindtap` | `refreshActiveWorkspace` | — |
-| 31 | — | `bindtap` | `switchWorkspace` | {'id': '{{item.id}}'} |
-| 44 | 重新同步 | `bindtap` | `loadWorkbench` | — |
-| 45 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'workbench'} |
-| 52 | 重试未完成同步 | `bindtap` | `loadWorkbench` | — |
-| 109 | 刷新待处理列表 | `bindtap` | `loadWorkbench` | — |
-| 125 | 继续查看 | `bindtap` | `showMorePending` | — |
-| 137 | 搜索参与者 | `bindinput` | `onParticipantQueryInput` | — |
-| 146 | 重新加载 | `bindtap` | `retryParticipants` | — |
-| 147 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'participants'} |
-| 159 | 查看{{item.displayName}}的参与者档案 | `bindtap` | `selectParticipantDossier` | {'id': '{{item.user_id}}'} |
-| 168 | 加载下一页 | `bindtap` | `loadMoreParticipants` | — |
-| 177 | 关闭参与者档案 | `bindtap` | `closeParticipantDossier` | — |
-| 180 | — | `bindtap` | `loadParticipantModule` | {'key': '{{item.key}}'} |
-| 189 | 加载下一页 | `bindtap` | `loadParticipantModule` | {'key': '{{participantModule.module}}', 'page': '{{participantModule.page + 1}}'} |
-| 212 | 进入试点项目 | `bindtap` | `switchWorkspace` | {'id': 'pilots'} |
-| 224 | 刷新 | `bindtap` | `loadAssessmentCases` | — |
-| 228 | — | `bindtap` | `selectAssessmentCase` | {'id': '{{item.id}}'} |
-| 233 | 重新加载 | `bindtap` | `loadAssessmentCases` | — |
-| 251 | 类型： | `bindchange` | `onAssessmentFilter` | {'key': 'kind'} |
-| 254 | 权限： | `bindchange` | `onAssessmentFilter` | {'key': 'visibility'} |
-| 284 | — | `bindinput` | `onAssessmentDraftInput` | {'key': 'assessmentInternalNotes'} |
-| 289 | — | `bindinput` | `onAssessmentDraftInput` | {'key': 'assessmentParticipantDraft'} |
-| 291 | 保存工作台草稿 | `bindtap` | `saveAssessmentDraft` | — |
-| 293 | 进入质量抽检与修复 | `bindtap` | `openAssessmentQuality` | — |
-| 305 | 刷新 | `bindtap` | `loadAnalysisJobs` | — |
-| 349 | 重新加载 | `bindtap` | `loadAnalysisJobs` | — |
-| 379 | 重新同步 | `bindtap` | `loadWorkbench` | — |
-| 394 | 重新加载 | `bindtap` | `loadDashboard` | — |
-| 395 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'pilot'} |
-| 405 | · | `bindtap` | `selectEnrollment` | {'id': '{{item.id}}'} |
-| 427 | 查看 | `bindtap` | `openReport` | — |
-| 428 | 人工确认 | `bindtap` | `confirmReport` | — |
-| 429 | 发送用户 | `bindtap` | `sendReport` | — |
-| 432 | 生成报告 | `bindtap` | `createReport` | — |
-| 440 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'observation'} |
-| 444 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'evidence'} |
-| 448 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'nextStep'} |
-| 452 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'openQuestion'} |
-| 468 | 生成并核对预览 | `bindtap` | `previewStageFeedback` | — |
-| 469 | 确认这个版本 | `bindtap` | `runDeliveryStep` | {'kind': 'stage', 'action': 'confirm'} |
-| 470 | 发送到参与者消息 | `bindtap` | `runDeliveryStep` | {'kind': 'stage', 'action': 'send'} |
-| 477 | — | `bindinput` | `onMessageTitleInput` | — |
-| 478 | — | `bindinput` | `onMessageBodyInput` | — |
-| 492 | 生成并核对预览 | `bindtap` | `previewParticipantMessage` | — |
-| 493 | 确认这个版本 | `bindtap` | `runDeliveryStep` | {'kind': 'message', 'action': 'confirm'} |
-| 494 | 发送到参与者消息 | `bindtap` | `runDeliveryStep` | {'kind': 'message', 'action': 'send'} |
-| 512 | — | `bindinput` | `onNoteInput` | — |
-| 513 | 保存备注 | `bindtap` | `saveNote` | — |
-| 518 | 生成探索手记草稿 | `bindtap` | `draftNarrative` | — |
-| 522 | 确认后交付用户 | `bindtap` | `confirmNarrative` | — |
+| 7 | 刷新当前工作区 | `bindtap` | `refreshActiveWorkspace` | — |
+| 29 | — | `bindtap` | `switchWorkspace` | {'id': '{{item.id}}'} |
+| 42 | 重新同步 | `bindtap` | `loadWorkbench` | — |
+| 43 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'workbench'} |
+| 50 | 重试未完成同步 | `bindtap` | `loadWorkbench` | — |
+| 107 | 刷新待处理列表 | `bindtap` | `loadWorkbench` | — |
+| 123 | 继续查看 | `bindtap` | `showMorePending` | — |
+| 135 | 搜索参与者 | `bindinput` | `onParticipantQueryInput` | — |
+| 144 | 重新加载 | `bindtap` | `retryParticipants` | — |
+| 145 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'participants'} |
+| 157 | 查看{{item.displayName}}的参与者档案 | `bindtap` | `selectParticipantDossier` | {'id': '{{item.user_id}}'} |
+| 166 | 加载下一页 | `bindtap` | `loadMoreParticipants` | — |
+| 175 | 关闭参与者档案 | `bindtap` | `closeParticipantDossier` | — |
+| 178 | — | `bindtap` | `loadParticipantModule` | {'key': '{{item.key}}'} |
+| 187 | 加载下一页 | `bindtap` | `loadParticipantModule` | {'key': '{{participantModule.module}}', 'page': '{{participantModule.page + 1}}'} |
+| 210 | 进入试点项目 | `bindtap` | `switchWorkspace` | {'id': 'pilots'} |
+| 222 | 刷新 | `bindtap` | `loadAssessmentCases` | — |
+| 226 | — | `bindtap` | `selectAssessmentCase` | {'id': '{{item.id}}'} |
+| 231 | 重新加载 | `bindtap` | `loadAssessmentCases` | — |
+| 249 | 类型： | `bindchange` | `onAssessmentFilter` | {'key': 'kind'} |
+| 252 | 权限： | `bindchange` | `onAssessmentFilter` | {'key': 'visibility'} |
+| 282 | — | `bindinput` | `onAssessmentDraftInput` | {'key': 'assessmentInternalNotes'} |
+| 287 | — | `bindinput` | `onAssessmentDraftInput` | {'key': 'assessmentParticipantDraft'} |
+| 289 | 保存工作台草稿 | `bindtap` | `saveAssessmentDraft` | — |
+| 291 | 进入质量抽检与修复 | `bindtap` | `openAssessmentQuality` | — |
+| 303 | 刷新 | `bindtap` | `loadAnalysisJobs` | — |
+| 347 | 重新加载 | `bindtap` | `loadAnalysisJobs` | — |
+| 377 | 重新同步 | `bindtap` | `loadWorkbench` | — |
+| 392 | 重新加载 | `bindtap` | `loadDashboard` | — |
+| 393 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'pilot'} |
+| 403 | · | `bindtap` | `selectEnrollment` | {'id': '{{item.id}}'} |
+| 425 | 查看 | `bindtap` | `openReport` | — |
+| 426 | 人工确认 | `bindtap` | `confirmReport` | — |
+| 427 | 发送用户 | `bindtap` | `sendReport` | — |
+| 430 | 生成报告 | `bindtap` | `createReport` | — |
+| 438 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'observation'} |
+| 442 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'evidence'} |
+| 446 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'nextStep'} |
+| 450 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'openQuestion'} |
+| 466 | 生成并核对预览 | `bindtap` | `previewStageFeedback` | — |
+| 467 | 确认这个版本 | `bindtap` | `runDeliveryStep` | {'kind': 'stage', 'action': 'confirm'} |
+| 468 | 发送到参与者消息 | `bindtap` | `runDeliveryStep` | {'kind': 'stage', 'action': 'send'} |
+| 475 | — | `bindinput` | `onMessageTitleInput` | — |
+| 476 | — | `bindinput` | `onMessageBodyInput` | — |
+| 490 | 生成并核对预览 | `bindtap` | `previewParticipantMessage` | — |
+| 491 | 确认这个版本 | `bindtap` | `runDeliveryStep` | {'kind': 'message', 'action': 'confirm'} |
+| 492 | 发送到参与者消息 | `bindtap` | `runDeliveryStep` | {'kind': 'message', 'action': 'send'} |
+| 510 | — | `bindinput` | `onNoteInput` | — |
+| 511 | 保存备注 | `bindtap` | `saveNote` | — |
+| 516 | 生成探索手记草稿 | `bindtap` | `draftNarrative` | — |
+| 520 | 确认后交付用户 | `bindtap` | `confirmNarrative` | — |
 
 #### 接口真值
 
@@ -2538,7 +2537,7 @@
 ### 45：测一测结果 `pages/assessment-result/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`b273897cb7cf88cd4eb662211217d95f764d7b6ed29025ea0d2f1acc237e353a`
+- 源码指纹：`af04f4020287cd6adc3cc99273397a55efec0dc3b10b5c5ae6f5d61bbaa18680`
 - 核对文件：`apps/miniprogram/pages/assessment-result/index.wxml`、`apps/miniprogram/pages/assessment-result/index.wxss`、`apps/miniprogram/pages/assessment-result/index.js`、`apps/miniprogram/pages/assessment-result/index.json`、`apps/miniprogram/utils/assessment-dimension-visualization.js`
 - 上游页面：`pages/assessment/index`、`pages/assessment-history/index`、`pages/assessment-detail/index`
 - 页面组件：`section-title` → `/components/section-title/index`、`alert-card` → `/components/alert-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`visualization-state` → `/components/visualization-state/index`
@@ -2548,8 +2547,8 @@
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 138 | 查看可练习任务 | `bindtap` | `openRecommendedCards` | — |
-| 139 | 返回测一测 | `bindtap` | `backToAssessment` | — |
+| 137 | 查看可练习任务 | `bindtap` | `openRecommendedCards` | — |
+| 138 | 返回测一测 | `bindtap` | `backToAssessment` | — |
 
 #### 接口真值
 
@@ -2665,7 +2664,7 @@
 ### 48：推荐训练卡 `pages/training-card/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`e3afb72a2c7fb0d2cc55b4f9ebb4d3c0d04a8cdc31f5860e567ed515b8c3b571`
+- 源码指纹：`be7c2a7b12a21c81ef53122ce5766806021b663dc52f57ae1987e495c7cf09b2`
 - 核对文件：`apps/miniprogram/pages/training-card/index.wxml`、`apps/miniprogram/pages/training-card/index.wxss`、`apps/miniprogram/pages/training-card/index.js`、`apps/miniprogram/pages/training-card/index.json`
 - 上游页面：`pages/home/index`、`pages/thermometer/index`、`pages/training/index`、`pages/training-history/index`、`pages/personalized-plan/index`、`pages/therapeutic-assessment-action-followup/index`、`pages/feedback-result/index`、`pages/assessment-result/index`、`pages/hot-topics/index`
 - 页面组件：`feedback-rating` → `/components/feedback-rating/index`、`page-state` → `/components/page-state/index`
@@ -2709,7 +2708,7 @@
 ### 49：记录尝试 `pages/checkin/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`416d2f2e7509a79748df3a508889f436a5df4ee0882d797c66b818f7bb41bd09`
+- 源码指纹：`557bfd2037614d909cb1102cd0026ccc88092bb6626306d2fcb113f25e8f6685`
 - 核对文件：`apps/miniprogram/pages/checkin/index.wxml`、`apps/miniprogram/pages/checkin/index.wxss`、`apps/miniprogram/pages/checkin/index.js`、`apps/miniprogram/pages/checkin/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
 - 上游页面：`pages/task-detail/index`
 - 页面组件：—
@@ -2753,7 +2752,7 @@
 ### 50：本周复盘 `pages/weekly-report/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`35c9715dbf997f6f6afb6abacfd85a044fcb065d6c56d0c0384b0d452fe81ea9`
+- 源码指纹：`614297c9f7147dcb19c7a99f8a878624c5ea0e4309f38933218d9ee373e2b445`
 - 核对文件：`apps/miniprogram/pages/weekly-report/index.wxml`、`apps/miniprogram/pages/weekly-report/index.wxss`、`apps/miniprogram/pages/weekly-report/index.js`、`apps/miniprogram/pages/weekly-report/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/home/index`、`pages/profile/index`
 - 页面组件：—
@@ -2793,7 +2792,7 @@
 ### 51：人工督导入口 `pages/supervision/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`7936b5e886a5d2e13b35e937e9807b8bd088a32286c216abc2b5d6fcb8256dbc`
+- 源码指纹：`72ebdbd5c4380ba601919f70a9ab26baa52d8ce423b22db105e6c9daee769a0a`
 - 核对文件：`apps/miniprogram/pages/supervision/index.wxml`、`apps/miniprogram/pages/supervision/index.wxss`、`apps/miniprogram/pages/supervision/index.js`、`apps/miniprogram/pages/supervision/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
 - 上游页面：`pages/home/index`、`pages/profile/index`、`pages/feedback-result/index`
 - 页面组件：—
