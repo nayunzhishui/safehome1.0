@@ -12172,3 +12172,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] F04 专项 `12 passed`、组合 `29 passed`；离线验证器、production/validation 构建和 diff check 通过。
 - [x] 首轮审查唯一 finding 为 validation 调试页缺少登记目标导出；Fix Loop 1 已闭环，独立复审 `pass`，decision SHA-256=`77d0ba3cab1f7a3b646dd977f0f76e78fb83c72550602a02bd86725427cb5414`。
 - [ ] 真实 CloudBase、微信平台、真机和发布批准仍为 pending，production 继续 NO-GO。按负责人要求，本阶段提交推送后停止，不启动 F05。
+
+## 2026-08-12：RC0810-F05 Showcase 生产硬关闭
+
+- [x] production profile 在读取 Showcase 内容与执行临时提升前先硬关闭；旧环境变量或专用 Header 都不能把 parent/student/researcher 提升为 admin。
+- [x] development/testing/validation 继续保留现有 Showcase 联调能力；只有当前 actor 实际携带专用 Header、请求登记研究路径且 profile gate 有效时，才声明 `showcase_full_access` 与开发例外。
+- [x] 允许与拒绝决定写入已有 `audit_logs`，记录真实 actor、角色、路径、request_id 与有效 profile；未新增数据库表或迁移。
+- [x] 首轮独立审查发现 capability 摘要未绑定当前 actor；Fix Loop 1 最小修复后复审 `pass`，decision SHA-256=`c7aba1735da6077728a8c8ae12732c63beafe999f8dddc3c37f4f140cbe187b8`。
+- [x] F05 专项 `6 passed`、既有 Showcase `16 passed`、组合 `29 passed`，离线 verifier 与 `git diff --check` 通过；13 文件合同与证据绑定一致。
+- [ ] production break-glass 不在本轮虚构实现；强认证、双人确认、限时、理由、范围、自动过期和审计仍为 `pending_external`，真实平台与发布继续 NO-GO。
+- 下一入口：完成最终文档一致性复审、精确提交并推送后，从 `RC0810-F06` 的 Preflight → Scope Freeze 开始；不得把 validation 开发例外当作 production 授权。

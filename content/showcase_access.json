@@ -1,5 +1,21 @@
 {
-  "version": "2026.07-showcase-v1",
+  "version": "2026.08-rc0810-f05",
+  "allowed_profiles": ["development", "testing", "validation"],
+  "break_glass": {
+    "implemented": false,
+    "production_available": false,
+    "status": "pending_external",
+    "required_controls": [
+      "strong_authentication",
+      "two_person_approval",
+      "bounded_duration",
+      "reason",
+      "scope",
+      "automatic_expiry",
+      "audit"
+    ],
+    "reason": "F05不新增生产紧急提权通道；正式高权限继续使用具名角色和后续外部门禁。"
+  },
   "enabled": true,
   "read_only_role_bypass": true,
   "researcher_platform_full_access": true,

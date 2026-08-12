@@ -1266,7 +1266,26 @@
       "phase": "complete",
       "dependencies": [
         "RC0810-F04"
-      ]
+      ],
+      "allowed_files": [
+        "backend/routes/auth_utils.py",
+        "backend/services/research_access_service.py",
+        "backend/services/showcase_access_service.py",
+        "backend/tests/test_showcase_access.py",
+        "backend/tests/test_rc0810_f05.py",
+        "content/showcase_access.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "scripts/verify_rc0810_f05_showcase.py"
+      ],
+      "change_budget": {
+        "expected_files": 13,
+        "pause_when_actual_exceeds_percent": 50
+      }
     },
     {
       "id": "RC0810-F06",
@@ -2430,12 +2449,19 @@
         "AUTH-01"
       ],
       "allowed_files": [
-        "backend/**",
+        "backend/routes/auth_utils.py",
+        "backend/services/research_access_service.py",
+        "backend/services/showcase_access_service.py",
+        "backend/tests/test_showcase_access.py",
+        "backend/tests/test_rc0810_f05.py",
         "content/showcase_access.json",
-        "config/rc0810/**",
-        "scripts/**",
-        "apps/miniprogram/**",
-        "docs/**"
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "scripts/verify_rc0810_f05_showcase.py"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -2454,23 +2480,70 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f05.py",
-            "-q"
+            "-q",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "expected_test_count": 6
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "backend/tests/test_showcase_access.py",
+            "backend/tests/test_rc0810_f05.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "expected_test_count": 29
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f05_showcase.py"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
         }
       ],
       "external_gates": [],
       "change_budget": {
         "allowed_modules": [
-          "backend/**",
+          "backend/routes/auth_utils.py",
+          "backend/services/research_access_service.py",
+          "backend/services/showcase_access_service.py",
+          "backend/tests/test_showcase_access.py",
+          "backend/tests/test_rc0810_f05.py",
           "content/showcase_access.json",
-          "config/rc0810/**",
-          "scripts/**",
-          "apps/miniprogram/**",
-          "docs/**"
+          "content/rc0810_release_candidate_registry.json",
+          "docs/00_当前事实基准/Claude计划模式.md",
+          "docs/00_当前事实基准/开发日志.md",
+          "docs/00_当前事实基准/开发说明.md",
+          "docs/00_当前事实基准/当前进度交接.md",
+          "docs/01_当前执行入口/0810bug修改计划.md",
+          "scripts/verify_rc0810_f05_showcase.py"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
@@ -2482,7 +2555,7 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 12,
+        "expected_files": 13,
         "expected_migrations": 0,
         "expected_interfaces": 0,
         "expected_pages": 0,

@@ -76,7 +76,10 @@ def assert_capability(actor: dict, capability_id: str) -> None:
 
 def capability_summary(actor: dict) -> dict:
     formal_role = str(actor.get("original_role") or actor.get("role") or "")
-    development_exception_active = bool(allow_showcase_researcher_platform_full_access())
+    development_exception_active = bool(
+        actor.get("showcase_full_access")
+        and allow_showcase_researcher_platform_full_access()
+    )
     capability_ids = capability_ids_for_role(formal_role)
     if development_exception_active:
         capability_ids = sorted(

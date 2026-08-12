@@ -8,12 +8,12 @@ ROOT = Path(__file__).resolve().parents[2]
 BACKEND = ROOT / "backend"
 
 
-def _fresh_app(tmp_path, monkeypatch, content_dir=None):
+def _fresh_app(tmp_path, monkeypatch, content_dir=None, app_env="validation"):
     sys.path.insert(0, str(BACKEND))
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("APP_ENV", app_env)
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "showcase.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(content_dir or ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
@@ -23,7 +23,7 @@ def _fresh_app(tmp_path, monkeypatch, content_dir=None):
     return importlib.import_module("app").app
 
 
-def test_showcase_opens_programs_and_training_cards_in_production(tmp_path, monkeypatch):
+def test_showcase_opens_programs_and_training_cards_in_validation(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
 

@@ -155,16 +155,24 @@ def elevate_actor_for_showcase_researcher_platform(actor: dict) -> dict:
     mistaken for guardian/minor authorization.
     """
 
-    from services.showcase_access_service import allow_showcase_researcher_platform_full_access
+    from services.showcase_access_service import (
+        allow_showcase_researcher_platform_full_access,
+        record_showcase_elevation_decision,
+    )
 
-    if (
-        allow_showcase_researcher_platform_full_access()
-        and request.headers.get(SHOWCASE_RESEARCHER_WORKSPACE_HEADER) == "1"
+    requested = (
+        request.headers.get(SHOWCASE_RESEARCHER_WORKSPACE_HEADER) == "1"
         and (
             request.path.startswith(SHOWCASE_RESEARCHER_PLATFORM_PATH_PREFIXES)
             or (request.method, request.path) in SHOWCASE_RESEARCHER_PLATFORM_OPERATIONS
         )
+    )
+
+    if (
+        allow_showcase_researcher_platform_full_access()
+        and requested
     ):
+        record_showcase_elevation_decision(actor, allowed=True)
         return {
             **actor,
             "original_role": actor.get("original_role") or actor.get("role"),
@@ -172,6 +180,8 @@ def elevate_actor_for_showcase_researcher_platform(actor: dict) -> dict:
             "showcase_access": True,
             "showcase_full_access": True,
         }
+    if requested:
+        record_showcase_elevation_decision(actor, allowed=False)
     return actor
 
 
