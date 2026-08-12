@@ -21,7 +21,7 @@
 
 .entry-row--compact {
   min-height: 160rpx;
-  padding: 24rpx 28rpx;
+  padding: 24rpx 32rpx;
   border-bottom: 0;
 }
 
@@ -43,8 +43,8 @@
   overflow: hidden;
   color: var(--safe-title);
   font-size: 32rpx;
-  font-weight: 700;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 44rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -61,173 +61,31 @@
   margin-top: 4rpx;
   color: var(--safe-muted);
   font-size: 24rpx;
-  line-height: 1.5;
+  line-height: 36rpx;
 }
 
 .entry-arrow {
+  width: 40rpx;
+  height: 40rpx;
   flex: 0 0 auto;
-  color: var(--safe-title);
-  font-size: 44rpx;
-  font-weight: 500;
-  line-height: 1;
 }
 
 .entry-action {
   flex: 0 0 auto;
   color: var(--safe-primary-deep);
   font-size: 24rpx;
-  font-weight: 700;
+  font-weight: 500;
   white-space: nowrap;
 }
 
 .entry-icon {
-  position: relative;
   width: 48rpx;
   height: 48rpx;
   flex: 0 0 auto;
-  color: var(--safe-title);
 }
 
-.entry-row--accent .entry-title,
-.entry-row--accent .entry-icon {
+.entry-row--accent .entry-title {
   color: var(--safe-primary-deep);
-}
-
-.entry-icon--thermometer .thermometer-stem {
-  position: absolute;
-  left: 18rpx;
-  top: 2rpx;
-  width: 12rpx;
-  height: 32rpx;
-  border: 3rpx solid currentColor;
-  border-bottom: 0;
-  border-radius: 10rpx 10rpx 0 0;
-  box-sizing: border-box;
-}
-
-.entry-icon--thermometer .thermometer-bulb {
-  position: absolute;
-  left: 13rpx;
-  bottom: 3rpx;
-  width: 22rpx;
-  height: 22rpx;
-  border: 3rpx solid currentColor;
-  border-radius: 50%;
-  box-sizing: border-box;
-}
-
-.entry-icon--assessment {
-  border: 3rpx solid currentColor;
-  border-radius: 50%;
-  box-sizing: border-box;
-}
-
-.check-mark {
-  position: absolute;
-  left: 12rpx;
-  top: 14rpx;
-  width: 18rpx;
-  height: 10rpx;
-  border-left: 3rpx solid currentColor;
-  border-bottom: 3rpx solid currentColor;
-  transform: rotate(-45deg);
-}
-
-.entry-icon--diary {
-  width: 34rpx;
-  height: 42rpx;
-  margin: 3rpx 7rpx;
-  border: 3rpx solid currentColor;
-  border-radius: 3rpx;
-  box-sizing: border-box;
-}
-
-.diary-line,
-.entry-icon--diary::before,
-.entry-icon--diary::after {
-  position: absolute;
-  left: 8rpx;
-  width: 15rpx;
-  height: 2rpx;
-  background: currentColor;
-  content: "";
-}
-
-.entry-icon--diary::before { top: 11rpx; }
-.diary-line { top: 19rpx; }
-.entry-icon--diary::after { top: 27rpx; }
-
-.entry-icon--feedback {
-  width: 40rpx;
-  height: 34rpx;
-  margin: 4rpx;
-  border: 3rpx solid currentColor;
-  border-radius: 12rpx;
-  box-sizing: border-box;
-}
-
-.feedback-tail {
-  position: absolute;
-  left: 6rpx;
-  bottom: -9rpx;
-  width: 12rpx;
-  height: 12rpx;
-  border-left: 3rpx solid currentColor;
-  border-bottom: 3rpx solid currentColor;
-  background: var(--safe-bg);
-  transform: skewY(-35deg);
-}
-
-.entry-icon--training {
-  width: 38rpx;
-  height: 38rpx;
-  margin: 5rpx;
-  border: 3rpx solid currentColor;
-  border-radius: 6rpx;
-  box-sizing: border-box;
-}
-
-.training-base {
-  position: absolute;
-  left: 8rpx;
-  bottom: 8rpx;
-  width: 16rpx;
-  height: 9rpx;
-  border-left: 3rpx solid currentColor;
-  border-right: 3rpx solid currentColor;
-  border-bottom: 3rpx solid currentColor;
-}
-
-.person-head {
-  position: absolute;
-  left: 15rpx;
-  top: 3rpx;
-  width: 18rpx;
-  height: 18rpx;
-  border: 3rpx solid currentColor;
-  border-radius: 50%;
-  box-sizing: border-box;
-}
-
-.person-body {
-  position: absolute;
-  left: 8rpx;
-  bottom: 2rpx;
-  width: 32rpx;
-  height: 18rpx;
-  border: 3rpx solid currentColor;
-  border-bottom: 0;
-  border-radius: 20rpx 20rpx 0 0;
-  box-sizing: border-box;
-}
-
-.start-mark {
-  display: block;
-  width: 48rpx;
-  color: var(--safe-title);
-  font-size: 48rpx;
-  line-height: 1;
-  text-align: center;
 }
 
 @media (max-width: 340px) {

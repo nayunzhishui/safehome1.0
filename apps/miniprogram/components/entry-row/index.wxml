@@ -1,19 +1,9 @@
 <button class="entry-row {{accent ? 'entry-row--accent' : ''}} {{compact ? 'entry-row--compact' : ''}} {{expanded ? 'entry-row--expanded' : ''}}" bindtap="handleTap">
-  <view wx:if="{{icon}}" class="entry-icon entry-icon--{{icon}}" aria-hidden="true">
-    <view wx:if="{{icon === 'thermometer'}}" class="thermometer-stem"></view>
-    <view wx:if="{{icon === 'thermometer'}}" class="thermometer-bulb"></view>
-    <view wx:if="{{icon === 'assessment'}}" class="check-mark"></view>
-    <view wx:if="{{icon === 'diary'}}" class="diary-line"></view>
-    <view wx:if="{{icon === 'feedback'}}" class="feedback-tail"></view>
-    <view wx:if="{{icon === 'training'}}" class="training-base"></view>
-    <view wx:if="{{icon === 'person'}}" class="person-head"></view>
-    <view wx:if="{{icon === 'person'}}" class="person-body"></view>
-    <text wx:if="{{icon === 'start'}}" class="start-mark">›</text>
-  </view>
+  <image wx:if="{{icon}}" class="entry-icon" src="/assets/icons/figma-home/{{icon === 'feedback' ? 'support' : (icon === 'start' ? 'chevron-right' : icon)}}.png" mode="aspectFit" aria-hidden="true" />
   <view class="entry-copy">
     <text class="entry-title {{wrapTitle ? 'entry-title--wrap' : ''}}">{{title}}</text>
     <text wx:if="{{subtitle}}" class="entry-subtitle">{{subtitle}}</text>
   </view>
   <text wx:if="{{actionLabel}}" class="entry-action">{{actionLabel}}</text>
-  <text wx:if="{{showArrow}}" class="entry-arrow" aria-hidden="true">›</text>
+  <image wx:if="{{showArrow}}" class="entry-arrow" src="/assets/icons/figma-home/chevron-right.png" mode="aspectFit" aria-hidden="true" />
 </button>

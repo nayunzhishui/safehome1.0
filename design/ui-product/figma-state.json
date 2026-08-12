@@ -101,6 +101,7 @@
       "QA/Home/Checks": "39:658",
       "QA/DiaryHistory": "52:178",
       "Components/AuthField": "56:53"
+      ,"Components/Overview": "342:77"
       ,"Components/BoundaryNote": "93:57"
       ,"Components/ConversationEntry": "101:61"
       ,"Components/QuestionComposer": "115:61"
@@ -130,6 +131,8 @@
       "__Icon/ChevronDown": "73:55",
       "SelectField": "77:57",
       "MessageRow": "88:57"
+      ,"TherapeuticChoiceOption": "252:89"
+      ,"TherapeuticTextarea": "258:85"
       ,"BoundaryNote/ConsentPendingBase": "93:61"
       ,"BoundaryNote/ConsentedBase": "93:62"
       ,"BoundaryNote": "99:61"
@@ -146,6 +149,12 @@
       ,"TherapeuticComparison": "270:77"
       ,"TherapeuticFeedbackLetter": "284:78"
       ,"TherapeuticCompactTextarea": "287:81"
+      ,"GrowthSegment": "301:83"
+      ,"BambooTimelineNode": "301:84"
+      ,"CourseCatalogCard": "307:77"
+      ,"ReadingChapterSection": "309:77"
+      ,"ProfileNavigationRow": "311:77"
+      ,"AssessmentWorksheetCard": "318:77"
     },
     "componentVariants": {
       "FeedbackRating/Default": "135:69",
@@ -688,5 +697,6 @@
     ,"TherapeuticActionReview shared WXML/WXSS implemented without changing action values, defaults, validation, APIs or navigation"
     ,"TherapeuticActionReview WeChat DevTools Preview passed at 1503106 bytes"
     ,"TherapeuticActionReview local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"Figma 02 Components reorganized with visible 30-instance overview at 342:77; all overview items reference real main components"
   ]
 }
