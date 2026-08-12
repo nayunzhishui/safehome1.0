@@ -1,0 +1,32 @@
+{
+  "schema": "safehome.rc0810.environment-inventory.v1",
+  "schema_version": "1.0.0",
+  "inventory_status": "frozen_current_fact",
+  "sensitive_values_included": false,
+  "sources": [
+    {"path": ".env.example", "layer": "deployment", "classification": "development_template", "production_eligible": false, "sha256": "7705c548d5f5edee2693ae85aeeb686bcd1161b8a6b2d926b7d721cd24882f7a"},
+    {"path": "Dockerfile", "layer": "deployment", "classification": "validation_only_legacy", "production_eligible": false, "sha256": "a9637bc2c4e3fbf15c4ed273806d5ef26c069cbb5336a2f6ca5d8a953d56c988"},
+    {"path": "backend/config.py", "layer": "backend", "classification": "runtime_configuration", "production_eligible": false, "sha256": "47cd7fce6b4c94356fbe502eba1e7fe1adbb4da5627550998ff7beba545dc81b"},
+    {"path": "backend/app.py", "layer": "backend", "classification": "runtime_entrypoint", "production_eligible": false, "sha256": "a86dd1b051c3a6f2fcb9410cbaf376152a3c6e17778c622edb5b7a879d1c141f"},
+    {"path": "backend/gunicorn.conf.py", "layer": "deployment", "classification": "runtime_server", "production_eligible": false, "sha256": "05e6b66d00fff9bcbd72c96308a458ce77c5b9f7be488b867646a77b42f021c0"},
+    {"path": "apps/miniprogram/services/cloudConfig.js", "layer": "miniprogram", "classification": "legacy_default_plus_runtime_override", "production_eligible": false, "sha256": "55a3a14ef556bdd8f63929c41ae633f6dc546c786478b41a77001cd601ef77d1"},
+    {"path": "apps/miniprogram/services/api.js", "layer": "miniprogram", "classification": "transport_contract", "production_eligible": false, "sha256": "f64ff18f979649f31945a7767e4799a43711fdb438c2e6dff64860104b57a814"},
+    {"path": "apps/web/vite.config.ts", "layer": "web", "classification": "development_build_tool", "production_eligible": false, "sha256": "d58ce35d792610b39e51ea5c58646a0b8ae54668c9d71406fb75d7aefb67f20f"},
+    {"path": "apps/web/src/services/safehomeApi.ts", "layer": "web", "classification": "client_transport_contract", "production_eligible": false, "sha256": "8d9c0934cc5ac8e52e0a6a5a931f659b850360c1387e771a40b89fa752e2fd87"},
+    {"path": "shared/constants/api.ts", "layer": "shared", "classification": "shared_api_contract", "production_eligible": false, "sha256": "dcb3bd2331b3ce1bcb8d9c99d8db8637736969df97da05467a97eaf8f3a8aeed"},
+    {"path": "docs/03_技术真相/API接口文档.md", "layer": "docs", "classification": "documented_api_contract", "production_eligible": false, "sha256": "c16f325424e181cac1e7e8285c3035215151e3eb07a06d83f7a77c3b23882166"},
+    {"path": "scripts/build_task9_cloudbase_package.ps1", "layer": "deployment", "classification": "legacy_validation_packager", "production_eligible": false, "sha256": "c9265042aef0c2f9ea08e287c2e00ee531a571694ce9d1b5e55969f35bdc3e4a"}
+  ],
+  "environment_variable_classes": {
+    "environment_selector": ["APP_ENV", "FLASK_ENV", "DB_PROVIDER"],
+    "secret_reference_only": ["SECRET_KEY", "ADMIN_EXPORT_TOKEN", "MYSQL_PASSWORD", "WECHAT_SECRET", "NOTIFICATION_SCHEDULER_TOKEN", "PRIVACY_TOMBSTONE_SECRET"],
+    "platform_reference": ["WECHAT_APPID", "WECHAT_TRAINING_DUE_TEMPLATE_ID", "CLOUDBASE_ACCESS_TOKEN_PATH"],
+    "network_and_storage": ["DATABASE_PATH", "MYSQL_HOST", "MYSQL_PORT", "MYSQL_USER", "MYSQL_DATABASE", "CONTENT_DIR", "ALLOWED_ORIGINS", "PORT"],
+    "capability_flag_source": "capability_matrix.json"
+  },
+  "current_fact_findings": [
+    {"id": "ENV-CURRENT-001", "fact": "Dockerfile以APP_ENV=production启动并打开多项能力", "decision": "仅分类为历史验证部署，禁止用作生产制品"},
+    {"id": "ENV-CURRENT-002", "fact": "小程序cloudConfig.js含现有默认CloudBase标识和本地HTTP入口", "decision": "生产profile不得继承这些引用，必须由冻结extConfig注入"},
+    {"id": "ENV-CURRENT-003", "fact": ".env.example含本地开发默认值", "decision": "仅作为开发模板，任何生产构建不得打包该文件"}
+  ]
+}

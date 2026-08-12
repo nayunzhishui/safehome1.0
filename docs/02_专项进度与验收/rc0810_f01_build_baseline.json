@@ -1,0 +1,26 @@
+{
+  "schema": "safehome.rc0810.f01-build-baseline.v1",
+  "task_id": "RC0810-F01",
+  "status": "implemented",
+  "production_gate_eligible": false,
+  "environment_contract": "config/rc0810/environment_inventory.json",
+  "build_profiles": "config/rc0810/build_profiles.json",
+  "capability_matrix": "config/rc0810/capability_matrix.json",
+  "release_population_contract": "config/rc0810/release_population_and_client_contract.json",
+  "source_inventory_count": 12,
+  "capability_flag_count": 31,
+  "artifact_profile_count": 5,
+  "test_count": 18,
+  "combined_test_count": 25,
+  "harness_recovery_patch": "scripts/run_rc0810.py: stale 前置任务在已有 pass 审查下可作为恢复依赖，不改变生产门禁",
+  "verification": {
+    "default": "valid=true",
+    "self_check": "valid=true",
+    "diff_check": "exit_code=0"
+  },
+  "external_evidence": "pending_external",
+  "notes": [
+    "本基线只证明开发/验证环境合同和生产 fail-closed 默认值，不代表真实发布批准。",
+    "未修改业务功能、数据库、迁移、CloudBase、Secret 或生产配置。"
+  ]
+}

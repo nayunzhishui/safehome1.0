@@ -1,0 +1,32 @@
+{
+  "schema": "safehome.rc0810.release-population-client.v1",
+  "schema_version": "1.0.0",
+  "release_population_manifest": {
+    "status": "pending_external",
+    "production_gate_eligible": false,
+    "age_scope": [],
+    "risk_scope": [],
+    "invite_mode": "closed",
+    "relationship_mode": "none",
+    "max_users": 0,
+    "max_organizations": 0,
+    "regions": [],
+    "inclusion_rules": [],
+    "exclusion_rules": ["all_participants_until_release_owner_approval"],
+    "exit_rules": ["any_safety_or_privacy_gate_failure", "evidence_expiry", "scope_expansion"],
+    "expansion_invalidates": ["security", "privacy", "real_device", "release_review"],
+    "owner": "release_owner",
+    "decision_evidence": null
+  },
+  "client_compatibility": {
+    "status": "definition_ready",
+    "minimum_client_version": "1.0.0",
+    "minimum_protocol_version": 1,
+    "maximum_protocol_version": 1,
+    "compatible_action": "allow_validation_only",
+    "old_client_action": "require_upgrade",
+    "unknown_protocol_action": "safe_reject",
+    "production_action": "safe_reject_until_release_gate",
+    "response_contract": {"http_status": 426, "error_code": "client_upgrade_required", "diagnostic_copy": false}
+  }
+}

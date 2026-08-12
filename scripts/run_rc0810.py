@@ -1575,6 +1575,11 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             key
             for key, record in state["tasks"].items()
             if record.get("status") in {"verified", "committed", "pushed", "engineering_complete"}
+            or (
+                record.get("status") == "stale"
+                and isinstance(record.get("review"), dict)
+                and record["review"].get("decision") == "pass"
+            )
         }
         unmet = sorted(set(unit["dependencies"]) - completed)
         if unmet:

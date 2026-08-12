@@ -1,6 +1,6 @@
 {
   "schema": "safehome.rc0810.registry.v1",
-  "version": "2026-08-10.f25a",
+  "version": "2026-08-11.f01",
   "frozen_baseline": {
     "captured_at": "2026-08-09T15:13:59.4299089Z",
     "branch": "main",
@@ -1099,7 +1099,13 @@
       "change_budget": {
         "expected_files": 14,
         "pause_when_actual_exceeds_percent": 50
-      }
+      },
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
+      ]
     },
     {
       "id": "RC0810-F25-A",
@@ -1153,6 +1159,51 @@
       "phase": "complete",
       "dependencies": [
         "RC0810-F25-A"
+      ],
+      "subtasks": [
+        "F01.1",
+        "F01.2",
+        "F01.3",
+        "F01.4",
+        "F01.5",
+        "F01.6",
+        "F01.7",
+        "F01.8",
+        "F01.9",
+        "F01.10"
+      ],
+      "allowed_files": [
+        "backend/tests/test_rc0810_f01.py",
+        "config/rc0810/build_profile.schema.json",
+        "config/rc0810/build_profiles.json",
+        "config/rc0810/capability_matrix.json",
+        "config/rc0810/environment_inventory.json",
+        "config/rc0810/release_population_and_client_contract.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f01_build_baseline.json",
+        "scripts/verify_rc0810_f01_profiles.py",
+        "scripts/run_rc0810.py"
+      ],
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
+      ],
+      "change_budget": {
+        "expected_files": 15,
+        "pause_when_actual_exceeds_percent": 50
+      },
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
       ]
     },
     {
@@ -1538,14 +1589,27 @@
         "RES-01"
       ],
       "allowed_files": [
-        "config/rc0810/**",
-        "scripts/**",
-        "backend/config.py",
-        "apps/miniprogram/**",
-        "apps/web/**",
-        "shared/**",
-        "docs/**",
-        "backend/migrations/**"
+        "backend/tests/test_rc0810_f01.py",
+        "config/rc0810/build_profile.schema.json",
+        "config/rc0810/build_profiles.json",
+        "config/rc0810/capability_matrix.json",
+        "config/rc0810/environment_inventory.json",
+        "config/rc0810/release_population_and_client_contract.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f01_build_baseline.json",
+        "scripts/verify_rc0810_f01_profiles.py",
+        "scripts/run_rc0810.py"
+      ],
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -1564,25 +1628,82 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f01.py",
-            "-q"
+            "-q",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "expected_test_count": 18
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "backend/tests/test_rc0810_f01.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "expected_test_count": 25
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f01_profiles.py"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f01_profiles.py",
+            "--self-check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
         }
       ],
       "external_gates": [],
       "change_budget": {
         "allowed_modules": [
-          "config/rc0810/**",
-          "scripts/**",
-          "backend/config.py",
-          "apps/miniprogram/**",
-          "apps/web/**",
-          "shared/**",
-          "docs/**",
-          "backend/migrations/**"
+          "backend/tests/test_rc0810_f01.py",
+          "config/rc0810/build_profile.schema.json",
+          "config/rc0810/build_profiles.json",
+          "config/rc0810/capability_matrix.json",
+          "config/rc0810/environment_inventory.json",
+          "config/rc0810/release_population_and_client_contract.json",
+          "content/rc0810_release_candidate_registry.json",
+          "docs/00_当前事实基准/Claude计划模式.md",
+          "docs/00_当前事实基准/开发日志.md",
+          "docs/00_当前事实基准/开发说明.md",
+          "docs/00_当前事实基准/当前进度交接.md",
+          "docs/01_当前执行入口/0810bug修改计划.md",
+          "docs/02_专项进度与验收/rc0810_f01_build_baseline.json",
+          "scripts/verify_rc0810_f01_profiles.py",
+          "scripts/run_rc0810.py"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
@@ -1594,8 +1715,8 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 14,
-        "expected_migrations": 1,
+          "expected_files": 15,
+        "expected_migrations": 0,
         "expected_interfaces": 0,
         "expected_pages": 0,
         "actual_delta_baseline": "task_start_snapshot",

@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "safehome.rc0810.build-profile.v1",
+  "title": "SafeHome RC0810 build profiles",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "decision_status",
+    "environments",
+    "artifact_profiles",
+    "source_contract",
+    "non_go_reasons"
+  ],
+  "properties": {
+    "schema": {"const": "safehome.rc0810.build-profiles.v1"},
+    "schema_version": {"const": "1.0.0"},
+    "decision_status": {"enum": ["definition_ready", "pending_external", "approved"]},
+    "environments": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "purpose", "data_class", "production_gate_eligible"],
+        "properties": {
+          "id": {"enum": ["development", "validation", "production"]},
+          "purpose": {"type": "string", "minLength": 1},
+          "data_class": {"enum": ["local_fake", "synthetic_validation", "participant_production"]},
+          "production_gate_eligible": {"type": "boolean"}
+        }
+      }
+    },
+    "artifact_profiles": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "profile_id",
+          "artifact_class",
+          "target_environment",
+          "production_gate_eligible",
+          "capabilities",
+          "references",
+          "required_inputs",
+          "blocked_by"
+        ],
+        "properties": {
+          "profile_id": {"type": "string", "minLength": 1},
+          "artifact_class": {"enum": ["miniprogram", "backend"]},
+          "target_environment": {"enum": ["development", "validation", "production"]},
+          "production_gate_eligible": {"type": "boolean"},
+          "capabilities": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "debug_pages",
+              "showcase",
+              "research_workbench",
+              "ai_sandbox",
+              "real_ai_provider",
+              "production_writes",
+              "privacy_execution",
+              "platform_send",
+              "local_http"
+            ],
+            "properties": {
+              "debug_pages": {"type": "boolean"},
+              "showcase": {"type": "boolean"},
+              "research_workbench": {"type": "boolean"},
+              "ai_sandbox": {"type": "boolean"},
+              "real_ai_provider": {"type": "boolean"},
+              "production_writes": {"type": "boolean"},
+              "privacy_execution": {"type": "boolean"},
+              "platform_send": {"type": "boolean"},
+              "local_http": {"type": "boolean"}
+            }
+          },
+          "references": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["cloud_env_id", "container_service", "api_base_url"],
+            "properties": {
+              "cloud_env_id": {"type": ["string", "null"]},
+              "container_service": {"type": ["string", "null"]},
+              "api_base_url": {"type": ["string", "null"]}
+            }
+          },
+          "required_inputs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "blocked_by": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    },
+    "source_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventory", "capability_matrix", "population_and_client"],
+      "properties": {
+        "inventory": {"const": "environment_inventory.json"},
+        "capability_matrix": {"const": "capability_matrix.json"},
+        "population_and_client": {"const": "release_population_and_client_contract.json"}
+      }
+    },
+    "non_go_reasons": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true}
+  }
+}

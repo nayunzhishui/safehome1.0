@@ -1,0 +1,149 @@
+{
+  "schema": "safehome.rc0810.build-profiles.v1",
+  "schema_version": "1.0.0",
+  "decision_status": "definition_ready",
+  "environments": [
+    {
+      "id": "development",
+      "purpose": "本地开发与隔离自动化测试，只允许本地或假数据",
+      "data_class": "local_fake",
+      "production_gate_eligible": false
+    },
+    {
+      "id": "validation",
+      "purpose": "测试云与真机验收，只允许合成或脱敏验证数据",
+      "data_class": "synthetic_validation",
+      "production_gate_eligible": false
+    },
+    {
+      "id": "production",
+      "purpose": "参与者生产环境定义；外部审批、真机和安全门禁未通过前禁止构建",
+      "data_class": "participant_production",
+      "production_gate_eligible": false
+    }
+  ],
+  "artifact_profiles": [
+    {
+      "profile_id": "development_miniprogram",
+      "artifact_class": "miniprogram",
+      "target_environment": "development",
+      "production_gate_eligible": false,
+      "capabilities": {
+        "debug_pages": true,
+        "showcase": true,
+        "research_workbench": true,
+        "ai_sandbox": true,
+        "real_ai_provider": false,
+        "production_writes": false,
+        "privacy_execution": false,
+        "platform_send": false,
+        "local_http": true
+      },
+      "references": {
+        "cloud_env_id": "local-only",
+        "container_service": "local-flask",
+        "api_base_url": "http://127.0.0.1:5000"
+      },
+      "required_inputs": ["local_http_opt_in"],
+      "blocked_by": []
+    },
+    {
+      "profile_id": "validation_miniprogram",
+      "artifact_class": "miniprogram",
+      "target_environment": "validation",
+      "production_gate_eligible": false,
+      "capabilities": {
+        "debug_pages": true,
+        "showcase": true,
+        "research_workbench": true,
+        "ai_sandbox": true,
+        "real_ai_provider": false,
+        "production_writes": false,
+        "privacy_execution": false,
+        "platform_send": false,
+        "local_http": false
+      },
+      "references": {
+        "cloud_env_id": "validation-env-required",
+        "container_service": "validation-service-required",
+        "api_base_url": "validation-url-required"
+      },
+      "required_inputs": ["validation_ext_config", "synthetic_data_attestation"],
+      "blocked_by": ["F12-B", "F25-B"]
+    },
+    {
+      "profile_id": "production_participant_miniprogram",
+      "artifact_class": "miniprogram",
+      "target_environment": "production",
+      "production_gate_eligible": false,
+      "capabilities": {
+        "debug_pages": false,
+        "showcase": false,
+        "research_workbench": false,
+        "ai_sandbox": false,
+        "real_ai_provider": false,
+        "production_writes": false,
+        "privacy_execution": false,
+        "platform_send": false,
+        "local_http": false
+      },
+      "references": {"cloud_env_id": null, "container_service": null, "api_base_url": null},
+      "required_inputs": ["production_ext_config", "release_owner_attestation"],
+      "blocked_by": ["F10-B", "F12-B", "F22-B", "F25-B", "F26"]
+    },
+    {
+      "profile_id": "validation_backend",
+      "artifact_class": "backend",
+      "target_environment": "validation",
+      "production_gate_eligible": false,
+      "capabilities": {
+        "debug_pages": true,
+        "showcase": true,
+        "research_workbench": true,
+        "ai_sandbox": true,
+        "real_ai_provider": false,
+        "production_writes": false,
+        "privacy_execution": false,
+        "platform_send": false,
+        "local_http": false
+      },
+      "references": {
+        "cloud_env_id": "validation-env-required",
+        "container_service": "validation-service-required",
+        "api_base_url": "validation-url-required"
+      },
+      "required_inputs": ["validation_secret_refs", "synthetic_data_attestation"],
+      "blocked_by": ["F12-B"]
+    },
+    {
+      "profile_id": "production_backend",
+      "artifact_class": "backend",
+      "target_environment": "production",
+      "production_gate_eligible": false,
+      "capabilities": {
+        "debug_pages": false,
+        "showcase": false,
+        "research_workbench": false,
+        "ai_sandbox": false,
+        "real_ai_provider": false,
+        "production_writes": false,
+        "privacy_execution": false,
+        "platform_send": false,
+        "local_http": false
+      },
+      "references": {"cloud_env_id": null, "container_service": null, "api_base_url": null},
+      "required_inputs": ["production_secret_refs", "release_owner_attestation"],
+      "blocked_by": ["F10-B", "F12-B", "F22-B", "F25-B", "F26"]
+    }
+  ],
+  "source_contract": {
+    "inventory": "environment_inventory.json",
+    "capability_matrix": "capability_matrix.json",
+    "population_and_client": "release_population_and_client_contract.json"
+  },
+  "non_go_reasons": [
+    "生产环境标识、服务名和域名尚未以外部证据冻结",
+    "真机、平台、安全、隐私和发布负责人门禁尚未通过",
+    "当前Dockerfile是历史验证部署定义，不是可发布生产制品"
+  ]
+}
