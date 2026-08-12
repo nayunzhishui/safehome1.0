@@ -1,0 +1,28 @@
+{
+  "schema": "safehome.rc0810.f03-image-baseline.v1",
+  "task_id": "RC0810-F03",
+  "status": "implemented_local_runtime_verified",
+  "profiles": {
+    "production": {
+      "app_env": "production",
+      "default_capabilities": "fail_closed",
+      "runtime_override_guard": true
+    },
+    "validation": {
+      "app_env": "validation",
+      "validation_capabilities": "explicit",
+      "production_only_capabilities": "disabled"
+    }
+  },
+  "secret_delivery": "runtime_only",
+  "control_plane_owner": "deployment_operator",
+  "participant_or_researcher_control_plane_access": false,
+  "local_runtime_evidence": {
+    "docker_engine": "29.6.1",
+    "production_healthz_env": "production",
+    "validation_healthz_env": "validation",
+    "illegal_production_override_exit": 78
+  },
+  "production_gate_eligible": false,
+  "reason": "F03证明本地两类镜像分离和启动门禁；真实CloudBase镜像、生产MySQL、Secret注入、路由身份与发布批准仍由后续任务和外部证据验收。"
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "safehome.rc0810.container-profiles.v1",
+  "production": {
+    "dockerfile": "Dockerfile",
+    "app_env": "production",
+    "production_gate_eligible": false,
+    "runtime_injected": [
+      "DB_PROVIDER",
+      "MYSQL_HOST",
+      "MYSQL_USER",
+      "MYSQL_PASSWORD",
+      "MYSQL_DATABASE",
+      "SECRET_KEY",
+      "ADMIN_EXPORT_TOKEN"
+    ],
+    "required_disabled_flags": [
+      "PRODUCTION_FEATURES_UNLOCKED",
+      "CONTENT_GOVERNANCE_PUBLISH_ENABLED",
+      "PRIVACY_EXECUTION_ENABLED",
+      "PRIVACY_PRODUCTION_EXECUTION_ENABLED",
+      "RESEARCH_OPERATIONS_WRITE_ENABLED",
+      "AI_QA_ENABLED",
+      "AI_QA_SANDBOX_ENABLED",
+      "AI_QA_REAL_PROVIDER_ENABLED",
+      "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
+      "OFFLINE_BENCHMARK_ENABLED",
+      "OFFLINE_EXTERNAL_INGEST_ENABLED",
+      "OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED",
+      "RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED",
+      "RESEARCH_OUTCOME_ANALYSIS_ALLOWED",
+      "RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED",
+      "SECURITY_SCAN_EXECUTION_ENABLED",
+      "RELIABILITY_JOB_EXECUTION_ENABLED",
+      "RELIABILITY_FAULT_INJECTION_ENABLED",
+      "RELIABILITY_GRADUAL_RELEASE_ENABLED",
+      "OPERATIONS_LOCAL_RELEASE_ENABLED",
+      "OPERATIONS_PRODUCTION_RELEASE_ENABLED"
+    ]
+  },
+  "validation": {
+    "dockerfile": "deploy/Dockerfile.validation",
+    "app_env": "validation",
+    "production_gate_eligible": false,
+    "runtime_injected": [
+      "DB_PROVIDER",
+      "DATABASE_PATH",
+      "SECRET_KEY",
+      "ADMIN_EXPORT_TOKEN"
+    ],
+    "required_enabled_flags": [
+      "PRODUCTION_FEATURES_UNLOCKED",
+      "CONTENT_GOVERNANCE_PUBLISH_ENABLED",
+      "PRIVACY_EXECUTION_ENABLED",
+      "RESEARCH_OPERATIONS_WRITE_ENABLED",
+      "AI_QA_ENABLED",
+      "AI_QA_SANDBOX_ENABLED",
+      "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
+      "OFFLINE_BENCHMARK_ENABLED",
+      "RESEARCH_METHODOLOGY_WORKBENCH_ENABLED",
+      "RESEARCH_METHODOLOGY_FORMAL_FREEZE_ALLOWED",
+      "RESEARCH_OUTCOME_ANALYSIS_ALLOWED",
+      "RESEARCH_ANALYSIS_JOB_EXECUTION_ENABLED",
+      "SECURITY_SCAN_EXECUTION_ENABLED",
+      "RELIABILITY_WORKBENCH_ENABLED",
+      "RELIABILITY_JOB_EXECUTION_ENABLED",
+      "RELIABILITY_GRADUAL_RELEASE_ENABLED",
+      "UX_GOVERNANCE_WORKBENCH_ENABLED",
+      "OPERATIONS_GOVERNANCE_WORKBENCH_ENABLED",
+      "OPERATIONS_LOCAL_RELEASE_ENABLED"
+    ],
+    "required_disabled_flags": [
+      "PRIVACY_PRODUCTION_EXECUTION_ENABLED",
+      "AI_QA_REAL_PROVIDER_ENABLED",
+      "OFFLINE_EXTERNAL_INGEST_ENABLED",
+      "OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED",
+      "RELIABILITY_FAULT_INJECTION_ENABLED",
+      "OPERATIONS_PRODUCTION_RELEASE_ENABLED"
+    ]
+  },
+  "application_command": [
+    "gunicorn",
+    "-c",
+    "gunicorn.conf.py",
+    "wsgi:app"
+  ],
+  "secret_names": [
+    "SECRET_KEY",
+    "MYSQL_PASSWORD",
+    "WECHAT_SECRET",
+    "DEEPSEEK_API_KEY",
+    "ADMIN_EXPORT_TOKEN"
+  ],
+  "control_plane": {
+    "managed_by": "deployment_operator",
+    "participant_routes_may_mutate": false,
+    "researcher_routes_may_mutate": false
+  }
+}

@@ -12152,3 +12152,14 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 正式包会移除内部页面文件、内部路由字符串及对应按钮绑定，并生成可达图和包审计。
 - [x] F02 专项 8 项通过；真实微信 iOS/Android、屏幕阅读器和平台上传仍 pending，production 继续 NO-GO。
 - [ ] 待 Harness 组合回归、独立审查、精确提交和推送；通过后下一入口 F03。
+
+## 2026-08-12：RC0810-F03 镜像分离
+
+- [x] production 与 validation 使用两份独立 Dockerfile；production 默认关闭受禁能力，validation 只显式开放联调能力，两者均不写入 Secret 或数据库连接值。
+- [x] entrypoint 固定镜像 profile，并在启动前拒绝 production 运行时覆盖受禁开关；非法覆盖实跑退出码 78。
+- [x] Docker 29.6.1 本地构建/运行通过；两类 `/healthz` 环境标记正确、417 条路由一致，镜像 config/history Secret 扫描通过；专项 11 项通过。
+- [x] F03 本地工程验收完成；真实 CloudBase、production MySQL、平台 Secret、运维身份和发布批准未验收，`production_gate_eligible=false`，这些外部/后续项不阻止 F03 提交后进入 F04。
+- [x] 首轮独立审查 `fix_required`：镜像误带测试、SQLite 与 Python 缓存；Fix Loop 1 已通过递归 `.dockerignore` 与镜像文件系统检查闭环。
+- [x] 第二轮审查确认污染已关闭，但 validation 的原有研究联调能力未全部恢复；Fix Loop 2 已对照 profile 恢复并由容器内 `app.config` 检查闭环。
+- [x] 第三轮审查确认 validation 已闭环，但 production 对部分执行/写入开关仍可运行时覆盖；Fix Loop 3 已纳入同组真实执行能力并复审通过，纯只读 workbench 未被过度封禁。
+- [x] Fix Loop 3 独立复审 `pass`，SHA-256=`fbfda53dd37228cada1cf857df57c45d1e9f22d3262760b5835c971f590a878a`；Harness 已接受。最终文档同步后重跑 7 条验收并完成一致性复审，再提交推送进入 F04。

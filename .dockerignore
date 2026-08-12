@@ -1,9 +1,19 @@
 __pycache__
+**/__pycache__
 *.pyc
+**/*.pyc
 *.pyo
+**/*.pyo
 .pytest_cache
+**/.pytest_cache
 *.sqlite3
+**/*.sqlite3
 *.sqlite3-journal
+**/*.sqlite3-journal
+*.sqlite
+**/*.sqlite
+*.db
+**/*.db
 .env
 .env.local
 .git
@@ -14,6 +24,7 @@ dist
 backups
 outputs
 apps
+backend/tests
 docs
 scripts
 *.md

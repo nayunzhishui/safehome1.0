@@ -1999,12 +1999,19 @@
         "CONTENT-02"
       ],
       "allowed_files": [
+        ".dockerignore",
         "Dockerfile",
-        "deploy/**",
-        "backend/**",
-        "config/rc0810/**",
-        "scripts/**",
-        "docs/**"
+        "backend/tests/test_rc0810_f03.py",
+        "config/rc0810/container_profiles.json",
+        "content/rc0810_release_candidate_registry.json",
+        "deploy/Dockerfile.validation",
+        "deploy/verify_rc0810_f03_images.py",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f03_image_baseline.json"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -2023,23 +2030,83 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f03.py",
-            "-q"
+            "-q",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "expected_test_count": 11
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "backend/tests/test_rc0810_f03.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "expected_test_count": 18
+        },
+        {
+          "argv": ["python", "deploy/verify_rc0810_f03_images.py"],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": ["python", "deploy/verify_rc0810_f03_images.py", "--build", "production"],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": ["python", "deploy/verify_rc0810_f03_images.py", "--build", "validation"],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": ["python", "deploy/verify_rc0810_f03_images.py", "--runtime"],
+          "cwd": ".",
+          "timeout_seconds": 180,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": ["git", "diff", "--check"],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
         }
       ],
       "external_gates": [],
       "change_budget": {
         "allowed_modules": [
+          ".dockerignore",
           "Dockerfile",
-          "deploy/**",
-          "backend/**",
-          "config/rc0810/**",
-          "scripts/**",
-          "docs/**"
+          "backend/tests/test_rc0810_f03.py",
+          "config/rc0810/container_profiles.json",
+          "content/rc0810_release_candidate_registry.json",
+          "deploy/Dockerfile.validation",
+          "deploy/verify_rc0810_f03_images.py",
+          "docs/00_当前事实基准/Claude计划模式.md",
+          "docs/00_当前事实基准/开发日志.md",
+          "docs/00_当前事实基准/开发说明.md",
+          "docs/00_当前事实基准/当前进度交接.md",
+          "docs/01_当前执行入口/0810bug修改计划.md",
+          "docs/02_专项进度与验收/rc0810_f03_image_baseline.json"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
@@ -2051,7 +2118,7 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 12,
+        "expected_files": 13,
         "expected_migrations": 0,
         "expected_interfaces": 0,
         "expected_pages": 0,
