@@ -72,35 +72,9 @@
   min-height: 272rpx;
 }
 
-.record-axis-line {
-  position: absolute;
-  top: 42rpx;
-  left: 16rpx;
-  width: 4rpx;
-  height: 116rpx;
-  border-radius: 999rpx;
-  background: var(--safe-primary);
-}
-
-.record-axis-line::after {
-  content: "";
-  position: absolute;
-  top: 54rpx;
-  left: -4rpx;
-  width: 12rpx;
-  height: 4rpx;
-  border-radius: 999rpx;
-  background: var(--safe-primary-deep);
-}
-
-.record-axis-dot {
-  position: absolute;
-  top: 10rpx;
-  left: 8rpx;
-  width: 20rpx;
-  height: 20rpx;
-  border-radius: 50%;
-  background: var(--safe-primary);
+.record-axis > bamboo-timeline-node {
+  display: block;
+  margin-top: 2rpx;
 }
 
 .record-content {

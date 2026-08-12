@@ -252,8 +252,9 @@ Page({
     })) {
       return;
     }
-    const id = event.currentTarget.dataset.id;
-    const enabled = event.currentTarget.dataset.enabled !== "false";
+    const id = event.detail.id || event.currentTarget.dataset.id;
+    const rawEnabled = event.detail.enabled !== undefined ? event.detail.enabled : event.currentTarget.dataset.enabled;
+    const enabled = rawEnabled !== false && rawEnabled !== "false";
     if (!id) return;
     if (!enabled) {
       wx.showToast({ title: "内容仍在审核中", icon: "none" });

@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "个性化训练方案"
+  "navigationBarTitleText": "个性化训练方案",
+  "usingComponents": {
+    "training-task-card": "/components/training-task-card/index"
+  }
 }

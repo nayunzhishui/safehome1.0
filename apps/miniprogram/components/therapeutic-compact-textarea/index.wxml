@@ -1,0 +1,8 @@
+<textarea
+  class="compact-textarea"
+  maxlength="{{maxlength}}"
+  value="{{value}}"
+  aria-label="{{ariaLabel}}"
+  placeholder="{{placeholder}}"
+  bindinput="handleInput"
+></textarea>

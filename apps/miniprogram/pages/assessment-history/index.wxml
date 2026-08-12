@@ -18,18 +18,12 @@
   </view>
 
   <view wx:elif="{{items.length}}" class="history-list">
-    <button wx:for="{{items}}" wx:key="id" class="history-row" data-id="{{item.id}}" data-worksheet-id="{{item.worksheet_id}}" bindtap="openResult">
-      <view class="record-mark"></view>
-      <view class="record-copy">
-        <text class="record-title">{{item.worksheetTitle}}</text>
-        <text class="record-summary">{{item.summaryText}}</text>
-        <view class="record-meta">
-          <text>{{item.createdAtText}}</text>
-          <text>{{item.dimensionText}}</text>
-        </view>
-      </view>
-      <text class="record-arrow">›</text>
-    </button>
+    <assessment-worksheet-card
+      wx:for="{{items}}"
+      wx:key="id"
+      item="{{item.cardItem}}"
+      bind:open="openResult"
+    />
 
     <view class="load-more-area">
       <button wx:if="{{hasMore}}" class="safe-outline-button load-more" loading="{{loadingMore}}" disabled="{{loadingMore}}" bindtap="loadMore">{{loadingMore ? '加载中' : '加载更多'}}</button>

@@ -1,0 +1,9 @@
+.feedback-letter { min-width: 0; display: grid; grid-template-columns: 36rpx minmax(0, 1fr); gap: 24rpx; padding-bottom: 48rpx; border-bottom: 2rpx solid var(--safe-border); }
+.feedback-letter__spine { position: relative; min-height: 432rpx; }
+.feedback-letter__line { position: absolute; top: 24rpx; bottom: 0; left: 17rpx; width: 2rpx; background: var(--safe-primary); }
+.feedback-letter__joint { position: absolute; top: 148rpx; left: 12rpx; width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--safe-primary); }
+.feedback-letter__tick { position: absolute; top: 154rpx; left: 8rpx; width: 20rpx; height: 4rpx; border-radius: 2rpx; background: var(--safe-primary); }
+.feedback-letter__copy { min-width: 0; display: grid; align-content: start; gap: 20rpx; }
+.feedback-letter__label { color: var(--safe-primary-deep); font-size: 26rpx; font-weight: 500; line-height: 40rpx; }
+.feedback-letter__title { color: var(--safe-title); font-size: 38rpx; font-weight: 500; line-height: 56rpx; }
+.feedback-letter__body { color: var(--safe-text); font-size: 30rpx; line-height: 48rpx; }

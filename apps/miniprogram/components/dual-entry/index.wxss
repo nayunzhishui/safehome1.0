@@ -3,19 +3,11 @@
 }
 
 .dual-entries {
-  position: relative;
   display: grid;
-  grid-template-columns: 1fr 1rpx 1fr;
-  align-items: center;
-  min-height: 208rpx;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20rpx;
 }
 
 .dual-entry {
   min-width: 0;
-}
-
-.dual-divider {
-  width: 1rpx;
-  height: 112rpx;
-  background: var(--safe-border);
 }

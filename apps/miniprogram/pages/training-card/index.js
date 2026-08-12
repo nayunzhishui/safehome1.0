@@ -118,8 +118,9 @@ Page({
   },
 
   choosePractice(event) {
-    const cardId = event.currentTarget.dataset.id || "";
-    const title = event.currentTarget.dataset.title || "这张训练卡";
+    const detail = event.detail || {};
+    const cardId = detail.id || event.currentTarget.dataset.id || "";
+    const title = detail.title || event.currentTarget.dataset.title || "这张训练卡";
     const selectedCard = this.data.cards.find((card) => card.id === cardId);
     if (selectedCard) {
       wx.setStorageSync("safehome:selectedTrainingCard", selectedCard);

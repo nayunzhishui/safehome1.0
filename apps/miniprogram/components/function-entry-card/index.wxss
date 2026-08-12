@@ -27,6 +27,49 @@
   font-weight: 800;
 }
 
+.entry-glyph {
+  position: relative;
+  box-sizing: border-box;
+  width: 30rpx;
+  height: 30rpx;
+  border: 3rpx solid currentColor;
+}
+
+.entry-glyph--assessment {
+  border-radius: 50%;
+}
+
+.entry-glyph--assessment .entry-glyph__inner {
+  position: absolute;
+  left: 7rpx;
+  top: 5rpx;
+  width: 8rpx;
+  height: 13rpx;
+  border-right: 3rpx solid currentColor;
+  border-bottom: 3rpx solid currentColor;
+  transform: rotate(42deg);
+}
+
+.entry-glyph--diary {
+  border-radius: 3rpx;
+}
+
+.entry-glyph--diary::before,
+.entry-glyph--diary::after,
+.entry-glyph--diary .entry-glyph__inner {
+  position: absolute;
+  left: 6rpx;
+  width: 14rpx;
+  height: 2rpx;
+  border-radius: 2rpx;
+  background: currentColor;
+  content: "";
+}
+
+.entry-glyph--diary::before { top: 7rpx; }
+.entry-glyph--diary .entry-glyph__inner { top: 13rpx; }
+.entry-glyph--diary::after { top: 19rpx; }
+
 .entry-title,
 .entry-subtitle {
   display: block;

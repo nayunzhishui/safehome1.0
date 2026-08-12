@@ -96,7 +96,7 @@ Page({
   },
 
   selectSection(event) {
-    const activeSection = event.currentTarget.dataset.key;
+    const activeSection = event.detail.key || event.currentTarget.dataset.key;
     if (!SECTION_KEYS.includes(activeSection)) return;
     this.setData({
       activeSection,

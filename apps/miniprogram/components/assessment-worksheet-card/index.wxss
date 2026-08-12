@@ -1,0 +1,9 @@
+.worksheet-card { position: relative; box-sizing: border-box; width: 100%; min-height: 264rpx; display: flex; align-items: flex-start; justify-content: space-between; gap: 24rpx; padding: 38rpx 34rpx 30rpx; border: 2rpx solid var(--safe-border); border-radius: 36rpx; background: var(--safe-card); text-align: left; }
+.worksheet-card--profile { border-color: #bfe3c4; }
+.worksheet-card--disabled { background: #fbfaf6; opacity: .78; }
+.worksheet-card__joint { position: absolute; top: 26rpx; right: 46rpx; width: 56rpx; height: 10rpx; border-radius: 6rpx; background: var(--safe-primary); }
+.worksheet-card__copy { min-width: 0; flex: 1; }
+.worksheet-card__title { display: block; color: var(--safe-title); font-size: 32rpx; font-weight: 600; line-height: 48rpx; }
+.worksheet-card__meta { display: block; margin-top: 14rpx; color: var(--safe-muted); font-size: 24rpx; line-height: 40rpx; }
+.worksheet-card__description { display: -webkit-box; margin-top: 12rpx; overflow: hidden; color: var(--safe-text); font-size: 26rpx; line-height: 40rpx; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.worksheet-card__action { flex: 0 0 auto; align-self: flex-end; color: var(--safe-primary-deep); font-size: 26rpx; font-weight: 600; line-height: 40rpx; }

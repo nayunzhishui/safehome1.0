@@ -1,0 +1,7 @@
+.bamboo-node { position: relative; width: 48rpx; height: 112rpx; color: var(--safe-primary); }
+.bamboo-node__stem { position: absolute; left: 21rpx; width: 6rpx; height: 36rpx; border-radius: 4rpx; background: currentColor; }
+.bamboo-node__stem--top { top: 0; }
+.bamboo-node__stem--bottom { top: 76rpx; }
+.bamboo-node__joint { position: absolute; top: 44rpx; left: 12rpx; width: 24rpx; height: 24rpx; box-sizing: border-box; border: 4rpx solid currentColor; border-radius: 50%; background: var(--safe-card); }
+.bamboo-node--relationship { color: var(--safe-primary-deep); }
+.bamboo-node--feedback { color: var(--safe-orange); }

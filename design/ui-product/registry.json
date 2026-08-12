@@ -40,7 +40,7 @@
     "done"
   ],
   "active_route": null,
-  "updated_at": "2026-08-12T21:14:15+08:00",
+  "updated_at": "2026-08-12T23:19:06+08:00",
   "pages": [
     {
       "index": 1,
@@ -1312,7 +1312,7 @@
       "index": 11,
       "route": "pages/training/index",
       "title": "训练",
-      "source_hash": "2bfdbf5ad6701e863e0c2356030279b01b68d0a1e31b8619434e21762d74e26e",
+      "source_hash": "60b337cf09bc46c1d8bf719561df1a944b055bd4cf42da66a3ef22653eb6f9ef",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -1558,7 +1558,7 @@
       "index": 13,
       "route": "pages/personalized-plan/index",
       "title": "个性化训练方案",
-      "source_hash": "eb25dc95a6bca76c8f6a85b762019a518227f2f25dec0b65de53a6b5f5b55c0e",
+      "source_hash": "90a0c747eabf95752088ba9bed3211bed8aaa61131c50d976a6089a796def81d",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -2329,7 +2329,7 @@
         },
         "figma": {
           "items": [
-            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=224-2"
+            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=224-3"
           ],
           "note": "四个栏目与状态矩阵完成，组件复用保持最小。",
           "recorded_at": "2026-08-11T21:36:04+08:00"
@@ -2454,7 +2454,7 @@
         },
         "figma": {
           "items": [
-            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=246-6"
+            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=246-7"
           ],
           "note": "完成无协作、待人工复核、已有反馈和状态矩阵。",
           "recorded_at": "2026-08-11T22:27:19+08:00"
@@ -3685,7 +3685,7 @@
         },
         "figma": {
           "items": [
-            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=299-25",
+            "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=299-26",
             "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/31-therapeutic-assessment-quality/assets/figma-participant-v1.png"
           ],
           "note": "Figma page 299:25；参与者299:26、复核299:63、状态299:122；2026-08-12 实时核验代表节点存在并补录直达链接",
@@ -3775,7 +3775,7 @@
       "index": 31,
       "route": "pages/growth-dashboard/index",
       "title": "我的成长仪表盘",
-      "source_hash": "c3bcf8ac1f6d12386398a265a702cd8bb89c60e71ccd70456462e76789a06e89",
+      "source_hash": "b73fbddfc947a334b2028e20adf5c52ba37a10958e22b4720786befe4f284b9b",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -4875,7 +4875,7 @@
       "index": 40,
       "route": "pages/diary-history/index",
       "title": "情绪记录",
-      "source_hash": "9502d141d2a9d6997bd4fd7dddb24267bb7dbaa57577d69e168d9dcd3656c489",
+      "source_hash": "1dc9286cc88100a3ebdf208ae9eba97c62a6b7659780524086078d2273e39ff8",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -5119,7 +5119,7 @@
       "index": 42,
       "route": "pages/assessment/index",
       "title": "家庭关系测一测",
-      "source_hash": "380e613a3d4deaa6661258ebd6fc4b141a2ab53d0fed62efeb1a6c6f4325131d",
+      "source_hash": "394235800acb93d3833211e81c3de0f310d3891dc3bea63ca2b5465c35f1fac2",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -5241,7 +5241,7 @@
       "index": 43,
       "route": "pages/assessment-history/index",
       "title": "全部测评记录",
-      "source_hash": "19370472bc4cdd5d7588f689db086a7f66df9936539d83fc59981b6dc9b8811d",
+      "source_hash": "4f36a4a49cd222b687de319e82398224252e50dc217cdc4994eb1fc6a96aadae",
       "stage": "complete",
       "evidence": {
         "truth": {
@@ -5851,7 +5851,7 @@
       "index": 48,
       "route": "pages/training-card/index",
       "title": "推荐训练卡",
-      "source_hash": "be7c2a7b12a21c81ef53122ce5766806021b663dc52f57ae1987e495c7cf09b2",
+      "source_hash": "c0c9325a0492ce44a9fbbacf8d4ac5a7801c2987d90dd46cbabd165f2019c732",
       "stage": "complete",
       "evidence": {
         "truth": {

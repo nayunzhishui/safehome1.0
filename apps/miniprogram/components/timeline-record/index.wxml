@@ -1,5 +1,5 @@
 <view class="record record--{{tone}}">
-  <view class="record-marker" aria-hidden="true"><view class="record-joint"></view></view>
+  <bamboo-timeline-node tone="{{tone}}" />
   <view class="record-body">
     <view class="record-head">
       <text class="record-title">{{item.title}}</text>

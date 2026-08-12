@@ -1,0 +1,4 @@
+<button class="growth-segment {{active ? 'growth-segment--active' : ''}}" aria-label="查看{{label}}，当前{{count}}条线索" bindtap="handleTap">
+  <text class="growth-segment__label">{{label}}</text>
+  <text class="growth-segment__count">{{count}}</text>
+</button>

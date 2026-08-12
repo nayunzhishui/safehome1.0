@@ -35,11 +35,11 @@ Component({
       this.triggerEvent("valuechange", { value: event.detail.value });
     },
     handleOption(event) {
-      this.triggerEvent("optionchange", { value: event.currentTarget.dataset.value });
+      this.triggerEvent("optionchange", { value: event.detail.value || event.currentTarget.dataset.value });
     },
     handleActionInput(event) {
       this.triggerEvent("actionchange", {
-        field: event.currentTarget.dataset.field,
+        field: event.detail.field || event.currentTarget.dataset.field,
         value: event.detail.value,
       });
     },

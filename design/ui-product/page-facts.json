@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-12T21:14:15+08:00",
+  "generated_at": "2026-08-12T23:19:06+08:00",
   "branch": "UIproduct",
-  "main_sha": "3a3555cecf44179953401eaea4fb25bd0221b9a7",
+  "main_sha": "dc66e21626ae8f2ac824c2b1fbcc09f3aafbdf7c",
   "app_page_count": 53,
   "pages": [
     {
@@ -1908,7 +1908,7 @@
         "apps/miniprogram/pages/training/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "2bfdbf5ad6701e863e0c2356030279b01b68d0a1e31b8619434e21762d74e26e",
+      "source_hash": "60b337cf09bc46c1d8bf719561df1a944b055bd4cf42da66a3ef22653eb6f9ef",
       "missing_files": [],
       "visible_text": [
         "从先稳定自己开始",
@@ -2387,7 +2387,7 @@
         "apps/miniprogram/pages/personalized-plan/index.js",
         "apps/miniprogram/pages/personalized-plan/index.json"
       ],
-      "source_hash": "eb25dc95a6bca76c8f6a85b762019a518227f2f25dec0b65de53a6b5f5b55c0e",
+      "source_hash": "90a0c747eabf95752088ba9bed3211bed8aaa61131c50d976a6089a796def81d",
       "missing_files": [],
       "visible_text": [
         "个性化训练方案",
@@ -2498,13 +2498,11 @@
           "line": 118
         },
         {
-          "event": "bindtap",
+          "event": "bindtapcard",
           "handler": "openSingleCard",
-          "tag": "button",
+          "tag": "training-task-card",
           "label": "",
-          "data": {
-            "card-id": "{{card.id}}"
-          },
+          "data": {},
           "line": 129
         },
         {
@@ -2513,7 +2511,7 @@
           "tag": "button",
           "label": "重试",
           "data": {},
-          "line": 147
+          "line": 151
         }
       ],
       "page_methods": [
@@ -2560,7 +2558,9 @@
       "upstream_pages": [
         "pages/training/index"
       ],
-      "components": {},
+      "components": {
+        "training-task-card": "/components/training-task-card/index"
+      },
       "storage": [],
       "state": {
         "bindings": [
@@ -2584,8 +2584,7 @@
           "plan",
           "notification",
           "loading",
-          "item",
-          "card"
+          "item"
         ],
         "set_data": [
           "notification",
@@ -7652,7 +7651,7 @@
         "apps/miniprogram/pages/growth-dashboard/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "c3bcf8ac1f6d12386398a265a702cd8bb89c60e71ccd70456462e76789a06e89",
+      "source_hash": "b73fbddfc947a334b2028e20adf5c52ba37a10958e22b4720786befe4f284b9b",
       "missing_files": [],
       "visible_text": [
         "我的成长",
@@ -7688,13 +7687,11 @@
           "line": 9
         },
         {
-          "event": "bindtap",
+          "event": "bindchange",
           "handler": "selectSection",
-          "tag": "button",
-          "label": "查看{{item.label}}，当前{{item.count}}条线索",
-          "data": {
-            "key": "{{item.key}}"
-          },
+          "tag": "growth-segment",
+          "label": "",
+          "data": {},
           "line": 13
         },
         {
@@ -7703,7 +7700,7 @@
           "tag": "button",
           "label": "记录一件小事",
           "data": {},
-          "line": 31
+          "line": 29
         },
         {
           "event": "bindtap",
@@ -7711,7 +7708,7 @@
           "tag": "button",
           "label": "查看练习",
           "data": {},
-          "line": 32
+          "line": 30
         },
         {
           "event": "bindaction",
@@ -7719,7 +7716,7 @@
           "tag": "page-state",
           "label": "",
           "data": {},
-          "line": 55
+          "line": 53
         },
         {
           "event": "bindaction",
@@ -7727,7 +7724,7 @@
           "tag": "page-state",
           "label": "",
           "data": {},
-          "line": 71
+          "line": 69
         },
         {
           "event": "bindtap",
@@ -7735,7 +7732,7 @@
           "tag": "button",
           "label": "",
           "data": {},
-          "line": 84
+          "line": 82
         },
         {
           "event": "bindtap",
@@ -7743,7 +7740,7 @@
           "tag": "button",
           "label": "打开消息列表",
           "data": {},
-          "line": 108
+          "line": 103
         }
       ],
       "page_methods": [
@@ -7835,7 +7832,8 @@
       "components": {
         "page-state": "/components/page-state/index",
         "status-pill": "/components/status-pill/index",
-        "timeline-record": "/components/timeline-record/index"
+        "timeline-record": "/components/timeline-record/index",
+        "growth-segment": "/components/growth-segment/index"
       },
       "storage": [
         {
@@ -10744,7 +10742,7 @@
         "apps/miniprogram/pages/diary-history/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "9502d141d2a9d6997bd4fd7dddb24267bb7dbaa57577d69e168d9dcd3656c489",
+      "source_hash": "1dc9286cc88100a3ebdf208ae9eba97c62a6b7659780524086078d2273e39ff8",
       "missing_files": [],
       "visible_text": [
         "情绪记录",
@@ -10766,7 +10764,7 @@
           "tag": "button",
           "label": "记录一件事",
           "data": {},
-          "line": 52
+          "line": 51
         },
         {
           "event": "bindaction",
@@ -10774,7 +10772,7 @@
           "tag": "page-state",
           "label": "新建一条情绪事件记录",
           "data": {},
-          "line": 55
+          "line": 54
         }
       ],
       "page_methods": [
@@ -10829,7 +10827,10 @@
       "upstream_pages": [
         "pages/home/index"
       ],
-      "components": {},
+      "components": {
+        "bamboo-timeline-node": "/components/bamboo-timeline-node/index",
+        "page-state": "/components/page-state/index"
+      },
       "storage": [
         {
           "operation": "getStorageSync",
@@ -11137,14 +11138,13 @@
         "apps/miniprogram/pages/assessment/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "380e613a3d4deaa6661258ebd6fc4b141a2ab53d0fed62efeb1a6c6f4325131d",
+      "source_hash": "394235800acb93d3833211e81c3de0f310d3891dc3bea63ca2b5465c35f1fac2",
       "missing_files": [],
       "visible_text": [
         "支持性测评",
         "清除",
         "打开联调测试页",
         "正在读取测一测内容...",
-        "· 项 · 约 分钟",
         "查看",
         "去登录"
       ],
@@ -11184,14 +11184,11 @@
           "line": 26
         },
         {
-          "event": "bindtap",
+          "event": "bindopen",
           "handler": "openAssessmentEntry",
-          "tag": "view",
-          "label": "打开测评：{{worksheet.display_title}}",
-          "data": {
-            "id": "{{worksheet.id}}",
-            "enabled": "{{worksheet.is_enabled_for_user}}"
-          },
+          "tag": "assessment-worksheet-card",
+          "label": "",
+          "data": {},
           "line": 39
         },
         {
@@ -11203,7 +11200,7 @@
             "id": "{{item.id}}",
             "worksheet-id": "{{item.worksheet_id}}"
           },
-          "line": 63
+          "line": 52
         },
         {
           "event": "bindtap",
@@ -11211,7 +11208,7 @@
           "tag": "button",
           "label": "去登录",
           "data": {},
-          "line": 88
+          "line": 77
         }
       ],
       "page_methods": [
@@ -11276,25 +11273,25 @@
         {
           "type": "navigateTo",
           "target": "/pages/assessment-detail/index?id=:dynamic",
-          "line": 262,
+          "line": 263,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/assessment-result/index?id=:dynamic",
-          "line": 271,
+          "line": 272,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/integration-test/index",
-          "line": 284,
+          "line": 285,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/login/index:dynamic",
-          "line": 313,
+          "line": 314,
           "source": "js"
         }
       ],
@@ -11308,6 +11305,7 @@
       ],
       "components": {
         "section-title": "/components/section-title/index",
+        "assessment-worksheet-card": "/components/assessment-worksheet-card/index",
         "function-entry-card": "/components/function-entry-card/index",
         "alert-card": "/components/alert-card/index",
         "bottom-tip-card": "/components/bottom-tip-card/index"
@@ -11316,22 +11314,22 @@
         {
           "operation": "getStorageSync",
           "key": "auth_token",
-          "line": 289
+          "line": 290
         },
         {
           "operation": "getStorageSync",
           "key": "auth_user",
-          "line": 293
+          "line": 294
         },
         {
           "operation": "removeStorageSync",
           "key": "auth_token",
-          "line": 319
+          "line": 320
         },
         {
           "operation": "removeStorageSync",
           "key": "auth_user",
-          "line": 320
+          "line": 321
         }
       ],
       "state": {
@@ -11380,7 +11378,7 @@
         "apps/miniprogram/pages/assessment-history/index.json",
         "apps/miniprogram/utils/authGuard.js"
       ],
-      "source_hash": "19370472bc4cdd5d7588f689db086a7f66df9936539d83fc59981b6dc9b8811d",
+      "source_hash": "4f36a4a49cd222b687de319e82398224252e50dc217cdc4994eb1fc6a96aadae",
       "missing_files": [],
       "visible_text": [
         "测评记录",
@@ -11405,14 +11403,11 @@
           "line": 17
         },
         {
-          "event": "bindtap",
+          "event": "bindopen",
           "handler": "openResult",
-          "tag": "button",
+          "tag": "assessment-worksheet-card",
           "label": "",
-          "data": {
-            "id": "{{item.id}}",
-            "worksheet-id": "{{item.worksheet_id}}"
-          },
+          "data": {},
           "line": 21
         },
         {
@@ -11421,7 +11416,7 @@
           "tag": "button",
           "label": "",
           "data": {},
-          "line": 35
+          "line": 29
         },
         {
           "event": "bindtap",
@@ -11429,7 +11424,7 @@
           "tag": "button",
           "label": "去测一测",
           "data": {},
-          "line": 44
+          "line": 38
         }
       ],
       "page_methods": [
@@ -11445,7 +11440,7 @@
       "api_calls": [
         {
           "method": "listAssessmentResults",
-          "line": 55,
+          "line": 70,
           "resolved": true,
           "http_method": "GET",
           "endpoint_templates": [
@@ -11471,19 +11466,19 @@
         {
           "type": "navigateTo",
           "target": "/pages/assessment-result/index?id=:dynamic",
-          "line": 88,
+          "line": 104,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/assessment/index",
-          "line": 94,
+          "line": 110,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/login/index:dynamic",
-          "line": 123,
+          "line": 139,
           "source": "js"
         }
       ],
@@ -11491,27 +11486,29 @@
       "upstream_pages": [
         "pages/profile/index"
       ],
-      "components": {},
+      "components": {
+        "assessment-worksheet-card": "/components/assessment-worksheet-card/index"
+      },
       "storage": [
         {
           "operation": "getStorageSync",
           "key": "auth_token",
-          "line": 99
+          "line": 115
         },
         {
           "operation": "getStorageSync",
           "key": "auth_user",
-          "line": 103
+          "line": 119
         },
         {
           "operation": "removeStorageSync",
           "key": "auth_token",
-          "line": 129
+          "line": 145
         },
         {
           "operation": "removeStorageSync",
           "key": "auth_user",
-          "line": 130
+          "line": 146
         }
       ],
       "state": {
@@ -12228,7 +12225,7 @@
         "apps/miniprogram/pages/training-card/index.js",
         "apps/miniprogram/pages/training-card/index.json"
       ],
-      "source_hash": "be7c2a7b12a21c81ef53122ce5766806021b663dc52f57ae1987e495c7cf09b2",
+      "source_hash": "c0c9325a0492ce44a9fbbacf8d4ac5a7801c2987d90dd46cbabd165f2019c732",
       "missing_files": [],
       "visible_text": [
         "训练卡",
@@ -12257,7 +12254,7 @@
           "data": {
             "id": "{{item.id}}"
           },
-          "line": 35
+          "line": 33
         },
         {
           "event": "bindtap",
@@ -12268,7 +12265,7 @@
             "id": "{{item.id}}",
             "title": "{{item.title}}"
           },
-          "line": 49
+          "line": 47
         },
         {
           "event": "bindselect",
@@ -12278,7 +12275,7 @@
           "data": {
             "id": "{{item.id}}"
           },
-          "line": 50
+          "line": 48
         },
         {
           "event": "bindaction",
@@ -12286,7 +12283,7 @@
           "tag": "page-state",
           "label": "",
           "data": {},
-          "line": 61
+          "line": 59
         }
       ],
       "page_methods": [
@@ -12323,7 +12320,7 @@
         },
         {
           "method": "createFeedbackLedgerEntry",
-          "line": 152,
+          "line": 153,
           "resolved": true,
           "http_method": "POST",
           "endpoint_templates": [
@@ -12351,13 +12348,13 @@
         {
           "type": "navigateTo",
           "target": "/pages/task-detail/index?card_id=:dynamic",
-          "line": 127,
+          "line": 128,
           "source": "js"
         },
         {
           "type": "navigateTo",
           "target": "/pages/diary-form/index",
-          "line": 142,
+          "line": 143,
           "source": "js"
         }
       ],
@@ -12375,13 +12372,14 @@
       ],
       "components": {
         "feedback-rating": "/components/feedback-rating/index",
-        "page-state": "/components/page-state/index"
+        "page-state": "/components/page-state/index",
+        "training-task-card": "/components/training-task-card/index"
       },
       "storage": [
         {
           "operation": "setStorageSync",
           "key": "safehome:selectedTrainingCard",
-          "line": 125
+          "line": 126
         }
       ],
       "state": {
@@ -12392,6 +12390,7 @@
           "tagsText",
           "cards",
           "item",
+          "false",
           "expandedCardId",
           "feedbackEvaluationSaving",
           "true"

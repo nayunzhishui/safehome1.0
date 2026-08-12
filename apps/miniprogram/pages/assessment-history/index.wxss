@@ -54,12 +54,10 @@
 }
 
 .history-list {
+  display: grid;
+  gap: 20rpx;
   margin-top: 26rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-  overflow: hidden;
-  box-shadow: var(--safe-shadow-card);
+  overflow: visible;
 }
 
 .history-row {
@@ -157,7 +155,7 @@
 }
 
 .load-more-area {
-  padding: 24rpx;
+  padding: 4rpx 0 24rpx;
   text-align: center;
 }
 

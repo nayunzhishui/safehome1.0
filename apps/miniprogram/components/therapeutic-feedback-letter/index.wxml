@@ -1,0 +1,8 @@
+<view class="feedback-letter" role="article" aria-label="{{title}}">
+  <view class="feedback-letter__spine" aria-hidden="true"><view class="feedback-letter__line"></view><view class="feedback-letter__joint"></view><view class="feedback-letter__tick"></view></view>
+  <view class="feedback-letter__copy">
+    <text wx:if="{{layerLabel}}" class="feedback-letter__label">{{layerLabel}}</text>
+    <text class="feedback-letter__title">{{title}}</text>
+    <text class="feedback-letter__body">{{content}}</text>
+  </view>
+</view>

@@ -10,17 +10,15 @@
 
   <view wx:elif="{{growth}}" class="growth-content">
     <view class="growth-rail" aria-label="成长线索分类">
-      <button
+      <growth-segment
         wx:for="{{sectionTabs}}"
         wx:key="key"
-        class="rail-tab {{item.active ? 'rail-tab--active' : ''}}"
-        data-key="{{item.key}}"
-        aria-label="查看{{item.label}}，当前{{item.count}}条线索"
-        bindtap="selectSection"
-      >
-        <text class="rail-count">{{item.count}}</text>
-        <text class="rail-label">{{item.label}}</text>
-      </button>
+        segment-key="{{item.key}}"
+        label="{{item.label}}"
+        count="{{item.count}}"
+        active="{{item.active}}"
+        bind:change="selectSection"
+      />
     </view>
 
     <view wx:if="{{activeSection === 'activity'}}" class="section-stack">
@@ -99,10 +97,7 @@
       </view>
       <view class="dashboard-section">
         <view wx:if="{{feedbackTimeline.length}}" class="timeline-list">
-          <view wx:for="{{feedbackTimeline}}" wx:key="id" class="timeline-item">
-            <view class="timeline-dot timeline-dot--feedback"></view>
-            <view class="timeline-body"><view class="timeline-head"><text class="timeline-title">{{item.title}}</text><text class="timeline-type">{{item.type_label}}</text></view><text class="timeline-summary">{{item.summary}}</text><text class="timeline-date">{{item.dateText}}</text></view>
-          </view>
+          <timeline-record wx:for="{{feedbackTimeline}}" wx:key="id" item="{{item}}" tone="feedback" />
         </view>
         <page-state wx:else kind="empty" title="暂时没有研究者反馈" description="没有反馈不代表好或不好；需要人工支持时可从消息或人工支持入口联系。" />
         <button class="section-action feedback-action" bindtap="openMessages">打开消息列表</button>

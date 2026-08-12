@@ -16,16 +16,14 @@
     </view>
 
     <view wx:for="{{cards}}" wx:key="id" class="task-card {{item.isPrimary ? 'task-card--primary' : 'task-card--alternative'}}">
-      <view class="task-head">
-        <view class="task-title-wrap">
-          <view class="task-title-line">
-            <text class="card-type">{{item.isPrimary ? '优先推荐 · ' : ''}}{{item.typeLabel}}</text>
-            <text class="duration-pill">{{item.durationText}}</text>
-          </view>
-          <text class="card-title">{{item.title}}</text>
-          <text class="body-text">{{item.purpose}}</text>
-        </view>
-      </view>
+      <training-task-card
+        title="{{item.title}}"
+        subtitle="{{item.purpose}}"
+        duration="{{item.durationText}}"
+        scenario="{{item.scenarioText}}"
+        tag="{{item.isPrimary ? '优先' : '备选'}}"
+        actionable="{{false}}"
+      />
 
       <view wx:if="{{item.isPrimary}}" class="today-step today-step--primary">
         <text class="today-label">今天的小目标</text>

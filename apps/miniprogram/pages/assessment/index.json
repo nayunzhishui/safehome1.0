@@ -2,6 +2,7 @@
   "navigationBarTitleText": "家庭关系测一测",
   "usingComponents": {
     "section-title": "/components/section-title/index",
+    "assessment-worksheet-card": "/components/assessment-worksheet-card/index",
     "function-entry-card": "/components/function-entry-card/index",
     "alert-card": "/components/alert-card/index",
     "bottom-tip-card": "/components/bottom-tip-card/index"

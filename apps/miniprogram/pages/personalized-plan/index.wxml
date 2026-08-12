@@ -126,13 +126,17 @@
     <text wx:if="{{item.cluster_name}}" class="item-title">{{item.cluster_name}}</text>
     <text class="item-reason">{{item.reason}}</text>
     <view class="card-list">
-      <button wx:for="{{item.cards}}" wx:for-item="card" wx:key="id" class="card-chip" data-card-id="{{card.id}}" bindtap="openSingleCard">
-        <view class="chip-copy">
-          <text class="chip-title">{{card.title}}</text>
-          <text wx:if="{{card.duration_minutes}}" class="chip-meta">{{card.duration_minutes}} 分钟</text>
-        </view>
-        <text class="chip-action">开始</text>
-      </button>
+      <training-task-card
+        wx:for="{{item.cards}}"
+        wx:for-item="card"
+        wx:key="id"
+        item-id="{{card.id}}"
+        title="{{card.title}}"
+        subtitle="{{card.purpose}}"
+        duration="{{card.duration_minutes ? card.duration_minutes + ' 分钟' : ''}}"
+        reason="{{item.reason}}"
+        bind:tapcard="openSingleCard"
+      />
     </view>
     <text class="item-boundary">{{item.boundary_notice}}</text>
   </view>

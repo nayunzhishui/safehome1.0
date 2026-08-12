@@ -174,7 +174,10 @@
 }
 
 .task-card {
-  overflow: hidden;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .task-head {
@@ -321,9 +324,7 @@
   border: 0;
 }
 
-.task-card--primary {
-  border-color: rgba(87, 139, 95, 0.32);
-}
+.task-card--primary { border-color: transparent; }
 
 .task-card--alternative .task-head {
   padding-bottom: 14rpx;

@@ -1,5 +1,9 @@
 {
   "navigationBarTitleText": "情绪记录",
   "backgroundColor": "#f7f8f5",
-  "enablePullDownRefresh": false
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "bamboo-timeline-node": "/components/bamboo-timeline-node/index",
+    "page-state": "/components/page-state/index"
+  }
 }

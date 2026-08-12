@@ -7,20 +7,6 @@
 .taf-hero .safe-h1, .taf-hero .safe-eyebrow { display: block; text-align: center; }
 .taf-card { display: grid; gap: 24rpx; padding: 28rpx 0; border-top: 1rpx solid var(--safe-border); border-bottom: 1rpx solid var(--safe-border); border-radius: 0; background: transparent; box-shadow: none; }
 .taf-options { display: grid; gap: 16rpx; }
-.taf-feedback-letter { min-width: 0; display: grid; grid-template-columns: 24rpx minmax(0, 1fr); gap: 16rpx; padding: 4rpx 0 24rpx; border: 0; border-bottom: 1rpx solid var(--safe-border); border-radius: 0; background: transparent; }
-.taf-feedback-letter__spine { position: relative; min-height: 216rpx; }
-.taf-feedback-letter__stem { position: absolute; top: 12rpx; bottom: 0; left: 10rpx; width: 2rpx; border-radius: 999rpx; background: var(--safe-primary); opacity: .72; }
-.taf-feedback-letter__joint { position: absolute; top: 74rpx; left: 7rpx; width: 8rpx; height: 8rpx; border-radius: 50%; background: var(--safe-primary); }
-.taf-feedback-letter__tick { position: absolute; top: 77rpx; left: 4rpx; width: 14rpx; height: 2rpx; border-radius: 999rpx; background: var(--safe-primary); opacity: .72; }
-.taf-feedback-letter__content { min-width: 0; display: grid; align-content: start; gap: 14rpx; }
-.taf-option { box-sizing: border-box; min-height: 112rpx; display: flex; align-items: center; gap: 18rpx; padding: 20rpx 24rpx; border: 2rpx solid var(--safe-border); border-radius: 20rpx; background: var(--safe-card); text-align: left; box-shadow: none; }
-.taf-option--selected { border-color: var(--safe-primary); background: var(--safe-primary-pale); }
-.taf-option__mark { width: 42rpx; height: 42rpx; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; border: 2rpx solid var(--safe-primary); border-radius: 50%; color: var(--safe-card); background: transparent; font-size: 23rpx; font-weight: 900; }
-.taf-option--selected .taf-option__mark { background: var(--safe-primary); }
-.taf-option__copy { min-width: 0; display: grid; gap: 6rpx; }
-.taf-option__title { color: var(--safe-title); font-size: 28rpx; font-weight: 750; }
-.taf-option__description { color: var(--safe-muted); font-size: 25rpx; line-height: 1.55; }
-.taf-textarea { box-sizing: border-box; width: 100%; min-height: 360rpx; padding: 24rpx; border: 2rpx solid var(--safe-border-strong); border-radius: 20rpx; background: var(--safe-card); color: var(--safe-title); font-size: 28rpx; line-height: 1.7; }
 .taf-action-form, .taf-action-section, .taf-field { display: grid; gap: 12rpx; }
 .taf-action-form { gap: 32rpx; }
 .taf-action-section { gap: 22rpx; }
@@ -31,18 +17,10 @@
 .taf-action-section__rule view:last-child { left: 12rpx; }
 .taf-action-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18rpx; }
 .taf-field__label { color: var(--safe-title); font-size: 26rpx; font-weight: 750; }
-.taf-textarea--compact { min-height: 150rpx; }
 .taf-input { box-sizing: border-box; min-height: 88rpx; padding: 22rpx 24rpx; border: 2rpx solid var(--safe-border-strong); border-radius: 20rpx; background: var(--safe-card); color: var(--safe-title); font-size: 28rpx; }
 .taf-confirmation { box-sizing: border-box; min-height: 96rpx; display: flex; align-items: center; gap: 16rpx; padding: 20rpx; border: 2rpx solid var(--safe-border); border-radius: var(--safe-radius-md); background: var(--safe-card); color: var(--safe-title); font-size: 25rpx; line-height: 1.55; text-align: left; }
 .taf-confirmation--selected { border-color: var(--safe-primary); background: var(--safe-primary-pale); }
 .taf-confirmation__mark { width: 40rpx; height: 40rpx; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; border: 2rpx solid var(--safe-primary); border-radius: 10rpx; color: var(--safe-primary-deep); font-weight: 900; }
-.taf-comparison { display: grid; gap: 28rpx; }
-.taf-comparison__panel { min-width: 0; display: grid; grid-template-columns: 24rpx minmax(0, 1fr); gap: 16rpx; align-items: stretch; }
-.taf-comparison__spine { position: relative; min-height: 108rpx; }
-.taf-comparison__stem { position: absolute; top: 14rpx; bottom: 0; left: 10rpx; width: 2rpx; border-radius: 999rpx; background: var(--safe-primary); opacity: .72; }
-.taf-comparison__joint { position: absolute; top: 0; left: 7rpx; width: 8rpx; height: 8rpx; border-radius: 50%; background: var(--safe-primary); }
-.taf-comparison__tick { position: absolute; top: 42rpx; left: 4rpx; width: 14rpx; height: 2rpx; border-radius: 999rpx; background: var(--safe-primary); opacity: .72; }
-.taf-comparison__content { min-width: 0; display: grid; align-content: start; gap: 10rpx; }
 .taf-actions { position: sticky; bottom: 0; z-index: 2; display: grid; grid-template-columns: minmax(160rpx, .45fr) 1fr; gap: 14rpx; padding: 14rpx 0 calc(8rpx + env(safe-area-inset-bottom)); background: rgba(250, 248, 244, .97); }
 .taf-actions button { min-height: 88rpx; }
 .taf-offline { padding: 20rpx 22rpx; border: 1rpx solid var(--safe-warning); border-radius: 18rpx; background: #fff7e8; color: #744818; font-size: 24rpx; line-height: 1.6; }

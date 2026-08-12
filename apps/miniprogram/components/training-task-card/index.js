@@ -28,10 +28,19 @@ Component({
       type: String,
       value: "",
     },
+    itemId: {
+      type: String,
+      value: "",
+    },
+    actionable: {
+      type: Boolean,
+      value: true,
+    },
   },
   methods: {
     handleTap() {
-      this.triggerEvent("tapcard");
+      if (!this.properties.actionable) return;
+      this.triggerEvent("tapcard", { id: this.properties.itemId, title: this.properties.title });
     },
   },
 });

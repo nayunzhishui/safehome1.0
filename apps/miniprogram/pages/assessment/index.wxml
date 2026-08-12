@@ -36,24 +36,13 @@
       <text>{{item.emptyText}}</text>
     </view>
     <view class="worksheet-list">
-      <view
+      <assessment-worksheet-card
         wx:for="{{item.items}}"
         wx:for-item="worksheet"
         wx:key="id"
-        class="worksheet-card {{worksheet.is_student_profile ? 'student-profile' : ''}} {{worksheet.is_enabled_for_user ? '' : 'disabled'}}"
-        data-id="{{worksheet.id}}"
-        data-enabled="{{worksheet.is_enabled_for_user}}"
-        role="button"
-        aria-label="打开测评：{{worksheet.display_title}}"
-        bindtap="openAssessmentEntry"
-      >
-        <view class="worksheet-main">
-          <text class="worksheet-title">{{worksheet.display_title}}</text>
-          <text class="worksheet-meta">{{worksheet.topic_label}} · {{worksheet.question_count}} 项 · 约{{worksheet.estimated_minutes}}分钟</text>
-          <text class="worksheet-desc">{{worksheet.instructions}}</text>
-        </view>
-        <text class="worksheet-action">{{worksheet.action_text}}</text>
-      </view>
+        item="{{worksheet}}"
+        bind:open="openAssessmentEntry"
+      />
     </view>
   </view>
 

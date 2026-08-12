@@ -1,5 +1,4 @@
 <view class="dual-entries" role="group" aria-label="主要记录入口">
-  <entry-row class="dual-entry" accent compact icon="{{leftIcon}}" title="{{leftTitle}}" subtitle="{{leftSubtitle}}" action-key="{{leftKey}}" show-arrow="{{false}}" bind:action="forwardAction" />
-  <view class="dual-divider" aria-hidden="true"></view>
-  <entry-row class="dual-entry" compact icon="{{rightIcon}}" title="{{rightTitle}}" subtitle="{{rightSubtitle}}" action-key="{{rightKey}}" show-arrow="{{false}}" bind:action="forwardAction" />
+  <function-entry-card class="dual-entry" title="{{leftTitle}}" subtitle="{{leftSubtitle}}" icon-type="{{leftIcon}}" action-key="{{leftKey}}" bind:tapcard="forwardAction" />
+  <function-entry-card class="dual-entry" title="{{rightTitle}}" subtitle="{{rightSubtitle}}" icon-type="{{rightIcon}}" action-key="{{rightKey}}" accent-color="#C96F2D" accent-bg="#FFF1E5" bind:tapcard="forwardAction" />
 </view>

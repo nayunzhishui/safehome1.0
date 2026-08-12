@@ -353,7 +353,7 @@
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-12T21:14:15+08:00`
+生成时间：`2026-08-12T23:19:06+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -810,7 +810,7 @@
 ### 11：训练 `pages/training/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`2bfdbf5ad6701e863e0c2356030279b01b68d0a1e31b8619434e21762d74e26e`
+- 源码指纹：`60b337cf09bc46c1d8bf719561df1a944b055bd4cf42da66a3ef22653eb6f9ef`
 - 核对文件：`apps/miniprogram/pages/training/index.wxml`、`apps/miniprogram/pages/training/index.wxss`、`apps/miniprogram/pages/training/index.js`、`apps/miniprogram/pages/training/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/home/index`、`pages/login/index`、`pages/getting-started/index`、`pages/training-history/index`、`pages/growth-dashboard/index`、`pages/course-detail/index`、`pages/assessment-result/index`
 - 页面组件：`section-title` → `/components/section-title/index`、`training-task-card` → `/components/training-task-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`
@@ -899,10 +899,10 @@
 ### 13：个性化训练方案 `pages/personalized-plan/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`eb25dc95a6bca76c8f6a85b762019a518227f2f25dec0b65de53a6b5f5b55c0e`
+- 源码指纹：`90a0c747eabf95752088ba9bed3211bed8aaa61131c50d976a6089a796def81d`
 - 核对文件：`apps/miniprogram/pages/personalized-plan/index.wxml`、`apps/miniprogram/pages/personalized-plan/index.wxss`、`apps/miniprogram/pages/personalized-plan/index.js`、`apps/miniprogram/pages/personalized-plan/index.json`
 - 上游页面：`pages/training/index`
-- 页面组件：—
+- 页面组件：`training-task-card` → `/components/training-task-card/index`
 - 主要可见内容：个性化训练方案、安排练习节奏、先选一个当前可承受的频率，之后可以随时调整。、当前阶段、练习频率、开始日期、计划状态、保存练习节奏、提醒、微信练习提醒、只在你主动授权后发送；关闭提醒不影响训练。、暂未开放、管理员完成微信模板审核后，这里可以开启。、已同意本次提醒、到达下一次练习日期后发送；一次性授权使用后需要重新开启。、上次授权已使用、如需下一次提醒，请再次主动开启。、微信设置中已关闭、如需恢复，请前往小程序设置调整订阅消息权限。、需要时再开启、建议在保存好练习节奏后，开启一次微信提醒。、开启一次微信提醒、前往微信设置、去测一测
 
 #### 交互与用户任务证据
@@ -918,8 +918,8 @@
 | 102 | 开启一次微信提醒 | `bindtap` | `requestTrainingReminder` | — |
 | 108 | 前往微信设置 | `bindtap` | `openNotificationSettings` | — |
 | 118 | 去测一测 | `bindtap` | `openAssessment` | — |
-| 129 | — | `bindtap` | `openSingleCard` | {'card-id': '{{card.id}}'} |
-| 147 | 重试 | `bindtap` | `loadPlan` | — |
+| 129 | — | `bindtapcard` | `openSingleCard` | — |
+| 151 | 重试 | `bindtap` | `loadPlan` | — |
 
 #### 接口真值
 
@@ -932,7 +932,7 @@
 - 下游路由：`navigateTo` → `/pages/assessment/index`（js:176）、`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:185）、`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:191）
 - 本地存储：—
 - WXML 数据绑定：`assignment`、`phaseOptions`、`item`、`cadenceOptions`、`statusOptions`、`savingAssignment`、`plan`、`notification`、`requestingReminder`、`planItems`、`card`、`loading`、`errorMessage`、`boundaryNotice`
-- 条件状态：`assignment`、`plan`、`notification`、`loading`、`item`、`card`
+- 条件状态：`assignment`、`plan`、`notification`、`loading`、`item`
 - `setData` 状态：`notification`、`preference`、`loading`、`errorMessage`、`planItems`、`sourceLabel`、`cardIdsText`、`plan`、`assignment`、`savingAssignment`、`requestingReminder`
 - 未解析事件：—
 - 未解析 API：—
@@ -1825,10 +1825,10 @@
 ### 31：我的成长仪表盘 `pages/growth-dashboard/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`c3bcf8ac1f6d12386398a265a702cd8bb89c60e71ccd70456462e76789a06e89`
+- 源码指纹：`b73fbddfc947a334b2028e20adf5c52ba37a10958e22b4720786befe4f284b9b`
 - 核对文件：`apps/miniprogram/pages/growth-dashboard/index.wxml`、`apps/miniprogram/pages/growth-dashboard/index.wxss`、`apps/miniprogram/pages/growth-dashboard/index.js`、`apps/miniprogram/pages/growth-dashboard/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/relationship-growth/index`、`pages/profile/index`
-- 页面组件：`page-state` → `/components/page-state/index`、`status-pill` → `/components/status-pill/index`、`timeline-record` → `/components/timeline-record/index`
+- 页面组件：`page-state` → `/components/page-state/index`、`status-pill` → `/components/status-pill/index`、`timeline-record` → `/components/timeline-record/index`、`growth-segment` → `/components/growth-segment/index`
 - 主要可见内容：我的成长、四类线索分别查看，不合成总分、现在可以做什么、记录一件小事、查看练习、情绪温度、1—10分，只与同一量尺的记录比较、记录与练习时间线、只呈现做过的事情，不把次数写成改善、支持性测评、每份量表独立成组，不把不同分值放在同一条曲线上、只在同一量尺再次填写后观察变化，不自动解释好坏。、关系探索单独呈现、不与日记次数或测评分值合并、探索任务、连续记录、阶段报告、关系探索时间线、这里只显示任务、连续记录和阶段报告的事实、共同核对、研究者反馈 条、打开消息列表
 
 #### 交互与用户任务证据
@@ -1836,13 +1836,13 @@
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
 | 9 | 重新读取成长线索 | `bindaction` | `loadGrowth` | — |
-| 13 | 查看{{item.label}}，当前{{item.count}}条线索 | `bindtap` | `selectSection` | {'key': '{{item.key}}'} |
-| 31 | 记录一件小事 | `bindtap` | `startDiary` | — |
-| 32 | 查看练习 | `bindtap` | `openTraining` | — |
-| 55 | — | `bindaction` | `startDiary` | — |
-| 71 | — | `bindaction` | `openAssessment` | — |
-| 84 | — | `bindtap` | `openRelationship` | — |
-| 108 | 打开消息列表 | `bindtap` | `openMessages` | — |
+| 13 | — | `bindchange` | `selectSection` | — |
+| 29 | 记录一件小事 | `bindtap` | `startDiary` | — |
+| 30 | 查看练习 | `bindtap` | `openTraining` | — |
+| 53 | — | `bindaction` | `startDiary` | — |
+| 69 | — | `bindaction` | `openAssessment` | — |
+| 82 | — | `bindtap` | `openRelationship` | — |
+| 103 | 打开消息列表 | `bindtap` | `openMessages` | — |
 
 #### 接口真值
 
@@ -2320,10 +2320,10 @@
 ### 40：情绪记录 `pages/diary-history/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`9502d141d2a9d6997bd4fd7dddb24267bb7dbaa57577d69e168d9dcd3656c489`
+- 源码指纹：`1dc9286cc88100a3ebdf208ae9eba97c62a6b7659780524086078d2273e39ff8`
 - 核对文件：`apps/miniprogram/pages/diary-history/index.wxml`、`apps/miniprogram/pages/diary-history/index.wxss`、`apps/miniprogram/pages/diary-history/index.js`、`apps/miniprogram/pages/diary-history/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/home/index`
-- 页面组件：—
+- 页面组件：`bamboo-timeline-node` → `/components/bamboo-timeline-node/index`、`page-state` → `/components/page-state/index`
 - 主要可见内容：情绪记录、记录一件事、这里只展示已经保存的记录，用于支持性观察，不替代专业诊断。
 
 #### 交互与用户任务证据
@@ -2331,8 +2331,8 @@
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
 | 14 | 重新加载情绪记录 | `bindaction` | `retry` | — |
-| 52 | 记录一件事 | `bindtap` | `startDiary` | — |
-| 55 | 新建一条情绪事件记录 | `bindaction` | `startDiary` | — |
+| 51 | 记录一件事 | `bindtap` | `startDiary` | — |
+| 54 | 新建一条情绪事件记录 | `bindaction` | `startDiary` | — |
 
 #### 接口真值
 
@@ -2406,11 +2406,11 @@
 ### 42：家庭关系测一测 `pages/assessment/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`380e613a3d4deaa6661258ebd6fc4b141a2ab53d0fed62efeb1a6c6f4325131d`
+- 源码指纹：`394235800acb93d3833211e81c3de0f310d3891dc3bea63ca2b5465c35f1fac2`
 - 核对文件：`apps/miniprogram/pages/assessment/index.wxml`、`apps/miniprogram/pages/assessment/index.wxss`、`apps/miniprogram/pages/assessment/index.js`、`apps/miniprogram/pages/assessment/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/home/index`、`pages/personalized-plan/index`、`pages/relationship-pilot/index`、`pages/growth-dashboard/index`、`pages/assessment-history/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`function-entry-card` → `/components/function-entry-card/index`、`alert-card` → `/components/alert-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`
-- 主要可见内容：支持性测评、清除、打开联调测试页、正在读取测一测内容...、· 项 · 约 分钟、查看、去登录
+- 页面组件：`section-title` → `/components/section-title/index`、`assessment-worksheet-card` → `/components/assessment-worksheet-card/index`、`function-entry-card` → `/components/function-entry-card/index`、`alert-card` → `/components/alert-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`
+- 主要可见内容：支持性测评、清除、打开联调测试页、正在读取测一测内容...、查看、去登录
 
 #### 交互与用户任务证据
 
@@ -2420,9 +2420,9 @@
 | 18 | 清除 | `bindinput` | `onSearchInput` | — |
 | 19 | 清除 | `bindtap` | `clearSearch` | — |
 | 26 | 打开联调测试页 | `bindtap` | `openIntegrationTest` | — |
-| 39 | 打开测评：{{worksheet.display_title}} | `bindtap` | `openAssessmentEntry` | {'id': '{{worksheet.id}}', 'enabled': '{{worksheet.is_enabled_for_user}}'} |
-| 63 | 查看测评记录：{{item.worksheet_title}} | `bindtap` | `openRecentResult` | {'id': '{{item.id}}', 'worksheet-id': '{{item.worksheet_id}}'} |
-| 88 | 去登录 | `bindtap` | `goLogin` | — |
+| 39 | — | `bindopen` | `openAssessmentEntry` | — |
+| 52 | 查看测评记录：{{item.worksheet_title}} | `bindtap` | `openRecentResult` | {'id': '{{item.id}}', 'worksheet-id': '{{item.worksheet_id}}'} |
+| 77 | 去登录 | `bindtap` | `goLogin` | — |
 
 #### 接口真值
 
@@ -2434,8 +2434,8 @@
 
 #### 路由、本地状态与页面状态
 
-- 下游路由：`navigateTo` → `/pages/assessment-detail/index?id=:dynamic`（js:262）、`navigateTo` → `/pages/assessment-result/index?id=:dynamic`（js:271）、`navigateTo` → `/pages/integration-test/index`（js:284）、`navigateTo` → `/pages/login/index:dynamic`（js:313）
-- 本地存储：`getStorageSync` `auth_token`（JS:289）、`getStorageSync` `auth_user`（JS:293）、`removeStorageSync` `auth_token`（JS:319）、`removeStorageSync` `auth_user`（JS:320）
+- 下游路由：`navigateTo` → `/pages/assessment-detail/index?id=:dynamic`（js:263）、`navigateTo` → `/pages/assessment-result/index?id=:dynamic`（js:272）、`navigateTo` → `/pages/integration-test/index`（js:285）、`navigateTo` → `/pages/login/index:dynamic`（js:314）
+- 本地存储：`getStorageSync` `auth_token`（JS:290）、`getStorageSync` `auth_user`（JS:294）、`removeStorageSync` `auth_token`（JS:320）、`removeStorageSync` `auth_user`（JS:321）
 - WXML 数据绑定：`tabs`、`activeAudience`、`item`、`searchKeyword`、`errorMessage`、`loading`、`categories`、`worksheet`、`recentResults`、`recentLoginTip`
 - 条件状态：`searchKeyword`、`errorMessage`、`loading`、`item`、`recentResults`、`recentLoginTip`
 - `setData` 状态：`activeAudience`、`searchKeyword`、`categories`、`loading`、`errorMessage`、`boundaryNotice`、`allAssessments`、`recentResults`、`recentLoginTip`
@@ -2452,10 +2452,10 @@
 ### 43：全部测评记录 `pages/assessment-history/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`19370472bc4cdd5d7588f689db086a7f66df9936539d83fc59981b6dc9b8811d`
+- 源码指纹：`4f36a4a49cd222b687de319e82398224252e50dc217cdc4994eb1fc6a96aadae`
 - 核对文件：`apps/miniprogram/pages/assessment-history/index.wxml`、`apps/miniprogram/pages/assessment-history/index.wxss`、`apps/miniprogram/pages/assessment-history/index.js`、`apps/miniprogram/pages/assessment-history/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/profile/index`
-- 页面组件：—
+- 页面组件：`assessment-worksheet-card` → `/components/assessment-worksheet-card/index`
 - 主要可见内容：测评记录、共、份记录、正在读取测评记录、请稍等一下。、记录暂时没有加载成功、重新加载、已显示全部 份记录、还没有测评记录、完成一份支持性测评后，记录会保存在这里。、去测一测
 
 #### 交互与用户任务证据
@@ -2463,20 +2463,20 @@
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
 | 17 | 重新加载 | `bindtap` | `retry` | — |
-| 21 | — | `bindtap` | `openResult` | {'id': '{{item.id}}', 'worksheet-id': '{{item.worksheet_id}}'} |
-| 35 | — | `bindtap` | `loadMore` | — |
-| 44 | 去测一测 | `bindtap` | `goAssessment` | — |
+| 21 | — | `bindopen` | `openResult` | — |
+| 29 | — | `bindtap` | `loadMore` | — |
+| 38 | 去测一测 | `bindtap` | `goAssessment` | — |
 
 #### 接口真值
 
 | JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
 |---:|---|---|---|---|
-| 55 | `listAssessmentResults` | `GET` | `/api/assessment-results` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/general_growth.py`、`backend/routes/profile.py`、`backend/routes/research_workspace.py` |
+| 70 | `listAssessmentResults` | `GET` | `/api/assessment-results` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/general_growth.py`、`backend/routes/profile.py`、`backend/routes/research_workspace.py` |
 
 #### 路由、本地状态与页面状态
 
-- 下游路由：`navigateTo` → `/pages/assessment-result/index?id=:dynamic`（js:88）、`navigateTo` → `/pages/assessment/index`（js:94）、`navigateTo` → `/pages/login/index:dynamic`（js:123）
-- 本地存储：`getStorageSync` `auth_token`（JS:99）、`getStorageSync` `auth_user`（JS:103）、`removeStorageSync` `auth_token`（JS:129）、`removeStorageSync` `auth_user`（JS:130）
+- 下游路由：`navigateTo` → `/pages/assessment-result/index?id=:dynamic`（js:104）、`navigateTo` → `/pages/assessment/index`（js:110）、`navigateTo` → `/pages/login/index:dynamic`（js:139）
+- 本地存储：`getStorageSync` `auth_token`（JS:115）、`getStorageSync` `auth_user`（JS:119）、`removeStorageSync` `auth_token`（JS:145）、`removeStorageSync` `auth_user`（JS:146）
 - WXML 数据绑定：`total`、`loading`、`errorMessage`、`items`、`item`、`hasMore`、`loadingMore`
 - 条件状态：`loading`、`errorMessage`、`items`、`hasMore`
 - `setData` 状态：`loading`、`loadingMore`、`errorMessage`、`items`、`page`、`total`、`hasMore`
@@ -2663,10 +2663,10 @@
 ### 48：推荐训练卡 `pages/training-card/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`be7c2a7b12a21c81ef53122ce5766806021b663dc52f57ae1987e495c7cf09b2`
+- 源码指纹：`c0c9325a0492ce44a9fbbacf8d4ac5a7801c2987d90dd46cbabd165f2019c732`
 - 核对文件：`apps/miniprogram/pages/training-card/index.wxml`、`apps/miniprogram/pages/training-card/index.wxss`、`apps/miniprogram/pages/training-card/index.js`、`apps/miniprogram/pages/training-card/index.json`
 - 上游页面：`pages/home/index`、`pages/thermometer/index`、`pages/training/index`、`pages/training-history/index`、`pages/personalized-plan/index`、`pages/therapeutic-assessment-action-followup/index`、`pages/feedback-result/index`、`pages/assessment-result/index`、`pages/hot-topics/index`
-- 页面组件：`feedback-rating` → `/components/feedback-rating/index`、`page-state` → `/components/page-state/index`
+- 页面组件：`feedback-rating` → `/components/feedback-rating/index`、`page-state` → `/components/page-state/index`、`training-task-card` → `/components/training-task-card/index`
 - 主要可见内容：训练卡、这次推荐依据、今天的小目标、适合、节奏、完成、可以这样说、这些情况先停下来
 
 #### 交互与用户任务证据
@@ -2674,10 +2674,10 @@
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
 | 10 | 这次推荐依据 | `bindaction` | `retryLoadCards` | — |
-| 35 | — | `bindtap` | `toggleCardDetails` | {'id': '{{item.id}}'} |
-| 49 | — | `bindtap` | `choosePractice` | {'id': '{{item.id}}', 'title': '{{item.title}}'} |
-| 50 | — | `bindselect` | `submitTrainingFeedback` | {'id': '{{item.id}}'} |
-| 61 | — | `bindaction` | `goDiary` | — |
+| 33 | — | `bindtap` | `toggleCardDetails` | {'id': '{{item.id}}'} |
+| 47 | — | `bindtap` | `choosePractice` | {'id': '{{item.id}}', 'title': '{{item.title}}'} |
+| 48 | — | `bindselect` | `submitTrainingFeedback` | {'id': '{{item.id}}'} |
+| 59 | — | `bindaction` | `goDiary` | — |
 
 #### 接口真值
 
@@ -2685,13 +2685,13 @@
 |---:|---|---|---|---|
 | 61 | `listCards` | `GET` | `/api/cards` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
 | 61 | `recommendCards` | `GET` | `/api/cards/recommend` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 152 | `createFeedbackLedgerEntry` | `POST` | `/api/feedback-ledger` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
+| 153 | `createFeedbackLedgerEntry` | `POST` | `/api/feedback-ledger` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
 
 #### 路由、本地状态与页面状态
 
-- 下游路由：`navigateTo` → `/pages/task-detail/index?card_id=:dynamic`（js:127）、`navigateTo` → `/pages/diary-form/index`（js:142）
-- 本地存储：`setStorageSync` `safehome:selectedTrainingCard`（JS:125）
-- WXML 数据绑定：`loading`、`errorMessage`、`errorDetail`、`tagsText`、`cards`、`item`、`expandedCardId`、`feedbackEvaluationSaving`、`true`
+- 下游路由：`navigateTo` → `/pages/task-detail/index?card_id=:dynamic`（js:128）、`navigateTo` → `/pages/diary-form/index`（js:143）
+- 本地存储：`setStorageSync` `safehome:selectedTrainingCard`（JS:126）
+- WXML 数据绑定：`loading`、`errorMessage`、`errorDetail`、`tagsText`、`cards`、`item`、`false`、`expandedCardId`、`feedbackEvaluationSaving`、`true`
 - 条件状态：`loading`、`errorMessage`、`tagsText`、`item`、`cards`
 - `setData` 状态：`tagsText`、`diaryId`、`tags`、`cardIds`、`loading`、`errorMessage`、`errorDetail`、`practiceMessage`、`cards`、`index`、`expandedCardId`、`feedbackEvaluationSaving`
 - 未解析事件：—

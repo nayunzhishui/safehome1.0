@@ -1,0 +1,9 @@
+<textarea
+  class="therapeutic-textarea {{value ? 'therapeutic-textarea--filled' : ''}} {{error ? 'therapeutic-textarea--error' : ''}}"
+  maxlength="{{maxlength}}"
+  value="{{value}}"
+  disabled="{{disabled}}"
+  aria-label="{{ariaLabel}}"
+  placeholder="{{placeholder}}"
+  bindinput="handleInput"
+></textarea>

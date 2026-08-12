@@ -12,7 +12,7 @@ Component({
   },
   methods: {
     forwardAction(event) {
-      this.triggerEvent("action", event.detail);
+      this.triggerEvent("action", { key: event.detail.key });
     },
   },
 });

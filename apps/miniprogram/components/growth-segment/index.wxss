@@ -1,0 +1,4 @@
+.growth-segment { box-sizing: border-box; width: 100%; min-height: 128rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6rpx; padding: 20rpx 16rpx 16rpx; border: 2rpx solid transparent; border-radius: 24rpx; background: var(--safe-bg); }
+.growth-segment--active { border-color: var(--safe-primary); background: var(--safe-bg-soft); }
+.growth-segment__label { color: var(--safe-title); font-size: 26rpx; font-weight: 700; line-height: 36rpx; }
+.growth-segment__count { color: var(--safe-muted); font-size: 24rpx; line-height: 34rpx; }

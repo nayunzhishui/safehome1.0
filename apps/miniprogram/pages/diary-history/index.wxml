@@ -28,8 +28,7 @@
         <text class="record-clock">{{item.timeText}}</text>
       </view>
       <view class="record-axis" aria-hidden="true">
-        <view class="record-axis-line"></view>
-        <view class="record-axis-dot"></view>
+        <bamboo-timeline-node />
       </view>
       <view class="record-content">
         <text class="record-scene">{{item.sceneText}}</text>

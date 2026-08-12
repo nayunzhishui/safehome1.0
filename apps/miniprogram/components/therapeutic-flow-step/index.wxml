@@ -32,47 +32,33 @@
   <view wx:if="{{!loading && stateKind !== 'withdrawn' && stateKind !== 'expired'}}" class="safe-card taf-card">
     <text wx:if="{{prompt}}" class="safe-h3">{{prompt}}</text>
 
-    <view wx:if="{{mode === 'feedback' && feedbackContent}}" class="taf-feedback-letter" role="article" aria-label="{{feedbackTitle}}">
-      <view class="taf-feedback-letter__spine" aria-hidden="true">
-        <view class="taf-feedback-letter__stem"></view>
-        <view class="taf-feedback-letter__joint"></view>
-        <view class="taf-feedback-letter__tick"></view>
-      </view>
-      <view class="taf-feedback-letter__content">
-        <text class="safe-eyebrow">{{feedbackLayerLabel}}</text>
-        <text class="safe-h3">{{feedbackTitle}}</text>
-        <text class="safe-body">{{feedbackContent}}</text>
-      </view>
-    </view>
+    <therapeutic-feedback-letter
+      wx:if="{{mode === 'feedback' && feedbackContent}}"
+      layer-label="{{feedbackLayerLabel}}"
+      title="{{feedbackTitle}}"
+      content="{{feedbackContent}}"
+    />
 
     <view wx:if="{{mode === 'choice' || mode === 'feedback'}}" class="taf-options" role="radiogroup" aria-label="{{prompt || title}}">
-      <button
+      <therapeutic-choice-option
         wx:for="{{options}}"
         wx:key="value"
-        class="taf-option {{selected === item.value ? 'taf-option--selected' : ''}}"
-        data-value="{{item.value}}"
-        role="radio"
-        aria-checked="{{selected === item.value}}"
-        aria-label="{{item.label}}：{{item.description}}"
-        bindtap="handleOption"
-      >
-        <view class="taf-option__mark" aria-hidden="true">{{selected === item.value ? '✓' : ''}}</view>
-        <view class="taf-option__copy">
-          <text class="taf-option__title">{{item.label}}</text>
-          <text class="taf-option__description">{{item.description}}</text>
-        </view>
-      </button>
+        value="{{item.value}}"
+        label="{{item.label}}"
+        description="{{item.description}}"
+        selected="{{selected === item.value}}"
+        bind:change="handleOption"
+      />
     </view>
 
-    <textarea
+    <therapeutic-textarea
       wx:if="{{mode === 'text' || (mode === 'feedback' && selected === 'not_like')}}"
-      class="taf-textarea"
       maxlength="4000"
       value="{{value}}"
       aria-label="{{prompt || title}}"
       placeholder="只写你愿意记录的部分，可以稍后修改。"
-      bindinput="handleInput"
-    ></textarea>
+      bind:input="handleInput"
+    />
 
     <view wx:if="{{mode === 'action'}}" class="taf-action-form">
       <view class="taf-action-section">
@@ -82,11 +68,11 @@
         </view>
         <label class="taf-field">
           <text class="taf-field__label">我愿意尝试的一小步</text>
-          <textarea class="taf-textarea taf-textarea--compact" maxlength="500" value="{{value}}" data-field="actionText" aria-label="我愿意尝试的一小步" placeholder="写下低压力、可停止的一小步。" bindinput="handleInput"></textarea>
+          <therapeutic-compact-textarea maxlength="500" value="{{value}}" field="actionText" aria-label="我愿意尝试的一小步" placeholder="写下低压力、可停止的一小步。" bind:input="handleInput" />
         </label>
         <label class="taf-field">
           <text class="taf-field__label">我为什么想试试</text>
-          <textarea class="taf-textarea taf-textarea--compact" maxlength="500" value="{{actionPlan.purposeText}}" data-field="purposeText" aria-label="行动目的" placeholder="记录你的目的，不要求证明效果。" bindinput="handleActionInput"></textarea>
+          <therapeutic-compact-textarea maxlength="500" value="{{actionPlan.purposeText}}" field="purposeText" aria-label="行动目的" placeholder="记录你的目的，不要求证明效果。" bind:input="handleActionInput" />
         </label>
       </view>
       <view class="taf-action-section">
@@ -114,11 +100,11 @@
         </view>
         <label class="taf-field">
           <text class="taf-field__label">什么情况下先停下来</text>
-          <textarea class="taf-textarea taf-textarea--compact" maxlength="300" value="{{actionPlan.stopCondition}}" data-field="stopCondition" aria-label="停止条件" placeholder="例如：感到明显不适、冲突升级或不再愿意时。" bindinput="handleActionInput"></textarea>
+          <therapeutic-compact-textarea maxlength="300" value="{{actionPlan.stopCondition}}" field="stopCondition" aria-label="停止条件" placeholder="例如：感到明显不适、冲突升级或不再愿意时。" bind:input="handleActionInput" />
         </label>
         <label class="taf-field">
           <text class="taf-field__label">如果没做到，我会怎么记录</text>
-          <textarea class="taf-textarea taf-textarea--compact" maxlength="800" value="{{actionPlan.setbackPlan}}" data-field="setbackPlan" aria-label="未完成时的记录方式" placeholder="只记录发生了什么，不责备自己。" bindinput="handleActionInput"></textarea>
+          <therapeutic-compact-textarea maxlength="800" value="{{actionPlan.setbackPlan}}" field="setbackPlan" aria-label="未完成时的记录方式" placeholder="只记录发生了什么，不责备自己。" bind:input="handleActionInput" />
         </label>
       </view>
       <button class="taf-confirmation {{actionPlan.confirmed ? 'taf-confirmation--selected' : ''}}" role="checkbox" aria-checked="{{actionPlan.confirmed}}" bindtap="handleActionConfirmation">
@@ -127,30 +113,7 @@
       </button>
     </view>
 
-    <view wx:if="{{mode === 'summary'}}" class="taf-comparison">
-      <view class="taf-comparison__panel">
-        <view class="taf-comparison__spine" aria-hidden="true">
-          <view class="taf-comparison__stem"></view>
-          <view class="taf-comparison__joint"></view>
-          <view class="taf-comparison__tick"></view>
-        </view>
-        <view class="taf-comparison__content">
-          <text class="safe-eyebrow">你的原话</text>
-          <text class="safe-body">{{originalText || '尚未填写'}}</text>
-        </view>
-      </view>
-      <view class="taf-comparison__panel">
-        <view class="taf-comparison__spine" aria-hidden="true">
-          <view class="taf-comparison__stem"></view>
-          <view class="taf-comparison__joint"></view>
-          <view class="taf-comparison__tick"></view>
-        </view>
-        <view class="taf-comparison__content">
-          <text class="safe-eyebrow">系统整理</text>
-          <text class="safe-body">{{systemText || '尚未形成整理版本'}}</text>
-        </view>
-      </view>
-    </view>
+    <therapeutic-comparison wx:if="{{mode === 'summary'}}" original-text="{{originalText}}" system-text="{{systemText}}" />
 
     <text class="draft-status" aria-live="polite">{{saveStatus}}</text>
   </view>

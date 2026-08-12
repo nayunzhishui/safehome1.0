@@ -7,30 +7,6 @@
   padding: 24rpx 0;
 }
 
-.record-marker {
-  position: relative;
-  width: 8rpx;
-  min-height: 76rpx;
-  flex: 0 0 8rpx;
-  border-radius: 6rpx;
-  background: linear-gradient(to bottom, var(--safe-primary-deep) 0 42%, transparent 42% 49%, var(--safe-primary-deep) 49% 100%);
-}
-
-.record-joint {
-  position: absolute;
-  top: 42%;
-  left: -3rpx;
-  width: 14rpx;
-  height: 8rpx;
-  border-radius: 6rpx;
-  background: var(--safe-primary-deep);
-}
-
-.record--relationship .record-marker,
-.record--relationship .record-joint {
-  background-color: var(--safe-primary);
-}
-
 .record-body { min-width: 0; flex: 1; }
 
 .record-head {

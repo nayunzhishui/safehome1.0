@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "全部测评记录"
+  "navigationBarTitleText": "全部测评记录",
+  "usingComponents": {
+    "assessment-worksheet-card": "/components/assessment-worksheet-card/index"
+  }
 }
