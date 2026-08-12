@@ -1,5 +1,9 @@
 const { createSafeHomeApi } = require("../../services/api");
-const { DEFAULT_CLOUD_CONFIG, saveCloudConfig } = require("../../services/cloudConfig");
+const {
+  DEFAULT_CLOUD_CONFIG,
+  DEVELOPMENT_CLOUD_TARGET,
+  saveCloudConfig,
+} = require("../../services/cloudConfig");
 
 function toText(value) {
   if (value === undefined || value === null) {
@@ -86,9 +90,7 @@ Page({
 
   useCloudBackend() {
     saveCloudConfig({
-      ...DEFAULT_CLOUD_CONFIG,
-      useLocalHttp: false,
-      transport: "cloud-container",
+      ...DEVELOPMENT_CLOUD_TARGET,
     });
     this.refreshApi();
     this.setData({

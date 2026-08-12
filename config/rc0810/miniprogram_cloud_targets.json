@@ -1,0 +1,48 @@
+{
+  "schema": "safehome.rc0810.miniprogram-cloud-targets.v1",
+  "production_release_approved": false,
+  "profiles": {
+    "development": {
+      "transport": "local-http",
+      "runtime_overrides": true,
+      "default_target": "loopback",
+      "production_default_allowed": false,
+      "allowed_cloud_targets": [
+        {
+          "cloudEnvId": "prod-d3gl35otiaa7c8d24",
+          "containerService": "flask-gh3l",
+          "target_status": "development_integration_only"
+        }
+      ]
+    },
+    "validation": {
+      "transport": "cloud-container",
+      "runtime_overrides": true,
+      "production_default_allowed": false,
+      "allowed_targets": [
+        {
+          "cloudEnvId": "validation-env-required",
+          "containerService": "validation-service-required",
+          "httpBaseUrl": "https://validation-url-required"
+        },
+        {
+          "cloudEnvId": "prod-d3gl35otiaa7c8d24",
+          "containerService": "flask-gh3l",
+          "httpBaseUrl": "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com",
+          "target_status": "validation_integration_only"
+        }
+      ]
+    },
+    "production": {
+      "transport": "cloud-container",
+      "runtime_overrides": false,
+      "target_status": "candidate_frozen_pending_platform_approval",
+      "cloudEnvId": "prod-d3gl35otiaa7c8d24",
+      "containerService": "flask-gh3l",
+      "httpBaseUrl": "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com"
+    }
+  },
+  "legacy_connection_storage_keys": ["safehome_cloud_config"],
+  "preserved_storage_classes": ["authentication", "drafts", "task_progress", "personal_data"],
+  "network_failure_policy": "surface_recoverable_error_without_target_fallback"
+}

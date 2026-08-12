@@ -1238,7 +1238,27 @@
       "phase": "complete",
       "dependencies": [
         "RC0810-F03"
-      ]
+      ],
+      "allowed_files": [
+        "apps/miniprogram/app.js",
+        "apps/miniprogram/pages/debug/index.js",
+        "apps/miniprogram/services/cloudConfig.js",
+        "backend/tests/test_rc0810_f04.py",
+        "config/rc0810/miniprogram_cloud_targets.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f04_cloud_target_baseline.json",
+        "scripts/build_rc0810_miniprogram.py",
+        "scripts/verify_rc0810_f04_cloud_target.py"
+      ],
+      "change_budget": {
+        "expected_files": 14,
+        "pause_when_actual_exceeds_percent": 50
+      }
     },
     {
       "id": "RC0810-F05",
@@ -2056,35 +2076,56 @@
           "expected_test_count": 18
         },
         {
-          "argv": ["python", "deploy/verify_rc0810_f03_images.py"],
+          "argv": [
+            "python",
+            "deploy/verify_rc0810_f03_images.py"
+          ],
           "cwd": ".",
           "timeout_seconds": 120,
           "shell": false,
           "expected_test_count": 1
         },
         {
-          "argv": ["python", "deploy/verify_rc0810_f03_images.py", "--build", "production"],
+          "argv": [
+            "python",
+            "deploy/verify_rc0810_f03_images.py",
+            "--build",
+            "production"
+          ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
           "expected_test_count": 1
         },
         {
-          "argv": ["python", "deploy/verify_rc0810_f03_images.py", "--build", "validation"],
+          "argv": [
+            "python",
+            "deploy/verify_rc0810_f03_images.py",
+            "--build",
+            "validation"
+          ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
           "expected_test_count": 1
         },
         {
-          "argv": ["python", "deploy/verify_rc0810_f03_images.py", "--runtime"],
+          "argv": [
+            "python",
+            "deploy/verify_rc0810_f03_images.py",
+            "--runtime"
+          ],
           "cwd": ".",
           "timeout_seconds": 180,
           "shell": false,
           "expected_test_count": 1
         },
         {
-          "argv": ["git", "diff", "--check"],
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
           "cwd": ".",
           "timeout_seconds": 120,
           "shell": false,
@@ -2189,10 +2230,20 @@
         "WX-02"
       ],
       "allowed_files": [
-        "apps/miniprogram/**",
-        "config/rc0810/**",
-        "scripts/**",
-        "docs/**"
+        "apps/miniprogram/app.js",
+        "apps/miniprogram/pages/debug/index.js",
+        "apps/miniprogram/services/cloudConfig.js",
+        "backend/tests/test_rc0810_f04.py",
+        "config/rc0810/miniprogram_cloud_targets.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f04_cloud_target_baseline.json",
+        "scripts/build_rc0810_miniprogram.py",
+        "scripts/verify_rc0810_f04_cloud_target.py"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -2211,21 +2262,101 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f04.py",
-            "-q"
+            "-q",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "expected_test_count": 12
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "backend/tests/test_rc0810_f02.py",
+            "backend/tests/test_rc0810_f04.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "expected_test_count": 29
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/verify_rc0810_f04_cloud_target.py"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/build_rc0810_miniprogram.py",
+            "--profile",
+            "production",
+            "--output",
+            ".codex_tmp/rc0810/f04-production",
+            "--copy-source"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/build_rc0810_miniprogram.py",
+            "--profile",
+            "validation",
+            "--output",
+            ".codex_tmp/rc0810/f04-validation",
+            "--copy-source"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
         }
       ],
       "external_gates": [],
       "change_budget": {
         "allowed_modules": [
-          "apps/miniprogram/**",
-          "config/rc0810/**",
-          "scripts/**",
-          "docs/**"
+          "apps/miniprogram/app.js",
+          "apps/miniprogram/pages/debug/index.js",
+          "apps/miniprogram/services/cloudConfig.js",
+          "backend/tests/test_rc0810_f04.py",
+          "config/rc0810/miniprogram_cloud_targets.json",
+          "content/rc0810_release_candidate_registry.json",
+          "docs/00_当前事实基准/Claude计划模式.md",
+          "docs/00_当前事实基准/开发日志.md",
+          "docs/00_当前事实基准/开发说明.md",
+          "docs/00_当前事实基准/当前进度交接.md",
+          "docs/01_当前执行入口/0810bug修改计划.md",
+          "docs/02_专项进度与验收/rc0810_f04_cloud_target_baseline.json",
+          "scripts/build_rc0810_miniprogram.py",
+          "scripts/verify_rc0810_f04_cloud_target.py"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
@@ -2237,10 +2368,10 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 10,
+        "expected_files": 14,
         "expected_migrations": 0,
         "expected_interfaces": 0,
-        "expected_pages": 4,
+        "expected_pages": 0,
         "actual_delta_baseline": "task_start_snapshot",
         "pause_when_actual_exceeds_percent": 50,
         "pause_on_second_unrelated_root_cause": true,

@@ -1,0 +1,23 @@
+{
+  "schema": "safehome.rc0810.f04-cloud-target-baseline.v1",
+  "status": "valid",
+  "profiles": [
+    "development",
+    "production",
+    "validation"
+  ],
+  "production_release_approved": false,
+  "packages": {
+    "production": {
+      "target_locked": true,
+      "runtime_overrides_present": false,
+      "production_gate_eligible": false
+    },
+    "validation": {
+      "target_locked": false,
+      "runtime_overrides_present": true,
+      "production_gate_eligible": false
+    }
+  },
+  "errors": []
+}

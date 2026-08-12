@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "apps" / "miniprogram"
 DEFAULT_POLICY = ROOT / "config" / "rc0810" / "miniprogram_page_policy.json"
+DEFAULT_CLOUD_TARGETS = ROOT / "config" / "rc0810" / "miniprogram_cloud_targets.json"
 ROUTE_RE = re.compile(r"[\"'`](/pages/[a-z0-9-]+/index)(?:\?[^\"'`]*)?[\"'`]", re.I)
 
 
@@ -149,7 +150,93 @@ def scan_internal_routes(output: Path, internal: set[str]) -> list[dict]:
     return findings
 
 
-def build(profile: str, output: Path, policy_path: Path, should_copy: bool) -> dict:
+def render_cloud_config(profile: str, contract: dict) -> str:
+    target = contract["profiles"][profile]
+    common = f'''const CLOUD_CONFIG_STORAGE_KEY = "safehome_cloud_config";
+const PROFILE = {json.dumps(profile)};
+'''
+    if profile == "production":
+        fixed = {
+            "profile": "production",
+            "cloudEnvId": target["cloudEnvId"],
+            "containerService": target["containerService"],
+            "httpBaseUrl": target["httpBaseUrl"],
+            "transport": "cloud-container",
+            "useLocalHttp": False,
+        }
+        return common + f'''const DEFAULT_CLOUD_CONFIG = Object.freeze({json.dumps(fixed, ensure_ascii=False)});
+function getCloudConfig() {{ return DEFAULT_CLOUD_CONFIG; }}
+function migrateLegacyCloudConfig() {{
+  if (typeof wx !== "undefined" && wx.removeStorageSync) wx.removeStorageSync(CLOUD_CONFIG_STORAGE_KEY);
+  return true;
+}}
+module.exports = {{ CLOUD_CONFIG_STORAGE_KEY, DEFAULT_CLOUD_CONFIG, getCloudConfig, migrateLegacyCloudConfig }};
+'''
+    allowed = target["allowed_targets"]
+    integration_target = next(
+        item for item in allowed if item.get("target_status") == "validation_integration_only"
+    )
+    default = {
+        "profile": "validation",
+        "cloudEnvId": "",
+        "containerService": "",
+        "httpBaseUrl": "",
+        "transport": "cloud-container",
+        "useLocalHttp": False,
+    }
+    return common + f'''const DEFAULT_CLOUD_CONFIG = Object.freeze({json.dumps(default, ensure_ascii=False)});
+const DEVELOPMENT_CLOUD_TARGET = Object.freeze({json.dumps(integration_target, ensure_ascii=False)});
+const ALLOWED_TARGETS = Object.freeze({json.dumps(allowed, ensure_ascii=False)});
+function invalid(detail) {{
+  const error = new Error("连接配置不可用，请检查配置后重试。");
+  error.code = "cloud_config_invalid"; error.userMessage = "连接配置不可用，请检查配置后重试。";
+  error.detail = detail; error.recoverable = true; return error;
+}}
+function readRuntimeTarget() {{
+  try {{
+    const ext = typeof wx !== "undefined" && wx.getExtConfigSync ? (wx.getExtConfigSync() || {{}}) : {{}};
+    const external = ext.safehomeCloud || ext.cloudConfig || {{}};
+    const stored = typeof wx !== "undefined" && wx.getStorageSync ? (wx.getStorageSync(CLOUD_CONFIG_STORAGE_KEY) || {{}}) : {{}};
+    return {{ ...external, ...stored }};
+  }} catch (error) {{ throw invalid("无法读取验证目标"); }}
+}}
+function getCloudConfig(overrides = {{}}) {{
+  const candidate = {{ ...readRuntimeTarget(), ...overrides }};
+  const match = ALLOWED_TARGETS.find((item) => item.cloudEnvId === candidate.cloudEnvId && item.containerService === candidate.containerService);
+  if (!match) throw invalid("目标环境或服务未登记");
+  return {{ ...DEFAULT_CLOUD_CONFIG, ...match }};
+}}
+function saveCloudConfig(config = {{}}) {{
+  const next = getCloudConfig(config);
+  if (typeof wx !== "undefined" && wx.setStorageSync) wx.setStorageSync(CLOUD_CONFIG_STORAGE_KEY, next);
+  return next;
+}}
+function migrateLegacyCloudConfig() {{ return false; }}
+module.exports = {{ CLOUD_CONFIG_STORAGE_KEY, DEFAULT_CLOUD_CONFIG, DEVELOPMENT_CLOUD_TARGET, getCloudConfig, saveCloudConfig, migrateLegacyCloudConfig }};
+'''
+
+
+def configure_cloud_target(output: Path, profile: str, contract_path: Path) -> dict:
+    contract = read_json(contract_path)
+    target = contract["profiles"][profile]
+    module_path = output / "services" / "cloudConfig.js"
+    module_path.parent.mkdir(parents=True, exist_ok=True)
+    module_path.write_text(render_cloud_config(profile, contract), encoding="utf-8")
+    audit = {
+        "schema": "safehome.rc0810.miniprogram-cloud-target-audit.v1",
+        "profile": profile,
+        "contract_sha256": file_hash(contract_path),
+        "transport": target["transport"],
+        "runtime_overrides_present": target["runtime_overrides"],
+        "target_locked": profile == "production" and not target["runtime_overrides"],
+        "production_release_approved": contract["production_release_approved"],
+        "production_gate_eligible": False,
+    }
+    write_json(output / "rc0810-cloud-target-audit.json", audit)
+    return audit
+
+
+def build(profile: str, output: Path, policy_path: Path, should_copy: bool, cloud_targets_path: Path = DEFAULT_CLOUD_TARGETS) -> dict:
     app = read_json(SOURCE / "app.json")
     policy = read_json(policy_path)
     mapping = validate_policy(app, policy)
@@ -183,6 +270,7 @@ def build(profile: str, output: Path, policy_path: Path, should_copy: bool) -> d
     })
     if should_copy:
         copy_source(output, set() if profile == "validation" else internal)
+        configure_cloud_target(output, profile, cloud_targets_path)
         if profile == "production":
             for relative, methods in policy.get("production_route_rewrites", {}).items():
                 strip_named_methods(output / relative, methods)
@@ -216,9 +304,10 @@ def main() -> int:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--policy", default=DEFAULT_POLICY, type=Path)
     parser.add_argument("--copy-source", action="store_true")
+    parser.add_argument("--cloud-targets", default=DEFAULT_CLOUD_TARGETS, type=Path)
     args = parser.parse_args()
     try:
-        audit = build(args.profile, args.output.resolve(), args.policy.resolve(), args.copy_source)
+        audit = build(args.profile, args.output.resolve(), args.policy.resolve(), args.copy_source, args.cloud_targets.resolve())
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(str(exc), file=sys.stderr)
         return 1

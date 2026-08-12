@@ -12163,3 +12163,12 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 第二轮审查确认污染已关闭，但 validation 的原有研究联调能力未全部恢复；Fix Loop 2 已对照 profile 恢复并由容器内 `app.config` 检查闭环。
 - [x] 第三轮审查确认 validation 已闭环，但 production 对部分执行/写入开关仍可运行时覆盖；Fix Loop 3 已纳入同组真实执行能力并复审通过，纯只读 workbench 未被过度封禁。
 - [x] Fix Loop 3 独立复审 `pass`，SHA-256=`fbfda53dd37228cada1cf857df57c45d1e9f22d3262760b5835c971f590a878a`；Harness 已接受。最终文档同步后重跑 7 条验收并完成一致性复审，再提交推送进入 F04。
+
+## 2026-08-12：RC0810-F04 CloudBase 目标锁定
+
+- [x] development 默认 loopback，仅允许本地目标与登记的云联调目标；validation 保留受控调试切换；production 包在构建时固定唯一候选 CloudBase 目标。
+- [x] production 包不读取 storage、extConfig 或启动参数切换目标；非法目标和网络失败返回可恢复错误，不自动回退到本地 HTTP 或其他环境。
+- [x] 旧配置迁移只删除 `safehome_cloud_config`，不清登录、草稿、进度或个人数据。
+- [x] F04 专项 `12 passed`、组合 `29 passed`；离线验证器、production/validation 构建和 diff check 通过。
+- [x] 首轮审查唯一 finding 为 validation 调试页缺少登记目标导出；Fix Loop 1 已闭环，独立复审 `pass`，decision SHA-256=`77d0ba3cab1f7a3b646dd977f0f76e78fb83c72550602a02bd86725427cb5414`。
+- [ ] 真实 CloudBase、微信平台、真机和发布批准仍为 pending，production 继续 NO-GO。按负责人要求，本阶段提交推送后停止，不启动 F05。
