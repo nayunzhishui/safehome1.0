@@ -1,0 +1,40 @@
+{
+  "captured_at": "2026-08-13T01:19:44+08:00",
+  "branch": "main",
+  "head": "f3f73e005db4112e5caa802a287b3ae1ce9a30a5",
+  "recent_commits": [
+    "f3f73e00 fix(rc0810): 完成F05 Showcase生产硬关闭",
+    "dc66e216 feat(rc0810): 完成F04 CloudBase目标锁定",
+    "3a3555ce feat(rc0810): 完成F03正式与验证镜像分离",
+    "f8bb8a0c docs(rc0810): 回填F02执行记录",
+    "613ee030 feat(rc0810): 完成F02小程序页面隔离",
+    "02ad104d docs(rc0810): 回填F01执行记录",
+    "2beab586 feat(rc0810): 完成F01构建配置合同与验证",
+    "3755f476 docs(rc0810): 标记上线整改暂停未完成",
+    "aee4f55b chore(rc0810): 建立F25-A微信平台约束基线",
+    "e0fb7fd0 chore(rc0810): 建立F22-A安全扫描基线"
+  ],
+  "dirty": true,
+  "status_short": [
+    " M apps/miniprogram/pages/profile/index.js",
+    " M apps/miniprogram/pages/support-assistant/index.js",
+    " M apps/miniprogram/pages/support-assistant/index.wxml",
+    " M apps/miniprogram/pages/support-assistant/index.wxss",
+    " M \"docs/00_\\345\\275\\223\\345\\211\\215\\344\\272\\213\\345\\256\\236\\345\\237\\272\\345\\207\\206/Claude\\350\\256\\241\\345\\210\\222\\346\\250\\241\\345\\274\\217.md\"",
+    " M \"docs/00_\\345\\275\\223\\345\\211\\215\\344\\272\\213\\345\\256\\236\\345\\237\\272\\345\\207\\206/\\345\\274\\200\\345\\217\\221\\346\\227\\245\\345\\277\\227.md\"",
+    " M \"docs/00_\\345\\275\\223\\345\\211\\215\\344\\272\\213\\345\\256\\236\\345\\237\\272\\345\\207\\206/\\345\\274\\200\\345\\217\\221\\350\\257\\264\\346\\230\\216.md\"",
+    " M \"docs/00_\\345\\275\\223\\345\\211\\215\\344\\272\\213\\345\\256\\236\\345\\237\\272\\345\\207\\206/\\345\\275\\223\\345\\211\\215\\350\\277\\233\\345\\272\\246\\344\\272\\244\\346\\216\\245.md\""
+  ],
+  "diff_stat": [
+    "apps/miniprogram/pages/profile/index.js              | 18 +++++++++++++++---",
+    " apps/miniprogram/pages/support-assistant/index.js    | 20 ++++++++++++++++++--",
+    " apps/miniprogram/pages/support-assistant/index.wxml  |  9 +++++----",
+    " apps/miniprogram/pages/support-assistant/index.wxss  | 10 ++++++++++",
+    " ...0\\256\\241\\345\\210\\222\\346\\250\\241\\345\\274\\217.md\" | 10 ++++++++++",
+    " ...5\\274\\200\\345\\217\\221\\346\\227\\245\\345\\277\\227.md\" | 10 ++++++++++",
+    " ...5\\274\\200\\345\\217\\221\\350\\257\\264\\346\\230\\216.md\" |  8 ++++++++",
+    " ...0\\277\\233\\345\\272\\246\\344\\272\\244\\346\\216\\245.md\" | 10 ++++++++++",
+    " 8 files changed, 86 insertions(+), 9 deletions(-)"
+  ],
+  "baseline_policy": "current_worktree; preserve and avoid all pre-existing modifications"
+}

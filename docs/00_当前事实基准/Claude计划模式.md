@@ -12182,3 +12182,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] F05 专项 `6 passed`、既有 Showcase `16 passed`、组合 `29 passed`，离线 verifier 与 `git diff --check` 通过；13 文件合同与证据绑定一致。
 - [ ] production break-glass 不在本轮虚构实现；强认证、双人确认、限时、理由、范围、自动过期和审计仍为 `pending_external`，真实平台与发布继续 NO-GO。
 - 下一入口：完成最终文档一致性复审、精确提交并推送后，从 `RC0810-F06` 的 Preflight → Scope Freeze 开始；不得把 validation 开发例外当作 production 授权。
+
+## 2026-08-13：非权限项产品信息密度与工程收敛
+
+- [x] R00：记录 main、HEAD、最近 10 次提交、dirty 文件和 diff stat；8 个开始前未提交文件全部保留。
+- [x] R01：审计 `miniprogram_page_policy` 中 48 个参与者页面，输出六维静态信息密度指标与问题页面排名。
+- [x] 建立 `home.before.json` 和 `assessment-result.before.json`，覆盖功能、按钮、入口、导航、数据块、API 与 loading/error/empty 状态。
+- [x] 明确权限、心理计分、风险分流、API、数据库和 shared 均冻结；R00/R01 未修改 UI。
+- [ ] R02：首页呈现收敛。下一次只从 PRECHECK 和 Scope Freeze 开始；before 项必须全部保留并生成 after 对比，完成 UI/功能/回归/独立审查后才可提交为 PASS。

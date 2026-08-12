@@ -1,0 +1,188 @@
+{
+  "schema": "safehome.participant-information-density.v1",
+  "captured_at": "2026-08-13T01:31:45+08:00",
+  "captured_from": "current_worktree",
+  "participant_page_count": 48,
+  "measurement_scope": "miniprogram pages classified as participant by config/rc0810/miniprogram_page_policy.json",
+  "ranking_formula": {
+    "text_density": 0.24,
+    "action_density": 0.2,
+    "visual_density": 0.2,
+    "terminology": 0.12,
+    "repetition": 0.08,
+    "decision_load": 0.16
+  },
+  "limitations": [
+    "Static source audit; conditional branches are counted together and may not render simultaneously.",
+    "Literal copy excludes runtime API content and mustache values.",
+    "Scores rank audit priority only; they are not user-quality or clinical-safety scores.",
+    "Runtime screenshots, device widths, scroll depth and assistive-technology checks remain pending for R02/R03."
+  ],
+  "top_pages": [
+    {
+      "rank": 1,
+      "page": "pages/relationship-growth/index",
+      "density_score": 74.7,
+      "text_density": 95.8,
+      "action_density": 91.2,
+      "visual_density": 38.3,
+      "terminology": 75.0,
+      "repetition": 29.2,
+      "decision_load_score": 90.6
+    },
+    {
+      "rank": 2,
+      "page": "pages/settings-detail/index",
+      "density_score": 63.2,
+      "text_density": 76.3,
+      "action_density": 90.4,
+      "visual_density": 23.8,
+      "terminology": 50.0,
+      "repetition": 12.5,
+      "decision_load_score": 93.9
+    },
+    {
+      "rank": 3,
+      "page": "pages/therapeutic-assessment/index",
+      "density_score": 55.3,
+      "text_density": 83.1,
+      "action_density": 75.3,
+      "visual_density": 13.8,
+      "terminology": 25.0,
+      "repetition": 37.5,
+      "decision_load_score": 72.2
+    },
+    {
+      "rank": 4,
+      "page": "pages/home/index",
+      "density_score": 49.9,
+      "text_density": 62.3,
+      "action_density": 86.7,
+      "visual_density": 36.9,
+      "terminology": 0.0,
+      "repetition": 12.5,
+      "decision_load_score": 57.9
+    },
+    {
+      "rank": 5,
+      "page": "pages/growth-dashboard/index",
+      "density_score": 46.3,
+      "text_density": 43.4,
+      "action_density": 46.9,
+      "visual_density": 43.1,
+      "terminology": 75.0,
+      "repetition": 12.5,
+      "decision_load_score": 49.3
+    },
+    {
+      "rank": 6,
+      "page": "pages/relationship-report/index",
+      "density_score": 43.5,
+      "text_density": 45.6,
+      "action_density": 24.7,
+      "visual_density": 48.3,
+      "terminology": 100.0,
+      "repetition": 12.5,
+      "decision_load_score": 30.8
+    },
+    {
+      "rank": 7,
+      "page": "pages/assessment-result/index",
+      "density_score": 42.0,
+      "text_density": 57.3,
+      "action_density": 12.5,
+      "visual_density": 51.9,
+      "terminology": 25.0,
+      "repetition": 33.3,
+      "decision_load_score": 60.6
+    },
+    {
+      "rank": 8,
+      "page": "pages/profile/index",
+      "density_score": 38.5,
+      "text_density": 49.3,
+      "action_density": 62.0,
+      "visual_density": 21.9,
+      "terminology": 0.0,
+      "repetition": 37.5,
+      "decision_load_score": 42.8
+    },
+    {
+      "rank": 9,
+      "page": "pages/feedback-result/index",
+      "density_score": 38.2,
+      "text_density": 57.6,
+      "action_density": 34.3,
+      "visual_density": 36.9,
+      "terminology": 0.0,
+      "repetition": 50.0,
+      "decision_load_score": 38.4
+    },
+    {
+      "rank": 10,
+      "page": "pages/program-detail/index",
+      "density_score": 37.1,
+      "text_density": 45.5,
+      "action_density": 45.1,
+      "visual_density": 15.0,
+      "terminology": 50.0,
+      "repetition": 0.0,
+      "decision_load_score": 50.9
+    },
+    {
+      "rank": 11,
+      "page": "pages/thermometer/index",
+      "density_score": 36.6,
+      "text_density": 36.1,
+      "action_density": 63.5,
+      "visual_density": 23.3,
+      "terminology": 0.0,
+      "repetition": 50.0,
+      "decision_load_score": 41.2
+    },
+    {
+      "rank": 12,
+      "page": "pages/weekly-report/index",
+      "density_score": 36.0,
+      "text_density": 56.9,
+      "action_density": 15.5,
+      "visual_density": 68.8,
+      "terminology": 0.0,
+      "repetition": 0.0,
+      "decision_load_score": 34.0
+    },
+    {
+      "rank": 13,
+      "page": "pages/diary-form/index",
+      "density_score": 33.9,
+      "text_density": 58.8,
+      "action_density": 47.6,
+      "visual_density": 13.8,
+      "terminology": 0.0,
+      "repetition": 29.2,
+      "decision_load_score": 32.1
+    },
+    {
+      "rank": 14,
+      "page": "pages/personalized-plan/index",
+      "density_score": 33.2,
+      "text_density": 39.8,
+      "action_density": 56.5,
+      "visual_density": 18.8,
+      "terminology": 0.0,
+      "repetition": 0.0,
+      "decision_load_score": 53.7
+    },
+    {
+      "rank": 15,
+      "page": "pages/training/index",
+      "density_score": 30.9,
+      "text_density": 45.5,
+      "action_density": 46.9,
+      "visual_density": 15.0,
+      "terminology": 0.0,
+      "repetition": 0.0,
+      "decision_load_score": 47.6
+    }
+  ]
+}

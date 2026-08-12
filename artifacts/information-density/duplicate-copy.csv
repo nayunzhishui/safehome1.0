@@ -1,0 +1,11 @@
+﻿text,page_count,pages
+网络响应较慢；草稿仍在本机，请不要重复点击。,4,pages/assessment-detail/index | pages/checkin/index | pages/goal-setting/index | pages/supervision/index
+项目试点 · 大学生关系探索,2,pages/relationship-pilot/index | pages/training/index
+请求编号： · 服务版本：,2,pages/messages/index | pages/training-history/index
+正在读取测一测内容...,2,pages/assessment-detail/index | pages/assessment/index
+正在读取课程内容...,2,pages/course-detail/index | pages/course/index
+共同理解一次关系体验,2,pages/relationship-growth/index | pages/therapeutic-assessment/index
+记录暂时没有加载成功,2,pages/assessment-history/index | pages/training-history/index
+可以带去讨论的问题,2,pages/assessment-result/index | pages/relationship-report/index
+SafeHome,2,pages/login/index | pages/register/index
+今天先练这一小步,2,pages/task-detail/index | pages/training-card/index

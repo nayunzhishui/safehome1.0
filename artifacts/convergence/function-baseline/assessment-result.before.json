@@ -1,0 +1,94 @@
+{
+  "schema": "safehome.function-baseline.v1",
+  "captured_at": "2026-08-13T01:31:45+08:00",
+  "captured_from": "current_worktree",
+  "page": "pages/assessment-result/index",
+  "routes": [
+    "/pages/assessment-result/index"
+  ],
+  "features": [
+    "测评名称与结果摘要",
+    "风险状态提示",
+    "阶段性画像/匹配清晰度",
+    "画像相对位置图",
+    "画像维度雷达图",
+    "画像文字解释",
+    "优势提示",
+    "当前可做的小步骤",
+    "可讨论问题",
+    "后续项目任务线索",
+    "量表维度位置",
+    "维度雷达图",
+    "维度分数与范围",
+    "训练卡推荐",
+    "进入可练习任务",
+    "返回测一测",
+    "非诊断边界说明"
+  ],
+  "buttons": [
+    {
+      "label": "查看可练习任务",
+      "handler": "openRecommendedCards",
+      "target": "/pages/training-card/index 或 /pages/training/index"
+    },
+    {
+      "label": "返回测一测",
+      "handler": "backToAssessment",
+      "target": "navigateBack(delta=2)"
+    }
+  ],
+  "links": [
+    {
+      "handler": "backToAssessment"
+    },
+    {
+      "handler": "openRecommendedCards"
+    }
+  ],
+  "navigation_targets": [
+    "/pages/training-card/index",
+    "/pages/training/index"
+  ],
+  "data_blocks": [
+    "测评名称与结果摘要",
+    "风险提示",
+    "阶段性画像位置",
+    "画像图例与解释",
+    "优势/小步骤",
+    "讨论问题/项目任务线索",
+    "学生支持性画像摘要",
+    "量表维度位置与图表",
+    "推荐训练卡",
+    "结果操作区",
+    "统一边界提示"
+  ],
+  "api_calls": [
+    "getAssessment",
+    "getAssessmentProfilePosition",
+    "getAssessmentResult",
+    "listCards"
+  ],
+  "conditional_states": [
+    "elif",
+    "else",
+    "if"
+  ],
+  "error_states": [
+    "结果读取失败或未找到共用错误区",
+    "画像位置/量表/训练卡辅助请求失败时降级显示"
+  ],
+  "loading_states": [
+    "整页正在读取结果"
+  ],
+  "empty_states": [
+    "没有找到结果",
+    "维度不足时不绘图并解释原因",
+    "无推荐卡时保留训练中心回退"
+  ],
+  "source_files": [
+    "apps/miniprogram/pages/assessment-result/index.js",
+    "apps/miniprogram/pages/assessment-result/index.json",
+    "apps/miniprogram/pages/assessment-result/index.wxml",
+    "apps/miniprogram/pages/assessment-result/index.wxss"
+  ]
+}

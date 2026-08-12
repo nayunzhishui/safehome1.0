@@ -1,0 +1,205 @@
+{
+  "schema": "safehome.function-baseline.v1",
+  "captured_at": "2026-08-13T01:31:45+08:00",
+  "captured_from": "current_worktree",
+  "page": "pages/home/index",
+  "routes": [
+    "/pages/home/index"
+  ],
+  "features": [
+    "消息中心",
+    "情绪天气",
+    "测一测",
+    "情绪日记",
+    "今天的一小步",
+    "三步开始",
+    "支持性反馈",
+    "训练中心",
+    "人工支持",
+    "最近记录",
+    "阶段性反馈",
+    "联调测试入口（仅开发态）"
+  ],
+  "buttons": [
+    {
+      "label": "消息中心",
+      "handler": "openMessages",
+      "target": "/pages/messages/index"
+    },
+    {
+      "label": "情绪天气/记录",
+      "handler": "openThermometer",
+      "target": "/pages/thermometer/index"
+    },
+    {
+      "label": "测一测",
+      "handler": "openCoreEntry",
+      "target": "/pages/assessment/index"
+    },
+    {
+      "label": "情绪日记",
+      "handler": "openCoreEntry",
+      "target": "/pages/diary-form/index"
+    },
+    {
+      "label": "今天的一小步",
+      "handler": "openTodayAction",
+      "target": "服务端/本地草稿返回的受控目标"
+    },
+    {
+      "label": "今天的一小步重试",
+      "handler": "retryTodayJourney",
+      "target": "原地重试"
+    },
+    {
+      "label": "了解三步",
+      "handler": "openGettingStarted",
+      "target": "/pages/getting-started/index"
+    },
+    {
+      "label": "三步：去记录",
+      "handler": "openStartStep",
+      "target": "/pages/diary-form/index"
+    },
+    {
+      "label": "三步：了解反馈",
+      "handler": "openStartStep",
+      "target": "/pages/getting-started/index"
+    },
+    {
+      "label": "三步：去练习",
+      "handler": "openStartStep",
+      "target": "/pages/training/index"
+    },
+    {
+      "label": "支持性反馈",
+      "handler": "openCoreEntry",
+      "target": "/pages/diary-form/index（先提示需记录）"
+    },
+    {
+      "label": "训练中心",
+      "handler": "openCoreEntry",
+      "target": "/pages/training/index"
+    },
+    {
+      "label": "人工支持",
+      "handler": "openCoreEntry",
+      "target": "/pages/supervision/index"
+    },
+    {
+      "label": "最近记录/查看全部/去记录",
+      "handler": "openWeeklyReport/startDiary",
+      "target": "/pages/weekly-report/index 或 /pages/diary-form/index"
+    },
+    {
+      "label": "阶段性反馈/本周复盘",
+      "handler": "openWeeklyReport",
+      "target": "/pages/weekly-report/index"
+    },
+    {
+      "label": "阶段性反馈空态：去测一测",
+      "handler": "openAssessment",
+      "target": "/pages/assessment/index"
+    },
+    {
+      "label": "进入联调测试页（仅开发态）",
+      "handler": "openIntegrationTest",
+      "target": "/pages/integration-test/index"
+    }
+  ],
+  "links": [
+    {
+      "handler": "openAssessment"
+    },
+    {
+      "handler": "openCoreEntry"
+    },
+    {
+      "handler": "openGettingStarted"
+    },
+    {
+      "handler": "openIntegrationTest"
+    },
+    {
+      "handler": "openMessages"
+    },
+    {
+      "handler": "openStartStep"
+    },
+    {
+      "handler": "openThermometer"
+    },
+    {
+      "handler": "openTodayAction"
+    },
+    {
+      "handler": "openWeeklyReport"
+    },
+    {
+      "handler": "retryTodayJourney"
+    },
+    {
+      "handler": "startDiary"
+    }
+  ],
+  "navigation_targets": [
+    "/pages/assessment/index",
+    "/pages/diary-form/index",
+    "/pages/getting-started/index",
+    "/pages/goal-setting/index",
+    "/pages/hot-topics/index",
+    "/pages/integration-test/index",
+    "/pages/login/index",
+    "/pages/messages/index",
+    "/pages/program-detail/index",
+    "/pages/relationship-task/index",
+    "/pages/settings-detail/index",
+    "/pages/supervision/index",
+    "/pages/thermometer/index",
+    "/pages/training-card/index",
+    "/pages/training/index",
+    "/pages/weekly-report/index"
+  ],
+  "data_blocks": [
+    "顶部问候与消息状态",
+    "情绪天气",
+    "测一测/情绪日记核心入口",
+    "今天的一小步",
+    "三步开始",
+    "更多支持入口",
+    "最近记录",
+    "阶段性反馈",
+    "开发态联调入口"
+  ],
+  "api_calls": [
+    "getEmotionThermometerDay",
+    "getProfileStats",
+    "getProgressSummary",
+    "getTodayJourney",
+    "listDiaries",
+    "trackProductEvent"
+  ],
+  "conditional_states": [
+    "else",
+    "if"
+  ],
+  "error_states": [
+    "今天的一小步错误与手动重试",
+    "阶段性反馈错误/离线提示",
+    "首页数据整体异常时的保守回退"
+  ],
+  "loading_states": [
+    "今天的一小步卡片加载态",
+    "情绪天气未就绪时显示联网后更新"
+  ],
+  "empty_states": [
+    "最近记录空态并提供去记录",
+    "阶段性反馈不足/不可用空态并保留测评和周报入口"
+  ],
+  "source_files": [
+    "apps/miniprogram/pages/home/index.js",
+    "apps/miniprogram/pages/home/index.json",
+    "apps/miniprogram/pages/home/index.wxml",
+    "apps/miniprogram/pages/home/index.wxss"
+  ]
+}
