@@ -1,0 +1,24 @@
+{
+  "schema": "safehome.rc0810.f02-page-baseline.v1",
+  "task_id": "RC0810-F02",
+  "status": "implemented",
+  "registered_pages": 52,
+  "production_participant_pages": 48,
+  "excluded_internal_pages": 4,
+  "internal_pages": [
+    "pages/debug/index",
+    "pages/integration-test/index",
+    "pages/researcher-dashboard/index",
+    "pages/therapeutic-assessment-quality/index"
+  ],
+  "production_gate_eligible": false,
+  "reason": "F02仅证明本地可重复生成的页面隔离包；微信平台、真机和生产发布证据仍未提供。",
+  "accessibility": {
+    "engineering_contract": "320px、200%文字、44px触控、loading/empty/error/offline状态",
+    "manual_external": ["wechat_ios", "wechat_android", "screen_reader"]
+  },
+  "tests": {
+    "targeted": 8,
+    "combined": 15
+  }
+}

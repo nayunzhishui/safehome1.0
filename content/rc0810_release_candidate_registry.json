@@ -1099,13 +1099,7 @@
       "change_budget": {
         "expected_files": 14,
         "pause_when_actual_exceeds_percent": 50
-      },
-      "inherited_shared_files": [
-        "docs/00_当前事实基准/Claude计划模式.md",
-        "docs/00_当前事实基准/开发日志.md",
-        "docs/00_当前事实基准/开发说明.md",
-        "docs/00_当前事实基准/当前进度交接.md"
-      ]
+      }
     },
     {
       "id": "RC0810-F25-A",
@@ -1198,13 +1192,7 @@
       "change_budget": {
         "expected_files": 15,
         "pause_when_actual_exceeds_percent": 50
-      },
-      "inherited_shared_files": [
-        "docs/00_当前事实基准/Claude计划模式.md",
-        "docs/00_当前事实基准/开发日志.md",
-        "docs/00_当前事实基准/开发说明.md",
-        "docs/00_当前事实基准/当前进度交接.md"
-      ]
+      }
     },
     {
       "id": "RC0810-F02",
@@ -1212,7 +1200,29 @@
       "phase": "complete",
       "dependencies": [
         "RC0810-F01"
-      ]
+      ],
+      "allowed_files": [
+        "backend/tests/test_rc0810_f02.py",
+        "config/rc0810/miniprogram_page_policy.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f02_page_baseline.json",
+        "scripts/build_rc0810_miniprogram.py"
+      ],
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
+      ],
+      "change_budget": {
+        "expected_files": 10,
+        "pause_when_actual_exceeds_percent": 50
+      }
     },
     {
       "id": "RC0810-F03",
@@ -1715,7 +1725,7 @@
           "**/*secret*",
           "production resources"
         ],
-          "expected_files": 15,
+        "expected_files": 15,
         "expected_migrations": 0,
         "expected_interfaces": 0,
         "expected_pages": 0,
@@ -1793,10 +1803,16 @@
         "QA-01"
       ],
       "allowed_files": [
-        "apps/miniprogram/**",
-        "scripts/**",
-        "config/rc0810/**",
-        "docs/**"
+        "backend/tests/test_rc0810_f02.py",
+        "config/rc0810/miniprogram_page_policy.json",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/02_专项进度与验收/rc0810_f02_page_baseline.json",
+        "scripts/build_rc0810_miniprogram.py"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -1815,21 +1831,86 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f02.py",
-            "-q"
+            "-q",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "expected_test_count": 10
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_rc0810_harness.py",
+            "backend/tests/test_rc0810_f02.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "expected_test_count": 17
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/build_rc0810_miniprogram.py",
+            "--profile",
+            "production",
+            "--output",
+            ".codex_tmp/rc0810/f02-production",
+            "--copy-source"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/build_rc0810_miniprogram.py",
+            "--profile",
+            "validation",
+            "--output",
+            ".codex_tmp/rc0810/f02-validation",
+            "--copy-source"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
         }
       ],
       "external_gates": [],
       "change_budget": {
         "allowed_modules": [
-          "apps/miniprogram/**",
-          "scripts/**",
-          "config/rc0810/**",
-          "docs/**"
+          "backend/tests/test_rc0810_f02.py",
+          "config/rc0810/miniprogram_page_policy.json",
+          "content/rc0810_release_candidate_registry.json",
+          "docs/00_当前事实基准/Claude计划模式.md",
+          "docs/00_当前事实基准/开发日志.md",
+          "docs/00_当前事实基准/开发说明.md",
+          "docs/00_当前事实基准/当前进度交接.md",
+          "docs/01_当前执行入口/0810bug修改计划.md",
+          "docs/02_专项进度与验收/rc0810_f02_page_baseline.json",
+          "scripts/build_rc0810_miniprogram.py"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
@@ -1841,10 +1922,10 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 14,
+        "expected_files": 10,
         "expected_migrations": 0,
         "expected_interfaces": 0,
-        "expected_pages": 4,
+        "expected_pages": 0,
         "actual_delta_baseline": "task_start_snapshot",
         "pause_when_actual_exceeds_percent": 50,
         "pause_on_second_unrelated_root_cause": true,
@@ -1894,6 +1975,12 @@
           "id": "F02.8",
           "default_status": "pending"
         }
+      ],
+      "inherited_shared_files": [
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
       ]
     },
     {
