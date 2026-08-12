@@ -40,13 +40,13 @@
     "done"
   ],
   "active_route": null,
-  "updated_at": "2026-08-12T20:21:33+08:00",
+  "updated_at": "2026-08-12T21:14:15+08:00",
   "pages": [
     {
       "index": 1,
       "route": "pages/home/index",
       "title": "安心陪伴",
-      "source_hash": "755a8230f81978d8a65a1a266dae310f6f981f5ea09fa70efb06936ae226cd6b",
+      "source_hash": "368d7c4ed4d296f45871852ad918e0155c90b57b88077dbb8b202f3ff8648dba",
       "stage": "complete",
       "evidence": {
         "truth": {

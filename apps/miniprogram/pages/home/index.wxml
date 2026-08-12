@@ -13,35 +13,9 @@
 
   <view class="home-divider"></view>
 
-  <button class="entry-row thermometer-entry" bindtap="openThermometer">
-    <view class="line-icon line-icon--thermometer" aria-hidden="true">
-      <view class="thermometer-stem"></view>
-      <view class="thermometer-bulb"></view>
-    </view>
-    <view class="entry-copy">
-      <text class="entry-title">情绪温度计</text>
-      <text class="entry-subtitle">今天已记录 {{thermometerRecordCount}} 次{{thermometerRecordReady ? '' : '，联网后更新'}}</text>
-    </view>
-    <text class="entry-arrow" aria-hidden="true">›</text>
-  </button>
+  <entry-row class="thermometer-entry" icon="thermometer" title="情绪温度计" subtitle="今天已记录 {{thermometerRecordCount}} 次{{thermometerRecordReady ? '' : '，联网后更新'}}" bind:action="openThermometer" />
 
-  <view class="dual-entries" role="group" aria-label="主要记录入口">
-    <button class="dual-entry dual-entry--accent" data-key="assessment" bindtap="openCoreEntry">
-      <view class="line-icon line-icon--assessment" aria-hidden="true"><view class="check-mark"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title">测一测</text>
-        <text class="entry-subtitle">了解此刻状态</text>
-      </view>
-    </button>
-    <view class="dual-divider" aria-hidden="true"></view>
-    <button class="dual-entry" data-key="diary" bindtap="openCoreEntry">
-      <view class="line-icon line-icon--diary" aria-hidden="true"><view class="diary-line"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title">情绪日记</text>
-        <text class="entry-subtitle">记录具体小事</text>
-      </view>
-    </button>
-  </view>
+  <dual-entry left-key="assessment" left-icon="assessment" left-title="测一测" left-subtitle="了解此刻状态" right-key="diary" right-icon="diary" right-title="情绪日记" right-subtitle="记录具体小事" bind:action="openCoreEntry" />
 
   <journey-action-card
     class="today-step-entry"
@@ -58,45 +32,17 @@
     bind:retry="retryTodayJourney"
   />
 
-  <button class="entry-row how-to-entry" bindtap="openGettingStarted">
-    <text class="start-mark" aria-hidden="true">›</text>
-    <view class="entry-copy">
-      <text class="entry-title">如何开始</text>
-      <text class="entry-subtitle">记录 · 反馈 · 练习</text>
-    </view>
-    <text class="entry-arrow" aria-hidden="true">›</text>
-  </button>
+  <entry-row class="how-to-entry" icon="start" title="如何开始" subtitle="记录 · 反馈 · 练习" bind:action="openGettingStarted" />
 
   <view class="home-section">
-    <view class="section-heading"><text>更多</text></view>
-    <button class="entry-row" data-key="feedback" bindtap="openCoreEntry">
-      <view class="line-icon line-icon--feedback" aria-hidden="true"><view class="feedback-tail"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title">支持性反馈</text>
-        <text class="entry-subtitle">记录后获得对应反馈</text>
-      </view>
-      <text class="entry-arrow" aria-hidden="true">›</text>
-    </button>
-    <button class="entry-row" data-key="training" bindtap="openCoreEntry">
-      <view class="line-icon line-icon--training" aria-hidden="true"><view class="training-base"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title">训练中心</text>
-        <text class="entry-subtitle">查看训练计划与练习</text>
-      </view>
-      <text class="entry-arrow" aria-hidden="true">›</text>
-    </button>
-    <button class="entry-row" data-key="supervision" bindtap="openCoreEntry">
-      <view class="line-icon line-icon--person" aria-hidden="true"><view class="person-head"></view><view class="person-body"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title">人工支持</text>
-        <text class="entry-subtitle">提交非实时支持请求</text>
-      </view>
-      <text class="entry-arrow" aria-hidden="true">›</text>
-    </button>
+    <section-heading title="更多" />
+    <entry-row icon="feedback" title="支持性反馈" subtitle="记录后获得对应反馈" action-key="feedback" bind:action="openCoreEntry" />
+    <entry-row icon="training" title="训练中心" subtitle="查看训练计划与练习" action-key="training" bind:action="openCoreEntry" />
+    <entry-row icon="person" title="人工支持" subtitle="提交非实时支持请求" action-key="supervision" bind:action="openCoreEntry" />
   </view>
 
   <view class="home-section">
-    <view class="section-heading"><text>最近记录</text></view>
+    <section-heading title="最近记录" />
     <page-state
       wx:if="{{!latestRecordReady && !latestRecordError}}"
       kind="loading"
@@ -111,42 +57,19 @@
       action-label="重新加载"
       bind:action="retryHomeData"
     />
-    <button wx:elif="{{latestRecord}}" class="entry-row summary-entry" bindtap="openDiaryHistory">
-      <view class="line-icon line-icon--diary" aria-hidden="true"><view class="diary-line"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title entry-title--wrap">{{latestRecord.time}} · {{latestRecord.trigger}}</text>
-        <text class="entry-subtitle">{{latestRecord.mood}}</text>
-      </view>
-      <text class="entry-action">{{latestRecord.status}}</text>
-      <text class="entry-arrow" aria-hidden="true">›</text>
-    </button>
-    <button wx:else class="entry-row summary-entry" bindtap="startDiary">
-      <view class="line-icon line-icon--diary" aria-hidden="true"><view class="diary-line"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title">还没有保存的记录</text>
-        <text class="entry-subtitle">可以先写下一件刚发生的小事</text>
-      </view>
-      <text class="entry-action">去记录</text>
-      <text class="entry-arrow" aria-hidden="true">›</text>
-    </button>
+    <entry-row wx:elif="{{latestRecord}}" class="summary-entry" icon="diary" title="{{latestRecord.time}} · {{latestRecord.trigger}}" subtitle="{{latestRecord.mood}}" action-label="{{latestRecord.status}}" expanded wrap-title bind:action="openDiaryHistory" />
+    <entry-row wx:else class="summary-entry" icon="diary" title="还没有保存的记录" subtitle="可以先写下一件刚发生的小事" action-label="去记录" expanded bind:action="startDiary" />
   </view>
 
   <view class="home-section">
-    <view class="section-heading"><text>阶段性反馈</text></view>
+    <section-heading title="阶段性反馈" />
     <page-state
       wx:if="{{!progressSummaryReady && !progressSummaryError}}"
       kind="loading"
       title="正在读取阶段性反馈"
       description="正在汇总已有记录，请稍候。"
     />
-    <button wx:elif="{{progressSummary}}" class="entry-row summary-entry summary-entry--expanded" bindtap="openWeeklyReport">
-      <view class="line-icon line-icon--feedback" aria-hidden="true"><view class="feedback-tail"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title entry-title--wrap">{{progressSummary.summaryText}}</text>
-        <text class="entry-subtitle">{{progressSummary.nextAction}}</text>
-      </view>
-      <text class="entry-arrow" aria-hidden="true">›</text>
-    </button>
+    <entry-row wx:elif="{{progressSummary}}" class="summary-entry" icon="feedback" title="{{progressSummary.summaryText}}" subtitle="{{progressSummary.nextAction}}" expanded wrap-title bind:action="openWeeklyReport" />
     <page-state
       wx:elif="{{progressSummaryError}}"
       kind="error"
@@ -155,15 +78,7 @@
       action-label="重新加载"
       bind:action="retryHomeData"
     />
-    <button wx:else class="entry-row summary-entry" bindtap="openWeeklyReport">
-      <view class="line-icon line-icon--feedback" aria-hidden="true"><view class="feedback-tail"></view></view>
-      <view class="entry-copy">
-        <text class="entry-title">记录还不够，继续观察</text>
-        <text class="entry-subtitle">完成更多记录后，这里会呈现阶段摘要</text>
-      </view>
-      <text class="entry-action">查看说明</text>
-      <text class="entry-arrow" aria-hidden="true">›</text>
-    </button>
+    <entry-row wx:else class="summary-entry" icon="feedback" title="记录还不够，继续观察" subtitle="完成更多记录后，这里会呈现阶段摘要" action-label="查看说明" expanded bind:action="openWeeklyReport" />
   </view>
 
   <view wx:if="{{showDevEntry}}" class="dev-entry-section">

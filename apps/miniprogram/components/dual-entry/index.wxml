@@ -1,0 +1,5 @@
+<view class="dual-entries" role="group" aria-label="主要记录入口">
+  <entry-row class="dual-entry" accent compact icon="{{leftIcon}}" title="{{leftTitle}}" subtitle="{{leftSubtitle}}" action-key="{{leftKey}}" show-arrow="{{false}}" bind:action="forwardAction" />
+  <view class="dual-divider" aria-hidden="true"></view>
+  <entry-row class="dual-entry" compact icon="{{rightIcon}}" title="{{rightTitle}}" subtitle="{{rightSubtitle}}" action-key="{{rightKey}}" show-arrow="{{false}}" bind:action="forwardAction" />
+</view>

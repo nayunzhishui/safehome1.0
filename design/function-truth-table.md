@@ -353,7 +353,7 @@
 
 ## 全页面自动代码证据（UIproduct Harness）
 
-生成时间：`2026-08-12T20:21:33+08:00`
+生成时间：`2026-08-12T21:14:15+08:00`
 分支：`UIproduct`
 页面数：`53`
 
@@ -362,32 +362,31 @@
 ### 01：安心陪伴 `pages/home/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`755a8230f81978d8a65a1a266dae310f6f981f5ea09fa70efb06936ae226cd6b`
+- 源码指纹：`368d7c4ed4d296f45871852ad918e0155c90b57b88077dbb8b202f3ff8648dba`
 - 核对文件：`apps/miniprogram/pages/home/index.wxml`、`apps/miniprogram/pages/home/index.wxss`、`apps/miniprogram/pages/home/index.js`、`apps/miniprogram/pages/home/index.json`
 - 上游页面：`pages/login/index`、`pages/register/index`、`pages/messages/index`、`pages/emergency-guide/index`、`pages/hot-topics/index`、`pages/checkin/index`、`pages/weekly-report/index`、`pages/supervision/index`
-- 页面组件：`journey-action-card` → `/components/journey-action-card/index`
-- 主要可见内容：安心陪伴、情绪温度计、今天已记录 次、测一测、了解此刻状态、情绪日记、记录具体小事、如何开始、记录 · 反馈 · 练习、更多、支持性反馈、记录后获得对应反馈、训练中心、查看训练计划与练习、人工支持、提交非实时支持请求、最近记录、还没有保存的记录、可以先写下一件刚发生的小事、去记录、阶段性反馈、记录还不够，继续观察、完成更多记录后，这里会呈现阶段摘要、查看说明
+- 页面组件：`journey-action-card` → `/components/journey-action-card/index`、`entry-row` → `/components/entry-row/index`、`dual-entry` → `/components/dual-entry/index`、`section-heading` → `/components/section-heading/index`
+- 主要可见内容：安心陪伴、进入联调测试页
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 16 | — | `bindtap` | `openThermometer` | — |
-| 29 | — | `bindtap` | `openCoreEntry` | {'key': 'assessment'} |
-| 37 | — | `bindtap` | `openCoreEntry` | {'key': 'diary'} |
-| 46 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindaction` | `openTodayAction` | — |
-| 46 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindretry` | `retryTodayJourney` | — |
-| 61 | › | `bindtap` | `openGettingStarted` | — |
-| 72 | — | `bindtap` | `openCoreEntry` | {'key': 'feedback'} |
-| 80 | — | `bindtap` | `openCoreEntry` | {'key': 'training'} |
-| 88 | — | `bindtap` | `openCoreEntry` | {'key': 'supervision'} |
-| 106 | — | `bindaction` | `retryHomeData` | — |
-| 114 | — | `bindtap` | `openDiaryHistory` | — |
-| 123 | — | `bindtap` | `startDiary` | — |
-| 142 | — | `bindtap` | `openWeeklyReport` | — |
-| 150 | — | `bindaction` | `retryHomeData` | — |
-| 158 | — | `bindtap` | `openWeeklyReport` | — |
-| 170 | 进入联调测试页 | `bindtap` | `openIntegrationTest` | — |
+| 16 | <journey-action-card class="today-step-en | `bindaction` | `openThermometer` | — |
+| 18 | <journey-action-card class="today-step-entry" loading=" " error-message=" " stat | `bindaction` | `openCoreEntry` | — |
+| 20 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindaction` | `openTodayAction` | — |
+| 20 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindretry` | `retryTodayJourney` | — |
+| 35 | <entry-row icon="training" title="训练中心" subtitle="查看训练计划与练习" action-ke | `bindaction` | `openGettingStarted` | — |
+| 39 | — | `bindaction` | `openCoreEntry` | — |
+| 40 | — | `bindaction` | `openCoreEntry` | — |
+| 41 | — | `bindaction` | `openCoreEntry` | — |
+| 52 | — | `bindaction` | `retryHomeData` | — |
+| 60 | — | `bindaction` | `openDiaryHistory` | — |
+| 61 | — | `bindaction` | `startDiary` | — |
+| 72 | <entry-row wx:else class="summary-entry" | `bindaction` | `openWeeklyReport` | — |
+| 73 | — | `bindaction` | `retryHomeData` | — |
+| 81 | — | `bindaction` | `openWeeklyReport` | — |
+| 85 | 进入联调测试页 | `bindtap` | `openIntegrationTest` | — |
 
 #### 接口真值
 

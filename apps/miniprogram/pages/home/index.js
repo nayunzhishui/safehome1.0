@@ -327,14 +327,14 @@ Page({
   openGettingStarted() { wx.navigateTo({ url: "/pages/getting-started/index" }); },
 
   openStartStep(event) {
-    const key = event.currentTarget.dataset.key;
+    const key = (event.detail && event.detail.key) || event.currentTarget.dataset.key;
     if (key === "diary") { this.startDiary(); return; }
     if (key === "training") { wx.switchTab({ url: "/pages/training/index" }); return; }
     wx.navigateTo({ url: "/pages/getting-started/index" });
   },
 
   openCoreEntry(event) {
-    const key = event.currentTarget.dataset.key;
+    const key = (event.detail && event.detail.key) || event.currentTarget.dataset.key;
     if (key === "diary") { this.startDiary(); return; }
     if (key === "training") { wx.switchTab({ url: "/pages/training/index" }); return; }
     if (key === "feedback") {

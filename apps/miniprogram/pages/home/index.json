@@ -1,6 +1,9 @@
 {
   "navigationBarTitleText": "安心陪伴",
   "usingComponents": {
-    "journey-action-card": "/components/journey-action-card/index"
+    "journey-action-card": "/components/journey-action-card/index",
+    "entry-row": "/components/entry-row/index",
+    "dual-entry": "/components/dual-entry/index",
+    "section-heading": "/components/section-heading/index"
   }
 }

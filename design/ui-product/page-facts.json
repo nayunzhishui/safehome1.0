@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-12T20:21:33+08:00",
+  "generated_at": "2026-08-12T21:14:15+08:00",
   "branch": "UIproduct",
-  "main_sha": "f8bb8a0c03663fdb652eac9bc8b9b873d1875f76",
+  "main_sha": "3a3555cecf44179953401eaea4fb25bd0221b9a7",
   "app_page_count": 53,
   "pages": [
     {
@@ -15,62 +15,28 @@
         "apps/miniprogram/pages/home/index.js",
         "apps/miniprogram/pages/home/index.json"
       ],
-      "source_hash": "755a8230f81978d8a65a1a266dae310f6f981f5ea09fa70efb06936ae226cd6b",
+      "source_hash": "368d7c4ed4d296f45871852ad918e0155c90b57b88077dbb8b202f3ff8648dba",
       "missing_files": [],
       "visible_text": [
         "安心陪伴",
-        "情绪温度计",
-        "今天已记录 次",
-        "测一测",
-        "了解此刻状态",
-        "情绪日记",
-        "记录具体小事",
-        "如何开始",
-        "记录 · 反馈 · 练习",
-        "更多",
-        "支持性反馈",
-        "记录后获得对应反馈",
-        "训练中心",
-        "查看训练计划与练习",
-        "人工支持",
-        "提交非实时支持请求",
-        "最近记录",
-        "还没有保存的记录",
-        "可以先写下一件刚发生的小事",
-        "去记录",
-        "阶段性反馈",
-        "记录还不够，继续观察",
-        "完成更多记录后，这里会呈现阶段摘要",
-        "查看说明"
+        "进入联调测试页"
       ],
       "events": [
         {
-          "event": "bindtap",
+          "event": "bindaction",
           "handler": "openThermometer",
-          "tag": "button",
-          "label": "",
+          "tag": "entry-row",
+          "label": "<journey-action-card class=\"today-step-en",
           "data": {},
           "line": 16
         },
         {
-          "event": "bindtap",
+          "event": "bindaction",
           "handler": "openCoreEntry",
-          "tag": "button",
-          "label": "",
-          "data": {
-            "key": "assessment"
-          },
-          "line": 29
-        },
-        {
-          "event": "bindtap",
-          "handler": "openCoreEntry",
-          "tag": "button",
-          "label": "",
-          "data": {
-            "key": "diary"
-          },
-          "line": 37
+          "tag": "dual-entry",
+          "label": "<journey-action-card class=\"today-step-entry\" loading=\" \" error-message=\" \" stat",
+          "data": {},
+          "line": 18
         },
         {
           "event": "bindaction",
@@ -78,7 +44,7 @@
           "tag": "journey-action-card",
           "label": "{{todayJourney ? todayJourney.actionAriaLabel : ",
           "data": {},
-          "line": 46
+          "line": 20
         },
         {
           "event": "bindretry",
@@ -86,93 +52,87 @@
           "tag": "journey-action-card",
           "label": "{{todayJourney ? todayJourney.actionAriaLabel : ",
           "data": {},
-          "line": 46
+          "line": 20
         },
         {
-          "event": "bindtap",
+          "event": "bindaction",
           "handler": "openGettingStarted",
-          "tag": "button",
-          "label": "›",
+          "tag": "entry-row",
+          "label": "<entry-row icon=\"training\" title=\"训练中心\" subtitle=\"查看训练计划与练习\" action-ke",
+          "data": {},
+          "line": 35
+        },
+        {
+          "event": "bindaction",
+          "handler": "openCoreEntry",
+          "tag": "entry-row",
+          "label": "",
+          "data": {},
+          "line": 39
+        },
+        {
+          "event": "bindaction",
+          "handler": "openCoreEntry",
+          "tag": "entry-row",
+          "label": "",
+          "data": {},
+          "line": 40
+        },
+        {
+          "event": "bindaction",
+          "handler": "openCoreEntry",
+          "tag": "entry-row",
+          "label": "",
+          "data": {},
+          "line": 41
+        },
+        {
+          "event": "bindaction",
+          "handler": "retryHomeData",
+          "tag": "page-state",
+          "label": "",
+          "data": {},
+          "line": 52
+        },
+        {
+          "event": "bindaction",
+          "handler": "openDiaryHistory",
+          "tag": "entry-row",
+          "label": "",
+          "data": {},
+          "line": 60
+        },
+        {
+          "event": "bindaction",
+          "handler": "startDiary",
+          "tag": "entry-row",
+          "label": "",
           "data": {},
           "line": 61
         },
         {
-          "event": "bindtap",
-          "handler": "openCoreEntry",
-          "tag": "button",
-          "label": "",
-          "data": {
-            "key": "feedback"
-          },
+          "event": "bindaction",
+          "handler": "openWeeklyReport",
+          "tag": "entry-row",
+          "label": "<entry-row wx:else class=\"summary-entry\"",
+          "data": {},
           "line": 72
         },
         {
-          "event": "bindtap",
-          "handler": "openCoreEntry",
-          "tag": "button",
-          "label": "",
-          "data": {
-            "key": "training"
-          },
-          "line": 80
-        },
-        {
-          "event": "bindtap",
-          "handler": "openCoreEntry",
-          "tag": "button",
-          "label": "",
-          "data": {
-            "key": "supervision"
-          },
-          "line": 88
-        },
-        {
           "event": "bindaction",
           "handler": "retryHomeData",
           "tag": "page-state",
           "label": "",
           "data": {},
-          "line": 106
-        },
-        {
-          "event": "bindtap",
-          "handler": "openDiaryHistory",
-          "tag": "button",
-          "label": "",
-          "data": {},
-          "line": 114
-        },
-        {
-          "event": "bindtap",
-          "handler": "startDiary",
-          "tag": "button",
-          "label": "",
-          "data": {},
-          "line": 123
-        },
-        {
-          "event": "bindtap",
-          "handler": "openWeeklyReport",
-          "tag": "button",
-          "label": "",
-          "data": {},
-          "line": 142
+          "line": 73
         },
         {
           "event": "bindaction",
-          "handler": "retryHomeData",
-          "tag": "page-state",
-          "label": "",
-          "data": {},
-          "line": 150
-        },
-        {
-          "event": "bindtap",
           "handler": "openWeeklyReport",
-          "tag": "button",
+          "tag": "entry-row",
           "label": "",
           "data": {},
-          "line": 158
+          "line": 81
         },
         {
           "event": "bindtap",
@@ -180,7 +140,7 @@
           "tag": "button",
           "label": "进入联调测试页",
           "data": {},
-          "line": 170
+          "line": 85
         }
       ],
       "page_methods": [
@@ -421,7 +381,10 @@
         "pages/supervision/index"
       ],
       "components": {
-        "journey-action-card": "/components/journey-action-card/index"
+        "journey-action-card": "/components/journey-action-card/index",
+        "entry-row": "/components/entry-row/index",
+        "dual-entry": "/components/dual-entry/index",
+        "section-heading": "/components/section-heading/index"
       },
       "storage": [
         {

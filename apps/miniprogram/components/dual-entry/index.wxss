@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.dual-entries {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1rpx 1fr;
+  align-items: center;
+  min-height: 208rpx;
+}
+
+.dual-entry {
+  min-width: 0;
+}
+
+.dual-divider {
+  width: 1rpx;
+  height: 112rpx;
+  background: var(--safe-border);
+}
