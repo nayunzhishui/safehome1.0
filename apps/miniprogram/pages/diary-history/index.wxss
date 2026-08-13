@@ -1,0 +1,167 @@
+.diary-history-page {
+  padding: 48rpx;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.history-header {
+  display: grid;
+  gap: 18rpx;
+  margin-bottom: 40rpx;
+}
+
+.history-title,
+.history-description,
+.history-count,
+.record-date,
+.record-clock,
+.record-scene,
+.record-description,
+.record-emotion,
+.record-intensity-label,
+.history-boundary {
+  display: block;
+}
+
+.history-title {
+  color: var(--safe-title);
+  font-size: 46rpx;
+  font-weight: 900;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.history-count {
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.record-list {
+  display: grid;
+}
+
+.record-row {
+  display: grid;
+  grid-template-columns: 112rpx 36rpx minmax(0, 1fr);
+  gap: 16rpx;
+  min-height: 272rpx;
+}
+
+.record-time {
+  min-width: 0;
+  padding-top: 2rpx;
+}
+
+.record-date {
+  color: var(--safe-title);
+  font-size: 24rpx;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.record-clock {
+  margin-top: 4rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.record-axis {
+  position: relative;
+  min-height: 272rpx;
+}
+
+.record-axis > bamboo-timeline-node {
+  display: block;
+  margin-top: 2rpx;
+}
+
+.record-content {
+  min-width: 0;
+  padding-bottom: 18rpx;
+  border-bottom: 1rpx solid var(--safe-border);
+}
+
+.record-scene {
+  overflow: hidden;
+  color: var(--safe-title);
+  font-size: 30rpx;
+  font-weight: 800;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-description {
+  display: -webkit-box;
+  margin-top: 10rpx;
+  overflow: hidden;
+  color: var(--safe-text);
+  font-size: 26rpx;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.record-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx 16rpx;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.record-emotion {
+  color: var(--safe-primary-deep);
+  font-weight: 700;
+}
+
+.record-intensity-label {
+  color: var(--safe-muted);
+}
+
+.intensity-scale {
+  display: flex;
+  gap: 6rpx;
+  margin-top: 8rpx;
+}
+
+.intensity-tick {
+  width: 8rpx;
+  height: 24rpx;
+  border-radius: 4rpx;
+  background: var(--safe-border);
+}
+
+.intensity-tick--active {
+  background: var(--safe-orange);
+}
+
+.record-action {
+  width: 100%;
+  min-height: 88rpx;
+  margin-top: 28rpx;
+  border-radius: var(--safe-radius-md);
+  background: var(--safe-primary);
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.record-action:active {
+  background: var(--safe-primary-deep);
+}
+
+.history-boundary {
+  margin-top: 40rpx;
+  color: var(--safe-muted);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.diary-history-page > page-state {
+  display: block;
+}

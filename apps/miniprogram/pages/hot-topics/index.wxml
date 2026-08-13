@@ -1,8 +1,6 @@
 <view class="safe-page hot-topics-page" role="main" aria-label="热门主题">
   <view class="topic-hero">
-    <text class="hero-kicker">教育热榜</text>
-    <text class="hero-title">看看其他家庭如何处理类似问题</text>
-    <text class="hero-text">这里不是评价谁做得对错，而是把常见亲子互动片段整理成更容易练习的小步骤。</text>
+    <text class="hero-title">热门主题</text>
   </view>
 
   <view class="safe-section">
@@ -22,7 +20,7 @@
   </view>
 
   <view class="safe-section">
-    <section-title title="案例列表" subtitle="选择一个和今天最接近的场景" />
+    <section-title title="案例列表" />
     <view class="topic-list">
       <button
         wx:for="{{visibleTopics}}"
@@ -31,9 +29,7 @@
         data-id="{{item.id}}"
         bindtap="selectTopic"
       >
-        <view class="topic-thumb">
-          <view class="topic-people"></view>
-        </view>
+        <view class="topic-mark"></view>
         <view class="topic-copy">
           <text class="topic-title">{{item.title}}</text>
           <view class="topic-meta">
@@ -47,7 +43,7 @@
   </view>
 
   <view class="safe-section">
-    <section-title title="案例拆解" subtitle="从情境中找到可以练习的位置" />
+    <section-title title="案例拆解" />
     <view class="detail-card">
       <text class="detail-title">{{selectedTopic.title}}</text>
       <view class="detail-block">
@@ -66,7 +62,7 @@
   </view>
 
   <view class="safe-section">
-    <section-title title="关联练习" subtitle="看完案例后，可以选一张训练卡试试" />
+    <section-title title="关联练习" />
     <view class="practice-card">
       <training-task-card
         title="{{selectedTopic.practiceCard.title}}"

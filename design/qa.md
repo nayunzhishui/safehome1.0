@@ -98,3 +98,39 @@ source: `design/context.md`、`design/audit.md`、任务二十计划、问题截
 - MANUAL：微信开发者工具、Android/iOS、系统大字体、读屏、真实双账号与长文本仍需负责人生成证据；本地Chrome和静态审计不能替代真机签字。
 
 结论：F19本地设计与工程验收为READY；发布状态仍为NOT APPROVED。
+
+## 2026-08-10：首页 Figma 组件化复现 QA
+
+- 原始视觉：`C:/Users/32257/.codex/generated_images/019fe695-ee6b-7143-9310-0612b3afeb40/exec-1185a562-53e9-40b1-b894-c39c414dbadd.png`
+- Figma：`https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs`
+- 功能基准：`design/function-truth-table.md` 首页章节。
+
+### 视觉与组件
+
+- PASS：六种首页状态均按顶栏、情绪温度计、双入口、今天的一小步、更多、最近记录、阶段性反馈、系统 tabBar 的固定顺序呈现。
+- PASS：保持方案 A 的开放式编辑排版、深绿主行动与陶土橙强调；去除纸张纹理、叶片装饰和装饰性衬线字体，减少通用 AI 疗愈模板感。
+- PASS：3 个变量集合、41 个变量、7 个文本样式、2 个阴影样式、8 个组件集、37 个变体、10 个私有图标已建立；页面无脱离组件实例、无未绑定实色、仅使用 Noto Sans SC。
+- PASS：按钮与图标按钮触控目标均不小于 44px；正文次级色对画布对比度 4.62:1，白字对深绿 10.00:1，深色字对橙色 5.31:1，加载态绿字 6.64:1。
+
+### 功能与状态
+
+- PASS：Default、Loading、Empty、Error、LongContent、NetworkFailure 六态完整；错误与断网不使用成功态颜色，加载态有骨架反馈。
+- PASS：未出现“情绪天气”“即时客服”“诊断结论”“一键生成”等越界语义；“支持性反馈”继续进入现有记录流程，不虚构历史反馈接口。
+- PASS：开发入口仅作为隐藏条件节点保留；未新增 API、数据库字段、业务入口或伪进度。
+- BLOCKED：最近记录应进入真实记录页。该页需先走独立真值、冻结、ImageGen、Figma 与 QA 流程，并复用现有 `GET /api/diaries`；因此首页代码尚未开始。
+
+### 结论
+
+首页 Figma 为 READY；小程序代码为 NOT STARTED。待真实记录页依赖完成后，再进入首页前端复现、微信开发者工具、Android/iOS、大字体、读屏与真机 Loop。
+
+## 2026-08-10：首页与情绪记录页前端复现 QA
+
+- PASS：新增只读情绪记录页并复用 `GET /api/diaries?limit=50`；无后端、API、数据库、content 或 shared 改动。
+- PASS：首页“最近记录”有数据时进入真实记录页，空状态仍进入日记表单；阶段性反馈仍进入周报。
+- PASS：首页已纠正“情绪天气”为“情绪温度计”，保留真实次数、跳转和既有接口。
+- PASS：首页模块顺序、消息入口、双入口、今天的一小步、如何开始、更多、最近记录和阶段性反馈均保留。
+- PASS：JS、JSON、设计令牌、53 页 UI governance、非 UI client audit 与 `git diff --check` 通过。
+- PASS：微信开发者工具 `preview` 编译成功，包体约 1.4 MB，未复现 WXSS 编译错误。
+- DEFERRED：桌面控制运行时不可用，未取得模拟器视觉截图；Android/iOS 真机、大字体和读屏按用户冻结规则延期到全部页面本地完成后统一验收。
+
+结论：代码与本地工程门禁通过；首页可登记为“本地完成”并进入下一页。设备视觉 Loop 尚未签字，项目最终真机验收仍未完成。

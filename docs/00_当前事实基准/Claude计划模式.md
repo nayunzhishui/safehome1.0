@@ -12066,6 +12066,52 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - `git diff --check`通过。
 - 微信开发者工具已启动，但本机自动化端口9420未成功开放；未把自动化真机/整页视觉检查登记为通过。
 
+# 0810 Bug 修改计划：PR #8 至 Release Candidate
+
+登记日期：2026-08-10
+
+状态：planned_not_started / baseline_audited / implementation_not_started
+
+权威详细计划：docs/01_当前执行入口/0810bug修改计划.md
+
+## 冻结决策
+
+- development/validation 继续保留联调页、研究工作台、受控 AI 与临时全权限展示。
+- production Release Candidate 在构建制品、页面清单、运行配置和服务端授权四层强制关闭 Showcase、内部页面和未批准能力。
+- production 参与者 AI 首发关闭；研究、情感计算、网络分析和治理能力保留在验证环境及独立后台制品，不删除源码。
+- 工程、RC、微信审核和生产发布分开记录。
+
+## 执行范围
+
+- RC0810-F00—F12：基线/Harness、制品边界、正式镜像、环境、Showcase、对象权限、Consent、Logout、幂等、CI、正式数据库和微信证据框架。
+- RC0810-F13—F21：家庭绑定、隐私血缘、主动风险调度、MySQL TLS/恢复、内容发布、研究来源、AI治理、心理内容、健康与运维。
+- RC0810-F22—F24：安全工具、Fuzz/Mutation、配置/审计/遗留质量项。
+- RC0810-F25—F26：微信与真机矩阵、最终RC收口。
+
+## 强制 Loop 与 Harness
+
+每个 Fxx 必须执行：Preflight → Scope Freeze → Failing Contract → 最小实现 → 专项/跨层验证 → 先回填详细计划 → 独立审查 → 修复 Loop → 复审通过 → 独立提交 → 推送 → 三份事实文档增量同步。
+
+审查不通过不得提交或进入下一任务；同一根因连续五轮失败时登记 root_cause_unresolved，不得删除测试、放宽权限或伪造证据。人工、伦理、真机和微信平台只生成证据包，不能自动签字。
+
+## 当前执行入口
+
+本轮仅完成详细计划登记，没有修改业务代码。下一步只执行 RC0810-F00，先建立机器注册表和可恢复 Harness，不得跳到业务修复。
+
+## 2026-08-10细化补充
+
+- 详细计划已为 F00—F26 增加二级可执行工单，覆盖阻塞关系、输入、逐层动作、负向测试、证据产物和回滚点。
+- 执行器不得只关闭父任务；每个 `Fxx.n` 都要保存状态和证据，缺任一子任务时父任务保持 incomplete。
+- 任务边界、执行顺序和“开发保留、正式关闭”决策没有变化，下一步仍只能执行 RC0810-F00。
+- 2026-08-10再次补充8项横向门禁：旧版本兼容、跨层合同、迁移、性能、UI/无障碍、证据有效期、发布演练和Change Budget；二级工单现为194项。
+
+## 2026-08-10第一性原理与上线报告校准补充
+
+- 执行顺序已调整：F00后先运行CI、证据模型、数据血缘、安全扫描和微信平台约束的A阶段，再进入业务整改；最终由B阶段对真实RC复验。
+- 新增四类GO、发布人群清单、控制面/业务面分离、可信构建来源、不可逆副作用对账、成本/配额和人工处理容量要求。
+- 参考上线报告只作为检查框架；历史commit、urlCheck概括、无定位完成结论和时效性链接不得直接成为RC证据。
+- 二级工单现为225项、横向门禁11项、编号无重复；工程仍为planned_not_started，下一步仍只执行RC0810-F00。
+
 ## 2026-08-10 RC0810-F00 完成记录
 
 - `RC0810-F00` 的 F00.1—F00.10 已完成并通过独立审查；本轮没有进入 F01 或业务修复。
@@ -12200,3 +12246,165 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 建立 `home.before.json` 和 `assessment-result.before.json`，覆盖功能、按钮、入口、导航、数据块、API 与 loading/error/empty 状态。
 - [x] 明确权限、心理计分、风险分流、API、数据库和 shared 均冻结；R00/R01 未修改 UI。
 - [ ] R02：首页呈现收敛。下一次只从 PRECHECK 和 Scope Freeze 开始；before 项必须全部保留并生成 after 对比，完成 UI/功能/回归/独立审查后才可提交为 PASS。
+## 2026-08-10 UIproduct 首页实现状态
+
+- [x] 情绪记录依赖页完成真值、ImageGen、Figma、代码与本地 Loop。
+- [x] 首页完成方案 A 代码复现，真实功能和模块顺序保持不变。
+- [x] 微信开发者工具 Preview 编译通过。
+- [x] 首页四类本地 Harness 已登记，逐页本地状态为 `complete`。
+- [ ] Android/iOS、大字体和读屏统一延期到全部页面本地完成后的最终批次。
+- [ ] 当前按单页流程进入 `pages/login/index`；不得因延期而跳过 ImageGen、Figma、本地 Loop 1–4 或 Harness。
+- [ ] 53 页本地完成后启动全量真机 Loop 5，逐页记录 `pass` 或 `fix_required` 并完成修正回归。
+
+## 2026-08-10 UIproduct 登录页状态
+
+- [x] 登录页功能真值、需求冻结、现状审查与方案 A 方向完成。
+- [x] ImageGen v2 完成功能自审；v1 越界隐私卡已淘汰。
+- [x] Figma Phase 0 只读发现完成，授权恢复且未遗留原子失败写入。
+- [x] 复用 token/Button，新增 AuthField 五状态组件，完成登录六态与 Figma 审查。
+- [x] 登录页前端、本地 Loop 1–4 和逐页 Harness 完成；真机继续留到 53 页本地完成后的最终批次。
+
+## 2026-08-10 UIproduct 登录页 Figma 重新认证门禁
+
+- [x] 复核 `UIproduct` 分支、登录页真值与 ImageGen 审查结果。
+- [x] 第二轮调用 Figma `whoami`，明确阻断为连接需要重新认证。
+- [x] 用户重新授权 Figma 后，已从 Phase 0 只读发现恢复并完成组件化复现与审查。
+- [x] Figma 通过后才修改登录页前端；本地 Loop 1–4 与逐页 Harness 已完成，真机继续统一后置。
+- [x] 连续第三轮 `whoami` 仍要求重新认证；当前任务按阻断规则登记为 blocked，等待外部授权状态变化后恢复。
+
+## 2026-08-10 UIproduct 登录页完成与下一门禁
+
+- [x] 登录页 ImageGen → Figma → WXML/WXSS → 本地 Loop/Harness 完整闭环，注册表状态 `complete`。
+- [x] 微信开发者工具 `preview` 编译通过，未出现 WXSS 编译错误；业务 JS、认证接口、后端和数据库均未修改。
+- [x] 当前自动流程推进到 `pages/register/index`，但尚未开始注册页设计。
+- [ ] 主 worktree 的 main 已外部推进到 `9c7d77c`，与 UIproduct 核准基线 `65fcef4` 不一致；需负责人明确授权新的合并或基线处理后，才能恢复全局 Harness 并开始注册页。
+- [ ] 全部页面完成后统一执行 Android/iOS、读屏和大字体真机验收。
+
+## 2026-08-10 UIproduct 延后合并 main 决定
+
+- [x] 用户明确决定先完成全部 UI，再统一合并 main。
+- [x] Harness 范围比较改为固定核准基线 `65fcef4`；外部 main `9c7d77c` 仅记录为最终集成待办。
+- [x] 53 页功能真值、truth Harness 与工程 Harness 重新通过，当前恢复到注册页。
+- [ ] 逐页完成剩余 51 页的 ImageGen、Figma、前端、本地 Loop 1–4 与 Harness。
+- [ ] 全部页面本地完成后，在 UIproduct worktree 统一合并当时 main；冲突同时保留两侧记录，更新基线并全量回归。
+- [ ] 合并与回归通过后，再启动统一真机验收和修正。
+
+## 2026-08-10 UIproduct 注册页状态
+
+- [x] 对照 WXML/JS/API/后端公开角色限制完成注册页功能真值与需求冻结。
+- [x] ImageGen v2 通过，移除只依赖 placeholder 的长度规则与按钮渐变感。
+- [x] Figma 复用现有 token、AuthField、Button，新增 SelectField 四状态并完成六屏审查。
+- [x] 仅实现注册页 WXML/WXSS和 Figma 导出箭头；注册 JS、API、后端和数据库未修改。
+- [x] 微信开发者工具 Preview、T23、资产和前端审计通过；本地 Loop 1–4 与四类 Harness 已登记。
+- [ ] 当前进入 `pages/messages/index`，继续执行同一单页流程。
+- [ ] 真机、Android/iOS、大字体和读屏仍待全部 53 页本地完成后统一验收。
+
+## 2026-08-10 UIproduct 消息页状态
+
+- [x] 对照 WXML/JS/API/后端只读消息能力完成消息页功能真值与需求冻结。
+- [x] ImageGen v2 修正重复标题和固定高列表空白，保持未读、已读、撤回与版本信息。
+- [x] Figma 新增 MessageRow 三态组件，完成七个 390×844 页面状态及视觉审查。
+- [x] 仅实现消息页 WXML/WXSS/JSON；消息 JS、接口、后端、数据库和自动已读语义未修改。
+- [x] 微信开发者工具 Preview、T23、资产、前端、真值与工程 Harness 通过；本地 Loop 1–4 与四类 Harness 已登记。
+- [ ] 当前进入 `pages/support-assistant/index`，继续执行同一单页流程。
+- [ ] 真机、main 合并、Android/iOS、大字体和读屏仍待全部页面本地完成后统一处理。
+
+## 2026-08-10 UIproduct 支持性问答页状态
+
+- [x] 对照页面代码、登录守卫、AI 配置、同意、会话与发送接口完成详细功能真值和需求冻结。
+- [x] 使用 UI skills 完成现状审查与三个结构方向；采用 A1 编辑式支持便笺。
+- [x] ImageGen v1 通过自审，保留边界、问答、引用和输入，不新增聊天或诊断能力。
+- [x] Figma Phase 0 已在连接恢复后完成；变量、样式、页面、组件与外部库状态均已实读。
+- [x] 已补齐本地 P0.a/P0.d/P0.e 和组件缺口清单；P0.b/P0.c 明确等待 Figma 当前状态复核。
+- [x] 连续第三个目标轮次仍为同一传输错误，已按阻断规则登记 blocked；恢复条件为 Figma MCP `whoami` 成功。
+- [x] Figma 曾短暂恢复并完成 P0.b/P0.c；`BoundaryNote` 文档区与两态空骨架已创建，精确节点为 `93:57`、`93:61`、`93:62`。
+- [x] `BoundaryNote` 两态组件集与属性完成；`ConversationEntry` 两态组件集与属性完成。
+- [x] 用户恢复后的连续三轮检查仍为同一传输错误，任务再次按规则标记 blocked。
+- [x] 已创建并审核 10 个页面状态，Disabled、同意、就绪、发送、对话、错误与长内容均完成。
+- [x] 支持性问答 10 个 Figma 状态、三组件集、前端实现、Preview、本地 Loop 1–4 与四类 Harness 全部完成。
+- [ ] 当前进入 `pages/message-detail/index`；继续执行真值复核、UI skills、冻结、ImageGen、Figma、实现和本地审核。
+- [ ] main 合并和 Android/iOS 真机继续统一后置，不因 Figma 阻断改变顺序。
+
+## 2026-08-11 UIproduct 紧急安全指引页状态
+
+- [x] 对照页面 JS、静态行动数组和上下游路由完成功能真值与方案 A 冻结。
+- [x] ImageGen、`SafetyActionRow` 两态组件、Default 与 320px 长内容 Figma 状态完成并审查。
+- [x] 仅实现 WXML/WXSS/JSON；页面 JS、接口、后端、数据库、content 与 shared 未修改。
+- [x] 接地编号修正为 5→1；现实资源仍走原 `navigateTo`，首页仍走原 `reLaunch`。
+- [x] Preview、53 页真值、token、UI governance、non-UI client、T23 与工程 Harness 通过。
+- [ ] 当前进入 `pages/emergency-resources/index`，继续执行同一单页流程。
+- [ ] main 合并、真机、大字体、读屏和 Android/iOS 继续统一后置。
+
+## 2026-08-11 UIproduct 紧急帮助说明页状态
+
+- [x] 对照页面 JS、四项静态资源、使用边界和安全指引路由完成功能真值与方案 A 冻结。
+- [x] 使用 UI skills 完成 ImageGen、`ResourceChannelRow`、Default 与 320px Figma 状态和视觉审查。
+- [x] 仅实现 WXML/WXSS；页面 JS、JSON、数据、事件、路由、API、后端、数据库、content 与 shared 未修改。
+- [x] 将重复粗侧线替换为 `4rpx` 开放式转角，并同步写入 UI 总指导。
+- [x] Preview、53 页真值、token、UI governance、non-UI client、T23 与工程 Harness 通过。
+- [x] Loop/Harness 已增加用户手工截图审查门禁；当前状态为 `awaiting_user_review`。
+- [ ] 等待用户手工截图，Codex 对照审查；通过后记录 `done` 并提交本页可恢复点。
+- [ ] 截图审查通过前不得进入 `pages/getting-started/index`；全量真机适配仍在所有页面本地完成后统一执行。
+
+## 2026-08-11 UIproduct 全页面小字门禁
+
+- [x] 审查用户提供的 8 张研究者端与用户端真实页面截图。
+- [x] 在 UI 总指导中冻结 `24rpx` 下限、`28rpx` 正文、单区小字通常不超过两行、免责声明去重和机器字段人类化规则。
+- [x] 将小字预算加入 ImageGen、Figma、代码审核、Loop 2、UX Harness 和用户截图 `fix_required` 条件。
+- [ ] 当前页仍等待专属手工截图；跨页截图不得用于越过 `pages/emergency-resources/index` 的用户验收门禁。
+
+## 2026-08-11 UIproduct 连续完成、最终统一验收
+
+- [x] 用户取消逐页手工截图等待，授权代理按既有文档门禁持续完成全部页面。
+- [x] 保留功能真值、UI skills、方案 A、ImageGen 自审、Figma、前端、Loop 1–4、四类 Harness 和小字预算。
+- [x] 最终用户视觉、功能与 Android/iOS 真机验收继续由 `device_acceptance` 控制，只在全部页面本地完成并完成 main 集成回归后开放。
+- [x] 登记紧急帮助说明页 `done`，活动页面进入 `pages/getting-started/index`。
+- [ ] 验证并提交紧急帮助说明页可恢复点，然后开始首次使用页功能审查。
+
+## 2026-08-11 UIproduct 网页版 GPT 生产与 Codex 修复审查
+
+- [x] 新增网页版 GPT 执行包，包含 UI 规则、Design 基础、ImageGen 模板、Figma 规则、GitHub 约束和远端证据格式。
+- [x] 冻结职责：网页版 GPT 先生产并推送 `UIproduct`；Codex 收到精确远端链接后独立审查。
+- [x] 冻结不可行处理：Codex 按 ImageGen → Figma → 代码顺序接管修正，完成 Loop/Harness 后提交新的 `UIproduct` 修复提交。
+- [x] 保留全部页面后统一视觉、功能与真机验收；远端 Codex 审查不能替代 Loop 5。
+- [x] `pages/getting-started/index` 保持冻结完成、Figma 与前端未开始；已有 ImageGen 仅作参考。
+- [x] 将 12 张现有截图复制到 `design/ui-product/references/current-ui/`，逐张写明可借鉴点、已知问题和功能真值边界。
+- [ ] 用户把执行包交给网页版 GPT，并在完成一页后把 ImageGen、Figma node 和 GitHub commit 链接交给 Codex。
+
+## 2026-08-11 Codex 本地连续 UI 执行续段
+
+- [x] 完成 `pages/getting-started/index`。
+- [x] 完成 `pages/thermometer/index`，保留情绪温度计真实语义。
+- [x] 完成 `pages/training/index`。
+- [x] 完成 `pages/training-history/index`。
+- [x] 完成 `pages/personalized-plan/index` 真值冻结、ImageGen 与图像审查。
+- [ ] 从个性化训练方案 Figma 门禁继续，随后持续处理剩余页面。
+
+## 2026-08-11 UIproduct 关系探索续段
+
+- [x] 完成 `pages/personalized-plan/index`。
+- [x] 完成 `pages/program-list/index`。
+- [x] 完成 `pages/program-detail/index`。
+- [x] 完成 `pages/relationship-pilot/index`。
+- [x] 完成 `pages/relationship-report/index`。
+- [x] 完成 `pages/relationship-task/index`。
+- [x] 完成 `pages/relationship-growth/index`。
+- [ ] 按注册表继续下一页面，全部页面本地完成后统一真机验收。
+
+- [x] 完成 `pages/therapeutic-assessment/index`。
+- [x] 完成 `pages/therapeutic-assessment-boundary/index`。
+- [x] 完成 `pages/therapeutic-assessment-issue/index`。
+- [x] 完成 `pages/therapeutic-assessment-recent-event/index`。
+- [x] 完成 `pages/therapeutic-assessment-resources/index`。
+- [x] 完成 `pages/therapeutic-assessment-sharing/index`。
+- [x] 完成 `pages/therapeutic-assessment-summary/index`。
+- [x] 完成 `pages/therapeutic-assessment-feedback-check/index`。
+- [x] 完成 `pages/therapeutic-assessment-action-review/index`。
+- [ ] 继续 `pages/therapeutic-assessment-action-followup/index`。
+## 2026-08-13：信息收敛与 UIproduct 本地集成
+
+- [x] `codex/信息收敛` 已快进合并到本地 `main`；提交 `757ceddb` 的 AI/RAG 动态入口和登录回跳参数已保留。
+- [x] `UIproduct` 的 29 个提交已进入本地合并；6 个冲突按双侧意图解决，支持性问答保留动态标题并采用组件化页面结构，四份事实文档保留两条历史。
+- [x] 项目旧 UI 文档未随分支删除；新总指导与真值表同时保留。UIproduct 独立工作树的 5 个未跟踪预览文件、F06 工作树的 5 个草稿均未改动。
+- [x] 合并验证：34 个变更 JS、54 个 JSON 可解析；相关前端合同 `25 passed`；UIproduct 分支真值与工程 Harness 通过，53/53 页面已登记。
+- [ ] 全量真机仍为 `fix_required`，仅记录 21/53；本地集成不代表正式上线、生产批准或真机验收完成。

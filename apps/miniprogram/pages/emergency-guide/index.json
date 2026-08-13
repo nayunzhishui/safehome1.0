@@ -1,6 +1,4 @@
 {
   "navigationBarTitleText": "紧急安全指引",
-  "usingComponents": {
-    "section-title": "/components/section-title/index"
-  }
+  "usingComponents": {"safety-action-row": "/components/safety-action-row/index"}
 }

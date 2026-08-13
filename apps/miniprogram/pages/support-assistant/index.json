@@ -1,3 +1,9 @@
 {
-  "navigationBarTitleText": "支持性问答"
+  "navigationBarTitleText": "支持性问答",
+  "usingComponents": {
+    "page-state": "/components/page-state/index",
+    "boundary-note": "/components/boundary-note/index",
+    "conversation-entry": "/components/conversation-entry/index",
+    "question-composer": "/components/question-composer/index"
+  }
 }

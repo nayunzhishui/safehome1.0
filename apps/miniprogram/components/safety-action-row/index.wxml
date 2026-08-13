@@ -1,0 +1,1 @@
+<view class="action-row"><text class="action-number">{{marker}}</text><text class="step-text">{{text}}</text></view>

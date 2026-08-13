@@ -1,0 +1,11 @@
+<button class="worksheet-card {{item.is_student_profile ? 'worksheet-card--profile' : ''}} {{item.is_enabled_for_user ? '' : 'worksheet-card--disabled'}}" aria-label="打开测评：{{item.display_title}}" bindtap="handleTap">
+  <view class="worksheet-card__joint" aria-hidden="true"></view>
+  <view class="worksheet-card__copy">
+    <text class="worksheet-card__title">{{item.display_title}}</text>
+    <text wx:if="{{item.meta_text}}" class="worksheet-card__meta">{{item.meta_text}}</text>
+    <text wx:elif="{{item.estimated_minutes}}" class="worksheet-card__meta">{{item.topic_label}} · {{item.question_count}} 项 · 约 {{item.estimated_minutes}} 分钟</text>
+    <text wx:else class="worksheet-card__meta">{{item.topic_label}} · {{item.action_text}}</text>
+    <text wx:if="{{item.instructions}}" class="worksheet-card__description">{{item.instructions}}</text>
+  </view>
+  <text class="worksheet-card__action">{{item.action_text}}</text>
+</button>

@@ -1,107 +1,98 @@
-<view class="safe-page thermometer-page">
+<view class="safe-page thermometer-page" role="main" aria-label="情绪温度计">
   <view class="page-head">
-    <text class="safe-h1">情绪温度计</text>
-    <text class="safe-subtitle">今天可以记录多次，只看一天里的小变化。</text>
+    <text class="page-title">情绪温度计</text>
   </view>
 
-  <view class="safe-card record-panel">
+  <view class="record-section">
     <view class="panel-top">
-      <text class="safe-h3">现在的强度</text>
-      <text class="level-text">{{intensityLevel}} / 10</text>
+      <text class="section-title">现在的强度</text>
+      <text class="level-text">{{intensityLevel}} <text class="level-range">/ 10</text></text>
     </view>
+
     <view class="thermometer-control">
-      <view class="thermometer-scale">
-        <text>10</text>
-        <text>7</text>
-        <text>4</text>
-        <text>1</text>
-      </view>
-      <view
-        id="intensityThermometer"
-        class="thermometer-shell"
-        role="slider"
-        aria-label="调整情绪强度"
-        aria-valuemin="1"
-        aria-valuemax="10"
-        aria-valuenow="{{intensityLevel}}"
-        bindtap="onThermometerTap"
-        bindtouchmove="onThermometerMove"
-      >
-        <view class="thermometer-track">
-          <view class="thermometer-fill" style="height: {{intensityPercent}}%;"></view>
-          <view class="thermometer-mercury" style="bottom: {{intensityPercent}}%;"></view>
-        </view>
-        <view class="thermometer-bulb"></view>
-      </view>
+      <intensity-scale value="{{intensityLevel}}" bind:change="onIntensityChange" />
+
       <view class="thermometer-actions">
-        <text class="step-label">也可以点按调节</text>
         <view class="step-button-row">
           <button class="step-button" aria-label="情绪强度减一" bindtap="decreaseIntensity">−</button>
-          <button class="step-button step-button--increase" aria-label="情绪强度加一" bindtap="increaseIntensity">＋</button>
+          <button class="step-button" aria-label="情绪强度加一" bindtap="increaseIntensity">＋</button>
         </view>
       </view>
     </view>
+
     <view class="micro-panel">
       <text class="micro-title">补充观察（可保持默认）</text>
       <view class="micro-row">
-        <text class="micro-label">愉悦度</text>
-        <text class="micro-value" aria-label="愉悦度 {{valenceLevel}} 分">{{valenceLevel}} / 10</text>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{valenceLevel}}" activeColor="#7aa78f" backgroundColor="#dfe5dc" bindchange="onValenceChange" bindchanging="onValenceChange" aria-label="调整愉悦度" />
+        <view class="micro-heading">
+          <text class="micro-label">愉悦度</text>
+          <text class="micro-value" aria-label="愉悦度 {{valenceLevel}} 分">{{valenceLevel}} / 10</text>
+        </view>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{valenceLevel}}" activeColor="#4f7c6b" backgroundColor="#dfe5dc" bindchange="onValenceChange" bindchanging="onValenceChange" aria-label="调整愉悦度" />
       </view>
       <view class="micro-row">
-        <text class="micro-label">身体唤起</text>
-        <text class="micro-value" aria-label="身体唤起 {{arousalLevel}} 分">{{arousalLevel}} / 10</text>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{arousalLevel}}" activeColor="#d18a55" backgroundColor="#eadfd0" bindchange="onArousalChange" bindchanging="onArousalChange" aria-label="调整身体唤起" />
+        <view class="micro-heading">
+          <text class="micro-label">身体唤起</text>
+          <text class="micro-value" aria-label="身体唤起 {{arousalLevel}} 分">{{arousalLevel}} / 10</text>
+        </view>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{arousalLevel}}" activeColor="#4f7c6b" backgroundColor="#dfe5dc" bindchange="onArousalChange" bindchanging="onArousalChange" aria-label="调整身体唤起" />
       </view>
       <view class="micro-row">
-        <text class="micro-label">可控感</text>
-        <text class="micro-value" aria-label="可控感 {{controlLevel}} 分">{{controlLevel}} / 10</text>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{controlLevel}}" activeColor="#6a86b4" backgroundColor="#dfe5dc" bindchange="onControlChange" bindchanging="onControlChange" aria-label="调整可控感" />
+        <view class="micro-heading">
+          <text class="micro-label">可控感</text>
+          <text class="micro-value" aria-label="可控感 {{controlLevel}} 分">{{controlLevel}} / 10</text>
+        </view>
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{controlLevel}}" activeColor="#4f7c6b" backgroundColor="#dfe5dc" bindchange="onControlChange" bindchanging="onControlChange" aria-label="调整可控感" />
       </view>
-      <input
-        class="emotion-input"
-        value="{{emotionLabel}}"
-        maxlength="40"
-        placeholder="可选：给这次情绪起个名字，如着急、烦躁、平静"
-        bindinput="onEmotionLabelInput"
-      />
+
+      <view class="text-field">
+        <input
+          class="emotion-input"
+          value="{{emotionLabel}}"
+          maxlength="40"
+          placeholder="可选：给这次情绪起个名字，如着急、烦躁、平静"
+          bindinput="onEmotionLabelInput"
+        />
+        <text class="field-limit">{{emotionLabel.length || 0}} / 40</text>
+      </view>
+      <view class="text-field text-field-brief">
+        <textarea
+          class="brief-input"
+          value="{{briefText}}"
+          maxlength="200"
+          placeholder="可选：用一句话写下刚才发生了什么。"
+          bindinput="onBriefInput"
+        />
+        <text class="field-limit">{{briefText.length || 0}} / 200</text>
+      </view>
     </view>
-    <textarea
-      class="brief-input"
-      value="{{briefText}}"
-      maxlength="200"
-      placeholder="可选：用一句话写下刚才发生了什么。"
-      bindinput="onBriefInput"
-    />
-    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="saveRecord">记录一次</button>
+
+    <button class="safe-primary-button save-button" loading="{{saving}}" disabled="{{saving}}" bindtap="saveRecord">{{saving ? '正在记录…' : '记录一次'}}</button>
   </view>
 
-  <view wx:if="{{receipt}}" class="safe-card receipt-panel" aria-label="本次记录回执">
+  <view wx:if="{{receipt}}" class="receipt-panel" aria-label="本次记录回执">
     <view class="receipt-heading">
-      <view>
-        <text class="safe-caption">刚刚记录完成</text>
-        <text class="safe-h3">先看见这一次</text>
+      <view class="receipt-title-group">
+        <text class="receipt-kicker">刚刚记录完成</text>
+        <text class="receipt-title">先看见这一次</text>
       </view>
       <button class="receipt-close" aria-label="收起记录回执" bindtap="dismissReceipt">×</button>
     </view>
     <text wx:for="{{receipt.messages}}" wx:key="*this" class="receipt-message">{{item}}</text>
-    <text class="safe-caption">{{receipt.boundary_notice}}</text>
-    <button
-      wx:if="{{receipt.practice_available}}"
-      class="safe-primary-button"
-      bindtap="openPractice"
-    >去练一张卡</button>
+    <text class="receipt-boundary">{{receipt.boundary_notice}}</text>
+    <button wx:if="{{receipt.practice_available}}" class="safe-outline-button receipt-action" bindtap="openPractice">去练一张卡</button>
   </view>
 
-  <view class="safe-card curve-panel">
-    <view class="panel-top">
+  <view class="curve-section" aria-busy="{{loading}}">
+    <view class="panel-top curve-heading">
       <view>
-        <text class="safe-h3">今日曲线</text>
-        <text class="safe-caption">共 {{summary.count}} 次，平均 {{summary.avg || "-"}}</text>
+        <text class="section-title">今日曲线</text>
+        <text class="section-meta">共 {{summary.count}} 次，平均 {{summary.avg || "-"}}</text>
       </view>
       <button class="refresh-button" bindtap="loadDay">刷新</button>
     </view>
+    <view wx:if="{{loading}}" class="quiet-state">正在读取今天的记录…</view>
     <canvas
+      wx:if="{{summary.count && !loading}}"
       id="moodCurve"
       class="curve-canvas"
       type="2d"
@@ -109,31 +100,35 @@
       bindtouchstart="handleCanvasTap"
     ></canvas>
     <view wx:if="{{selectedPoint}}" class="selected-point">
-      <text class="safe-h3">{{selectedPoint.label}} · {{selectedPoint.intensity_level}} / 10</text>
-      <text class="safe-body">{{selectedPoint.brief_text || "这次没有写备注。"}}</text>
+      <text class="selected-title">{{selectedPoint.label}} · 强度 {{selectedPoint.intensity_level}} / 10</text>
+      <text class="selected-desc">{{selectedPoint.brief_text || "这次没有写备注。"}}</text>
     </view>
-    <view wx:if="{{!summary.count && !loading}}" class="empty-tip">
-      <text>今天还没有记录。先记录一次，再看曲线。</text>
+    <view wx:if="{{!summary.count && !loading}}" class="quiet-state curve-empty">
+      <text class="state-title">今天还没有记录</text>
+      <text class="state-text">先记录一次，再看曲线。</text>
     </view>
   </view>
 
-  <view wx:if="{{errorMessage}}" class="safe-card list-panel">
-    <text class="safe-h3">暂时没能完成</text>
-    <text class="safe-body">{{errorMessage}}</text>
-    <button class="safe-primary-button" bindtap="loadDay">重试读取</button>
+  <view wx:if="{{errorMessage}}" class="error-panel" role="alert">
+    <text class="state-title">暂时没能完成</text>
+    <text class="state-text">{{errorMessage}}</text>
+    <button class="safe-outline-button retry-button" bindtap="loadDay">重试读取</button>
   </view>
 
-  <view class="safe-card list-panel">
-    <text class="safe-h3">今天的记录</text>
+  <view class="list-section">
+    <text class="section-title">今天的记录</text>
     <view wx:for="{{records}}" wx:key="id" class="record-row">
       <view class="record-badge">{{item.intensity_level}}</view>
       <view class="record-copy">
-        <text class="row-title">{{item.timeLabel}}</text>
+        <view class="record-heading">
+          <text class="row-title">{{item.timeLabel}}</text>
+          <text class="row-level">强度 {{item.intensity_level}} / 10</text>
+        </view>
         <text wx:if="{{item.emotion_label}}" class="row-meta">{{item.emotion_label}} · 愉悦 {{item.valence_level || '-'}} · 唤起 {{item.arousal_level || '-'}} · 可控 {{item.control_level || '-'}}</text>
         <text class="row-desc">{{item.brief_text || "没有备注"}}</text>
       </view>
     </view>
-    <text wx:if="{{!records.length}}" class="safe-caption">记录后会按时间显示在这里。</text>
+    <view wx:if="{{!records.length && !loading}}" class="quiet-state list-empty">记录后会按时间显示在这里。</view>
   </view>
 
   <view class="boundary-note">{{boundaryNotice}}</view>

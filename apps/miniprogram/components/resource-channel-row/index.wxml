@@ -1,0 +1,1 @@
+<view class="resource-row"><view class="bamboo-corner" aria-hidden="true"><view class="bamboo-joint"></view></view><view class="resource-copy"><text class="resource-title">{{title}}</text><text class="resource-text">{{text}}</text></view></view>

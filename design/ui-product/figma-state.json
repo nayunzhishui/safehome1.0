@@ -1,0 +1,702 @@
+{
+  "runId": "safehome-ui-product-20260810",
+  "fileName": "安心陪伴 UIproduct",
+  "fileKey": "8vocq2yUvjQavYpaxGotPs",
+  "fileUrl": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
+  "phase": "phase30_therapeutic_assessment_action_followup_figma_complete",
+  "step": "continue_next_registered_page",
+  "blocker": null,
+  "entities": {
+    "collections": {
+      "Primitive": "VariableCollectionId:2:2",
+      "Semantic": "VariableCollectionId:2:3",
+      "Dimension": "VariableCollectionId:2:4"
+    },
+    "variables": {
+      "Primitive/neutral/0": "VariableID:3:2",
+      "Primitive/neutral/50": "VariableID:3:3",
+      "Primitive/neutral/100": "VariableID:3:4",
+      "Primitive/neutral/300": "VariableID:3:5",
+      "Primitive/neutral/600": "VariableID:3:6",
+      "Primitive/neutral/900": "VariableID:3:7",
+      "Primitive/green/100": "VariableID:3:8",
+      "Primitive/green/500": "VariableID:4:2",
+      "Primitive/green/700": "VariableID:4:3",
+      "Primitive/green/800": "VariableID:4:4",
+      "Primitive/orange/500": "VariableID:4:5",
+      "Primitive/warning/600": "VariableID:4:6",
+      "Primitive/danger/600": "VariableID:4:7",
+      "Dimension/space/2xs": "VariableID:5:2",
+      "Dimension/space/xs": "VariableID:5:3",
+      "Dimension/space/sm": "VariableID:5:4",
+      "Dimension/space/md": "VariableID:5:5",
+      "Dimension/space/lg": "VariableID:5:6",
+      "Dimension/space/xl": "VariableID:5:7",
+      "Dimension/space/2xl": "VariableID:5:8",
+      "Dimension/space/3xl": "VariableID:5:9",
+      "Dimension/radius/sm": "VariableID:6:2",
+      "Dimension/radius/md": "VariableID:6:3",
+      "Dimension/radius/lg": "VariableID:6:4",
+      "Dimension/radius/full": "VariableID:6:5",
+      "Dimension/size/touch/min": "VariableID:6:6",
+      "Dimension/size/icon/sm": "VariableID:6:7",
+      "Dimension/size/icon/md": "VariableID:6:8",
+      "Dimension/size/icon/lg": "VariableID:6:9",
+      "Semantic/color/bg/canvas": "VariableID:7:2",
+      "Semantic/color/bg/surface": "VariableID:7:3",
+      "Semantic/color/bg/subtle": "VariableID:7:4",
+      "Semantic/color/bg/action": "VariableID:7:5",
+      "Semantic/color/text/primary": "VariableID:7:6",
+      "Semantic/color/text/secondary": "VariableID:7:7",
+      "Semantic/color/text/inverse": "VariableID:8:2",
+      "Semantic/color/text/action": "VariableID:8:3",
+      "Semantic/color/border/default": "VariableID:8:4",
+      "Semantic/color/action/primary": "VariableID:8:5",
+      "Semantic/color/action/accent": "VariableID:8:6",
+      "Semantic/color/status/danger": "VariableID:8:7"
+    },
+    "styles": {
+      "Text/Display/Page": "S:a30ca4d4507ed937eaf58749b70ca814c8a74ef0,",
+      "Text/Title/Section": "S:1ebf82dce0881130754843c2b3bdf3b1929ab933,",
+      "Text/Title/Action": "S:9650a0efc14097455b768fb76a5bb0f72f2e8271,",
+      "Text/Title/Item": "S:cd57f817a9987755e0b3010cdc2b0e74a61e46bf,",
+      "Text/Body/Default": "S:96d6295b6c5bce2b9dd353837b9c83bf21a149db,",
+      "Text/Caption/Default": "S:97d2aaf036d6d7c3552101013282a316436997cb,",
+      "Text/Label/Action": "S:752338acb362bdf4f093cea4623205c13acd9b59,",
+      "Effect/Shadow/Subtle": "S:cad8ad7eef226add85528808adc430db7d87e7f6,",
+      "Effect/Shadow/Action": "S:00e3adc1ee54117646c17ccd569adfee3117bc58,"
+    },
+    "pages": {
+      "00 Cover": "0:1",
+      "01 Foundations": "11:2",
+      "02 Components": "11:3",
+      "03 Screens": "11:4",
+      "99 QA": "11:5",
+      "15 Program List": "196:2",
+      "16 Program Detail": "201:75",
+      "17 Relationship Pilot": "209:75",
+      "18 Relationship Report": "214:2",
+      "19 Relationship Task": "219:2",
+      "20 Relationship Growth": "224:2",
+      "21 Therapeutic Assessment": "246:6",
+      "22 Therapeutic Assessment Boundary": "253:6",
+      "23 Therapeutic Assessment Issue": "259:6",
+      "24 Therapeutic Assessment Recent Event": "261:6",
+      "25 Therapeutic Assessment Resources": "264:6",
+      "26 Therapeutic Assessment Sharing": "266:6",
+      "27 Therapeutic Assessment Summary": "275:77",
+      "28 Therapeutic Assessment Feedback Check": "285:6",
+      "29 Therapeutic Assessment Action Review": "288:6",
+      "30 Therapeutic Assessment Action Followup": "291:6"
+    },
+    "documentation": {
+      "Cover": "12:2",
+      "Foundations/Root": "12:6",
+      "Foundations/Colors": "13:2",
+      "Foundations/Typography": "13:59",
+      "Foundations/Dimensions": "14:2",
+      "Foundations/Shadows": "15:2",
+      "QA/Home": "39:2",
+      "QA/Home/Verdict": "39:5",
+      "QA/Home/Checks": "39:658",
+      "QA/DiaryHistory": "52:178",
+      "Components/AuthField": "56:53"
+      ,"Components/Overview": "342:77"
+      ,"Components/BoundaryNote": "93:57"
+      ,"Components/ConversationEntry": "101:61"
+      ,"Components/QuestionComposer": "115:61"
+      ,"Components/FeedbackRating": "134:69"
+      ,"Components/FeedbackRating/Stage": "134:72"
+      ,"Components/SafetyActionRow": "156:75"
+      ,"Components/SafetyActionRow/Stage": "156:78"
+      ,"Components/ResourceChannelRow": "168:75"
+      ,"Components/ResourceChannelRow/Stage": "168:78"
+      ,"Components/TherapeuticComparison": "272:77"
+      ,"Components/TherapeuticFeedbackLetter": "284:86"
+      ,"Components/TherapeuticCompactTextarea": "287:82"
+    },
+    "components": {
+      "Button": "18:59",
+      "IconButton": "19:39",
+      "EntryRow": "21:60",
+      "DualEntry": "22:48",
+      "JourneyActionCard": "24:94",
+      "SectionHeading": "26:46",
+      "TabBarItem": "27:46",
+      "PageStateInline": "28:56",
+      "IntensityScale": "42:150",
+      "TimelineRecord": "45:40",
+      "AuthField/Base": "56:56",
+      "AuthField": "58:53",
+      "__Icon/ChevronDown": "73:55",
+      "SelectField": "77:57",
+      "MessageRow": "88:57"
+      ,"TherapeuticChoiceOption": "252:89"
+      ,"TherapeuticTextarea": "258:85"
+      ,"BoundaryNote/ConsentPendingBase": "93:61"
+      ,"BoundaryNote/ConsentedBase": "93:62"
+      ,"BoundaryNote": "99:61"
+      ,"ConversationEntry/UserBase": "101:65"
+      ,"ConversationEntry/AssistantBase": "101:66"
+      ,"ConversationEntry": "105:61"
+      ,"QuestionComposer": "120:69"
+      ,"FeedbackRating/DefaultBase": "135:69"
+      ,"FeedbackRating": "138:69"
+      ,"SafetyActionRow/PriorityBase": "156:79"
+      ,"SafetyActionRow/GroundingBase": "157:75"
+      ,"SafetyActionRow": "157:78"
+      ,"ResourceChannelRow": "169:75"
+      ,"TherapeuticComparison": "270:77"
+      ,"TherapeuticFeedbackLetter": "284:78"
+      ,"TherapeuticCompactTextarea": "287:81"
+      ,"GrowthSegment": "301:83"
+      ,"BambooTimelineNode": "301:84"
+      ,"CourseCatalogCard": "307:77"
+      ,"ReadingChapterSection": "309:77"
+      ,"ProfileNavigationRow": "311:77"
+      ,"AssessmentWorksheetCard": "318:77"
+    },
+    "componentVariants": {
+      "FeedbackRating/Default": "135:69",
+      "FeedbackRating/Matches": "137:69",
+      "FeedbackRating/PartlyMatches": "137:81",
+      "FeedbackRating/DoesNotMatch": "137:93",
+      "FeedbackRating/Uncomfortable": "137:105",
+      "FeedbackRating/Saving": "137:117",
+      "SafetyActionRow/Priority": "156:79",
+      "SafetyActionRow/Grounding": "157:75",
+      "AuthField/Default": "56:56",
+      "AuthField/Focused": "57:53",
+      "AuthField/Filled": "57:58",
+      "AuthField/Error": "57:63",
+      "AuthField/Disabled": "57:68",
+      "SelectField/Default": "75:53",
+      "SelectField/Focused": "76:54",
+      "SelectField/Error": "76:59",
+      "SelectField/Disabled": "76:65",
+      "MessageRow/Unread": "87:61",
+      "MessageRow/Read": "87:72",
+      "MessageRow/Withdrawn": "87:83"
+      ,"BoundaryNote/ConsentPending": "93:61"
+      ,"BoundaryNote/Consented": "93:62"
+      ,"ConversationEntry/User": "101:65"
+      ,"ConversationEntry/Assistant": "101:66"
+      ,"QuestionComposer/Disabled": "116:63"
+      ,"QuestionComposer/Ready": "116:64"
+      ,"QuestionComposer/Sending": "116:65"
+      ,"QuestionComposer/Error": "116:66"
+      ,"Button/Outline/Default": "146:69"
+      ,"Button/Outline/Pressed": "146:72"
+      ,"Button/Outline/Disabled": "146:75"
+      ,"Button/Outline/Loading": "146:78"
+    },
+    "componentProperties": {
+      "FeedbackRating/Prompt": "Prompt#138:0",
+      "SafetyActionRow/Number": "Number#157:0",
+      "SafetyActionRow/Body": "Body#157:3",
+      "ResourceChannelRow/Title": "Title#169:0",
+      "ResourceChannelRow/Body": "Body#169:1",
+      "AuthField/Label": "Label#59:0",
+      "AuthField/Content": "Content#59:6",
+      "AuthField/Message": "Message#59:12",
+      "SelectField/Label": "Label#77:0",
+      "SelectField/Value": "Value#77:5",
+      "SelectField/Message": "Message#77:10",
+      "SelectField/Icon": "Icon#77:15",
+      "MessageRow/Title": "Title#88:0",
+      "MessageRow/Body": "Body#88:4",
+      "MessageRow/Meta": "Meta#88:8",
+      "MessageRow/Status": "Status#88:12",
+      "MessageRow/ShowDivider": "Show Divider#88:16"
+      ,"BoundaryNote/Title": "Title#100:0"
+      ,"BoundaryNote/Body": "Body#100:3"
+      ,"BoundaryNote/Status": "Status#100:6"
+      ,"ConversationEntry/RoleLabel": "RoleLabel#106:0"
+      ,"ConversationEntry/Body": "Body#106:3"
+      ,"ConversationEntry/ShowSources": "ShowSources#106:6"
+      ,"ConversationEntry/Sources": "Sources#106:9"
+      ,"QuestionComposer/Label": "Label#121:0"
+      ,"QuestionComposer/Counter": "Counter#121:5"
+      ,"QuestionComposer/Text": "Text#121:10"
+      ,"QuestionComposer/Error": "Error#121:15"
+      ,"QuestionComposer/ShowError": "ShowError#121:20"
+      ,"TherapeuticComparison/OriginalText": "Original Text#272:0"
+      ,"TherapeuticComparison/SystemText": "System Text#272:1"
+    },
+    "screens": {
+      "RelationshipTask/Drawing": "219:3",
+      "RelationshipTask/Sentence": "220:8",
+      "RelationshipTask/States": "220:1600",
+      "RelationshipGrowth/Curve": "224:3",
+      "RelationshipGrowth/Timeline": "228:2",
+      "RelationshipGrowth/Feedback": "230:2",
+      "RelationshipGrowth/Records": "232:2",
+      "RelationshipGrowth/States": "233:1574",
+      "TherapeuticAssessment/Ready": "246:7",
+      "TherapeuticAssessment/Waiting": "246:74",
+      "TherapeuticAssessment/Feedback": "246:143",
+      "TherapeuticAssessment/States": "246:222",
+      "TherapeuticBoundary/Default": "253:7",
+      "TherapeuticBoundary/ContinueSelected": "254:66",
+      "TherapeuticBoundary/NotNowSelected": "254:93",
+      "TherapeuticBoundary/States": "254:125",
+      "TherapeuticIssue/Default": "259:7",
+      "TherapeuticIssue/DraftRestored": "259:47",
+      "TherapeuticIssue/States": "259:85",
+      "TherapeuticRecentEvent/Default": "261:7",
+      "TherapeuticRecentEvent/DraftRestored": "261:35",
+      "TherapeuticRecentEvent/States": "261:61",
+      "TherapeuticResources/Default": "264:7",
+      "TherapeuticResources/DraftRestored": "264:34",
+      "TherapeuticResources/States": "264:59",
+      "TherapeuticSharing/Default": "266:7",
+      "TherapeuticSharing/QuestionOnly": "266:63",
+      "TherapeuticSharing/QuestionAndEvent": "266:91",
+      "TherapeuticSharing/PauseSharing": "266:124",
+      "TherapeuticSharing/States": "266:162",
+      "TherapeuticSummary/Default": "275:78",
+      "TherapeuticSummary/LongContent": "279:28",
+      "TherapeuticSummary/ContentStates": "279:1822",
+      "TherapeuticSummary/States": "279:1861",
+      "TherapeuticFeedbackCheck/Default": "285:7",
+      "TherapeuticFeedbackCheck/NotLike": "285:60",
+      "TherapeuticFeedbackCheck/SystemStates": "285:113",
+      "TherapeuticFeedbackCheck/RecognitionStates": "285:131",
+      "TherapeuticActionReview/Empty": "288:7",
+      "TherapeuticActionReview/Filled": "288:63",
+      "TherapeuticActionReview/States": "288:116",
+      "TherapeuticActionFollowup/Default": "291:7",
+      "TherapeuticActionFollowup/Stopped": "291:67",
+      "TherapeuticActionFollowup/Declined": "291:125",
+      "TherapeuticActionFollowup/LongContent": "291:183",
+      "TherapeuticActionFollowup/States": "291:241",
+      "RelationshipReport/Delivered": "214:3",
+      "RelationshipReport/DeliveryPending": "214:140",
+      "RelationshipReport/States": "214:147",
+      "RelationshipPilot/EnrollmentRequired": "209:76",
+      "RelationshipPilot/Enrolled": "209:77",
+      "RelationshipPilot/States": "209:78",
+      "ProgramDetail/Default": "201:76",
+      "ProgramDetail/PreviewReadOnly": "205:1527",
+      "ProgramDetail/States": "201:78",
+      "ProgramList/Default": "196:3",
+      "ProgramList/States": "196:4",
+      "EmergencyGuide/Default": "162:1343",
+      "EmergencyGuide/LongContentSmallScreen": "162:1346",
+      "MessageDetail/Default": "139:1243",
+      "MessageDetail/Loading": "141:1257",
+      "MessageDetail/MissingId": "141:1271",
+      "MessageDetail/LoadError": "141:1285",
+      "MessageDetail/NetworkFailure": "141:1299",
+      "MessageDetail/Saving": "141:1313",
+      "MessageDetail/Evaluated": "141:1327",
+      "MessageDetail/Uncomfortable": "141:1341",
+      "MessageDetail/Withdrawn": "141:1355",
+      "MessageDetail/LongContent": "141:1369",
+      "Home/Default": "30:2",
+      "Home/Loading": "34:147",
+      "Home/Empty": "34:175",
+      "Home/Error": "34:203",
+      "Home/LongContent": "34:231",
+      "Home/NetworkFailure": "34:259",
+      "DiaryHistory/Default": "47:631",
+      "DiaryHistory/Loading": "50:717",
+      "DiaryHistory/Empty": "50:744",
+      "DiaryHistory/Error": "50:774",
+      "DiaryHistory/LongContent": "50:834",
+      "DiaryHistory/NetworkFailure": "50:804",
+      "Login/Default": "61:803",
+      "Login/Loading": "63:823",
+      "Login/Unavailable": "64:843",
+      "Login/Error": "65:861",
+      "Login/LongContent": "66:877",
+      "Login/MustChangePassword": "67:893",
+      "Register/Default": "80:907",
+      "Register/StudentSelected": "83:929",
+      "Register/Loading": "83:989",
+      "Register/ValidationError": "83:1034",
+      "Register/ApiError": "83:1081",
+      "Register/LongContent": "83:1132",
+      "Messages/Default": "90:1034",
+      "Messages/Loading": "90:1077",
+      "Messages/Empty": "90:1090",
+      "Messages/Error": "90:1103",
+      "Messages/LoginRequired": "90:1119",
+      "Messages/LongContent": "90:1135",
+      "Messages/NetworkFailure": "90:1178"
+      ,"SupportAssistant/Loading": "107:1109"
+      ,"SupportAssistant/ConfigError": "107:1111"
+      ,"SupportAssistant/Disabled": "107:1113"
+      ,"SupportAssistant/ConsentPending": "107:1115"
+      ,"SupportAssistant/Ready": "107:1117"
+      ,"SupportAssistant/Sending": "107:1119"
+      ,"SupportAssistant/Conversation": "107:1121"
+      ,"SupportAssistant/InlineError": "107:1123"
+      ,"SupportAssistant/LongContent": "107:1125"
+      ,"SupportAssistant/NetworkFailure": "107:1127"
+      ,"EmergencyResources/Default": "170:1387"
+      ,"EmergencyResources/LongContentSmallScreen": "170:1389"
+    },
+    "screenNodes": {
+      "EmergencyGuide/Default/Content": "162:1344",
+      "EmergencyGuide/Default/SafetyActionDock": "162:1345",
+      "EmergencyGuide/Default/Header": "163:1343",
+      "EmergencyGuide/Default/PrioritySection": "163:1348",
+      "EmergencyGuide/Default/GroundingSection": "163:1383",
+      "EmergencyGuide/Default/Boundary": "163:1401",
+      "EmergencyGuide/Default/OpenRealityResources": "163:1405",
+      "EmergencyGuide/Default/BackHome": "163:1410",
+      "EmergencyGuide/LongContentSmallScreen/Content": "162:1347",
+      "EmergencyGuide/LongContentSmallScreen/SafetyActionDock": "162:1348",
+      "EmergencyGuide/LongContentSmallScreen/OpenRealityResources": "163:1439",
+      "EmergencyGuide/LongContentSmallScreen/BackHome": "163:1444",
+      "MessageDetail/Default/MessageType": "139:1244",
+      "MessageDetail/Default/Title": "139:1245",
+      "MessageDetail/Default/Meta": "139:1246",
+      "MessageDetail/Default/EditorialBody": "139:1247",
+      "MessageDetail/Default/EditorialRule": "139:1248",
+      "MessageDetail/Default/Body": "139:1249",
+      "MessageDetail/Default/OpenSource": "140:1243",
+      "MessageDetail/Default/FeedbackRating": "140:1248",
+      "MessageDetail/Default/Boundary": "140:1259",
+      "MessageDetail/Default/BoundaryDivider": "140:1260",
+      "MessageDetail/Default/BoundaryTitle": "140:1261",
+      "MessageDetail/Default/BoundaryText": "140:1262",
+      "MessageDetail/Default/Back": "140:1263",
+      "MessageDetail/Loading/State": "142:1383",
+      "MessageDetail/MissingId/State": "142:1387",
+      "MessageDetail/LoadError/State": "142:1391",
+      "MessageDetail/NetworkFailure/State": "142:1395",
+      "MessageDetail/Saving/FeedbackRating": "141:1321",
+      "MessageDetail/Evaluated/FeedbackRating": "141:1335",
+      "MessageDetail/Uncomfortable/FeedbackRating": "141:1349",
+      "Button/Outline/Default/Icon": "146:70",
+      "Button/Outline/Default/Label": "146:71",
+      "Button/Outline/Pressed/Icon": "146:73",
+      "Button/Outline/Pressed/Label": "146:74",
+      "Button/Outline/Disabled/Icon": "146:76",
+      "Button/Outline/Disabled/Label": "146:77",
+      "Button/Outline/Loading/Label": "146:80",
+      "FeedbackRating/Default/Prompt": "135:70",
+      "FeedbackRating/Default/Options": "135:71",
+      "FeedbackRating/Default/Matches": "135:72",
+      "FeedbackRating/Default/PartlyMatches": "135:73",
+      "FeedbackRating/Default/DoesNotMatch": "135:74",
+      "FeedbackRating/Default/Uncomfortable": "135:75",
+      "FeedbackRating/Default/MatchesLabel": "136:69",
+      "FeedbackRating/Default/PartlyMatchesLabel": "136:70",
+      "FeedbackRating/Default/DoesNotMatchLabel": "136:71",
+      "FeedbackRating/Default/UncomfortableLabel": "136:72",
+      "FeedbackRating/Matches/Note": "137:80",
+      "FeedbackRating/PartlyMatches/Note": "137:92",
+      "FeedbackRating/DoesNotMatch/Note": "137:104",
+      "FeedbackRating/Uncomfortable/Note": "137:116",
+      "SafetyActionRow/Priority/Number": "156:80",
+      "SafetyActionRow/Priority/Body": "156:81",
+      "SafetyActionRow/Grounding/Number": "157:76",
+      "SafetyActionRow/Grounding/Body": "157:77",
+      "Login/Default/Content": "61:804",
+      "Login/Default/Header": "61:805",
+      "Login/Default/QuickMethods": "61:809",
+      "Login/Default/Divider": "61:826",
+      "Login/Default/Form": "61:830",
+      "Login/Default/WechatButton": "61:811",
+      "Login/Default/PhoneButton": "61:816",
+      "Login/Default/Username": "61:831",
+      "Login/Default/Password": "61:836",
+      "Login/Default/Submit": "61:841",
+      "Login/Default/Register": "61:846",
+      "Login/Loading/StatusMessage": "63:885",
+      "Login/Unavailable/CapabilityMessage": "64:891",
+      "Login/Error/StatusMessage": "65:907",
+      "Login/LongContent/CapabilityMessage": "66:903",
+      "Login/LongContent/StatusMessage": "66:904",
+      "Login/MustChangePassword/Form": "67:919",
+      "Login/MustChangePassword/CurrentPassword": "67:922",
+      "Login/MustChangePassword/NewPassword": "67:927",
+      "Login/MustChangePassword/ConfirmPassword": "67:932",
+      "Login/MustChangePassword/Submit": "67:937",
+      "Register/Default/Content": "80:908",
+      "Register/Default/Header": "80:928",
+      "Register/Default/Form": "80:932",
+      "Register/Default/Username": "81:908",
+      "Register/Default/Password": "81:915",
+      "Register/Default/Role": "81:941",
+      "Register/Default/Nickname": "81:948",
+      "Register/Default/Submit": "81:954",
+      "Register/Default/Login": "81:959",
+      "Register/Loading/StatusMessage": "83:1029",
+      "Register/ValidationError/StatusMessage": "83:1063",
+      "Register/ApiError/StatusMessage": "83:1118",
+      "Messages/Default/Content": "90:1035",
+      "Messages/Default/Header": "90:1036",
+      "Messages/Default/List": "90:1040",
+      "Messages/Default/Boundary": "90:1074",
+      "Messages/Error/Diagnostic": "90:1113",
+      "Messages/LoginRequired/Diagnostic": "90:1129",
+      "Messages/NetworkFailure/Diagnostic": "90:1188"
+      ,"BoundaryNote/Pending/Title": "94:57"
+      ,"BoundaryNote/Pending/Body": "94:58"
+      ,"BoundaryNote/Pending/Action": "94:59"
+      ,"BoundaryNote/Consented/Title": "97:61"
+      ,"BoundaryNote/Consented/Body": "97:62"
+      ,"BoundaryNote/Consented/Status": "98:61"
+      ,"BoundaryNote/Consented/Check": "98:62"
+      ,"BoundaryNote/Consented/StatusText": "98:65"
+      ,"ConversationEntry/User/RoleLabel": "102:61"
+      ,"ConversationEntry/User/Body": "102:62"
+      ,"ConversationEntry/User/Divider": "102:63"
+      ,"ConversationEntry/Assistant/RoleLabel": "103:61"
+      ,"ConversationEntry/Assistant/Body": "103:62"
+      ,"ConversationEntry/Assistant/Sources": "104:61"
+      ,"ConversationEntry/Assistant/SourcesDivider": "104:62"
+      ,"ConversationEntry/Assistant/SourcesLabel": "104:63"
+      ,"ConversationEntry/Assistant/SourcesText": "104:64"
+      ,"ConversationEntry/Assistant/Divider": "104:65"
+      ,"SupportAssistant/Loading/Content": "107:1110"
+      ,"SupportAssistant/ConfigError/Content": "107:1112"
+      ,"SupportAssistant/Disabled/Content": "107:1114"
+      ,"SupportAssistant/ConsentPending/Content": "107:1116"
+      ,"SupportAssistant/Ready/Content": "107:1118"
+      ,"SupportAssistant/Sending/Content": "107:1120"
+      ,"SupportAssistant/Conversation/Content": "107:1122"
+      ,"SupportAssistant/InlineError/Content": "107:1124"
+      ,"SupportAssistant/LongContent/Content": "107:1126"
+      ,"SupportAssistant/NetworkFailure/Content": "107:1128"
+      ,"SupportAssistant/Loading/Header": "108:1109"
+      ,"SupportAssistant/ConfigError/Header": "108:1113"
+      ,"SupportAssistant/Disabled/Header": "108:1117"
+      ,"SupportAssistant/ConsentPending/Header": "108:1121"
+      ,"SupportAssistant/Ready/Header": "108:1125"
+      ,"SupportAssistant/Sending/Header": "109:1109"
+      ,"SupportAssistant/Conversation/Header": "109:1113"
+      ,"SupportAssistant/InlineError/Header": "109:1117"
+      ,"SupportAssistant/LongContent/Header": "109:1121"
+      ,"SupportAssistant/NetworkFailure/Header": "109:1125"
+      ,"SupportAssistant/Loading/State": "111:1109"
+      ,"SupportAssistant/ConfigError/State": "111:1113"
+      ,"SupportAssistant/NetworkFailure/State": "111:1120"
+      ,"EmergencyResources/Default/Content": "170:1388"
+      ,"EmergencyResources/Default/Header": "171:1387"
+      ,"EmergencyResources/Default/ResourceList": "174:1387"
+      ,"EmergencyResources/Default/Boundary": "176:1435"
+      ,"EmergencyResources/Default/OpenEmergencyGuide": "176:1439"
+      ,"EmergencyResources/LongContentSmallScreen/Content": "170:1390"
+      ,"EmergencyResources/LongContentSmallScreen/Header": "172:1387"
+      ,"EmergencyResources/LongContentSmallScreen/ResourceList": "174:1436"
+      ,"EmergencyResources/LongContentSmallScreen/Boundary": "177:1437"
+      ,"EmergencyResources/LongContentSmallScreen/OpenEmergencyGuide": "177:1441"
+      ,"SupportAssistant/Disabled/Notice": "112:1118"
+      ,"SupportAssistant/Disabled/NoticeTitle": "113:1118"
+      ,"SupportAssistant/Disabled/NoticeBody": "113:1119"
+      ,"QuestionComposer/Stage": "115:62"
+      ,"QuestionComposer/DisabledBase": "116:63"
+      ,"QuestionComposer/ReadyBase": "116:64"
+      ,"QuestionComposer/SendingBase": "116:65"
+      ,"QuestionComposer/ErrorBase": "116:66"
+      ,"QuestionComposer/Ready/Header": "117:61"
+      ,"QuestionComposer/Ready/Label": "117:62"
+      ,"QuestionComposer/Ready/Counter": "117:63"
+      ,"QuestionComposer/Ready/Textarea": "117:64"
+      ,"QuestionComposer/Ready/Text": "117:65"
+      ,"QuestionComposer/Ready/Submit": "117:66"
+      ,"QuestionComposer/Error/Message": "119:69"
+      ,"QuestionComposer/Sending/Counter": "118:77"
+      ,"QuestionComposer/Sending/Text": "118:79"
+      ,"SupportAssistant/ConsentPending/Boundary": "122:1118"
+      ,"SupportAssistant/Ready/Boundary": "122:1132"
+      ,"SupportAssistant/Sending/Boundary": "122:1147"
+      ,"SupportAssistant/Conversation/Boundary": "122:1162"
+      ,"SupportAssistant/InlineError/Boundary": "122:1177"
+      ,"SupportAssistant/LongContent/Boundary": "122:1192"
+      ,"SupportAssistant/ConsentPending/Composer": "123:1166"
+      ,"SupportAssistant/Ready/Composer": "123:1187"
+      ,"SupportAssistant/Sending/Composer": "123:1216"
+      ,"SupportAssistant/Conversation/Composer": "123:1235"
+      ,"SupportAssistant/InlineError/Composer": "123:1260"
+      ,"SupportAssistant/LongContent/Composer": "123:1290"
+      ,"SupportAssistant/Conversation/List": "124:1223"
+      ,"SupportAssistant/Conversation/User": "124:1224"
+      ,"SupportAssistant/Conversation/Assistant": "124:1228"
+      ,"SupportAssistant/LongContent/List": "124:1239"
+      ,"SupportAssistant/LongContent/User": "124:1240"
+      ,"SupportAssistant/LongContent/Assistant": "124:1244"
+    }
+  },
+  "pendingValidations": [
+    "After all pages are locally complete, capture device screenshots for every page",
+    "After all pages are locally complete, run Android and iOS visual checks",
+    "During final device batch, run large-font and screen-reader checks"
+  ],
+  "completedSteps": [
+    "P0.a code discovery",
+    "P0.d local scope lock",
+    "P0.e code-image conflict map",
+    "Figma authorization restored",
+    "Figma file created",
+    "P0.b empty target file inspected",
+    "P0.c Code Connect and libraries inspected",
+    "P0.f local design-system gap analysis",
+    "User approved Noto Sans SC for Figma only",
+    "P1.a-P1.h Foundations validated: 3 collections, 41 variables, 7 text styles, 2 effect styles",
+    "P2.a page skeleton created: 00 Cover, 01 Foundations, 02 Components, 03 Screens, 99 QA",
+    "P2.b Cover and Foundations documentation validated by metadata, design context and screenshots",
+    "P3.a-P3.e component library validated: 8 component sets, 37 variants, 10 private icons",
+    "P3 Harness passed: Noto Sans SC only, zero raw solid paints, 44px button and icon-button touch targets",
+    "P4.a-P4.f homepage states completed: Default, Loading, Empty, Error, LongContent and NetworkFailure",
+    "P5 visual harness passed: module order, state semantics, typography, contrast, variables and component instances checked",
+    "P5 QA page completed: root 39:2, verdict 39:5, checks 39:658",
+    "Diary-history truth, ImageGen, Figma, code and local loops completed",
+    "Homepage frontend implemented against Figma after dependency completion",
+    "WeChat DevTools preview compilation passed",
+    "Login P0.a-P0.f discovery complete: local foundations and Button reused; AuthField and six screen states locked",
+    "Login AuthField documentation section and Default base component created",
+    "Login AuthField five visual variants created",
+    "Login AuthField component set created and laid out",
+    "Login AuthField text properties wired across five variants",
+    "Login AuthField Filled and Disabled border preview corrected while retaining token binding",
+    "Login Default screen created from Button and AuthField instances",
+    "Login Loading screen created with disabled fields and loading actions",
+    "Login Unavailable screen created from real capability fallback copy",
+    "Login Error screen initially exposed field-local feedback, then was corrected to the existing overall error semantics",
+    "Login LongContent screen created from existing capability and credential error copy",
+    "Login MustChangePassword screen created from the existing forced-password-change branch",
+    "Login AuthField Error variant now hugs 114px content height without overlap",
+    "Login Loading shows one active authentication path; Error uses the existing overall message without inferred field errors",
+    "Login Figma review passed: five AuthField variants, zero raw solid paints, six 390x844 states within viewport",
+    "Login WXML/WXSS implemented without changing authentication JS, APIs or navigation",
+    "Login WeChat DevTools preview compilation passed at about 1.4 MB",
+    "Login local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred",
+    "Register P0.a-P0.f discovery complete: existing foundations/AuthField/Button reused; local SelectField gap locked",
+    "Register __Icon/ChevronDown and SelectField four-state component set created with token bindings",
+    "Register six 390x844 Figma states completed and visually reviewed against ImageGen v2",
+    "Register WXML/WXSS and exact Figma chevron asset implemented without changing JS, APIs or navigation",
+    "Register WeChat DevTools preview compilation passed at about 1.4 MB",
+    "Register local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred",
+    "Messages P0.a-P0.f discovery complete: current list, error diagnostics, withdrawn/version semantics and existing PageState reused",
+    "Messages MessageRow three-state component set created with text and divider properties",
+    "Messages seven 390x844 screen states created and visually reviewed against ImageGen v2",
+    "Messages get_design_context captured for WeChat mini-program implementation",
+    "Messages WXML/WXSS/JSON implemented without changing JS, APIs or navigation",
+    "Messages WeChat DevTools preview compilation passed at 1,487,732 bytes",
+    "Messages local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    ,"SupportAssistant BoundaryNote, ConversationEntry and QuestionComposer component sets completed"
+    ,"SupportAssistant ten 390x844 states completed and visually reviewed"
+    ,"SupportAssistant Figma harness passed: Noto Sans SC only and zero raw solid paints"
+    ,"SupportAssistant get_design_context captured from Conversation state 107:1121"
+    ,"SupportAssistant WXML and WXSS implemented without changing JS, APIs, navigation, backend, database or shared"
+    ,"SupportAssistant WeChat DevTools preview passed at 1490034 bytes"
+    ,"SupportAssistant local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    ,"MessageDetail FeedbackRating six-state component set and Button Outline four-state variants completed"
+    ,"MessageDetail ten 390x844 states completed; long-content overlap and Outline property forwarding fixed"
+    ,"MessageDetail Figma harness passed: Noto Sans SC only and zero raw solid paints"
+    ,"MessageDetail get_design_context captured from Default state 139:1243"
+    ,"MessageDetail FeedbackRating result notes corrected to 12px/18px after accessibility review"
+    ,"MessageDetail WXML/WXSS and opt-in FeedbackRating editorial variant implemented without changing page business JS or APIs"
+    ,"MessageDetail WeChat DevTools preview passed at 1491164 bytes"
+    ,"MessageDetail local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    ,"EmergencyGuide P0.a-P0.f complete: live Figma inventory matches local ledger; external list components rejected as incompatible"
+    ,"EmergencyGuide SafetyActionRow two-variant component set completed and small-screen text reflow fixed"
+    ,"EmergencyGuide Default and LongContentSmallScreen states completed and visually reviewed"
+    ,"EmergencyGuide Figma harness passed: Noto Sans SC only, zero raw solid paints, no placeholders, 44px actions"
+    ,"EmergencyGuide get_design_context captured from Default state 162:1343"
+    ,"EmergencyResources ResourceChannelRow component completed with user-requested lightweight editorial corner marker"
+    ,"EmergencyResources Default and LongContentSmallScreen states completed and visually reviewed"
+    ,"EmergencyResources Figma harness passed: Noto Sans SC only, zero raw solid paints, no placeholders, 44px action"
+    ,"EmergencyResources get_design_context captured from Default state 170:1387"
+    ,"EmergencyGuide WXML/WXSS/JSON implemented without changing JS, APIs, navigation, backend, database, content or shared"
+    ,"EmergencyGuide WeChat DevTools Preview passed at 1492220 bytes"
+    ,"EmergencyGuide local visual, UI, UX, state and four Harness reviews recorded complete; device review deferred"
+    ,"EmergencyResources WXML/WXSS implemented without changing JS, APIs, navigation, backend, database, content or shared"
+    ,"EmergencyResources WeChat DevTools Preview passed at 1493991 bytes"
+    ,"EmergencyResources local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"ProgramList ImageGen review corrected unsupported filters before Figma"
+    ,"ProgramList Default and Loading/Error/Empty states completed and visually reviewed"
+    ,"ProgramList Figma harness passed: Noto Sans SC only, zero raw solid fills, existing Chevron and PageState instances reused"
+    ,"ProgramList WXML/WXSS implemented without changing JS, APIs, permissions, navigation, backend or database"
+    ,"ProgramList WeChat DevTools Preview passed at 1495198 bytes"
+    ,"ProgramList local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"ProgramDetail ImageGen review corrected invented copy and separated measurement plan from sessions"
+    ,"ProgramDetail Default, PreviewReadOnly and seven local states completed and visually reviewed"
+    ,"ProgramDetail Figma harness passed: Noto Sans SC only, zero raw solid fills, minimal exact component reuse"
+    ,"ProgramDetail WXML/WXSS implemented without changing JS, APIs, review, permission, draft or submit semantics"
+    ,"ProgramDetail WeChat DevTools Preview passed at 1496039 bytes"
+    ,"ProgramDetail local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"RelationshipPilot ImageGen review removed invented profile data and separated enrollment from enrolled state"
+    ,"RelationshipPilot EnrollmentRequired, Enrolled and seven local states completed and visually reviewed"
+    ,"RelationshipPilot Figma harness passed: Noto Sans SC only, zero raw solid fills, minimal exact component reuse"
+    ,"RelationshipPilot WXML/WXSS implemented without changing JS, APIs, role gate, enrollment, tracking or navigation semantics"
+    ,"RelationshipPilot WeChat DevTools Preview passed at 1496466 bytes"
+    ,"RelationshipPilot local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"RelationshipReport ImageGen review removed invented dates, values and report content before Figma"
+    ,"RelationshipReport Delivered, DeliveryPending and eight local states completed and visually reviewed"
+    ,"RelationshipReport semantic paint binding fallback was corrected and revalidated at zero raw fills and strokes"
+    ,"RelationshipReport Figma harness passed: Noto Sans SC only and minimal exact component reuse"
+    ,"RelationshipReport WXML/WXSS/JSON implemented without changing JS, APIs, report gates, feedback or export semantics"
+    ,"RelationshipReport WeChat DevTools Preview passed at 1497248 bytes"
+    ,"RelationshipReport local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"RelationshipTask ImageGen produced drawing and sentence variants; unsupported tool icons and fixed draft state were removed"
+    ,"RelationshipTask Drawing, Sentence and ten local states completed and visually reviewed"
+    ,"RelationshipTask Figma harness passed: Noto Sans SC only, zero raw fills and strokes, minimal exact component reuse"
+    ,"RelationshipTask WXML/WXSS implemented without changing JS, local draft, drawing, consent, risk or submit semantics"
+    ,"RelationshipTask WeChat DevTools Preview passed at 1497926 bytes"
+    ,"RelationshipTask local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"RelationshipGrowth Curve, Timeline, Feedback, Records and twelve local states completed and visually reviewed"
+    ,"RelationshipGrowth Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders, minimal Button reuse"
+    ,"RelationshipGrowth WXML/WXSS/JSON implemented without changing JS, redirects, filters, drafts, idempotency or API semantics"
+    ,"RelationshipGrowth WeChat DevTools Preview passed at 1496960 bytes"
+    ,"RelationshipGrowth local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticAssessment Ready, Waiting, Feedback and eight local states completed and visually reviewed"
+    ,"TherapeuticAssessment Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders, minimal Button reuse"
+    ,"TherapeuticAssessment WXML/WXSS implemented without changing JS, APIs, scopes, consent, withdrawal or idempotency semantics"
+    ,"TherapeuticAssessment WeChat DevTools Preview passed at 1499842 bytes"
+    ,"TherapeuticAssessment local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticBoundary choice-option component set 252:89 created for simple two-state reuse"
+    ,"TherapeuticBoundary Default, ContinueSelected, NotNowSelected and six local states completed and visually reviewed"
+    ,"TherapeuticBoundary Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticBoundary shared WXML/WXSS styling implemented without changing JS, flow utility, APIs, drafts or navigation"
+    ,"TherapeuticBoundary WeChat DevTools Preview passed at 1500067 bytes"
+    ,"TherapeuticBoundary local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticIssue four-state Textarea component set 258:85 created for restrained text-step reuse"
+    ,"TherapeuticIssue Default, DraftRestored and six local states completed and visually reviewed"
+    ,"TherapeuticIssue Textarea Auto Layout height compression found in review and corrected at component source"
+    ,"TherapeuticIssue Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticIssue shared WXSS writing height calibrated without changing JS, flow utility, APIs, validation or drafts"
+    ,"TherapeuticIssue WeChat DevTools Preview passed at 1500067 bytes"
+    ,"TherapeuticIssue local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticIssue and RecentEvent repeated step-level boundary caption removed under the hardcoded-small-copy gate"
+    ,"TherapeuticRecentEvent Default, DraftRestored and five local states completed and visually reviewed"
+    ,"TherapeuticRecentEvent Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticRecentEvent reused existing Textarea and Buttons without changing evidence, API, scope, idempotency or draft semantics"
+    ,"TherapeuticRecentEvent WeChat DevTools Preview passed at 1500094 bytes"
+    ,"TherapeuticRecentEvent local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticResources Default, DraftRestored and five local states completed and visually reviewed"
+    ,"TherapeuticResources Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticResources reused existing Textarea and Buttons without adding cards, tags, recommendations or hardcoded captions"
+    ,"TherapeuticResources WeChat DevTools Preview passed at 1500094 bytes"
+    ,"TherapeuticResources local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticSharing Default, three selected states and local states completed and visually reviewed"
+    ,"TherapeuticSharing retained only consequence-bearing option descriptions and dynamic status copy"
+    ,"TherapeuticSharing WeChat DevTools Preview passed at 1500094 bytes"
+    ,"TherapeuticSharing local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticSummary component 270:77 created with equal-weight original and system text properties"
+    ,"TherapeuticSummary Default, LongContent, missing-content and system states completed and visually reviewed"
+    ,"TherapeuticSummary Figma harness passed: Noto Sans SC only, zero raw fills and strokes, no placeholders"
+    ,"TherapeuticSummary shared WXML/WXSS implemented without changing participant flow, APIs or navigation"
+    ,"TherapeuticSummary WeChat DevTools Preview passed at 1500973 bytes"
+    ,"TherapeuticSummary local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticFeedbackCheck component 284:78 and page 285:6 created with equal-weight recognition choices"
+    ,"TherapeuticFeedbackCheck removed redundant boundary caption, inherited button icons and decorative small copy"
+    ,"TherapeuticFeedbackCheck Figma harness passed: Noto Sans SC only, zero raw fills and strokes, minimum 12px auxiliary text"
+    ,"TherapeuticFeedbackCheck shared WXML/WXSS implemented without changing participant flow, APIs, validation or navigation"
+    ,"TherapeuticFeedbackCheck WeChat DevTools Preview passed at 1501710 bytes"
+    ,"TherapeuticFeedbackCheck local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"TherapeuticActionReview compact textarea component set 287:81 and page 288:6 created"
+    ,"TherapeuticActionReview retained all action fields and used three lightweight sections without fake counters"
+    ,"TherapeuticActionReview Figma harness passed: Noto Sans SC only, zero raw fills and strokes, minimum 12px auxiliary text"
+    ,"TherapeuticActionReview shared WXML/WXSS implemented without changing action values, defaults, validation, APIs or navigation"
+    ,"TherapeuticActionReview WeChat DevTools Preview passed at 1503106 bytes"
+    ,"TherapeuticActionReview local Loop 1-4 and four Harness reviews passed; device review deferred"
+    ,"Figma 02 Components reorganized with visible 30-instance overview at 342:77; all overview items reference real main components"
+  ]
+}

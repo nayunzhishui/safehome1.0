@@ -1,4 +1,4 @@
-<view class="journey-action journey-action--{{errorMessage ? 'error' : state}}" role="region" aria-label="{{regionAriaLabel}}">
+<view class="journey-action journey-action--{{loading ? 'loading' : (errorMessage ? 'error' : state)}}" role="region" aria-label="{{regionAriaLabel}}">
   <view class="journey-action__head">
     <view class="journey-action__marker" aria-hidden="true">{{marker}}</view>
     <text class="journey-action__kicker">{{eyebrow}}</text>

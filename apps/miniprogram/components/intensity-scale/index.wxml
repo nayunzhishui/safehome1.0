@@ -1,0 +1,30 @@
+<view class="intensity-scale">
+  <view class="intensity-labels" aria-hidden="true">
+    <text>10</text>
+    <text>9</text>
+    <text>8</text>
+    <text>7</text>
+    <text>6</text>
+    <text>5</text>
+    <text>4</text>
+    <text>3</text>
+    <text>2</text>
+    <text>1</text>
+  </view>
+  <view
+    id="intensityTrack"
+    class="intensity-touch-target"
+    role="slider"
+    aria-label="调整情绪强度"
+    aria-valuemin="1"
+    aria-valuemax="10"
+    aria-valuenow="{{value}}"
+    bindtap="handleTap"
+    bindtouchmove="handleTouchMove"
+  >
+    <view class="intensity-track">
+      <view class="intensity-fill" style="height: {{percent}}%;"></view>
+      <view class="intensity-marker" style="bottom: {{percent}}%;"></view>
+    </view>
+  </view>
+</view>

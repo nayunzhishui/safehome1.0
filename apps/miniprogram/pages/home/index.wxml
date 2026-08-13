@@ -1,11 +1,6 @@
-<view class="safe-page home-page">
-
-  <!-- 顶栏 -->
-  <view class="home-topline">
-    <view>
-      <text class="home-greeting">安心陪伴</text>
-      <text class="home-subtitle">选择今天的一小步</text>
-    </view>
+<view class="safe-page safe-page--with-tabbar home-page" role="main" aria-label="安心陪伴首页">
+  <view class="home-header">
+    <text class="home-title">安心陪伴</text>
     <button class="notice-button" aria-label="打开消息中心{{unreadMessageCount > 0 ? '，有未读消息' : ''}}" bindtap="openMessages">
       <view class="notice-icon" aria-hidden="true">
         <view class="notice-icon-dome"></view>
@@ -16,29 +11,12 @@
     </button>
   </view>
 
-  <!-- 情绪天气：紧凑横条 -->
-  <button class="mood-strip" bindtap="openThermometer">
-    <view class="mood-strip-left">
-      <text class="mood-strip-label">情绪天气</text>
-      <text class="mood-strip-sub">今天已记录 {{thermometerRecordCount}} 次{{thermometerRecordReady ? '' : '，联网后更新'}}</text>
-    </view>
-    <text class="mood-strip-face">☺</text>
-    <text class="mood-strip-action">记录 ›</text>
-  </button>
+  <view class="home-divider"></view>
 
-  <!-- 核心入口：两个并排大按钮 -->
-  <view class="core-actions">
-    <button class="core-btn core-btn--primary" data-key="assessment" bindtap="openCoreEntry">
-      <text class="core-btn-title">测一测</text>
-      <text class="core-btn-sub">了解当前状态</text>
-    </button>
-    <button class="core-btn core-btn--secondary" data-key="diary" bindtap="openCoreEntry">
-      <text class="core-btn-title">情绪日记</text>
-      <text class="core-btn-sub">记录一次具体事件</text>
-    </button>
-  </view>
+  <entry-row class="thermometer-entry" icon="thermometer" title="情绪温度计" subtitle="今天已记录 {{thermometerRecordCount}} 次{{thermometerRecordReady ? '' : '，联网后更新'}}" bind:action="openThermometer" />
 
-  <!-- 今日唯一动态建议：保留原首页结构，只在核心入口与三步开始之间补充 -->
+  <dual-entry left-key="assessment" left-icon="assessment" left-title="测一测" left-subtitle="了解此刻状态" right-key="diary" right-icon="diary" right-title="情绪日记" right-subtitle="记录具体小事" bind:action="openCoreEntry" />
+
   <journey-action-card
     class="today-step-entry"
     loading="{{todayJourneyLoading}}"
@@ -50,121 +28,60 @@
     meta-text="{{todayJourney ? todayJourney.metaText : ''}}"
     button-label="{{todayJourney ? todayJourney.buttonLabel : '继续'}}"
     action-aria-label="{{todayJourney ? todayJourney.actionAriaLabel : '继续今天的一小步'}}"
-    boundary-notice="{{todayJourney ? todayJourney.boundaryNotice : ''}}"
     bind:action="openTodayAction"
     bind:retry="retryTodayJourney"
   />
 
-  <!-- 三步开始：横向步骤条 -->
-  <view class="safe-section">
-    <section-title title="三步开始" subtitle="完成一个最小练习闭环" more-text="了解三步" bind:more="openGettingStarted" />
-    <view class="step-row">
-      <button
-        wx:for="{{startSteps}}"
-        wx:key="title"
-        class="step-chip"
-        data-key="{{item.key}}"
-        bindtap="openStartStep"
-      >
-        <text class="step-chip-num">{{index + 1}}</text>
-        <text class="step-chip-title">{{item.title}}</text>
-        <text class="step-chip-action">{{item.actionText}}</text>
-      </button>
-    </view>
+  <entry-row class="how-to-entry" icon="start" title="如何开始" subtitle="记录 · 反馈 · 练习" bind:action="openGettingStarted" />
+
+  <view class="home-section">
+    <section-heading title="更多" />
+    <entry-row icon="feedback" title="支持性反馈" subtitle="记录后获得对应反馈" action-key="feedback" bind:action="openCoreEntry" />
+    <entry-row icon="training" title="训练中心" subtitle="查看训练计划与练习" action-key="training" bind:action="openCoreEntry" />
+    <entry-row icon="person" title="人工支持" subtitle="提交非实时支持请求" action-key="supervision" bind:action="openCoreEntry" />
   </view>
 
-  <!-- 其他入口：竖向列表 -->
-  <view class="safe-section">
-    <section-title title="更多" subtitle="" />
-    <view class="quick-list">
-      <button class="quick-list-row" data-key="feedback" bindtap="openCoreEntry">
-        <view class="quick-list-copy">
-          <text class="quick-list-title">支持性反馈</text>
-          <text class="quick-list-sub">查看上次记录的互动线索</text>
-        </view>
-        <text class="quick-list-arrow">›</text>
-      </button>
-      <button class="quick-list-row" data-key="training" bindtap="openCoreEntry">
-        <view class="quick-list-copy">
-          <text class="quick-list-title">训练中心</text>
-          <text class="quick-list-sub">选择今天的小练习</text>
-        </view>
-        <text class="quick-list-arrow">›</text>
-      </button>
-      <button class="quick-list-row" data-key="supervision" bindtap="openCoreEntry">
-        <view class="quick-list-copy">
-          <text class="quick-list-title">人工支持</text>
-          <text class="quick-list-sub">提交补充反馈请求，非实时危机服务</text>
-        </view>
-        <text class="quick-list-arrow">›</text>
-      </button>
-    </view>
+  <view class="home-section">
+    <section-heading title="最近记录" />
+    <page-state
+      wx:if="{{!latestRecordReady && !latestRecordError}}"
+      kind="loading"
+      title="正在读取最近记录"
+      description="正在同步已经保存的真实记录，请稍候。"
+    />
+    <page-state
+      wx:elif="{{latestRecordError}}"
+      kind="error"
+      title="暂时无法读取最近记录"
+      description="{{latestRecordError}}"
+      action-label="重新加载"
+      bind:action="retryHomeData"
+    />
+    <entry-row wx:elif="{{latestRecord}}" class="summary-entry" icon="diary" title="{{latestRecord.time}} · {{latestRecord.trigger}}" subtitle="{{latestRecord.mood}}" action-label="{{latestRecord.status}}" expanded wrap-title bind:action="openDiaryHistory" />
+    <entry-row wx:else class="summary-entry" icon="diary" title="还没有保存的记录" subtitle="可以先写下一件刚发生的小事" action-label="去记录" expanded bind:action="startDiary" />
   </view>
 
-  <!-- 最近记录 -->
-  <view class="safe-section">
-    <section-title title="最近记录" subtitle="方便继续查看与跟进" more-text="查看全部" bind:more="openWeeklyReport" />
-    <button wx:if="{{latestRecord}}" class="recent-record-card" bindtap="openWeeklyReport">
-      <view class="recent-copy">
-        <text class="recent-time">{{latestRecord.time}}</text>
-        <text class="recent-title">{{latestRecord.mood}}，{{latestRecord.trigger}}</text>
-      </view>
-      <text class="recent-status">{{latestRecord.status}} ›</text>
-    </button>
-    <button wx:else class="recent-record-card recent-record-card--empty" bindtap="startDiary">
-      <view class="recent-copy">
-        <text class="recent-time">还没有记录</text>
-        <text class="recent-title">可以先写下一件刚发生的小事</text>
-      </view>
-      <text class="recent-status">去记录 ›</text>
-    </button>
+  <view class="home-section">
+    <section-heading title="阶段性反馈" />
+    <page-state
+      wx:if="{{!progressSummaryReady && !progressSummaryError}}"
+      kind="loading"
+      title="正在读取阶段性反馈"
+      description="正在汇总已有记录，请稍候。"
+    />
+    <entry-row wx:elif="{{progressSummary}}" class="summary-entry" icon="feedback" title="{{progressSummary.summaryText}}" subtitle="{{progressSummary.nextAction}}" expanded wrap-title bind:action="openWeeklyReport" />
+    <page-state
+      wx:elif="{{progressSummaryError}}"
+      kind="error"
+      title="暂时无法读取阶段性反馈"
+      description="{{progressSummaryError}}"
+      action-label="重新加载"
+      bind:action="retryHomeData"
+    />
+    <entry-row wx:else class="summary-entry" icon="feedback" title="记录还不够，继续观察" subtitle="完成更多记录后，这里会呈现阶段摘要" action-label="查看说明" expanded bind:action="openWeeklyReport" />
   </view>
 
-  <!-- 阶段性反馈 -->
-  <view class="safe-section">
-    <section-title title="阶段性反馈" subtitle="根据近期记录整理，不做诊断" more-text="本周复盘" bind:more="openWeeklyReport" />
-    <view wx:if="{{progressSummary}}" class="progress-card">
-      <view class="progress-card-head">
-        <view class="progress-copy">
-          <text class="progress-kicker">{{progressSummary.statusText}}</text>
-          <text class="progress-title">{{progressSummary.summaryText}}</text>
-          <text class="progress-period">{{progressSummary.periodText}}</text>
-        </view>
-        <text class="progress-badge">{{progressSummary.totalSignalCount}}</text>
-      </view>
-      <view class="progress-grid">
-        <view class="progress-metric">
-          <text class="progress-number">{{progressSummary.assessmentCount}}</text>
-          <text class="progress-label">测评记录</text>
-        </view>
-        <view class="progress-metric">
-          <text class="progress-number">{{progressSummary.checkinCount}}</text>
-          <text class="progress-label">练习打卡</text>
-        </view>
-        <view class="progress-metric">
-          <text class="progress-number">{{progressSummary.thermometerCount}}</text>
-          <text class="progress-label">情绪温度</text>
-        </view>
-      </view>
-      <view class="progress-lines">
-        <text class="progress-line">常见场景：{{progressSummary.topScene}}</text>
-        <text class="progress-line">常见情绪：{{progressSummary.topEmotion}}</text>
-        <text class="progress-line progress-line--strong">{{progressSummary.nextAction}}</text>
-      </view>
-      <text class="progress-boundary">{{progressSummary.boundaryNotice}}</text>
-    </view>
-    <view wx:else class="progress-card progress-card--empty">
-      <text class="progress-kicker">还不能归纳</text>
-      <text class="progress-title">{{progressSummaryError || '记录还不够，先继续完成测评和练习。'}}</text>
-      <view class="progress-empty-actions">
-        <button class="progress-empty-btn" bindtap="openAssessment">去测一测</button>
-        <button class="progress-empty-btn progress-empty-btn--secondary" bindtap="openWeeklyReport">看本周复盘</button>
-      </view>
-    </view>
-  </view>
-
-  <view wx:if="{{showDevEntry}}" class="safe-section dev-entry-section">
+  <view wx:if="{{showDevEntry}}" class="dev-entry-section">
     <button class="dev-entry" bindtap="openIntegrationTest">进入联调测试页</button>
   </view>
-
 </view>

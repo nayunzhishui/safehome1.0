@@ -1,13 +1,14 @@
 <view class="safe-page relationship-task-page">
-  <view class="safe-card safe-card--hero">
+  <view class="task-hero">
     <text class="task-meta">线上探索材料</text>
     <text class="task-heading">{{isDrawing ? '关系隐喻互动绘画' : '如果……会怎样'}}</text>
-    <text class="task-copy">{{isDrawing ? '用线条、形状或位置表达此刻的关系感受，再配一两句画外音。系统不会解释象征或潜意识。' : '只回答你愿意回答的情境。没有标准答案，也不要求全部填写。'}}</text>
     <view class="save-state {{saving ? 'is-saving' : ''}}"><text class="save-dot"></text><text>{{saveStatus}}</text></view>
     <view wx:if="{{draftRestored}}" class="draft-notice">已恢复上次未提交的本机草稿，你可以接着完成。</view>
   </view>
 
-  <view wx:if="{{isDrawing}}" class="safe-card drawing-card">
+  <view class="task-instruction" role="note">{{isDrawing ? '用线条、形状或位置表达此刻的关系感受，再配一两句画外音。系统不会解释象征或潜意识。' : '只回答你愿意回答的情境。没有标准答案，也不要求全部填写。'}}</view>
+
+  <view wx:if="{{isDrawing}}" class="drawing-section">
     <view class="canvas-label-row"><text class="canvas-label">画布</text><text class="canvas-help">可撤销、重做，草稿自动留在本机</text></view>
     <canvas canvas-id="relationshipCanvas" class="drawing-canvas" disable-scroll="true" aria-label="关系感受绘画画布，可使用下方按钮撤销、重做或清空" bindtouchstart="startStroke" bindtouchmove="moveStroke" bindtouchend="endStroke"></canvas>
     <view class="canvas-tools">
@@ -36,9 +37,11 @@
     </view>
   </view>
 
-  <checkbox-group bindchange="toggleConsent">
-    <label class="consent-row"><checkbox value="agree" checked="{{consent}}" />我同意将这份敏感叙事材料用于本次试点评估与人工复核；默认不导出原文。</label>
-  </checkbox-group>
-  <view class="boundary-card">材料只作为访谈和共同理解的线索，不自动解释潜意识、人格、依恋类型或病理模式。</view>
-  <button class="safe-primary-button submit-button" loading="{{saving}}" disabled="{{saving}}" bindtap="saveTask">提交这份材料</button>
+  <view class="task-submit-section">
+    <checkbox-group bindchange="toggleConsent">
+      <label class="consent-row"><checkbox value="agree" checked="{{consent}}" />我同意将这份敏感叙事材料用于本次试点评估与人工复核；默认不导出原文。</label>
+    </checkbox-group>
+    <view class="boundary-note">材料只作为访谈和共同理解的线索，不自动解释潜意识、人格、依恋类型或病理模式。</view>
+    <button class="safe-primary-button submit-button" loading="{{saving}}" disabled="{{saving}}" bindtap="saveTask">提交这份材料</button>
+  </view>
 </view>

@@ -486,7 +486,9 @@ git add backend content docs AGENTS.md
 git commit -m "实现 backend MVP 并更新交接文档"
 git push
 ```
-如果本轮任务涉及用户研究、UI/UX、美术设计、可用性测试或视觉审查，请先阅读Codex用户研究与美术设计完整指令.md。
+如果本轮任务涉及用户研究、UI/UX、美术设计、可用性测试、Figma、ImageGen 或视觉审查，必须先完整阅读 `docs/07_UI设计/UI美术与UX改造总指导.md`，并按其中的单页冻结、UI skills、Loop 与 Harness 流程执行。
+
+任何小程序页面 UI 设计或前端改动前，还必须读取并核对 `design/function-truth-table.md` 中的目标页章节。若目标页尚未完成真值表，先从当前前端事件、API、后端能力和本地状态建立真值表，不得先出图或改代码。
 
 切换账号或模型后，先重新读取：
 

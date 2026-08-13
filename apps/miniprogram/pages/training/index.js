@@ -265,7 +265,7 @@ Page({
   },
 
   openTrainingCard(event) {
-    const id = event.currentTarget.dataset.id || event.target.dataset.id || "";
+    const id = (event.detail && event.detail.id) || event.currentTarget.dataset.id || event.target.dataset.id || "";
     wx.navigateTo({
       url: `/pages/task-detail/index?id=${encodeURIComponent(id)}`,
     });

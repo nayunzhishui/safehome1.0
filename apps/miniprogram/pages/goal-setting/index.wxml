@@ -1,8 +1,6 @@
 <view class="page" role="main" aria-label="目标设定">
   <view class="hero">
-    <text class="eyebrow">MVP 1.1 第一步</text>
-    <text class="title">设定本周小目标</text>
-    <text class="summary">先选一个最常出现的亲子场景，再写下这周想练习的一个小动作。</text>
+    <text class="title">本周小目标</text>
   </view>
 
   <view class="panel">
@@ -11,7 +9,6 @@
         <text class="step-icon">01</text>
         <text class="step-title">高频亲子冲突场景</text>
       </view>
-      <text class="hint">选择最常出现的一个场景，也可以自己填写。</text>
       <view class="tag-grid">
         <button
           wx:for="{{sceneOptions}}"
@@ -31,7 +28,6 @@
         <text class="step-icon">02</text>
         <text class="step-title">希望减少的旧反应</text>
       </view>
-      <text class="hint">这里不是评价对错，只是找到一个可以先少一点的反应。</text>
       <view class="tag-grid">
         <button
           wx:for="{{oldReactionOptions}}"
@@ -50,7 +46,6 @@
         <text class="step-icon">03</text>
         <text class="step-title">希望练习的新反应</text>
       </view>
-      <text class="hint">先选一个很小、能试一次的动作。</text>
       <view class="tag-grid">
         <button
           wx:for="{{newReactionOptions}}"
@@ -69,7 +64,6 @@
         <text class="step-icon">04</text>
         <text class="step-title">本周 SMART 小目标</text>
       </view>
-      <text class="hint">写成一周内可以观察到的小目标，不需要很完美。</text>
       <textarea
         class="textarea"
         value="{{smartGoal}}"

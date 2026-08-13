@@ -161,6 +161,8 @@ Page({
     thermometerRecordReady: false,
     unreadMessageCount: 0,
     latestRecord: null,
+    latestRecordReady: false,
+    latestRecordError: "",
     progressSummary: null,
     progressSummaryReady: false,
     progressSummaryError: "",
@@ -195,13 +197,14 @@ Page({
       const todayKey = formatLocalDate(new Date());
       const [todayResult, latestResult, stats, thermometerDay, progressSummary] = await Promise.all([
         api.listDiaries({ date: todayKey, limit: 100 }).catch(() => ({ items: [] })),
-        api.listDiaries({ limit: 1 }).catch(() => ({ items: [] })),
+        api.listDiaries({ limit: 1 }).catch((error) => ({ items: [], __error: error })),
         api.getProfileStats().catch(() => null),
         api.getEmotionThermometerDay({ date: todayKey }).catch(() => null),
         api.getProgressSummary({ range: "7d" }).catch((error) => ({ __error: error })),
       ]);
       const todayItems = todayResult && Array.isArray(todayResult.items) ? todayResult.items : [];
       const latestItems = latestResult && Array.isArray(latestResult.items) ? latestResult.items : [];
+      const latestError = latestResult && latestResult.__error ? latestResult.__error : null;
       const thermometerRecordCount = thermometerDay && thermometerDay.summary ? thermometerDay.summary.count || 0 : 0;
       const latest = latestItems[0] || null;
       const progressError = progressSummary && progressSummary.__error ? progressSummary.__error : null;
@@ -211,6 +214,8 @@ Page({
         thermometerRecordCount,
         thermometerRecordReady: !!thermometerDay,
         unreadMessageCount: stats ? stats.unread_message_count || 0 : 0,
+        latestRecordReady: !latestError,
+        latestRecordError: latestError ? latestError.message || "暂时无法读取最近记录。" : "",
         progressSummary: progressError ? null : formatProgressSummary(progressSummary),
         progressSummaryReady: !progressError,
         progressSummaryError: progressError ? progressError.message || "登录后可以查看阶段性反馈。" : "",
@@ -219,7 +224,7 @@ Page({
               mood: latest.parent_emotion || "一次记录",
               time: (latest.event_time || latest.created_at || "").slice(0, 16).replace("T", " "),
               trigger: latest.scene || latest.event_description || "亲子互动",
-              status: "查看复盘",
+              status: "查看记录",
             }
           : null,
       });
@@ -233,14 +238,18 @@ Page({
         progressSummaryReady: false,
         progressSummaryError: "联网后可以查看阶段性反馈。",
         latestRecord: null,
+        latestRecordReady: false,
+        latestRecordError: "联网后可以查看最近记录。",
       });
     }
   },
 
   startGoalSetting() { wx.navigateTo({ url: "/pages/goal-setting/index" }); },
   startDiary() { wx.navigateTo({ url: "/pages/diary-form/index" }); },
+  openDiaryHistory() { wx.navigateTo({ url: "/pages/diary-history/index" }); },
   openThermometer() { wx.navigateTo({ url: "/pages/thermometer/index" }); },
   openWeeklyReport() { wx.navigateTo({ url: "/pages/weekly-report/index" }); },
+  retryHomeData() { this.refreshHomeData(); },
 
   async loadTodayJourney() {
     this.setData({ todayJourneyLoading: true, todayJourneyError: "" });
@@ -318,14 +327,14 @@ Page({
   openGettingStarted() { wx.navigateTo({ url: "/pages/getting-started/index" }); },
 
   openStartStep(event) {
-    const key = event.currentTarget.dataset.key;
+    const key = (event.detail && event.detail.key) || event.currentTarget.dataset.key;
     if (key === "diary") { this.startDiary(); return; }
     if (key === "training") { wx.switchTab({ url: "/pages/training/index" }); return; }
     wx.navigateTo({ url: "/pages/getting-started/index" });
   },
 
   openCoreEntry(event) {
-    const key = event.currentTarget.dataset.key;
+    const key = (event.detail && event.detail.key) || event.currentTarget.dataset.key;
     if (key === "diary") { this.startDiary(); return; }
     if (key === "training") { wx.switchTab({ url: "/pages/training/index" }); return; }
     if (key === "feedback") {

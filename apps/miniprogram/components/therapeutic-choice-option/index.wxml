@@ -1,0 +1,13 @@
+<button
+  class="choice-option {{selected ? 'choice-option--selected' : ''}}"
+  role="radio"
+  aria-checked="{{selected}}"
+  aria-label="{{description ? label + '：' + description : label}}"
+  bindtap="handleTap"
+>
+  <view class="choice-option__mark" aria-hidden="true">{{selected ? '✓' : ''}}</view>
+  <view class="choice-option__copy">
+    <text class="choice-option__title">{{label}}</text>
+    <text wx:if="{{description}}" class="choice-option__description">{{description}}</text>
+  </view>
+</button>

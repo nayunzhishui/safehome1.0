@@ -1,0 +1,15 @@
+<button
+  class="message-row {{message.is_unread ? 'message-row--unread' : ''}} {{message.is_withdrawn ? 'message-row--withdrawn' : ''}}"
+  aria-label="{{message.is_withdrawn ? '已撤回消息：' : (message.is_unread ? '未读消息：' : '已读消息：')}}{{message.title}}"
+  bindtap="handleTap"
+>
+  <view wx:if="{{message.is_unread}}" class="unread-marker" aria-hidden="true"></view>
+  <view class="message-copy">
+    <text class="message-title">{{message.title}}</text>
+    <text class="message-body">{{message.is_withdrawn ? '研究者已撤回这条内容，请忽略此前版本。' : (message.body || '打开查看详情。')}}</text>
+    <view class="message-meta">
+      <text class="message-time">{{message.sender_role ? '研究者补充 · ' : ''}}{{message.created_at}}{{message.delivery_version ? ' · 第 ' + message.delivery_version + ' 版' : ''}}</text>
+      <text class="message-status {{message.is_unread ? 'message-status--unread' : ''}}">{{message.is_withdrawn ? '已撤回' : (message.is_unread ? '未读' : '已读')}}</text>
+    </view>
+  </view>
+</button>

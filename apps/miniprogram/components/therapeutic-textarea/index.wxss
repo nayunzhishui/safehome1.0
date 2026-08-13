@@ -1,0 +1,15 @@
+.therapeutic-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 392rpx;
+  padding: 40rpx;
+  border: 2rpx solid var(--safe-border);
+  border-radius: 36rpx;
+  background: var(--safe-card);
+  color: var(--safe-title);
+  font-size: 28rpx;
+  line-height: 46rpx;
+}
+.therapeutic-textarea--filled { border-color: var(--safe-primary-deep); }
+.therapeutic-textarea--error { border-color: var(--safe-danger); }
+.therapeutic-textarea[disabled] { background: var(--safe-bg-soft); }

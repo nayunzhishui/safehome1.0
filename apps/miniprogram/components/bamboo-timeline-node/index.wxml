@@ -1,0 +1,5 @@
+<view class="bamboo-node bamboo-node--{{tone}}" aria-hidden="true">
+  <view class="bamboo-node__stem bamboo-node__stem--top"></view>
+  <view class="bamboo-node__joint"></view>
+  <view class="bamboo-node__stem bamboo-node__stem--bottom"></view>
+</view>

@@ -2,89 +2,42 @@
   <view class="ta-hero">
     <text class="ta-kicker">{{activeCase ? activeCase.service_level.display_name : defaultServiceLevel.display_name}} · 可撤回</text>
     <text class="ta-title">共同理解一次关系体验</text>
-    <text class="ta-copy">从你真正关心的问题出发，决定愿意共享什么。反馈是可讨论的版本，不是对你或关系的定论。</text>
   </view>
 
   <view wx:if="{{notice}}" class="ta-notice" role="status">{{notice}}</view>
   <view wx:if="{{errorMessage}}" class="ta-error" role="alert">{{errorMessage}}</view>
-  <view wx:if="{{productionContract}}" class="ta-contract" aria-label="协作式评估机器契约">
-    <view class="ta-contract-heading">
-      <text class="ta-section-title">协作边界已对齐</text>
-      <text class="ta-version">{{productionContract.version}}</text>
-    </view>
-    <text class="ta-meta">服务级别、人员胜任力、对象权限和安全状态分别判断；任一项未知都会暂停继续。</text>
-  </view>
 
-  <view wx:if="{{adultLaunchScope}}" class="safe-card ta-card" aria-label="低风险成人首发范围">
-    <text class="ta-section-title">当前首发范围</text>
-    <text class="ta-meta">仅面向自愿参加、单人资料、非紧急议题的成年人，提供L1/L2真人支持性协作。</text>
-    <text class="ta-boundary">{{adultLaunchScope.boundary_notice}}</text>
-    <view wx:if="{{activeCase && (!launchScreening || launchScreening.decision === 'screening_required')}}">
-      <button class="safe-outline-button" loading="{{saving}}" disabled="{{saving}}" bindtap="confirmAdultLaunchScope">确认符合上述范围</button>
-    </view>
-    <text wx:elif="{{launchScreening}}" class="ta-kicker">范围记录：{{launchScreening.decision}}</text>
-  </view>
-
-  <view wx:if="{{childPolicy}}" class="safe-card ta-card" aria-label="未成年人亲子保护范围">
-    <text class="ta-section-title">未成年人/亲子子线</text>
-    <text class="ta-meta">当前入口未开放。监护人同意和儿童知情、同意或拒绝会分别记录。</text>
-    <text class="ta-boundary">{{childPolicy.boundary_notice}}</text>
-  </view>
-
-  <view wx:if="{{multiPartyPolicy}}" class="safe-card ta-card" aria-label="伴侣与多人保护范围">
-    <text class="ta-section-title">伴侣与多人子线</text>
-    <text class="ta-meta">当前入口未开放。每个人的个别披露默认不会进入共同反馈。</text>
-    <text class="ta-boundary">{{multiPartyPolicy.boundary_notice}}</text>
-  </view>
-
-  <view wx:if="{{aiAssistPolicy}}" class="safe-card ta-card" aria-label="AI辅助边界">
-    <text class="ta-section-title">AI只提供可拒绝的整理候选</text>
-    <text class="ta-meta">原话、候选、人工修改入口和“都不符合”会同时保留；AI不能发送反馈或冒充人工复核。</text>
-    <text class="ta-boundary">{{aiAssistPolicy.boundary_notice}}</text>
-  </view>
-
-  <view wx:if="{{methodCatalog}}" class="safe-card ta-card" aria-label="受控方法内容库">
-    <text class="ta-section-title">方法内容由独立审核控制</text>
-    <text class="ta-meta">已登记 {{methodCatalog.count}} 项；这里只显示适用范围和治理状态，不公开专业模板正文。</text>
-    <text class="ta-boundary">{{methodCatalog.boundary}}</text>
-  </view>
-
-  <view class="safe-card ta-card ta-flow-entry">
-    <view>
-      <text class="ta-section-title">八步协作流程</text>
-      <text class="ta-meta">一屏只做一个主要决定，草稿会先保存在本机，登录后可跨设备继续。</text>
+  <view class="ta-entry">
+    <view class="ta-entry__heading">
+      <view>
+        <text class="ta-section-title">{{activeCase ? '你的最近一次协作' : '开始一次支持性协作'}}</text>
+        <text class="ta-meta">每一步只做一个主要决定；你可以暂停、表达不同意见或撤回。</text>
+      </view>
+      <text wx:if="{{activeCase}}" class="ta-status">{{activeCase.workflowLabel}}</text>
     </view>
     <button wx:if="{{activeCase}}" class="safe-primary-button" bindtap="continueParticipantFlow">继续最近一次协作</button>
     <button wx:else class="safe-primary-button" bindtap="startParticipantFlow">开始一次协作</button>
-    <button wx:if="{{activeCase}}" class="safe-outline-button" bindtap="startParticipantFlow">开始新的议题</button>
+    <button wx:if="{{activeCase}}" class="ta-link-action" bindtap="startParticipantFlow">开始新的议题</button>
   </view>
 
-  <view class="safe-card ta-card">
-    <text class="ta-section-title">1. 写下想共同理解的问题</text>
-    <textarea class="ta-textarea" maxlength="1000" value="{{question}}" bindinput="onQuestionInput" placeholder="例如：为什么最近一次沟通让我既想靠近又想退开？"></textarea>
-    <text class="ta-field-label">本次愿意共享</text>
-    <checkbox-group class="ta-scope-list" bindchange="onScopeChange">
-      <label><checkbox value="question" checked="{{shareQuestion}}" color="#4f7c6b" />上面的问题</label>
-      <label><checkbox value="recent_record" checked="{{shareRecentRecord}}" color="#4f7c6b" />最近一次相关记录</label>
-    </checkbox-group>
-    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="createCase">提交协作问题</button>
-    <text class="ta-boundary">提交后仍可调整共享范围、表达不同意见或撤回。高风险内容会优先进入人工支持，不生成普通自动建议。</text>
-  </view>
-
-  <view wx:if="{{loading}}" class="safe-card ta-card">正在读取协作记录…</view>
-  <view wx:elif="{{activeCase}}" class="safe-card ta-card">
+  <view wx:if="{{loading}}" class="ta-loading" role="status">正在读取协作记录…</view>
+  <view wx:elif="{{activeCase}}" class="ta-current">
     <view class="ta-heading">
-      <view><text class="ta-section-title">2. 查看当前协作</text><text class="ta-meta">{{activeCase.workflowLabel}} · {{activeCase.service_level.display_name}}</text></view>
+      <view>
+        <text class="ta-section-title">当前协作</text>
+        <text class="ta-meta">{{activeCase.workflowLabel}} · {{activeCase.service_level.display_name}}</text>
+      </view>
       <text class="ta-version">版本 {{activeCase.version}}</text>
     </view>
     <text class="ta-question">{{activeCase.assessment_question}}</text>
     <text wx:if="{{activeCase.working_question && activeCase.working_question !== activeCase.assessment_question}}" class="ta-meta">当前改写：{{activeCase.working_question}}</text>
-    <view class="ta-secondary-actions">
-      <button class="safe-outline-button" data-action="generate_candidates" bindtap="updateQuestionAction">查看两个问题候选</button>
-      <button class="safe-outline-button" data-action="none_fit" bindtap="updateQuestionAction">都不符合</button>
-      <button class="safe-outline-button" data-action="pause" bindtap="updateQuestionAction">暂时停一下</button>
+
+    <view class="ta-question-actions">
+      <button class="ta-text-action" data-action="generate_candidates" bindtap="updateQuestionAction">查看两个问题候选</button>
+      <button class="ta-text-action" data-action="none_fit" bindtap="updateQuestionAction">都不符合</button>
     </view>
-    <text wx:for="{{activeCase.question_candidates}}" wx:key="id" class="ta-meta">{{item.text}}</text>
+    <text wx:for="{{activeCase.question_candidates}}" wx:key="id" class="ta-candidate">{{item.text}}</text>
+
     <view wx:if="{{activeCase.latestFeedback}}" class="ta-feedback">
       <text class="ta-kicker">经人工复核的反馈</text>
       <text class="ta-feedback-copy">{{activeCase.latestFeedback.participant_content}}</text>
@@ -92,29 +45,93 @@
       <text class="ta-meta">可讨论的下一步：{{activeCase.latestFeedback.next_step}}</text>
     </view>
     <view wx:else class="ta-waiting">研究者正在整理可讨论的草稿；未经人工复核的内容不会发送给你。</view>
-    <view class="ta-feedback">
+
+    <view class="ta-evidence">
       <text class="ta-kicker">本次可见线索</text>
       <block wx:if="{{evidenceItems.length}}">
-        <text wx:for="{{evidenceItems}}" wx:key="id" class="ta-meta">{{item.kind}} · {{item.content}}</text>
+        <text wx:for="{{evidenceItems}}" wx:key="id" class="ta-evidence-line">{{item.content}}</text>
       </block>
       <text wx:else class="ta-meta">尚无可见线索；内部草稿不会提前展示。</text>
     </view>
-    <view class="ta-secondary-actions">
-      <button class="safe-outline-button" bindtap="disagree">这和我的体验不一致</button>
-      <button class="ta-withdraw" bindtap="withdraw">撤回本次协作</button>
+
+    <view class="ta-question-actions">
+      <button class="ta-text-action" bindtap="disagree">这和我的体验不一致</button>
+      <button class="ta-text-action" data-action="pause" bindtap="updateQuestionAction">暂时停一下</button>
+      <button class="ta-text-action" bindtap="openQualityRecord">更正与投诉</button>
     </view>
-    <button class="safe-outline-button" bindtap="openQualityRecord">查看或提交更正与投诉</button>
+    <button class="ta-withdraw" bindtap="withdraw">撤回本次协作</button>
   </view>
 
-  <view wx:if="{{activeCase && activeCase.latestFeedback}}" class="safe-card ta-card">
-    <text class="ta-section-title">3. 选择一个愿意尝试的小行动</text>
+  <view wx:if="{{activeCase && activeCase.latestFeedback}}" class="ta-next-action">
+    <text class="ta-section-title">选择一个愿意尝试的小行动</text>
+    <text class="ta-meta">仅在收到经人工复核的反馈后记录。</text>
     <textarea class="ta-textarea ta-textarea--short" maxlength="500" value="{{actionText}}" bindinput="onActionInput" placeholder="写下低压力、可退出、今天能完成的一小步"></textarea>
     <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="chooseAction">记录下一小步</button>
   </view>
 
-  <view class="safe-card ta-card">
+  <view class="ta-question-form">
+    <text class="ta-section-title">写下想共同理解的问题</text>
+    <text class="ta-meta">描述一件具体情境或感受，不急着解释谁对谁错。</text>
+    <textarea class="ta-textarea" maxlength="1000" value="{{question}}" bindinput="onQuestionInput" placeholder="例如：最近一次沟通中，什么让我既想靠近又想退开？"></textarea>
+    <text class="ta-field-label">本次愿意共享</text>
+    <checkbox-group class="ta-scope-list" bindchange="onScopeChange">
+      <label><checkbox value="question" checked="{{shareQuestion}}" color="#4f7c6b" />上面的问题</label>
+      <label><checkbox value="recent_record" checked="{{shareRecentRecord}}" color="#4f7c6b" />最近一次相关记录</label>
+    </checkbox-group>
+    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="createCase">提交协作问题</button>
+    <text class="ta-form-boundary">提交后仍可调整共享范围、表达不同意见或撤回。高风险内容会优先进入人工支持，不生成普通自动建议。</text>
+  </view>
+
+  <view class="ta-policy-index" aria-label="开始前了解">
+    <view class="ta-policy-heading">
+      <view class="ta-open-corner"></view>
+      <text class="ta-section-title">开始前了解</text>
+    </view>
+
+    <view wx:if="{{productionContract}}" class="ta-policy-intro">
+      <view class="ta-contract-heading">
+        <text class="ta-policy-title">协作边界已对齐</text>
+        <text class="ta-version">{{productionContract.version}}</text>
+      </view>
+      <text class="ta-meta">服务级别、人员胜任力、对象权限和安全状态分别判断；任一项未知都会暂停继续。</text>
+    </view>
+
+    <view wx:if="{{adultLaunchScope}}" class="ta-policy-row">
+      <text class="ta-policy-title">当前首发范围</text>
+      <text class="ta-policy-copy">仅面向自愿参加、单人资料、非紧急议题的成年人，提供 L1/L2 真人支持性协作。</text>
+      <text class="ta-policy-boundary">{{adultLaunchScope.boundary_notice}}</text>
+      <button wx:if="{{activeCase && (!launchScreening || launchScreening.decision === 'screening_required')}}" class="safe-outline-button" loading="{{saving}}" disabled="{{saving}}" bindtap="confirmAdultLaunchScope">确认符合上述范围</button>
+      <text wx:elif="{{launchScreening}}" class="ta-policy-status">范围信息已记录</text>
+    </view>
+
+    <view wx:if="{{childPolicy}}" class="ta-policy-row">
+      <text class="ta-policy-title">未成年人／亲子子线</text>
+      <text class="ta-policy-copy">当前入口未开放。监护人同意和儿童知情、同意或拒绝会分别记录。</text>
+      <text class="ta-policy-boundary">{{childPolicy.boundary_notice}}</text>
+    </view>
+
+    <view wx:if="{{multiPartyPolicy}}" class="ta-policy-row">
+      <text class="ta-policy-title">伴侣与多人子线</text>
+      <text class="ta-policy-copy">当前入口未开放。每个人的个别披露默认不会进入共同反馈。</text>
+      <text class="ta-policy-boundary">{{multiPartyPolicy.boundary_notice}}</text>
+    </view>
+
+    <view wx:if="{{aiAssistPolicy}}" class="ta-policy-row">
+      <text class="ta-policy-title">AI 只提供可拒绝的整理候选</text>
+      <text class="ta-policy-copy">原话、候选、人工修改入口和“都不符合”会同时保留；AI 不能发送反馈或冒充人工复核。</text>
+      <text class="ta-policy-boundary">{{aiAssistPolicy.boundary_notice}}</text>
+    </view>
+
+    <view wx:if="{{methodCatalog}}" class="ta-policy-row">
+      <text class="ta-policy-title">方法内容由独立审核控制</text>
+      <text class="ta-policy-copy">已登记 {{methodCatalog.count}} 项；这里只显示适用范围和治理状态，不公开专业模板正文。</text>
+      <text class="ta-policy-boundary">{{methodCatalog.boundary}}</text>
+    </view>
+  </view>
+
+  <view class="ta-sharing">
     <text class="ta-section-title">资料与共享</text>
-    <text class="ta-boundary">每条资料单独决定：仅自己、指定专业人员，或经所有相关人确认后用于共同反馈。账号绑定不会自动互看；授权可修改、到期或撤回。</text>
+    <text class="ta-policy-copy">每条资料单独决定：仅自己、指定专业人员，或经所有相关人确认后用于共同反馈。账号绑定不会自动互看；授权可修改、到期或撤回。</text>
   </view>
 
   <text class="ta-footer-boundary">共同反馈只记录变化、讨论和行动线索，不生成疗效分数，也不替代心理咨询、诊断或危机支持。</text>

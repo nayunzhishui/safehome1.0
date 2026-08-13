@@ -1,0 +1,44 @@
+{
+  "route": "pages/diary-history/index",
+  "title": "情绪记录",
+  "status": "local_code_loops_complete_device_review_deferred",
+  "source": {
+    "truth": "design/function-truth-table.md",
+    "context": "design/context.md",
+    "audit": "design/audit.md",
+    "api": "GET /api/diaries?limit=50"
+  },
+  "scope": {
+    "frontendOnly": true,
+    "backendChanges": false,
+    "apiChanges": false,
+    "databaseChanges": false
+  },
+  "states": [
+    "Default",
+    "Loading",
+    "Empty",
+    "Error",
+    "NetworkFailure",
+    "LongContent"
+  ],
+  "nextGate": "local_harness",
+  "evidence": {
+    "imagegen": "design/ui-product/pages/02-diary-history/assets/imagegen-default-v1.png",
+    "imageReview": "design/ui-product/pages/02-diary-history/image-review.md",
+    "figmaFile": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs",
+    "figmaReview": "design/ui-product/pages/02-diary-history/figma-review.md",
+    "codeReview": "design/ui-product/pages/02-diary-history/code-review.md",
+    "figmaNodes": {
+      "intensityScale": "42:150",
+      "timelineRecord": "45:40",
+      "default": "47:631",
+      "loading": "50:717",
+      "empty": "50:744",
+      "error": "50:774",
+      "longContent": "50:834",
+      "networkFailure": "50:804",
+      "qa": "52:178"
+    }
+  }
+}

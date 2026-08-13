@@ -186,7 +186,7 @@ Page({
   },
 
   openSingleCard(event) {
-    const cardId = event.currentTarget.dataset.cardId || "";
+    const cardId = (event.detail && event.detail.id) || event.currentTarget.dataset.cardId || "";
     if (!cardId) return;
     wx.navigateTo({ url: `/pages/training-card/index?card_ids=${encodeURIComponent(cardId)}` });
   },

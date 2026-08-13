@@ -3,54 +3,31 @@
 }
 
 .course-hero {
-  position: relative;
-  min-height: 300rpx;
-  overflow: hidden;
+  padding: 24rpx 0 8rpx;
+  text-align: center;
 }
 
-.hero-copy {
-  position: relative;
-  z-index: 1;
-  max-width: none;
-}
-
-.hero-kicker,
 .hero-title,
-.hero-summary,
 .progress-number,
 .progress-text {
   display: block;
 }
 
-.hero-kicker {
-  margin-bottom: 10rpx;
-  color: var(--safe-primary);
-  font-size: 24rpx;
-  font-weight: 800;
-}
-
 .hero-title {
   color: var(--safe-title);
-  font-size: 42rpx;
-  font-weight: 850;
+  font-size: 46rpx;
+  font-weight: 900;
   line-height: 1.28;
   letter-spacing: 0;
 }
 
-.hero-summary {
-  margin-top: 16rpx;
-  color: var(--safe-text);
-  font-size: 28rpx;
-  line-height: 1.7;
-}
-
 .progress-card {
   position: relative;
-  min-height: 164rpx;
+  min-height: 142rpx;
   overflow: hidden;
   padding: 28rpx;
   border: 1rpx solid rgba(87, 139, 95, 0.18);
-  border-radius: var(--safe-radius-md);
+  border-radius: 20rpx;
   background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
 }
@@ -79,17 +56,12 @@
 .progress-mark {
   position: absolute;
   right: 28rpx;
-  bottom: 26rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 92rpx;
-  height: 92rpx;
-  border-radius: 50%;
-  background: rgba(255, 253, 248, 0.82);
-  color: var(--safe-primary-deep);
-  font-size: 24rpx;
-  font-weight: 900;
+  top: 50%;
+  width: 86rpx;
+  height: 10rpx;
+  margin-top: -5rpx;
+  border-radius: 999rpx;
+  background: var(--safe-primary-deep);
 }
 
 .category-scroll {
@@ -108,11 +80,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 62rpx;
-  padding: 0 24rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-pill);
-  background: var(--safe-card);
+  min-height: 68rpx;
+  padding: 0 18rpx;
+  border: 0;
+  border-bottom: 4rpx solid transparent;
+  border-radius: 0;
+  background: transparent;
   color: var(--safe-text);
   font-size: 24rpx;
   font-weight: 700;
@@ -123,8 +96,8 @@
 }
 
 .category-chip.active {
-  border-color: rgba(87, 139, 95, 0.36);
-  background: var(--safe-primary-soft);
+  border-bottom-color: var(--safe-primary-deep);
+  background: transparent;
   color: var(--safe-primary-deep);
   font-weight: 900;
 }
@@ -158,6 +131,6 @@
   border: 1rpx solid var(--safe-border-strong);
   border-radius: var(--safe-radius-pill);
   color: var(--safe-primary-deep);
-  font-size: 23rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }

@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   gap: 18rpx;
-  padding: 8rpx 0 24rpx;
+  padding: 8rpx 0 8rpx;
 }
 
 .back-button {
@@ -36,6 +36,7 @@
 .overview-card {
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 
 .task-tag,
@@ -61,7 +62,7 @@
 }
 
 .task-title {
-  margin-top: 18rpx;
+  margin-top: 2rpx;
   color: var(--safe-title);
   font-size: 42rpx;
   font-weight: 850;
@@ -96,7 +97,7 @@
 
 .overview-label {
   color: var(--safe-muted);
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 700;
 }
 

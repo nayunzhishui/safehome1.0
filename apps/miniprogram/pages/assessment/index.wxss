@@ -3,7 +3,8 @@
 }
 
 .assessment-head {
-  padding: 8rpx 0 2rpx;
+  padding: 12rpx 0 6rpx;
+  text-align: center;
 }
 
 .page-title,
@@ -13,16 +14,9 @@
 
 .page-title {
   color: var(--safe-title);
-  font-size: 36rpx;
+  font-size: 46rpx;
   font-weight: 850;
-  line-height: 1.28;
-}
-
-.page-subtitle {
-  margin-top: 10rpx;
-  color: var(--safe-text);
-  font-size: 24rpx;
-  line-height: 1.55;
+  line-height: 1.3;
 }
 
 .head-tags {
@@ -125,7 +119,10 @@
 .audience-tabs {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10rpx;
+  gap: 4rpx;
+  padding: 6rpx;
+  border-radius: 18rpx;
+  background: #f0f3eb;
 }
 
 .audience-tab {
@@ -134,19 +131,19 @@
   align-items: center;
   justify-content: center;
   padding: 0 10rpx;
-  border: 1rpx solid #e4eadc;
-  border-radius: 14rpx;
-  background: #ffffff;
+  border: 0;
+  border-radius: 13rpx;
+  background: transparent;
   color: #596a5b;
-  font-size: 23rpx;
+  font-size: 25rpx;
   font-weight: 800;
   line-height: 1.2;
 }
 
 .audience-tab.active {
-  border-color: #9ed5a6;
-  background: var(--safe-primary-pale);
+  background: #ffffff;
   color: var(--safe-primary-deep);
+  box-shadow: 0 3rpx 10rpx rgba(45, 68, 52, 0.08);
 }
 
 .search-row {
@@ -176,7 +173,7 @@
   border-radius: 999rpx;
   background: #f8fbf5;
   color: #4f7356;
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }
 
@@ -204,12 +201,26 @@
 }
 
 .worksheet-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 20rpx;
   padding: 24rpx;
   border: 1rpx solid #e8efdf;
+}
+
+.worksheet-card::before,
+.recent-card--profile::before {
+  content: "";
+  position: absolute;
+  top: 16rpx;
+  right: 18rpx;
+  width: 42rpx;
+  height: 6rpx;
+  border-radius: 999rpx;
+  background: var(--safe-primary);
 }
 
 .worksheet-card.reference {
@@ -219,7 +230,6 @@
 
 .worksheet-card.student-profile {
   border-color: #bfe3c4;
-  border-left: 8rpx solid var(--safe-primary);
   background: var(--safe-card);
 }
 
@@ -299,7 +309,7 @@
 .recent-meta {
   margin-top: 8rpx;
   color: #7a8777;
-  font-size: 22rpx;
+  font-size: 24rpx;
   line-height: 1.45;
 }
 
@@ -321,11 +331,13 @@
   border-radius: 999rpx;
   background: var(--safe-primary-soft);
   color: var(--safe-primary);
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }
 
 .recent-card {
+  position: relative;
+  overflow: hidden;
   padding: 22rpx;
   border: 1rpx solid var(--safe-border);
 }
@@ -335,7 +347,7 @@
 }
 
 .recent-card--profile {
-  border-left: 8rpx solid var(--safe-primary);
+  border-color: #bfe3c4;
 }
 
 .recent-head {
@@ -353,7 +365,7 @@
   min-height: 40rpx;
   padding: 0 14rpx;
   border-radius: 999rpx;
-  font-size: 21rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }
 
@@ -389,7 +401,7 @@
   border-radius: 999rpx;
   background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
-  font-size: 23rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }
 
@@ -422,6 +434,6 @@
   border-radius: 999rpx;
   background: #fffdf8;
   color: #8a2f2f;
-  font-size: 23rpx;
+  font-size: 24rpx;
   font-weight: 800;
 }

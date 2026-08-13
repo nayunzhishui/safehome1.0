@@ -1,0 +1,9 @@
+<button class="entry-row {{accent ? 'entry-row--accent' : ''}} {{compact ? 'entry-row--compact' : ''}} {{expanded ? 'entry-row--expanded' : ''}}" bindtap="handleTap">
+  <image wx:if="{{icon}}" class="entry-icon" src="/assets/icons/figma-home/{{icon === 'feedback' ? 'support' : (icon === 'start' ? 'chevron-right' : icon)}}.png" mode="aspectFit" aria-hidden="true" />
+  <view class="entry-copy">
+    <text class="entry-title {{wrapTitle ? 'entry-title--wrap' : ''}}">{{title}}</text>
+    <text wx:if="{{subtitle}}" class="entry-subtitle">{{subtitle}}</text>
+  </view>
+  <text wx:if="{{actionLabel}}" class="entry-action">{{actionLabel}}</text>
+  <image wx:if="{{showArrow}}" class="entry-arrow" src="/assets/icons/figma-home/chevron-right.png" mode="aspectFit" aria-hidden="true" />
+</button>

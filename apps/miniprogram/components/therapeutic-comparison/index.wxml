@@ -1,0 +1,10 @@
+<view class="therapeutic-comparison" aria-label="原话与系统整理对照">
+  <view class="comparison-panel">
+    <view class="comparison-spine" aria-hidden="true"><view class="comparison-spine__line"></view><view class="comparison-spine__joint"></view><view class="comparison-spine__tick"></view></view>
+    <view class="comparison-copy"><text class="comparison-label">你的原话</text><text class="comparison-body">{{originalText || '尚未填写'}}</text></view>
+  </view>
+  <view class="comparison-panel">
+    <view class="comparison-spine" aria-hidden="true"><view class="comparison-spine__line"></view><view class="comparison-spine__joint"></view><view class="comparison-spine__tick"></view></view>
+    <view class="comparison-copy"><text class="comparison-label">系统整理</text><text class="comparison-body">{{systemText || '尚未形成整理版本'}}</text></view>
+  </view>
+</view>

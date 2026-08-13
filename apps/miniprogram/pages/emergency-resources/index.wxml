@@ -1,23 +1,20 @@
 <view class="safe-page emergency-page" role="main" aria-label="现实支持资源">
-  <view class="safe-card safe-card--hero">
-    <text class="page-kicker">现实资源</text>
+  <view class="emergency-header">
     <text class="page-title">先把人连接上</text>
-    <text class="page-summary">这里不提供热线号码库，也不判断你是否处于危机。它只提醒：紧急时优先找能真实到场或及时回应的帮助。</text>
+    <view class="header-rule" aria-hidden="true"></view>
   </view>
 
-  <view class="resource-list">
-    <view wx:for="{{resources}}" wx:key="title" class="resource-card">
-      <text class="resource-title">{{item.title}}</text>
-      <text class="resource-text">{{item.text}}</text>
-    </view>
+  <view class="resource-intro" role="note">这里不提供热线号码库，也不判断你是否处于危机。紧急时，请优先找能真实到场或及时回应的帮助。</view>
+
+  <view class="resource-list" aria-label="现实支持方向">
+    <resource-channel-row wx:for="{{resources}}" wx:key="title" title="{{item.title}}" text="{{item.text}}" />
   </view>
 
-  <view class="safe-section">
-    <view class="warning-card">
-      <text class="warning-title">使用边界</text>
-      <text class="warning-text">本工具不能替代紧急服务、线下专业评估、法律判断或医疗诊断。安全风险出现时，请先停止独自处理。</text>
-    </view>
+  <view class="boundary-note">
+    <view class="boundary-rule" aria-hidden="true"></view>
+    <text class="boundary-title">使用边界</text>
+    <text class="boundary-text">本工具不能替代紧急服务、线下专业评估、法律判断或医疗诊断。安全风险出现时，请先停止独自处理。</text>
   </view>
 
-  <button class="safe-primary-button bottom-action" bindtap="goGuide">查看紧急安全指引</button>
+  <button class="safe-outline-button bottom-action" hover-class="safe-active" bindtap="goGuide">查看紧急安全指引</button>
 </view>

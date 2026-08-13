@@ -79,7 +79,7 @@ Page({
   },
 
   onQuestionInput(event) {
-    this.setData({ question: String(event.detail.value || "").slice(0, 1000) });
+    this.setData({ question: String((event.detail && event.detail.value) || "").slice(0, 1000) });
   },
 
   async ensureSession() {

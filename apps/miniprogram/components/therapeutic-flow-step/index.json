@@ -1,6 +1,11 @@
 {
   "component": true,
   "usingComponents": {
-    "page-state": "/components/page-state/index"
+    "page-state": "/components/page-state/index",
+    "therapeutic-choice-option": "/components/therapeutic-choice-option/index",
+    "therapeutic-textarea": "/components/therapeutic-textarea/index",
+    "therapeutic-comparison": "/components/therapeutic-comparison/index",
+    "therapeutic-feedback-letter": "/components/therapeutic-feedback-letter/index",
+    "therapeutic-compact-textarea": "/components/therapeutic-compact-textarea/index"
   }
 }

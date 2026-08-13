@@ -1,0 +1,54 @@
+:host { display: block; }
+
+.record {
+  display: flex;
+  align-items: stretch;
+  gap: 20rpx;
+  padding: 24rpx 0;
+}
+
+.record-body { min-width: 0; flex: 1; }
+
+.record-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.record-title,
+.record-type,
+.record-summary,
+.record-date { display: block; }
+
+.record-title {
+  min-width: 0;
+  color: var(--safe-title);
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 44rpx;
+}
+
+.record-type {
+  flex: 0 0 auto;
+  padding: 2rpx 14rpx;
+  border-radius: var(--safe-radius-pill);
+  background: var(--safe-primary-soft);
+  color: var(--safe-primary-deep);
+  font-size: 22rpx;
+  line-height: 34rpx;
+}
+
+.record-summary {
+  margin-top: 8rpx;
+  color: var(--safe-text);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.record-date {
+  margin-top: 8rpx;
+  color: var(--safe-muted);
+  font-size: 23rpx;
+  line-height: 34rpx;
+}

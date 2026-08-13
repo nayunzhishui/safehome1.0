@@ -2,6 +2,7 @@
   "navigationBarTitleText": "推荐训练卡",
   "usingComponents": {
     "feedback-rating": "/components/feedback-rating/index",
-    "page-state": "/components/page-state/index"
+    "page-state": "/components/page-state/index",
+    "training-task-card": "/components/training-task-card/index"
   }
 }

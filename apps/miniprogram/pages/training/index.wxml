@@ -1,17 +1,11 @@
 <view class="safe-page safe-page--with-tabbar training-page" role="main" aria-label="训练中心">
-  <view class="training-hero safe-card safe-card--hero">
+  <view class="training-hero">
     <view class="hero-copy">
       <text class="hero-title">从先稳定自己开始</text>
-      <text class="hero-summary">每天选一个小练习，不需要一次做很多。先让身体慢下来，再进入沟通。</text>
-      <view class="hero-steps">
-        <text>看见情绪</text>
-        <text>慢下来</text>
-        <text>再回应</text>
-      </view>
     </view>
   </view>
 
-  <view class="training-entry-panel safe-card">
+  <view class="training-entry-panel">
     <text class="entry-kicker">训练入口</text>
     <view class="entry-grid">
       <button class="entry-item entry-item--active">
@@ -29,20 +23,12 @@
     </view>
   </view>
 
-  <view wx:if="{{relationshipPilotAvailable}}" class="safe-card relationship-pilot-entry">
-    <text class="entry-kicker">项目试点 · 大学生关系探索</text>
-    <text class="entry-title">从测一测到评估问题与微行动</text>
-    <text class="entry-desc">聚合阶段性画像、初筛报告、关系绘画、句子补全和连续复盘。它不是治疗或诊断服务。</text>
-    <button class="safe-primary-button" bindtap="openRelationshipPilot">进入关系探索试点</button>
-  </view>
-
-  <view wx:if="{{latestRecommendation}}" class="recommendation-card safe-card">
+  <view wx:if="{{latestRecommendation}}" class="recommendation-card">
     <view class="recommendation-head">
       <view class="recommendation-copy">
         <text class="recommendation-kicker">{{latestRecommendation.sourceLabel}}</text>
         <text class="recommendation-title">今天可以先练这个方向</text>
       </view>
-      <button class="recommendation-action" bindtap="openLatestRecommendation">查看练习</button>
     </view>
     <text wx:if="{{latestRecommendation.reason}}" class="recommendation-label">推荐理由</text>
     <text wx:if="{{latestRecommendation.reason}}" class="recommendation-text">{{latestRecommendation.reason}}</text>
@@ -59,9 +45,17 @@
       </view>
     </view>
     <text wx:if="{{latestRecommendation.boundaryNotice}}" class="recommendation-boundary">{{latestRecommendation.boundaryNotice}}</text>
+    <button class="safe-primary-button recommendation-action" bindtap="openLatestRecommendation">查看练习</button>
   </view>
 
-  <view wx:if="{{threeDayPlan}}" class="plan-card safe-card">
+  <view wx:if="{{relationshipPilotAvailable}}" class="relationship-pilot-entry">
+    <text class="entry-kicker">项目试点 · 大学生关系探索</text>
+    <text class="entry-title">从测一测到评估问题与微行动</text>
+    <text class="entry-desc">聚合阶段性画像、初筛报告、关系绘画、句子补全和连续复盘。它不是治疗或诊断服务。</text>
+    <button class="safe-outline-button relationship-action" bindtap="openRelationshipPilot">进入关系探索试点</button>
+  </view>
+
+  <view wx:if="{{threeDayPlan}}" class="plan-card">
     <view class="plan-head">
       <text class="plan-kicker">{{threeDayPlan.sourceTitle}}</text>
       <text class="plan-title">3 天轻量练习</text>
@@ -85,7 +79,7 @@
     <text class="plan-boundary">{{threeDayPlan.boundaryNotice}}</text>
   </view>
 
-  <view class="starter-card safe-card">
+  <view class="starter-card">
     <view class="starter-head">
       <text class="starter-icon">先</text>
       <view class="starter-copy">
@@ -123,6 +117,7 @@
           duration="{{task.duration}}"
           scenario="{{task.scenario}}"
           tag="{{task.tag}}"
+          item-id="{{task.id}}"
           bind:tapcard="openTrainingCard"
         />
       </view>

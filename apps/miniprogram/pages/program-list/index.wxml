@@ -1,22 +1,33 @@
 <view class="safe-page program-list-page" role="main" aria-label="项目测试列表">
   <view class="page-head">
     <text class="safe-h1">项目测试</text>
-    <text class="safe-subtitle">先选一个主题，按小节慢慢练习。</text>
   </view>
 
-  <view wx:if="{{previewMode}}" class="preview-notice">研究者预览：草案仅供审核，不可作为正式项目提交。</view>
+  <view wx:if="{{previewMode}}" class="preview-notice">
+    <view class="editorial-marker"></view>
+    <view class="preview-copy">
+      <text class="preview-label">研究者预览</text>
+      <text class="preview-text">草案仅供审核，不可作为正式项目提交。</text>
+    </view>
+  </view>
 
-  <view wx:for="{{programs}}" wx:key="id" class="safe-card program-card {{item.preview_only ? 'program-card--preview' : ''}}" data-id="{{item.id}}" data-preview="{{item.preview_only}}" role="button" aria-label="打开项目：{{item.title}}" bindtap="openProgram">
+  <view wx:for="{{programs}}" wx:key="id" class="program-card {{item.preview_only ? 'program-card--preview' : ''}}" data-id="{{item.id}}" data-preview="{{item.preview_only}}" role="button" aria-label="打开项目：{{item.title}}" bindtap="openProgram" hover-class="program-card--pressed" hover-stay-time="90">
     <view class="program-head">
-    <text class="program-status">{{item.showcase_open ? '展示开放' : item.preview_only ? '待三方审核' : '已批准试点'}}</text>
+      <text class="program-status">{{item.showcase_open ? '展示开放' : item.preview_only ? '待三方审核' : '已批准试点'}}</text>
       <text class="program-count">{{item.session_count}} 小节</text>
     </view>
-    <text class="program-title">{{item.title}}</text>
-    <text class="program-meta">{{item.audience}}</text>
-    <view class="construct-row">
-      <text wx:for="{{item.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
+    <view class="program-body">
+      <view class="program-copy">
+        <text class="program-title">{{item.title}}</text>
+        <text class="program-meta">受众：{{item.audience}}</text>
+        <view class="construct-row">
+          <text class="construct-label">目标构念：</text>
+          <text wx:for="{{item.target_constructs}}" wx:key="*this" class="construct-chip">{{item}}</text>
+        </view>
+        <text class="program-first">第一节：{{item.first_session_title}}</text>
+      </view>
+      <text class="program-chevron" aria-hidden="true">›</text>
     </view>
-    <text class="program-first">第一节：{{item.first_session_title}}</text>
   </view>
 
   <page-state wx:if="{{loading}}" kind="loading" title="正在读取项目测试内容" description="请稍候。" />
@@ -26,5 +37,8 @@
   <page-state wx:if="{{!loading && !errorMessage && !programs.length}}" kind="empty" title="项目方案正在审核" description="{{availability && availability.message ? availability.message : '当前还没有已完成治理审核的项目测试内容。'}}" />
   <text wx:if="{{!loading && !errorMessage && !programs.length && availability && availability.pending_review_count}}" class="pending-count">已有 {{availability.pending_review_count}} 个方案完成开发，待研究、心理和伦理审核。</text>
 
-  <view class="boundary-note">{{boundaryNotice}}</view>
+  <view class="boundary-note">
+    <view class="editorial-marker"></view>
+    <text class="boundary-copy">{{boundaryNotice}}</text>
+  </view>
 </view>

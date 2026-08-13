@@ -1,0 +1,373 @@
+[
+  {
+    "index": 1,
+    "route": "pages/home/index",
+    "image": "C:/Users/32257/.codex/generated_images/019fe695-ee6b-7143-9310-0612b3afeb40/exec-1185a562-53e9-40b1-b894-c39c414dbadd.png",
+    "nodeId": "",
+    "url": ""
+  },
+  {
+    "index": 2,
+    "route": "pages/login/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/03-login/assets/imagegen-default-v2.png",
+    "nodeId": "",
+    "url": ""
+  },
+  {
+    "index": 3,
+    "route": "pages/register/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/04-register/assets/imagegen-default-v2.png",
+    "nodeId": "80:907",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=80-907"
+  },
+  {
+    "index": 4,
+    "route": "pages/messages/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/05-messages/assets/imagegen-default-v2.png",
+    "nodeId": "90:1034",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=90-1034"
+  },
+  {
+    "index": 5,
+    "route": "pages/support-assistant/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/06-support-assistant/assets/imagegen-default-v1.png",
+    "nodeId": "",
+    "url": ""
+  },
+  {
+    "index": 6,
+    "route": "pages/message-detail/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/07-message-detail/assets/imagegen-default-v1.png",
+    "nodeId": "139:1243",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=139-1243"
+  },
+  {
+    "index": 7,
+    "route": "pages/emergency-guide/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/08-emergency-guide/assets/imagegen-default-v1.png",
+    "nodeId": "162:1343",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=162-1343"
+  },
+  {
+    "index": 8,
+    "route": "pages/emergency-resources/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/09-emergency-resources/assets/imagegen-default-v1.png",
+    "nodeId": "170:1387",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=170-1387"
+  },
+  {
+    "index": 9,
+    "route": "pages/getting-started/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/10-getting-started/assets/imagegen-default-v1.png",
+    "nodeId": "187:3",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=187-3"
+  },
+  {
+    "index": 10,
+    "route": "pages/thermometer/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/11-thermometer/assets/imagegen-default-v1.png",
+    "nodeId": "190:3",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=190-3"
+  },
+  {
+    "index": 11,
+    "route": "pages/training/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/12-training/assets/imagegen-default-v1.png",
+    "nodeId": "192:3",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=192-3"
+  },
+  {
+    "index": 12,
+    "route": "pages/training-history/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/13-training-history/assets/imagegen-default-v1.png",
+    "nodeId": "193:3",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=193-3"
+  },
+  {
+    "index": 13,
+    "route": "pages/personalized-plan/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/14-personalized-plan/assets/imagegen-default-v1.png",
+    "nodeId": "194:3",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=194-3"
+  },
+  {
+    "index": 14,
+    "route": "pages/program-list/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/15-program-list/assets/imagegen-default-v1.png",
+    "nodeId": "196:3",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=196-3"
+  },
+  {
+    "index": 15,
+    "route": "pages/program-detail/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/16-program-detail/assets/imagegen-default-v1.png",
+    "nodeId": "201:76",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=201-76"
+  },
+  {
+    "index": 16,
+    "route": "pages/relationship-pilot/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/17-relationship-pilot/assets/imagegen-default-v1.png",
+    "nodeId": "209:76",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=209-76"
+  },
+  {
+    "index": 17,
+    "route": "pages/relationship-report/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/18-relationship-report/assets/imagegen-default-v1.png",
+    "nodeId": "214:3",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=214-3"
+  },
+  {
+    "index": 18,
+    "route": "pages/relationship-task/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/19-relationship-task/assets/imagegen-variants-v1.png",
+    "nodeId": "219:3",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=219-3"
+  },
+  {
+    "index": 19,
+    "route": "pages/relationship-growth/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/20-relationship-growth/assets/imagegen-curve-v1.png",
+    "nodeId": "224:2",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=224-2"
+  },
+  {
+    "index": 20,
+    "route": "pages/therapeutic-assessment/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/21-therapeutic-assessment/assets/imagegen-default-v1.png",
+    "nodeId": "246:6",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=246-6"
+  },
+  {
+    "index": 21,
+    "route": "pages/therapeutic-assessment-boundary/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/22-therapeutic-assessment-boundary/assets/imagegen-selected-v1.png",
+    "nodeId": "253:7",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=253-7"
+  },
+  {
+    "index": 22,
+    "route": "pages/therapeutic-assessment-issue/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/23-therapeutic-assessment-issue/assets/imagegen-selected-v1.png",
+    "nodeId": "259:7",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=259-7"
+  },
+  {
+    "index": 23,
+    "route": "pages/therapeutic-assessment-recent-event/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/24-therapeutic-assessment-recent-event/assets/imagegen-selected-v1.png",
+    "nodeId": "261:7",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=261-7"
+  },
+  {
+    "index": 24,
+    "route": "pages/therapeutic-assessment-resources/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/25-therapeutic-assessment-resources/assets/imagegen-selected-v1.png",
+    "nodeId": "264:7",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=264-7"
+  },
+  {
+    "index": 25,
+    "route": "pages/therapeutic-assessment-sharing/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/26-therapeutic-assessment-sharing/assets/imagegen-selected-v1.png",
+    "nodeId": "266:7",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=266-7"
+  },
+  {
+    "index": 26,
+    "route": "pages/therapeutic-assessment-summary/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/27-therapeutic-assessment-summary/assets/imagegen-selected-v1.png",
+    "nodeId": "275:78",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=275-78"
+  },
+  {
+    "index": 27,
+    "route": "pages/therapeutic-assessment-feedback-check/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/28-therapeutic-assessment-feedback-check/assets/imagegen-selected-v1.png",
+    "nodeId": "285:7",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=285-7"
+  },
+  {
+    "index": 28,
+    "route": "pages/therapeutic-assessment-action-review/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/29-therapeutic-assessment-action-review/assets/imagegen-selected-v1.png",
+    "nodeId": "288:7",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=288-7"
+  },
+  {
+    "index": 29,
+    "route": "pages/therapeutic-assessment-action-followup/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/30-therapeutic-assessment-action-followup/assets/imagegen-selected-v1.png",
+    "nodeId": "291:7",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=291-7"
+  },
+  {
+    "index": 30,
+    "route": "pages/therapeutic-assessment-quality/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/31-therapeutic-assessment-quality/assets/imagegen-selected-v1.png",
+    "nodeId": "299:25",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=299-25"
+  },
+  {
+    "index": 31,
+    "route": "pages/growth-dashboard/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/32-growth-dashboard/assets/imagegen-selected-v1.png",
+    "nodeId": "302:1457",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=302-1457"
+  },
+  {
+    "index": 32,
+    "route": "pages/relationship-narrative/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/33-relationship-narrative/assets/imagegen-selected-v1.png",
+    "nodeId": "303:1471",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=303-1471"
+  },
+  {
+    "index": 33,
+    "route": "pages/researcher-dashboard/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/34-researcher-dashboard/assets/imagegen-selected-v1.png",
+    "nodeId": "305:1471",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=305-1471"
+  },
+  {
+    "index": 34,
+    "route": "pages/course/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/35-course/assets/imagegen-selected-v1.png",
+    "nodeId": "308:1471",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=308-1471"
+  },
+  {
+    "index": 35,
+    "route": "pages/course-detail/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/36-course-detail/assets/imagegen-selected-v1.png",
+    "nodeId": "310:1501",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=310-1501"
+  },
+  {
+    "index": 36,
+    "route": "pages/profile/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/37-profile/assets/imagegen-selected-v1.png",
+    "nodeId": "312:1516",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=312-1516"
+  },
+  {
+    "index": 37,
+    "route": "pages/settings-detail/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/38-settings-detail/assets/imagegen-selected-v1.png",
+    "nodeId": "313:1544",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=313-1544"
+  },
+  {
+    "index": 38,
+    "route": "pages/goal-setting/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/39-goal-setting/assets/imagegen-selected-v1.png",
+    "nodeId": "314:1553",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=314-1553"
+  },
+  {
+    "index": 39,
+    "route": "pages/diary-form/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/40-diary-form/assets/imagegen-selected-v1.png",
+    "nodeId": "315:1565",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=315-1565"
+  },
+  {
+    "index": 40,
+    "route": "pages/diary-history/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/41-diary-history/assets/imagegen-selected-v1.png",
+    "nodeId": "316:1571",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=316-1571"
+  },
+  {
+    "index": 41,
+    "route": "pages/feedback-result/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/42-feedback-result/assets/imagegen-selected-v1.png",
+    "nodeId": "317:1571",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=317-1571"
+  },
+  {
+    "index": 42,
+    "route": "pages/assessment/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/43-assessment/imagegen-concept.png",
+    "nodeId": "319:1587",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=319-1587"
+  },
+  {
+    "index": 43,
+    "route": "pages/assessment-history/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/44-assessment-history/imagegen-concept.png",
+    "nodeId": "320:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=320-1602"
+  },
+  {
+    "index": 44,
+    "route": "pages/assessment-detail/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/45-assessment-detail/imagegen-concept.png",
+    "nodeId": "322:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=322-1602"
+  },
+  {
+    "index": 45,
+    "route": "pages/assessment-result/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/46-assessment-result/imagegen-concept.png",
+    "nodeId": "323:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=323-1602"
+  },
+  {
+    "index": 46,
+    "route": "pages/hot-topics/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/47-hot-topics/imagegen-concept.png",
+    "nodeId": "324:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=324-1602"
+  },
+  {
+    "index": 47,
+    "route": "pages/task-detail/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/48-task-detail/imagegen-concept.png",
+    "nodeId": "325:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=325-1602"
+  },
+  {
+    "index": 48,
+    "route": "pages/training-card/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/49-training-card/imagegen-concept.png",
+    "nodeId": "326:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=326-1602"
+  },
+  {
+    "index": 49,
+    "route": "pages/checkin/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/50-checkin/imagegen-concept.png",
+    "nodeId": "327:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=327-1602"
+  },
+  {
+    "index": 50,
+    "route": "pages/weekly-report/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/51-weekly-report/imagegen-concept.png",
+    "nodeId": "328:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=328-1602"
+  },
+  {
+    "index": 51,
+    "route": "pages/supervision/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/52-supervision/imagegen-concept.png",
+    "nodeId": "329:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=329-1602"
+  },
+  {
+    "index": 52,
+    "route": "pages/debug/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/53-debug/imagegen-concept.png",
+    "nodeId": "331:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=331-1602"
+  },
+  {
+    "index": 53,
+    "route": "pages/integration-test/index",
+    "image": "D:/codex/workspace/safehome1.0-UIproduct/design/ui-product/pages/54-integration-test/imagegen-concept.png",
+    "nodeId": "332:1602",
+    "url": "https://www.figma.com/design/8vocq2yUvjQavYpaxGotPs?node-id=332-1602"
+  }
+]

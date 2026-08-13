@@ -12,6 +12,7 @@ Component({
     disabled: { type: Boolean, value: false },
     prompt: { type: String, value: "这段内容与你的实际情况相符吗？" },
     compact: { type: Boolean, value: false },
+    editorial: { type: Boolean, value: false },
   },
   data: { options: OPTIONS },
   methods: {

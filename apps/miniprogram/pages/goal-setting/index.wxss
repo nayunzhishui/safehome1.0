@@ -5,48 +5,33 @@
 }
 
 .hero {
-  padding: 20rpx 4rpx 28rpx;
-}
-
-.eyebrow {
-  display: block;
-  margin-bottom: 10rpx;
-  color: #3c7a49;
-  font-size: 24rpx;
-  font-weight: 700;
+  padding: 24rpx 4rpx 34rpx;
+  text-align: center;
 }
 
 .title {
   display: block;
-  margin-bottom: 14rpx;
   color: #1d2b22;
-  font-size: 40rpx;
-  font-weight: 700;
-}
-
-.summary,
-.hint {
-  display: block;
-  color: #5b6b60;
-  font-size: 28rpx;
-  line-height: 1.7;
+  font-size: 46rpx;
+  font-weight: 900;
 }
 
 .panel {
-  padding: 28rpx;
-  border: 1rpx solid #dce6db;
-  border-radius: 8rpx;
-  background: #ffffff;
+  padding: 0;
+  background: transparent;
 }
 
 .step-card {
+  position: relative;
   margin-bottom: 28rpx;
-  padding-bottom: 28rpx;
-  border-bottom: 1rpx solid #e6eee5;
+  padding: 28rpx;
+  border: 1rpx solid #dce6db;
+  border-radius: 16rpx;
+  background: #ffffff;
 }
 
 .step-card:last-of-type {
-  border-bottom: 0;
+  border-bottom: 1rpx solid #dce6db;
 }
 
 .step-head {
@@ -62,13 +47,25 @@
   justify-content: center;
   width: 48rpx;
   height: 48rpx;
-  border-radius: 8rpx;
-  background: #edf5ee;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
   color: #2f7d45;
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 700;
   text-align: center;
-  line-height: 48rpx;
+  line-height: 1.3;
+}
+
+.step-card::before {
+  content: "";
+  display: block;
+  width: 52rpx;
+  height: 8rpx;
+  margin-bottom: 16rpx;
+  border-radius: 999rpx;
+  background: #2f7d45;
 }
 
 .step-title {
@@ -147,7 +144,7 @@
   display: block;
   margin: 0 0 14rpx;
   color: #5b6b60;
-  font-size: 23rpx;
+  font-size: 24rpx;
   line-height: 1.55;
 }
 

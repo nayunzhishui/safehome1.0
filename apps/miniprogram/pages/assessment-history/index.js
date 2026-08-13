@@ -12,13 +12,28 @@ function formatDate(value) {
 function formatResult(item) {
   const scores = item.scores || {};
   const dimensions = Array.isArray(scores.dimensions) ? scores.dimensions : [];
+  const worksheetTitle = item.worksheet_title || "支持性测评";
+  const createdAtText = formatDate(item.created_at);
+  const summaryText = item.result_summary || "已保存本次测评记录。";
+  const dimensionText = dimensions.length ? `${dimensions.length} 个维度` : "查看完整结果";
   return {
     ...item,
-    worksheetTitle: item.worksheet_title || "支持性测评",
-    createdAtText: formatDate(item.created_at),
-    summaryText: item.result_summary || "已保存本次测评记录。",
+    worksheetTitle,
+    createdAtText,
+    summaryText,
     dimensionCount: dimensions.length,
-    dimensionText: dimensions.length ? `${dimensions.length} 个维度` : "查看完整结果",
+    dimensionText,
+    cardItem: {
+      id: item.id,
+      display_title: worksheetTitle,
+      topic_label: createdAtText,
+      meta_text: `${createdAtText} · ${dimensionText}`,
+      question_count: dimensions.length,
+      estimated_minutes: 0,
+      instructions: summaryText,
+      action_text: dimensionText,
+      is_enabled_for_user: true,
+    },
   };
 }
 
@@ -82,8 +97,9 @@ Page({
   },
 
   openResult(event) {
-    const id = event.currentTarget.dataset.id || "";
-    const worksheetId = event.currentTarget.dataset.worksheetId || "";
+    const id = event.detail && event.detail.id ? event.detail.id : "";
+    const selected = this.data.items.find((item) => item.id === id) || {};
+    const worksheetId = selected.worksheet_id || "";
     if (!id) return;
     wx.navigateTo({
       url: `/pages/assessment-result/index?id=${encodeURIComponent(id)}&worksheet_id=${encodeURIComponent(worksheetId)}`,

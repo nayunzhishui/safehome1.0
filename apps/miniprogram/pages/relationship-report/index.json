@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "关系健康初筛报告",
+  "navigationBarTitleText": "阶段性报告",
   "usingComponents": {
     "relationship-status": "/components/relationship-status/index",
     "feedback-rating": "/components/feedback-rating/index",

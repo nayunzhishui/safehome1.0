@@ -1,4 +1,5 @@
-<button class="training-card" bindtap="handleTap">
+<view class="training-card {{actionable ? '' : 'training-card--static'}}" role="{{actionable ? 'button' : 'group'}}" hover-class="{{actionable ? 'training-card--pressed' : 'none'}}" bindtap="handleTap">
+  <view class="training-bamboo-mark" aria-hidden="true"></view>
   <view class="training-head">
     <view class="training-mark">
       <view class="mark-face"></view>
@@ -10,7 +11,7 @@
       </view>
       <text class="training-subtitle">{{subtitle}}</text>
     </view>
-    <text class="training-arrow">›</text>
+    <text wx:if="{{actionable}}" class="training-arrow">›</text>
   </view>
   <view class="training-meta">
     <view wx:if="{{stage}}" class="meta-row">
@@ -30,4 +31,4 @@
       <text>预计用时：{{duration}}</text>
     </view>
   </view>
-</button>
+</view>

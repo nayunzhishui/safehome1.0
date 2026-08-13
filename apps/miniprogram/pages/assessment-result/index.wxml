@@ -6,7 +6,6 @@
   <view wx:elif="{{result}}">
     <view class="result-head">
       <text class="result-title">{{result.worksheet_title}}</text>
-      <text class="result-meta">{{result.result_summary}}</text>
     </view>
 
     <view wx:if="{{riskSummary}}" class="risk-strip {{riskSummary.riskLevel === 'high' ? 'high' : ''}}">

@@ -1,15 +1,17 @@
 <view class="safe-page researcher-dashboard-page">
   <view class="workbench-hero">
-    <view>
-      <text class="dashboard-kicker">研究者移动工作台</text>
+    <view class="workbench-title-group">
       <text class="dashboard-title">先处理重要的一小步</text>
-      <text class="dashboard-copy">移动端用于查看摘要、处理提醒和进入试点；完整研究配置与批量工作仍在 Web 完成。</text>
     </view>
-    <view class="sync-chip" bindtap="refreshActiveWorkspace" role="button" aria-label="刷新当前工作区">
+  </view>
+  <view class="sync-row" bindtap="refreshActiveWorkspace" role="button" aria-label="刷新当前工作区">
+    <view>
       <text class="sync-label">最近同步</text>
       <text class="sync-time">{{lastSyncText}}</text>
     </view>
+    <text class="sync-action">重新同步</text>
   </view>
+  <view class="workbench-boundary">移动端用于查看摘要、处理提醒和进入试点；完整研究配置与批量工作仍在 Web 完成。</view>
 
   <view wx:if="{{offline}}" class="state-banner state-banner--offline">
     <text class="state-title">当前离线</text>
@@ -17,11 +19,10 @@
   </view>
   <view wx:if="{{developmentFullAccess}}" class="development-access-banner">
     <text class="development-access-title">开发全权限模式</text>
-    <text class="development-access-copy">普通测试账号临时可读写研究平台，包括权限配置、治疗性评估、AI、情感计算、网络分析、发布与生产门禁。业务状态机和证据约束仍然生效；正式发布前必须关闭此模式。</text>
+    <text class="development-access-copy">测试账号临时开放研究能力；正式发布前必须关闭。</text>
   </view>
   <view wx:if="{{capabilityScope}}" class="capability-scope-card">
     <text class="capability-scope-title">当前身份：{{capabilityScope.formal_role}} · 能力矩阵 {{capabilityScope.registry_version}}</text>
-    <text class="capability-scope-copy">页面导航按能力显示；每次深链访问仍由服务端重新授权并记录审计。</text>
   </view>
 
   <scroll-view scroll-x class="workspace-tabs" aria-label="研究者工作区导航">

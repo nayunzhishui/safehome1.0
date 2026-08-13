@@ -1,4 +1,5 @@
 .training-card {
+  position: relative;
   width: 100%;
   display: block;
   padding: 26rpx;
@@ -8,8 +9,20 @@
   box-shadow: var(--safe-shadow-card);
 }
 
-.training-card:active {
+.training-bamboo-mark {
+  width: 56rpx;
+  height: 10rpx;
+  margin-bottom: 18rpx;
+  border-radius: 6rpx;
+  background: var(--safe-primary-deep);
+}
+
+.training-card--pressed {
   transform: scale(0.99);
+}
+
+.training-card--static {
+  cursor: default;
 }
 
 .training-head {

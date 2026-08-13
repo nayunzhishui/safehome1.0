@@ -1,0 +1,12 @@
+.compact-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 164rpx;
+  padding: 26rpx 30rpx;
+  border: 2rpx solid var(--safe-border);
+  border-radius: 24rpx;
+  background: var(--safe-card);
+  color: var(--safe-title);
+  font-size: 28rpx;
+  line-height: 44rpx;
+}

@@ -59,27 +59,8 @@ Page({
     });
   },
 
-  setIntensityFromTouch(event) {
-    const touch = event.touches && event.touches[0] ? event.touches[0] : event.changedTouches && event.changedTouches[0];
-    if (!touch) return;
-    wx.createSelectorQuery()
-      .in(this)
-      .select("#intensityThermometer")
-      .boundingClientRect((rect) => {
-        if (!rect || !rect.height) return;
-        const y = touch.clientY !== undefined ? touch.clientY : touch.y;
-        const ratio = 1 - Math.max(0, Math.min(rect.height, y - rect.top)) / rect.height;
-        this.syncIntensityVisual(1 + ratio * 9);
-      })
-      .exec();
-  },
-
-  onThermometerTap(event) {
-    this.setIntensityFromTouch(event);
-  },
-
-  onThermometerMove(event) {
-    this.setIntensityFromTouch(event);
+  onIntensityChange(event) {
+    this.syncIntensityVisual(event.detail.value);
   },
 
   decreaseIntensity() {

@@ -1,0 +1,95 @@
+{
+  "route": "pages/support-assistant/index",
+  "title": "支持性问答",
+  "status": "local_complete",
+  "scope": {
+    "frontendOnly": true,
+    "backendChanges": false,
+    "apiChanges": false,
+    "databaseChanges": false
+  },
+  "completed": [
+    "truth",
+    "freeze",
+    "imagegen",
+    "image_review",
+    "figma_phase0",
+    "figma_boundary_note_skeleton",
+    "figma_boundary_note_pending",
+    "figma_boundary_note_consented",
+    "figma_boundary_note_variant_set",
+    "figma_boundary_note_properties",
+    "figma_conversation_entry",
+    "figma_screen_skeletons",
+    "figma_shared_headers",
+    "figma_loading_config_error_network_states"
+    ,"figma_disabled_state"
+    ,"figma_question_composer"
+    ,"figma_all_ten_states"
+    ,"figma_review"
+    ,"implementation"
+    ,"loop_visual"
+    ,"loop_ui"
+    ,"loop_ux"
+    ,"loop_states"
+    ,"harness_visual"
+    ,"harness_component"
+    ,"harness_ux"
+    ,"harness_engineering"
+    ,"done"
+  ],
+  "nextGate": "device_review_after_all_pages_local_complete",
+  "blockerAttempts": 0,
+  "blocker": null,
+  "evidence": {
+    "truth": "design/function-truth-table.md",
+    "context": "design/ui-product/pages/06-support-assistant/context.md",
+    "audit": "design/ui-product/pages/06-support-assistant/audit.md",
+    "ideate": "design/ui-product/pages/06-support-assistant/ideate.md",
+    "imagegen": "design/ui-product/pages/06-support-assistant/assets/imagegen-default-v1.png",
+    "imageReview": "design/ui-product/pages/06-support-assistant/image-review.md",
+    "figmaGapAnalysis": "design/ui-product/pages/06-support-assistant/figma-gap-analysis.md",
+    "figmaBoundarySection": "93:57",
+    "figmaBoundaryPending": "93:61",
+    "figmaBoundaryConsented": "93:62",
+    "figmaBoundaryPendingTitle": "94:57",
+    "figmaBoundaryPendingBody": "94:58",
+    "figmaBoundaryPendingAction": "94:59"
+    ,"figmaBoundaryConsentedTitle": "97:61"
+    ,"figmaBoundaryConsentedBody": "97:62"
+    ,"figmaBoundaryConsentedStatus": "98:61"
+    ,"figmaBoundaryConsentedCheck": "98:62"
+    ,"figmaBoundaryConsentedStatusText": "98:65"
+    ,"figmaBoundarySet": "99:61"
+    ,"figmaBoundaryTitleProperty": "Title#100:0"
+    ,"figmaBoundaryBodyProperty": "Body#100:3"
+    ,"figmaBoundaryStatusProperty": "Status#100:6"
+    ,"figmaConversationSection": "101:61"
+    ,"figmaConversationStage": "101:64"
+    ,"figmaConversationUser": "101:65"
+    ,"figmaConversationAssistant": "101:66"
+    ,"figmaConversationUserRole": "102:61"
+    ,"figmaConversationUserBody": "102:62"
+    ,"figmaConversationUserDivider": "102:63"
+    ,"figmaConversationAssistantRole": "103:61"
+    ,"figmaConversationAssistantBody": "103:62"
+    ,"figmaConversationAssistantSources": "104:61"
+    ,"figmaConversationAssistantSourcesText": "104:64"
+    ,"figmaConversationAssistantDivider": "104:65"
+    ,"figmaConversationSet": "105:61"
+    ,"figmaConversationRoleProperty": "RoleLabel#106:0"
+    ,"figmaConversationBodyProperty": "Body#106:3"
+    ,"figmaConversationShowSourcesProperty": "ShowSources#106:6"
+    ,"figmaConversationSourcesProperty": "Sources#106:9"
+    ,"figmaSupportScreens": ["107:1109", "107:1111", "107:1113", "107:1115", "107:1117", "107:1119", "107:1121", "107:1123", "107:1125", "107:1127"]
+    ,"figmaDisabledNotice": "112:1118"
+    ,"figmaComposerSection": "115:61"
+    ,"figmaComposerStage": "115:62"
+    ,"figmaComposerBases": ["116:63", "116:64", "116:65", "116:66"]
+    ,"figmaComposerSet": "120:69"
+    ,"figmaComposerProperties": ["Label#121:0", "Counter#121:5", "Text#121:10", "Error#121:15", "ShowError#121:20"]
+    ,"figmaReview": "design/ui-product/pages/06-support-assistant/figma-review.md"
+    ,"figmaDesignContextScreen": "107:1121"
+    ,"implementationReview": "design/ui-product/pages/06-support-assistant/code-review.md"
+  }
+}

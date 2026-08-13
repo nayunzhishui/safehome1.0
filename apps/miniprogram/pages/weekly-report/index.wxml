@@ -1,9 +1,7 @@
 <view class="safe-page weekly-page" role="main" aria-label="本周复盘">
-  <view class="weekly-hero safe-card safe-card--hero">
+  <view class="weekly-hero">
     <view class="hero-copy">
-      <text class="hero-kicker">本周复盘</text>
-      <text class="hero-title">看看这一周的小变化</text>
-      <text class="hero-summary">这不是评分，也不是判断。只是把记录和练习整理出来，帮你找到下周可以继续的一小步。</text>
+      <text class="hero-title">本周复盘</text>
     </view>
   </view>
 
@@ -20,11 +18,6 @@
   </view>
 
   <view wx:else class="weekly-content">
-    <view class="notice-card">
-      <text class="notice-title">过程复盘说明</text>
-      <text class="notice-text">周报是过程复盘，不是成绩单。这里不评价家长或孩子，只整理本周记录中的场景、情绪和练习情况。</text>
-    </view>
-
     <view class="profile-card">
       <text class="profile-title">阶段性画像线索</text>
       <text class="profile-text">

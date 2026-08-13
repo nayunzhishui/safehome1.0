@@ -1,0 +1,42 @@
+{
+  "route": "pages/messages/index",
+  "title": "消息",
+  "status": "local_complete",
+  "scope": {
+    "frontendOnly": true,
+    "backendChanges": false,
+    "apiChanges": false,
+    "databaseChanges": false
+  },
+  "completed": [
+    "truth",
+    "freeze",
+    "imagegen",
+    "image_review",
+    "figma",
+    "figma_review",
+    "implementation",
+    "loop_visual",
+    "loop_ui",
+    "loop_ux",
+    "loop_states",
+    "harness_visual",
+    "harness_component",
+    "harness_ux",
+    "harness_engineering",
+    "done"
+  ],
+  "nextGate": "device_review_after_all_pages_local_complete",
+  "blocker": null,
+  "evidence": {
+    "truth": "design/function-truth-table.md",
+    "context": "design/ui-product/pages/05-messages/context.md",
+    "audit": "design/ui-product/pages/05-messages/audit.md",
+    "ideate": "design/ui-product/pages/05-messages/ideate.md",
+    "imagegen": "design/ui-product/pages/05-messages/assets/imagegen-default-v2.png",
+    "imageReview": "design/ui-product/pages/05-messages/image-review.md",
+    "figmaGapAnalysis": "design/ui-product/pages/05-messages/figma-gap-analysis.md",
+    "figmaReview": "design/ui-product/pages/05-messages/figma-review.md",
+    "implementationReview": "design/ui-product/pages/05-messages/code-review.md"
+  }
+}

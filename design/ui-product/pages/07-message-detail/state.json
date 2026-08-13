@@ -1,0 +1,47 @@
+{
+  "route": "pages/message-detail/index",
+  "title": "消息详情",
+  "status": "local_complete",
+  "scope": {
+    "frontendOnly": true,
+    "backendChanges": false,
+    "apiChanges": false,
+    "databaseChanges": false
+  },
+  "completed": [
+    "truth",
+    "freeze",
+    "imagegen",
+    "image_review",
+    "figma",
+    "figma_review",
+    "implementation",
+    "loop_visual",
+    "loop_ui",
+    "loop_ux",
+    "loop_states",
+    "harness_visual",
+    "harness_component",
+    "harness_ux",
+    "harness_engineering",
+    "done"
+  ],
+  "nextGate": "device_acceptance_after_all_pages_local_complete",
+  "blockerAttempts": 0,
+  "blocker": null,
+  "evidence": {
+    "truth": "design/function-truth-table.md",
+    "context": "design/ui-product/pages/07-message-detail/context.md",
+    "audit": "design/ui-product/pages/07-message-detail/audit.md",
+    "ideate": "design/ui-product/pages/07-message-detail/ideate.md",
+    "imagegen": "design/ui-product/pages/07-message-detail/assets/imagegen-default-v1.png",
+    "imageReview": "design/ui-product/pages/07-message-detail/image-review.md",
+    "figmaGapAnalysis": "design/ui-product/pages/07-message-detail/figma-gap-analysis.md",
+    "figmaFeedbackRating": "138:69",
+    "figmaScreens": ["139:1243", "141:1257", "141:1271", "141:1285", "141:1299", "141:1313", "141:1327", "141:1341", "141:1355", "141:1369"],
+    "figmaReview": "design/ui-product/pages/07-message-detail/figma-review.md",
+    "figmaDesignContextScreen": "139:1243",
+    "accessibilityReview": "design/ui-product/pages/07-message-detail/accessibility-review.md",
+    "codeReview": "design/ui-product/pages/07-message-detail/code-review.md"
+  }
+}

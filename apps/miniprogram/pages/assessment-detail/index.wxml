@@ -6,7 +6,6 @@
   <view wx:elif="{{worksheet}}">
     <view class="assessment-detail-head">
       <text class="page-title">{{worksheet.display_title}}</text>
-      <text class="page-subtitle">{{worksheet.displaySourceText}} · {{worksheet.category}}</text>
     </view>
 
     <view class="instruction-block">

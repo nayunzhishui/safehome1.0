@@ -1,30 +1,49 @@
 <view class="safe-page auth-page" role="main" aria-label="注册">
-  <view class="safe-card auth-card">
-    <view class="safe-eyebrow">SafeHome</view>
-    <view class="safe-h1">注册</view>
-    <view class="safe-body">当前开放家长和学生账号。研究者、督导和管理员由项目负责人单独开通。</view>
-
-    <view class="field">
-      <text>用户名</text>
-      <input value="{{username}}" placeholder="至少 3 个字符" bindinput="onUsernameInput" />
-    </view>
-    <view class="field">
-      <text>密码</text>
-      <input value="{{password}}" password placeholder="至少 8 个字符" bindinput="onPasswordInput" />
-    </view>
-    <view class="field">
-      <text>角色</text>
-      <picker range="{{roleOptions}}" range-key="label" value="{{roleIndex}}" bindchange="onRoleChange">
-        <view class="picker-value">{{roleOptions[roleIndex].label}}</view>
-      </picker>
-    </view>
-    <view class="field">
-      <text>昵称（可选）</text>
-      <input value="{{nickname}}" placeholder="选填" bindinput="onNicknameInput" />
+  <view class="auth-shell">
+    <view class="auth-header">
+      <text class="auth-brand">SafeHome</text>
+      <text class="auth-title">创建账号</text>
     </view>
 
-    <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
-    <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitRegister">注册</button>
-    <button class="ghost-action" bindtap="goLogin">已有账号，去登录</button>
+    <view class="auth-form">
+      <view class="auth-section-title">账号信息</view>
+
+      <view class="field field-first">
+        <text class="field-label">用户名</text>
+        <input value="{{username}}" placeholder="请输入用户名" bindinput="onUsernameInput" />
+        <text class="field-helper">至少 3 个字符</text>
+      </view>
+
+      <view class="field">
+        <text class="field-label">密码</text>
+        <input value="{{password}}" password placeholder="请输入密码" bindinput="onPasswordInput" />
+        <text class="field-helper">至少 8 个字符</text>
+      </view>
+
+      <view class="field">
+        <text class="field-label">角色</text>
+        <picker
+          range="{{roleOptions}}"
+          range-key="label"
+          value="{{roleIndex}}"
+          bindchange="onRoleChange"
+          aria-label="选择角色，当前为{{roleOptions[roleIndex].label}}"
+        >
+          <view class="picker-value">
+            <text>{{roleOptions[roleIndex].label}}</text>
+            <image class="picker-chevron" src="/assets/icons/chevron-down.svg" mode="aspectFit" aria-hidden="true" />
+          </view>
+        </picker>
+      </view>
+
+      <view class="field">
+        <text class="field-label">昵称（可选）</text>
+        <input value="{{nickname}}" placeholder="选填" bindinput="onNicknameInput" />
+      </view>
+
+      <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
+      <button class="primary-action" loading="{{loading}}" disabled="{{loading}}" bindtap="submitRegister">注册</button>
+      <button class="ghost-action" bindtap="goLogin">已有账号，去登录</button>
+    </view>
   </view>
 </view>

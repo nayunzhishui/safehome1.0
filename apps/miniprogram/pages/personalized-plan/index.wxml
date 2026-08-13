@@ -1,10 +1,9 @@
 <view class="safe-page plan-page" role="main" aria-label="个性化训练方案">
   <view class="page-head">
     <text class="safe-h1">个性化训练方案</text>
-    <text class="safe-subtitle">根据最近测评和阶段性画像，推荐更适合先练的小动作。</text>
   </view>
 
-  <view class="safe-card assignment-panel">
+  <view class="assignment-panel">
     <view class="assignment-head">
       <view>
         <text class="safe-h3">安排练习节奏</text>
@@ -72,7 +71,7 @@
     <text class="item-boundary">{{assignment.boundary_notice || '练习节奏由用户自行设置，研究者共同确认前不代表正式干预安排。'}}</text>
   </view>
 
-  <view wx:if="{{plan && plan.assignment}}" class="safe-card reminder-panel">
+  <view wx:if="{{plan && plan.assignment}}" class="reminder-panel">
     <view class="reminder-head">
       <view class="reminder-icon"><text>提醒</text></view>
       <view class="reminder-copy">
@@ -113,13 +112,13 @@
     >前往微信设置</button>
   </view>
 
-  <view wx:if="{{!loading && plan && !plan.has_assessment}}" class="safe-card empty-card">
+  <view wx:if="{{!loading && plan && !plan.has_assessment}}" class="empty-card">
     <text class="safe-h3">{{plan.next_action.title}}</text>
     <text class="safe-body">{{plan.next_action.description}}</text>
     <button class="safe-primary-button" bindtap="openAssessment">去测一测</button>
   </view>
 
-  <view wx:for="{{planItems}}" wx:key="source_result_id" class="safe-card item-card">
+  <view wx:for="{{planItems}}" wx:key="source_result_id" class="item-card">
     <view class="item-head">
       <text class="item-tag">{{item.sourceLabel}}</text>
       <text class="item-source">{{item.source_worksheet.title}}</text>
@@ -127,28 +126,32 @@
     <text wx:if="{{item.cluster_name}}" class="item-title">{{item.cluster_name}}</text>
     <text class="item-reason">{{item.reason}}</text>
     <view class="card-list">
-      <button wx:for="{{item.cards}}" wx:for-item="card" wx:key="id" class="card-chip" data-card-id="{{card.id}}" bindtap="openSingleCard">
-        <view class="chip-copy">
-          <text class="chip-title">{{card.title}}</text>
-          <text wx:if="{{card.duration_minutes}}" class="chip-meta">{{card.duration_minutes}} 分钟</text>
-        </view>
-        <text class="chip-action">开始</text>
-      </button>
+      <training-task-card
+        wx:for="{{item.cards}}"
+        wx:for-item="card"
+        wx:key="id"
+        item-id="{{card.id}}"
+        title="{{card.title}}"
+        subtitle="{{card.purpose}}"
+        duration="{{card.duration_minutes ? card.duration_minutes + ' 分钟' : ''}}"
+        reason="{{item.reason}}"
+        bind:tapcard="openSingleCard"
+      />
     </view>
     <text class="item-boundary">{{item.boundary_notice}}</text>
   </view>
 
-  <view wx:if="{{loading}}" class="safe-card empty-card">
+  <view wx:if="{{loading}}" class="empty-card">
     <text class="safe-body">正在读取训练方案...</text>
   </view>
 
-  <view wx:if="{{!loading && errorMessage}}" class="safe-card empty-card">
+  <view wx:if="{{!loading && errorMessage}}" class="empty-card empty-card--error">
     <text class="safe-h3">暂时没能读取</text>
     <text class="safe-body">{{errorMessage}}</text>
     <button class="safe-primary-button" bindtap="loadPlan">重试</button>
   </view>
 
-  <view wx:if="{{!loading && plan && plan.has_assessment && !planItems.length}}" class="safe-card empty-card">
+  <view wx:if="{{!loading && plan && plan.has_assessment && !planItems.length}}" class="empty-card">
     <text class="safe-h3">{{plan.assignment && !plan.assignment.is_due_today ? '今天不用赶进度' : '暂未匹配到训练卡'}}</text>
     <text class="safe-body">{{plan.assignment && !plan.assignment.is_due_today ? plan.assignment.due_reason : '可以先从通用训练里选择一张最容易完成的卡。'}}</text>
   </view>

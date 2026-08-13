@@ -1,99 +1,162 @@
 .emergency-page {
-  padding-bottom: 72rpx;
+  padding: 80rpx 48rpx calc(320rpx + env(safe-area-inset-bottom));
 }
 
 .page-kicker,
 .page-title,
 .page-summary,
+.section-heading,
+.section-note,
+.action-number,
 .step-text,
-.warning-title,
-.warning-text {
+.boundary-title,
+.boundary-text {
   display: block;
 }
 
+.emergency-header {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  align-items: center;
+  text-align: center;
+}
+
 .page-kicker {
-  color: #9F3E38;
-  font-size: 24rpx;
-  font-weight: 850;
+  color: var(--experience-danger);
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 40rpx;
 }
 
 .page-title {
-  margin-top: 12rpx;
-  color: var(--safe-title);
-  font-size: 42rpx;
-  font-weight: 900;
+  color: var(--experience-ink);
+  font-size: 56rpx;
+  font-weight: 700;
+  line-height: 72rpx;
+  text-align: center;
 }
 
 .page-summary {
-  margin-top: 16rpx;
-  color: var(--safe-text);
-  font-size: 27rpx;
-  line-height: 1.75;
+  color: var(--experience-muted);
+  font-size: var(--experience-font-body);
+  line-height: 44rpx;
 }
 
-.step-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14rpx;
-  margin-top: 18rpx;
+.safety-rule {
+  width: 112rpx;
+  height: 4rpx;
+  background: var(--experience-danger);
 }
 
-.step-row {
-  display: flex;
-  gap: 18rpx;
-  align-items: flex-start;
-  padding: 20rpx 22rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
-}
-
-.step-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38rpx;
-  height: 38rpx;
-  flex: 0 0 38rpx;
-  border-radius: 50%;
-  background: var(--safe-primary-soft);
-  color: var(--safe-primary-deep);
-  font-size: 20rpx;
-  font-weight: 900;
-}
-
-.step-text {
-  color: var(--safe-text);
-  font-size: 26rpx;
+.safety-intro {
+  margin-top: 32rpx;
+  padding: 24rpx 0;
+  border-top: 1rpx solid var(--safe-border);
+  border-bottom: 1rpx solid var(--safe-border);
+  color: var(--experience-ink);
+  font-size: 28rpx;
   line-height: 1.65;
 }
 
-.warning-card {
-  padding: 24rpx 28rpx;
-  border: 1rpx solid rgba(215, 111, 103, 0.26);
-  border-radius: var(--safe-radius-md);
-  background: rgba(255, 244, 240, 0.92);
+.emergency-section {
+  margin-top: 48rpx;
 }
 
-.warning-title {
-  color: #9F3E38;
-  font-size: 27rpx;
-  font-weight: 900;
+.section-heading {
+  color: var(--experience-ink);
+  font-size: var(--experience-font-title);
+  font-weight: 700;
+  line-height: 56rpx;
 }
 
-.warning-text {
-  margin-top: 10rpx;
-  color: var(--safe-text);
-  font-size: 25rpx;
-  line-height: 1.75;
+.section-note {
+  margin-top: 16rpx;
+  color: var(--experience-muted);
+  font-size: var(--experience-font-caption);
+  line-height: 36rpx;
 }
 
-.bottom-action {
-  width: 100%;
+.action-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16rpx;
 }
 
-.bottom-actions {
-  display: grid;
+.action-row {
+  min-height: 160rpx;
+  display: flex;
+  gap: 32rpx;
+  align-items: flex-start;
+  padding: 32rpx 8rpx;
+  border-bottom: 1rpx solid var(--experience-line);
+}
+
+.action-number {
+  width: 100rpx;
+  flex: 0 0 100rpx;
+  color: var(--experience-primary-deep);
+  font-size: 44rpx;
+  font-weight: 700;
+  line-height: 60rpx;
+}
+
+.step-text {
+  min-width: 0;
+  flex: 1;
+  color: var(--experience-ink);
+  font-size: var(--experience-font-body);
+  line-height: 44rpx;
+  overflow-wrap: anywhere;
+}
+
+.boundary-note {
+  margin-top: 48rpx;
+  padding-top: 32rpx;
+}
+
+.boundary-rule {
+  height: 1rpx;
+  margin-bottom: 16rpx;
+  background: var(--experience-line);
+}
+
+.boundary-title {
+  color: var(--experience-ink);
+  font-size: 32rpx;
+  font-weight: 700;
+  line-height: 44rpx;
+}
+
+.boundary-text {
+  margin-top: 16rpx;
+  color: var(--experience-muted);
+  font-size: var(--experience-font-caption);
+  line-height: 36rpx;
+}
+
+.safety-action-dock {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
   gap: 16rpx;
-  margin-top: 32rpx;
+  padding: 32rpx 48rpx calc(40rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--experience-line);
+  background: var(--experience-surface);
+}
+
+.safety-action {
+  width: 100%;
+  border-radius: 32rpx;
+}
+
+@media (max-width: 340px) {
+  .action-number {
+    width: 84rpx;
+    flex-basis: 84rpx;
+  }
 }

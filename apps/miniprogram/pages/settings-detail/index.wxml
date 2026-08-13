@@ -1,8 +1,7 @@
 <view class="safe-page settings-detail-page" role="main" aria-label="设置详情">
-  <view class="safe-card safe-card--hero hero-card">
+  <view class="hero-card">
     <text class="hero-kicker">{{notice.kicker}}</text>
     <text class="hero-title">{{notice.title}}</text>
-    <text class="hero-summary">{{notice.subtitle}}</text>
   </view>
 
   <view wx:for="{{notice.sections}}" wx:key="title" class="safe-section">
@@ -16,7 +15,7 @@
   </view>
 
   <view wx:if="{{noticeType === 'protection'}}" class="safe-section">
-    <section-title title="保护状态" subtitle="年龄确认和未满14周岁保护以服务器状态为准。" />
+    <section-title title="保护状态" />
 
     <page-state
       wx:if="{{protectionLoading}}"
@@ -141,7 +140,7 @@
   </view>
 
   <view wx:if="{{noticeType === 'privacy'}}" class="safe-section privacy-control-section">
-    <section-title title="我的删除申请" subtitle="查看当前进度；尚未开始处理时可以主动取消。" />
+    <section-title title="我的删除申请" />
 
     <page-state
       wx:if="{{privacyLoading || privacyError}}"

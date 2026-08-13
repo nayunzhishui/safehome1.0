@@ -7,6 +7,33 @@
 
 .feedback-rating--compact { padding: 16rpx; }
 
+.feedback-rating--editorial {
+  padding: 40rpx;
+  border-radius: 32rpx;
+}
+
+.feedback-rating--editorial .feedback-rating-prompt {
+  font-size: 28rpx;
+  line-height: 1.43;
+}
+
+.feedback-rating--editorial .feedback-rating-options {
+  gap: 16rpx;
+  margin-top: 28rpx;
+}
+
+.feedback-rating--editorial .feedback-rating-option {
+  min-height: 88rpx;
+  padding: 10rpx 20rpx;
+  font-size: 24rpx;
+}
+
+.feedback-rating--editorial .feedback-rating-note {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
 .feedback-rating-prompt {
   display: block;
   color: var(--safe-title);

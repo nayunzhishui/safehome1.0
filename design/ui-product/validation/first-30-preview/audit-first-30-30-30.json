@@ -1,0 +1,19 @@
+{
+  "endpoint": "ws://127.0.0.1:9420",
+  "checked": 1,
+  "results": [
+    {
+      "index": 30,
+      "requested": "pages/therapeutic-assessment-quality/index",
+      "actual": "pages/login/index",
+      "routeOk": true,
+      "rootFound": true,
+      "headingFound": true,
+      "consoleErrors": 0,
+      "exceptions": 0,
+      "screenshot": "D:\\codex\\workspace\\safehome1.0-UIproduct\\design\\ui-product\\validation\\first-30-preview\\screenshots\\30-therapeutic-assessment-quality.png"
+    }
+  ],
+  "consoleErrors": [],
+  "exceptions": []
+}
