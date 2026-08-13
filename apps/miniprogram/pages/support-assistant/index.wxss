@@ -51,6 +51,16 @@
   line-height: 1.7;
 }
 
+.pipeline-note {
+  display: block;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid #e4ebe7;
+  color: #708079;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
 .boundary-card,
 .notice-card,
 .composer {

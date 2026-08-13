@@ -1,8 +1,9 @@
-<view class="page-shell" aria-label="支持性问答页面">
+<view class="page-shell" aria-label="{{eyebrow}}页面">
   <view class="intro-card">
-    <text class="eyebrow">支持性问答</text>
-    <text class="title">把问题缩小到下一步</text>
-    <text class="subtitle">只检索已审核内容，不评价你、孩子或关系的好坏。</text>
+    <text class="eyebrow">{{eyebrow}}</text>
+    <text class="title">{{title}}</text>
+    <text class="subtitle">{{subtitle}}</text>
+    <text class="pipeline-note">AI生成与RAG检索共用同一套边界、引用和降级规则。</text>
   </view>
 
   <page-state

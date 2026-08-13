@@ -13,13 +13,29 @@ Page({
     question: "",
     messages: [],
     error: "",
+    focus: "ai",
+    eyebrow: "AI支持性问答",
+    title: "把问题缩小到下一步",
+    subtitle: "AI只根据已审核知识整理回答，并显示参考来源。",
     boundary: "回答可能遗漏情境，不构成诊断、治疗、危机处置或关系判断。",
   },
 
-  onLoad() {
+  onLoad(options = {}) {
+    const focus = options.focus === "rag" ? "rag" : "ai";
+    const isRag = focus === "rag";
+    this.setData({
+      focus,
+      eyebrow: isRag ? "RAG知识库问答" : "AI支持性问答",
+      title: isRag ? "从已审核内容里找答案" : "把问题缩小到下一步",
+      subtitle: isRag
+        ? "先检索项目知识库，再整理为带参考来源的小步骤。"
+        : "AI只根据已审核知识整理回答，并显示参考来源。",
+    });
+    wx.setNavigationBarTitle({ title: isRag ? "RAG知识库问答" : "AI支持性问答" });
     if (!isLoggedIn()) {
+      const redirect = encodeURIComponent(`/pages/support-assistant/index?focus=${focus}`);
       wx.redirectTo({
-        url: "/pages/login/index?redirect=%2Fpages%2Fsupport-assistant%2Findex",
+        url: `/pages/login/index?redirect=${redirect}`,
       });
       return;
     }

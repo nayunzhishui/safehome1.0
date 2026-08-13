@@ -47,9 +47,21 @@ Page({
     ],
     supportEntries: [
       {
-        title: "支持性问答",
-        subtitle: "基于已审核内容整理一个可暂停的小步骤",
-        url: "/pages/support-assistant/index",
+        title: "协作式评估",
+        subtitle: "共同理解一次具体体验，不生成诊断结论",
+        url: "/pages/therapeutic-assessment/index",
+        private: true,
+      },
+      {
+        title: "AI支持性问答",
+        subtitle: "根据已审核内容整理一个可暂停的小步骤",
+        url: "/pages/support-assistant/index?focus=ai",
+        private: true,
+      },
+      {
+        title: "RAG知识库问答",
+        subtitle: "从项目知识库检索答案并显示参考来源",
+        url: "/pages/support-assistant/index?focus=rag",
         private: true,
       },
       {
