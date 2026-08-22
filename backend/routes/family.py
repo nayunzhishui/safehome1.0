@@ -19,6 +19,8 @@ from services.schema_migration_service import apply_pending_schema_migrations
 bp = Blueprint("family", __name__, url_prefix="/api/family")
 MAX_BIND_ATTEMPTS = 5
 BIND_CODE_EXPIRES_HOURS = 24
+BIND_GUESS_WINDOW_MINUTES = 10
+BIND_GUESS_LIMIT_PER_ACTOR = 10
 
 
 def _new_bind_code() -> str:
@@ -33,6 +35,42 @@ def _is_expired(expires_at: str | None, timestamp: str) -> bool:
     if not expires_at:
         return False
     return datetime.fromisoformat(expires_at) <= datetime.fromisoformat(timestamp)
+
+
+def _bind_guess_cutoff(timestamp: str) -> str:
+    return (
+        datetime.fromisoformat(timestamp) - timedelta(minutes=BIND_GUESS_WINDOW_MINUTES)
+    ).isoformat()
+
+
+def _bind_guess_failure_count(conn, actor_id: str, timestamp: str) -> int:
+    row = conn.execute(
+        """
+        SELECT COUNT(*) AS count
+        FROM audit_logs
+        WHERE actor_id = ?
+          AND action = 'family_bind_guess_failed'
+          AND created_at >= ?
+        """,
+        (actor_id, _bind_guess_cutoff(timestamp)),
+    ).fetchone()
+    return int(row["count"] if row else 0)
+
+
+def _record_bind_guess_failure(conn, actor_id: str, reason: str) -> None:
+    # Never store the submitted binding code or a reversible derivative of it.
+    write_audit_log(
+        conn,
+        action="family_bind_guess_failed",
+        actor_id=actor_id,
+        target_type="family_bind",
+        target_id=None,
+        metadata={
+            "route": "/api/family/bind-student",
+            "reason": reason,
+            "bind_code_logged": False,
+        },
+    )
 
 
 def _public_link(row: dict) -> dict:
@@ -103,8 +141,10 @@ def create_bind_code():
             "bind_code": bind_code,
             "status": "pending",
             "expires_at": expires_at,
-            "expires_policy": "绑定码 24 小时内有效，超过 5 次尝试后失效。",
+            "expires_policy": "绑定码 24 小时内有效；错误猜测会按学生账号窗口限流。",
             "max_attempts": MAX_BIND_ATTEMPTS,
+            "guess_window_minutes": BIND_GUESS_WINDOW_MINUTES,
+            "guess_limit_per_actor": BIND_GUESS_LIMIT_PER_ACTOR,
         }
     )
 
@@ -124,7 +164,7 @@ def bind_student():
     timestamp = now_iso()
     with get_connection() as conn:
         apply_pending_schema_migrations(conn)
-        # Plan A: establish the age boundary before binding.  Under-14 users
+        # Plan A: establish the age boundary before binding. Under-14 users
         # are still allowed to bind because this link is the prerequisite for
         # Plan B guardian consent.
         if safeguards_enforced():
@@ -140,13 +180,39 @@ def bind_student():
                     details=age_status,
                 )
 
+        failure_count = _bind_guess_failure_count(conn, str(actor["id"]), timestamp)
+        if failure_count >= BIND_GUESS_LIMIT_PER_ACTOR:
+            write_audit_log(
+                conn,
+                action="family_bind_guess_rate_limited",
+                actor_id=actor["id"],
+                target_type="family_bind",
+                target_id=None,
+                metadata={
+                    "route": "/api/family/bind-student",
+                    "window_minutes": BIND_GUESS_WINDOW_MINUTES,
+                    "limit": BIND_GUESS_LIMIT_PER_ACTOR,
+                    "bind_code_logged": False,
+                },
+            )
+            conn.commit()
+            return fail(
+                "bind_guess_rate_limited",
+                "绑定码尝试过于频繁，请稍后再试。",
+                status=429,
+            )
+
         row = conn.execute(
             "SELECT * FROM family_links WHERE bind_code = ? AND status = 'pending' ORDER BY created_at DESC LIMIT 1",
             (bind_code,),
         ).fetchone()
         if row is None:
+            _record_bind_guess_failure(conn, str(actor["id"]), "not_found")
+            conn.commit()
             return fail("not_found", "绑定码不存在或已失效", status=404)
         if int(row["attempt_count"] or 0) >= MAX_BIND_ATTEMPTS:
+            _record_bind_guess_failure(conn, str(actor["id"]), "link_attempt_limit")
+            conn.commit()
             return fail("too_many_attempts", "绑定码尝试次数过多，请家长重新生成。", status=429)
         if _is_expired(row["expires_at"], timestamp):
             conn.execute(
@@ -154,22 +220,33 @@ def bind_student():
                 UPDATE family_links
                 SET status = 'expired', attempt_count = attempt_count + 1,
                     last_attempt_at = ?, updated_at = ?
-                WHERE id = ?
+                WHERE id = ? AND status = 'pending'
                 """,
                 (timestamp, timestamp, row["id"]),
             )
+            _record_bind_guess_failure(conn, str(actor["id"]), "expired")
             conn.commit()
             return fail("bind_code_expired", "绑定码已过期，请家长重新生成。", status=410)
-        conn.execute(
+
+        # Atomic claim: a pending code can be consumed by only one student,
+        # even when two workers race after reading the same pending row.
+        cursor = conn.execute(
             """
             UPDATE family_links
             SET student_user_id = ?, status = 'active',
                 attempt_count = attempt_count + 1, last_attempt_at = ?,
                 confirmed_at = ?, updated_at = ?
-            WHERE id = ?
+            WHERE id = ? AND status = 'pending'
             """,
             (actor["id"], timestamp, timestamp, timestamp, row["id"]),
         )
+        if int(cursor.rowcount or 0) != 1:
+            conn.rollback()
+            return fail(
+                "bind_code_already_consumed",
+                "绑定码已被使用或刚刚失效，请家长重新生成。",
+                status=409,
+            )
         conn.execute(
             """
             INSERT INTO consent_records (
@@ -189,6 +266,9 @@ def bind_student():
                 str(row["parent_user_id"]),
             )
         except ParticipantSafeguardError as exc:
+            # Do not commit a half-bound family link when safeguard attachment
+            # fails after the atomic claim.
+            conn.rollback()
             return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
         write_audit_log(
             conn,
@@ -200,6 +280,7 @@ def bind_student():
                 "route": "/api/family/bind-student",
                 "parent_user_id": row["parent_user_id"],
                 "minor_safeguard_status": safeguard_status.get("status"),
+                "atomic_claim": True,
             },
         )
         conn.commit()
