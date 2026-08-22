@@ -1,6 +1,6 @@
 """Parent-student binding code endpoints."""
 
-import random
+import secrets
 from datetime import datetime, timedelta
 from flask import Blueprint, request
 
@@ -22,7 +22,7 @@ BIND_CODE_EXPIRES_HOURS = 24
 
 
 def _new_bind_code() -> str:
-    return f"{random.randint(0, 999999):06d}"
+    return f"{secrets.randbelow(1_000_000):06d}"
 
 
 def _expires_at(timestamp: str) -> str:
@@ -65,6 +65,16 @@ def create_bind_code():
     bind_code = _new_bind_code()
     with get_connection() as conn:
         apply_pending_schema_migrations(conn)
+        # Keep only one usable pending code per parent. Regeneration revokes
+        # older pending codes so leaked/stale codes cannot remain valid.
+        conn.execute(
+            """
+            UPDATE family_links
+            SET status = 'revoked', revoked_at = ?, updated_at = ?
+            WHERE parent_user_id = ? AND status = 'pending'
+            """,
+            (timestamp, timestamp, actor["id"]),
+        )
         while conn.execute("SELECT id FROM family_links WHERE bind_code = ? AND status = 'pending'", (bind_code,)).fetchone():
             bind_code = _new_bind_code()
         conn.execute(
@@ -84,7 +94,7 @@ def create_bind_code():
             actor_id=actor["id"],
             target_type="family_link",
             target_id=link_id,
-            metadata={"route": "/api/family/create-bind-code"},
+            metadata={"route": "/api/family/create-bind-code", "previous_pending_codes_revoked": True},
         )
         conn.commit()
     return ok(
@@ -226,7 +236,7 @@ def members():
                 """,
                 (actor["id"],),
             ).fetchall()
-        else:
+        elif actor["role"] == "admin":
             rows = conn.execute(
                 """
                 SELECT * FROM family_links
@@ -234,6 +244,12 @@ def members():
                 LIMIT 100
                 """
             ).fetchall()
+        else:
+            return fail(
+                "forbidden",
+                "当前后台角色没有全局家庭关系读取权限。",
+                status=403,
+            )
     return ok({"items": [_public_link(item) for item in rows_to_dicts(rows)]})
 
 
