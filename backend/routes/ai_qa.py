@@ -2,8 +2,14 @@
 
 from flask import Blueprint, current_app, request
 
+from database import get_connection
 from routes.auth_utils import route_actor as _actor
 from routes.utils import fail, ok
+from services.participant_safeguard_service import (
+    ParticipantSafeguardError,
+    public_status,
+    safeguards_enforced,
+)
 from services.ai_provider_governance_service import (
     list_provider_candidates,
     list_provider_evidence,
@@ -56,7 +62,30 @@ def _session_actor():
     roles = ["researcher", "supervisor", "admin"]
     if current_app.config.get("AI_QA_ENABLED", False):
         roles = ["parent", "student", *roles]
-    return _actor(*roles)
+    actor, error = _actor(*roles)
+    if error or not actor:
+        return actor, error
+    if actor.get("role") == "student" and safeguards_enforced():
+        try:
+            with get_connection() as conn:
+                status = public_status(conn, str(actor["id"]))
+        except ParticipantSafeguardError as exc:
+            return None, fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
+        if status.get("age_verification_required"):
+            return None, fail(
+                "age_verification_required",
+                "使用支持性问答前需要先完成年龄确认。",
+                status=403,
+                details=status,
+            )
+        if status.get("minor_safeguards_required") and status.get("status") != "active":
+            return None, fail(
+                "minor_safeguards_required",
+                "未满14周岁参与者需要先完成监护人授权和儿童确认，才能使用支持性问答。",
+                status=403,
+                details=status,
+            )
+    return actor, None
 
 
 def _response(callback):
