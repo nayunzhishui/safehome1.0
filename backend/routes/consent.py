@@ -3,7 +3,7 @@
 from flask import Blueprint, request
 
 from database import get_connection, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
-from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
+from routes.auth_utils import AuthError, auth_error_response, get_current_actor, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool
 from services.participant_safeguard_service import (
     ParticipantSafeguardError,
@@ -29,6 +29,35 @@ ALLOWED_CONSENT_TYPES = {
 }
 
 DEFAULT_CONSENT_VERSION = "2026.07-consent-v2"
+
+
+@bp.before_app_request
+def enforce_researcher_sensitive_read_containment():
+    """Fail closed known researcher bypasses until scoped policy is authoritative.
+
+    The admin assessment-results route exposes raw answers/scores and the legacy
+    admin export route still has opt-out consent semantics for several research
+    export types.  Researcher access is therefore disabled at the application
+    boundary.  Admin operational access remains unchanged; researcher access
+    must move to capability-, assignment- and explicit-consent-scoped services.
+    """
+
+    if request.method != "GET" or request.path not in {
+        "/api/admin/assessment-results",
+        "/api/admin/export",
+    }:
+        return None
+    try:
+        actor = get_current_actor(allow_legacy_admin=False)
+    except AuthError as exc:
+        return auth_error_response(exc)
+    if actor and actor.get("role") == "researcher":
+        return fail(
+            "researcher_sensitive_read_disabled",
+            "研究者原始测评读取和旧研究导出已临时关闭，请使用完成显式授权校验的受控研究数据接口。",
+            status=403,
+        )
+    return None
 
 
 def get_latest_consent(conn, user_id: str, consent_type: str) -> dict | None:
