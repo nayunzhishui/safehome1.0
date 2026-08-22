@@ -11,7 +11,14 @@ from __future__ import annotations
 
 from copy import deepcopy
 
-from database import get_connection, json_dumps, json_loads, row_to_dict, write_audit_log
+from database import (
+    get_connection,
+    json_dumps,
+    json_loads,
+    now_iso,
+    row_to_dict,
+    write_audit_log,
+)
 from services.ai_qa_service import get_session as core_get_session
 from services.ai_qa_service import send_message as core_send_message
 
@@ -53,61 +60,61 @@ def _requirement(scope: dict) -> tuple[str, str]:
     return "feedback_draft", "T2"
 
 
-def _normalize_review_case(actor: dict, result: dict) -> dict | None:
-    case_id = str(result.get("review_case_id") or "")
-    message = result.get("message") if isinstance(result, dict) else None
-    if not case_id or not isinstance(message, dict):
-        return None
+def _normalize_case_row(actor: dict, message: dict, case: dict) -> dict:
+    """Normalize a pending participant review case to the true recipient scope."""
+
+    if str(case.get("recipient_user_id") or "") != str(actor.get("id") or ""):
+        return case
+    if str(case.get("message_id") or "") != str(message.get("id") or ""):
+        return case
+    if str(case.get("status") or "") != "pending_review":
+        return case
+
+    scope = json_loads(case.get("scope_json"), {})
+    existing_scope = dict(scope) if isinstance(scope, dict) else {}
+    role = str(actor.get("role") or "")
+    involves_minor = role == "student"
+    scope.update(
+        {
+            "object_scope": (
+                "individual_student_support"
+                if involves_minor
+                else "individual_parent_support"
+            ),
+            "risk_level": _derived_risk(message, existing_scope),
+            # A student role is conservatively treated as involving a minor;
+            # the current age model only distinguishes under-14 vs 14+, so
+            # 14+ cannot be safely equated with legal adulthood.
+            "involves_minor": involves_minor,
+            "participant_role": role,
+            "pre_publication_review_required": True,
+        }
+    )
+    required_task, required_competency = _requirement(scope)
+    timestamp = now_iso()
 
     with get_connection() as conn:
-        row = conn.execute(
-            "SELECT * FROM ai_qa_review_cases WHERE id = ?",
-            (case_id,),
-        ).fetchone()
-        if row is None:
-            return None
-        case = row_to_dict(row)
-        if str(case.get("recipient_user_id") or "") != str(actor.get("id") or ""):
-            return None
-        if str(case.get("message_id") or "") != str(message.get("id") or ""):
-            return None
-
-        scope = json_loads(case.get("scope_json"), {})
-        existing_scope = dict(scope) if isinstance(scope, dict) else {}
-        role = str(actor.get("role") or "")
-        involves_minor = role == "student"
-        scope.update(
-            {
-                "object_scope": (
-                    "individual_student_support"
-                    if involves_minor
-                    else "individual_parent_support"
-                ),
-                "risk_level": _derived_risk(message, existing_scope),
-                # A student role is conservatively treated as involving a minor;
-                # the current age model only distinguishes under-14 vs 14+, so
-                # 14+ cannot be safely equated with legal adulthood.
-                "involves_minor": involves_minor,
-                "participant_role": role,
-                "pre_publication_review_required": True,
-            }
-        )
-        required_task, required_competency = _requirement(scope)
         conn.execute(
             """
             UPDATE ai_qa_review_cases
             SET scope_json = ?, required_task_code = ?, required_competency = ?,
-                updated_at = updated_at
+                updated_at = ?
             WHERE id = ? AND status = 'pending_review'
             """,
-            (json_dumps(scope), required_task, required_competency, case_id),
+            (
+                json_dumps(scope),
+                required_task,
+                required_competency,
+                timestamp,
+                case["id"],
+            ),
         )
         write_audit_log(
             conn,
             "ai_qa_participant_review_scope_normalized",
             str(actor["id"]),
             "ai_qa_review_case",
-            case_id,
+            str(case["id"]),
             {
                 "participant_role": role,
                 "involves_minor": involves_minor,
@@ -120,9 +127,25 @@ def _normalize_review_case(actor: dict, result: dict) -> dict | None:
         conn.commit()
         updated = conn.execute(
             "SELECT * FROM ai_qa_review_cases WHERE id = ?",
-            (case_id,),
+            (case["id"],),
         ).fetchone()
     return row_to_dict(updated)
+
+
+def _normalize_review_case(actor: dict, result: dict) -> dict | None:
+    case_id = str(result.get("review_case_id") or "")
+    message = result.get("message") if isinstance(result, dict) else None
+    if not case_id or not isinstance(message, dict):
+        return None
+
+    with get_connection() as conn:
+        row = conn.execute(
+            "SELECT * FROM ai_qa_review_cases WHERE id = ?",
+            (case_id,),
+        ).fetchone()
+    if row is None:
+        return None
+    return _normalize_case_row(actor, message, row_to_dict(row))
 
 
 def _delivery_view(message: dict, case: dict | None) -> dict:
@@ -171,7 +194,11 @@ def send_participant_delivery_message(actor: dict, session_id: str, payload: dic
         result = dict(result)
         result["message"] = _delivery_view(result["message"], case)
         if case is not None:
-            result["route"] = "pending_human_review" if case.get("status") == "pending_review" else result.get("route")
+            result["route"] = (
+                "pending_human_review"
+                if case.get("status") == "pending_review"
+                else result.get("route")
+            )
             result["human_escalation"] = True
             result["candidate_withheld"] = case.get("status") == "pending_review"
     return result
@@ -186,20 +213,29 @@ def get_participant_delivery_session(actor: dict, session_id: str) -> dict:
     if not isinstance(messages, list) or not messages:
         return session
 
-    message_ids = [
-        str(item.get("id"))
+    assistant_messages = {
+        str(item.get("id")): item
         for item in messages
-        if isinstance(item, dict) and item.get("role") == "assistant" and item.get("id")
-    ]
+        if isinstance(item, dict)
+        and item.get("role") == "assistant"
+        and item.get("id")
+    }
     cases_by_message: dict[str, dict] = {}
-    if message_ids:
+    if assistant_messages:
+        message_ids = list(assistant_messages)
         placeholders = ",".join("?" for _ in message_ids)
         with get_connection() as conn:
             rows = conn.execute(
                 f"SELECT * FROM ai_qa_review_cases WHERE message_id IN ({placeholders})",
                 message_ids,
             ).fetchall()
-            cases_by_message = {str(row["message_id"]): row_to_dict(row) for row in rows}
+        for row in rows:
+            case = row_to_dict(row)
+            message_id = str(case["message_id"])
+            message = assistant_messages.get(message_id)
+            if message is not None:
+                case = _normalize_case_row(actor, message, case)
+            cases_by_message[message_id] = case
 
     result = dict(session)
     result["messages"] = [
