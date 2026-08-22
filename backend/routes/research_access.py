@@ -12,7 +12,10 @@ from services.research_access_service import (
     list_assignments,
     update_assignment,
 )
-from services.research_sensitive_access_service import list_authorized_assessment_summaries
+from services.research_sensitive_access_service import (
+    list_authorized_assessment_summaries,
+    list_authorized_participants,
+)
 
 
 bp = Blueprint("research_access", __name__, url_prefix="/api/research/access")
@@ -90,6 +93,18 @@ def claim_enrollment_route(enrollment_id: str):
         enrollment_id,
         request.headers.get("Idempotency-Key", ""),
     )
+
+
+@bp.get("/participants")
+def authorized_participants_route():
+    """List only assigned participants with current explicit research opt-in."""
+
+    actor, error = _actor()
+    if error:
+        return error
+    limit = parse_int(request.args.get("limit"), 100)
+    limit = 100 if limit is None else max(1, min(limit, 200))
+    return _respond(list_authorized_participants, actor, limit)
 
 
 @bp.get("/enrollments/<enrollment_id>/assessment-summaries")
