@@ -88,6 +88,15 @@ jobs:
           RAG_EMBEDDING_PROVIDER: hash
         run: python -m pytest backend/tests/test_security_p0_boundary_fixes.py -q
 
+      - name: P1 network boundary security regressions
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: sqlite
+          CONTENT_DIR: ${{ github.workspace }}/content
+          REDIS_ENABLED: "0"
+          RAG_EMBEDDING_PROVIDER: hash
+        run: python -m pytest backend/tests/test_security_p1_network_boundaries.py -q
+
       - name: Inherited security compatibility regressions
         env:
           APP_ENV: testing
