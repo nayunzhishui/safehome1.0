@@ -1,11 +1,13 @@
 """Fail-closed researcher access to participant-derived sensitive data.
 
 This service is the authoritative bridge between researcher capabilities,
-object-scope assignments and explicit participant research authorization.  It
-intentionally returns minimized summaries rather than raw answer payloads.
+object-scope assignments and explicit participant research authorization. It
+returns minimized summaries rather than raw participant payloads.
 """
 
 from __future__ import annotations
+
+import hashlib
 
 from database import get_connection, row_to_dict, rows_to_dicts, write_audit_log
 from services.participant_safeguard_service import (
@@ -22,6 +24,10 @@ from services.research_access_service import (
 
 
 EXPLICIT_RESEARCH_CONSENT_TYPE = "research_authorization"
+
+
+def _anonymous_subject_id(user_id: str) -> str:
+    return "anon_" + hashlib.sha256(str(user_id).encode("utf-8")).hexdigest()[:12]
 
 
 def _latest_explicit_research_consent(conn, user_id: str) -> dict | None:
@@ -96,6 +102,88 @@ def _authorized_enrollment(conn, actor: dict, enrollment_id: str, capability_id:
     return enrollment
 
 
+def list_authorized_participants(actor: dict, limit: int) -> dict:
+    """List only assigned, explicitly opted-in participants using minimal fields."""
+
+    capability_id = "research.participant.read"
+    assert_capability(actor, capability_id)
+    limit = max(1, min(int(limit), 200))
+
+    with get_connection() as conn:
+        if actor.get("role") == "admin":
+            rows = conn.execute(
+                """
+                SELECT e.id, e.user_id, e.status, e.review_status,
+                       e.worksheet_id, e.profile_model_id, e.created_at
+                FROM relationship_pilot_enrollments e
+                WHERE e.status IN ('enrolled', 'active')
+                ORDER BY e.created_at DESC, e.id DESC
+                LIMIT ?
+                """,
+                (limit * 3,),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """
+                SELECT e.id, e.user_id, e.status, e.review_status,
+                       e.worksheet_id, e.profile_model_id, e.created_at
+                FROM relationship_pilot_enrollments e
+                JOIN research_scope_assignments a
+                  ON a.enrollment_id = e.id
+                 AND a.actor_id = ?
+                 AND a.status = 'active'
+                WHERE e.status IN ('enrolled', 'active')
+                ORDER BY e.created_at DESC, e.id DESC
+                LIMIT ?
+                """,
+                (str(actor["id"]), limit * 3),
+            ).fetchall()
+
+        items: list[dict] = []
+        for raw in rows:
+            enrollment = row_to_dict(raw)
+            user_id = str(enrollment["user_id"])
+            try:
+                require_explicit_research_authorization(conn, user_id)
+            except ResearchAccessError:
+                continue
+            items.append(
+                {
+                    "enrollment_id": enrollment["id"],
+                    "anonymous_id": _anonymous_subject_id(user_id),
+                    "status": enrollment.get("status"),
+                    "review_status": enrollment.get("review_status"),
+                    "worksheet_id": enrollment.get("worksheet_id"),
+                    "profile_model_id": enrollment.get("profile_model_id"),
+                    "created_at": enrollment.get("created_at"),
+                }
+            )
+            if len(items) >= limit:
+                break
+
+        write_audit_log(
+            conn,
+            "research_authorized_participants_viewed",
+            str(actor["id"]),
+            "research_participant_list",
+            "authorized",
+            {
+                "capability": capability_id,
+                "row_count": len(items),
+                "explicit_research_authorization_required": True,
+                "direct_user_ids_returned": False,
+            },
+        )
+        conn.commit()
+
+    return {
+        "items": items,
+        "count": len(items),
+        "limit": limit,
+        "boundary_notice": "仅列出当前分配范围内且已有明确研究授权的参与者，并使用匿名化标识。",
+    }
+
+
 def list_authorized_assessment_summaries(actor: dict, enrollment_id: str, limit: int) -> dict:
     """Return only minimized assessment summaries for an authorized enrollment.
 
@@ -142,6 +230,7 @@ def list_authorized_assessment_summaries(actor: dict, enrollment_id: str, limit:
 
     return {
         "enrollment_id": enrollment_id,
+        "anonymous_id": _anonymous_subject_id(user_id),
         "anonymous_scope": True,
         "items": items,
         "count": len(items),
