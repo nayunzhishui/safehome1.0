@@ -10,6 +10,8 @@ from services.participant_safeguard_service import (
     public_status,
     safeguards_enforced,
 )
+from services.research_access_service import ResearchAccessError
+from services.research_sensitive_access_service import require_explicit_research_authorization
 
 bp = Blueprint("consent", __name__, url_prefix="/api/consent")
 
@@ -29,34 +31,78 @@ ALLOWED_CONSENT_TYPES = {
 }
 
 DEFAULT_CONSENT_VERSION = "2026.07-consent-v2"
+LEGACY_RESEARCH_EXPORT_TYPES_REQUIRING_SUBJECT = {
+    "profile",
+    "student_profiles",
+    "records",
+    "student_followups",
+    "sandplay",
+    "parent_assessments",
+}
+LEGACY_RESEARCH_EXPORT_TYPES_BLOCKED = {"raw_wide", "long"}
+
+
+def _legacy_research_workspace_path(path: str) -> bool:
+    return path == "/api/research/participants" or path.startswith("/api/research/participants/")
 
 
 @bp.before_app_request
-def enforce_researcher_sensitive_read_containment():
-    """Fail closed known researcher bypasses until scoped policy is authoritative.
+def enforce_sensitive_research_read_boundary():
+    """Fail closed legacy research paths that do not enforce explicit opt-in.
 
-    The admin assessment-results route exposes raw answers/scores and the legacy
-    admin export route still has opt-out consent semantics for several research
-    export types.  Researcher access is therefore disabled at the application
-    boundary.  Admin operational access remains unchanged; researcher access
-    must move to capability-, assignment- and explicit-consent-scoped services.
+    Researchers must use `/api/research/access/*`, where capability, object
+    assignment and current `research_authorization` are checked together.
+    Admin exports of participant-derived research data are also subject-scoped
+    and explicit-opt-in; bulk raw/long legacy exports stay closed until a
+    purpose-scoped replacement exists.
     """
 
-    if request.method != "GET" or request.path not in {
-        "/api/admin/assessment-results",
-        "/api/admin/export",
-    }:
+    if request.method != "GET":
         return None
+
+    is_admin_raw_results = request.path == "/api/admin/assessment-results"
+    is_admin_export = request.path == "/api/admin/export"
+    is_legacy_workspace = _legacy_research_workspace_path(request.path)
+    if not (is_admin_raw_results or is_admin_export or is_legacy_workspace):
+        return None
+
     try:
-        actor = get_current_actor(allow_legacy_admin=False)
+        actor = get_current_actor(allow_legacy_admin=True)
     except AuthError as exc:
         return auth_error_response(exc)
+
     if actor and actor.get("role") == "researcher":
         return fail(
             "researcher_sensitive_read_disabled",
-            "研究者原始测评读取和旧研究导出已临时关闭，请使用完成显式授权校验的受控研究数据接口。",
+            "旧研究数据读取路径已关闭。请使用 /api/research/access 下经过 capability、分配范围和明确研究授权校验的接口。",
             status=403,
         )
+
+    if not is_admin_export or not actor or actor.get("role") != "admin":
+        return None
+
+    export_type = str(request.args.get("type") or "diaries").strip()
+    if export_type in LEGACY_RESEARCH_EXPORT_TYPES_BLOCKED:
+        return fail(
+            "scoped_research_export_required",
+            "raw_wide/long 旧批量研究导出已关闭；请迁移到目的限定、参与者范围明确的受控导出流程。",
+            status=403,
+        )
+    if export_type not in LEGACY_RESEARCH_EXPORT_TYPES_REQUIRING_SUBJECT:
+        return None
+
+    user_id = str(request.args.get("user_id") or "").strip()
+    if not user_id:
+        return fail(
+            "research_subject_scope_required",
+            "参与者衍生研究数据导出必须明确指定 user_id，并通过当前研究授权校验。",
+            status=400,
+        )
+    try:
+        with get_connection() as conn:
+            require_explicit_research_authorization(conn, user_id)
+    except ResearchAccessError as exc:
+        return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
     return None
 
 
@@ -77,7 +123,7 @@ def get_latest_consent(conn, user_id: str, consent_type: str) -> dict | None:
 def create_consent_record():
     payload = request.get_json(silent=True) or {}
     try:
-        # The token actor is authoritative.  user_id in a participant payload
+        # The token actor is authoritative. user_id in a participant payload
         # is compatibility metadata only and cannot impersonate another user.
         user_id = resolve_actor_user_id(payload=payload, allow_legacy_admin=False, allow_dev_fallback=True)
     except AuthError as exc:
@@ -97,8 +143,7 @@ def create_consent_record():
 
     # AI consent is not sufficient by itself for an under-14 participant.
     # In enforced environments, the guardian relationship, guardian consent
-    # and child assent must already be active before an affirmative AI consent
-    # can be recorded. This closes the generic-consent bypass into AI routes.
+    # and child assent must already be active before affirmative AI consent.
     if consent_type == "ai_assistance" and agreed and safeguards_enforced():
         try:
             with get_connection() as conn:
