@@ -1,6 +1,10 @@
 """Internal Task 31 security, privacy, and abuse-control endpoints."""
 
-from flask import Blueprint, request
+import hmac
+import json
+import os
+
+from flask import Blueprint, current_app, request
 
 from routes.auth_utils import route_actor as _actor
 from routes.utils import fail, ok
@@ -15,6 +19,59 @@ from services.security_control_service import (
 
 
 bp = Blueprint("security_controls", __name__, url_prefix="/api/security")
+INTERNAL_HEALTH_TOKEN_ENV = "INTERNAL_HEALTH_TOKEN"
+INTERNAL_HEALTH_HEADER = "X-Internal-Health-Token"
+
+
+def _production() -> bool:
+    return str(current_app.config.get("APP_ENV") or "").strip().lower() == "production"
+
+
+def _valid_internal_health_token() -> bool:
+    expected = str(os.environ.get(INTERNAL_HEALTH_TOKEN_ENV) or "").strip()
+    supplied = str(request.headers.get(INTERNAL_HEALTH_HEADER) or "").strip()
+    return bool(expected and supplied and hmac.compare_digest(expected, supplied))
+
+
+@bp.before_app_request
+def protect_deep_health_details():
+    """Keep deep operational readiness details off the anonymous production edge.
+
+    `/readyz` remains available to infrastructure probes but is redacted by the
+    after-request hook below. `/healthz/deep` exposes its detailed payload only
+    to a deployment-injected internal health token. Development/testing retain
+    the existing detailed behavior for diagnostics and tests.
+    """
+
+    if not _production() or request.path != "/healthz/deep":
+        return None
+    if _valid_internal_health_token():
+        return None
+    return fail(
+        "not_found",
+        "没有找到对应接口。",
+        status=404,
+    )
+
+
+@bp.after_app_request
+def redact_public_production_readiness(response):
+    """Expose only readiness truth, not database/content/backlog internals."""
+
+    if not _production() or request.path != "/readyz":
+        return response
+    payload = response.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return response
+    minimal = {
+        "ok": bool(payload.get("ok")),
+        "service": payload.get("service") or "safehome-backend",
+        "version": payload.get("version"),
+    }
+    response.set_data(json.dumps(minimal, ensure_ascii=False, separators=(",", ":")))
+    response.headers["Content-Type"] = "application/json; charset=utf-8"
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 def _response(callback):
