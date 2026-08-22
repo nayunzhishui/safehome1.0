@@ -10,6 +10,10 @@ from services.participant_safeguard_service import (
     public_status,
     safeguards_enforced,
 )
+from services.ai_participant_delivery_service import (
+    get_participant_delivery_session,
+    send_participant_delivery_message,
+)
 from services.ai_provider_governance_service import (
     list_provider_candidates,
     list_provider_evidence,
@@ -23,14 +27,12 @@ from services.ai_qa_service import (
     delete_session,
     get_config_status,
     get_use_case_catalog,
-    get_session,
     list_review_evidence,
     list_sessions,
     purge_expired_synthetic_data,
     review_evaluation,
     run_evaluation,
     save_feedback,
-    send_message,
 )
 from services.ai_qa_retrieval_service import (
     KnowledgeError,
@@ -235,7 +237,7 @@ def ai_qa_session_detail(session_id: str):
     actor, error = _session_actor()
     if error:
         return error
-    return _response(lambda: get_session(actor, session_id))
+    return _response(lambda: get_participant_delivery_session(actor, session_id))
 
 
 @bp.delete("/sessions/<session_id>")
@@ -252,7 +254,7 @@ def ai_qa_message_create(session_id: str):
     if error:
         return error
     payload = request.get_json(silent=True) or {}
-    return _response(lambda: send_message(actor, session_id, payload))
+    return _response(lambda: send_participant_delivery_message(actor, session_id, payload))
 
 
 @bp.post("/messages/<message_id>/feedback")
