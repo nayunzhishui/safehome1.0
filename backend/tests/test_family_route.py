@@ -1,4 +1,5 @@
 import importlib
+import json
 import sys
 from pathlib import Path
 
@@ -47,6 +48,8 @@ def test_parent_creates_expiring_bind_code_and_student_binds(tmp_path, monkeypat
     assert len(created["bind_code"]) == 6
     assert created["expires_at"]
     assert created["max_attempts"] == 5
+    assert created["guess_window_minutes"] == 10
+    assert created["guess_limit_per_actor"] == 10
 
     bind = client.post(
         "/api/family/bind-student",
@@ -106,3 +109,84 @@ def test_bind_code_attempt_limit_returns_429(tmp_path, monkeypatch):
     )
     assert bind.status_code == 429
     assert bind.get_json()["error"]["code"] == "too_many_attempts"
+
+
+def test_nonexistent_bind_code_guesses_are_rate_limited_per_student(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    student_id, student_token = _register(client, "guess-limited-student", "student")
+    headers = {"Authorization": f"Bearer {student_token}"}
+
+    submitted_codes = []
+    for index in range(10):
+        code = f"{700000 + index:06d}"
+        submitted_codes.append(code)
+        response = client.post(
+            "/api/family/bind-student",
+            headers=headers,
+            json={"bind_code": code},
+        )
+        assert response.status_code == 404
+
+    blocked = client.post(
+        "/api/family/bind-student",
+        headers=headers,
+        json={"bind_code": "700099"},
+    )
+    assert blocked.status_code == 429
+    assert blocked.get_json()["error"]["code"] == "bind_guess_rate_limited"
+
+    import database
+
+    with database.get_connection() as conn:
+        failures = conn.execute(
+            """
+            SELECT metadata_json FROM audit_logs
+            WHERE actor_id = ? AND action = 'family_bind_guess_failed'
+            ORDER BY created_at ASC
+            """,
+            (student_id,),
+        ).fetchall()
+        limited = conn.execute(
+            """
+            SELECT metadata_json FROM audit_logs
+            WHERE actor_id = ? AND action = 'family_bind_guess_rate_limited'
+            """,
+            (student_id,),
+        ).fetchall()
+
+    assert len(failures) == 10
+    assert len(limited) == 1
+    all_metadata = " ".join(row["metadata_json"] for row in [*failures, *limited])
+    for code in submitted_codes:
+        assert code not in all_metadata
+    assert "700099" not in all_metadata
+    assert all(json.loads(row["metadata_json"])["bind_code_logged"] is False for row in failures)
+
+
+def test_regenerating_bind_code_revokes_previous_pending_code(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    _, parent_token = _register(client, "regenerate-parent", "parent")
+    _, student_token = _register(client, "regenerate-student", "student")
+    parent_headers = {"Authorization": f"Bearer {parent_token}"}
+
+    first = client.post("/api/family/create-bind-code", headers=parent_headers)
+    second = client.post("/api/family/create-bind-code", headers=parent_headers)
+    first_code = first.get_json()["data"]["bind_code"]
+    second_code = second.get_json()["data"]["bind_code"]
+    assert first_code != second_code
+
+    old = client.post(
+        "/api/family/bind-student",
+        headers={"Authorization": f"Bearer {student_token}"},
+        json={"bind_code": first_code},
+    )
+    assert old.status_code == 404
+
+    current = client.post(
+        "/api/family/bind-student",
+        headers={"Authorization": f"Bearer {student_token}"},
+        json={"bind_code": second_code},
+    )
+    assert current.status_code == 200
