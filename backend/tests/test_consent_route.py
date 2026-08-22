@@ -174,7 +174,10 @@ def test_profile_records_consent_summary_and_exports_status(tmp_path, monkeypatc
     detail = detail_response.get_json()["data"]
     assert detail["report"]["consent_summary"]["research_authorization"]["status"] == "agreed"
 
-    export_response = client.get("/api/admin/export?type=profile", headers={"X-Admin-Token": "safehome-local-admin-token"})
+    export_response = client.get(
+        "/api/admin/export?type=profile&user_id=student-consent",
+        headers={"X-Admin-Token": "safehome-local-admin-token"},
+    )
     assert export_response.status_code == 200
     csv_text = export_response.get_data(as_text=True)
     assert "research_authorization_status" in csv_text
@@ -223,7 +226,10 @@ def test_parent_assessment_research_consent_syncs_consent_record_and_export(tmp_
     records = consent_response.get_json()["data"]["items"]
     assert any(item["consent_type"] == "research_authorization" and item["agreed"] == 1 for item in records)
 
-    export_response = client.get("/api/admin/export?type=parent_assessments", headers={"X-Admin-Token": "safehome-local-admin-token"})
+    export_response = client.get(
+        "/api/admin/export?type=parent_assessments&user_id=parent-consent-assessment",
+        headers={"X-Admin-Token": "safehome-local-admin-token"},
+    )
     assert export_response.status_code == 200
     csv_text = export_response.get_data(as_text=True)
     assert "research_consent_status" in csv_text
