@@ -3,7 +3,7 @@
 from flask import Blueprint, request
 
 from routes.auth_utils import AuthError, auth_error_response, elevate_actor_for_showcase_researcher_platform, require_login
-from routes.utils import fail, ok
+from routes.utils import fail, ok, parse_int
 from services.research_access_service import (
     ResearchAccessError,
     capability_summary,
@@ -12,6 +12,7 @@ from services.research_access_service import (
     list_assignments,
     update_assignment,
 )
+from services.research_sensitive_access_service import list_authorized_assessment_summaries
 
 
 bp = Blueprint("research_access", __name__, url_prefix="/api/research/access")
@@ -89,3 +90,15 @@ def claim_enrollment_route(enrollment_id: str):
         enrollment_id,
         request.headers.get("Idempotency-Key", ""),
     )
+
+
+@bp.get("/enrollments/<enrollment_id>/assessment-summaries")
+def authorized_assessment_summaries_route(enrollment_id: str):
+    """Read minimized assessment summaries through capability + scope + opt-in."""
+
+    actor, error = _actor()
+    if error:
+        return error
+    limit = parse_int(request.args.get("limit"), 100)
+    limit = 100 if limit is None else max(1, min(limit, 200))
+    return _respond(list_authorized_assessment_summaries, actor, enrollment_id, limit)
