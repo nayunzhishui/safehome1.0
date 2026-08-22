@@ -79,6 +79,15 @@ jobs:
           RAG_EMBEDDING_PROVIDER: hash
         run: python -m pytest backend/tests/test_engineering_ai_runtime_20260807.py -q
 
+      - name: P0 boundary security regressions
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: sqlite
+          CONTENT_DIR: ${{ github.workspace }}/content
+          REDIS_ENABLED: "0"
+          RAG_EMBEDDING_PROVIDER: hash
+        run: python -m pytest backend/tests/test_security_p0_boundary_fixes.py -q
+
       - name: Inherited security compatibility regressions
         env:
           APP_ENV: testing
