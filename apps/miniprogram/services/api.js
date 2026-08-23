@@ -106,6 +106,7 @@ const API_ENDPOINTS = {
   assessmentResults: "/api/assessment-results",
   assessmentProfilePositionBase: "/api/assessment-results/:id/profile-position",
   consent: "/api/consent",
+  consentAnnotationBase: "/api/consent/:id/annotations",
   profile: "/api/profile",
   profileStats: "/api/profile/stats",
   progressSummary: "/api/progress-summary",
@@ -590,15 +591,16 @@ function createSafeHomeApi(options = {}) {
     },
 
     createConsent(data) {
+      const { user_id: _ignoredUserId, subject_id: _ignoredSubjectId, ...selfConsent } = data || {};
       return request(API_ENDPOINTS.consent, {
         method: "POST",
-        data: withDefaultUser(data),
+        data: selfConsent,
         requiresAuth: true,
       });
     },
 
-    listConsentRecords(params = {}) {
-      return request(`${API_ENDPOINTS.consent}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    listConsentRecords() {
+      return request(API_ENDPOINTS.consent, { requiresAuth: true });
     },
 
     createDiary(data) {

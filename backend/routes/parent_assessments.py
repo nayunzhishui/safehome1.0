@@ -7,6 +7,7 @@ from flask import Blueprint, request
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts
 from routes.consent import DEFAULT_CONSENT_VERSION, get_latest_consent
 from routes.utils import auth_error_response, fail, ok, parse_bool, require_admin_or_owner, require_admin_token, require_user_id
+from services.consent_service import ConsentError, append_consent_event, is_verified_participant_event
 from services.content_loader import ContentLoadError
 from services.parent_assessment_service import (
     ParentAssessmentInputError,
@@ -17,6 +18,11 @@ from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
 
 bp = Blueprint("parent_assessments", __name__, url_prefix="/api")
+
+
+@bp.errorhandler(ConsentError)
+def handle_consent_error(exc: ConsentError):
+    return fail(exc.code, str(exc), status=exc.status)
 
 
 def _anonymous_id(user_id: str) -> str:
@@ -63,36 +69,35 @@ def _apply_high_risk_parent_boundary(result: dict, risk_result: dict) -> None:
 
 def _ensure_research_consent(conn, user_id: str, agreed: bool, consent_version: str, timestamp: str) -> dict:
     latest = get_latest_consent(conn, user_id, "research_authorization")
-    if latest and bool(latest.get("agreed")) == agreed:
+    if (
+        latest
+        and is_verified_participant_event(latest, user_id)
+        and bool(latest.get("agreed")) == agreed
+        and latest.get("consent_version") == consent_version
+        and (latest.get("purpose") or latest.get("consent_type")) == "research_authorization"
+        and (latest.get("processor") or "safehome") == "safehome"
+    ):
         return {
             "research_authorization": "agreed" if agreed else "declined",
             "consent_version": latest.get("consent_version"),
             "record_id": latest.get("id"),
         }
 
-    record_id = new_id("consent")
-    conn.execute(
-        """
-        INSERT INTO consent_records (
-            id, user_id, consent_type, consent_version, agreed,
-            agreed_at, revoked_at, created_at
-        )
-        VALUES (?, ?, 'research_authorization', ?, ?, ?, ?, ?)
-        """,
-        (
-            record_id,
-            user_id,
-            consent_version,
-            1 if agreed else 0,
-            timestamp,
-            None if agreed else timestamp,
-            timestamp,
-        ),
+    item, _created = append_consent_event(
+        conn,
+        actor_id=user_id,
+        subject_id=user_id,
+        consent_type="research_authorization",
+        consent_version=consent_version,
+        agreed=agreed,
+        purpose="research_authorization",
+        source="embedded_parent_assessment",
+        event_type="self_agreed" if agreed else "self_withdrawn",
     )
     return {
         "research_authorization": "agreed" if agreed else "declined",
         "consent_version": consent_version,
-        "record_id": record_id,
+        "record_id": item["id"],
     }
 
 

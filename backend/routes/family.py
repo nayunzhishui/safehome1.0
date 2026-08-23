@@ -8,6 +8,7 @@ from database import get_connection, new_id, now_iso, row_to_dict, rows_to_dicts
 from routes.auth_utils import AuthError, auth_error_response, require_login, require_role
 from routes.consent import DEFAULT_CONSENT_VERSION
 from routes.utils import fail, ok
+from services.consent_service import ConsentError, append_consent_event
 from services.participant_safeguard_service import (
     ParticipantSafeguardError,
     attach_guardian_from_family_link,
@@ -160,16 +161,21 @@ def bind_student():
             """,
             (actor["id"], timestamp, timestamp, timestamp, row["id"]),
         )
-        conn.execute(
-            """
-            INSERT INTO consent_records (
-                id, user_id, consent_type, consent_version, agreed,
-                agreed_at, revoked_at, created_at
+        try:
+            append_consent_event(
+                conn,
+                actor_id=str(actor["id"]),
+                subject_id=str(actor["id"]),
+                consent_type="parent_view_student_summary",
+                consent_version=DEFAULT_CONSENT_VERSION,
+                agreed=True,
+                purpose="parent_view_student_summary",
+                source="family_binding",
+                event_type="self_agreed",
             )
-            VALUES (?, ?, 'parent_view_student_summary', ?, 1, ?, NULL, ?)
-            """,
-            (new_id("consent"), actor["id"], DEFAULT_CONSENT_VERSION, timestamp, timestamp),
-        )
+        except ConsentError as exc:
+            conn.rollback()
+            return fail(exc.code, str(exc), status=exc.status)
         # Plan B: for an under-14 participant, binding establishes the guardian
         # relationship but does NOT imply sensitive-data consent.
         try:

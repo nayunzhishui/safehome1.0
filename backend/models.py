@@ -1053,11 +1053,35 @@ SCHEMA_SQL = [
     CREATE TABLE IF NOT EXISTS consent_records (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
+        actor_id TEXT,
+        subject_id TEXT,
         consent_type TEXT NOT NULL,
         consent_version TEXT NOT NULL,
+        purpose TEXT,
+        processor TEXT,
+        text_hash TEXT,
+        source TEXT NOT NULL DEFAULT 'provenance_unknown',
+        reason TEXT,
+        evidence_ref TEXT,
+        supersedes_id TEXT,
+        event_type TEXT NOT NULL DEFAULT 'provenance_unknown',
+        event_version INTEGER NOT NULL DEFAULT 1,
         agreed INTEGER NOT NULL,
         agreed_at TEXT NOT NULL,
         revoked_at TEXT,
+        created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS consent_record_annotations (
+        id TEXT PRIMARY KEY,
+        consent_record_id TEXT NOT NULL,
+        actor_id TEXT NOT NULL,
+        subject_id TEXT NOT NULL,
+        annotation_type TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        evidence_ref TEXT NOT NULL,
+        supersedes_id TEXT,
         created_at TEXT NOT NULL
     )
     """,
@@ -2828,6 +2852,7 @@ SCHEMA_SQL = [
 
 
 INDEX_SQL = [
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_consent_event_version ON consent_records(subject_id, consent_type, event_version)",
     "CREATE INDEX IF NOT EXISTS idx_emotion_diaries_user_created ON emotion_diaries(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_emotion_thermometer_user_created ON emotion_thermometer(user_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)",

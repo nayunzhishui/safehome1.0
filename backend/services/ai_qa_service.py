@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 from flask import current_app
 
 from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
+from services.consent_service import has_active_consent
 from services.ai_qa_input_security_service import (
     InputSecurityError,
     classify_input_domain,
@@ -301,18 +302,17 @@ def _require_runtime_for_actor(actor: dict) -> None:
 def _require_participant_ai_consent(actor: dict) -> None:
     if actor.get("role") not in {"parent", "student"}:
         return
+    policy = _load_participant_use_case_policy()
     with get_connection() as conn:
-        row = conn.execute(
-            """
-            SELECT agreed, revoked_at
-            FROM consent_records
-            WHERE user_id = ? AND consent_type = 'ai_assistance'
-            ORDER BY created_at DESC
-            LIMIT 1
-            """,
-            (actor["id"],),
-        ).fetchone()
-    if row is None or int(row["agreed"] or 0) != 1 or row["revoked_at"]:
+        active = has_active_consent(
+            conn,
+            str(actor["id"]),
+            str(policy["required_consent_type"]),
+            consent_version=str(policy["required_consent_version"]),
+            purpose=str(policy["required_consent_purpose"]),
+            processor=str(policy["required_consent_processor"]),
+        )
+    if not active:
         raise AiQaError(
             "ai_assistance_consent_required",
             "请先阅读并同意AI辅助处理说明",

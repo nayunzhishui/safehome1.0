@@ -1,5 +1,13 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-24：RC0810-F07 执行结果
+
+- 已完成本人限定的 Consent API、不可变同意/撤回事件、来源与 actor/subject 血缘、行政注释隔离、精确用途合同和隐私导出/删除同步。
+- 旧记录只标记 `provenance_unknown`；显式迁移支持 plan/apply/verify/rollback，未执行生产迁移，production 继续 NO-GO。
+- 独立审查 Fix Loop 已关闭迁移排序、未知来源授权、撤回合同、事务回滚及机器契约 finding，最终 `pass`。
+- F07 专项 11 项、受影响组合 31 项、家庭绑定原测试 3 项，以及 Web typecheck、小程序语法、API 契约和差异检查通过。
+- F07 独立提交推送后，执行入口切换到 RC0810-F08 安全退出；先冻结真实 logout/token/auth_epoch 合同和历史账号兼容边界。
+
 ## 2026-08-23：RC0810-F06 执行结果
 
 - 已完成跨用户对象授权、分配有效期、治疗性评估 case/data-item 范围、存在性隐藏、迁移与 API 契约同步。

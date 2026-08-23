@@ -4307,7 +4307,7 @@ export const GENERATED_API_ENDPOINTS = [
     "handler": "consent.list_consent_records",
     "module": "routes.consent",
     "access": {
-      "mode": "owner_or_authorized",
+      "mode": "authenticated",
       "roles": [
         "parent",
         "student",
@@ -4315,10 +4315,10 @@ export const GENERATED_API_ENDPOINTS = [
         "supervisor",
         "admin"
       ],
-      "legacy_admin_token": true,
+      "legacy_admin_token": false,
       "showcase_read_bypass": false
     },
-    "object_scope": "self_or_active_participant_assignment_or_admin_capability",
+    "object_scope": "authenticated_self_only_consent_event_history",
     "request": {
       "content_type": null,
       "path_parameters": [],
@@ -4349,6 +4349,7 @@ export const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
+      "consent_self_only",
       "forbidden",
       "http_error",
       "internal_error",
@@ -4368,7 +4369,7 @@ export const GENERATED_API_ENDPOINTS = [
     "handler": "consent.create_consent_record",
     "module": "routes.consent",
     "access": {
-      "mode": "owner_or_authorized",
+      "mode": "authenticated",
       "roles": [
         "parent",
         "student",
@@ -4376,10 +4377,10 @@ export const GENERATED_API_ENDPOINTS = [
         "supervisor",
         "admin"
       ],
-      "legacy_admin_token": true,
+      "legacy_admin_token": false,
       "showcase_read_bypass": false
     },
-    "object_scope": "self_only_or_dedicated_domain_command",
+    "object_scope": "authenticated_self_only_consent_event_history",
     "request": {
       "content_type": "application/json",
       "path_parameters": [],
@@ -4387,7 +4388,15 @@ export const GENERATED_API_ENDPOINTS = [
       "body_fields": [
         "agreed",
         "consent_type",
-        "consent_version"
+        "consent_version",
+        "evidence_ref",
+        "expected_latest_id",
+        "processor",
+        "purpose",
+        "reason",
+        "subject_id",
+        "text_hash",
+        "user_id"
       ],
       "headers": [],
       "pagination": null,
@@ -4412,9 +4421,76 @@ export const GENERATED_API_ENDPOINTS = [
       "request_id": "string"
     },
     "error_codes": [
+      "consent_self_only",
+      "consent_version_conflict",
       "forbidden",
       "http_error",
       "internal_error",
+      "unauthorized",
+      "validation_error"
+    ],
+    "enum_refs": [],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
+    "operation_id": "consent.add_consent_annotation.post",
+    "method": "POST",
+    "path": "/api/consent/<consent_record_id>/annotations",
+    "handler": "consent.add_consent_annotation",
+    "module": "routes.consent",
+    "access": {
+      "mode": "capability",
+      "roles": [
+        "admin"
+      ],
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "admin_consent_annotation_without_mutating_participant_event",
+    "request": {
+      "content_type": "application/json",
+      "path_parameters": [
+        "consent_record_id"
+      ],
+      "query_parameters": [],
+      "body_fields": [
+        "annotation_type",
+        "evidence_ref",
+        "reason",
+        "supersedes_id"
+      ],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.consent.add_consent_annotation.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "annotation_version_conflict",
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
       "unauthorized",
       "validation_error"
     ],

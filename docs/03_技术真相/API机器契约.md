@@ -74,8 +74,9 @@
 | GET | `/api/cards/recommend` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/checkins` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_active_participant_assignment_or_admin_capability | page/page_size | — | active |
 | POST | `/api/checkins` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_only_or_dedicated_domain_command | — | supported | active |
-| GET | `/api/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_active_participant_assignment_or_admin_capability | — | — | active |
-| POST | `/api/consent` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_only_or_dedicated_domain_command | — | — | active |
+| GET | `/api/consent` | authenticated:parent,student,researcher,supervisor,admin | authenticated_self_only_consent_event_history | — | — | active |
+| POST | `/api/consent` | authenticated:parent,student,researcher,supervisor,admin | authenticated_self_only_consent_event_history | — | — | active |
+| POST | `/api/consent/<consent_record_id>/annotations` | capability:admin | admin_consent_annotation_without_mutating_participant_event | — | — | active |
 | GET | `/api/content-review/active/<content_type>/<item_id>` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/content-review/inventory` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/content-review/inventory/register` | public:public | not_applicable_or_development_legacy | — | — | active |

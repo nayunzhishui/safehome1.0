@@ -133,6 +133,10 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
         return {"mode": "role", "roles": ["researcher", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path == "/api/admin/assessment-results":
         return {"mode": "capability", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+    if path.startswith("/api/consent"):
+        if path.endswith("/annotations"):
+            return {"mode": "capability", "roles": ["admin"], "legacy_admin_token": False, "showcase_read_bypass": False}
+        return {"mode": "authenticated", "roles": ALL_AUTHENTICATED_ROLES, "legacy_admin_token": False, "showcase_read_bypass": False}
     if module.endswith("routes.admin"):
         return {"mode": "admin", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path.startswith("/api/research/"):
@@ -207,6 +211,10 @@ def _object_scope(path: str, method: str, access: dict[str, Any], source: str) -
         return "active_unexpired_assignment_for_researcher_supervisor_full_for_admin"
     if path == "/api/feedback/generate":
         return "self_or_research_feedback_write_capability_and_active_assignment"
+    if path.startswith("/api/consent"):
+        if path.endswith("/annotations"):
+            return "admin_consent_annotation_without_mutating_participant_event"
+        return "authenticated_self_only_consent_event_history"
     if path == "/api/operations-governance/public-status":
         return "non_sensitive_operations_gate_status_only"
     if path.startswith("/api/operations-governance"):
@@ -352,10 +360,14 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
     }
 
 
-def _error_codes(path: str, source: str, access: dict[str, Any]) -> list[str]:
+def _error_codes(path: str, method: str, source: str, access: dict[str, Any]) -> list[str]:
     codes = set(re.findall(r"fail\(\s*['\"]([a-z0-9_]+)['\"]", source))
     if access["mode"] != "public":
         codes.update(["unauthorized", "forbidden"])
+    if path == "/api/consent" and method == "POST":
+        codes.update(["validation_error", "consent_self_only", "consent_version_conflict"])
+    if path.endswith("/annotations") and path.startswith("/api/consent/"):
+        codes.update(["validation_error", "not_found", "annotation_version_conflict"])
     if path.startswith("/api/ai-qa/"):
         codes.update(["ai_qa_sandbox_disabled", "ai_qa_killed", "validation_error"])
         if "/sessions" in path or "/messages" in path:
@@ -437,7 +449,7 @@ def build_contract(flask_app) -> dict[str, Any]:
                         "data_contract": f"{module}.{getattr(view_func, '__name__', rule.endpoint)}.data",
                     },
                     "error_envelope": {"ok": False, "error": {"code": "string", "message": "string"}, "request_id": "string"},
-                    "error_codes": _error_codes(path, source, access),
+                    "error_codes": _error_codes(path, method, source, access),
                     "enum_refs": _enum_refs(path),
                     "deprecation": {"status": "active", "remove_after": None, "replacement": None},
                 }

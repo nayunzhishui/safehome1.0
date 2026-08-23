@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 from config import Config
 from database import get_connection, new_id, now_iso, row_to_dict, write_audit_log
+from services.consent_service import ConsentError, append_consent_event
 from services.schema_migration_service import apply_pending_schema_migrations
 
 AGE_BANDS = {"under_14", "14_or_over"}
@@ -311,24 +312,21 @@ def record_guardian_consent(conn, parent_user_id: str, child_user_id: str, agree
     if child_assent_reset:
         child_assent = "pending"
     status = _derive_status("under_14", parent_user_id, consent_status, child_assent)
-    consent_id = new_id("consent")
-    conn.execute(
-        """
-        INSERT INTO consent_records (
-            id, user_id, consent_type, consent_version, agreed,
-            agreed_at, revoked_at, created_at
-        ) VALUES (?, ?, 'guardian_sensitive_processing_under14', ?, ?, ?, ?, ?)
-        """,
-        (
-            consent_id,
-            child_user_id,
-            POLICY_VERSION,
-            1 if agreed else 0,
-            timestamp,
-            None if agreed else timestamp,
-            timestamp,
-        ),
-    )
+    try:
+        consent, _created = append_consent_event(
+            conn,
+            actor_id=parent_user_id,
+            subject_id=child_user_id,
+            consent_type="guardian_sensitive_processing_under14",
+            consent_version=POLICY_VERSION,
+            agreed=agreed,
+            purpose="sensitive_processing_under14",
+            source="guardian_flow",
+            event_type="guardian_agreed" if agreed else "guardian_withdrawn",
+        )
+    except ConsentError as exc:
+        raise ParticipantSafeguardError(exc.code, str(exc), exc.status) from exc
+    consent_id = consent["id"]
     conn.execute(
         """
         UPDATE participant_minor_safeguards

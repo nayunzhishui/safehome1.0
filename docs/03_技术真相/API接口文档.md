@@ -222,15 +222,20 @@
 
 ### `POST /api/consent`
 
-用途：记录用户使用说明、隐私说明、非诊断边界说明、匿名研究授权等同意状态。
+用途：由已登录用户记录本人的同意或撤回事件。事件只追加，不修改历史记录。
 
 请求字段：
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `user_id` | string | 否 | 匿名用户 ID；开发环境缺省为 `demo-parent`，生产环境必填 |
+| `user_id` / `subject_id` | string | 否 | 兼容字段；如提供，必须与 token actor 相同，不能代替他人同意 |
 | `consent_type` | string | 是 | `user_agreement`、`privacy_policy`、`non_diagnostic_notice`、`research_authorization`、`contact_permission`、`ai_assistance`、`relationship_analysis` |
 | `consent_version` | string | 否 | 同意文本版本，缺省为 `2026.07-consent-v2` |
+| `purpose` | string | 否 | 处理目的；缺省为 `consent_type` |
+| `processor` | string | 否 | 处理方标识；缺省为 `safehome` |
+| `text_hash` | string | 否 | 已展示文本的 SHA-256；提供时必须为 64 位十六进制 |
+| `expected_latest_id` | string | 状态变化时 | 当前最新事件 ID，用于阻止并发覆盖 |
+| `reason` / `evidence_ref` | string | 否 | 撤回原因或关联证据引用 |
 | `agreed` | boolean | 是 | 是否同意；`research_authorization` 允许为 `false` |
 
 响应字段：
@@ -239,16 +244,21 @@
 |---|---|---|
 | `id` | string | 同意记录 ID |
 | `user_id` | string | 匿名用户 ID |
+| `actor_id` / `subject_id` | string/null | 真实操作人和决定主体；旧记录的 actor 可为空 |
 | `consent_type` | string | 同意类型 |
 | `consent_version` | string | 同意文本版本 |
+| `purpose` / `processor` / `text_hash` | string/null | 用途、处理方和文本版本指纹 |
+| `source` | string | `participant_self`、专项流程来源或旧记录的 `provenance_unknown` |
+| `event_type` | string | 本人、监护人事件或 `provenance_unknown` |
+| `supersedes_id` | string/null | 前一不可变事件 ID |
 | `agreed` | integer | 1 表示同意，0 表示不同意或撤回 |
 | `agreed_at` | string | 记录该选择的时间 |
 | `revoked_at` | string/null | 不同意或撤回时的时间 |
 | `created_at` | string | 创建时间 |
 
-### `GET /api/consent?user_id=xxx`
+### `GET /api/consent`
 
-用途：查看某个匿名用户的同意记录。
+用途：查看 token actor 本人的同意事件；不能查询他人。
 
 响应字段：
 
@@ -257,11 +267,18 @@
 | `items` | array | 同意记录列表 |
 | `count` | integer | 记录数 |
 
+### `POST /api/consent/{consent_record_id}/annotations`
+
+用途：管理员对已有同意事件增加行政注释或错误更正。需要 `privacy.consent.annotate` capability，必须提供 `reason` 和 `evidence_ref`；原同意事件及其 `agreed` 状态不会被改写。
+
+`GET /api/privacy/consent-status` 会额外返回 `verification_status`。只有 actor 与 subject 一致且来源可验证的参与者决定才返回 `agreed=true`；旧记录返回 `provenance_unknown`，前端显示“待本人确认”，研究导出也按未获得有效授权处理。
+
 边界：
 
 - 不采集真实姓名、手机号、身份证号等强身份信息。
 - 匿名研究授权不与基础使用强绑定。
-- 当前只是同意记录，不是完整登录或权限系统。
+- 旧记录只标为 `provenance_unknown`，不会迁移成已验证的本人同意。
+- 文本版本、purpose 或 processor 改变后，消费方必须按新合同重新确认，旧同意不能自动覆盖。
 
 ## 0B. 风险人工复核记录
 

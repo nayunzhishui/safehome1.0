@@ -10,7 +10,12 @@ type ConsentItem = {
   user_id: string;
   consent_type: string;
   agreed: boolean;
+  verification_status: "verified_participant" | "provenance_unknown" | "not_recorded";
   consent_version: string | null;
+  purpose: string | null;
+  processor: string | null;
+  source: string | null;
+  current_record_id: string | null;
   agreed_at: string | null;
   revoked_at: string | null;
 };
@@ -113,7 +118,8 @@ export function PrivacyCenterPage() {
     }
   }
 
-  async function handleRevoke(consentType: string) {
+  async function handleRevoke(item: ConsentItem) {
+    const consentType = item.consent_type;
     if (!window.confirm(`确认撤回「${CONSENT_LABELS[consentType] ?? consentType}」？撤回后您将不再参与后续研究导出。`)) {
       return;
     }
@@ -124,7 +130,15 @@ export function PrivacyCenterPage() {
       const resp = await fetch(`${base}${API_ENDPOINTS.privacyRevokeConsent}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...authHeaders },
-        body: JSON.stringify({ user_id: userId, consent_type: consentType, reason: "用户主动撤回" }),
+        body: JSON.stringify({
+          user_id: userId,
+          consent_type: consentType,
+          consent_version: item.consent_version,
+          expected_latest_id: item.current_record_id,
+          purpose: item.purpose,
+          processor: item.processor,
+          reason: "用户主动撤回",
+        }),
       });
       const body = await resp.json();
       if (body.ok) {
@@ -243,15 +257,18 @@ export function PrivacyCenterPage() {
             <div className="metricCard" key={item.consent_type}>
               <span>{consentLabel(item.consent_type)}</span>
               <strong style={{ color: item.agreed ? "var(--color-success, #16a34a)" : "var(--color-warning, #ca8a04)" }}>
-                {item.agreed ? "已同意" : "未同意"}
+                {item.verification_status === "provenance_unknown" ? "待本人确认" : item.agreed ? "已同意" : "未同意"}
               </strong>
               {item.agreed_at ? <small>同意时间：{item.agreed_at.slice(0, 10)}</small> : null}
               {item.revoked_at ? <small>撤回时间：{item.revoked_at.slice(0, 10)}</small> : null}
+              {item.source ? (
+                <small>记录来源：{item.source === "participant_self" ? "本人操作" : item.source === "provenance_unknown" ? "历史来源待确认" : "专项流程"}</small>
+              ) : null}
               {(item.consent_type === "anonymous_research" || item.consent_type === "research_authorization") && item.agreed ? (
                 <button
                   className="pill muted"
                   disabled={revokeStatus === "loading"}
-                  onClick={() => handleRevoke(item.consent_type)}
+                  onClick={() => handleRevoke(item)}
                   style={{ marginTop: 8 }}
                 >
                   撤回授权

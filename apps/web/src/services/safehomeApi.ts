@@ -32,6 +32,8 @@ import type {
   ComputationContractPublicStatus,
   ConsentInput,
   ConsentRecord,
+  ConsentAnnotationInput,
+  ConsentRecordAnnotation,
   ContentReviewUpdateInput,
   ContentReviewUpdateResult,
   ContentGovernanceDiff,
@@ -477,12 +479,17 @@ export class SafeHomeApiClient {
   createConsent(input: ConsentInput): Promise<ConsentRecord> {
     return this.requestData<ConsentRecord>(API_ENDPOINTS.consent, {
       method: "POST",
-      body: this.withDefaultUser(input),
+      body: input,
     });
   }
 
-  listConsentRecords(params: { user_id?: string } = {}): Promise<ListResponse<ConsentRecord>> {
-    return this.requestData<ListResponse<ConsentRecord>>(this.withQuery(API_ENDPOINTS.consent, this.withDefaultUserParam(params)));
+  listConsentRecords(): Promise<ListResponse<ConsentRecord>> {
+    return this.requestData<ListResponse<ConsentRecord>>(API_ENDPOINTS.consent);
+  }
+
+  createConsentAnnotation(consentRecordId: string, input: ConsentAnnotationInput): Promise<ConsentRecordAnnotation> {
+    const path = API_ENDPOINTS.consentAnnotationBase.replace(":id", encodeURIComponent(consentRecordId));
+    return this.requestData<ConsentRecordAnnotation>(path, { method: "POST", body: input });
   }
 
   createDiary(input: EmotionDiaryInput): Promise<EmotionDiary> {

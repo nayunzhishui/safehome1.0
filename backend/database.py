@@ -23,6 +23,7 @@ REQUIRED_HEALTH_TABLES = [
     "risk_review_records",
     "audit_logs",
     "consent_records",
+    "consent_record_annotations",
     "records",
     "messages",
     "notification_preferences",
@@ -164,8 +165,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_08_20_062"
-CURRENT_SCHEMA_NAME = "rc0810_f06_object_scope"
+CURRENT_SCHEMA_VERSION = "2026_08_24_063"
+CURRENT_SCHEMA_NAME = "rc0810_f07_consent_provenance"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -201,6 +202,10 @@ MYSQL_VARCHAR_COLUMNS = {
     "purpose_code",
     "consent_type",
     "consent_version",
+    "purpose",
+    "processor",
+    "text_hash",
+    "event_type",
     "authorization_status",
     "source_type",
     "source_version",
@@ -570,6 +575,9 @@ class MySQLConnection:
 
     def commit(self) -> None:
         self._connection.commit()
+
+    def rollback(self) -> None:
+        self._connection.rollback()
 
     def close(self) -> None:
         self._connection.close()
@@ -1110,6 +1118,22 @@ def ensure_schema_columns(conn) -> None:
     }
     for column, definition in family_link_columns.items():
         ensure_column(conn, "family_links", column, definition)
+
+    consent_record_columns = {
+        "actor_id": "TEXT",
+        "subject_id": "TEXT",
+        "purpose": "TEXT",
+        "processor": "TEXT",
+        "text_hash": "TEXT",
+        "source": "TEXT NOT NULL DEFAULT 'provenance_unknown'",
+        "reason": "TEXT",
+        "evidence_ref": "TEXT",
+        "supersedes_id": "TEXT",
+        "event_type": "TEXT NOT NULL DEFAULT 'provenance_unknown'",
+        "event_version": "INTEGER NOT NULL DEFAULT 1",
+    }
+    for column, definition in consent_record_columns.items():
+        ensure_column(conn, "consent_records", column, definition)
 
     relationship_task_columns = {"idempotency_key": "TEXT"}
     for column, definition in relationship_task_columns.items():

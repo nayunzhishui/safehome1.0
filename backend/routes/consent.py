@@ -2,9 +2,15 @@
 
 from flask import Blueprint, request
 
-from database import get_connection, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
-from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
+from database import get_connection, row_to_dict, rows_to_dicts
+from routes.auth_utils import AuthError, auth_error_response, require_capability, require_login
 from routes.utils import fail, ok, parse_bool
+from services.consent_service import (
+    ConsentError,
+    append_consent_event,
+    create_consent_annotation,
+    latest_consent_event,
+)
 
 bp = Blueprint("consent", __name__, url_prefix="/api/consent")
 
@@ -27,27 +33,20 @@ DEFAULT_CONSENT_VERSION = "2026.07-consent-v2"
 
 
 def get_latest_consent(conn, user_id: str, consent_type: str) -> dict | None:
-    row = conn.execute(
-        """
-        SELECT * FROM consent_records
-        WHERE user_id = ? AND consent_type = ?
-        ORDER BY created_at DESC
-        LIMIT 1
-        """,
-        (user_id, consent_type),
-    ).fetchone()
-    return row_to_dict(row)
+    return latest_consent_event(conn, user_id, consent_type)
 
 
 @bp.post("")
 def create_consent_record():
     payload = request.get_json(silent=True) or {}
     try:
-        # The token actor is authoritative.  user_id in a participant payload
-        # is compatibility metadata only and cannot impersonate another user.
-        user_id = resolve_actor_user_id(payload=payload, allow_legacy_admin=False, allow_dev_fallback=True)
+        actor = require_login(allow_legacy_admin=False)
     except AuthError as exc:
         return auth_error_response(exc)
+
+    user_id = str(payload.get("user_id") or payload.get("subject_id") or actor["id"]).strip()
+    if user_id != str(actor["id"]):
+        return fail("consent_self_only", "普通同意接口只能记录本人决定。", status=403)
 
     consent_type = str(payload.get("consent_type") or "").strip()
     if consent_type not in ALLOWED_CONSENT_TYPES:
@@ -61,54 +60,39 @@ def create_consent_record():
     if not consent_version or len(consent_version) > 120:
         return fail("validation_error", "consent_version 无效")
 
-    timestamp = now_iso()
-    record_id = new_id("consent")
-    revoked_at = timestamp if not agreed else None
-
-    with get_connection() as conn:
-        conn.execute(
-            """
-            INSERT INTO consent_records (
-                id, user_id, consent_type, consent_version, agreed,
-                agreed_at, revoked_at, created_at
+    try:
+        with get_connection() as conn:
+            item, created = append_consent_event(
+                conn,
+                actor_id=str(actor["id"]),
+                subject_id=str(actor["id"]),
+                consent_type=consent_type,
+                consent_version=consent_version,
+                agreed=agreed,
+                purpose=payload.get("purpose"),
+                processor=str(payload.get("processor") or "safehome"),
+                text_hash=payload.get("text_hash"),
+                source="participant_self",
+                reason=payload.get("reason"),
+                evidence_ref=payload.get("evidence_ref"),
+                expected_latest_id=payload.get("expected_latest_id"),
+                require_latest_guard=True,
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                record_id,
-                user_id,
-                consent_type,
-                consent_version,
-                1 if agreed else 0,
-                timestamp,
-                revoked_at,
-                timestamp,
-            ),
-        )
-        write_audit_log(
-            conn,
-            action="consent_recorded",
-            actor_id=user_id,
-            target_type="consent_record",
-            target_id=record_id,
-            metadata={"consent_type": consent_type, "agreed": bool(agreed), "consent_version": consent_version},
-        )
-        conn.commit()
-        row = conn.execute("SELECT * FROM consent_records WHERE id = ?", (record_id,)).fetchone()
-
-    return ok(row_to_dict(row), status=201)
+            conn.commit()
+    except ConsentError as exc:
+        return fail(exc.code, str(exc), status=exc.status)
+    return ok(item, status=201 if created else 200)
 
 
 @bp.get("")
 def list_consent_records():
     try:
-        user_id = resolve_actor_user_id(
-            requested_user_id=request.args.get("user_id"),
-            allow_legacy_admin=False,
-            allow_dev_fallback=True,
-        )
+        actor = require_login(allow_legacy_admin=False)
     except AuthError as exc:
         return auth_error_response(exc)
+    user_id = str(request.args.get("user_id") or actor["id"]).strip()
+    if user_id != str(actor["id"]):
+        return fail("consent_self_only", "只能查看本人的同意记录。", status=403)
 
     with get_connection() as conn:
         rows = conn.execute(
@@ -121,3 +105,26 @@ def list_consent_records():
         ).fetchall()
 
     return ok({"items": rows_to_dicts(rows), "count": len(rows)})
+
+
+@bp.post("/<consent_record_id>/annotations")
+def add_consent_annotation(consent_record_id: str):
+    payload = request.get_json(silent=True) or {}
+    try:
+        actor = require_capability("privacy.consent.annotate", allow_legacy_admin=False)
+        with get_connection() as conn:
+            item = create_consent_annotation(
+                conn,
+                actor_id=str(actor["id"]),
+                consent_record_id=consent_record_id,
+                annotation_type=str(payload.get("annotation_type") or "").strip(),
+                reason=str(payload.get("reason") or ""),
+                evidence_ref=str(payload.get("evidence_ref") or ""),
+                supersedes_id=payload.get("supersedes_id"),
+            )
+            conn.commit()
+    except AuthError as exc:
+        return auth_error_response(exc)
+    except ConsentError as exc:
+        return fail(exc.code, str(exc), status=exc.status)
+    return ok(item, status=201)

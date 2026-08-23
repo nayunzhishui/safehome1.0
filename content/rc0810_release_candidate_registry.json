@@ -2977,6 +2977,9 @@
         "apps/web/**",
         "apps/miniprogram/**",
         "docs/**",
+        "content/ai_participant_use_case_policy.json",
+        "content/researcher_capability_registry.json",
+        "content/rc0810_release_candidate_registry.json",
         "backend/migrations/**"
       ],
       "forbidden_files": [
@@ -3001,7 +3004,7 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "implemented"
         }
       ],
       "external_gates": [],
@@ -3012,6 +3015,9 @@
           "apps/web/**",
           "apps/miniprogram/**",
           "docs/**",
+          "content/ai_participant_use_case_policy.json",
+          "content/researcher_capability_registry.json",
+          "content/rc0810_release_candidate_registry.json",
           "backend/migrations/**"
         ],
         "forbidden_modules": [
@@ -3024,10 +3030,10 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 18,
-        "expected_migrations": 2,
-        "expected_interfaces": 4,
-        "expected_pages": 0,
+        "expected_files": 34,
+        "expected_migrations": 1,
+        "expected_interfaces": 3,
+        "expected_pages": 1,
         "actual_delta_baseline": "task_start_snapshot",
         "pause_when_actual_exceeds_percent": 50,
         "pause_on_second_unrelated_root_cause": true,

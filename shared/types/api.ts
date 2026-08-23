@@ -1367,13 +1367,31 @@ export type ConsentType =
   | "privacy_policy"
   | "non_diagnostic_notice"
   | "research_authorization"
-  | "contact_permission";
+  | "anonymous_research"
+  | "contact_permission"
+  | "service_data"
+  | "quality_evaluation"
+  | "model_training"
+  | "ai_assistance"
+  | "relationship_analysis"
+  | "secondary_research";
 
 export interface ConsentRecord {
   id: ID;
   user_id: ID;
+  actor_id?: ID | null;
+  subject_id?: ID | null;
   consent_type: ConsentType;
   consent_version: string;
+  purpose?: string | null;
+  processor?: string | null;
+  text_hash?: string | null;
+  source: "participant_self" | "guardian_flow" | "family_binding" | "embedded_parent_assessment" | "provenance_unknown" | string;
+  reason?: string | null;
+  evidence_ref?: string | null;
+  supersedes_id?: ID | null;
+  event_type: "self_agreed" | "self_withdrawn" | "guardian_agreed" | "guardian_withdrawn" | "provenance_unknown" | string;
+  event_version: number;
   agreed: number;
   agreed_at: ISODateTime;
   revoked_at?: ISODateTime | null;
@@ -1381,10 +1399,34 @@ export interface ConsentRecord {
 }
 
 export interface ConsentInput {
-  user_id?: ID;
   consent_type: ConsentType;
   consent_version?: string;
+  purpose?: string;
+  processor?: string;
+  text_hash?: string;
+  reason?: string;
+  evidence_ref?: string;
+  expected_latest_id?: ID;
   agreed: boolean;
+}
+
+export interface ConsentRecordAnnotation {
+  id: ID;
+  consent_record_id: ID;
+  actor_id: ID;
+  subject_id: ID;
+  annotation_type: "administrative_annotation" | "error_correction";
+  reason: string;
+  evidence_ref: string;
+  supersedes_id?: ID | null;
+  created_at: ISODateTime;
+}
+
+export interface ConsentAnnotationInput {
+  annotation_type: ConsentRecordAnnotation["annotation_type"];
+  reason: string;
+  evidence_ref: string;
+  supersedes_id?: ID;
 }
 
 export type RiskReviewStatus = "pending" | "reviewed" | "follow_up_needed" | "transferred" | "closed";

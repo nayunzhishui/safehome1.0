@@ -30,9 +30,27 @@ def _fresh_app(tmp_path, monkeypatch, app_env: str = "development"):
     return module.app
 
 
+def _headers_for_user(app, user_id: str, role: str = "parent") -> dict:
+    with app.app_context():
+        from database import get_connection, now_iso
+        from routes.auth_utils import generate_auth_token
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO users (id, nickname, role, status, created_at, updated_at) "
+                "VALUES (?, ?, ?, 'active', ?, ?)",
+                (user_id, user_id, role, timestamp, timestamp),
+            )
+            conn.commit()
+        token = generate_auth_token({"id": user_id, "role": role})
+    return {"Authorization": f"Bearer {token}"}
+
+
 def test_create_and_list_consent_records(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    headers = _headers_for_user(app, "parent-consent")
 
     create_response = client.post(
         "/api/consent",
@@ -41,7 +59,7 @@ def test_create_and_list_consent_records(tmp_path, monkeypatch):
             "consent_type": "user_agreement",
             "consent_version": "2026.07-consent-v2",
             "agreed": True,
-        },
+        }, headers=headers,
     )
 
     assert create_response.status_code == 201
@@ -52,7 +70,7 @@ def test_create_and_list_consent_records(tmp_path, monkeypatch):
     assert created["agreed"] == 1
     assert created["revoked_at"] is None
 
-    list_response = client.get("/api/consent?user_id=parent-consent")
+    list_response = client.get("/api/consent", headers=headers)
     assert list_response.status_code == 200
     listed = list_response.get_json()["data"]
     assert listed["count"] == 1
@@ -62,6 +80,7 @@ def test_create_and_list_consent_records(tmp_path, monkeypatch):
 def test_research_authorization_can_be_declined(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    headers = _headers_for_user(app, "parent-consent")
 
     response = client.post(
         "/api/consent",
@@ -69,7 +88,7 @@ def test_research_authorization_can_be_declined(tmp_path, monkeypatch):
             "user_id": "parent-consent",
             "consent_type": "research_authorization",
             "agreed": False,
-        },
+        }, headers=headers,
     )
 
     assert response.status_code == 201
@@ -82,6 +101,7 @@ def test_research_authorization_can_be_declined(tmp_path, monkeypatch):
 def test_invalid_consent_type_is_rejected(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    headers = _headers_for_user(app, "parent-consent")
 
     response = client.post(
         "/api/consent",
@@ -89,7 +109,7 @@ def test_invalid_consent_type_is_rejected(tmp_path, monkeypatch):
             "user_id": "parent-consent",
             "consent_type": "clinical_diagnosis",
             "agreed": True,
-        },
+        }, headers=headers,
     )
 
     assert response.status_code == 400
@@ -99,6 +119,7 @@ def test_invalid_consent_type_is_rejected(tmp_path, monkeypatch):
 def test_task37_data_purposes_have_separate_consent_records(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    headers = _headers_for_user(app, "participant-task37")
 
     for consent_type in (
         "service_data",
@@ -113,12 +134,12 @@ def test_task37_data_purposes_have_separate_consent_records(tmp_path, monkeypatc
                 "consent_type": consent_type,
                 "consent_version": f"2026.07-{consent_type}-v1",
                 "agreed": consent_type == "service_data",
-            },
+            }, headers=headers,
         )
         assert response.status_code == 201
         assert response.get_json()["data"]["consent_type"] == consent_type
 
-    listed = client.get("/api/consent?user_id=participant-task37").get_json()["data"]
+    listed = client.get("/api/consent", headers=headers).get_json()["data"]
     assert {item["consent_type"] for item in listed["items"]} == {
         "service_data",
         "quality_evaluation",
@@ -146,10 +167,12 @@ def test_production_consent_requires_authenticated_actor(tmp_path, monkeypatch):
 def test_profile_records_consent_summary_and_exports_status(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
+    headers = _headers_for_user(app, "student-consent", "student")
 
     client.post(
         "/api/consent",
-        json={"user_id": "student-consent", "consent_type": "research_authorization", "agreed": True},
+        json={"consent_type": "research_authorization", "agreed": True},
+        headers=headers,
     )
     profile_response = client.post(
         "/api/profile",
@@ -219,7 +242,10 @@ def test_parent_assessment_research_consent_syncs_consent_record_and_export(tmp_
     assert data["research_consent"] == 1
     assert data["consent_summary"]["research_authorization"] == "agreed"
 
-    consent_response = client.get("/api/consent?user_id=parent-consent-assessment")
+    consent_response = client.get(
+        "/api/consent",
+        headers=_headers_for_user(app, "parent-consent-assessment"),
+    )
     records = consent_response.get_json()["data"]["items"]
     assert any(item["consent_type"] == "research_authorization" and item["agreed"] == 1 for item in records)
 

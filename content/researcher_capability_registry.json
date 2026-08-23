@@ -1,6 +1,6 @@
 {
-  "version": "2026.07.task36-f13-v1",
-  "updated_at": "2026-07-22",
+  "version": "2026.08.rc0810-f07-v1",
+  "updated_at": "2026-08-24",
   "default_decision": "deny",
   "formal_roles": ["researcher", "supervisor", "admin"],
   "showcase_policy": {
@@ -155,6 +155,16 @@
       "operations": ["POST /api/auth/admin-create-account", "POST /api/auth/admin-unlock-account"],
       "roles": ["admin"],
       "object_scope": "all",
+      "sensitivity": "restricted",
+      "audit_required": true,
+      "mobile_available": false,
+      "development_exception": false
+    },
+    {
+      "id": "privacy.consent.annotate",
+      "operations": ["POST /api/consent/{id}/annotations"],
+      "roles": ["admin"],
+      "object_scope": "all_with_reason_and_evidence",
       "sensitivity": "restricted",
       "audit_required": true,
       "mobile_available": false,
