@@ -180,7 +180,7 @@ def get_enrollment(actor: dict, enrollment_id: str) -> ServiceResult:
         if not item:
             raise RelationshipPilotError("not_found", "没有找到报名记录。", 404)
         if not own_or_researcher(actor, item["user_id"]):
-            raise RelationshipPilotError("forbidden", "无权查看该报名记录。", 403)
+            raise RelationshipPilotError("not_found", "没有找到可访问的报名记录。", 404)
         ensure_researcher_access(actor, item)
         tasks = rows_to_dicts(conn.execute("SELECT * FROM relationship_pilot_tasks WHERE enrollment_id = ? ORDER BY created_at", (enrollment_id,)).fetchall())
         reports = rows_to_dicts(conn.execute("SELECT id, status, version, created_at, confirmed_at FROM relationship_screening_reports WHERE enrollment_id = ? ORDER BY created_at DESC", (enrollment_id,)).fetchall())

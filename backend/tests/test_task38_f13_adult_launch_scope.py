@@ -55,6 +55,16 @@ def _seed(app):
                         1, 'p-f13', ?, ?)""",
                 (now, now),
             )
+            conn.execute(
+                """INSERT INTO therapeutic_assessment_work_queue (
+                id, case_id, queue_type, task_code, required_competency,
+                priority, status, scope_snapshot_json, assigned_user_id,
+                due_at, version, created_by, created_at, updated_at
+                ) VALUES ('queue-f13', 'case-f13', 'supervision', 'launch_screening',
+                          'T3', 'normal', 'claimed', '{}', 's-f13',
+                          '2099-01-01T00:00:00+00:00', 1, 's-f13', ?, ?)""",
+                (now, now),
+            )
             conn.commit()
         return {
             user_id: {
@@ -177,7 +187,7 @@ def test_object_scope_and_researcher_assignment_are_enforced(tmp_path, monkeypat
         headers={**headers["other-f13"], "Idempotency-Key": "f13-cross-object"},
         json=_eligible_payload(),
     )
-    assert denied.status_code == 403
+    assert denied.status_code == 404
     created = client.post(
         "/api/therapeutic-assessment/cases/case-f13/launch-screenings",
         headers={**headers["p-f13"], "Idempotency-Key": "f13-readable"},

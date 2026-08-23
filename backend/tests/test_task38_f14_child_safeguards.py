@@ -64,7 +64,28 @@ def _seed(app):
         }
 
 
-def _initialize(client, headers):
+def _grant_supervisor_scope(client):
+    with client.application.app_context():
+        from database import get_connection, now_iso
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                """INSERT OR IGNORE INTO therapeutic_assessment_work_queue (
+                id, case_id, queue_type, task_code, required_competency,
+                priority, status, scope_snapshot_json, assigned_user_id,
+                due_at, version, created_by, created_at, updated_at
+                ) VALUES ('queue-f14', 'case-f14', 'supervision', 'child_safeguards',
+                          'T3', 'normal', 'claimed', '{}', 's-f14',
+                          '2099-01-01T00:00:00+00:00', 1, 's-f14', ?, ?)""",
+                (timestamp, timestamp),
+            )
+            conn.commit()
+
+
+def _initialize(client, headers, *, scoped=True):
+    if scoped:
+        _grant_supervisor_scope(client)
     return client.post(
         "/api/therapeutic-assessment/cases/case-f14/child-safeguards",
         headers={**headers["s-f14"], "Idempotency-Key": "f14-init"},
@@ -98,7 +119,9 @@ def test_policy_keeps_child_entry_closed_and_separates_decisions_and_sources():
 def test_supervisor_initializes_separate_guardian_and_child_controls(tmp_path, monkeypatch):
     app = _app(tmp_path, monkeypatch)
     headers = _seed(app)
-    response = _initialize(app.test_client(), headers)
+    client = app.test_client()
+    assert _initialize(client, headers, scoped=False).status_code == 404
+    response = _initialize(client, headers)
     assert response.status_code == 201
     data = response.get_json()["data"]
     assert data["guardian_consent_status"] == "pending"
@@ -108,6 +131,26 @@ def test_supervisor_initializes_separate_guardian_and_child_controls(tmp_path, m
         item["joint_feedback_allowed"] is False
         for item in data["source_permissions"].values()
     )
+    with app.app_context():
+        from database import get_connection
+
+        with get_connection() as conn:
+            conn.execute("DELETE FROM therapeutic_assessment_work_queue WHERE id = 'queue-f14'")
+            conn.commit()
+    assert client.get(
+        "/api/therapeutic-assessment/cases/case-f14/child-safeguards",
+        headers=headers["s-f14"],
+    ).status_code == 404
+    assert client.patch(
+        "/api/therapeutic-assessment/cases/case-f14/child-safeguards/gates",
+        headers={**headers["s-f14"], "Idempotency-Key": "f14-no-scope-gates"},
+        json={
+            "t3_evidence_ref": "evidence:t3-child",
+            "ethics_evidence_ref": "evidence:ethics-child",
+            "pilot_evidence_ref": "evidence:a0-a3-child",
+            "expected_version": data["version"],
+        },
+    ).status_code == 404
 
 
 def test_guardian_consent_cannot_override_child_refusal(tmp_path, monkeypatch):
@@ -198,7 +241,7 @@ def test_unlinked_account_and_wrong_capacity_are_denied(tmp_path, monkeypatch):
         headers={**headers["guardian-f14"], "Idempotency-Key": "f14-wrong"},
         json={"action": "child_assent", "expected_version": current["version"]},
     )
-    assert denied.status_code == 403
+    assert denied.status_code == 404
     assert wrong.status_code == 403
 
 

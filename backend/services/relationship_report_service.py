@@ -91,7 +91,7 @@ def get_report(actor: dict, report_id: str, download: bool = False) -> ServiceRe
             raise RelationshipPilotError("not_found", "没有找到报告。", 404)
         item = expand_report(row_to_dict(row))
         if not own_or_researcher(actor, item["user_id"]):
-            raise RelationshipPilotError("forbidden", "无权查看该报告。", 403)
+            raise RelationshipPilotError("not_found", "没有找到可访问的报告。", 404)
         enrollment = enrollment_by_id(conn, item["enrollment_id"])
         ensure_researcher_access(actor, enrollment)
         is_researcher = actor.get("role") in RESEARCH_ROLES

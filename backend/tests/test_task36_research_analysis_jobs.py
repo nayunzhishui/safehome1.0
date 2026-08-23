@@ -50,6 +50,17 @@ def _seed(app):
                    VALUES ('consent-f13', 'parent-f13', 'research_authorization', 'research-v1', 1, ?, ?)""",
                 (now, now),
             )
+            conn.execute(
+                """
+                INSERT INTO research_scope_assignments (
+                    id, enrollment_id, actor_id, assignment_role, status, version,
+                    idempotency_key, assigned_by, expires_at, created_at, updated_at
+                ) VALUES ('assignment-f13', 'enrollment-f13', 'researcher-f13',
+                          'researcher', 'active', 1, 'seed-assignment-f13',
+                          'admin-f13', '2099-01-01T00:00:00+00:00', ?, ?)
+                """,
+                (now, now),
+            )
             conn.commit()
         return {
             actor_id: {"Authorization": f"Bearer {generate_auth_token({'id': actor_id, 'role': role})}"}

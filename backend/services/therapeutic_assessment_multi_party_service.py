@@ -19,6 +19,8 @@ from services.therapeutic_assessment_service import (
     FORMAL_ROLES,
     REVIEW_ROLES,
     TherapeuticAssessmentError,
+    _assert_read,
+    _assert_researcher,
     _case_row,
     _event,
     _idempotency,
@@ -80,23 +82,17 @@ def _decode(item: dict) -> tuple[list[str], dict, dict]:
     )
 
 
-def _assert_visible(actor: dict, case: dict, item: dict) -> None:
+def _assert_visible(conn, actor: dict, case: dict, item: dict) -> None:
     parties, _, _ = _decode(item)
     actor_id = str(actor["id"])
-    role = str(actor.get("role") or "")
-    if not (
-        actor_id in parties
-        or role in REVIEW_ROLES
-        or (
-            role == "researcher"
-            and actor_id == str(case.get("assigned_researcher_id") or "")
-        )
-    ):
+    if actor_id in parties:
+        return
+    try:
+        _assert_read(conn, actor, case)
+    except TherapeuticAssessmentError as exc:
         raise TherapeuticAssessmentError(
-            "forbidden",
-            "当前账号没有该多人保护记录的对象范围权限。",
-            403,
-        )
+            "not_found", "没有找到可访问的多人保护记录。", 404
+        ) from exc
 
 
 def _has_signal(screenings: dict) -> bool:
@@ -172,6 +168,7 @@ def initialize(
     party_ids = sorted(set(party_ids))
     with get_connection() as conn:
         case = _case_row(conn, case_id)
+        _assert_researcher(conn, actor, case)
         existing = conn.execute(
             """SELECT * FROM therapeutic_assessment_multi_party_safeguards
             WHERE created_by = ? AND idempotency_key = ?""",
@@ -253,7 +250,7 @@ def update_consent(
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         item = _row(conn, case_id)
-        _assert_visible(actor, case, item)
+        _assert_visible(conn, actor, case, item)
         parties, consents, screenings = _decode(item)
         actor_id = str(actor["id"])
         if actor_id not in parties:
@@ -290,7 +287,7 @@ def update_safety_screen(
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         item = _row(conn, case_id)
-        _assert_visible(actor, case, item)
+        _assert_visible(conn, actor, case, item)
         parties, consents, screenings = _decode(item)
         actor_id = str(actor["id"])
         if actor_id not in parties:
@@ -375,6 +372,8 @@ def update_gates(
     if not isinstance(expected, int) or not all(refs.values()):
         raise TherapeuticAssessmentError("validation_error", "T3、伦理、试点证据和版本不能为空。")
     with get_connection() as conn:
+        case = _case_row(conn, case_id)
+        _assert_researcher(conn, actor, case)
         item = _row(conn, case_id)
         if int(item["version"]) != expected:
             raise TherapeuticAssessmentError("version_conflict", "记录已更新，请刷新。", 409)
@@ -420,7 +419,7 @@ def get_safeguard(actor: dict, case_id: str) -> dict:
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         item = _row(conn, case_id)
-        _assert_visible(actor, case, item)
+        _assert_visible(conn, actor, case, item)
         write_audit_log(
             conn,
             "therapeutic_assessment_multi_party_viewed",

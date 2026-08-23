@@ -95,7 +95,7 @@ def get_workbench(actor: dict, case_id: str, query: dict) -> dict:
 
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         total = int(
             conn.execute(
                 f"SELECT COUNT(*) AS count FROM therapeutic_assessment_evidence_items WHERE {where}",
@@ -157,7 +157,7 @@ def save_workbench_draft(actor: dict, case_id: str, payload: dict, idempotency_k
 
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         from services.therapeutic_assessment_competency_service import (
             assert_task_authorized,
         )

@@ -126,6 +126,12 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     assert enrollment["dimensions"]
     assert enrollment["radar_features"]
 
+    claimed = client.post(
+        f"/api/research/access/enrollments/{enrollment['id']}/claim",
+        headers={**researcher_headers, "Idempotency-Key": "pilot-explicit-claim"},
+    )
+    assert claimed.status_code == 201
+
     report_response = client.post(
         f"/api/relationship-pilot/enrollments/{enrollment['id']}/report",
         headers=researcher_headers,
@@ -166,7 +172,7 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
     assert download.get_json()["error"]["code"] == "report_not_delivered"
 
     forbidden = client.get(f"/api/relationship-pilot/reports/{report['id']}", headers=other_headers)
-    assert forbidden.status_code == 403
+    assert forbidden.status_code == 404
 
     drawing = client.post(
         f"/api/relationship-pilot/enrollments/{enrollment['id']}/tasks",
@@ -271,17 +277,17 @@ def test_relationship_pilot_full_report_message_task_and_narrative_flow(tmp_path
         headers={**other_researcher_headers, "Idempotency-Key": "other-researcher-message"},
         json={"enrollment_id": enrollment["id"], "title": "越权消息", "body": "不应发送成功。"},
     )
-    assert assignment_conflict.status_code == 403
+    assert assignment_conflict.status_code == 404
     other_researcher_detail = client.get(
         f"/api/relationship-pilot/enrollments/{enrollment['id']}",
         headers=other_researcher_headers,
     )
-    assert other_researcher_detail.status_code == 403
+    assert other_researcher_detail.status_code == 404
     other_researcher_growth = client.get(
         f"/api/relationship-pilot/growth?user_id={student['user']['id']}",
         headers=other_researcher_headers,
     )
-    assert other_researcher_growth.status_code == 403
+    assert other_researcher_growth.status_code == 404
     sent = client.post(
         f"/api/relationship-pilot/reports/{report['id']}/send",
         headers=researcher_headers,

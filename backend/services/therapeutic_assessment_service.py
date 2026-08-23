@@ -212,19 +212,68 @@ def _case_row(conn, case_id: str) -> dict:
     return row_to_dict(row)
 
 
-def _can_read(actor: dict, case: dict) -> bool:
+def _authorization_scope_matches(scope: dict, case: dict) -> bool:
+    case_ids = {str(item) for item in scope.get("case_ids") or []}
+    complexities = {str(item) for item in scope.get("complexity_scopes") or []}
+    readiness = {str(item) for item in scope.get("readiness_levels") or []}
+    snapshots = scope.get("case_scope_snapshots")
+    if isinstance(snapshots, dict) and str(case["id"]) in snapshots:
+        snapshot = snapshots[str(case["id"])]
+        if not isinstance(snapshot, dict) or (
+            str(snapshot.get("complexity_scope") or "") != str(case["complexity_scope"])
+            or str(snapshot.get("readiness_level") or "") != str(case["readiness_level"])
+        ):
+            return False
+    return (
+        (not case_ids or str(case["id"]) in case_ids)
+        and (not complexities or str(case["complexity_scope"]) in complexities)
+        and (not readiness or str(case["readiness_level"]) in readiness)
+    )
+
+
+def _supervisor_has_case_scope(conn, actor_id: str, case: dict) -> bool:
+    queue_scope = conn.execute(
+        """
+        SELECT 1 FROM therapeutic_assessment_work_queue
+        WHERE case_id = ? AND assigned_user_id = ? AND status = 'claimed'
+        LIMIT 1
+        """,
+        (str(case["id"]), actor_id),
+    ).fetchone()
+    if queue_scope is not None:
+        return True
+    researcher_id = str(case.get("assigned_researcher_id") or "")
+    if not researcher_id:
+        return False
+    timestamp = now_iso()
+    rows = rows_to_dicts(conn.execute(
+        """
+        SELECT scope_json FROM therapeutic_assessment_authorizations
+        WHERE user_id = ? AND supervisor_user_id = ? AND status = 'active'
+          AND starts_at <= ? AND expires_at > ?
+        """,
+        (researcher_id, actor_id, timestamp, timestamp),
+    ).fetchall())
+    return any(
+        _authorization_scope_matches(json_loads(row.get("scope_json"), {}), case)
+        for row in rows
+    )
+
+
+def _can_read(conn, actor: dict, case: dict) -> bool:
     actor_id = str(actor["id"])
     role = str(actor.get("role") or "")
     return (
         actor_id == str(case["participant_user_id"])
-        or role in {"admin", "supervisor"}
+        or role == "admin"
+        or (role == "supervisor" and _supervisor_has_case_scope(conn, actor_id, case))
         or (role == "researcher" and actor_id == str(case.get("assigned_researcher_id") or ""))
     )
 
 
-def _assert_read(actor: dict, case: dict) -> None:
-    if not _can_read(actor, case):
-        raise TherapeuticAssessmentError("forbidden", "当前账号没有该记录的对象范围权限。", 403)
+def _assert_read(conn, actor: dict, case: dict) -> None:
+    if not _can_read(conn, actor, case):
+        raise TherapeuticAssessmentError("not_found", "没有找到该协作记录。", 404)
 
 
 def _assert_participant(actor: dict, case: dict) -> None:
@@ -232,12 +281,14 @@ def _assert_participant(actor: dict, case: dict) -> None:
         raise TherapeuticAssessmentError("forbidden", "只能修改自己的协作记录。", 403)
 
 
-def _assert_researcher(actor: dict, case: dict) -> None:
+def _assert_researcher(conn, actor: dict, case: dict) -> None:
     role = str(actor.get("role") or "")
     if role not in FORMAL_ROLES:
         raise TherapeuticAssessmentError("forbidden", "该操作仅向正式研究角色开放。", 403)
     if role == "researcher" and str(actor["id"]) != str(case.get("assigned_researcher_id") or ""):
         raise TherapeuticAssessmentError("forbidden", "研究者只能处理分配给自己的记录。", 403)
+    if role == "supervisor" and not _supervisor_has_case_scope(conn, str(actor["id"]), case):
+        raise TherapeuticAssessmentError("not_found", "没有找到该协作记录。", 404)
 
 
 def _event(conn, case_id: str, actor: dict, action: str, key: str, before: int | None, after: int | None, metadata: dict) -> None:
@@ -439,7 +490,30 @@ def list_cases(actor: dict) -> dict:
             rows = conn.execute("SELECT * FROM therapeutic_assessment_cases WHERE participant_user_id = ? ORDER BY created_at DESC", (str(actor["id"]),)).fetchall()
         elif role == "researcher":
             rows = conn.execute("SELECT * FROM therapeutic_assessment_cases WHERE assigned_researcher_id = ? ORDER BY created_at DESC", (str(actor["id"]),)).fetchall()
-        elif role in {"supervisor", "admin"}:
+        elif role == "supervisor":
+            rows = conn.execute(
+                """
+                SELECT DISTINCT c.*
+                FROM therapeutic_assessment_cases c
+                WHERE EXISTS (
+                    SELECT 1 FROM therapeutic_assessment_work_queue q
+                    WHERE q.case_id = c.id AND q.assigned_user_id = ? AND q.status = 'claimed'
+                ) OR EXISTS (
+                    SELECT 1 FROM therapeutic_assessment_authorizations a
+                    WHERE a.user_id = c.assigned_researcher_id
+                      AND a.supervisor_user_id = ? AND a.status = 'active'
+                      AND a.starts_at <= ? AND a.expires_at > ?
+                )
+                ORDER BY c.created_at DESC
+                """,
+                (str(actor["id"]), str(actor["id"]), now_iso(), now_iso()),
+            ).fetchall()
+            rows = [
+                row
+                for row in rows
+                if _can_read(conn, actor, row_to_dict(row))
+            ]
+        elif role == "admin":
             rows = conn.execute("SELECT * FROM therapeutic_assessment_cases ORDER BY created_at DESC LIMIT 200").fetchall()
         else:
             raise TherapeuticAssessmentError("forbidden", "当前角色不能查看协作记录。", 403)
@@ -452,7 +526,7 @@ def list_cases(actor: dict) -> dict:
 def get_case(actor: dict, case_id: str) -> dict:
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_read(actor, case)
+        _assert_read(conn, actor, case)
         write_audit_log(conn, "therapeutic_assessment_case_viewed", str(actor["id"]), "therapeutic_assessment_case", case_id, {})
         conn.commit()
         return _present_case(conn, case, actor)
@@ -542,6 +616,7 @@ def assign_case(actor: dict, case_id: str, payload: dict, idempotency_key: str) 
     researcher_id = _required_text(payload, "researcher_id", 128)
     with get_connection() as conn:
         case = _case_row(conn, case_id)
+        _assert_read(conn, actor, case)
         before = int(case["version"])
         conn.execute("UPDATE therapeutic_assessment_cases SET assigned_researcher_id = ?, version = version + 1, updated_at = ? WHERE id = ?", (researcher_id, now_iso(), case_id))
         _event(conn, case_id, actor, "assigned", key, before, before + 1, {"researcher_id": researcher_id})
@@ -557,6 +632,7 @@ def set_readiness(actor: dict, case_id: str, payload: dict, idempotency_key: str
     refs = {name: _required_text(payload, name, 500) for name in ("qualification_evidence_ref", "supervision_evidence_ref", "ethics_evidence_ref")}
     with get_connection() as conn:
         case = _case_row(conn, case_id)
+        _assert_read(conn, actor, case)
         if case["risk_level"] != "low" or case["complexity_scope"] != "individual_adult_low_risk":
             raise TherapeuticAssessmentError("external_gate_required", "该范围仍需D01-D26资格、督导和伦理门禁，不能进入发送阶段。", 409)
         before = int(case["version"])
@@ -578,7 +654,7 @@ def create_feedback(actor: dict, case_id: str, payload: dict, idempotency_key: s
     key = _idempotency(idempotency_key)
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         from services.therapeutic_assessment_competency_service import (
             assert_task_authorized,
         )
@@ -904,7 +980,7 @@ def revise_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_ke
             raise TherapeuticAssessmentError("not_found", "没有找到反馈版本。", 404)
         previous = row_to_dict(row)
         case = _case_row(conn, previous["case_id"])
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         from services.therapeutic_assessment_competency_service import (
             assert_task_authorized,
         )
@@ -955,7 +1031,7 @@ def withdraw_feedback(actor: dict, feedback_id: str, payload: dict, idempotency_
             raise TherapeuticAssessmentError("not_found", "没有找到反馈版本。", 404)
         feedback = row_to_dict(row)
         case = _case_row(conn, feedback["case_id"])
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         existing = conn.execute(
             "SELECT 1 FROM therapeutic_assessment_events WHERE actor_id = ? AND idempotency_key = ? AND action = 'feedback_withdrawn'",
             (str(actor["id"]), key),

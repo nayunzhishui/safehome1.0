@@ -48,7 +48,7 @@ def _seed(app):
                         id, user_id, competency_level, task_code, scope_json,
                         supervisor_user_id, evidence_ref, starts_at, expires_at,
                         status, version, granted_by, created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, 'admin-f16', ?, ?,
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?,
                         '2099-01-01T00:00:00+00:00', 'active', 1, 'admin-f16', ?, ?)
                     """,
                     (
@@ -57,6 +57,7 @@ def _seed(app):
                         level,
                         task_code,
                         '{"complexity_scopes":["individual_adult_low_risk"]}',
+                        "supervisor-f16" if user_id == "researcher-f16" else "admin-f16",
                         f"test-evidence:{authorization_id}",
                         now,
                         now,
@@ -248,7 +249,7 @@ def test_complete_human_led_collaboration_and_version_scope(tmp_path, monkeypatc
 
     detail = client.get(f"/api/therapeutic-assessment/cases/{case_id}", headers=headers["participant-f16"])
     denied = client.get(f"/api/therapeutic-assessment/cases/{case_id}", headers=headers["other-f16"])
-    assert detail.status_code == 200 and denied.status_code == 403
+    assert detail.status_code == 200 and denied.status_code == 404
     assert detail.get_json()["data"]["feedback_versions"][-1]["status"] == "sent"
 
 

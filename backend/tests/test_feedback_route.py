@@ -179,6 +179,6 @@ def test_feedback_diary_id_requires_matching_owner_or_admin(tmp_path):
         headers=ADMIN_HEADERS,
     )
 
-    assert wrong_owner.status_code == 401
+    assert wrong_owner.status_code == 404
     assert owner.status_code == 201
     assert admin.status_code == 201

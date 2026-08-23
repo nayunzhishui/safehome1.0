@@ -92,7 +92,7 @@ def _implementation_metrics(
 def get_case_lifecycle(actor: dict, case_id: str) -> dict:
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_read(actor, case)
+        _assert_read(conn, actor, case)
         if not _enabled():
             return {
                 "enabled": False,

@@ -6,7 +6,7 @@ from flask import current_app, request
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 from config import Config
-from database import get_connection, row_to_dict
+from database import get_connection, row_to_dict, write_audit_log
 from routes.utils import fail, require_admin_token
 
 AUTH_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7
@@ -238,6 +238,52 @@ def resolve_actor_user_id(
         role = actor.get("role")
         if role in {"admin", "supervisor", "researcher"}:
             if explicit_user_id:
+                if str(explicit_user_id) == str(actor["id"]):
+                    return str(actor["id"])
+                from services.research_access_service import (
+                    ResearchAccessError,
+                    require_participant_scope,
+                )
+
+                with get_connection() as conn:
+                    if request.method not in {"GET", "HEAD", "OPTIONS"}:
+                        write_audit_log(
+                            conn,
+                            "participant_scope_denied",
+                            str(actor["id"]),
+                            "participant_scope",
+                            "hidden",
+                            {"method": request.method, "path": request.path, "reason": "generic_cross_write"},
+                        )
+                        conn.commit()
+                        raise AuthError("没有找到可访问的参与者资料。", status=404, code="not_found")
+                    try:
+                        require_participant_scope(conn, actor, str(explicit_user_id))
+                    except ResearchAccessError as exc:
+                        write_audit_log(
+                            conn,
+                            "participant_scope_denied",
+                            str(actor["id"]),
+                            "participant_scope",
+                            "hidden",
+                            {"method": request.method, "path": request.path, "reason": exc.code},
+                        )
+                        conn.commit()
+                        raise AuthError(
+                            exc.message,
+                            status=exc.status,
+                            code=exc.code,
+                            details=exc.details,
+                        ) from exc
+                    write_audit_log(
+                        conn,
+                        "participant_scope_granted",
+                        str(actor["id"]),
+                        "participant_scope",
+                        str(explicit_user_id),
+                        {"method": request.method, "path": request.path},
+                    )
+                    conn.commit()
                 return str(explicit_user_id)
             if actor.get("source") == "legacy_admin_token":
                 raise AuthError("后台查询需要指定 user_id", status=400)

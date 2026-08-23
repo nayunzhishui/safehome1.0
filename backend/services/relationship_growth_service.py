@@ -104,9 +104,9 @@ def get_growth(actor: dict, requested_user_id: str = "") -> ServiceResult:
         enrollment_rows = rows_to_dicts(conn.execute("SELECT * FROM relationship_pilot_enrollments WHERE user_id = ? ORDER BY created_at", (user_id,)).fetchall())
         if actor.get("role") in {"researcher", "supervisor"} and requested_user_id and not enrollment_rows:
             raise RelationshipPilotError(
-                "forbidden",
-                "当前账号没有访问该参与者资料的范围权限。",
-                403,
+                "not_found",
+                "没有找到可访问的参与者资料。",
+                404,
                 {"required_capability": "research.report.read"},
             )
         for enrollment in enrollment_rows:

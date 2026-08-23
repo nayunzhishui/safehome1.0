@@ -142,24 +142,40 @@ def _allowed_user_clause(actor: dict, alias: str = "u") -> tuple[str, list[str]]
           )
           AND consent_latest.agreed = 0
     )"""
-    if actor.get("role") != "researcher":
+    if actor.get("role") not in {"researcher", "supervisor"}:
         return consent_clause, []
     return (
         f"""EXISTS (
-            SELECT 1 FROM relationship_pilot_enrollments access_e
-            WHERE access_e.user_id = {alias}.id AND access_e.assigned_researcher_id = ?
-              AND access_e.status NOT IN ('withdrawn', 'deleted')
+            SELECT 1
+            FROM relationship_pilot_enrollments access_e
+            JOIN research_scope_assignments access_a
+              ON access_a.enrollment_id = access_e.id
+            WHERE access_e.user_id = {alias}.id
+              AND access_e.status IN ('enrolled', 'active')
+              AND access_a.actor_id = ?
+              AND access_a.assignment_role = ?
+              AND access_a.status = 'active'
+              AND (access_a.expires_at IS NULL OR access_a.expires_at > ?)
         ) AND ({consent_clause})""",
-        [str(actor["id"])],
+        [str(actor["id"]), str(actor["role"]), now_iso()],
     )
 
 
 def _scoped_user_column(actor: dict, column: str) -> tuple[str, list[str]]:
-    if actor.get("role") != "researcher":
+    if actor.get("role") not in {"researcher", "supervisor"}:
         return "1 = 1", []
     return (
-        f"{column} IN (SELECT user_id FROM relationship_pilot_enrollments WHERE assigned_researcher_id = ?)",
-        [str(actor["id"])],
+        f"""{column} IN (
+            SELECT access_e.user_id
+            FROM relationship_pilot_enrollments access_e
+            JOIN research_scope_assignments access_a ON access_a.enrollment_id = access_e.id
+            WHERE access_a.actor_id = ?
+              AND access_a.assignment_role = ?
+              AND access_a.status = 'active'
+              AND (access_a.expires_at IS NULL OR access_a.expires_at > ?)
+              AND access_e.status IN ('enrolled', 'active')
+        )""",
+        [str(actor["id"]), str(actor["role"]), now_iso()],
     )
 
 
@@ -267,7 +283,7 @@ def list_participants():
             "page": page,
             "page_size": page_size,
             "has_more": offset + len(rows) < total,
-            "scope": "assigned_participants" if actor.get("role") == "researcher" else "all_participants",
+            "scope": "assigned_participants" if actor.get("role") in {"researcher", "supervisor"} else "all_participants",
             "boundary_notice": "研究者仅查看获授权范围内的参与者资料；敏感详情访问会写入审计日志。",
         }
     )
@@ -424,7 +440,7 @@ def get_research_operations():
             tuple(params),
         ).fetchone()["count"]
         privacy_request_count = 0
-        if actor.get("role") in {"admin", "supervisor"}:
+        if actor.get("role") == "admin":
             privacy_request_count = conn.execute(
                 "SELECT COUNT(*) AS count FROM privacy_requests WHERE status IN ('pending', 'processing')"
             ).fetchone()["count"]
@@ -444,7 +460,7 @@ def get_research_operations():
 
     return ok(
         {
-            "scope": "assigned_participants" if actor.get("role") == "researcher" else "all_participants",
+            "scope": "assigned_participants" if actor.get("role") in {"researcher", "supervisor"} else "all_participants",
             "generated_at": timestamp,
             "notification_preferences": {
                 "accepted": preference_counts.get("accepted", 0),
@@ -470,7 +486,7 @@ def get_research_operations():
                 "risk_review": int(risk_review_count),
                 "privacy_requests": int(privacy_request_count),
             },
-            "privacy_management_available": actor.get("role") in {"admin", "supervisor"},
+            "privacy_management_available": actor.get("role") == "admin",
             "boundary_notice": "仅展示脱敏数量和错误代码，不返回 OpenID、模板密钥、联系方式或填写原文。",
         }
     )

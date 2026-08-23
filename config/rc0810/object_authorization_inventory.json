@@ -1,0 +1,1983 @@
+{
+  "schema": "safehome.rc0810.object-authorization-inventory.v1",
+  "generated_by": "scripts/verify_rc0810_f06_authorization.py --write",
+  "target_parameters": [
+    "user_id",
+    "participant_user_id",
+    "subject_id",
+    "record_id",
+    "job_id"
+  ],
+  "objects": [
+    {
+      "object_type": "participant_user",
+      "owner": "users.id",
+      "assignment": "research_scope_assignments via active relationship enrollment",
+      "supervision_scope": "active supervisor assignment",
+      "admin_capability": "research.participant.read",
+      "existence_hiding": "404 for cross-target denial",
+      "route_prefixes": [
+        "/api/research/participants",
+        "/api/diaries",
+        "/api/assessment",
+        "/api/profile",
+        "/api/checkins",
+        "/api/goals",
+        "/api/programs",
+        "/api/training"
+      ]
+    },
+    {
+      "object_type": "message",
+      "owner": "messages.user_id",
+      "assignment": "participant scope for cross-target read; cross-target read-state writes denied",
+      "supervision_scope": "active supervisor assignment",
+      "admin_capability": "research.participant.read",
+      "existence_hiding": "message id queried together with authorized user_id",
+      "route_prefixes": [
+        "/api/messages"
+      ]
+    },
+    {
+      "object_type": "relationship_enrollment",
+      "owner": "relationship_pilot_enrollments.user_id",
+      "assignment": "explicit active, unexpired research_scope_assignment",
+      "supervision_scope": "explicit active, unexpired supervisor assignment",
+      "admin_capability": "versioned research capability",
+      "existence_hiding": "404 for unauthorized enrollment, report and growth object reads; independent capability denial remains 403",
+      "route_prefixes": [
+        "/api/relationship-pilot",
+        "/api/research/access",
+        "/api/research/deliveries"
+      ]
+    },
+    {
+      "object_type": "therapeutic_case",
+      "owner": "therapeutic_assessment_cases.participant_user_id",
+      "assignment": "cases.assigned_researcher_id",
+      "supervision_scope": "claimed queue item or active authorization supervision chain",
+      "admin_capability": "formal admin role plus route capability/state gates",
+      "existence_hiding": "404 for case-scope denial",
+      "route_prefixes": [
+        "/api/therapeutic-assessment"
+      ]
+    },
+    {
+      "object_type": "therapeutic_data_item",
+      "owner": "therapeutic_assessment_data_items.controller_user_id and provider_user_id",
+      "assignment": "explicit allowed_viewer_ids under current visibility and consent state",
+      "supervision_scope": "no implicit supervisor access",
+      "admin_capability": "no implicit admin access; explicit dynamic consent only",
+      "existence_hiding": "404 for unshared data-item ids",
+      "route_prefixes": [
+        "/api/therapeutic-assessment/data-items"
+      ]
+    },
+    {
+      "object_type": "research_analysis",
+      "owner": "snapshot participant scope",
+      "assignment": "job and artifact inherit snapshot actor/object scope",
+      "supervision_scope": "service-specific assignment",
+      "admin_capability": "research.analysis.operate",
+      "existence_hiding": "indirect ids checked through owning snapshot",
+      "route_prefixes": [
+        "/api/research/analysis"
+      ]
+    },
+    {
+      "object_type": "export",
+      "owner": "export query scope",
+      "assignment": "not sufficient",
+      "supervision_scope": "not sufficient",
+      "admin_capability": "research.export",
+      "existence_hiding": "capability denial before export query",
+      "route_prefixes": [
+        "/api/admin/export"
+      ]
+    },
+    {
+      "object_type": "module_owned_record",
+      "owner": "record user_id or domain ownership relation",
+      "assignment": "central participant helper or domain service",
+      "supervision_scope": "active participant assignment or domain queue",
+      "admin_capability": "route-specific capability",
+      "existence_hiding": "domain service contract",
+      "route_prefixes": [
+        "/api/"
+      ]
+    }
+  ],
+  "discovered_routes": [
+    {
+      "route": "/api/admin/worksheets/<worksheet_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "parameters": [
+        "worksheet_id"
+      ]
+    },
+    {
+      "route": "/api/admin/worksheets/<worksheet_id>",
+      "methods": [
+        "PUT"
+      ],
+      "parameters": [
+        "worksheet_id"
+      ]
+    },
+    {
+      "route": "/api/ai-qa/evaluation/<run_id>/reviews",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "run_id"
+      ]
+    },
+    {
+      "route": "/api/ai-qa/messages/<message_id>/feedback",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "message_id"
+      ]
+    },
+    {
+      "route": "/api/ai-qa/providers/evidence/<evidence_id>/verify",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "evidence_id"
+      ]
+    },
+    {
+      "route": "/api/ai-qa/review-cases/<case_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/ai-qa/review-cases/<case_id>/decisions",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/ai-qa/sessions/<session_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "parameters": [
+        "session_id"
+      ]
+    },
+    {
+      "route": "/api/ai-qa/sessions/<session_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "session_id"
+      ]
+    },
+    {
+      "route": "/api/ai-qa/sessions/<session_id>/messages",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "session_id"
+      ]
+    },
+    {
+      "route": "/api/assessment-results/<result_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "result_id"
+      ]
+    },
+    {
+      "route": "/api/assessment-results/<result_id>/profile-position",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "result_id"
+      ]
+    },
+    {
+      "route": "/api/assessments/<worksheet_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "worksheet_id"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-account-merges/<workflow_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-account-merges/<workflow_id>/confirm",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-account-merges/<workflow_id>/execute",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-account-merges/<workflow_id>/rollback",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-account-merges/<workflow_id>/verify",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-accounts/<username>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "username"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-accounts/<username>/revoke",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "username"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-accounts/<username>/unlock",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "username"
+      ]
+    },
+    {
+      "route": "/api/content-review/active/<content_type>/<item_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "content_type",
+        "item_id"
+      ]
+    },
+    {
+      "route": "/api/content-review/releases/<release_id>/<action>",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "action",
+        "release_id"
+      ]
+    },
+    {
+      "route": "/api/content-review/versions/<version_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "version_id"
+      ]
+    },
+    {
+      "route": "/api/content-review/versions/<version_id>/diff",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "version_id"
+      ]
+    },
+    {
+      "route": "/api/content-review/versions/<version_id>/publish",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "version_id"
+      ]
+    },
+    {
+      "route": "/api/content-review/versions/<version_id>/reviews",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "version_id"
+      ]
+    },
+    {
+      "route": "/api/content-review/versions/<version_id>/submit",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "version_id"
+      ]
+    },
+    {
+      "route": "/api/courses/<course_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "course_id"
+      ]
+    },
+    {
+      "route": "/api/courses/<course_id>/progress",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "course_id"
+      ]
+    },
+    {
+      "route": "/api/courses/<course_id>/progress",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "course_id"
+      ]
+    },
+    {
+      "route": "/api/feedback-ledger/<entry_id>/actions",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "entry_id"
+      ]
+    },
+    {
+      "route": "/api/messages/<message_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "message_id"
+      ]
+    },
+    {
+      "route": "/api/messages/<message_id>/read",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "message_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/incidents/<incident_id>/notifications/<notification_id>/<action>",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "action",
+        "incident_id",
+        "notification_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/incidents/<incident_id>/postmortem",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "incident_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/packages/<package_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "package_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/packages/<package_id>/<action>",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "action",
+        "package_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/packages/<package_id>/approvals",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "package_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/packages/<package_id>/release",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "package_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/packages/<package_id>/replay",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "package_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/packages/<package_id>/reviews",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "package_id"
+      ]
+    },
+    {
+      "route": "/api/operations-governance/packages/<package_id>/submit",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "package_id"
+      ]
+    },
+    {
+      "route": "/api/parent-assessments/<submission_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "submission_id"
+      ]
+    },
+    {
+      "route": "/api/parent-assessments/<submission_id>/actions",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "submission_id"
+      ]
+    },
+    {
+      "route": "/api/privacy/admin/requests/<request_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/privacy/admin/requests/<request_id>/approvals",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/privacy/admin/requests/<request_id>/execute",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/privacy/admin/requests/<request_id>/preview",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/privacy/admin/requests/<request_id>/transition",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/privacy/admin/requests/<request_id>/verification",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/privacy/requests/<request_id>/appeal",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/privacy/requests/<request_id>/cancel",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/profile-results/<profile_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "profile_id"
+      ]
+    },
+    {
+      "route": "/api/profile-results/<profile_id>/followups",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "profile_id"
+      ]
+    },
+    {
+      "route": "/api/profile-results/<profile_id>/followups",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "profile_id"
+      ]
+    },
+    {
+      "route": "/api/profile-results/<profile_id>/review",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "profile_id"
+      ]
+    },
+    {
+      "route": "/api/profile-results/<profile_id>/reviews",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "profile_id"
+      ]
+    },
+    {
+      "route": "/api/profile-results/<profile_id>/sandplay",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "profile_id"
+      ]
+    },
+    {
+      "route": "/api/profile-results/<profile_id>/sandplay",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "profile_id"
+      ]
+    },
+    {
+      "route": "/api/profile-results/<profile_id>/visuals",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "profile_id"
+      ]
+    },
+    {
+      "route": "/api/programs/<program_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "program_id"
+      ]
+    },
+    {
+      "route": "/api/programs/<program_id>/entries",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "program_id"
+      ]
+    },
+    {
+      "route": "/api/programs/<program_id>/entries",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "program_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/enrollments/<enrollment_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "enrollment_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/enrollments/<enrollment_id>/longitudinal",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "enrollment_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/enrollments/<enrollment_id>/narrative",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "enrollment_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/enrollments/<enrollment_id>/notes",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "enrollment_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/enrollments/<enrollment_id>/report",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "enrollment_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/enrollments/<enrollment_id>/tasks",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "enrollment_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/narratives/<narrative_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "narrative_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/narratives/<narrative_id>/confirm",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "narrative_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/reports/<report_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "report_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/reports/<report_id>",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "report_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/reports/<report_id>/confirm",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "report_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/reports/<report_id>/hypotheses/<int:hypothesis_index>",
+      "methods": [
+        "PUT"
+      ],
+      "parameters": [
+        "hypothesis_index",
+        "report_id"
+      ]
+    },
+    {
+      "route": "/api/relationship-pilot/reports/<report_id>/send",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "report_id"
+      ]
+    },
+    {
+      "route": "/api/reliability/computation-harness/jobs/<job_id>/cancel",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/reliability/computation-harness/jobs/<job_id>/freeze",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/reliability/computation-harness/jobs/<job_id>/resume",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/reliability/feature-flags/<flag_name>",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "flag_name"
+      ]
+    },
+    {
+      "route": "/api/reliability/feature-flags/<flag_name>/rollback",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "flag_name"
+      ]
+    },
+    {
+      "route": "/api/reliability/jobs/<job_id>/claim",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/reliability/jobs/<job_id>/complete",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/reliability/jobs/<job_id>/fail",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/reliability/jobs/<job_id>/recover",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/access/assignments/<assignment_id>",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "assignment_id"
+      ]
+    },
+    {
+      "route": "/api/research/access/enrollments/<enrollment_id>/claim",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "enrollment_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/artifacts/<artifact_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "parameters": [
+        "artifact_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/artifacts/<artifact_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "artifact_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/jobs/<job_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/jobs/<job_id>/cancel",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/jobs/<job_id>/claim",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/jobs/<job_id>/complete",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/jobs/<job_id>/execute-synthetic",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/jobs/<job_id>/fail",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/jobs/<job_id>/recover",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/analysis/jobs/<job_id>/suspend",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "job_id"
+      ]
+    },
+    {
+      "route": "/api/research/benchmarks/cases/<case_id>/adjudications",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/research/benchmarks/cases/<case_id>/annotations",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/research/benchmarks/runs/<run_id>/reviews",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "run_id"
+      ]
+    },
+    {
+      "route": "/api/research/benchmarks/runtime-actions/<action>",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "action"
+      ]
+    },
+    {
+      "route": "/api/research/benchmarks/shadow-runs/<run_id>/replay",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "run_id"
+      ]
+    },
+    {
+      "route": "/api/research/deliveries/<workflow_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/research/deliveries/<workflow_id>",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/research/deliveries/<workflow_id>/confirm",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/research/deliveries/<workflow_id>/preview",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/research/deliveries/<workflow_id>/send",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/research/deliveries/<workflow_id>/withdraw",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "workflow_id"
+      ]
+    },
+    {
+      "route": "/api/research/participants/<user_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "user_id"
+      ]
+    },
+    {
+      "route": "/api/research/participants/<user_id>/modules/<module_key>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "module_key",
+        "user_id"
+      ]
+    },
+    {
+      "route": "/api/research/work-items/<work_item_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "work_item_id"
+      ]
+    },
+    {
+      "route": "/api/research/work-items/<work_item_id>/actions",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "work_item_id"
+      ]
+    },
+    {
+      "route": "/api/risk-review/<review_id>/review",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "review_id"
+      ]
+    },
+    {
+      "route": "/api/security/accounts/<user_id>/status",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "user_id"
+      ]
+    },
+    {
+      "route": "/api/security/events/<event_id>/resolve",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "event_id"
+      ]
+    },
+    {
+      "route": "/api/supervision/<request_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/supervision/<request_id>/acknowledge",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/supervision/<request_id>/reply",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/supervision/<request_id>/resolve",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/supervision/<request_id>/reviewer",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "request_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/actions/<action_id>",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "action_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/actions/<action_id>/followups",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "action_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/ai-assist/candidates/<candidate_id>",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "candidate_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/actions",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/assign",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards/decision",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards/gates",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/data-items",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/disagree",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/evidence",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/evidence",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/feedback-versions",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/launch-screenings",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/launch-screenings/latest",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/lifecycle",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/consent",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/gates",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/safety-screen",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id",
+        "step_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>",
+      "methods": [
+        "PUT"
+      ],
+      "parameters": [
+        "case_id",
+        "step_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/quality-incidents",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/question",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/readiness",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/researcher-workbench",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/researcher-workbench/draft",
+      "methods": [
+        "PUT"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/responsibility-chain",
+      "methods": [
+        "PUT"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/safety-signals",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/scope",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/transitions",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/withdraw",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/cases/<case_id>/work-queue",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "case_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/competency/authorizations/<authorization_id>/revoke",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "authorization_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/data-items/<item_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "item_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/data-items/<item_id>/consent",
+      "methods": [
+        "PATCH"
+      ],
+      "parameters": [
+        "item_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/evidence/<evidence_id>/review",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "evidence_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/resend",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "feedback_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/responses",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "feedback_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/review",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "feedback_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/revise",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "feedback_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/send",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "feedback_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "feedback_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/method-library/<item_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "item_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/pilot-evidence/<stage_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "stage_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/production-gate/evidence/<evidence_id>/verify",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "evidence_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/publication-candidates/<candidate_id>/recover",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "candidate_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/publication-candidates/<candidate_id>/withdraw",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "candidate_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/quality/incidents/<incident_id>/impact-analysis",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "incident_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/quality/incidents/<incident_id>/resolve",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "incident_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/quality/reviews/<review_id>/claim",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "review_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/quality/reviews/<review_id>/complete",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "review_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/safety-events/<event_id>/resolve",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "event_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/stop-recovery/evidence/<evidence_id>/verify",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "evidence_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/evidence",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "incident_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/restore",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "incident_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/work-queue/<item_id>/claim",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "item_id"
+      ]
+    },
+    {
+      "route": "/api/therapeutic-assessment/work-queue/<item_id>/handoff",
+      "methods": [
+        "POST"
+      ],
+      "parameters": [
+        "item_id"
+      ]
+    },
+    {
+      "route": "/api/training-plan/recommendation-snapshots/<snapshot_id>",
+      "methods": [
+        "GET"
+      ],
+      "parameters": [
+        "snapshot_id"
+      ]
+    }
+  ],
+  "source_parameter_hits": [
+    {
+      "file": "backend/routes/admin.py",
+      "line": 843,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/assessments.py",
+      "line": 314,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/assessments.py",
+      "line": 361,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/assessments.py",
+      "line": 378,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/auth_utils.py",
+      "line": 85,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/checkins.py",
+      "line": 112,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/consent.py",
+      "line": 106,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/courses.py",
+      "line": 112,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/courses.py",
+      "line": 137,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/diaries.py",
+      "line": 102,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/emotion_thermometer.py",
+      "line": 194,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/feedback_ledger.py",
+      "line": 80,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/general_growth.py",
+      "line": 25,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/goals.py",
+      "line": 74,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/journey.py",
+      "line": 20,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/messages.py",
+      "line": 49,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/messages.py",
+      "line": 76,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/messages.py",
+      "line": 76,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/messages.py",
+      "line": 84,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/messages.py",
+      "line": 102,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/messages.py",
+      "line": 102,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/minor_safeguards.py",
+      "line": 69,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/minor_safeguards.py",
+      "line": 259,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/notifications.py",
+      "line": 28,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/privacy.py",
+      "line": 45,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/privacy.py",
+      "line": 58,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/privacy.py",
+      "line": 74,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/privacy.py",
+      "line": 88,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/privacy.py",
+      "line": 262,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/profile.py",
+      "line": 160,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/profile.py",
+      "line": 469,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/programs.py",
+      "line": 124,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/progress_summary.py",
+      "line": 20,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/progress_summary.py",
+      "line": 30,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/progress_summary.py",
+      "line": 39,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/relationship_pilot_routes.py",
+      "line": 194,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/reports.py",
+      "line": 16,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/training_plan.py",
+      "line": 345,
+      "parameter": "user_id"
+    },
+    {
+      "file": "backend/routes/utils.py",
+      "line": 49,
+      "parameter": "user_id"
+    }
+  ]
+}

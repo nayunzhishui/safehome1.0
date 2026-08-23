@@ -20,6 +20,8 @@ from services.therapeutic_assessment_service import (
     FORMAL_ROLES,
     REVIEW_ROLES,
     TherapeuticAssessmentError,
+    _assert_read,
+    _can_read,
     _case_row,
     _idempotency,
 )
@@ -277,6 +279,7 @@ def create_work_item(
         raise TherapeuticAssessmentError("validation_error", "人工队列类型无效。")
     with get_connection() as conn:
         case = _case_row(conn, case_id)
+        _assert_read(conn, actor, case)
         replay = conn.execute(
             """
             SELECT q.* FROM therapeutic_assessment_queue_events e
@@ -377,7 +380,13 @@ def list_work_items(actor: dict, params: dict) -> dict:
         rows = rows_to_dicts(
             conn.execute(query + " ORDER BY due_at ASC, created_at ASC", values).fetchall()
         )
-        if str(actor.get("role")) not in REVIEW_ROLES:
+        if str(actor.get("role")) == "supervisor":
+            rows = [
+                row
+                for row in rows
+                if _can_read(conn, actor, _case_row(conn, row["case_id"]))
+            ]
+        elif str(actor.get("role")) not in REVIEW_ROLES:
             visible = []
             for row in rows:
                 if str(row.get("assigned_user_id") or "") == str(actor["id"]):

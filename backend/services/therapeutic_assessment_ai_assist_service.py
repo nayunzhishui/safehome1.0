@@ -237,7 +237,7 @@ def create_candidates(
     source_field = str(payload.get("source_field") or "")
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         existing = conn.execute(
             "SELECT * FROM therapeutic_assessment_ai_assist_candidates "
             "WHERE created_by = ? AND idempotency_key = ?",
@@ -314,7 +314,7 @@ def create_candidates(
 def list_candidates(actor: dict, case_id: str) -> dict:
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         rows = rows_to_dicts(
             conn.execute(
                 "SELECT * FROM therapeutic_assessment_ai_assist_candidates "
@@ -344,7 +344,7 @@ def decide_candidate(
             raise TherapeuticAssessmentError("not_found", "没有找到该AI候选。", 404)
         item = row_to_dict(row)
         case = _case_row(conn, item["case_id"])
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         replay = conn.execute(
             "SELECT * FROM therapeutic_assessment_events WHERE actor_id = ? AND idempotency_key = ?",
             (str(actor["id"]), key),

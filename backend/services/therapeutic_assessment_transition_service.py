@@ -43,7 +43,7 @@ def _contract() -> dict:
     return value
 
 
-def _authorize(actor: dict, case: dict, track: str, target: str) -> None:
+def _authorize(conn, actor: dict, case: dict, track: str, target: str) -> None:
     role = str(actor.get("role") or "")
     if role in PARTICIPANT_ROLES:
         _assert_participant(actor, case)
@@ -58,7 +58,7 @@ def _authorize(actor: dict, case: dict, track: str, target: str) -> None:
             raise TherapeuticAssessmentError("forbidden", "该状态变化需要正式研究角色处理。", 403)
         return
 
-    _assert_researcher(actor, case)
+    _assert_researcher(conn, actor, case)
     if track == "hypothesis" and target in REVIEW_ONLY_HYPOTHESIS_TARGETS and role not in REVIEW_ROLES:
         raise TherapeuticAssessmentError("forbidden", "该假设状态需要督导或管理员复核。", 403)
     if track == "safety" and target in REVIEW_ONLY_SAFETY_TARGETS and role not in REVIEW_ROLES:
@@ -121,7 +121,7 @@ def transition_case(
         if role in PARTICIPANT_ROLES:
             _assert_participant(actor, case)
         else:
-            _assert_researcher(actor, case)
+            _assert_researcher(conn, actor, case)
 
         replay = conn.execute(
             """
@@ -160,7 +160,7 @@ def transition_case(
                 409,
                 {"track": track, "current_state": current_state, "target_state": target},
             )
-        _authorize(actor, case, track, target)
+        _authorize(conn, actor, case, track, target)
 
         workflow_state = target if track == "workflow" else str(case["workflow_state"])
         safety_state = target if track == "safety" else str(case["safety_state"])

@@ -201,7 +201,7 @@ def record_screening(
                 )
             return _present(item), 200
         case = _case_row(conn, case_id)
-        _assert_read(actor, case)
+        _assert_read(conn, actor, case)
         role = str(actor.get("role") or "")
         if (
             str(actor["id"]) != str(case["participant_user_id"])
@@ -295,7 +295,7 @@ def record_screening(
 def latest_screening(actor: dict, case_id: str) -> dict:
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_read(actor, case)
+        _assert_read(conn, actor, case)
         row = conn.execute(
             """SELECT * FROM therapeutic_assessment_launch_screenings
             WHERE case_id = ? ORDER BY created_at DESC LIMIT 1""",

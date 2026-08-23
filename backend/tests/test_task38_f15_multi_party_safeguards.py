@@ -64,7 +64,28 @@ def _seed(app):
         }
 
 
-def _init(client, headers):
+def _grant_supervisor_scope(client):
+    with client.application.app_context():
+        from database import get_connection, now_iso
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                """INSERT OR IGNORE INTO therapeutic_assessment_work_queue (
+                id, case_id, queue_type, task_code, required_competency,
+                priority, status, scope_snapshot_json, assigned_user_id,
+                due_at, version, created_by, created_at, updated_at
+                ) VALUES ('queue-f15', 'case-f15', 'supervision', 'multi_party_safeguards',
+                          'T3', 'normal', 'claimed', '{}', 's-f15',
+                          '2099-01-01T00:00:00+00:00', 1, 's-f15', ?, ?)""",
+                (timestamp, timestamp),
+            )
+            conn.commit()
+
+
+def _init(client, headers, *, scoped=True):
+    if scoped:
+        _grant_supervisor_scope(client)
     return client.post(
         "/api/therapeutic-assessment/cases/case-f15/multi-party-safeguards",
         headers={**headers["s-f15"], "Idempotency-Key": "f15-init"},
@@ -109,13 +130,35 @@ def test_policy_defaults_to_closed_separate_and_non_equalizing():
 def test_supervisor_initializes_two_party_scope_without_joint_sharing(tmp_path, monkeypatch):
     app = _app(tmp_path, monkeypatch)
     headers = _seed(app)
-    response = _init(app.test_client(), headers)
+    client = app.test_client()
+    assert _init(client, headers, scoped=False).status_code == 404
+    response = _init(client, headers)
     assert response.status_code == 201
     data = response.get_json()["data"]
     assert data["status"] == "blocked_pending_multi_party"
     assert data["joint_feedback_allowed"] is False
     assert set(data["party_user_ids"]) == {"party-a", "party-b"}
     assert all(value == "pending" for value in data["party_consents"].values())
+    with app.app_context():
+        from database import get_connection
+
+        with get_connection() as conn:
+            conn.execute("DELETE FROM therapeutic_assessment_work_queue WHERE id = 'queue-f15'")
+            conn.commit()
+    assert client.get(
+        "/api/therapeutic-assessment/cases/case-f15/multi-party-safeguards",
+        headers=headers["s-f15"],
+    ).status_code == 404
+    assert client.patch(
+        "/api/therapeutic-assessment/cases/case-f15/multi-party-safeguards/gates",
+        headers={**headers["s-f15"], "Idempotency-Key": "f15-no-scope-gates"},
+        json={
+            "t3_evidence_ref": "evidence:t3-multi",
+            "ethics_evidence_ref": "evidence:ethics-multi",
+            "pilot_evidence_ref": "evidence:a0-a3-multi",
+            "expected_version": data["version"],
+        },
+    ).status_code == 404
 
 
 def test_any_safety_signal_forces_separate_support_without_exposing_party(tmp_path, monkeypatch):
@@ -190,7 +233,7 @@ def test_outsider_and_unassigned_researcher_are_denied(tmp_path, monkeypatch):
         "/api/therapeutic-assessment/cases/case-f15/multi-party-safeguards",
         headers=headers["outsider"],
     )
-    assert denied.status_code == 403
+    assert denied.status_code == 404
 
 
 def test_public_contract_and_clients_expose_multi_party_protection(tmp_path, monkeypatch):

@@ -114,12 +114,12 @@ def get_data_item(actor: dict, item_id: str) -> dict:
         if row is None:
             raise TherapeuticAssessmentError("not_found", "没有找到该资料。", 404)
         item = row_to_dict(row)
+        if not _can_read(conn, actor, item):
+            raise TherapeuticAssessmentError("not_found", "没有找到该资料。", 404)
         if item["status"] == "withdrawn":
             raise TherapeuticAssessmentError("forbidden", "该资料授权已撤回。", 403)
         if _expired(item):
             raise TherapeuticAssessmentError("expired", "该资料授权已过期。", 410)
-        if not _can_read(conn, actor, item):
-            raise TherapeuticAssessmentError("forbidden", "该资料未向当前账号共享。", 403)
         write_audit_log(conn, "therapeutic_assessment_data_item_viewed", str(actor["id"]), "therapeutic_assessment_data_item", item_id, {"visibility": item["visibility"]})
         conn.commit()
         return _present(item)
@@ -138,7 +138,7 @@ def update_consent(actor: dict, item_id: str, payload: dict, idempotency_key: st
         actor_id = str(actor["id"])
         involved = {str(item["subject_user_id"]), *json_loads(item["involved_user_ids_json"], [])}
         if actor_id not in involved:
-            raise TherapeuticAssessmentError("forbidden", "只有资料主体或涉及者可以更新同意。", 403)
+            raise TherapeuticAssessmentError("not_found", "没有找到该资料。", 404)
         replay = conn.execute(
             """SELECT data_item_id, action FROM therapeutic_assessment_data_consents
             WHERE actor_id = ? AND idempotency_key = ?""",

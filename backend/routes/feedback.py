@@ -102,6 +102,7 @@ def _match_diary_training_rules(feedback_result: dict) -> list[dict]:
 def generate():
     payload = request.get_json(silent=True) or {}
     diary_id = payload.get("diary_id")
+    authorized_diary_user_id = None
 
     with get_connection() as conn:
         source_payload = dict(payload)
@@ -110,9 +111,10 @@ def generate():
             if diary is None:
                 return fail("not_found", "未找到对应的情绪事件记录", status=404)
             try:
-                require_admin_or_owner(diary["user_id"])
+                require_admin_or_owner(diary["user_id"], conn=conn)
             except ValueError as exc:
                 return auth_error_response(exc)
+            authorized_diary_user_id = str(diary["user_id"])
             source_payload.update(row_to_dict(diary))
 
         risk_result = check_text_risk(_feedback_risk_text(source_payload), source="feedback")
@@ -129,10 +131,13 @@ def generate():
             )
 
         feedback_id = new_id("feedback")
-        try:
-            user_id = require_user_id(source_payload)
-        except ValueError as exc:
-            return fail("validation_error", str(exc), status=400)
+        if authorized_diary_user_id is not None:
+            user_id = authorized_diary_user_id
+        else:
+            try:
+                user_id = require_user_id(source_payload)
+            except ValueError as exc:
+                return fail("validation_error", str(exc), status=400)
         timestamp = now_iso()
         conn.execute(
             """

@@ -141,7 +141,7 @@ def create_evidence(actor: dict, case_id: str, payload: dict, idempotency_key: s
         if str(actor.get("role") or "") in {"parent", "student"}:
             _assert_participant(actor, case)
         else:
-            _assert_researcher(actor, case)
+            _assert_researcher(conn, actor, case)
             from services.therapeutic_assessment_competency_service import (
                 assert_task_authorized,
             )
@@ -227,7 +227,7 @@ def create_action_followup(
             if str(action_item["participant_user_id"]) != str(actor["id"]):
                 raise TherapeuticAssessmentError("forbidden", "只能随访自己的行动记录。", 403)
         else:
-            _assert_researcher(actor, case)
+            _assert_researcher(conn, actor, case)
 
     evidence_payload = dict(payload)
     evidence_payload.update(
@@ -253,7 +253,7 @@ def create_action_followup(
 def list_evidence(actor: dict, case_id: str) -> dict:
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_read(actor, case)
+        _assert_read(conn, actor, case)
         rows = rows_to_dicts(
             conn.execute(
                 "SELECT * FROM therapeutic_assessment_evidence_items WHERE case_id = ? ORDER BY created_at, id",
@@ -295,7 +295,7 @@ def review_hypothesis(actor: dict, evidence_id: str, payload: dict, idempotency_
         if item["kind"] != "H":
             raise TherapeuticAssessmentError("validation_error", "只有H项进入人工假设复核。")
         case = _case_row(conn, str(item["case_id"]))
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         from services.therapeutic_assessment_competency_service import (
             assert_task_authorized,
         )

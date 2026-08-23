@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from database import get_connection, json_loads, load_content_json, now_iso, row_to_dict, write_audit_log
+from database import json_loads, load_content_json, now_iso, row_to_dict, write_audit_log
 
 
 RELATIONSHIP_WORKSHEET_IDS = {
@@ -86,36 +86,27 @@ def enrollment_by_id(conn, enrollment_id: str) -> dict | None:
 
 
 def ensure_researcher_assignment(conn, actor: dict, enrollment: dict) -> dict:
-    """Claim an unassigned enrollment for a researcher and reject cross-researcher writes."""
+    """Require an explicit assignment for cross-participant research writes."""
 
     if actor.get("role") == "admin":
         return enrollment
-    if actor.get("role") == "supervisor":
-        ensure_researcher_access(actor, enrollment)
+    if actor.get("role") not in {"researcher", "supervisor"}:
         return enrollment
-    if actor.get("role") != "researcher":
-        return enrollment
-    from services.research_access_service import ResearchAccessError, claim_enrollment, has_object_scope
-
-    actor_id = str(actor.get("id") or "")
-    if has_object_scope(conn, actor, enrollment):
-        return enrollment
-    try:
-        claim_enrollment(actor, str(enrollment["id"]), f"legacy-auto-{enrollment['id']}-{actor_id}")
-    except ResearchAccessError as exc:
-        raise RelationshipPilotError(exc.code, exc.message, exc.status, exc.details) from exc
-    refreshed = enrollment_by_id(conn, enrollment["id"])
-    if not refreshed:
-        raise RelationshipPilotError("not_found", "没有找到可操作的报名记录。", 404)
-    return refreshed
+    ensure_researcher_access(actor, enrollment, conn=conn)
+    return enrollment
 
 
-def ensure_researcher_access(actor: dict, enrollment: dict) -> None:
+def ensure_researcher_access(actor: dict, enrollment: dict, *, conn=None) -> None:
     if actor.get("role") not in RESEARCH_ROLES:
         return
     from services.research_access_service import ResearchAccessError, require_object_scope
 
     try:
+        if conn is not None:
+            require_object_scope(conn, actor, enrollment, "research.participant.read")
+            return
+        from database import get_connection
+
         with get_connection() as access_conn:
             require_object_scope(access_conn, actor, enrollment, "research.participant.read")
     except ResearchAccessError as exc:

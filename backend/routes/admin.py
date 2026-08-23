@@ -8,7 +8,7 @@ from io import StringIO
 from flask import Blueprint, Response, request
 
 from database import get_connection, json_dumps, json_loads, load_content_json, now_iso, write_audit_log
-from routes.auth_utils import AuthError, auth_error_response, require_role
+from routes.auth_utils import AuthError, auth_error_response, require_capability, require_role
 from services.privacy_request_service import research_revoked_filter
 from routes.utils import fail, ok, parse_bool, parse_int
 from services.content_loader import ContentLoadError, load_parent_scales, load_student_scales
@@ -737,7 +737,7 @@ def _assessment_result_from_row(row) -> dict:
 @bp.get("/assessment-results")
 def list_admin_assessment_results():
     try:
-        require_role("admin", "researcher", allow_legacy_admin=True)
+        actor = require_capability("research.participant.read", allow_legacy_admin=True)
     except AuthError as exc:
         return auth_error_response(exc)
 
@@ -746,6 +746,23 @@ def list_admin_assessment_results():
     profile_model_id = request.args.get("profile_model_id")
     where = []
     params: list = []
+    if actor.get("role") in {"researcher", "supervisor"}:
+        where.append(
+            """
+            user_id IN (
+                SELECT enrollment.user_id
+                FROM relationship_pilot_enrollments enrollment
+                JOIN research_scope_assignments assignment
+                  ON assignment.enrollment_id = enrollment.id
+                WHERE assignment.actor_id = ?
+                  AND assignment.assignment_role = ?
+                  AND assignment.status = 'active'
+                  AND (assignment.expires_at IS NULL OR assignment.expires_at > ?)
+                  AND enrollment.status IN ('enrolled', 'active')
+            )
+            """
+        )
+        params.extend([str(actor["id"]), str(actor["role"]), now_iso()])
     if worksheet_id:
         where.append("worksheet_id = ?")
         params.append(worksheet_id)
@@ -816,20 +833,9 @@ def _parent_long_rows(rows) -> list[dict]:
 def export_csv():
     export_type = request.args.get("type", "diaries")
     try:
-        actor = require_role("admin", "researcher", allow_legacy_admin=True)
+        actor = require_capability("research.export", allow_legacy_admin=True)
     except AuthError as exc:
         return auth_error_response(exc)
-    if actor["role"] == "researcher" and export_type not in {
-        "profile",
-        "student_profiles",
-        "records",
-        "parent_assessments",
-        "raw_wide",
-        "long",
-        "codebook",
-        "cards",
-    }:
-        return fail("forbidden", "researcher 仅可访问脱敏研究导出", status=403)
     limit, limit_error = _parse_export_limit(request.args.get("limit"))
     if limit_error:
         return limit_error

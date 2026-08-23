@@ -71,7 +71,7 @@ def test_schema_034_and_binding_does_not_grant_access(tmp_path, monkeypatch):
     case = _case(client, headers)
     created = _create(client, headers, case["id"]).get_json()["data"]
     denied = client.get(f"/api/therapeutic-assessment/data-items/{created['id']}", headers=headers["p2-f05"])
-    assert denied.status_code == 403
+    assert denied.status_code == 404
     with app.app_context():
         from database import CURRENT_SCHEMA_VERSION
         assert CURRENT_SCHEMA_VERSION >= "2026_07_27_038"
@@ -91,7 +91,7 @@ def test_named_professional_only_and_no_raw_content(tmp_path, monkeypatch):
     denied = client.get(f"/api/therapeutic-assessment/data-items/{created['id']}", headers=headers["s-f05"])
     assert raw.status_code == 400
     assert allowed.status_code == 200
-    assert denied.status_code == 403
+    assert denied.status_code == 404
     assert "raw_content" not in str(allowed.get_json())
 
 
@@ -139,7 +139,7 @@ def test_expired_item_and_shared_feedback_require_explicit_confirmation(tmp_path
     expired_read = client.get(f"/api/therapeutic-assessment/data-items/{expired['id']}", headers=headers["r-f05"])
     shared_read = client.get(f"/api/therapeutic-assessment/data-items/{shared['id']}", headers=headers["p2-f05"])
     assert expired_read.status_code == 410
-    assert shared_read.status_code == 403
+    assert shared_read.status_code == 404
 
 
 def test_notification_preview_is_minimal(tmp_path, monkeypatch):

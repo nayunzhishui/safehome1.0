@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-07-21.2"
+CONTRACT_VERSION = "2026-08-20.f06"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 
@@ -131,6 +131,8 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
         if path in {"/api/ai-qa/evaluation/run", "/api/ai-qa/review/evidence"}:
             return {"mode": "role", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
         return {"mode": "role", "roles": ["researcher", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
+    if path == "/api/admin/assessment-results":
+        return {"mode": "capability", "roles": ["researcher", "supervisor", "admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if module.endswith("routes.admin"):
         return {"mode": "admin", "roles": ["admin"], "legacy_admin_token": True, "showcase_read_bypass": False}
     if path.startswith("/api/research/"):
@@ -173,7 +175,7 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
     return {"mode": "public", "roles": ["public"], "legacy_admin_token": False, "showcase_read_bypass": False}
 
 
-def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
+def _object_scope(path: str, method: str, access: dict[str, Any], source: str) -> str:
     if path == "/api/therapeutic-assessment/quality/runtime":
         return "authenticated_quality_queue_counts_and_pause_state_no_participant_text"
     if "/api/therapeutic-assessment/quality/reviews" in path:
@@ -182,6 +184,29 @@ def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
         return "participant_owned_assigned_or_task_authorized_quality_incident_history"
     if path.endswith("/quality-incidents"):
         return "participant_owned_or_authorized_case_quality_incident_append_only"
+    if path.startswith("/api/therapeutic-assessment/data-items/"):
+        if path.endswith("/consent"):
+            return "data_subject_or_involved_participant_consent_control"
+        return "data_controller_or_provider_or_explicit_allowed_viewer_with_dynamic_consent"
+    if path.startswith("/api/therapeutic-assessment/cases/") and path.endswith("/data-items"):
+        return "case_participant_owned_data_item_creation"
+    if path.startswith("/api/therapeutic-assessment/cases") or path.startswith(
+        (
+            "/api/therapeutic-assessment/actions/",
+            "/api/therapeutic-assessment/evidence/",
+            "/api/therapeutic-assessment/feedback-versions/",
+            "/api/therapeutic-assessment/safety-events/",
+        )
+    ):
+        return "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin"
+    if path.startswith("/api/therapeutic-assessment"):
+        return "module_resource_role_or_owner_scope_without_therapeutic_case_claim"
+    if path == "/api/admin/export":
+        return "research_export_capability_admin_only"
+    if path == "/api/admin/assessment-results":
+        return "active_unexpired_assignment_for_researcher_supervisor_full_for_admin"
+    if path == "/api/feedback/generate":
+        return "self_or_research_feedback_write_capability_and_active_assignment"
     if path == "/api/operations-governance/public-status":
         return "non_sensitive_operations_gate_status_only"
     if path.startswith("/api/operations-governance"):
@@ -210,18 +235,34 @@ def _object_scope(path: str, access: dict[str, Any], source: str) -> str:
         return "own_synthetic_research_sessions_only"
     if path.startswith("/api/ai-qa/") and access["mode"] != "public":
         return "internal_synthetic_evidence_role_scoped"
+    if path.startswith("/api/research/access/assignments"):
+        return "admin_managed_versioned_assignment_lifecycle"
+    if path == "/api/research/access/capabilities":
+        return "authenticated_actor_capability_summary"
+    if path.startswith("/api/research/access/enrollments/"):
+        return "researcher_explicit_enrollment_claim_without_implicit_write_claim"
+    if path.startswith("/api/research/analysis/"):
+        return "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation"
+    if path.startswith("/api/research/deliveries"):
+        return "relationship_delivery_bound_to_active_unexpired_enrollment_assignment"
     if path.startswith("/api/research/"):
-        return "assigned_participants_for_researcher_full_for_supervisor_admin"
+        return "active_unexpired_assignment_for_researcher_supervisor_full_for_admin"
     if path.startswith("/api/privacy/admin/"):
         return "full_for_supervisor_admin"
     if path.startswith("/api/privacy/"):
         return "self"
     if path.startswith("/api/messages"):
-        return "self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin"
+        if method == "GET":
+            return "self_for_participant_active_assignment_for_researcher_supervisor_full_for_admin"
+        if path == "/api/messages" and method == "POST":
+            return "explicit_active_assignment_for_research_message_send"
+        return "self_only_for_message_read_state_writes"
     if path.startswith("/api/relationship-pilot/"):
-        return "self_or_assigned_participant_or_supervisor_admin"
+        return "self_or_explicit_active_unexpired_assignment_or_admin_capability"
     if any(token in source for token in ["resolve_actor_user_id", "resolve_user_id_for_query", "require_admin_or_owner"]):
-        return "self_or_authorized_role"
+        if method == "GET":
+            return "self_or_active_participant_assignment_or_admin_capability"
+        return "self_only_or_dedicated_domain_command"
     if access["mode"] == "public":
         return "not_applicable_or_development_legacy"
     return "role_scoped"
@@ -388,7 +429,7 @@ def build_contract(flask_app) -> dict[str, Any]:
                     "handler": rule.endpoint,
                     "module": module,
                     "access": access,
-                    "object_scope": _object_scope(path, access, source),
+                    "object_scope": _object_scope(path, method, access, source),
                     "request": _request_contract(path, method, source),
                     "response": {
                         "envelope": "health" if path.startswith("/health") or path == "/readyz" else ("standard_or_download" if "download" in source and "Response(" in source else "standard"),

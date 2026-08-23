@@ -587,7 +587,7 @@ def create_quality_incident(
         if replay:
             return _present_incident(row_to_dict(replay)), 200
         case = _case_row(conn, case_id)
-        _assert_read(actor, case)
+        _assert_read(conn, actor, case)
         if str(actor.get("role") or "") in {"parent", "student"} and str(actor["id"]) != str(case["participant_user_id"]):
             raise TherapeuticAssessmentError("forbidden", "只能为自己的协作记录提交更正或投诉。", 403)
         if feedback_id:

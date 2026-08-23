@@ -50,7 +50,7 @@ def get_request_user_id() -> str | None:
     return str(user_id) if user_id else None
 
 
-def require_admin_or_owner(record_user_id: str | None) -> str:
+def require_admin_or_owner(record_user_id: str | None, *, conn=None) -> str:
     from routes.auth_utils import AuthError, get_current_actor
 
     try:
@@ -58,11 +58,63 @@ def require_admin_or_owner(record_user_id: str | None) -> str:
     except AuthError as exc:
         raise ValueError(str(exc)) from exc
     if actor is not None:
-        if actor.get("role") in {"admin", "supervisor", "researcher"}:
-            return str(actor["id"])
         if record_user_id and str(actor.get("id")) == str(record_user_id):
             return str(actor["id"])
-        raise ValueError("只能访问自己的数据")
+        if actor.get("role") in {"admin", "supervisor", "researcher"} and record_user_id:
+            from database import get_connection, write_audit_log
+            from services.research_access_service import (
+                ResearchAccessError,
+                require_participant_scope,
+            )
+
+            access_conn = conn or get_connection()
+            owns_connection = conn is None
+            capability_id = "research.participant.read"
+            if request.method not in {"GET", "HEAD", "OPTIONS"}:
+                if request.path != "/api/feedback/generate":
+                    write_audit_log(
+                        access_conn,
+                        "participant_object_scope_denied",
+                        str(actor["id"]),
+                        "participant_scope",
+                        "hidden",
+                        {"path": request.path, "reason": "generic_cross_write"},
+                    )
+                    if owns_connection:
+                        access_conn.commit()
+                    raise AuthError("没有找到可访问的记录", status=404, code="not_found")
+                capability_id = "research.feedback.write"
+            try:
+                require_participant_scope(
+                    access_conn,
+                    actor,
+                    str(record_user_id),
+                    capability_id=capability_id,
+                )
+            except ResearchAccessError as exc:
+                write_audit_log(
+                    access_conn,
+                    "participant_object_scope_denied",
+                    str(actor["id"]),
+                    "participant_scope",
+                    "hidden",
+                    {"path": request.path, "reason": exc.code},
+                )
+                if owns_connection:
+                    access_conn.commit()
+                raise AuthError("没有找到可访问的记录", status=404, code="not_found") from exc
+            write_audit_log(
+                access_conn,
+                "participant_object_scope_granted",
+                str(actor["id"]),
+                "participant_scope",
+                str(record_user_id),
+                {"path": request.path, "capability_id": capability_id},
+            )
+            if owns_connection:
+                access_conn.commit()
+            return str(actor["id"])
+        raise AuthError("没有找到可访问的记录", status=404, code="not_found")
 
     if str(current_app.config.get("APP_ENV", "development")).lower() != "development":
         raise ValueError("需要先登录")
@@ -73,7 +125,13 @@ def require_admin_or_owner(record_user_id: str | None) -> str:
 
 
 def auth_error_response(exc: ValueError):
-    return fail("unauthorized", str(exc), status=401)
+    status = int(getattr(exc, "status", 401))
+    code = getattr(exc, "code", None) or {
+        401: "unauthorized",
+        403: "forbidden",
+        404: "not_found",
+    }.get(status, "unauthorized")
+    return fail(code, str(exc), status=status, details=getattr(exc, "details", None))
 
 
 def require_fields(payload: dict, fields: list[str]) -> list[str]:

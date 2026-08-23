@@ -17,6 +17,7 @@ from services.therapeutic_assessment_service import (
     FORMAL_ROLES,
     REVIEW_ROLES,
     TherapeuticAssessmentError,
+    _authorization_scope_matches,
     _idempotency,
 )
 
@@ -280,25 +281,6 @@ def list_authorizations(actor: dict, params: dict) -> dict:
     }
 
 
-def _scope_matches(scope: dict, case: dict) -> bool:
-    case_ids = {str(item) for item in scope.get("case_ids") or []}
-    complexities = {str(item) for item in scope.get("complexity_scopes") or []}
-    readiness = {str(item) for item in scope.get("readiness_levels") or []}
-    snapshots = scope.get("case_scope_snapshots")
-    if isinstance(snapshots, dict) and str(case["id"]) in snapshots:
-        snapshot = snapshots[str(case["id"])]
-        if not isinstance(snapshot, dict) or (
-            str(snapshot.get("complexity_scope") or "") != str(case["complexity_scope"])
-            or str(snapshot.get("readiness_level") or "") != str(case["readiness_level"])
-        ):
-            return False
-    return (
-        (not case_ids or str(case["id"]) in case_ids)
-        and (not complexities or str(case["complexity_scope"]) in complexities)
-        and (not readiness or str(case["readiness_level"]) in readiness)
-    )
-
-
 def assert_task_authorized(conn, actor: dict, case: dict, task_code: str) -> dict:
     policy = _policy()
     required_level = policy["minimum_level"].get(task_code)
@@ -335,7 +317,7 @@ def assert_task_authorized(conn, actor: dict, case: dict, task_code: str) -> dic
         ):
             continue
         scope = json_loads(row.get("scope_json"), {})
-        if _scope_matches(scope, case):
+        if _authorization_scope_matches(scope, case):
             return _present(row)
     raise TherapeuticAssessmentError(
         "competency_authorization_required",
@@ -362,7 +344,7 @@ def require_reauthorization_after_major_event(
     )
     affected = [
         row for row in rows
-        if _scope_matches(json_loads(row.get("scope_json"), {}), case)
+        if _authorization_scope_matches(json_loads(row.get("scope_json"), {}), case)
     ]
     for row in affected:
         before = int(row["version"])

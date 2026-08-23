@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime, timedelta, timezone
 
 from database import (
     get_connection,
@@ -22,6 +23,7 @@ from services.showcase_access_service import allow_showcase_researcher_platform_
 REGISTRY_FILE = "researcher_capability_registry.json"
 ACTIVE_ENROLLMENT_STATUSES = {"enrolled", "active"}
 ASSIGNMENT_ROLES = {"researcher", "supervisor"}
+DEFAULT_ASSIGNMENT_DAYS = 30
 
 
 class ResearchAccessError(Exception):
@@ -105,9 +107,10 @@ def active_assignment(conn, enrollment_id: str, actor_id: str, assignment_role: 
         """
         SELECT * FROM research_scope_assignments
         WHERE enrollment_id = ? AND actor_id = ? AND assignment_role = ? AND status = 'active'
+          AND (expires_at IS NULL OR expires_at > ?)
         ORDER BY updated_at DESC LIMIT 1
         """,
-        (enrollment_id, actor_id, assignment_role),
+        (enrollment_id, actor_id, assignment_role, now_iso()),
     ).fetchone()
     return row_to_dict(row)
 
@@ -119,18 +122,76 @@ def has_object_scope(conn, actor: dict, enrollment: dict) -> bool:
     if role not in ASSIGNMENT_ROLES:
         return str(actor.get("id")) == str(enrollment.get("user_id"))
     actor_id = str(actor.get("id") or "")
-    if role == "researcher" and str(enrollment.get("assigned_researcher_id") or "") == actor_id:
-        return True
     return bool(active_assignment(conn, str(enrollment["id"]), actor_id, role))
+
+
+def has_participant_scope(conn, actor: dict, participant_user_id: str) -> bool:
+    """Return whether the actor can access one participant across modules."""
+
+    actor_id = str(actor.get("id") or "")
+    role = str(actor.get("role") or "")
+    participant_user_id = str(participant_user_id or "")
+    if not participant_user_id:
+        return False
+    if actor_id == participant_user_id and role not in ASSIGNMENT_ROLES:
+        return True
+    if role == "admin":
+        return (
+            conn.execute(
+                "SELECT 1 FROM users WHERE id = ? AND COALESCE(status, 'active') != 'deleted'",
+                (participant_user_id,),
+            ).fetchone()
+            is not None
+        )
+    if role not in ASSIGNMENT_ROLES:
+        return False
+    return (
+        conn.execute(
+            """
+            SELECT 1
+            FROM research_scope_assignments assignment
+            JOIN relationship_pilot_enrollments enrollment
+              ON enrollment.id = assignment.enrollment_id
+            WHERE enrollment.user_id = ?
+              AND enrollment.status IN ('enrolled', 'active')
+              AND assignment.actor_id = ?
+              AND assignment.assignment_role = ?
+              AND assignment.status = 'active'
+              AND (assignment.expires_at IS NULL OR assignment.expires_at > ?)
+            LIMIT 1
+            """,
+            (participant_user_id, actor_id, role, now_iso()),
+        ).fetchone()
+        is not None
+    )
+
+
+def require_participant_scope(
+    conn,
+    actor: dict,
+    participant_user_id: str,
+    capability_id: str = "research.participant.read",
+) -> None:
+    """Authorize a cross-module participant target without revealing existence."""
+
+    assert_capability(actor, capability_id)
+    if has_participant_scope(conn, actor, participant_user_id):
+        return
+    raise ResearchAccessError(
+        "not_found",
+        "没有找到可访问的参与者资料。",
+        404,
+        {"required_capability": capability_id},
+    )
 
 
 def require_object_scope(conn, actor: dict, enrollment: dict, capability_id: str) -> None:
     if has_object_scope(conn, actor, enrollment):
         return
     raise ResearchAccessError(
-        "forbidden",
-        "当前账号没有访问该参与者资料的范围权限。",
-        403,
+        "not_found",
+        "没有找到可访问的参与者资料。",
+        404,
         {"required_capability": capability_id},
     )
 
@@ -161,13 +222,14 @@ def _insert_assignment(
     idempotency_key: str,
 ) -> dict:
     timestamp = now_iso()
+    expires_at = (datetime.now(timezone.utc) + timedelta(days=DEFAULT_ASSIGNMENT_DAYS)).isoformat()
     assignment_id = new_id("research_scope")
     conn.execute(
         """
         INSERT INTO research_scope_assignments (
             id, enrollment_id, actor_id, assignment_role, status, version,
-            idempotency_key, assigned_by, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, 'active', 1, ?, ?, ?, ?)
+            idempotency_key, assigned_by, expires_at, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, 'active', 1, ?, ?, ?, ?, ?)
         """,
         (
             assignment_id,
@@ -176,6 +238,7 @@ def _insert_assignment(
             assignment_role,
             idempotency_key or None,
             assigned_by,
+            expires_at,
             timestamp,
             timestamp,
         ),
@@ -271,9 +334,10 @@ def create_assignment(actor: dict, payload: dict, idempotency_key: str) -> tuple
             """
             SELECT * FROM research_scope_assignments
             WHERE enrollment_id = ? AND assignment_role = ? AND status = 'active'
+              AND (expires_at IS NULL OR expires_at > ?)
             ORDER BY updated_at DESC LIMIT 1
             """,
-            (enrollment_id, assignment_role),
+            (enrollment_id, assignment_role, now_iso()),
         ).fetchone()
         if existing:
             existing_item = row_to_dict(existing)
@@ -282,7 +346,11 @@ def create_assignment(actor: dict, payload: dict, idempotency_key: str) -> tuple
             raise ResearchAccessError("assignment_conflict", "该报名已有有效分配，请使用转交操作。", 409)
         if assignment_role == "researcher":
             legacy_actor = str(enrollment.get("assigned_researcher_id") or "")
-            if legacy_actor and legacy_actor != target_actor_id:
+            assignment_history = conn.execute(
+                "SELECT 1 FROM research_scope_assignments WHERE enrollment_id = ? AND assignment_role = 'researcher' LIMIT 1",
+                (enrollment_id,),
+            ).fetchone()
+            if not assignment_history and legacy_actor and legacy_actor != target_actor_id:
                 raise ResearchAccessError("assignment_conflict", "该报名已有有效分配，请先完成迁移或转交。", 409)
         item = _insert_assignment(
             conn, enrollment_id, target_actor_id, assignment_role, str(actor["id"]), idempotency_key
@@ -323,11 +391,17 @@ def claim_enrollment(actor: dict, enrollment_id: str, idempotency_key: str) -> t
             """
             SELECT * FROM research_scope_assignments
             WHERE enrollment_id = ? AND assignment_role = 'researcher' AND status = 'active'
+              AND (expires_at IS NULL OR expires_at > ?)
             ORDER BY updated_at DESC LIMIT 1
             """,
+            (enrollment_id, now_iso()),
+        ).fetchone()
+        assignment_history = conn.execute(
+            "SELECT 1 FROM research_scope_assignments WHERE enrollment_id = ? AND assignment_role = 'researcher' LIMIT 1",
             (enrollment_id,),
         ).fetchone()
-        if (legacy_actor and legacy_actor != actor_id) or (active and active["actor_id"] != actor_id):
+        legacy_conflict = not assignment_history and legacy_actor and legacy_actor != actor_id
+        if legacy_conflict or (active and active["actor_id"] != actor_id):
             raise ResearchAccessError(
                 "forbidden", "该报名当前不可领取。", 403, {"required_capability": "research.assignment.claim"}
             )

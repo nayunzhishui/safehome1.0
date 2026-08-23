@@ -55,6 +55,18 @@ def _seed(app):
                         now,
                     ),
                 )
+            conn.execute(
+                """INSERT INTO therapeutic_assessment_authorizations (
+                    id, user_id, competency_level, task_code, scope_json,
+                    supervisor_user_id, evidence_ref, starts_at, expires_at,
+                    status, version, granted_by, created_at, updated_at
+                ) VALUES ('auth-f03-supervision', 'researcher-f03', 'T3',
+                    'supervision', '{"complexity_scopes":["individual_adult_low_risk"]}',
+                    'supervisor-f03', 'test-evidence:supervision', ?,
+                    '2099-01-01T00:00:00+00:00', 'active', 1,
+                    'supervisor-f03', ?, ?)""",
+                (now, now, now),
+            )
             conn.commit()
         return {
             role: {"Authorization": f"Bearer {generate_auth_token({'id': actor_id, 'role': role})}"}
@@ -68,7 +80,17 @@ def _case(client, headers):
         headers={**headers["parent"], "Idempotency-Key": "f03-case"},
         json={"assessment_question": "我想理解一次沟通", "shared_scope": ["question"], "consent": True},
     )
-    return response.get_json()["data"]
+    case = response.get_json()["data"]
+    with client.application.app_context():
+        from database import get_connection
+
+        with get_connection() as conn:
+            conn.execute(
+                "UPDATE therapeutic_assessment_cases SET assigned_researcher_id = 'researcher-f03' WHERE id = ?",
+                (case["id"],),
+            )
+            conn.commit()
+    return case
 
 
 def _post(client, headers, case_id, payload, key):

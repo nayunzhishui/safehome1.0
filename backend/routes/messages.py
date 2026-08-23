@@ -2,8 +2,14 @@
 
 from flask import Blueprint, request
 
-from routes.auth_utils import AuthError, auth_error_response, require_capability, require_login
-from routes.utils import fail, ok, parse_int, resolve_user_id_for_query
+from routes.auth_utils import (
+    AuthError,
+    auth_error_response,
+    require_capability,
+    require_login,
+    resolve_actor_user_id,
+)
+from routes.utils import fail, ok, parse_int
 from services.message_service import (
     MessageServiceError,
     get_user_message,
@@ -17,20 +23,21 @@ from services.message_service import (
 bp = Blueprint("messages", __name__, url_prefix="/api/messages")
 
 
-def _resolve_message_user_id(requested_user_id: str | None = None) -> tuple[str | None, tuple | None]:
+def _resolve_message_user_id(
+    requested_user_id: str | None = None,
+) -> tuple[str | None, dict | None, tuple | None]:
     try:
         actor = require_login(allow_legacy_admin=True)
     except AuthError as exc:
-        return None, auth_error_response(exc)
-    if actor["role"] in {"admin", "supervisor"}:
-        try:
-            return resolve_user_id_for_query(requested_user_id), None
-        except ValueError as exc:
-            return None, fail("validation_error", str(exc), status=400)
-    actor_id = str(actor["id"])
-    if requested_user_id and str(requested_user_id) != actor_id:
-        return None, fail("forbidden", "只能查看自己的消息。", status=403)
-    return actor_id, None
+        return None, None, auth_error_response(exc)
+    try:
+        user_id = resolve_actor_user_id(
+            requested_user_id=requested_user_id,
+            allow_legacy_admin=True,
+        )
+    except AuthError as exc:
+        return None, actor, auth_error_response(exc)
+    return user_id, actor, None
 
 
 def _service_error(exc: MessageServiceError):
@@ -39,7 +46,7 @@ def _service_error(exc: MessageServiceError):
 
 @bp.get("")
 def list_messages():
-    user_id, error = _resolve_message_user_id(request.args.get("user_id"))
+    user_id, _actor, error = _resolve_message_user_id(request.args.get("user_id"))
     if error:
         return error
     page = max(1, parse_int(request.args.get("page"), 1))
@@ -66,7 +73,7 @@ def send_researcher_message():
 @bp.post("/read-all")
 def mark_all_messages_read():
     payload = request.get_json(silent=True) or {}
-    user_id, error = _resolve_message_user_id(payload.get("user_id") or request.args.get("user_id"))
+    user_id, _actor, error = _resolve_message_user_id(payload.get("user_id") or request.args.get("user_id"))
     if error:
         return error
     return ok(mark_all_read(user_id))
@@ -74,11 +81,17 @@ def mark_all_messages_read():
 
 @bp.get("/<message_id>")
 def get_message(message_id: str):
-    user_id, error = _resolve_message_user_id(request.args.get("user_id"))
+    user_id, actor, error = _resolve_message_user_id(request.args.get("user_id"))
     if error:
         return error
     try:
-        return ok(get_user_message(user_id, message_id))
+        return ok(
+            get_user_message(
+                user_id,
+                message_id,
+                mark_read=str(actor["id"]) == str(user_id),
+            )
+        )
     except MessageServiceError as exc:
         return _service_error(exc)
 
@@ -86,7 +99,7 @@ def get_message(message_id: str):
 @bp.post("/<message_id>/read")
 def mark_message_read(message_id: str):
     payload = request.get_json(silent=True) or {}
-    user_id, error = _resolve_message_user_id(payload.get("user_id") or request.args.get("user_id"))
+    user_id, _actor, error = _resolve_message_user_id(payload.get("user_id") or request.args.get("user_id"))
     if error:
         return error
     try:

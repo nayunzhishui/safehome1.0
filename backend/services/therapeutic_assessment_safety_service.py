@@ -167,7 +167,7 @@ def configure_responsibility_chain(
     timestamp = now_iso()
     with get_connection() as conn:
         case = _case_row(conn, case_id)
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         for user_id in (responsible, supervisor):
             user = conn.execute(
                 "SELECT role, status FROM users WHERE id = ?",
@@ -235,7 +235,7 @@ def create_safety_signal(actor: dict, case_id: str, payload: dict, idempotency_k
         if str(actor.get("role") or "") in PARTICIPANT_ROLES:
             _assert_participant(actor, case)
         else:
-            _assert_researcher(actor, case)
+            _assert_researcher(conn, actor, case)
         replay = conn.execute(
             "SELECT * FROM therapeutic_assessment_safety_events WHERE detected_by = ? AND idempotency_key = ?",
             (actor_id, key),
@@ -308,7 +308,7 @@ def resolve_safety_event(actor: dict, event_id: str, payload: dict, idempotency_
             raise TherapeuticAssessmentError("not_found", "没有找到该安全事件。", 404)
         event = row_to_dict(row)
         case = _case_row(conn, str(event["case_id"]))
-        _assert_researcher(actor, case)
+        _assert_researcher(conn, actor, case)
         chain = _chain(conn, str(event["case_id"]))
         if chain is None or chain["status"] != "active":
             raise TherapeuticAssessmentError("human_chain_required", "责任链未生效，不能解除安全暂停。", 409)

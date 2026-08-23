@@ -164,8 +164,8 @@ REQUIRED_HEALTH_TABLES = [
     "computation_deletion_tombstones",
     "computation_legal_holds",
 ]
-CURRENT_SCHEMA_VERSION = "2026_07_29_061"
-CURRENT_SCHEMA_NAME = "therapeutic_assessment_stop_recovery"
+CURRENT_SCHEMA_VERSION = "2026_08_20_062"
+CURRENT_SCHEMA_NAME = "rc0810_f06_object_scope"
 IDENTITY_FIELDS = ("username", "wechat_openid", "phone_hash")
 MYSQL_INDEXABLE_VARCHAR_LENGTH = 191
 MYSQL_VARCHAR_COLUMNS = {
@@ -1117,6 +1117,7 @@ def ensure_schema_columns(conn) -> None:
         ensure_column(conn, "relationship_longitudinal_entries", column, definition)
 
     ensure_column(conn, "relationship_pilot_enrollments", "assigned_researcher_id", "TEXT")
+    ensure_column(conn, "research_scope_assignments", "expires_at", "TEXT")
 
     message_columns = {
         "sender_id": "TEXT",

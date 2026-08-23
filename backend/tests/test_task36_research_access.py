@@ -155,9 +155,9 @@ def test_admin_assignment_enforces_researcher_and_supervisor_object_scope(tmp_pa
     ).status_code == 201
 
     assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["researcher-a"]).status_code == 200
-    assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["researcher-b"]).status_code == 403
+    assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["researcher-b"]).status_code == 404
     assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["supervisor-a"]).status_code == 200
-    assert client.get("/api/relationship-pilot/enrollments/enrollment-b", headers=headers["supervisor-a"]).status_code == 403
+    assert client.get("/api/relationship-pilot/enrollments/enrollment-b", headers=headers["supervisor-a"]).status_code == 404
     assert client.get("/api/relationship-pilot/enrollments/enrollment-b", headers=headers["admin-a"]).status_code == 200
 
 
@@ -204,7 +204,7 @@ def test_assignment_revocation_and_version_conflict_are_enforced(tmp_path, monke
 
     assert stale.status_code == 409
     assert revoked.status_code == 200
-    assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["researcher-a"]).status_code == 403
+    assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["researcher-a"]).status_code == 404
 
 
 def test_assignment_update_replays_same_result_and_rejects_changed_payload(tmp_path, monkeypatch):
@@ -260,7 +260,7 @@ def test_assignment_transfer_is_atomic_and_revokes_old_scope(tmp_path, monkeypat
 
     assert transferred.status_code == 200
     assert transferred.get_json()["data"]["active_assignment"]["actor_id"] == "researcher-b"
-    assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["researcher-a"]).status_code == 403
+    assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["researcher-a"]).status_code == 404
     assert client.get("/api/relationship-pilot/enrollments/enrollment-a", headers=headers["researcher-b"]).status_code == 200
 
 
@@ -333,9 +333,9 @@ def test_researcher_unknown_user_growth_is_forbidden_without_object_leak(tmp_pat
         headers=headers["researcher-a"],
     )
 
-    assert response.status_code == 403
+    assert response.status_code == 404
     body = response.get_json()
-    assert body["error"]["code"] == "forbidden"
+    assert body["error"]["code"] == "not_found"
     assert body["error"]["details"]["required_capability"] == "research.report.read"
     assert "not-a-visible-participant" not in json.dumps(body, ensure_ascii=False)
 

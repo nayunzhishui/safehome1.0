@@ -19,6 +19,8 @@ from services.therapeutic_assessment_service import (
     FORMAL_ROLES,
     REVIEW_ROLES,
     TherapeuticAssessmentError,
+    _assert_read,
+    _assert_researcher,
     _case_row,
     _event,
     _idempotency,
@@ -79,28 +81,26 @@ def _row(conn, case_id: str) -> dict:
     return row_to_dict(row)
 
 
-def _visible(actor: dict, case: dict, safeguard: dict) -> bool:
+def _visible(conn, actor: dict, case: dict, safeguard: dict) -> bool:
     actor_id = str(actor["id"])
-    role = str(actor.get("role") or "")
-    return (
-        actor_id in {
-            str(safeguard["guardian_user_id"]),
-            str(safeguard["child_user_id"]),
-        }
-        or role in REVIEW_ROLES
-        or (
-            role == "researcher"
-            and actor_id == str(case.get("assigned_researcher_id") or "")
-        )
-    )
+    if actor_id in {
+        str(safeguard["guardian_user_id"]),
+        str(safeguard["child_user_id"]),
+    }:
+        return True
+    try:
+        _assert_read(conn, actor, case)
+    except TherapeuticAssessmentError:
+        return False
+    return True
 
 
-def _assert_visible(actor: dict, case: dict, safeguard: dict) -> None:
-    if not _visible(actor, case, safeguard):
+def _assert_visible(conn, actor: dict, case: dict, safeguard: dict) -> None:
+    if not _visible(conn, actor, case, safeguard):
         raise TherapeuticAssessmentError(
-            "forbidden",
-            "当前账号没有该未成年人保护记录的对象范围权限。",
-            403,
+            "not_found",
+            "没有找到可访问的未成年人保护记录。",
+            404,
         )
 
 
@@ -158,6 +158,7 @@ def initialize(
         raise TherapeuticAssessmentError("validation_error", "监护人、儿童和case版本不能为空。")
     with get_connection() as conn:
         case = _case_row(conn, case_id)
+        _assert_researcher(conn, actor, case)
         existing = conn.execute(
             """SELECT * FROM therapeutic_assessment_child_safeguards
             WHERE created_by = ? AND idempotency_key = ?""",
@@ -263,7 +264,7 @@ def update_decision(
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         item = _row(conn, case_id)
-        _assert_visible(actor, case, item)
+        _assert_visible(conn, actor, case, item)
         replay = conn.execute(
             """SELECT 1 FROM therapeutic_assessment_events
             WHERE actor_id = ? AND idempotency_key = ? AND case_id = ?""",
@@ -358,6 +359,8 @@ def update_gates(
     if not isinstance(expected, int) or not all(refs.values()):
         raise TherapeuticAssessmentError("validation_error", "T3、伦理、试点证据和版本不能为空。")
     with get_connection() as conn:
+        case = _case_row(conn, case_id)
+        _assert_researcher(conn, actor, case)
         item = _row(conn, case_id)
         replay = conn.execute(
             """SELECT 1 FROM therapeutic_assessment_events
@@ -417,7 +420,7 @@ def get_safeguard(actor: dict, case_id: str) -> dict:
     with get_connection() as conn:
         case = _case_row(conn, case_id)
         item = _row(conn, case_id)
-        _assert_visible(actor, case, item)
+        _assert_visible(conn, actor, case, item)
         write_audit_log(
             conn,
             "therapeutic_assessment_child_safeguards_viewed",

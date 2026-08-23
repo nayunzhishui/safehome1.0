@@ -141,6 +141,7 @@ SCHEMA_SQL = [
         version INTEGER NOT NULL DEFAULT 1,
         idempotency_key TEXT,
         assigned_by TEXT NOT NULL,
+        expires_at TEXT,
         revoked_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
