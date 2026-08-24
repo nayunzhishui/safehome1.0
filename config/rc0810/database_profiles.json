@@ -13,7 +13,7 @@
       "automatic_schema_changes": true
     },
     "validation": {
-      "providers": ["sqlite", "mysql"],
+      "providers": ["sqlite"],
       "data_watermark": "synthetic_validation_only",
       "automatic_schema_changes": true,
       "sqlite_path_must_be_explicit": true

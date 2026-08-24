@@ -41,10 +41,10 @@ jobs:
         run: python scripts/ci_fail_job.py backend
       - name: Run backend tests
         working-directory: backend
-        run: python -m pytest tests -q
+        run: python -m pytest tests -q --junitxml=ci-backend.xml
       - name: Record evidence
         if: always()
-        run: python scripts/write_ci_job_evidence.py --job backend --status "${{ job.status }}"
+        run: python scripts/write_ci_job_evidence.py --job backend --status "${{ job.status }}" --test-report backend/ci-backend.xml
 
   ai:
     runs-on: ubuntu-24.04
@@ -62,12 +62,12 @@ jobs:
             analysis/text_analysis/requirements.txt
       - run: python -m pip install -r backend/requirements.txt
       - name: Run AI quality gate
-        run: python -m pytest backend/tests/test_task37_c08_ai_quality.py -q
+        run: python -m pytest backend/tests/test_task37_c08_ai_quality.py -q --junitxml=ci-ai.xml
       - name: Controlled failure
         run: python scripts/ci_fail_job.py ai
       - name: Record evidence
         if: always()
-        run: python scripts/write_ci_job_evidence.py --job ai --status "${{ job.status }}"
+        run: python scripts/write_ci_job_evidence.py --job ai --status "${{ job.status }}" --test-report ci-ai.xml
 
   mysql-redis:
     runs-on: ubuntu-24.04
@@ -133,12 +133,12 @@ jobs:
           CONTENT_DIR: ${{ github.workspace }}/content
           REDIS_ENABLED: "0"
           RAG_EMBEDDING_PROVIDER: hash
-        run: python -m pytest backend/tests/test_engineering_ai_runtime_20260807.py -q
+        run: python -m pytest backend/tests/test_engineering_ai_runtime_20260807.py -q --junitxml=ci-mysql-redis.xml
       - name: Controlled failure
         run: python scripts/ci_fail_job.py mysql-redis
       - name: Record evidence
         if: always()
-        run: python scripts/write_ci_job_evidence.py --job mysql-redis --status "${{ job.status }}"
+        run: python scripts/write_ci_job_evidence.py --job mysql-redis --status "${{ job.status }}" --test-report ci-mysql-redis.xml
 
   web:
     runs-on: ubuntu-24.04
@@ -161,7 +161,7 @@ jobs:
         run: python3 scripts/ci_fail_job.py web
       - name: Record evidence
         if: always()
-        run: python3 scripts/write_ci_job_evidence.py --job web --status "${{ job.status }}" --artifact apps/web/dist
+        run: python3 scripts/write_ci_job_evidence.py --job web --status "${{ job.status }}" --test-count 0 --artifact apps/web/dist
 
   npm-audit:
     runs-on: ubuntu-24.04
@@ -182,7 +182,7 @@ jobs:
         run: python3 scripts/ci_fail_job.py npm-audit
       - name: Record evidence
         if: always()
-        run: python3 scripts/write_ci_job_evidence.py --job npm-audit --status "${{ job.status }}"
+        run: python3 scripts/write_ci_job_evidence.py --job npm-audit --status "${{ job.status }}" --test-count 0
 
   miniprogram:
     runs-on: ubuntu-24.04
@@ -211,7 +211,7 @@ jobs:
         run: python scripts/ci_fail_job.py miniprogram
       - name: Record evidence
         if: always()
-        run: python scripts/write_ci_job_evidence.py --job miniprogram --status "${{ job.status }}" --artifact apps/miniprogram/app.json
+        run: python scripts/write_ci_job_evidence.py --job miniprogram --status "${{ job.status }}" --test-count 0 --artifact apps/miniprogram/app.json
 
   content-api:
     runs-on: ubuntu-24.04
@@ -236,7 +236,7 @@ jobs:
         run: python scripts/ci_fail_job.py content-api
       - name: Record evidence
         if: always()
-        run: python scripts/write_ci_job_evidence.py --job content-api --status "${{ job.status }}" --artifact shared/contracts/api-contract.json --artifact shared/contracts/api-boundary-audit.json
+        run: python scripts/write_ci_job_evidence.py --job content-api --status "${{ job.status }}" --test-count 0 --artifact shared/contracts/api-contract.json --artifact shared/contracts/api-boundary-audit.json
 
   artifact:
     runs-on: ubuntu-24.04
@@ -254,6 +254,7 @@ jobs:
         if: always()
         run: >-
           python scripts/write_ci_job_evidence.py --job artifact --status "${{ job.status }}"
+          --test-count 0
           --artifact Dockerfile --artifact config/rc0810/build_profiles.json
           --artifact apps/web/package-lock.json
 
@@ -273,12 +274,12 @@ jobs:
             analysis/text_analysis/requirements.txt
       - run: python -m pip install -r backend/requirements.txt
       - run: python scripts/verify_rc0810_f22_security.py --self-check
-      - run: python -m pytest backend/tests/test_rc0810_f22.py -q -p no:cacheprovider
+      - run: python -m pytest backend/tests/test_rc0810_f22.py -q -p no:cacheprovider --junitxml=ci-security-contract.xml
       - name: Controlled failure
         run: python scripts/ci_fail_job.py security-contract
       - name: Record evidence
         if: always()
-        run: python scripts/write_ci_job_evidence.py --job security-contract --status "${{ job.status }}" --artifact docs/02_专项进度与验收/rc0810_f22a_security_baseline.json
+        run: python scripts/write_ci_job_evidence.py --job security-contract --status "${{ job.status }}" --test-report ci-security-contract.xml --artifact docs/02_专项进度与验收/rc0810_f22a_security_baseline.json
 
   release-gate:
     if: always()

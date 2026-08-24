@@ -43,6 +43,7 @@ def _production_env(monkeypatch, *, provider="mysql", approved=True):
 
 def test_f11_contract_freezes_mysql_only_production_and_explicit_heads():
     payload = json.loads(CONTRACT.read_text(encoding="utf-8"))
+    assert payload["profiles"]["validation"]["providers"] == ["sqlite"]
     production = payload["profiles"]["production"]
     assert production["providers"] == ["mysql"]
     assert production["automatic_schema_changes"] is False
@@ -182,8 +183,32 @@ def test_f11_synthetic_migration_fixture_preserves_ids_counts_status_versions_an
     payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
     assert service.validate_synthetic_migration_fixture(payload) == []
     changed = copy.deepcopy(payload)
-    changed["after"][0]["owner_id"] = "wrong-owner"
-    assert "migration_manifest_mismatch" in service.validate_synthetic_migration_fixture(changed)
+    changed["records"].pop()
+    assert "fixture_categories_incomplete" in service.validate_synthetic_migration_fixture(changed)
+
+
+def test_f11_synthetic_verifier_executes_real_pending_migrations():
+    completed = __import__("subprocess").run(
+        [sys.executable, str(BACKEND / "scripts" / "migrate_rc0810_f11_database_profile.py")],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    result = json.loads(completed.stdout)
+    assert result["records_compared"] == 9
+    assert result["before_after_equal"] is True
+    assert result["synthetic_database_mutated"] is True
+    assert result["production_database_mutated"] is False
+    assert result["database_deleted_after_verification"] is True
+    assert result["applied_migrations"] == [
+        "2026_08_07_062",
+        "2026_08_07_063",
+        "2026_08_24_064",
+        "2026_08_24_065",
+        "2026_08_24_066",
+    ]
 
 
 def test_f11_connection_timeout_is_sanitized(monkeypatch, tmp_path):

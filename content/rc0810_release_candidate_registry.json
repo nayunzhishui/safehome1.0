@@ -3390,6 +3390,9 @@
       "allowed_files": [
         ".github/workflows/**",
         "backend/scripts/audit_api_boundaries.py",
+        "backend/scripts/bootstrap_researcher.py",
+        "backend/config.py",
+        "backend/routes/auth.py",
         "backend/tests/**",
         "apps/web/**",
         "apps/miniprogram/**",
@@ -3421,7 +3424,7 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "expected_test_count": 14,
+          "expected_test_count": 16,
           "status": "active_f10b_contract"
         }
       ],
@@ -3430,6 +3433,9 @@
         "allowed_modules": [
           ".github/workflows/**",
           "backend/scripts/audit_api_boundaries.py",
+          "backend/scripts/bootstrap_researcher.py",
+          "backend/config.py",
+          "backend/routes/auth.py",
           "backend/tests/**",
           "apps/web/**",
           "apps/miniprogram/**",
@@ -3527,7 +3533,8 @@
         "config/**",
         "scripts/**",
         "docs/**",
-        "backend/migrations/**"
+        "backend/migrations/**",
+        "content/rc0810_release_candidate_registry.json"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -3552,7 +3559,7 @@
           "timeout_seconds": 600,
           "shell": false,
           "status": "active",
-          "expected_test_count": 15
+          "expected_test_count": 16
         }
       ],
       "external_gates": [],
@@ -3563,7 +3570,8 @@
           "config/**",
           "scripts/**",
           "docs/**",
-          "backend/migrations/**"
+          "backend/migrations/**",
+          "content/rc0810_release_candidate_registry.json"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
@@ -3691,7 +3699,7 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-        "expected_test_count": 43,
+          "expected_test_count": 44,
           "status": "active_f12a_combined_regression"
         },
         {

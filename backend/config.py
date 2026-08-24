@@ -53,6 +53,10 @@ class Config:
     CONTENT_DIR = Path(os.environ.get("CONTENT_DIR", DEFAULT_CONTENT_DIR))
     SECRET_KEY = os.environ.get("SECRET_KEY", DEFAULT_SECRET_KEY)
     ADMIN_EXPORT_TOKEN = os.environ.get("ADMIN_EXPORT_TOKEN", DEFAULT_ADMIN_EXPORT_TOKEN)
+    DEPLOYMENT_CLOUDBASE_ENV_ID = os.environ.get("DEPLOYMENT_CLOUDBASE_ENV_ID", "").strip()
+    DEPLOYMENT_CLOUDBASE_SERVICE = os.environ.get("DEPLOYMENT_CLOUDBASE_SERVICE", "").strip()
+    DEPLOYMENT_PUBLIC_BASE_URL = os.environ.get("DEPLOYMENT_PUBLIC_BASE_URL", "").strip().rstrip("/")
+    DEPLOYMENT_TARGET_ENVIRONMENT = os.environ.get("DEPLOYMENT_TARGET_ENVIRONMENT", "").strip()
     TRUST_CLOUDBASE_IDENTITY_HEADERS = os.environ.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", "").strip().lower() in {
         "1",
         "true",

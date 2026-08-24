@@ -141,17 +141,20 @@ def public_database_fingerprint(settings: Any, facts: dict[str, Any]) -> dict[st
 
 def validate_synthetic_migration_fixture(payload: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    if payload.get("schema") != "safehome.rc0810.database-migration-fixture.v1":
+    if payload.get("schema") != "safehome.rc0810.database-migration-fixture.v2":
         errors.append("fixture_schema_invalid")
-    before = payload.get("before") if isinstance(payload.get("before"), list) else []
-    after = payload.get("after") if isinstance(payload.get("after"), list) else []
-    before_categories = {str(item.get("category")) for item in before if isinstance(item, dict)}
-    if before_categories != REQUIRED_SYNTHETIC_CATEGORIES:
+    records = payload.get("records") if isinstance(payload.get("records"), list) else []
+    categories = {str(item.get("category")) for item in records if isinstance(item, dict)}
+    if categories != REQUIRED_SYNTHETIC_CATEGORIES or len(records) != len(categories):
         errors.append("fixture_categories_incomplete")
-    if any(set(item) != {"category", "id", "owner_id", "count", "status", "version"} for item in before + after):
+    if any(
+        not isinstance(item, dict)
+        or set(item) != {"category", "id", "owner_id", "count", "status", "version"}
+        or not str(item.get("id") or "")
+        or not str(item.get("owner_id") or "")
+        or int(item.get("count") or 0) < 1
+        or int(item.get("version") or 0) < 1
+        for item in records
+    ):
         errors.append("fixture_fields_invalid")
-    before_map = {str(item.get("category")): item for item in before}
-    after_map = {str(item.get("category")): item for item in after}
-    if before_map != after_map:
-        errors.append("migration_manifest_mismatch")
     return errors

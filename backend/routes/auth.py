@@ -774,6 +774,8 @@ def admin_create_account():
     temporary_credential = payload.get("temporary_credential") is True
     credential_receipt_id = str(payload.get("credential_receipt_id") or "").strip() or None
     credential_expires_at = str(payload.get("credential_expires_at") or "").strip() or None
+    target_environment = str(payload.get("target_environment") or "").strip()
+    target_binding = payload.get("target_binding")
 
     if len(username) < 3:
         return fail("validation_error", "用户名至少需要 3 个字符", status=400)
@@ -784,6 +786,42 @@ def admin_create_account():
     if temporary_credential and (not credential_receipt_id or not credential_expires_at):
         return fail("validation_error", "一次性凭据需要receipt ID和过期时间", status=400)
     if temporary_credential:
+        app_environment = str(current_app.config.get("APP_ENV") or "development").lower()
+        if not target_environment:
+            if app_environment == "production":
+                return fail("environment_binding_required", "云端一次性凭据需要目标环境绑定", status=400)
+            target_environment = "local"
+        if target_environment not in {"local", "test_cloud", "production"}:
+            return fail("validation_error", "一次性凭据目标环境无效", status=400)
+        if target_environment != "local":
+            expected_target_environment = str(
+                current_app.config.get("DEPLOYMENT_TARGET_ENVIRONMENT") or ""
+            )
+            expected_binding = {
+                "cloud_env_id": str(current_app.config.get("DEPLOYMENT_CLOUDBASE_ENV_ID") or ""),
+                "container_service": str(current_app.config.get("DEPLOYMENT_CLOUDBASE_SERVICE") or ""),
+                "base_url": str(current_app.config.get("DEPLOYMENT_PUBLIC_BASE_URL") or "").rstrip("/"),
+            }
+            if not expected_target_environment or not all(expected_binding.values()):
+                return fail(
+                    "environment_binding_unconfigured",
+                    "服务端未配置云环境身份，禁止应用云端一次性凭据",
+                    status=503,
+                )
+            if target_environment != expected_target_environment:
+                return fail(
+                    "environment_binding_mismatch",
+                    "一次性凭据环境类别与当前部署不一致",
+                    status=409,
+                )
+            normalized_binding = dict(target_binding) if isinstance(target_binding, dict) else {}
+            normalized_binding["base_url"] = str(normalized_binding.get("base_url") or "").rstrip("/")
+            if normalized_binding != expected_binding:
+                return fail(
+                    "environment_binding_mismatch",
+                    "一次性凭据目标与当前云环境不一致",
+                    status=409,
+                )
         password_error = _validate_new_password(password)
         if password_error:
             return fail("validation_error", password_error, status=400)

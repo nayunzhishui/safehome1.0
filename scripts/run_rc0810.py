@@ -504,6 +504,20 @@ def _git_text(*args: str) -> str:
     return _run_git(*args).decode("utf-8", errors="replace").strip()
 
 
+def _committed_diff_files(base_commit: str | None, head_commit: str) -> list[str]:
+    if not base_commit or base_commit == head_commit:
+        return []
+    raw = _run_git(
+        "-c",
+        "core.quotepath=false",
+        "diff",
+        "--name-only",
+        "-z",
+        f"{base_commit}..{head_commit}",
+    )
+    return sorted(_nul_paths(raw))
+
+
 def _nul_paths(value: bytes) -> list[str]:
     return sorted(
         item.decode("utf-8", errors="replace")
@@ -1379,6 +1393,23 @@ def review_wave(
                 state["updated_at"] = utc_now()
                 write_state(state)
                 raise HarnessError("波次冻结点源码或注册表已变化；checkpoint测试证据已失效。")
+            actual_modified_files = sorted(
+                set(
+                    _committed_diff_files(
+                        wave_state.get("base_commit"), current_snapshot["git"]["head"]
+                    )
+                )
+                | {
+                    path
+                    for record in task_records.values()
+                    for path in record["main_review_checkpoint"]["actual_modified_files"]
+                }
+            )
+            modified_files_bytes = json.dumps(
+                actual_modified_files,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")
             packet = {
                 "schema": "safehome.rc0810.review-packet.v1",
                 "task": f"WAVE-{wave_id}",
@@ -1392,15 +1423,8 @@ def review_wave(
                 "registry_sha256": sha256_bytes(REGISTRY_PATH.read_bytes()),
                 "execution_units": wave["execution_units"],
                 "freeze_unit": wave["freeze_unit"],
-                "actual_modified_files": sorted(
-                    {
-                        path
-                        for record in task_records.values()
-                        for path in record["main_review_checkpoint"][
-                            "actual_modified_files"
-                        ]
-                    }
-                ),
+                "actual_modified_files": actual_modified_files,
+                "actual_modified_files_sha256": sha256_bytes(modified_files_bytes),
                 "test_evidence": [
                     outcome
                     for record in task_records.values()
@@ -2033,6 +2057,41 @@ def _registry_transition_is_scoped(
     }
 
 
+def _registry_transition_is_wave_fix_scoped(
+    previous: dict[str, Any], current: dict[str, Any], wave: dict[str, Any] | None
+) -> bool:
+    if wave is None:
+        return False
+    unit_ids = set(wave.get("execution_units", []))
+    parent_ids = {
+        unit.get("task")
+        for unit in current.get("execution_units", [])
+        if unit.get("id") in unit_ids
+    }
+    if None in parent_ids or not parent_ids:
+        return False
+    ignored = {"version", "tasks", "execution_units"}
+    if {
+        key: value for key, value in previous.items() if key not in ignored
+    } != {key: value for key, value in current.items() if key not in ignored}:
+        return False
+    if {
+        item["id"]: item for item in previous["tasks"] if item["id"] not in parent_ids
+    } != {
+        item["id"]: item for item in current["tasks"] if item["id"] not in parent_ids
+    }:
+        return False
+    return {
+        item["id"]: item
+        for item in previous["execution_units"]
+        if item["id"] not in unit_ids
+    } == {
+        item["id"]: item
+        for item in current["execution_units"]
+        if item["id"] not in unit_ids
+    }
+
+
 def _previous_wave_reviews_complete(
     registry: dict[str, Any], state: dict[str, Any], wave_id: str
 ) -> bool:
@@ -2154,10 +2213,13 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             reopen_pending = (
                 existing.get("status") == "review_pending_wave"
                 and wave is not None
-                and state.get("wave_checkpoints", {})
-                .get(wave["id"], {})
-                .get("status")
-                == "review_failed"
+                and (
+                    state.get("wave_checkpoints", {})
+                    .get(wave["id"], {})
+                    .get("review", {})
+                    .get("decision")
+                    == "fix_required"
+                )
             )
             if existing.get("status") not in {"review_failed", "fixing", "stale"} and not reopen_pending:
                 raise HarnessError(f"{task_id}已启动，拒绝重复执行。")
@@ -2193,8 +2255,20 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             current_registry_sha256 = sha256_bytes(REGISTRY_PATH.read_bytes())
             if current_registry_sha256 != state.get("registry_sha256"):
                 previous_registry = _previous_registry_snapshot(state)
+                wave_fix_scoped = (
+                    wave is not None
+                    and isinstance(state.get("wave_checkpoints", {}).get(wave["id"]), dict)
+                    and state["wave_checkpoints"][wave["id"]]
+                    .get("review", {})
+                    .get("decision")
+                    == "fix_required"
+                    and _registry_transition_is_wave_fix_scoped(
+                        previous_registry, registry, wave
+                    )
+                )
                 if not (
                     _registry_transition_is_scoped(previous_registry, registry, task_id)
+                    or wave_fix_scoped
                     or _registry_transition_is_wave_harness_upgrade(
                         previous_registry, registry
                     )

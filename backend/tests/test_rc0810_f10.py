@@ -28,6 +28,7 @@ CHECK_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "check.yml"
 CONTROLLED_FAILURE_PATH = ROOT / "scripts" / "ci_fail_job.py"
 RELEASE_GATE_PATH = ROOT / "scripts" / "verify_ci_release_gate.py"
 CI_EVIDENCE_PATH = ROOT / "scripts" / "write_ci_job_evidence.py"
+BOOTSTRAP_PATH = ROOT / "backend" / "scripts" / "bootstrap_researcher.py"
 
 
 def _baseline() -> dict:
@@ -417,7 +418,16 @@ def test_f10b_job_evidence_binds_source_locks_artifacts_and_provenance(tmp_path)
         "GITHUB_STEP_SUMMARY": str(summary_path),
     }
     completed = subprocess.run(
-        [sys.executable, str(CI_EVIDENCE_PATH), "--job", "artifact", "--artifact", "Dockerfile"],
+        [
+            sys.executable,
+            str(CI_EVIDENCE_PATH),
+            "--job",
+            "artifact",
+            "--test-count",
+            "0",
+            "--artifact",
+            "Dockerfile",
+        ],
         cwd=ROOT, env=env, capture_output=True, text=True, check=False,
     )
     assert completed.returncode == 0, completed.stderr
@@ -431,6 +441,10 @@ def test_f10b_job_evidence_binds_source_locks_artifacts_and_provenance(tmp_path)
     }
     assert len(payload["artifacts"]["Dockerfile"]) == 64
     assert payload["provenance"]["run_id"] == "123"
+    assert payload["test_count"] == 0
+    assert payload["dependency_versions"]["python"]["Flask"]["declared"] == ["==3.1.3"]
+    assert "installed" in payload["dependency_versions"]["python"]["Flask"]
+    assert payload["dependency_versions"]["node"]["nanoid"]
     assert payload["sbom_summary"]["status"] == "dependency_inputs_bound"
     assert payload["attestation_summary"]["status"] == "pending_f22b"
     assert payload["production_gate_eligible"] is False
@@ -448,3 +462,60 @@ def test_f10b_job_evidence_rejects_untrusted_source_identity(tmp_path):
     )
     assert completed.returncode != 0
     assert "GITHUB_SHA" in completed.stderr
+
+
+def test_f10b_bootstrap_rejects_arbitrary_cloud_url_and_binds_request_identity(tmp_path, monkeypatch):
+    spec = importlib.util.spec_from_file_location("bootstrap_researcher_f10_test", BOOTSTRAP_PATH)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    receipt_path = module.prepare(tmp_path / "receipt.json", target_environment="test_cloud")
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert receipt["target_binding"] == {
+        "cloud_env_id": "prod-d3gl35otiaa7c8d24",
+        "container_service": "flask-gh3l",
+        "base_url": module.DEFAULT_BASE_URL,
+    }
+    try:
+        module._validate_target_environment(receipt, "https://arbitrary-production.example")
+    except ValueError as exc:
+        assert "批准" in str(exc) or "绑定" in str(exc)
+    else:
+        raise AssertionError("test_cloud receipt must reject an arbitrary HTTPS target")
+
+
+def test_f10b_server_rejects_bootstrap_binding_for_another_cloud_target(tmp_path, monkeypatch):
+    sys.path.insert(0, str(ROOT / "backend"))
+    for name in list(sys.modules):
+        if name in {"app", "config", "database"} or name.startswith("routes."):
+            sys.modules.pop(name, None)
+    monkeypatch.setenv("APP_ENV", "testing")
+    monkeypatch.setenv("DB_PROVIDER", "sqlite")
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "binding.sqlite3"))
+    monkeypatch.setenv("CONTENT_DIR", str(ROOT / "content"))
+    monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "binding-admin-token")
+    monkeypatch.setenv("DEPLOYMENT_TARGET_ENVIRONMENT", "test_cloud")
+    monkeypatch.setenv("DEPLOYMENT_CLOUDBASE_ENV_ID", "approved-env")
+    monkeypatch.setenv("DEPLOYMENT_CLOUDBASE_SERVICE", "approved-service")
+    monkeypatch.setenv("DEPLOYMENT_PUBLIC_BASE_URL", "https://approved.example")
+    app = importlib.import_module("app").app
+    response = app.test_client().post(
+        "/api/auth/admin-create-account",
+        headers={"X-Admin-Token": "binding-admin-token"},
+        json={
+            "username": "bound_researcher",
+            "password": "Temporary-Binding-Password-123!",
+            "role": "researcher",
+            "temporary_credential": True,
+            "credential_receipt_id": "credential_receipt_binding_test",
+            "credential_expires_at": "2099-01-01T00:00:00+00:00",
+            "target_environment": "test_cloud",
+            "target_binding": {
+                "cloud_env_id": "arbitrary-production-env",
+                "container_service": "arbitrary-service",
+                "base_url": "https://arbitrary-production.example",
+            },
+        },
+    )
+    assert response.status_code == 409
+    assert response.get_json()["error"]["code"] == "environment_binding_mismatch"

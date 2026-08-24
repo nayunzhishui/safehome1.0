@@ -798,6 +798,29 @@ def test_main_review_checkpoint_advances_inside_wave_but_not_across_boundary(tmp
     packet_result = run_cli("review", "--wave", "A", env=env)
     assert packet_result.returncode == 0, packet_result.stderr
     packet = json.loads(packet_result.stdout)
+    packet_payload = json.loads(
+        Path(packet["review_packet_path"]).read_text(encoding="utf-8")
+    )
+    expected_raw = subprocess.run(
+            [
+                "git",
+                "-c",
+                "core.quotepath=false",
+                "diff",
+                "--name-only",
+                "-z",
+                f'{packet_payload["base_commit"]}..{packet_payload["head_commit"]}',
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=False,
+            check=True,
+        ).stdout.decode("utf-8")
+    expected_files = sorted(path for path in expected_raw.split("\0") if path)
+    assert packet_payload["actual_modified_files"] == expected_files
+    assert packet_payload["actual_modified_files_sha256"] == hashlib.sha256(
+        json.dumps(expected_files, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     decision_path = write_review_decision(packet, reviewer_id="fixed-reviewer")
     accepted = run_cli(
         "review",
@@ -905,3 +928,25 @@ def test_wave_fix_required_keeps_pending_and_reuses_fixed_reviewer(tmp_path):
     report = json.loads(run_cli("report", env=env).stdout)
     assert report["tasks"]["RC0810-F10-A"]["status"] == "review_pending_wave"
     assert report["production_release_approved"] is False
+    assert run_cli("start", "RC0810-F10-A", env=env).returncode == 0
+    assert run_cli("verify", "RC0810-F10-A", env=env).returncode == 0
+    assert run_cli("review", "RC0810-F10-A", "--pending-wave", env=env).returncode == 0
+    assert run_cli("start", "RC0810-F10-A", env=env).returncode == 0
+
+
+def test_wave_fix_registry_transition_may_touch_only_tasks_in_same_wave():
+    spec = __import__("importlib.util").util.spec_from_file_location(
+        "rc0810_runner_wave_fix_scope", RUNNER_PATH
+    )
+    module = __import__("importlib.util").util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    previous = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    current = json.loads(json.dumps(previous))
+    wave = previous["review_waves"][0]
+    task_by_id = {task["id"]: task for task in current["tasks"]}
+    task_by_id["RC0810-F10"]["change_budget"]["expected_files"] += 1
+    task_by_id["RC0810-F11"]["change_budget"]["expected_files"] += 1
+    assert module._registry_transition_is_wave_fix_scoped(previous, current, wave) is True
+    task_by_id["RC0810-F13"]["change_budget"]["expected_files"] += 1
+    assert module._registry_transition_is_wave_fix_scoped(previous, current, wave) is False

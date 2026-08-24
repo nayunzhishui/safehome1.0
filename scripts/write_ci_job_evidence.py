@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.metadata
 import json
 import os
 import platform
+import re
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -51,11 +54,67 @@ def _node_version() -> str | None:
         return None
 
 
+def _dependency_versions() -> dict[str, dict]:
+    python_dependencies: dict[str, dict[str, object]] = {}
+    for relative_path in DEPENDENCY_INPUTS[:3]:
+        for raw_line in (ROOT / relative_path).read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            match = re.match(r"^([A-Za-z0-9_.-]+)\s*(.*)$", line)
+            if not line or line.startswith("#") or not match:
+                continue
+            name, constraint = match.group(1), match.group(2).strip()
+            record = python_dependencies.setdefault(
+                name,
+                {"declared": [], "installed": None},
+            )
+            if constraint and constraint not in record["declared"]:
+                record["declared"].append(constraint)
+            try:
+                record["installed"] = importlib.metadata.version(name)
+            except importlib.metadata.PackageNotFoundError:
+                pass
+
+    lock = json.loads((ROOT / "apps" / "web" / "package-lock.json").read_text(encoding="utf-8"))
+    node_dependencies: dict[str, str] = {}
+    for package_path, metadata in lock.get("packages", {}).items():
+        if not package_path.startswith("node_modules/") or not isinstance(metadata, dict):
+            continue
+        version = metadata.get("version")
+        if version:
+            node_dependencies[package_path.removeprefix("node_modules/")] = str(version)
+    return {
+        "python": dict(sorted(python_dependencies.items())),
+        "node": dict(sorted(node_dependencies.items())),
+    }
+
+
+def _unique_test_count(paths: list[str]) -> tuple[int | None, str]:
+    if not paths:
+        return None, "not_declared"
+    identities: set[tuple[str, str, str]] = set()
+    for relative_path in paths:
+        path = ROOT / relative_path
+        if not path.is_file():
+            return None, "report_missing_due_prior_failure"
+        root = ET.parse(path).getroot()
+        for case in root.iter("testcase"):
+            identities.add(
+                (
+                    str(case.get("file") or ""),
+                    str(case.get("classname") or ""),
+                    str(case.get("name") or ""),
+                )
+            )
+    return len(identities), "junit_unique_cases"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--job", required=True)
     parser.add_argument("--status", default="success")
     parser.add_argument("--artifact", action="append", default=[])
+    parser.add_argument("--test-count", type=int)
+    parser.add_argument("--test-report", action="append", default=[])
     args = parser.parse_args()
 
     head = _git("rev-parse", "HEAD")
@@ -63,6 +122,16 @@ def main() -> int:
     if expected_head and expected_head != head:
         print(f"GITHUB_SHA {expected_head} does not match checked-out HEAD {head}", file=sys.stderr)
         return 1
+    if args.test_count is not None and args.test_report:
+        print("--test-count and --test-report cannot be used together", file=sys.stderr)
+        return 1
+    if args.test_count is not None and args.test_count < 0:
+        print("--test-count must be non-negative", file=sys.stderr)
+        return 1
+    if args.test_count is None:
+        test_count, test_count_source = _unique_test_count(args.test_report)
+    else:
+        test_count, test_count_source = args.test_count, "explicit_non_test_count"
     dependencies = {path: _sha256(ROOT / path) for path in DEPENDENCY_INPUTS}
     artifacts = {path: _sha256(ROOT / path) for path in args.artifact}
     payload = {
@@ -77,6 +146,9 @@ def main() -> int:
             "python": platform.python_version(),
             "node": _node_version(),
         },
+        "test_count": test_count,
+        "test_count_source": test_count_source,
+        "dependency_versions": _dependency_versions(),
         "dependency_inputs": dependencies,
         "artifacts": artifacts,
         "provenance": {

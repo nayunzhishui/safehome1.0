@@ -16,6 +16,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_USERNAME = "safehome_researcher_01"
 DEFAULT_BASE_URL = "https://flask-gh3l-261352-9-1436233118.sh.run.tcloudbase.com"
+CLOUD_TARGETS_PATH = ROOT / "config" / "rc0810" / "miniprogram_cloud_targets.json"
 ALLOWED_BOOTSTRAP_ROLES = {"parent", "student", "researcher", "supervisor", "admin"}
 ALLOWED_TARGET_ENVIRONMENTS = {"local", "test_cloud", "production"}
 ALLOWED_OPERATIONS = {"create", "rotate"}
@@ -43,6 +44,42 @@ def _validate_target_environment(receipt: dict, base_url: str) -> None:
         raise ValueError("非本地凭据不能应用到本地环境。")
     if not is_local and target == "local":
         raise ValueError("本地凭据不能应用到云端环境。")
+    if target != "local":
+        binding = receipt.get("target_binding")
+        if not isinstance(binding, dict):
+            raise ValueError("云端凭据缺少批准环境绑定。")
+        if str(binding.get("base_url") or "").rstrip("/") != base_url.rstrip("/"):
+            raise ValueError("云端地址与receipt批准绑定不一致。")
+        approved = _approved_target(target)
+        if binding != approved:
+            raise ValueError("云端环境或服务与批准绑定不一致。")
+
+
+def _approved_target(target_environment: str) -> dict:
+    contract = json.loads(CLOUD_TARGETS_PATH.read_text(encoding="utf-8"))
+    if target_environment == "test_cloud":
+        candidates = contract["profiles"]["validation"]["allowed_targets"]
+        candidate = next(
+            (
+                item
+                for item in candidates
+                if item.get("target_status") == "validation_integration_only"
+            ),
+            None,
+        )
+        if not candidate:
+            raise ValueError("未冻结test_cloud批准目标。")
+    elif target_environment == "production":
+        if contract.get("production_release_approved") is not True:
+            raise ValueError("生产目标尚未批准，不能生成生产receipt。")
+        candidate = contract["profiles"]["production"]
+    else:
+        raise ValueError("本地环境不需要云端批准绑定。")
+    return {
+        "cloud_env_id": candidate["cloudEnvId"],
+        "container_service": candidate["containerService"],
+        "base_url": candidate["httpBaseUrl"].rstrip("/"),
+    }
 
 
 def prepare(
@@ -89,6 +126,8 @@ def prepare(
         "expires_at": (now + timedelta(hours=24)).isoformat(timespec="seconds"),
         "security_notice": "一次性凭据文件，不得提交 Git；首次登录必须修改密码。",
     }
+    if target_environment != "local":
+        payload["target_binding"] = _approved_target(target_environment)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return target
@@ -112,6 +151,8 @@ def _apply_receipt(receipt_path: Path, base_url: str, admin_token: str, expected
         "temporary_credential": True,
         "credential_receipt_id": receipt["receipt_id"],
         "credential_expires_at": receipt["expires_at"],
+        "target_environment": receipt["target_environment"],
+        "target_binding": receipt.get("target_binding"),
     }
     request = Request(
         f"{base_url.rstrip('/')}/api/auth/admin-create-account",

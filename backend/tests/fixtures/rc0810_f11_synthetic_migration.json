@@ -1,18 +1,7 @@
 {
-  "schema": "safehome.rc0810.database-migration-fixture.v1",
+  "schema": "safehome.rc0810.database-migration-fixture.v2",
   "data_class": "synthetic_only",
-  "before": [
-    {"category": "new_user", "id": "usr_new_001", "owner_id": "usr_new_001", "count": 1, "status": "active", "version": 1},
-    {"category": "legacy_user", "id": "usr_legacy_001", "owner_id": "usr_legacy_001", "count": 1, "status": "active", "version": 3},
-    {"category": "locked_user", "id": "usr_locked_001", "owner_id": "usr_locked_001", "count": 1, "status": "locked", "version": 2},
-    {"category": "disabled_user", "id": "usr_disabled_001", "owner_id": "usr_disabled_001", "count": 1, "status": "disabled", "version": 4},
-    {"category": "historical_assessment", "id": "assessment_001", "owner_id": "usr_legacy_001", "count": 2, "status": "completed", "version": 2},
-    {"category": "training_checkin", "id": "checkin_001", "owner_id": "usr_new_001", "count": 3, "status": "completed", "version": 1},
-    {"category": "message", "id": "message_001", "owner_id": "usr_new_001", "count": 2, "status": "sent", "version": 1},
-    {"category": "research_task", "id": "research_001", "owner_id": "usr_legacy_001", "count": 1, "status": "assigned", "version": 5},
-    {"category": "therapeutic_assessment", "id": "ta_case_001", "owner_id": "usr_legacy_001", "count": 1, "status": "paused", "version": 6}
-  ],
-  "after": [
+  "records": [
     {"category": "new_user", "id": "usr_new_001", "owner_id": "usr_new_001", "count": 1, "status": "active", "version": 1},
     {"category": "legacy_user", "id": "usr_legacy_001", "owner_id": "usr_legacy_001", "count": 1, "status": "active", "version": 3},
     {"category": "locked_user", "id": "usr_locked_001", "owner_id": "usr_locked_001", "count": 1, "status": "locked", "version": 2},
