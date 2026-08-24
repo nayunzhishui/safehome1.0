@@ -38,6 +38,30 @@ RUNTIME_ROOT = Path(
 REGISTRY_SCHEMA = "safehome.rc0810.registry.v1"
 STATE_SCHEMA = "safehome.rc0810.run-state.v1"
 POINTER_SCHEMA = "safehome.rc0810.active-run.v1"
+PRODUCTION_REVIEW_WAVES = [
+    {
+        "id": "A",
+        "execution_units": ["RC0810-F10-B", "RC0810-F11", "RC0810-F12-B"],
+        "freeze_unit": "RC0810-F12-B",
+    },
+    {
+        "id": "B",
+        "execution_units": [
+            "RC0810-F13", "RC0810-F15", "RC0810-F16", "RC0810-F17",
+            "RC0810-F18", "RC0810-F19", "RC0810-F14-B", "RC0810-F20",
+            "RC0810-F21",
+        ],
+        "freeze_unit": "RC0810-F21",
+    },
+    {
+        "id": "C",
+        "execution_units": [
+            "RC0810-F22-B", "RC0810-F23", "RC0810-F24", "RC0810-F25-B",
+            "RC0810-F26",
+        ],
+        "freeze_unit": "RC0810-F26",
+    },
+]
 
 
 class HarnessError(ValueError):
@@ -97,6 +121,27 @@ def task_map(registry: dict[str, Any]) -> dict[str, dict[str, Any]]:
 
 def unit_map(registry: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {unit["id"]: unit for unit in registry["execution_units"]}
+
+
+def review_wave_map(registry: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {wave["id"]: wave for wave in registry.get("review_waves", [])}
+
+
+def _wave_for_unit(registry: dict[str, Any], task_id: str) -> dict[str, Any] | None:
+    return next(
+        (
+            wave
+            for wave in registry.get("review_waves", [])
+            if task_id in wave["execution_units"]
+        ),
+        None,
+    )
+
+
+def _previous_waves(registry: dict[str, Any], wave_id: str) -> list[dict[str, Any]]:
+    waves = registry.get("review_waves", [])
+    position = next(index for index, wave in enumerate(waves) if wave["id"] == wave_id)
+    return waves[:position]
 
 
 def topological_order(registry: dict[str, Any]) -> list[str]:
@@ -276,6 +321,39 @@ def validate_registry(registry: dict[str, Any]) -> None:
         raise HarnessError("早期失败基线波次必须紧跟F00执行。")
     if topological_order(registry) != registry["execution_order"]:
         raise HarnessError("依赖拓扑与冻结顺序不一致。")
+    waves = registry.get("review_waves")
+    if not isinstance(waves, list) or [wave.get("id") for wave in waves] != [
+        "A",
+        "B",
+        "C",
+    ]:
+        raise HarnessError("审查波次必须按A/B/C唯一登记。")
+    wave_units = [unit_id for wave in waves for unit_id in wave.get("execution_units", [])]
+    if (
+        len(wave_units) != len(set(wave_units))
+        or not set(wave_units).issubset(units_by_id)
+        or any(
+            not wave.get("execution_units")
+            or wave.get("freeze_unit") != wave["execution_units"][-1]
+            for wave in waves
+        )
+    ):
+        raise HarnessError("审查波次执行单元或冻结点无效。")
+    positions = [registry["execution_order"].index(unit_id) for unit_id in wave_units]
+    if positions != sorted(positions):
+        raise HarnessError("审查波次必须服从冻结执行顺序。")
+    if "review_pending_wave" not in set(
+        registry.get("state_machine", {}).get("statuses", [])
+    ) or "review_pending_wave" not in set(
+        registry.get("subtask_record_schema", {}).get("statuses", [])
+    ):
+        raise HarnessError("Harness未注册review_pending_wave状态。")
+    review_policy = registry.get("independent_review_policy", {})
+    if (
+        review_policy.get("fixed_reviewer_across_waves") is not True
+        or review_policy.get("wave_decision_only_at_freeze") is not True
+    ):
+        raise HarnessError("固定reviewer与波次冻结门禁必须失败关闭。")
     mapping = registry.get("pr_mapping", {})
     if mapping.get("task_to_pr") != {
         task["id"]: task["pr_ids"] for task in tasks
@@ -744,16 +822,22 @@ def verify_task(registry: dict[str, Any], task_id: str) -> tuple[int, dict[str, 
             )
             previous_registry = _previous_registry_snapshot(state)
             if frozen_current_registry:
-                if not _registry_transition_is_scoped(
-                    previous_registry, registry, task_id
+                if not (
+                    _registry_transition_is_scoped(previous_registry, registry, task_id)
+                    or _registry_transition_is_wave_harness_upgrade(
+                        previous_registry, registry
+                    )
                 ):
                     raise HarnessError("注册表变化超出当前任务；拒绝verify采用。")
                 state.setdefault("registry_history", []).append(state["registry_sha256"])
                 state["registry_sha256"] = current_registry_sha256
                 state["registry_snapshot"] = registry
             else:
-                if not _registry_transition_is_scoped(
-                    previous_registry, registry, task_id
+                if not (
+                    _registry_transition_is_scoped(previous_registry, registry, task_id)
+                    or _registry_transition_is_wave_harness_upgrade(
+                        previous_registry, registry
+                    )
                 ):
                     raise HarnessError("任务启动后全局注册表合同发生变化；拒绝verify执行。")
                 if not _verification_commands_unchanged(
@@ -944,6 +1028,7 @@ def review_task(
     decision: str | None,
     reviewer_id: str | None,
     decision_evidence: str | None,
+    pending_wave: bool = False,
 ) -> dict[str, Any]:
     with state_lock():
         state = read_state()
@@ -951,6 +1036,13 @@ def review_task(
             raise HarnessError(f"{task_id}尚未start。")
         _validate_evidence_chain(state)
         task_state = state["tasks"][task_id]
+        wave = _wave_for_unit(registry, task_id)
+        if pending_wave and wave is None:
+            raise HarnessError("该任务不属于A/B/C审查波次。")
+        if pending_wave and any((decision, reviewer_id, decision_evidence)):
+            raise HarnessError("主审checkpoint不得携带独立review decision。")
+        if wave is not None and not pending_wave:
+            raise HarnessError("波次任务不得使用单任务独立review decision。")
         run_dir = RUNTIME_ROOT / state["run_id"]
         packet_path = run_dir / "reviews" / f"{task_id}.json"
         if decision is None:
@@ -1022,6 +1114,55 @@ def review_task(
                 "review_decision": None,
                 "challenge_nonce": uuid.uuid4().hex,
             }
+            if pending_wave:
+                checkpoint = {
+                    "task": task_id,
+                    "wave": wave["id"],
+                    "status": "review_pending_wave",
+                    "commit": current_snapshot["git"]["head"],
+                    "source_tree": current_snapshot["git"]["source_tree"],
+                    "dirty_diff_sha256": current_snapshot["git"]["dirty_diff_sha256"],
+                    "actual_modified_files": delta,
+                    "test_evidence": task_state.get("outcomes", []),
+                    "recorded_at": utc_now(),
+                    "independent_review_pass": False,
+                }
+                task_state["status"] = "review_pending_wave"
+                task_state["main_review_checkpoint"] = checkpoint
+                task_state["review_packet"] = None
+                task_state["review"] = None
+                for subtask_id in task_state.get("active_subtasks", []):
+                    task_state["subtasks"][subtask_id]["status"] = (
+                        "review_pending_wave"
+                    )
+                waves = state.setdefault("wave_checkpoints", {})
+                wave_state = waves.setdefault(
+                    wave["id"],
+                    {
+                        "status": "in_progress",
+                        "base_checkpoint": state.get("last_review_pass_checkpoint")
+                        or state.get("last_verified_checkpoint"),
+                        "base_commit": task_state["start_snapshot"].get("commit"),
+                        "base_source_tree": task_state["start_snapshot"]["source_tree"],
+                        "pending_tasks": [],
+                    },
+                )
+                wave_state["status"] = "review_pending_wave"
+                wave_state["latest_task"] = task_id
+                wave_state["updated_at"] = utc_now()
+                if task_id not in wave_state["pending_tasks"]:
+                    wave_state["pending_tasks"].append(task_id)
+                state["last_progress_checkpoint"] = (
+                    f"{task_id}:review_pending_wave"
+                )
+                state["updated_at"] = utc_now()
+                write_state(state)
+                return {
+                    "task": task_id,
+                    "status": "review_pending_wave",
+                    "wave": wave["id"],
+                    "independent_review_pass": False,
+                }
             atomic_write_json(packet_path, packet)
             packet_hash = sha256_bytes(packet_path.read_bytes())
             task_state["status"] = "reviewing"
@@ -1118,6 +1259,8 @@ def review_task(
         }
         if decision == "pass":
             state["last_verified_checkpoint"] = f"{task_id}:verified"
+            state["last_review_pass_checkpoint"] = f"{task_id}:verified"
+            state["last_progress_checkpoint"] = f"{task_id}:verified"
             unit = unit_map(registry)[task_id]
             for subtask_id in task_state.get("active_subtasks", []):
                 subtask = task_state["subtasks"][subtask_id]
@@ -1135,30 +1278,277 @@ def review_task(
     return {"task": task_id, "status": task_state["status"], "decision": decision}
 
 
-def resume_command() -> dict[str, Any]:
+def review_wave(
+    registry: dict[str, Any],
+    wave_id: str,
+    *,
+    decision: str | None,
+    reviewer_id: str | None,
+    decision_evidence: str | None,
+) -> dict[str, Any]:
+    wave = review_wave_map(registry).get(wave_id)
+    if wave is None:
+        raise HarnessError(f"未知审查波次：{wave_id}")
+    with state_lock():
+        state = read_state()
+        if state is None:
+            raise HarnessError("尚无活动run。")
+        _validate_evidence_chain(state)
+        if not _previous_wave_reviews_complete(registry, state, wave_id):
+            raise HarnessError("前一审查波次尚未review pass。")
+        task_records = {
+            task_id: state["tasks"].get(task_id)
+            for task_id in wave["execution_units"]
+        }
+        if any(
+            record is None or record.get("status") != "review_pending_wave"
+            for record in task_records.values()
+        ):
+            raise HarnessError("波次冻结点尚未齐备review_pending_wave任务。")
+        run_dir = RUNTIME_ROOT / state["run_id"]
+        wave_state = state.get("wave_checkpoints", {}).get(wave_id)
+        if not isinstance(wave_state, dict):
+            raise HarnessError("波次checkpoint缺失。")
+        packet_path = run_dir / "reviews" / f"wave-{wave_id}.json"
+        if decision is None:
+            if wave_state.get("status") == "reviewing":
+                raise HarnessError("波次已处于reviewing状态。")
+            current_snapshot = collect_git_snapshot(registry)
+            freeze_record = task_records[wave["freeze_unit"]]
+            freeze_checkpoint = freeze_record["main_review_checkpoint"]
+            latest_evidence_path = Path(
+                freeze_checkpoint["test_evidence"][-1]["evidence"]["path"]
+            )
+            latest_evidence = json.loads(
+                latest_evidence_path.read_text(encoding="utf-8")
+            )
+            if (
+                freeze_checkpoint.get("source_tree")
+                != current_snapshot["git"]["source_tree"]
+                or latest_evidence.get("registry_sha256")
+                != sha256_bytes(REGISTRY_PATH.read_bytes())
+            ):
+                freeze_record["previous_status"] = freeze_record["status"]
+                freeze_record["status"] = "stale"
+                freeze_record["evidence_status"] = "stale"
+                wave_state["status"] = "stale"
+                state["updated_at"] = utc_now()
+                write_state(state)
+                raise HarnessError("波次冻结点源码或注册表已变化；checkpoint测试证据已失效。")
+            packet = {
+                "schema": "safehome.rc0810.review-packet.v1",
+                "task": f"WAVE-{wave_id}",
+                "wave": wave_id,
+                "base_checkpoint": wave_state.get("base_checkpoint"),
+                "base_source_tree": wave_state.get("base_source_tree"),
+                "base_commit": wave_state.get("base_commit"),
+                "head_commit": current_snapshot["git"]["head"],
+                "source_tree": current_snapshot["git"]["source_tree"],
+                "dirty_diff_sha256": current_snapshot["git"]["dirty_diff_sha256"],
+                "registry_sha256": sha256_bytes(REGISTRY_PATH.read_bytes()),
+                "execution_units": wave["execution_units"],
+                "freeze_unit": wave["freeze_unit"],
+                "actual_modified_files": sorted(
+                    {
+                        path
+                        for record in task_records.values()
+                        for path in record["main_review_checkpoint"][
+                            "actual_modified_files"
+                        ]
+                    }
+                ),
+                "test_evidence": [
+                    outcome
+                    for record in task_records.values()
+                    for outcome in record["main_review_checkpoint"]["test_evidence"]
+                ],
+                "created_at": utc_now(),
+                "review_decision": None,
+                "challenge_nonce": uuid.uuid4().hex,
+            }
+            atomic_write_json(packet_path, packet)
+            packet_hash = sha256_bytes(packet_path.read_bytes())
+            wave_state["status"] = "reviewing"
+            wave_state["review_packet"] = {
+                "path": str(packet_path),
+                "sha256": packet_hash,
+            }
+            state["last_progress_checkpoint"] = f"wave:{wave_id}:reviewing"
+            state["updated_at"] = utc_now()
+            write_state(state)
+            return {
+                "wave": wave_id,
+                "status": "reviewing",
+                "review_decision": None,
+                "review_packet_path": str(packet_path),
+                "review_packet_sha256": packet_hash,
+            }
+
+        if wave_state.get("status") != "reviewing":
+            raise HarnessError("波次未处于reviewing状态。")
+        if decision not in {"pass", "fix_required", "blocked_external"}:
+            raise HarnessError("审查结论必须为pass/fix_required/blocked_external。")
+        if not reviewer_id or reviewer_id.lower() in {
+            "runner",
+            "automation",
+            "self",
+            str(state.get("operator_id", "runner")).lower(),
+        }:
+            raise HarnessError("审查结论必须来自独立reviewer。")
+        fixed_reviewer = state.get("fixed_wave_reviewer_id")
+        if fixed_reviewer and reviewer_id != fixed_reviewer:
+            raise HarnessError("波次审查必须续用同一固定reviewer。")
+        packet = wave_state["review_packet"]
+        path = Path(packet["path"])
+        if not path.is_file() or sha256_bytes(path.read_bytes()) != packet["sha256"]:
+            raise HarnessError("波次审查包缺失或被篡改。")
+        packet_record = json.loads(path.read_text(encoding="utf-8"))
+        current_snapshot = collect_git_snapshot(registry)
+        if (
+            packet_record.get("source_tree") != current_snapshot["git"]["source_tree"]
+            or packet_record.get("dirty_diff_sha256")
+            != current_snapshot["git"]["dirty_diff_sha256"]
+            or packet_record.get("registry_sha256")
+            != sha256_bytes(REGISTRY_PATH.read_bytes())
+        ):
+            wave_state["status"] = "stale"
+            for record in task_records.values():
+                record["status"] = "stale"
+                record["evidence_status"] = "stale"
+            state["updated_at"] = utc_now()
+            write_state(state)
+            raise HarnessError("源码、差异或注册表已变化；旧波次结论不得验收。")
+        if not decision_evidence:
+            raise HarnessError("独立审查必须提供decision evidence文件。")
+        decision_path = Path(decision_evidence).resolve()
+        review_root = (run_dir / "reviews").resolve()
+        if not _path_within(decision_path, review_root) or not decision_path.is_file():
+            raise HarnessError("decision evidence必须位于当前run的reviews目录。")
+        try:
+            decision_record = json.loads(decision_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise HarnessError("decision evidence不是有效JSON。") from exc
+        if decision_record.get("schema") != "safehome.rc0810.review-decision.v1":
+            raise HarnessError("decision evidence schema不兼容。")
+        if (
+            decision_record.get("review_packet_sha256") != packet["sha256"]
+            or decision_record.get("challenge_nonce")
+            != packet_record.get("challenge_nonce")
+            or decision_record.get("decision") != decision
+            or decision_record.get("reviewer_id") != reviewer_id
+            or decision_record.get("reviewer_kind")
+            not in registry["independent_review_policy"]["allowed_reviewer_kinds"]
+        ):
+            raise HarnessError("decision evidence与波次包、结论或reviewer不一致。")
+        try:
+            valid_until = datetime.fromisoformat(decision_record["valid_until"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise HarnessError("decision evidence缺少有效期限。") from exc
+        if valid_until.tzinfo is None or valid_until <= datetime.now(timezone.utc):
+            raise HarnessError("decision evidence已过期或缺少时区。")
+        if not isinstance(decision_record.get("findings"), list):
+            raise HarnessError("decision evidence必须包含findings数组。")
+
+        state["fixed_wave_reviewer_id"] = reviewer_id
+        decision_hash = sha256_bytes(decision_path.read_bytes())
+        status_by_decision = {
+            "pass": "review_pass",
+            "fix_required": "review_failed",
+            "blocked_external": "blocked_external",
+        }
+        wave_state["status"] = status_by_decision[decision]
+        wave_state["review"] = {
+            "decision": decision,
+            "reviewer_id": reviewer_id,
+            "reviewer_kind": decision_record["reviewer_kind"],
+            "packet_sha256": packet["sha256"],
+            "decision_evidence_path": str(decision_path),
+            "decision_evidence_sha256": decision_hash,
+            "valid_until": decision_record["valid_until"],
+            "recorded_at": utc_now(),
+        }
+        if decision == "pass":
+            for task_id, record in task_records.items():
+                record["status"] = "verified"
+                record["review"] = {**wave_state["review"], "wave": wave_id}
+                for subtask_id in record.get("active_subtasks", []):
+                    record["subtasks"][subtask_id]["status"] = "verified"
+                    record["subtasks"][subtask_id]["review_decision"] = "pass"
+            checkpoint = f"{wave['freeze_unit']}:verified"
+            state["last_verified_checkpoint"] = checkpoint
+            state["last_review_pass_checkpoint"] = checkpoint
+            state["last_progress_checkpoint"] = checkpoint
+        else:
+            state["last_progress_checkpoint"] = (
+                f"wave:{wave_id}:{status_by_decision[decision]}"
+            )
+        state["updated_at"] = utc_now()
+        write_state(state)
+    return {
+        "wave": wave_id,
+        "status": status_by_decision[decision],
+        "decision": decision,
+    }
+
+
+def resume_command(registry: dict[str, Any]) -> dict[str, Any]:
     with state_lock():
         state = read_state()
         if state is None:
             raise HarnessError("没有可恢复的run。")
         _validate_evidence_chain(state)
-        checkpoint = state.get("last_verified_checkpoint")
-        if checkpoint:
-            return {"run_id": state["run_id"], "resume_from": checkpoint, "replayed_commands": 0}
-        active = next(
-            (
-                f"{task_id}:{record['status']}"
-                for task_id, record in state["tasks"].items()
-                if record["status"] not in {"verified", "pushed", "engineering_complete"}
-            ),
-            "no_active_task",
+        progress = state.get("last_progress_checkpoint")
+        if progress and not progress.startswith("wave:"):
+            task_id, _, status = progress.partition(":")
+            record = state["tasks"].get(task_id)
+            if record and status == "review_pending_wave":
+                checkpoint = record.get("main_review_checkpoint", {})
+                current_snapshot = collect_git_snapshot(registry)
+                if checkpoint.get("source_tree") != current_snapshot["git"]["source_tree"]:
+                    record["previous_status"] = record["status"]
+                    record["status"] = "stale"
+                    record["evidence_status"] = "stale"
+                    state["updated_at"] = utc_now()
+                    write_state(state)
+                    raise HarnessError("checkpoint源码已变化；旧测试证据已失效。")
+            if record and record.get("status") == status and status in {
+                "in_progress",
+                "fixing",
+                "review_pending_wave",
+                "review_failed",
+                "stale",
+            }:
+                return {
+                    "run_id": state["run_id"],
+                    "resume_from": progress,
+                    "replayed_commands": 0,
+                }
+        if progress and progress.startswith("wave:"):
+            return {
+                "run_id": state["run_id"],
+                "resume_from": progress,
+                "replayed_commands": 0,
+            }
+        checkpoint = state.get("last_review_pass_checkpoint") or state.get(
+            "last_verified_checkpoint"
         )
-        return {"run_id": state["run_id"], "resume_from": active, "replayed_commands": 0}
+        return {
+            "run_id": state["run_id"],
+            "resume_from": checkpoint or "no_active_task",
+            "replayed_commands": 0,
+        }
 
 
 def next_command(registry: dict[str, Any]) -> dict[str, Any]:
     state = read_state()
     task_states = {} if state is None else state["tasks"]
-    terminal = {"verified", "committed", "pushed", "engineering_complete"}
+    terminal = {
+        "verified",
+        "committed",
+        "pushed",
+        "engineering_complete",
+        "review_pending_wave",
+    }
     for unit in registry["execution_units"]:
         task_id = unit["id"]
         current = task_states.get(task_id)
@@ -1169,6 +1559,19 @@ def next_command(registry: dict[str, Any]) -> dict[str, Any]:
             for dependency in unit["dependencies"]
         )
         if current is None and dependencies_ready:
+            wave = _wave_for_unit(registry, task_id)
+            if (
+                wave is not None
+                and state is not None
+                and not _previous_wave_reviews_complete(registry, state, wave["id"])
+            ):
+                blocked_wave = _previous_waves(registry, wave["id"])[-1]["id"]
+                return {
+                    "task": None,
+                    "status": "wave_review_required",
+                    "wave": blocked_wave,
+                    "ready": False,
+                }
             return {"task": task_id, "status": "planned", "ready": True}
     return {"task": None, "status": "complete", "ready": False}
 
@@ -1231,6 +1634,7 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
             "implemented",
             "reviewing",
             "review_failed",
+            "review_pending_wave",
             "stale",
         }
         execution_positions = {
@@ -1321,6 +1725,7 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
             ),
             "production_release_approved": False,
             "external_gate_auto_approved": False,
+            "review_waves": state.get("wave_checkpoints", {}),
             "stale_tasks": stale_tasks,
         }
         report_path = RUNTIME_ROOT / state["run_id"] / "report.json"
@@ -1461,6 +1866,7 @@ def _f00_start_snapshot(registry: dict[str, Any], task: dict[str, Any]) -> dict[
         else:
             effective_manifest[path] = after
     return {
+        "commit": frozen["head"],
         "source_tree": frozen["source_tree"],
         "source_manifest": effective_manifest,
         "dirty_diff_sha256": frozen["dirty_diff"]["sha256"],
@@ -1475,6 +1881,7 @@ def _f00_start_snapshot(registry: dict[str, Any], task: dict[str, Any]) -> dict[
 def _standard_start_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
     snapshot = collect_git_snapshot(registry)
     return {
+        "commit": snapshot["git"]["head"],
         "source_tree": snapshot["git"]["source_tree"],
         "source_manifest": snapshot["git"]["source_manifest"],
         "dirty_diff_sha256": snapshot["git"]["dirty_diff_sha256"],
@@ -1484,6 +1891,45 @@ def _standard_start_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
 
 def _task_contract_sha256(task: dict[str, Any], unit: dict[str, Any]) -> str:
     return sha256_bytes(canonical_json({"task": task, "execution_unit": unit}))
+
+
+def _registry_transition_is_wave_harness_upgrade(
+    previous: dict[str, Any], current: dict[str, Any]
+) -> bool:
+    if previous.get("review_waves") is not None:
+        return False
+    if (
+        current.get("version") != "2026-08-24.wave-review-v1"
+        or current.get("review_waves") != PRODUCTION_REVIEW_WAVES
+    ):
+        return False
+    allowed = {
+        "version",
+        "state_machine",
+        "subtask_record_schema",
+        "independent_review_policy",
+        "review_waves",
+        "tasks",
+    }
+    if {
+        key: value for key, value in previous.items() if key not in allowed
+    } != {key: value for key, value in current.items() if key not in allowed}:
+        return False
+    previous_tasks = json.loads(json.dumps(previous["tasks"]))
+    current_tasks = json.loads(json.dumps(current["tasks"]))
+    previous_f00 = next(task for task in previous_tasks if task["id"] == "RC0810-F00")
+    current_f00 = next(task for task in current_tasks if task["id"] == "RC0810-F00")
+    expected_f00_commands = json.loads(
+        json.dumps(previous_f00["acceptance_commands"])
+    )
+    if len(expected_f00_commands) != 1:
+        return False
+    expected_f00_commands[0]["timeout_seconds"] = 360
+    expected_f00_commands[0]["expected_test_count"] = 11
+    if current_f00["acceptance_commands"] != expected_f00_commands:
+        return False
+    current_f00["acceptance_commands"] = previous_f00["acceptance_commands"]
+    return current_tasks == previous_tasks
 
 
 def _registry_transition_is_scoped(
@@ -1514,6 +1960,16 @@ def _registry_transition_is_scoped(
         for item in current["execution_units"]
         if item["id"] != task_id
     }
+
+
+def _previous_wave_reviews_complete(
+    registry: dict[str, Any], state: dict[str, Any], wave_id: str
+) -> bool:
+    checkpoints = state.get("wave_checkpoints", {})
+    return all(
+        checkpoints.get(wave["id"], {}).get("status") == "review_pass"
+        for wave in _previous_waves(registry, wave_id)
+    )
 
 
 def _verification_commands_unchanged(
@@ -1571,10 +2027,23 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
                 "evidence_chain": [],
                 "last_verified_checkpoint": None,
             }
+        wave = _wave_for_unit(registry, task_id)
+        if (
+            wave is not None
+            and not _previous_wave_reviews_complete(registry, state, wave["id"])
+        ):
+            raise HarnessError("前一审查波次尚未review pass；拒绝跨波次启动。")
         completed = {
             key
             for key, record in state["tasks"].items()
-            if record.get("status") in {"verified", "committed", "pushed", "engineering_complete"}
+            if record.get("status")
+            in {
+                "verified",
+                "committed",
+                "pushed",
+                "engineering_complete",
+                "review_pending_wave",
+            }
             or (
                 record.get("status") == "stale"
                 and isinstance(record.get("review"), dict)
@@ -1586,7 +2055,15 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             raise HarnessError(f"{task_id}存在未完成依赖：{unmet}")
         existing = state["tasks"].get(task_id)
         if existing:
-            if existing.get("status") not in {"review_failed", "fixing", "stale"}:
+            reopen_pending = (
+                existing.get("status") == "review_pending_wave"
+                and wave is not None
+                and state.get("wave_checkpoints", {})
+                .get(wave["id"], {})
+                .get("status")
+                == "review_failed"
+            )
+            if existing.get("status") not in {"review_failed", "fixing", "stale"} and not reopen_pending:
                 raise HarnessError(f"{task_id}已启动，拒绝重复执行。")
             existing.setdefault("iteration_history", []).append(
                 {
@@ -1601,6 +2078,12 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             existing["review"] = None
             existing["outcomes"] = []
             existing["evidence_status"] = "pending_retest"
+            if wave is not None:
+                wave_state = state.get("wave_checkpoints", {}).get(wave["id"])
+                if wave_state is not None:
+                    wave_state["status"] = "in_progress"
+                    wave_state["review_packet"] = None
+                state["last_progress_checkpoint"] = f"{task_id}:fixing"
             contract_hash = _task_contract_sha256(task, unit)
             existing.setdefault("initial_task_contract_sha256", contract_hash)
             existing["start_task_contract_sha256"] = contract_hash
@@ -1614,8 +2097,11 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             current_registry_sha256 = sha256_bytes(REGISTRY_PATH.read_bytes())
             if current_registry_sha256 != state.get("registry_sha256"):
                 previous_registry = _previous_registry_snapshot(state)
-                if not _registry_transition_is_scoped(
-                    previous_registry, registry, task_id
+                if not (
+                    _registry_transition_is_scoped(previous_registry, registry, task_id)
+                    or _registry_transition_is_wave_harness_upgrade(
+                        previous_registry, registry
+                    )
                 ):
                     raise HarnessError(
                         "注册表变化超出当前执行单元；拒绝Fix Loop采用。"
@@ -1631,7 +2117,12 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
         current_registry_sha256 = sha256_bytes(REGISTRY_PATH.read_bytes())
         if current_registry_sha256 != state.get("registry_sha256"):
             previous_registry = _previous_registry_snapshot(state)
-            if not _registry_transition_is_scoped(previous_registry, registry, task_id):
+            if not (
+                _registry_transition_is_scoped(previous_registry, registry, task_id)
+                or _registry_transition_is_wave_harness_upgrade(
+                    previous_registry, registry
+                )
+            ):
                 raise HarnessError("注册表变化超出当前新执行单元；必须先独立冻结。")
             state.setdefault("registry_history", []).append(state["registry_sha256"])
             state["registry_sha256"] = current_registry_sha256
@@ -1657,6 +2148,8 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
                 for item in task["subtasks"]
             },
         }
+        if wave is not None:
+            state["last_progress_checkpoint"] = f"{task_id}:in_progress"
         state["updated_at"] = utc_now()
         write_state(state)
     return {"run_id": state["run_id"], "task": task_id, "status": "in_progress"}
@@ -1671,7 +2164,9 @@ def _parser() -> argparse.ArgumentParser:
         command = sub.add_parser(name)
         command.add_argument("task")
     review = sub.add_parser("review")
-    review.add_argument("task")
+    review.add_argument("task", nargs="?")
+    review.add_argument("--pending-wave", action="store_true")
+    review.add_argument("--wave", choices=("A", "B", "C"))
     review.add_argument(
         "--decision", choices=("pass", "fix_required", "blocked_external")
     )
@@ -1728,22 +2223,37 @@ def main() -> int:
             print(json.dumps(payload, ensure_ascii=False, indent=2))
             return exit_code
         if args.command == "review":
+            if args.wave:
+                if args.task or args.pending_wave:
+                    raise HarnessError("波次审查不能同时指定task或--pending-wave。")
+                payload = review_wave(
+                    registry,
+                    args.wave,
+                    decision=args.decision,
+                    reviewer_id=args.reviewer_id,
+                    decision_evidence=args.decision_evidence,
+                )
+            else:
+                if not args.task:
+                    raise HarnessError("单任务审查必须指定task。")
+                payload = review_task(
+                    registry,
+                    args.task.upper(),
+                    decision=args.decision,
+                    reviewer_id=args.reviewer_id,
+                    decision_evidence=args.decision_evidence,
+                    pending_wave=args.pending_wave,
+                )
             print(
                 json.dumps(
-                    review_task(
-                        registry,
-                        args.task.upper(),
-                        decision=args.decision,
-                        reviewer_id=args.reviewer_id,
-                        decision_evidence=args.decision_evidence,
-                    ),
+                    payload,
                     ensure_ascii=False,
                     indent=2,
                 )
             )
             return 0
         if args.command == "resume":
-            print(json.dumps(resume_command(), ensure_ascii=False, indent=2))
+            print(json.dumps(resume_command(registry), ensure_ascii=False, indent=2))
             return 0
         if args.command == "report":
             print(json.dumps(report_command(registry), ensure_ascii=False, indent=2))

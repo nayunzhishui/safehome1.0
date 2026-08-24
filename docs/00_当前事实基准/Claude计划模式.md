@@ -1,5 +1,15 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-24：RC0810 9.2 Harness 最小适配
+
+- [x] 注册 `review_pending_wave` 与 A/B/C 三个 checkpoint；波次 A 新增范围为 F10-B、F11、F12-B，F07—F09 复用既有有效 review-pass。
+- [x] 波次内主审通过可保存 checkpoint、独立提交并继续；pending 不计入独立 review pass 或 production Gate。
+- [x] 波次冻结 packet 只接受固定 reviewer 的 `pass/fix_required/blocked_external`；`fix_required` 不批量关闭，`pass` 才关闭 pending。
+- [x] 增加状态转换、断点恢复、证据失效、跨波次阻断、固定 reviewer 和伪造单任务 pass 拒绝合同。
+- [x] 保持旧单任务审查与恢复语义；未修改 F10、业务、数据库、CloudBase、Secret 或生产配置。
+- [x] 文档冻结后完整 Harness `11 passed in 286.10s`，差异检查通过。
+- [ ] 独立提交并推送；随后进入 F10-B，状态保持 `review_pending_wave`，到 F12-B 才启动唯一 reviewer。
+
 ## 2026-08-24：RC0810-F09 执行结果
 
 - 六类核心写入已从“先查再写”改为数据库唯一 claim：目标、日记、打卡、人工支持、普通测评和家长测评同 key/同 canonical hash 回放首次资源与响应，同 key/异 hash 稳定返回 409。

@@ -45,6 +45,33 @@ def fixture_registry(tmp_path: Path, mode: str = "success", timeout: int = 10):
     return path
 
 
+def fixture_wave_registry(tmp_path: Path):
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    path = fixture_registry(tmp_path)
+    registry = json.loads(path.read_text(encoding="utf-8"))
+    fixture_command = registry["tasks"][0]["acceptance_commands"]
+    registry["tasks"][10]["acceptance_commands"] = fixture_command
+    registry["review_waves"] = [
+        {
+            "id": "A",
+            "execution_units": ["RC0810-F00"],
+            "freeze_unit": "RC0810-F00",
+        },
+        {
+            "id": "B",
+            "execution_units": ["RC0810-F10-A"],
+            "freeze_unit": "RC0810-F10-A",
+        },
+        {
+            "id": "C",
+            "execution_units": ["RC0810-F12-A"],
+            "freeze_unit": "RC0810-F12-A",
+        },
+    ]
+    path.write_text(json.dumps(registry, ensure_ascii=False), encoding="utf-8")
+    return path
+
+
 def write_review_decision(
     packet_result: dict,
     *,
@@ -593,3 +620,175 @@ def test_review_rejects_task_contract_expanded_after_start(tmp_path):
     global_verified = run_cli("verify", "RC0810-F00", env=global_env)
     assert global_verified.returncode == 2
     assert "全局注册表合同发生变化" in global_verified.stderr
+
+
+def test_wave_registry_declares_pending_status_and_three_checkpoints():
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+
+    assert "review_pending_wave" in registry["state_machine"]["statuses"]
+    assert registry["state_machine"]["resume_from"] == (
+        "last_progress_checkpoint_then_last_review_pass_checkpoint"
+    )
+    waves = registry["review_waves"]
+    assert [wave["id"] for wave in waves] == ["A", "B", "C"]
+    assert waves[0] == {
+        "id": "A",
+        "execution_units": ["RC0810-F10-B", "RC0810-F11", "RC0810-F12-B"],
+        "freeze_unit": "RC0810-F12-B",
+    }
+    assert waves[1]["freeze_unit"] == "RC0810-F21"
+    assert waves[2]["freeze_unit"] == "RC0810-F26"
+    assert registry["independent_review_policy"]["fixed_reviewer_across_waves"] is True
+
+
+def test_main_review_checkpoint_advances_inside_wave_but_not_across_boundary(tmp_path):
+    runtime = tmp_path / "wave-runtime"
+    registry_path = fixture_wave_registry(tmp_path)
+    env = {
+        "RC0810_RUNTIME_ROOT": str(runtime),
+        "RC0810_REGISTRY_PATH": str(registry_path),
+        "RC0810_RUN_ID": "run-wave",
+    }
+
+    assert run_cli("start", "RC0810-F00", env=env).returncode == 0
+    assert run_cli("verify", "RC0810-F00", env=env).returncode == 0
+    pending = run_cli("review", "RC0810-F00", "--pending-wave", env=env)
+    assert pending.returncode == 0, pending.stderr
+    assert json.loads(pending.stdout) == {
+        "task": "RC0810-F00",
+        "status": "review_pending_wave",
+        "wave": "A",
+        "independent_review_pass": False,
+    }
+
+    resumed = run_cli("resume", env=env)
+    assert resumed.returncode == 0, resumed.stderr
+    assert json.loads(resumed.stdout)["resume_from"] == (
+        "RC0810-F00:review_pending_wave"
+    )
+    blocked_next = json.loads(run_cli("next", env=env).stdout)
+    assert blocked_next["status"] == "wave_review_required"
+    assert blocked_next["wave"] == "A"
+    assert run_cli("start", "RC0810-F10-A", env=env).returncode != 0
+
+    forged_task_pass = run_cli(
+        "review",
+        "RC0810-F00",
+        "--decision",
+        "pass",
+        "--reviewer-id",
+        "fake-reviewer",
+        env=env,
+    )
+    assert forged_task_pass.returncode != 0
+
+    packet_result = run_cli("review", "--wave", "A", env=env)
+    assert packet_result.returncode == 0, packet_result.stderr
+    packet = json.loads(packet_result.stdout)
+    decision_path = write_review_decision(packet, reviewer_id="fixed-reviewer")
+    accepted = run_cli(
+        "review",
+        "--wave",
+        "A",
+        "--decision",
+        "pass",
+        "--reviewer-id",
+        "fixed-reviewer",
+        "--decision-evidence",
+        str(decision_path),
+        env=env,
+    )
+    assert accepted.returncode == 0, accepted.stderr
+    assert json.loads(accepted.stdout)["status"] == "review_pass"
+    assert json.loads(run_cli("next", env=env).stdout)["task"] == "RC0810-F10-A"
+
+
+def test_pending_wave_resume_rejects_tampered_or_stale_evidence(tmp_path):
+    runtime = tmp_path / "wave-evidence-runtime"
+    registry_path = fixture_wave_registry(tmp_path)
+    env = {
+        "RC0810_RUNTIME_ROOT": str(runtime),
+        "RC0810_REGISTRY_PATH": str(registry_path),
+        "RC0810_RUN_ID": "run-wave-evidence",
+    }
+
+    assert run_cli("start", "RC0810-F00", env=env).returncode == 0
+    assert run_cli("verify", "RC0810-F00", env=env).returncode == 0
+    assert run_cli("review", "RC0810-F00", "--pending-wave", env=env).returncode == 0
+    pointer = json.loads((runtime / "state.json").read_text(encoding="utf-8"))
+    state_path = runtime / pointer["state_path"]
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    evidence_path = Path(state["evidence_chain"][0]["path"])
+    evidence_path.write_text("{}\n", encoding="utf-8")
+    assert run_cli("resume", env=env).returncode != 0
+
+    stale_runtime = tmp_path / "wave-stale-runtime"
+    stale_registry_path = fixture_wave_registry(tmp_path / "stale")
+    stale_env = env | {
+        "RC0810_RUNTIME_ROOT": str(stale_runtime),
+        "RC0810_REGISTRY_PATH": str(stale_registry_path),
+        "RC0810_RUN_ID": "run-wave-stale",
+    }
+    assert run_cli("start", "RC0810-F00", env=stale_env).returncode == 0
+    assert run_cli("verify", "RC0810-F00", env=stale_env).returncode == 0
+    assert run_cli(
+        "review", "RC0810-F00", "--pending-wave", env=stale_env
+    ).returncode == 0
+    registry = json.loads(stale_registry_path.read_text(encoding="utf-8"))
+    registry["claim_register"][0]["statement"] += " drift"
+    stale_registry_path.write_text(json.dumps(registry), encoding="utf-8")
+    stale = run_cli("review", "--wave", "A", env=stale_env)
+    assert stale.returncode != 0
+    assert "checkpoint测试证据已失效" in stale.stderr
+
+
+def test_wave_fix_required_keeps_pending_and_reuses_fixed_reviewer(tmp_path):
+    runtime = tmp_path / "fixed-reviewer-runtime"
+    registry_path = fixture_wave_registry(tmp_path)
+    env = {
+        "RC0810_RUNTIME_ROOT": str(runtime),
+        "RC0810_REGISTRY_PATH": str(registry_path),
+        "RC0810_RUN_ID": "run-fixed-reviewer",
+    }
+
+    assert run_cli("start", "RC0810-F00", env=env).returncode == 0
+    assert run_cli("verify", "RC0810-F00", env=env).returncode == 0
+    assert run_cli("review", "RC0810-F00", "--pending-wave", env=env).returncode == 0
+    wave_a_packet = json.loads(run_cli("review", "--wave", "A", env=env).stdout)
+    wave_a_decision = write_review_decision(
+        wave_a_packet, reviewer_id="fixed-reviewer"
+    )
+    assert run_cli(
+        "review", "--wave", "A", "--decision", "pass",
+        "--reviewer-id", "fixed-reviewer", "--decision-evidence", str(wave_a_decision),
+        env=env,
+    ).returncode == 0
+
+    assert run_cli("start", "RC0810-F10-A", env=env).returncode == 0
+    assert run_cli("verify", "RC0810-F10-A", env=env).returncode == 0
+    assert run_cli("review", "RC0810-F10-A", "--pending-wave", env=env).returncode == 0
+    wave_b_packet = json.loads(run_cli("review", "--wave", "B", env=env).stdout)
+    wrong_decision = write_review_decision(
+        wave_b_packet, reviewer_id="replacement-reviewer", decision="fix_required"
+    )
+    wrong = run_cli(
+        "review", "--wave", "B", "--decision", "fix_required",
+        "--reviewer-id", "replacement-reviewer", "--decision-evidence", str(wrong_decision),
+        env=env,
+    )
+    assert wrong.returncode != 0
+    assert "固定reviewer" in wrong.stderr
+
+    fixed_decision = write_review_decision(
+        wave_b_packet, reviewer_id="fixed-reviewer", decision="fix_required"
+    )
+    fixed = run_cli(
+        "review", "--wave", "B", "--decision", "fix_required",
+        "--reviewer-id", "fixed-reviewer", "--decision-evidence", str(fixed_decision),
+        env=env,
+    )
+    assert fixed.returncode == 0, fixed.stderr
+    assert json.loads(fixed.stdout)["status"] == "review_failed"
+    report = json.loads(run_cli("report", env=env).stdout)
+    assert report["tasks"]["RC0810-F10-A"]["status"] == "review_pending_wave"
+    assert report["production_release_approved"] is False

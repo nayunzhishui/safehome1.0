@@ -1,6 +1,6 @@
 {
   "schema": "safehome.rc0810.registry.v1",
-  "version": "2026-08-11.f01",
+  "version": "2026-08-24.wave-review-v1",
   "frozen_baseline": {
     "captured_at": "2026-08-09T15:13:59.4299089Z",
     "branch": "main",
@@ -120,6 +120,7 @@
       "running",
       "verified",
       "review_failed",
+      "review_pending_wave",
       "blocked_external",
       "complete"
     ]
@@ -154,6 +155,7 @@
       "plan_backfilled",
       "reviewing",
       "review_failed",
+      "review_pending_wave",
       "fixing",
       "verified",
       "committed",
@@ -164,9 +166,46 @@
     ],
     "review_pass_requires_independent_reviewer": true,
     "verify_may_not_self_approve_review": true,
-    "resume_from": "last_verified_checkpoint",
+    "resume_from": "last_progress_checkpoint_then_last_review_pass_checkpoint",
     "repeated_commands_must_not_repeat_verified_side_effects": true
   },
+  "review_waves": [
+    {
+      "id": "A",
+      "execution_units": [
+        "RC0810-F10-B",
+        "RC0810-F11",
+        "RC0810-F12-B"
+      ],
+      "freeze_unit": "RC0810-F12-B"
+    },
+    {
+      "id": "B",
+      "execution_units": [
+        "RC0810-F13",
+        "RC0810-F15",
+        "RC0810-F16",
+        "RC0810-F17",
+        "RC0810-F18",
+        "RC0810-F19",
+        "RC0810-F14-B",
+        "RC0810-F20",
+        "RC0810-F21"
+      ],
+      "freeze_unit": "RC0810-F21"
+    },
+    {
+      "id": "C",
+      "execution_units": [
+        "RC0810-F22-B",
+        "RC0810-F23",
+        "RC0810-F24",
+        "RC0810-F25-B",
+        "RC0810-F26"
+      ],
+      "freeze_unit": "RC0810-F26"
+    }
+  ],
   "independent_review_policy": {
     "decision_artifact_required": true,
     "reviewer_must_differ_from_operator": true,
@@ -175,7 +214,9 @@
       "separate_agent"
     ],
     "packet_nonce_required": true,
-    "valid_until_required": true
+    "valid_until_required": true,
+    "fixed_reviewer_across_waves": true,
+    "wave_decision_only_at_freeze": true
   },
   "artifact_profiles": {
     "f00_harness_sources": {
@@ -1593,9 +1634,9 @@
             "-q"
           ],
           "cwd": ".",
-          "timeout_seconds": 180,
+          "timeout_seconds": 360,
           "shell": false,
-          "expected_test_count": 6,
+          "expected_test_count": 11,
           "status": "active"
         }
       ],
