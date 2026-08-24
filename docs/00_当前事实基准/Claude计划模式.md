@@ -9,7 +9,8 @@
 - [x] F10 16 项、F11 16 项、Task36 14 项和 packet 专项 1 项通过。
 - [x] 同一 reviewer 确认前 5 项 finding 全部关闭；新增的 production receipt 测试夹具 finding 已改用批准的 `test_cloud`。
 - [x] 凭据专项 9 项、F10 16 项、F12 30 项、Harness+F12 44 项及冻结证据校验通过。
-- [ ] 独立提交并推送，重新生成波次 A packet 后续用同一 reviewer 复审。
+- [x] 最终 packet 绑定 `39e76225..acbd1198`；同一 reviewer `Sartre` 返回 `pass`，Harness 波次 A=`review_pass`。
+- [ ] 提交推送纯事实回填后进入 F13；到 F21 冻结前不启动新 reviewer。
 
 ## 2026-08-24：RC0810-F12-B 外部证据接收
 
