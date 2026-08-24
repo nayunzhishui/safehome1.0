@@ -22,6 +22,7 @@ MVP_TABLES = [
     "privacy_requests",
     "privacy_request_actions",
     "family_links",
+    "family_bind_rate_limits",
     "weekly_reports",
     "supervision_requests",
     "messages",
@@ -741,6 +742,11 @@ SCHEMA_SQL = [
         expires_at TEXT,
         attempt_count INTEGER NOT NULL DEFAULT 0,
         last_attempt_at TEXT,
+        bind_code_hash TEXT,
+        bind_code_tail TEXT,
+        version INTEGER NOT NULL DEFAULT 1,
+        locked_until TEXT,
+        lock_reason TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         confirmed_at TEXT,
@@ -1070,6 +1076,20 @@ SCHEMA_SQL = [
         agreed_at TEXT NOT NULL,
         revoked_at TEXT,
         created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS family_bind_rate_limits (
+        id TEXT PRIMARY KEY,
+        dimension TEXT NOT NULL,
+        dimension_hash TEXT NOT NULL,
+        window_key TEXT NOT NULL,
+        attempt_count INTEGER NOT NULL DEFAULT 1,
+        locked_until TEXT,
+        last_attempt_at TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(dimension, dimension_hash, window_key)
     )
     """,
     """
@@ -2875,6 +2895,8 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_privacy_request_executions_request_started ON privacy_request_executions(request_id, started_at)",
     "CREATE INDEX IF NOT EXISTS idx_privacy_tombstones_subject_hash ON privacy_deletion_tombstones(subject_hash)",
     "CREATE INDEX IF NOT EXISTS idx_family_links_code_status ON family_links(bind_code, status)",
+    "CREATE INDEX IF NOT EXISTS idx_family_links_code_hash_status ON family_links(bind_code_hash, status)",
+    "CREATE INDEX IF NOT EXISTS idx_family_bind_rate_limits_lookup ON family_bind_rate_limits(dimension, dimension_hash, window_key)",
     "CREATE INDEX IF NOT EXISTS idx_assessment_worksheets_audience_enabled ON assessment_worksheets(audience_class, enabled_for_user)",
     "CREATE INDEX IF NOT EXISTS idx_messages_user_status_created ON messages(user_id, status, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_messages_sender_idempotency ON messages(sender_id, idempotency_key)",

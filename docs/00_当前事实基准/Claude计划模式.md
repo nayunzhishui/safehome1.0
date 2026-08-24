@@ -1,5 +1,17 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-24：RC0810-F13 家庭绑定安全闭环
+
+- [x] 冻结 `pending/consumed/expired/revoked/locked` 五态并完成 10 位安全随机码、HMAC 摘要和末四位存储。
+- [x] 使用 pending、版本、有效期和锁定条件完成原子单次兑换；并发双学生仅一个成功。
+- [x] Consent 或监护附加失败时回滚兑换与本次限流账本；无效尝试保留脱敏计数。
+- [x] 完成账号、设备、IP、单码四维限流；生产 Redis 未配置/不可用时 fail-closed。
+- [x] 完成重新生成撤销旧码、临时锁定恢复、解绑和未成年人独立 Consent 路径。
+- [x] 新增 067/068 加法迁移并将 database profile head 同步到 068；未执行真实/生产迁移。
+- [x] 双端 10 位输入、API 机器契约、技术文档和设置页功能真值同步。
+- [x] Harness F13 专项 14 项及直接受影响测试、API 契约、Web typecheck/build、小程序静态检查通过。
+- [ ] 完成主审 checkpoint、独立提交和推送后保持 `review_pending_wave`；F21 冻结前不启动 reviewer，下一项 F15。
+
 ## 2026-08-24：RC0810 波次 A Fix Loop
 
 - [x] F12-B 冻结后才首次启动唯一 reviewer；真实结论 `fix_required` 已写入 Harness。

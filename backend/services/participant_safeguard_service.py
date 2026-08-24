@@ -279,7 +279,7 @@ def _assert_active_family_link(conn, parent_user_id: str, child_user_id: str) ->
     row = conn.execute(
         """
         SELECT id FROM family_links
-        WHERE parent_user_id = ? AND student_user_id = ? AND status = 'active'
+        WHERE parent_user_id = ? AND student_user_id = ? AND status = 'consumed'
         ORDER BY confirmed_at DESC LIMIT 1
         """,
         (parent_user_id, child_user_id),

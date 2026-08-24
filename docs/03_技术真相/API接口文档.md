@@ -2535,3 +2535,10 @@ relationship_initiation_intention_action
 canonical v1 按字段名排序，保留显式空值，时间字段归一为 UTC，忽略 `client_submission_id` 和展示昵称，并绑定 actor、HTTP endpoint 与合同版本；规范化 body 上限为 64 KiB。家长测评的开放文本、开始/完成时间和督导 `source_title` 等会影响结果的字段均参与摘要；Web 弱网重试会从同一 resilient draft 恢复时间与提交 ID。没有提交标识的旧客户端保持原创建语义。该兼容策略不把旧客户端升级为更高权限，也不连接 production。
 
 核心事务内的风险、审计、推荐、Consent 和研究摘要副作用只登记/执行一次。站内消息、微信订阅、AI Provider 和导出分别继续由 `messages`、`notification_deliveries`、`ai_qa_provider_events` 和 `audit_logs` 提供专用对账状态；通用账本不重复复制相同事实。外部动作已发生后只能进入补偿状态，不能标为“已回滚”。机器契约版本为 `2026-08-24.f09`。
+
+## 2026-08-24：RC0810-F13 家庭绑定码合同
+
+- `POST /api/family/create-bind-code`：仅家长可调用；返回一次性展示的 10 位数字绑定码和 24 小时有效期。重新生成会撤销该家长已有的 `pending/locked` 码。
+- `POST /api/family/bind-student`：仅学生可调用；请求体为 `bind_code`，可带 `X-Device-Id`。兑换按账号、设备、IP 和单码限流，并使用状态、版本、有效期和锁定条件完成原子单次更新。
+- 成功兑换返回 `status=consumed`。错误、过期、撤销和重放统一返回 `bind_code_unavailable`（400），不暴露码是否存在；超限返回 `family_binding_rate_limited`（429）。生产 Redis 未配置或不可用时返回 `family_binding_rate_limit_unavailable`（503）且不兑换。
+- 完整绑定码不得进入数据库业务字段、审计元数据、限流账本或错误响应。未满 14 周岁路径仍先完成年龄确认；绑定成功只建立监护关系，不自动生成监护人敏感数据处理同意。

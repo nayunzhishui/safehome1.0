@@ -812,9 +812,8 @@ def test_f09_schema_has_three_recoverable_migrations_and_all_six_request_hashes(
         )
 
         manifest = migration_manifest()
-        f09_migrations = [
-            item for item in manifest if item["version"].startswith("2026_08_24_06")
-        ]
+        f09_versions = {"2026_08_24_064", "2026_08_24_065", "2026_08_24_066"}
+        f09_migrations = [item for item in manifest if item["version"] in f09_versions]
         assert [item["version"] for item in f09_migrations] == [
             "2026_08_24_064",
             "2026_08_24_065",

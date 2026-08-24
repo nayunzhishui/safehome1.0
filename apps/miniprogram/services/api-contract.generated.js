@@ -3194,6 +3194,8 @@ const GENERATED_API_ENDPOINTS = [
         "password",
         "role",
         "rotate_existing",
+        "target_binding",
+        "target_environment",
         "temporary_credential",
         "username"
       ],
@@ -3222,6 +3224,9 @@ const GENERATED_API_ENDPOINTS = [
     "error_codes": [
       "account_not_found",
       "credential_receipt_reused",
+      "environment_binding_mismatch",
+      "environment_binding_required",
+      "environment_binding_unconfigured",
       "forbidden",
       "http_error",
       "internal_error",
@@ -5908,7 +5913,9 @@ const GENERATED_API_ENDPOINTS = [
       "body_fields": [
         "bind_code"
       ],
-      "headers": [],
+      "headers": [
+        "X-Device-Id"
+      ],
       "pagination": null,
       "idempotency": {
         "supported": false,
@@ -5932,14 +5939,13 @@ const GENERATED_API_ENDPOINTS = [
     },
     "error_codes": [
       "age_verification_required",
-      "bind_code_expired",
+      "bind_code_unavailable",
+      "family_binding_rate_limit_unavailable",
+      "family_binding_rate_limited",
       "forbidden",
       "http_error",
       "internal_error",
-      "not_found",
-      "too_many_attempts",
-      "unauthorized",
-      "validation_error"
+      "unauthorized"
     ],
     "enum_refs": [],
     "deprecation": {

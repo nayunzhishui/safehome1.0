@@ -376,6 +376,14 @@ def _error_codes(path: str, method: str, source: str, access: dict[str, Any]) ->
         codes.update(["unauthorized", "forbidden"])
     if path == "/api/consent" and method == "POST":
         codes.update(["validation_error", "consent_self_only", "consent_version_conflict"])
+    if path == "/api/family/bind-student" and method == "POST":
+        codes.update(
+            [
+                "bind_code_unavailable",
+                "family_binding_rate_limited",
+                "family_binding_rate_limit_unavailable",
+            ]
+        )
     if path.endswith("/annotations") and path.startswith("/api/consent/"):
         codes.update(["validation_error", "not_found", "annotation_version_conflict"])
     if path.startswith("/api/ai-qa/"):

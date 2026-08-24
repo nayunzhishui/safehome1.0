@@ -44,7 +44,7 @@ def test_parent_creates_expiring_bind_code_and_student_binds(tmp_path, monkeypat
     )
     assert create.status_code == 200
     created = create.get_json()["data"]
-    assert len(created["bind_code"]) == 6
+    assert len(created["bind_code"]) == 10
     assert created["expires_at"]
     assert created["max_attempts"] == 5
 
@@ -56,23 +56,27 @@ def test_parent_creates_expiring_bind_code_and_student_binds(tmp_path, monkeypat
     assert bind.status_code == 200
     data = bind.get_json()["data"]
     assert data["student_user_id"] == student_id
-    assert data["status"] == "active"
+    assert data["status"] == "consumed"
     assert data["attempt_count"] == 1
 
 
-def test_expired_bind_code_returns_410(tmp_path, monkeypatch):
+def test_expired_bind_code_uses_generic_unavailable_response(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
     _, parent_token = _register(client, "expired-parent", "parent")
     _, student_token = _register(client, "expired-student", "student")
 
     create = client.post("/api/family/create-bind-code", headers={"Authorization": f"Bearer {parent_token}"})
-    bind_code = create.get_json()["data"]["bind_code"]
+    created = create.get_json()["data"]
+    bind_code = created["bind_code"]
 
     import database
 
     with database.get_connection() as conn:
-        conn.execute("UPDATE family_links SET expires_at = '2020-01-01T00:00:00+00:00' WHERE bind_code = ?", (bind_code,))
+        conn.execute(
+            "UPDATE family_links SET expires_at = '2020-01-01T00:00:00+00:00' WHERE id = ?",
+            (created["id"],),
+        )
         conn.commit()
 
     bind = client.post(
@@ -80,29 +84,27 @@ def test_expired_bind_code_returns_410(tmp_path, monkeypatch):
         headers={"Authorization": f"Bearer {student_token}"},
         json={"bind_code": bind_code},
     )
-    assert bind.status_code == 410
-    assert bind.get_json()["error"]["code"] == "bind_code_expired"
+    assert bind.status_code == 400
+    assert bind.get_json()["error"]["code"] == "bind_code_unavailable"
 
 
-def test_bind_code_attempt_limit_returns_429(tmp_path, monkeypatch):
+def test_bind_code_rate_limit_returns_429(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
     _, parent_token = _register(client, "limited-parent", "parent")
     _, student_token = _register(client, "limited-student", "student")
 
-    create = client.post("/api/family/create-bind-code", headers={"Authorization": f"Bearer {parent_token}"})
-    bind_code = create.get_json()["data"]["bind_code"]
+    client.post("/api/family/create-bind-code", headers={"Authorization": f"Bearer {parent_token}"})
 
-    import database
-
-    with database.get_connection() as conn:
-        conn.execute("UPDATE family_links SET attempt_count = 5 WHERE bind_code = ?", (bind_code,))
-        conn.commit()
-
-    bind = client.post(
-        "/api/family/bind-student",
-        headers={"Authorization": f"Bearer {student_token}"},
-        json={"bind_code": bind_code},
-    )
+    headers = {"Authorization": f"Bearer {student_token}", "X-Device-Id": "family-limit-device"}
+    responses = [
+        client.post(
+            "/api/family/bind-student",
+            headers=headers,
+            json={"bind_code": "9999999999"},
+        )
+        for _ in range(6)
+    ]
+    bind = responses[-1]
     assert bind.status_code == 429
-    assert bind.get_json()["error"]["code"] == "too_many_attempts"
+    assert bind.get_json()["error"]["code"] == "family_binding_rate_limited"

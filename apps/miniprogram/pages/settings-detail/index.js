@@ -214,7 +214,7 @@ Page({
       }
       if (role === "parent") {
         const family = await listFamilyMembers();
-        const activeLinks = (family.items || []).filter((item) => item.status === "active" && item.student_user_id);
+        const activeLinks = (family.items || []).filter((item) => item.status === "consumed" && item.student_user_id);
         const children = await Promise.all(
           activeLinks.map(async (link) => {
             try {
@@ -260,13 +260,13 @@ Page({
   },
 
   onBindCodeInput(event) {
-    this.setData({ bindCodeInput: String(event.detail.value || "").replace(/\D/g, "").slice(0, 6) });
+    this.setData({ bindCodeInput: String(event.detail.value || "").replace(/\D/g, "").slice(0, 10) });
   },
 
   submitStudentBinding() {
     const bindCode = String(this.data.bindCodeInput || "").trim();
-    if (bindCode.length !== 6 || this.data.protectionBusy) {
-      this.setData({ protectionError: "请输入家长提供的6位绑定码。" });
+    if (bindCode.length !== 10 || this.data.protectionBusy) {
+      this.setData({ protectionError: "请输入家长提供的10位绑定码。" });
       return;
     }
     this.setData({ protectionBusy: true, protectionError: "" });

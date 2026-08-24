@@ -91,9 +91,9 @@ export function FamilyBindPage() {
   }
 
   async function bindWithCode() {
-    if (inputCode.length !== 6) {
+    if (inputCode.length !== 10) {
       setBindStatus("error");
-      setBindMessage("绑定码必须是 6 位数字");
+      setBindMessage("绑定码必须是 10 位数字");
       return;
     }
     setBindStatus("loading");
@@ -136,8 +136,9 @@ export function FamilyBindPage() {
   }
 
   function statusBadge(status: string): string {
-    if (status === "active") return "已绑定";
+    if (status === "consumed") return "已绑定";
     if (status === "pending") return "等待确认";
+    if (status === "locked") return "暂时锁定";
     if (status === "revoked") return "已撤销";
     return status;
   }
@@ -166,7 +167,7 @@ export function FamilyBindPage() {
       <section className="guidanceBox" aria-label="说明">
         <h2>绑定说明</h2>
         <ul>
-          <li>家长生成 6 位绑定码，学生输入确认后建立关联。</li>
+          <li>家长生成 10 位绑定码，学生输入确认后建立关联。</li>
           <li>家长默认只查看授权摘要，不查看学生自由文本原文。</li>
           <li>绑定后可随时撤销。</li>
         </ul>
@@ -175,7 +176,7 @@ export function FamilyBindPage() {
       {isParent ? (
         <section className="guidanceBox familySection">
           <h2>生成绑定码</h2>
-          <p>点击下方按钮生成一个新的 6 位绑定码，分享给学生完成绑定。</p>
+          <p>点击下方按钮生成一个新的 10 位绑定码，分享给学生完成绑定。</p>
           <button className="primaryButton" onClick={() => { void createBindCode(); }} disabled={codeStatus === "loading"}>
             生成绑定码
           </button>
@@ -183,7 +184,7 @@ export function FamilyBindPage() {
             <div className="metricCard bindCodeCard">
               <span>绑定码</span>
               <strong className="bindCodeValue">{bindCode}</strong>
-              <small>有效期：24 小时，超过 5 次尝试后失效</small>
+              <small>有效期：24 小时；连续尝试过多会暂时锁定</small>
             </div>
           ) : null}
           {codeMessage ? <div className={`status compact ${codeStatus}`} role={codeStatus === "error" ? "alert" : "status"} aria-live="polite">{codeMessage}</div> : null}
@@ -195,7 +196,7 @@ export function FamilyBindPage() {
           <h2>输入绑定码</h2>
           <label className="tokenField">
             绑定码
-            <input value={inputCode} onChange={(e) => setInputCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="6 位数字" maxLength={6} />
+            <input value={inputCode} onChange={(e) => setInputCode(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10 位数字" maxLength={10} />
           </label>
           <button className="primaryButton" onClick={() => { void bindWithCode(); }} disabled={bindStatus === "loading"}>
             确认绑定
@@ -217,7 +218,7 @@ export function FamilyBindPage() {
                 <strong>{statusBadge(m.status)}</strong>
                 {m.student_user_id ? <small>学生 ID：{m.student_user_id.slice(0, 12)}...</small> : null}
                 {m.confirmed_at ? <small>确认时间：{m.confirmed_at.slice(0, 10)}</small> : null}
-                {m.status === "active" || m.status === "pending" ? (
+                {m.status === "consumed" || m.status === "pending" || m.status === "locked" ? (
                   <button className="secondaryButton familyUnbind" onClick={() => { void unbind(m.id); }}>
                     撤销绑定
                   </button>

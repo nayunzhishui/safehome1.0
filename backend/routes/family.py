@@ -1,7 +1,7 @@
 """Parent-student binding code endpoints."""
 
-import random
 from datetime import datetime, timedelta
+
 from flask import Blueprint, request
 
 from database import get_connection, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
@@ -9,6 +9,14 @@ from routes.auth_utils import AuthError, auth_error_response, require_login, req
 from routes.consent import DEFAULT_CONSENT_VERSION
 from routes.utils import fail, ok
 from services.consent_service import ConsentError, append_consent_event
+from services.family_binding_service import (
+    FamilyBindingError,
+    generate_bind_code,
+    hash_bind_code,
+    redact_bind_code,
+    enforce_redemption_rate_limits,
+    redeem_pending_link,
+)
 from services.participant_safeguard_service import (
     ParticipantSafeguardError,
     attach_guardian_from_family_link,
@@ -23,17 +31,11 @@ BIND_CODE_EXPIRES_HOURS = 24
 
 
 def _new_bind_code() -> str:
-    return f"{random.randint(0, 999999):06d}"
+    return generate_bind_code()
 
 
 def _expires_at(timestamp: str) -> str:
     return (datetime.fromisoformat(timestamp) + timedelta(hours=BIND_CODE_EXPIRES_HOURS)).isoformat()
-
-
-def _is_expired(expires_at: str | None, timestamp: str) -> bool:
-    if not expires_at:
-        return False
-    return datetime.fromisoformat(expires_at) <= datetime.fromisoformat(timestamp)
 
 
 def _public_link(row: dict) -> dict:
@@ -64,20 +66,46 @@ def create_bind_code():
     expires_at = _expires_at(timestamp)
     link_id = new_id("family")
     bind_code = _new_bind_code()
+    bind_code_hash = hash_bind_code(bind_code)
     with get_connection() as conn:
         apply_pending_schema_migrations(conn)
-        while conn.execute("SELECT id FROM family_links WHERE bind_code = ? AND status = 'pending'", (bind_code,)).fetchone():
+        revoked_pending = conn.execute(
+            """
+            UPDATE family_links
+            SET status = 'revoked', revoked_at = ?, updated_at = ?,
+                locked_until = NULL, lock_reason = 'regenerated', version = version + 1
+            WHERE parent_user_id = ? AND status IN ('pending', 'locked')
+            """,
+            (timestamp, timestamp, actor["id"]),
+        ).rowcount
+        while conn.execute(
+            "SELECT id FROM family_links WHERE bind_code_hash = ?",
+            (bind_code_hash,),
+        ).fetchone():
             bind_code = _new_bind_code()
+            bind_code_hash = hash_bind_code(bind_code)
         conn.execute(
             """
             INSERT INTO family_links (
-                id, parent_user_id, student_user_id, bind_code, relation_label,
+                id, parent_user_id, student_user_id, bind_code, bind_code_hash,
+                bind_code_tail, relation_label,
                 status, expires_at, attempt_count, last_attempt_at,
+                version, locked_until, lock_reason,
                 created_at, updated_at, confirmed_at, revoked_at
             )
-            VALUES (?, ?, NULL, ?, ?, 'pending', ?, 0, NULL, ?, ?, NULL, NULL)
+            VALUES (?, ?, NULL, ?, ?, ?, ?, 'pending', ?, 0, NULL, 1, NULL, NULL, ?, ?, NULL, NULL)
             """,
-            (link_id, actor["id"], bind_code, str(payload.get("relation_label") or "家长").strip()[:50], expires_at, timestamp, timestamp),
+            (
+                link_id,
+                actor["id"],
+                redact_bind_code(bind_code),
+                bind_code_hash,
+                bind_code[-4:],
+                str(payload.get("relation_label") or "家长").strip()[:50],
+                expires_at,
+                timestamp,
+                timestamp,
+            ),
         )
         write_audit_log(
             conn,
@@ -85,7 +113,10 @@ def create_bind_code():
             actor_id=actor["id"],
             target_type="family_link",
             target_id=link_id,
-            metadata={"route": "/api/family/create-bind-code"},
+            metadata={
+                "route": "/api/family/create-bind-code",
+                "revoked_prior_pending_count": int(revoked_pending or 0),
+            },
         )
         conn.commit()
     return ok(
@@ -94,7 +125,7 @@ def create_bind_code():
             "bind_code": bind_code,
             "status": "pending",
             "expires_at": expires_at,
-            "expires_policy": "绑定码 24 小时内有效，超过 5 次尝试后失效。",
+            "expires_policy": "绑定码 24 小时内有效，连续尝试过多会暂时锁定。",
             "max_attempts": MAX_BIND_ATTEMPTS,
         }
     )
@@ -109,12 +140,22 @@ def bind_student():
 
     payload = request.get_json(silent=True) or {}
     bind_code = str(payload.get("bind_code") or "").strip()
-    if len(bind_code) != 6 or not bind_code.isdigit():
-        return fail("validation_error", "绑定码必须是 6 位数字", status=400)
-
     timestamp = now_iso()
     with get_connection() as conn:
         apply_pending_schema_migrations(conn)
+        try:
+            enforce_redemption_rate_limits(
+                conn,
+                actor_id=str(actor["id"]),
+                device_id=str(request.headers.get("X-Device-Id") or ""),
+                ip_address=str(request.remote_addr or ""),
+                bind_code=bind_code,
+                timestamp=timestamp,
+            )
+        except FamilyBindingError as exc:
+            if exc.persist:
+                conn.commit()
+            return fail(exc.code, exc.message, status=exc.status)
         # Plan A: establish the age boundary before binding.  Under-14 users
         # are still allowed to bind because this link is the prerequisite for
         # Plan B guardian consent.
@@ -131,36 +172,17 @@ def bind_student():
                     details=age_status,
                 )
 
-        row = conn.execute(
-            "SELECT * FROM family_links WHERE bind_code = ? AND status = 'pending' ORDER BY created_at DESC LIMIT 1",
-            (bind_code,),
-        ).fetchone()
-        if row is None:
-            return fail("not_found", "绑定码不存在或已失效", status=404)
-        if int(row["attempt_count"] or 0) >= MAX_BIND_ATTEMPTS:
-            return fail("too_many_attempts", "绑定码尝试次数过多，请家长重新生成。", status=429)
-        if _is_expired(row["expires_at"], timestamp):
-            conn.execute(
-                """
-                UPDATE family_links
-                SET status = 'expired', attempt_count = attempt_count + 1,
-                    last_attempt_at = ?, updated_at = ?
-                WHERE id = ?
-                """,
-                (timestamp, timestamp, row["id"]),
+        try:
+            row = redeem_pending_link(
+                conn,
+                bind_code=bind_code,
+                student_user_id=str(actor["id"]),
+                timestamp=timestamp,
             )
-            conn.commit()
-            return fail("bind_code_expired", "绑定码已过期，请家长重新生成。", status=410)
-        conn.execute(
-            """
-            UPDATE family_links
-            SET student_user_id = ?, status = 'active',
-                attempt_count = attempt_count + 1, last_attempt_at = ?,
-                confirmed_at = ?, updated_at = ?
-            WHERE id = ?
-            """,
-            (actor["id"], timestamp, timestamp, timestamp, row["id"]),
-        )
+        except FamilyBindingError as exc:
+            if exc.persist:
+                conn.commit()
+            return fail(exc.code, exc.message, status=exc.status)
         try:
             append_consent_event(
                 conn,
@@ -185,6 +207,7 @@ def bind_student():
                 str(row["parent_user_id"]),
             )
         except ParticipantSafeguardError as exc:
+            conn.rollback()
             return fail(exc.code, exc.message, status=exc.status, details=exc.details or None)
         write_audit_log(
             conn,
@@ -218,7 +241,7 @@ def members():
             rows = conn.execute(
                 """
                 SELECT * FROM family_links
-                WHERE parent_user_id = ? AND status IN ('pending', 'active')
+                WHERE parent_user_id = ? AND status IN ('pending', 'locked', 'consumed')
                 ORDER BY created_at DESC
                 """,
                 (actor["id"],),
@@ -227,7 +250,7 @@ def members():
             rows = conn.execute(
                 """
                 SELECT * FROM family_links
-                WHERE student_user_id = ? AND status = 'active'
+                WHERE student_user_id = ? AND status = 'consumed'
                 ORDER BY created_at DESC
                 """,
                 (actor["id"],),

@@ -140,7 +140,7 @@ def status():
                 link = conn.execute(
                     """
                     SELECT id FROM family_links
-                    WHERE parent_user_id = ? AND student_user_id = ? AND status = 'active'
+                    WHERE parent_user_id = ? AND student_user_id = ? AND status = 'consumed'
                     LIMIT 1
                     """,
                     (str(actor["id"]), user_id),

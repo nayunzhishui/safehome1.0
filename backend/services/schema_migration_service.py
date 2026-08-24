@@ -520,6 +520,94 @@ def _apply_2026_08_24_066(conn) -> None:
         _create_index_if_missing(conn, name, table, columns)
 
 
+def _apply_2026_08_24_067(conn) -> None:
+    for column, definition in {
+        "bind_code_hash": "TEXT",
+        "bind_code_tail": "TEXT",
+        "version": "INTEGER NOT NULL DEFAULT 1",
+        "locked_until": "TEXT",
+        "lock_reason": "TEXT",
+    }.items():
+        ensure_column(conn, "family_links", column, definition)
+    _create_index_if_missing(
+        conn,
+        "idx_family_links_code_hash_status",
+        "family_links",
+        "bind_code_hash, status",
+    )
+
+
+def _apply_2026_08_24_068(conn) -> None:
+    from services.family_binding_service import hash_bind_code, redact_bind_code
+
+    _execute_schema(
+        conn,
+        """
+        CREATE TABLE IF NOT EXISTS family_bind_rate_limits (
+            id TEXT PRIMARY KEY,
+            dimension TEXT NOT NULL,
+            dimension_hash TEXT NOT NULL,
+            window_key TEXT NOT NULL,
+            attempt_count INTEGER NOT NULL DEFAULT 1,
+            locked_until TEXT,
+            last_attempt_at TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(dimension, dimension_hash, window_key)
+        )
+        """,
+    )
+    rows = conn.execute(
+        "SELECT id, bind_code, bind_code_hash, status FROM family_links"
+    ).fetchall()
+    for row in rows:
+        plaintext = str(row["bind_code"] or "")
+        if plaintext.isdigit():
+            conn.execute(
+                """
+                UPDATE family_links
+                SET bind_code = ?, bind_code_hash = ?, bind_code_tail = ?, version = version + 1
+                WHERE id = ?
+                """,
+                (
+                    redact_bind_code(plaintext),
+                    row["bind_code_hash"] or hash_bind_code(plaintext),
+                    plaintext[-4:],
+                    row["id"],
+                ),
+            )
+        elif not plaintext.startswith("redacted:"):
+            conn.execute(
+                "UPDATE family_links SET bind_code = 'redacted:unknown', version = version + 1 WHERE id = ?",
+                (row["id"],),
+            )
+        if not row["bind_code_hash"] and not plaintext.isdigit() and row["status"] == "pending":
+            timestamp = now_iso()
+            conn.execute(
+                """
+                UPDATE family_links
+                SET status = 'revoked', revoked_at = ?, updated_at = ?, version = version + 1
+                WHERE id = ?
+                """,
+                (timestamp, timestamp, row["id"]),
+            )
+    timestamp = now_iso()
+    conn.execute(
+        """
+        UPDATE family_links
+        SET status = 'consumed', updated_at = ?, version = version + 1
+        WHERE status = 'active'
+        """,
+        (timestamp,),
+    )
+    _create_index_if_missing(
+        conn,
+        "idx_family_bind_rate_limits_lookup",
+        "family_bind_rate_limits",
+        "dimension, dimension_hash, window_key",
+    )
+
+
 MIGRATIONS = (
     Migration(
         version="2026_08_07_062",
@@ -571,6 +659,27 @@ MIGRATIONS = (
             "Stop side-effect producers before rollback.",
             "Export unresolved and externally committed ledger rows before any table removal.",
             "Do not mark external actions as reverted merely because the application transaction rolled back.",
+        ),
+    ),
+    Migration(
+        version="2026_08_24_067",
+        name="family_binding_code_digest",
+        apply=_apply_2026_08_24_067,
+        rollback_notes=(
+            "Stop family binding writes before rollback.",
+            "Keep digest, tail, version and lock columns because they contain no plaintext binding code.",
+            "Do not restore plaintext codes; revoke pending codes if the previous application cannot read digests.",
+        ),
+    ),
+    Migration(
+        version="2026_08_24_068",
+        name="family_binding_rate_limits_and_plaintext_backfill",
+        apply=_apply_2026_08_24_068,
+        rollback_notes=(
+            "Stop family binding writes before rollback.",
+            "Preserve the rate-limit ledger for abuse investigation and retention review.",
+            "Never restore plaintext binding codes; revoke pending codes before running an application version that lacks digest lookup.",
+            "Consumed and revoked family relationships remain business records and must not be deleted by rollback.",
         ),
     ),
 )

@@ -52,16 +52,16 @@
         </view>
 
         <view wx:if="{{protectionStatus.status === 'guardian_link_required'}}">
-          <text class="notice-text">请向家长获取6位绑定码。完成绑定后，仍需家长单独确认是否同意受保护的数据处理。</text>
+          <text class="notice-text">请向家长获取10位绑定码。完成绑定后，仍需家长单独确认是否同意受保护的数据处理。</text>
           <input
             class="safe-input"
             type="number"
-            maxlength="6"
+            maxlength="10"
             value="{{bindCodeInput}}"
-            placeholder="输入6位绑定码"
+            placeholder="输入10位绑定码"
             bindinput="onBindCodeInput"
           />
-          <button class="safe-primary-button" disabled="{{protectionBusy || bindCodeInput.length !== 6}}" bindtap="submitStudentBinding">完成家长绑定</button>
+          <button class="safe-primary-button" disabled="{{protectionBusy || bindCodeInput.length !== 10}}" bindtap="submitStudentBinding">完成家长绑定</button>
         </view>
 
         <view wx:if="{{protectionStatus.status === 'guardian_consent_required'}}">
@@ -91,7 +91,7 @@
       <view wx:if="{{protectionRole === 'parent'}}" class="notice-card">
         <text class="privacy-request-title">家长绑定与监护人确认</text>
         <text class="notice-text">先生成绑定码给学生。学生完成绑定后，如果其年龄为未满14周岁，你可以在下方单独同意或撤回受保护的数据处理。</text>
-        <button class="safe-primary-button" disabled="{{protectionBusy}}" bindtap="createGuardianBindCode">生成6位绑定码</button>
+        <button class="safe-primary-button" disabled="{{protectionBusy}}" bindtap="createGuardianBindCode">生成10位绑定码</button>
         <view wx:if="{{generatedBindCode}}" class="privacy-request-card">
           <text class="privacy-request-title">绑定码：{{generatedBindCode}}</text>
           <text class="privacy-request-meta">有效期至：{{generatedBindExpiresAt}}</text>
