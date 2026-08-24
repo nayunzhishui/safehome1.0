@@ -1988,7 +1988,19 @@ def _registry_transition_is_declared_checkpoint_resume(
         checkpoint_registry = json.loads(raw.decode("utf-8"))
     except (HarnessError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
         return False
-    return _registry_transition_is_wave_harness_upgrade(checkpoint_registry, current)
+    candidate = json.loads(json.dumps(current))
+    checkpoint_tasks = task_map(checkpoint_registry)
+    candidate_tasks = task_map(candidate)
+    for unit_id in wave.get("execution_units", []):
+        unit = unit_map(candidate).get(unit_id)
+        if unit is None:
+            return False
+        parent_id = unit.get("task")
+        if parent_id not in checkpoint_tasks or parent_id not in candidate_tasks:
+            return False
+        candidate_tasks[parent_id].clear()
+        candidate_tasks[parent_id].update(json.loads(json.dumps(checkpoint_tasks[parent_id])))
+    return _registry_transition_is_wave_harness_upgrade(checkpoint_registry, candidate)
 
 
 def _registry_transition_is_scoped(

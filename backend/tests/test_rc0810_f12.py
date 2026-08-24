@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 from copy import deepcopy
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,11 @@ REGISTRY_PATH = ROOT / "content" / "rc0810_release_candidate_registry.json"
 SCHEMA_PATH = ROOT / "config" / "rc0810" / "wechat_external_evidence.schema.json"
 CATALOG_PATH = ROOT / "config" / "rc0810" / "wechat_external_evidence_catalog.json"
 VERIFY_PATH = ROOT / "scripts" / "verify_rc0810_f12_evidence.py"
+FIXTURE_START = datetime.now(timezone.utc).replace(microsecond=0) - timedelta(minutes=1)
+
+
+def _fixture_time(*, seconds: int = 0, days: int = 0) -> str:
+    return (FIXTURE_START + timedelta(seconds=seconds, days=days)).isoformat()
 
 
 def _transition_sha256(transition: dict) -> str:
@@ -102,14 +108,14 @@ def _valid_synthetic_evidence() -> dict:
         "operator": {
             "id": "synthetic-automation",
             "role": "device_operator",
-            "observed_at": "2026-08-10T10:00:09+08:00",
+            "observed_at": _fixture_time(seconds=9),
         },
         "artifacts": [
             {
                 "kind": "screenshot",
                 "path": ".codex_tmp/rc0810/synthetic/e07.png",
                 "sha256": "e" * 64,
-                "captured_at": "2026-08-10T10:00:05+08:00",
+                "captured_at": _fixture_time(seconds=5),
                 "package_sha256": "a" * 64,
                 "request_id": "synthetic-request-001",
                 "account_role": "parent",
@@ -120,31 +126,31 @@ def _valid_synthetic_evidence() -> dict:
                 "id": "terminate",
                 "expected": "previous process is terminated",
                 "result": "synthetic fixture passed",
-                "started_at": "2026-08-10T10:00:00+08:00",
-                "finished_at": "2026-08-10T10:00:02+08:00",
+                "started_at": _fixture_time(),
+                "finished_at": _fixture_time(seconds=2),
                 "request_id": "synthetic-request-001",
             },
             {
                 "id": "cold_launch",
                 "expected": "bound package cold launches",
                 "result": "synthetic fixture passed",
-                "started_at": "2026-08-10T10:00:03+08:00",
-                "finished_at": "2026-08-10T10:00:07+08:00",
+                "started_at": _fixture_time(seconds=3),
+                "finished_at": _fixture_time(seconds=7),
                 "request_id": "synthetic-request-001",
             },
             {
                 "id": "open_home",
                 "expected": "initial home state is stable",
                 "result": "synthetic fixture passed",
-                "started_at": "2026-08-10T10:00:08+08:00",
-                "finished_at": "2026-08-10T10:00:10+08:00",
+                "started_at": _fixture_time(seconds=8),
+                "finished_at": _fixture_time(seconds=10),
                 "request_id": "synthetic-request-001",
             },
         ],
         "human_conclusion": None,
         "validity": {
-            "valid_from": "2026-08-10T10:00:00+08:00",
-            "valid_until": "2026-08-17T10:00:00+08:00",
+            "valid_from": _fixture_time(),
+            "valid_until": _fixture_time(days=6),
             "invalidated_at": None,
             "invalidation_reasons": [],
         },
@@ -170,7 +176,7 @@ def _valid_synthetic_evidence() -> dict:
             "challenge_nonce": "1" * 32,
             "actor_id": "rc0810-evidence-validator",
             "identity_source": "machine_registry",
-            "transitioned_at": "2026-08-10T10:00:12+08:00",
+            "transitioned_at": _fixture_time(seconds=12),
             "attestation_path": None,
             "attestation_sha256": None,
         }
@@ -385,7 +391,7 @@ def test_f12a_validator_rejects_forged_or_stale_evidence(tmp_path, case, expecte
     elif case == "duplicate_artifact":
         evidence["artifacts"].append(deepcopy(evidence["artifacts"][0]))
     elif case == "timeline_mismatch":
-        evidence["artifacts"][0]["captured_at"] = "2026-08-10T11:00:00+08:00"
+        evidence["artifacts"][0]["captured_at"] = _fixture_time(seconds=3600)
     elif case == "contextless_screenshot":
         evidence["artifacts"][0].pop("request_id")
     elif case == "orphan_request_id":
@@ -397,15 +403,15 @@ def test_f12a_validator_rejects_forged_or_stale_evidence(tmp_path, case, expecte
     elif case == "stale_dependency":
         evidence["dependency_snapshot"]["device_model"] = "old-device"
     elif case == "excessive_validity":
-        evidence["validity"]["valid_until"] = "2026-08-18T10:00:00+08:00"
+        evidence["validity"]["valid_until"] = _fixture_time(days=8)
     elif case == "early_transition":
-        evidence["transitions"][0]["transitioned_at"] = "2026-08-10T09:59:59+08:00"
+        evidence["transitions"][0]["transitioned_at"] = _fixture_time(seconds=-1)
     elif case == "future_operator":
         evidence["operator"]["observed_at"] = "2030-08-10T10:00:09+08:00"
     elif case == "account_role_mismatch":
         evidence["artifacts"][0]["account_role"] = "arbitrary-role"
     elif case == "transition_outside_validity":
-        evidence["transitions"][0]["transitioned_at"] = "2026-08-18T10:00:00+08:00"
+        evidence["transitions"][0]["transitioned_at"] = _fixture_time(days=8)
     elif case == "automated_human_signature":
         evidence["synthetic"] = False
         evidence["status"] = "human_verified"
@@ -415,14 +421,14 @@ def test_f12a_validator_rejects_forged_or_stale_evidence(tmp_path, case, expecte
             "evidence_ready",
             "rc0810-evidence-validator",
             "machine_registry",
-            "2026-08-10T10:00:13+08:00",
+            _fixture_time(seconds=13),
         )
         _append_transition(
             evidence,
             "human_verified",
             "forged-human",
             "reviewer_registry",
-            "2026-08-10T10:00:14+08:00",
+            _fixture_time(seconds=14),
         )
     elif case == "missing_human_conclusion":
         evidence["synthetic"] = False
@@ -432,14 +438,14 @@ def test_f12a_validator_rejects_forged_or_stale_evidence(tmp_path, case, expecte
             "evidence_ready",
             "rc0810-evidence-validator",
             "machine_registry",
-            "2026-08-10T10:00:13+08:00",
+            _fixture_time(seconds=13),
         )
         _append_transition(
             evidence,
             "human_verified",
             "independent_device_reviewer",
             "reviewer_registry",
-            "2026-08-10T10:00:14+08:00",
+            _fixture_time(seconds=14),
         )
     elif case == "automated_platform_signature":
         evidence["synthetic"] = False
@@ -450,27 +456,27 @@ def test_f12a_validator_rejects_forged_or_stale_evidence(tmp_path, case, expecte
             "evidence_ready",
             "rc0810-evidence-validator",
             "machine_registry",
-            "2026-08-10T10:00:13+08:00",
+            _fixture_time(seconds=13),
         )
         _append_transition(
             evidence,
             "human_verified",
             "independent_device_reviewer",
             "reviewer_registry",
-            "2026-08-10T10:00:14+08:00",
+            _fixture_time(seconds=14),
         )
         _append_transition(
             evidence,
             "platform_approved",
             "forged-platform",
             "external_gate_registry",
-            "2026-08-10T10:00:15+08:00",
+            _fixture_time(seconds=15),
         )
     elif case == "invalidated":
-        evidence["validity"]["invalidated_at"] = "2026-08-10T10:00:15+08:00"
+        evidence["validity"]["invalidated_at"] = _fixture_time(seconds=15)
         evidence["validity"]["invalidation_reasons"] = ["package_changed"]
     elif case == "expired":
-        evidence["validity"]["valid_until"] = "2026-08-10T09:00:00+08:00"
+        evidence["validity"]["valid_until"] = _fixture_time(seconds=-3600)
     elif case == "unexpected_approval_field":
         evidence["automatic_platform_approval"] = True
 
@@ -688,14 +694,14 @@ def test_f12a_human_transition_requires_trusted_identity_and_non_null_attestatio
         "evidence_ready",
         "rc0810-evidence-validator",
         "machine_registry",
-        "2026-08-10T10:00:13+08:00",
+        _fixture_time(seconds=13),
     )
     _append_transition(
         evidence,
         "human_verified",
         "independent_qa_reviewer",
         "reviewer_registry",
-        "2026-08-10T10:00:14+08:00",
+        _fixture_time(seconds=14),
     )
     human = evidence["transitions"][-1]
     attestation = {

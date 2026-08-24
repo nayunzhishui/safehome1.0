@@ -3691,7 +3691,7 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "expected_test_count": 37,
+        "expected_test_count": 43,
           "status": "active_f12a_combined_regression"
         },
         {
