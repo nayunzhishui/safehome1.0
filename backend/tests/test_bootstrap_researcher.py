@@ -104,7 +104,7 @@ def test_prepare_records_expiring_receipt_environment_and_explicit_operation(tmp
 
 def test_apply_rejects_expired_receipt_before_network_call(tmp_path):
     module = load_module()
-    receipt_path = module.prepare(tmp_path / "expired.json", target_environment="production")
+    receipt_path = module.prepare(tmp_path / "expired.json", target_environment="test_cloud")
     payload = json.loads(receipt_path.read_text(encoding="utf-8"))
     payload["expires_at"] = "2020-01-01T00:00:00+00:00"
     receipt_path.write_text(json.dumps(payload), encoding="utf-8")

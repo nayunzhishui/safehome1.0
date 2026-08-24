@@ -7,7 +7,9 @@
 - [x] bootstrap 增加客户端批准目标与服务端部署身份双重校验。
 - [x] CI evidence 增加唯一测试数和依赖版本；波次 packet 增加 `base..head` 累计文件及摘要。
 - [x] F10 16 项、F11 16 项、Task36 14 项和 packet 专项 1 项通过。
-- [ ] 更新 Harness checkpoint、提交并推送，重新生成波次 A packet后续用同一 reviewer 复审。
+- [x] 同一 reviewer 确认前 5 项 finding 全部关闭；新增的 production receipt 测试夹具 finding 已改用批准的 `test_cloud`。
+- [x] 凭据专项 9 项、F10 16 项、F12 30 项、Harness+F12 44 项及冻结证据校验通过。
+- [ ] 独立提交并推送，重新生成波次 A packet 后续用同一 reviewer 复审。
 
 ## 2026-08-24：RC0810-F12-B 外部证据接收
 
