@@ -21,16 +21,16 @@ def test_task18_opening_matrix_covers_all_governed_content():
     assert all(item["opening_category"] in {"研究者受控", "继续隐藏"} for item in rows if item["kind"] == "研究分析")
 
 
-def test_production_showcase_opens_cards_and_courses_without_changing_review_status(tmp_path, monkeypatch):
+def test_validation_showcase_opens_cards_and_courses_without_changing_review_status(tmp_path, monkeypatch):
     sys.path.insert(0, str(ROOT / "backend"))
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("APP_ENV", "validation")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
     monkeypatch.setenv("SECRET_KEY", "task18-opening-production-secret")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "task18-opening-admin")
     monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "1")

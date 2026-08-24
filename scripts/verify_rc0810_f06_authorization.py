@@ -26,7 +26,7 @@ def _live_routes() -> list[dict]:
     os.environ["APP_ENV"] = "testing"
     os.environ["DATABASE_PATH"] = str(Path(temp_dir.name) / "inventory.sqlite3")
     os.environ["CONTENT_DIR"] = str(ROOT / "content")
-    os.environ["ALLOW_PRODUCTION_SQLITE"] = "1"
+    os.environ["DATABASE_DATA_WATERMARK"] = "local_fake_only"
     if str(BACKEND) not in sys.path:
         sys.path.insert(0, str(BACKEND))
     for name in list(sys.modules):

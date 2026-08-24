@@ -27,14 +27,15 @@ def _fresh_production_app(tmp_path, monkeypatch):
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("APP_ENV", "validation")
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-admin-token")
     monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-production-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
     module = importlib.import_module("app")
+    module.app.config["APP_ENV"] = "production"
     return module.app
 
 

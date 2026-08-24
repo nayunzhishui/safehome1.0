@@ -3551,7 +3551,8 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 15
         }
       ],
       "external_gates": [],
@@ -3574,8 +3575,8 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 14,
-        "expected_migrations": 1,
+        "expected_files": 26,
+        "expected_migrations": 0,
         "expected_interfaces": 0,
         "expected_pages": 0,
         "actual_delta_baseline": "task_start_snapshot",

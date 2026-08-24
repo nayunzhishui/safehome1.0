@@ -1,0 +1,31 @@
+{
+  "schema": "safehome.rc0810.database-profiles.v1",
+  "production_gate_eligible": false,
+  "profiles": {
+    "development": {
+      "providers": ["sqlite", "mysql"],
+      "data_watermark": "local_fake_only",
+      "automatic_schema_changes": true
+    },
+    "testing": {
+      "providers": ["sqlite", "mysql"],
+      "data_watermark": "local_fake_only",
+      "automatic_schema_changes": true
+    },
+    "validation": {
+      "providers": ["sqlite", "mysql"],
+      "data_watermark": "synthetic_validation_only",
+      "automatic_schema_changes": true,
+      "sqlite_path_must_be_explicit": true
+    },
+    "production": {
+      "providers": ["mysql"],
+      "data_watermark": "participant_production",
+      "automatic_schema_changes": false,
+      "legacy_schema_version": "2026_08_24_063",
+      "explicit_migration_head": "2026_08_24_066",
+      "approved_migration_head": "2026_08_24_063+2026_08_24_066",
+      "required_runtime_privileges": ["SELECT", "INSERT", "UPDATE", "DELETE"]
+    }
+  }
+}

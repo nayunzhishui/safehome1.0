@@ -36,14 +36,16 @@ def _fresh_app(tmp_path, monkeypatch):
             ("routes.", "services.")
         ):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("APP_ENV", "validation")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "rc0810-f09.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
     monkeypatch.setenv("SECRET_KEY", "rc0810-f09-test-secret-key-that-is-long-enough")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "rc0810-f09-admin-token")
-    return importlib.import_module("app").app
+    app = importlib.import_module("app").app
+    app.config["APP_ENV"] = "production"
+    return app
 
 
 def _register(client, username="parent-f09"):

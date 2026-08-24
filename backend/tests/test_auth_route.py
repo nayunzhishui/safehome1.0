@@ -13,13 +13,14 @@ def _fresh_app(tmp_path, monkeypatch, app_env="development"):
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
             sys.modules.pop(name, None)
-    monkeypatch.setenv("APP_ENV", app_env)
+    runtime_env = "validation" if app_env == "production" else app_env
+    monkeypatch.setenv("APP_ENV", runtime_env)
     monkeypatch.delenv("ADMIN_EXPORT_TOKEN", raising=False)
     monkeypatch.delenv("WECHAT_APPID", raising=False)
     monkeypatch.delenv("WECHAT_SECRET", raising=False)
     if app_env == "production":
         monkeypatch.setenv("DB_PROVIDER", "sqlite")
-        monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+        monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
         monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-characters")
         monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-admin-token")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))

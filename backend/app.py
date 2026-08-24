@@ -250,13 +250,21 @@ def create_app(
     app.config.pop("JSON_AS_ASCII", None)
     configure_logging(app)
     if init_database:
-        init_db()
-        # New changes use explicit named migrations.  Keep the historical
-        # init_db/ensure_column path intact, then apply additive migrations in
-        # a separate transaction so rollback/review remains possible.
-        with get_connection() as conn:
-            apply_pending_schema_migrations(conn)
-            conn.commit()
+        if str(app.config.get("APP_ENV") or "").lower() == "production":
+            database_status = check_database_health()
+            if not database_status.get("ok"):
+                reasons = database_status.get("profile_errors") or [
+                    database_status.get("error_code") or "database_not_ready"
+                ]
+                raise RuntimeError("生产数据库启动检查失败：" + ", ".join(reasons))
+        else:
+            init_db()
+            # Production never changes schema during application startup.
+            # Development/validation keep explicit additive migrations for
+            # isolated local or synthetic data only.
+            with get_connection() as conn:
+                apply_pending_schema_migrations(conn)
+                conn.commit()
     app.extensions["safehome_build_identity"] = load_build_identity(app.config["CONTENT_DIR"])
 
     app.register_blueprint(auth_bp)

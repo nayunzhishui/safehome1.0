@@ -9,6 +9,11 @@ from pathlib import Path
 
 from config import Config
 from models import IDENTITY_UNIQUE_INDEX_SQL, INDEX_SQL, SCHEMA_SQL
+from services.database_profile_service import (
+    granted_privileges,
+    public_database_fingerprint,
+    runtime_profile_errors,
+)
 
 
 REQUIRED_HEALTH_TABLES = [
@@ -556,9 +561,9 @@ class MySQLConnection:
             charset="utf8mb4",
             cursorclass=pymysql.cursors.DictCursor,
             autocommit=False,
-            connect_timeout=5,
-            read_timeout=10,
-            write_timeout=10,
+            connect_timeout=Config.MYSQL_CONNECT_TIMEOUT_SECONDS,
+            read_timeout=Config.MYSQL_READ_TIMEOUT_SECONDS,
+            write_timeout=Config.MYSQL_WRITE_TIMEOUT_SECONDS,
         )
 
     def __enter__(self):
@@ -720,7 +725,11 @@ def check_database_health() -> dict:
         "database_file_exists": path.exists(),
         "expected_schema_version": CURRENT_SCHEMA_VERSION,
         "current_schema_version": None,
+        "explicit_migration_head": None,
         "schema_version_ok": False,
+        "profile_ok": False,
+        "profile_errors": [],
+        "fingerprint": None,
         "required_tables_ok": False,
         "missing_tables": [],
         "training_cards_count": 0,
@@ -737,6 +746,7 @@ def check_database_health() -> dict:
         with get_connection() as conn:
             rows = list_database_tables(conn)
             result["current_schema_version"] = get_latest_schema_version(conn)
+            result["explicit_migration_head"] = get_latest_explicit_migration_version(conn)
             result["schema_version_ok"] = result["current_schema_version"] == CURRENT_SCHEMA_VERSION
             result["training_cards_count"] = get_table_count(conn, "training_cards")
             result["assessment_worksheets_count"] = get_table_count(conn, "assessment_worksheets")
@@ -744,6 +754,18 @@ def check_database_health() -> dict:
             result["identity_uniqueness_ok"] = identity_status["ok"]
             result["identity_duplicate_groups"] = identity_status["duplicate_groups"]
             result["identity_unique_indexes_ok"] = identity_unique_indexes_present(conn)
+            runtime_facts = {
+                "database_name": None,
+                "legacy_schema_version": result["current_schema_version"],
+                "explicit_migration_head": result["explicit_migration_head"],
+                "server_read_only": False,
+                "privileges": {"ALL PRIVILEGES"},
+            }
+            if _connection_provider(conn) == "mysql":
+                runtime_facts.update(inspect_mysql_runtime(conn))
+            result["profile_errors"] = runtime_profile_errors(Config, runtime_facts)
+            result["profile_ok"] = not result["profile_errors"]
+            result["fingerprint"] = public_database_fingerprint(Config, runtime_facts)
         existing_tables = {row["name"] for row in rows}
         missing_tables = [table for table in REQUIRED_HEALTH_TABLES if table not in existing_tables]
         content_training_cards = load_content_json("training_cards.json").get("cards", [])
@@ -764,10 +786,37 @@ def check_database_health() -> dict:
             and result["worksheets_sync_ok"]
             and result["identity_uniqueness_ok"]
             and result["identity_unique_indexes_ok"]
+            and result["profile_ok"]
         )
-    except (sqlite3.Error, OSError, json.JSONDecodeError, RuntimeError, Exception) as exc:
-        result["error"] = str(exc)
+    except Exception as exc:
+        message = str(exc).lower()
+        result["error_code"] = (
+            "database_connection_timeout"
+            if "timed out" in message or "timeout" in message
+            else "database_connection_failed"
+        )
     return result
+
+
+def inspect_mysql_runtime(conn) -> dict:
+    database_row = conn.execute("SELECT DATABASE() AS database_name").fetchone()
+    grant_rows = conn.execute("SHOW GRANTS").fetchall()
+    variable_rows = conn.execute(
+        "SHOW VARIABLES WHERE Variable_name IN ('read_only', 'super_read_only')"
+    ).fetchall()
+    read_only = False
+    for row in variable_rows:
+        if isinstance(row, dict):
+            value = row.get("Value", row.get("value"))
+        else:
+            value = row[1] if isinstance(row, (tuple, list)) and len(row) > 1 else None
+        if str(value or "").strip().lower() in {"1", "on", "true", "yes"}:
+            read_only = True
+    return {
+        "database_name": database_row["database_name"] if database_row else None,
+        "server_read_only": read_only,
+        "privileges": granted_privileges(grant_rows),
+    }
 
 
 def list_database_tables(conn) -> list[dict]:
@@ -935,6 +984,20 @@ def get_latest_schema_version(conn) -> str | None:
         row = conn.execute(
             """
             SELECT version FROM schema_migrations
+            ORDER BY version DESC
+            LIMIT 1
+            """
+        ).fetchone()
+    except Exception:
+        return None
+    return row["version"] if row else None
+
+
+def get_latest_explicit_migration_version(conn) -> str | None:
+    try:
+        row = conn.execute(
+            """
+            SELECT version FROM explicit_schema_migrations
             ORDER BY version DESC
             LIMIT 1
             """

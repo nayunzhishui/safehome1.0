@@ -19,11 +19,11 @@ def _fresh_app(tmp_path, monkeypatch, *, build_info=None, content_dir=None):
     tmp_path.mkdir(parents=True, exist_ok=True)
     sys.path.insert(0, str(BACKEND))
     _clear_modules()
-    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("APP_ENV", "validation")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "task36-f09.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(content_dir or ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "synthetic_validation_only")
     monkeypatch.setenv("SECRET_KEY", "task36-f09-test-secret-key-that-is-long-enough")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "task36-f09-admin-token")
     if build_info is not None:
@@ -71,7 +71,7 @@ def test_healthz_exposes_safe_build_identity_and_response_headers(tmp_path, monk
     assert "task36-f09-admin-token" not in serialized
 
 
-def test_production_readiness_accepts_matching_packaged_fingerprint(tmp_path, monkeypatch):
+def test_validation_readiness_accepts_matching_packaged_fingerprint(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, build_info=_build_info())
     response = app.test_client().get("/readyz")
     deployment = response.get_json()["deployment"]
@@ -84,7 +84,7 @@ def test_production_readiness_accepts_matching_packaged_fingerprint(tmp_path, mo
     assert deployment["schema_matches"] is True
 
 
-def test_production_readiness_distinguishes_contract_content_and_schema_drift(tmp_path, monkeypatch):
+def test_validation_readiness_distinguishes_contract_content_and_schema_drift(tmp_path, monkeypatch):
     contract_info = {**_build_info(), "api_contract_hash": "0" * 64}
     contract_app = _fresh_app(tmp_path / "contract", monkeypatch, build_info=contract_info)
     contract = contract_app.test_client().get("/readyz")

@@ -1,4 +1,5 @@
 import importlib
+import hashlib
 import os
 import sys
 from pathlib import Path
@@ -17,12 +18,29 @@ def _clear_backend_modules():
             sys.modules.pop(name, None)
 
 
+def _configure_production_mysql(monkeypatch):
+    host = "mysql.internal.example"
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("DB_PROVIDER", "mysql")
+    monkeypatch.setenv("MYSQL_HOST", host)
+    monkeypatch.setenv("MYSQL_PORT", "3306")
+    monkeypatch.setenv("MYSQL_USER", "safehome_runtime")
+    monkeypatch.setenv("MYSQL_PASSWORD", "fixture-password")
+    monkeypatch.setenv("MYSQL_DATABASE", "safehome")
+    monkeypatch.setenv("DATABASE_DATA_WATERMARK", "participant_production")
+    monkeypatch.setenv("DB_PROFILE_APPROVAL_ID", "approval-fixture-001")
+    monkeypatch.setenv("DB_APPROVED_HOST_SHA256", hashlib.sha256(host.encode()).hexdigest())
+    monkeypatch.setenv("DB_APPROVED_DATABASE", "safehome")
+    monkeypatch.setenv("DB_APPROVED_PORT", "3306")
+    monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_24_066")
+    monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
+
+
 def test_production_rejects_default_admin_export_token(tmp_path, monkeypatch):
     _clear_backend_modules()
-    monkeypatch.setenv("APP_ENV", "production")
-    monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    _configure_production_mysql(monkeypatch)
     monkeypatch.delenv("ADMIN_EXPORT_TOKEN", raising=False)
+    monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
 
@@ -42,24 +60,23 @@ def test_production_requires_explicit_db_provider(tmp_path, monkeypatch):
         importlib.import_module("app")
 
 
-def test_production_sqlite_requires_explicit_override(tmp_path, monkeypatch):
-    _clear_backend_modules()
-    monkeypatch.setenv("APP_ENV", "production")
-    monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
-    monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
-    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
-    monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
-
-    with pytest.raises(RuntimeError, match="ALLOW_PRODUCTION_SQLITE=1"):
-        importlib.import_module("app")
-
-
-def test_production_accepts_explicit_admin_export_token_only_with_legacy_opt_in(tmp_path, monkeypatch):
+def test_production_sqlite_is_rejected_even_with_legacy_override(tmp_path, monkeypatch):
     _clear_backend_modules()
     monkeypatch.setenv("APP_ENV", "production")
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
     monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
+    monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
+
+    with pytest.raises(RuntimeError, match="只允许 MySQL"):
+        importlib.import_module("app")
+
+
+def test_explicit_admin_export_token_requires_legacy_opt_in(tmp_path, monkeypatch):
+    _clear_backend_modules()
+    monkeypatch.setenv("APP_ENV", "testing")
+    monkeypatch.setenv("DB_PROVIDER", "sqlite")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
     monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "1")
     monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
@@ -78,9 +95,7 @@ def test_production_accepts_explicit_admin_export_token_only_with_legacy_opt_in(
 
 def test_production_rejects_default_secret_key(tmp_path, monkeypatch):
     _clear_backend_modules()
-    monkeypatch.setenv("APP_ENV", "production")
-    monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    _configure_production_mysql(monkeypatch)
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
     monkeypatch.delenv("SECRET_KEY", raising=False)
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
@@ -92,9 +107,7 @@ def test_production_rejects_default_secret_key(tmp_path, monkeypatch):
 
 def test_production_rejects_short_secret_key(tmp_path, monkeypatch):
     _clear_backend_modules()
-    monkeypatch.setenv("APP_ENV", "production")
-    monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    _configure_production_mysql(monkeypatch)
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
     monkeypatch.setenv("SECRET_KEY", "short-secret")
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
@@ -142,9 +155,7 @@ def test_guarded_production_features_can_be_opened_with_explicit_unlock(
 
 def test_production_ai_cannot_use_fake_provider(tmp_path, monkeypatch):
     _clear_backend_modules()
-    monkeypatch.setenv("APP_ENV", "production")
-    monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
+    _configure_production_mysql(monkeypatch)
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
     monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-32-chars")
     monkeypatch.setenv("PRODUCTION_FEATURES_UNLOCKED", "1")

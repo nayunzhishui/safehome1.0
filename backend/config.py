@@ -3,6 +3,8 @@
 import os
 from pathlib import Path
 
+from services.database_profile_service import startup_profile_errors
+
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
@@ -10,6 +12,7 @@ DEFAULT_CONTENT_DIR = BASE_DIR / "content" if (BASE_DIR / "content").exists() el
 DEFAULT_ADMIN_EXPORT_TOKEN = "safehome-local-admin-token"
 DEFAULT_SECRET_KEY = "safehome-local-dev-secret"
 DB_PROVIDER_ENV_VALUE = os.environ.get("DB_PROVIDER")
+DATABASE_PATH_ENV_VALUE = os.environ.get("DATABASE_PATH")
 
 
 class Config:
@@ -17,11 +20,36 @@ class Config:
     APP_ENV = os.environ.get("APP_ENV", os.environ.get("FLASK_ENV", "development"))
     DB_PROVIDER = (DB_PROVIDER_ENV_VALUE or "sqlite").strip().lower()
     DATABASE_PATH = Path(os.environ.get("DATABASE_PATH", BASE_DIR / "safehome.sqlite3"))
+    DATABASE_PATH_EXPLICIT = bool(DATABASE_PATH_ENV_VALUE)
     MYSQL_HOST = os.environ.get("MYSQL_HOST", "")
     MYSQL_PORT = int(os.environ.get("MYSQL_PORT", "3306"))
     MYSQL_USER = os.environ.get("MYSQL_USER", "")
     MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "")
     MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "")
+    MYSQL_CONNECT_TIMEOUT_SECONDS = int(os.environ.get("MYSQL_CONNECT_TIMEOUT_SECONDS", "5"))
+    MYSQL_READ_TIMEOUT_SECONDS = int(os.environ.get("MYSQL_READ_TIMEOUT_SECONDS", "10"))
+    MYSQL_WRITE_TIMEOUT_SECONDS = int(os.environ.get("MYSQL_WRITE_TIMEOUT_SECONDS", "10"))
+    DB_PROFILE_CONTRACT_PATH = Path(
+        os.environ.get(
+            "DB_PROFILE_CONTRACT_PATH",
+            PROJECT_ROOT / "config" / "rc0810" / "database_profiles.json",
+        )
+    )
+    DATABASE_DATA_WATERMARK = os.environ.get(
+        "DATABASE_DATA_WATERMARK",
+        "participant_production"
+        if str(APP_ENV).lower() == "production"
+        else (
+            "synthetic_validation_only"
+            if str(APP_ENV).lower() == "validation"
+            else "local_fake_only"
+        ),
+    ).strip()
+    DB_PROFILE_APPROVAL_ID = os.environ.get("DB_PROFILE_APPROVAL_ID", "").strip()
+    DB_APPROVED_HOST_SHA256 = os.environ.get("DB_APPROVED_HOST_SHA256", "").strip().lower()
+    DB_APPROVED_DATABASE = os.environ.get("DB_APPROVED_DATABASE", "").strip()
+    DB_APPROVED_PORT = int(os.environ.get("DB_APPROVED_PORT", "0"))
+    DB_APPROVED_MIGRATION_HEAD = os.environ.get("DB_APPROVED_MIGRATION_HEAD", "").strip()
     CONTENT_DIR = Path(os.environ.get("CONTENT_DIR", DEFAULT_CONTENT_DIR))
     SECRET_KEY = os.environ.get("SECRET_KEY", DEFAULT_SECRET_KEY)
     ADMIN_EXPORT_TOKEN = os.environ.get("ADMIN_EXPORT_TOKEN", DEFAULT_ADMIN_EXPORT_TOKEN)
@@ -165,6 +193,29 @@ class Config:
             ]
             if missing:
                 raise RuntimeError(f"MySQL 模式缺少环境变量：{', '.join(missing)}")
+        if min(
+            cls.MYSQL_CONNECT_TIMEOUT_SECONDS,
+            cls.MYSQL_READ_TIMEOUT_SECONDS,
+            cls.MYSQL_WRITE_TIMEOUT_SECONDS,
+        ) <= 0:
+            raise RuntimeError("MySQL 连接、读取和写入超时必须为正整数")
+        if str(cls.APP_ENV).lower() == "production" and not DB_PROVIDER_ENV_VALUE:
+            raise RuntimeError("生产环境必须显式配置 DB_PROVIDER")
+        profile_errors = startup_profile_errors(cls)
+        if profile_errors:
+            messages = {
+                "database_provider_not_allowed": "production 数据库只允许 MySQL",
+                "production_sqlite_override_forbidden": "生产环境禁止 ALLOW_PRODUCTION_SQLITE",
+                "production_database_approval_missing": "生产数据库缺少批准摘要",
+                "production_database_host_not_approved": "生产数据库主机不匹配批准摘要",
+                "production_database_name_not_approved": "生产数据库名不匹配批准摘要",
+                "production_database_port_not_approved": "生产数据库端口不匹配批准摘要",
+                "production_database_migration_head_not_approved": "生产数据库 migration head 不匹配批准摘要",
+                "database_data_watermark_mismatch": "数据库数据水印与 profile 不一致",
+                "validation_sqlite_path_not_explicit": "validation SQLite 必须显式配置 DATABASE_PATH",
+                "database_profile_unknown_environment": "APP_ENV 没有对应数据库 profile",
+            }
+            raise RuntimeError(messages.get(profile_errors[0], profile_errors[0]))
         if cls.WECHAT_SUBSCRIBE_MODE not in {"once", "long_term"}:
             raise RuntimeError("WECHAT_SUBSCRIBE_MODE 只能是 once 或 long_term")
         if cls.AI_QA_PROVIDER not in {"fake", "deepseek", "openai"}:
@@ -229,10 +280,6 @@ class Config:
                 raise RuntimeError("启用生产隐私执行前必须确认数据保存矩阵")
             if cls.PRIVACY_PRODUCTION_EXECUTION_ENABLED and len(str(cls.PRIVACY_TOMBSTONE_SECRET)) < 32:
                 raise RuntimeError("启用生产隐私执行前墓碑密钥长度不能少于32个字符")
-            if not DB_PROVIDER_ENV_VALUE:
-                raise RuntimeError("生产环境必须显式配置 DB_PROVIDER")
-            if cls.DB_PROVIDER == "sqlite" and not cls.ALLOW_PRODUCTION_SQLITE:
-                raise RuntimeError("生产环境使用 sqlite 必须显式设置 ALLOW_PRODUCTION_SQLITE=1")
             if not cls.ADMIN_EXPORT_TOKEN:
                 raise RuntimeError("生产环境必须配置 ADMIN_EXPORT_TOKEN")
             if cls.ADMIN_EXPORT_TOKEN == DEFAULT_ADMIN_EXPORT_TOKEN:
