@@ -307,6 +307,37 @@ def test_wave_resume_uses_declared_historical_review_pass_checkpoint(tmp_path):
     assert "checkpoint" in invalid.stderr
 
 
+def test_wave_resume_adopts_checkpoint_registry_over_stale_runtime_registry(tmp_path):
+    current = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    previous = json.loads(json.dumps(current))
+    next(task for task in previous["tasks"] if task["id"] == "RC0810-F07")[
+        "title"
+    ] = "stale runtime registry contract"
+    previous_path = tmp_path / "previous-registry.json"
+    current_path = tmp_path / "current-registry.json"
+    previous_path.write_text(json.dumps(previous), encoding="utf-8")
+    current_path.write_text(json.dumps(current), encoding="utf-8")
+    runtime = tmp_path / "runtime"
+    base_env = {
+        "RC0810_RUNTIME_ROOT": str(runtime),
+        "RC0810_RUN_ID": "run-stale-registry",
+    }
+
+    seeded = run_cli(
+        "start",
+        "RC0810-F00",
+        env=base_env | {"RC0810_REGISTRY_PATH": str(previous_path)},
+    )
+    assert seeded.returncode == 0, seeded.stderr
+    resumed = run_cli(
+        "start",
+        "RC0810-F10-B",
+        env=base_env | {"RC0810_REGISTRY_PATH": str(current_path)},
+    )
+    assert resumed.returncode == 0, resumed.stderr
+    assert json.loads(resumed.stdout)["status"] == "in_progress"
+
+
 def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_review(
     tmp_path,
 ):
@@ -711,7 +742,10 @@ def test_wave_registry_declares_pending_status_and_three_checkpoints():
         "base_checkpoint": {
             "status": "review_pass",
             "commit": "39e76225d873c2aaac2731974fa1f63853a6f9be",
-            "execution_units": ["RC0810-F07", "RC0810-F08", "RC0810-F09"],
+            "execution_units": [
+                "RC0810-F10-A", "RC0810-F12-A", "RC0810-F07",
+                "RC0810-F08", "RC0810-F09",
+            ],
             "production_gate_eligible": False,
         },
     }

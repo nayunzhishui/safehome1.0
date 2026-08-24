@@ -46,7 +46,10 @@ PRODUCTION_REVIEW_WAVES = [
         "base_checkpoint": {
             "status": "review_pass",
             "commit": "39e76225d873c2aaac2731974fa1f63853a6f9be",
-            "execution_units": ["RC0810-F07", "RC0810-F08", "RC0810-F09"],
+            "execution_units": [
+                "RC0810-F10-A", "RC0810-F12-A", "RC0810-F07",
+                "RC0810-F08", "RC0810-F09",
+            ],
             "production_gate_eligible": False,
         },
     },
@@ -1966,11 +1969,26 @@ def _registry_transition_is_wave_harness_upgrade(
     if len(expected_f00_commands) != 1:
         return False
     expected_f00_commands[0]["timeout_seconds"] = 360
-    expected_f00_commands[0]["expected_test_count"] = 12
+    expected_f00_commands[0]["expected_test_count"] = 13
     if current_f00["acceptance_commands"] != expected_f00_commands:
         return False
     current_f00["acceptance_commands"] = previous_f00["acceptance_commands"]
     return current_tasks == previous_tasks
+
+
+def _registry_transition_is_declared_checkpoint_resume(
+    current: dict[str, Any], wave: dict[str, Any] | None
+) -> bool:
+    if wave is None or not isinstance(wave.get("base_checkpoint"), dict):
+        return False
+    checkpoint = wave["base_checkpoint"]
+    try:
+        relative = "content/rc0810_release_candidate_registry.json"
+        raw = _run_git("show", f"{checkpoint['commit']}:{relative}")
+        checkpoint_registry = json.loads(raw.decode("utf-8"))
+    except (HarnessError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    return _registry_transition_is_wave_harness_upgrade(checkpoint_registry, current)
 
 
 def _registry_transition_is_scoped(
@@ -2188,6 +2206,7 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
                 or _registry_transition_is_wave_harness_upgrade(
                     previous_registry, registry
                 )
+                or _registry_transition_is_declared_checkpoint_resume(registry, wave)
             ):
                 raise HarnessError("注册表变化超出当前新执行单元；必须先独立冻结。")
             state.setdefault("registry_history", []).append(state["registry_sha256"])
