@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-24：RC0810 9.2 历史 checkpoint 补正
+
+- [x] 复现旧运行态缺少 F07—F09 task record 时 F10-B 无法启动。
+- [x] 波次 A 登记 F09 完整 commit，并只继承 F07—F09 的依赖完成事实。
+- [x] 启动时验证 commit 存在且为当前 HEAD 祖先；错误 commit 失败关闭。
+- [x] 波次 packet base 绑定该 commit/tree，不生成新 review pass，不改变 production NO-GO。
+- [x] 新增专项与既有合同同轮通过，完整 Harness `12 passed in 326.05s`。
+- [ ] 独立提交并推送；随后恢复 F10-B 草稿并正式 start。
+
 ## 2026-08-24：RC0810 9.2 Harness 最小适配
 
 - [x] 注册 `review_pending_wave` 与 A/B/C 三个 checkpoint；波次 A 新增范围为 F10-B、F11、F12-B，F07—F09 复用既有有效 review-pass。

@@ -234,6 +234,79 @@ def test_plan_validates_schema_topology_and_start_order(tmp_path):
     assert run_cli("plan", env=cyclic_env).returncode != 0
 
 
+def test_wave_resume_uses_declared_historical_review_pass_checkpoint(tmp_path):
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    fixture_command = [
+        {
+            "argv": [
+                "python",
+                "backend/tests/fixtures/rc0810_command_fixture.py",
+                "success",
+            ],
+            "cwd": ".",
+            "timeout_seconds": 10,
+            "shell": False,
+            "status": "active",
+        }
+    ]
+    next(task for task in registry["tasks"] if task["id"] == "RC0810-F10")[
+        "acceptance_commands"
+    ] = fixture_command
+    f10b = next(
+        unit for unit in registry["execution_units"] if unit["id"] == "RC0810-F10-B"
+    )
+    f10b["dependencies"] = ["RC0810-F09"]
+    registry["review_waves"][0]["base_checkpoint"] = {
+        "status": "review_pass",
+        "commit": head,
+        "execution_units": ["RC0810-F07", "RC0810-F08", "RC0810-F09"],
+        "production_gate_eligible": False,
+    }
+    registry_path = tmp_path / "checkpoint-registry.json"
+    registry_path.write_text(json.dumps(registry), encoding="utf-8")
+    runtime = tmp_path / "runtime"
+    env = {
+        "RC0810_RUNTIME_ROOT": str(runtime),
+        "RC0810_REGISTRY_PATH": str(registry_path),
+        "RC0810_RUN_ID": "run-checkpoint",
+    }
+
+    started = run_cli("start", "RC0810-F10-B", env=env)
+    assert started.returncode == 0, started.stderr
+    verified = run_cli("verify", "RC0810-F10-B", env=env)
+    assert verified.returncode == 0, verified.stderr
+    pending = run_cli("review", "RC0810-F10-B", "--pending-wave", env=env)
+    assert pending.returncode == 0, pending.stderr
+    assert json.loads(pending.stdout)["status"] == "review_pending_wave"
+    pointer = json.loads((runtime / "state.json").read_text(encoding="utf-8"))
+    state = json.loads(
+        (runtime / pointer["state_path"]).read_text(encoding="utf-8")
+    )
+    assert state["wave_checkpoints"]["A"]["base_commit"] == head
+    assert state["wave_checkpoints"]["A"]["base_checkpoint"]["status"] == "review_pass"
+
+    registry["review_waves"][0]["base_checkpoint"]["commit"] = "0" * 40
+    invalid_path = tmp_path / "invalid-checkpoint-registry.json"
+    invalid_path.write_text(json.dumps(registry), encoding="utf-8")
+    invalid = run_cli(
+        "start",
+        "RC0810-F10-B",
+        env={
+            "RC0810_RUNTIME_ROOT": str(tmp_path / "invalid-runtime"),
+            "RC0810_REGISTRY_PATH": str(invalid_path),
+        },
+    )
+    assert invalid.returncode != 0
+    assert "checkpoint" in invalid.stderr
+
+
 def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_review(
     tmp_path,
 ):
@@ -635,6 +708,12 @@ def test_wave_registry_declares_pending_status_and_three_checkpoints():
         "id": "A",
         "execution_units": ["RC0810-F10-B", "RC0810-F11", "RC0810-F12-B"],
         "freeze_unit": "RC0810-F12-B",
+        "base_checkpoint": {
+            "status": "review_pass",
+            "commit": "39e76225d873c2aaac2731974fa1f63853a6f9be",
+            "execution_units": ["RC0810-F07", "RC0810-F08", "RC0810-F09"],
+            "production_gate_eligible": False,
+        },
     }
     assert waves[1]["freeze_unit"] == "RC0810-F21"
     assert waves[2]["freeze_unit"] == "RC0810-F26"

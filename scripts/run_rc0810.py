@@ -43,6 +43,12 @@ PRODUCTION_REVIEW_WAVES = [
         "id": "A",
         "execution_units": ["RC0810-F10-B", "RC0810-F11", "RC0810-F12-B"],
         "freeze_unit": "RC0810-F12-B",
+        "base_checkpoint": {
+            "status": "review_pass",
+            "commit": "39e76225d873c2aaac2731974fa1f63853a6f9be",
+            "execution_units": ["RC0810-F07", "RC0810-F08", "RC0810-F09"],
+            "production_gate_eligible": False,
+        },
     },
     {
         "id": "B",
@@ -342,6 +348,27 @@ def validate_registry(registry: dict[str, Any]) -> None:
     positions = [registry["execution_order"].index(unit_id) for unit_id in wave_units]
     if positions != sorted(positions):
         raise HarnessError("审查波次必须服从冻结执行顺序。")
+    for wave in waves:
+        checkpoint = wave.get("base_checkpoint")
+        if checkpoint is None:
+            continue
+        inherited = checkpoint.get("execution_units")
+        first_position = registry["execution_order"].index(wave["execution_units"][0])
+        if (
+            checkpoint.get("status") != "review_pass"
+            or checkpoint.get("production_gate_eligible") is not False
+            or not isinstance(checkpoint.get("commit"), str)
+            or len(checkpoint["commit"]) != 40
+            or not isinstance(inherited, list)
+            or not inherited
+            or len(inherited) != len(set(inherited))
+            or not set(inherited).issubset(units_by_id)
+            or any(
+                registry["execution_order"].index(unit_id) >= first_position
+                for unit_id in inherited
+            )
+        ):
+            raise HarnessError("波次历史review-pass checkpoint无效。")
     if "review_pending_wave" not in set(
         registry.get("state_machine", {}).get("statuses", [])
     ) or "review_pending_wave" not in set(
@@ -1136,14 +1163,28 @@ def review_task(
                         "review_pending_wave"
                     )
                 waves = state.setdefault("wave_checkpoints", {})
+                declared_base = wave.get("base_checkpoint")
+                base_commit = (
+                    declared_base["commit"]
+                    if isinstance(declared_base, dict)
+                    else task_state["start_snapshot"].get("commit")
+                )
+                base_source_tree = (
+                    _run_git("rev-parse", f"{base_commit}^{{tree}}")
+                    .decode("ascii")
+                    .strip()
+                    if base_commit
+                    else task_state["start_snapshot"]["source_tree"]
+                )
                 wave_state = waves.setdefault(
                     wave["id"],
                     {
                         "status": "in_progress",
-                        "base_checkpoint": state.get("last_review_pass_checkpoint")
+                        "base_checkpoint": declared_base
+                        or state.get("last_review_pass_checkpoint")
                         or state.get("last_verified_checkpoint"),
-                        "base_commit": task_state["start_snapshot"].get("commit"),
-                        "base_source_tree": task_state["start_snapshot"]["source_tree"],
+                        "base_commit": base_commit,
+                        "base_source_tree": base_source_tree,
                         "pending_tasks": [],
                     },
                 )
@@ -1925,7 +1966,7 @@ def _registry_transition_is_wave_harness_upgrade(
     if len(expected_f00_commands) != 1:
         return False
     expected_f00_commands[0]["timeout_seconds"] = 360
-    expected_f00_commands[0]["expected_test_count"] = 11
+    expected_f00_commands[0]["expected_test_count"] = 12
     if current_f00["acceptance_commands"] != expected_f00_commands:
         return False
     current_f00["acceptance_commands"] = previous_f00["acceptance_commands"]
@@ -1970,6 +2011,30 @@ def _previous_wave_reviews_complete(
         checkpoints.get(wave["id"], {}).get("status") == "review_pass"
         for wave in _previous_waves(registry, wave_id)
     )
+
+
+def _wave_base_checkpoint_units(wave: dict[str, Any] | None) -> set[str]:
+    if wave is None:
+        return set()
+    checkpoint = wave.get("base_checkpoint")
+    if not isinstance(checkpoint, dict):
+        return set()
+    commit = checkpoint["commit"]
+    exists = subprocess.run(
+        ["git", "cat-file", "-e", f"{commit}^{{commit}}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if exists.returncode != 0 or ancestor.returncode != 0:
+        raise HarnessError("历史review-pass checkpoint不是当前HEAD的有效祖先。")
+    return set(checkpoint["execution_units"])
 
 
 def _verification_commands_unchanged(
@@ -2050,6 +2115,7 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
                 and record["review"].get("decision") == "pass"
             )
         }
+        completed.update(_wave_base_checkpoint_units(wave))
         unmet = sorted(set(unit["dependencies"]) - completed)
         if unmet:
             raise HarnessError(f"{task_id}存在未完成依赖：{unmet}")

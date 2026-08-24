@@ -177,7 +177,17 @@
         "RC0810-F11",
         "RC0810-F12-B"
       ],
-      "freeze_unit": "RC0810-F12-B"
+      "freeze_unit": "RC0810-F12-B",
+      "base_checkpoint": {
+        "status": "review_pass",
+        "commit": "39e76225d873c2aaac2731974fa1f63853a6f9be",
+        "execution_units": [
+          "RC0810-F07",
+          "RC0810-F08",
+          "RC0810-F09"
+        ],
+        "production_gate_eligible": false
+      }
     },
     {
       "id": "B",
@@ -1636,7 +1646,7 @@
           "cwd": ".",
           "timeout_seconds": 360,
           "shell": false,
-          "expected_test_count": 11,
+          "expected_test_count": 12,
           "status": "active"
         }
       ],
