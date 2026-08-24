@@ -8,7 +8,7 @@
   ],
   "counts": {
     "blocker": 0,
-    "warning": 65
+    "warning": 64
   },
   "quality_boundary": "Static findings are engineering review signals, not participant or researcher quality scores.",
   "findings": [
@@ -45,115 +45,109 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/admin.py:816",
+      "location": "backend/routes/admin.py:833",
       "handler": "export_csv"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:312",
+      "location": "backend/routes/assessments.py:314",
       "handler": "list_assessment_results"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:359",
+      "location": "backend/routes/assessments.py:361",
       "handler": "get_assessment_result"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:376",
+      "location": "backend/routes/assessments.py:378",
       "handler": "get_assessment_profile_position"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:377",
+      "location": "backend/routes/auth.py:413",
       "handler": "register"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:419",
+      "location": "backend/routes/auth.py:455",
       "handler": "login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:502",
+      "location": "backend/routes/auth.py:548",
       "handler": "wechat_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:573",
+      "location": "backend/routes/auth.py:627",
       "handler": "phone_login"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:644",
+      "location": "backend/routes/auth.py:706",
       "handler": "bind_phone"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:698",
+      "location": "backend/routes/auth.py:760",
       "handler": "admin_create_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:825",
+      "location": "backend/routes/auth.py:887",
       "handler": "change_password"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:881",
+      "location": "backend/routes/auth.py:943",
       "handler": "admin_unlock_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:930",
+      "location": "backend/routes/auth.py:992",
       "handler": "admin_verify_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:944",
+      "location": "backend/routes/auth.py:1006",
       "handler": "admin_revoke_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/checkins.py:13",
+      "location": "backend/routes/checkins.py:22",
       "handler": "create_checkin"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/checkins.py:110",
+      "location": "backend/routes/checkins.py:160",
       "handler": "list_checkins"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/consent.py:41",
-      "handler": "create_consent_record"
-    },
-    {
-      "severity": "warning",
-      "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/consent.py:101",
+      "location": "backend/routes/consent.py:88",
       "handler": "list_consent_records"
     },
     {
       "severity": "warning",
       "rule": "possible_unbounded_list",
-      "location": "backend/routes/consent.py:101",
+      "location": "backend/routes/consent.py:88",
       "handler": "list_consent_records"
     },
     {
@@ -183,13 +177,13 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/diaries.py:21",
+      "location": "backend/routes/diaries.py:29",
       "handler": "create_diary"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/diaries.py:101",
+      "location": "backend/routes/diaries.py:148",
       "handler": "list_diaries"
     },
     {
@@ -207,25 +201,25 @@
     {
       "severity": "warning",
       "rule": "possible_n_plus_one",
-      "location": "backend/routes/family.py:55",
+      "location": "backend/routes/family.py:56",
       "handler": "create_bind_code"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/family.py:103",
+      "location": "backend/routes/family.py:104",
       "handler": "bind_student"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/family.py:203",
+      "location": "backend/routes/family.py:209",
       "handler": "members"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/family.py:241",
+      "location": "backend/routes/family.py:247",
       "handler": "unbind"
     },
     {
@@ -237,43 +231,43 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/goals.py:12",
+      "location": "backend/routes/goals.py:20",
       "handler": "create_goal"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/goals.py:72",
+      "location": "backend/routes/goals.py:119",
       "handler": "list_goals"
     },
     {
       "severity": "warning",
       "rule": "possible_unbounded_list",
-      "location": "backend/routes/goals.py:72",
+      "location": "backend/routes/goals.py:119",
       "handler": "list_goals"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/parent_assessments.py:108",
+      "location": "backend/routes/parent_assessments.py:123",
       "handler": "create_parent_assessment"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/parent_assessments.py:233",
+      "location": "backend/routes/parent_assessments.py:319",
       "handler": "list_parent_assessments"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/parent_assessments.py:254",
+      "location": "backend/routes/parent_assessments.py:340",
       "handler": "get_parent_assessment_result"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/parent_assessments.py:267",
+      "location": "backend/routes/parent_assessments.py:353",
       "handler": "create_parent_report_action"
     },
     {
@@ -369,37 +363,37 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/supervision.py:88",
+      "location": "backend/routes/supervision.py:97",
       "handler": "create_supervision_request"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/supervision.py:215",
+      "location": "backend/routes/supervision.py:288",
       "handler": "get_supervision_request"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/supervision.py:232",
+      "location": "backend/routes/supervision.py:305",
       "handler": "get_supervision_request_for_reviewer"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/supervision.py:255",
+      "location": "backend/routes/supervision.py:328",
       "handler": "acknowledge_supervision_request"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/supervision.py:286",
+      "location": "backend/routes/supervision.py:359",
       "handler": "reply_supervision_request"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/supervision.py:337",
+      "location": "backend/routes/supervision.py:410",
       "handler": "resolve_supervision_request"
     }
   ]

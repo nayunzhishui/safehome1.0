@@ -3389,12 +3389,14 @@
       ],
       "allowed_files": [
         ".github/workflows/**",
+        "backend/scripts/audit_api_boundaries.py",
         "backend/tests/**",
         "apps/web/**",
         "apps/miniprogram/**",
         "scripts/**",
         "config/**",
         "content/rc0810_release_candidate_registry.json",
+        "shared/contracts/api-boundary-audit.json",
         "docs/**"
       ],
       "forbidden_files": [
@@ -3419,20 +3421,22 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "expected_test_count": 7,
-          "status": "active_f10a_contract"
+          "expected_test_count": 14,
+          "status": "active_f10b_contract"
         }
       ],
       "external_gates": [],
       "change_budget": {
         "allowed_modules": [
           ".github/workflows/**",
+          "backend/scripts/audit_api_boundaries.py",
           "backend/tests/**",
           "apps/web/**",
           "apps/miniprogram/**",
           "scripts/**",
           "config/**",
           "content/rc0810_release_candidate_registry.json",
+          "shared/contracts/api-boundary-audit.json",
           "docs/**"
         ],
         "forbidden_modules": [

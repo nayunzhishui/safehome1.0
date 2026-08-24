@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ROUTES_DIR = ROOT / "backend" / "routes"
 SNAPSHOT_PATH = ROOT / "shared" / "contracts" / "api-boundary-audit.json"
 AUTH_MARKERS = (
+    "require_capability(",
     "require_login(",
     "require_role(",
     "require_user_id(",

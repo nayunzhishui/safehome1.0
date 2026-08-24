@@ -1,6 +1,8 @@
 import hashlib
 import json
 import importlib.util
+import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -21,6 +23,11 @@ EVIDENCE_PATH = (
     / "02_专项进度与验收"
     / "rc0810_f10a_github_actions_evidence.json"
 )
+DECISIONS_PATH = ROOT / "config" / "rc0810" / "ci_contract_decisions.json"
+CHECK_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "check.yml"
+CONTROLLED_FAILURE_PATH = ROOT / "scripts" / "ci_fail_job.py"
+RELEASE_GATE_PATH = ROOT / "scripts" / "verify_ci_release_gate.py"
+CI_EVIDENCE_PATH = ROOT / "scripts" / "write_ci_job_evidence.py"
 
 
 def _baseline() -> dict:
@@ -288,3 +295,150 @@ def test_concurrent_overlay_is_explicit_and_does_not_hide_task_delta():
         assert "任务专属文件" in str(exc)
     else:
         raise AssertionError("task-owned files must not be hidden as overlays")
+
+
+def test_f10b_decisions_replace_three_stale_ci_assumptions():
+    decisions = json.loads(DECISIONS_PATH.read_text(encoding="utf-8"))
+    assert decisions["schema"] == "safehome.rc0810.ci-contract-decisions.v1"
+    assert decisions["task"] == "RC0810-F10-B"
+    assert decisions["production_gate_eligible"] is False
+    assert decisions["decisions"] == {
+        "bootstrap_participant_policy": {
+            "decision": "admin_controlled_one_time_provisioning_allowed",
+            "public_self_registration_allowed": False,
+        },
+        "participant_ai_client_policy": {
+            "decision": "client_methods_may_exist_behind_server_and_runtime_gates",
+            "method_presence_means_released": False,
+        },
+        "production_ai_policy": {
+            "decision": "real_provider_code_may_exist_behind_explicit_gates",
+            "current_production_release_allowed": False,
+        },
+    }
+
+
+def _workflow_job_sections(source: str) -> dict[str, str]:
+    jobs_source = source.split("\njobs:\n", 1)[1]
+    matches = list(re.finditer(r"(?m)^  ([a-z][a-z0-9-]+):\s*$", jobs_source))
+    return {
+        match.group(1): jobs_source[match.start() : matches[index + 1].start()]
+        if index + 1 < len(matches)
+        else jobs_source[match.start() :]
+        for index, match in enumerate(matches)
+    }
+
+
+def test_f10b_workflow_has_independent_required_jobs_and_aggregate_gate():
+    source = CHECK_WORKFLOW_PATH.read_text(encoding="utf-8")
+    sections = _workflow_job_sections(source)
+    required = {
+        "backend", "ai", "mysql-redis", "web", "npm-audit", "miniprogram",
+        "content-api", "artifact", "security-contract",
+    }
+    assert set(sections) == required | {"release-gate"}
+    assert all("\n    needs:" not in sections[job] for job in required)
+    assert all(f"ci_fail_job.py {job}" in sections[job] for job in required)
+    assert "if: always()" in sections["release-gate"]
+    assert all(job in sections["release-gate"] for job in required)
+    assert "verify_ci_release_gate.py" in sections["release-gate"]
+
+
+def test_f10b_workflow_pins_actions_and_declares_lock_aware_caches():
+    source = CHECK_WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803" in source
+    assert "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97" in source
+    assert "actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38" in source
+    assert "cache-dependency-path: apps/web/package-lock.json" in source
+    assert "cache-dependency-path: |" in source
+    assert "backend/requirements.txt" in source
+    assert not re.search(r"uses:\s+[^\s]+@v\d+", source)
+
+
+def test_f10b_controlled_failure_only_fails_selected_job():
+    clean_env = os.environ.copy()
+    clean_env.pop("SAFEHOME_CI_FAIL_JOB", None)
+    success = subprocess.run(
+        [sys.executable, str(CONTROLLED_FAILURE_PATH), "web"], cwd=ROOT,
+        env=clean_env, capture_output=True, text=True, check=False,
+    )
+    selected = subprocess.run(
+        [sys.executable, str(CONTROLLED_FAILURE_PATH), "web"], cwd=ROOT,
+        env=clean_env | {"SAFEHOME_CI_FAIL_JOB": "web"},
+        capture_output=True, text=True, check=False,
+    )
+    other = subprocess.run(
+        [sys.executable, str(CONTROLLED_FAILURE_PATH), "backend"], cwd=ROOT,
+        env=clean_env | {"SAFEHOME_CI_FAIL_JOB": "web"},
+        capture_output=True, text=True, check=False,
+    )
+    assert success.returncode == 0
+    assert selected.returncode != 0
+    assert other.returncode == 0
+
+
+def test_f10b_release_gate_rejects_any_non_success_job_result():
+    required = [
+        "backend", "ai", "mysql-redis", "web", "npm-audit", "miniprogram",
+        "content-api", "artifact", "security-contract",
+    ]
+    success_payload = json.dumps({job: "success" for job in required})
+    success = subprocess.run(
+        [sys.executable, str(RELEASE_GATE_PATH), "--results-json", success_payload],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+    assert success.returncode == 0
+    assert json.loads(success.stdout)["ci_gate_eligible"] is True
+    failed_payload = json.dumps(
+        {job: "failure" if job == "web" else "success" for job in required}
+    )
+    failed = subprocess.run(
+        [sys.executable, str(RELEASE_GATE_PATH), "--results-json", failed_payload],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+    assert failed.returncode != 0
+    assert json.loads(failed.stdout)["failed_jobs"] == ["web"]
+
+
+def test_f10b_job_evidence_binds_source_locks_artifacts_and_provenance(tmp_path):
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True
+    ).stdout.strip()
+    summary_path = tmp_path / "step-summary.md"
+    env = os.environ.copy() | {
+        "GITHUB_SHA": head, "GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "2",
+        "GITHUB_WORKFLOW": "SafeHome Required Checks", "GITHUB_JOB": "artifact",
+        "GITHUB_STEP_SUMMARY": str(summary_path),
+    }
+    completed = subprocess.run(
+        [sys.executable, str(CI_EVIDENCE_PATH), "--job", "artifact", "--artifact", "Dockerfile"],
+        cwd=ROOT, env=env, capture_output=True, text=True, check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    payload = json.loads(completed.stdout)
+    assert payload["schema"] == "safehome.ci-job-evidence.v1"
+    assert payload["source"]["commit"] == head
+    assert len(payload["source"]["tree"]) == 40
+    assert set(payload["dependency_inputs"]) == {
+        "backend/requirements.txt", "analysis/profiling/requirements.txt",
+        "analysis/text_analysis/requirements.txt", "apps/web/package-lock.json", "Dockerfile",
+    }
+    assert len(payload["artifacts"]["Dockerfile"]) == 64
+    assert payload["provenance"]["run_id"] == "123"
+    assert payload["sbom_summary"]["status"] == "dependency_inputs_bound"
+    assert payload["attestation_summary"]["status"] == "pending_f22b"
+    assert payload["production_gate_eligible"] is False
+    assert "safehome.ci-job-evidence.v1" in summary_path.read_text(encoding="utf-8")
+
+
+def test_f10b_job_evidence_rejects_untrusted_source_identity(tmp_path):
+    env = os.environ.copy() | {
+        "GITHUB_SHA": "0" * 40,
+        "GITHUB_STEP_SUMMARY": str(tmp_path / "summary.md"),
+    }
+    completed = subprocess.run(
+        [sys.executable, str(CI_EVIDENCE_PATH), "--job", "backend"], cwd=ROOT,
+        env=env, capture_output=True, text=True, check=False,
+    )
+    assert completed.returncode != 0
+    assert "GITHUB_SHA" in completed.stderr

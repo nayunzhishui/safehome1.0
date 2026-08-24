@@ -1,4 +1,5 @@
 import importlib
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -78,16 +79,29 @@ def test_task28_ai_qa_raw_and_derived_session_data_is_in_privacy_whitelist(tmp_p
             assert all(privacy._table_count(conn, table, user_id) == 0 for table in tables)
 
 
-def test_task28_shared_web_and_miniprogram_contracts_keep_participant_api_hidden():
+def test_task28_client_methods_exist_but_participant_release_gate_stays_closed():
     constants = (PROJECT_ROOT / "shared" / "constants" / "api.ts").read_text(encoding="utf-8")
     types = (PROJECT_ROOT / "shared" / "types" / "api.ts").read_text(encoding="utf-8")
     web_api = (PROJECT_ROOT / "apps" / "web" / "src" / "services" / "safehomeApi.ts").read_text(encoding="utf-8")
     mini_api = (PROJECT_ROOT / "apps" / "miniprogram" / "services" / "api.js").read_text(encoding="utf-8")
     main = (PROJECT_ROOT / "apps" / "web" / "src" / "main.tsx").read_text(encoding="utf-8")
+    governance = json.loads(
+        (PROJECT_ROOT / "content" / "ai_qa_governance.json").read_text(encoding="utf-8")
+    )
+    decisions = json.loads(
+        (PROJECT_ROOT / "config/rc0810/ci_contract_decisions.json").read_text(encoding="utf-8")
+    )["decisions"]["participant_ai_client_policy"]
     assert all(name in constants for name in ("aiQaConfig", "aiQaSessions", "aiQaEvaluation", "aiQaReviewEvidence", "aiQaKillSwitch"))
     assert all(name in types for name in ("AiQaConfig", "AiQaSession", "AiQaCitation", "AiQaEvaluationRun"))
     assert "createAiQaSession" in web_api and "runAiQaEvaluation" in web_api
     assert 'href: "/ai-sandbox"' in main
-    assert "getAiQaConfig" in mini_api
-    assert "sendAiQaMessage" not in mini_api
-    assert "createAiQaSession" not in mini_api
+    assert all(
+        name in mini_api
+        for name in ("getAiQaConfig", "sendAiQaMessage", "createAiQaSession")
+    )
+    assert decisions == {
+        "decision": "client_methods_may_exist_behind_server_and_runtime_gates",
+        "method_presence_means_released": False,
+    }
+    assert governance["participant_feature_enabled"] is False
+    assert governance["engineering_controls"]["participant_enabled"] is False

@@ -1,5 +1,15 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-24：RC0810-F10-B CI Gate
+
+- [x] 三个旧失败合同按当前决策同步，公开自注册和 production participant AI 仍关闭。
+- [x] API 边界保持 0 blocker；warning 65→64 的语义差异已审计，Task35 原用例通过。
+- [x] 九个 required job 独立运行，最终 aggregate Gate 只接受全部 success。
+- [x] action 固定 commit，缓存绑定 requirements/lockfile，支持定向失败注入和 job 级来源/制品证据。
+- [x] F10 专项 14 项、原红点非 Harness 6 项和完整 Harness 13 项通过；本地结果不冒充远端 GitHub CI。
+- [x] 无迁移、业务、CloudBase、Secret 或 production 配置变更。
+- [ ] 主审 checkpoint 后独立提交并推送，状态保持 `review_pending_wave`；随后进入 F11，不启动 reviewer。
+
 ## 2026-08-24：RC0810 9.2 历史 checkpoint 补正
 
 - [x] 复现旧运行态缺少 F07—F09 task record 时 F10-B 无法启动。

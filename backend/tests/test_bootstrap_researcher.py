@@ -58,14 +58,28 @@ def test_prepare_supports_explicit_admin_account_without_logging_password(tmp_pa
     assert len(payload["password"]) >= 20
 
 
-def test_prepare_rejects_public_participant_roles(tmp_path):
+def test_prepare_allows_admin_controlled_participant_one_time_provisioning(tmp_path):
     module = load_module()
-    try:
-        module.prepare(tmp_path / "parent.json", username="unsafe-parent", role="parent")
-    except ValueError as exc:
-        assert "只允许" in str(exc)
-    else:
-        raise AssertionError("bootstrap must not create participant roles")
+    decisions = json.loads(
+        (ROOT / "config/rc0810/ci_contract_decisions.json").read_text(encoding="utf-8")
+    )["decisions"]["bootstrap_participant_policy"]
+    receipt_path = module.prepare(
+        tmp_path / "parent.json",
+        username="controlled-parent",
+        role="parent",
+        target_environment="test_cloud",
+    )
+    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+
+    assert decisions == {
+        "decision": "admin_controlled_one_time_provisioning_allowed",
+        "public_self_registration_allowed": False,
+    }
+    assert payload["schema"] == "safehome.one_time_credential.v1"
+    assert payload["role"] == "parent"
+    assert payload["operation"] == "create"
+    assert payload["target_environment"] == "test_cloud"
+    assert payload["expires_at"]
 
 
 def test_prepare_records_expiring_receipt_environment_and_explicit_operation(tmp_path):

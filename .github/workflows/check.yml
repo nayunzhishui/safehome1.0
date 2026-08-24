@@ -1,97 +1,300 @@
-name: SafeHome Checks
+name: SafeHome Required Checks
 
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      fail_job:
+        description: Optional required job to fail for isolation verification
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+env:
+  SAFEHOME_CI_FAIL_JOB: ${{ github.event.inputs.fail_job || '' }}
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-
+  backend:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           fetch-depth: 0
-
-      - name: Setup Python
-        uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
-
-      - name: Install Python dependencies
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            analysis/profiling/requirements.txt
+            analysis/text_analysis/requirements.txt
+      - name: Install backend dependencies
         run: |
           python -m pip install -r backend/requirements.txt
-          python -m pip install -r analysis/text_analysis/requirements.txt
           python -m pip install -r analysis/profiling/requirements.txt
+          python -m pip install -r analysis/text_analysis/requirements.txt
           python -m pip check
-
-      - name: Inspect release artifact hashes
-        run: python backend/scripts/print_release_artifact_hashes.py
-
-      - name: Validate content
-        run: python backend/scripts/validate_content.py
-
-      - name: Check API contract drift
-        run: |
-          if ! python backend/scripts/build_api_contract.py --check; then
-            python backend/scripts/build_api_contract.py
-            git diff -- \
-              shared/contracts/api-contract.json \
-              shared/types/api-contract.generated.ts \
-              apps/miniprogram/services/api-contract.generated.js \
-              docs/03_技术真相/API机器契约.md
-            exit 1
-          fi
-
-      - name: Check API query boundaries
-        run: python backend/scripts/audit_api_boundaries.py --check
-
-      - name: Replay API compatibility snapshot
-        run: python backend/scripts/check_api_compatibility.py
-
       - name: Run backend tests
-        run: |
-          cd backend
-          python -m pytest tests -q
+        working-directory: backend
+        run: python -m pytest tests -q
+      - name: Controlled failure
+        run: python scripts/ci_fail_job.py backend
+      - name: Record evidence
+        if: always()
+        run: python scripts/write_ci_job_evidence.py --job backend --status "${{ job.status }}"
 
-      - name: Run AI continuous quality gate
+  ai:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            analysis/profiling/requirements.txt
+            analysis/text_analysis/requirements.txt
+      - run: python -m pip install -r backend/requirements.txt
+      - name: Run AI quality gate
         run: python -m pytest backend/tests/test_task37_c08_ai_quality.py -q
+      - name: Controlled failure
+        run: python scripts/ci_fail_job.py ai
+      - name: Record evidence
+        if: always()
+        run: python scripts/write_ci_job_evidence.py --job ai --status "${{ job.status }}"
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
+  mysql-redis:
+    runs-on: ubuntu-24.04
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: safehome-ci
+          MYSQL_DATABASE: safehome
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -psafehome-ci --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            analysis/profiling/requirements.txt
+            analysis/text_analysis/requirements.txt
+      - run: python -m pip install -r backend/requirements.txt
+      - name: MySQL and Redis smoke
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: mysql
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: "3306"
+          MYSQL_USER: root
+          MYSQL_PASSWORD: safehome-ci
+          MYSQL_DATABASE: safehome
+          MYSQL_POOL_ENABLED: "1"
+          MYSQL_POOL_MIN_CACHED: "1"
+          MYSQL_POOL_MAX_CACHED: "3"
+          MYSQL_POOL_MAX_CONNECTIONS: "5"
+          REDIS_ENABLED: "1"
+          REDIS_URL: redis://127.0.0.1:6379/0
+          REDIS_NAMESPACE: safehome-ci
+          RAG_EMBEDDING_PROVIDER: hash
+          CONTENT_DIR: ${{ github.workspace }}/content
+        run: python backend/scripts/infrastructure_smoke.py
+      - name: MySQL Redis runtime tests
+        env:
+          APP_ENV: testing
+          DB_PROVIDER: sqlite
+          DATABASE_PATH: /tmp/safehome-engineering-ai.sqlite3
+          CONTENT_DIR: ${{ github.workspace }}/content
+          REDIS_ENABLED: "0"
+          RAG_EMBEDDING_PROVIDER: hash
+        run: python -m pytest backend/tests/test_engineering_ai_runtime_20260807.py -q
+      - name: Controlled failure
+        run: python scripts/ci_fail_job.py mysql-redis
+      - name: Record evidence
+        if: always()
+        run: python scripts/write_ci_job_evidence.py --job mysql-redis --status "${{ job.status }}"
+
+  web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
           node-version: "20"
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
-
-      - name: Install web dependencies
+      - run: npm ci
         working-directory: apps/web
-        run: npm ci
-
-      - name: Audit web dependencies
+      - run: npm run typecheck
         working-directory: apps/web
-        run: npm audit --audit-level=high
-
-      - name: Typecheck web
+      - run: npm run build
         working-directory: apps/web
-        run: npm run typecheck
+      - name: Controlled failure
+        run: python3 scripts/ci_fail_job.py web
+      - name: Record evidence
+        if: always()
+        run: python3 scripts/write_ci_job_evidence.py --job web --status "${{ job.status }}" --artifact apps/web/dist
 
-      - name: Build web
+  npm-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
         working-directory: apps/web
-        run: npm run build
+      - run: npm audit --audit-level=high
+        working-directory: apps/web
+      - name: Controlled failure
+        run: python3 scripts/ci_fail_job.py npm-audit
+      - name: Record evidence
+        if: always()
+        run: python3 scripts/write_ci_job_evidence.py --job npm-audit --status "${{ job.status }}"
 
-      - name: Check shared design tokens
-        run: python scripts/check_design_tokens.py
+  miniprogram:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: python scripts/check_design_tokens.py
+      - run: python scripts/audit_miniprogram_ui_governance.py
+      - run: node scripts/audit_task23_visual_system.mjs
+      - run: python backend/scripts/audit_miniprogram_frontend.py
+      - run: python backend/scripts/validate_miniprogram_assets.py
+      - name: Controlled failure
+        run: python scripts/ci_fail_job.py miniprogram
+      - name: Record evidence
+        if: always()
+        run: python scripts/write_ci_job_evidence.py --job miniprogram --status "${{ job.status }}" --artifact apps/miniprogram/app.json
 
-      - name: Audit miniprogram UI governance
-        run: python scripts/audit_miniprogram_ui_governance.py
+  content-api:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            analysis/profiling/requirements.txt
+            analysis/text_analysis/requirements.txt
+      - run: python -m pip install -r backend/requirements.txt
+      - run: python backend/scripts/validate_content.py
+      - run: python backend/scripts/build_api_contract.py --check
+      - run: python backend/scripts/audit_api_boundaries.py --check
+      - run: python backend/scripts/check_api_compatibility.py
+      - name: Controlled failure
+        run: python scripts/ci_fail_job.py content-api
+      - name: Record evidence
+        if: always()
+        run: python scripts/write_ci_job_evidence.py --job content-api --status "${{ job.status }}" --artifact shared/contracts/api-contract.json --artifact shared/contracts/api-boundary-audit.json
 
-      - name: Audit participant visual states
-        run: node scripts/audit_task23_visual_system.mjs
+  artifact:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+      - run: python backend/scripts/print_release_artifact_hashes.py
+      - name: Controlled failure
+        run: python scripts/ci_fail_job.py artifact
+      - name: Record evidence
+        if: always()
+        run: >-
+          python scripts/write_ci_job_evidence.py --job artifact --status "${{ job.status }}"
+          --artifact Dockerfile --artifact config/rc0810/build_profiles.json
+          --artifact apps/web/package-lock.json
 
-      - name: Audit miniprogram structure
-        run: python backend/scripts/audit_miniprogram_frontend.py
+  security-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            analysis/profiling/requirements.txt
+            analysis/text_analysis/requirements.txt
+      - run: python -m pip install -r backend/requirements.txt
+      - run: python scripts/verify_rc0810_f22_security.py --self-check
+      - run: python -m pytest backend/tests/test_rc0810_f22.py -q -p no:cacheprovider
+      - name: Controlled failure
+        run: python scripts/ci_fail_job.py security-contract
+      - name: Record evidence
+        if: always()
+        run: python scripts/write_ci_job_evidence.py --job security-contract --status "${{ job.status }}" --artifact docs/02_专项进度与验收/rc0810_f22a_security_baseline.json
 
-      - name: Validate miniprogram JavaScript and JSON
-        run: python backend/scripts/validate_miniprogram_assets.py
+  release-gate:
+    if: always()
+    needs:
+      - backend
+      - ai
+      - mysql-redis
+      - web
+      - npm-audit
+      - miniprogram
+      - content-api
+      - artifact
+      - security-contract
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - name: Require every independent job to pass
+        env:
+          REQUIRED_RESULTS_JSON: >-
+            {"backend":"${{ needs.backend.result }}","ai":"${{ needs.ai.result }}","mysql-redis":"${{ needs['mysql-redis'].result }}","web":"${{ needs.web.result }}","npm-audit":"${{ needs['npm-audit'].result }}","miniprogram":"${{ needs.miniprogram.result }}","content-api":"${{ needs['content-api'].result }}","artifact":"${{ needs.artifact.result }}","security-contract":"${{ needs['security-contract'].result }}"}
+        run: python3 scripts/verify_ci_release_gate.py --results-json "$REQUIRED_RESULTS_JSON"

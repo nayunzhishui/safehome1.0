@@ -1,0 +1,19 @@
+{
+  "schema": "safehome.rc0810.ci-contract-decisions.v1",
+  "task": "RC0810-F10-B",
+  "production_gate_eligible": false,
+  "decisions": {
+    "bootstrap_participant_policy": {
+      "decision": "admin_controlled_one_time_provisioning_allowed",
+      "public_self_registration_allowed": false
+    },
+    "participant_ai_client_policy": {
+      "decision": "client_methods_may_exist_behind_server_and_runtime_gates",
+      "method_presence_means_released": false
+    },
+    "production_ai_policy": {
+      "decision": "real_provider_code_may_exist_behind_explicit_gates",
+      "current_production_release_allowed": false
+    }
+  }
+}

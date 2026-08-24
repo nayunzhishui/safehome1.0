@@ -57,12 +57,23 @@ def test_miniprogram_only_exposes_public_security_status():
     assert "resolveSecurityEvent" not in source
 
 
-def test_ai_security_boundary_has_no_real_provider_or_write_tools():
+def test_ai_security_boundary_keeps_real_provider_and_participant_release_gated():
     governance = json.loads((ROOT / "content/ai_qa_governance.json").read_text(encoding="utf-8"))
     registry = json.loads((ROOT / "content/security_privacy_abuse_registry.json").read_text(encoding="utf-8"))
+    decisions = json.loads(
+        (ROOT / "config/rc0810/ci_contract_decisions.json").read_text(encoding="utf-8")
+    )["decisions"]["production_ai_policy"]
     config_source = (ROOT / "backend/config.py").read_text(encoding="utf-8")
+    assert decisions == {
+        "decision": "real_provider_code_may_exist_behind_explicit_gates",
+        "current_production_release_allowed": False,
+    }
     assert governance["decisions"]["provider"]["status"] == "owner_security_review_required"
-    assert "AI_QA_ENABLED 必须保持关闭" in config_source
+    assert governance["participant_feature_enabled"] is False
+    assert governance["engineering_controls"]["participant_enabled"] is False
+    assert governance["engineering_controls"]["provider_adapter"]["external_enabled"] is False
+    assert "AI_QA_REAL_PROVIDER_ENABLED" in config_source
+    assert "生产环境参与者AI问答禁止使用 fake 供应商" in config_source
     assert {item["id"] for item in registry["ai_threats"]} >= {"prompt_injection", "knowledge_poisoning", "cross_user_retrieval", "provider_retention", "tool_abuse", "cost_exhaustion", "unauthorized_action"}
 
 
