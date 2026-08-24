@@ -8,6 +8,7 @@
 - [x] action 固定 commit，缓存绑定 requirements/lockfile，支持定向失败注入和 job 级来源/制品证据。
 - [x] F10 专项 14 项、原红点非 Harness 6 项和完整 Harness 13 项通过；本地结果不冒充远端 GitHub CI。
 - [x] 无迁移、业务、CloudBase、Secret 或 production 配置变更。
+- [x] 远端首次运行发现并修复小程序独立 job 的 Playwright 依赖遗漏；其余真实 Gate finding 保持红灯。
 - [ ] 主审 checkpoint 后独立提交并推送，状态保持 `review_pending_wave`；随后进入 F11，不启动 reviewer。
 
 ## 2026-08-24：RC0810 9.2 历史 checkpoint 补正
