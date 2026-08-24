@@ -1485,7 +1485,12 @@ export interface RiskReviewInput {
   note?: string;
 }
 
-export interface Goal {
+export interface IdempotentWriteReceipt {
+  client_submission_id?: string | null;
+  idempotency_replayed?: boolean;
+}
+
+export interface Goal extends IdempotentWriteReceipt {
   id: ID;
   user_id: ID;
   scene: string;
@@ -1505,9 +1510,10 @@ export interface GoalInput {
   motivation?: string;
   start_date?: ISODate;
   status?: GoalStatus;
+  client_submission_id?: string;
 }
 
-export interface EmotionDiary {
+export interface EmotionDiary extends IdempotentWriteReceipt {
   id: ID;
   user_id: ID;
   goal_id?: ID | null;
@@ -1541,6 +1547,7 @@ export interface EmotionDiaryInput {
   body_sensation?: string;
   behavior?: string;
   raw_text?: string;
+  client_submission_id?: string;
 }
 
 export interface EmotionThermometerReceipt {
@@ -2312,7 +2319,7 @@ export interface AssessmentAnswer {
   score?: number;
 }
 
-export interface AssessmentResult {
+export interface AssessmentResult extends IdempotentWriteReceipt {
   id: ID;
   user_id: ID;
   worksheet_id: ID;
@@ -2942,9 +2949,10 @@ export interface ParentAssessmentInput {
   answers: Record<string, string | number>;
   question_answers?: Record<string, string>;
   client_submission_id?: string;
+  consent_version?: string;
 }
 
-export interface ParentAssessmentResult {
+export interface ParentAssessmentResult extends IdempotentWriteReceipt {
   id: ID;
   user_id: ID;
   anonymous_id: string;
@@ -2968,7 +2976,7 @@ export interface ParentAssessmentResult {
   created_at: ISODateTime;
 }
 
-export interface Checkin {
+export interface Checkin extends IdempotentWriteReceipt {
   id: ID;
   user_id: ID;
   card_id: ID;
@@ -2995,6 +3003,7 @@ export interface CheckinInput {
   emotion_before?: number;
   emotion_after?: number;
   reflection?: string;
+  client_submission_id?: string;
 }
 
 export interface WeeklyReport {
@@ -3054,7 +3063,7 @@ export interface WeeklyReport {
   next_week_suggestion: string;
 }
 
-export interface SupervisionRequest {
+export interface SupervisionRequest extends IdempotentWriteReceipt {
   id: ID;
   user_id: ID;
   diary_id?: ID | null;
@@ -3076,6 +3085,10 @@ export interface SupervisionInput {
   contact?: string;
   risk_hint?: string;
   risk_level?: RiskLevel;
+  source_type?: "diary" | "assessment";
+  source_id?: ID;
+  source_title?: string;
+  client_submission_id?: string;
 }
 
 export interface ListResponse<T> {

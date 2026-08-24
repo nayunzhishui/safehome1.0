@@ -2518,3 +2518,20 @@ relationship_initiation_intention_action
 - `POST /api/therapeutic-assessment/stop-recovery/evidence/<evidence_id>/verify`：仅督导或管理员使用版本锁独立核验；证据记录人不能核验自己的证据。
 - `POST /api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/restore`：仅督导或管理员可申请恢复。七类独立核验证据必须全部齐全，且不能存在其它未关闭事件；临时展示越权、模拟Agent和自动测试均不计恢复批准。
 - 恢复接口只恢复受控运行开关，不构成生产发布批准。迁移、内容版本、供应商和对外沟通仍按各自回滚层处理。
+
+## 2026-08-24：RC0810-F09 核心写接口原子幂等
+
+以下接口统一支持 `Idempotency-Key` 请求头或请求体 `client_submission_id`，请求头优先：
+
+- `POST /api/goals`
+- `POST /api/diaries`
+- `POST /api/checkins`
+- `POST /api/supervision`
+- `POST /api/assessment-results`
+- `POST /api/parent-assessments`
+
+首次创建返回 201 和 `idempotency_replayed=false`；同一登录用户、接口和提交标识重试相同 canonical 内容时返回 200、首次资源/响应和 `idempotency_replayed=true`；相同标识用于不同内容返回 `idempotency_conflict`（409）。账本损坏且首次资源不可读时返回 `idempotency_state_conflict`（409），不会重新创建替代记录。
+
+canonical v1 按字段名排序，保留显式空值，时间字段归一为 UTC，忽略 `client_submission_id` 和展示昵称，并绑定 actor、HTTP endpoint 与合同版本；规范化 body 上限为 64 KiB。家长测评的开放文本、开始/完成时间和督导 `source_title` 等会影响结果的字段均参与摘要；Web 弱网重试会从同一 resilient draft 恢复时间与提交 ID。没有提交标识的旧客户端保持原创建语义。该兼容策略不把旧客户端升级为更高权限，也不连接 production。
+
+核心事务内的风险、审计、推荐、Consent 和研究摘要副作用只登记/执行一次。站内消息、微信订阅、AI Provider 和导出分别继续由 `messages`、`notification_deliveries`、`ai_qa_provider_events` 和 `audit_logs` 提供专用对账状态；通用账本不重复复制相同事实。外部动作已发生后只能进入补偿状态，不能标为“已回滚”。机器契约版本为 `2026-08-24.f09`。

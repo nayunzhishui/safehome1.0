@@ -9,12 +9,21 @@ from routes.consent import DEFAULT_CONSENT_VERSION, get_latest_consent
 from routes.utils import auth_error_response, fail, ok, parse_bool, require_admin_or_owner, require_admin_token, require_user_id
 from services.consent_service import ConsentError, append_consent_event, is_verified_participant_event
 from services.content_loader import ContentLoadError
+from services.idempotency_service import (
+    IdempotencyConflictError,
+    IdempotencyValidationError,
+    canonical_request_hash,
+    public_idempotent_resource,
+    record_side_effect,
+    reserve_idempotency,
+    store_idempotency_response,
+)
 from services.parent_assessment_service import (
     ParentAssessmentInputError,
     create_parent_assessment_result,
     get_parent_assessment_payload,
 )
-from services.risk_review_service import create_risk_review_record
+from services.risk_review_service import create_risk_review_record, should_create_risk_review
 from services.risk_service import check_text_risk
 
 bp = Blueprint("parent_assessments", __name__, url_prefix="/api")
@@ -33,6 +42,7 @@ def _anonymous_id(user_id: str) -> str:
 def _expand_parent_row(item: dict | None) -> dict | None:
     if item is None:
         return None
+    item = public_idempotent_resource(item)
     item["answers"] = json_loads(item.get("answers_json"), {})
     item["scores"] = json_loads(item.get("scores_json"), {})
     item["report"] = json_loads(item.get("report_json"), {})
@@ -133,30 +143,76 @@ def create_parent_assessment():
     completed_at = payload.get("completed_at") or timestamp
     research_consent = parse_bool(payload.get("research_consent"), True)
     consent_version = str(payload.get("consent_version") or DEFAULT_CONSENT_VERSION).strip() or DEFAULT_CONSENT_VERSION
+    expected_answers = {
+        "scale_answers": result.get("answers"),
+        "question_answers": result.get("question_answers"),
+    }
+    idempotency_payload = {
+        "answers": expected_answers,
+        "research_consent": research_consent,
+        "consent_version": consent_version,
+        "participant_code": str(payload.get("participant_code") or "").strip()[:120],
+        "study_batch": str(payload.get("study_batch") or "").strip()[:120],
+        "source_channel": str(payload.get("source_channel") or "safehome-web").strip()[:120],
+        "started_at": payload.get("started_at"),
+        "completed_at": payload.get("completed_at"),
+        "free_text": str(payload.get("free_text") or ""),
+        "raw_text": str(payload.get("raw_text") or ""),
+        "reflection_text": str(payload.get("reflection_text") or ""),
+    }
+    try:
+        request_hash = canonical_request_hash(
+            actor_id=user_id,
+            endpoint="POST /api/parent-assessments",
+            version="v1",
+            payload=idempotency_payload,
+        ) if client_submission_id else None
+    except IdempotencyValidationError as exc:
+        return fail(exc.code, exc.message, status=400)
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
+        reservation = None
         if client_submission_id:
-            existing = conn.execute(
-                "SELECT * FROM parent_assessment_submissions WHERE user_id = ? AND client_submission_id = ?",
-                (user_id, client_submission_id),
-            ).fetchone()
-            if existing is not None:
-                expected_answers = {
-                    "scale_answers": result.get("answers"),
-                    "question_answers": result.get("question_answers"),
-                }
-                if json_loads(existing["answers_json"], {}) != expected_answers or bool(existing["research_consent"]) != research_consent:
-                    return fail("idempotency_conflict", "该提交标识已用于另一份家长测评。", status=409)
+            try:
+                reservation = reserve_idempotency(
+                    conn,
+                    actor_id=user_id,
+                    endpoint="POST /api/parent-assessments",
+                    idempotency_key=client_submission_id,
+                    request_hash=request_hash,
+                    resource_type="parent_assessment",
+                    resource_id=submission_id,
+                )
+            except IdempotencyConflictError:
+                return fail("idempotency_conflict", "该提交标识已用于另一份家长测评。", status=409)
+            if not reservation.created:
+                if reservation.response is not None:
+                    item = dict(reservation.response)
+                    item["idempotency_replayed"] = True
+                    return ok(item)
+                existing = conn.execute(
+                    "SELECT * FROM parent_assessment_submissions WHERE id = ? AND user_id = ?",
+                    (reservation.resource_id, user_id),
+                ).fetchone()
+                if existing is None:
+                    return fail("idempotency_state_conflict", "原提交结果不可用。", status=409)
                 item = _expand_parent_row(row_to_dict(existing))
                 item["report_url"] = f"/assessment/report/{existing['id']}"
                 item["risk"] = risk_result
                 item["boundary_notice"] = risk_result.get("boundary_notice")
-                item["consent_summary"] = _ensure_research_consent(conn, user_id, research_consent, consent_version, timestamp)
                 item["idempotency_replayed"] = True
-                conn.commit()
                 return ok(item)
         consent_summary = _ensure_research_consent(conn, user_id, research_consent, consent_version, timestamp)
+        if reservation is not None:
+            record_side_effect(
+                conn,
+                idempotency_record_id=reservation.id,
+                effect_type="consent",
+                effect_key="research_authorization",
+                status="committed",
+                metadata={"record_id": consent_summary.get("record_id")},
+            )
         conn.execute(
             """
             INSERT INTO parent_assessment_submissions (
@@ -164,9 +220,9 @@ def create_parent_assessment():
                 study_batch, source_channel, questionnaire_version, scoring_version,
                 answers_json, scores_json, profile_key, report_json,
                 started_at, completed_at, duration_seconds, quality_flags_json,
-                client_submission_id, export_allowed, created_at, updated_at
+                client_submission_id, request_hash, export_allowed, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 submission_id,
@@ -187,50 +243,75 @@ def create_parent_assessment():
                 result.get("duration_seconds", 0),
                 json_dumps(result.get("quality_flags", {})),
                 client_submission_id or None,
+                request_hash,
                 1,
                 timestamp,
                 timestamp,
             ),
         )
-        conn.execute(
-            """
-            INSERT INTO records (
-                id, user_id, module_type, source_id, data_json,
-                created_at, updated_at, export_allowed
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                new_id("record"),
-                user_id,
-                "parent_assessment",
-                submission_id,
-                json_dumps(
-                    {
-                        "anonymous_id": _anonymous_id(user_id),
-                        "profile_key": result.get("profile_key"),
-                        "report_role": result.get("report", {}).get("role"),
-                        "risk_level": risk_result.get("risk_level", "low"),
-                        "requires_review": bool(risk_result.get("requires_review")),
-                        "consent_summary": consent_summary,
-                        "duration_seconds": result.get("duration_seconds", 0),
-                        "quality_flags": result.get("quality_flags", {}).get("flags", []),
-                    }
+        if reservation is None or record_side_effect(
+            conn,
+            idempotency_record_id=reservation.id,
+            effect_type="research_record",
+            effect_key="parent_assessment_summary",
+            status="committed",
+            metadata={"resource_id": submission_id},
+        ):
+            conn.execute(
+                """
+                INSERT INTO records (
+                    id, user_id, module_type, source_id, data_json,
+                    created_at, updated_at, export_allowed
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    new_id("record"),
+                    user_id,
+                    "parent_assessment",
+                    submission_id,
+                    json_dumps(
+                        {
+                            "anonymous_id": _anonymous_id(user_id),
+                            "profile_key": result.get("profile_key"),
+                            "report_role": result.get("report", {}).get("role"),
+                            "risk_level": risk_result.get("risk_level", "low"),
+                            "requires_review": bool(risk_result.get("requires_review")),
+                            "consent_summary": consent_summary,
+                            "duration_seconds": result.get("duration_seconds", 0),
+                            "quality_flags": result.get("quality_flags", {}).get("flags", []),
+                        }
+                    ),
+                    timestamp,
+                    timestamp,
+                    1,
                 ),
-                timestamp,
-                timestamp,
-                1,
-            ),
-        )
-        create_risk_review_record(conn, user_id, "parent_assessment", submission_id, risk_result)
-        conn.commit()
+            )
+        if reservation is None or record_side_effect(
+            conn,
+            idempotency_record_id=reservation.id,
+            effect_type="risk_task",
+            effect_key="parent_assessment_risk_review",
+            status="committed" if should_create_risk_review(risk_result) else "not_required",
+            metadata={"resource_id": submission_id},
+        ):
+            create_risk_review_record(conn, user_id, "parent_assessment", submission_id, risk_result)
         row = conn.execute("SELECT * FROM parent_assessment_submissions WHERE id = ?", (submission_id,)).fetchone()
+        item = _expand_parent_row(row_to_dict(row))
+        item["report_url"] = f"/assessment/report/{submission_id}"
+        item["risk"] = risk_result
+        item["boundary_notice"] = risk_result.get("boundary_notice")
+        item["consent_summary"] = consent_summary
+        item["idempotency_replayed"] = False
+        if reservation is not None:
+            store_idempotency_response(
+                conn,
+                idempotency_record_id=reservation.id,
+                response=item,
+                response_status=201,
+            )
+        conn.commit()
 
-    item = _expand_parent_row(row_to_dict(row))
-    item["report_url"] = f"/assessment/report/{submission_id}"
-    item["risk"] = risk_result
-    item["boundary_notice"] = risk_result.get("boundary_notice")
-    item["consent_summary"] = consent_summary
     return ok(item, status=201)
 
 

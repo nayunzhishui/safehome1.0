@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-24：RC0810-F09 执行结果
+
+- 六类核心写入已从“先查再写”改为数据库唯一 claim：目标、日记、打卡、人工支持、普通测评和家长测评同 key/同 canonical hash 回放首次资源与响应，同 key/异 hash 稳定返回 409。
+- 新增三段显式加法迁移：幂等主账本与六表 `request_hash`、历史提交键回填、副作用 ledger。SQLite 和 MySQL 唯一冲突均重读赢家，不把并发冲突暴露为 500。
+- 打卡审计、人工支持事件/风险/审计、普通测评风险/画像/推荐、家长测评 Consent/研究摘要/风险均与主记录同事务且登记一次；微信、站内消息、AI Provider 和导出继续复用各自已有的 delivery/message/provider/audit 专用账本，避免重复造账。
+- 旧客户端不提供 key 时维持原创建行为；64 KiB canonical body 上限、actor/endpoint/version 绑定、字段排序、时间归一和明确忽略字段已形成共享 helper。
+- 独立审查两轮 Fix Loop 关闭了家长测评风险文本/时间、测评 GET 摘要泄露、补偿状态绕过、低风险督导账本、Web 弱网重试时间漂移和督导来源标题六项 finding，最终 `pass`。
+- F09 专项 21 项、受影响组合 60 项、Web typecheck 和四份 API 契约检查已通过；内部 `request_hash` 不进入接口响应。本地实现不等于测试云 MySQL、production 迁移或发布批准，F11 仍负责最终数据库 profile 验证。
+
 ## 2026-08-24：RC0810-F08 执行结果
 
 - Web 与小程序退出均先调用 `POST /api/auth/logout`，服务端按 `auth_epoch` 撤销账号既有 Token；成功或失败后才清理本地认证状态和敏感页面缓存，明确允许的未提交草稿继续保留。

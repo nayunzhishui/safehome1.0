@@ -90,11 +90,11 @@ export function useResilientDraft<T>({
     return () => window.removeEventListener("beforeunload", warn);
   }, [serialized]);
 
-  function flush() {
-    if (!hasContentRef.current(value)) return;
+  function flush(nextValue: T = value) {
+    if (!hasContentRef.current(nextValue)) return;
     const savedAt = new Date().toISOString();
     try {
-      window.localStorage.setItem(storageKey, JSON.stringify({ version: DRAFT_VERSION, values: value, savedAt, clientSubmissionId: submissionId.current }));
+      window.localStorage.setItem(storageKey, JSON.stringify({ version: DRAFT_VERSION, values: nextValue, savedAt, clientSubmissionId: submissionId.current }));
       setSaveStatus(savedLabel(savedAt));
     } catch {
       setSaveStatus("本机空间不足，暂时无法保存草稿");

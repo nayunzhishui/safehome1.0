@@ -1,6 +1,6 @@
 # API机器契约
 
-契约版本：`2026-08-24.f08`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
+契约版本：`2026-08-24.f09`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
 
 统一成功包络为`{ok:true,data,request_id}`，统一错误包络为`{ok:false,error:{code,message},request_id}`；下载接口除外，但响应头仍含`X-Request-ID`。
 

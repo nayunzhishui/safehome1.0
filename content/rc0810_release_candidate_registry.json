@@ -3219,7 +3219,8 @@
         "apps/web/**",
         "apps/miniprogram/**",
         "docs/**",
-        "backend/migrations/**"
+        "backend/migrations/**",
+        "content/rc0810_release_candidate_registry.json"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -3243,7 +3244,7 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "implemented"
         }
       ],
       "external_gates": [],
@@ -3254,7 +3255,8 @@
           "apps/web/**",
           "apps/miniprogram/**",
           "docs/**",
-          "backend/migrations/**"
+          "backend/migrations/**",
+          "content/rc0810_release_candidate_registry.json"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",

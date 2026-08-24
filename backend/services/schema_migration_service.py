@@ -15,7 +15,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from database import ensure_column, mysqlize_schema_statement, now_iso
+from database import ensure_column, json_loads, mysqlize_schema_statement, new_id, now_iso
+from services.idempotency_service import canonical_request_hash
 
 MYSQL_MIGRATION_LOCK_NAME = "safehome_explicit_schema_migrations"
 MYSQL_MIGRATION_LOCK_TIMEOUT_SECONDS = 15
@@ -258,6 +259,267 @@ def _apply_2026_08_07_063(conn) -> None:
         _create_index_if_missing(conn, name, table, columns)
 
 
+def _apply_2026_08_24_064(conn) -> None:
+    _execute_schema(
+        conn,
+        """
+        CREATE TABLE IF NOT EXISTS core_idempotency_records (
+            id TEXT PRIMARY KEY,
+            actor_id TEXT NOT NULL,
+            endpoint TEXT NOT NULL,
+            idempotency_key TEXT NOT NULL,
+            request_hash TEXT NOT NULL,
+            resource_type TEXT NOT NULL,
+            resource_id TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'committed',
+            response_status INTEGER,
+            response_json TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(actor_id, endpoint, idempotency_key)
+        )
+        """,
+    )
+    for table in (
+        "goals",
+        "emotion_diaries",
+        "checkins",
+        "supervision_requests",
+        "assessment_results",
+        "parent_assessment_submissions",
+    ):
+        ensure_column(conn, table, "request_hash", "TEXT")
+    for name, table, columns in (
+        (
+            "idx_core_idempotency_resource",
+            "core_idempotency_records",
+            "resource_type, resource_id",
+        ),
+        (
+            "idx_core_idempotency_created",
+            "core_idempotency_records",
+            "created_at",
+        ),
+    ):
+        _create_index_if_missing(conn, name, table, columns)
+
+
+def _apply_2026_08_24_065(conn) -> None:
+    configs = (
+        (
+            "goals",
+            "POST /api/goals",
+            "goal",
+            lambda row: {
+                "scene": row["scene"],
+                "smart_goal": row["smart_goal"],
+                "motivation": row["motivation"],
+                "start_date": row["start_date"],
+                "status": row["status"],
+            },
+        ),
+        (
+            "emotion_diaries",
+            "POST /api/diaries",
+            "diary",
+            lambda row: {
+                key: row[key]
+                for key in (
+                    "goal_id",
+                    "event_time",
+                    "scene",
+                    "event_description",
+                    "parent_emotion",
+                    "parent_emotion_intensity",
+                    "child_emotion",
+                    "child_emotion_intensity",
+                    "automatic_thought",
+                    "body_sensation",
+                    "behavior",
+                    "raw_text",
+                )
+            },
+        ),
+        (
+            "checkins",
+            "POST /api/checkins",
+            "checkin",
+            lambda row: {
+                "card_id": row["card_id"],
+                "diary_id": row["diary_id"],
+                "completed": bool(row["completed"]),
+                "emotion_before": row["emotion_before"],
+                "emotion_after": row["emotion_after"],
+                "reflection": str(row["reflection"] or ""),
+                "helpfulness_rating": row["helpfulness_rating"],
+                "skip_reason": row["skip_reason"],
+                "source_recommendation_id": row["source_recommendation_id"],
+                "before_thermometer_id": row["before_thermometer_id"],
+                "after_thermometer_id": row["after_thermometer_id"],
+            },
+        ),
+        (
+            "supervision_requests",
+            "POST /api/supervision",
+            "supervision_request",
+            lambda row: {
+                "message": row["message"],
+                "source_type": str(row["source_type"] or ""),
+                "source_id": str(row["source_id"] or ""),
+                "source_title": str(row["source_title"] or ""),
+                "contact": row["contact"],
+                "risk_hint": row["risk_hint"],
+            },
+        ),
+        (
+            "assessment_results",
+            "POST /api/assessment-results",
+            "assessment_result",
+            lambda row: {
+                "worksheet_id": row["worksheet_id"],
+                "answers": json_loads(row["answers_json"], []),
+                "result_summary": row["result_summary"],
+            },
+        ),
+        (
+            "parent_assessment_submissions",
+            "POST /api/parent-assessments",
+            "parent_assessment",
+            lambda row: {
+                "answers": json_loads(row["answers_json"], {}),
+                "research_consent": bool(row["research_consent"]),
+            },
+        ),
+    )
+    for table, endpoint, resource_type, payload_builder in configs:
+        rows = conn.execute(
+            f"SELECT * FROM {table} WHERE client_submission_id IS NOT NULL AND client_submission_id <> ''"
+        ).fetchall()
+        for row in rows:
+            payload = payload_builder(row)
+            if resource_type == "parent_assessment":
+                consent = conn.execute(
+                    """
+                    SELECT consent_version FROM consent_records
+                    WHERE user_id = ? AND consent_type = 'research_authorization'
+                      AND agreed = ? AND created_at <= ?
+                    ORDER BY created_at DESC LIMIT 1
+                    """,
+                    (row["user_id"], row["research_consent"], row["created_at"]),
+                ).fetchone()
+                payload.update(
+                    {
+                        "consent_version": consent["consent_version"] if consent else "2026.07-consent-v2",
+                        "participant_code": str(row["participant_code"] or ""),
+                        "study_batch": str(row["study_batch"] or ""),
+                        "source_channel": str(row["source_channel"] or "safehome-web"),
+                        "started_at": row["started_at"],
+                        "completed_at": row["completed_at"],
+                        "free_text": "",
+                        "raw_text": "",
+                        "reflection_text": "",
+                    }
+                )
+            request_hash = canonical_request_hash(
+                actor_id=str(row["user_id"]),
+                endpoint=endpoint,
+                version="v1",
+                payload=payload,
+            )
+            conn.execute(
+                f"UPDATE {table} SET request_hash = ? WHERE id = ? AND request_hash IS NULL",
+                (request_hash, row["id"]),
+            )
+            _insert_legacy_idempotency_record(
+                conn,
+                actor_id=str(row["user_id"]),
+                endpoint=endpoint,
+                idempotency_key=str(row["client_submission_id"]),
+                request_hash=request_hash,
+                resource_type=resource_type,
+                resource_id=str(row["id"]),
+                created_at=str(row["created_at"]),
+            )
+
+
+def _insert_legacy_idempotency_record(
+    conn,
+    *,
+    actor_id: str,
+    endpoint: str,
+    idempotency_key: str,
+    request_hash: str,
+    resource_type: str,
+    resource_id: str,
+    created_at: str,
+) -> None:
+    params = (
+        new_id("idem"),
+        actor_id,
+        endpoint,
+        idempotency_key,
+        request_hash,
+        resource_type,
+        resource_id,
+        created_at,
+        now_iso(),
+    )
+    if _provider(conn) == "mysql":
+        conn.execute(
+            """
+            INSERT IGNORE INTO core_idempotency_records (
+                id, actor_id, endpoint, idempotency_key, request_hash,
+                resource_type, resource_id, status, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'committed', ?, ?)
+            """,
+            params,
+        )
+    else:
+        conn.execute(
+            """
+            INSERT INTO core_idempotency_records (
+                id, actor_id, endpoint, idempotency_key, request_hash,
+                resource_type, resource_id, status, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'committed', ?, ?)
+            ON CONFLICT(actor_id, endpoint, idempotency_key) DO NOTHING
+            """,
+            params,
+        )
+
+
+def _apply_2026_08_24_066(conn) -> None:
+    _execute_schema(
+        conn,
+        """
+        CREATE TABLE IF NOT EXISTS core_side_effect_ledger (
+            id TEXT PRIMARY KEY,
+            idempotency_record_id TEXT NOT NULL,
+            effect_type TEXT NOT NULL,
+            effect_key TEXT NOT NULL,
+            status TEXT NOT NULL,
+            external_reference TEXT,
+            metadata_json TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(idempotency_record_id, effect_type, effect_key)
+        )
+        """,
+    )
+    for name, table, columns in (
+        (
+            "idx_core_side_effect_status",
+            "core_side_effect_ledger",
+            "effect_type, status, updated_at",
+        ),
+        (
+            "idx_core_side_effect_record",
+            "core_side_effect_ledger",
+            "idempotency_record_id",
+        ),
+    ):
+        _create_index_if_missing(conn, name, table, columns)
+
+
 MIGRATIONS = (
     Migration(
         version="2026_08_07_062",
@@ -279,6 +541,36 @@ MIGRATIONS = (
             "Keep embedding columns in place unless a separate destructive migration is approved; legacy vector_json remains valid.",
             "Export agent_runs and agent_tool_calls if they contain audit evidence before dropping them.",
             "Agent tables contain hashes/metadata only and must never be repurposed as a participant-text store.",
+        ),
+    ),
+    Migration(
+        version="2026_08_24_064",
+        name="core_write_idempotency_schema",
+        apply=_apply_2026_08_24_064,
+        rollback_notes=(
+            "Stop core writes before rollback.",
+            "Keep request_hash columns unless a separate destructive migration is approved.",
+            "Drop core_idempotency_records only after exporting its actor/key/resource bindings.",
+        ),
+    ),
+    Migration(
+        version="2026_08_24_065",
+        name="core_write_idempotency_backfill",
+        apply=_apply_2026_08_24_065,
+        rollback_notes=(
+            "Stop core writes before rollback.",
+            "Backfilled request hashes and idempotency records are additive and should normally remain.",
+            "Never delete primary business records when rolling back this backfill.",
+        ),
+    ),
+    Migration(
+        version="2026_08_24_066",
+        name="core_side_effect_ledger",
+        apply=_apply_2026_08_24_066,
+        rollback_notes=(
+            "Stop side-effect producers before rollback.",
+            "Export unresolved and externally committed ledger rows before any table removal.",
+            "Do not mark external actions as reverted merely because the application transaction rolled back.",
         ),
     ),
 )

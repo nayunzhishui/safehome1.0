@@ -13,6 +13,14 @@ from routes.utils import (
     require_fields,
 )
 from services.input_validation_service import InputValidationError, validate_diary_payload
+from services.idempotency_service import (
+    IdempotencyConflictError,
+    IdempotencyValidationError,
+    canonical_request_hash,
+    public_idempotent_resource,
+    reserve_idempotency,
+    store_idempotency_response,
+)
 
 bp = Blueprint("diaries", __name__, url_prefix="/api/diaries")
 
@@ -37,39 +45,68 @@ def create_diary():
     submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
     if len(submission_id) > 120:
         return fail("validation_error", "提交标识不能超过120个字符。", status=400)
+    idempotency_payload = {
+        "goal_id": payload.get("goal_id"),
+        "event_time": payload.get("event_time"),
+        "scene": payload["scene"],
+        "event_description": payload["event_description"],
+        "parent_emotion": payload["parent_emotion"],
+        "parent_emotion_intensity": payload["parent_emotion_intensity"],
+        "child_emotion": payload.get("child_emotion"),
+        "child_emotion_intensity": payload.get("child_emotion_intensity"),
+        "automatic_thought": payload.get("automatic_thought"),
+        "body_sensation": payload.get("body_sensation"),
+        "behavior": payload.get("behavior"),
+        "raw_text": payload.get("raw_text"),
+    }
+    try:
+        request_hash = canonical_request_hash(
+            actor_id=user_id,
+            endpoint="POST /api/diaries",
+            version="v1",
+            payload=idempotency_payload,
+        ) if submission_id else None
+    except IdempotencyValidationError as exc:
+        return fail(exc.code, exc.message, status=400)
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
         if submission_id:
-            existing = conn.execute(
-                "SELECT * FROM emotion_diaries WHERE user_id = ? AND client_submission_id = ?",
-                (user_id, submission_id),
-            ).fetchone()
-            if existing is not None:
-                expected = (
-                    payload.get("goal_id"), payload.get("event_time"), payload["scene"], payload["event_description"],
-                    payload["parent_emotion"], payload["parent_emotion_intensity"],
-                    payload.get("child_emotion"), payload.get("child_emotion_intensity"),
-                    payload.get("automatic_thought"), payload.get("body_sensation"), payload.get("behavior"), payload.get("raw_text"),
+            try:
+                reservation = reserve_idempotency(
+                    conn,
+                    actor_id=user_id,
+                    endpoint="POST /api/diaries",
+                    idempotency_key=submission_id,
+                    request_hash=request_hash,
+                    resource_type="diary",
+                    resource_id=diary_id,
                 )
-                actual = (
-                    existing["goal_id"], existing["event_time"], existing["scene"], existing["event_description"],
-                    existing["parent_emotion"], existing["parent_emotion_intensity"], existing["child_emotion"],
-                    existing["child_emotion_intensity"], existing["automatic_thought"], existing["body_sensation"],
-                    existing["behavior"], existing["raw_text"],
-                )
-                if actual != expected:
-                    return fail("idempotency_conflict", "该提交标识已用于另一份情绪记录。", status=409)
-                return ok(row_to_dict(existing))
+            except IdempotencyConflictError:
+                return fail("idempotency_conflict", "该提交标识已用于另一份情绪记录。", status=409)
+            if not reservation.created:
+                if reservation.response is not None:
+                    item = public_idempotent_resource(reservation.response)
+                    item["idempotency_replayed"] = True
+                    return ok(item)
+                existing = conn.execute(
+                    "SELECT * FROM emotion_diaries WHERE id = ? AND user_id = ?",
+                    (reservation.resource_id, user_id),
+                ).fetchone()
+                if existing is None:
+                    return fail("idempotency_state_conflict", "原提交结果不可用。", status=409)
+                item = public_idempotent_resource(row_to_dict(existing))
+                item["idempotency_replayed"] = True
+                return ok(item)
         conn.execute(
             """
             INSERT INTO emotion_diaries (
                 id, user_id, goal_id, event_time, scene, event_description,
                 parent_emotion, parent_emotion_intensity, child_emotion,
                 child_emotion_intensity, automatic_thought, body_sensation,
-                behavior, raw_text, client_submission_id, created_at, updated_at
+                behavior, raw_text, client_submission_id, request_hash, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 diary_id,
@@ -87,14 +124,24 @@ def create_diary():
                 payload.get("behavior"),
                 payload.get("raw_text"),
                 submission_id or None,
+                request_hash,
                 timestamp,
                 timestamp,
             ),
         )
-        conn.commit()
         row = conn.execute("SELECT * FROM emotion_diaries WHERE id = ?", (diary_id,)).fetchone()
+        item = public_idempotent_resource(row_to_dict(row))
+        item["idempotency_replayed"] = False
+        if submission_id:
+            store_idempotency_response(
+                conn,
+                idempotency_record_id=reservation.id,
+                response=item,
+                response_status=201,
+            )
+        conn.commit()
 
-    return ok(row_to_dict(row), status=201)
+    return ok(item, status=201)
 
 
 @bp.get("")
@@ -168,4 +215,4 @@ def list_diaries():
                     (user_id, limit),
                 ).fetchall()
 
-    return ok({"items": rows_to_dicts(rows)})
+    return ok({"items": [public_idempotent_resource(item) for item in rows_to_dicts(rows)]})

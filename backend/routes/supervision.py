@@ -8,8 +8,17 @@ from database import ensure_user, get_connection, json_dumps, new_id, now_iso, r
 from routes.auth_utils import AuthError, auth_error_response, require_role, resolve_actor_user_id
 from routes.utils import fail, ok, require_fields
 from services.input_validation_service import InputValidationError, bounded_text, validate_supervision_payload
+from services.idempotency_service import (
+    IdempotencyConflictError,
+    IdempotencyValidationError,
+    canonical_request_hash,
+    public_idempotent_resource,
+    record_side_effect,
+    reserve_idempotency,
+    store_idempotency_response,
+)
 from services.message_service import create_message
-from services.risk_review_service import create_risk_review_record
+from services.risk_review_service import create_risk_review_record, should_create_risk_review
 from services.risk_service import check_text_risk
 from services.schema_migration_service import apply_pending_schema_migrations
 
@@ -53,7 +62,7 @@ def _mask_contact(value: str | None) -> str | None:
 
 
 def _public_item(row: dict, *, include_contact: bool = False) -> dict:
-    item = dict(row)
+    item = public_idempotent_resource(row)
     contact = item.pop("contact", None)
     item["contact_masked"] = _mask_contact(contact)
     if include_contact:
@@ -115,29 +124,56 @@ def create_supervision_request():
     stored_risk_level = str(risk_result.get("risk_level") or payload.get("risk_level") or "low")
     priority = _priority(safety_route)
     due_at = _due_at(safety_route, timestamp)
+    idempotency_payload = {
+        "message": payload["message"],
+        "source_type": source_type,
+        "source_id": source_id,
+        "source_title": source_title,
+        "contact": payload.get("contact"),
+        "risk_hint": payload.get("risk_hint"),
+    }
+    try:
+        request_hash = canonical_request_hash(
+            actor_id=user_id,
+            endpoint="POST /api/supervision",
+            version="v1",
+            payload=idempotency_payload,
+        ) if submission_id else None
+    except IdempotencyValidationError as exc:
+        return fail(exc.code, exc.message, status=400)
 
     with get_connection() as conn:
         apply_pending_schema_migrations(conn)
         ensure_user(conn, user_id, payload.get("nickname"))
+        reservation = None
         if submission_id:
-            existing = conn.execute(
-                "SELECT * FROM supervision_requests WHERE user_id = ? AND client_submission_id = ?",
-                (user_id, submission_id),
-            ).fetchone()
-            if existing is not None:
-                same_payload = (
-                    existing["message"] == payload["message"]
-                    and (existing["source_type"] or "") == source_type
-                    and (existing["source_id"] or "") == source_id
-                    and existing["contact"] == payload.get("contact")
-                    and existing["risk_hint"] == payload.get("risk_hint")
-                    and (not source_title or existing["source_title"] == source_title)
+            try:
+                reservation = reserve_idempotency(
+                    conn,
+                    actor_id=user_id,
+                    endpoint="POST /api/supervision",
+                    idempotency_key=submission_id,
+                    request_hash=request_hash,
+                    resource_type="supervision_request",
+                    resource_id=request_id,
                 )
-                if not same_payload:
-                    return fail("idempotency_conflict", "该提交标识已用于另一份人工支持请求。", status=409)
+            except IdempotencyConflictError:
+                return fail("idempotency_conflict", "该提交标识已用于另一份人工支持请求。", status=409)
+            if not reservation.created:
+                if reservation.response is not None:
+                    item = dict(reservation.response)
+                    item["idempotency_replayed"] = True
+                    return ok(item)
+                existing = conn.execute(
+                    "SELECT * FROM supervision_requests WHERE id = ? AND user_id = ?",
+                    (reservation.resource_id, user_id),
+                ).fetchone()
+                if existing is None:
+                    return fail("idempotency_state_conflict", "原提交结果不可用。", status=409)
                 item = _public_item(row_to_dict(existing))
                 item["risk"] = risk_result
                 item["boundary_notice"] = risk_result.get("boundary_notice")
+                item["idempotency_replayed"] = True
                 return ok(item)
         if source_type == "diary":
             source_row = conn.execute(
@@ -145,6 +181,8 @@ def create_supervision_request():
                 (source_id, user_id),
             ).fetchone()
             if source_row is None:
+                if reservation is not None:
+                    conn.rollback()
                 return fail("source_not_found", "没有找到可关联的情绪日记。", status=404)
             source_title = source_title or f"情绪日记 · {source_row['scene'] or '具体事件'}"
         elif source_type == "assessment":
@@ -153,6 +191,8 @@ def create_supervision_request():
                 (source_id, user_id),
             ).fetchone()
             if source_row is None:
+                if reservation is not None:
+                    conn.rollback()
                 return fail("source_not_found", "没有找到可关联的测评记录。", status=404)
             source_title = source_title or f"测一测 · {source_row['worksheet_title'] or '支持性测评'}"
 
@@ -161,9 +201,9 @@ def create_supervision_request():
             INSERT INTO supervision_requests (
                 id, user_id, diary_id, source_type, source_id, source_title,
                 message, contact, risk_hint, risk_level, status, client_submission_id,
-                priority, due_at, last_actor_id, created_at
+                request_hash, priority, due_at, last_actor_id, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?)
             """,
             (
                 request_id,
@@ -177,37 +217,70 @@ def create_supervision_request():
                 payload.get("risk_hint"),
                 stored_risk_level,
                 submission_id or None,
+                request_hash,
                 priority,
                 due_at,
                 user_id,
                 timestamp,
             ),
         )
-        _event(
+        if reservation is None or record_side_effect(
             conn,
-            request_id,
-            user_id,
-            "participant",
-            "created",
-            None,
-            "pending",
-            {"priority": priority, "due_at": due_at, "safety_route": safety_route},
-        )
-        create_risk_review_record(conn, user_id, "supervision", request_id, risk_result)
-        write_audit_log(
+            idempotency_record_id=reservation.id,
+            effect_type="database_event",
+            effect_key="supervision_created",
+            status="committed",
+            metadata={"resource_id": request_id},
+        ):
+            _event(
+                conn,
+                request_id,
+                user_id,
+                "participant",
+                "created",
+                None,
+                "pending",
+                {"priority": priority, "due_at": due_at, "safety_route": safety_route},
+            )
+        if reservation is None or record_side_effect(
             conn,
-            action="supervision_requested",
-            actor_id=user_id,
-            target_type="supervision_request",
-            target_id=request_id,
-            metadata={"priority": priority, "due_at": due_at, "safety_route": safety_route},
-        )
-        conn.commit()
+            idempotency_record_id=reservation.id,
+            effect_type="risk_task",
+            effect_key="supervision_risk_review",
+            status="committed" if should_create_risk_review(risk_result) else "not_required",
+            metadata={"resource_id": request_id, "risk_level": stored_risk_level},
+        ):
+            create_risk_review_record(conn, user_id, "supervision", request_id, risk_result)
+        if reservation is None or record_side_effect(
+            conn,
+            idempotency_record_id=reservation.id,
+            effect_type="audit",
+            effect_key="supervision_requested",
+            status="committed",
+            metadata={"resource_id": request_id},
+        ):
+            write_audit_log(
+                conn,
+                action="supervision_requested",
+                actor_id=user_id,
+                target_type="supervision_request",
+                target_id=request_id,
+                metadata={"priority": priority, "due_at": due_at, "safety_route": safety_route},
+            )
         row = conn.execute("SELECT * FROM supervision_requests WHERE id = ?", (request_id,)).fetchone()
+        item = _public_item(row_to_dict(row))
+        item["risk"] = risk_result
+        item["boundary_notice"] = risk_result.get("boundary_notice")
+        item["idempotency_replayed"] = False
+        if reservation is not None:
+            store_idempotency_response(
+                conn,
+                idempotency_record_id=reservation.id,
+                response=item,
+                response_status=201,
+            )
+        conn.commit()
 
-    item = _public_item(row_to_dict(row))
-    item["risk"] = risk_result
-    item["boundary_notice"] = risk_result.get("boundary_notice")
     return ok(item, status=201)
 
 

@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-08-24.f08"
+CONTRACT_VERSION = "2026-08-24.f09"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 

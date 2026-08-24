@@ -10,6 +10,7 @@ from routes.utils import fail, ok, parse_bool, parse_int, require_fields
 from services.assessment_execution_service import AssessmentSubmissionError, submit_assessment
 from services.assessment_profile_position_store import backfill_profile_position, profile_cluster_value
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
+from services.idempotency_service import public_idempotent_resource
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
 
@@ -131,6 +132,7 @@ def _known_worksheet_ids() -> list[str]:
 
 
 def _expand_result_row(row: dict) -> dict:
+    row = public_idempotent_resource(row)
     row["answers"] = json_loads(row.get("answers_json"), [])
     row["scores"] = json_loads(row.get("scores_json"), {})
     row["raw_scale"] = json_loads(row.get("raw_scale_json"), {})

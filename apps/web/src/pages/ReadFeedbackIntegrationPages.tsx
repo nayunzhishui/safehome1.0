@@ -843,12 +843,13 @@ export function ParentAssessmentPage() {
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState<LoadState>("loading");
   const [message, setMessage] = useState("正在读取家长测评题目...");
-  const startedAt = useMemo(() => new Date().toISOString(), []);
+  const [startedAt, setStartedAt] = useState(() => new Date().toISOString());
+  const [completedAt, setCompletedAt] = useState<string | null>(null);
   const [slowSubmitting, setSlowSubmitting] = useState(false);
   const draft = useResilientDraft({
     storageKey: "safehome:draft:parent-assessment",
     submissionPrefix: "parent-assessment",
-    value: { answers, questionAnswers, participantCode, studyBatch, sourceChannel, consentAccepted, researchConsent, viewMode, step },
+    value: { answers, questionAnswers, participantCode, studyBatch, sourceChannel, consentAccepted, researchConsent, viewMode, step, startedAt, completedAt },
     restore: (saved) => {
       setAnswers(saved.answers || {});
       setQuestionAnswers(saved.questionAnswers || {});
@@ -859,6 +860,8 @@ export function ParentAssessmentPage() {
       setResearchConsent(Boolean(saved.researchConsent));
       setViewMode(saved.viewMode || "block");
       setStep(Number(saved.step || 0));
+      setStartedAt(saved.startedAt || new Date().toISOString());
+      setCompletedAt(saved.completedAt || null);
     },
     hasContent: (saved) => Object.values(saved.answers || {}).some(Boolean) || Object.values(saved.questionAnswers || {}).some(Boolean) || Boolean(saved.participantCode || saved.studyBatch),
   });
@@ -893,7 +896,21 @@ export function ParentAssessmentPage() {
     }
     setStatus("saving");
     setMessage("正在生成家长支持性反馈...");
-    draft.flush();
+    const submissionCompletedAt = completedAt || new Date().toISOString();
+    if (!completedAt) setCompletedAt(submissionCompletedAt);
+    draft.flush({
+      answers,
+      questionAnswers,
+      participantCode,
+      studyBatch,
+      sourceChannel,
+      consentAccepted,
+      researchConsent,
+      viewMode,
+      step,
+      startedAt,
+      completedAt: submissionCompletedAt,
+    });
     setSlowSubmitting(false);
     const slowTimer = window.setTimeout(() => setSlowSubmitting(true), 8000);
     try {
@@ -903,7 +920,7 @@ export function ParentAssessmentPage() {
         study_batch: studyBatch,
         source_channel: sourceChannel,
         started_at: startedAt,
-        completed_at: new Date().toISOString(),
+        completed_at: submissionCompletedAt,
         answers,
         question_answers: questionAnswers,
         client_submission_id: draft.clientSubmissionId,

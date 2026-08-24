@@ -2,11 +2,19 @@
 
 from dataclasses import dataclass
 
-from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict
+from database import ensure_user, get_connection, json_dumps, new_id, now_iso, row_to_dict
 from services.assessment_profile_position_store import backfill_profile_position
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
+from services.idempotency_service import (
+    IdempotencyConflictError,
+    canonical_request_hash,
+    public_idempotent_resource,
+    record_side_effect,
+    reserve_idempotency,
+    store_idempotency_response,
+)
 from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability
-from services.risk_review_service import create_risk_review_record
+from services.risk_review_service import create_risk_review_record, should_create_risk_review
 from services.risk_service import check_text_risk
 from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
 
@@ -63,31 +71,75 @@ def submit_assessment(
     summary = result_summary or worksheet.get("result_disclaimer") or "本次内容已保存。结果仅用于自我观察和练习记录，不构成诊断。"
     if risk_result and not risk_result.get("allow_auto_feedback", True):
         summary = risk_result.get("safe_response") or summary
+    request_hash = canonical_request_hash(
+        actor_id=user_id,
+        endpoint="POST /api/assessment-results",
+        version="v1",
+        payload={
+            "worksheet_id": worksheet["id"],
+            "answers": answers,
+            "result_summary": summary,
+        },
+    ) if client_submission_id else None
+    training_rules = evaluate_training_rules(
+        worksheet["id"],
+        scores,
+        worksheet=worksheet,
+        risk_result=risk_result,
+        user_id=user_id,
+    )
+    recommended_card_ids = flatten_card_ids(training_rules) or worksheet.get("recommended_card_ids", [])
+    if risk_result and not risk_result.get("allow_recommended_training_cards", True):
+        recommended_card_ids = []
+        training_rules = []
 
     replayed = False
     with get_connection() as conn:
         ensure_user(conn, user_id, nickname)
-        existing = None
+        reservation = None
         if client_submission_id:
-            existing = conn.execute(
-                "SELECT * FROM assessment_results WHERE user_id = ? AND client_submission_id = ?",
-                (user_id, client_submission_id),
-            ).fetchone()
-        if existing is not None:
-            if existing["worksheet_id"] != worksheet["id"] or json_loads(existing["answers_json"], []) != answers:
-                raise AssessmentSubmissionError("idempotency_conflict", "该提交标识已用于另一份测评记录。", 409)
-            row = existing
-            replayed = True
-        else:
+            try:
+                reservation = reserve_idempotency(
+                    conn,
+                    actor_id=user_id,
+                    endpoint="POST /api/assessment-results",
+                    idempotency_key=client_submission_id,
+                    request_hash=request_hash,
+                    resource_type="assessment_result",
+                    resource_id=result_id,
+                )
+            except IdempotencyConflictError as exc:
+                raise AssessmentSubmissionError(
+                    "idempotency_conflict",
+                    "该提交标识已用于另一份测评记录。",
+                    409,
+                ) from exc
+            if not reservation.created:
+                if reservation.response is not None:
+                    result = public_idempotent_resource(reservation.response)
+                    result["idempotency_replayed"] = True
+                    return result
+                row = conn.execute(
+                    "SELECT * FROM assessment_results WHERE id = ? AND user_id = ?",
+                    (reservation.resource_id, user_id),
+                ).fetchone()
+                if row is None:
+                    raise AssessmentSubmissionError(
+                        "idempotency_state_conflict",
+                        "原提交结果不可用。",
+                        409,
+                    )
+                replayed = True
+        if not replayed:
             conn.execute(
                 """
                 INSERT INTO assessment_results (
                     id, user_id, worksheet_id, worksheet_title, category,
                     answers_json, scores_json, scoring_version, raw_scale_json,
                     raw_scores_json, transformed_scores_json, transformation_version,
-                    total_score, result_summary, client_submission_id, created_at
+                    total_score, result_summary, client_submission_id, request_hash, created_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     result_id,
@@ -105,10 +157,19 @@ def submit_assessment(
                     execution.total_score,
                     summary,
                     client_submission_id,
+                    request_hash,
                     now_iso(),
                 ),
             )
-            create_risk_review_record(conn, user_id, "assessment_result", result_id, risk_result)
+            if reservation is None or record_side_effect(
+                conn,
+                idempotency_record_id=reservation.id,
+                effect_type="risk_task",
+                effect_key="assessment_risk_review",
+                status="committed" if should_create_risk_review(risk_result) else "not_required",
+                metadata={"resource_id": result_id},
+            ):
+                create_risk_review_record(conn, user_id, "assessment_result", result_id, risk_result)
             row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
             result_row = row_to_dict(row)
             if result_row:
@@ -116,39 +177,61 @@ def submit_assessment(
                 try:
                     position = build_assessment_profile_position(result_row, worksheet)
                     backfill_profile_position(conn, result_id, position)
+                    if reservation is not None:
+                        record_side_effect(
+                            conn,
+                            idempotency_record_id=reservation.id,
+                            effect_type="profile_position",
+                            effect_key="assessment_profile_position",
+                            status="committed",
+                            metadata={"resource_id": result_id},
+                        )
                     row = conn.execute("SELECT * FROM assessment_results WHERE id = ?", (result_id,)).fetchone()
                 except ProfilePositionUnavailable:
-                    pass
-        conn.commit()
+                    if reservation is not None:
+                        record_side_effect(
+                            conn,
+                            idempotency_record_id=reservation.id,
+                            effect_type="profile_position",
+                            effect_key="assessment_profile_position",
+                            status="not_available",
+                            metadata={"resource_id": result_id},
+                        )
+            if reservation is not None:
+                record_side_effect(
+                    conn,
+                    idempotency_record_id=reservation.id,
+                    effect_type="recommendation",
+                    effect_key="assessment_training_recommendation",
+                    status="computed",
+                    metadata={"resource_id": result_id, "card_count": len(recommended_card_ids)},
+                )
 
-    result = row_to_dict(row)
-    result["answers"] = answers
-    result["scores"] = scores
-    result["raw_scale"] = score_provenance["raw_scale"]
-    result["raw_scores"] = score_provenance["raw_scores"]
-    result["transformed_scores"] = score_provenance["transformed_scores"]
-    result["scoring_version"] = score_provenance["scoring_version"]
-    result["transformation_version"] = score_provenance["transformation_version"]
-    result["score_reporting_notice"] = score_provenance["reporting_notice"]
-    training_rules = evaluate_training_rules(
-        worksheet["id"],
-        scores,
-        worksheet=worksheet,
-        risk_result=risk_result,
-        user_id=user_id,
-    )
-    recommended_card_ids = flatten_card_ids(training_rules) or worksheet.get("recommended_card_ids", [])
-    if risk_result and not risk_result.get("allow_recommended_training_cards", True):
-        recommended_card_ids = []
-        training_rules = []
-    result["recommended_card_ids"] = recommended_card_ids
-    result["training_recommendation_rules"] = training_rules
-    result["risk"] = risk_result
-    result["minor_safeguards"] = minor_safeguards
-    result["boundary_notice"] = worksheet.get("boundary_notice")
-    result["result_disclaimer"] = worksheet.get("result_disclaimer")
-    result["idempotency_replayed"] = replayed
-    return result
+        result = public_idempotent_resource(row_to_dict(row))
+        result["answers"] = answers
+        result["scores"] = scores
+        result["raw_scale"] = score_provenance["raw_scale"]
+        result["raw_scores"] = score_provenance["raw_scores"]
+        result["transformed_scores"] = score_provenance["transformed_scores"]
+        result["scoring_version"] = score_provenance["scoring_version"]
+        result["transformation_version"] = score_provenance["transformation_version"]
+        result["score_reporting_notice"] = score_provenance["reporting_notice"]
+        result["recommended_card_ids"] = recommended_card_ids
+        result["training_recommendation_rules"] = training_rules
+        result["risk"] = risk_result
+        result["minor_safeguards"] = minor_safeguards
+        result["boundary_notice"] = worksheet.get("boundary_notice")
+        result["result_disclaimer"] = worksheet.get("result_disclaimer")
+        result["idempotency_replayed"] = replayed
+        if reservation is not None and reservation.created:
+            store_idempotency_response(
+                conn,
+                idempotency_record_id=reservation.id,
+                response=result,
+                response_status=201,
+            )
+        conn.commit()
+        return result
 
 
 def execute_assessment(worksheet: dict, submitted_answers: list[dict]) -> AssessmentExecutionResult:
