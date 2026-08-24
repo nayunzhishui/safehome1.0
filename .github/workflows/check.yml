@@ -37,11 +37,11 @@ jobs:
           python -m pip install -r analysis/profiling/requirements.txt
           python -m pip install -r analysis/text_analysis/requirements.txt
           python -m pip check
+      - name: Controlled failure
+        run: python scripts/ci_fail_job.py backend
       - name: Run backend tests
         working-directory: backend
         run: python -m pytest tests -q
-      - name: Controlled failure
-        run: python scripts/ci_fail_job.py backend
       - name: Record evidence
         if: always()
         run: python scripts/write_ci_job_evidence.py --job backend --status "${{ job.status }}"

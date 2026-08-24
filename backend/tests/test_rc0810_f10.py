@@ -342,6 +342,9 @@ def test_f10b_workflow_has_independent_required_jobs_and_aggregate_gate():
     assert "working-directory: apps/web" in sections["miniprogram"]
     assert "npm ci" in sections["miniprogram"]
     assert "npx playwright install --with-deps chromium" in sections["miniprogram"]
+    assert sections["backend"].index("ci_fail_job.py backend") < sections["backend"].index(
+        "python -m pytest tests -q"
+    )
     assert "if: always()" in sections["release-gate"]
     assert all(job in sections["release-gate"] for job in required)
     assert "verify_ci_release_gate.py" in sections["release-gate"]
