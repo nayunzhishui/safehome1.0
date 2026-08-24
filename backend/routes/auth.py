@@ -69,7 +69,43 @@ def _public_user(row: dict) -> dict:
         "avatar_url": row.get("avatar_url"),
         "status": row.get("status") or "active",
         "must_change_password": bool(row.get("must_change_password")),
+        "auth_epoch": int(row.get("auth_epoch") or 0),
     }
+
+
+def _apply_pending_logout(conn, row: dict, payload: dict) -> tuple[bool, bool]:
+    if payload.get("revoke_previous_sessions") is not True:
+        return False, False
+    pending_user_id = str(payload.get("pending_logout_user_id") or "").strip()
+    user_id = str(row["id"])
+    if not pending_user_id or pending_user_id != user_id:
+        return False, True
+
+    current_epoch = int(row.get("auth_epoch") or 0)
+    supplied_epoch = payload.get("pending_logout_auth_epoch")
+    try:
+        expected_epoch = int(supplied_epoch) if supplied_epoch is not None else current_epoch
+    except (TypeError, ValueError):
+        expected_epoch = current_epoch
+    if current_epoch <= expected_epoch:
+        timestamp = now_iso()
+        cursor = conn.execute(
+            """
+            UPDATE users SET auth_epoch = auth_epoch + 1, updated_at = ?
+            WHERE id = ? AND auth_epoch = ?
+            """,
+            (timestamp, user_id, current_epoch),
+        )
+        if cursor.rowcount == 1:
+            write_audit_log(
+                conn,
+                "auth_pending_logout_resolved",
+                user_id,
+                "user",
+                user_id,
+                {"previous_auth_epoch": current_epoch, "token_material_received": False},
+            )
+    return True, False
 
 
 def _participant_quick_login_row(conn, row):
@@ -491,11 +527,21 @@ def login():
             (anonymous_id, timestamp, timestamp, row["id"]),
         )
         register_claim_candidate(conn, row["id"], anonymous_id)
+        pending_logout_resolved, pending_logout_user_mismatch = _apply_pending_logout(
+            conn, row_to_dict(row), payload
+        )
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE id = ?", (row["id"],)).fetchone()
 
     user = _public_user(row_to_dict(row))
-    return ok({"token": generate_auth_token(user), "user": user})
+    return ok(
+        {
+            "token": generate_auth_token(user),
+            "user": user,
+            "pending_logout_resolved": pending_logout_resolved,
+            "pending_logout_user_mismatch": pending_logout_user_mismatch,
+        }
+    )
 
 
 @bp.post("/wechat-login")
@@ -555,6 +601,12 @@ def wechat_login():
                 (nickname, avatar_url, anonymous_id, timestamp, timestamp, user_id),
             )
         register_claim_candidate(conn, user_id, anonymous_id)
+        current = row_to_dict(
+            conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+        )
+        pending_logout_resolved, pending_logout_user_mismatch = _apply_pending_logout(
+            conn, current, payload
+        )
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
@@ -565,6 +617,8 @@ def wechat_login():
             "user": user,
             "dev_fallback": bool(session.get("dev_fallback")),
             "identity_source": session.get("identity_source") or "jscode2session",
+            "pending_logout_resolved": pending_logout_resolved,
+            "pending_logout_user_mismatch": pending_logout_user_mismatch,
         }
     )
 
@@ -626,6 +680,12 @@ def phone_login():
             (phone_hash, timestamp, cloudbase_openid, anonymous_id, timestamp, timestamp, user_id),
         )
         register_claim_candidate(conn, user_id, anonymous_id)
+        current = row_to_dict(
+            conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+        )
+        pending_logout_resolved, pending_logout_user_mismatch = _apply_pending_logout(
+            conn, current, payload
+        )
         conn.commit()
         row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
 
@@ -636,6 +696,8 @@ def phone_login():
             "user": user,
             "phone_bound": True,
             "phone_masked": _mask_phone(phone_number),
+            "pending_logout_resolved": pending_logout_resolved,
+            "pending_logout_user_mismatch": pending_logout_user_mismatch,
         }
     )
 
@@ -981,19 +1043,50 @@ def admin_revoke_account(username: str):
 def logout():
     try:
         actor = get_current_actor(allow_legacy_admin=False)
-    except AuthError as exc:
-        return auth_error_response(exc)
+    except AuthError:
+        return ok(
+            {
+                "message": "本地登录状态可以清除；服务端令牌已失效或无法再次撤销。",
+                "tokens_revoked": False,
+                "already_inactive": True,
+            }
+        )
     if actor is None:
-        return ok({"message": "本地登录状态可以清除；当前请求没有可撤销的服务端令牌。", "tokens_revoked": False})
+        return ok(
+            {
+                "message": "本地登录状态可以清除；当前请求没有可撤销的服务端令牌。",
+                "tokens_revoked": False,
+                "already_inactive": True,
+            }
+        )
     timestamp = now_iso()
     with get_connection() as conn:
-        conn.execute(
-            "UPDATE users SET auth_epoch = auth_epoch + 1, updated_at = ? WHERE id = ?",
-            (timestamp, actor["id"]),
+        expected_epoch = int(actor.get("user", {}).get("auth_epoch") or 0)
+        cursor = conn.execute(
+            """
+            UPDATE users SET auth_epoch = auth_epoch + 1, updated_at = ?
+            WHERE id = ? AND auth_epoch = ?
+            """,
+            (timestamp, actor["id"], expected_epoch),
         )
-        write_audit_log(conn, "auth_sessions_revoked", actor["id"], "user", actor["id"], {"scope": "all_tokens"})
+        tokens_revoked = cursor.rowcount == 1
+        if tokens_revoked:
+            write_audit_log(
+                conn,
+                "auth_sessions_revoked",
+                actor["id"],
+                "user",
+                actor["id"],
+                {"scope": "all_tokens", "previous_auth_epoch": expected_epoch},
+            )
         conn.commit()
-    return ok({"message": "已安全退出，当前账号的既有登录令牌已失效。"})
+    return ok(
+        {
+            "message": "已安全退出，当前账号的既有登录令牌已失效。",
+            "tokens_revoked": tokens_revoked,
+            "already_inactive": not tokens_revoked,
+        }
+    )
 
 
 @bp.get("/me")

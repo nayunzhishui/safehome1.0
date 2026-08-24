@@ -4,6 +4,8 @@ const { DEFAULT_CLOUD_CONFIG, getCloudConfig } = require("./cloudConfig");
 const DEFAULT_CONTAINER_SERVICE = DEFAULT_CLOUD_CONFIG.containerService;
 const DEFAULT_CLOUD_ENV_ID = DEFAULT_CLOUD_CONFIG.cloudEnvId;
 const DEFAULT_HTTP_BASE_URL = DEFAULT_CLOUD_CONFIG.httpBaseUrl;
+const PENDING_LOGOUT_KEY = "safehome_pending_logout";
+const PENDING_LOGOUT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 function getClientVersion() {
   try {
@@ -215,6 +217,10 @@ function createSafeHomeApi(options = {}) {
   function clearAuthSession() {
     wx.removeStorageSync("auth_token");
     wx.removeStorageSync("auth_user");
+    wx.removeStorageSync("safehome_dismissed_data_claim_id");
+    wx.removeStorageSync("safehome:selectedTrainingCard");
+    wx.removeStorageSync("safehome:latestTrainingRecommendation");
+    wx.removeStorageSync("safehome:threeDayLightPlan");
     try {
       const app = typeof getApp === "function" ? getApp() : null;
       if (app && app.globalData) {
@@ -224,6 +230,65 @@ function createSafeHomeApi(options = {}) {
     } catch (error) {
       // getApp can be unavailable in isolated service-layer tests.
     }
+  }
+
+  function getPendingLogout() {
+    const pending = wx.getStorageSync(PENDING_LOGOUT_KEY);
+    if (!pending || typeof pending !== "object" || !pending.user_id || !pending.requested_at) {
+      wx.removeStorageSync(PENDING_LOGOUT_KEY);
+      return null;
+    }
+    const requestedAt = Date.parse(pending.requested_at);
+    if (!Number.isFinite(requestedAt) || Date.now() - requestedAt > PENDING_LOGOUT_MAX_AGE_MS) {
+      wx.removeStorageSync(PENDING_LOGOUT_KEY);
+      return null;
+    }
+    return pending;
+  }
+
+  function markPendingLogout(user) {
+    if (!user || !user.id) return null;
+    const marker = {
+      user_id: String(user.id),
+      auth_epoch: Number.isInteger(user.auth_epoch) ? user.auth_epoch : null,
+      requested_at: new Date().toISOString(),
+    };
+    wx.setStorageSync(PENDING_LOGOUT_KEY, marker);
+    return marker;
+  }
+
+  function clearPendingLogout() {
+    wx.removeStorageSync(PENDING_LOGOUT_KEY);
+  }
+
+  function clearPendingLogoutForUser(userId) {
+    const pending = getPendingLogout();
+    if (!pending || pending.user_id === String(userId || "")) {
+      clearPendingLogout();
+    }
+  }
+
+  function withPendingLogout(data = {}) {
+    const pending = getPendingLogout();
+    if (!pending) return data;
+    return {
+      ...data,
+      revoke_previous_sessions: true,
+      pending_logout_user_id: pending.user_id,
+      pending_logout_auth_epoch: pending.auth_epoch,
+    };
+  }
+
+  function saveAuthResult(result) {
+    if (result && result.token) {
+      wx.setStorageSync("auth_token", result.token);
+      wx.setStorageSync("auth_user", result.user || null);
+      wx.removeStorageSync("safehome_anonymous_user_id");
+    }
+    if (result && result.pending_logout_resolved) {
+      clearPendingLogout();
+    }
+    return result;
   }
 
   function request(path, options = {}) {
@@ -236,7 +301,9 @@ function createSafeHomeApi(options = {}) {
       method,
       clientVersion: getClientVersion(),
     };
-    const authToken = wx.getStorageSync("auth_token") || "";
+    const authToken = options.authToken !== undefined
+      ? options.authToken
+      : wx.getStorageSync("auth_token") || "";
     const authHeader = authToken ? { Authorization: `Bearer ${authToken}` } : {};
 
     return new Promise((resolve, reject) => {
@@ -450,18 +517,11 @@ function createSafeHomeApi(options = {}) {
     login(data) {
       return request(API_ENDPOINTS.authLogin, {
         method: "POST",
-        data: {
+        data: withPendingLogout({
           ...data,
           anonymous_id: defaultUserId,
-        },
-      }).then((result) => {
-        if (result && result.token) {
-          wx.setStorageSync("auth_token", result.token);
-          wx.setStorageSync("auth_user", result.user || null);
-          wx.removeStorageSync("safehome_anonymous_user_id");
-        }
-        return result;
-      });
+        }),
+      }).then(saveAuthResult);
     },
 
     getAuthCapabilities() {
@@ -514,35 +574,21 @@ function createSafeHomeApi(options = {}) {
     wechatLogin(data) {
       return request(API_ENDPOINTS.authWechatLogin, {
         method: "POST",
-        data: {
+        data: withPendingLogout({
           ...data,
           anonymous_id: defaultUserId,
-        },
-      }).then((result) => {
-        if (result && result.token) {
-          wx.setStorageSync("auth_token", result.token);
-          wx.setStorageSync("auth_user", result.user || null);
-          wx.removeStorageSync("safehome_anonymous_user_id");
-        }
-        return result;
-      });
+        }),
+      }).then(saveAuthResult);
     },
 
     phoneLogin(data) {
       return request(API_ENDPOINTS.authPhoneLogin, {
         method: "POST",
-        data: {
+        data: withPendingLogout({
           ...data,
           anonymous_id: defaultUserId,
-        },
-      }).then((result) => {
-        if (result && result.token) {
-          wx.setStorageSync("auth_token", result.token);
-          wx.setStorageSync("auth_user", result.user || null);
-          wx.removeStorageSync("safehome_anonymous_user_id");
-        }
-        return result;
-      });
+        }),
+      }).then(saveAuthResult);
     },
 
     bindWechatPhone(data) {
@@ -571,9 +617,24 @@ function createSafeHomeApi(options = {}) {
     },
 
     logout() {
-      wx.removeStorageSync("auth_token");
-      wx.removeStorageSync("auth_user");
-      return request(API_ENDPOINTS.authLogout, { method: "POST" }).catch(() => ({}));
+      const authToken = wx.getStorageSync("auth_token") || "";
+      const authUser = wx.getStorageSync("auth_user") || null;
+      return request(API_ENDPOINTS.authLogout, {
+        method: "POST",
+        authToken,
+      }).then((result) => {
+        clearPendingLogoutForUser(authUser && authUser.id);
+        clearAuthSession();
+        return { ...result, pending_logout: false };
+      }).catch((error) => {
+        const pending = authToken ? markPendingLogout(authUser) : null;
+        clearAuthSession();
+        return {
+          tokens_revoked: false,
+          pending_logout: Boolean(pending),
+          error_code: error && error.code || "logout_request_failed",
+        };
+      });
     },
 
     createGoal(data) {

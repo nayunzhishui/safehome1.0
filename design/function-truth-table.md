@@ -2146,14 +2146,15 @@
 | 129 | `getProfileStats` | `GET` | `/api/profile/stats` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
 | 226 | `claimAnonymousData` | `POST` | `/api/auth/data-claim` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
 | 252 | `unbindIdentity` | `POST` | `/api/auth/identity-unbind` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
+| 282 | `logout` | `POST` | `/api/auth/logout` | `backend/routes/auth.py`；先请求服务端撤销账号全部令牌，再清本地。弱网失败时仅保存不含 Token 的 `safehome_pending_logout`，下次同账号登录完成撤销。 |
 
 #### 路由、本地状态与页面状态
 
 - 下游路由：`switchTab` → `/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex`（js:191）、`navigateTo` → `/pages/register/index?redirect=%2Fpages%2Fprofile%2Findex`（js:202）、`navigateTo` → `/pages/researcher-dashboard/index`（js:208）、`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fresearcher-dashboard%2Findex`（js:211）、`redirectTo` → `/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex`（js:256）、`navigateTo` → `/pages/login/index:dynamic`（js:298）
 - 本地存储：`getStorageSync` `safehome_dismissed_data_claim_id`（JS:124）、`setStorageSync` `safehome_dismissed_data_claim_id`（JS:216）、`removeStorageSync` `safehome_dismissed_data_claim_id`（JS:227）、`getStorageSync` `auth_token`（JS:274）、`getStorageSync` `auth_user`（JS:278）、`removeStorageSync` `auth_token`（JS:304）、`removeStorageSync` `auth_user`（JS:305）
-- WXML 数据绑定：`user`、`loggedIn`、`identityStatus`、`identityBusy`、`dataClaim`、`item`、`claimBusy`、`isResearcher`、`recordEntries`、`index`、`supportEntries`、`safetyEntries`、`settingsEntries`
+- WXML 数据绑定：`user`、`loggedIn`、`identityStatus`、`identityBusy`、`logoutBusy`、`dataClaim`、`item`、`claimBusy`、`isResearcher`、`recordEntries`、`index`、`supportEntries`、`safetyEntries`、`settingsEntries`
 - 条件状态：`user`、`loggedIn`、`identityStatus`、`dataClaim`
-- `setData` 状态：`user`、`loginState`、`streakText`、`growthLevel`、`roleText`、`isResearcher`、`showcaseAccess`、`stats`、`loggedIn`、`dataClaim`、`identityStatus`、`nickname`、`claimBusy`、`identityBusy`
+- `setData` 状态：`user`、`loginState`、`streakText`、`growthLevel`、`roleText`、`isResearcher`、`showcaseAccess`、`stats`、`loggedIn`、`dataClaim`、`identityStatus`、`nickname`、`claimBusy`、`identityBusy`、`logoutBusy`
 - 未解析事件：—
 - 未解析 API：—
 - 无效目标路由：—

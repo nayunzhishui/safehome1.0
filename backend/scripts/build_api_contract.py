@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-08-20.f06"
+CONTRACT_VERSION = "2026-08-24.f08"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 
@@ -180,6 +180,10 @@ def _access_for(path: str, method: str, module: str, source: str) -> dict[str, A
 
 
 def _object_scope(path: str, method: str, access: dict[str, Any], source: str) -> str:
+    if path == "/api/auth/logout":
+        return "optional_bearer_revoke_all_account_tokens_idempotent"
+    if path in {"/api/auth/login", "/api/auth/wechat-login", "/api/auth/phone-login"}:
+        return "authenticated_identity_match_before_pending_logout_revoke"
     if path == "/api/therapeutic-assessment/quality/runtime":
         return "authenticated_quality_queue_counts_and_pause_state_no_participant_text"
     if "/api/therapeutic-assessment/quality/reviews" in path:
@@ -349,6 +353,12 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ("/api/operations-governance/incidents/<incident_id>/notifications/<notification_id>/<action>", "POST"): ["error_code"],
     }
     body_fields.update(operations_body_fields.get((path, method), []))
+    auth_body_fields = {
+        ("/api/auth/login", "POST"): ["revoke_previous_sessions", "pending_logout_user_id", "pending_logout_auth_epoch"],
+        ("/api/auth/wechat-login", "POST"): ["revoke_previous_sessions", "pending_logout_user_id", "pending_logout_auth_epoch"],
+        ("/api/auth/phone-login", "POST"): ["revoke_previous_sessions", "pending_logout_user_id", "pending_logout_auth_epoch"],
+    }
+    body_fields.update(auth_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),

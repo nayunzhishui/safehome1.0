@@ -7,6 +7,8 @@
 
 const AUTH_TOKEN_KEY = "safehome_auth_token";
 const AUTH_USER_KEY = "safehome_auth_user";
+const PENDING_LOGOUT_KEY = "safehome_pending_logout";
+const PENDING_LOGOUT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 export interface AuthUser {
   id: string;
@@ -16,6 +18,13 @@ export interface AuthUser {
   anonymous_id?: string;
   status?: string;
   must_change_password?: boolean;
+  auth_epoch?: number;
+}
+
+export interface PendingLogout {
+  user_id: string;
+  auth_epoch: number | null;
+  requested_at: string;
 }
 
 function migrateLegacyLocalStorage(): void {
@@ -76,6 +85,50 @@ export function clearAuthSession(): void {
   window.sessionStorage.removeItem(AUTH_USER_KEY);
   window.localStorage.removeItem(AUTH_TOKEN_KEY);
   window.localStorage.removeItem(AUTH_USER_KEY);
+  window.localStorage.removeItem("safehome_anonymous_user_id");
+  window.localStorage.removeItem("safehome_dismissed_data_claim_id");
+  window.localStorage.removeItem("safehome:selectedTrainingCard");
+  window.localStorage.removeItem("safehome:latestTrainingRecommendation");
+  window.localStorage.removeItem("safehome:threeDayLightPlan");
+}
+
+export function getPendingLogout(): PendingLogout | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(PENDING_LOGOUT_KEY);
+    const parsed = raw ? (JSON.parse(raw) as PendingLogout) : null;
+    const requestedAt = parsed ? Date.parse(parsed.requested_at) : Number.NaN;
+    if (!parsed?.user_id || !Number.isFinite(requestedAt) || Date.now() - requestedAt > PENDING_LOGOUT_MAX_AGE_MS) {
+      window.localStorage.removeItem(PENDING_LOGOUT_KEY);
+      return null;
+    }
+    return parsed;
+  } catch {
+    window.localStorage.removeItem(PENDING_LOGOUT_KEY);
+    return null;
+  }
+}
+
+export function markPendingLogout(user: AuthUser): void {
+  if (typeof window === "undefined" || !user.id) return;
+  const marker: PendingLogout = {
+    user_id: user.id,
+    auth_epoch: Number.isInteger(user.auth_epoch) ? Number(user.auth_epoch) : null,
+    requested_at: new Date().toISOString(),
+  };
+  window.localStorage.setItem(PENDING_LOGOUT_KEY, JSON.stringify(marker));
+}
+
+export function clearPendingLogout(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(PENDING_LOGOUT_KEY);
+}
+
+export function clearPendingLogoutForUser(userId: string): void {
+  const pending = getPendingLogout();
+  if (!pending || pending.user_id === userId) {
+    clearPendingLogout();
+  }
 }
 
 export function logout(): void {

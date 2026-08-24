@@ -45,5 +45,9 @@ App({
     this.globalData.user = null;
     wx.removeStorageSync("auth_token");
     wx.removeStorageSync("auth_user");
+    wx.removeStorageSync("safehome_dismissed_data_claim_id");
+    wx.removeStorageSync("safehome:selectedTrainingCard");
+    wx.removeStorageSync("safehome:latestTrainingRecommendation");
+    wx.removeStorageSync("safehome:threeDayLightPlan");
   },
 });

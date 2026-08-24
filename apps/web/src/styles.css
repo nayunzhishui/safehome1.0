@@ -742,6 +742,20 @@ body,
   padding: 26px 20px 52px;
 }
 
+.publicSessionBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0 auto 16px;
+  max-width: 1180px;
+}
+
+.publicSessionBar span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
 .adminWorkspace {
   min-height: 100vh;
   display: grid;

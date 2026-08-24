@@ -3098,7 +3098,9 @@
         "shared/**",
         "apps/web/**",
         "apps/miniprogram/**",
-        "docs/**"
+        "docs/**",
+        "design/function-truth-table.md",
+        "content/rc0810_release_candidate_registry.json"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -3122,7 +3124,7 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "implemented"
         }
       ],
       "external_gates": [],
@@ -3132,7 +3134,9 @@
           "shared/**",
           "apps/web/**",
           "apps/miniprogram/**",
-          "docs/**"
+          "docs/**",
+          "design/function-truth-table.md",
+          "content/rc0810_release_candidate_registry.json"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
@@ -3144,10 +3148,10 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 14,
+        "expected_files": 24,
         "expected_migrations": 0,
         "expected_interfaces": 4,
-        "expected_pages": 4,
+        "expected_pages": 2,
         "actual_delta_baseline": "task_start_snapshot",
         "pause_when_actual_exceeds_percent": 50,
         "pause_on_second_unrelated_root_cause": true,

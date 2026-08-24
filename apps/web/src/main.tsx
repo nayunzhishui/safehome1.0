@@ -1,7 +1,15 @@
 import React, { Suspense, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-import { clearAuthSession, getStoredAuthToken, saveAuthSession, type AuthUser } from "./services/authState";
+import {
+  clearAuthSession,
+  clearPendingLogout,
+  clearPendingLogoutForUser,
+  getStoredAuthToken,
+  markPendingLogout,
+  saveAuthSession,
+  type AuthUser,
+} from "./services/authState";
 import { safeHomeApi, SafeHomeApiError } from "./services/safehomeApi";
 import { ErrorBoundary, lazyWithRetry as lazy } from "./components/ErrorBoundary";
 import "./styles.css";
@@ -161,6 +169,7 @@ function RouteFallback() {
 
 function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcaseEnabled: boolean }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [logoutBusy, setLogoutBusy] = useState(false);
   const path = window.location.pathname;
   const isLandingPath = path === "/";
   const isAboutStudyPath = path === "/about-study";
@@ -259,6 +268,20 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     !isExportPath &&
     path !== "/integration-test";
 
+  async function handleLogout() {
+    if (!authUser || logoutBusy) return;
+    setLogoutBusy(true);
+    try {
+      await safeHomeApi.logout();
+      clearPendingLogoutForUser(authUser.id);
+    } catch {
+      markPendingLogout(authUser);
+    } finally {
+      clearAuthSession();
+      window.location.href = "/login";
+    }
+  }
+
   const pageContent = shouldBlockAdminPath ? (
     <AccessDeniedPage path={path} allowedRoles={matchedAdminLink.roles || []} />
   ) : (
@@ -311,7 +334,22 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     return (
       <>
         <a className="skipLink" href="#main-content">跳到主要内容</a>
-        <main className="page landingMode" id="main-content">{suspendedPageContent}</main>
+        <main className="page landingMode" id="main-content">
+          {authUser && path !== "/login" && path !== "/register" ? (
+            <div className="publicSessionBar">
+              <span>当前已登录</span>
+              <button
+                className="secondaryButton"
+                type="button"
+                disabled={logoutBusy}
+                onClick={() => { void handleLogout(); }}
+              >
+                {logoutBusy ? "正在退出…" : "退出登录"}
+              </button>
+            </div>
+          ) : null}
+          {suspendedPageContent}
+        </main>
       </>
     );
   }
@@ -369,6 +407,16 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
           </div>
           <span className="adminPath">safehome1.0 {path}</span>
           <strong>管理员后台</strong>
+          {authUser ? (
+            <button
+              className="secondaryButton"
+              type="button"
+              disabled={logoutBusy}
+              onClick={() => { void handleLogout(); }}
+            >
+              {logoutBusy ? "正在退出…" : "退出登录"}
+            </button>
+          ) : null}
         </header>
         {suspendedPageContent}
       </section>

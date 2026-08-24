@@ -208,7 +208,7 @@ import type {
 } from "../../../../shared/types/api";
 import { getStoredAdminToken } from "./adminToken";
 import type { AuthUser } from "./authState";
-import { getStoredAuthUser, getToken } from "./authState";
+import { clearPendingLogout, getPendingLogout, getStoredAuthUser, getToken } from "./authState";
 import { clearAnonymousUserId, getAnonymousUserId } from "./userIdentity";
 
 export type { ResearchParticipantDossier, ResearchParticipantModuleKey, ResearchParticipantModulePage, ResearchParticipantSummary } from "../../../../shared/types/api";
@@ -313,13 +313,39 @@ export class SafeHomeApiClient {
     return this.requestData(API_ENDPOINTS.textAnalysisSummary);
   }
 
-  async login(creds: { username: string; password: string }): Promise<{ token: string; user: AuthUser }> {
-    const data = await this.requestData<{ token: string; user: AuthUser }>(API_ENDPOINTS.authLogin, {
+  async login(creds: { username: string; password: string }): Promise<{
+    token: string;
+    user: AuthUser;
+    pending_logout_resolved: boolean;
+    pending_logout_user_mismatch: boolean;
+  }> {
+    const pending = getPendingLogout();
+    const data = await this.requestData<{
+      token: string;
+      user: AuthUser;
+      pending_logout_resolved: boolean;
+      pending_logout_user_mismatch: boolean;
+    }>(API_ENDPOINTS.authLogin, {
       method: "POST",
-      body: { ...creds, anonymous_id: this.defaultUserId },
+      body: {
+        ...creds,
+        anonymous_id: this.defaultUserId,
+        ...(pending
+          ? {
+              revoke_previous_sessions: true,
+              pending_logout_user_id: pending.user_id,
+              pending_logout_auth_epoch: pending.auth_epoch,
+            }
+          : {}),
+      },
     });
+    if (data.pending_logout_resolved) clearPendingLogout();
     clearAnonymousUserId();
     return data;
+  }
+
+  logout(): Promise<{ message: string; tokens_revoked: boolean; already_inactive: boolean }> {
+    return this.requestData(API_ENDPOINTS.authLogout, { method: "POST" });
   }
 
   async register(creds: {

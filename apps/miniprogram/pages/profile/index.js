@@ -118,6 +118,7 @@ Page({
     claimBusy: false,
     identityStatus: null,
     identityBusy: false,
+    logoutBusy: false,
   },
 
   onShow() {
@@ -275,9 +276,15 @@ Page({
     });
   },
 
-  doLogout() {
-    logout();
-    wx.showToast({ title: "已退出", icon: "success" });
-    this.loadProfile();
+  async doLogout() {
+    if (this.data.logoutBusy) return;
+    this.setData({ logoutBusy: true });
+    const result = await api.logout();
+    this.setData({ logoutBusy: false });
+    wx.showToast({
+      title: result.pending_logout ? "已退出，联网后将撤销旧会话" : "已退出",
+      icon: "none",
+    });
+    await this.loadProfile();
   },
 });

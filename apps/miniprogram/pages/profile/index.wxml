@@ -15,7 +15,7 @@
     <text class="auth-title">{{loggedIn ? '账号已连接' : '先登录后保存记录'}}</text>
     <text class="auth-text">登录后，你的记录只会用于本工具内的复盘、训练建议和必要的人工补充反馈。</text>
     <view wx:if="{{loggedIn}}" class="auth-actions">
-      <button class="auth-secondary" bindtap="doLogout">退出登录</button>
+      <button class="auth-secondary" bindtap="doLogout" loading="{{logoutBusy}}" disabled="{{logoutBusy}}">退出登录</button>
     </view>
     <view wx:else class="auth-actions">
       <button class="auth-primary" bindtap="goLogin">去登录</button>

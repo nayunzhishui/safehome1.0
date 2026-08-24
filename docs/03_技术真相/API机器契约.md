@@ -1,6 +1,6 @@
 # API机器契约
 
-契约版本：`2026-08-20.f06`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
+契约版本：`2026-08-24.f08`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
 
 统一成功包络为`{ok:true,data,request_id}`，统一错误包络为`{ok:false,error:{code,message},request_id}`；下载接口除外，但响应头仍含`X-Request-ID`。
 
@@ -64,12 +64,12 @@
 | GET | `/api/auth/data-claim-preview` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/auth/identity-status` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/auth/identity-unbind` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
-| POST | `/api/auth/login` | public:public | not_applicable_or_development_legacy | — | — | active |
-| POST | `/api/auth/logout` | public:public | not_applicable_or_development_legacy | — | — | active |
+| POST | `/api/auth/login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |
+| POST | `/api/auth/logout` | public:public | optional_bearer_revoke_all_account_tokens_idempotent | — | — | active |
 | GET | `/api/auth/me` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
-| POST | `/api/auth/phone-login` | public:public | not_applicable_or_development_legacy | — | — | active |
+| POST | `/api/auth/phone-login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |
 | POST | `/api/auth/register` | public:public | not_applicable_or_development_legacy | — | — | active |
-| POST | `/api/auth/wechat-login` | public:public | not_applicable_or_development_legacy | — | — | active |
+| POST | `/api/auth/wechat-login` | public:public | authenticated_identity_match_before_pending_logout_revoke | — | — | active |
 | GET | `/api/cards` | role:researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/cards/recommend` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/checkins` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_active_participant_assignment_or_admin_capability | page/page_size | — | active |

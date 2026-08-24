@@ -1425,6 +1425,14 @@ Invoke-WebRequest `
 
 生产边界：接口不会把 `WECHAT_APPID`、`WECHAT_SECRET`、登录 code 或微信服务端原始响应暴露给用户或普通日志；传输故障日志只记录操作名、异常类型、上游HTTP状态和底层原因类型。停用账号不能通过微信重新登录。
 
+### `POST /api/auth/logout`
+
+用途：安全退出当前账号，并通过递增 `auth_epoch` 一次性撤销该账号在所有设备上的旧 Token。匿名请求、已过期 Token 和重复退出均返回幂等成功；`tokens_revoked=true` 只表示本次请求实际完成了服务端撤销。
+
+客户端顺序：Web 和小程序先携带现有 Bearer Token 请求本接口，随后才清理本地认证状态和页面敏感缓存。网络中断或服务端 5xx 时，客户端仍清本地，但只保存 `user_id`、可选 `auth_epoch` 和时间戳组成的 `safehome_pending_logout`，不得保存 Token 明文；明确允许的未提交本地草稿保留。
+
+下次登录：账号密码、微信或手机号登录可附加 `revoke_previous_sessions=true`、`pending_logout_user_id`、`pending_logout_auth_epoch`。后端只在登录身份与 pending 用户完全一致后先递增 `auth_epoch`，再签发新 Token；不一致时返回 `pending_logout_user_mismatch=true`，不会撤销另一个账号。成功返回 `pending_logout_resolved=true` 后客户端删除 pending 标识。
+
 ### `POST /api/auth/admin-create-account`
 
 用途：由持有 `X-Admin-Token` 的负责人创建或恢复任意受支持角色账号。可传 `rotate_existing=true` 为同名账号设置新密码并清除锁定、停用理由和临时凭据状态；轮换保留原用户 ID、历史数据和角色，且不能同时改变角色。未显式传该字段时，同名账号返回 `409 username_exists`。

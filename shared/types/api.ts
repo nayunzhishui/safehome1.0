@@ -50,6 +50,37 @@ export interface DataClaimResult {
   version: number;
 }
 
+export interface PendingLogoutRequest {
+  revoke_previous_sessions: true;
+  pending_logout_user_id: ID;
+  pending_logout_auth_epoch?: number | null;
+}
+
+export interface AuthUser {
+  id: ID;
+  username?: string | null;
+  nickname?: string | null;
+  role: UserRole | "user";
+  anonymous_id?: string | null;
+  avatar_url?: string | null;
+  status: string;
+  must_change_password: boolean;
+  auth_epoch: number;
+}
+
+export interface AuthLoginResult {
+  token: string;
+  user: AuthUser;
+  pending_logout_resolved: boolean;
+  pending_logout_user_mismatch: boolean;
+}
+
+export interface AuthLogoutResult {
+  message: string;
+  tokens_revoked: boolean;
+  already_inactive: boolean;
+}
+
 export type LoginIdentityState = "unbound" | "bound_direct" | "bound_linked" | "claim_pending" | "claimed";
 
 export interface LoginIdentityDescriptor {
@@ -1357,6 +1388,7 @@ export interface User {
   anonymous_id?: string | null;
   avatar_url?: string | null;
   status?: string | null;
+  auth_epoch?: number;
   source?: string | null;
   created_at: ISODateTime;
   updated_at: ISODateTime;
