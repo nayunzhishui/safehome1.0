@@ -1,5 +1,11 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：波次 B reviewer 替换审计适配
+
+- [x] 原 reviewer 不可恢复时，要求绑定旧 reviewer、最后有效 checkpoint、恢复失败记录和替代 reviewer。
+- [x] 无替换证据或哈希/checkpoint 不匹配继续拒绝；`fixing` 中途不得重置基线。
+- [x] 最小 Harness 合同通过；未改变业务、数据库、生产配置或 review 结论。
+
 ## 2026-08-26：波次 B Fix Loop（F15/F21 findings）
 
 - [x] 复现 scheduler 连续三次扫描失败进入 dead-letter 后仍放行高风险自动化。

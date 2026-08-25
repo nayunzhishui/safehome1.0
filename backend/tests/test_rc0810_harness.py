@@ -1039,7 +1039,46 @@ def test_wave_fix_required_keeps_pending_and_reuses_fixed_reviewer(tmp_path):
     assert repeated_start.returncode != 0
     assert run_cli("verify", "RC0810-F10-A", env=env).returncode == 0
     assert run_cli("review", "RC0810-F10-A", "--pending-wave", env=env).returncode == 0
-    assert run_cli("start", "RC0810-F10-A", env=env).returncode == 0
+    replacement_packet = json.loads(run_cli("review", "--wave", "B", env=env).stdout)
+    pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+    state = json.loads((runtime / pointer["state_path"]).read_text(encoding="utf-8"))
+    replacement_path = Path(replacement_packet["review_packet_path"]).with_name(
+        "wave-B-reviewer-replacement.json"
+    )
+    replacement_path.write_text(
+        json.dumps(
+            {
+                "schema": "safehome.rc0810.reviewer_replacement.v1",
+                "wave": "B",
+                "previous_reviewer_id": "fixed-reviewer",
+                "replacement_reviewer_id": "replacement-reviewer",
+                "previous_reviewer_checkpoint": {
+                    "decision_evidence_sha256": state["wave_checkpoints"]["A"]["review"]["decision_evidence_sha256"]
+                },
+                "recovery_attempts": ["fixed reviewer no longer live"],
+                "replacement_reason": "previous_reviewer_ended_and_cannot_be_recovered",
+            }
+        ),
+        encoding="utf-8",
+    )
+    replacement_decision = write_review_decision(
+        replacement_packet, reviewer_id="replacement-reviewer"
+    )
+    replacement_payload = json.loads(replacement_decision.read_text(encoding="utf-8"))
+    replacement_payload["reviewer_replacement"] = {
+        "evidence_path": str(replacement_path),
+        "evidence_sha256": hashlib.sha256(replacement_path.read_bytes()).hexdigest(),
+    }
+    replacement_decision.write_text(json.dumps(replacement_payload), encoding="utf-8")
+    accepted_replacement = run_cli(
+        "review", "--wave", "B", "--decision", "pass",
+        "--reviewer-id", "replacement-reviewer",
+        "--decision-evidence", str(replacement_decision), env=env,
+    )
+    assert accepted_replacement.returncode == 0, accepted_replacement.stderr
+    final_report = json.loads(run_cli("report", env=env).stdout)
+    assert final_report["review_waves"]["B"]["review"]["reviewer_id"] == "replacement-reviewer"
+    assert final_report["review_waves"]["B"]["review"]["reviewer_replacement"]["previous_reviewer_id"] == "fixed-reviewer"
 
 
 def test_wave_fix_registry_transition_may_touch_only_tasks_in_same_wave():

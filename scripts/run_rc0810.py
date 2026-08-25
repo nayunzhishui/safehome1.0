@@ -1485,8 +1485,6 @@ def review_wave(
         }:
             raise HarnessError("审查结论必须来自独立reviewer。")
         fixed_reviewer = state.get("fixed_wave_reviewer_id")
-        if fixed_reviewer and reviewer_id != fixed_reviewer:
-            raise HarnessError("波次审查必须续用同一固定reviewer。")
         packet = wave_state["review_packet"]
         path = Path(packet["path"])
         if not path.is_file() or sha256_bytes(path.read_bytes()) != packet["sha256"]:
@@ -1538,6 +1536,54 @@ def review_wave(
         if not isinstance(decision_record.get("findings"), list):
             raise HarnessError("decision evidence必须包含findings数组。")
 
+        replacement_metadata = None
+        if fixed_reviewer and reviewer_id != fixed_reviewer:
+            replacement = decision_record.get("reviewer_replacement")
+            if not isinstance(replacement, dict):
+                raise HarnessError("波次审查必须续用同一固定reviewer；替换必须提供审计证据。")
+            replacement_path = Path(str(replacement.get("evidence_path") or "")).resolve()
+            if (
+                not _path_within(replacement_path, review_root)
+                or not replacement_path.is_file()
+                or replacement.get("evidence_sha256")
+                != sha256_bytes(replacement_path.read_bytes())
+            ):
+                raise HarnessError("reviewer替换证据缺失或哈希不匹配。")
+            try:
+                replacement_record = json.loads(
+                    replacement_path.read_text(encoding="utf-8")
+                )
+            except (OSError, json.JSONDecodeError) as exc:
+                raise HarnessError("reviewer替换证据不是有效JSON。") from exc
+            previous_waves = _previous_waves(registry, wave_id)
+            previous_review = (
+                state.get("wave_checkpoints", {})
+                .get(previous_waves[-1]["id"], {})
+                .get("review", {})
+                if previous_waves
+                else {}
+            )
+            checkpoint = replacement_record.get("previous_reviewer_checkpoint", {})
+            if (
+                replacement_record.get("schema")
+                != "safehome.rc0810.reviewer_replacement.v1"
+                or replacement_record.get("wave") != wave_id
+                or replacement_record.get("previous_reviewer_id") != fixed_reviewer
+                or replacement_record.get("replacement_reviewer_id") != reviewer_id
+                or replacement_record.get("replacement_reason")
+                != "previous_reviewer_ended_and_cannot_be_recovered"
+                or not replacement_record.get("recovery_attempts")
+                or checkpoint.get("decision_evidence_sha256")
+                != previous_review.get("decision_evidence_sha256")
+            ):
+                raise HarnessError("reviewer替换证据未绑定旧reviewer或最后有效checkpoint。")
+            replacement_metadata = {
+                "previous_reviewer_id": fixed_reviewer,
+                "evidence_path": str(replacement_path),
+                "evidence_sha256": replacement["evidence_sha256"],
+                "reason": replacement_record["replacement_reason"],
+            }
+
         state["fixed_wave_reviewer_id"] = reviewer_id
         decision_hash = sha256_bytes(decision_path.read_bytes())
         status_by_decision = {
@@ -1556,6 +1602,8 @@ def review_wave(
             "valid_until": decision_record["valid_until"],
             "recorded_at": utc_now(),
         }
+        if replacement_metadata is not None:
+            wave_state["review"]["reviewer_replacement"] = replacement_metadata
         if decision == "pass":
             for task_id, record in task_records.items():
                 record["status"] = "verified"
