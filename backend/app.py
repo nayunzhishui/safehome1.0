@@ -60,6 +60,10 @@ from routes.training_plan import bp as training_plan_bp
 from routes.therapeutic_assessment import bp as therapeutic_assessment_bp
 from services.runtime_metrics import record_response, snapshot as runtime_metrics_snapshot
 from services.reliability_service import record_request_event
+from services.operations_reliability_service import (
+    protected_health_allowed,
+    protected_runtime_components,
+)
 from routes.auth_utils import AuthError, get_current_actor
 from services.assessment_profile_service import model_artifact_hash_is_valid
 from services.build_fingerprint_service import (
@@ -410,23 +414,24 @@ def create_app(
 
     @app.get("/healthz")
     def healthz():
-        build = app.extensions.get("safehome_build_identity") or {}
         return jsonify(
             {
                 "ok": True,
                 "service": "safehome-backend",
-                "env": app.config.get("APP_ENV"),
                 "version": SERVICE_VERSION,
-                "build": public_build_identity(build),
             }
         )
 
     @app.get("/healthz/deep")
     def deep_healthz():
+        if not protected_health_allowed():
+            return jsonify({"ok": False, "error": {"code": "operations_health_forbidden", "message": "该健康检查仅限内部运维访问。"}}), 403
         return jsonify(build_readiness_payload(app))
 
     @app.get("/readyz")
     def readyz():
+        if not protected_health_allowed():
+            return jsonify({"ok": False, "error": {"code": "operations_health_forbidden", "message": "该健康检查仅限内部运维访问。"}}), 403
         payload = build_readiness_payload(app)
         return jsonify(payload), 200 if payload["ok"] else 503
 
@@ -438,8 +443,16 @@ def build_readiness_payload(app: Flask) -> dict:
     content = check_content_health(app.config["CONTENT_DIR"])
     build = load_build_identity(app.config["CONTENT_DIR"])
     deployment = deployment_consistency(build, database, str(app.config.get("APP_ENV") or ""))
+    protected = protected_runtime_components()
     return {
-        "ok": bool(database.get("ok") and content.get("ok") and deployment.get("ok")),
+        "ok": bool(
+            database.get("ok")
+            and content.get("ok")
+            and deployment.get("ok")
+            and protected["redis"].get("ok")
+            and protected["queues"].get("ok")
+            and protected["scheduler"].get("ok")
+        ),
         "service": "safehome-backend",
         "env": app.config.get("APP_ENV"),
         "version": SERVICE_VERSION,
@@ -447,6 +460,7 @@ def build_readiness_payload(app: Flask) -> dict:
         "deployment": deployment,
         "database": database,
         "content": content,
+        **protected,
         "runtime_metrics": runtime_metrics_snapshot(),
         "operational_backlog": operational_backlog(),
     }

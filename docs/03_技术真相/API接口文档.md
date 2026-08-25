@@ -104,9 +104,11 @@
 
 ## 0. 健康检查
 
+F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` 是受保护运维探针，只接受明确内部 socket 源地址，或请求头 `X-Operations-Token` 与服务端 `OPERATIONS_HEALTH_TOKEN` 匹配。服务端不信任 `X-Forwarded-For` 来授予权限。
+
 ### `GET /healthz`
 
-用途：确认后端是否启动。该接口只返回轻量状态和不含路径/密钥的构建身份，不检查数据库。
+用途：确认后端是否启动。该接口只返回轻量状态和非敏感版本，不检查数据库，也不返回环境或构建指纹。
 
 响应示例：
 
@@ -114,22 +116,13 @@
 {
   "ok": true,
   "service": "safehome-backend",
-  "env": "development",
-  "version": "safehome-2026-06-04",
-  "build": {
-    "build_id": "10439c1c26c147970a36",
-    "commit_sha": "<git-sha>",
-    "build_time": "<UTC>",
-    "api_contract_hash": "<sha256>",
-    "content_manifest_hash": "<sha256>",
-    "schema_expected": {"version": "2026_07_22_025"}
-  }
+  "version": "safehome-2026-08-07-safety-convergence"
 }
 ```
 
 ### `GET /healthz/deep`
 
-用途：云托管和部署诊断。该接口只做只读检查，不返回 token、用户数据或自由文本。
+用途：内部云托管和部署诊断。该接口只做只读检查，不执行迁移，不返回 token、用户数据或自由文本；无内部来源或运维令牌时返回 `403 operations_health_forbidden`。
 
 检查项：
 
@@ -139,10 +132,13 @@
 - `training_cards` 是否与 `content/training_cards.json` 同步；
 - `assessment_worksheets` 是否与 `content/assessment_worksheets.json` 同步。
 - 容器API契约、content清单和数据库schema是否与包内构建指纹一致。
+- Redis 是否按配置可用；
+- 可靠任务和消息队列是否积压或出现死信；
+- 安全 scheduler 是否暂停、熔断或积压。
 
 ### `GET /readyz`
 
-用途：部署 readiness 检查。该接口和 `/healthz/deep` 使用同一组只读检查，但当数据库或 content 不可用时返回 `503`，便于云托管、负载均衡或部署脚本判断服务是否真正可接流量。
+用途：受保护的部署 readiness 检查。该接口和 `/healthz/deep` 使用同一组只读检查；未授权返回 `403`，数据库、Redis、队列、content、scheduler 或部署一致性不可用时返回 `503`。
 
 响应外形与 `/healthz/deep` 一致：
 
@@ -153,6 +149,9 @@
   "env": "development",
   "version": "safehome-2026-06-04",
   "database": {},
+  "redis": {},
+  "queues": {},
+  "scheduler": {},
   "content": {},
   "build": {},
   "deployment": {"ok": true, "diagnosis": "consistent"}

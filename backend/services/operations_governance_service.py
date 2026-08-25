@@ -22,6 +22,10 @@ from database import get_connection, json_dumps, json_loads, new_id, now_iso, ro
 from services.ai_qa_service import _evaluate_case
 from services.feedback_service import generate_feedback
 from services.risk_service import check_text_risk
+from services.operations_reliability_service import (
+    OperationsReliabilityError,
+    sanitize_incident_record,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -33,7 +37,11 @@ AI_REPLAY_PATH = ROOT / "content" / "ai_qa_synthetic_safety_suite.json"
 
 RISK_LEVELS = {"low", "medium", "high"}
 TARGET_ENVIRONMENTS = {"local_synthetic", "production_candidate"}
-INCIDENT_TYPES = {"unauthorized_access", "data_leak", "severe_adverse_event", "ai_safety_failure"}
+INCIDENT_TYPES = {
+    "unauthorized_access", "data_leak", "severe_adverse_event", "ai_safety_failure",
+    "psychological_content_misdelivery", "cross_object_disclosure", "deletion_failure",
+    "high_risk_feedback_error", "external_message_misdelivery",
+}
 INCIDENT_SEVERITIES = {"high", "critical"}
 APPROVAL_DOMAINS = {
     "low": ("psychology",),
@@ -670,6 +678,11 @@ def _notification_roles(incident_type: str) -> tuple[str, ...]:
         "data_leak": ("security_owner", "privacy_owner", "operations_owner"),
         "severe_adverse_event": ("psychology_supervisor", "ethics_owner", "operations_owner"),
         "ai_safety_failure": ("ai_safety_owner", "security_owner", "operations_owner"),
+        "psychological_content_misdelivery": ("psychology_supervisor", "content_owner", "operations_owner"),
+        "cross_object_disclosure": ("security_owner", "privacy_owner", "operations_owner"),
+        "deletion_failure": ("privacy_owner", "database_owner", "operations_owner"),
+        "high_risk_feedback_error": ("psychology_supervisor", "ethics_owner", "operations_owner"),
+        "external_message_misdelivery": ("privacy_owner", "operations_owner", "communications_owner"),
     }
     return mapping[incident_type]
 
@@ -684,7 +697,10 @@ def _incident_detail(conn, incident_id: str) -> dict:
 
 
 def report_incident(actor: dict, payload: dict) -> dict:
-    allowed = {"capability_id", "package_id", "incident_type", "severity", "evidence_refs", "summary_code"}
+    allowed = {
+        "capability_id", "package_id", "incident_type", "severity", "evidence_refs", "summary_code",
+        "impact_code", "started_at", "detected_at", "decisions", "followup_actions",
+    }
     unknown = set(payload) - allowed
     capability_id = str(payload.get("capability_id") or "")
     package_id = str(payload.get("package_id") or "").strip() or None
@@ -700,6 +716,20 @@ def report_incident(actor: dict, payload: dict) -> dict:
         raise OperationsGovernanceError("validation_error", "证据引用不能为空。")
     incident_id = new_id("opsincident")
     timestamp = now_iso()
+    try:
+        incident_record = sanitize_incident_record(
+            {
+                "impact_code": str(payload.get("impact_code") or summary_code),
+                "started_at": str(payload.get("started_at") or timestamp),
+                "detected_at": str(payload.get("detected_at") or timestamp),
+                "recovered_at": None,
+                "evidence_refs": normalized_refs,
+                "decisions": payload.get("decisions") or ["contain_and_disable"],
+                "followup_actions": payload.get("followup_actions") or ["human_postmortem_required"],
+            }
+        )
+    except OperationsReliabilityError as exc:
+        raise OperationsGovernanceError(exc.code, str(exc)) from exc
     evidence_hold_hash = _hash({"incident_id": incident_id, "capability_id": capability_id, "package_id": package_id, "incident_type": incident_type, "severity": severity, "summary_code": summary_code, "evidence_refs": normalized_refs, "reported_at": timestamp})
     with get_connection() as conn:
         if package_id:
@@ -708,8 +738,8 @@ def report_incident(actor: dict, payload: dict) -> dict:
             """INSERT INTO operations_incidents
                (id,capability_id,package_id,incident_type,severity,status,summary_code,evidence_refs_json,evidence_hold_hash,
                 capability_disabled,notification_required,postmortem_json,reported_by,reported_at,updated_at)
-               VALUES (?,?,?,?,?,'contained_disabled_notifications_queued',?,?,?,1,1,'{}',?,?,?)""",
-            (incident_id, capability_id, package_id, incident_type, severity, summary_code, json_dumps(normalized_refs), evidence_hold_hash, actor["id"], timestamp, timestamp),
+               VALUES (?,?,?,?,?,'contained_disabled_notifications_queued',?,?,?,1,1,?,?,?,?)""",
+            (incident_id, capability_id, package_id, incident_type, severity, summary_code, json_dumps(normalized_refs), evidence_hold_hash, json_dumps({"incident_record": incident_record}), actor["id"], timestamp, timestamp),
         )
         _set_runtime_control(conn, capability_id, package_id, "disabled_by_incident", f"incident:{incident_type}", actor["id"])
         for recipient_role in _notification_roles(incident_type):
@@ -725,19 +755,38 @@ def report_incident(actor: dict, payload: dict) -> dict:
 
 
 def record_postmortem(actor: dict, incident_id: str, payload: dict) -> dict:
-    allowed = {"root_cause_code", "corrective_actions", "evidence_refs"}
+    allowed = {"root_cause_code", "corrective_actions", "evidence_refs", "recovered_at", "decisions", "followup_actions"}
     unknown = set(payload) - allowed
     root = str(payload.get("root_cause_code") or "").strip()
     actions = payload.get("corrective_actions")
     refs = payload.get("evidence_refs") or []
     if unknown or not root or not isinstance(actions, list) or not actions or len(actions) > 20 or not isinstance(refs, list):
         raise OperationsGovernanceError("validation_error", "复盘只接受原因代码、纠正动作和证据引用。", details={"unknown_fields": sorted(unknown)})
-    postmortem = {"root_cause_code": root, "corrective_actions": [str(value)[:300] for value in actions], "evidence_refs": [str(value)[:300] for value in refs], "automatic_resume": False, "human_close_required": True}
     timestamp = now_iso()
     with get_connection() as conn:
         item = _incident_detail(conn, incident_id)
         if item["status"] == "closed":
             raise OperationsGovernanceError("incident_already_closed", "事件已关闭。", 409)
+        initial_record = (item.get("postmortem") or {}).get("incident_record") or {}
+        try:
+            incident_record = sanitize_incident_record(
+                {
+                    **initial_record,
+                    "recovered_at": str(payload.get("recovered_at") or timestamp),
+                    "decisions": payload.get("decisions") or initial_record.get("decisions") or ["keep_capability_disabled"],
+                    "followup_actions": payload.get("followup_actions") or initial_record.get("followup_actions") or ["human_close_required"],
+                }
+            )
+        except OperationsReliabilityError as exc:
+            raise OperationsGovernanceError(exc.code, str(exc)) from exc
+        postmortem = {
+            "root_cause_code": root,
+            "corrective_actions": [str(value)[:300] for value in actions],
+            "evidence_refs": [str(value)[:300] for value in refs],
+            "incident_record": incident_record,
+            "automatic_resume": False,
+            "human_close_required": True,
+        }
         conn.execute("UPDATE operations_incidents SET status = 'postmortem_recorded_human_close_pending', postmortem_json = ?, postmortem_by = ?, postmortem_at = ?, updated_at = ? WHERE id = ?", (json_dumps(postmortem), actor["id"], timestamp, timestamp, incident_id))
         write_audit_log(conn, "operations_incident_postmortem_recorded", actor["id"], "operations_incident", incident_id, {"root_cause_code": root, "automatic_resume": False, "capability_disabled": True})
         conn.commit()

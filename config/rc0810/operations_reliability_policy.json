@@ -1,0 +1,95 @@
+{
+  "schema": "safehome.rc0810-f21-operations-reliability.v1",
+  "version": "2026-08-25-rc0810-f21-v1",
+  "status": "engineering_frozen_external_operations_owner_pending",
+  "health_contract": {
+    "public_fields": ["ok", "service", "version"],
+    "protected_paths": ["/healthz/deep", "/readyz"],
+    "authorization": "configured_operations_token_or_explicit_source_cidr",
+    "forwarded_headers_trusted": false,
+    "protected_components": ["database", "redis", "queues", "content", "scheduler", "deployment"]
+  },
+  "sli_slo": [
+    {"metric": "request_success_rate", "target": 0.995, "window": "30d", "status": "engineering_budget"},
+    {"metric": "request_latency_p95_ms", "target": 800, "window": "5m", "status": "engineering_budget"},
+    {"metric": "http_5xx_rate", "target": 0.005, "window": "5m", "status": "engineering_budget"},
+    {"metric": "authentication_failure_rate", "target": 0.1, "window": "15m", "status": "security_signal_not_availability_failure"},
+    {"metric": "database_or_redis_unavailable", "target": 0, "window": "1m", "status": "engineering_budget"},
+    {"metric": "queue_backlog", "target": 100, "window": "10m", "status": "engineering_budget"},
+    {"metric": "risk_review_sla_breach", "target": 0, "window": "1m", "status": "safety_gate"},
+    {"metric": "external_message_failure_rate", "target": 0.02, "window": "15m", "status": "engineering_budget"},
+    {"metric": "scheduler_delay_seconds", "target": 120, "window": "5m", "status": "safety_gate"}
+  ],
+  "alerts": [
+    {"id": "http_5xx_spike", "level": "P1", "threshold": "http_5xx_rate>0.02", "duration": "5m", "notify": ["operations_owner", "engineering_owner"], "silence": "only_during_bound_drill_or_active_incident", "recovery": "http_5xx_rate<=0.005_for_10m"},
+    {"id": "database_unavailable", "level": "P0", "threshold": "database_ok=false", "duration": "1m", "notify": ["operations_owner", "database_owner"], "silence": "never_in_production", "recovery": "database_ok=true_and_integrity_check_passed"},
+    {"id": "redis_unavailable", "level": "P1", "threshold": "redis_enabled=true_and_redis_ok=false", "duration": "2m", "notify": ["operations_owner", "engineering_owner"], "silence": "only_if_redis_dependent_routes_are_disabled", "recovery": "redis_ok=true_for_5m"},
+    {"id": "queue_backlog", "level": "P1", "threshold": "pending_jobs>=100_or_dead_letter_jobs>0", "duration": "10m", "notify": ["operations_owner", "safety_on_call"], "silence": "bound_maintenance_window_only", "recovery": "pending_jobs<50_and_dead_letter_jobs=0_for_10m"},
+    {"id": "risk_sla_breach", "level": "P0", "threshold": "risk_review_sla_breach>0", "duration": "1m", "notify": ["safety_on_call", "psychology_supervisor", "operations_owner"], "silence": "never", "recovery": "breaches_reconciled_and_human_capacity_confirmed"},
+    {"id": "message_delivery_failure", "level": "P1", "threshold": "external_message_failure_rate>0.02", "duration": "15m", "notify": ["operations_owner", "privacy_owner"], "silence": "bound_provider_incident_only", "recovery": "failure_rate<=0.02_and_duplicate_check_passed"},
+    {"id": "content_version_mismatch", "level": "P0", "threshold": "content_version_match=false", "duration": "1m", "notify": ["content_owner", "psychology_supervisor", "operations_owner"], "silence": "never", "recovery": "verified_previous_artifact_restored"},
+    {"id": "scheduler_delay", "level": "P0", "threshold": "scheduler_delay_seconds>120", "duration": "5m", "notify": ["safety_on_call", "operations_owner"], "silence": "never_while_safety_automation_enabled", "recovery": "delay<=120_and_backlog_reconciled"}
+  ],
+  "rollback_runbooks": {
+    "code_version": {
+      "trigger": "new_release_causes_health_or_safety_gate_failure",
+      "steps": ["stop_rollout", "select_previous_verified_image", "deploy_by_digest", "verify_public_and_protected_health", "reconcile_side_effects"],
+      "verification": ["image_digest_matches", "health_ready", "error_rate_recovered"],
+      "data_rule": "do_not_reverse_database_schema_automatically"
+    },
+    "database_migration": {
+      "trigger": "migration_or_data_integrity_gate_failure",
+      "steps": ["stop_writes", "preserve_evidence", "restore_to_isolated_target", "apply_forward_fix_or_data_restore", "compare_counts_ids_and_ownership", "human_approve_reopen"],
+      "verification": ["schema_head_expected", "row_counts_match", "ownership_and_consent_match"],
+      "data_rule": "prefer_forward_fix_and_never_drop_schema_automatically"
+    },
+    "content_artifact": {
+      "trigger": "content_hash_version_or_psychological_boundary_failure",
+      "steps": ["disable_publish", "select_previous_verified_artifact", "verify_hash_and_manifest", "invalidate_caches", "replay_synthetic_boundary_cases", "human_approve_reopen"],
+      "verification": ["artifact_hash_matches", "production_manifest_valid", "participant_copy_boundary_passed"],
+      "data_rule": "historical_results_keep_original_payload"
+    }
+  },
+  "incident_record": {
+    "required_fields": ["impact_code", "started_at", "detected_at", "recovered_at", "evidence_refs", "decisions", "followup_actions"],
+    "prohibited_fields": ["participant_text", "message_body", "raw_answer", "secret", "credential"],
+    "p0_categories": [
+      {"id": "psychological_content_misdelivery", "stop": "disable_content_publish_and_affected_delivery", "notify": ["psychology_supervisor", "content_owner", "operations_owner"], "repair": "restore_verified_artifact_and_review_recipients", "reconcile": "compare_artifact_recipient_and_delivery_ledger"},
+      {"id": "cross_object_disclosure", "stop": "disable_affected_read_and_export_entry", "notify": ["security_owner", "privacy_owner", "operations_owner"], "repair": "close_scope_gap_and_rotate_exposed_access", "reconcile": "enumerate_objects_actors_and_audit_reads"},
+      {"id": "deletion_failure", "stop": "pause_affected_deletion_and_restore_flow", "notify": ["privacy_owner", "database_owner", "operations_owner"], "repair": "forward_fix_and_repeat_isolated_reconciliation", "reconcile": "compare_primary_backup_tombstone_and_exports"},
+      {"id": "high_risk_feedback_error", "stop": "disable_automatic_feedback_and_recommendation", "notify": ["psychology_supervisor", "ethics_owner", "operations_owner"], "repair": "route_to_human_review_and_correct_rule_or_artifact", "reconcile": "enumerate_high_risk_outputs_and_human_followup"},
+      {"id": "external_message_misdelivery", "stop": "disable_external_message_send", "notify": ["privacy_owner", "operations_owner", "communications_owner"], "repair": "correct_recipient_binding_and_provider_state", "reconcile": "compare_outbox_provider_receipts_and_recipients"}
+    ]
+  },
+  "isolated_drills": [
+    {"scenario": "http_5xx", "alert": "http_5xx_spike", "injected": {"http_5xx_rate": 0.05}, "recovered": {"http_5xx_rate": 0.001}},
+    {"scenario": "database_outage", "alert": "database_unavailable", "injected": {"database_ok": false}, "recovered": {"database_ok": true, "integrity_check": true}},
+    {"scenario": "redis_outage", "alert": "redis_unavailable", "injected": {"redis_enabled": true, "redis_ok": false}, "recovered": {"redis_enabled": true, "redis_ok": true}},
+    {"scenario": "queue_backlog", "alert": "queue_backlog", "injected": {"pending_jobs": 120, "dead_letter_jobs": 1}, "recovered": {"pending_jobs": 20, "dead_letter_jobs": 0}},
+    {"scenario": "content_version_error", "alert": "content_version_mismatch", "injected": {"content_version_match": false}, "recovered": {"content_version_match": true, "artifact_hash_verified": true}}
+  ],
+  "performance_budget": {
+    "core_api": {"p50_ms": 250, "p95_ms": 800, "p99_ms": 1500, "error_rate": 0.005, "concurrency": 50, "db_queries_per_request": 20},
+    "database": {"pool_max_connections": 20, "pool_wait_p95_ms": 100},
+    "queue": {"wait_p95_seconds": 120, "scheduler_delay_seconds": 120},
+    "web": {"first_screen_gzip_kb": 900, "cold_start_ms": 3000, "memory_mb": 256},
+    "miniprogram": {"main_package_mb": 2, "subpackages_total_mb": 20, "cold_start_ms": 3000, "memory_mb": 256},
+    "gate": "any_exceeded_blocks_rc_until_owner_accepts_smaller_scope_or_fix"
+  },
+  "cost_quota": [
+    {"resource": "cloudbase_requests", "monthly_budget": 100000, "unit": "requests", "warn_at": 0.8, "hard_action": "disable_non_core_traffic", "owner": "cloud_account_owner"},
+    {"resource": "mysql_storage", "monthly_budget": 5, "unit": "gb", "warn_at": 0.8, "hard_action": "stop_nonessential_ingest", "owner": "database_owner"},
+    {"resource": "logs", "monthly_budget": 10, "unit": "gb", "warn_at": 0.8, "hard_action": "reduce_non_security_debug_logs", "owner": "operations_owner"},
+    {"resource": "backups", "monthly_budget": 20, "unit": "gb", "warn_at": 0.8, "hard_action": "stop_extra_snapshots_keep_required_retention", "owner": "database_owner"},
+    {"resource": "external_messages", "monthly_budget": 10000, "unit": "messages", "warn_at": 0.8, "hard_action": "disable_optional_messages", "owner": "communications_owner"},
+    {"resource": "production_ai", "monthly_budget": 0, "unit": "cny", "warn_at": 0.8, "hard_action": "keep_production_ai_disabled", "owner": "ai_owner"},
+    {"resource": "human_review", "monthly_budget": 160, "unit": "hours", "warn_at": 0.8, "hard_action": "pause_new_pilot_intake", "owner": "operations_owner"}
+  ],
+  "account_continuity": [
+    {"system": "cloudbase_admin", "minimum_admins": 2, "recovery": "verified_organization_owner_and_offline_recovery_contact", "single_person_dependency": false},
+    {"system": "billing_account", "minimum_admins": 2, "recovery": "provider_identity_and_invoice_owner_recovery", "single_person_dependency": false},
+    {"system": "production_secrets", "minimum_admins": 2, "recovery": "external_secret_manager_break_glass_and_rotation", "single_person_dependency": false}
+  ],
+  "external_gates": {"operations_owner": "pending_external", "test_cloud_observation": "pending_external", "account_recovery_drill": "pending_external"},
+  "production_gate_eligible": false
+}

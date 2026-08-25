@@ -31,8 +31,8 @@ def test_healthz_returns_lightweight_status_without_secret(tmp_path, monkeypatch
     app_module = importlib.import_module("app")
     assert data["ok"] is True
     assert data["service"] == "safehome-backend"
-    assert data["env"] == "development"
     assert data["version"] == app_module.SERVICE_VERSION
+    assert set(data) == {"ok", "service", "version"}
     assert "test-secret-token" not in response.get_data(as_text=True)
 
 

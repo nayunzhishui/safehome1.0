@@ -171,6 +171,7 @@ class Config:
     RELIABILITY_PRODUCTION_SLO_FROZEN = os.environ.get(
         "RELIABILITY_PRODUCTION_SLO_FROZEN", "0"
     ).strip().lower() in {"1", "true", "yes"}
+    OPERATIONS_HEALTH_TOKEN = os.environ.get("OPERATIONS_HEALTH_TOKEN", "").strip()
     UX_GOVERNANCE_WORKBENCH_ENABLED = os.environ.get(
         "UX_GOVERNANCE_WORKBENCH_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
