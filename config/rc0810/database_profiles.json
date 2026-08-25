@@ -23,8 +23,8 @@
       "data_watermark": "participant_production",
       "automatic_schema_changes": false,
       "legacy_schema_version": "2026_08_24_063",
-      "explicit_migration_head": "2026_08_25_072",
-      "approved_migration_head": "2026_08_24_063+2026_08_25_072",
+      "explicit_migration_head": "2026_08_25_074",
+      "approved_migration_head": "2026_08_24_063+2026_08_25_074",
       "required_runtime_privileges": ["SELECT", "INSERT", "UPDATE", "DELETE"]
     }
   }

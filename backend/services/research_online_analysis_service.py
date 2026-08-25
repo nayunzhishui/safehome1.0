@@ -20,6 +20,14 @@ from services.research_analysis_service import (
     ResearchAnalysisError,
     claim_job,
     complete_job,
+    fail_job,
+)
+from services.research_execution_manifest_service import (
+    ResearchManifestError,
+    canonical_hash,
+    fail_execution_manifest,
+    finalize_execution_manifest,
+    prepare_execution_manifest,
 )
 
 
@@ -39,6 +47,11 @@ ANALYSIS_LABELS = {
 MINIMUM_SAMPLE = 5
 MAX_GRAPH_NODES = 40
 MAX_GRAPH_EDGES = 80
+MODEL_VERSION = "rules-no-model-v1"
+DICTIONARY_HASH = canonical_hash({"catalog_version": CATALOG_VERSION, "labels": ANALYSIS_LABELS})
+THRESHOLDS_HASH = canonical_hash(
+    {"minimum_sample": MINIMUM_SAMPLE, "maximum_graph_nodes": MAX_GRAPH_NODES, "maximum_graph_edges": MAX_GRAPH_EDGES}
+)
 
 
 def _fixture_path():
@@ -60,9 +73,9 @@ def _fixture_hash() -> str:
     return hashlib.sha256(_fixture_bytes()).hexdigest()
 
 
-def _fixture_cases() -> list[dict]:
+def _fixture_cases(source_bytes: bytes | None = None) -> list[dict]:
     try:
-        payload = json.loads(_fixture_bytes().decode("utf-8"))
+        payload = json.loads((source_bytes if source_bytes is not None else _fixture_bytes()).decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ResearchAnalysisError(
             "synthetic_fixture_invalid",
@@ -229,59 +242,130 @@ def execute_synthetic_job(actor: dict, job_id: str) -> dict:
                 (item["snapshot_id"],),
             ).fetchall()
         ]
+        snapshot = dict(
+            conn.execute(
+                "SELECT snapshot_hash FROM research_analysis_snapshots WHERE id = ?",
+                (item["snapshot_id"],),
+            ).fetchone()
+        )
     expected_version = ALGORITHM_VERSIONS.get(str(item["analysis_type"]))
-    expected_hash = _fixture_hash()
-    if (
-        not links
-        or any(link["source_type"] != "synthetic_fixture" or link["source_id"] != FIXTURE_ID for link in links)
-        or any(link["source_hash"] != expected_hash for link in links)
+    fixture_bytes = _fixture_bytes()
+    expected_hash = hashlib.sha256(fixture_bytes).hexdigest()
+    if not links or any(
+        link["source_type"] != "synthetic_fixture" or link["source_id"] != FIXTURE_ID for link in links
     ):
         raise ResearchAnalysisError(
             "real_participant_analysis_blocked",
             "T35门禁未批准，在线执行器当前只接受项目自有合成基准。",
             409,
         )
-    if item["analysis_version"] != expected_version or item["resource_hash"] != expected_hash:
+    if any(link["source_hash"] != expected_hash for link in links) or item["resource_hash"] != expected_hash:
+        raise ResearchAnalysisError(
+            "source_hash_mismatch",
+            "任务声明的来源指纹与服务端读取结果不一致。",
+            409,
+        )
+    if item["analysis_version"] != expected_version:
         raise ResearchAnalysisError(
             "analysis_version_mismatch",
             "任务版本或资源指纹与受控目录不一致。",
             409,
         )
 
-    params = json_loads(item.get("parameters_json"), {})
-    minimum_count = max(MINIMUM_SAMPLE, min(int(params.get("minimum_count") or MINIMUM_SAMPLE), 50))
-    requested = max(0, min(int(params.get("synthetic_sample_size") or 240), 240))
-    cases = _fixture_cases()[:requested]
-    unknown_count = sum(1 for case in cases if str(case.get("generator_label") or "unmapped") == "unmapped")
-    quality, coverage, unknown_rate, warnings = _quality(len(cases), unknown_count, minimum_count)
-    suppressed = quality == "insufficient"
-    if item["analysis_type"] == "affect_aggregate":
-        result = _affect_result(cases, suppressed)
-    elif item["analysis_type"] == "semantic_network":
-        result = _semantic_result(cases, minimum_count, suppressed)
-    else:
-        result = _topology_result(len(cases), minimum_count, suppressed)
-
     claim_job(actor, job_id, {"lease_seconds": 300})
-    completed = complete_job(
-        actor,
-        job_id,
-        {
-            "metrics": {
-                "coverage_rate": coverage,
-                "unknown_rate": unknown_rate,
-                "sample_size": len(cases),
-                "quality_status": quality,
-                "result": {
-                    **result,
-                    "catalog_version": CATALOG_VERSION,
-                    "fixture_id": FIXTURE_ID,
-                    "data_mode": "project_owned_synthetic_only",
-                },
-                "warnings": warnings,
-            }
-        },
-    )
+    manifest_id = ""
+    try:
+        params = json_loads(item.get("parameters_json"), {})
+        random_seed = params.get("random_seed", 0)
+        if not isinstance(random_seed, int) or isinstance(random_seed, bool) or not -(2**31) <= random_seed < 2**31:
+            raise ResearchManifestError("analysis_parameter_invalid", "随机种子必须是32位整数。", 409)
+        with get_connection() as conn:
+            manifest = prepare_execution_manifest(
+                conn,
+                actor_id=actor["id"],
+                job=item,
+                snapshot_hash=snapshot["snapshot_hash"],
+                source_id=FIXTURE_ID,
+                source_type="synthetic_fixture",
+                source_path=_fixture_path(),
+                declared_hash=links[0]["source_hash"],
+                model_version=MODEL_VERSION,
+                dictionary_hash=DICTIONARY_HASH,
+                thresholds_hash=THRESHOLDS_HASH,
+                random_seed=random_seed,
+                source_bytes=fixture_bytes,
+            )
+            manifest_id = manifest["id"]
+            conn.commit()
+
+        minimum_count = max(MINIMUM_SAMPLE, min(int(params.get("minimum_count") or MINIMUM_SAMPLE), 50))
+        requested = max(0, min(int(params.get("synthetic_sample_size") or 240), 240))
+        cases = _fixture_cases(fixture_bytes)[:requested]
+        unknown_count = sum(1 for case in cases if str(case.get("generator_label") or "unmapped") == "unmapped")
+        quality, coverage, unknown_rate, warnings = _quality(len(cases), unknown_count, minimum_count)
+        suppressed = quality == "insufficient"
+        if item["analysis_type"] == "affect_aggregate":
+            result = _affect_result(cases, suppressed)
+        elif item["analysis_type"] == "semantic_network":
+            result = _semantic_result(cases, minimum_count, suppressed)
+        else:
+            result = _topology_result(len(cases), minimum_count, suppressed)
+        metrics = {
+            "coverage_rate": coverage,
+            "unknown_rate": unknown_rate,
+            "sample_size": len(cases),
+            "quality_status": quality,
+            "result": {
+                **result,
+                "catalog_version": CATALOG_VERSION,
+                "fixture_id": FIXTURE_ID,
+                "data_mode": "project_owned_synthetic_only",
+            },
+            "warnings": warnings,
+        }
+        with get_connection() as conn:
+            try:
+                manifest = finalize_execution_manifest(conn, manifest_id, item["analysis_type"], metrics)
+            except ResearchManifestError:
+                conn.commit()
+                raise
+            conn.commit()
+        completed = complete_job(
+            actor,
+            job_id,
+            {"metrics": metrics},
+            execution_manifest_id=manifest_id,
+        )
+    except ResearchManifestError as exc:
+        if manifest_id:
+            with get_connection() as conn:
+                fail_execution_manifest(conn, manifest_id, exc.code)
+                conn.commit()
+        try:
+            fail_job(actor, job_id, {"error_code": exc.code})
+        except ResearchAnalysisError:
+            pass
+        raise ResearchAnalysisError(exc.code, exc.message, exc.status, exc.details) from exc
+    except ResearchAnalysisError as exc:
+        if manifest_id:
+            with get_connection() as conn:
+                fail_execution_manifest(conn, manifest_id, exc.code)
+                conn.commit()
+        try:
+            fail_job(actor, job_id, {"error_code": exc.code})
+        except ResearchAnalysisError:
+            pass
+        raise
+    except Exception as exc:
+        if manifest_id:
+            with get_connection() as conn:
+                fail_execution_manifest(conn, manifest_id, "algorithm_execution_failed")
+                conn.commit()
+        try:
+            fail_job(actor, job_id, {"error_code": "algorithm_execution_failed"})
+        except ResearchAnalysisError:
+            pass
+        raise ResearchAnalysisError("algorithm_execution_failed", "研究算法执行失败，未生成部分结果。", 503) from exc
     with get_connection() as conn:
         write_audit_log(
             conn,
@@ -294,6 +378,9 @@ def execute_synthetic_job(actor: dict, job_id: str) -> dict:
                 "analysis_version": item["analysis_version"],
                 "sample_size": len(cases),
                 "small_sample_suppressed": suppressed,
+                "execution_manifest_id": manifest_id,
+                "manifest_hash": manifest["manifest_hash"],
+                "reproducibility_status": manifest["reproducibility_status"],
                 "real_participant_data_used": False,
             },
         )

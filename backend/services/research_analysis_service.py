@@ -19,6 +19,11 @@ from database import (
     write_audit_log,
 )
 from services.research_access_service import assert_capability, has_object_scope, require_object_scope
+from services.research_execution_manifest_service import (
+    ResearchManifestError,
+    consume_completion_manifest,
+    validate_completion_manifest,
+)
 
 
 ANALYSIS_TYPES = {"affect_aggregate", "semantic_network", "family_topology"}
@@ -40,6 +45,7 @@ PARAMETER_KEYS = {
     "dimension_ids",
     "include_unknown",
     "synthetic_sample_size",
+    "random_seed",
 }
 METRIC_KEYS = {"coverage_rate", "unknown_rate", "sample_size", "quality_status", "result", "warnings"}
 FORBIDDEN_KEYS = {"text", "raw_text", "content", "body", "prompt", "answer", "diagnosis", "label"}
@@ -561,10 +567,22 @@ def claim_job(actor: dict, job_id: str, payload: dict) -> dict:
         return _expand(_job(conn, job_id))
 
 
-def complete_job(actor: dict, job_id: str, payload: dict) -> dict:
+def complete_job(
+    actor: dict,
+    job_id: str,
+    payload: dict,
+    *,
+    execution_manifest_id: str | None = None,
+) -> dict:
     assert_capability(actor, "research.analysis.operate")
     metrics = payload.get("metrics") or {}
     _assert_safe_shape(metrics, METRIC_KEYS)
+    if not execution_manifest_id:
+        raise ResearchAnalysisError(
+            "server_execution_proof_required",
+            "任务只能由服务端执行器使用一次性 Manifest 完成。",
+            409,
+        )
     coverage = metrics.get("coverage_rate")
     unknown = metrics.get("unknown_rate")
     sample_size = metrics.get("sample_size")
@@ -586,23 +604,34 @@ def complete_job(actor: dict, job_id: str, payload: dict) -> dict:
         _freeze_invalid_snapshot(conn, snapshot)
         if item["status"] != "running" or item["lease_owner"] != actor["id"]:
             raise ResearchAnalysisError("job_lease_conflict", "只有当前租约持有人可以完成任务。", 409)
+        try:
+            execution_manifest = validate_completion_manifest(
+                conn,
+                job=item,
+                manifest_id=execution_manifest_id,
+                metrics=metrics,
+            )
+        except ResearchManifestError as exc:
+            raise ResearchAnalysisError(exc.code, exc.message, exc.status, exc.details) from exc
         artifact_id = new_id("analysis_artifact")
         artifact_hash = _hash(
             {
                 "job_id": job_id,
                 "snapshot_hash": snapshot["snapshot_hash"],
                 "analysis_version": item["analysis_version"],
+                "execution_manifest_hash": execution_manifest["manifest_hash"],
                 "metrics": metrics,
             }
         )
         conn.execute(
             """INSERT INTO research_analysis_artifacts
-               (id, job_id, snapshot_id, analysis_type, analysis_version, metrics_json, artifact_hash,
+               (id, job_id, execution_manifest_id, snapshot_id, analysis_type, analysis_version, metrics_json, artifact_hash,
                 quality_status, boundary_notice, visibility, status, created_by, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'researcher_only', 'active', ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'researcher_only', 'active', ?, ?)""",
             (
                 artifact_id,
                 job_id,
+                execution_manifest_id,
                 item["snapshot_id"],
                 item["analysis_type"],
                 item["analysis_version"],
@@ -614,6 +643,10 @@ def complete_job(actor: dict, job_id: str, payload: dict) -> dict:
                 timestamp,
             ),
         )
+        try:
+            consume_completion_manifest(conn, execution_manifest_id, artifact_id)
+        except ResearchManifestError as exc:
+            raise ResearchAnalysisError(exc.code, exc.message, exc.status, exc.details) from exc
         conn.execute(
             """UPDATE research_analysis_jobs SET status = 'succeeded', result_artifact_id = ?, completed_at = ?,
                lease_owner = NULL, lease_expires_at = NULL, updated_at = ? WHERE id = ?""",
@@ -626,7 +659,11 @@ def complete_job(actor: dict, job_id: str, payload: dict) -> dict:
             "complete",
             "running",
             "succeeded",
-            metadata={"artifact_hash": artifact_hash, "quality_status": quality},
+            metadata={
+                "artifact_hash": artifact_hash,
+                "execution_manifest_hash": execution_manifest["manifest_hash"],
+                "quality_status": quality,
+            },
         )
         write_audit_log(
             conn,
@@ -634,7 +671,12 @@ def complete_job(actor: dict, job_id: str, payload: dict) -> dict:
             actor["id"],
             "research_analysis_job",
             job_id,
-            {"artifact_id": artifact_id, "quality_status": quality, "raw_text_included": False},
+            {
+                "artifact_id": artifact_id,
+                "execution_manifest_id": execution_manifest_id,
+                "quality_status": quality,
+                "raw_text_included": False,
+            },
         )
         conn.commit()
         return _expand(_job(conn, job_id))

@@ -142,7 +142,7 @@ def test_snapshot_and_job_store_only_references_and_are_idempotent(tmp_path, mon
             assert "不应进入队列" not in stored
 
 
-def test_lease_backoff_dead_letter_recovery_completion_and_derived_delete(tmp_path, monkeypatch):
+def test_lease_backoff_dead_letter_recovery_and_unproved_completion_rejected(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     headers = _seed(app)
     client = app.test_client()
@@ -168,20 +168,16 @@ def test_lease_backoff_dead_letter_recovery_completion_and_derived_delete(tmp_pa
         headers=headers["admin-f13"],
         json={"metrics": {"coverage_rate": 0.8, "unknown_rate": 0.2, "sample_size": 10, "quality_status": "limited", "result": {"positive": 4}}},
     )
-    assert complete.status_code == 200 and complete.get_json()["data"]["status"] == "succeeded"
-    artifact_id = complete.get_json()["data"]["result_artifact_id"]
-    artifact = client.get(f"/api/research/analysis/artifacts/{artifact_id}", headers=headers["researcher-f13"])
-    assert artifact.status_code == 200
-    data = artifact.get_json()["data"]
-    assert data["visibility"] == "researcher_only" and data["metrics"]["unknown_rate"] == 0.2
-    assert "诊断" in data["boundary_notice"]
-    deleted = client.delete(
-        f"/api/research/analysis/artifacts/{artifact_id}",
-        headers=headers["admin-f13"],
-        json={"reason_code": "participant_withdrawal"},
-    )
-    assert deleted.status_code == 200 and deleted.get_json()["data"]["derived_data_only"] is True
-    assert client.get(f"/api/research/analysis/artifacts/{artifact_id}", headers=headers["researcher-f13"]).status_code == 410
+    assert complete.status_code == 409
+    assert complete.get_json()["error"]["code"] == "server_execution_proof_required"
+    with app.app_context():
+        from database import get_connection
+
+        with get_connection() as conn:
+            assert conn.execute(
+                "SELECT COUNT(*) AS count FROM research_analysis_artifacts WHERE job_id = ?",
+                (job_id,),
+            ).fetchone()["count"] == 0
 
 
 def test_consent_withdrawal_freezes_job_and_artifact_and_preserves_audit(tmp_path, monkeypatch):

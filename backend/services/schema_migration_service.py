@@ -711,6 +711,44 @@ def _apply_2026_08_25_072(conn) -> None:
     )
 
 
+def _apply_2026_08_25_073(conn) -> None:
+    for statement in (
+        """CREATE TABLE IF NOT EXISTS research_source_objects (
+            id TEXT PRIMARY KEY, source_id TEXT NOT NULL, source_type TEXT NOT NULL,
+            storage_path TEXT NOT NULL, payload_blob LONGBLOB NOT NULL,
+            server_hash TEXT NOT NULL, size_bytes INTEGER NOT NULL,
+            data_mode TEXT NOT NULL, rights_status TEXT NOT NULL,
+            owner_scope TEXT NOT NULL, retention_policy TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'verified', created_by TEXT NOT NULL,
+            created_at TEXT NOT NULL, UNIQUE(source_id, server_hash))""",
+        """CREATE TABLE IF NOT EXISTS research_execution_manifests (
+            id TEXT PRIMARY KEY, job_id TEXT NOT NULL, attempt_number INTEGER NOT NULL,
+            source_object_id TEXT NOT NULL, source_hash TEXT NOT NULL, code_commit TEXT NOT NULL,
+            execution_environment TEXT NOT NULL, execution_image_ref TEXT NOT NULL,
+            runtime_version TEXT NOT NULL, dependency_hash TEXT NOT NULL,
+            algorithm_version TEXT NOT NULL, model_version TEXT NOT NULL,
+            dictionary_hash TEXT NOT NULL, thresholds_hash TEXT NOT NULL,
+            input_snapshot_hash TEXT NOT NULL, random_seed INTEGER NOT NULL,
+            parameters_json TEXT NOT NULL DEFAULT '{}', metrics_hash TEXT, result_hash TEXT,
+            result_reference TEXT, log_summary_json TEXT NOT NULL DEFAULT '{}',
+            log_digest TEXT, manifest_hash TEXT,
+            reproducibility_key TEXT NOT NULL, reproducibility_status TEXT, failure_code TEXT,
+            status TEXT NOT NULL DEFAULT 'prepared',
+            created_by TEXT NOT NULL, created_at TEXT NOT NULL, completed_at TEXT,
+            consumed_at TEXT,
+            UNIQUE(job_id, attempt_number))""",
+    ):
+        _execute_schema(conn, statement)
+
+
+def _apply_2026_08_25_074(conn) -> None:
+    ensure_column(conn, "research_analysis_artifacts", "execution_manifest_id", "TEXT")
+    _create_index_if_missing(conn, "idx_research_source_hash", "research_source_objects", "server_hash, status")
+    _create_index_if_missing(conn, "idx_research_manifest_job_status", "research_execution_manifests", "job_id, status, created_at")
+    _create_index_if_missing(conn, "idx_research_manifest_reproducibility", "research_execution_manifests", "reproducibility_key, status, created_at")
+    _create_index_if_missing(conn, "idx_research_artifact_manifest", "research_analysis_artifacts", "execution_manifest_id")
+
+
 MIGRATIONS = (
     Migration(
         version="2026_08_07_062",
@@ -823,6 +861,26 @@ MIGRATIONS = (
             "Keep release-to-artifact bindings for audit and rollback.",
             "Rollback only by switching to a previously verified artifact.",
             "Never delete the active artifact before all instances stop reading it.",
+        ),
+    ),
+    Migration(
+        version="2026_08_25_073",
+        name="research_server_source_and_execution_manifest",
+        apply=_apply_2026_08_25_073,
+        rollback_notes=(
+            "Stop research workers before rollback.",
+            "Preserve server-computed source objects and execution manifests as audit evidence.",
+            "Do not replace server hashes with client-declared values.",
+        ),
+    ),
+    Migration(
+        version="2026_08_25_074",
+        name="research_artifact_manifest_binding",
+        apply=_apply_2026_08_25_074,
+        rollback_notes=(
+            "Keep artifact-to-manifest bindings and completed manifests.",
+            "Disable generic completion rather than accepting unproved metrics.",
+            "Derived artifacts remain subject to consent withdrawal and deletion rules.",
         ),
     ),
 )

@@ -1,0 +1,64 @@
+{
+  "version": "2026-08-25.f18-v1",
+  "hash_algorithm": "sha256",
+  "active_source_types": ["synthetic_fixture"],
+  "blocked_source_types_until_external_approval": [
+    "emotion_diary",
+    "assessment_result",
+    "relationship_task",
+    "checkin",
+    "message_feedback"
+  ],
+  "source": {
+    "storage_root": "content",
+    "storage_backend": "database_immutable_blob",
+    "owner_scope": "project_owned_global",
+    "rights_status": "project_owned_synthetic",
+    "retention_policy": "retain_with_release_evidence",
+    "client_declared_hash_is_completion_evidence": false,
+    "selection_capability": "research.analysis.operate"
+  },
+  "required_manifest_fields": [
+    "code_commit",
+    "execution_environment",
+    "execution_image_ref",
+    "runtime_version",
+    "dependency_hash",
+    "algorithm_version",
+    "model_version",
+    "dictionary_hash",
+    "thresholds_hash",
+    "input_snapshot_hash",
+    "source_hash",
+    "random_seed",
+    "result_reference",
+    "log_summary_json",
+    "log_digest",
+    "metrics_hash",
+    "result_hash"
+  ],
+  "completion": {
+    "public_metrics_completion_allowed": false,
+    "server_manifest_required": true,
+    "single_consumer": true,
+    "partial_output_allowed": false
+  },
+  "reproducibility": {
+    "current_algorithms_are_deterministic": true,
+    "comparison": "exact_result_sha256",
+    "tolerance": 0,
+    "unexplained_difference_allowed": false
+  },
+  "allowed_outputs": {
+    "affect_aggregate": ["suppressed", "categories", "category_definition"],
+    "semantic_network": ["suppressed", "nodes", "edges", "node_definition", "edge_definition", "minimum_support", "node_limit", "edge_limit"],
+    "family_topology": ["suppressed", "nodes", "edges", "minimum_support", "inference_disabled", "quality_judgement_disabled"]
+  },
+  "forbidden_output_fields": ["text", "raw_text", "diagnosis", "participant_user_id"],
+  "real_participant_processing_enabled": false,
+  "production_release_approved": false,
+  "external_gates": {
+    "research_data_owner": "pending_external",
+    "ethics_owner": "pending_external"
+  }
+}

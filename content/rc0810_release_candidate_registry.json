@@ -4586,6 +4586,7 @@
       "allowed_files": [
         "backend/**",
         "config/**",
+        "content/rc0810_release_candidate_registry.json",
         "scripts/**",
         "docs/**",
         "backend/migrations/**"
@@ -4612,14 +4613,27 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 9
         }
       ],
-      "external_gates": [],
+      "external_gates": [
+        {
+          "owner": "research_data_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "ethics_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
       "change_budget": {
         "allowed_modules": [
           "backend/**",
           "config/**",
+          "content/rc0810_release_candidate_registry.json",
           "scripts/**",
           "docs/**",
           "backend/migrations/**"

@@ -2173,7 +2173,8 @@ relationship_initiation_intention_action
 - `POST /api/research/analysis/jobs`：必须提供`Idempotency-Key`，只接受快照ID、分析/资源版本和最小聚合参数；拒绝原文、prompt、正文和诊断标签。
 - `GET /api/research/analysis/jobs`、`GET /api/research/analysis/jobs/{id}`：研究者/督导/管理员按对象范围读取任务状态、事件和影子结果。
 - `POST /api/research/analysis/jobs/{id}/cancel`：创建者或管理员取消等待/失败/运行任务。
-- `POST .../{id}/claim|complete|fail|recover|suspend`：admin/受控执行器路径，执行租约、指数退避、死信、人工恢复和模型停用冻结。
+- `POST .../{id}/claim|fail|recover|suspend`：admin/受控执行器路径，执行租约、指数退避、死信、人工恢复和模型停用冻结。
+- `POST .../{id}/complete`：保留旧 HTTP 路径但不接受客户端自报 metrics；即使字段合法，缺少内部一次性服务端 Manifest 仍返回 `409 server_execution_proof_required`。
 - `GET /api/research/analysis/artifacts/{id}`：只返回覆盖率、未知率、样本量、质量状态、聚合结果和非诊断边界。
 - `DELETE /api/research/analysis/artifacts/{id}`：admin受控删除派生结果，保留删除原因、时间和审计；不删除来源业务数据。
 
@@ -2241,6 +2242,13 @@ relationship_initiation_intention_action
 - `GET /api/research/analysis/jobs`：除任务字段外，成功任务会附带 researcher-only 工件及覆盖率、未知率、样本量和质量状态。
 - 当前 `real_participant_processing_enabled=false`、`production_training_enabled=false`；T35 人工门禁未签前，真实参与者来源固定返回 `real_participant_analysis_blocked`。
 - 小样本不返回类别分布或图节点/边；家庭拓扑不推断关系质量、潜意识或家庭病理。
+
+### 2026-08-25 RC0810-F18 完成证明补充
+
+- `execute-synthetic` 由服务端读取并固化来源字节，客户端/快照 hash 只用于比对；不一致返回 `source_hash_mismatch`。
+- 每次成功任务的 artifact 绑定 `execution_manifest_id`。Manifest 记录执行版本、依赖、输入、随机种子、结果引用、日志摘要和结果 hash，并且只能消费一次。
+- 来源或版本漂移、部分输出、Manifest/metrics 篡改、错误任务复用和重放均返回 409；算法异常返回 `algorithm_execution_failed`，任务与 Manifest 进入失败态且不生成部分 artifact。
+- 接口只返回聚合结果，不返回 source object 字节或参与者原文。真实参与者处理和 production release 仍为 false。
 ### T36-F17 可靠性与安全统一响应补充
 
 - `GET /api/reliability/workbench` 新增 `task36_integration`：只返回六条关键链路的引擎、幂等、并发、重试、死信、恢复、对象范围和删除范围等元数据。

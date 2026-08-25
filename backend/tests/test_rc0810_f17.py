@@ -87,7 +87,8 @@ def test_f17_migrations_and_policy_freeze_immutable_storage_contract(tmp_path, m
         with database.get_connection() as conn:
             tables = {row["name"] for row in database.list_database_tables(conn)}
             assert {"content_release_artifacts", "content_active_artifacts"} <= tables
-            assert migrations.MIGRATIONS[-1].version == "2026_08_25_072"
+            versions = [migration.version for migration in migrations.MIGRATIONS]
+            assert versions.index("2026_08_25_072") == versions.index("2026_08_25_071") + 1
     policy = json.loads((ROOT / "config/rc0810/content_artifact_policy.json").read_text(encoding="utf-8"))
     assert policy["container_filesystem"] == "read_only"
     assert policy["production_gate_eligible"] is False
