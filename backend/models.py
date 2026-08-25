@@ -467,12 +467,38 @@ SCHEMA_SQL = [
         content_type TEXT NOT NULL,
         item_id TEXT NOT NULL,
         payload_hash TEXT NOT NULL,
+        artifact_id TEXT,
         package_json TEXT NOT NULL,
         previous_release_id TEXT,
         release_reason TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT 'active',
         released_by TEXT NOT NULL,
         created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS content_release_artifacts (
+        id TEXT PRIMARY KEY,
+        filename TEXT NOT NULL,
+        payload_text TEXT NOT NULL,
+        artifact_hash TEXT NOT NULL,
+        schema_version TEXT NOT NULL,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        status TEXT NOT NULL DEFAULT 'verified',
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(filename, artifact_hash)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS content_active_artifacts (
+        filename TEXT PRIMARY KEY,
+        artifact_id TEXT NOT NULL,
+        generation INTEGER NOT NULL DEFAULT 1,
+        switch_reason TEXT NOT NULL,
+        impact_scope_json TEXT NOT NULL DEFAULT '[]',
+        updated_by TEXT NOT NULL,
+        updated_at TEXT NOT NULL
     )
     """,
     """
@@ -2982,6 +3008,8 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_content_versions_item_status ON content_governance_versions(content_type, item_id, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_content_reviews_version_discipline ON content_governance_reviews(version_id, discipline, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_content_releases_item_status ON content_governance_releases(content_type, item_id, status, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_content_artifacts_file_created ON content_release_artifacts(filename, created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_content_active_artifact ON content_active_artifacts(artifact_id)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_sessions_user_status ON ai_qa_sessions(user_id, status, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_messages_session_created ON ai_qa_messages(session_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_ai_qa_safety_created ON ai_qa_safety_events(category, severity, created_at)",

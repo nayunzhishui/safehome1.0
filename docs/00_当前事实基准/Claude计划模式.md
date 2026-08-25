@@ -1,5 +1,15 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-25：RC0810-F17 不可变内容发布
+
+- [x] 盘点并移除发布、暂停、退役和恢复对容器文件的写入路径。
+- [x] 新增完整文件不可变 artifact、release 绑定和 CAS active pointer。
+- [x] 运行读取校验 artifact hash，缓存键绑定 filename/hash；损坏不回退容器。
+- [x] 完成结构/ID 校验、失败原子性、旧制品恢复、双连接/重启与并发冲突合同。
+- [x] 新增 071/072 加法迁移、策略、技术/运维文档；production 外部门禁保持 pending。
+- [x] 主智能体自审补上构造快照与 CAS 指针绑定，避免同文件并发发布丢更新。
+- [x] 完成 F17 冻结验证与 Harness checkpoint；独立提交推送后进入 F18，F21 前不调用 reviewer。
+
 ## 2026-08-25：RC0810 历史 checkpoint 证据绑定
 
 - [x] 定位 F14-A 原最终独立复审 packet、`pass` decision、nonce、哈希和提交树。

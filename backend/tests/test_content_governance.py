@@ -114,6 +114,7 @@ def test_draft_requires_complete_source_copyright_and_age_metadata(tmp_path, mon
 
 def test_full_review_publish_pause_and_restore_keep_immutable_hash(tmp_path, monkeypatch):
     app, content_dir = _fresh_app(tmp_path, monkeypatch)
+    source_before = (content_dir / "training_cards.json").read_bytes()
     client = app.test_client()
     created = client.post("/api/content-review/versions", json=_draft_payload(), headers=ADMIN_HEADERS).get_json()["data"]
     version_id = created["id"]
@@ -134,8 +135,10 @@ def test_full_review_publish_pause_and_restore_keep_immutable_hash(tmp_path, mon
     descriptor = client.get("/api/content-review/active/training_card/emotion_naming").get_json()["data"]
     assert descriptor["release_id"] == release["release_id"]
     assert descriptor["payload_hash"] == created["payload_hash"]
-    active = json.loads((content_dir / "training_cards.json").read_text(encoding="utf-8"))
+    with app.app_context():
+        active = importlib.import_module("database").load_content_json("training_cards.json")
     assert next(card for card in active["cards"] if card["id"] == "emotion_naming")["title"] == "给情绪一个名字"
+    assert (content_dir / "training_cards.json").read_bytes() == source_before
 
     paused = client.post(
         f"/api/content-review/releases/{release['release_id']}/pause",
@@ -143,8 +146,10 @@ def test_full_review_publish_pause_and_restore_keep_immutable_hash(tmp_path, mon
         headers=ADMIN_HEADERS,
     )
     assert paused.status_code == 200
-    inactive = json.loads((content_dir / "training_cards.json").read_text(encoding="utf-8"))
+    with app.app_context():
+        inactive = importlib.import_module("database").load_content_json("training_cards.json")
     assert next(card for card in inactive["cards"] if card["id"] == "emotion_naming")["enabled"] is False
+    assert (content_dir / "training_cards.json").read_bytes() == source_before
 
     restored = client.post(
         f"/api/content-review/releases/{release['release_id']}/restore",
@@ -153,6 +158,9 @@ def test_full_review_publish_pause_and_restore_keep_immutable_hash(tmp_path, mon
     )
     assert restored.status_code == 200
     assert restored.get_json()["data"]["restored"] is True
+    with app.app_context():
+        restored_content = importlib.import_module("database").load_content_json("training_cards.json")
+    assert next(card for card in restored_content["cards"] if card["id"] == "emotion_naming")["enabled"] is True
     detail = client.get(f"/api/content-review/versions/{version_id}", headers=ADMIN_HEADERS).get_json()["data"]
     assert detail["payload_hash"] == created["payload_hash"]
 
@@ -174,7 +182,7 @@ def test_publish_is_independently_gated_by_environment_confirmation_and_hash(tmp
     assert response.get_json()["error"]["code"] == "content_publish_disabled"
 
 
-def test_atomic_publish_restores_content_file_when_database_switch_fails(tmp_path, monkeypatch):
+def test_atomic_publish_keeps_source_and_pointer_when_artifact_store_fails(tmp_path, monkeypatch):
     app, content_dir = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
     created = client.post("/api/content-review/versions", json=_draft_payload(), headers=ADMIN_HEADERS).get_json()["data"]
@@ -184,39 +192,34 @@ def test_atomic_publish_restores_content_file_when_database_switch_fails(tmp_pat
 
     with app.app_context():
         service = importlib.import_module("services.content_governance_service")
-        original_get_connection = service.get_connection
-        calls = {"count": 0}
-
-        def failing_get_connection():
-            calls["count"] += 1
-            if calls["count"] == 3:
-                raise RuntimeError("synthetic database switch failure")
-            return original_get_connection()
-
-        monkeypatch.setattr(service, "get_connection", failing_get_connection)
-        with pytest.raises(RuntimeError, match="synthetic database switch failure"):
+        monkeypatch.setattr(
+            service,
+            "_store_artifact",
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                RuntimeError("synthetic artifact store failure")
+            ),
+        )
+        with pytest.raises(RuntimeError, match="synthetic artifact store failure"):
             service.publish_version({"id": "admin-token", "role": "admin"}, created["id"], {"confirm_publish": True, "expected_hash": created["payload_hash"], "dependency_impact_confirmed": True, "release_reason": "恢复测试"})
+        database = importlib.import_module("database")
+        with database.get_connection() as conn:
+            assert conn.execute("SELECT artifact_id FROM content_active_artifacts WHERE filename = 'training_cards.json'").fetchone() is None
 
     assert (content_dir / "training_cards.json").read_bytes() == before
 
 
-def test_release_lock_rejects_concurrent_switch_without_changing_content(tmp_path, monkeypatch):
+def test_publish_uses_database_pointer_without_filesystem_lock(tmp_path, monkeypatch):
     app, content_dir = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
     created = client.post("/api/content-review/versions", json=_draft_payload(), headers=ADMIN_HEADERS).get_json()["data"]
     client.post(f"/api/content-review/versions/{created['id']}/submit", headers=ADMIN_HEADERS)
     _approve_all(app, client, created["id"])
     before = (content_dir / "training_cards.json").read_bytes()
-    lock_path = content_dir / ".content-governance.lock"
-    lock_path.write_text("synthetic active release", encoding="utf-8")
-    try:
-        with app.app_context():
-            service = importlib.import_module("services.content_governance_service")
-            with pytest.raises(service.GovernanceError) as error:
-                service.publish_version({"id": "admin-token", "role": "admin"}, created["id"], {"confirm_publish": True, "expected_hash": created["payload_hash"], "dependency_impact_confirmed": True, "release_reason": "并发测试"})
-            assert error.value.code == "content_release_in_progress"
-    finally:
-        lock_path.unlink(missing_ok=True)
+    with app.app_context():
+        service = importlib.import_module("services.content_governance_service")
+        release = service.publish_version({"id": "admin-token", "role": "admin"}, created["id"], {"confirm_publish": True, "expected_hash": created["payload_hash"], "dependency_impact_confirmed": True, "release_reason": "数据库指针测试"})
+        assert release["generation"] == 1
+    assert not (content_dir / ".content-governance.lock").exists()
     assert (content_dir / "training_cards.json").read_bytes() == before
 
 

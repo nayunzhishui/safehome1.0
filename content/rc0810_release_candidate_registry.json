@@ -4482,10 +4482,22 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 9
         }
       ],
-      "external_gates": [],
+      "external_gates": [
+        {
+          "owner": "content_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "platform_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
       "change_budget": {
         "allowed_modules": [
           "backend/**",
@@ -4506,7 +4518,7 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 18,
+        "expected_files": 19,
         "expected_migrations": 2,
         "expected_interfaces": 0,
         "expected_pages": 0,

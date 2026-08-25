@@ -1,5 +1,6 @@
 """Database helpers for the SafeHome MVP backend."""
 
+import hashlib
 import json
 import re
 import sqlite3
@@ -225,6 +226,9 @@ MYSQL_VARCHAR_COLUMNS = {
     "lease_owner",
     "result_artifact_id",
     "artifact_hash",
+    "artifact_id",
+    "filename",
+    "package_hash",
     "quality_status",
     "visibility",
     "deletion_reason_code",
@@ -1511,9 +1515,54 @@ def write_audit_log(
     return audit_id
 
 
+_CONTENT_ARTIFACT_CACHE: dict[tuple[str, str], str] = {}
+
+
+class ContentArtifactIntegrityError(RuntimeError):
+    """Raised when an active immutable content artifact fails hash validation."""
+
+
+def clear_content_artifact_cache() -> None:
+    _CONTENT_ARTIFACT_CACHE.clear()
+
+
+def load_content_text(filename: str) -> str:
+    try:
+        with get_connection() as conn:
+            row = conn.execute(
+                """
+                SELECT a.payload_text, a.artifact_hash, a.status
+                FROM content_active_artifacts p
+                JOIN content_release_artifacts a ON a.id = p.artifact_id
+                WHERE p.filename = ?
+                """,
+                (filename,),
+            ).fetchone()
+    except Exception as exc:
+        message = str(exc).lower()
+        if "no such table" not in message and "doesn't exist" not in message:
+            raise
+        row = None
+    if row is not None:
+        payload_text = str(row["payload_text"])
+        artifact_hash = str(row["artifact_hash"])
+        if row["status"] != "verified" or hashlib.sha256(
+            payload_text.encode("utf-8")
+        ).hexdigest() != artifact_hash:
+            raise ContentArtifactIntegrityError(
+                f"active content artifact integrity failed: {filename}"
+            )
+        cache_key = (filename, artifact_hash)
+        cached = _CONTENT_ARTIFACT_CACHE.get(cache_key)
+        if cached is None:
+            _CONTENT_ARTIFACT_CACHE[cache_key] = payload_text
+            cached = payload_text
+        return cached
+    return (Config.CONTENT_DIR / filename).read_text(encoding="utf-8")
+
+
 def load_content_json(filename: str) -> dict:
-    path = Config.CONTENT_DIR / filename
-    return json.loads(path.read_text(encoding="utf-8"))
+    return json.loads(load_content_text(filename))
 
 
 def sync_training_cards(conn) -> None:

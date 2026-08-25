@@ -1,0 +1,23 @@
+{
+  "schema": "safehome.rc0810.content-artifact-policy.v1",
+  "production_gate_eligible": false,
+  "storage": "database_immutable_version_table",
+  "container_filesystem": "read_only",
+  "active_switch": "database_compare_and_swap_pointer",
+  "cache_key": ["filename", "artifact_hash"],
+  "required_artifact_fields": [
+    "payload",
+    "payload_schema",
+    "artifact_hash",
+    "author",
+    "reviewers",
+    "released_at",
+    "dependencies",
+    "artifact_status"
+  ],
+  "rollback": "switch_only_to_verified_existing_artifact",
+  "external_gates": {
+    "content_owner": "pending_external",
+    "platform_owner": "pending_external"
+  }
+}

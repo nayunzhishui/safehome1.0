@@ -5,14 +5,13 @@ from __future__ import annotations
 import difflib
 import hashlib
 import json
-import os
-import time
+import threading
 from contextlib import contextmanager
 from pathlib import Path
 
 from flask import current_app
 
-from database import get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
+from database import ContentArtifactIntegrityError, get_connection, json_dumps, json_loads, load_content_json, load_content_text, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from services.feedback_service import generate_feedback
 from services.risk_service import check_text_risk
 
@@ -46,6 +45,7 @@ DISCIPLINE_ROLES = {
     "content": {"admin"},
 }
 TERMINAL_STATUSES = {"retired"}
+_PROCESS_RELEASE_LOCK = threading.RLock()
 
 
 class GovernanceError(ValueError):
@@ -58,30 +58,9 @@ class GovernanceError(ValueError):
 
 @contextmanager
 def _release_lock():
-    """Serialize file/database release switches across local worker processes."""
-    lock_path = current_app.config["CONTENT_DIR"] / ".content-governance.lock"
-    descriptor = None
-    for _attempt in range(2):
-        try:
-            descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-            os.write(descriptor, now_iso().encode("utf-8"))
-            break
-        except FileExistsError as exc:
-            try:
-                stale = time.time() - lock_path.stat().st_mtime > 300
-            except OSError:
-                stale = False
-            if stale:
-                lock_path.unlink(missing_ok=True)
-                continue
-            raise GovernanceError("content_release_in_progress", "已有内容发布或恢复操作正在执行", 409) from exc
-    if descriptor is None:
-        raise GovernanceError("content_release_lock_failed", "无法取得内容发布锁", 409)
-    try:
+    """Serialize local threads; the database pointer CAS covers other instances."""
+    with _PROCESS_RELEASE_LOCK:
         yield
-    finally:
-        os.close(descriptor)
-        lock_path.unlink(missing_ok=True)
 
 
 def _canonical(value) -> str:
@@ -113,9 +92,14 @@ def _load_active_item(content_type: str, item_id: str):
     path, list_field, id_field = _load_target(content_type)
     if not path.exists():
         raise GovernanceError("content_source_missing", f"内容源不存在：{path.name}", 404)
-    if list_field is None:
-        return path.read_text(encoding="utf-8"), path
-    content = json.loads(path.read_text(encoding="utf-8"))
+    try:
+        if list_field is None:
+            return load_content_text(path.name), path
+        content = load_content_json(path.name)
+    except ContentArtifactIntegrityError as exc:
+        raise GovernanceError(
+            "active_content_integrity_failed", "运行内容制品完整性校验失败", 503
+        ) from exc
     item = next((entry for entry in content.get(list_field, []) if str(entry.get(id_field)) == item_id), None)
     if item is None:
         raise GovernanceError("not_found", "未找到对应内容项", 404)
@@ -404,25 +388,118 @@ def dependency_impact(content_type: str, item_id: str) -> dict:
     return {"content_type": content_type, "item_id": item_id, "has_dependencies": bool(impacts), "impacts": impacts}
 
 
-def _replace_active_item(content_type: str, item_id: str, payload) -> tuple[Path, bytes | None]:
+def _build_artifact_document(content_type: str, item_id: str, payload) -> tuple[str, str, str, dict | None]:
     path, list_field, id_field = _load_target(content_type)
-    old_bytes = path.read_bytes() if path.exists() else None
+    with get_connection() as conn:
+        artifact = conn.execute(
+            """SELECT p.artifact_id, p.generation, a.payload_text,
+                      a.artifact_hash, a.status
+               FROM content_active_artifacts p
+               JOIN content_release_artifacts a ON a.id = p.artifact_id
+               WHERE p.filename = ?""",
+            (path.name,),
+        ).fetchone()
+    expected_pointer = (
+        {"artifact_id": artifact["artifact_id"], "generation": artifact["generation"]}
+        if artifact is not None
+        else None
+    )
+    if artifact is not None:
+        active_text = str(artifact["payload_text"])
+        if artifact["status"] != "verified" or hashlib.sha256(
+            active_text.encode("utf-8")
+        ).hexdigest() != artifact["artifact_hash"]:
+            raise GovernanceError(
+                "active_content_integrity_failed", "运行内容制品完整性校验失败", 503
+            )
+    else:
+        active_text = path.read_text(encoding="utf-8") if path.exists() else ""
     if list_field is None:
         rendered = str(payload)
     else:
-        root = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"version": "governed", list_field: []}
+        root = json.loads(active_text) if active_text else {"version": "governed", list_field: []}
+        if not isinstance(root, dict) or not isinstance(root.get(list_field), list):
+            raise GovernanceError("content_schema_incompatible", "内容根结构与运行合同不兼容", 409)
+        payload_id = payload.get(id_field) if isinstance(payload, dict) else None
+        if str(payload_id or "") != item_id:
+            raise GovernanceError("content_reference_invalid", "内容 ID 与发布目标不一致", 409)
         items = root.setdefault(list_field, [])
         index = next((idx for idx, item in enumerate(items) if str(item.get(id_field)) == item_id), None)
         if index is None:
             items.append(payload)
         else:
             items[index] = payload
+        ids = [str(item.get(id_field) or "") for item in items]
+        if any(not value for value in ids) or len(ids) != len(set(ids)):
+            raise GovernanceError("content_reference_invalid", "内容 ID 缺失或重复", 409)
         root["updated_at"] = now_iso()
         rendered = json.dumps(root, ensure_ascii=False, indent=2) + "\n"
-    temp = path.with_suffix(path.suffix + f".{new_id('tmp')}")
-    temp.write_text(rendered, encoding="utf-8")
-    os.replace(temp, path)
-    return path, old_bytes
+    return (
+        path.name,
+        rendered,
+        hashlib.sha256(rendered.encode("utf-8")).hexdigest(),
+        expected_pointer,
+    )
+
+
+def _current_pointer(conn, filename: str):
+    return conn.execute(
+        "SELECT artifact_id, generation FROM content_active_artifacts WHERE filename = ?",
+        (filename,),
+    ).fetchone()
+
+
+def _store_artifact(conn, *, artifact_id: str, filename: str, payload_text: str, artifact_hash: str, metadata: dict, actor_id: str) -> str:
+    try:
+        conn.execute(
+            """INSERT INTO content_release_artifacts
+            (id, filename, payload_text, artifact_hash, schema_version, metadata_json, status, created_by, created_at)
+            VALUES (?, ?, ?, ?, 'safehome.content-artifact.v1', ?, 'verified', ?, ?)""",
+            (artifact_id, filename, payload_text, artifact_hash, json_dumps(metadata), actor_id, now_iso()),
+        )
+        return artifact_id
+    except Exception:
+        existing = conn.execute(
+            "SELECT id FROM content_release_artifacts WHERE filename = ? AND artifact_hash = ?",
+            (filename, artifact_hash),
+        ).fetchone()
+        if existing is None:
+            raise
+        return existing["id"]
+
+
+def _switch_active_pointer(conn, *, filename: str, artifact_id: str, expected_pointer, actor_id: str, reason: str, impact_scope: list) -> int:
+    timestamp = now_iso()
+    if expected_pointer is None:
+        try:
+            conn.execute(
+                """INSERT INTO content_active_artifacts
+                (filename, artifact_id, generation, switch_reason, impact_scope_json, updated_by, updated_at)
+                VALUES (?, ?, 1, ?, ?, ?, ?)""",
+                (filename, artifact_id, reason, json_dumps(impact_scope), actor_id, timestamp),
+            )
+            return 1
+        except Exception as exc:
+            raise GovernanceError("content_release_conflict", "active 指针已被其他实例切换", 409) from exc
+    cursor = conn.execute(
+        """UPDATE content_active_artifacts
+        SET artifact_id = ?, generation = generation + 1, switch_reason = ?,
+            impact_scope_json = ?, updated_by = ?, updated_at = ?
+        WHERE filename = ? AND artifact_id = ? AND generation = ?""",
+        (
+            artifact_id,
+            reason,
+            json_dumps(impact_scope),
+            actor_id,
+            timestamp,
+            filename,
+            expected_pointer["artifact_id"],
+            expected_pointer["generation"],
+        ),
+    )
+    if cursor.rowcount != 1:
+        raise GovernanceError("content_release_conflict", "active 指针已被其他实例切换", 409)
+    return int(expected_pointer["generation"]) + 1
 
 
 def publish_version(actor: dict, version_id: str, payload: dict) -> dict:
@@ -450,33 +527,67 @@ def _publish_version_locked(actor: dict, version_id: str, payload: dict) -> dict
         "content_type": version["content_type"],
         "item_id": version["item_id"],
         "payload_hash": version["payload_hash"],
+        "payload_schema": "safehome.content-artifact.v1",
+        "author": version["created_by"],
+        "reviewers": [
+            {
+                "discipline": review["discipline"],
+                "reviewer_id": review["reviewer_id"],
+                "decision": review["decision"],
+            }
+            for review in version["reviews"]
+        ],
+        "dependencies": version["dependency_impact"]["impacts"],
         "metadata": version["metadata"],
         "released_at": now_iso(),
+        "released_by": actor["id"],
+        "artifact_status": "verified",
     }
+    filename, artifact_payload, artifact_hash, expected_pointer = _build_artifact_document(
+        version["content_type"], version["item_id"], version["payload"]
+    )
+    artifact_id = new_id("cart")
+    package.update(
+        {
+            "artifact_id": artifact_id,
+            "artifact_filename": filename,
+            "artifact_hash": artifact_hash,
+        }
+    )
     package["package_hash"] = _hash(package)
     release_id = new_id("cgrls")
-    path = None
-    old_bytes = None
-    try:
-        path, old_bytes = _replace_active_item(version["content_type"], version["item_id"], version["payload"])
-        with get_connection() as conn:
-            previous = conn.execute("SELECT id FROM content_governance_releases WHERE content_type = ? AND item_id = ? AND status = 'active' ORDER BY created_at DESC LIMIT 1", (version["content_type"], version["item_id"])).fetchone()
-            previous_id = previous["id"] if previous else None
-            conn.execute("UPDATE content_governance_releases SET status = 'superseded' WHERE content_type = ? AND item_id = ? AND status = 'active'", (version["content_type"], version["item_id"]))
-            conn.execute("INSERT INTO content_governance_releases (id, version_id, content_type, item_id, payload_hash, package_json, previous_release_id, release_reason, status, released_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)", (release_id, version_id, version["content_type"], version["item_id"], version["payload_hash"], json_dumps(package), previous_id, str(payload.get("release_reason") or "受控发布"), actor["id"], now_iso()))
-            conn.execute("UPDATE content_governance_versions SET status = 'published', published_at = ?, updated_at = ? WHERE id = ?", (now_iso(), now_iso(), version_id))
-            write_audit_log(conn, "content_version_published", actor["id"], "content_release", release_id, {"version_id": version_id, "package_hash": package["package_hash"], "previous_release_id": previous_id})
-            conn.commit()
-    except Exception:
-        if path is not None:
-            if old_bytes is None:
-                path.unlink(missing_ok=True)
-            else:
-                restore = path.with_suffix(path.suffix + ".restore")
-                restore.write_bytes(old_bytes)
-                os.replace(restore, path)
-        raise
-    return {"release_id": release_id, "version_id": version_id, "package": package, "status": "active", "rollback_available": True}
+    with get_connection() as conn:
+        stored_artifact_id = _store_artifact(
+            conn,
+            artifact_id=artifact_id,
+            filename=filename,
+            payload_text=artifact_payload,
+            artifact_hash=artifact_hash,
+            metadata=package,
+            actor_id=actor["id"],
+        )
+        if stored_artifact_id != artifact_id:
+            package["artifact_id"] = stored_artifact_id
+            package.pop("package_hash", None)
+            package["package_hash"] = _hash(package)
+            artifact_id = stored_artifact_id
+        generation = _switch_active_pointer(
+            conn,
+            filename=filename,
+            artifact_id=artifact_id,
+            expected_pointer=expected_pointer,
+            actor_id=actor["id"],
+            reason=str(payload.get("release_reason") or "受控发布"),
+            impact_scope=version["dependency_impact"]["impacts"],
+        )
+        previous = conn.execute("SELECT id FROM content_governance_releases WHERE content_type = ? AND item_id = ? AND status = 'active' ORDER BY created_at DESC LIMIT 1", (version["content_type"], version["item_id"])).fetchone()
+        previous_id = previous["id"] if previous else None
+        conn.execute("UPDATE content_governance_releases SET status = 'superseded' WHERE content_type = ? AND item_id = ? AND status = 'active'", (version["content_type"], version["item_id"]))
+        conn.execute("INSERT INTO content_governance_releases (id, version_id, content_type, item_id, payload_hash, artifact_id, package_json, previous_release_id, release_reason, status, released_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)", (release_id, version_id, version["content_type"], version["item_id"], version["payload_hash"], artifact_id, json_dumps(package), previous_id, str(payload.get("release_reason") or "受控发布"), actor["id"], now_iso()))
+        conn.execute("UPDATE content_governance_versions SET status = 'published', published_at = ?, updated_at = ? WHERE id = ?", (now_iso(), now_iso(), version_id))
+        write_audit_log(conn, "content_version_published", actor["id"], "content_release", release_id, {"version_id": version_id, "package_hash": package["package_hash"], "artifact_id": artifact_id, "artifact_hash": artifact_hash, "generation": generation, "previous_release_id": previous_id})
+        conn.commit()
+    return {"release_id": release_id, "version_id": version_id, "artifact_id": artifact_id, "artifact_hash": artifact_hash, "generation": generation, "package": package, "status": "active", "rollback_available": True}
 
 
 def change_release_state(actor: dict, release_id: str, action: str, payload: dict) -> dict:
@@ -503,47 +614,66 @@ def _change_release_state_locked(actor: dict, release_id: str, action: str, payl
         inactive_payload = version["payload"]
         if isinstance(inactive_payload, dict):
             inactive_payload = {**inactive_payload, "enabled": False, "enabled_for_user": False, "governance_status": next_status}
-        path, old_bytes = _replace_active_item(version["content_type"], version["item_id"], inactive_payload)
-        try:
-            with get_connection() as conn:
-                timestamp = now_iso()
-                conn.execute("UPDATE content_governance_versions SET status = ?, updated_at = ?, retired_at = CASE WHEN ? THEN ? ELSE retired_at END WHERE id = ?", (next_status, timestamp, 1 if action == "retire" else 0, timestamp, version["id"]))
-                conn.execute("UPDATE content_governance_releases SET status = ? WHERE id = ?", (next_status, release_id))
-                write_audit_log(conn, f"content_release_{action}d", actor["id"], "content_release", release_id, {"version_id": version["id"], "impact_count": len(impact["impacts"])})
-                conn.commit()
-        except Exception:
-            if old_bytes is None:
-                path.unlink(missing_ok=True)
-            else:
-                restore_path = path.with_suffix(path.suffix + ".restore")
-                restore_path.write_bytes(old_bytes)
-                os.replace(restore_path, path)
-            raise
-        return {"release_id": release_id, "status": next_status, "dependency_impact": impact}
+        filename, artifact_payload, artifact_hash, expected_pointer = _build_artifact_document(
+            version["content_type"], version["item_id"], inactive_payload
+        )
+        artifact_id = new_id("cart")
+        with get_connection() as conn:
+            artifact_id = _store_artifact(
+                conn,
+                artifact_id=artifact_id,
+                filename=filename,
+                payload_text=artifact_payload,
+                artifact_hash=artifact_hash,
+                metadata={"schema": "safehome.content-artifact.v1", "transition": action, "source_release_id": release_id},
+                actor_id=actor["id"],
+            )
+            generation = _switch_active_pointer(
+                conn,
+                filename=filename,
+                artifact_id=artifact_id,
+                expected_pointer=expected_pointer,
+                actor_id=actor["id"],
+                reason=str(payload.get("reason") or action),
+                impact_scope=impact["impacts"],
+            )
+            timestamp = now_iso()
+            conn.execute("UPDATE content_governance_versions SET status = ?, updated_at = ?, retired_at = CASE WHEN ? THEN ? ELSE retired_at END WHERE id = ?", (next_status, timestamp, 1 if action == "retire" else 0, timestamp, version["id"]))
+            conn.execute("UPDATE content_governance_releases SET status = ? WHERE id = ?", (next_status, release_id))
+            write_audit_log(conn, f"content_release_{action}d", actor["id"], "content_release", release_id, {"version_id": version["id"], "artifact_id": artifact_id, "artifact_hash": artifact_hash, "generation": generation, "impact_count": len(impact["impacts"])})
+            conn.commit()
+        return {"release_id": release_id, "status": next_status, "artifact_id": artifact_id, "artifact_hash": artifact_hash, "generation": generation, "dependency_impact": impact}
     if action == "restore":
         if release["status"] not in {"paused", "superseded"}:
             raise GovernanceError("invalid_content_transition", "只有暂停或已替代发布可以恢复", 409)
         package = json_loads(release["package_json"], {})
-        package_hash = package.pop("package_hash", None)
-        if not package_hash or package_hash != _hash(package) or release["payload_hash"] != version["payload_hash"]:
+        unsigned_package = dict(package)
+        package_hash = unsigned_package.pop("package_hash", None)
+        if not package_hash or package_hash != _hash(unsigned_package) or release["payload_hash"] != version["payload_hash"]:
             raise GovernanceError("release_package_integrity_failed", "不可变发布包校验失败", 409)
-        path, old_bytes = _replace_active_item(version["content_type"], version["item_id"], version["payload"])
-        try:
-            with get_connection() as conn:
-                conn.execute("UPDATE content_governance_releases SET status = 'superseded' WHERE content_type = ? AND item_id = ? AND status = 'active'", (version["content_type"], version["item_id"]))
-                conn.execute("UPDATE content_governance_releases SET status = 'active' WHERE id = ?", (release_id,))
-                conn.execute("UPDATE content_governance_versions SET status = 'published', updated_at = ?, retired_at = NULL WHERE id = ?", (now_iso(), version["id"]))
-                write_audit_log(conn, "content_release_restored", actor["id"], "content_release", release_id, {"version_id": version["id"], "payload_hash": version["payload_hash"]})
-                conn.commit()
-        except Exception:
-            if old_bytes is None:
-                path.unlink(missing_ok=True)
-            else:
-                restore_path = path.with_suffix(path.suffix + ".restore")
-                restore_path.write_bytes(old_bytes)
-                os.replace(restore_path, path)
-            raise
-        return {"release_id": release_id, "version_id": version["id"], "status": "active", "restored": True}
+        with get_connection() as conn:
+            artifact = conn.execute(
+                "SELECT * FROM content_release_artifacts WHERE id = ?",
+                (release.get("artifact_id") or package.get("artifact_id"),),
+            ).fetchone()
+            if artifact is None or artifact["status"] != "verified" or hashlib.sha256(str(artifact["payload_text"]).encode("utf-8")).hexdigest() != artifact["artifact_hash"] or artifact["artifact_hash"] != package.get("artifact_hash"):
+                raise GovernanceError("release_package_integrity_failed", "旧内容制品完整性校验失败", 409)
+            pointer = _current_pointer(conn, artifact["filename"])
+            generation = _switch_active_pointer(
+                conn,
+                filename=artifact["filename"],
+                artifact_id=artifact["id"],
+                expected_pointer=pointer,
+                actor_id=actor["id"],
+                reason=str(payload.get("reason") or "恢复已验证旧版本"),
+                impact_scope=version["dependency_impact"]["impacts"],
+            )
+            conn.execute("UPDATE content_governance_releases SET status = 'superseded' WHERE content_type = ? AND item_id = ? AND status = 'active'", (version["content_type"], version["item_id"]))
+            conn.execute("UPDATE content_governance_releases SET status = 'active' WHERE id = ?", (release_id,))
+            conn.execute("UPDATE content_governance_versions SET status = 'published', updated_at = ?, retired_at = NULL WHERE id = ?", (now_iso(), version["id"]))
+            write_audit_log(conn, "content_release_restored", actor["id"], "content_release", release_id, {"version_id": version["id"], "artifact_id": artifact["id"], "artifact_hash": artifact["artifact_hash"], "generation": generation, "reason": str(payload.get("reason") or "恢复已验证旧版本")})
+            conn.commit()
+        return {"release_id": release_id, "version_id": version["id"], "artifact_id": artifact["id"], "artifact_hash": artifact["artifact_hash"], "generation": generation, "status": "active", "restored": True}
     raise GovernanceError("validation_error", "不支持的发布操作")
 
 

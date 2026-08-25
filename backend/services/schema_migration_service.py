@@ -672,6 +672,45 @@ def _apply_2026_08_25_070(conn) -> None:
     )
 
 
+def _apply_2026_08_25_071(conn) -> None:
+    for statement in (
+        """
+        CREATE TABLE IF NOT EXISTS content_release_artifacts (
+            id TEXT PRIMARY KEY, filename TEXT NOT NULL,
+            payload_text TEXT NOT NULL, artifact_hash TEXT NOT NULL,
+            schema_version TEXT NOT NULL, metadata_json TEXT NOT NULL DEFAULT '{}',
+            status TEXT NOT NULL DEFAULT 'verified', created_by TEXT NOT NULL,
+            created_at TEXT NOT NULL, UNIQUE(filename, artifact_hash)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS content_active_artifacts (
+            filename TEXT PRIMARY KEY, artifact_id TEXT NOT NULL,
+            generation INTEGER NOT NULL DEFAULT 1, switch_reason TEXT NOT NULL,
+            impact_scope_json TEXT NOT NULL DEFAULT '[]', updated_by TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+        """,
+    ):
+        _execute_schema(conn, statement)
+
+
+def _apply_2026_08_25_072(conn) -> None:
+    ensure_column(conn, "content_governance_releases", "artifact_id", "TEXT")
+    _create_index_if_missing(
+        conn,
+        "idx_content_artifacts_file_created",
+        "content_release_artifacts",
+        "filename, created_at",
+    )
+    _create_index_if_missing(
+        conn,
+        "idx_content_active_artifact",
+        "content_active_artifacts",
+        "artifact_id",
+    )
+
+
 MIGRATIONS = (
     Migration(
         version="2026_08_07_062",
@@ -764,6 +803,26 @@ MIGRATIONS = (
             "Keep the global runtime row, dead letters and pause state.",
             "Rollback may stop new workers but must not clear an active kill switch.",
             "Human evidence remains required before resuming paused automation.",
+        ),
+    ),
+    Migration(
+        version="2026_08_25_071",
+        name="immutable_content_artifacts",
+        apply=_apply_2026_08_25_071,
+        rollback_notes=(
+            "Disable content publishing before application rollback.",
+            "Preserve immutable artifact rows and active-pointer audit facts.",
+            "Do not copy governed payloads back into a container filesystem.",
+        ),
+    ),
+    Migration(
+        version="2026_08_25_072",
+        name="content_artifact_pointer_binding",
+        apply=_apply_2026_08_25_072,
+        rollback_notes=(
+            "Keep release-to-artifact bindings for audit and rollback.",
+            "Rollback only by switching to a previously verified artifact.",
+            "Never delete the active artifact before all instances stop reading it.",
         ),
     ),
 )
