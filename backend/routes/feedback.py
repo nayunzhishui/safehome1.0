@@ -8,6 +8,7 @@ from services.feedback_service import generate_feedback
 from services.card_service import list_cards
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
+from services.safety_scheduler_service import SchedulerError, assert_automation_allowed
 
 bp = Blueprint("feedback", __name__, url_prefix="/api/feedback")
 
@@ -117,6 +118,18 @@ def generate():
             authorized_diary_user_id = str(diary["user_id"])
             source_payload.update(row_to_dict(diary))
 
+        if authorized_diary_user_id is not None:
+            user_id = authorized_diary_user_id
+        else:
+            try:
+                user_id = require_user_id(source_payload)
+            except ValueError as exc:
+                return fail("validation_error", str(exc), status=400)
+        try:
+            assert_automation_allowed(conn, "automatic_feedback")
+        except SchedulerError as exc:
+            return fail(exc.code, str(exc), status=exc.status)
+
         risk_result = check_text_risk(_feedback_risk_text(source_payload), source="feedback")
         if risk_result["allow_auto_feedback"] is False:
             result = _high_risk_feedback_result(risk_result)
@@ -129,15 +142,7 @@ def generate():
                 if risk_result.get("allow_recommended_training_cards") is not False
                 else []
             )
-
         feedback_id = new_id("feedback")
-        if authorized_diary_user_id is not None:
-            user_id = authorized_diary_user_id
-        else:
-            try:
-                user_id = require_user_id(source_payload)
-            except ValueError as exc:
-                return fail("validation_error", str(exc), status=400)
         timestamp = now_iso()
         conn.execute(
             """

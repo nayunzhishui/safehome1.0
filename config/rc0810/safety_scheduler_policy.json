@@ -1,0 +1,29 @@
+{
+  "schema": "safehome.rc0810.safety-scheduler-policy.v1",
+  "version": "2026-08-25-f15-v1",
+  "production_enabled": false,
+  "scan_interval_seconds": 60,
+  "lease_seconds": 120,
+  "max_attempts": 3,
+  "clock": {
+    "storage_timezone": "UTC",
+    "display_timezone_source": "user_profile",
+    "lease_deadline_source": "database_utc",
+    "daylight_saving_rule": "convert_only_at_display_boundary"
+  },
+  "human_capacity": {
+    "status": "pending_external",
+    "minutes_per_item": null,
+    "daily_safe_capacity": null,
+    "max_backlog": null,
+    "unattended_windows": [],
+    "named_owner_evidence": null,
+    "automation_may_approve": false
+  },
+  "kill_switch": {
+    "disabled_scopes": ["automatic_feedback", "free_text_ai", "therapeutic_intake"],
+    "preserved_scopes": ["low_risk_record_save", "human_support_status", "privacy_rights"],
+    "reactivation_requires_human_evidence": true
+  },
+  "production_release_approved": false
+}

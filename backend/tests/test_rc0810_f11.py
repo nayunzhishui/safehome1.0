@@ -38,7 +38,7 @@ def _production_env(monkeypatch, *, provider="mysql", approved=True):
         monkeypatch.setenv("DB_APPROVED_HOST_SHA256", hashlib.sha256(host.encode()).hexdigest())
         monkeypatch.setenv("DB_APPROVED_DATABASE", "safehome")
         monkeypatch.setenv("DB_APPROVED_PORT", "3306")
-        monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_24_068")
+        monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_25_070")
 
 
 def test_f11_contract_freezes_mysql_only_production_and_explicit_heads():
@@ -47,7 +47,7 @@ def test_f11_contract_freezes_mysql_only_production_and_explicit_heads():
     production = payload["profiles"]["production"]
     assert production["providers"] == ["mysql"]
     assert production["automatic_schema_changes"] is False
-    assert production["approved_migration_head"] == "2026_08_24_063+2026_08_24_068"
+    assert production["approved_migration_head"] == "2026_08_24_063+2026_08_25_070"
     assert payload["production_gate_eligible"] is False
 
 
@@ -125,7 +125,7 @@ def test_f11_runtime_accepts_current_writable_mysql_profile(monkeypatch):
     facts = {
         "database_name": "safehome",
         "legacy_schema_version": "2026_08_24_063",
-        "explicit_migration_head": "2026_08_24_068",
+        "explicit_migration_head": "2026_08_25_070",
         "server_read_only": False,
         "privileges": {"SELECT", "INSERT", "UPDATE", "DELETE"},
     }
@@ -139,7 +139,7 @@ def test_f11_fingerprint_is_irreversible_and_contains_no_database_name_or_user(m
     service = importlib.import_module("services.database_profile_service")
     fingerprint = service.public_database_fingerprint(
         config,
-        {"legacy_schema_version": "2026_08_24_063", "explicit_migration_head": "2026_08_24_068"},
+        {"legacy_schema_version": "2026_08_24_063", "explicit_migration_head": "2026_08_25_070"},
     )
     text = json.dumps(fingerprint)
     assert len(fingerprint["host_sha256"]) == 64
@@ -210,6 +210,8 @@ def test_f11_synthetic_verifier_executes_real_pending_migrations():
         "2026_08_24_066",
         "2026_08_24_067",
         "2026_08_24_068",
+        "2026_08_25_069",
+        "2026_08_25_070",
     ]
 
 
@@ -271,7 +273,7 @@ def test_f11_production_app_startup_never_runs_schema_changes(monkeypatch, tmp_p
         DB_APPROVED_HOST_SHA256 = hashlib.sha256(MYSQL_HOST.encode()).hexdigest()
         DB_APPROVED_DATABASE = "safehome"
         DB_APPROVED_PORT = 3306
-        DB_APPROVED_MIGRATION_HEAD = "2026_08_24_063+2026_08_24_068"
+        DB_APPROVED_MIGRATION_HEAD = "2026_08_24_063+2026_08_25_070"
         SECRET_KEY = "production-test-secret-key-at-least-32"
         ADMIN_EXPORT_TOKEN = "production-test-admin-token"
 

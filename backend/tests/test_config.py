@@ -32,7 +32,7 @@ def _configure_production_mysql(monkeypatch):
     monkeypatch.setenv("DB_APPROVED_HOST_SHA256", hashlib.sha256(host.encode()).hexdigest())
     monkeypatch.setenv("DB_APPROVED_DATABASE", "safehome")
     monkeypatch.setenv("DB_APPROVED_PORT", "3306")
-    monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_24_068")
+    monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_25_070")
     monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
 
 

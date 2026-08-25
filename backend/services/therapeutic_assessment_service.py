@@ -18,6 +18,7 @@ from database import (
 )
 from services.risk_service import check_text_risk
 from services.risk_review_service import create_risk_review_record
+from services.safety_scheduler_service import SchedulerError, assert_automation_allowed
 from services.therapeutic_assessment_level_service import level as service_level
 
 
@@ -417,6 +418,10 @@ def create_case(actor: dict, payload: dict, idempotency_key: str) -> tuple[dict,
         ).fetchone()
         if existing:
             return _present_case(conn, row_to_dict(existing), actor), 200
+        try:
+            assert_automation_allowed(conn, "therapeutic_intake")
+        except SchedulerError as exc:
+            raise TherapeuticAssessmentError(exc.code, exc.message, exc.status) from exc
     from services.therapeutic_assessment_quality_service import (
         assert_new_case_intake_allowed,
     )

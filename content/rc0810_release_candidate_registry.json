@@ -4165,6 +4165,7 @@
         "deploy/**",
         "config/**",
         "scripts/**",
+        "content/rc0810_release_candidate_registry.json",
         "docs/**",
         "backend/migrations/**"
       ],
@@ -4190,7 +4191,8 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 9
         }
       ],
       "external_gates": [
@@ -4211,6 +4213,7 @@
           "deploy/**",
           "config/**",
           "scripts/**",
+          "content/rc0810_release_candidate_registry.json",
           "docs/**",
           "backend/migrations/**"
         ],
@@ -4224,9 +4227,9 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 18,
+        "expected_files": 24,
         "expected_migrations": 2,
-        "expected_interfaces": 0,
+        "expected_interfaces": 1,
         "expected_pages": 0,
         "actual_delta_baseline": "task_start_snapshot",
         "pause_when_actual_exceeds_percent": 50,

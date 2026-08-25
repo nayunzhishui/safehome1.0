@@ -23,6 +23,9 @@ MVP_TABLES = [
     "privacy_request_actions",
     "family_links",
     "family_bind_rate_limits",
+    "safety_scheduler_runtime",
+    "safety_scheduler_runs",
+    "safety_scheduler_events",
     "weekly_reports",
     "supervision_requests",
     "messages",
@@ -1090,6 +1093,56 @@ SCHEMA_SQL = [
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         UNIQUE(dimension, dimension_hash, window_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS safety_scheduler_runtime (
+        id TEXT PRIMARY KEY,
+        paused INTEGER NOT NULL DEFAULT 0,
+        kill_switch INTEGER NOT NULL DEFAULT 0,
+        reason TEXT,
+        disabled_scopes_json TEXT NOT NULL DEFAULT '[]',
+        lease_owner TEXT,
+        lease_expires_at TEXT,
+        last_started_at TEXT,
+        last_success_at TEXT,
+        last_failure_at TEXT,
+        backlog_count INTEGER NOT NULL DEFAULT 0,
+        oldest_due_age_seconds INTEGER NOT NULL DEFAULT 0,
+        claim_failure_count INTEGER NOT NULL DEFAULT 0,
+        dead_letter_count INTEGER NOT NULL DEFAULT 0,
+        backfill_required INTEGER NOT NULL DEFAULT 0,
+        version INTEGER NOT NULL DEFAULT 1,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS safety_scheduler_runs (
+        id TEXT PRIMARY KEY,
+        run_key TEXT NOT NULL UNIQUE,
+        worker_id TEXT NOT NULL,
+        status TEXT NOT NULL,
+        attempt_count INTEGER NOT NULL DEFAULT 0,
+        max_attempts INTEGER NOT NULL DEFAULT 3,
+        started_at TEXT NOT NULL,
+        lease_expires_at TEXT,
+        finished_at TEXT,
+        error_code TEXT,
+        stats_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS safety_scheduler_events (
+        id TEXT PRIMARY KEY,
+        event_key TEXT NOT NULL UNIQUE,
+        source_type TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        due_at TEXT,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL
     )
     """,
     """
@@ -2897,6 +2950,8 @@ INDEX_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_family_links_code_status ON family_links(bind_code, status)",
     "CREATE INDEX IF NOT EXISTS idx_family_links_code_hash_status ON family_links(bind_code_hash, status)",
     "CREATE INDEX IF NOT EXISTS idx_family_bind_rate_limits_lookup ON family_bind_rate_limits(dimension, dimension_hash, window_key)",
+    "CREATE INDEX IF NOT EXISTS idx_safety_scheduler_runs_status_started ON safety_scheduler_runs(status, started_at)",
+    "CREATE INDEX IF NOT EXISTS idx_safety_scheduler_events_source ON safety_scheduler_events(source_type, source_id, created_at)",
     "CREATE INDEX IF NOT EXISTS idx_assessment_worksheets_audience_enabled ON assessment_worksheets(audience_class, enabled_for_user)",
     "CREATE INDEX IF NOT EXISTS idx_messages_user_status_created ON messages(user_id, status, created_at)",
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_messages_sender_idempotency ON messages(sender_id, idempotency_key)",

@@ -568,6 +568,55 @@ def handoff_work_item(
         )
 
 
+def refresh_queue_runtime(conn, *, timestamp: str, actor_id: str) -> dict:
+    """Refresh queue safety state from an active clock using the caller transaction."""
+    policy = _policy()
+    pending_count = int(conn.execute(
+        "SELECT COUNT(*) AS count FROM therapeutic_assessment_work_queue WHERE status IN ('open', 'claimed', 'handoff_required')"
+    ).fetchone()["count"])
+    overdue_count = int(conn.execute(
+        "SELECT COUNT(*) AS count FROM therapeutic_assessment_work_queue WHERE status IN ('open', 'claimed', 'handoff_required') AND due_at < ?",
+        (timestamp,),
+    ).fetchone()["count"])
+    urgent_rows = rows_to_dicts(conn.execute(
+        "SELECT * FROM therapeutic_assessment_work_queue WHERE priority = 'urgent' AND status IN ('open', 'handoff_required')"
+    ).fetchall())
+    shifts = rows_to_dicts(conn.execute(
+        "SELECT * FROM therapeutic_assessment_duty_shifts WHERE status = 'active' AND starts_at <= ? AND expires_at > ?",
+        (timestamp, timestamp),
+    ).fetchall())
+    unattended = 0
+    for item in urgent_rows:
+        case = _case_row(conn, item["case_id"])
+        if not any(
+            item["queue_type"] in set(_present_shift(shift)["queue_types"])
+            and _scope_matches(_present_shift(shift)["scope"], case)
+            for shift in shifts
+        ):
+            unattended += 1
+    limits = policy["runtime_pause"]
+    reasons = []
+    if pending_count > int(limits["max_pending"]):
+        reasons.append("pending_threshold")
+    if overdue_count > int(limits["max_overdue"]):
+        reasons.append("overdue_threshold")
+    if limits["pause_when_urgent_queue_unattended"] and unattended:
+        reasons.append("urgent_queue_unattended")
+    runtime = _runtime(conn)
+    conn.execute(
+        """UPDATE therapeutic_assessment_queue_runtime
+        SET paused = ?, reason = ?, pending_count = ?, overdue_count = ?,
+            unattended_urgent_count = ?, policy_version = ?,
+            version = version + 1, updated_at = ? WHERE id = 'global'""",
+        (int(bool(reasons)), ",".join(reasons) or None, pending_count, overdue_count,
+         unattended, policy["version"], timestamp),
+    )
+    write_audit_log(conn, "therapeutic_assessment_queue_monitored", actor_id,
+                    "therapeutic_assessment_queue_runtime", "global",
+                    {"paused": bool(reasons), "reasons": reasons, "before_version": runtime["version"]})
+    return _runtime(conn)
+
+
 def queue_runtime_status() -> dict:
     with get_connection() as conn:
         return _runtime(conn)
@@ -575,82 +624,8 @@ def queue_runtime_status() -> dict:
 
 def run_queue_monitor(actor: dict) -> dict:
     _assert_review_role(actor)
-    policy = _policy()
     timestamp = now_iso()
     with get_connection() as conn:
-        pending_count = int(
-            conn.execute(
-                "SELECT COUNT(*) AS count FROM therapeutic_assessment_work_queue WHERE status IN ('open', 'claimed', 'handoff_required')"
-            ).fetchone()["count"]
-        )
-        overdue_count = int(
-            conn.execute(
-                "SELECT COUNT(*) AS count FROM therapeutic_assessment_work_queue WHERE status IN ('open', 'claimed', 'handoff_required') AND due_at < ?",
-                (timestamp,),
-            ).fetchone()["count"]
-        )
-        urgent_rows = rows_to_dicts(
-            conn.execute(
-                "SELECT * FROM therapeutic_assessment_work_queue WHERE priority = 'urgent' AND status IN ('open', 'handoff_required')"
-            ).fetchall()
-        )
-        unattended = 0
-        for item in urgent_rows:
-            case = _case_row(conn, item["case_id"])
-            shifts = rows_to_dicts(
-                conn.execute(
-                    """
-                    SELECT * FROM therapeutic_assessment_duty_shifts
-                    WHERE status = 'active' AND starts_at <= ? AND expires_at > ?
-                    """,
-                    (timestamp, timestamp),
-                ).fetchall()
-            )
-            if not any(
-                item["queue_type"] in set(_present_shift(shift)["queue_types"])
-                and _scope_matches(_present_shift(shift)["scope"], case)
-                for shift in shifts
-            ):
-                unattended += 1
-        limits = policy["runtime_pause"]
-        reasons = []
-        if pending_count > int(limits["max_pending"]):
-            reasons.append("pending_threshold")
-        if overdue_count > int(limits["max_overdue"]):
-            reasons.append("overdue_threshold")
-        if limits["pause_when_urgent_queue_unattended"] and unattended:
-            reasons.append("urgent_queue_unattended")
-        runtime = _runtime(conn)
-        paused = bool(reasons)
-        conn.execute(
-            """
-            UPDATE therapeutic_assessment_queue_runtime
-            SET paused = ?, reason = ?, pending_count = ?, overdue_count = ?,
-                unattended_urgent_count = ?, policy_version = ?,
-                version = version + 1, updated_at = ?
-            WHERE id = 'global'
-            """,
-            (
-                int(paused),
-                ",".join(reasons) or None,
-                pending_count,
-                overdue_count,
-                unattended,
-                policy["version"],
-                timestamp,
-            ),
-        )
-        write_audit_log(
-            conn,
-            "therapeutic_assessment_queue_monitored",
-            str(actor["id"]),
-            "therapeutic_assessment_queue_runtime",
-            "global",
-            {
-                "paused": paused,
-                "reasons": reasons,
-                "before_version": runtime["version"],
-            },
-        )
+        result = refresh_queue_runtime(conn, timestamp=timestamp, actor_id=str(actor["id"]))
         conn.commit()
-        return _runtime(conn)
+        return result

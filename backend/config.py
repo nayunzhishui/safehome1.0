@@ -184,6 +184,12 @@ class Config:
         "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
     ).strip().lower() in {"1", "true", "yes"}
+    SAFETY_SCHEDULER_ENABLED = os.environ.get(
+        "SAFETY_SCHEDULER_ENABLED",
+        "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
+    ).strip().lower() in {"1", "true", "yes"}
+    SAFETY_SCHEDULER_LEASE_SECONDS = int(os.environ.get("SAFETY_SCHEDULER_LEASE_SECONDS", "120"))
+    SAFETY_SCHEDULER_MAX_ATTEMPTS = int(os.environ.get("SAFETY_SCHEDULER_MAX_ATTEMPTS", "3"))
 
     @classmethod
     def validate(cls) -> None:
@@ -203,6 +209,10 @@ class Config:
             cls.MYSQL_WRITE_TIMEOUT_SECONDS,
         ) <= 0:
             raise RuntimeError("MySQL 连接、读取和写入超时必须为正整数")
+        if cls.SAFETY_SCHEDULER_LEASE_SECONDS < 30 or cls.SAFETY_SCHEDULER_MAX_ATTEMPTS not in range(1, 11):
+            raise RuntimeError("安全调度器租约必须不少于30秒，最大尝试次数必须为1至10")
+        if str(cls.APP_ENV).lower() == "production" and cls.SAFETY_SCHEDULER_ENABLED:
+            raise RuntimeError("F15 人工容量与值守证据未批准前禁止生产启用安全调度器")
         if str(cls.APP_ENV).lower() == "production" and not DB_PROVIDER_ENV_VALUE:
             raise RuntimeError("生产环境必须显式配置 DB_PROVIDER")
         profile_errors = startup_profile_errors(cls)

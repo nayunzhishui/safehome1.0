@@ -284,6 +284,13 @@ def _require_sandbox() -> None:
 
 
 def _require_runtime_for_actor(actor: dict) -> None:
+    from services.safety_scheduler_service import SchedulerError, assert_automation_allowed
+
+    with get_connection() as conn:
+        try:
+            assert_automation_allowed(conn, "free_text_ai")
+        except SchedulerError as exc:
+            raise AiQaError(exc.code, str(exc), exc.status) from exc
     if actor.get("role") not in {"parent", "student"}:
         _require_sandbox()
         return

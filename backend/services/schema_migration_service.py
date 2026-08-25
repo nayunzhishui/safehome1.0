@@ -608,6 +608,70 @@ def _apply_2026_08_24_068(conn) -> None:
     )
 
 
+def _apply_2026_08_25_069(conn) -> None:
+    for statement in (
+        """
+        CREATE TABLE IF NOT EXISTS safety_scheduler_runtime (
+            id TEXT PRIMARY KEY, paused INTEGER NOT NULL DEFAULT 0,
+            kill_switch INTEGER NOT NULL DEFAULT 0, reason TEXT,
+            disabled_scopes_json TEXT NOT NULL DEFAULT '[]', lease_owner TEXT,
+            lease_expires_at TEXT, last_started_at TEXT, last_success_at TEXT,
+            last_failure_at TEXT, backlog_count INTEGER NOT NULL DEFAULT 0,
+            oldest_due_age_seconds INTEGER NOT NULL DEFAULT 0,
+            claim_failure_count INTEGER NOT NULL DEFAULT 0,
+            dead_letter_count INTEGER NOT NULL DEFAULT 0,
+            backfill_required INTEGER NOT NULL DEFAULT 0,
+            version INTEGER NOT NULL DEFAULT 1, updated_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS safety_scheduler_runs (
+            id TEXT PRIMARY KEY, run_key TEXT NOT NULL UNIQUE,
+            worker_id TEXT NOT NULL, status TEXT NOT NULL,
+            attempt_count INTEGER NOT NULL DEFAULT 0,
+            max_attempts INTEGER NOT NULL DEFAULT 3, started_at TEXT NOT NULL,
+            lease_expires_at TEXT, finished_at TEXT, error_code TEXT,
+            stats_json TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS safety_scheduler_events (
+            id TEXT PRIMARY KEY, event_key TEXT NOT NULL UNIQUE,
+            source_type TEXT NOT NULL, source_id TEXT NOT NULL,
+            action TEXT NOT NULL, due_at TEXT, metadata_json TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL
+        )
+        """,
+    ):
+        _execute_schema(conn, statement)
+
+
+def _apply_2026_08_25_070(conn) -> None:
+    timestamp = now_iso()
+    if conn.execute(
+        "SELECT id FROM safety_scheduler_runtime WHERE id = 'global'"
+    ).fetchone() is None:
+        conn.execute(
+            """INSERT INTO safety_scheduler_runtime
+            (id, paused, kill_switch, disabled_scopes_json, version, updated_at)
+            VALUES ('global', 0, 0, '[]', 1, ?)""",
+            (timestamp,),
+        )
+    _create_index_if_missing(
+        conn,
+        "idx_safety_scheduler_runs_status_started",
+        "safety_scheduler_runs",
+        "status, started_at",
+    )
+    _create_index_if_missing(
+        conn,
+        "idx_safety_scheduler_events_source",
+        "safety_scheduler_events",
+        "source_type, source_id, created_at",
+    )
+
+
 MIGRATIONS = (
     Migration(
         version="2026_08_07_062",
@@ -680,6 +744,26 @@ MIGRATIONS = (
             "Preserve the rate-limit ledger for abuse investigation and retention review.",
             "Never restore plaintext binding codes; revoke pending codes before running an application version that lacks digest lookup.",
             "Consumed and revoked family relationships remain business records and must not be deleted by rollback.",
+        ),
+    ),
+    Migration(
+        version="2026_08_25_069",
+        name="safety_scheduler_lease_and_event_ledger",
+        apply=_apply_2026_08_25_069,
+        rollback_notes=(
+            "Stop scheduler workers before application rollback.",
+            "Preserve scheduler runs and events as operational safety evidence.",
+            "Do not restore read-triggered timeout processing as the only safety clock.",
+        ),
+    ),
+    Migration(
+        version="2026_08_25_070",
+        name="safety_scheduler_runtime_backfill",
+        apply=_apply_2026_08_25_070,
+        rollback_notes=(
+            "Keep the global runtime row, dead letters and pause state.",
+            "Rollback may stop new workers but must not clear an active kill switch.",
+            "Human evidence remains required before resuming paused automation.",
         ),
     ),
 )
