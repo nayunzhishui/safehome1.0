@@ -33,6 +33,7 @@ def _production_env(monkeypatch, *, provider="mysql", approved=True):
     monkeypatch.setenv("MYSQL_SSL_CA", str(Path(__file__)))
     monkeypatch.setenv("SECRET_KEY", "production-test-secret-key-at-least-32")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-admin-token")
+    monkeypatch.setenv("OPERATIONS_HEALTH_TOKEN", "production-operations-health-token")
     monkeypatch.setenv("DATABASE_DATA_WATERMARK", "participant_production")
     if approved:
         monkeypatch.setenv("DB_PROFILE_APPROVAL_ID", "approval-fixture-001")

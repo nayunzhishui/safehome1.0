@@ -298,6 +298,16 @@ def run_safety_scheduler(worker_id: str, *, now: str | datetime | None = None, r
             dead = attempts >= max_attempts
             status = "dead_letter" if dead else "retrying"
             conn.execute("UPDATE safety_scheduler_runs SET status = ?, attempt_count = ?, finished_at = ?, lease_expires_at = NULL, error_code = ?, updated_at = ? WHERE id = ?", (status, attempts, timestamp, type(exc).__name__, timestamp, run_id))
+            if dead:
+                activate_unattended_kill_switch(conn, "scheduler_dead_letter")
+                write_audit_log(
+                    conn,
+                    "safety_scheduler_dead_letter_kill_switch_activated",
+                    str(worker_id),
+                    "safety_scheduler_run",
+                    run_id,
+                    {"run_key": key, "disabled_scopes": DISABLED_SCOPES},
+                )
             conn.execute("UPDATE safety_scheduler_runtime SET last_failure_at = ?, claim_failure_count = claim_failure_count + 1, dead_letter_count = dead_letter_count + ?, updated_at = ? WHERE id = 'global'", (timestamp, int(dead), timestamp))
             _release(conn, str(worker_id), timestamp)
             conn.commit()

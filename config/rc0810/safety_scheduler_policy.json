@@ -21,6 +21,7 @@
     "automation_may_approve": false
   },
   "kill_switch": {
+    "activation_triggers": ["human_queue_timeout", "human_queue_unavailable", "scheduler_dead_letter"],
     "disabled_scopes": ["automatic_feedback", "free_text_ai", "therapeutic_intake"],
     "preserved_scopes": ["low_risk_record_save", "human_support_status", "privacy_rights"],
     "reactivation_requires_human_evidence": true

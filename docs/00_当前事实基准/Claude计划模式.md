@@ -1,5 +1,17 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：波次 B Fix Loop（F15/F21 findings）
+
+- [x] 复现 scheduler 连续三次扫描失败进入 dead-letter 后仍放行高风险自动化。
+- [x] dead-letter 事务内激活 kill switch，禁用自动反馈、自由文本 AI 和治疗性新受理。
+- [x] 保留低风险记录保存；恢复仍必须提供真人证据。
+- [x] F15 专项 9 项通过；不新增迁移、接口、页面或生产动作。
+- [x] Harness 重新绑定 F15 证据并保持 `review_pending_wave`，等待同一 reviewer 增量复审。
+- [x] production deep/ready 强制有效运维令牌；RFC1918/loopback 代理源不再自动获得权限。
+- [x] 非 production 仅默认放行 loopback；额外 CIDR 必须显式配置，且始终不信任转发来源头。
+- [x] production 启动缺少 `OPERATIONS_HEALTH_TOKEN` 时 fail-closed；未写入任何真实 Secret。
+- [x] F21 专项与生产配置定向合同通过，等待同一 reviewer 增量复审。
+
 ## 2026-08-26：RC0810-F21 运行健康与事故恢复
 
 - [x] public health 最小化；deep/ready 仅允许内部源或运维令牌，且不信任转发来源头。

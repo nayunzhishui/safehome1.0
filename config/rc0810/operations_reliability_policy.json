@@ -6,6 +6,8 @@
     "public_fields": ["ok", "service", "version"],
     "protected_paths": ["/healthz/deep", "/readyz"],
     "authorization": "configured_operations_token_or_explicit_source_cidr",
+    "production_authorization": "configured_operations_token_required",
+    "nonproduction_trusted_cidrs": "explicit_configuration_only_default_loopback",
     "forwarded_headers_trusted": false,
     "protected_components": ["database", "redis", "queues", "content", "scheduler", "deployment"]
   },

@@ -36,7 +36,18 @@ def _configure_production_mysql(monkeypatch):
     monkeypatch.setenv("MYSQL_SSL_CA", str(Path(__file__)))
     monkeypatch.setenv("MYSQL_SSL_VERIFY_IDENTITY", "1")
     monkeypatch.setenv("MYSQL_TLS_MIN_VERSION", "TLSv1.2")
+    monkeypatch.setenv("OPERATIONS_HEALTH_TOKEN", "production-operations-health-token")
     monkeypatch.delenv("ALLOW_PRODUCTION_SQLITE", raising=False)
+
+
+def test_production_requires_operations_health_token(monkeypatch):
+    _clear_backend_modules()
+    _configure_production_mysql(monkeypatch)
+    monkeypatch.delenv("OPERATIONS_HEALTH_TOKEN", raising=False)
+    module = importlib.import_module("config")
+
+    with pytest.raises(RuntimeError, match="必须配置 OPERATIONS_HEALTH_TOKEN"):
+        module.Config.validate()
 
 
 def test_production_rejects_default_admin_export_token(tmp_path, monkeypatch):

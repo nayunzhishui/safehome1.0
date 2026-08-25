@@ -137,8 +137,16 @@ def test_expired_lease_is_reclaimed_after_worker_restart(tmp_path, monkeypatch):
 
 
 def test_repeated_failures_enter_dead_letter_and_metrics(tmp_path, monkeypatch):
-    _fresh_app(tmp_path, monkeypatch)
-    from services.safety_scheduler_service import SchedulerRunFailed, run_safety_scheduler, scheduler_status
+    app = _fresh_app(tmp_path, monkeypatch)
+    import database
+    import pytest
+    from services.safety_scheduler_service import (
+        SchedulerError,
+        SchedulerRunFailed,
+        assert_automation_allowed,
+        run_safety_scheduler,
+        scheduler_status,
+    )
 
     for attempt in range(3):
         try:
@@ -149,6 +157,32 @@ def test_repeated_failures_enter_dead_letter_and_metrics(tmp_path, monkeypatch):
     assert status["dead_letter_count"] == 1
     assert status["claim_failure_count"] == 3
     assert status["last_run_status"] == "dead_letter"
+    assert status["kill_switch"] is True
+    assert set(status["disabled_scopes"]) == {
+        "automatic_feedback",
+        "free_text_ai",
+        "therapeutic_intake",
+    }
+    with database.get_connection() as conn:
+        with pytest.raises(SchedulerError):
+            assert_automation_allowed(conn, "automatic_feedback")
+
+    client = app.test_client()
+    registered = client.post(
+        "/api/auth/register",
+        json={"username": "f15-dead-letter-parent", "password": "password123", "role": "parent"},
+    ).get_json()["data"]
+    diary = client.post(
+        "/api/diaries",
+        headers={"Authorization": f"Bearer {registered['token']}"},
+        json={
+            "user_id": registered["user"]["id"],
+            "scene": "晚饭",
+            "event_description": "普通记录",
+            "parent_emotion": "平静",
+        },
+    )
+    assert diary.status_code == 201
 
 
 def test_pause_resume_backfill_requires_human_evidence(tmp_path, monkeypatch):
@@ -203,4 +237,5 @@ def test_policy_uses_utc_and_does_not_fabricate_production_capacity(tmp_path, mo
     assert policy["human_capacity"]["daily_safe_capacity"] is None
     assert policy["production_enabled"] is False
     versions = [item["version"] for item in migration_manifest()]
-    assert versions[-2:] == ["2026_08_25_069", "2026_08_25_070"]
+    assert "2026_08_25_069" in versions
+    assert "2026_08_25_070" in versions

@@ -1992,6 +1992,33 @@ def _standard_start_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _wave_review_start_snapshot(
+    state: dict[str, Any], wave: dict[str, Any]
+) -> dict[str, Any]:
+    """Recover the immutable reviewed tree for runs opened by the old Fix Loop."""
+
+    wave_state = state.get("wave_checkpoints", {}).get(wave["id"], {})
+    review = wave_state.get("review", {})
+    packet_path = RUNTIME_ROOT / state["run_id"] / "reviews" / f"wave-{wave['id']}.json"
+    expected_hash = review.get("packet_sha256")
+    if not packet_path.is_file() or not expected_hash:
+        raise HarnessError("Fix Loop缺少原波次审查包，拒绝猜测重开基线。")
+    if sha256_bytes(packet_path.read_bytes()) != expected_hash:
+        raise HarnessError("Fix Loop原波次审查包哈希不匹配。")
+    packet = json.loads(packet_path.read_text(encoding="utf-8"))
+    source_tree = packet.get("source_tree")
+    if not isinstance(source_tree, str) or not source_tree:
+        raise HarnessError("Fix Loop原波次审查包缺少源码树。")
+    return {
+        "commit": packet.get("head_commit"),
+        "source_tree": source_tree,
+        "source_manifest": _manifest_from_tree(source_tree),
+        "dirty_diff_sha256": packet.get("dirty_diff_sha256"),
+        "binding": "wave_review_packet_legacy_fix_recovery",
+        "review_packet_sha256": expected_hash,
+    }
+
+
 def _task_contract_sha256(task: dict[str, Any], unit: dict[str, Any]) -> str:
     return sha256_bytes(canonical_json({"task": task, "execution_unit": unit}))
 
@@ -2390,8 +2417,17 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             raise HarnessError(f"{task_id}存在未完成依赖：{unmet}")
         existing = state["tasks"].get(task_id)
         if existing:
+            previous_status = existing.get("status")
+            legacy_fixing_recovery = (
+                previous_status == "fixing"
+                and existing.get("start_snapshot", {}).get("binding")
+                not in {
+                    "fix_iteration_start_worktree",
+                    "wave_review_packet_legacy_fix_recovery",
+                }
+            )
             reopen_pending = (
-                existing.get("status") == "review_pending_wave"
+                previous_status == "review_pending_wave"
                 and wave is not None
                 and (
                     state.get("wave_checkpoints", {})
@@ -2401,8 +2437,17 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
                     == "fix_required"
                 )
             )
-            if existing.get("status") not in {"review_failed", "fixing", "stale"} and not reopen_pending:
+            if previous_status == "fixing" and not legacy_fixing_recovery:
+                raise HarnessError(f"{task_id}已处于Fix Loop，拒绝重置迭代基线。")
+            if previous_status not in {"review_failed", "fixing", "stale"} and not reopen_pending:
                 raise HarnessError(f"{task_id}已启动，拒绝重复执行。")
+            if legacy_fixing_recovery:
+                if wave is None:
+                    raise HarnessError("旧Fix Loop缺少波次信息，拒绝猜测重开基线。")
+                fix_start = _wave_review_start_snapshot(state, wave)
+            else:
+                fix_start = _standard_start_snapshot(registry)
+                fix_start["binding"] = "fix_iteration_start_worktree"
             existing.setdefault("iteration_history", []).append(
                 {
                     "status": existing["status"],
@@ -2427,11 +2472,10 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
             existing["start_task_contract_sha256"] = contract_hash
             existing["start_registry_sha256"] = sha256_bytes(REGISTRY_PATH.read_bytes())
             existing["iteration_started_at"] = utc_now()
+            existing["start_snapshot"] = fix_start
             allowed_scope = unit.get("allowed_files", task["allowed_files"])
             for subtask_id in _unit_subtask_ids(unit, task):
                 existing["subtasks"][subtask_id]["allowed_scope"] = allowed_scope
-            if task_id == "RC0810-F00":
-                existing["start_snapshot"] = _f00_start_snapshot(registry, task)
             current_registry_sha256 = sha256_bytes(REGISTRY_PATH.read_bytes())
             if current_registry_sha256 != state.get("registry_sha256"):
                 previous_registry = _previous_registry_snapshot(state)

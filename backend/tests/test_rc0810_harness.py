@@ -1001,7 +1001,42 @@ def test_wave_fix_required_keeps_pending_and_reuses_fixed_reviewer(tmp_path):
     report = json.loads(run_cli("report", env=env).stdout)
     assert report["tasks"]["RC0810-F10-A"]["status"] == "review_pending_wave"
     assert report["production_release_approved"] is False
+
+    pointer_path = runtime / "state.json"
+    pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+    state_path = runtime / pointer["state_path"]
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["tasks"]["RC0810-F10-A"]["status"] = "fixing"
+    state["tasks"]["RC0810-F10-A"]["start_snapshot"] = {
+        "commit": "stale-before-fix",
+        "source_tree": "stale-before-fix",
+        "source_manifest": {"unrelated-after-original-start.txt": "stale"},
+        "dirty_diff_sha256": "stale-before-fix",
+        "binding": "task_start_worktree",
+    }
+    state["wave_checkpoints"]["B"]["status"] = "in_progress"
+    state["wave_checkpoints"]["B"]["review_packet"] = None
+    state_path.write_text(
+        json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    pointer["state_sha256"] = hashlib.sha256(state_path.read_bytes()).hexdigest()
+    pointer_path.write_text(
+        json.dumps(pointer, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+
     assert run_cli("start", "RC0810-F10-A", env=env).returncode == 0
+    pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+    restarted_state = json.loads(
+        (runtime / pointer["state_path"]).read_text(encoding="utf-8")
+    )
+    reviewed_packet = json.loads(
+        Path(wave_b_packet["review_packet_path"]).read_text(encoding="utf-8")
+    )
+    restarted_snapshot = restarted_state["tasks"]["RC0810-F10-A"]["start_snapshot"]
+    assert restarted_snapshot["source_tree"] == reviewed_packet["source_tree"]
+    assert restarted_snapshot["binding"] == "wave_review_packet_legacy_fix_recovery"
+    repeated_start = run_cli("start", "RC0810-F10-A", env=env)
+    assert repeated_start.returncode != 0
     assert run_cli("verify", "RC0810-F10-A", env=env).returncode == 0
     assert run_cli("review", "RC0810-F10-A", "--pending-wave", env=env).returncode == 0
     assert run_cli("start", "RC0810-F10-A", env=env).returncode == 0

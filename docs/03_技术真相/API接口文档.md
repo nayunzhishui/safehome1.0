@@ -104,7 +104,7 @@
 
 ## 0. 健康检查
 
-F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` 是受保护运维探针，只接受明确内部 socket 源地址，或请求头 `X-Operations-Token` 与服务端 `OPERATIONS_HEALTH_TOKEN` 匹配。服务端不信任 `X-Forwarded-For` 来授予权限。
+F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` 是受保护运维探针。production 只接受请求头 `X-Operations-Token` 与服务端非空 `OPERATIONS_HEALTH_TOKEN` 匹配，缺少服务端令牌时应用拒绝启动；任意 RFC1918/loopback 代理源都不能替代令牌。development/testing 默认只放行本机 loopback，额外 CIDR 必须通过 `OPERATIONS_HEALTH_TRUSTED_CIDRS` 显式配置。服务端始终不信任 `X-Forwarded-For` 来授予权限。
 
 ### `GET /healthz`
 

@@ -172,6 +172,10 @@ class Config:
         "RELIABILITY_PRODUCTION_SLO_FROZEN", "0"
     ).strip().lower() in {"1", "true", "yes"}
     OPERATIONS_HEALTH_TOKEN = os.environ.get("OPERATIONS_HEALTH_TOKEN", "").strip()
+    OPERATIONS_HEALTH_TRUSTED_CIDRS = os.environ.get(
+        "OPERATIONS_HEALTH_TRUSTED_CIDRS",
+        "127.0.0.0/8,::1/128" if str(APP_ENV).lower() in {"development", "testing"} else "",
+    ).strip()
     UX_GOVERNANCE_WORKBENCH_ENABLED = os.environ.get(
         "UX_GOVERNANCE_WORKBENCH_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
@@ -248,6 +252,8 @@ class Config:
                 "database_profile_unknown_environment": "APP_ENV 没有对应数据库 profile",
             }
             raise RuntimeError(messages.get(profile_errors[0], profile_errors[0]))
+        if str(cls.APP_ENV).lower() == "production" and not cls.OPERATIONS_HEALTH_TOKEN:
+            raise RuntimeError("生产环境必须配置 OPERATIONS_HEALTH_TOKEN")
         if cls.WECHAT_SUBSCRIBE_MODE not in {"once", "long_term"}:
             raise RuntimeError("WECHAT_SUBSCRIBE_MODE 只能是 once 或 long_term")
         if cls.AI_QA_PROVIDER not in {"fake", "deepseek", "openai"}:

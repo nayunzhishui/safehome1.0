@@ -16,10 +16,6 @@ from services.redis_service import health as redis_health
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_PATH = ROOT / "config" / "rc0810" / "operations_reliability_policy.json"
-INTERNAL_NETWORKS = tuple(
-    ipaddress.ip_network(value)
-    for value in ("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "::1/128", "fc00::/7", "fe80::/10")
-)
 
 
 class OperationsReliabilityError(ValueError):
@@ -32,22 +28,32 @@ def load_operations_policy() -> dict:
     return json.loads(POLICY_PATH.read_text(encoding="utf-8"))
 
 
-def _internal_source(remote_addr: str | None) -> bool:
+def _trusted_source(remote_addr: str | None, configured_cidrs: str) -> bool:
     try:
         address = ipaddress.ip_address(str(remote_addr or ""))
     except ValueError:
         return False
-    return any(address in network for network in INTERNAL_NETWORKS)
+    networks = []
+    for value in configured_cidrs.split(","):
+        if not value.strip():
+            continue
+        try:
+            networks.append(ipaddress.ip_network(value.strip(), strict=True))
+        except ValueError:
+            return False
+    return any(address in network for network in networks)
 
 
 def protected_health_allowed() -> bool:
-    """Trust only the socket peer or an explicit operations token."""
+    """Require the operations token in production; local CIDRs are explicit."""
 
-    if _internal_source(request.remote_addr):
-        return True
     configured = str(current_app.config.get("OPERATIONS_HEALTH_TOKEN") or "")
     supplied = str(request.headers.get("X-Operations-Token") or "")
-    return bool(configured and supplied and hmac.compare_digest(configured, supplied))
+    token_allowed = bool(configured and supplied and hmac.compare_digest(configured, supplied))
+    if str(current_app.config.get("APP_ENV") or "").lower() == "production":
+        return token_allowed
+    trusted_cidrs = str(current_app.config.get("OPERATIONS_HEALTH_TRUSTED_CIDRS") or "")
+    return token_allowed or _trusted_source(request.remote_addr, trusted_cidrs)
 
 
 def protected_runtime_components() -> dict:

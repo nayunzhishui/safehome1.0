@@ -39,6 +39,8 @@ def test_f21_policy_freezes_protected_health_contract():
     contract = policy["health_contract"]
     assert contract["public_fields"] == ["ok", "service", "version"]
     assert contract["protected_paths"] == ["/healthz/deep", "/readyz"]
+    assert contract["production_authorization"] == "configured_operations_token_required"
+    assert contract["nonproduction_trusted_cidrs"] == "explicit_configuration_only_default_loopback"
     assert contract["forwarded_headers_trusted"] is False
     assert set(contract["protected_components"]) == {
         "database", "redis", "queues", "content", "scheduler", "deployment"
@@ -55,16 +57,22 @@ def test_f21_public_health_is_minimal(tmp_path, monkeypatch):
 def test_f21_external_deep_health_without_token_is_denied(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
-    for path in ("/healthz/deep", "/readyz"):
-        response = client.get(path, environ_base={"REMOTE_ADDR": "198.51.100.8"})
-        assert response.status_code == 403
-        assert response.get_json()["error"]["code"] == "operations_health_forbidden"
+    for remote_addr in ("198.51.100.8", "10.23.4.5"):
+        for path in ("/healthz/deep", "/readyz"):
+            response = client.get(path, environ_base={"REMOTE_ADDR": remote_addr})
+            assert response.status_code == 403
+            assert response.get_json()["error"]["code"] == "operations_health_forbidden"
+    app.config["APP_ENV"] = "production"
+    response = client.get("/readyz", environ_base={"REMOTE_ADDR": "127.0.0.1"})
+    assert response.status_code == 403
+    assert response.get_json()["error"]["code"] == "operations_health_forbidden"
 
 
 def test_f21_operations_token_allows_protected_health(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
+    app.config["APP_ENV"] = "production"
     response = app.test_client().get(
-        "/readyz",
+        "/healthz/deep",
         headers={"X-Operations-Token": "ops-health-test-token"},
         environ_base={"REMOTE_ADDR": "198.51.100.8"},
     )
