@@ -3,10 +3,15 @@
 import hashlib
 from datetime import datetime, timedelta, timezone
 
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 
 from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict, rows_to_dicts
 from services.content_loader import ContentLoadError
+from services.psychological_content_governance_service import (
+    build_assessment_snapshot,
+    payload_hash,
+    production_legacy_profile_allowed,
+)
 from services.risk_review_service import create_risk_review_record
 from services.risk_service import check_text_risk
 from services.sandplay_service import SandplayInputError, summarize_sandplay_scene, validate_sandplay_scene
@@ -262,6 +267,30 @@ def _save_profile_result(payload: dict, result: dict, client_submission_id: str 
         "recommended_card_ids": recommended_card_ids,
     }
     result_summary = f"{result.get('profile_name')}：{result.get('supportive_explanation')}"
+    assessment_payload = get_student_assessment_payload()
+    worksheet_payload = {
+        "id": PROFILE_WORKSHEET_ID,
+        "source_file": "readfeedback/student_scales.json",
+        "source_version": assessment_payload.get("version") or "unversioned",
+        "display_title": PROFILE_WORKSHEET_TITLE,
+        "boundary_notice": assessment_payload.get("boundary_notice"),
+        "result_disclaimer": result.get("boundary_notice"),
+        **assessment_payload,
+    }
+    content_snapshot = build_assessment_snapshot(
+        worksheet_payload,
+        result_summary=result_summary,
+        recommended_card_ids=recommended_card_ids,
+        interpretation_payload={
+            "result_summary": result_summary,
+            "boundary_notice": result.get("boundary_notice"),
+            "rules_version": result.get("rules_version"),
+            "model_version": result.get("model_version"),
+            "model_type": result.get("model_type"),
+            "dimensions": result.get("dimensions", []),
+        },
+    )
+    snapshot_hash = payload_hash(content_snapshot)
 
     with get_connection() as conn:
         ensure_user(conn, user_id, payload.get("nickname"))
@@ -291,9 +320,11 @@ def _save_profile_result(payload: dict, result: dict, client_submission_id: str 
             """
             INSERT INTO assessment_results (
                 id, user_id, worksheet_id, worksheet_title, category,
-                answers_json, scores_json, total_score, result_summary, client_submission_id, created_at
+                answers_json, scores_json, total_score, result_summary,
+                content_snapshot_json, content_snapshot_hash, worksheet_payload_hash,
+                worksheet_version, interpretation_version, client_submission_id, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 result_id,
@@ -305,6 +336,11 @@ def _save_profile_result(payload: dict, result: dict, client_submission_id: str 
                 json_dumps(scores),
                 None,
                 result_summary,
+                json_dumps(content_snapshot),
+                snapshot_hash,
+                content_snapshot["worksheet"]["payload_hash"],
+                content_snapshot["worksheet"]["version"],
+                content_snapshot["interpretation"]["version"],
                 client_submission_id,
                 timestamp,
             ),
@@ -408,6 +444,15 @@ def _save_profile_result(payload: dict, result: dict, client_submission_id: str 
 
 @bp.post("/profile")
 def create_profile():
+    if (
+        str(current_app.config.get("APP_ENV") or "development").lower() == "production"
+        and not production_legacy_profile_allowed()
+    ):
+        return fail(
+            "assessment_not_in_production_manifest",
+            "该支持性测评尚未完成 production 内容与版权审核。",
+            status=409,
+        )
     payload = request.get_json(silent=True) or {}
     submission_id = str(request.headers.get("Idempotency-Key") or payload.get("client_submission_id") or "").strip()
     if len(submission_id) > 120:
@@ -442,6 +487,15 @@ def create_profile():
 
 @bp.get("/student-assessment")
 def get_student_assessment():
+    if (
+        str(current_app.config.get("APP_ENV") or "development").lower() == "production"
+        and not production_legacy_profile_allowed()
+    ):
+        return fail(
+            "assessment_not_in_production_manifest",
+            "该支持性测评尚未完成 production 内容与版权审核。",
+            status=409,
+        )
     try:
         return ok(get_student_assessment_payload())
     except ContentLoadError as exc:

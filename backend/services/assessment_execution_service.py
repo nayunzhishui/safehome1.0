@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from database import ensure_user, get_connection, json_dumps, new_id, now_iso, row_to_dict
+from database import ensure_user, get_connection, json_dumps, json_loads, new_id, now_iso, row_to_dict
 from services.assessment_profile_position_store import backfill_profile_position
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.idempotency_service import (
@@ -14,6 +14,11 @@ from services.idempotency_service import (
     store_idempotency_response,
 )
 from services.participant_safeguard_service import ParticipantSafeguardError, assert_participant_capability
+from services.psychological_content_governance_service import (
+    build_assessment_snapshot,
+    payload_hash,
+    verify_snapshot,
+)
 from services.risk_review_service import create_risk_review_record, should_create_risk_review
 from services.risk_service import check_text_risk
 from services.training_recommendation_service import evaluate_training_rules, flatten_card_ids
@@ -77,8 +82,8 @@ def submit_assessment(
         version="v1",
         payload={
             "worksheet_id": worksheet["id"],
-            "answers": answers,
-            "result_summary": summary,
+            "answers": submitted_answers,
+            "result_summary": result_summary,
         },
     ) if client_submission_id else None
     training_rules = evaluate_training_rules(
@@ -92,6 +97,15 @@ def submit_assessment(
     if risk_result and not risk_result.get("allow_recommended_training_cards", True):
         recommended_card_ids = []
         training_rules = []
+    content_snapshot = build_assessment_snapshot(
+        worksheet,
+        result_summary=summary,
+        recommended_card_ids=recommended_card_ids,
+        recommendation_rules=training_rules,
+    )
+    content_snapshot_hash = payload_hash(content_snapshot)
+    worksheet_descriptor = content_snapshot["worksheet"]
+    interpretation_descriptor = content_snapshot["interpretation"]
 
     replayed = False
     with get_connection() as conn:
@@ -137,9 +151,11 @@ def submit_assessment(
                     id, user_id, worksheet_id, worksheet_title, category,
                     answers_json, scores_json, scoring_version, raw_scale_json,
                     raw_scores_json, transformed_scores_json, transformation_version,
-                    total_score, result_summary, client_submission_id, request_hash, created_at
+                    total_score, result_summary, content_snapshot_json,
+                    content_snapshot_hash, worksheet_payload_hash, worksheet_version,
+                    interpretation_version, client_submission_id, request_hash, created_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     result_id,
@@ -156,6 +172,11 @@ def submit_assessment(
                     score_provenance["transformation_version"],
                     execution.total_score,
                     summary,
+                    json_dumps(content_snapshot),
+                    content_snapshot_hash,
+                    worksheet_descriptor["payload_hash"],
+                    worksheet_descriptor["version"],
+                    interpretation_descriptor["version"],
                     client_submission_id,
                     request_hash,
                     now_iso(),
@@ -208,6 +229,30 @@ def submit_assessment(
                 )
 
         result = public_idempotent_resource(row_to_dict(row))
+        response_worksheet = worksheet
+        if replayed:
+            persisted = json_loads(result.get("content_snapshot_json"), {})
+            response_worksheet = persisted.get("worksheet_payload") or {}
+            answers = json_loads(result.get("answers_json"), [])
+            scores = json_loads(result.get("scores_json"), {})
+            score_provenance = {
+                "raw_scale": json_loads(result.get("raw_scale_json"), {}),
+                "raw_scores": json_loads(result.get("raw_scores_json"), {}),
+                "transformed_scores": json_loads(
+                    result.get("transformed_scores_json"), {}
+                ),
+                "scoring_version": result.get("scoring_version"),
+                "transformation_version": result.get("transformation_version"),
+                "reporting_notice": (
+                    "九点原分与五点模型输入已分字段保存；报告必须标明量尺，不得混写。"
+                    if result.get("transformation_version")
+                    else "当前结果按问卷原始量尺保存；没有模型兼容转换。"
+                ),
+            }
+            recommendation = persisted.get("recommendation") or {}
+            recommended_card_ids = recommendation.get("card_ids") or []
+            training_rules = recommendation.get("rules") or []
+            risk_result = scores.get("risk")
         result["answers"] = answers
         result["scores"] = scores
         result["raw_scale"] = score_provenance["raw_scale"]
@@ -220,8 +265,10 @@ def submit_assessment(
         result["training_recommendation_rules"] = training_rules
         result["risk"] = risk_result
         result["minor_safeguards"] = minor_safeguards
-        result["boundary_notice"] = worksheet.get("boundary_notice")
-        result["result_disclaimer"] = worksheet.get("result_disclaimer")
+        result["boundary_notice"] = response_worksheet.get("boundary_notice")
+        result["result_disclaimer"] = response_worksheet.get("result_disclaimer")
+        persisted_snapshot = json_loads(result.get("content_snapshot_json"), {})
+        result["content_snapshot"] = persisted_snapshot
         result["idempotency_replayed"] = replayed
         if reservation is not None and reservation.created:
             store_idempotency_response(
@@ -232,6 +279,48 @@ def submit_assessment(
             )
         conn.commit()
         return result
+
+
+def replay_assessment_snapshot(row: dict) -> dict:
+    """Recompute score output from the immutable payload stored with a result."""
+
+    snapshot = json_loads(row.get("content_snapshot_json"), {})
+    verification = verify_snapshot(snapshot, row.get("content_snapshot_hash"))
+    if not verification["valid"]:
+        return {
+            "snapshot_valid": False,
+            "reason": verification["reason"],
+            "scores": None,
+            "total_score": None,
+        }
+    worksheet = snapshot["worksheet_payload"]
+    answers = json_loads(row.get("answers_json"), [])
+    if not isinstance(answers, list) or not isinstance(worksheet.get("questions"), list):
+        return {
+            "snapshot_valid": True,
+            "reason": "verified_stored_output",
+            "scores": json_loads(row.get("scores_json"), {}),
+            "total_score": row.get("total_score"),
+            "worksheet_version": snapshot["worksheet"]["version"],
+            "worksheet_payload_hash": snapshot["worksheet"]["payload_hash"],
+            "interpretation_version": snapshot["interpretation"]["version"],
+            "replay_mode": "stored_output_with_original_payload",
+        }
+    replayed = execute_assessment(worksheet, answers)
+    scores = replayed.scores
+    stored_scores = json_loads(row.get("scores_json"), {})
+    if "risk" in stored_scores:
+        scores["risk"] = stored_scores["risk"]
+    return {
+        "snapshot_valid": True,
+        "reason": "verified",
+        "scores": scores,
+        "total_score": replayed.total_score,
+        "worksheet_version": snapshot["worksheet"]["version"],
+        "worksheet_payload_hash": snapshot["worksheet"]["payload_hash"],
+        "interpretation_version": snapshot["interpretation"]["version"],
+        "replay_mode": "server_rescore_from_original_payload",
+    }
 
 
 def execute_assessment(worksheet: dict, submitted_answers: list[dict]) -> AssessmentExecutionResult:

@@ -1,0 +1,85 @@
+{
+  "schema_version": "safehome.psychological-content-governance.v1",
+  "version": "2026-08-25-rc0810-f20-v1",
+  "governed_sources": [
+    {
+      "content_type": "worksheet",
+      "filename": "assessment_worksheets.json",
+      "list_field": "worksheets",
+      "id_field": "id",
+      "version_field": "source_version"
+    },
+    {
+      "content_type": "training_card",
+      "filename": "training_cards.json",
+      "list_field": "cards",
+      "id_field": "id",
+      "version_field": "root.version"
+    },
+    {
+      "content_type": "feedback_rule",
+      "filename": "feedback_rules.json",
+      "list_field": "rules",
+      "id_field": "id",
+      "version_field": "version"
+    }
+  ],
+  "production_manifest": {
+    "worksheet_ids": [],
+    "status": "blocked_external",
+    "required_fields": [
+      "source_file",
+      "source_version",
+      "questions",
+      "scoring",
+      "boundary_notice",
+      "result_disclaimer"
+    ],
+    "required_rights_statuses": ["owned", "licensed", "public_domain", "permission_recorded"],
+    "required_approval": "approved",
+    "empty_reason": "量表逐项版权与心理专业复核尚未完成，当前不得自动批准 production 清单。"
+  },
+  "rights_overrides": {},
+  "legacy_content_tracks": [
+    {
+      "endpoint": "/api/profile",
+      "source": "readfeedback/student_scales.json",
+      "status": "validation_only_legacy_track",
+      "production_enabled": false,
+      "replacement": "POST /api/assessment-results with governed assessment_worksheets artifact"
+    }
+  ],
+  "external_gates": {
+    "psychology_reviewer": "pending_external",
+    "content_rights_owner": "pending_external"
+  },
+  "terminology": {
+    "participant": ["支持性测评", "协作式了解", "阶段性观察"],
+    "internal": ["治疗性评估"],
+    "wechat_review": ["支持性测评", "自我了解与练习辅助"],
+    "participant_prohibited": [
+      "治疗性评估",
+      "确诊为",
+      "人格障碍",
+      "人格问题",
+      "保证治愈",
+      "保证有效",
+      "一定有效",
+      "替代心理咨询",
+      "替代危机干预"
+    ],
+    "internal_term_file_allowlist": {
+      "治疗性评估": [
+        "apps/web/src/main.tsx",
+        "apps/web/src/pages/OperationsGovernanceWorkbench.tsx",
+        "apps/web/src/pages/TherapeuticAssessmentQualityWorkbench.tsx"
+      ]
+    }
+  },
+  "copy_audit": {
+    "min_payload_text_length": 18,
+    "frontend_extensions": [".js", ".ts", ".tsx", ".wxml"],
+    "safe_fallback_allowlist": []
+  },
+  "approval_policy": "human_owned_never_auto_approve"
+}

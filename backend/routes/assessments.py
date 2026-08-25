@@ -7,10 +7,15 @@ from flask import Blueprint, current_app, request
 from database import get_connection, json_loads, load_content_json, row_to_dict, rows_to_dicts
 from routes.auth_utils import AuthError, auth_error_response, get_current_actor, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int, require_fields
-from services.assessment_execution_service import AssessmentSubmissionError, submit_assessment
+from services.assessment_execution_service import (
+    AssessmentSubmissionError,
+    replay_assessment_snapshot,
+    submit_assessment,
+)
 from services.assessment_profile_position_store import backfill_profile_position, profile_cluster_value
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.idempotency_service import public_idempotent_resource
+from services.psychological_content_governance_service import production_worksheet_allowed
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
 
@@ -34,7 +39,11 @@ def _is_governed_for_user(worksheet: dict) -> bool:
         return False
     if not _governance_enforced():
         return True
-    return str(worksheet.get("review_status") or "") in APPROVED_REVIEW_STATUSES
+    if str(worksheet.get("review_status") or "") not in APPROVED_REVIEW_STATUSES:
+        return False
+    if str(current_app.config.get("APP_ENV") or "development").lower() == "production":
+        return production_worksheet_allowed(str(worksheet.get("id") or ""))
+    return True
 
 
 def _reviewer_preview_requested() -> bool:
@@ -131,7 +140,7 @@ def _known_worksheet_ids() -> list[str]:
     return [worksheet["id"] for worksheet in _worksheets() if worksheet.get("id")]
 
 
-def _expand_result_row(row: dict) -> dict:
+def _expand_result_row(row: dict, *, include_replay: bool = False) -> dict:
     row = public_idempotent_resource(row)
     row["answers"] = json_loads(row.get("answers_json"), [])
     row["scores"] = json_loads(row.get("scores_json"), {})
@@ -144,6 +153,9 @@ def _expand_result_row(row: dict) -> dict:
         else "当前结果按问卷原始量尺保存；没有模型兼容转换。"
     )
     row["profile_cluster_id"] = profile_cluster_value({"cluster_id": row.get("profile_cluster_id")})
+    if include_replay:
+        row["content_snapshot"] = json_loads(row.get("content_snapshot_json"), {})
+        row["historical_replay"] = replay_assessment_snapshot(row)
     return row
 
 
@@ -371,7 +383,7 @@ def get_assessment_result(result_id: str):
         ).fetchone()
     if row is None:
         return fail("not_found", "没有找到对应的测一测结果", status=404)
-    return ok(_expand_result_row(row_to_dict(row)))
+    return ok(_expand_result_row(row_to_dict(row), include_replay=True))
 
 
 @bp.get("/assessment-results/<result_id>/profile-position")

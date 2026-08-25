@@ -158,7 +158,7 @@ def test_f18_policy_schema_and_migration_head_are_frozen(tmp_path, monkeypatch):
     assert policy["active_source_types"] == ["synthetic_fixture"]
     assert policy["completion"]["public_metrics_completion_allowed"] is False
     assert policy["real_participant_processing_enabled"] is False
-    assert profile["profiles"]["production"]["explicit_migration_head"] == "2026_08_25_075"
+    assert profile["profiles"]["production"]["explicit_migration_head"] == "2026_08_25_076"
     with app.app_context():
         from database import get_connection
 

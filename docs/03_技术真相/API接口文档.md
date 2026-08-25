@@ -636,7 +636,7 @@
 
 用途：保存用户一次测一测填写结果。
 
-说明：如果对应测评不存在或已下线，接口返回 `not_found`，不保存结果。如果对应测评仍存在但 `enabled_for_user=false`，接口返回 `assessment_not_enabled`，不保存结果。服务端以 worksheet 为唯一题目和计分真相：拒绝未知题号、重复题号、非法选项和缺少必答题，不使用客户端提交的 `score` 参与计分。
+说明：如果对应测评不存在或已下线，接口返回 `not_found`，不保存结果。如果对应测评仍存在但 `enabled_for_user=false`，接口返回 `assessment_not_enabled`，不保存结果。服务端以 worksheet 为唯一题目和计分真相：拒绝未知题号、重复题号、非法选项和缺少必答题，不使用客户端提交的 `score` 参与计分。每次提交同时保存作答时的完整 worksheet、量尺、计分、解释和边界快照，以及 `content_snapshot_hash`、`worksheet_payload_hash`、`worksheet_version`、`interpretation_version`。production 仅允许 `psychological_content_governance.json` 中逐项满足来源、版权、量尺、计分和非诊断边界的 allowlist；当前 allowlist 为空。
 
 请求字段：
 
@@ -692,10 +692,16 @@
 | `profile_pc1` | number/null | 本次结果在画像模型 PCA 二维图上的横坐标 |
 | `profile_pc2` | number/null | 本次结果在画像模型 PCA 二维图上的纵坐标 |
 | `profile_confidence` | number/null | 本次画像落点置信度 |
+| `content_snapshot_hash` | string | 作答时完整内容快照 SHA-256 |
+| `worksheet_payload_hash` | string | 作答时 worksheet payload SHA-256 |
+| `worksheet_version` | string | 作答时 worksheet 版本 |
+| `interpretation_version` | string | 作答时解释版本 |
 
 ### `GET /api/assessment-results`
 
 用途：查询测一测历史结果。接口只返回当前内容库仍保留的测评 ID 对应结果；旧版自建 UP 工作表或附录示例的历史残留记录不会返回给用户端。
+
+单条详情 `GET /api/assessment-results/<result_id>` 额外返回 `content_snapshot` 和 `historical_replay`。服务端先核对快照及 worksheet/解释 payload 哈希，再按原题目和计分重放；快照不合法时明确返回 `snapshot_valid=false`，不会用当前内容静默替代。
 
 查询参数：
 

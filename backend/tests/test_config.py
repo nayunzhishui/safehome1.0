@@ -32,7 +32,7 @@ def _configure_production_mysql(monkeypatch):
     monkeypatch.setenv("DB_APPROVED_HOST_SHA256", hashlib.sha256(host.encode()).hexdigest())
     monkeypatch.setenv("DB_APPROVED_DATABASE", "safehome")
     monkeypatch.setenv("DB_APPROVED_PORT", "3306")
-    monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_25_075")
+    monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_25_076")
     monkeypatch.setenv("MYSQL_SSL_CA", str(Path(__file__)))
     monkeypatch.setenv("MYSQL_SSL_VERIFY_IDENTITY", "1")
     monkeypatch.setenv("MYSQL_TLS_MIN_VERSION", "TLSv1.2")

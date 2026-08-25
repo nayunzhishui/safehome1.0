@@ -13,6 +13,9 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 from services.artifact_integrity_service import artifact_sha256  # noqa: E402
+from services.psychological_content_governance_service import (  # noqa: E402
+    production_eligibility,
+)
 
 DEFAULT_CONTENT_DIR = PROJECT_ROOT / "content"
 DEFAULT_SCHEMA_DIR = DEFAULT_CONTENT_DIR / "schemas"
@@ -1884,6 +1887,50 @@ def validate_ai_capability_policy_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_psychological_content_governance(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        policy = load_json(content_dir / "psychological_content_governance.json")
+        worksheets_root = load_json(content_dir / "assessment_worksheets.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"心理内容治理事实源不可读取：{exc}"]
+    if policy.get("schema_version") != "safehome.psychological-content-governance.v1":
+        errors.append("心理内容治理策略版本不兼容")
+    expected_gates = {
+        "psychology_reviewer": "pending_external",
+        "content_rights_owner": "pending_external",
+    }
+    if policy.get("external_gates") != expected_gates:
+        errors.append("心理与版权门禁必须保持待外部真人复核")
+    if policy.get("approval_policy") != "human_owned_never_auto_approve":
+        errors.append("心理内容不得由自动化批准")
+    sources = policy.get("governed_sources") or []
+    expected_types = {"worksheet", "training_card", "feedback_rule"}
+    if {item.get("content_type") for item in sources} != expected_types:
+        errors.append("worksheet、训练卡和反馈规则 governed source 不完整")
+    for source in sources:
+        if not (content_dir / str(source.get("filename") or "")).is_file():
+            errors.append(f"心理内容源不存在：{source.get('filename')}")
+    worksheets = {
+        item.get("id"): item for item in worksheets_root.get("worksheets", [])
+    }
+    rights = policy.get("rights_overrides") or {}
+    for worksheet_id in (policy.get("production_manifest") or {}).get(
+        "worksheet_ids", []
+    ):
+        worksheet = worksheets.get(worksheet_id)
+        if not worksheet:
+            errors.append(f"production 测评不存在：{worksheet_id}")
+            continue
+        eligibility = production_eligibility(worksheet, rights.get(worksheet_id))
+        if not eligibility["eligible"]:
+            errors.append(
+                f"production 测评 {worksheet_id} 未满足来源/版权/量尺/计分/边界："
+                + ",".join(eligibility["blockers"])
+            )
+    return errors
+
+
 def validate_therapeutic_stop_recovery_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -2036,6 +2083,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_ai_runtime_policy_content(content_dir))
     errors.extend(validate_ai_release_policy_content(content_dir))
     errors.extend(validate_ai_capability_policy_content(content_dir))
+    errors.extend(validate_psychological_content_governance(content_dir))
     errors.extend(validate_therapeutic_stop_recovery_content(content_dir))
     errors.extend(validate_task37_38_final_acceptance_content(content_dir))
     return errors

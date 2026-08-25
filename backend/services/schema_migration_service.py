@@ -775,6 +775,17 @@ def _apply_2026_08_25_075(conn) -> None:
     )
 
 
+def _apply_2026_08_25_076(conn) -> None:
+    for column, definition in {
+        "content_snapshot_json": "TEXT NOT NULL DEFAULT '{}'",
+        "content_snapshot_hash": "TEXT",
+        "worksheet_payload_hash": "TEXT",
+        "worksheet_version": "TEXT",
+        "interpretation_version": "TEXT",
+    }.items():
+        ensure_column(conn, "assessment_results", column, definition)
+
+
 MIGRATIONS = (
     Migration(
         version="2026_08_07_062",
@@ -917,6 +928,17 @@ MIGRATIONS = (
             "Keep AI capability decisions as audit evidence.",
             "Disable AI routes before application rollback.",
             "Never treat rollback as approval to enable participant AI.",
+        ),
+    ),
+    Migration(
+        version="2026_08_25_076",
+        name="assessment_content_snapshot",
+        apply=_apply_2026_08_25_076,
+        rollback_notes=(
+            "Stop assessment writes before application rollback.",
+            "Preserve immutable assessment content snapshots with historical results.",
+            "Do not replace stored worksheet payloads with the current content version.",
+            "The additive columns may remain unused by an older application version.",
         ),
     ),
 )

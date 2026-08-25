@@ -4850,6 +4850,7 @@
       ],
       "allowed_files": [
         "backend/**",
+        "config/**",
         "content/**",
         "shared/**",
         "apps/web/**",
@@ -4879,7 +4880,40 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 9
+        },
+        {
+          "argv": [
+            "python",
+            "backend/scripts/verify_rc0810_f20_content.py"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "python",
+            "backend/scripts/verify_rc0810_f20_content.py",
+            "--self-check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "expected_test_count": 1
         }
       ],
       "external_gates": [
@@ -4897,6 +4931,7 @@
       "change_budget": {
         "allowed_modules": [
           "backend/**",
+          "config/**",
           "content/**",
           "shared/**",
           "apps/web/**",
