@@ -1,0 +1,28 @@
+{
+  "schema": "safehome.rc0810.review-decision.v1",
+  "review_packet_sha256": "67225a4361dc342f5aba89e26ed7583d00a93f4e19dc0d2f7b3f9683b4f21147",
+  "challenge_nonce": "f9044704c3134273b4e1d34370ac60f2",
+  "decision": "pass",
+  "reviewer_id": "f14a-independent-reviewer",
+  "reviewer_kind": "separate_agent",
+  "findings": [],
+  "closed_findings": [
+    "F14A-REV-001 remained closed after final documentation backfill",
+    "F14A-REV-002 remained closed after final documentation backfill"
+  ],
+  "review_notes": {
+    "delta_since_pass2": "Git tree comparison from 4c5c9b62ec97041bcad3d8b8b8c808e180bcf24a to 259930bae3a4baf2cbac53e01d6806ab8cbce1f0 shows only the main plan and four required fact documents changed; verifier, Harness, tests, schema, catalog and registry are byte-identical to pass2.",
+    "documentation_consistency": "The plan and fact documents consistently state 168 assets, 7 endpoint-level processors, 176 pending gaps, pending_external/NO-GO, F14-B export/deletion/restore/vendor boundaries, and pass2 decision SHA-256 689614a98ceb0ac8c8fb50437158ed93ebbdfc34b089f0470419210e31116010. The beginner-facing development explanation carries the same counts and boundaries without turning the engineering pass into production approval.",
+    "packet_binding": "Final packet SHA/nonce、HEAD/origin、source_tree、dirty_diff、registry、start/current contract、start registry, exact 12-file scope and all five evidence file/record/hash-chain bindings were independently recomputed and matched.",
+    "independent_tests": [
+      "python -m pytest backend/tests/test_rc0810_f14.py -q -p no:cacheprovider => 12 passed in 18.07s",
+      "python scripts/verify_rc0810_f14_lineage.py => baseline_ready, 168 assets, 7 processors, 176 gaps, release_gate_eligible=false",
+      "git diff --check => passed",
+      "final packet evidence command-002 independently recomputed => Harness+F14 19 passed, exit_code=0, source/dirty/registry binding current"
+    ],
+    "release_boundary": "Final pass applies only to F14-A baseline and documentation consistency. privacy_owner, all lifecycle decisions, F14-B synthetic export/deletion, cache/queue/object-store checks, isolated restore, region/cross-border and vendor commitments remain pending; release stays NO-GO.",
+    "graph_fallback": "Knowledge graph tools required by review-changes were unavailable; final review used exact Git tree delta, packet/state/hash recomputation, documentation cross-check, and targeted validation."
+  },
+  "created_at": "2026-08-10T10:14:09Z",
+  "valid_until": "2026-08-17T10:14:09Z"
+}

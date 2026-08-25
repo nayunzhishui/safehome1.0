@@ -204,7 +204,20 @@
         "RC0810-F20",
         "RC0810-F21"
       ],
-      "freeze_unit": "RC0810-F21"
+      "freeze_unit": "RC0810-F21",
+      "base_checkpoint": {
+        "status": "review_pass",
+        "commit": "4a17b9faf9187a5d414f92e84ff7b08e60802d49",
+        "execution_units": ["RC0810-F14-A"],
+        "production_gate_eligible": false,
+        "evidence_binding": {
+          "task": "RC0810-F14-A",
+          "review_packet_path": "config/rc0810/f14a_review_packet_checkpoint.json",
+          "review_packet_sha256": "67225a4361dc342f5aba89e26ed7583d00a93f4e19dc0d2f7b3f9683b4f21147",
+          "decision_path": "config/rc0810/f14a_review_decision_checkpoint.json",
+          "decision_sha256": "13cf65d6fd83c658016c02fe9580b7db9302d7302b2a1c88dc250ea635d0eeba"
+        }
+      }
     },
     {
       "id": "C",

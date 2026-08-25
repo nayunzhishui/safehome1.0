@@ -372,6 +372,14 @@ def validate_registry(registry: dict[str, Any]) -> None:
             )
         ):
             raise HarnessError("波次历史review-pass checkpoint无效。")
+        legacy_checkpoint = (
+            wave.get("id") == "A"
+            and checkpoint == PRODUCTION_REVIEW_WAVES[0]["base_checkpoint"]
+        )
+        if not legacy_checkpoint and not _historical_checkpoint_evidence_is_valid(
+            registry, checkpoint
+        ):
+            raise HarnessError("波次历史review-pass checkpoint缺少有效独立复审证据。")
     if "review_pending_wave" not in set(
         registry.get("state_machine", {}).get("statuses", [])
     ) or "review_pending_wave" not in set(
@@ -2004,30 +2012,56 @@ def _registry_transition_is_wave_harness_upgrade(
 
 
 def _registry_transition_is_declared_checkpoint_resume(
-    current: dict[str, Any], wave: dict[str, Any] | None
+    previous: dict[str, Any],
+    current: dict[str, Any],
+    wave: dict[str, Any] | None,
+    task_id: str,
 ) -> bool:
     if wave is None or not isinstance(wave.get("base_checkpoint"), dict):
         return False
     checkpoint = wave["base_checkpoint"]
-    try:
-        relative = "content/rc0810_release_candidate_registry.json"
-        raw = _run_git("show", f"{checkpoint['commit']}:{relative}")
-        checkpoint_registry = json.loads(raw.decode("utf-8"))
-    except (HarnessError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
+    legacy_checkpoint = (
+        wave.get("id") == "A"
+        and checkpoint == PRODUCTION_REVIEW_WAVES[0]["base_checkpoint"]
+    )
+    if legacy_checkpoint:
+        try:
+            relative = "content/rc0810_release_candidate_registry.json"
+            raw = _run_git("show", f"{checkpoint['commit']}:{relative}")
+            checkpoint_registry = json.loads(raw.decode("utf-8"))
+        except (HarnessError, KeyError, UnicodeDecodeError, json.JSONDecodeError):
+            return False
+        candidate = json.loads(json.dumps(current))
+        checkpoint_tasks = task_map(checkpoint_registry)
+        candidate_tasks = task_map(candidate)
+        for unit_id in wave.get("execution_units", []):
+            unit = unit_map(candidate).get(unit_id)
+            if unit is None:
+                return False
+            parent_id = unit.get("task")
+            if parent_id not in checkpoint_tasks or parent_id not in candidate_tasks:
+                return False
+            candidate_tasks[parent_id].clear()
+            candidate_tasks[parent_id].update(
+                json.loads(json.dumps(checkpoint_tasks[parent_id]))
+            )
+        return _registry_transition_is_wave_harness_upgrade(
+            checkpoint_registry, candidate
+        )
+    if not _historical_checkpoint_evidence_is_valid(current, checkpoint):
         return False
     candidate = json.loads(json.dumps(current))
-    checkpoint_tasks = task_map(checkpoint_registry)
-    candidate_tasks = task_map(candidate)
-    for unit_id in wave.get("execution_units", []):
-        unit = unit_map(candidate).get(unit_id)
-        if unit is None:
-            return False
-        parent_id = unit.get("task")
-        if parent_id not in checkpoint_tasks or parent_id not in candidate_tasks:
-            return False
-        candidate_tasks[parent_id].clear()
-        candidate_tasks[parent_id].update(json.loads(json.dumps(checkpoint_tasks[parent_id])))
-    return _registry_transition_is_wave_harness_upgrade(checkpoint_registry, candidate)
+    candidate_wave = review_wave_map(candidate).get(wave["id"])
+    previous_wave = review_wave_map(previous).get(wave["id"])
+    if candidate_wave is None or previous_wave is None:
+        return False
+    if "base_checkpoint" in previous_wave:
+        candidate_wave["base_checkpoint"] = json.loads(
+            json.dumps(previous_wave["base_checkpoint"])
+        )
+    else:
+        candidate_wave.pop("base_checkpoint", None)
+    return _registry_transition_is_scoped(previous, candidate, task_id)
 
 
 def _registry_transition_is_scoped(
@@ -2163,6 +2197,68 @@ def _wave_base_checkpoint_units(wave: dict[str, Any] | None) -> set[str]:
     if exists.returncode != 0 or ancestor.returncode != 0:
         raise HarnessError("历史review-pass checkpoint不是当前HEAD的有效祖先。")
     return set(checkpoint["execution_units"])
+
+
+def _historical_checkpoint_evidence_is_valid(
+    registry: dict[str, Any], checkpoint: dict[str, Any]
+) -> bool:
+    binding = checkpoint.get("evidence_binding")
+    if not isinstance(binding, dict):
+        return False
+    required = {
+        "task",
+        "review_packet_path",
+        "review_packet_sha256",
+        "decision_path",
+        "decision_sha256",
+    }
+    if not required.issubset(binding):
+        return False
+    task_id = binding.get("task")
+    if task_id not in checkpoint.get("execution_units", []):
+        return False
+    try:
+        packet_path = (ROOT / binding["review_packet_path"]).resolve()
+        decision_path = (ROOT / binding["decision_path"]).resolve()
+        packet_bytes = packet_path.read_bytes()
+        decision_bytes = decision_path.read_bytes()
+        if (
+            sha256_bytes(packet_bytes) != binding["review_packet_sha256"]
+            or sha256_bytes(decision_bytes) != binding["decision_sha256"]
+        ):
+            return False
+        packet = json.loads(packet_bytes.decode("utf-8"))
+        decision = json.loads(decision_bytes.decode("utf-8"))
+        commit_tree = _run_git("rev-parse", f"{checkpoint['commit']}^{{tree}}")
+        commit_tree_text = commit_tree.decode("ascii").strip()
+    except (
+        HarnessError,
+        KeyError,
+        OSError,
+        TypeError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+    ):
+        return False
+    allowed_kinds = set(
+        registry.get("independent_review_policy", {}).get(
+            "allowed_reviewer_kinds", []
+        )
+    )
+    return bool(
+        packet.get("schema") == "safehome.rc0810.review-packet.v1"
+        and packet.get("task") == task_id
+        and packet.get("source_tree") == commit_tree_text
+        and decision.get("schema") == "safehome.rc0810.review-decision.v1"
+        and decision.get("decision") == "pass"
+        and decision.get("reviewer_kind") in allowed_kinds
+        and decision.get("reviewer_id")
+        and decision.get("review_packet_sha256")
+        == binding["review_packet_sha256"]
+        and decision.get("challenge_nonce") == packet.get("challenge_nonce")
+        and isinstance(decision.get("findings"), list)
+        and not decision["findings"]
+    )
 
 
 def _verification_commands_unchanged(
@@ -2331,7 +2427,9 @@ def start_task(registry: dict[str, Any], task_id: str) -> dict[str, Any]:
                 or _registry_transition_is_wave_harness_upgrade(
                     previous_registry, registry
                 )
-                or _registry_transition_is_declared_checkpoint_resume(registry, wave)
+                or _registry_transition_is_declared_checkpoint_resume(
+                    previous_registry, registry, wave, task_id
+                )
             ):
                 raise HarnessError("注册表变化超出当前新执行单元；必须先独立冻结。")
             state.setdefault("registry_history", []).append(state["registry_sha256"])

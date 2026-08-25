@@ -1,5 +1,12 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-25：RC0810 历史 checkpoint 证据绑定
+
+- [x] 定位 F14-A 原最终独立复审 packet、`pass` decision、nonce、哈希和提交树。
+- [x] 波次 B 仅凭原始证据文件哈希、packet/decision 互绑及 `4a17b9fa` 提交树恢复 F14-A 依赖。
+- [x] 新增篡改 decision 哈希拒绝测试；历史 decision 到期不等于不可引用其已冻结提交，但 production Gate 继续为 false。
+- [x] 本修复不启动 reviewer、不重跑 F14-A、不修改业务或数据库；独立提交推送后继续 F17。
+
 ## 2026-08-25：RC0810-F16 MySQL 安全与隔离恢复
 
 - [x] production MySQL CA、主机身份校验和最低 TLSv1.2 fail-closed。
