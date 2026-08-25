@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "safehome.rc0810.privacy-lineage.v1",
+  "$id": "safehome.rc0810.privacy-lineage.v2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11,13 +11,14 @@
     "source_bindings",
     "assets",
     "external_processors",
+    "phase_b_evidence",
     "privacy_owner",
     "release_gate_eligible"
   ],
   "properties": {
-    "schema": {"const": "safehome.rc0810.privacy-lineage.v1"},
+    "schema": {"const": "safehome.rc0810.privacy-lineage.v2"},
     "version": {"type": "string", "minLength": 1},
-    "phase": {"const": "phase_a_baseline"},
+    "phase": {"const": "phase_b_rescan"},
     "generated_from": {
       "type": "object",
       "additionalProperties": false,
@@ -126,6 +127,84 @@
           "deletion_capability": {"const": "pending_privacy_owner_confirmation"},
           "privacy_notice_status": {"const": "pending_external"},
           "review_status": {"const": "pending_external"}
+        }
+      }
+    },
+    "phase_b_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dependency_units",
+        "required_assets",
+        "participant_rights",
+        "post_delete_surfaces",
+        "isolated_restore",
+        "external_data_flow"
+      ],
+      "properties": {
+        "dependency_units": {
+          "const": ["RC0810-F17", "RC0810-F18", "RC0810-F19"]
+        },
+        "required_assets": {
+          "type": "array",
+          "minItems": 5,
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "participant_rights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "export_mode",
+            "deletion_mode",
+            "audit_actor_handling",
+            "service"
+          ],
+          "properties": {
+            "export_mode": {"const": "synthetic_subject_dry_run"},
+            "deletion_mode": {"const": "preview_then_execute"},
+            "audit_actor_handling": {"const": "pseudonymize_minimal_ledger"},
+            "service": {"const": "backend/services/privacy_request_service.py"}
+          }
+        },
+        "post_delete_surfaces": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["object_storage", "cache", "queue", "search_index", "offline_exports", "backups"],
+          "properties": {
+            "object_storage": {"const": "not_present_in_current_architecture"},
+            "cache": {"const": "not_present_in_current_architecture"},
+            "queue": {"const": "database_rows_in_scope_or_no_participant_payload"},
+            "search_index": {"const": "not_present_in_current_architecture"},
+            "offline_exports": {"const": "blocked_after_withdrawal_or_deletion"},
+            "backups": {"const": "tombstone_reconciliation_required"}
+          }
+        },
+        "isolated_restore": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["target_environment", "production_restore_forbidden", "tombstone_reconciliation", "verifier"],
+          "properties": {
+            "target_environment": {"const": "isolated_validation"},
+            "production_restore_forbidden": {"const": true},
+            "tombstone_reconciliation": {"const": "required"},
+            "verifier": {"const": "backend/scripts/verify_privacy_restore.py"}
+          }
+        },
+        "external_data_flow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "automatic_approval_allowed", "required_evidence"],
+          "properties": {
+            "status": {"const": "pending_external"},
+            "automatic_approval_allowed": {"const": false},
+            "required_evidence": {
+              "type": "array",
+              "minItems": 7,
+              "items": {"type": "string"},
+              "uniqueItems": true
+            }
+          }
         }
       }
     },

@@ -61,6 +61,19 @@ PRODUCTION_REVIEW_WAVES = [
             "RC0810-F21",
         ],
         "freeze_unit": "RC0810-F21",
+        "base_checkpoint": {
+            "status": "review_pass",
+            "commit": "4a17b9faf9187a5d414f92e84ff7b08e60802d49",
+            "execution_units": ["RC0810-F14-A"],
+            "production_gate_eligible": False,
+            "evidence_binding": {
+                "task": "RC0810-F14-A",
+                "review_packet_path": "config/rc0810/f14a_review_packet_checkpoint.json",
+                "review_packet_sha256": "67225a4361dc342f5aba89e26ed7583d00a93f4e19dc0d2f7b3f9683b4f21147",
+                "decision_path": "config/rc0810/f14a_review_decision_checkpoint.json",
+                "decision_sha256": "13cf65d6fd83c658016c02fe9580b7db9302d7302b2a1c88dc250ea635d0eeba",
+            },
+        },
     },
     {
         "id": "C",
@@ -1737,6 +1750,13 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
         )
         source_anchor_id = active_task_id or checkpoint_task_id
         source_anchor = state["tasks"].get(source_anchor_id or "")
+        if (
+            source_anchor is not None
+            and not source_anchor.get("outcomes")
+            and checkpoint_task_id is not None
+        ):
+            source_anchor_id = checkpoint_task_id
+            source_anchor = state["tasks"].get(checkpoint_task_id)
         if source_anchor and source_anchor.get("outcomes"):
             bound_source_tree = source_anchor["subtasks"][
                 next(iter(source_anchor["subtasks"]))
@@ -1745,6 +1765,7 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
                 roots.add(source_anchor_id)
         if roots and "registry_changed" not in stale_reason:
             stale_reason.append("source_tree_changed")
+        stale_units: list[str] = []
         if roots:
             stale_units = _recursive_unit_dependents(registry, roots)
             stale_parent_ids = {
@@ -1762,14 +1783,6 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
                 }
                 for task_id in stale_tasks
             }
-            stale_unit_set = set(stale_units)
-            for unit_id, record in state["tasks"].items():
-                if unit_id in stale_unit_set or record.get("status") != "stale":
-                    continue
-                restored_status = _restorable_status(record)
-                if restored_status is not None:
-                    record["status"] = restored_status
-                    record["evidence_status"] = "current"
             for unit_id in stale_units:
                 if unit_id not in state["tasks"]:
                     continue
@@ -1779,6 +1792,17 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
                         "status"
                     ]
                 state["tasks"][unit_id]["status"] = "stale"
+        stale_unit_set = set(stale_units)
+        restored_any = False
+        for unit_id, record in state["tasks"].items():
+            if unit_id in stale_unit_set or record.get("status") != "stale":
+                continue
+            restored_status = _restorable_status(record)
+            if restored_status is not None:
+                record["status"] = restored_status
+                record["evidence_status"] = "current"
+                restored_any = True
+        if roots or restored_any:
             state["updated_at"] = utc_now()
             write_state(state)
         report = {
@@ -2045,8 +2069,29 @@ def _registry_transition_is_declared_checkpoint_resume(
             candidate_tasks[parent_id].update(
                 json.loads(json.dumps(checkpoint_tasks[parent_id]))
             )
-        return _registry_transition_is_wave_harness_upgrade(
+        if _registry_transition_is_wave_harness_upgrade(
             checkpoint_registry, candidate
+        ):
+            return True
+        if {
+            key: value for key, value in previous.items() if key != "tasks"
+        } != {key: value for key, value in current.items() if key != "tasks"}:
+            return False
+        previous_tasks = task_map(previous)
+        current_tasks = task_map(current)
+        changed_tasks = {
+            task_id
+            for task_id in set(previous_tasks) | set(current_tasks)
+            if previous_tasks.get(task_id) != current_tasks.get(task_id)
+        }
+        checkpoint_parent_tasks = {
+            unit_map(current)[unit_id]["task"]
+            for unit_id in checkpoint.get("execution_units", [])
+            if unit_id in unit_map(current)
+        }
+        return bool(changed_tasks) and changed_tasks <= checkpoint_parent_tasks and all(
+            current_tasks.get(parent_id) == checkpoint_tasks.get(parent_id)
+            for parent_id in changed_tasks
         )
     if not _historical_checkpoint_evidence_is_valid(current, checkpoint):
         return False

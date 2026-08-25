@@ -1,4 +1,4 @@
-"""Validate the RC0810-F14-A privacy-lineage baseline without mutating data."""
+"""Validate the RC0810-F14-B privacy-lineage rescan without mutating data."""
 
 from __future__ import annotations
 
@@ -37,6 +37,13 @@ SENSITIVE_VALUE_RE = re.compile(
     r"(?:secret|token|password|api[_-]?key)=[^&\s\"']{6,})"
 )
 NON_COLUMN_PREFIXES = {"primary", "unique", "foreign", "constraint", "check"}
+PHASE_B_REQUIRED_ASSETS = {
+    "content_release_artifacts",
+    "content_active_artifacts",
+    "research_source_objects",
+    "research_execution_manifests",
+    "ai_capability_decisions",
+}
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -102,8 +109,8 @@ def discover_columns(models_path: Path | None = None) -> dict[str, list[str]]:
     for path in source_paths(models_path):
         text = path.read_text(encoding="utf-8")
         for table_name, body in TABLE_BLOCK_RE.findall(text):
-            for raw_line in body.splitlines():
-                line = raw_line.strip().rstrip(",")
+            for raw_line in re.split(r"[,\n]", body):
+                line = raw_line.strip()
                 if not line:
                     continue
                 token = line.split()[0].strip("`\"'[]").lower()
@@ -253,6 +260,9 @@ def generated_assets(models_path: Path | None = None) -> list[dict[str, Any]]:
 
 def refresh_catalog(catalog_path: Path = CATALOG_PATH) -> None:
     catalog = load_json(catalog_path)
+    catalog["schema"] = "safehome.rc0810.privacy-lineage.v2"
+    catalog["version"] = "2026-08-25.f14b"
+    catalog["phase"] = "phase_b_rescan"
     catalog["assets"] = generated_assets()
     catalog["external_processors"] = generated_external_processors()
     catalog["source_bindings"] = current_source_bindings()
@@ -289,6 +299,27 @@ def validate_catalog(
         errors.append(f"unknown_catalog_tables:{','.join(extra)}")
     if duplicate_asset_ids:
         errors.append("duplicate_asset_ids")
+    phase_b_required_assets = set(
+        catalog.get("phase_b_evidence", {}).get("required_assets", [])
+    )
+    phase_b_required_assets_current = (
+        phase_b_required_assets == PHASE_B_REQUIRED_ASSETS
+        and PHASE_B_REQUIRED_ASSETS <= registered
+    )
+    if phase_b_required_assets_current:
+        asset_by_table = {
+            item.get("table_name"): item
+            for item in catalog.get("assets", [])
+            if isinstance(item, dict)
+        }
+        phase_b_required_assets_current = all(
+            asset_by_table[name].get("access_paths")
+            for name in PHASE_B_REQUIRED_ASSETS
+        ) and "actor_id" in asset_by_table["ai_capability_decisions"].get(
+            "actor_keys", []
+        )
+    if not phase_b_required_assets_current:
+        errors.append("phase_b_required_assets_stale")
     asset_catalog_matches = catalog.get("assets") == generated_assets(models_path)
     if not asset_catalog_matches:
         errors.append("asset_catalog_mismatch")
@@ -328,7 +359,7 @@ def validate_catalog(
     owner_pending = catalog.get("privacy_owner", {}).get("status") != "approved"
     return {
         "valid": not errors,
-        "status": "baseline_ready" if not errors else "invalid",
+        "status": "phase_b_ready" if not errors else "invalid",
         "privacy_owner_status": catalog.get("privacy_owner", {}).get("status"),
         "release_gate_eligible": False,
         "asset_count": len(registered),
@@ -337,6 +368,7 @@ def validate_catalog(
         "unregistered_tables": missing,
         "unknown_catalog_tables": extra,
         "duplicate_asset_ids": duplicate_asset_ids,
+        "phase_b_required_assets_current": phase_b_required_assets_current,
         "asset_catalog_matches": asset_catalog_matches,
         "source_bindings_current": source_bindings_current,
         "processor_catalog_matches": processor_catalog_matches,

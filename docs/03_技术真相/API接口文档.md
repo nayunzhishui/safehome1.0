@@ -8,6 +8,13 @@
 
 阅读方式：先看”通用约定”和对应接口章节；公开操作的机器登记见`API机器契约.md`和`shared/contracts/api-contract.json`。若与历史日志冲突，以机器契约、本文开头进度口径和`docs/00_当前事实基准/项目进度统一口径.md`为准。
 
+## 2026-08-25：F14-B 隐私权利补充合同
+
+- `GET /api/privacy/export-my-data` 的 `counts` 增加 `ai_capability_decisions`，只返回当前主体的决策记录数量，不返回内部审计明细、问答原文或密钥。
+- 隐私申请选择 `account_identity` 时，预览与 dry-run 会定位 AI capability 决策账本；dry-run 不修改数据。
+- 受控执行不会删除最小 AI 决策事实，而是把 `actor_id` 替换为本次删除生成的主体代号；删除后旧主体 ID 查询为零，执行证明和墓碑继续保留。
+- production 真实删除仍受保存策略、执行开关和双人批准门禁约束；本轮没有开放 production 执行。
+
 ## 2026-08-25：F19 AI capability 当前合同
 
 - `GET /api/ai-qa/config` 的最终开放状态来自唯一 capability resolver，新增 `participant_entry_visible`、`capability`、`sandbox_capability` 和 `capability_policy`；`provider_policy` 增加 `response_origin` 与 `response_origin_label`，不返回密钥。

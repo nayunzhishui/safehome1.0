@@ -387,6 +387,29 @@ def test_wave_resume_adopts_checkpoint_registry_over_stale_runtime_registry(tmp_
     assert resumed.returncode == 0, resumed.stderr
     assert json.loads(resumed.stdout)["status"] == "in_progress"
 
+    forged = json.loads(json.dumps(current))
+    next(task for task in forged["tasks"] if task["id"] == "RC0810-F07")[
+        "title"
+    ] = "forged checkpoint task"
+    forged_path = tmp_path / "forged-registry.json"
+    forged_path.write_text(json.dumps(forged), encoding="utf-8")
+    forged_runtime = tmp_path / "forged-runtime"
+    forged_env = {
+        "RC0810_RUNTIME_ROOT": str(forged_runtime),
+        "RC0810_RUN_ID": "run-forged-registry",
+    }
+    assert run_cli(
+        "start",
+        "RC0810-F00",
+        env=forged_env | {"RC0810_REGISTRY_PATH": str(previous_path)},
+    ).returncode == 0
+    rejected = run_cli(
+        "start",
+        "RC0810-F10-B",
+        env=forged_env | {"RC0810_REGISTRY_PATH": str(forged_path)},
+    )
+    assert rejected.returncode != 0
+
 
 def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_review(
     tmp_path,

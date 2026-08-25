@@ -1,4 +1,5 @@
 import json
+import importlib
 import subprocess
 import sys
 from pathlib import Path
@@ -20,12 +21,12 @@ def run_verifier(*args: str):
     )
 
 
-def test_f14a_default_definition_is_fail_closed():
+def test_f14b_default_definition_is_fail_closed():
     completed = run_verifier()
     assert completed.returncode == 0, completed.stderr
     payload = json.loads(completed.stdout)
     assert payload["valid"] is True
-    assert payload["status"] == "baseline_ready"
+    assert payload["status"] == "phase_b_ready"
     assert payload["privacy_owner_status"] == "pending_external"
     assert payload["release_gate_eligible"] is False
 
@@ -46,6 +47,18 @@ def test_f14a_catalog_covers_every_discovered_table():
         "agent_runs",
         "agent_tool_calls",
     } <= tables
+    assets = {item["table_name"]: item for item in catalog["assets"]}
+    required = {
+        "content_release_artifacts",
+        "content_active_artifacts",
+        "research_source_objects",
+        "research_execution_manifests",
+        "ai_capability_decisions",
+    }
+    assert required <= set(assets)
+    assert all(assets[name]["access_paths"] for name in required)
+    assert "actor_id" in assets["ai_capability_decisions"]["actor_keys"]
+    assert payload["phase_b_required_assets_current"] is True
 
 
 def test_f14a_each_asset_has_subject_actor_derivation_and_lifecycle_metadata():
@@ -83,6 +96,15 @@ def test_f14a_rejects_tampered_asset_metadata(tmp_path):
     completed = run_verifier("--catalog", str(candidate))
     assert completed.returncode != 0
     assert "asset_catalog_mismatch" in completed.stdout
+
+    catalog["assets"].append(dict(catalog["assets"][0]))
+    duplicate = tmp_path / "duplicate-assets.json"
+    duplicate.write_text(json.dumps(catalog), encoding="utf-8")
+    duplicate_result = run_verifier("--catalog", str(duplicate))
+    assert duplicate_result.returncode != 0
+    duplicate_payload = json.loads(duplicate_result.stdout)
+    assert duplicate_payload["duplicate_asset_ids"] == [catalog["assets"][0]["asset_id"]]
+    assert "duplicate_asset_ids" in duplicate_payload["errors"]
 
 
 def test_f14a_catalog_binds_models_migrations_routes_and_services():
@@ -132,6 +154,32 @@ def test_f14a_external_processors_are_inventoried_without_approval():
     completed = run_verifier()
     assert completed.returncode == 0, completed.stderr
     assert json.loads(completed.stdout)["processor_catalog_matches"] is True
+    evidence = catalog["phase_b_evidence"]
+    assert evidence["dependency_units"] == ["RC0810-F17", "RC0810-F18", "RC0810-F19"]
+    assert evidence["participant_rights"] == {
+        "export_mode": "synthetic_subject_dry_run",
+        "deletion_mode": "preview_then_execute",
+        "audit_actor_handling": "pseudonymize_minimal_ledger",
+        "service": "backend/services/privacy_request_service.py",
+    }
+    assert evidence["isolated_restore"] == {
+        "target_environment": "isolated_validation",
+        "production_restore_forbidden": True,
+        "tombstone_reconciliation": "required",
+        "verifier": "backend/scripts/verify_privacy_restore.py",
+    }
+    external = evidence["external_data_flow"]
+    assert external["status"] == "pending_external"
+    assert external["automatic_approval_allowed"] is False
+    assert set(external["required_evidence"]) == {
+        "data_region",
+        "cross_border_path",
+        "provider_training_commitment",
+        "provider_retention_commitment",
+        "provider_deletion_commitment",
+        "subprocessor_inventory",
+        "wechat_privacy_notice_mapping",
+    }
 
 
 def test_f14a_new_table_without_registry_entry_fails_closed(tmp_path):
@@ -216,13 +264,105 @@ def test_f14a_registry_freezes_exact_scope_without_migration_or_business_changes
     ]
 
 
-def test_f14a_duplicate_asset_ids_are_rejected_explicitly(tmp_path):
-    catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
-    catalog["assets"].append(dict(catalog["assets"][0]))
-    candidate = tmp_path / "duplicate-assets.json"
-    candidate.write_text(json.dumps(catalog), encoding="utf-8")
-    completed = run_verifier("--catalog", str(candidate))
-    assert completed.returncode != 0
-    payload = json.loads(completed.stdout)
-    assert payload["duplicate_asset_ids"] == [catalog["assets"][0]["asset_id"]]
-    assert "duplicate_asset_ids" in payload["errors"]
+def _fresh_f14b_app(tmp_path, monkeypatch):
+    if str(ROOT / "backend") not in sys.path:
+        sys.path.insert(0, str(ROOT / "backend"))
+    for name in list(sys.modules):
+        if name in {"app", "config", "database", "models"} or name.startswith(
+            ("routes.", "services.")
+        ):
+            sys.modules.pop(name, None)
+    monkeypatch.setenv("APP_ENV", "testing")
+    monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "f14b.sqlite3"))
+    monkeypatch.setenv("CONTENT_DIR", str(ROOT / "content"))
+    app = importlib.import_module("app").app
+    app.config.update(
+        PRIVACY_EXECUTION_ENABLED=True,
+        PRIVACY_RETENTION_POLICY_APPROVED=True,
+    )
+    return app
+
+
+def _login(client, code):
+    response = client.post("/api/auth/wechat-login", json={"code": code, "nickname": code})
+    assert response.status_code == 200
+    return response.get_json()["data"]
+
+
+def _headers(token, key=None):
+    result = {"Authorization": f"Bearer {token}"}
+    if key:
+        result["Idempotency-Key"] = key
+    return result
+
+
+def test_f14b_ai_decision_dry_run_then_execution_pseudonymizes_actor(
+    tmp_path, monkeypatch
+):
+    app = _fresh_f14b_app(tmp_path, monkeypatch)
+    client = app.test_client()
+    owner = _login(client, "f14b-owner")
+    admin = _login(client, "f14b-admin")
+    owner_id = owner["user"]["id"]
+    admin_id = admin["user"]["id"]
+    with app.app_context():
+        database = importlib.import_module("database")
+        with database.get_connection() as conn:
+            conn.execute("UPDATE users SET role = 'admin' WHERE id = ?", (admin_id,))
+            conn.execute(
+                """INSERT INTO ai_capability_decisions
+                   (id, actor_id, actor_role, operation, environment, audience,
+                    enabled, provider, real_provider_allowed, reason_code,
+                    policy_version, data_mode, created_at)
+                   VALUES ('f14b-capability', ?, 'parent', 'route_session_access',
+                           'testing', 'participant', 0, 'fake', 0,
+                           'participant_ai_not_available_in_environment',
+                           '2026.08-rc0810-f19-v1', 'none', ?)""",
+                (owner_id, database.now_iso()),
+            )
+            conn.commit()
+
+    exported = client.get("/api/privacy/export-my-data", headers=_headers(owner["token"]))
+    assert exported.status_code == 200
+    assert exported.get_json()["data"]["counts"]["ai_capability_decisions"] == 1
+
+    created = client.post(
+        "/api/privacy/delete-my-data",
+        headers=_headers(owner["token"]),
+        json={"reason": "停止使用"},
+    )
+    request_id = created.get_json()["data"]["id"]
+    claimed = client.post(
+        f"/api/privacy/admin/requests/{request_id}/transition",
+        headers=_headers(admin["token"], "f14b-claim"),
+        json={"action": "start_processing", "scope": ["account_identity"], "note": "核对"},
+    )
+    version = claimed.get_json()["data"]["request"]["version"]
+    dry_run = client.post(
+        f"/api/privacy/admin/requests/{request_id}/execute",
+        headers=_headers(admin["token"], "f14b-dry-run"),
+        json={"dry_run": True, "expected_version": version},
+    )
+    assert dry_run.status_code == 200
+    with app.app_context():
+        database = importlib.import_module("database")
+        with database.get_connection() as conn:
+            assert conn.execute(
+                "SELECT actor_id FROM ai_capability_decisions WHERE id = 'f14b-capability'"
+            ).fetchone()["actor_id"] == owner_id
+
+    executed = client.post(
+        f"/api/privacy/admin/requests/{request_id}/execute",
+        headers=_headers(admin["token"], "f14b-execute"),
+        json={"dry_run": False, "expected_version": version},
+    )
+    assert executed.status_code == 200
+    replacement = executed.get_json()["data"]["result"]["replacement_user_id"]
+    with app.app_context():
+        database = importlib.import_module("database")
+        with database.get_connection() as conn:
+            actor_id = conn.execute(
+                "SELECT actor_id FROM ai_capability_decisions WHERE id = 'f14b-capability'"
+            ).fetchone()["actor_id"]
+    assert actor_id == replacement
+    assert actor_id != owner_id

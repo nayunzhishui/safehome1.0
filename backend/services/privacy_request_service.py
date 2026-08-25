@@ -31,7 +31,13 @@ RESEARCH_CONSENT_TYPES = {"anonymous_research", "research_authorization"}
 CONSENT_TYPES_FOR_STATUS = ["user_agreement", "privacy_policy", "non_diagnostic_notice", "anonymous_research", "research_authorization"]
 
 SCOPE_TABLES = {
-    "account_identity": ("consent_record_annotations", "consent_records", "family_links", "data_claims"),
+    "account_identity": (
+        "consent_record_annotations",
+        "consent_records",
+        "family_links",
+        "data_claims",
+        "ai_capability_decisions",
+    ),
     "participant_records": (
         "goals", "emotion_diaries", "emotion_thermometer", "assessment_results",
         "student_profiles", "student_profile_followups", "student_sandplay_entries",
@@ -239,7 +245,21 @@ def export_participant_privacy_summary(user_id: str) -> dict:
             consent["annotations"] = annotations_by_record.get(consent["id"], [])
         return {
             "user_id": user_id,
-            "counts": {"goals": count_for_user(conn, "goals"), "diaries": count_for_user(conn, "emotion_diaries"), "feedback": count_for_user(conn, "feedback_results"), "checkins": count_for_user(conn, "checkins"), "profiles": count_for_user(conn, "student_profiles"), "parent_assessments": count_for_user(conn, "parent_assessment_submissions"), "supervision": count_for_user(conn, "supervision_requests"), "ai_qa_sessions": count_for_user(conn, "ai_qa_sessions")},
+            "counts": {
+                "goals": count_for_user(conn, "goals"),
+                "diaries": count_for_user(conn, "emotion_diaries"),
+                "feedback": count_for_user(conn, "feedback_results"),
+                "checkins": count_for_user(conn, "checkins"),
+                "profiles": count_for_user(conn, "student_profiles"),
+                "parent_assessments": count_for_user(conn, "parent_assessment_submissions"),
+                "supervision": count_for_user(conn, "supervision_requests"),
+                "ai_qa_sessions": count_for_user(conn, "ai_qa_sessions"),
+                "ai_capability_decisions": _count(
+                    conn,
+                    "SELECT COUNT(*) AS count FROM ai_capability_decisions WHERE actor_id = ?",
+                    (user_id,),
+                ),
+            },
             "consent_status": [_latest_consent_status(conn, user_id, consent_type) for consent_type in CONSENT_TYPES_FOR_STATUS],
             "consent_history": consent_rows,
             "privacy_requests": rows_to_dicts(privacy_rows),
@@ -621,6 +641,12 @@ def _count(conn, sql: str, params: tuple) -> int:
 
 
 def _table_count(conn, table: str, user_id: str) -> int:
+    if table == "ai_capability_decisions":
+        return _count(
+            conn,
+            "SELECT COUNT(*) AS count FROM ai_capability_decisions WHERE actor_id = ?",
+            (user_id,),
+        )
     if table in DIRECT_USER_TABLES:
         return _count(conn, f"SELECT COUNT(*) AS count FROM {table} WHERE user_id = ?", (user_id,))
     if table == "family_links":
@@ -794,7 +820,14 @@ def approve_privacy_execution(request_id: str, actor: dict, scope_hash: str, pol
     return row_to_dict(row)
 
 
-def _delete_table_rows(conn, table: str, user_id: str) -> int:
+def _delete_table_rows(
+    conn, table: str, user_id: str, replacement_user_id: str | None = None
+) -> int:
+    if table == "ai_capability_decisions":
+        return conn.execute(
+            "UPDATE ai_capability_decisions SET actor_id = ? WHERE actor_id = ?",
+            (replacement_user_id, user_id),
+        ).rowcount
     if table in DIRECT_USER_TABLES:
         return conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (user_id,)).rowcount
     if table == "family_links":
@@ -985,13 +1018,15 @@ def execute_privacy_request(request_id: str, actor: dict, *, dry_run: bool, idem
             user_id = row["user_id"]
             scopes = preview["scope"]
             deleted: dict[str, int] = {}
+            replacement = f"deleted_{_stable_hash({'request_id': request_id, 'user_id': user_id})[:16]}"
             ordered_tables = [
                 "parent_report_actions", "profile_reviews", "relationship_research_notes",
                 *[table for scope in scopes for table in SCOPE_TABLES[scope] if table not in {"parent_report_actions", "profile_reviews", "relationship_research_notes"}],
             ]
             for table in dict.fromkeys(ordered_tables):
-                deleted[table] = _delete_table_rows(conn, table, user_id)
-            replacement = f"deleted_{_stable_hash({'request_id': request_id, 'user_id': user_id})[:16]}"
+                deleted[table] = _delete_table_rows(
+                    conn, table, user_id, replacement
+                )
             if "account_identity" in scopes:
                 conn.execute("UPDATE users SET nickname = '已删除用户', username = NULL, phone_or_email = NULL, password_hash = NULL, anonymous_id = ?, wechat_openid = NULL, phone_hash = NULL, avatar_url = NULL, status = 'deleted', updated_at = ? WHERE id = ?", (replacement, timestamp, user_id))
                 deleted["users_anonymized"] = 1
