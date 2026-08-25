@@ -456,7 +456,7 @@ export function AiQaSandboxPage() {
           ) : null}
           {answer ? (
             <article className="aiQaAnswer" aria-label="受控回答">
-              <div className="answerMeta"><span>{answer.route}</span><span>{answer.fixed_response ? "固定安全响应" : "fake provider"}</span></div>
+              <div className="answerMeta"><span>{answer.route}</span><span>{answer.fixed_response ? "固定安全响应" : (config?.provider_policy.response_origin_label || "合成模拟器")}</span></div>
               <h3>回答</h3><p>{answer.message.content}</p>
               <p className="boundaryCallout">不确定性：{answer.uncertainty || String(answer.message.safety.uncertainty || "不适用")}。{answer.boundary_notice}</p>
               <h3>来源</h3>

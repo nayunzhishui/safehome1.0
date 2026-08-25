@@ -1811,6 +1811,79 @@ def validate_ai_release_policy_content(content_dir: Path) -> list[str]:
     return errors
 
 
+def validate_ai_capability_policy_content(content_dir: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        policy = load_json(content_dir / "ai_capability_policy.json")
+        governance = load_json(content_dir / "ai_qa_governance.json")
+        release = load_json(content_dir / "ai_qa_release_policy.json")
+        participant = load_json(content_dir / "ai_participant_use_case_policy.json")
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"AI capability 事实源不可读取：{exc}"]
+    production = policy.get("production") or {}
+    if policy.get("schema_version") != "safehome.ai-capability-policy.v1":
+        errors.append("AI capability 策略版本不兼容")
+    if any(
+        production.get(key) is not False
+        for key in (
+            "participant_enabled",
+            "participant_entry_visible",
+            "sandbox_enabled",
+            "provider_calls_enabled",
+        )
+    ):
+        errors.append("production AI 必须固定关闭参与者、入口、沙盒和供应商调用")
+    validation = policy.get("validation") or {}
+    required_validation_controls = {
+        "server_selected_provider",
+        "verified_provider_governance",
+        "positive_budget",
+        "rate_limit",
+        "transport_timeout",
+        "circuit_breaker",
+        "dlp",
+        "approved_sources",
+        "audit_event",
+    }
+    if (
+        validation.get("participant_enabled") is not False
+        or validation.get("sandbox_enabled") is not True
+        or set(validation.get("allowed_roles") or [])
+        != {"researcher", "supervisor", "admin"}
+        or set(validation.get("real_provider_requirements") or [])
+        != required_validation_controls
+    ):
+        errors.append("validation AI 必须保持内部受控、非参与者且具备完整运行控制")
+    future_gate = policy.get("future_production_gate") or {}
+    required_future_evidence = {
+        "participant_consent",
+        "provider_terms",
+        "data_region",
+        "retention_and_deletion",
+        "red_team",
+        "human_on_call",
+        "budget",
+        "rollback_drill",
+    }
+    if (
+        future_gate.get("status") != "pending_external"
+        or future_gate.get("automatic_approval_allowed") is not False
+        or set(future_gate.get("required_evidence") or [])
+        != required_future_evidence
+    ):
+        errors.append("未来 production AI Gate 必须由外部负责人逐项批准且禁止自动通过")
+    if not (
+        governance.get("participant_feature_enabled") is False
+        and governance.get("engineering_controls", {}).get("participant_enabled") is False
+        and release.get("participant_entry_enabled") is False
+        and release.get("production_release_approved") is False
+        and release.get("automatic_advance_allowed") is False
+        and participant.get("production_runtime_enabled") is False
+    ):
+        errors.append("AI capability、governance、release 与参与者用例事实发生漂移")
+    return errors
+
+
 def validate_therapeutic_stop_recovery_content(content_dir: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -1962,6 +2035,7 @@ def validate_content(content_dir: Path = DEFAULT_CONTENT_DIR, schema_dir: Path =
     errors.extend(validate_ai_continuous_quality_content(content_dir))
     errors.extend(validate_ai_runtime_policy_content(content_dir))
     errors.extend(validate_ai_release_policy_content(content_dir))
+    errors.extend(validate_ai_capability_policy_content(content_dir))
     errors.extend(validate_therapeutic_stop_recovery_content(content_dir))
     errors.extend(validate_task37_38_final_acceptance_content(content_dir))
     return errors

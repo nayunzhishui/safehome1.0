@@ -2,6 +2,7 @@ const { createSafeHomeApi } = require("../../services/api");
 const { isLoggedIn } = require("../../utils/authGuard");
 
 const api = createSafeHomeApi();
+const SYNTHETIC_LABEL = "合成问答演示";
 
 Page({
   data: {
@@ -14,9 +15,9 @@ Page({
     messages: [],
     error: "",
     focus: "ai",
-    eyebrow: "AI支持性问答",
+    eyebrow: "支持性问答",
     title: "把问题缩小到下一步",
-    subtitle: "AI只根据已审核知识整理回答，并显示参考来源。",
+    subtitle: "正在确认当前能力、来源和开放状态。",
     boundary: "回答可能遗漏情境，不构成诊断、治疗、危机处置或关系判断。",
   },
 
@@ -25,11 +26,11 @@ Page({
     const isRag = focus === "rag";
     this.setData({
       focus,
-      eyebrow: isRag ? "RAG知识库问答" : "AI支持性问答",
+      eyebrow: isRag ? "知识库问答" : "支持性问答",
       title: isRag ? "从已审核内容里找答案" : "把问题缩小到下一步",
       subtitle: isRag
         ? "先检索项目知识库，再整理为带参考来源的小步骤。"
-        : "AI只根据已审核知识整理回答，并显示参考来源。",
+        : "只根据已审核知识整理回答，并显示参考来源。",
     });
     wx.setNavigationBarTitle({ title: isRag ? "RAG知识库问答" : "AI支持性问答" });
     if (!isLoggedIn()) {
@@ -47,9 +48,15 @@ Page({
     try {
       const config = await api.getAiQaConfig();
       const participant = config.participant_use_case_policy || {};
+      const capability = config.capability || {};
+      const simulated = capability.response_origin === "synthetic_simulation";
       this.setData({
         loading: false,
         enabled: Boolean(config.participant_enabled),
+        eyebrow: simulated ? SYNTHETIC_LABEL : this.data.eyebrow,
+        subtitle: simulated
+          ? "仅使用本地合成模拟器和已审核内容，不代表真实供应商回答。"
+          : this.data.subtitle,
         boundary: participant.boundary_notice || this.data.boundary,
       });
     } catch (error) {

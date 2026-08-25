@@ -1,0 +1,54 @@
+{
+  "schema_version": "safehome.ai-capability-policy.v1",
+  "policy_version": "2026.08-rc0810-f19-v1",
+  "production": {
+    "participant_enabled": false,
+    "participant_entry_visible": false,
+    "sandbox_enabled": false,
+    "provider_calls_enabled": false,
+    "reason_code": "production_ai_fixed_closed"
+  },
+  "validation": {
+    "participant_enabled": false,
+    "sandbox_enabled": true,
+    "allowed_roles": ["researcher", "supervisor", "admin"],
+    "data_mode": "synthetic_or_explicitly_authorized",
+    "real_provider_requirements": [
+      "server_selected_provider",
+      "verified_provider_governance",
+      "positive_budget",
+      "rate_limit",
+      "transport_timeout",
+      "circuit_breaker",
+      "dlp",
+      "approved_sources",
+      "audit_event"
+    ]
+  },
+  "local": {
+    "participant_flag_may_enable_fake_only": true,
+    "sandbox_flag_may_enable": true,
+    "data_mode": "local_fake_only"
+  },
+  "copy": {
+    "unavailable_label": "支持性问答当前未开放",
+    "fake_label": "合成问答演示",
+    "fake_origin_label": "合成模拟器",
+    "external_origin_label": "受控外部供应商"
+  },
+  "future_production_gate": {
+    "status": "pending_external",
+    "owner": "ai_governance_owner",
+    "automatic_approval_allowed": false,
+    "required_evidence": [
+      "participant_consent",
+      "provider_terms",
+      "data_region",
+      "retention_and_deletion",
+      "red_team",
+      "human_on_call",
+      "budget",
+      "rollback_drill"
+    ]
+  }
+}

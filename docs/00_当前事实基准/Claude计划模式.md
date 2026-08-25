@@ -1,5 +1,17 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-25：RC0810-F19 正式 AI 关闭与治理统一
+
+- [x] 盘点配置、参与者用例、治理/发布策略、双端入口和 DeepSeek/OpenAI 适配器。
+- [x] 建立唯一 capability 事实源与 resolver，统一 UI、route、service 和 provider 决定。
+- [x] production 固定关闭入口、沙盒和 provider；配置/密钥注入、旧客户端和直连 API 均失败关闭。
+- [x] validation 只保留内部合成/授权路径，并绑定预算、限流、超时、熔断、DLP、来源和审计条件。
+- [x] 建立未来 production 人工 Gate 模板，当前 `pending_external` 且禁止自动批准。
+- [x] 双端 fake/unavailable 文案改为合成模拟或未开放，不冒充真实 AI 回答。
+- [x] 新增 075 加法迁移和 capability 决策账本；同步 API、数据库和功能真值。
+- [x] F19 专项 9 项、F11 16 项、Web typecheck/build、小程序语法与目标页真值通过。
+- [x] Harness 最终收口并独立提交推送，状态保持 `review_pending_wave`；下一项 F14-B，F21 冻结前不调用 reviewer。
+
 ## 2026-08-25：RC0810-F18 研究来源与执行 Manifest
 
 - [x] 冻结合成 source object 类型、权限、SHA-256、权利和保留策略；真实参与者与外部来源保持关闭。

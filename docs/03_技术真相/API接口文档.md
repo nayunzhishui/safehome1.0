@@ -8,6 +8,14 @@
 
 阅读方式：先看”通用约定”和对应接口章节；公开操作的机器登记见`API机器契约.md`和`shared/contracts/api-contract.json`。若与历史日志冲突，以机器契约、本文开头进度口径和`docs/00_当前事实基准/项目进度统一口径.md`为准。
 
+## 2026-08-25：F19 AI capability 当前合同
+
+- `GET /api/ai-qa/config` 的最终开放状态来自唯一 capability resolver，新增 `participant_entry_visible`、`capability`、`sandbox_capability` 和 `capability_policy`；`provider_policy` 增加 `response_origin` 与 `response_origin_label`，不返回密钥。
+- production 固定返回 `participant_enabled=false`、`sandbox_enabled=false`、`participant_entry_visible=false`、`reason_code=production_ai_fixed_closed`、`external_provider_enabled=false`。环境开关、provider 选择或密钥存在都不能覆盖。
+- parent/student 在 production 直接访问 `/api/ai-qa/sessions` 或消息路径返回 `409 ai_qa_production_fixed_closed`，不会创建会话、写入问题或调用 provider。
+- validation 仅允许 researcher/supervisor/admin 的合成或明确授权数据；真实 provider 还必须通过服务端选择与供应商证据、正预算、限流、超时、熔断、DLP、来源和审计门禁。
+- development/testing 的参与者演示只允许 fake；UI 必须显示“合成问答演示/合成模拟器”，不得写成真实 AI 已回答。
+
 ## 任务二十七：完整内容治理接口
 
 内容治理使用`content_governance_versions/reviews/releases`，运行内容仍由`content`目录提供。草稿不会覆盖运行内容；导入登记固定为`registered`，不会自动批准。研究者、督导和管理员可查看，发布、暂停、退役和恢复仅管理员可执行，并受`CONTENT_GOVERNANCE_PUBLISH_ENABLED`与独立确认保护。
@@ -2462,7 +2470,7 @@ relationship_initiation_intention_action
 
 ### 2026-07-30 参与者支持性问答增量
 
-- `GET /api/ai-qa/config`动态返回`participant_enabled`、`participant_eligible`、`stage`和`participant_use_case_policy`。只有服务端`AI_QA_ENABLED=1`且全局kill switch未触发时，参与者入口才可用。
+- `GET /api/ai-qa/config`动态返回`participant_enabled`、`participant_eligible`、`stage`和`participant_use_case_policy`。该历史参与者链路只可在 development/testing 的 fake 模式显式开启；production 与 validation 参与者入口均由 F19 capability 合同固定关闭。
 - `GET/POST /api/ai-qa/sessions`、`GET/DELETE /api/ai-qa/sessions/<id>`、`POST /api/ai-qa/sessions/<id>/messages`与`POST /api/ai-qa/messages/<id>/feedback`允许`parent/student`访问本人会话。
 - 参与者必须先提交当前有效的`ai_assistance`独立同意；撤回同意后，新建会话、发送消息和评价均失败关闭。
 - 参与者会话固定为`participant_support`、`synthetic_data=0`、`research_use_allowed=0`，不允许跨会话记忆、写工具、自动采用、诊断、危机结论、量表正式解释或关系质量判断。

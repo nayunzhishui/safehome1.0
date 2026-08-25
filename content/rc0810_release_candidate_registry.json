@@ -4723,6 +4723,7 @@
         "shared/**",
         "apps/web/**",
         "apps/miniprogram/**",
+        "design/function-truth-table.md",
         "docs/**",
         "backend/migrations/**"
       ],
@@ -4748,7 +4749,8 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 9
         }
       ],
       "external_gates": [
@@ -4766,6 +4768,7 @@
           "shared/**",
           "apps/web/**",
           "apps/miniprogram/**",
+          "design/function-truth-table.md",
           "docs/**",
           "backend/migrations/**"
         ],

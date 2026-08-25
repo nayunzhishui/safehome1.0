@@ -749,6 +749,32 @@ def _apply_2026_08_25_074(conn) -> None:
     _create_index_if_missing(conn, "idx_research_artifact_manifest", "research_analysis_artifacts", "execution_manifest_id")
 
 
+def _apply_2026_08_25_075(conn) -> None:
+    _execute_schema(
+        conn,
+        """CREATE TABLE IF NOT EXISTS ai_capability_decisions (
+            id TEXT PRIMARY KEY, actor_id TEXT, actor_role TEXT NOT NULL,
+            operation TEXT NOT NULL, environment TEXT NOT NULL,
+            audience TEXT NOT NULL, enabled INTEGER NOT NULL,
+            provider TEXT NOT NULL, real_provider_allowed INTEGER NOT NULL,
+            reason_code TEXT NOT NULL, policy_version TEXT NOT NULL,
+            data_mode TEXT NOT NULL, created_at TEXT NOT NULL
+        )""",
+    )
+    _create_index_if_missing(
+        conn,
+        "idx_ai_capability_decisions_actor_created",
+        "ai_capability_decisions",
+        "actor_id, created_at",
+    )
+    _create_index_if_missing(
+        conn,
+        "idx_ai_capability_decisions_reason_created",
+        "ai_capability_decisions",
+        "reason_code, created_at",
+    )
+
+
 MIGRATIONS = (
     Migration(
         version="2026_08_07_062",
@@ -881,6 +907,16 @@ MIGRATIONS = (
             "Keep artifact-to-manifest bindings and completed manifests.",
             "Disable generic completion rather than accepting unproved metrics.",
             "Derived artifacts remain subject to consent withdrawal and deletion rules.",
+        ),
+    ),
+    Migration(
+        version="2026_08_25_075",
+        name="ai_capability_decision_ledger",
+        apply=_apply_2026_08_25_075,
+        rollback_notes=(
+            "Keep AI capability decisions as audit evidence.",
+            "Disable AI routes before application rollback.",
+            "Never treat rollback as approval to enable participant AI.",
         ),
     ),
 )

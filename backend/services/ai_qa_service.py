@@ -24,6 +24,11 @@ from services.ai_qa_output_gate_service import (
     get_output_gate_policy,
 )
 from services.ai_qa_provider import ProviderError, get_provider
+from services.ai_capability_service import (
+    AiCapabilityDecision,
+    capability_policy_summary,
+    resolve_ai_capability,
+)
 from services.ai_qa_quality_service import (
     QualityConfigurationError,
     build_change_fingerprint,
@@ -190,20 +195,24 @@ def get_config_status() -> dict:
     )
 
     governance = json.loads((current_app.config["CONTENT_DIR"] / "ai_qa_governance.json").read_text(encoding="utf-8"))
-    runtime = _runtime_killed()
     configured_provider = str(
         current_app.config.get("AI_QA_PROVIDER", "fake")
     ).strip().lower()
     provider_admission = get_runtime_provider_admission(configured_provider)
-    participant_enabled = (
-        bool(current_app.config.get("AI_QA_ENABLED"))
-        and not bool(runtime["killed"])
+    participant_capability = resolve_ai_capability(
+        {"role": "parent"}, "participant_config"
     )
+    sandbox_capability = resolve_ai_capability(
+        {"role": "researcher"}, "sandbox_config"
+    )
+    runtime = _runtime_killed()
+    participant_enabled = participant_capability.enabled
     participant_policy = _load_participant_use_case_policy()
     return {
         "service_name": governance.get("decisions", {}).get("service_name", {}).get("proposed", "支持性内容助手"),
         "participant_enabled": participant_enabled,
-        "sandbox_enabled": bool(current_app.config.get("AI_QA_SANDBOX_ENABLED")) and not bool(runtime["killed"]),
+        "sandbox_enabled": sandbox_capability.enabled,
+        "participant_entry_visible": participant_capability.participant_entry_visible,
         "provider": configured_provider,
         "stage": (
             "controlled_participant_support"
@@ -212,6 +221,9 @@ def get_config_status() -> dict:
         ),
         "governance_status": governance.get("status"),
         "participant_eligible": participant_enabled,
+        "capability": participant_capability.public(),
+        "sandbox_capability": sandbox_capability.public(),
+        "capability_policy": capability_policy_summary(),
         "gate_decisions": governance.get("decisions", {}),
         "runtime_control": {"killed": int(runtime.get("killed") or 0), "changed_at": runtime.get("changed_at")},
         "data_policy": {
@@ -225,15 +237,7 @@ def get_config_status() -> dict:
         },
         "provider_policy": {
             "approved_providers": (
-                [configured_provider]
-                if provider_admission["allowed"]
-                and (
-                    configured_provider == "fake"
-                    or current_app.config.get(
-                        "AI_QA_REAL_PROVIDER_ENABLED", False
-                    )
-                )
-                else ["fake"]
+                [configured_provider] if sandbox_capability.enabled else []
             ),
             "adapter_candidates": ["deepseek", "openai"],
             "server_selected_only": True,
@@ -250,14 +254,10 @@ def get_config_status() -> dict:
             "circuit_failure_threshold": int(current_app.config.get("AI_QA_CIRCUIT_THRESHOLD", 3)),
             "hard_timeout_enforced_by_provider": True,
             "budget_micros_per_day": int(current_app.config.get("AI_QA_DAILY_BUDGET_MICROS", 0)),
-            "external_provider_enabled": bool(
-                configured_provider != "fake"
-                and provider_admission["allowed"]
-                and current_app.config.get(
-                    "AI_QA_REAL_PROVIDER_ENABLED", False
-                )
-            ),
+            "external_provider_enabled": sandbox_capability.real_provider_allowed,
             "runtime_admission_reason": provider_admission["reason"],
+            "response_origin": sandbox_capability.response_origin,
+            "response_origin_label": sandbox_capability.response_origin_label,
         },
         "provider_selection": get_provider_selection_summary(),
         "input_security": get_input_security_policy(),
@@ -275,15 +275,32 @@ def get_config_status() -> dict:
     }
 
 
-def _require_sandbox() -> None:
-    if not current_app.config.get("AI_QA_SANDBOX_ENABLED", False):
-        raise AiQaError("ai_qa_sandbox_disabled", "研究者合成沙盒未开启", 409)
-    runtime = _runtime_killed()
-    if runtime["killed"]:
-        raise AiQaError("ai_qa_killed", "内容助手已被停用", 503, {"reason": runtime.get("reason")})
+def _raise_capability_error(decision: AiCapabilityDecision) -> None:
+    if decision.reason_code == "production_ai_fixed_closed":
+        raise AiQaError(
+            "ai_qa_production_fixed_closed",
+            "正式环境支持性问答固定关闭，请使用记录、训练或人工支持",
+            409,
+        )
+    if decision.reason_code == "ai_qa_killed":
+        raise AiQaError("ai_qa_killed", "内容助手已被停用", 503)
+    if decision.reason_code == "ai_governance_drift":
+        raise AiQaError("ai_qa_governance_drift", "AI治理事实不一致，能力已关闭", 503)
+    if decision.audience == "participant":
+        raise AiQaError("ai_qa_participant_disabled", "支持性问答暂未开放", 409)
+    raise AiQaError("ai_qa_sandbox_disabled", "研究者合成沙盒未开启", 409)
 
 
-def _require_runtime_for_actor(actor: dict) -> None:
+def _require_sandbox(actor: dict | None = None) -> AiCapabilityDecision:
+    decision = resolve_ai_capability(
+        actor or {"role": "researcher"}, "sandbox", audit=bool(actor)
+    )
+    if not decision.enabled:
+        _raise_capability_error(decision)
+    return decision
+
+
+def _require_runtime_for_actor(actor: dict) -> AiCapabilityDecision:
     from services.safety_scheduler_service import SchedulerError, assert_automation_allowed
 
     with get_connection() as conn:
@@ -291,19 +308,10 @@ def _require_runtime_for_actor(actor: dict) -> None:
             assert_automation_allowed(conn, "free_text_ai")
         except SchedulerError as exc:
             raise AiQaError(exc.code, str(exc), exc.status) from exc
-    if actor.get("role") not in {"parent", "student"}:
-        _require_sandbox()
-        return
-    if not current_app.config.get("AI_QA_ENABLED", False):
-        raise AiQaError("ai_qa_participant_disabled", "支持性问答暂未开放", 409)
-    runtime = _runtime_killed()
-    if runtime["killed"]:
-        raise AiQaError(
-            "ai_qa_killed",
-            "支持性问答已暂停，请使用记录、训练或人工支持",
-            503,
-            {"reason": runtime.get("reason")},
-        )
+    decision = resolve_ai_capability(actor, "session_runtime", audit=True)
+    if not decision.enabled:
+        _raise_capability_error(decision)
+    return decision
 
 
 def _require_participant_ai_consent(actor: dict) -> None:
@@ -542,7 +550,7 @@ def _fixed_message(actor: dict, session_id: str, text: str, route: str, precheck
 
 
 def send_message(actor: dict, session_id: str, payload: dict) -> dict:
-    _require_runtime_for_actor(actor)
+    capability = _require_runtime_for_actor(actor)
     _require_participant_ai_consent(actor)
     session = _get_owned_session(actor, session_id)
     _require_use_case_for_actor(actor, session.get("use_case_id"))
@@ -597,7 +605,7 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
     participant_mode = actor.get("role") in {"parent", "student"}
     if not participant_mode and payload.get("synthetic_data") is not True:
         raise AiQaError("synthetic_data_required", "当前只允许合成问题", 409)
-    provider_name = str(current_app.config.get("AI_QA_PROVIDER", "fake"))
+    provider_name = capability.provider
     try:
         enforce_usage_control(actor, session, provider_name)
     except UsageControlError as exc:
@@ -697,17 +705,11 @@ def send_message(actor: dict, session_id: str, payload: dict) -> dict:
                 "severity": "medium",
             },
         )
-    from services.ai_provider_governance_service import (
-        get_runtime_provider_admission,
-    )
-
-    admission = get_runtime_provider_admission(provider_name)
-    allow_real = bool(
-        current_app.config.get("AI_QA_REAL_PROVIDER_ENABLED", False)
-        and admission["allowed"]
-    )
     try:
-        provider = get_provider(provider_name, allow_real=allow_real)
+        provider = get_provider(
+            provider_name,
+            capability_decision=capability,
+        )
     except ProviderError as provider_setup_error:
         return _fixed_message(
             actor,
@@ -1166,7 +1168,9 @@ def save_feedback(actor: dict, message_id: str, payload: dict) -> dict:
     return dict(row)
 
 
-def _evaluate_case(case: dict) -> dict:
+def _evaluate_case(
+    case: dict, capability: AiCapabilityDecision | None = None
+) -> dict:
     started = time.perf_counter()
     text = str(case.get("text") or "")
     expected = str(case.get("expected_route") or "")
@@ -1197,7 +1201,7 @@ def _evaluate_case(case: dict) -> dict:
             }
         ]
         try:
-            provider = get_provider("fake")
+            provider = get_provider("fake", capability_decision=capability)
             result = provider.generate(text, citations, mode=str(case.get("fake_mode") or "normal"))
             cost_micros = max(0, int(result.cost_micros))
             output_gate = evaluate_ai_output(
@@ -1241,7 +1245,7 @@ def _evaluate_case(case: dict) -> dict:
 
 
 def run_evaluation(actor: dict) -> dict:
-    _require_sandbox()
+    capability = _require_sandbox(actor)
     content_dir = current_app.config["CONTENT_DIR"]
     suite = json.loads(
         (content_dir / "ai_qa_synthetic_safety_suite.json").read_text(
@@ -1256,7 +1260,9 @@ def run_evaluation(actor: dict) -> dict:
         raise AiQaError(
             "evaluation_configuration_invalid", str(exc), 409
         ) from exc
-    results = [_evaluate_case(case) for case in suite.get("cases", [])]
+    results = [
+        _evaluate_case(case, capability) for case in suite.get("cases", [])
+    ]
     with get_connection() as conn:
         review_stats = conn.execute(
             """

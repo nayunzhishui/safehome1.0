@@ -1,7 +1,8 @@
 {
   "schema_version": "safehome.ai-participant-use-case-policy.v1",
   "policy_version": "2026.07-t37-p2-participant-v1",
-  "stage": "controlled_participant_support",
+  "stage": "development_fake_contract_production_closed",
+  "production_runtime_enabled": false,
   "allowed_roles": ["parent", "student"],
   "allowed_use_cases": [
     {

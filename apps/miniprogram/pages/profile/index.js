@@ -3,6 +3,50 @@ const { getAuthUser, isLoggedIn, logout, requireLogin } = require("../../utils/a
 
 const api = createSafeHomeApi();
 
+const BASE_SUPPORT_ENTRIES = [
+  {
+    title: "协作式评估",
+    subtitle: "共同理解一次具体体验，不生成诊断结论",
+    url: "/pages/therapeutic-assessment/index",
+    private: true,
+  },
+  {
+    title: "人工督导",
+    subtitle: "获得专业补充反馈",
+    url: "/pages/supervision/index",
+    private: true,
+  },
+  {
+    title: "专业资源说明",
+    subtitle: "了解线下支持边界",
+    url: "/pages/emergency-resources/index",
+  },
+];
+
+function buildSupportEntries(participantEntryVisible, capability = null) {
+  if (!participantEntryVisible) return BASE_SUPPORT_ENTRIES;
+  const simulated = capability && capability.response_origin === "synthetic_simulation";
+  const label = simulated ? "合成问答演示" : "支持性问答";
+  return [
+    BASE_SUPPORT_ENTRIES[0],
+    {
+      title: label,
+      subtitle: simulated
+        ? "仅用于本地合成数据演示，不代表真实供应商回答"
+        : "根据已审核内容整理一个可暂停的小步骤",
+      url: "/pages/support-assistant/index?focus=ai",
+      private: true,
+    },
+    {
+      title: simulated ? "合成知识检索演示" : "知识库问答",
+      subtitle: "从已审核项目内容检索并显示参考来源",
+      url: "/pages/support-assistant/index?focus=rag",
+      private: true,
+    },
+    ...BASE_SUPPORT_ENTRIES.slice(1),
+  ];
+}
+
 Page({
   data: {
     user: {
@@ -45,37 +89,7 @@ Page({
         private: true,
       },
     ],
-    supportEntries: [
-      {
-        title: "协作式评估",
-        subtitle: "共同理解一次具体体验，不生成诊断结论",
-        url: "/pages/therapeutic-assessment/index",
-        private: true,
-      },
-      {
-        title: "AI支持性问答",
-        subtitle: "根据已审核内容整理一个可暂停的小步骤",
-        url: "/pages/support-assistant/index?focus=ai",
-        private: true,
-      },
-      {
-        title: "RAG知识库问答",
-        subtitle: "从项目知识库检索答案并显示参考来源",
-        url: "/pages/support-assistant/index?focus=rag",
-        private: true,
-      },
-      {
-        title: "人工督导",
-        subtitle: "获得专业补充反馈",
-        url: "/pages/supervision/index",
-        private: true,
-      },
-      {
-        title: "专业资源说明",
-        subtitle: "了解线下支持边界",
-        url: "/pages/emergency-resources/index",
-      },
-    ],
+    supportEntries: buildSupportEntries(false),
     safetyEntries: [
       {
         title: "紧急安全指引",
@@ -129,11 +143,16 @@ Page({
     const storedUser = getAuthUser();
     const loggedIn = isLoggedIn();
     const canClaim = loggedIn && storedUser && ["parent", "student", "user"].includes(storedUser.role);
-    const [showcase, claimPreview, identityStatus] = await Promise.all([
+    const [showcase, claimPreview, identityStatus, aiConfig] = await Promise.all([
       api.getShowcaseAccess().catch(() => ({ enabled: false })),
       canClaim ? api.getDataClaimPreview().catch(() => null) : Promise.resolve(null),
       canClaim ? api.getIdentityStatus().catch(() => null) : Promise.resolve(null),
+      api.getAiQaConfig().catch(() => null),
     ]);
+    const supportEntries = buildSupportEntries(
+      Boolean(aiConfig && aiConfig.participant_entry_visible),
+      aiConfig && aiConfig.capability,
+    );
     const dismissedClaimId = wx.getStorageSync("safehome_dismissed_data_claim_id") || "";
     const dataClaim = claimPreview && claimPreview.available && claimPreview.claim_id !== dismissedClaimId
       ? claimPreview
@@ -154,6 +173,7 @@ Page({
         showcaseAccess: !!showcase.enabled,
         dataClaim,
         identityStatus,
+        supportEntries,
       });
     } catch (error) {
       this.setData({
@@ -166,6 +186,7 @@ Page({
         },
         dataClaim,
         identityStatus,
+        supportEntries,
       });
     }
   },

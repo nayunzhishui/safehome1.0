@@ -111,15 +111,18 @@ class Config:
         "true",
         "yes",
     }
-    AI_QA_ENABLED = os.environ.get("AI_QA_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
-    AI_QA_SANDBOX_ENABLED = os.environ.get(
+    AI_QA_REQUESTED_ENABLED = os.environ.get("AI_QA_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+    AI_QA_ENABLED = AI_QA_REQUESTED_ENABLED and str(APP_ENV).lower() != "production"
+    AI_QA_SANDBOX_REQUESTED_ENABLED = os.environ.get(
         "AI_QA_SANDBOX_ENABLED",
         "1" if str(APP_ENV).lower() in {"development", "testing"} else "0",
     ).strip().lower() in {"1", "true", "yes"}
+    AI_QA_SANDBOX_ENABLED = AI_QA_SANDBOX_REQUESTED_ENABLED and str(APP_ENV).lower() != "production"
     AI_QA_PROVIDER = os.environ.get("AI_QA_PROVIDER", "fake").strip().lower()
-    AI_QA_REAL_PROVIDER_ENABLED = os.environ.get(
+    AI_QA_REAL_PROVIDER_REQUESTED_ENABLED = os.environ.get(
         "AI_QA_REAL_PROVIDER_ENABLED", "0"
     ).strip().lower() in {"1", "true", "yes"}
+    AI_QA_REAL_PROVIDER_ENABLED = AI_QA_REAL_PROVIDER_REQUESTED_ENABLED and str(APP_ENV).lower() != "production"
     AI_QA_REQUESTS_PER_HOUR = int(os.environ.get("AI_QA_REQUESTS_PER_HOUR", "30"))
     AI_QA_DAILY_BUDGET_MICROS = int(os.environ.get("AI_QA_DAILY_BUDGET_MICROS", "0"))
     AI_QA_TIMEOUT_MS = int(os.environ.get("AI_QA_TIMEOUT_MS", "3000"))
@@ -277,12 +280,6 @@ class Config:
                 "受控生产功能必须先显式设置 PRODUCTION_FEATURES_UNLOCKED=1："
                 + ", ".join(guarded_production_features)
             )
-        if (
-            str(cls.APP_ENV).lower() == "production"
-            and cls.AI_QA_ENABLED
-            and cls.AI_QA_PROVIDER == "fake"
-        ):
-            raise RuntimeError("生产环境参与者AI问答禁止使用 fake 供应商")
         if str(cls.APP_ENV).lower() == "production" and cls.RELIABILITY_FAULT_INJECTION_ENABLED:
             raise RuntimeError("生产环境禁止启用 RELIABILITY_FAULT_INJECTION_ENABLED")
         if cls.WECHAT_SUBSCRIBE_SEND_ENABLED:

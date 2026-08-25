@@ -499,9 +499,18 @@ def get_provider(
     name: str,
     *,
     allow_real: bool = False,
+    capability_decision=None,
     transport: JsonTransport | None = None,
 ):
     normalized = str(name or "").strip().lower()
+    if capability_decision is not None and (
+        not bool(getattr(capability_decision, "enabled", False))
+        or str(getattr(capability_decision, "provider", "")) != normalized
+    ):
+        raise ProviderError(
+            "provider_capability_denied",
+            "统一AI能力决定未授权当前供应商",
+        )
     if normalized == "fake":
         return FakeProvider()
     settings = REAL_PROVIDER_SETTINGS.get(normalized)
@@ -510,7 +519,11 @@ def get_provider(
             "provider_not_supported",
             "当前供应商没有受支持的服务端适配器",
         )
-    if not allow_real:
+    runtime_real_allowed = bool(
+        capability_decision is not None
+        and getattr(capability_decision, "real_provider_allowed", False)
+    )
+    if not (allow_real or runtime_real_allowed):
         raise ProviderError(
             "provider_not_approved",
             "真实供应商尚未通过运行门禁",

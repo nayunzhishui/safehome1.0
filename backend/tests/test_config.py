@@ -32,7 +32,7 @@ def _configure_production_mysql(monkeypatch):
     monkeypatch.setenv("DB_APPROVED_HOST_SHA256", hashlib.sha256(host.encode()).hexdigest())
     monkeypatch.setenv("DB_APPROVED_DATABASE", "safehome")
     monkeypatch.setenv("DB_APPROVED_PORT", "3306")
-    monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_25_074")
+    monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_25_075")
     monkeypatch.setenv("MYSQL_SSL_CA", str(Path(__file__)))
     monkeypatch.setenv("MYSQL_SSL_VERIFY_IDENTITY", "1")
     monkeypatch.setenv("MYSQL_TLS_MIN_VERSION", "TLSv1.2")
@@ -156,7 +156,7 @@ def test_guarded_production_features_can_be_opened_with_explicit_unlock(
     assert module.app.config["OPERATIONS_PRODUCTION_RELEASE_ENABLED"] is True
 
 
-def test_production_ai_cannot_use_fake_provider(tmp_path, monkeypatch):
+def test_production_ai_flag_is_forced_closed_even_when_requested(tmp_path, monkeypatch):
     _clear_backend_modules()
     _configure_production_mysql(monkeypatch)
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "production-test-token")
@@ -167,5 +167,9 @@ def test_production_ai_cannot_use_fake_provider(tmp_path, monkeypatch):
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
 
-    with pytest.raises(RuntimeError, match="生产环境参与者AI问答禁止使用 fake"):
-        importlib.import_module("app")
+    config = importlib.import_module("config")
+
+    assert config.Config.AI_QA_REQUESTED_ENABLED is True
+    assert config.Config.AI_QA_ENABLED is False
+    assert config.Config.AI_QA_SANDBOX_ENABLED is False
+    assert config.Config.AI_QA_REAL_PROVIDER_ENABLED is False

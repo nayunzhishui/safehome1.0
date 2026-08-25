@@ -1,9 +1,10 @@
 """Controlled AI QA synthetic research sandbox endpoints."""
 
-from flask import Blueprint, current_app, request
+from flask import Blueprint, request
 
 from routes.auth_utils import route_actor as _actor
 from routes.utils import fail, ok
+from services.ai_capability_service import resolve_ai_capability
 from services.ai_provider_governance_service import (
     list_provider_candidates,
     list_provider_evidence,
@@ -53,10 +54,35 @@ bp = Blueprint("ai_qa", __name__, url_prefix="/api/ai-qa")
 
 
 def _session_actor():
-    roles = ["researcher", "supervisor", "admin"]
-    if current_app.config.get("AI_QA_ENABLED", False):
-        roles = ["parent", "student", *roles]
-    return _actor(*roles)
+    actor, error = _actor("parent", "student", "researcher", "supervisor", "admin")
+    if error:
+        return actor, error
+    decision = resolve_ai_capability(actor, "route_session_access", audit=True)
+    if decision.enabled:
+        return actor, None
+    if decision.reason_code == "production_ai_fixed_closed":
+        return None, fail(
+            "ai_qa_production_fixed_closed",
+            "正式环境支持性问答固定关闭，请使用记录、训练或人工支持",
+            status=409,
+        )
+    if decision.reason_code == "ai_qa_killed":
+        return None, fail(
+            "ai_qa_killed",
+            "内容助手已被停用",
+            status=503,
+        )
+    if decision.reason_code == "ai_governance_drift":
+        return None, fail(
+            "ai_qa_governance_drift",
+            "AI治理事实不一致，能力已关闭",
+            status=503,
+        )
+    return None, fail(
+        "ai_qa_participant_disabled" if decision.audience == "participant" else "ai_qa_sandbox_disabled",
+        "支持性问答暂未开放" if decision.audience == "participant" else "研究者合成沙盒未开启",
+        status=403 if decision.audience == "participant" else 409,
+    )
 
 
 def _response(callback):

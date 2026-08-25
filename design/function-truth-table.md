@@ -554,37 +554,37 @@
 ### 05：支持性问答 `pages/support-assistant/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`2a5ae8ee425b686490a6701173f16ad47f6cc8422dbc3d0f69285e37a1cab7f4`
+- 源码指纹：`fd633e7a128947c18e51903354ae62400d2e7c741ef9ada5321798153700d9bf`
 - 核对文件：`apps/miniprogram/pages/support-assistant/index.wxml`、`apps/miniprogram/pages/support-assistant/index.wxss`、`apps/miniprogram/pages/support-assistant/index.js`、`apps/miniprogram/pages/support-assistant/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/profile/index`
 - 页面组件：`page-state` → `/components/page-state/index`、`boundary-note` → `/components/boundary-note/index`、`conversation-entry` → `/components/conversation-entry/index`、`question-composer` → `/components/question-composer/index`
-- 主要可见内容：把问题缩小到下一步、当前未开放、你仍可使用情绪记录、训练卡和人工支持。
+- 主要可见内容：问答生成与知识检索共用同一套边界、引用和降级规则。、当前未开放、你仍可使用情绪记录、训练卡和人工支持。
 
 #### 交互与用户任务证据
 
 | 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
 |---:|---|---|---|---|
-| 13 | 当前未开放 | `bindaction` | `loadStatus` | — |
-| 29 | — | `bindconfirm` | `enableConsent` | — |
-| 35 | — | `bindinput` | `onQuestionInput` | — |
-| 35 | — | `bindsubmit` | `sendQuestion` | — |
+| 18 | 当前未开放 | `bindaction` | `loadStatus` | — |
+| 34 | — | `bindconfirm` | `enableConsent` | — |
+| 40 | — | `bindinput` | `onQuestionInput` | — |
+| 40 | — | `bindsubmit` | `sendQuestion` | — |
 
 #### 接口真值
 
 | JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
 |---:|---|---|---|---|
-| 32 | `getAiQaConfig` | `GET` | `/api/ai-qa/config` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
-| 51 | `createConsent` | `POST` | `/api/consent` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
-| 71 | `createAiQaSession` | `POST` | `/api/ai-qa/sessions` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
-| 88 | `sendAiQaMessage` | `POST` | `/api/ai-qa/sessions` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
+| 49 | `getAiQaConfig` | `GET` | `/api/ai-qa/config` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
+| 74 | `createConsent` | `POST` | `/api/consent` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
+| 94 | `createAiQaSession` | `POST` | `/api/ai-qa/sessions` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
+| 111 | `sendAiQaMessage` | `POST` | `/api/ai-qa/sessions` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
 
 #### 路由、本地状态与页面状态
 
-- 下游路由：`redirectTo` → `/pages/login/index?redirect=%2Fpages%2Fsupport-assistant%2Findex`（js:21）、`navigateTo` → `/pages/login/index:dynamic`（js:138）
-- 本地存储：`getStorageSync` `auth_token`（JS:114）、`getStorageSync` `auth_user`（JS:118）、`removeStorageSync` `auth_token`（JS:144）、`removeStorageSync` `auth_user`（JS:145）
-- WXML 数据绑定：`loading`、`error`、`boundary`、`consented`、`sending`、`messages`、`item`、`question`
+- 下游路由：`redirectTo` → `/pages/login/index?redirect=:dynamic`（js:38）、`navigateTo` → `/pages/login/index:dynamic`（js:161）
+- 本地存储：`getStorageSync` `auth_token`（JS:137）、`getStorageSync` `auth_user`（JS:141）、`removeStorageSync` `auth_token`（JS:167）、`removeStorageSync` `auth_user`（JS:168）
+- WXML 数据绑定：`eyebrow`、`title`、`subtitle`、`loading`、`error`、`boundary`、`consented`、`sending`、`messages`、`item`、`question`
 - 条件状态：`loading`、`error`、`enabled`、`messages`
-- `setData` 状态：`loading`、`error`、`enabled`、`boundary`、`sending`、`consented`、`question`、`sessionId`、`messages`、`role`、`content`、`citations`
+- `setData` 状态：`eyebrow`、`title`、`subtitle`、`focus`、`loading`、`error`、`enabled`、`boundary`、`sending`、`consented`、`question`、`sessionId`、`messages`、`role`、`content`、`citations`
 - 未解析事件：—
 - 未解析 API：—
 - 无效目标路由：—
@@ -2113,7 +2113,7 @@
 ### 36：我的 `pages/profile/index`
 
 - 真值状态：`auto_evidence_complete`
-- 源码指纹：`8213f78b180f9938534be6c66788babcaf1510e0e96984100ba8369412596e6e`
+- 源码指纹：`ee9c3b2e32680c06913c752f462db0d33dfc70e46b1e8ede64265831693c61f1`
 - 核对文件：`apps/miniprogram/pages/profile/index.wxml`、`apps/miniprogram/pages/profile/index.wxss`、`apps/miniprogram/pages/profile/index.js`、`apps/miniprogram/pages/profile/index.json`、`apps/miniprogram/utils/authGuard.js`
 - 上游页面：`pages/login/index`
 - 页面组件：`section-title` → `/components/section-title/index`、`function-entry-card` → `/components/function-entry-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`alert-card` → `/components/alert-card/index`
@@ -2140,21 +2140,22 @@
 
 | JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
 |---:|---|---|---|---|
-| 120 | `getShowcaseAccess` | `GET` | `/api/showcase-access` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 121 | `getDataClaimPreview` | `GET` | `/api/auth/data-claim-preview` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 122 | `getIdentityStatus` | `GET` | `/api/auth/identity-status` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 129 | `getProfileStats` | `GET` | `/api/profile/stats` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 226 | `claimAnonymousData` | `POST` | `/api/auth/data-claim` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 252 | `unbindIdentity` | `POST` | `/api/auth/identity-unbind` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 282 | `logout` | `POST` | `/api/auth/logout` | `backend/routes/auth.py`；先请求服务端撤销账号全部令牌，再清本地。弱网失败时仅保存不含 Token 的 `safehome_pending_logout`，下次同账号登录完成撤销。 |
+| 147 | `getShowcaseAccess` | `GET` | `/api/showcase-access` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
+| 148 | `getDataClaimPreview` | `GET` | `/api/auth/data-claim-preview` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
+| 149 | `getIdentityStatus` | `GET` | `/api/auth/identity-status` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
+| 150 | `getAiQaConfig` | `GET` | `/api/ai-qa/config` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
+| 161 | `getProfileStats` | `GET` | `/api/profile/stats` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
+| 260 | `claimAnonymousData` | `POST` | `/api/auth/data-claim` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
+| 286 | `unbindIdentity` | `POST` | `/api/auth/identity-unbind` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
+| 303 | `logout` | `POST` | `/api/auth/logout` | `backend/routes/auth.py`；先请求服务端撤销账号全部令牌，再清本地。弱网失败时仅保存不含 Token 的 `safehome_pending_logout`，下次同账号登录完成撤销。 |
 
 #### 路由、本地状态与页面状态
 
-- 下游路由：`switchTab` → `/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex`（js:191）、`navigateTo` → `/pages/register/index?redirect=%2Fpages%2Fprofile%2Findex`（js:202）、`navigateTo` → `/pages/researcher-dashboard/index`（js:208）、`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fresearcher-dashboard%2Findex`（js:211）、`redirectTo` → `/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex`（js:256）、`navigateTo` → `/pages/login/index:dynamic`（js:298）
-- 本地存储：`getStorageSync` `safehome_dismissed_data_claim_id`（JS:124）、`setStorageSync` `safehome_dismissed_data_claim_id`（JS:216）、`removeStorageSync` `safehome_dismissed_data_claim_id`（JS:227）、`getStorageSync` `auth_token`（JS:274）、`getStorageSync` `auth_user`（JS:278）、`removeStorageSync` `auth_token`（JS:304）、`removeStorageSync` `auth_user`（JS:305）
+- 下游路由：`switchTab` → `/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex`（js:225）、`navigateTo` → `/pages/register/index?redirect=%2Fpages%2Fprofile%2Findex`（js:236）、`navigateTo` → `/pages/researcher-dashboard/index`（js:242）、`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fresearcher-dashboard%2Findex`（js:245）、`redirectTo` → `/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex`（js:290）、`navigateTo` → `/pages/login/index:dynamic`（js:338）
+- 本地存储：`getStorageSync` `safehome_dismissed_data_claim_id`（JS:156）、`setStorageSync` `safehome_dismissed_data_claim_id`（JS:250）、`removeStorageSync` `safehome_dismissed_data_claim_id`（JS:261）、`getStorageSync` `auth_token`（JS:314）、`getStorageSync` `auth_user`（JS:318）、`removeStorageSync` `auth_token`（JS:344）、`removeStorageSync` `auth_user`（JS:345）
 - WXML 数据绑定：`user`、`loggedIn`、`identityStatus`、`identityBusy`、`logoutBusy`、`dataClaim`、`item`、`claimBusy`、`isResearcher`、`recordEntries`、`index`、`supportEntries`、`safetyEntries`、`settingsEntries`
 - 条件状态：`user`、`loggedIn`、`identityStatus`、`dataClaim`
-- `setData` 状态：`user`、`loginState`、`streakText`、`growthLevel`、`roleText`、`isResearcher`、`showcaseAccess`、`stats`、`loggedIn`、`dataClaim`、`identityStatus`、`nickname`、`claimBusy`、`identityBusy`、`logoutBusy`
+- `setData` 状态：`user`、`loginState`、`streakText`、`growthLevel`、`roleText`、`isResearcher`、`showcaseAccess`、`stats`、`loggedIn`、`dataClaim`、`identityStatus`、`supportEntries`、`nickname`、`claimBusy`、`identityBusy`、`logoutBusy`
 - 未解析事件：—
 - 未解析 API：—
 - 无效目标路由：—

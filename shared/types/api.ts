@@ -3395,14 +3395,46 @@ export interface AiProviderSelection {
   boundary_notice: string;
 }
 
+export interface AiCapabilityDecision {
+  enabled: boolean;
+  environment: string;
+  audience: "participant" | "internal";
+  operation: string;
+  provider: "fake" | "deepseek" | "openai";
+  real_provider_allowed: boolean;
+  participant_entry_visible: boolean;
+  data_mode: string;
+  reason_code: string;
+  policy_version: string;
+  response_origin:
+    | "unavailable"
+    | "synthetic_simulation"
+    | "controlled_external_provider";
+  response_origin_label: string;
+}
+
 export interface AiQaConfig {
   service_name: string;
   participant_enabled: boolean;
   sandbox_enabled: boolean;
+  participant_entry_visible: boolean;
   provider: "fake" | "deepseek" | "openai";
   stage: "synthetic_research_sandbox" | "controlled_participant_support";
   governance_status: string;
   participant_eligible: boolean;
+  capability: AiCapabilityDecision;
+  sandbox_capability: AiCapabilityDecision;
+  capability_policy: {
+    policy_version: string;
+    governance_drift: boolean;
+    future_production_gate: {
+      status: "pending_external";
+      owner: string;
+      automatic_approval_allowed: false;
+      required_evidence: string[];
+    };
+    copy: Record<string, string>;
+  };
   gate_decisions: Record<string, { proposed: unknown; status: string }>;
   runtime_control: { killed: 0 | 1; changed_at?: ISODateTime | null };
   data_policy: {
@@ -3428,6 +3460,8 @@ export interface AiQaConfig {
     budget_micros_per_day: number;
     external_provider_enabled: boolean;
     runtime_admission_reason: string;
+    response_origin: AiCapabilityDecision["response_origin"];
+    response_origin_label: string;
   };
   provider_selection: {
     policy_version: string;

@@ -5,7 +5,7 @@
   </view>
   <view class="mode-note">
     <text class="page-summary">{{subtitle}}</text>
-    <text class="pipeline-note">AI生成与RAG检索共用同一套边界、引用和降级规则。</text>
+    <text class="pipeline-note">问答生成与知识检索共用同一套边界、引用和降级规则。</text>
   </view>
 
   <page-state
