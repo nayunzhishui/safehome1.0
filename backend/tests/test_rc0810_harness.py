@@ -986,7 +986,7 @@ def test_wave_fix_required_keeps_pending_and_reuses_fixed_reviewer(tmp_path):
         env=env,
     )
     assert wrong.returncode != 0
-    assert "固定reviewer" in wrong.stderr
+    assert "预绑定" in wrong.stderr
 
     fixed_decision = write_review_decision(
         wave_b_packet, reviewer_id="fixed-reviewer", decision="fix_required"
@@ -1039,10 +1039,9 @@ def test_wave_fix_required_keeps_pending_and_reuses_fixed_reviewer(tmp_path):
     assert repeated_start.returncode != 0
     assert run_cli("verify", "RC0810-F10-A", env=env).returncode == 0
     assert run_cli("review", "RC0810-F10-A", "--pending-wave", env=env).returncode == 0
-    replacement_packet = json.loads(run_cli("review", "--wave", "B", env=env).stdout)
     pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
     state = json.loads((runtime / pointer["state_path"]).read_text(encoding="utf-8"))
-    replacement_path = Path(replacement_packet["review_packet_path"]).with_name(
+    replacement_path = Path(wave_b_packet["review_packet_path"]).with_name(
         "wave-B-reviewer-replacement.json"
     )
     replacement_path.write_text(
@@ -1061,15 +1060,45 @@ def test_wave_fix_required_keeps_pending_and_reuses_fixed_reviewer(tmp_path):
         ),
         encoding="utf-8",
     )
+    replacement_bytes = replacement_path.read_bytes()
+    replacement_packet = json.loads(run_cli("review", "--wave", "B", env=env).stdout)
+    frozen_packet = json.loads(
+        Path(replacement_packet["review_packet_path"]).read_text(encoding="utf-8")
+    )
+    assert frozen_packet["reviewer_replacement"]["evidence_sha256"] == (
+        hashlib.sha256(replacement_bytes).hexdigest()
+    )
     replacement_decision = write_review_decision(
         replacement_packet, reviewer_id="replacement-reviewer"
     )
-    replacement_payload = json.loads(replacement_decision.read_text(encoding="utf-8"))
-    replacement_payload["reviewer_replacement"] = {
+    replacement_record = json.loads(replacement_path.read_text(encoding="utf-8"))
+    replacement_record["recovery_attempts"].append("post-freeze mutation")
+    replacement_path.write_text(json.dumps(replacement_record), encoding="utf-8")
+    changed_replacement = run_cli(
+        "review", "--wave", "B", "--decision", "pass",
+        "--reviewer-id", "replacement-reviewer",
+        "--decision-evidence", str(replacement_decision), env=env,
+    )
+    assert changed_replacement.returncode != 0
+    assert "冻结后新增或变化" in changed_replacement.stderr
+    replacement_path.write_bytes(replacement_bytes)
+    decision_bytes = replacement_decision.read_bytes()
+    self_reported_decision = json.loads(decision_bytes)
+    self_reported_decision["reviewer_replacement"] = {
         "evidence_path": str(replacement_path),
-        "evidence_sha256": hashlib.sha256(replacement_path.read_bytes()).hexdigest(),
+        "evidence_sha256": hashlib.sha256(replacement_bytes).hexdigest(),
     }
-    replacement_decision.write_text(json.dumps(replacement_payload), encoding="utf-8")
+    replacement_decision.write_text(
+        json.dumps(self_reported_decision), encoding="utf-8"
+    )
+    self_reported = run_cli(
+        "review", "--wave", "B", "--decision", "pass",
+        "--reviewer-id", "replacement-reviewer",
+        "--decision-evidence", str(replacement_decision), env=env,
+    )
+    assert self_reported.returncode != 0
+    assert "不得自报" in self_reported.stderr
+    replacement_decision.write_bytes(decision_bytes)
     accepted_replacement = run_cli(
         "review", "--wave", "B", "--decision", "pass",
         "--reviewer-id", "replacement-reviewer",

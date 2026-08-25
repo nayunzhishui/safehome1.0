@@ -1,5 +1,12 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：波次 B replacement evidence Fix Loop
+
+- [x] 登记同一 reviewer 的 high finding：替换证据未在 wave packet 前预绑定。
+- [x] 固定替换证据路径，并在 packet/state 冻结路径、哈希、旧/新 reviewer 与上一有效 checkpoint。
+- [x] 拒绝 decision 自报替换路径/哈希，以及冻结后新增、改写或重哈希。
+- [x] 最小 Harness 专项通过；下一步重建波次 B packet 并续用 `sartre_replacement` 复审。
+
 ## 2026-08-26：波次 B reviewer 替换审计适配
 
 - [x] 原 reviewer 不可恢复时，要求绑定旧 reviewer、最后有效 checkpoint、恢复失败记录和替代 reviewer。
