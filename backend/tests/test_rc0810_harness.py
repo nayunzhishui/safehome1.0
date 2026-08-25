@@ -950,3 +950,34 @@ def test_wave_fix_registry_transition_may_touch_only_tasks_in_same_wave():
     assert module._registry_transition_is_wave_fix_scoped(previous, current, wave) is True
     task_by_id["RC0810-F13"]["change_budget"]["expected_files"] += 1
     assert module._registry_transition_is_wave_fix_scoped(previous, current, wave) is False
+
+
+def test_scoped_registry_change_restores_pending_checkpoint_and_prefers_latest_started_unit():
+    spec = __import__("importlib.util").util.spec_from_file_location(
+        "rc0810_runner_scoped_stale", RUNNER_PATH
+    )
+    module = __import__("importlib.util").util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    previous = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    current = json.loads(json.dumps(previous))
+    task_by_id = {task["id"]: task for task in current["tasks"]}
+    task_by_id["RC0810-F15"]["change_budget"]["expected_files"] += 1
+    records = {
+        "RC0810-F13": {
+            "status": "stale",
+            "outcomes": [{"exit_code": 0}],
+        },
+        "RC0810-F15": {"status": "stale", "outcomes": []},
+    }
+    assert module._registry_change_roots(previous, current, records) == {"RC0810-F15"}
+    assert module._latest_nonterminal_unit(
+        current, {"tasks": records}, "RC0810-F12-B"
+    ) == "RC0810-F15"
+    assert module._restorable_status(
+        {
+            "previous_status": "review_pending_wave",
+            "main_review_checkpoint": {"status": "review_pending_wave"},
+            "review": None,
+        }
+    ) == "review_pending_wave"

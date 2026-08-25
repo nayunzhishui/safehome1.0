@@ -1676,6 +1676,34 @@ def _recursive_unit_dependents(
     return [unit_id for unit_id in registry["execution_order"] if unit_id in stale]
 
 
+def _latest_nonterminal_unit(
+    registry: dict[str, Any], state: dict[str, Any], checkpoint_task_id: str | None
+) -> str | None:
+    nonterminal_statuses = {
+        "in_progress",
+        "fixing",
+        "implemented",
+        "reviewing",
+        "review_failed",
+        "review_pending_wave",
+        "stale",
+    }
+    execution_positions = {
+        unit_id: index for index, unit_id in enumerate(registry["execution_order"])
+    }
+    checkpoint_position = execution_positions.get(checkpoint_task_id or "", -1)
+    return next(
+        (
+            unit_id
+            for unit_id in reversed(registry["execution_order"])
+            if unit_id in state["tasks"]
+            and execution_positions[unit_id] >= checkpoint_position
+            and state["tasks"][unit_id].get("status") in nonterminal_statuses
+        ),
+        None,
+    )
+
+
 def report_command(registry: dict[str, Any]) -> dict[str, Any]:
     with state_lock():
         state = read_state()
@@ -1688,38 +1716,16 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
         stale_reason: list[str] = []
         if current_registry_hash != state["registry_sha256"]:
             roots.update(
-                task_id
-                for task_id, record in state["tasks"].items()
-                if record.get("outcomes")
+                _registry_change_roots(
+                    state.get("registry_snapshot"), registry, state["tasks"]
+                )
             )
             stale_reason.append("registry_changed")
         current_snapshot = collect_git_snapshot(registry)
         checkpoint = state.get("last_verified_checkpoint")
         checkpoint_task_id = checkpoint.split(":", 1)[0] if checkpoint else None
-        nonterminal_statuses = {
-            "in_progress",
-            "fixing",
-            "implemented",
-            "reviewing",
-            "review_failed",
-            "review_pending_wave",
-            "stale",
-        }
-        execution_positions = {
-            unit_id: index
-            for index, unit_id in enumerate(registry["execution_order"])
-        }
-        checkpoint_position = execution_positions.get(checkpoint_task_id or "", -1)
-        active_task_id = next(
-            (
-                unit_id
-                for unit_id in reversed(registry["execution_order"])
-                if unit_id in state["tasks"]
-                and execution_positions[unit_id] >= checkpoint_position
-                and state["tasks"][unit_id].get("status") in nonterminal_statuses
-                and state["tasks"][unit_id].get("outcomes")
-            ),
-            None,
+        active_task_id = _latest_nonterminal_unit(
+            registry, state, checkpoint_task_id
         )
         source_anchor_id = active_task_id or checkpoint_task_id
         source_anchor = state["tasks"].get(source_anchor_id or "")
@@ -1752,21 +1758,18 @@ def report_command(registry: dict[str, Any]) -> dict[str, Any]:
             for unit_id, record in state["tasks"].items():
                 if unit_id in stale_unit_set or record.get("status") != "stale":
                     continue
-                previous_status = record.get("previous_status")
-                if (
-                    previous_status
-                    in {"verified", "committed", "pushed", "engineering_complete"}
-                    and record.get("review", {}).get("decision") == "pass"
-                ):
-                    record["status"] = previous_status
+                restored_status = _restorable_status(record)
+                if restored_status is not None:
+                    record["status"] = restored_status
                     record["evidence_status"] = "current"
             for unit_id in stale_units:
                 if unit_id not in state["tasks"]:
                     continue
                 state["tasks"][unit_id]["evidence_status"] = "stale"
-                state["tasks"][unit_id]["previous_status"] = state["tasks"][unit_id][
-                    "status"
-                ]
+                if state["tasks"][unit_id].get("status") != "stale":
+                    state["tasks"][unit_id]["previous_status"] = state["tasks"][unit_id][
+                        "status"
+                    ]
                 state["tasks"][unit_id]["status"] = "stale"
             state["updated_at"] = utc_now()
             write_state(state)
@@ -2055,6 +2058,42 @@ def _registry_transition_is_scoped(
         for item in current["execution_units"]
         if item["id"] != task_id
     }
+
+
+def _registry_change_roots(
+    previous: dict[str, Any] | None,
+    current: dict[str, Any],
+    task_records: dict[str, Any],
+) -> set[str]:
+    if isinstance(previous, dict):
+        scoped = {
+            unit_id
+            for unit_id in task_records
+            if _registry_transition_is_scoped(previous, current, unit_id)
+        }
+        if len(scoped) == 1:
+            return scoped
+    return {
+        unit_id
+        for unit_id, record in task_records.items()
+        if record.get("outcomes")
+    }
+
+
+def _restorable_status(record: dict[str, Any]) -> str | None:
+    previous_status = record.get("previous_status")
+    checkpoint = record.get("main_review_checkpoint") or {}
+    if (
+        previous_status == "review_pending_wave"
+        and checkpoint.get("status") == "review_pending_wave"
+    ):
+        return previous_status
+    if (
+        previous_status in {"verified", "committed", "pushed", "engineering_complete"}
+        and record.get("review", {}).get("decision") == "pass"
+    ):
+        return previous_status
+    return None
 
 
 def _registry_transition_is_wave_fix_scoped(
