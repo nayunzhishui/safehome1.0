@@ -15,6 +15,7 @@ import threading
 from typing import Any
 
 from config import Config
+from services.database_recovery_service import mysql_ssl_context, public_tls_contract
 
 
 _LOCK = threading.Lock()
@@ -54,8 +55,11 @@ def pool_settings() -> dict[str, Any]:
         "connect_timeout_seconds": _int("MYSQL_CONNECT_TIMEOUT_SECONDS", 5, 1, 60),
         "read_timeout_seconds": _int("MYSQL_READ_TIMEOUT_SECONDS", 10, 1, 120),
         "write_timeout_seconds": _int("MYSQL_WRITE_TIMEOUT_SECONDS", 10, 1, 120),
-        "ssl_ca_configured": bool(os.environ.get("MYSQL_SSL_CA", "").strip()),
-        "ssl_verify_identity": _bool("MYSQL_SSL_VERIFY_IDENTITY", default=True),
+        **public_tls_contract(
+            Config.MYSQL_SSL_CA,
+            Config.MYSQL_TLS_MIN_VERSION,
+            Config.MYSQL_SSL_VERIFY_IDENTITY,
+        ),
     }
 
 
@@ -76,15 +80,9 @@ def _creator_kwargs() -> dict[str, Any]:
         "read_timeout": settings["read_timeout_seconds"],
         "write_timeout": settings["write_timeout_seconds"],
     }
-    ssl_ca = os.environ.get("MYSQL_SSL_CA", "").strip()
+    ssl_ca = Config.MYSQL_SSL_CA
     if ssl_ca:
-        kwargs.update(
-            {
-                "ssl_ca": ssl_ca,
-                "ssl_verify_cert": True,
-                "ssl_verify_identity": settings["ssl_verify_identity"],
-            }
-        )
+        kwargs["ssl"] = mysql_ssl_context(ssl_ca, Config.MYSQL_TLS_MIN_VERSION)
     return kwargs
 
 

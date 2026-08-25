@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-25：RC0810-F16 MySQL 安全与隔离恢复
+
+- [x] production MySQL CA、主机身份校验和最低 TLSv1.2 fail-closed。
+- [x] 冻结关键 owner 关系和孤儿检测 SQL。
+- [x] 完成备份清单、隔离目标校验、损坏/中断/重复恢复合同。
+- [x] F11 合成夹具备份→恢复→升级→归属核对通过。
+- [x] F16 专项 10 项、直接影响 7 项通过；真实 RPO/RTO 保持外部门禁。
+- [x] Harness checkpoint 收口后状态保持 `review_pending_wave`；独立提交推送后进入 F17，F21 前不调用 reviewer。
+
 ## 2026-08-25：RC0810 Harness 断点恢复热修复
 
 - [x] scoped 注册表变化仅失效对应执行单元及后继。

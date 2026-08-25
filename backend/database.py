@@ -563,6 +563,8 @@ class MySQLConnection:
         except ImportError as exc:
             raise RuntimeError("DB_PROVIDER=mysql 时需要安装 PyMySQL") from exc
 
+        from services.database_recovery_service import mysql_ssl_context
+
         self._connection = pymysql.connect(
             host=Config.MYSQL_HOST,
             port=Config.MYSQL_PORT,
@@ -575,6 +577,9 @@ class MySQLConnection:
             connect_timeout=Config.MYSQL_CONNECT_TIMEOUT_SECONDS,
             read_timeout=Config.MYSQL_READ_TIMEOUT_SECONDS,
             write_timeout=Config.MYSQL_WRITE_TIMEOUT_SECONDS,
+            ssl=mysql_ssl_context(Config.MYSQL_SSL_CA, Config.MYSQL_TLS_MIN_VERSION)
+            if Config.MYSQL_SSL_CA
+            else None,
         )
 
     def __enter__(self):

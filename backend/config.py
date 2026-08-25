@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 from services.database_profile_service import startup_profile_errors
+from services.database_recovery_service import tls_contract_errors
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -29,6 +30,11 @@ class Config:
     MYSQL_CONNECT_TIMEOUT_SECONDS = int(os.environ.get("MYSQL_CONNECT_TIMEOUT_SECONDS", "5"))
     MYSQL_READ_TIMEOUT_SECONDS = int(os.environ.get("MYSQL_READ_TIMEOUT_SECONDS", "10"))
     MYSQL_WRITE_TIMEOUT_SECONDS = int(os.environ.get("MYSQL_WRITE_TIMEOUT_SECONDS", "10"))
+    MYSQL_SSL_CA = os.environ.get("MYSQL_SSL_CA", "").strip()
+    MYSQL_SSL_VERIFY_IDENTITY = os.environ.get(
+        "MYSQL_SSL_VERIFY_IDENTITY", "1"
+    ).strip().lower() in {"1", "true", "yes", "on"}
+    MYSQL_TLS_MIN_VERSION = os.environ.get("MYSQL_TLS_MIN_VERSION", "TLSv1.2").strip()
     DB_PROFILE_CONTRACT_PATH = Path(
         os.environ.get(
             "DB_PROFILE_CONTRACT_PATH",
@@ -209,6 +215,14 @@ class Config:
             cls.MYSQL_WRITE_TIMEOUT_SECONDS,
         ) <= 0:
             raise RuntimeError("MySQL 连接、读取和写入超时必须为正整数")
+        tls_errors = tls_contract_errors(cls)
+        if tls_errors:
+            messages = {
+                "mysql_tls_ca_required": "生产 MySQL 必须配置有效 TLS CA 文件",
+                "mysql_tls_identity_verification_required": "生产 MySQL 必须启用主机身份校验",
+                "mysql_tls_minimum_version_too_low": "生产 MySQL 最低 TLS 版本必须为 TLSv1.2 或 TLSv1.3",
+            }
+            raise RuntimeError(messages[tls_errors[0]])
         if cls.SAFETY_SCHEDULER_LEASE_SECONDS < 30 or cls.SAFETY_SCHEDULER_MAX_ATTEMPTS not in range(1, 11):
             raise RuntimeError("安全调度器租约必须不少于30秒，最大尝试次数必须为1至10")
         if str(cls.APP_ENV).lower() == "production" and cls.SAFETY_SCHEDULER_ENABLED:

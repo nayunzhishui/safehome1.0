@@ -1,0 +1,27 @@
+{
+  "schema": "safehome.rc0810.database-recovery-policy.v1",
+  "production_release_approved": false,
+  "tls": {
+    "ca_required": true,
+    "verify_identity": true,
+    "minimum_version": "TLSv1.2",
+    "secrets_or_paths_may_be_logged": false
+  },
+  "relationships": [
+    {"id": "assessment_result_owner", "child_table": "assessment_results", "child_column": "user_id", "parent_table": "users", "parent_column": "id", "enforcement": "application_validator"},
+    {"id": "checkin_owner", "child_table": "checkins", "child_column": "user_id", "parent_table": "users", "parent_column": "id", "enforcement": "application_validator"},
+    {"id": "message_owner", "child_table": "messages", "child_column": "user_id", "parent_table": "users", "parent_column": "id", "enforcement": "application_validator"},
+    {"id": "research_work_item_owner", "child_table": "research_work_items", "child_column": "user_id", "parent_table": "users", "parent_column": "id", "enforcement": "application_validator"},
+    {"id": "therapeutic_case_owner", "child_table": "therapeutic_assessment_cases", "child_column": "participant_user_id", "parent_table": "users", "parent_column": "id", "enforcement": "application_validator"}
+  ],
+  "recovery": {
+    "allowed_target_environment": "isolated_validation",
+    "production_target_forbidden": true,
+    "rpo_target_minutes": 60,
+    "rto_target_minutes": 120,
+    "production_actual": null,
+    "status": "pending_external",
+    "owners": ["database_owner", "security_owner"],
+    "automation_may_approve": false
+  }
+}

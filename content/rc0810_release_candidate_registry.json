@@ -4305,6 +4305,7 @@
         "deploy/**",
         "config/**",
         "scripts/**",
+        "content/rc0810_release_candidate_registry.json",
         "docs/**",
         "backend/migrations/**"
       ],
@@ -4330,16 +4331,29 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 10
         }
       ],
-      "external_gates": [],
+      "external_gates": [
+        {
+          "owner": "database_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        },
+        {
+          "owner": "security_owner",
+          "status": "pending_external",
+          "automation_may_approve": false
+        }
+      ],
       "change_budget": {
         "allowed_modules": [
           "backend/**",
           "deploy/**",
           "config/**",
           "scripts/**",
+          "content/rc0810_release_candidate_registry.json",
           "docs/**",
           "backend/migrations/**"
         ],
@@ -4353,9 +4367,9 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 18,
-        "expected_migrations": 3,
-        "expected_interfaces": 0,
+        "expected_files": 16,
+        "expected_migrations": 0,
+        "expected_interfaces": 1,
         "expected_pages": 0,
         "actual_delta_baseline": "task_start_snapshot",
         "pause_when_actual_exceeds_percent": 50,
