@@ -19,6 +19,7 @@ MVP_TABLES = [
     "parent_report_actions",
     "records",
     "audit_logs",
+    "audit_chain_state",
     "privacy_requests",
     "privacy_request_actions",
     "family_links",
@@ -1086,7 +1087,19 @@ SCHEMA_SQL = [
         target_type TEXT,
         target_id TEXT,
         metadata_json TEXT NOT NULL,
+        sequence_no INTEGER,
+        previous_hash TEXT,
+        event_hash TEXT,
+        hash_version TEXT,
         created_at TEXT NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS audit_chain_state (
+        singleton_id INTEGER PRIMARY KEY,
+        last_sequence INTEGER NOT NULL DEFAULT 0,
+        last_hash TEXT NOT NULL,
+        updated_at TEXT NOT NULL
     )
     """,
     """
@@ -1359,6 +1372,11 @@ SCHEMA_SQL = [
         status TEXT NOT NULL DEFAULT 'available',
         counts_json TEXT NOT NULL DEFAULT '{}',
         idempotency_key TEXT,
+        claim_token_digest TEXT,
+        claim_token_expires_at TEXT,
+        claim_token_used_at TEXT,
+        attempt_count INTEGER NOT NULL DEFAULT 0,
+        locked_until TEXT,
         version INTEGER NOT NULL DEFAULT 0,
         claimed_at TEXT,
         created_at TEXT NOT NULL,

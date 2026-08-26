@@ -74,7 +74,7 @@ def test_anonymous_records_require_explicit_confirmation_and_claim_once(tmp_path
 
     claimed = client.post(
         "/api/auth/data-claim",
-        headers=headers,
+        headers={**headers, "Idempotency-Key": "claim-owner-once"},
         json={"claim_id": preview["claim_id"], "confirm": True},
     )
     assert claimed.status_code == 200
@@ -85,7 +85,7 @@ def test_anonymous_records_require_explicit_confirmation_and_claim_once(tmp_path
 
     repeated = client.post(
         "/api/auth/data-claim",
-        headers=headers,
+        headers={**headers, "Idempotency-Key": "claim-owner-once"},
         json={"claim_id": preview["claim_id"], "confirm": True},
     ).get_json()["data"]
     assert repeated["already_completed"] is True
@@ -111,7 +111,7 @@ def test_claim_candidate_cannot_be_used_by_another_account(tmp_path):
 
     forbidden = client.post(
         "/api/auth/data-claim",
-        headers=first_headers,
+        headers={**first_headers, "Idempotency-Key": "cross-account-claim"},
         json={"claim_id": second_claim_id, "confirm": True},
     )
     assert forbidden.status_code == 404

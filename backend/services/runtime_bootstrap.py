@@ -23,14 +23,6 @@ def _bool(name: str, default: bool = False) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def _int(name: str, default: int, minimum: int, maximum: int) -> int:
-    try:
-        value = int(os.environ.get(name, str(default)))
-    except (TypeError, ValueError):
-        value = default
-    return max(minimum, min(value, maximum))
-
-
 def install_pre_app() -> dict[str, Any]:
     """Install adapters that must exist before app.py imports routes/services."""
     global _PRE_APP_STATUS
@@ -50,20 +42,20 @@ def _client_key(app) -> str:
     return hashlib.sha256(f"{secret}:{value}".encode("utf-8")).hexdigest()[:24]
 
 
-def _limit_for_path(path: str) -> tuple[str, int, int] | None:
+def _limit_for_path(path: str, config: dict[str, Any]) -> tuple[str, int, int] | None:
     if path == "/api/auth/login":
-        return "auth-login", _int("REDIS_LOGIN_RATE_LIMIT_PER_MINUTE", 20, 5, 300), 60
+        return "auth-login", int(config.get("REDIS_LOGIN_RATE_LIMIT_PER_MINUTE", 20)), 60
     if path.startswith("/api/ai-qa/") and path not in {"/api/ai-qa/config", "/api/ai-qa/use-cases"}:
-        return "ai-qa", _int("REDIS_AI_RATE_LIMIT_PER_MINUTE", 60, 5, 600), 60
+        return "ai-qa", int(config.get("REDIS_AI_RATE_LIMIT_PER_MINUTE", 60)), 60
     return None
 
 
 def configure_app(app) -> dict[str, Any]:
     """Apply infrastructure-only WSGI/runtime controls; no UI behavior lives here."""
-    max_body = _int("MAX_REQUEST_BODY_BYTES", 1024 * 1024, 64 * 1024, 10 * 1024 * 1024)
+    max_body = int(app.config.get("MAX_REQUEST_BODY_BYTES", 1024 * 1024))
     app.config["MAX_CONTENT_LENGTH"] = max_body
 
-    proxy_hops = _int("TRUST_PROXY_HOPS", 0, 0, 4)
+    proxy_hops = int(app.config.get("TRUST_PROXY_HOPS", 0))
     if proxy_hops:
         app.wsgi_app = ProxyFix(
             app.wsgi_app,
@@ -77,22 +69,32 @@ def configure_app(app) -> dict[str, Any]:
     def distributed_runtime_rate_limit():
         if request.method == "OPTIONS":
             return None
-        spec = _limit_for_path(request.path)
+        spec = _limit_for_path(request.path, app.config)
         if spec is None:
             return None
         bucket_name, limit, window = spec
-        decision = rate_limit(f"{bucket_name}:{_client_key(app)}", limit=limit, window_seconds=window)
+        production = str(app.config.get("APP_ENV") or "").lower() == "production"
+        decision = rate_limit(
+            f"{bucket_name}:{_client_key(app)}",
+            limit=limit,
+            window_seconds=window,
+            unavailable_policy="deny" if production else "deny_if_enabled",
+        )
         g.redis_rate_limit = decision
         if decision["allowed"]:
             return None
+        unavailable = not decision.get("available")
         response = jsonify(
             {
                 "ok": False,
-                "error": {"code": "rate_limited", "message": "请求过于频繁，请稍后再试。"},
+                "error": {
+                    "code": "rate_limit_unavailable" if unavailable else "rate_limited",
+                    "message": "请求保护暂时不可用，请稍后再试。" if unavailable else "请求过于频繁，请稍后再试。",
+                },
                 "request_id": getattr(g, "request_id", None),
             }
         )
-        response.status_code = 429
+        response.status_code = 503 if unavailable else 429
         response.headers["Retry-After"] = str(decision["retry_after"])
         return response
 

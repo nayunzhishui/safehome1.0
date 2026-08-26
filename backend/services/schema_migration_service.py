@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from database import ensure_column, json_loads, mysqlize_schema_statement, new_id, now_iso
+from database import audit_event_hash, ensure_column, json_loads, mysqlize_schema_statement, new_id, now_iso
 from services.idempotency_service import canonical_request_hash
 
 MYSQL_MIGRATION_LOCK_NAME = "safehome_explicit_schema_migrations"
@@ -786,6 +786,70 @@ def _apply_2026_08_25_076(conn) -> None:
         ensure_column(conn, "assessment_results", column, definition)
 
 
+def _apply_2026_08_26_077(conn) -> None:
+    for column, definition in {
+        "claim_token_digest": "TEXT",
+        "claim_token_expires_at": "TEXT",
+        "claim_token_used_at": "TEXT",
+        "attempt_count": "INTEGER NOT NULL DEFAULT 0",
+        "locked_until": "TEXT",
+    }.items():
+        ensure_column(conn, "data_claims", column, definition)
+    _create_index_if_missing(
+        conn,
+        "idx_data_claim_target_digest",
+        "data_claims",
+        "target_user_id, claim_token_digest",
+    )
+
+
+def _apply_2026_08_26_078(conn) -> None:
+    for column, definition in {
+        "sequence_no": "INTEGER",
+        "previous_hash": "TEXT",
+        "event_hash": "TEXT",
+        "hash_version": "TEXT",
+    }.items():
+        ensure_column(conn, "audit_logs", column, definition)
+    _execute_schema(
+        conn,
+        """CREATE TABLE IF NOT EXISTS audit_chain_state (
+            singleton_id INTEGER PRIMARY KEY,
+            last_sequence INTEGER NOT NULL DEFAULT 0,
+            last_hash TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )""",
+    )
+    rows = conn.execute(
+        "SELECT id, actor_id, action, target_type, target_id, metadata_json, created_at FROM audit_logs ORDER BY created_at ASC, id ASC"
+    ).fetchall()
+    previous_hash = ""
+    for sequence_no, raw in enumerate(rows, start=1):
+        row = dict(raw)
+        event_hash = audit_event_hash(
+            audit_id=row["id"],
+            sequence_no=sequence_no,
+            previous_hash=previous_hash,
+            actor_id=row.get("actor_id"),
+            action=row["action"],
+            target_type=row.get("target_type"),
+            target_id=row.get("target_id"),
+            metadata_json=row["metadata_json"],
+            created_at=row["created_at"],
+        )
+        conn.execute(
+            "UPDATE audit_logs SET sequence_no = ?, previous_hash = ?, event_hash = ?, hash_version = 'sha256-v1' WHERE id = ?",
+            (sequence_no, previous_hash, event_hash, row["id"]),
+        )
+        previous_hash = event_hash
+    conn.execute("DELETE FROM audit_chain_state WHERE singleton_id = 1")
+    conn.execute(
+        "INSERT INTO audit_chain_state (singleton_id, last_sequence, last_hash, updated_at) VALUES (1, ?, ?, ?)",
+        (len(rows), previous_hash, now_iso()),
+    )
+    _create_index_if_missing(conn, "idx_audit_logs_sequence", "audit_logs", "sequence_no")
+
+
 MIGRATIONS = (
     Migration(
         version="2026_08_07_062",
@@ -939,6 +1003,26 @@ MIGRATIONS = (
             "Preserve immutable assessment content snapshots with historical results.",
             "Do not replace stored worksheet payloads with the current content version.",
             "The additive columns may remain unused by an older application version.",
+        ),
+    ),
+    Migration(
+        version="2026_08_26_077",
+        name="anonymous_claim_token_digest",
+        apply=_apply_2026_08_26_077,
+        rollback_notes=(
+            "Stop anonymous claim writes before application rollback.",
+            "Preserve token digests and consumption timestamps for abuse review; never restore plaintext tokens.",
+            "Revoke unconsumed claims before running an application that cannot validate digest-backed tokens.",
+        ),
+    ),
+    Migration(
+        version="2026_08_26_078",
+        name="audit_tamper_evident_chain",
+        apply=_apply_2026_08_26_078,
+        rollback_notes=(
+            "Stop audit writers before application rollback.",
+            "Preserve sequence and chain hash columns as audit evidence.",
+            "The chain detects modification but is not an external immutable archive.",
         ),
     ),
 )

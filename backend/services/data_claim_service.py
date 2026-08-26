@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import re
+import secrets
+from datetime import datetime, timedelta, timezone
 
 from database import json_dumps, json_loads, new_id, now_iso, row_to_dict, write_audit_log
 
 
 ANONYMOUS_ID_PATTERN = re.compile(r"^(?:wx|web)_user_\d{10,16}_[0-9a-fA-F]{4,20}$")
+DEFAULT_CLAIM_TOKEN_TTL_SECONDS = 900
+DEFAULT_CLAIM_MAX_ATTEMPTS = 5
+CLAIM_LOCK_SECONDS = 900
 
 # Only participant-owned rows are transferred. Review notes and audit logs remain
 # immutable because their actor/reviewer identity has a different meaning.
@@ -113,7 +119,21 @@ def register_claim_candidate(conn, target_user_id: str, anonymous_id: str | None
     return {"id": claim_id, "target_user_id": target_user_id, "status": "available", "counts_json": json_dumps(counts)}
 
 
-def claim_preview(conn, target_user_id: str) -> dict:
+def _token_digest(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def _parse_time(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def claim_preview(conn, target_user_id: str, *, token_ttl_seconds: int = DEFAULT_CLAIM_TOKEN_TTL_SECONDS) -> dict:
     row = conn.execute(
         """
         SELECT * FROM data_claims
@@ -133,13 +153,27 @@ def claim_preview(conn, target_user_id: str) -> dict:
         }
     item = row_to_dict(row)
     counts = count_claimable_records(conn, item["anonymous_id"])
+    token = secrets.token_urlsafe(32) if sum(counts.values()) > 0 else None
+    timestamp = datetime.now(timezone.utc)
+    expires_at = timestamp + timedelta(seconds=max(60, min(int(token_ttl_seconds), 3600)))
     conn.execute(
-        "UPDATE data_claims SET counts_json = ?, updated_at = ? WHERE id = ?",
-        (json_dumps(counts), now_iso(), item["id"]),
+        """UPDATE data_claims
+           SET counts_json = ?, claim_token_digest = ?, claim_token_expires_at = ?,
+               claim_token_used_at = NULL, attempt_count = 0, locked_until = NULL, updated_at = ?
+           WHERE id = ?""",
+        (
+            json_dumps(counts),
+            _token_digest(token) if token else None,
+            expires_at.isoformat() if token else None,
+            timestamp.isoformat(),
+            item["id"],
+        ),
     )
     return {
         "available": sum(counts.values()) > 0,
-        "claim_id": item["id"],
+        # Compatibility field: it is now a short-lived bearer token, not the
+        # durable database row id. Only its SHA-256 digest is persisted.
+        "claim_id": token,
         "total_records": sum(counts.values()),
         "modules": summarized_counts(counts),
         "boundary_notice": "只显示记录数量，不展示试用期填写原文；需要你确认后才会合并。",
@@ -154,16 +188,46 @@ def claim_records(
     *,
     idempotency_key: str | None = None,
     expected_version: int | None = None,
+    max_attempts: int = DEFAULT_CLAIM_MAX_ATTEMPTS,
 ) -> dict:
+    if not idempotency_key:
+        raise ValueError("匿名认领必须提供 Idempotency-Key")
+    digest = _token_digest(str(claim_id))
     row = conn.execute(
-        "SELECT * FROM data_claims WHERE id = ? AND target_user_id = ?",
-        (claim_id, target_user_id),
+        "SELECT * FROM data_claims WHERE claim_token_digest = ? AND target_user_id = ?",
+        (digest, target_user_id),
     ).fetchone()
     if row is None:
+        candidate = conn.execute(
+            "SELECT * FROM data_claims WHERE target_user_id = ? AND status = 'available' ORDER BY created_at ASC LIMIT 1",
+            (target_user_id,),
+        ).fetchone()
+        if candidate is not None:
+            attempts = int(candidate["attempt_count"] or 0) + 1
+            locked_until = None
+            if attempts >= max(1, int(max_attempts)):
+                locked_until = (datetime.now(timezone.utc) + timedelta(seconds=CLAIM_LOCK_SECONDS)).isoformat()
+            conn.execute(
+                "UPDATE data_claims SET attempt_count = ?, locked_until = ?, updated_at = ? WHERE id = ?",
+                (attempts, locked_until, now_iso(), candidate["id"]),
+            )
+            # Failed bearer-token attempts are security evidence and must
+            # survive the domain error returned to the caller.
+            conn.commit()
         raise LookupError("没有找到可认领的试用记录")
     claim = row_to_dict(row)
+    locked_until = _parse_time(claim.get("locked_until"))
+    if locked_until and locked_until > datetime.now(timezone.utc):
+        raise ValueError("认领尝试过多，请稍后重新预览")
+    expires_at = _parse_time(claim.get("claim_token_expires_at"))
+    if not expires_at or expires_at <= datetime.now(timezone.utc):
+        raise ValueError("认领令牌已过期，请重新预览")
+    if not hmac.compare_digest(str(claim.get("claim_token_digest") or ""), digest):
+        raise LookupError("没有找到可认领的试用记录")
     stored_counts = json_loads(claim.get("counts_json"), {})
     if claim["status"] == "claimed":
+        if not claim.get("claim_token_used_at") or claim.get("idempotency_key") != idempotency_key:
+            raise ValueError("认领令牌已使用，请重新预览")
         return {
             "claim_id": claim_id,
             "status": "claimed",
@@ -178,19 +242,20 @@ def claim_records(
     current_version = int(claim.get("version") or 0)
     if expected_version is not None and int(expected_version) != current_version:
         raise ValueError("认领状态已更新，请刷新后重试")
-    stable_idempotency_key = str(idempotency_key or f"claim:{claim_id}:{target_user_id}")[:191]
+    stable_idempotency_key = str(idempotency_key)[:191]
     cursor = conn.execute(
         """
         UPDATE data_claims
-        SET status = 'processing', idempotency_key = ?, version = version + 1, updated_at = ?
+        SET status = 'processing', idempotency_key = ?, claim_token_used_at = ?,
+            version = version + 1, updated_at = ?
         WHERE id = ? AND target_user_id = ? AND status = 'available' AND version = ?
         """,
-        (stable_idempotency_key, now_iso(), claim_id, target_user_id, current_version),
+        (stable_idempotency_key, now_iso(), now_iso(), claim["id"], target_user_id, current_version),
     )
     if cursor.rowcount != 1:
         latest = conn.execute(
             "SELECT * FROM data_claims WHERE id = ? AND target_user_id = ?",
-            (claim_id, target_user_id),
+            (claim["id"], target_user_id),
         ).fetchone()
         if latest is not None and latest["status"] == "claimed":
             latest_item = row_to_dict(latest)
@@ -230,7 +295,7 @@ def claim_records(
             version = version + 1, updated_at = ?
         WHERE id = ? AND status = 'processing'
         """,
-        (json_dumps(counts), timestamp, timestamp, claim_id),
+        (json_dumps(counts), timestamp, timestamp, claim["id"]),
     )
     conn.execute(
         """
@@ -244,7 +309,7 @@ def claim_records(
         action="anonymous_data_claimed",
         actor_id=target_user_id,
         target_type="data_claim",
-        target_id=claim_id,
+        target_id=claim["id"],
         metadata={"record_count": sum(counts.values()), "module_counts": counts},
     )
     return {

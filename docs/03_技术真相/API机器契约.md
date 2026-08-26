@@ -1,6 +1,6 @@
 # API机器契约
 
-契约版本：`2026-08-24.f09`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
+契约版本：`2026-08-26.f24`。本文件由`backend/scripts/build_api_contract.py`生成，请勿手工编辑。
 
 统一成功包络为`{ok:true,data,request_id}`，统一错误包络为`{ok:false,error:{code,message},request_id}`；下载接口除外，但响应头仍含`X-Request-ID`。
 
@@ -60,7 +60,7 @@
 | POST | `/api/auth/bind-phone` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/auth/capabilities` | public:public | not_applicable_or_development_legacy | — | — | active |
 | POST | `/api/auth/change-password` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
-| POST | `/api/auth/data-claim` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | supported | active |
+| POST | `/api/auth/data-claim` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | required | active |
 | GET | `/api/auth/data-claim-preview` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | GET | `/api/auth/identity-status` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
 | POST | `/api/auth/identity-unbind` | authenticated:parent,student,researcher,supervisor,admin | role_scoped | — | — | active |
@@ -317,7 +317,7 @@
 | GET | `/api/therapeutic-assessment/ai-assist` | role:parent,student,researcher,supervisor,admin | module_resource_role_or_owner_scope_without_therapeutic_case_claim | — | — | active |
 | PATCH | `/api/therapeutic-assessment/ai-assist/candidates/<candidate_id>` | role:parent,student,researcher,supervisor,admin | module_resource_role_or_owner_scope_without_therapeutic_case_claim | — | — | active |
 | GET | `/api/therapeutic-assessment/cases` | role:parent,student,researcher,supervisor,admin | participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin | — | — | active |
-| POST | `/api/therapeutic-assessment/cases` | role:parent,student,researcher,supervisor,admin | participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin | — | — | active |
+| POST | `/api/therapeutic-assessment/cases` | role:parent,student,researcher,supervisor,admin | participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin | — | required | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>` | role:parent,student,researcher,supervisor,admin | participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin | — | — | active |
 | POST | `/api/therapeutic-assessment/cases/<case_id>/actions` | role:parent,student,researcher,supervisor,admin | participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin | — | — | active |
 | GET | `/api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates` | role:parent,student,researcher,supervisor,admin | participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin | — | — | active |

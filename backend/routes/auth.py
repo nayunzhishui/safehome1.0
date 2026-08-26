@@ -3,7 +3,6 @@
 import hashlib
 import hmac
 import json
-import os
 import re
 import time
 from datetime import datetime, timedelta, timezone
@@ -28,6 +27,7 @@ from routes.auth_utils import (
 )
 from routes.utils import fail, ok, require_admin_token
 from services.data_claim_service import claim_preview, claim_records, register_claim_candidate
+from services.redis_service import hash_component as redis_hash_component, rate_limit as redis_rate_limit
 from services.identity_lifecycle_service import (
     BACKEND_ROLES,
     PARTICIPANT_ROLES,
@@ -162,7 +162,7 @@ def _trusted_cloudbase_openid() -> str | None:
         return None
     if source not in _CLOUDBASE_MINIPROGRAM_SOURCES:
         return None
-    configured_appid = os.environ.get("WECHAT_APPID", "").strip()
+    configured_appid = str(current_app.config.get("WECHAT_APPID") or "").strip()
     if configured_appid and (
         not request_appid or not hmac.compare_digest(configured_appid, request_appid)
     ):
@@ -210,8 +210,8 @@ def _wechat_transport_error(operation: str, exc: Exception) -> WechatAuthError:
 
 
 def _wechat_session_from_code(code: str) -> dict:
-    appid = os.environ.get("WECHAT_APPID", "").strip()
-    secret = os.environ.get("WECHAT_SECRET", "").strip()
+    appid = str(current_app.config.get("WECHAT_APPID") or "").strip()
+    secret = str(current_app.config.get("WECHAT_SECRET") or "").strip()
     if appid and secret:
         query = urlencode(
             {
@@ -251,7 +251,7 @@ def _wechat_session_from_code(code: str) -> dict:
 
 
 def _cloudbase_access_token() -> str | None:
-    token_path = Path(os.environ.get("CLOUDBASE_ACCESS_TOKEN_PATH", CLOUDBASE_ACCESS_TOKEN_PATH))
+    token_path = Path(current_app.config.get("CLOUDBASE_ACCESS_TOKEN_PATH", CLOUDBASE_ACCESS_TOKEN_PATH))
     try:
         token = token_path.read_text(encoding="utf-8").strip()
     except OSError:
@@ -260,8 +260,8 @@ def _cloudbase_access_token() -> str | None:
 
 
 def _standard_wechat_access_token() -> str | None:
-    appid = os.environ.get("WECHAT_APPID", "").strip()
-    secret = os.environ.get("WECHAT_SECRET", "").strip()
+    appid = str(current_app.config.get("WECHAT_APPID") or "").strip()
+    secret = str(current_app.config.get("WECHAT_SECRET") or "").strip()
     if not appid or not secret:
         return None
 
@@ -373,8 +373,8 @@ def _parse_utc_timestamp(value: str) -> datetime | None:
 def auth_capabilities():
     """Expose login readiness without returning credentials or identity values."""
     standard_wechat_configured = bool(
-        os.environ.get("WECHAT_APPID", "").strip()
-        and os.environ.get("WECHAT_SECRET", "").strip()
+        str(current_app.config.get("WECHAT_APPID") or "").strip()
+        and str(current_app.config.get("WECHAT_SECRET") or "").strip()
     )
     cloudbase_identity_configured = bool(
         current_app.config.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", False)
@@ -1321,7 +1321,11 @@ def data_claim_preview():
     with get_connection() as conn:
         # Backfill accounts that recorded an anonymous ID before this feature existed.
         register_claim_candidate(conn, actor["id"], actor["user"].get("anonymous_id"))
-        preview = claim_preview(conn, actor["id"])
+        preview = claim_preview(
+            conn,
+            actor["id"],
+            token_ttl_seconds=int(current_app.config.get("DATA_CLAIM_TOKEN_TTL_SECONDS", 900)),
+        )
         conn.commit()
     return ok(preview)
 
@@ -1345,9 +1349,21 @@ def data_claim():
             expected_version = int(expected_version)
         except (TypeError, ValueError):
             return fail("validation_error", "认领状态版本无效", status=400)
-    idempotency_key = str(
-        request.headers.get("Idempotency-Key") or f"claim:{claim_id}:{actor['id']}"
-    ).strip()
+    idempotency_key = str(request.headers.get("Idempotency-Key") or "").strip()
+    if not idempotency_key:
+        return fail("idempotency_key_required", "匿名认领必须提供 Idempotency-Key", status=400)
+    production = str(current_app.config.get("APP_ENV") or "").lower() == "production"
+    rate_decision = redis_rate_limit(
+        "data-claim:"
+        + redis_hash_component(f"{actor['id']}:{request.remote_addr or 'unknown'}", salt="data-claim"),
+        limit=int(current_app.config.get("DATA_CLAIM_RATE_LIMIT_PER_MINUTE", 10)),
+        window_seconds=60,
+        unavailable_policy="deny" if production else "deny_if_enabled",
+    )
+    if not rate_decision["allowed"]:
+        if not rate_decision["available"]:
+            return fail("rate_limit_unavailable", "请求保护暂时不可用，请稍后再试", status=503)
+        return fail("rate_limited", "认领尝试过于频繁，请稍后再试", status=429)
     try:
         with get_connection() as conn:
             result = claim_records(
@@ -1356,6 +1372,7 @@ def data_claim():
                 claim_id,
                 idempotency_key=idempotency_key,
                 expected_version=expected_version,
+                max_attempts=int(current_app.config.get("DATA_CLAIM_MAX_ATTEMPTS", 5)),
             )
             conn.commit()
     except LookupError as exc:

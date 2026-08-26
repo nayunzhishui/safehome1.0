@@ -1,0 +1,96 @@
+{
+  "schema": "safehome.rc0810.f24-evidence.v1",
+  "task_id": "RC0810-F24",
+  "status": "engineering_complete_review_pending_wave",
+  "source_base_commit": "5b6f00e3ececd4d3dfccd2a84df43cfbfb8942ec",
+  "completed_subtasks": [
+    "F24.1",
+    "F24.2",
+    "F24.3",
+    "F24.4",
+    "F24.5",
+    "F24.6",
+    "F24.7"
+  ],
+  "artifacts": {
+    "config_inventory": "config/rc0810/config_read_inventory.json",
+    "failure_policy": "config/rc0810/f24_failure_policy.json",
+    "legacy_disposition": "config/rc0810/f24_legacy_disposition.json",
+    "api_contract": "shared/contracts/api-contract.json",
+    "compatibility_baseline": "shared/contracts/api-contract.baseline.json"
+  },
+  "closed_findings": [
+    {
+      "id": "F23-SCHEMA-01",
+      "result": "closed",
+      "evidence": "Therapeutic case POST now declares five runtime body fields and required Idempotency-Key in all four generated contract artifacts."
+    }
+  ],
+  "migrations": [
+    {
+      "version": "2026_08_26_077",
+      "name": "anonymous_claim_token_digest",
+      "kind": "additive",
+      "rollback": "Stop claim writes, preserve digests/evidence, revoke unconsumed claims before an old application is restored."
+    },
+    {
+      "version": "2026_08_26_078",
+      "name": "audit_tamper_evident_chain",
+      "kind": "additive_backfill",
+      "rollback": "Stop audit writers and preserve sequence/hash evidence; do not describe the chain as immutable storage."
+    }
+  ],
+  "verification": [
+    {
+      "command": "python -m pytest backend/tests/test_rc0810_f24.py backend/tests/test_data_claims.py backend/tests/test_task36_identity_lifecycle.py backend/tests/test_schema_migrations.py -q -p no:cacheprovider",
+      "result": "passed",
+      "unique_tests": 21,
+      "duration_seconds": 69.75
+    },
+    {
+      "command": "python scripts/check_rc0810_f24_config.py",
+      "result": "passed",
+      "registered_reads": 146,
+      "unclassified_reads": 0
+    },
+    {
+      "command": "python backend/scripts/build_api_contract.py --check",
+      "result": "passed",
+      "artifacts": 4
+    },
+    {
+      "command": "python backend/scripts/check_api_compatibility.py",
+      "result": "passed",
+      "frozen_operations": 136
+    },
+    {
+      "command": "node --check apps/miniprogram/pages/home/index.js && node --check apps/miniprogram/services/api-contract.generated.js",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed_with_line_ending_warnings_only"
+    }
+  ],
+  "key_source_sha256": {
+    "backend/services/data_claim_service.py": "67df3c56c5b707d0a05e8aa1ebfd73d37dc9a36b44fc5e454cb19939de6f26e1",
+    "backend/database.py": "7cfd3508186e84d3a0ccd1a85dac128b499ab553b233ec2bd9072c0da587a256",
+    "shared/contracts/api-contract.json": "76635e2fd551a72e7bdad9745ec9cf8a62707346509cb1a5709901de959687da"
+  },
+  "review": {
+    "decision": "pending_wave_c",
+    "reviewer_invoked": false,
+    "review_pass_claimed": false,
+    "next_review_point": "RC0810-F26"
+  },
+  "release": {
+    "production_go": false,
+    "reason": "F22-B source/container findings, supply-chain attestation, F25-B external platform/device evidence and wave-C review remain open."
+  },
+  "scope_notes": [
+    "No CloudBase, Secret or production resource was changed.",
+    "No production database was connected or migrated.",
+    "The user waived unrelated broad regression; only task-specific and directly affected tests were run.",
+    "The existing Harness run remains stale at F22-B and must be rebound at F26; no state or review pass was fabricated."
+  ]
+}

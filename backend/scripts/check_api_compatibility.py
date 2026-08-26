@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 from datetime import date
 from pathlib import Path
 
@@ -67,7 +68,39 @@ def compatibility_errors(baseline: dict, current: dict) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--freeze-baseline", action="store_true")
+    parser.add_argument("--reconcile-reviewed-security-from-git", metavar="COMMIT")
     args = parser.parse_args()
+    if args.reconcile_reviewed_security_from_git:
+        commit = args.reconcile_reviewed_security_from_git
+        baseline_payload = subprocess.run(
+            ["git", "show", f"{commit}:shared/contracts/api-contract.baseline.json"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        ).stdout.decode("utf-8")
+        source_payload = subprocess.run(
+            ["git", "show", f"{commit}:shared/contracts/api-contract.json"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        ).stdout.decode("utf-8")
+        baseline = json.loads(baseline_payload)
+        source = _index(json.loads(source_payload))
+        changed = 0
+        for item in baseline.get("endpoints", []):
+            reviewed = source.get(item["operation_id"])
+            if reviewed is None:
+                continue
+            for field in ("object_scope", "access"):
+                if item.get(field) != reviewed.get(field):
+                    item[field] = reviewed.get(field)
+                    changed += 1
+        BASELINE_PATH.write_text(json.dumps(baseline, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(
+            f"reconciled {BASELINE_PATH.relative_to(ROOT)} from reviewed security state "
+            f"{commit} ({changed} fields; {len(baseline.get('endpoints', []))} frozen operations)"
+        )
+        return 0
     if args.freeze_baseline:
         BASELINE_PATH.write_text(CURRENT_PATH.read_text(encoding="utf-8"), encoding="utf-8")
         print(f"frozen {BASELINE_PATH.relative_to(ROOT)}")

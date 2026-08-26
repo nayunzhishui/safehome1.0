@@ -15,6 +15,15 @@
 
   <entry-row class="thermometer-entry" icon="thermometer" title="情绪温度计" subtitle="今天已记录 {{thermometerRecordCount}} 次{{thermometerRecordReady ? '' : '，联网后更新'}}" bind:action="openThermometer" />
 
+  <page-state
+    wx:if="{{homeOverviewError}}"
+    kind="error"
+    title="首页摘要暂时不可用"
+    description="{{homeOverviewError}}"
+    action-label="重新加载"
+    bind:action="retryHomeData"
+  />
+
   <dual-entry left-key="assessment" left-icon="assessment" left-title="测一测" left-subtitle="了解此刻状态" right-key="diary" right-icon="diary" right-title="情绪日记" right-subtitle="记录具体小事" bind:action="openCoreEntry" />
 
   <journey-action-card

@@ -1,0 +1,14 @@
+{
+  "schema": "safehome.rc0810.f24-legacy-disposition.v1",
+  "items": [
+    {"id": "M-08", "decision": "partially_cleaned", "evidence": "Deleted the unreferenced runtime_bootstrap._int helper after repository reference search; referenced admin-token helpers remain and now read Flask config."},
+    {"id": "M-09", "decision": "retained", "evidence": "API limit alias is an active compatibility route with explicit Deprecation/Sunset headers."},
+    {"id": "M-10", "decision": "fixed", "evidence": "Authentication route configuration reads use current_app instead of direct environment access."},
+    {"id": "M-11", "decision": "retained", "evidence": "Provider modules are registered explicit infrastructure profiles; deleting them would remove active runtime adapters."},
+    {"id": "M-12", "decision": "retained", "evidence": "Generated shared, miniprogram and Markdown API contracts are consumed by compatibility checks and clients."},
+    {"id": "M-13", "decision": "fixed", "evidence": "Therapeutic case creation fields and required idempotency are generated from an explicit route override."},
+    {"id": "M-14", "decision": "retained", "evidence": "Task registry generators remain referenced by required verification commands; no unreferenced helper was proven safe to delete."}
+  ],
+  "deletions": [],
+  "principle": "Only redundancy with reference evidence is deleted. No such safe deletion was established in F24."
+}

@@ -83,10 +83,27 @@ class Config:
         for origin in os.environ.get("ALLOWED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173").split(",")
         if origin.strip()
     ]
+    REDIS_URL = os.environ.get("REDIS_URL", "").strip()
+    REDIS_ENABLED = os.environ.get("REDIS_ENABLED", "1").strip().lower() in {"1", "true", "yes", "on"}
+    REDIS_LOGIN_RATE_LIMIT_PER_MINUTE = int(os.environ.get("REDIS_LOGIN_RATE_LIMIT_PER_MINUTE", "20"))
+    REDIS_AI_RATE_LIMIT_PER_MINUTE = int(os.environ.get("REDIS_AI_RATE_LIMIT_PER_MINUTE", "60"))
+    DATA_CLAIM_RATE_LIMIT_PER_MINUTE = int(os.environ.get("DATA_CLAIM_RATE_LIMIT_PER_MINUTE", "10"))
+    DATA_CLAIM_TOKEN_TTL_SECONDS = int(os.environ.get("DATA_CLAIM_TOKEN_TTL_SECONDS", "900"))
+    DATA_CLAIM_MAX_ATTEMPTS = int(os.environ.get("DATA_CLAIM_MAX_ATTEMPTS", "5"))
+    MAX_REQUEST_BODY_BYTES = int(os.environ.get("MAX_REQUEST_BODY_BYTES", str(1024 * 1024)))
+    TRUST_PROXY_HOPS = int(os.environ.get("TRUST_PROXY_HOPS", "0"))
     JSON_AS_ASCII = False
     DEFAULT_PAGE_SIZE = 50
     WECHAT_APPID = os.environ.get("WECHAT_APPID", "").strip()
     WECHAT_SECRET = os.environ.get("WECHAT_SECRET", "").strip()
+    CLOUDBASE_ACCESS_TOKEN_PATH = os.environ.get(
+        "CLOUDBASE_ACCESS_TOKEN_PATH", "/.tencentcloudbase/wx/cloudbase_access_token"
+    ).strip()
+    LEGACY_ADMIN_TOKEN_ENABLED = (
+        None
+        if os.environ.get("LEGACY_ADMIN_TOKEN_ENABLED") is None
+        else os.environ.get("LEGACY_ADMIN_TOKEN_ENABLED", "").strip().lower() in {"1", "true", "yes", "on"}
+    )
     WECHAT_TRAINING_DUE_TEMPLATE_ID = os.environ.get("WECHAT_TRAINING_DUE_TEMPLATE_ID", "").strip()
     WECHAT_TRAINING_DUE_TEMPLATE_FIELDS = os.environ.get("WECHAT_TRAINING_DUE_TEMPLATE_FIELDS", "").strip()
     WECHAT_TRAINING_DUE_PAGE = os.environ.get(
@@ -233,6 +250,14 @@ class Config:
             raise RuntimeError(messages[tls_errors[0]])
         if cls.SAFETY_SCHEDULER_LEASE_SECONDS < 30 or cls.SAFETY_SCHEDULER_MAX_ATTEMPTS not in range(1, 11):
             raise RuntimeError("安全调度器租约必须不少于30秒，最大尝试次数必须为1至10")
+        if cls.REDIS_LOGIN_RATE_LIMIT_PER_MINUTE not in range(5, 301) or cls.REDIS_AI_RATE_LIMIT_PER_MINUTE not in range(5, 601):
+            raise RuntimeError("Redis 认证或 AI 每分钟限流配置超出允许范围")
+        if cls.DATA_CLAIM_RATE_LIMIT_PER_MINUTE not in range(1, 61) or cls.DATA_CLAIM_MAX_ATTEMPTS not in range(1, 21):
+            raise RuntimeError("匿名认领限流配置超出允许范围")
+        if cls.DATA_CLAIM_TOKEN_TTL_SECONDS not in range(60, 3601):
+            raise RuntimeError("匿名认领令牌有效期必须为60至3600秒")
+        if cls.MAX_REQUEST_BODY_BYTES not in range(64 * 1024, 10 * 1024 * 1024 + 1) or cls.TRUST_PROXY_HOPS not in range(0, 5):
+            raise RuntimeError("请求体或代理跳数配置超出允许范围")
         if str(cls.APP_ENV).lower() == "production" and cls.SAFETY_SCHEDULER_ENABLED:
             raise RuntimeError("F15 人工容量与值守证据未批准前禁止生产启用安全调度器")
         if str(cls.APP_ENV).lower() == "production" and not DB_PROVIDER_ENV_VALUE:

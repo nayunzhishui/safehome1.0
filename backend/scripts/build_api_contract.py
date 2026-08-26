@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 TS_PATH = ROOT / "shared" / "types" / "api-contract.generated.ts"
 MINIPROGRAM_PATH = ROOT / "apps" / "miniprogram" / "services" / "api-contract.generated.js"
 DOC_PATH = ROOT / "docs" / "03_技术真相" / "API机器契约.md"
-CONTRACT_VERSION = "2026-08-24.f09"
+CONTRACT_VERSION = "2026-08-26.f24"
 ALL_AUTHENTICATED_ROLES = ["parent", "student", "researcher", "supervisor", "admin"]
 
 
@@ -291,8 +291,19 @@ def _pagination(source: str) -> dict[str, Any] | None:
 
 def _idempotency(path: str, method: str, source: str) -> dict[str, Any]:
     supported = "Idempotency-Key" in source or "idempotency_key" in source
-    required = supported and (path.endswith("/actions") or path.endswith("/execute"))
-    return {"supported": supported, "required": required, "header": "Idempotency-Key" if supported else None, "max_length": 120 if supported else None}
+    required_overrides = {
+        ("/api/therapeutic-assessment/cases", "POST"),
+        ("/api/auth/data-claim", "POST"),
+    }
+    if (path, method) in required_overrides:
+        supported = True
+    required = supported and (
+        path.endswith("/actions")
+        or path.endswith("/execute")
+        or (path, method) in required_overrides
+    )
+    max_length = 128 if (path, method) == ("/api/therapeutic-assessment/cases", "POST") else 120
+    return {"supported": supported, "required": required, "header": "Idempotency-Key" if supported else None, "max_length": max_length if supported else None}
 
 
 def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
@@ -359,6 +370,16 @@ def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
         ("/api/auth/phone-login", "POST"): ["revoke_previous_sessions", "pending_logout_user_id", "pending_logout_auth_epoch"],
     }
     body_fields.update(auth_body_fields.get((path, method), []))
+    therapeutic_body_fields = {
+        ("/api/therapeutic-assessment/cases", "POST"): [
+            "assessment_question",
+            "complexity_scope",
+            "consent",
+            "enrollment_id",
+            "shared_scope",
+        ],
+    }
+    body_fields.update(therapeutic_body_fields.get((path, method), []))
     return {
         "content_type": "application/json" if method in {"POST", "PUT", "PATCH"} else None,
         "path_parameters": sorted(re.findall(r"<(?:(?:int|string|path|uuid):)?([^>]+)>", path)),

@@ -5568,6 +5568,9 @@
         "backend/**",
         "apps/web/**",
         "apps/miniprogram/**",
+        "shared/contracts/api-contract.json",
+        "shared/contracts/api-contract.baseline.json",
+        "shared/types/api-contract.generated.ts",
         "config/**",
         "scripts/**",
         "docs/**",
@@ -5595,7 +5598,66 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 8
+        },
+        {
+          "argv": [
+            "python",
+            "-m",
+            "pytest",
+            "backend/tests/test_data_claims.py",
+            "backend/tests/test_task36_identity_lifecycle.py",
+            "backend/tests/test_schema_migrations.py",
+            "-q",
+            "-p",
+            "no:cacheprovider"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 13
+        },
+        {
+          "argv": ["python", "scripts/check_rc0810_f24_config.py"],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
+        },
+        {
+          "argv": ["python", "backend/scripts/build_api_contract.py", "--check"],
+          "cwd": ".",
+          "timeout_seconds": 300,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 4
+        },
+        {
+          "argv": ["python", "backend/scripts/check_api_compatibility.py"],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 136
+        },
+        {
+          "argv": ["node", "--check", "apps/miniprogram/pages/home/index.js"],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
+        },
+        {
+          "argv": ["git", "diff", "--check"],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
         }
       ],
       "external_gates": [],
@@ -5604,6 +5666,9 @@
           "backend/**",
           "apps/web/**",
           "apps/miniprogram/**",
+          "shared/contracts/api-contract.json",
+          "shared/contracts/api-contract.baseline.json",
+          "shared/types/api-contract.generated.ts",
           "config/**",
           "scripts/**",
           "docs/**",

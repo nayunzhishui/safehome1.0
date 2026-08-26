@@ -160,6 +160,7 @@ Page({
     thermometerRecordCount: 0,
     thermometerRecordReady: false,
     unreadMessageCount: 0,
+    homeOverviewError: "",
     latestRecord: null,
     latestRecordReady: false,
     latestRecordError: "",
@@ -196,24 +197,29 @@ Page({
     try {
       const todayKey = formatLocalDate(new Date());
       const [todayResult, latestResult, stats, thermometerDay, progressSummary] = await Promise.all([
-        api.listDiaries({ date: todayKey, limit: 100 }).catch(() => ({ items: [] })),
+        api.listDiaries({ date: todayKey, limit: 100 }).catch((error) => ({ __error: error })),
         api.listDiaries({ limit: 1 }).catch((error) => ({ items: [], __error: error })),
-        api.getProfileStats().catch(() => null),
-        api.getEmotionThermometerDay({ date: todayKey }).catch(() => null),
+        api.getProfileStats().catch((error) => ({ __error: error })),
+        api.getEmotionThermometerDay({ date: todayKey }).catch((error) => ({ __error: error })),
         api.getProgressSummary({ range: "7d" }).catch((error) => ({ __error: error })),
       ]);
-      const todayItems = todayResult && Array.isArray(todayResult.items) ? todayResult.items : [];
+      const todayError = todayResult && todayResult.__error ? todayResult.__error : null;
+      const statsError = stats && stats.__error ? stats.__error : null;
+      const thermometerError = thermometerDay && thermometerDay.__error ? thermometerDay.__error : null;
+      const overviewErrors = [todayError, statsError, thermometerError].filter(Boolean);
+      const todayItems = !todayError && todayResult && Array.isArray(todayResult.items) ? todayResult.items : [];
       const latestItems = latestResult && Array.isArray(latestResult.items) ? latestResult.items : [];
       const latestError = latestResult && latestResult.__error ? latestResult.__error : null;
-      const thermometerRecordCount = thermometerDay && thermometerDay.summary ? thermometerDay.summary.count || 0 : 0;
+      const thermometerRecordCount = !thermometerError && thermometerDay && thermometerDay.summary ? thermometerDay.summary.count || 0 : 0;
       const latest = latestItems[0] || null;
       const progressError = progressSummary && progressSummary.__error ? progressSummary.__error : null;
       this.setData({
         todayRecordCount: todayItems.length,
-        todayRecordCountReady: true,
+        todayRecordCountReady: !todayError,
         thermometerRecordCount,
-        thermometerRecordReady: !!thermometerDay,
-        unreadMessageCount: stats ? stats.unread_message_count || 0 : 0,
+        thermometerRecordReady: !thermometerError,
+        unreadMessageCount: !statsError && stats ? stats.unread_message_count || 0 : 0,
+        homeOverviewError: overviewErrors.length ? "首页摘要暂时没有加载成功，请重新加载。" : "",
         latestRecordReady: !latestError,
         latestRecordError: latestError ? latestError.message || "暂时无法读取最近记录。" : "",
         progressSummary: progressError ? null : formatProgressSummary(progressSummary),
@@ -234,6 +240,7 @@ Page({
         todayRecordCountReady: false,
         thermometerRecordCount: 0,
         thermometerRecordReady: false,
+        homeOverviewError: "首页摘要暂时没有加载成功，请重新加载。",
         progressSummary: null,
         progressSummaryReady: false,
         progressSummaryError: "联网后可以查看阶段性反馈。",

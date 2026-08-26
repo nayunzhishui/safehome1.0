@@ -1,7 +1,5 @@
 """Signed-token auth helpers for the formal pilot account MVP."""
 
-import os
-
 from flask import current_app, request
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
@@ -54,9 +52,9 @@ def legacy_admin_token_enabled() -> bool:
     with LEGACY_ADMIN_TOKEN_ENABLED=1 and should treat that as temporary debt.
     """
 
-    configured = os.environ.get("LEGACY_ADMIN_TOKEN_ENABLED")
+    configured = current_app.config.get("LEGACY_ADMIN_TOKEN_ENABLED")
     if configured is not None:
-        return configured.strip().lower() in {"1", "true", "yes"}
+        return bool(configured)
     return str(Config.APP_ENV or "development").strip().lower() in {"development", "testing"}
 
 

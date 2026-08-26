@@ -1,7 +1,5 @@
 """Small response and parsing helpers for route modules."""
 
-import os
-
 from flask import current_app, g, has_request_context, jsonify, request
 
 
@@ -19,9 +17,9 @@ def fail(code: str, message: str, status: int = 400, details: dict | list | None
 
 
 def _legacy_admin_token_enabled() -> bool:
-    configured = os.environ.get("LEGACY_ADMIN_TOKEN_ENABLED")
+    configured = current_app.config.get("LEGACY_ADMIN_TOKEN_ENABLED")
     if configured is not None:
-        return configured.strip().lower() in {"1", "true", "yes"}
+        return bool(configured)
     return str(current_app.config.get("APP_ENV", "development")).lower() in {"development", "testing"}
 
 

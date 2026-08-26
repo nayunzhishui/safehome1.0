@@ -1,0 +1,29 @@
+{
+  "schema": "safehome.rc0810.f24-failure-policy.v1",
+  "routes": {
+    "/api/auth/login": {
+      "risk": "authentication_bruteforce",
+      "redis_unavailable": "fail_closed_503",
+      "development_disabled": "allow_local_only"
+    },
+    "/api/auth/data-claim": {
+      "risk": "bearer_token_guess_or_replay",
+      "redis_unavailable": "fail_closed_503",
+      "database_fallback": "actor_scoped_attempt_lock"
+    },
+    "/api/ai-qa/*": {
+      "risk": "cost_and_abuse",
+      "redis_unavailable": "fail_closed_503",
+      "development_disabled": "allow_local_only"
+    },
+    "/api/family/bind-student": {
+      "risk": "cross_account_binding",
+      "redis_unavailable": "fail_closed_503_when_configured_or_production",
+      "database_fallback": "dimension_rate_limit_ledger"
+    }
+  },
+  "ordinary_cache": {
+    "redis_unavailable": "fail_open_without_using_cached_data",
+    "reason": "Redis is not a business-data source of truth"
+  }
+}

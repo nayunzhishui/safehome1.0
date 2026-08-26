@@ -1497,10 +1497,44 @@ def write_audit_log(
     metadata: dict | None = None,
 ) -> str:
     audit_id = new_id("audit")
+    created_at = now_iso()
+    metadata_json = json.dumps(metadata or {}, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    # Updating the singleton row first obtains the database row/write lock, so
+    # concurrent writers cannot allocate the same chain position.
+    state = conn.execute(
+        "SELECT last_sequence, last_hash FROM audit_chain_state WHERE singleton_id = 1"
+    ).fetchone()
+    if state is None:
+        conn.execute(
+            "INSERT INTO audit_chain_state (singleton_id, last_sequence, last_hash, updated_at) VALUES (1, 0, '', ?)",
+            (created_at,),
+        )
+    else:
+        conn.execute(
+            "UPDATE audit_chain_state SET last_sequence = last_sequence WHERE singleton_id = 1"
+        )
+    state = conn.execute(
+        "SELECT last_sequence, last_hash FROM audit_chain_state WHERE singleton_id = 1"
+    ).fetchone()
+    sequence_no = int(state["last_sequence"]) + 1
+    previous_hash = str(state["last_hash"] or "")
+    event_hash = audit_event_hash(
+        audit_id=audit_id,
+        sequence_no=sequence_no,
+        previous_hash=previous_hash,
+        actor_id=actor_id,
+        action=action,
+        target_type=target_type,
+        target_id=target_id,
+        metadata_json=metadata_json,
+        created_at=created_at,
+    )
     conn.execute(
         """
-        INSERT INTO audit_logs (id, actor_id, action, target_type, target_id, metadata_json, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO audit_logs (
+            id, actor_id, action, target_type, target_id, metadata_json,
+            sequence_no, previous_hash, event_hash, hash_version, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'sha256-v1', ?)
         """,
         (
             audit_id,
@@ -1508,11 +1542,98 @@ def write_audit_log(
             action,
             target_type,
             target_id,
-            json_dumps(metadata or {}),
-            now_iso(),
+            metadata_json,
+            sequence_no,
+            previous_hash,
+            event_hash,
+            created_at,
         ),
     )
+    conn.execute(
+        "UPDATE audit_chain_state SET last_sequence = ?, last_hash = ?, updated_at = ? WHERE singleton_id = 1",
+        (sequence_no, event_hash, created_at),
+    )
     return audit_id
+
+
+def audit_event_hash(
+    *,
+    audit_id: str,
+    sequence_no: int,
+    previous_hash: str,
+    actor_id: str | None,
+    action: str,
+    target_type: str | None,
+    target_id: str | None,
+    metadata_json: str,
+    created_at: str,
+) -> str:
+    try:
+        metadata = json.loads(metadata_json or "{}")
+    except (TypeError, ValueError):
+        metadata = metadata_json
+    payload = {
+        "action": action,
+        "actor_id": actor_id,
+        "audit_id": audit_id,
+        "created_at": created_at,
+        "metadata": metadata,
+        "previous_hash": previous_hash,
+        "sequence_no": int(sequence_no),
+        "target_id": target_id,
+        "target_type": target_type,
+    }
+    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def verify_audit_chain(conn) -> dict:
+    """Verify the tamper-evident chain; this does not claim immutable storage."""
+    rows = conn.execute(
+        """SELECT id, actor_id, action, target_type, target_id, metadata_json,
+                  sequence_no, previous_hash, event_hash, hash_version, created_at
+           FROM audit_logs ORDER BY sequence_no ASC, created_at ASC, id ASC"""
+    ).fetchall()
+    previous_hash = ""
+    expected_sequence = 1
+    for row in rows:
+        sequence_no = int(row["sequence_no"] or 0)
+        expected_hash = audit_event_hash(
+            audit_id=row["id"],
+            sequence_no=sequence_no,
+            previous_hash=str(row["previous_hash"] or ""),
+            actor_id=row["actor_id"],
+            action=row["action"],
+            target_type=row["target_type"],
+            target_id=row["target_id"],
+            metadata_json=row["metadata_json"],
+            created_at=row["created_at"],
+        )
+        valid = (
+            sequence_no == expected_sequence
+            and str(row["previous_hash"] or "") == previous_hash
+            and row["hash_version"] == "sha256-v1"
+            and row["event_hash"] == expected_hash
+        )
+        if not valid:
+            return {
+                "ok": False,
+                "checked_count": expected_sequence,
+                "first_invalid_audit_id": row["id"],
+                "reason": "audit_chain_mismatch",
+            }
+        previous_hash = expected_hash
+        expected_sequence += 1
+    state = conn.execute(
+        "SELECT last_sequence, last_hash FROM audit_chain_state WHERE singleton_id = 1"
+    ).fetchone()
+    state_ok = state is not None and int(state["last_sequence"]) == len(rows) and str(state["last_hash"] or "") == previous_hash
+    return {
+        "ok": state_ok,
+        "checked_count": len(rows),
+        "first_invalid_audit_id": None,
+        "reason": "ok" if state_ok else "audit_chain_state_mismatch",
+    }
 
 
 _CONTENT_ARTIFACT_CACHE: dict[tuple[str, str], str] = {}

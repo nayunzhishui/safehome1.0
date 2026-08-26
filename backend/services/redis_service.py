@@ -149,8 +149,21 @@ def acquire_once(key: str, ttl_seconds: int = 300) -> bool | None:
         return None
 
 
-def rate_limit(key: str, *, limit: int, window_seconds: int) -> dict[str, Any]:
-    """Fixed-window distributed rate limit; unavailable Redis never blocks by itself."""
+def rate_limit(
+    key: str,
+    *,
+    limit: int,
+    window_seconds: int,
+    unavailable_policy: str = "allow",
+) -> dict[str, Any]:
+    """Apply a fixed-window limit with an explicit Redis failure policy.
+
+    ``deny_if_enabled`` permits intentional local disablement but blocks when a
+    configured Redis instance is unavailable. ``deny`` is used by production
+    authentication and other abuse-sensitive paths.
+    """
+    if unavailable_policy not in {"allow", "deny", "deny_if_enabled"}:
+        raise ValueError("unsupported Redis unavailable policy")
     client = get_client()
     limit = max(1, int(limit))
     window_seconds = max(1, int(window_seconds))
@@ -159,12 +172,17 @@ def rate_limit(key: str, *, limit: int, window_seconds: int) -> dict[str, Any]:
     redis_key = _key(f"ratelimit:{key}:{bucket}")
     retry_after = max(1, (bucket + 1) * window_seconds - now)
     if client is None:
+        redis_enabled = bool(settings().get("enabled"))
+        allowed = unavailable_policy == "allow" or (
+            unavailable_policy == "deny_if_enabled" and not redis_enabled
+        )
         return {
             "available": False,
-            "allowed": True,
+            "allowed": allowed,
             "limit": limit,
             "remaining": limit,
             "retry_after": retry_after,
+            "reason": "redis_disabled" if not redis_enabled else "redis_unavailable",
         }
     try:
         pipe = client.pipeline(transaction=True)
@@ -178,12 +196,15 @@ def rate_limit(key: str, *, limit: int, window_seconds: int) -> dict[str, Any]:
             "limit": limit,
             "remaining": max(0, limit - count),
             "retry_after": retry_after,
+            "reason": "allowed" if count <= limit else "rate_limited",
         }
     except Exception:
+        allowed = unavailable_policy == "allow"
         return {
             "available": False,
-            "allowed": True,
+            "allowed": allowed,
             "limit": limit,
             "remaining": limit,
             "retry_after": retry_after,
+            "reason": "redis_unavailable",
         }

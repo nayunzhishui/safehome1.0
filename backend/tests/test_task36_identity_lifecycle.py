@@ -179,7 +179,10 @@ def test_claim_uses_version_and_idempotency_without_duplicate_audit(tmp_path, mo
     assert second.get_json()["data"]["already_completed"] is True
     database = importlib.import_module("database")
     with database.get_connection() as conn:
-        claim = conn.execute("SELECT * FROM data_claims WHERE id = ?", (preview["claim_id"],)).fetchone()
+        claim = conn.execute(
+            "SELECT * FROM data_claims WHERE claim_token_digest = ?",
+            (hashlib.sha256(preview["claim_id"].encode("utf-8")).hexdigest(),),
+        ).fetchone()
         assert claim["status"] == "claimed"
         assert claim["idempotency_key"] == "f12-claim-once"
         assert int(claim["version"]) == 2

@@ -1,6 +1,6 @@
 {
   "schema": "safehome.api-contract.v1",
-  "version": "2026-08-24.f09",
+  "version": "2026-08-26.f24",
   "base_path": "/api",
   "compatibility_policy": {
     "additive_fields_allowed": true,
@@ -3468,7 +3468,7 @@
         "pagination": null,
         "idempotency": {
           "supported": true,
-          "required": false,
+          "required": true,
           "header": "Idempotency-Key",
           "max_length": 120
         }
@@ -3490,8 +3490,11 @@
         "claim_unavailable",
         "forbidden",
         "http_error",
+        "idempotency_key_required",
         "internal_error",
         "not_found",
+        "rate_limit_unavailable",
+        "rate_limited",
         "unauthorized",
         "validation_error"
       ],
@@ -9948,6 +9951,7 @@
         "request_id": "string"
       },
       "error_codes": [
+        "assessment_not_in_production_manifest",
         "content_load_error",
         "forbidden",
         "http_error",
@@ -18831,6 +18835,7 @@
         "request_id": "string"
       },
       "error_codes": [
+        "assessment_not_in_production_manifest",
         "content_load_error",
         "http_error",
         "internal_error"
@@ -19619,14 +19624,20 @@
         "content_type": "application/json",
         "path_parameters": [],
         "query_parameters": [],
-        "body_fields": [],
+        "body_fields": [
+          "assessment_question",
+          "complexity_scope",
+          "consent",
+          "enrollment_id",
+          "shared_scope"
+        ],
         "headers": [],
         "pagination": null,
         "idempotency": {
-          "supported": false,
-          "required": false,
-          "header": null,
-          "max_length": null
+          "supported": true,
+          "required": true,
+          "header": "Idempotency-Key",
+          "max_length": 128
         }
       },
       "response": {
