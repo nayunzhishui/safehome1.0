@@ -1824,7 +1824,7 @@ def next_command(registry: dict[str, Any]) -> dict[str, Any]:
         if record_is_complete(record)
     }
     for wave in registry.get("review_waves", []):
-        completed.update(_wave_base_checkpoint_units(wave))
+        completed.update(_active_wave_base_checkpoint_units(registry, state, wave))
     pending_dependencies = list(completed)
     units = unit_map(registry)
     while pending_dependencies:
@@ -2465,6 +2465,23 @@ def _wave_base_checkpoint_units(wave: dict[str, Any] | None) -> set[str]:
     if exists.returncode != 0 or ancestor.returncode != 0:
         raise HarnessError("历史review-pass checkpoint不是当前HEAD的有效祖先。")
     return set(checkpoint["execution_units"])
+
+
+def _active_wave_base_checkpoint_units(
+    registry: dict[str, Any], state: dict[str, Any] | None, wave: dict[str, Any] | None
+) -> set[str]:
+    """Activate historical units only after the run has actually reached that wave."""
+    if wave is None or state is None:
+        return set()
+    previous_waves = _previous_waves(registry, wave["id"])
+    if previous_waves:
+        if not _previous_wave_reviews_complete(registry, state, wave["id"]):
+            return set()
+    elif not any(
+        unit_id in state.get("tasks", {}) for unit_id in wave.get("execution_units", [])
+    ) and state.get("wave_checkpoints", {}).get(wave["id"], {}).get("status") != "review_pass":
+        return set()
+    return _wave_base_checkpoint_units(wave)
 
 
 def _historical_checkpoint_evidence_is_valid(

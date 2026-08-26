@@ -1,4 +1,4 @@
-"""Validate the F22-A security baseline and prove its gates fail closed."""
+"""Validate the current F22-B gate while retaining F22-A audit compatibility."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import copy
 import hashlib
 import json
 import re
+import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -31,7 +32,8 @@ from run_rc0810_f22_scans import (  # noqa: E402
 SCHEMA_PATH = ROOT / "config" / "rc0810" / "security_gate.schema.json"
 POLICY_PATH = ROOT / "config" / "rc0810" / "security_gate_policy.json"
 EXCEPTIONS_PATH = ROOT / "config" / "rc0810" / "security_exception_registry.json"
-BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22a_security_baseline.json"
+BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_security_gate.json"
+LEGACY_BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22a_security_baseline.json"
 EXPECTED_INPUTS = (
     "backend/requirements.txt",
     "analysis/profiling/requirements.txt",
@@ -139,7 +141,8 @@ def report_contract_errors(
     errors: list[str] = []
     tool = str(report.get("tool", ""))
     source_tree = str(baseline.get("source_tree", ""))
-    prefix = f"/.codex_tmp/rc0810/security/f22a/{source_tree}"
+    phase_slug = "f22b" if baseline.get("phase") == "F22-B" else "f22a"
+    prefix = f"/.codex_tmp/rc0810/security/{phase_slug}/{source_tree}"
     filename = f"negative-{tool}.json" if negative else f"{tool}.json"
     if not normalized(report.get("path", "")).endswith(f"{prefix}/reports/{filename}"):
         errors.append("path")
@@ -147,7 +150,8 @@ def report_contract_errors(
         errors.append("version")
     if report.get("source_tree") != source_tree:
         errors.append("source_tree")
-    if report.get("captured_at") != baseline.get("captured_at"):
+    expected_captured_at = baseline.get("source_scan_captured_at", baseline.get("captured_at"))
+    if report.get("captured_at") != expected_captured_at:
         errors.append("captured_at")
     allowed_exit_codes = {"detect-secrets": {0}, "bandit": {0, 1}, "pip-audit": {0, 1}, "npm-audit": {0, 1}}
     if report.get("exit_code") not in allowed_exit_codes.get(tool, set()):
@@ -249,6 +253,259 @@ def finding_is_blocking(category: str, severity: str, policy: dict[str, Any]) ->
     return severity in policy["severity_gate"].get(gate_key, [])
 
 
+def trivy_summary(payload: dict[str, Any]) -> dict[str, int]:
+    summary = {"critical": 0, "high": 0, "secret": 0}
+    for result in payload.get("Results", []):
+        if not isinstance(result, dict):
+            continue
+        for finding in result.get("Vulnerabilities") or []:
+            severity = str(finding.get("Severity", "")).lower()
+            if severity in {"critical", "high"}:
+                summary[severity] += 1
+        summary["secret"] += len(result.get("Secrets") or [])
+    return summary
+
+
+def trivy_license_names(payload: dict[str, Any]) -> list[str]:
+    names: set[str] = set()
+    for result in payload.get("Results", []):
+        if not isinstance(result, dict):
+            continue
+        for item in result.get("Licenses") or []:
+            if isinstance(item, dict) and item.get("Name"):
+                names.add(str(item["Name"]))
+    return sorted(names)
+
+
+def validate_f22b(
+    gate: dict[str, Any],
+    *,
+    require_runtime: bool,
+    policy: dict[str, Any],
+    schema: dict[str, Any],
+    exceptions: dict[str, Any],
+) -> dict[str, Any]:
+    errors: list[str] = []
+    required = {
+        "schema", "phase", "captured_at", "source_scan_captured_at", "head",
+        "head_tree", "source_tree", "dirty_diff_sha256", "source_manifest_sha256",
+        "policy_sha256", "exception_registry_sha256", "dependency_inputs",
+        "action_inputs", "source_reports", "negative_gate_evidence",
+        "blocking_findings", "finding_summary", "source_open_gate_findings",
+        "container_scan", "sbom_status", "license_status",
+        "supply_chain_attestation", "open_gate_findings",
+        "production_gate_eligible", "status",
+    }
+    if set(gate) != required:
+        errors.append("f22b_contract_fields_invalid")
+    if gate.get("schema") != "safehome.rc0810.security-gate.v2" or gate.get("phase") != "F22-B":
+        errors.append("f22b_schema_invalid")
+
+    source = security_source_snapshot()
+    for key, label in (
+        ("source_tree", "source_tree_mismatch"),
+        ("dirty_diff_sha256", "dirty_diff_mismatch"),
+        ("source_manifest_sha256", "source_manifest_mismatch"),
+        ("head", "head_binding_mismatch"),
+        ("head_tree", "head_binding_mismatch"),
+    ):
+        if gate.get(key) != source[key]:
+            errors.append(label)
+    if gate.get("policy_sha256") != sha256_file(POLICY_PATH):
+        errors.append("policy_hash_mismatch")
+    if gate.get("exception_registry_sha256") != sha256_file(EXCEPTIONS_PATH):
+        errors.append("exception_registry_hash_mismatch")
+    current_inputs = {item: sha256_file(ROOT / item) for item in EXPECTED_INPUTS}
+    if gate.get("dependency_inputs") != current_inputs:
+        errors.append("dependency_input_mismatch")
+    action_paths = (".github/workflows/security-gate.yml", ".github/workflows/check.yml")
+    current_actions = {item: sha256_file(ROOT / item) for item in action_paths}
+    if gate.get("action_inputs") != current_actions:
+        errors.append("action_input_mismatch")
+    errors.extend(validate_exceptions(exceptions, schema, gate.get("captured_at", ""), baseline=gate, policy=policy))
+    if policy.get("phase") != "F22-B" or policy.get("production_release_approved") is not False:
+        errors.append("policy_must_not_approve_production")
+
+    source_reports = gate.get("source_reports", [])
+    tools = [str(item.get("tool", "")) for item in source_reports if isinstance(item, dict)]
+    contract_valid = len(source_reports) == 4 and set(tools) == EXPECTED_TOOLS and len(tools) == len(set(tools))
+    report_paths: dict[str, Path] = {}
+    runtime_verified = contract_valid
+    if not contract_valid:
+        errors.append("runtime_report_contract_invalid")
+    for report in source_reports:
+        if not isinstance(report, dict) or report_contract_errors(report, gate, policy):
+            contract_valid = False
+            runtime_verified = False
+            if "runtime_report_contract_invalid" not in errors:
+                errors.append("runtime_report_contract_invalid")
+            continue
+        valid, path, report_errors = verify_runtime_report(report, require_runtime=require_runtime)
+        errors.extend(report_errors)
+        runtime_verified = runtime_verified and valid
+        if path is not None:
+            report_paths[str(report.get("tool"))] = path
+    if runtime_verified and len(report_paths) == 4:
+        try:
+            if summarize(report_paths) != gate.get("finding_summary"):
+                errors.append("runtime_summary_mismatch")
+            if build_blocking_findings(report_paths, str(gate.get("source_tree", ""))) != gate.get("blocking_findings"):
+                errors.append("runtime_blocking_finding_index_mismatch")
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            errors.append("runtime_report_parse_failed")
+            runtime_verified = False
+    if blocking_count(gate.get("finding_summary", {})) != gate.get("source_open_gate_findings"):
+        errors.append("gate_finding_count_mismatch")
+    if len(gate.get("blocking_findings", [])) != gate.get("source_open_gate_findings"):
+        errors.append("blocking_finding_index_count_mismatch")
+
+    negative = gate.get("negative_gate_evidence", {})
+    negative_reports = negative.get("reports", []) if isinstance(negative, dict) else []
+    negative_tools = [str(item.get("tool", "")) for item in negative_reports if isinstance(item, dict)]
+    expected_checks = {
+        "fake_secret_fixture_rejected": True,
+        "high_sast_fixture_rejected": True,
+        "high_dependency_fixture_rejected": True,
+    }
+    if (
+        not isinstance(negative, dict)
+        or negative.get("source_tree") != gate.get("source_tree")
+        or set(negative_tools) != {"detect-secrets", "bandit", "pip-audit"}
+        or len(negative_tools) != 3
+        or negative.get("checks") != expected_checks
+    ):
+        errors.append("negative_gate_evidence_invalid")
+    for report in negative_reports:
+        if not isinstance(report, dict) or report_contract_errors(report, gate, policy, negative=True):
+            if "negative_gate_evidence_invalid" not in errors:
+                errors.append("negative_gate_evidence_invalid")
+            continue
+        valid, _, report_errors = verify_runtime_report(report, require_runtime=require_runtime)
+        errors.extend(report_errors)
+        runtime_verified = runtime_verified and valid
+
+    evidence_payloads: dict[str, dict[str, Any]] = {}
+    for key, expected_tool in (
+        ("container_scan", "trivy-container"),
+        ("sbom_status", "trivy-sbom"),
+        ("license_status", "trivy-license"),
+    ):
+        section = gate.get(key, {})
+        report = section.get("report", {}) if isinstance(section, dict) else {}
+        if (
+            section.get("status") != "completed"
+            or report.get("tool") != expected_tool
+            or report.get("version") != policy.get("tools", {}).get("trivy")
+            or report.get("source_tree") != gate.get("source_tree")
+            or report.get("captured_at") != gate.get("captured_at")
+            or report.get("exit_code") != 0
+            or not str(report.get("path", "")).replace("\\", "/").endswith(
+                f"/.codex_tmp/rc0810/security/f22b/{gate.get('source_tree')}/reports/"
+                + {"container_scan": "trivy-container.json", "sbom_status": "trivy-sbom.cdx.json", "license_status": "trivy-license.json"}[key]
+            )
+            or f"aquasec/trivy@{policy.get('tool_images', {}).get('trivy')}" not in report.get("command", [])
+        ):
+            errors.append(f"{key}_contract_invalid")
+            continue
+        path = Path(str(report.get("path", "")))
+        if path.is_file():
+            if sha256_file(path) != report.get("sha256") or path.stat().st_size != report.get("bytes"):
+                errors.append("runtime_report_hash_mismatch")
+                continue
+            try:
+                evidence_payloads[key] = load_json(path)
+            except (OSError, ValueError, TypeError, json.JSONDecodeError):
+                errors.append("runtime_report_parse_failed")
+        elif require_runtime:
+            errors.append("runtime_report_missing")
+
+    container = gate.get("container_scan", {})
+    expected_image = f"aquasec/trivy@{policy.get('tool_images', {}).get('trivy')}"
+    if (
+        re.fullmatch(r"sha256:[0-9a-f]{64}", str(container.get("image_id", ""))) is None
+        or container.get("tool_image") != expected_image
+    ):
+        errors.append("container_image_binding_invalid")
+    container_summary = container.get("finding_summary", {})
+    container_open = sum(int(container_summary.get(key, 0)) for key in ("critical", "high", "secret"))
+    if container.get("production_blocking") is not (container_open > 0):
+        errors.append("container_gate_status_invalid")
+    if "container_scan" in evidence_payloads and trivy_summary(evidence_payloads["container_scan"]) != container_summary:
+        errors.append("container_summary_mismatch")
+
+    sbom = gate.get("sbom_status", {})
+    if sbom.get("format") != "CycloneDX" or sbom.get("production_blocking") is not False:
+        errors.append("sbom_contract_invalid")
+    if "sbom_status" in evidence_payloads:
+        payload = evidence_payloads["sbom_status"]
+        if payload.get("bomFormat") != "CycloneDX" or len(payload.get("components") or []) != sbom.get("component_count"):
+            errors.append("sbom_summary_mismatch")
+
+    licenses = gate.get("license_status", {})
+    forbidden = sorted(set(licenses.get("observed_licenses", [])) & set(policy["severity_gate"]["forbidden_licenses"]))
+    if forbidden != licenses.get("forbidden_licenses_found") or licenses.get("production_blocking") is not bool(forbidden):
+        errors.append("license_gate_status_invalid")
+    if "license_status" in evidence_payloads and trivy_license_names(evidence_payloads["license_status"]) != licenses.get("observed_licenses"):
+        errors.append("license_summary_mismatch")
+
+    attestation = gate.get("supply_chain_attestation", {})
+    artifact_reuse = attestation.get("local_artifact_reuse")
+    if artifact_reuse is not None:
+        previous_tree = str(artifact_reuse.get("from_source_tree", ""))
+        unchanged = subprocess.run(
+            [
+                "git", "diff", "--quiet", previous_tree,
+                str(gate.get("source_tree", "")), "--", "Dockerfile", "backend",
+                "content", "shared", "deploy/verify_rc0810_f03_images.py",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+        if (
+            re.fullmatch(r"[0-9a-f]{40}", previous_tree) is None
+            or artifact_reuse.get("docker_context_unchanged") is not True
+            or unchanged.returncode != 0
+        ):
+            errors.append("artifact_reuse_binding_invalid")
+    if (
+        attestation.get("status") != "pending_external"
+        or attestation.get("production_blocking") is not True
+        or attestation.get("runner") != "ubuntu-24.04"
+        or attestation.get("action_commits") != policy.get("action_commits")
+        or attestation.get("trivy_image_digest") != policy.get("tool_images", {}).get("trivy")
+    ):
+        errors.append("supply_chain_attestation_invalid")
+    expected_open = int(gate.get("source_open_gate_findings", 0)) + container_open + len(forbidden)
+    if gate.get("open_gate_findings") != expected_open:
+        errors.append("open_gate_finding_total_invalid")
+    expected_status = "rescan_complete_no_go" if expected_open else "attestation_pending_no_go"
+    if gate.get("production_gate_eligible") is not False or gate.get("status") != expected_status:
+        errors.append("production_gate_must_remain_closed")
+
+    if require_runtime and not errors and artifact_reuse is None:
+        completed = subprocess.run(
+            ["docker", "image", "inspect", str(container.get("image_tag", "")), "--format", "{{.Id}}"],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        if completed.returncode != 0 or completed.stdout.strip() != container.get("image_id"):
+            errors.append("runtime_image_binding_mismatch")
+    return {
+        "valid": not errors,
+        "status": expected_status if not errors else "invalid",
+        "phase": "F22-B",
+        "source_tree": gate.get("source_tree"),
+        "runtime_reports_verified": runtime_verified and len(evidence_payloads) == 3,
+        "finding_summary": gate.get("finding_summary", {}),
+        "open_gate_findings": gate.get("open_gate_findings"),
+        "container_status": container.get("status"),
+        "sbom_status": sbom.get("status"),
+        "license_status": licenses.get("status"),
+        "production_gate_eligible": False,
+        "errors": list(dict.fromkeys(errors)),
+    }
+
+
 def validate_baseline(
     baseline_path: Path = BASELINE_PATH, *, require_runtime: bool = False
 ) -> dict[str, Any]:
@@ -266,6 +523,15 @@ def validate_baseline(
             "production_gate_eligible": False,
             "errors": [f"definition_missing_or_invalid:{exc}"],
         }
+
+    if baseline.get("phase") == "F22-B":
+        return validate_f22b(
+            baseline,
+            require_runtime=require_runtime,
+            policy=policy,
+            schema=schema,
+            exceptions=exceptions,
+        )
 
     for problem in Draft202012Validator(
         schema, format_checker=FormatChecker()
@@ -456,12 +722,27 @@ def run_self_checks() -> dict[str, bool]:
         policy=policy,
     )
     stale = copy.deepcopy(baseline)
-    stale["raw_reports"][0]["sha256"] = "0" * 64
+    report_key = "source_reports" if baseline.get("phase") == "F22-B" else "raw_reports"
+    stale[report_key][0]["sha256"] = "0" * 64
     with tempfile.TemporaryDirectory(prefix="rc0810-f22-self-check-") as directory:
+        phase_slug = "f22b" if baseline.get("phase") == "F22-B" else "f22a"
+        runtime_report = (
+            Path(directory)
+            / ".codex_tmp"
+            / "rc0810"
+            / "security"
+            / phase_slug
+            / baseline["source_tree"]
+            / "reports"
+            / Path(stale[report_key][0]["path"]).name
+        )
+        runtime_report.parent.mkdir(parents=True)
+        runtime_report.write_text("{}", encoding="utf-8")
+        stale[report_key][0]["path"] = str(runtime_report)
         stale_path = Path(directory) / "stale.json"
         stale_path.write_text(json.dumps(stale), encoding="utf-8")
         stale_result = validate_baseline(stale_path)
-    return {
+    checks = {
         "expired_exception_rejected": "expired_exception" in expired_errors,
         "fake_secret_fixture_rejected": baseline.get("negative_gate_evidence", {}).get("checks", {}).get("fake_secret_fixture_rejected") is True,
         "high_dependency_fixture_rejected": baseline.get("negative_gate_evidence", {}).get("checks", {}).get("high_dependency_fixture_rejected") is True,
@@ -474,6 +755,34 @@ def run_self_checks() -> dict[str, bool]:
             and "runtime_report_hash_mismatch" in stale_result["errors"]
         ),
     }
+    if baseline.get("phase") == "F22-B":
+        container = copy.deepcopy(baseline)
+        container["container_scan"]["finding_summary"]["critical"] += 1
+        container["container_scan"]["production_blocking"] = False
+        license_gate = copy.deepcopy(baseline)
+        forbidden_license = policy["severity_gate"]["forbidden_licenses"][0]
+        license_gate["license_status"]["observed_licenses"].append(forbidden_license)
+        attestation = copy.deepcopy(baseline)
+        attestation["supply_chain_attestation"]["status"] = "completed"
+        with tempfile.TemporaryDirectory(prefix="rc0810-f22b-gates-") as directory:
+            paths = []
+            for name, payload in (
+                ("container", container),
+                ("license", license_gate),
+                ("attestation", attestation),
+            ):
+                path = Path(directory) / f"{name}.json"
+                path.write_text(json.dumps(payload), encoding="utf-8")
+                paths.append(path)
+            results = [validate_baseline(path) for path in paths]
+        checks.update(
+            {
+                "critical_container_fixture_rejected": "container_gate_status_invalid" in results[0]["errors"],
+                "forbidden_license_fixture_rejected": "license_gate_status_invalid" in results[1]["errors"],
+                "missing_attestation_rejected": "supply_chain_attestation_invalid" in results[2]["errors"],
+            }
+        )
+    return checks
 
 
 def main() -> int:

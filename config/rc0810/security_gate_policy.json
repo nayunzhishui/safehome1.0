@@ -1,6 +1,6 @@
 {
   "schema": "safehome.rc0810.security-policy.v1",
-  "phase": "F22-A",
+  "phase": "F22-B",
   "tools": {
     "bandit": "1.9.4",
     "detect-secrets": "1.5.0",
@@ -16,19 +16,22 @@
     "pip-licenses": "https://pypi.org/project/pip-licenses/5.5.5/",
     "trivy": "https://github.com/aquasecurity/trivy/releases/tag/v0.72.0"
   },
+  "tool_images": {
+    "trivy": "sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f"
+  },
   "action_commits": {
     "actions/checkout": "d23441a48e516b6c34aea4fa41551a30e30af803",
     "actions/setup-node": "249970729cb0ef3589644e2896645e5dc5ba9c38",
     "actions/setup-python": "5fda3b95a4ea91299a34e894583c3862153e4b97"
   },
   "scans": [
-    {"id": "secret", "tool": "detect-secrets", "scope": ["source_tree"], "timeout_seconds": 300, "phase_a_status": "active"},
-    {"id": "sast", "tool": "bandit", "scope": ["backend", "scripts", "analysis"], "timeout_seconds": 600, "phase_a_status": "active"},
-    {"id": "python_dependency", "tool": "pip-audit", "scope": ["backend/requirements.txt", "analysis/profiling/requirements.txt", "analysis/text_analysis/requirements.txt"], "timeout_seconds": 600, "phase_a_status": "active"},
-    {"id": "node_dependency", "tool": "npm-audit", "scope": ["apps/web/package-lock.json"], "timeout_seconds": 600, "phase_a_status": "active"},
-    {"id": "container", "tool": "trivy", "scope": ["Dockerfile", "deploy"], "timeout_seconds": 900, "phase_a_status": "pending_f22b_image"},
-    {"id": "sbom", "tool": "pip-audit/npm", "scope": ["backend/requirements.txt", "analysis/profiling/requirements.txt", "analysis/text_analysis/requirements.txt", "apps/web/package-lock.json"], "timeout_seconds": 600, "phase_a_status": "pending_f22b_final_dependencies"},
-    {"id": "license", "tool": "pip-licenses/npm", "scope": ["backend/requirements.txt", "analysis/profiling/requirements.txt", "analysis/text_analysis/requirements.txt", "apps/web/package-lock.json"], "timeout_seconds": 600, "phase_a_status": "pending_f22b_isolated_install"}
+    {"id": "secret", "tool": "detect-secrets", "scope": ["source_tree"], "timeout_seconds": 300, "phase_b_status": "active"},
+    {"id": "sast", "tool": "bandit", "scope": ["backend", "scripts", "analysis"], "timeout_seconds": 600, "phase_b_status": "active"},
+    {"id": "python_dependency", "tool": "pip-audit", "scope": ["backend/requirements.txt", "analysis/profiling/requirements.txt", "analysis/text_analysis/requirements.txt"], "timeout_seconds": 600, "phase_b_status": "active"},
+    {"id": "node_dependency", "tool": "npm-audit", "scope": ["apps/web/package-lock.json"], "timeout_seconds": 600, "phase_b_status": "active"},
+    {"id": "container", "tool": "trivy", "scope": ["built_image"], "timeout_seconds": 1800, "phase_b_status": "active"},
+    {"id": "sbom", "tool": "trivy", "scope": ["built_image"], "timeout_seconds": 1800, "phase_b_status": "active"},
+    {"id": "license", "tool": "trivy", "scope": ["source_tree", "dependency_lockfiles"], "timeout_seconds": 1800, "phase_b_status": "active"}
   ],
   "excluded_paths": [
     ".codex_tmp/",

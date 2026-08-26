@@ -1,4 +1,4 @@
-name: RC0810 Security Baseline
+name: RC0810 F22-B Security Gate
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  f22a-security-baseline:
+  f22b-security-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -28,7 +28,7 @@ jobs:
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
 
-      - name: Install pinned F22-A scanners
+      - name: Install pinned F22-B scanners
         run: |
           python -m pip install --disable-pip-version-check \
             bandit==1.9.4 \
@@ -37,8 +37,8 @@ jobs:
             pip-licenses==5.5.5
           npm install --global npm@11.13.0
 
-      - name: Run independent source and dependency scans
-        run: python scripts/run_rc0810_f22_scans.py
+      - name: Run fresh source image SBOM and license scans
+        run: python scripts/run_rc0810_f22b_security.py
 
       - name: Validate current runtime reports
         run: python scripts/verify_rc0810_f22_security.py --require-runtime
@@ -46,24 +46,20 @@ jobs:
       - name: Prove negative gates fail closed
         run: python scripts/verify_rc0810_f22_security.py --self-check
 
-      - name: Preserve F22-A as release NO-GO
+      - name: Preserve F22-B as release NO-GO
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
-          path = Path("docs/02_专项进度与验收/rc0810_f22a_security_baseline.json")
-          baseline = json.loads(path.read_text(encoding="utf-8"))
-          if baseline["production_gate_eligible"] is not False:
-              raise SystemExit("F22-A must not approve production")
-          if not all(
-              baseline[key]["production_blocking"]
-              for key in (
-                  "container_scan",
-                  "sbom_status",
-                  "license_status",
-                  "supply_chain_attestation",
-              )
+          path = Path("docs/02_专项进度与验收/rc0810_f22b_security_gate.json")
+          gate = json.loads(path.read_text(encoding="utf-8"))
+          if gate["production_gate_eligible"] is not False:
+              raise SystemExit("F22-B must not approve production")
+          attestation = gate["supply_chain_attestation"]
+          if (
+              attestation["status"] != "pending_external"
+              or attestation["production_blocking"] is not True
           ):
-              raise SystemExit("F22-A pending gates must stay blocking")
+              raise SystemExit("external attestation must stay production blocking")
           PY

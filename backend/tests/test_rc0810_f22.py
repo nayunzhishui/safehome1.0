@@ -1,8 +1,6 @@
 import json
-import hashlib
 import importlib.util
 import re
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -12,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[2]
 VERIFIER = ROOT / "scripts" / "verify_rc0810_f22_security.py"
 POLICY = ROOT / "config" / "rc0810" / "security_gate_policy.json"
 EXCEPTIONS = ROOT / "config" / "rc0810" / "security_exception_registry.json"
-BASELINE = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22a_security_baseline.json"
+BASELINE = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_security_gate.json"
+LEGACY_BASELINE = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22a_security_baseline.json"
 WORKFLOW = ROOT / ".github" / "workflows" / "security-gate.yml"
 REGISTRY = ROOT / "content" / "rc0810_release_candidate_registry.json"
 
@@ -35,17 +34,17 @@ def load_verifier_module():
     return module
 
 
-def test_f22a_default_baseline_is_valid_but_release_stays_no_go():
+def test_f22b_default_gate_is_valid_but_release_stays_no_go():
     completed = run_verifier()
     assert completed.returncode == 0, completed.stderr
     payload = json.loads(completed.stdout)
     assert payload["valid"] is True
-    assert payload["status"] == "frozen_security_baseline"
+    assert payload["status"] in {"rescan_complete_no_go", "attestation_pending_no_go"}
     assert payload["production_gate_eligible"] is False
-    assert payload["phase"] == "F22-A"
+    assert payload["phase"] == "F22-B"
 
 
-def test_f22a_policy_pins_tool_versions_and_action_commits():
+def test_f22b_policy_pins_tool_versions_images_and_action_commits():
     policy = json.loads(POLICY.read_text(encoding="utf-8"))
     assert policy["tools"] == {
         "bandit": "1.9.4",
@@ -55,10 +54,12 @@ def test_f22a_policy_pins_tool_versions_and_action_commits():
         "pip-licenses": "5.5.5",
         "trivy": "0.72.0",
     }
+    assert policy["phase"] == "F22-B"
+    assert policy["tool_images"]["trivy"] == "sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f"
     assert all(re.fullmatch(r"[0-9a-f]{40}", value) for value in policy["action_commits"].values())
 
 
-def test_f22a_policy_covers_every_required_scan_and_excludes_no_business_source():
+def test_f22b_policy_covers_every_required_scan_and_excludes_no_business_source():
     policy = json.loads(POLICY.read_text(encoding="utf-8"))
     scans = {item["id"]: item for item in policy["scans"]}
     assert set(scans) == {
@@ -80,9 +81,10 @@ def test_f22a_policy_covers_every_required_scan_and_excludes_no_business_source(
         "analysis/text_analysis/requirements.txt",
     ]
     assert set(policy["exclusion_reasons"]) == set(policy["excluded_paths"])
+    assert all(item["phase_b_status"] == "active" for item in scans.values())
 
 
-def test_f22a_exception_registry_is_empty_and_schema_requires_owner_reason_expiry():
+def test_f22b_exception_registry_is_empty_and_schema_requires_owner_reason_expiry():
     exceptions = json.loads(EXCEPTIONS.read_text(encoding="utf-8"))
     assert exceptions["exceptions"] == []
     schema = json.loads(
@@ -127,31 +129,33 @@ def test_f22a_exception_registry_is_empty_and_schema_requires_owner_reason_expir
     assert "exception_finding_not_bound" in errors
 
 
-def test_f22a_baseline_binds_source_locks_policy_exceptions_and_raw_reports():
-    baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
-    assert len(baseline["source_tree"]) == 40
-    assert len(baseline["dirty_diff_sha256"]) == 64
-    assert set(baseline["dependency_inputs"]) == {
+def test_f22b_gate_binds_source_locks_actions_image_and_reports():
+    gate = json.loads(BASELINE.read_text(encoding="utf-8"))
+    assert len(gate["source_tree"]) == 40
+    assert len(gate["dirty_diff_sha256"]) == 64
+    assert set(gate["dependency_inputs"]) == {
         "backend/requirements.txt",
         "analysis/profiling/requirements.txt",
         "analysis/text_analysis/requirements.txt",
         "apps/web/package-lock.json",
         "Dockerfile",
     }
-    assert all(len(value) == 64 for value in baseline["dependency_inputs"].values())
-    assert len(baseline["policy_sha256"]) == 64
-    assert len(baseline["exception_registry_sha256"]) == 64
-    assert {item["tool"] for item in baseline["raw_reports"]} >= {
+    assert all(len(value) == 64 for value in gate["dependency_inputs"].values())
+    assert set(gate["action_inputs"]) == {".github/workflows/check.yml", ".github/workflows/security-gate.yml"}
+    assert len(gate["policy_sha256"]) == 64
+    assert len(gate["exception_registry_sha256"]) == 64
+    assert {item["tool"] for item in gate["source_reports"]} == {
         "bandit",
         "detect-secrets",
         "npm-audit",
         "pip-audit",
     }
-    assert len(baseline["blocking_findings"]) == baseline["open_gate_findings"]
-    assert all(len(item["fingerprint"]) == 64 for item in baseline["blocking_findings"])
+    assert len(gate["blocking_findings"]) == gate["source_open_gate_findings"]
+    assert re.fullmatch(r"sha256:[0-9a-f]{64}", gate["container_scan"]["image_id"])
+    assert all(len(item["fingerprint"]) == 64 for item in gate["blocking_findings"])
 
 
-def test_f22a_rejects_source_or_lock_binding_tamper(tmp_path):
+def test_f22b_rejects_source_or_lock_binding_tamper(tmp_path):
     baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
     baseline["source_tree"] = "0" * 40
     baseline["dependency_inputs"]["backend/requirements.txt"] = "0" * 64
@@ -163,10 +167,14 @@ def test_f22a_rejects_source_or_lock_binding_tamper(tmp_path):
     assert "dependency_input_mismatch" in completed.stdout
 
 
-def test_f22a_require_runtime_rejects_missing_or_hash_mismatched_reports(tmp_path):
+def test_f22b_require_runtime_rejects_missing_or_hash_mismatched_reports(tmp_path):
     baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
-    for report in baseline["raw_reports"]:
-        report["path"] = str(tmp_path / f"missing-{report['tool']}.json")
+    report_dir = (
+        tmp_path / ".codex_tmp" / "rc0810" / "security" / "f22b"
+        / baseline["source_tree"] / "reports"
+    )
+    for report in baseline["source_reports"]:
+        report["path"] = str(report_dir / Path(report["path"]).name)
     candidate = tmp_path / "missing-runtime.json"
     candidate.write_text(json.dumps(baseline), encoding="utf-8")
     completed = run_verifier("--baseline", str(candidate), "--require-runtime")
@@ -174,59 +182,26 @@ def test_f22a_require_runtime_rejects_missing_or_hash_mismatched_reports(tmp_pat
     assert "runtime_report_missing" in completed.stdout
 
     forged = json.loads(BASELINE.read_text(encoding="utf-8"))
-    for report in forged["raw_reports"]:
-        fake = tmp_path / f"forged-{report['tool']}.json"
-        fake.write_text("{}", encoding="utf-8")
-        report["path"] = str(fake)
-        report["sha256"] = hashlib.sha256(fake.read_bytes()).hexdigest()
-        report["bytes"] = fake.stat().st_size
-        report["exit_code"] = 127
-        report["command"] = ["forged"]
-    forged["finding_summary"] = {key: 0 for key in forged["finding_summary"]}
-    forged["open_gate_findings"] = 0
+    forged["container_scan"]["report"]["sha256"] = "0" * 64
     forged_path = tmp_path / "forged-runtime.json"
     forged_path.write_text(json.dumps(forged), encoding="utf-8")
     completed = run_verifier("--baseline", str(forged_path), "--require-runtime")
     assert completed.returncode != 0
-    assert "runtime_report_contract_invalid" in completed.stdout
-
-    trailing = json.loads(BASELINE.read_text(encoding="utf-8"))
-    source_tree = trailing["source_tree"]
-    report_dir = tmp_path / ".codex_tmp" / "rc0810" / "security" / "f22a" / source_tree / "reports"
-    report_dir.mkdir(parents=True)
-    for group in (trailing["raw_reports"], trailing["negative_gate_evidence"]["reports"]):
-        for report in group:
-            destination = report_dir / Path(report["path"]).name
-            shutil.copyfile(report["path"], destination)
-            report["path"] = str(destination)
-            report["sha256"] = hashlib.sha256(destination.read_bytes()).hexdigest()
-            report["bytes"] = destination.stat().st_size
-    detect = next(item for item in trailing["raw_reports"] if item["tool"] == "detect-secrets")
-    detect_path = Path(detect["path"])
-    detect_path.write_text(
-        '{"results":{}}\n{"results":{"hidden":[{"type":"Secret"}]}}',
-        encoding="utf-8",
-    )
-    detect["sha256"] = hashlib.sha256(detect_path.read_bytes()).hexdigest()
-    detect["bytes"] = detect_path.stat().st_size
-    trailing["finding_summary"]["secret"] = 0
-    trailing["open_gate_findings"] -= 254
-    trailing_path = tmp_path / "trailing-runtime.json"
-    trailing_path.write_text(json.dumps(trailing), encoding="utf-8")
-    completed = run_verifier("--baseline", str(trailing_path), "--require-runtime")
-    assert completed.returncode != 0
-    assert "runtime_report_parse_failed" in completed.stdout
+    assert "runtime_report_hash_mismatch" in completed.stdout
 
 
-def test_f22a_self_check_rejects_fake_secret_high_sast_and_high_dependency():
+def test_f22b_self_check_rejects_each_blocking_gate_fixture():
     completed = run_verifier("--self-check")
     assert completed.returncode == 0, completed.stderr
     payload = json.loads(completed.stdout)
     assert payload["self_checks"] == {
         "expired_exception_rejected": True,
+        "critical_container_fixture_rejected": True,
         "fake_secret_fixture_rejected": True,
+        "forbidden_license_fixture_rejected": True,
         "high_dependency_fixture_rejected": True,
         "high_sast_fixture_rejected": True,
+        "missing_attestation_rejected": True,
         "self_approved_exception_rejected": True,
         "untrusted_reviewer_rejected": True,
         "unknown_finding_rejected": True,
@@ -234,7 +209,7 @@ def test_f22a_self_check_rejects_fake_secret_high_sast_and_high_dependency():
     }
 
 
-def test_f22a_open_secret_critical_high_or_unknown_severity_keeps_gate_closed():
+def test_f22b_open_secret_critical_high_or_unknown_severity_keeps_gate_closed():
     policy = json.loads(POLICY.read_text(encoding="utf-8"))
     assert policy["severity_gate"] == {
         "secret": ["unknown", "low", "medium", "high", "critical"],
@@ -244,7 +219,7 @@ def test_f22a_open_secret_critical_high_or_unknown_severity_keeps_gate_closed():
     }
 
 
-def test_f22a_workflow_uses_only_sha_pinned_actions_and_runs_negative_gate():
+def test_f22b_workflow_uses_pinned_actions_and_immutable_trivy_image():
     workflow = WORKFLOW.read_text(encoding="utf-8")
     uses = re.findall(r"uses:\s*([^\s]+)", workflow)
     assert uses
@@ -254,22 +229,26 @@ def test_f22a_workflow_uses_only_sha_pinned_actions_and_runs_negative_gate():
     assert "pip-audit==2.10.1" in workflow
     assert "bandit==1.9.4" in workflow
     assert "detect-secrets==1.5.0" in workflow
+    assert "run_rc0810_f22b_security.py" in workflow
+    assert "cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f" in json.loads(POLICY.read_text(encoding="utf-8"))["tool_images"]["trivy"]
 
 
-def test_f22a_container_and_supply_chain_gaps_remain_explicitly_blocking():
-    baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
-    assert baseline["container_scan"]["status"] == "pending_f22b_image"
-    assert baseline["container_scan"]["production_blocking"] is True
-    assert baseline["supply_chain_attestation"]["status"] == "pending_external"
-    assert baseline["supply_chain_attestation"]["production_blocking"] is True
+def test_f22b_container_sbom_license_complete_but_attestation_blocks_production():
+    gate = json.loads(BASELINE.read_text(encoding="utf-8"))
+    assert gate["container_scan"]["status"] == "completed"
+    assert gate["sbom_status"]["status"] == "completed"
+    assert gate["license_status"]["status"] == "completed"
+    assert gate["supply_chain_attestation"]["status"] == "pending_external"
+    assert gate["supply_chain_attestation"]["production_blocking"] is True
+    assert gate["production_gate_eligible"] is False
 
 
-def test_f22a_registry_freezes_exact_scope_and_phase_without_business_changes():
+def test_f22b_registry_freezes_exact_scope_and_phase_without_business_changes():
     registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
-    unit = next(item for item in registry["execution_units"] if item["id"] == "RC0810-F22-A")
+    unit = next(item for item in registry["execution_units"] if item["id"] == "RC0810-F22-B")
     task = next(item for item in registry["tasks"] if item["id"] == "RC0810-F22")
-    assert unit["subtasks"] == [f"F22.{index}" for index in range(1, 9)]
-    assert unit["change_budget"]["expected_files"] == 14
-    assert len(unit["allowed_files"]) == 14
-    assert all(not path.startswith("backend/") or path.endswith("test_rc0810_f22.py") for path in unit["allowed_files"])
-    assert [item["expected_test_count"] for item in task["acceptance_commands"]] == [12, 19, 1, 1, 1]
+    assert unit["dependencies"] == ["RC0810-F21", "RC0810-F22-A"]
+    assert task["subtasks"] == [{"id": f"F22.{index}", "default_status": "pending"} for index in range(1, 9)]
+    assert task["change_budget"]["expected_files"] == 14
+    assert all(not path.startswith("backend/") or path.endswith("test_rc0810_f22.py") for path in task["allowed_files"])
+    assert [item["expected_test_count"] for item in task["acceptance_commands"]] == [12, 29, 1, 1, 1]

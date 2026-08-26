@@ -279,7 +279,7 @@ jobs:
         run: python scripts/ci_fail_job.py security-contract
       - name: Record evidence
         if: always()
-        run: python scripts/write_ci_job_evidence.py --job security-contract --status "${{ job.status }}" --test-report ci-security-contract.xml --artifact docs/02_专项进度与验收/rc0810_f22a_security_baseline.json
+        run: python scripts/write_ci_job_evidence.py --job security-contract --status "${{ job.status }}" --test-report ci-security-contract.xml --artifact docs/02_专项进度与验收/rc0810_f22b_security_gate.json
 
   release-gate:
     if: always()

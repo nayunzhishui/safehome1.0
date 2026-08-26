@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：F22-B 最终安全 Gate
+
+- [x] 固定扫描器版本、Trivy 镜像摘要、严重度/例外/超时/负向夹具合同。
+- [x] 重扫当前源码、依赖、隔离构建镜像，生成 CycloneDX SBOM 和许可证报告；旧 F22-A 报告不复用为当前证据。
+- [x] 绑定源码树、依赖锁、Actions 文件、镜像 ID 和运行报告哈希；运行证据缺失或篡改失败关闭。
+- [x] 修复 legacy checkpoint 对新运行的越界激活；新运行从 F10-A 开始，当前已有 A/B checkpoint 的运行可进入 F22-B。
+- [x] 工程 Gate 保持 NO-GO：外部 attestation 待完成，现有 source/container findings 未关闭，自动化不得批准生产。
+- [ ] 提交推送后标记 F22-B `review_pending_wave`；下一项 F23，F26 冻结前不调用 reviewer。
+
 ## 2026-08-26：波次 C phase-A checkpoint 恢复
 
 - [x] 复现波次 B pass 后 `next` 错回 F00。

@@ -1,4 +1,4 @@
-"""Run the F22-A independent scanners against one immutable Git tree."""
+"""Run the F22 source scanners against one immutable Git tree."""
 
 from __future__ import annotations
 
@@ -30,6 +30,11 @@ POLICY_PATH = ROOT / "config" / "rc0810" / "security_gate_policy.json"
 EXCEPTIONS_PATH = ROOT / "config" / "rc0810" / "security_exception_registry.json"
 BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22a_security_baseline.json"
 BASELINE_RELATIVE = BASELINE_PATH.relative_to(ROOT).as_posix()
+F22B_GATE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_security_gate.json"
+SECURITY_REPORT_RELATIVES = (
+    BASELINE_RELATIVE,
+    F22B_GATE_PATH.relative_to(ROOT).as_posix(),
+)
 DEFAULT_TOOLS = ROOT / ".codex_tmp" / "rc0810" / "security-tools"
 DEFAULT_RUNTIME = ROOT / ".codex_tmp" / "rc0810" / "security" / "f22a"
 PYTHON_REQUIREMENTS = (
@@ -61,7 +66,7 @@ def git(*args: str, env: dict[str, str] | None = None) -> bytes:
 
 
 def security_source_snapshot() -> dict[str, str]:
-    """Return a real Git tree excluding the self-referential tracked baseline."""
+    """Return a real Git tree excluding self-referential tracked reports."""
     registry = load_registry()
     current = collect_git_snapshot(registry)["git"]
     with tempfile.TemporaryDirectory(prefix="rc0810-f22-index-") as directory:
@@ -69,13 +74,14 @@ def security_source_snapshot() -> dict[str, str]:
         env = os.environ.copy()
         env["GIT_INDEX_FILE"] = str(index)
         git("read-tree", current["source_tree"], env=env)
-        subprocess.run(
-            ["git", "update-index", "--force-remove", "--", BASELINE_RELATIVE],
-            cwd=ROOT,
-            env=env,
-            capture_output=True,
-            check=False,
-        )
+        for relative in SECURITY_REPORT_RELATIVES:
+            subprocess.run(
+                ["git", "update-index", "--force-remove", "--", relative],
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                check=False,
+            )
         source_tree = git("write-tree", env=env).decode("ascii").strip()
     manifest = git("ls-tree", "-r", "-z", source_tree)
     diff = git("diff-tree", "--binary", "--no-ext-diff", current["head_tree"], source_tree)
