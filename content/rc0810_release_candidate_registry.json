@@ -228,7 +228,32 @@
         "RC0810-F25-B",
         "RC0810-F26"
       ],
-      "freeze_unit": "RC0810-F26"
+      "freeze_unit": "RC0810-F26",
+      "base_checkpoint": {
+        "status": "review_pass",
+        "commit": "aee4f55badfb3b0928e55b245ce7070d642bd29e",
+        "execution_units": [
+          "RC0810-F22-A",
+          "RC0810-F25-A"
+        ],
+        "production_gate_eligible": false,
+        "legacy_phase_bindings": [
+          {
+            "task": "RC0810-F22-A",
+            "commit": "e0fb7fd0bcde3e6ea6e485ec978d9663152831f9",
+            "baseline_path": "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+            "baseline_sha256": "7d32bcdd49e977b7e80e37c5a59bf36e2d61ac7c269466e1d1419e2130506c63",
+            "documented_review_decision_sha256": "7d1f0a9cb8870618d33f654984afa13ffc52b2f554b3710f9664c3b51fce2faa"
+          },
+          {
+            "task": "RC0810-F25-A",
+            "commit": "aee4f55badfb3b0928e55b245ce7070d642bd29e",
+            "baseline_path": "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+            "baseline_sha256": "983205b0ff751cdf3c3a7e1cde32c27487e92be25057b3a14d1f7e750987f218",
+            "documented_review_decision_sha256": "4919cdfc4142b6926c56c5f3df297674e41ed363ad284e4fe85a06b86f88808c"
+          }
+        ]
+      }
     }
   ],
   "independent_review_policy": {

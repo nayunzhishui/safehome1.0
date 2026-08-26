@@ -1170,6 +1170,55 @@ def test_completed_reviewer_replacement_is_not_reapplied_on_same_wave(tmp_path):
     ) is None
 
 
+def test_wave_c_legacy_phase_checkpoint_restores_f22b_without_forged_pass():
+    spec = __import__("importlib.util").util.spec_from_file_location(
+        "rc0810_runner_wave_c_resume", RUNNER_PATH
+    )
+    module = __import__("importlib.util").util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    module.validate_registry(registry)
+    wave_c = next(wave for wave in registry["review_waves"] if wave["id"] == "C")
+    assert module._wave_base_checkpoint_units(wave_c) == {
+        "RC0810-F22-A",
+        "RC0810-F25-A",
+    }
+    state = {
+        "tasks": {
+            "RC0810-F21": {
+                "status": "stale",
+                "review": {"decision": "pass"},
+            }
+        },
+        "wave_checkpoints": {
+            "A": {"status": "review_pass"},
+            "B": {"status": "review_pass"},
+        },
+    }
+    original_read_state = module.read_state
+    module.read_state = lambda: state
+    try:
+        assert module.next_command(registry) == {
+            "task": "RC0810-F22-B",
+            "status": "planned",
+            "ready": True,
+        }
+    finally:
+        module.read_state = original_read_state
+
+    forged = json.loads(json.dumps(registry))
+    forged["review_waves"][2]["base_checkpoint"]["legacy_phase_bindings"][0][
+        "baseline_sha256"
+    ] = "0" * 64
+    try:
+        module.validate_registry(forged)
+    except module.HarnessError:
+        pass
+    else:
+        raise AssertionError("tampered legacy phase checkpoint must be rejected")
+
+
 def test_scoped_registry_change_restores_pending_checkpoint_and_prefers_latest_started_unit():
     spec = __import__("importlib.util").util.spec_from_file_location(
         "rc0810_runner_scoped_stale", RUNNER_PATH

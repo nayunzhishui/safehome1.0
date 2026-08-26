@@ -82,6 +82,28 @@ PRODUCTION_REVIEW_WAVES = [
             "RC0810-F26",
         ],
         "freeze_unit": "RC0810-F26",
+        "base_checkpoint": {
+            "status": "review_pass",
+            "commit": "aee4f55badfb3b0928e55b245ce7070d642bd29e",
+            "execution_units": ["RC0810-F22-A", "RC0810-F25-A"],
+            "production_gate_eligible": False,
+            "legacy_phase_bindings": [
+                {
+                    "task": "RC0810-F22-A",
+                    "commit": "e0fb7fd0bcde3e6ea6e485ec978d9663152831f9",
+                    "baseline_path": "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+                    "baseline_sha256": "7d32bcdd49e977b7e80e37c5a59bf36e2d61ac7c269466e1d1419e2130506c63",
+                    "documented_review_decision_sha256": "7d1f0a9cb8870618d33f654984afa13ffc52b2f554b3710f9664c3b51fce2faa",
+                },
+                {
+                    "task": "RC0810-F25-A",
+                    "commit": "aee4f55badfb3b0928e55b245ce7070d642bd29e",
+                    "baseline_path": "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+                    "baseline_sha256": "983205b0ff751cdf3c3a7e1cde32c27487e92be25057b3a14d1f7e750987f218",
+                    "documented_review_decision_sha256": "4919cdfc4142b6926c56c5f3df297674e41ed363ad284e4fe85a06b86f88808c",
+                },
+            ],
+        },
     },
 ]
 
@@ -255,6 +277,56 @@ def topological_order(registry: dict[str, Any]) -> list[str]:
         complete.add(selected)
         remaining.remove(selected)
     return result
+
+
+def _legacy_phase_checkpoint_is_valid(
+    wave: dict[str, Any], checkpoint: dict[str, Any]
+) -> bool:
+    if (
+        wave.get("id") != "C"
+        or checkpoint != PRODUCTION_REVIEW_WAVES[2]["base_checkpoint"]
+    ):
+        return False
+    checkpoint_commit = checkpoint["commit"]
+    if subprocess.run(
+        ["git", "merge-base", "--is-ancestor", checkpoint_commit, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    ).returncode != 0:
+        return False
+    for binding in checkpoint["legacy_phase_bindings"]:
+        baseline_path = (ROOT / binding["baseline_path"]).resolve()
+        if (
+            not _path_within(baseline_path, ROOT)
+            or not baseline_path.is_file()
+            or sha256_bytes(baseline_path.read_bytes())
+            != binding["baseline_sha256"]
+        ):
+            return False
+        try:
+            baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return False
+        if (
+            baseline.get("phase") != binding["task"].removeprefix("RC0810-")
+            or baseline.get("production_gate_eligible") is not False
+        ):
+            return False
+        commit = binding["commit"]
+        if subprocess.run(
+            ["git", "merge-base", "--is-ancestor", commit, checkpoint_commit],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        ).returncode != 0 or subprocess.run(
+            ["git", "diff", "--quiet", commit, "--", binding["baseline_path"]],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        ).returncode != 0:
+            return False
+    return True
 
 
 def _validate_command(command: dict[str, Any], policy: dict[str, Any]) -> None:
@@ -453,7 +525,7 @@ def validate_registry(registry: dict[str, Any]) -> None:
         legacy_checkpoint = (
             wave.get("id") == "A"
             and checkpoint == PRODUCTION_REVIEW_WAVES[0]["base_checkpoint"]
-        )
+        ) or _legacy_phase_checkpoint_is_valid(wave, checkpoint)
         if not legacy_checkpoint and not _historical_checkpoint_evidence_is_valid(
             registry, checkpoint
         ):
@@ -1738,15 +1810,37 @@ def next_command(registry: dict[str, Any]) -> dict[str, Any]:
         "engineering_complete",
         "review_pending_wave",
     }
+
+    def record_is_complete(record: dict[str, Any]) -> bool:
+        return record.get("status") in terminal or (
+            record.get("status") == "stale"
+            and isinstance(record.get("review"), dict)
+            and record["review"].get("decision") == "pass"
+        )
+
+    completed = {
+        task_id
+        for task_id, record in task_states.items()
+        if record_is_complete(record)
+    }
+    for wave in registry.get("review_waves", []):
+        completed.update(_wave_base_checkpoint_units(wave))
+    pending_dependencies = list(completed)
+    units = unit_map(registry)
+    while pending_dependencies:
+        completed_unit = pending_dependencies.pop()
+        for dependency in units.get(completed_unit, {}).get("dependencies", []):
+            if dependency not in completed:
+                completed.add(dependency)
+                pending_dependencies.append(dependency)
     for unit in registry["execution_units"]:
         task_id = unit["id"]
         current = task_states.get(task_id)
-        if current is not None and current["status"] not in terminal:
+        if current is None and task_id in completed:
+            continue
+        if current is not None and not record_is_complete(current):
             return {"task": task_id, "status": current["status"], "ready": False}
-        dependencies_ready = all(
-            task_states.get(dependency, {}).get("status") in terminal
-            for dependency in unit["dependencies"]
-        )
+        dependencies_ready = set(unit["dependencies"]).issubset(completed)
         if current is None and dependencies_ready:
             wave = _wave_for_unit(registry, task_id)
             if (
@@ -2220,7 +2314,9 @@ def _registry_transition_is_declared_checkpoint_resume(
             current_tasks.get(parent_id) == checkpoint_tasks.get(parent_id)
             for parent_id in changed_tasks
         )
-    if not _historical_checkpoint_evidence_is_valid(current, checkpoint):
+    if not _legacy_phase_checkpoint_is_valid(
+        wave, checkpoint
+    ) and not _historical_checkpoint_evidence_is_valid(current, checkpoint):
         return False
     candidate = json.loads(json.dumps(current))
     candidate_wave = review_wave_map(candidate).get(wave["id"])

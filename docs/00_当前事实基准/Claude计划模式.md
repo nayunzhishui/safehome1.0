@@ -1,5 +1,12 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：波次 C phase-A checkpoint 恢复
+
+- [x] 复现波次 B pass 后 `next` 错回 F00。
+- [x] 固定恢复 F22-A/F25-A 的祖先 commit、baseline hash 与历史 decision 摘要，不新增 pass。
+- [x] 支持从合法 terminal/review-pass 记录反推已满足依赖；篡改 checkpoint 失败关闭。
+- [x] 专项、plan、next 和 diff check 通过；当前入口为 F22-B。
+
 ## 2026-08-26：波次 B review pass
 
 - [x] 同一 `sartre_replacement` 完成最终 Fix Loop 复审，结论 `pass`、findings 为空。
