@@ -18,7 +18,6 @@
 - wechat_platform_real_device_and_human_evidence_missing
 - product_platform_engineering_professional_go_incomplete
 - 72h_candidate_observation_not_executed
-- wave_c_independent_review_pending
 
 ## 四方 GO
 
@@ -41,4 +40,4 @@
 
 ## 下一动作
 
-波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须补齐 required CI、当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。
+波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须补齐 required CI、当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。

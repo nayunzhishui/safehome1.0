@@ -1,0 +1,72 @@
+{
+  "schema": "safehome.rc0810.wave-c-review-decision.v1",
+  "wave": "C",
+  "reviewer_id": "sartre_replacement",
+  "reviewer_kind": "separate_agent",
+  "decision": "pass",
+  "reviewed_base": "908603e100c5cb473f2d632f3e673d3824ebff76",
+  "reviewed_head": "fa322a719f81d1cca4b1c3993e8f607c40bd0b64",
+  "packet_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/reviews/wave-C-f26.json",
+  "packet_sha256": "23d5b378c4f623dd3bfce8f7ce9c531e9bc16d383b205f5302d8f75917f21627",
+  "packet_nonce": "wave-c-30e0ae53-20260826-fix1",
+  "packet_head": "30e0ae53e3642bcc040d6959b3c0e93caa5f8f05",
+  "candidate_commit": "f879440ecb2d82cb1ebe7798ff87db558f14e35a",
+  "candidate_source_tree": "cc6be2cca3dd73217dc26ef8df5733b58f1c7ec5",
+  "production_recommendation": "NO_GO",
+  "findings": [],
+  "closed_findings": [
+    {
+      "severity": "high",
+      "title": "review decision accepted self-consistent packet identity",
+      "status": "closed",
+      "fix_commit": "30e0ae53e3642bcc040d6959b3c0e93caa5f8f05"
+    },
+    {
+      "severity": "medium",
+      "title": "post-freeze test attempted to bind the packet again",
+      "status": "closed",
+      "fix_commit": "5dee717eb79889f8b60b43839358487b198e9397"
+    },
+    {
+      "severity": "medium",
+      "title": "repository-relative decision path was not resolved before validation",
+      "status": "closed",
+      "fix_commit": "74e0adbc1c3146f89038a0b8f8b1376b0fa7a5f1"
+    },
+    {
+      "severity": "medium",
+      "title": "F15 and F26 expected test counts were assigned to the wrong tasks",
+      "status": "closed",
+      "fix_commit": "5f7ef3d93f13a842914d1173848528a4d906fd1d"
+    },
+    {
+      "severity": "medium",
+      "title": "recorded review pass was not covered by the forged-pass self-check",
+      "status": "closed",
+      "fix_commit": "7df8f385a57ff9991f4cda6082e6150add0dbc21"
+    },
+    {
+      "severity": "medium",
+      "title": "review pass retained the pending-review blocker and F26.8 state",
+      "status": "closed",
+      "fix_commit": "fa322a719f81d1cca4b1c3993e8f607c40bd0b64"
+    }
+  ],
+  "targeted_retest": {
+    "reviewer": "1 passed in 34.32s",
+    "main_agent": [
+      "1 passed in 42.77s",
+      "12 passed in 48.99s",
+      "F26 self-check valid=true with six rejection checks true",
+      "21 tests collected (F15=9, F26=12)"
+    ],
+    "full_regression_rerun": false
+  },
+  "limitations": [
+    "pass accepts wave-C implementation and truthful NO-GO evidence only",
+    "pass is not production, platform, human or current security approval",
+    "required CI, image, external evidence, four-GO and observation remain blocking"
+  ],
+  "reviewed_at": "2026-08-27T03:05:52.6410082+08:00",
+  "valid_until": "2026-09-03T03:05:52.6410082+08:00"
+}

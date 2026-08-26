@@ -2,7 +2,7 @@
   "schema": "safehome.rc0810.f26-final-rc.v1",
   "phase": "F26",
   "generated_at": "2026-08-26T13:48:46.226601+00:00",
-  "task_status": "review_pending_wave",
+  "task_status": "complete_no_go",
   "engineering_materials_status": "evidence_ready_no_go",
   "candidate": {
     "source_commit": "f879440ecb2d82cb1ebe7798ff87db558f14e35a",
@@ -1251,13 +1251,16 @@
     }
   },
   "wave_c_review": {
-    "status": "review_pending_wave",
+    "status": "review_pass",
     "reviewer_id": "sartre_replacement",
     "base_commit": "908603e100c5cb473f2d632f3e673d3824ebff76",
     "reviewed_head": null,
     "packet_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/reviews/wave-C-f26.json",
     "packet_sha256": "23d5b378c4f623dd3bfce8f7ce9c531e9bc16d383b205f5302d8f75917f21627",
-    "decision_artifact": null,
+    "decision_artifact": {
+      "path": "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+      "sha256": "49ea07551f322094a965ac33424806fdce34789487962fbb8d84e275a8b4e65f"
+    },
     "prior_wave_b_packet_sha256": "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21",
     "prior_wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb",
     "packet_nonce": "wave-c-30e0ae53-20260826-fix1",
@@ -1271,7 +1274,8 @@
       "last_review_pass_checkpoint": "RC0810-F21:verified",
       "wave_b_packet_sha256": "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21",
       "wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
-    }
+    },
+    "decision_reviewed_head": "fa322a719f81d1cca4b1c3993e8f607c40bd0b64"
   },
   "release_decision": {
     "recommendation": "NO_GO",
@@ -1283,8 +1287,7 @@
       "backend_image_and_digest_missing",
       "wechat_platform_real_device_and_human_evidence_missing",
       "product_platform_engineering_professional_go_incomplete",
-      "72h_candidate_observation_not_executed",
-      "wave_c_independent_review_pending"
+      "72h_candidate_observation_not_executed"
     ]
   },
   "phase_separation": {
@@ -1331,7 +1334,7 @@
     },
     {
       "id": "F26.8",
-      "status": "review_pending_wave"
+      "status": "review_pass"
     },
     {
       "id": "F26.9",
