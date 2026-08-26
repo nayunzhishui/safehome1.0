@@ -6122,7 +6122,7 @@
           "timeout_seconds": 600,
           "shell": false,
           "status": "active",
-          "expected_test_count": 10
+          "expected_test_count": 12
         },
         {
           "argv": [

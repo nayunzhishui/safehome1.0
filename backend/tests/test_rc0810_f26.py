@@ -196,3 +196,16 @@ def test_f26_self_checks_reject_forged_go_ci_review_and_hash(f26):
         "missing_pr8_item_rejected": True,
         "short_observation_window_rejected": True,
     }
+
+
+def test_f26_self_checks_cover_recorded_review_pass(f26):
+    module, _, _, _ = f26
+    assert all(module.run_self_checks(F26_REPORT).values())
+
+
+def test_f26_markdown_reflects_recorded_review_pass(f26):
+    module, _, _, _ = f26
+    report = json.loads(F26_REPORT.read_text(encoding="utf-8"))
+    rendered = module.render_markdown(report)
+    assert "波次 C 固定 reviewer 已审查通过" in rendered
+    assert "波次 C 先由固定 reviewer" not in rendered

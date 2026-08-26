@@ -553,6 +553,16 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- {name}: {item['status']}（approved={str(item['approved']).lower()}）"
         for name, item in report["four_go"].items()
     )
+    if report["wave_c_review"]["status"] == "review_pass":
+        next_action = (
+            "波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须补齐 required CI、"
+            "当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
+        )
+    else:
+        next_action = (
+            "波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须补齐 required CI、"
+            "当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
+        )
     return f"""# RC0810-F26 最终 RC 收口与发布建议
 
 结论：**NO-GO**。本报告完成工程材料收口，不代表 RC 已形成、平台已批准、已发布或已稳定运行。
@@ -587,7 +597,7 @@ def render_markdown(report: dict[str, Any]) -> str:
 
 ## 下一动作
 
-波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须补齐 required CI、当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。
+{next_action}
 """
 
 
@@ -864,7 +874,10 @@ def run_self_checks(report_path: Path = DEFAULT_REPORT) -> dict[str, bool]:
     ci["required_ci"][0]["status"] = "verified"
     mutations.append(("forged_required_ci_rejected", ci))
     review = copy.deepcopy(original)
-    review["wave_c_review"]["status"] = "review_pass"
+    if review["wave_c_review"].get("status") == "review_pass":
+        review["wave_c_review"]["decision_artifact"]["sha256"] = "0" * 64
+    else:
+        review["wave_c_review"]["status"] = "review_pass"
     mutations.append(("forged_review_pass_rejected", review))
     artifact = copy.deepcopy(original)
     artifact["artifacts"]["source_tar"]["sha256"] = "0" * 64
