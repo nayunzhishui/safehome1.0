@@ -93,6 +93,10 @@ def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _resolve_repository_path(path: Path) -> Path:
+    return (ROOT / path).resolve() if not path.is_absolute() else path.resolve()
+
+
 def _git_file(commit: str, path: str) -> bytes:
     return _git_bytes("show", f"{commit}:{path}")
 
@@ -926,6 +930,7 @@ def bind_review_packet(report_path: Path, packet_path: Path, markdown_path: Path
 
 def apply_review_decision(report_path: Path, decision_path: Path, markdown_path: Path) -> dict[str, Any]:
     report = _read_json(report_path)
+    decision_path = _resolve_repository_path(decision_path)
     decision = _read_json(decision_path)
     review = report["wave_c_review"]
     if review.get("status") != "review_pending_wave" or review.get("packet_sha256") is None:

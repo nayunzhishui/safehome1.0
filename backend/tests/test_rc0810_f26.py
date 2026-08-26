@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BUILDER = ROOT / "scripts" / "build_rc0810_f26_rc.py"
 REGISTRY = ROOT / "content" / "rc0810_release_candidate_registry.json"
 F26_REPORT = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f26_final_rc.json"
+WAVE_C_DECISION = Path("docs/02_专项进度与验收/rc0810_wave_c_review_decision.json")
 WAVE_C_PACKET = (
     ROOT
     / ".codex_tmp"
@@ -177,6 +178,11 @@ def test_f26_review_packet_is_prebound_and_rejects_self_reported_or_changed_iden
         bound,
         {"path": ".codex_tmp/self-reported-decision.json", "sha256": "0" * 64},
     ) == ["review_decision_path_invalid"]
+
+
+def test_f26_resolves_repository_relative_review_decision_path(f26):
+    module, _, _, _ = f26
+    assert module._resolve_repository_path(WAVE_C_DECISION) == ROOT / WAVE_C_DECISION
 
 
 def test_f26_self_checks_reject_forged_go_ci_review_and_hash(f26):

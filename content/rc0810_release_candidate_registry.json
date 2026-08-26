@@ -4280,7 +4280,7 @@
           "timeout_seconds": 600,
           "shell": false,
           "status": "active",
-          "expected_test_count": 9
+          "expected_test_count": 10
         }
       ],
       "external_gates": [
