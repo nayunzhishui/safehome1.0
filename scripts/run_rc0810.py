@@ -188,6 +188,8 @@ def _load_reviewer_replacement_binding(
         )
     except (OSError, json.JSONDecodeError) as exc:
         raise HarnessError("reviewer替换证据不是有效JSON。") from exc
+    if replacement_record.get("replacement_reviewer_id") == fixed_reviewer:
+        return None
     previous_waves = _previous_waves(registry, wave_id)
     previous_review = (
         state.get("wave_checkpoints", {})

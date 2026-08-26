@@ -1128,6 +1128,48 @@ def test_wave_fix_registry_transition_may_touch_only_tasks_in_same_wave():
     assert module._registry_transition_is_wave_fix_scoped(previous, current, wave) is False
 
 
+def test_completed_reviewer_replacement_is_not_reapplied_on_same_wave(tmp_path):
+    spec = __import__("importlib.util").util.spec_from_file_location(
+        "rc0810_runner_completed_replacement", RUNNER_PATH
+    )
+    module = __import__("importlib.util").util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    review_root = tmp_path / "reviews"
+    review_root.mkdir()
+    (review_root / "wave-B-reviewer-replacement.json").write_text(
+        json.dumps(
+            {
+                "schema": "safehome.rc0810.reviewer_replacement.v1",
+                "wave": "B",
+                "previous_reviewer_id": "old-reviewer",
+                "replacement_reviewer_id": "replacement-reviewer",
+                "previous_reviewer_checkpoint": {
+                    "decision_evidence_sha256": "checkpoint-hash"
+                },
+                "recovery_attempts": ["old reviewer unavailable"],
+                "replacement_reason": "previous_reviewer_ended_and_cannot_be_recovered",
+            }
+        ),
+        encoding="utf-8",
+    )
+    state = {
+        "fixed_wave_reviewer_id": "replacement-reviewer",
+        "wave_checkpoints": {
+            "A": {"review": {"decision_evidence_sha256": "checkpoint-hash"}}
+        },
+    }
+    registry = {
+        "review_waves": [
+            {"id": "A", "execution_units": [], "freeze_unit": "A"},
+            {"id": "B", "execution_units": [], "freeze_unit": "B"},
+        ]
+    }
+    assert module._load_reviewer_replacement_binding(
+        registry, state, "B", review_root
+    ) is None
+
+
 def test_scoped_registry_change_restores_pending_checkpoint_and_prefers_latest_started_unit():
     spec = __import__("importlib.util").util.spec_from_file_location(
         "rc0810_runner_scoped_stale", RUNNER_PATH

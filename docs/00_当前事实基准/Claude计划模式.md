@@ -6,6 +6,7 @@
 - [x] 固定替换证据路径，并在 packet/state 冻结路径、哈希、旧/新 reviewer 与上一有效 checkpoint。
 - [x] 拒绝 decision 自报替换路径/哈希，以及冻结后新增、改写或重哈希。
 - [x] 最小 Harness 专项通过；下一步重建波次 B packet 并续用 `sartre_replacement` 复审。
+- [x] 已固定替代 reviewer 后忽略同波次历史替换动作，避免 Fix Loop 误判为二次替换；状态单测通过。
 
 ## 2026-08-26：波次 B reviewer 替换审计适配
 
