@@ -1,0 +1,44 @@
+{
+  "schema": "safehome.rc0810.f23-fuzz-corpus.v1",
+  "seed": 81023,
+  "max_cases": 32,
+  "targets": [
+    {
+      "operation_id": "diaries.create_diary.post",
+      "base": {
+        "scene": "晚饭后",
+        "event_description": "我先停下来听完，再说明自己的担心。",
+        "parent_emotion": "担心",
+        "parent_emotion_intensity": 5
+      },
+      "cases": [
+        {"case_id": "diary-missing-scene", "operator": "missing_field", "field": "scene"},
+        {"case_id": "diary-nested-intensity", "operator": "replace", "field": "parent_emotion_intensity", "value_kind": "deep_nested", "depth": 12},
+        {"case_id": "diary-overlong-scene", "operator": "replace", "field": "scene", "value_kind": "repeat", "character": "界", "count": 121},
+        {"case_id": "diary-unknown-nested", "operator": "add_unknown", "field": "_unexpected", "value_kind": "deep_nested", "depth": 12},
+        {"case_id": "diary-unicode-scene", "operator": "replace", "field": "scene", "value": "亲子沟通🙂éمرحبا"}
+      ]
+    },
+    {
+      "operation_id": "consent.create_consent_record.post",
+      "base": {
+        "consent_type": "privacy_policy",
+        "agreed": true,
+        "consent_version": "2026.08-f23"
+      },
+      "cases": [
+        {"case_id": "consent-invalid-state", "operator": "replace", "field": "consent_type", "value": "unknown_consent_state"},
+        {"case_id": "consent-missing-agreed", "operator": "missing_field", "field": "agreed"},
+        {"case_id": "consent-overlong-version", "operator": "replace", "field": "consent_version", "value_kind": "repeat", "character": "v", "count": 121}
+      ]
+    },
+    {
+      "operation_id": "messages.list_messages.get",
+      "base": {},
+      "cases": [
+        {"case_id": "messages-negative-page", "operator": "replace", "field": "page", "value": -1},
+        {"case_id": "messages-page-size-overflow", "operator": "replace", "field": "page_size", "value": 1000000}
+      ]
+    }
+  ]
+}

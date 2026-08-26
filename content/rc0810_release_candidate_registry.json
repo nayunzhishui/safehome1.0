@@ -5439,12 +5439,42 @@
             "-m",
             "pytest",
             "backend/tests/test_rc0810_f23.py",
-            "-q"
+            "-q",
+            "-k",
+            "not mutation_runner",
+            "-p",
+            "no:cacheprovider"
           ],
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 9
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/run_rc0810_f23_mutation.py",
+            "--report",
+            "docs/02_专项进度与验收/rc0810_f23_mutation_report.json"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 900,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 6
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
         }
       ],
       "external_gates": [],

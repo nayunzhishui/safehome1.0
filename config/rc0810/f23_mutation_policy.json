@@ -1,0 +1,55 @@
+{
+  "schema": "safehome.rc0810.f23-mutation-policy.v1",
+  "seed": 81023,
+  "timeout_seconds_per_mutant": 120,
+  "mutants": [
+    {
+      "id": "role-check-removed",
+      "path": "backend/routes/auth_utils.py",
+      "find": "    if actor[\"role\"] not in roles:\n",
+      "replace": "    if False:  # RC0810-F23 mutant: role rejection removed\n",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_role_gate_rejects_participant_on_admin_route",
+      "gate": "role"
+    },
+    {
+      "id": "assignment-check-bypassed",
+      "path": "backend/services/research_access_service.py",
+      "find": "    if has_participant_scope(conn, actor, participant_user_id):\n        return\n",
+      "replace": "    if True:  # RC0810-F23 mutant: assignment check bypassed\n        return\n",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_assignment_gate_hides_unassigned_subject",
+      "gate": "assignment"
+    },
+    {
+      "id": "consent-self-only-removed",
+      "path": "backend/routes/consent.py",
+      "find": "    user_id = str(payload.get(\"user_id\") or payload.get(\"subject_id\") or actor[\"id\"]).strip()\n    if user_id != str(actor[\"id\"]):\n",
+      "replace": "    user_id = str(payload.get(\"user_id\") or payload.get(\"subject_id\") or actor[\"id\"]).strip()\n    if False:  # RC0810-F23 mutant: self-only check removed\n",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_consent_self_only_rejects_replaced_subject",
+      "gate": "consent_self_only"
+    },
+    {
+      "id": "high-risk-feedback-branch-removed",
+      "path": "backend/routes/feedback.py",
+      "find": "        if risk_result[\"allow_auto_feedback\"] is False:\n",
+      "replace": "        if False:  # RC0810-F23 mutant: high-risk feedback branch removed\n",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_risk_gate_blocks_ordinary_feedback",
+      "gate": "risk"
+    },
+    {
+      "id": "therapeutic-human-support-route-removed",
+      "path": "backend/services/therapeutic_assessment_service.py",
+      "find": "        status = \"support_required\" if risk[\"requires_review\"] else \"open\"\n",
+      "replace": "        status = \"open\"  # RC0810-F23 mutant: safety route removed\n",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_therapeutic_risk_gate_routes_to_human_support",
+      "gate": "therapeutic_assessment"
+    },
+    {
+      "id": "idempotency-conflict-check-removed",
+      "path": "backend/services/idempotency_service.py",
+      "find": "        if str(existing[\"request_hash\"]) != str(request_hash):\n",
+      "replace": "        if False:  # RC0810-F23 mutant: request hash conflict ignored\n",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_idempotency_hash_conflict_is_rejected",
+      "gate": "idempotency"
+    }
+  ]
+}

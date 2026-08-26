@@ -1,0 +1,94 @@
+{
+  "schema": "safehome.rc0810.f23-mutation-report.v1",
+  "seed": 81023,
+  "source_base_commit": "2e234cd0e437f24305d472c6005b7b933a194f21",
+  "source_files_sha256": {
+    "backend/routes/auth_utils.py": "00002027c2678cfba5691382f4a07b38fef92e62d2af105018989885561de066",
+    "backend/routes/consent.py": "7d3b7cd00c6e5f2aafa1ad6961651bd88741f81081e1d88fa021fb0f02f85ef6",
+    "backend/routes/feedback.py": "c8c71f29c88e105bb54ad04fa7013a295af09f0939d620bc461e194076433abd",
+    "backend/services/idempotency_service.py": "9b72206e073cc27d4a060c10daa00a72e4d1d26f81c8cffae8f49bf4856886a5",
+    "backend/services/research_access_service.py": "23a1cc0180fc2bf6d696c8823786d440d1c89ec42fd2978037a93f545d9816fd",
+    "backend/services/therapeutic_assessment_service.py": "3028ab48c2468a7a208a32c6ad9f7d5e6e6b9017383b2764fef48023ab8cb4b7"
+  },
+  "source_snapshot_sha256": "d954f3a9b268aa5614e90bed59b892d70f14656f82fe1c16cdbb17250989de58",
+  "api_contract_sha256": "bfb3de2d0a5ee536e22184fb830e65cf135e0b60fba9dc91ced3aafcc6219fa1",
+  "fuzz_corpus_sha256": "226a572ca106fa3b19eba3c5fd3d5a8d1c0d8fcdd919077b9f737c87b19c6406",
+  "fuzz_case_count": 10,
+  "fuzz_case_ids": [
+    "consent-invalid-state",
+    "consent-missing-agreed",
+    "consent-overlong-version",
+    "diary-missing-scene",
+    "diary-nested-intensity",
+    "diary-overlong-scene",
+    "diary-unicode-scene",
+    "diary-unknown-nested",
+    "messages-negative-page",
+    "messages-page-size-overflow"
+  ],
+  "mutant_count": 6,
+  "killed_count": 6,
+  "surviving_count": 0,
+  "invalid_run_count": 0,
+  "all_killed": true,
+  "results": [
+    {
+      "id": "role-check-removed",
+      "gate": "role",
+      "path": "backend/routes/auth_utils.py",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_role_gate_rejects_participant_on_admin_route",
+      "classification": "killed",
+      "returncode": 1
+    },
+    {
+      "id": "assignment-check-bypassed",
+      "gate": "assignment",
+      "path": "backend/services/research_access_service.py",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_assignment_gate_hides_unassigned_subject",
+      "classification": "killed",
+      "returncode": 1
+    },
+    {
+      "id": "consent-self-only-removed",
+      "gate": "consent_self_only",
+      "path": "backend/routes/consent.py",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_consent_self_only_rejects_replaced_subject",
+      "classification": "killed",
+      "returncode": 1
+    },
+    {
+      "id": "high-risk-feedback-branch-removed",
+      "gate": "risk",
+      "path": "backend/routes/feedback.py",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_risk_gate_blocks_ordinary_feedback",
+      "classification": "killed",
+      "returncode": 1
+    },
+    {
+      "id": "therapeutic-human-support-route-removed",
+      "gate": "therapeutic_assessment",
+      "path": "backend/services/therapeutic_assessment_service.py",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_therapeutic_risk_gate_routes_to_human_support",
+      "classification": "killed",
+      "returncode": 1
+    },
+    {
+      "id": "idempotency-conflict-check-removed",
+      "gate": "idempotency",
+      "path": "backend/services/idempotency_service.py",
+      "pytest_node": "backend/tests/test_rc0810_f23.py::test_idempotency_hash_conflict_is_rejected",
+      "classification": "killed",
+      "returncode": 1
+    }
+  ],
+  "schema_contract_gaps": [
+    {
+      "id": "F23-SCHEMA-01",
+      "status": "open_for_followup",
+      "operation_id": "therapeutic_assessment.post_case_route.post",
+      "finding": "运行时要求JSON字段与Idempotency-Key，但当前API契约仍登记空body_fields且idempotency=false。",
+      "production_gate_blocking": true
+    }
+  ],
+  "replay_command": "python scripts/run_rc0810_f23_mutation.py --report docs/02_专项进度与验收/rc0810_f23_mutation_report.json"
+}

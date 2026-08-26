@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：RC0810-F23 Fuzz 与 Mutation
+
+- [x] 从当前 API 契约和固定 seed `81023` 生成 10 个非法字段、缺字段、超长、深嵌套、Unicode 与分页边界样本。
+- [x] 真实 API 覆盖角色、Consent 本人决定、主体/记录/任务/消息/导出/source object 替换、风险、治疗性评估与幂等冲突；9 项非 mutation 专项通过。
+- [x] 在临时源码副本删除或反转 6 个关键判断，6 个 mutant 均被对应 API 合同杀死；语法/启动错误不计成功。
+- [x] 固定 seed、最小复现、源码摘要与重放命令已写入 `rc0810_f23_mutation_report.json`。
+- [ ] `F23-SCHEMA-01`：治疗性评估创建接口的运行时 JSON/Idempotency-Key 要求尚未进入 API 契约，转入 F24 关闭并继续阻断 production。
+- [ ] F23 工程完成、等待波次 C 集中复审；下一项 F24，F26 前不调用 reviewer。
+
 ## 2026-08-26：F22-B 最终安全 Gate
 
 - [x] 固定扫描器版本、Trivy 镜像摘要、严重度/例外/超时/负向夹具合同。
