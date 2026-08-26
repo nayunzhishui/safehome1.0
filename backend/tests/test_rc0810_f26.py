@@ -203,9 +203,19 @@ def test_f26_self_checks_cover_recorded_review_pass(f26):
     assert all(module.run_self_checks(F26_REPORT).values())
 
 
-def test_f26_markdown_reflects_recorded_review_pass(f26):
-    module, _, _, _ = f26
-    report = json.loads(F26_REPORT.read_text(encoding="utf-8"))
+def test_f26_review_pass_closes_only_review_pending_state(f26):
+    module, pending_report, _, _ = f26
+    report = copy.deepcopy(pending_report)
+    remaining_blockers = set(report["release_decision"]["blocking_reasons"]) - {
+        module.WAVE_C_PENDING_BLOCKER
+    }
+    report["wave_c_review"]["status"] = "review_pass"
+    module._complete_wave_c_review_state(report)
+
+    assert module._review_state_errors(report) == []
+    assert set(report["release_decision"]["blocking_reasons"]) == remaining_blockers
+    assert next(item for item in report["subtasks"] if item["id"] == "F26.8")["status"] == "review_pass"
     rendered = module.render_markdown(report)
     assert "波次 C 固定 reviewer 已审查通过" in rendered
     assert "波次 C 先由固定 reviewer" not in rendered
+    assert module.WAVE_C_PENDING_BLOCKER not in rendered

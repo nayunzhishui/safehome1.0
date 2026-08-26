@@ -34,6 +34,7 @@ RC0810_RUNTIME_ROOT = ROOT / ".codex_tmp" / "rc0810"
 ACTIVE_STATE_POINTER = RC0810_RUNTIME_ROOT / "state.json"
 WAVE_C_PACKET_NAME = "wave-C-f26.json"
 WAVE_C_BASE_COMMIT = "908603e1"
+WAVE_C_PENDING_BLOCKER = "wave_c_independent_review_pending"
 WAVE_B_PACKET_SHA256 = "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21"
 WAVE_B_DECISION_SHA256 = "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
 BACKEND_SOURCE_PATHS = (
@@ -601,6 +602,44 @@ def render_markdown(report: dict[str, Any]) -> str:
 """
 
 
+def _complete_wave_c_review_state(report: dict[str, Any]) -> None:
+    report["task_status"] = "complete_no_go"
+    blockers = report["release_decision"]["blocking_reasons"]
+    report["release_decision"]["blocking_reasons"] = [
+        blocker for blocker in blockers if blocker != WAVE_C_PENDING_BLOCKER
+    ]
+    for subtask in report["subtasks"]:
+        if subtask.get("id") == "F26.8":
+            subtask["status"] = "review_pass"
+            break
+
+
+def _review_state_errors(report: dict[str, Any]) -> list[str]:
+    status = report.get("wave_c_review", {}).get("status")
+    blockers = report.get("release_decision", {}).get("blocking_reasons", [])
+    pending_blocker = WAVE_C_PENDING_BLOCKER in blockers
+    subtask_status = next(
+        (item.get("status") for item in report.get("subtasks", []) if item.get("id") == "F26.8"),
+        None,
+    )
+    errors: list[str] = []
+    if status == "review_pass":
+        if pending_blocker:
+            errors.append("review_pass_with_pending_blocker")
+        if subtask_status != "review_pass":
+            errors.append("review_pass_with_pending_subtask")
+        if report.get("task_status") != "complete_no_go":
+            errors.append("review_pass_with_incomplete_task")
+    elif status == "review_pending_wave":
+        if not pending_blocker:
+            errors.append("review_pending_without_pending_blocker")
+        if subtask_status != "review_pending_wave":
+            errors.append("review_pending_with_closed_subtask")
+        if report.get("task_status") != "review_pending_wave":
+            errors.append("review_pending_with_complete_task")
+    return errors
+
+
 def _active_harness_binding() -> tuple[dict[str, Any], dict[str, Any], Path]:
     pointer = _read_json(ACTIVE_STATE_POINTER)
     state_path_value = pointer.get("state_path")
@@ -834,6 +873,7 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
     if decision.get("recommendation") != "NO_GO" or decision.get("production_gate_eligible") is not False or decision.get("automatic_release_performed") is not False:
         errors.append("release_decision_must_be_no_go")
     review = report.get("wave_c_review", {})
+    errors.extend(_review_state_errors(report))
     if review.get("reviewer_id") != "sartre_replacement":
         errors.append("fixed_reviewer_mismatch")
     if review.get("status") == "review_pass":
@@ -961,7 +1001,7 @@ def apply_review_decision(report_path: Path, decision_path: Path, markdown_path:
     errors = _review_decision_errors(report, review["decision_artifact"])
     if errors:
         raise RcEvidenceError(";".join(errors))
-    report["task_status"] = "complete_no_go"
+    _complete_wave_c_review_state(report)
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     markdown_path.write_text(render_markdown(report), encoding="utf-8")
     return report
