@@ -43,6 +43,7 @@
     {"page": "pages/settings-detail/index", "classification": "participant"},
     {"page": "pages/goal-setting/index", "classification": "participant"},
     {"page": "pages/diary-form/index", "classification": "participant"},
+    {"page": "pages/diary-history/index", "classification": "participant"},
     {"page": "pages/feedback-result/index", "classification": "participant"},
     {"page": "pages/assessment/index", "classification": "participant"},
     {"page": "pages/assessment-history/index", "classification": "participant"},

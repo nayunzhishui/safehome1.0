@@ -4,14 +4,14 @@
   "inventory_sources": {
     "app_json": {
       "path": "apps/miniprogram/app.json",
-      "sha256": "08dedcb3790a7a9b5c2d7f0ca06690f4b85c18faa0628093af19f7b9f3054032"
+      "sha256": "bbd7c09afcb50113f14282f752dc3b026de635ea881a5af0ed6f9cdaaf8b89cc"
     },
     "api_client": {
       "path": "apps/miniprogram/services/api.js",
-      "sha256": "f64ff18f979649f31945a7767e4799a43711fdb438c2e6dff64860104b57a814"
+      "sha256": "2242ba9e392ed46c33f13f746e4f723bd42e1b244eff1af8fa9febbc07d431be"
     },
-    "registered_pages_count": 52,
-    "registered_pages_sha256": "62fa438466303d9af7fdeb8c8606c8296ad5edbe2220e7a900353c91612b5f9c"
+    "registered_pages_count": 53,
+    "registered_pages_sha256": "2156f9a04788bef886f1d8d5d791c2c15f1941fd1e6a2136763893f8c49b2a78"
   },
   "capabilities": [
     {
@@ -36,7 +36,7 @@
     },
     {
       "id": "emotion_diary",
-      "pages": ["pages/diary-form/index"],
+      "pages": ["pages/diary-form/index", "pages/diary-history/index"],
       "apis": ["/api/diaries"],
       "data_domains": ["emotion_diaries"],
       "service_category": null,
@@ -135,6 +135,7 @@
     {"page": "pages/settings-detail/index", "classification": "blocker_pending_mapping", "capability_id": null},
     {"page": "pages/goal-setting/index", "classification": "public_mapped", "capability_id": "goal_setting"},
     {"page": "pages/diary-form/index", "classification": "public_mapped", "capability_id": "emotion_diary"},
+    {"page": "pages/diary-history/index", "classification": "public_mapped", "capability_id": "emotion_diary"},
     {"page": "pages/feedback-result/index", "classification": "public_mapped", "capability_id": "supportive_feedback"},
     {"page": "pages/assessment/index", "classification": "blocker_pending_mapping", "capability_id": null},
     {"page": "pages/assessment-history/index", "classification": "blocker_pending_mapping", "capability_id": null},
