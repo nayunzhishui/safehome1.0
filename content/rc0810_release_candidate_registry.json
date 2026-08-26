@@ -6087,12 +6087,17 @@
         "PR8-DOD"
       ],
       "allowed_files": [
-        "config/rc0810/**",
-        "scripts/**",
-        "docs/**",
-        ".github/workflows/**",
-        "Dockerfile",
-        "deploy/**"
+        "scripts/build_rc0810_f26_rc.py",
+        "backend/tests/test_rc0810_f26.py",
+        "content/rc0810_release_candidate_registry.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+        "docs/01_当前执行入口/0810bug修改计划.md",
+        "docs/00_当前事实基准/Claude计划模式.md",
+        "docs/00_当前事实基准/开发日志.md",
+        "docs/00_当前事实基准/开发说明.md",
+        "docs/00_当前事实基准/当前进度交接.md"
       ],
       "forbidden_files": [
         "backend/migrations/** when expected_migrations=0",
@@ -6116,7 +6121,34 @@
           "cwd": ".",
           "timeout_seconds": 600,
           "shell": false,
-          "status": "planned_contract_file_not_created"
+          "status": "active",
+          "expected_test_count": 8
+        },
+        {
+          "argv": [
+            "python",
+            "scripts/build_rc0810_f26_rc.py",
+            "--report",
+            "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+            "--self-check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 600,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
+        },
+        {
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "cwd": ".",
+          "timeout_seconds": 120,
+          "shell": false,
+          "status": "active",
+          "expected_test_count": 1
         }
       ],
       "external_gates": [
@@ -6148,12 +6180,17 @@
       ],
       "change_budget": {
         "allowed_modules": [
-          "config/rc0810/**",
-          "scripts/**",
-          "docs/**",
-          ".github/workflows/**",
-          "Dockerfile",
-          "deploy/**"
+          "scripts/build_rc0810_f26_rc.py",
+          "backend/tests/test_rc0810_f26.py",
+          "content/rc0810_release_candidate_registry.json",
+          "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+          "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+          "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+          "docs/01_当前执行入口/0810bug修改计划.md",
+          "docs/00_当前事实基准/Claude计划模式.md",
+          "docs/00_当前事实基准/开发日志.md",
+          "docs/00_当前事实基准/开发说明.md",
+          "docs/00_当前事实基准/当前进度交接.md"
         ],
         "forbidden_modules": [
           "backend/migrations/** when expected_migrations=0",
@@ -6165,7 +6202,7 @@
           "**/*secret*",
           "production resources"
         ],
-        "expected_files": 18,
+        "expected_files": 11,
         "expected_migrations": 0,
         "expected_interfaces": 0,
         "expected_pages": 0,
