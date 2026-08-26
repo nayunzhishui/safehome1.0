@@ -144,4 +144,3 @@ def test_f26_self_checks_reject_forged_go_ci_review_and_hash(f26):
         "missing_pr8_item_rejected": True,
         "short_observation_window_rejected": True,
     }
-
