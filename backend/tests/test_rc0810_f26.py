@@ -145,15 +145,15 @@ def test_f26_four_go_phase_separation_and_review_remain_truthful(f26):
 
 
 def test_f26_review_packet_is_prebound_and_rejects_self_reported_or_changed_identity(f26, tmp_path):
-    module, _, report_path, markdown_path = f26
-    bound = module.bind_review_packet(report_path, WAVE_C_PACKET, markdown_path)
+    module, _, _, _ = f26
+    bound = json.loads(F26_REPORT.read_text(encoding="utf-8"))
     review = bound["wave_c_review"]
     packet = json.loads(WAVE_C_PACKET.read_text(encoding="utf-8"))
     assert review["packet_sha256"] == hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest()
     assert review["packet_nonce"] == packet["packet_nonce"]
     assert review["packet_head"] == packet["review_head"]["commit"]
     assert review["harness_binding"]["fixed_reviewer_id"] == "sartre_replacement"
-    assert module.validate_report(report_path)["valid"] is True
+    assert module.validate_report(F26_REPORT)["valid"] is True
 
     mutations = {}
     missing = copy.deepcopy(bound)
