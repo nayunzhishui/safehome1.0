@@ -1,5 +1,11 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：波次 B review pass
+
+- [x] 同一 `sartre_replacement` 完成最终 Fix Loop 复审，结论 `pass`、findings 为空。
+- [x] Harness 接受最终 decision；F13—F21 全部 verified，production/external gates 保持 false/pending。
+- [x] 纯事实回填后进入波次 C F22-B；F26 冻结前不调用 reviewer。
+
 ## 2026-08-26：波次 B replacement evidence Fix Loop
 
 - [x] 登记同一 reviewer 的 high finding：替换证据未在 wave packet 前预绑定。
