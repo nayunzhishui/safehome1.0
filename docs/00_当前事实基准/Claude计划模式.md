@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：RC0810-F26 最终 RC 工程冻结
+
+- [x] 从与 `origin/main` 一致的 `f879440e` 隔离 Git archive 生成源码包、后端源码包、production 小程序 ZIP、SBOM inventory、manifest 和 SHA-256 清单。
+- [x] 77 个 PR #8 编号全部进入关闭矩阵；缺少当前证据的项目没有标记 resolved。
+- [x] 发布演练包含冻结、灰度、停止阈值、人工确认、72 小时观察、代码/数据库/内容回滚和数据核对；消息、外部 AI、导出与风险任务分别登记副作用 ledger。
+- [x] 8 项 F26 专项和 6 项反伪造/漂移自检通过；未运行无关回归，也未执行生产动作。
+- [ ] 10 类 required CI、安全重扫、后端镜像、微信平台/真机、四方 GO 和观察期缺失；工程材料完成但 RC 未形成，production NO-GO。
+- [ ] 波次 C 已冻结，下一步只续用 `sartre_replacement` 独立审查；通过后仅回填 review decision，不能改变 NO-GO 外部门禁。
+
 ## 2026-08-26：RC0810-F25-B 微信平台与真机最终材料
 
 - [x] 修复新增情绪记录历史页未进入 production 页面策略/能力映射的漂移，最终 inventory 为 53 页。
