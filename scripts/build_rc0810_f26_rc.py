@@ -30,6 +30,9 @@ FINAL_POLICY_PATH = ROOT / "content" / "task37_38_final_acceptance_policy.json"
 F22_REPORT_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_security_gate.json"
 F25_REPORT_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25b_evidence.json"
 ARTIFACT_ROOT = ROOT / ".codex_tmp" / "rc0810" / "f26"
+RC0810_RUNTIME_ROOT = ROOT / ".codex_tmp" / "rc0810"
+ACTIVE_STATE_POINTER = RC0810_RUNTIME_ROOT / "state.json"
+WAVE_C_PACKET_NAME = "wave-C-f26.json"
 WAVE_C_BASE_COMMIT = "908603e1"
 WAVE_B_PACKET_SHA256 = "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21"
 WAVE_B_DECISION_SHA256 = "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
@@ -477,9 +480,13 @@ def build_report(
             "status": "review_pending_wave",
             "reviewer_id": "sartre_replacement",
             "base_commit": wave_base,
-            "reviewed_head": None,
             "packet_path": None,
             "packet_sha256": None,
+            "packet_nonce": None,
+            "packet_head": None,
+            "packet_source_tree": None,
+            "harness_binding": None,
+            "decision_reviewed_head": None,
             "decision_artifact": None,
             "prior_wave_b_packet_sha256": WAVE_B_PACKET_SHA256,
             "prior_wave_b_decision_sha256": WAVE_B_DECISION_SHA256,
@@ -580,10 +587,138 @@ def render_markdown(report: dict[str, Any]) -> str:
 """
 
 
-def _review_decision_errors(review: dict[str, Any], decision_artifact: dict[str, Any]) -> list[str]:
+def _active_harness_binding() -> tuple[dict[str, Any], dict[str, Any], Path]:
+    pointer = _read_json(ACTIVE_STATE_POINTER)
+    state_path_value = pointer.get("state_path")
+    if not isinstance(state_path_value, str):
+        raise RcEvidenceError("active Harness state_path missing")
+    state_path = (RC0810_RUNTIME_ROOT / state_path_value).resolve()
+    if RC0810_RUNTIME_ROOT.resolve() not in state_path.parents or not state_path.is_file():
+        raise RcEvidenceError("active Harness state path invalid")
+    state_payload = state_path.read_bytes()
+    if _sha256(state_payload) != pointer.get("state_sha256"):
+        raise RcEvidenceError("active Harness state hash mismatch")
+    state = json.loads(state_payload)
+    if state.get("run_id") != pointer.get("run_id"):
+        raise RcEvidenceError("active Harness run mismatch")
+    wave_b = state.get("wave_checkpoints", {}).get("B", {})
+    review = wave_b.get("review", {})
+    if (
+        state.get("fixed_wave_reviewer_id") != "sartre_replacement"
+        or wave_b.get("status") != "review_pass"
+        or review.get("packet_sha256") != WAVE_B_PACKET_SHA256
+        or review.get("decision_evidence_sha256") != WAVE_B_DECISION_SHA256
+    ):
+        raise RcEvidenceError("Harness fixed reviewer or wave-B checkpoint invalid")
+    wave_c = state.get("wave_checkpoints", {}).get("C", {})
+    if wave_c.get("status") == "review_pass":
+        raise RcEvidenceError("Harness already claims an unbound wave-C review pass")
+    return pointer, state, state_path
+
+
+def _expected_wave_c_packet_path() -> tuple[Path, dict[str, Any], dict[str, Any], Path]:
+    pointer, state, state_path = _active_harness_binding()
+    packet_path = (
+        RC0810_RUNTIME_ROOT / pointer["run_id"] / "reviews" / WAVE_C_PACKET_NAME
+    ).resolve()
+    return packet_path, pointer, state, state_path
+
+
+def _packet_payload_errors(
+    report: dict[str, Any],
+    packet: dict[str, Any],
+    *,
+    actual_sha256: str,
+    packet_path: Path,
+    require_current_head: bool = False,
+) -> list[str]:
     errors: list[str] = []
+    review = report.get("wave_c_review", {})
+    candidate = report.get("candidate", {})
+    try:
+        expected_path, pointer, _, state_path = _expected_wave_c_packet_path()
+    except (OSError, json.JSONDecodeError, RcEvidenceError) as exc:
+        return [f"harness_binding_invalid:{exc}"]
+    if packet_path.resolve() != expected_path:
+        errors.append("review_packet_path_not_active_wave_c")
+    if packet.get("schema") != "safehome.rc0810.wave-review-packet.v2" or packet.get("wave") != "C":
+        errors.append("review_packet_identity_invalid")
+    nonce = packet.get("packet_nonce")
+    if not isinstance(nonce, str) or len(nonce) < 16:
+        errors.append("review_packet_nonce_invalid")
+    if packet.get("reviewer_id") != "sartre_replacement":
+        errors.append("review_packet_reviewer_invalid")
+    if packet.get("base_checkpoint", {}).get("commit") != review.get("base_commit"):
+        errors.append("review_packet_base_invalid")
+    packet_head = packet.get("review_head", {}).get("commit")
+    packet_tree = packet.get("review_head", {}).get("source_tree")
+    if packet.get("release_candidate", {}).get("commit") != candidate.get("source_commit"):
+        errors.append("review_packet_candidate_commit_invalid")
+    if packet.get("release_candidate", {}).get("source_tree") != candidate.get("source_tree"):
+        errors.append("review_packet_candidate_tree_invalid")
+    try:
+        if packet_tree != _git_text("rev-parse", f"{packet_head}^{{tree}}"):
+            errors.append("review_packet_head_tree_invalid")
+        _run("git", "merge-base", "--is-ancestor", review.get("base_commit"), packet_head)
+        if require_current_head and packet_head != _git_text("rev-parse", "HEAD"):
+            errors.append("review_packet_not_bound_to_current_head")
+        elif not require_current_head:
+            _run("git", "merge-base", "--is-ancestor", packet_head, "HEAD")
+    except (RcEvidenceError, TypeError) as exc:
+        errors.append(f"review_packet_git_binding_invalid:{exc}")
+    bound = review.get("packet_sha256") is not None
+    if bound:
+        expected_relative = expected_path.relative_to(ROOT).as_posix()
+        if review.get("packet_path") != expected_relative:
+            errors.append("bound_review_packet_path_mismatch")
+        if review.get("packet_sha256") != actual_sha256:
+            errors.append("bound_review_packet_hash_mismatch")
+        if review.get("packet_nonce") != nonce:
+            errors.append("bound_review_packet_nonce_mismatch")
+        if review.get("packet_head") != packet_head or review.get("packet_source_tree") != packet_tree:
+            errors.append("bound_review_packet_head_mismatch")
+        harness = review.get("harness_binding", {})
+        if (
+            harness.get("run_id") != pointer.get("run_id")
+            or harness.get("state_path") != state_path.relative_to(ROOT).as_posix()
+            or harness.get("state_sha256") != pointer.get("state_sha256")
+            or harness.get("fixed_reviewer_id") != "sartre_replacement"
+            or harness.get("last_review_pass_checkpoint") != "RC0810-F21:verified"
+        ):
+            errors.append("bound_harness_state_mismatch")
+    return errors
+
+
+def _bound_review_packet_errors(report: dict[str, Any]) -> list[str]:
+    review = report.get("wave_c_review", {})
+    path_value = review.get("packet_path")
+    if not isinstance(path_value, str):
+        return ["review_packet_not_prebound"]
+    try:
+        expected_path, _, _, _ = _expected_wave_c_packet_path()
+    except (OSError, json.JSONDecodeError, RcEvidenceError) as exc:
+        return [f"harness_binding_invalid:{exc}"]
+    path = (ROOT / path_value).resolve()
+    if path != expected_path or not path.is_file():
+        return ["review_packet_missing_or_self_reported_path"]
+    try:
+        packet = _read_json(path)
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"review_packet_unreadable:{exc}"]
+    return _packet_payload_errors(
+        report,
+        packet,
+        actual_sha256=_sha256(path.read_bytes()),
+        packet_path=path,
+    )
+
+
+def _review_decision_errors(report: dict[str, Any], decision_artifact: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    review = report["wave_c_review"]
+    errors.extend(_bound_review_packet_errors(report))
     path_value = decision_artifact.get("path")
-    if not isinstance(path_value, str) or not path_value.startswith("docs/02_专项进度与验收/"):
+    if path_value != "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json":
         return ["review_decision_path_invalid"]
     path = ROOT / path_value
     if not path.is_file() or _sha256(path.read_bytes()) != decision_artifact.get("sha256"):
@@ -593,12 +728,41 @@ def _review_decision_errors(review: dict[str, Any], decision_artifact: dict[str,
         errors.append("review_decision_schema_invalid")
     if decision.get("reviewer_id") != "sartre_replacement" or decision.get("decision") != "pass":
         errors.append("review_decision_not_independent_pass")
+    if decision.get("reviewer_kind") != "separate_agent":
+        errors.append("reviewer_kind_invalid")
     if decision.get("reviewed_base") != review.get("base_commit"):
         errors.append("review_base_mismatch")
-    if decision.get("reviewed_head") != review.get("reviewed_head"):
-        errors.append("review_head_mismatch")
-    if decision.get("packet_sha256") != review.get("packet_sha256"):
+    if decision.get("packet_path") != review.get("packet_path"):
+        errors.append("review_packet_path_mismatch")
+    if (
+        decision.get("packet_sha256") != review.get("packet_sha256")
+        or decision.get("packet_nonce") != review.get("packet_nonce")
+        or decision.get("packet_head") != review.get("packet_head")
+    ):
         errors.append("review_packet_mismatch")
+    candidate = report["candidate"]
+    if (
+        decision.get("candidate_commit") != candidate.get("source_commit")
+        or decision.get("candidate_source_tree") != candidate.get("source_tree")
+    ):
+        errors.append("review_candidate_mismatch")
+    reviewed_head = decision.get("reviewed_head")
+    if reviewed_head != review.get("decision_reviewed_head"):
+        errors.append("review_decision_head_mismatch")
+    try:
+        _run("git", "merge-base", "--is-ancestor", reviewed_head, "HEAD")
+    except (RcEvidenceError, TypeError) as exc:
+        errors.append(f"review_decision_head_invalid:{exc}")
+    if decision.get("production_recommendation") != "NO_GO":
+        errors.append("review_decision_must_preserve_no_go")
+    if not isinstance(decision.get("findings"), list):
+        errors.append("review_findings_invalid")
+    try:
+        valid_until = datetime.fromisoformat(decision["valid_until"])
+        if valid_until.tzinfo is None or valid_until <= datetime.now(timezone.utc):
+            errors.append("review_decision_expired")
+    except (KeyError, TypeError, ValueError):
+        errors.append("review_decision_validity_invalid")
     return errors
 
 
@@ -663,9 +827,11 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
         if not isinstance(artifact, dict):
             errors.append("review_pass_without_decision_artifact")
         else:
-            errors.extend(_review_decision_errors(review, artifact))
+            errors.extend(_review_decision_errors(report, artifact))
     elif review.get("status") != "review_pending_wave":
         errors.append("wave_c_review_status_invalid")
+    elif review.get("packet_sha256") is not None:
+        errors.extend(_bound_review_packet_errors(report))
     phases = report.get("phase_separation", {})
     if phases != {
         "engineering_materials_complete": True,
@@ -714,21 +880,70 @@ def run_self_checks(report_path: Path = DEFAULT_REPORT) -> dict[str, bool]:
     return checks
 
 
+def bind_review_packet(report_path: Path, packet_path: Path, markdown_path: Path) -> dict[str, Any]:
+    report = _read_json(report_path)
+    review = report["wave_c_review"]
+    if review.get("status") != "review_pending_wave" or any(
+        review.get(key) is not None
+        for key in ("packet_path", "packet_sha256", "packet_nonce", "packet_head", "harness_binding")
+    ):
+        raise RcEvidenceError("wave-C review packet is already bound or review is not pending")
+    expected_path, pointer, state, state_path = _expected_wave_c_packet_path()
+    packet_path = packet_path.resolve()
+    if packet_path != expected_path or not packet_path.is_file():
+        raise RcEvidenceError("wave-C packet must use the fixed active-run path")
+    packet = _read_json(packet_path)
+    packet_sha256 = _sha256(packet_path.read_bytes())
+    errors = _packet_payload_errors(
+        report,
+        packet,
+        actual_sha256=packet_sha256,
+        packet_path=packet_path,
+        require_current_head=True,
+    )
+    if errors:
+        raise RcEvidenceError(";".join(errors))
+    review.update({
+        "packet_path": packet_path.relative_to(ROOT).as_posix(),
+        "packet_sha256": packet_sha256,
+        "packet_nonce": packet["packet_nonce"],
+        "packet_head": packet["review_head"]["commit"],
+        "packet_source_tree": packet["review_head"]["source_tree"],
+        "harness_binding": {
+            "run_id": pointer["run_id"],
+            "state_path": state_path.relative_to(ROOT).as_posix(),
+            "state_sha256": pointer["state_sha256"],
+            "fixed_reviewer_id": state["fixed_wave_reviewer_id"],
+            "last_review_pass_checkpoint": state["last_review_pass_checkpoint"],
+            "wave_b_packet_sha256": WAVE_B_PACKET_SHA256,
+            "wave_b_decision_sha256": WAVE_B_DECISION_SHA256,
+        },
+    })
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    markdown_path.write_text(render_markdown(report), encoding="utf-8")
+    return report
+
+
 def apply_review_decision(report_path: Path, decision_path: Path, markdown_path: Path) -> dict[str, Any]:
     report = _read_json(report_path)
     decision = _read_json(decision_path)
     review = report["wave_c_review"]
+    if review.get("status") != "review_pending_wave" or review.get("packet_sha256") is None:
+        raise RcEvidenceError("wave-C packet must be prebound before applying a decision")
+    if decision.get("reviewed_head") != _git_text("rev-parse", "HEAD"):
+        raise RcEvidenceError("review decision must bind the current pre-decision HEAD")
     review.update({
         "status": "review_pass" if decision.get("decision") == "pass" else "review_failed",
-        "reviewed_head": decision.get("reviewed_head"),
-        "packet_path": decision.get("packet_path"),
-        "packet_sha256": decision.get("packet_sha256"),
+        "decision_reviewed_head": decision.get("reviewed_head"),
         "decision_artifact": {
             "path": decision_path.relative_to(ROOT).as_posix(),
             "sha256": _sha256(decision_path.read_bytes()),
         },
     })
-    report["task_status"] = "complete_no_go" if review["status"] == "review_pass" else "fix_required"
+    errors = _review_decision_errors(report, review["decision_artifact"])
+    if errors:
+        raise RcEvidenceError(";".join(errors))
+    report["task_status"] = "complete_no_go"
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     markdown_path.write_text(render_markdown(report), encoding="utf-8")
     return report
@@ -741,10 +956,13 @@ def main() -> int:
     parser.add_argument("--source-commit")
     parser.add_argument("--write-report", action="store_true")
     parser.add_argument("--self-check", action="store_true")
+    parser.add_argument("--bind-review-packet", type=Path)
     parser.add_argument("--apply-review-decision", type=Path)
     args = parser.parse_args()
     if args.write_report:
         build_report(args.report, markdown_path=args.markdown, commit=args.source_commit)
+    if args.bind_review_packet:
+        bind_review_packet(args.report, args.bind_review_packet, args.markdown)
     if args.apply_review_decision:
         apply_review_decision(args.report, args.apply_review_decision, args.markdown)
     result = validate_report(args.report)

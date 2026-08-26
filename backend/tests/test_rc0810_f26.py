@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import importlib.util
 import json
@@ -15,6 +16,15 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 BUILDER = ROOT / "scripts" / "build_rc0810_f26_rc.py"
 REGISTRY = ROOT / "content" / "rc0810_release_candidate_registry.json"
+F26_REPORT = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f26_final_rc.json"
+WAVE_C_PACKET = (
+    ROOT
+    / ".codex_tmp"
+    / "rc0810"
+    / "run-20260824T090306Z-4c4d4bf8"
+    / "reviews"
+    / "wave-C-f26.json"
+)
 
 
 def _load_builder():
@@ -35,7 +45,8 @@ def f26(tmp_path_factory):
     directory = tmp_path_factory.mktemp("f26-report")
     report_path = directory / "report.json"
     markdown_path = directory / "report.md"
-    report = module.build_report(report_path, markdown_path=markdown_path)
+    frozen_commit = json.loads(F26_REPORT.read_text(encoding="utf-8"))["candidate"]["source_commit"]
+    report = module.build_report(report_path, markdown_path=markdown_path, commit=frozen_commit)
     return module, report, report_path, markdown_path
 
 
@@ -131,6 +142,41 @@ def test_f26_four_go_phase_separation_and_review_remain_truthful(f26):
     assert phases["platform_approved"] is False
     assert phases["released"] is False
     assert phases["stable_operation_verified"] is False
+
+
+def test_f26_review_packet_is_prebound_and_rejects_self_reported_or_changed_identity(f26, tmp_path):
+    module, _, report_path, markdown_path = f26
+    bound = module.bind_review_packet(report_path, WAVE_C_PACKET, markdown_path)
+    review = bound["wave_c_review"]
+    packet = json.loads(WAVE_C_PACKET.read_text(encoding="utf-8"))
+    assert review["packet_sha256"] == hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest()
+    assert review["packet_nonce"] == packet["packet_nonce"]
+    assert review["packet_head"] == packet["review_head"]["commit"]
+    assert review["harness_binding"]["fixed_reviewer_id"] == "sartre_replacement"
+    assert module.validate_report(report_path)["valid"] is True
+
+    mutations = {}
+    missing = copy.deepcopy(bound)
+    missing["wave_c_review"]["packet_path"] = ".codex_tmp/rc0810/missing/wave-C-f26.json"
+    mutations["missing"] = missing
+    wrong_hash = copy.deepcopy(bound)
+    wrong_hash["wave_c_review"]["packet_sha256"] = "0" * 64
+    mutations["hash"] = wrong_hash
+    wrong_nonce = copy.deepcopy(bound)
+    wrong_nonce["wave_c_review"]["packet_nonce"] = "forged-nonce-value"
+    mutations["nonce"] = wrong_nonce
+    wrong_head = copy.deepcopy(bound)
+    wrong_head["wave_c_review"]["packet_head"] = bound["candidate"]["source_commit"]
+    mutations["head"] = wrong_head
+    for name, candidate in mutations.items():
+        path = tmp_path / f"{name}.json"
+        path.write_text(json.dumps(candidate, ensure_ascii=False), encoding="utf-8")
+        assert module.validate_report(path)["valid"] is False
+
+    assert module._review_decision_errors(
+        bound,
+        {"path": ".codex_tmp/self-reported-decision.json", "sha256": "0" * 64},
+    ) == ["review_decision_path_invalid"]
 
 
 def test_f26_self_checks_reject_forged_go_ci_review_and_hash(f26):

@@ -5649,7 +5649,7 @@
           "timeout_seconds": 600,
           "shell": false,
           "status": "active",
-          "expected_test_count": 8
+          "expected_test_count": 9
         },
         {
           "argv": [
