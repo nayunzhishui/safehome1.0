@@ -1255,11 +1255,23 @@
     "reviewer_id": "sartre_replacement",
     "base_commit": "908603e100c5cb473f2d632f3e673d3824ebff76",
     "reviewed_head": null,
-    "packet_path": null,
-    "packet_sha256": null,
+    "packet_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/reviews/wave-C-f26.json",
+    "packet_sha256": "23d5b378c4f623dd3bfce8f7ce9c531e9bc16d383b205f5302d8f75917f21627",
     "decision_artifact": null,
     "prior_wave_b_packet_sha256": "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21",
-    "prior_wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
+    "prior_wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb",
+    "packet_nonce": "wave-c-30e0ae53-20260826-fix1",
+    "packet_head": "30e0ae53e3642bcc040d6959b3c0e93caa5f8f05",
+    "packet_source_tree": "91d0dea8572e730e35f3a321d7dba70059e476c9",
+    "harness_binding": {
+      "run_id": "run-20260824T090306Z-4c4d4bf8",
+      "state_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/state.json",
+      "state_sha256": "ddcf1d1844982d32f967b6efd5c5f1386a99364400472950df3542fd15dada7a",
+      "fixed_reviewer_id": "sartre_replacement",
+      "last_review_pass_checkpoint": "RC0810-F21:verified",
+      "wave_b_packet_sha256": "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21",
+      "wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
+    }
   },
   "release_decision": {
     "recommendation": "NO_GO",
