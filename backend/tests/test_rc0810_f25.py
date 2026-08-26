@@ -3,6 +3,7 @@ import importlib.util
 import subprocess
 import sys
 import copy
+import zipfile
 from pathlib import Path
 
 
@@ -10,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[2]
 VERIFIER = ROOT / "scripts" / "verify_rc0810_f25_platform.py"
 CONFIG = ROOT / "config" / "rc0810"
 REGISTRY = ROOT / "content" / "rc0810_release_candidate_registry.json"
+F25B_REPORT = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25b_evidence.json"
+F25B_BUILDER = ROOT / "scripts" / "build_rc0810_f25b_evidence.py"
 
 
 def run_verifier(*args: str):
@@ -133,7 +136,7 @@ def test_f25a_capability_map_links_page_api_data_and_keeps_missing_platform_clai
     app_pages = json.loads((ROOT / "apps/miniprogram/app.json").read_text(encoding="utf-8"))["pages"]
     inventory = mapping["registered_page_inventory"]
     assert [item["page"] for item in inventory] == app_pages
-    assert len({item["page"] for item in inventory}) == len(app_pages) == 52
+    assert len({item["page"] for item in inventory}) == len(app_pages) == 53
     assert {item["classification"] for item in inventory} <= set(mapping["allowed_page_classifications"])
     mapped_pages = {
         page
@@ -259,4 +262,74 @@ def test_f25a_self_check_and_registry_freeze_exact_sixteen_file_scope():
     assert len(unit["allowed_files"]) == 16
     assert unit["change_budget"]["expected_files"] == 16
     assert unit["subtasks"] == [f"F25.{index}" for index in range(1, 15)]
-    assert [item["expected_test_count"] for item in task["acceptance_commands"]] == [19, 26, 1, 1, 1]
+    assert [item["expected_test_count"] for item in task["acceptance_commands"]] == [23, 30, 1, 1, 1]
+
+
+def test_f25b_packet_is_valid_but_release_stays_no_go():
+    completed = subprocess.run(
+        [sys.executable, str(F25B_BUILDER), "--report", str(F25B_REPORT), "--self-check"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    result = json.loads(completed.stdout)
+    assert result["valid"] is True
+    assert result["status"] == "self_check_passed"
+    assert result["production_gate_eligible"] is False
+    assert all(result["self_checks"].values())
+
+
+def test_f25b_package_is_bound_and_excludes_internal_surfaces():
+    report = json.loads(F25B_REPORT.read_text(encoding="utf-8"))
+    package = ROOT / report["artifact_binding"]["miniprogram_package"]["path"]
+    with zipfile.ZipFile(package) as archive:
+        names = set(archive.namelist())
+        assert "project.private.config.json" not in names
+        assert "pages/debug/index.js" not in names
+        assert "pages/integration-test/index.js" not in names
+        assert "pages/researcher-dashboard/index.js" not in names
+        assert "pages/therapeutic-assessment-quality/index.js" not in names
+        project = json.loads(archive.read("project.config.json"))
+        assert project["setting"]["urlCheck"] is True
+        assert project["condition"]["miniprogram"]["list"] == []
+
+
+def test_f25b_external_results_remain_pending_and_blockers_are_complete():
+    report = json.loads(F25B_REPORT.read_text(encoding="utf-8"))
+    assert report["engineering_status"] == "evidence_ready"
+    assert report["external_verification_complete"] is False
+    assert report["release_recommendation"] == "NO_GO"
+    assert report["artifact_binding"]["backend_image"]["image_digest"] is None
+    assert report["artifact_binding"]["backend_image"]["status"] == "pending_external"
+    assert {item["id"] for item in report["blockers"]} == {
+        "F25-EXT-01", "F25-EXT-02", "F25-EXT-03", "F25-EXT-04",
+        "F25-EXT-05", "F25-EXT-06", "F25-EXT-07", "F25-EXT-08",
+    }
+    assert [item["id"] for item in report["subtasks"]] == [
+        f"F25.{number}" for number in range(1, 15)
+    ]
+    required_metadata = {
+        "captured_at", "valid_until", "request_id", "invalidation_conditions"
+    }
+    for group in (
+        report["platform_checks"], report["account_scenarios"],
+        report["message_scenarios"], report["devtools"]["checks"],
+        report["device_matrix"], report["real_world_evidence"],
+    ):
+        assert all(required_metadata <= set(item) for item in group)
+
+
+def test_f25b_rejects_fabricated_device_verification(tmp_path):
+    module_spec = importlib.util.spec_from_file_location("build_rc0810_f25b_evidence", F25B_BUILDER)
+    module = importlib.util.module_from_spec(module_spec)
+    assert module_spec.loader is not None
+    module_spec.loader.exec_module(module)
+    report = json.loads(F25B_REPORT.read_text(encoding="utf-8"))
+    report["device_matrix"][0]["status"] = "human_verified"
+    candidate = tmp_path / "fabricated.json"
+    candidate.write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
+    result = module.validate_report(candidate)
+    assert result["valid"] is False
+    assert "external_evidence_must_remain_pending" in result["errors"]

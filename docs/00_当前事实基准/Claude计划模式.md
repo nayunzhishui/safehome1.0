@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-26：RC0810-F25-B 微信平台与真机最终材料
+
+- [x] 修复新增情绪记录历史页未进入 production 页面策略/能力映射的漂移，最终 inventory 为 53 页。
+- [x] 从 Git 提交 `11eeeb25` 生成确定性 production 小程序候选包，静态旅程通过并剥离 4 个内部/调试页。
+- [x] 审核说明、账号规则、功能路径、边界、失败恢复、证据元数据、冻结窗口和 external blocker 已进入 packet。
+- [x] 4 项 F25-B 专项和 5 项反伪造/漂移自检通过；未运行无关全量回归。
+- [ ] Docker daemon、DevTools、微信后台、真实账号/请求、iOS/Android、人工审核、RACI 与试点证据缺失，均保持 `pending_external`。
+- [ ] F25-B 工程材料完成，父任务 `blocked_external`、production NO-GO；下一项 F26，冻结后才续用固定 reviewer。
+
 ## 2026-08-26：RC0810-F24 配置、审计与遗留质量
 
 - [x] 关闭 `F23-SCHEMA-01`，四份机器契约登记治疗性评估创建字段和必需幂等头。
