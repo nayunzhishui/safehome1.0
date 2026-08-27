@@ -682,7 +682,14 @@ def _mysql_column_line(line: str) -> str:
 
 
 def mysqlize_schema_statement(statement: str) -> str:
-    lines = [_mysql_column_line(line) for line in statement.splitlines()]
+    lines = []
+    column_boundary = re.compile(
+        r"(?<=[,(])(?=\s*[A-Za-z_][A-Za-z0-9_]*\s+(?:TEXT|INTEGER|REAL|BLOB|DOUBLE|VARCHAR)\b)",
+        re.IGNORECASE,
+    )
+    for line in statement.splitlines():
+        segments = column_boundary.split(line)
+        lines.append("".join(_mysql_column_line(segment) for segment in segments))
     return "\n".join(lines).replace("REAL", "DOUBLE")
 
 
