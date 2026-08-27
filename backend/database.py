@@ -208,6 +208,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "assigned_by",
     "assignment_id",
     "snapshot_id",
+    "execution_manifest_id",
     "analysis_type",
     "analysis_version",
     "resource_hash",
