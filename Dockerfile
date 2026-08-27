@@ -32,6 +32,7 @@ ENV PRODUCTION_FEATURES_UNLOCKED=0 \
 COPY backend /app/backend
 COPY content /app/content
 COPY shared /app/shared
+COPY config/rc0810/database_profiles.json /app/config/rc0810/database_profiles.json
 COPY deploy/verify_rc0810_f03_images.py /app/verify_rc0810_f03_images.py
 
 RUN addgroup --system safehome \

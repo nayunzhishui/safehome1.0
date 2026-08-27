@@ -139,6 +139,7 @@ def test_f22b_gate_binds_source_locks_actions_image_and_reports():
         "analysis/text_analysis/requirements.txt",
         "apps/web/package-lock.json",
         "Dockerfile",
+        "config/rc0810/database_profiles.json",
     }
     assert all(len(value) == 64 for value in gate["dependency_inputs"].values())
     assert set(gate["action_inputs"]) == {".github/workflows/check.yml", ".github/workflows/security-gate.yml"}

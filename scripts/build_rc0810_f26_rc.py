@@ -43,6 +43,7 @@ BACKEND_SOURCE_PATHS = (
     "backend",
     "content",
     "shared",
+    "config/rc0810/database_profiles.json",
     "deploy/verify_rc0810_f03_images.py",
 )
 LOCK_PATTERNS = (

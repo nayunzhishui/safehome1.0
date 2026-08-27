@@ -27,6 +27,7 @@ DEPENDENCY_INPUTS = (
     "analysis/text_analysis/requirements.txt",
     "apps/web/package-lock.json",
     "Dockerfile",
+    "config/rc0810/database_profiles.json",
 )
 ACTION_INPUTS = (
     ".github/workflows/security-gate.yml",
@@ -155,6 +156,7 @@ def main() -> int:
             [
                 "git", "diff", "--quiet", previous_tree, source_tree, "--",
                 "Dockerfile", "backend", "content", "shared",
+                "config/rc0810/database_profiles.json",
                 "deploy/verify_rc0810_f03_images.py",
             ],
             cwd=ROOT,

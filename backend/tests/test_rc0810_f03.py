@@ -71,6 +71,15 @@ def test_f03_database_and_provider_configuration_are_runtime_injected():
     assert "DATABASE_PATH=" not in production
 
 
+def test_f03_images_package_database_profile_contract():
+    copy_contract = (
+        "COPY config/rc0810/database_profiles.json "
+        "/app/config/rc0810/database_profiles.json"
+    )
+    assert copy_contract in PRODUCTION.read_text(encoding="utf-8")
+    assert copy_contract in VALIDATION.read_text(encoding="utf-8")
+
+
 def test_f03_production_runtime_override_is_rejected():
     execution_flags = [
         "AI_QA_ENABLED",

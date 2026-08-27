@@ -1,5 +1,13 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-27：Docker 恢复与正式镜像
+
+- [x] 恢复 Docker Desktop，确认 Engine 29.6.1 可用；未删除 Docker 管理的 `dockerInference` 套接字或重置数据。
+- [x] 修复 production/validation 镜像遗漏数据库 profile 合同的问题，并把该文件纳入 release/security/RC 依赖绑定。
+- [x] F03 专项 12 项和静态合同通过；正式镜像成功构建，非 root、固定 production 入口、文件系统干净、无登记 Secret，非法生产能力覆盖以 78 拒绝。
+- [ ] required CI 未完成；后端全量在范围切换时中断，网页 typecheck/build 通过，npm audit 有 4 个 High 且当前报告无修复版本。
+- [ ] 迁移回滚、安全重扫、真实 MySQL 启动、finding 关闭和 RC 重冻结转交其他 agent；production 继续 NO-GO。
+
 ## 2026-08-27：RC0810-F26 与波次 C 工程收口
 
 - [x] 从与 `origin/main` 一致的 `f879440e` 隔离 Git archive 生成源码包、后端源码包、production 小程序 ZIP、SBOM inventory、manifest 和 SHA-256 清单。

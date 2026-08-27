@@ -112,7 +112,8 @@
       ".dockerignore",
       "backend",
       "content",
-      "shared"
+      "shared",
+      "config/rc0810/database_profiles.json"
     ],
     "exclude": [
       "secrets",
