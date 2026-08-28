@@ -1230,7 +1230,7 @@
         "docs/00_当前事实基准/开发说明.md",
         "docs/00_当前事实基准/当前进度交接.md",
         "docs/01_当前执行入口/0810bug修改计划.md",
-        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
         "scripts/verify_rc0810_f25_platform.py"
       ],
       "change_budget": {
@@ -5836,7 +5836,7 @@
         "docs/00_当前事实基准/开发说明.md",
         "docs/00_当前事实基准/当前进度交接.md",
         "docs/01_当前执行入口/0810bug修改计划.md",
-        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
         "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
         "scripts/build_rc0810_f25b_evidence.py",
         "scripts/verify_rc0810_f25_platform.py"
@@ -5955,7 +5955,7 @@
           "docs/00_当前事实基准/开发说明.md",
           "docs/00_当前事实基准/当前进度交接.md",
           "docs/01_当前执行入口/0810bug修改计划.md",
-          "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+          "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
           "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
           "scripts/build_rc0810_f25b_evidence.py",
           "scripts/verify_rc0810_f25_platform.py"

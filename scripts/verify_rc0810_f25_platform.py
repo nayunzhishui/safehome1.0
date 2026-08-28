@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from run_rc0810 import collect_git_snapshot, load_registry  # noqa: E402
 
 
-BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25a_platform_baseline.json"
+BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25a_platform_baseline_current.json"
 BASELINE_RELATIVE = BASELINE_PATH.relative_to(ROOT).as_posix()
 DEFINITIONS = (
     "config/rc0810/wechat_platform_acceptance.schema.json",
