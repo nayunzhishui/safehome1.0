@@ -126,7 +126,10 @@ def _release_input_snapshot(commit: str) -> dict[str, Any]:
 
 
 def _backend_context_sha256(commit: str) -> str:
-    return _sha256(_git_bytes("archive", "--format=tar", commit, "--", *BACKEND_CONTEXTS))
+    inventory = _git_bytes(
+        "-c", "core.quotepath=false", "ls-tree", "-r", "-z", commit, "--", *BACKEND_CONTEXTS
+    )
+    return _sha256(inventory)
 
 
 def _safe_extract_tar(payload: bytes, destination: Path) -> None:

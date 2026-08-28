@@ -33,6 +33,16 @@ ACTION_INPUTS = (
     ".github/workflows/security-gate.yml",
     ".github/workflows/check.yml",
 )
+IMAGE_CONTEXT_PATHS = (
+    ".dockerignore",
+    "Dockerfile",
+    "backend",
+    ":(exclude)backend/tests",
+    "content",
+    "shared",
+    "config/rc0810/database_profiles.json",
+    "deploy/verify_rc0810_f03_images.py",
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -41,6 +51,16 @@ def sha256_file(path: Path) -> str:
 
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def docker_context_unchanged(previous_tree: str, source_tree: str) -> bool:
+    completed = subprocess.run(
+        ["git", "diff", "--quiet", previous_tree, source_tree, "--", *IMAGE_CONTEXT_PATHS],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    return completed.returncode == 0
 
 
 def run(argv: list[str], *, cwd: Path = ROOT, timeout: int) -> subprocess.CompletedProcess[bytes]:
@@ -152,17 +172,7 @@ def main() -> int:
     artifact_reuse: dict[str, Any] | None = None
     if previous_gate is not None:
         previous_tree = str(previous_gate.get("source_tree", ""))
-        unchanged = subprocess.run(
-            [
-                "git", "diff", "--quiet", previous_tree, source_tree, "--",
-                "Dockerfile", "backend", "content", "shared",
-                "config/rc0810/database_profiles.json",
-                "deploy/verify_rc0810_f03_images.py",
-            ],
-            cwd=ROOT,
-            check=False,
-        )
-        if unchanged.returncode != 0:
+        if not docker_context_unchanged(previous_tree, source_tree):
             raise RuntimeError("existing image gate cannot be reused after Docker context changes")
         for section, destination in (
             ("container_scan", container_path),

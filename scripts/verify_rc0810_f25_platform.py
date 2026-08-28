@@ -200,6 +200,41 @@ def platform_source_snapshot() -> dict[str, str]:
     }
 
 
+def source_binding_errors(
+    baseline: dict[str, Any], source: dict[str, str]
+) -> list[str]:
+    """Validate the frozen source while allowing later evidence-only commits."""
+
+    errors: list[str] = []
+    for field in ("source_tree", "source_manifest_sha256"):
+        if baseline.get(field) != source[field]:
+            errors.append(f"{field}_mismatch")
+    recorded_head = baseline.get("head")
+    recorded_tree = baseline.get("head_tree")
+    if not isinstance(recorded_head, str) or not isinstance(recorded_tree, str):
+        return [*errors, "head_binding_invalid"]
+    try:
+        git("merge-base", "--is-ancestor", recorded_head, "HEAD")
+        actual_recorded_tree = git(
+            "rev-parse", f"{recorded_head}^{{tree}}"
+        ).decode("ascii").strip()
+        expected_diff = git(
+            "diff-tree",
+            "--binary",
+            "--no-ext-diff",
+            recorded_tree,
+            str(baseline.get("source_tree")),
+        )
+    except RuntimeError:
+        errors.append("head_binding_invalid")
+        return errors
+    if recorded_tree != actual_recorded_tree:
+        errors.append("head_tree_mismatch")
+    if baseline.get("dirty_diff_sha256") != sha256_bytes(expected_diff):
+        errors.append("dirty_diff_sha256_mismatch")
+    return errors
+
+
 def definition_paths() -> dict[str, Path]:
     return {relative: ROOT / relative for relative in DEFINITIONS}
 
@@ -429,9 +464,7 @@ def validate_definition(baseline_path: Path = BASELINE_PATH) -> dict[str, Any]:
     for problem in Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(baseline):
         errors.append(f"baseline_schema:{problem.message}")
     source = platform_source_snapshot()
-    for field in ("head", "head_tree", "source_tree", "dirty_diff_sha256", "source_manifest_sha256"):
-        if baseline.get(field) != source[field]:
-            errors.append(f"{field}_mismatch")
+    errors.extend(source_binding_errors(baseline, source))
     expected_hashes = {relative: sha256_file(path) for relative, path in definition_paths().items()}
     if baseline.get("definition_hashes") != expected_hashes:
         errors.append("definition_hash_mismatch")

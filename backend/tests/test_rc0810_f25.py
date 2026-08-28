@@ -3,6 +3,7 @@ import importlib.util
 import subprocess
 import sys
 import copy
+import hashlib
 import zipfile
 from pathlib import Path
 
@@ -31,6 +32,62 @@ def load_verifier_module():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+def load_f25b_builder_module():
+    spec = importlib.util.spec_from_file_location("build_rc0810_f25b_evidence", F25B_BUILDER)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_f25a_source_binding_allows_later_evidence_only_commit(monkeypatch):
+    module = load_verifier_module()
+    recorded_head = "a" * 40
+    recorded_tree = "b" * 40
+    source_tree = "c" * 40
+    diff_bytes = b"frozen evidence diff"
+    baseline = {
+        "head": recorded_head,
+        "head_tree": recorded_tree,
+        "source_tree": source_tree,
+        "dirty_diff_sha256": module.sha256_bytes(diff_bytes),
+        "source_manifest_sha256": "d" * 64,
+    }
+    current = {
+        "head": "e" * 40,
+        "head_tree": "f" * 40,
+        "source_tree": source_tree,
+        "dirty_diff_sha256": "0" * 64,
+        "source_manifest_sha256": "d" * 64,
+    }
+
+    def fake_git(*args, **_kwargs):
+        if args[:2] == ("merge-base", "--is-ancestor"):
+            return b""
+        if args[0] == "rev-parse":
+            return f"{recorded_tree}\n".encode("ascii")
+        if args[0] == "diff-tree":
+            return diff_bytes
+        raise AssertionError(args)
+
+    monkeypatch.setattr(module, "git", fake_git)
+    assert module.source_binding_errors(baseline, current) == []
+
+
+def test_f25b_backend_context_hash_uses_tree_inventory(monkeypatch):
+    module = load_f25b_builder_module()
+    inventory = b"100644 blob deadbeef\tbackend/app.py\0"
+    calls = []
+
+    def fake_git_bytes(*args):
+        calls.append(args)
+        return inventory
+
+    monkeypatch.setattr(module, "_git_bytes", fake_git_bytes)
+    assert module._backend_context_sha256("a" * 40) == hashlib.sha256(inventory).hexdigest()
+    assert calls[0][:5] == ("-c", "core.quotepath=false", "ls-tree", "-r", "-z")
 
 
 def test_f25a_default_definition_is_ready_but_release_stays_no_go():
