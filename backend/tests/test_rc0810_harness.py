@@ -27,6 +27,9 @@ def run_cli(*args: str, env: dict[str, str] | None = None):
 
 def fixture_registry(tmp_path: Path, mode: str = "success", timeout: int = 10):
     registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    registry["frozen_baseline"]["source_tree"] = subprocess.check_output(
+        ["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True
+    ).strip()
     registry["tasks"][0]["acceptance_commands"] = [
         {
             "argv": [
@@ -1299,6 +1302,9 @@ def test_wave_c_legacy_phase_checkpoint_restores_f22b_without_forged_pass():
     registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     module.validate_registry(registry)
     wave_c = next(wave for wave in registry["review_waves"] if wave["id"] == "C")
+    for binding in wave_c["base_checkpoint"]["legacy_phase_bindings"]:
+        committed = module._run_git("show", f"HEAD:{binding['baseline_path']}")
+        assert module.sha256_bytes(committed) == binding["baseline_sha256"]
     assert module._wave_base_checkpoint_units(wave_c) == {
         "RC0810-F22-A",
         "RC0810-F25-A",

@@ -92,14 +92,14 @@ PRODUCTION_REVIEW_WAVES = [
                     "task": "RC0810-F22-A",
                     "commit": "e0fb7fd0bcde3e6ea6e485ec978d9663152831f9",
                     "baseline_path": "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
-                    "baseline_sha256": "7d32bcdd49e977b7e80e37c5a59bf36e2d61ac7c269466e1d1419e2130506c63",
+                    "baseline_sha256": "3a45e934d068aee44ed5d50548681ce1ae73743f4da88020fb271be450676886",
                     "documented_review_decision_sha256": "7d1f0a9cb8870618d33f654984afa13ffc52b2f554b3710f9664c3b51fce2faa",
                 },
                 {
                     "task": "RC0810-F25-A",
                     "commit": "aee4f55badfb3b0928e55b245ce7070d642bd29e",
                     "baseline_path": "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
-                    "baseline_sha256": "983205b0ff751cdf3c3a7e1cde32c27487e92be25057b3a14d1f7e750987f218",
+                    "baseline_sha256": "ebc72ad5f79bb59acec1c7146880f3452c25fdc92896b435da56f1b1d3ab8044",
                     "documented_review_decision_sha256": "4919cdfc4142b6926c56c5f3df297674e41ed363ad284e4fe85a06b86f88808c",
                 },
             ],
@@ -297,16 +297,14 @@ def _legacy_phase_checkpoint_is_valid(
         return False
     for binding in checkpoint["legacy_phase_bindings"]:
         baseline_path = (ROOT / binding["baseline_path"]).resolve()
-        if (
-            not _path_within(baseline_path, ROOT)
-            or not baseline_path.is_file()
-            or sha256_bytes(baseline_path.read_bytes())
-            != binding["baseline_sha256"]
-        ):
+        if not _path_within(baseline_path, ROOT) or not baseline_path.is_file():
             return False
         try:
-            baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+            baseline_bytes = _historical_checkpoint_evidence_bytes(baseline_path)
+            if sha256_bytes(baseline_bytes) != binding["baseline_sha256"]:
+                return False
+            baseline = json.loads(baseline_bytes.decode("utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
             return False
         if (
             baseline.get("phase") != binding["task"].removeprefix("RC0810-")

@@ -250,7 +250,9 @@ def test_training_plan_assignment_drives_due_state_and_next_date(tmp_path, monke
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
     _user_id, token = _wechat_login(client, "training-cadence-due")
-    today = date.today()
+    from services.training_schedule_service import current_local_day
+
+    today = current_local_day()
     saved = client.post(
         "/api/training-plan/assignment",
         headers={"Authorization": f"Bearer {token}"},

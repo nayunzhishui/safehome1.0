@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-29：GitHub required CI Fix Loop
+
+- [x] 读取 Actions #582：6 个独立 job 通过，`security-contract`、`backend`、`npm-audit` 失败，`release-gate` 随之失败。
+- [x] 修复 CRLF/LF 历史证据绑定、Harness 悬空 Git tree 测试夹具、Asia/Shanghai 日期测试和 Task35 两项非规范化哈希。
+- [x] 定向验证：Harness 7 项、其余受影响组合 57 项、训练日期 1 项、Task35 1 项通过；4 个 F22/F25 用例只报告旧证据按设计失效。
+- [ ] 提交修复后重建 F22/F25/F26 当前证据，并运行其冻结层验证。
+- [ ] 旧波次 C review pass 已因机器合同/源码变化失效；冻结后续用固定 reviewer，禁止补写或伪造 pass。
+- [ ] npm 4 High、正式 registry digest/attestation、微信平台/真机、四方 GO、72h 仍阻断 production。
+
 ## 2026-08-28：RC0810 本地发布门禁续跑
 
 - [x] 恢复并验证 Docker、MySQL 8.4、Redis 7.4；完成隔离迁移恢复和正式候选镜像 runtime gate。

@@ -7,7 +7,6 @@ trains on external text, signs a human gate, or enables production replacement.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import sys
 from pathlib import Path
@@ -39,9 +38,8 @@ def verify() -> dict:
         if not path.is_file():
             failures.append({"task": "T35-F00", "path": artifact["path"], "reason": "missing"})
             continue
-        raw_hash = hashlib.sha256(path.read_bytes()).hexdigest()
         normalized_hash = artifact_sha256(path)
-        if artifact["sha256"] not in {raw_hash, normalized_hash}:
+        if artifact["sha256"] != normalized_hash:
             failures.append({"task": "T35-F00", "path": artifact["path"], "reason": "sha256_mismatch"})
     return {
         "schema": "safehome.task35.verify.v1",
