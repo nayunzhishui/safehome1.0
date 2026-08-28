@@ -1,16 +1,16 @@
 {
   "schema": "safehome.rc0810.f25b-evidence.v1",
   "phase": "F25-B",
-  "generated_at": "2026-08-28T12:36:40.424507+00:00",
+  "generated_at": "2026-08-28T13:14:28.409945+00:00",
   "engineering_status": "evidence_ready",
   "external_verification_complete": false,
   "production_gate_eligible": false,
   "release_recommendation": "NO_GO",
   "artifact_source": {
-    "commit": "c3dc089002a8f057670c39d75ee3160dcb36f092",
-    "source_tree": "8264085bba6e18e0518511e804918b1361106074",
+    "commit": "1311eee763d5986761a9fd7945f3c3f81e35b16f",
+    "source_tree": "83930035d59b21ada5c2d222c576cac2a1f60ef8",
     "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35",
-    "backend_build_context_sha256": "59b871bb84b77165e4f6e21fb70148cb3064712b66881ee0c6cc28b29e44bf8c",
+    "backend_build_context_sha256": "7c90e9fd2ce3128b70b609f4edd3192f95c03e8b82f1832bffb844aeb41a839a",
     "files": {
       "apps/miniprogram/app.json": "2dfaa5009db98bd1dcbb7961eda8a1911daf54113b8e2c56ccb645112f8cecaf",
       "apps/miniprogram/project.config.json": "b5f76b3605b7940c414b44141850aac9302bdba9a8fdea02155a2dbddfee1cad",
@@ -22,12 +22,12 @@
   },
   "artifact_binding": {
     "miniprogram_package": {
-      "path": ".codex_tmp/rc0810/f25b/c3dc089002a8f057670c39d75ee3160dcb36f092/safehome-miniprogram-production.zip",
-      "sha256": "286176b034568256228077659fde21f45e3dd80605f655b2f8f3f966f73766bb",
+      "path": ".codex_tmp/rc0810/f25b/1311eee763d5986761a9fd7945f3c3f81e35b16f/safehome-miniprogram-production.zip",
+      "sha256": "a2c1d591986804f5f887864bb8dc180cc19e34fd609370e8635caf5940f28dfa",
       "status": "evidence_ready",
       "profile": "production",
       "static_journey_gate_passed": true,
-      "size_bytes": 997087
+      "size_bytes": 997088
     },
     "backend_image": {
       "status": "pending_external",

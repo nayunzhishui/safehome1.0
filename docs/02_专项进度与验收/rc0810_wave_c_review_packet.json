@@ -2,7 +2,7 @@
   "schema": "safehome.rc0810.wave-review-packet.v2",
   "wave": "C",
   "freeze_unit": "RC0810-F26",
-  "packet_nonce": "wave-c-c3dc0890-20260828-local-gates",
+  "packet_nonce": "wave-c-1311eee7-20260828-local-gates",
   "reviewer_id": "sartre_replacement",
   "base_checkpoint": {
     "commit": "908603e100c5cb473f2d632f3e673d3824ebff76",
@@ -11,8 +11,8 @@
     "wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
   },
   "review_head": {
-    "commit": "c3dc089002a8f057670c39d75ee3160dcb36f092",
-    "source_tree": "8264085bba6e18e0518511e804918b1361106074",
+    "commit": "1311eee763d5986761a9fd7945f3c3f81e35b16f",
+    "source_tree": "83930035d59b21ada5c2d222c576cac2a1f60ef8",
     "pushed_to_origin": false
   },
   "release_candidate": {
@@ -28,9 +28,9 @@
     "RC0810-F26"
   ],
   "diff": {
-    "range": "908603e100c5cb473f2d632f3e673d3824ebff76..c3dc089002a8f057670c39d75ee3160dcb36f092",
+    "range": "908603e100c5cb473f2d632f3e673d3824ebff76..1311eee763d5986761a9fd7945f3c3f81e35b16f",
     "files_changed": 133,
-    "insertions": 14092,
+    "insertions": 13817,
     "deletions": 1925,
     "diff_check": "pass"
   },

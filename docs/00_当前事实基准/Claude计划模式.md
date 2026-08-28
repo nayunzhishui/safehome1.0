@@ -12722,3 +12722,9 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [ ] clean source freeze 后重建 F25-B 包、重跑 F22-A/B 安全扫描、required CI、迁移回滚/恢复与最终全量回归。
 - [ ] 既有 reviewer 只在 F12-B 冻结点接收精简 packet；当前保持 `review_pending_wave`，不得伪造 `review_pass`。
 - [ ] production 仍 NO-GO：外部平台/真机/CloudBase/Secret/发布批准未完成，npm audit 仍有 4 个 High。
+
+## 2026-08-28：本地门禁完成后的继续入口
+
+- [x] 本地 required、Docker、MySQL/Redis、迁移恢复、安全重扫和 RC 重冻结已完成；唯一 required 失败为 npm audit 4 High。
+- [x] 波次 C 审查包已冻结并绑定 `1311eee7`，F26 定向测试 `12 passed`。
+- [ ] 固定 reviewer 当前不可恢复，继续保持 `review_pending_wave`；推送后由网页 GPT 只读审查累计代码并核验 GitHub Actions，不得替代 Harness reviewer 或批准上线。

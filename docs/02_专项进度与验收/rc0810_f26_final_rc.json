@@ -1,7 +1,7 @@
 {
   "schema": "safehome.rc0810.f26-final-rc.v1",
   "phase": "F26",
-  "generated_at": "2026-08-28T12:37:58.297361+00:00",
+  "generated_at": "2026-08-28T13:15:34.058033+00:00",
   "task_status": "review_pending_wave",
   "engineering_materials_status": "evidence_ready_no_go",
   "evidence_mode": "local_gates_complete_no_go",
@@ -240,8 +240,8 @@
   },
   "security_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
-    "source_tree": "131693a458073fd4121ded2fdfa9ceac533788f0",
-    "candidate_source_tree": "131693a458073fd4121ded2fdfa9ceac533788f0",
+    "source_tree": "19614fc83a02e8344b3a4c72ae721ef2fed6d026",
+    "candidate_source_tree": "19614fc83a02e8344b3a4c72ae721ef2fed6d026",
     "current_status": "current",
     "historical_status": "rescan_complete_no_go",
     "sbom_status": "current_scan_complete_no_go",
@@ -249,7 +249,7 @@
   },
   "platform_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
-    "source_commit": "c3dc089002a8f057670c39d75ee3160dcb36f092",
+    "source_commit": "1311eee763d5986761a9fd7945f3c3f81e35b16f",
     "historical_engineering_status": "evidence_ready",
     "production_approved": false,
     "external_blockers": [
@@ -1265,12 +1265,12 @@
     "reviewer_id": "sartre_replacement",
     "base_commit": "908603e100c5cb473f2d632f3e673d3824ebff76",
     "packet_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/reviews/wave-C-f26.json",
-    "packet_sha256": "aa4b5efa2445d704bd5e20b8ee67c8ff8ec653313b0ac9fb5d9561e5a56ddaa5",
+    "packet_sha256": "f3402848248e4dea60ca060e9c4b47f7841f78b9fd75fcc71db80c6fbc407d33",
     "packet_archive_path": "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
-    "packet_archive_sha256": "aa4b5efa2445d704bd5e20b8ee67c8ff8ec653313b0ac9fb5d9561e5a56ddaa5",
-    "packet_nonce": "wave-c-c3dc0890-20260828-local-gates",
-    "packet_head": "c3dc089002a8f057670c39d75ee3160dcb36f092",
-    "packet_source_tree": "8264085bba6e18e0518511e804918b1361106074",
+    "packet_archive_sha256": "f3402848248e4dea60ca060e9c4b47f7841f78b9fd75fcc71db80c6fbc407d33",
+    "packet_nonce": "wave-c-1311eee7-20260828-local-gates",
+    "packet_head": "1311eee763d5986761a9fd7945f3c3f81e35b16f",
+    "packet_source_tree": "83930035d59b21ada5c2d222c576cac2a1f60ef8",
     "harness_binding": {
       "run_id": "run-20260824T090306Z-4c4d4bf8",
       "state_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/state.json",
