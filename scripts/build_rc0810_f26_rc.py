@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import build_rc0810_f25b_evidence as f25b
+import run_rc0810_f22_scans as f22scan
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -280,15 +281,15 @@ def _pr8_matrix(registry: dict[str, Any]) -> list[dict[str, Any]]:
     return result
 
 
-def _required_ci(policy: dict[str, Any]) -> list[dict[str, Any]]:
+def _required_ci(policy: dict[str, Any], local_ci_complete: bool = False) -> list[dict[str, Any]]:
     return [
         {
             "id": item["id"],
             "title": item["title"],
             "required": item["required"] is True,
-            "status": "not_run_user_waiver",
-            "evidence": None,
-            "release_effect": "blocking",
+            "status": "local_pass" if local_ci_complete else "not_run_user_waiver",
+            "evidence": "local_required_ci_and_fix_loop" if local_ci_complete else None,
+            "release_effect": "satisfied_locally" if local_ci_complete else "blocking",
         }
         for item in policy["automatic_acceptance_categories"]
     ]
@@ -378,6 +379,9 @@ def build_report(
     *,
     markdown_path: Path = DEFAULT_MARKDOWN,
     commit: str | None = None,
+    local_ci_complete: bool = False,
+    backend_image_id: str | None = None,
+    backend_image_tag: str | None = None,
 ) -> dict[str, Any]:
     commit = _git_text("rev-parse", commit or "HEAD")
     source_tree = _git_text("rev-parse", f"{commit}^{{tree}}")
@@ -419,12 +423,32 @@ def build_report(
     f22 = _read_json(F22_REPORT_PATH)
     f25 = _read_json(F25_REPORT_PATH)
     wave_base = _git_text("rev-parse", WAVE_C_BASE_COMMIT)
+    local_evidence_mode = local_ci_complete and bool(backend_image_id and backend_image_tag)
+    current_security_tree = f22scan.security_source_snapshot()["source_tree"] if local_evidence_mode else None
+    security_is_current = local_evidence_mode and f22.get("source_tree") == current_security_tree
+    backend_image = (
+        {
+            "status": "local_built_unpublished",
+            "image_id": backend_image_id,
+            "tag": backend_image_tag,
+            "digest": None,
+            "source_commit": commit,
+            "reason": "registry_digest_and_attestation_pending",
+        }
+        if local_evidence_mode
+        else {
+            "status": "missing_blocking",
+            "digest": None,
+            "reason": "docker_daemon_unavailable_and_current_image_not_built",
+        }
+    )
     report = {
         "schema": "safehome.rc0810.f26-final-rc.v1",
         "phase": "F26",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "task_status": "review_pending_wave",
         "engineering_materials_status": "evidence_ready_no_go",
+        "evidence_mode": "local_gates_complete_no_go" if local_evidence_mode else "historical_user_waiver",
         "candidate": {
             "source_commit": commit,
             "source_tree": source_tree,
@@ -442,11 +466,7 @@ def build_report(
             "source_sbom": {**sbom_artifact, "coverage": sbom["status"], "component_count": len(sbom["components"])},
             "artifact_manifest": manifest,
             "sha256sums": sums,
-            "backend_image": {
-                "status": "missing_blocking",
-                "digest": None,
-                "reason": "docker_daemon_unavailable_and_current_image_not_built",
-            },
+            "backend_image": backend_image,
         },
         "dependency_locks": {
             "inputs": dependency_inputs,
@@ -457,14 +477,24 @@ def build_report(
             "content_artifacts": _tracked_hash_summary(commit, ("content/content_governance_manifest.json", "content/offline_baseline_manifest.json", "content/operations_release_manifest.json")),
             "rc0810_config": _tracked_hash_summary(commit, ("config/rc0810/",)),
         },
-        "required_ci": _required_ci(final_policy),
+        "required_ci": _required_ci(final_policy, local_evidence_mode),
+        "required_ci_summary": (
+            {
+                "status": "completed_with_failure",
+                "blocking_job": "npm-audit",
+                "high_vulnerabilities": 4,
+                "official_github_ci": "pending_push",
+            }
+            if local_evidence_mode
+            else {"status": "not_run_user_waiver"}
+        ),
         "security_evidence": {
             "path": F22_REPORT_PATH.relative_to(ROOT).as_posix(),
             "source_tree": f22.get("source_tree"),
-            "candidate_source_tree": source_tree,
-            "current_status": "current" if f22.get("source_tree") == source_tree else "stale",
+            "candidate_source_tree": current_security_tree or source_tree,
+            "current_status": "current" if security_is_current else "stale",
             "historical_status": f22.get("status"),
-            "sbom_status": "inventory_generated_but_current_vulnerability_scan_not_run",
+            "sbom_status": "current_scan_complete_no_go" if security_is_current else "inventory_generated_but_current_vulnerability_scan_not_run",
             "production_gate_eligible": False,
         },
         "platform_evidence": {
@@ -480,7 +510,7 @@ def build_report(
         "four_go": {
             "product": {"approved": False, "status": "pending_external", "owner": "product_owner"},
             "platform": {"approved": False, "status": "blocked_external", "owner": "platform_owner"},
-            "engineering": {"approved": False, "status": "blocked_required_ci_image_security", "owner": "engineering_owner"},
+            "engineering": {"approved": False, "status": "blocked_npm_audit_registry_digest" if local_evidence_mode else "blocked_required_ci_image_security", "owner": "engineering_owner"},
             "professional": {"approved": False, "status": "pending_external", "owner": "professional_owner"},
         },
         "wave_c_review": {
@@ -503,9 +533,9 @@ def build_report(
             "production_gate_eligible": False,
             "automatic_release_performed": False,
             "blocking_reasons": [
-                "required_ci_not_run_by_user_direction",
-                "current_security_scan_missing_and_f22_evidence_stale",
-                "backend_image_and_digest_missing",
+                *( ["required_ci_completed_with_npm_audit_failure", "backend_registry_digest_and_attestation_missing"]
+                   if local_evidence_mode
+                   else ["required_ci_not_run_by_user_direction", "current_security_scan_missing_and_f22_evidence_stale", "backend_image_and_digest_missing"] ),
                 "wechat_platform_real_device_and_human_evidence_missing",
                 "product_platform_engineering_professional_go_incomplete",
                 "72h_candidate_observation_not_executed",
@@ -522,15 +552,18 @@ def build_report(
         "known_issues": [
             "F22-B security report is bound to an older source tree and is historical only.",
             "F25-B has eight external blockers and no platform or human approval.",
-            "Required CI/Harness/regression was not run at F26 by explicit user direction.",
-            "No current backend image, image digest, container scan or production migration evidence exists.",
+            *( ["Local required CI and fix loop completed, but npm audit still reports four High findings with no upstream fix.",
+                "The backend image is local only; registry digest and supply-chain attestation remain missing."]
+               if local_evidence_mode
+               else ["Required CI/Harness/regression was not run at F26 by explicit user direction.",
+                     "No current backend image, image digest, container scan or production migration evidence exists."] ),
         ],
         "subtasks": [
             {"id": "F26.1", "status": "evidence_ready"},
-            {"id": "F26.2", "status": "blocked_user_waiver"},
-            {"id": "F26.3", "status": "partial_backend_image_missing"},
-            {"id": "F26.4", "status": "partial_image_and_security_missing"},
-            {"id": "F26.5", "status": "partial_structural_scan_only"},
+            {"id": "F26.2", "status": "local_complete_with_failure" if local_evidence_mode else "blocked_user_waiver"},
+            {"id": "F26.3", "status": "local_image_registry_digest_missing" if local_evidence_mode else "partial_backend_image_missing"},
+            {"id": "F26.4", "status": "current_scan_no_go" if local_evidence_mode else "partial_image_and_security_missing"},
+            {"id": "F26.5", "status": "current_scan_no_go" if local_evidence_mode else "partial_structural_scan_only"},
             {"id": "F26.6", "status": "evidence_ready"},
             {"id": "F26.7", "status": "evidence_ready_no_resolved_claims"},
             {"id": "F26.8", "status": "review_pending_wave"},
@@ -551,6 +584,13 @@ def build_report(
 
 def render_markdown(report: dict[str, Any]) -> str:
     candidate = report["candidate"]
+    local_mode = report.get("evidence_mode") == "local_gates_complete_no_go"
+    image = report["artifacts"]["backend_image"]
+    image_line = (
+        f"本地已构建 `{image['tag']}` / `{image['image_id']}`；未伪造 registry digest"
+        if local_mode
+        else "缺失，未伪造 digest"
+    )
     blockers = "\n".join(f"- {item}" for item in report["release_decision"]["blocking_reasons"])
     gates = "\n".join(
         f"- {name}: {item['status']}（approved={str(item['approved']).lower()}）"
@@ -558,13 +598,13 @@ def render_markdown(report: dict[str, Any]) -> str:
     )
     if report["wave_c_review"]["status"] == "review_pass":
         next_action = (
-            "波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须补齐 required CI、"
-            "当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
+            "波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须关闭 npm High、补齐镜像仓库摘要与证明、"
+            "微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
         )
     else:
         next_action = (
-            "波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须补齐 required CI、"
-            "当前安全扫描、正式后端镜像、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
+            "波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须关闭 npm High、补齐镜像仓库摘要与证明、"
+            "微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
         )
     return f"""# RC0810-F26 最终 RC 收口与发布建议
 
@@ -576,7 +616,7 @@ def render_markdown(report: dict[str, Any]) -> str:
 - tree：`{candidate['source_tree']}`
 - 打包方式：隔离 Git archive；未从脏工作区直接打包
 - production 小程序 ZIP：`{report['artifacts']['miniprogram_zip']['sha256']}`
-- 后端镜像：缺失，未伪造 digest
+- 后端镜像：{image_line}
 
 ## 阻断原因
 
@@ -903,14 +943,54 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
     expected_ci = {item["id"] for item in policy["automatic_acceptance_categories"]}
     if {item.get("id") for item in required_ci} != expected_ci:
         errors.append("required_ci_catalog_incomplete")
-    if any(item.get("required") is not True or item.get("status") != "not_run_user_waiver" for item in required_ci):
-        errors.append("required_ci_must_remain_unverified")
+    evidence_mode = report.get("evidence_mode", "historical_user_waiver")
+    if evidence_mode == "local_gates_complete_no_go":
+        if any(
+            item.get("required") is not True
+            or item.get("status") != "local_pass"
+            or item.get("evidence") != "local_required_ci_and_fix_loop"
+            for item in required_ci
+        ):
+            errors.append("local_required_ci_evidence_invalid")
+        if report.get("required_ci_summary") != {
+            "status": "completed_with_failure",
+            "blocking_job": "npm-audit",
+            "high_vulnerabilities": 4,
+            "official_github_ci": "pending_push",
+        }:
+            errors.append("required_ci_failure_summary_invalid")
+    elif evidence_mode == "historical_user_waiver":
+        if any(item.get("required") is not True or item.get("status") != "not_run_user_waiver" for item in required_ci):
+            errors.append("required_ci_must_remain_unverified")
+    else:
+        errors.append("evidence_mode_invalid")
     security = report.get("security_evidence", {})
-    if security.get("source_tree") == candidate.get("source_tree") or security.get("current_status") != "stale":
-        errors.append("stale_security_evidence_promoted")
     image = report.get("artifacts", {}).get("backend_image", {})
-    if image.get("status") != "missing_blocking" or image.get("digest") is not None:
-        errors.append("backend_image_fabricated")
+    if evidence_mode == "local_gates_complete_no_go":
+        try:
+            current_security_tree = f22scan.security_source_snapshot()["source_tree"]
+        except (RuntimeError, OSError) as exc:
+            errors.append(f"security_snapshot_unavailable:{exc}")
+        else:
+            if (
+                security.get("source_tree") != current_security_tree
+                or security.get("candidate_source_tree") != current_security_tree
+                or security.get("current_status") != "current"
+            ):
+                errors.append("current_security_evidence_invalid")
+        if (
+            image.get("status") != "local_built_unpublished"
+            or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(image.get("image_id") or ""))
+            or not isinstance(image.get("tag"), str)
+            or image.get("source_commit") != commit
+            or image.get("digest") is not None
+        ):
+            errors.append("local_backend_image_evidence_invalid")
+    else:
+        if security.get("source_tree") == candidate.get("source_tree") or security.get("current_status") != "stale":
+            errors.append("stale_security_evidence_promoted")
+        if image.get("status") != "missing_blocking" or image.get("digest") is not None:
+            errors.append("backend_image_fabricated")
     registry = _read_json(REGISTRY_PATH)
     expected_prs = {pr_id for task in registry["tasks"] for pr_id in task["pr_ids"]}
     matrix = report.get("pr8_close_matrix", [])
@@ -1071,12 +1151,22 @@ def main() -> int:
     parser.add_argument("--markdown", type=Path, default=DEFAULT_MARKDOWN)
     parser.add_argument("--source-commit")
     parser.add_argument("--write-report", action="store_true")
+    parser.add_argument("--local-ci-complete", action="store_true")
+    parser.add_argument("--backend-image-id")
+    parser.add_argument("--backend-image-tag")
     parser.add_argument("--self-check", action="store_true")
     parser.add_argument("--bind-review-packet", type=Path)
     parser.add_argument("--apply-review-decision", type=Path)
     args = parser.parse_args()
     if args.write_report:
-        build_report(args.report, markdown_path=args.markdown, commit=args.source_commit)
+        build_report(
+            args.report,
+            markdown_path=args.markdown,
+            commit=args.source_commit,
+            local_ci_complete=args.local_ci_complete,
+            backend_image_id=args.backend_image_id,
+            backend_image_tag=args.backend_image_tag,
+        )
     if args.bind_review_packet:
         bind_review_packet(args.report, args.bind_review_packet, args.markdown)
     if args.apply_review_decision:

@@ -83,7 +83,7 @@ def test_f26_production_packages_exclude_internal_and_local_files(f26):
 
 
 def test_f26_required_ci_and_security_gaps_force_no_go(f26):
-    _, report, _, _ = f26
+    module, report, _, _ = f26
     assert report["required_ci"]
     assert all(item["required"] is True for item in report["required_ci"])
     assert all(item["status"] == "not_run_user_waiver" for item in report["required_ci"])
@@ -91,6 +91,9 @@ def test_f26_required_ci_and_security_gaps_force_no_go(f26):
     assert report["artifacts"]["backend_image"]["digest"] is None
     assert report["release_decision"]["recommendation"] == "NO_GO"
     assert report["release_decision"]["production_gate_eligible"] is False
+    local = module._required_ci(json.loads((ROOT / "content" / "task37_38_final_acceptance_policy.json").read_text(encoding="utf-8")), True)
+    assert all(item["status"] == "local_pass" for item in local)
+    assert all(item["evidence"] == "local_required_ci_and_fix_loop" for item in local)
 
 
 def test_f26_stale_evidence_is_not_promoted(f26):

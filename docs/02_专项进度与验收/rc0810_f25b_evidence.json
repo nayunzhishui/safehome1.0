@@ -1,16 +1,16 @@
 {
   "schema": "safehome.rc0810.f25b-evidence.v1",
   "phase": "F25-B",
-  "generated_at": "2026-08-28T08:01:03.326658+00:00",
+  "generated_at": "2026-08-28T12:03:25.082800+00:00",
   "engineering_status": "evidence_ready",
   "external_verification_complete": false,
   "production_gate_eligible": false,
   "release_recommendation": "NO_GO",
   "artifact_source": {
-    "commit": "99306c1c8fd84ec30d09e902e01f9390667acfff",
-    "source_tree": "1f4dff4d5815db4f935274694958ffaeb9a36dae",
+    "commit": "9c596f96454bf4108f31fecdb8cdb09b30df3858",
+    "source_tree": "e908a0b49c371d460ca61cf455af5e87e8d4755f",
     "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35",
-    "backend_build_context_sha256": "4f48d8c50bd9795af921d68618eddc4b4db3a8e101968109b99212cf4f481733",
+    "backend_build_context_sha256": "72bfb254160a1693ae6b92a3a52efecb7c1815212a02b289c6c32b6bf3a9faea",
     "files": {
       "apps/miniprogram/app.json": "2dfaa5009db98bd1dcbb7961eda8a1911daf54113b8e2c56ccb645112f8cecaf",
       "apps/miniprogram/project.config.json": "b5f76b3605b7940c414b44141850aac9302bdba9a8fdea02155a2dbddfee1cad",
@@ -22,17 +22,17 @@
   },
   "artifact_binding": {
     "miniprogram_package": {
-      "path": ".codex_tmp/rc0810/f25b/99306c1c8fd84ec30d09e902e01f9390667acfff/safehome-miniprogram-production.zip",
-      "sha256": "b55bb5b551e65ccace55fd579ae07e905f88b4944af9dc2aa213480e833dd924",
+      "path": ".codex_tmp/rc0810/f25b/9c596f96454bf4108f31fecdb8cdb09b30df3858/safehome-miniprogram-production.zip",
+      "sha256": "bf7e25cf8011f0d2e2bb6c2a63ef06df3db541dd4bd46c6818f894f99d634846",
       "status": "evidence_ready",
       "profile": "production",
       "static_journey_gate_passed": true,
-      "size_bytes": 997086
+      "size_bytes": 997088
     },
     "backend_image": {
       "status": "pending_external",
       "image_digest": null,
-      "blocker": "backend_image_not_built_in_f25b"
+      "blocker": "docker_daemon_unavailable"
     },
     "appid_fingerprint": "sha256:ac88112a1d98d0ac0841781d3e32eff906eaa3198de05148c3beca59385288bb",
     "cloudbase_env_id": "prod-d3gl35otiaa7c8d24",
@@ -774,7 +774,7 @@
       "id": "F25-EXT-01",
       "scope": "backend_image",
       "status": "pending_external",
-      "reason": "backend_image_not_built_in_f25b"
+      "reason": "docker_daemon_unavailable"
     },
     {
       "id": "F25-EXT-02",
