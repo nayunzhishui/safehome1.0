@@ -1,5 +1,14 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-28：RC0810 本地发布门禁续跑
+
+- [x] 恢复并验证 Docker、MySQL 8.4、Redis 7.4；完成隔离迁移恢复和正式候选镜像 runtime gate。
+- [x] 完成 Web、小程序、内容/API、制品、F14 隐私谱系和 F22 完整安全重扫；未操作生产资源。
+- [x] 修复证据哈希循环、过期镜像探针和 Harness 偶然脏状态测试；定向 Fix Loop 已通过。
+- [x] 后端全量首轮执行：1339 passed、13 个门禁绑定失败；13 个失败均已有对应最小复验通过。
+- [ ] npm audit 4 High、F22 open gate 362、镜像 registry digest/attestation、微信平台/真机、四方 GO 和 72h 未关闭，production NO-GO。
+- [ ] 完成 F25/F26 当前证据与固定 reviewer 波次 C 复审后推送；官方 GitHub required CI 和全历史只读审查交给网页 GPT。
+
 ## 2026-08-27：Docker 恢复与正式镜像
 
 - [x] 恢复 Docker Desktop，确认 Engine 29.6.1 可用；未删除 Docker 管理的 `dockerInference` 套接字或重置数据。
