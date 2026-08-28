@@ -211,6 +211,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "analysis_type",
     "analysis_version",
     "resource_hash",
+    "server_hash",
     "purpose_code",
     "consent_type",
     "consent_version",
@@ -225,6 +226,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "idempotency_key",
     "lease_owner",
     "result_artifact_id",
+    "execution_manifest_id",
     "artifact_hash",
     "artifact_id",
     "filename",
@@ -233,6 +235,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "visibility",
     "deletion_reason_code",
     "request_hash",
+    "claim_token_digest",
     "endpoint",
     "resource_type",
     "resource_id",
@@ -271,6 +274,7 @@ MYSQL_VARCHAR_COLUMNS = {
     "decision",
     "evidence_ref",
     "snapshot_hash",
+    "reproducibility_key",
     "state",
     "reason_code",
     "dataset_key",
@@ -679,7 +683,10 @@ def _mysql_column_line(line: str) -> str:
 
 
 def mysqlize_schema_statement(statement: str) -> str:
-    lines = [_mysql_column_line(line) for line in statement.splitlines()]
+    lines = [
+        ",".join(_mysql_column_line(segment) for segment in line.split(","))
+        for line in statement.splitlines()
+    ]
     return "\n".join(lines).replace("REAL", "DOUBLE")
 
 

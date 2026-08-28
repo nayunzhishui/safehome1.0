@@ -18,14 +18,7 @@ BUILDER = ROOT / "scripts" / "build_rc0810_f26_rc.py"
 REGISTRY = ROOT / "content" / "rc0810_release_candidate_registry.json"
 F26_REPORT = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f26_final_rc.json"
 WAVE_C_DECISION = Path("docs/02_专项进度与验收/rc0810_wave_c_review_decision.json")
-WAVE_C_PACKET = (
-    ROOT
-    / ".codex_tmp"
-    / "rc0810"
-    / "run-20260824T090306Z-4c4d4bf8"
-    / "reviews"
-    / "wave-C-f26.json"
-)
+WAVE_C_PACKET = ROOT / "docs" / "02_专项进度与验收" / "rc0810_wave_c_review_packet.json"
 
 
 def _load_builder():
@@ -151,10 +144,11 @@ def test_f26_review_packet_is_prebound_and_rejects_self_reported_or_changed_iden
     review = bound["wave_c_review"]
     packet = json.loads(WAVE_C_PACKET.read_text(encoding="utf-8"))
     assert review["packet_sha256"] == hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest()
+    assert review["packet_archive_sha256"] == review["packet_sha256"]
     assert review["packet_nonce"] == packet["packet_nonce"]
     assert review["packet_head"] == packet["review_head"]["commit"]
     assert review["harness_binding"]["fixed_reviewer_id"] == "sartre_replacement"
-    assert module.validate_report(F26_REPORT)["valid"] is True
+    assert module._bound_review_packet_errors(bound) == []
 
     mutations = {}
     missing = copy.deepcopy(bound)

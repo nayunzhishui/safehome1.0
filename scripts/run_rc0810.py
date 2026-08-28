@@ -2505,8 +2505,8 @@ def _historical_checkpoint_evidence_is_valid(
     try:
         packet_path = (ROOT / binding["review_packet_path"]).resolve()
         decision_path = (ROOT / binding["decision_path"]).resolve()
-        packet_bytes = packet_path.read_bytes()
-        decision_bytes = decision_path.read_bytes()
+        packet_bytes = _historical_checkpoint_evidence_bytes(packet_path)
+        decision_bytes = _historical_checkpoint_evidence_bytes(decision_path)
         if (
             sha256_bytes(packet_bytes) != binding["review_packet_sha256"]
             or sha256_bytes(decision_bytes) != binding["decision_sha256"]
@@ -2544,6 +2544,23 @@ def _historical_checkpoint_evidence_is_valid(
         and isinstance(decision.get("findings"), list)
         and not decision["findings"]
     )
+
+
+def _historical_checkpoint_evidence_bytes(path: Path) -> bytes:
+    if not path.is_file():
+        raise OSError(f"historical review evidence is missing: {path}")
+    if not _path_within(path, ROOT):
+        return path.read_bytes()
+    relative = path.relative_to(ROOT).as_posix()
+    clean = subprocess.run(
+        ["git", "diff", "--quiet", "HEAD", "--", relative],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if clean.returncode != 0:
+        raise OSError(f"historical review evidence is modified: {relative}")
+    return _run_git("show", f"HEAD:{relative}")
 
 
 def _verification_commands_unchanged(

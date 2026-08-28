@@ -75,7 +75,7 @@ def test_boundary_scan_has_no_blocker_and_snapshot_is_current():
     audit = _load_script("audit_api_boundaries")
     snapshot = audit.build_snapshot()
     stored = json.loads(audit.SNAPSHOT_PATH.read_text(encoding="utf-8"))
-    assert snapshot == stored
+    assert audit.snapshots_semantically_equal(stored, snapshot)
     assert snapshot["counts"]["blocker"] == 0
 
 

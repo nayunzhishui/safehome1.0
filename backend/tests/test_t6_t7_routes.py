@@ -69,8 +69,11 @@ def test_profile_stats_and_messages_flow(tmp_path, monkeypatch):
     assert listed["unread_count"] == 1
     assert listed["items"][0]["id"] == owner_message["id"]
 
-    forbidden_response = client.get("/api/messages?user_id=demo-parent", headers={"Authorization": f"Bearer {token}"})
-    assert forbidden_response.status_code == 403
+    cross_user_response = client.get("/api/messages?user_id=demo-parent", headers={"Authorization": f"Bearer {token}"})
+    assert cross_user_response.status_code == 200
+    cross_user_data = cross_user_response.get_json()["data"]
+    assert [item["id"] for item in cross_user_data["items"]] == [owner_message["id"]]
+    assert message["id"] not in {item["id"] for item in cross_user_data["items"]}
 
     detail_response = client.get(f"/api/messages/{owner_message['id']}?user_id={user_id}", headers={"Authorization": f"Bearer {token}"})
     assert detail_response.status_code == 200

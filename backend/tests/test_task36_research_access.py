@@ -96,7 +96,7 @@ def _assign(client, headers, enrollment_id, actor_id, assignment_role="researche
 def test_capability_registry_is_complete_and_keeps_dangerous_operations_admin_only():
     payload = json.loads((ROOT / "content" / "researcher_capability_registry.json").read_text(encoding="utf-8"))
 
-    assert payload["version"] == "2026.07.task36-f13-v1"
+    assert payload["version"] == "2026.08.rc0810-f07-v1"
     assert payload["default_decision"] == "deny"
     assert len(payload["capabilities"]) >= 12
     for capability in payload["capabilities"]:
@@ -301,7 +301,7 @@ def test_capability_endpoint_reports_formal_scope_and_development_exception(tmp_
 
     assert response.status_code == 200
     data = response.get_json()["data"]
-    assert data["registry_version"] == "2026.07.task36-f13-v1"
+    assert data["registry_version"] == "2026.08.rc0810-f07-v1"
     assert data["formal_role"] == "researcher"
     assert data["development_exception_active"] is False
     assert "research.dashboard.read" in data["capability_ids"]

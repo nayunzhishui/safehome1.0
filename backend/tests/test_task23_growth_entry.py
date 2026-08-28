@@ -148,5 +148,5 @@ def test_growth_entry_keeps_historical_urls_and_one_profile_entry():
     assert "/pages/relationship-growth/index?detail=1" in unified_source
     for label in ["记录与练习", "测评变化", "关系探索", "研究者反馈"]:
         assert label in unified_source or label in unified_markup
-    assert "不生成单一成长分数" in unified_markup
+    assert "四类线索分别查看，不合成总分" in unified_markup
     assert 'bind:action="loadGrowth"' in unified_markup

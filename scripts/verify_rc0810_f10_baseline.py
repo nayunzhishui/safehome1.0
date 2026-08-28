@@ -50,6 +50,30 @@ def _git(*args: str, binary: bool = False) -> bytes | str:
     return completed.stdout.decode("utf-8").strip()
 
 
+def _evidence_bytes(path: Path) -> bytes:
+    resolved = path.resolve()
+    try:
+        relative = resolved.relative_to(ROOT).as_posix()
+    except ValueError:
+        return resolved.read_bytes()
+
+    tracked = subprocess.run(
+        ["git", "ls-files", "--error-unmatch", "--", relative],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    clean = subprocess.run(
+        ["git", "diff", "--quiet", "HEAD", "--", relative],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if tracked.returncode == 0 and clean.returncode == 0:
+        return _git("show", f"HEAD:{relative}", binary=True)
+    return resolved.read_bytes()
+
+
 def verify(path: Path, evidence_path: Path = DEFAULT_EVIDENCE) -> dict:
     baseline = json.loads(path.read_text(encoding="utf-8"))
     errors: list[str] = []
@@ -89,7 +113,7 @@ def verify(path: Path, evidence_path: Path = DEFAULT_EVIDENCE) -> dict:
     actions = baseline.get("github_actions", {})
     artifact = actions.get("evidence_artifact", {})
     try:
-        evidence_bytes = evidence_path.read_bytes()
+        evidence_bytes = _evidence_bytes(evidence_path)
         evidence = json.loads(evidence_bytes.decode("utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         evidence = {}

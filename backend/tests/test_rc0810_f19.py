@@ -182,4 +182,4 @@ def test_f19_additive_migration_and_database_head_are_registered():
 
     assert "2026_08_25_075" in migrations
     assert "ai_capability_decisions" in migrations
-    assert profile["profiles"]["production"]["explicit_migration_head"] == "2026_08_25_076"
+    assert profile["profiles"]["production"]["explicit_migration_head"] == "2026_08_26_078"

@@ -10,11 +10,12 @@ def _read(relative_path: str) -> str:
 
 def test_today_step_card_is_inserted_without_reordering_existing_home_sections():
     wxml = _read("apps/miniprogram/pages/home/index.wxml")
-    core_index = wxml.index('class="core-actions"')
+    thermometer_index = wxml.index('class="thermometer-entry"')
+    core_index = wxml.index("<dual-entry")
     today_index = wxml.index("<journey-action-card")
-    three_step_index = wxml.index('title="三步开始"')
-    assert core_index < today_index < three_step_index
-    for required_text in ["情绪天气", "测一测", "情绪日记", "更多", "最近记录", "阶段性反馈"]:
+    how_to_index = wxml.index('title="如何开始"')
+    assert thermometer_index < core_index < today_index < how_to_index
+    for required_text in ["情绪温度计", "测一测", "情绪日记", "更多", "最近记录", "阶段性反馈"]:
         assert required_text in wxml
 
 
@@ -51,14 +52,11 @@ def test_today_step_card_has_accessible_action_and_all_states():
 
 def test_home_progress_fallback_actions_do_not_clip_button_labels():
     wxml = _read("apps/miniprogram/pages/home/index.wxml")
-    wxss = _read("apps/miniprogram/pages/home/index.wxss")
+    component_wxml = _read("apps/miniprogram/components/journey-action-card/index.wxml")
+    component_wxss = _read("apps/miniprogram/components/journey-action-card/index.wxss")
 
-    assert 'class="progress-empty-btn"' in wxml
-    assert 'class="progress-empty-btn progress-empty-btn--secondary"' in wxml
-    block = wxss.split(".progress-empty-btn {", 1)[1].split("}", 1)[0]
-    assert "min-height: var(--safe-touch)" in block
-    assert "display: flex" in block
-    assert "align-items: center" in block
-    assert "justify-content: center" in block
-    assert "box-sizing: border-box" in block
-    assert "line-height: 1.3" in block
+    assert 'class="summary-entry"' in wxml
+    assert "wrap-title" in wxml
+    assert 'class="progress-empty-btn"' not in wxml
+    assert "min-height: 88rpx" in component_wxss
+    assert 'aria-label="{{actionAriaLabel}}"' in component_wxml

@@ -15,7 +15,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from database import audit_event_hash, ensure_column, json_loads, mysqlize_schema_statement, new_id, now_iso
+from database import (
+    audit_event_hash,
+    ensure_column,
+    json_loads,
+    mysqlize_column_definition,
+    mysqlize_schema_statement,
+    new_id,
+    now_iso,
+)
 from services.idempotency_service import canonical_request_hash
 
 MYSQL_MIGRATION_LOCK_NAME = "safehome_explicit_schema_migrations"
@@ -795,6 +803,12 @@ def _apply_2026_08_26_077(conn) -> None:
         "locked_until": "TEXT",
     }.items():
         ensure_column(conn, "data_claims", column, definition)
+    if _provider(conn) == "mysql":
+        digest_definition = mysqlize_column_definition("claim_token_digest", "TEXT")
+        conn.execute(
+            "ALTER TABLE data_claims MODIFY COLUMN claim_token_digest "
+            f"{digest_definition} NULL"
+        )
     _create_index_if_missing(
         conn,
         "idx_data_claim_target_digest",

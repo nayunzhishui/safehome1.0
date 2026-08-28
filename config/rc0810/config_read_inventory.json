@@ -5,7 +5,7 @@
     {
       "file": "backend/app.py",
       "profile": "application_boot_profile",
-      "source_sha256": "c58ee8db5c003076c24243e71f7c1966a6815062d1d8a8546df749be434cad49",
+      "source_sha256": "ce0b9e03769c4a51267178b7f7d4f99ead69090fe2a08754629780cd9b4754ee",
       "reads": [
         {
           "line": 77,
@@ -37,7 +37,7 @@
     {
       "file": "backend/config.py",
       "profile": "flask_config_source",
-      "source_sha256": "61ecd0a9b1066f063fa3ffa1f9f7553ecb914531d456879391b645ae36fe7f8e",
+      "source_sha256": "dfccdaf3ac9f1c3f9cc7947762e841da8ae18464a835c04e92497f64b172cc1e",
       "reads": [
         {
           "line": 15,
@@ -551,7 +551,7 @@
     {
       "file": "backend/scripts/backup_sqlite.py",
       "profile": "cli_profile",
-      "source_sha256": "34be4c00fb6ee3e29e6a271c34339216873f23458c4c5ad9aa903372df08ba29",
+      "source_sha256": "6710a71d9dced2b2a5a18b16ca3490ac745d4504cf17fdea776afe88faea9730",
       "reads": [
         {
           "line": 16,
@@ -563,7 +563,7 @@
     {
       "file": "backend/scripts/bootstrap_researcher.py",
       "profile": "cli_profile",
-      "source_sha256": "967d8253addc7bee3aa47ed232546c5538a2bdbff74ac7c29ee8a8cbda5a135b",
+      "source_sha256": "ffc8433ccae815b6588f832aeb4dfb7b4f904924a7df6db39ba0ac0abb05cd5d",
       "reads": [
         {
           "line": 256,
@@ -575,7 +575,7 @@
     {
       "file": "backend/scripts/build_api_contract.py",
       "profile": "cli_profile",
-      "source_sha256": "e8a64714ad51fa60514f8cb841d70fcc31fcc3a096392bc2e50ac703afb98439",
+      "source_sha256": "ae92dd7450dc93357d52670222c7a58f6aea8f90b835a9baae416acc97136d29",
       "reads": [
         {
           "line": 558,
@@ -619,7 +619,7 @@
     {
       "file": "backend/scripts/check_sqlite_ops.py",
       "profile": "cli_profile",
-      "source_sha256": "2cc39270be90caca0a653e1f11bebdc691e18350947584ba247fcc6067cfbcb2",
+      "source_sha256": "8c322cbb25d08c3dbffe632ad477819c4c3da915024724fcd21ff59b2e925179",
       "reads": [
         {
           "line": 16,
@@ -648,7 +648,7 @@
     {
       "file": "backend/scripts/restore_sqlite.py",
       "profile": "cli_profile",
-      "source_sha256": "1b3ff79d3279da9c403bb342c026252260e5ebbb03b5ad1aa335875ef9f413d0",
+      "source_sha256": "bb95c7748d8e534ced444624d7d926d29bea3f989f2f0d500d5346cf34a7292f",
       "reads": [
         {
           "line": 16,
@@ -677,7 +677,7 @@
     {
       "file": "backend/services/ai_qa_provider.py",
       "profile": "ai_provider_profile",
-      "source_sha256": "dab2872bdccac96846bc073292bc7c8dd424b82408a3a2b19a521d4313bb7df4",
+      "source_sha256": "5aaa77469517ce80d1a99422a28c8f5e409473d481703cdd2d467a2bc1c554da",
       "reads": [
         {
           "line": 329,
@@ -689,7 +689,7 @@
     {
       "file": "backend/services/build_fingerprint_service.py",
       "profile": "build_identity_profile",
-      "source_sha256": "d766c885833f90cdd5f41ae5d400d7572296cfabccc2b8ae56604d4ec3f632c1",
+      "source_sha256": "ac1e19957e606f43161405d6029427bbe5323bcfa97b570d6bb5cc124f05ae18",
       "reads": [
         {
           "line": 85,
@@ -763,7 +763,7 @@
     {
       "file": "backend/services/family_binding_service.py",
       "profile": "binding_security_profile",
-      "source_sha256": "3703888538909f075087cee5dc395634332935ca1f4ecb8ff654983379abea34",
+      "source_sha256": "77d6b8b8c73bb0071a7d973b38e8a07781bf40f582e3ccb59b5f5abc4ef0b272",
       "reads": [
         {
           "line": 39,
@@ -785,7 +785,7 @@
     {
       "file": "backend/services/mysql_pool_runtime.py",
       "profile": "mysql_infrastructure_profile",
-      "source_sha256": "3afd9e07a4f67a153e748c8e0bb9964df7fee55c87cc66ee2afe428292e9fafb",
+      "source_sha256": "9f1954a3fae8a4270da0898f36ebd34cd4cf2d00b442abe71f9af36ee3ac0b31",
       "reads": [
         {
           "line": 31,
@@ -814,7 +814,7 @@
     {
       "file": "backend/services/redis_service.py",
       "profile": "redis_infrastructure_profile",
-      "source_sha256": "19b097d1d86dfe78b77eef16dccf928107ee88009cc75ea4dcd077637b935d74",
+      "source_sha256": "7eca012505407a5a3fd31a6bb91edd4a5d58197fcb373cce16925b55e9680ce4",
       "reads": [
         {
           "line": 25,
@@ -846,7 +846,7 @@
     {
       "file": "backend/services/research_execution_manifest_service.py",
       "profile": "research_build_profile",
-      "source_sha256": "fd7a92827c21b646385a401e577e3d7a6fa5c567152f157dff4f51e986494cb4",
+      "source_sha256": "74a49c0a18fea8b370b2d51516416f1969f1c2b877404e3b660ce2c49e98fd1e",
       "reads": [
         {
           "line": 131,
@@ -863,7 +863,7 @@
     {
       "file": "backend/services/runtime_bootstrap.py",
       "profile": "pre_app_infrastructure_profile",
-      "source_sha256": "5b09f31a779d62380d3fe9e4bd80ada75dc0b2f3b3113a3d3857e3b44e3acfdd",
+      "source_sha256": "0d85e66552f00034e8e70da4c2cb8171dda9fc4a6bb51ad011c2e0c01e43036e",
       "reads": [
         {
           "line": 20,

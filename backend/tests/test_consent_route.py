@@ -148,8 +148,8 @@ def test_task37_data_purposes_have_separate_consent_records(tmp_path, monkeypatc
     }
 
 
-def test_production_consent_requires_authenticated_actor(tmp_path, monkeypatch):
-    app = _fresh_app(tmp_path, monkeypatch, app_env="production")
+def test_consent_requires_authenticated_actor(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch, app_env="validation")
     client = app.test_client()
 
     response = client.post(

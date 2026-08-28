@@ -226,8 +226,8 @@ def test_f20_additive_migration_and_database_head_are_registered():
     ):
         assert field in migration_source
         assert field in model_source
-    assert profile["profiles"]["production"]["explicit_migration_head"] == "2026_08_25_076"
-    assert profile["profiles"]["production"]["approved_migration_head"] == "2026_08_24_063+2026_08_25_076"
+    assert profile["profiles"]["production"]["explicit_migration_head"] == "2026_08_26_078"
+    assert profile["profiles"]["production"]["approved_migration_head"] == "2026_08_24_063+2026_08_26_078"
 
 
 def test_global_content_validator_includes_f20_governance_contract():

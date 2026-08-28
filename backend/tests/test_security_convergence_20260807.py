@@ -1,4 +1,5 @@
 import importlib
+import json
 import sys
 from pathlib import Path
 
@@ -9,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BACKEND = ROOT / "backend"
 
 
-def _fresh_app(tmp_path, monkeypatch, env="pilot"):
+def _fresh_app(tmp_path, monkeypatch, env="testing"):
     sys.path.insert(0, str(BACKEND))
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
@@ -20,8 +21,11 @@ def _fresh_app(tmp_path, monkeypatch, env="pilot"):
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
     monkeypatch.setenv("SECRET_KEY", "security-convergence-secret-key-long-enough")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", "legacy-admin-token")
-    monkeypatch.delenv("LEGACY_ADMIN_TOKEN_ENABLED", raising=False)
-    return importlib.import_module("app").app
+    monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "0")
+    app = importlib.import_module("app").app
+    safeguard_service = importlib.import_module("services.participant_safeguard_service")
+    monkeypatch.setattr(safeguard_service.Config, "MINOR_SAFEGUARDS_ENFORCED", True, raising=False)
+    return app
 
 
 def _register(client, username, role):
@@ -242,3 +246,49 @@ def test_legacy_admin_header_disabled_by_default_in_pilot(tmp_path, monkeypatch)
     response = client.get("/api/risk-review", headers={"X-Admin-Token": "legacy-admin-token"})
     assert response.status_code == 401
     assert response.get_json()["error"]["code"] == "legacy_admin_token_disabled"
+
+
+def test_governance_sync_does_not_append_empty_legacy_capability():
+    script = BACKEND / "scripts" / "sync_api_governance_registries.py"
+    spec = importlib.util.spec_from_file_location("sync_api_governance_registries", script)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+
+    contract = {
+        "version": "test-contract",
+        "endpoints": [{"operation_id": "example.read.get"}],
+    }
+    registry = {
+        "capabilities": [
+            {"id": "capability.example", "operation_ids": ["example.read.get"]}
+        ],
+        "production_release_approved": False,
+    }
+
+    synchronized, convergence_operations = module.sync_operations(contract, registry)
+
+    assert convergence_operations == []
+    assert [item["id"] for item in synchronized["capabilities"]] == [
+        "capability.example"
+    ]
+
+
+def test_security_generator_is_stable_under_governance_sync():
+    generator_path = BACKEND / "scripts" / "generate_task31_security_registry.py"
+    sync_path = BACKEND / "scripts" / "sync_api_governance_registries.py"
+    generator_spec = importlib.util.spec_from_file_location("generate_task31_security_registry", generator_path)
+    sync_spec = importlib.util.spec_from_file_location("sync_api_governance_registries_for_security", sync_path)
+    generator = importlib.util.module_from_spec(generator_spec)
+    sync = importlib.util.module_from_spec(sync_spec)
+    assert generator_spec.loader is not None
+    assert sync_spec.loader is not None
+    generator_spec.loader.exec_module(generator)
+    sync_spec.loader.exec_module(sync)
+
+    generated = generator.build_registry()
+    contract = json.loads(generator.CONTRACT_PATH.read_text(encoding="utf-8"))
+    synchronized, added = sync.sync_security(contract, generated.copy())
+
+    assert added == []
+    assert synchronized == generated

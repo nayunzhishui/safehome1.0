@@ -323,8 +323,10 @@ def test_cloudbase_identity_matching_appid_without_source_is_rejected_without_ex
 
 def test_wechat_login_reports_network_failure_without_leaking_credentials(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")
-    monkeypatch.setenv("WECHAT_APPID", "wx-test-appid")
-    monkeypatch.setenv("WECHAT_SECRET", "secret-must-not-leak")
+    app.config.update(
+        WECHAT_APPID="wx-test-appid",
+        WECHAT_SECRET="secret-must-not-leak",
+    )
     auth_module = importlib.import_module("routes.auth")
 
     def fail_network(*_args, **_kwargs):
@@ -548,7 +550,7 @@ def test_wechat_phone_exchange_uses_cloudbase_token_file(tmp_path, monkeypatch):
     auth_module = importlib.import_module("routes.auth")
     token_path = tmp_path / "cloudbase_access_token"
     token_path.write_text("cloudbase-token", encoding="utf-8")
-    monkeypatch.setenv("CLOUDBASE_ACCESS_TOKEN_PATH", str(token_path))
+    app.config["CLOUDBASE_ACCESS_TOKEN_PATH"] = str(token_path)
     observed = {}
 
     class FakeResponse:

@@ -25,7 +25,7 @@ CONTRACT_PATH = ROOT / "shared" / "contracts" / "api-contract.json"
 SECURITY_PATH = ROOT / "content" / "security_privacy_abuse_registry.json"
 OPERATIONS_PATH = ROOT / "content" / "operations_capability_registry.json"
 
-FORMAL_ROLES = {"parent", "student", "researcher", "supervisor", "admin"}
+FORMAL_ROLES = ("parent", "student", "researcher", "supervisor", "admin")
 
 
 def load(path: Path) -> dict:
@@ -39,54 +39,45 @@ def dump(path: Path, payload: dict) -> None:
 def operation_action(endpoint: dict) -> str:
     method = str(endpoint.get("method") or "GET").upper()
     path = str(endpoint.get("path") or "").lower()
-    operation_id = str(endpoint.get("operation_id") or "").lower()
-    if method == "GET":
-        if "export" in path or "export" in operation_id or "download" in path:
-            return "export"
-        return "read"
-    if method == "DELETE":
+    if "/send" in path or "notification" in path and method == "POST":
+        return "send"
+    if "export" in path:
+        return "export"
+    if method == "DELETE" or "delete-my-data" in path:
         return "delete"
-    if method in {"PUT", "PATCH"}:
+    if method == "GET":
+        return "read"
+    if any(marker in path for marker in ("/transition", "/confirm", "/review", "/approve", "/disable", "/resolve", "/claim")):
         return "update"
-    if method == "POST":
-        if path.endswith("/send") or ".send" in operation_id or "send_" in operation_id:
-            return "send"
-        return "create"
-    return "update"
+    return "create" if method == "POST" else "update"
 
 
 def object_type(endpoint: dict) -> str:
-    module = str(endpoint.get("module") or "").removeprefix("routes.")
-    if module:
-        return module.replace("_routes", "")[:80]
-    parts = [part for part in str(endpoint.get("path") or "").split("/") if part and part != "api"]
-    return (parts[0] if parts else "api")[:80]
+    module = str(endpoint.get("module") or "routes.unknown").removeprefix("routes.")
+    return module.replace("_routes", "")
 
 
 def machine_security_fields(endpoint: dict) -> dict:
     access = endpoint.get("access") or {}
     request = endpoint.get("request") or {}
-    raw_roles = [str(role) for role in access.get("roles", []) if role]
-    public = "public" in raw_roles or access.get("mode") == "public"
-    allowed_roles = ["public"] if public else sorted(set(raw_roles) & FORMAL_ROLES)
-    denied_roles = [] if public else sorted(FORMAL_ROLES - set(allowed_roles))
+    allowed_roles = list(access.get("roles") or [])
+    if access.get("mode") == "public":
+        allowed_roles = ["public"]
+    denied_roles = list(FORMAL_ROLES) if allowed_roles == ["public"] else [
+        role for role in FORMAL_ROLES if role not in allowed_roles
+    ]
     return {
         "operation_id": endpoint.get("operation_id"),
         "method": endpoint.get("method"),
         "path": endpoint.get("path"),
         "object_type": object_type(endpoint),
         "action": operation_action(endpoint),
-        "object_scope": endpoint.get("object_scope") or "not_applicable_or_development_legacy",
+        "object_scope": endpoint.get("object_scope") or "unspecified",
         "allowed_roles": allowed_roles,
         "denied_roles": denied_roles,
         "legacy_admin_token": bool(access.get("legacy_admin_token", False)),
         "showcase_read_bypass": bool(access.get("showcase_read_bypass", False)),
-        "idempotency": request.get("idempotency") or {
-            "supported": False,
-            "required": False,
-            "header": None,
-            "max_length": None,
-        },
+        "idempotency": request.get("idempotency") or {},
     }
 
 
@@ -176,12 +167,14 @@ def sync_operations(contract: dict, registry: dict) -> tuple[dict, list[str]]:
     target_operations = sorted(endpoint_ids - covered_elsewhere)
 
     new_target = convergence_capability(target_operations, str(contract.get("version") or "unknown"))
-    if existing_target:
+    if existing_target and not target_operations:
+        capabilities = [item for item in capabilities if item.get("id") != target_id]
+    elif existing_target:
         # Preserve any future human fields while refreshing the required
         # machine coverage and branch-specific evidence fields.
         new_target = {**existing_target, **new_target}
         capabilities = [new_target if item.get("id") == target_id else item for item in capabilities]
-    else:
+    elif target_operations:
         capabilities.append(new_target)
 
     # Remove stale operation IDs from all other capabilities when the API no
@@ -196,7 +189,8 @@ def sync_operations(contract: dict, registry: dict) -> tuple[dict, list[str]]:
 
     registry["capabilities"] = capabilities
     registry["production_release_approved"] = False
-    registry["api_contract_version"] = contract.get("version")
+    registry.pop("api_contract_version", None)
+    registry["generated_from_contract_version"] = contract.get("version")
     return registry, target_operations
 
 

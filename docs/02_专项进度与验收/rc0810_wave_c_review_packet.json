@@ -1,0 +1,122 @@
+{
+  "schema": "safehome.rc0810.wave-review-packet.v2",
+  "wave": "C",
+  "freeze_unit": "RC0810-F26",
+  "packet_nonce": "wave-c-30e0ae53-20260826-fix1",
+  "reviewer_id": "sartre_replacement",
+  "base_checkpoint": {
+    "commit": "908603e100c5cb473f2d632f3e673d3824ebff76",
+    "status": "review_pass",
+    "wave_b_packet_sha256": "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21",
+    "wave_b_decision_sha256": "a24af5a4fb5f713af91c13767ea6b460cf4dea1a3e44544b6ec0b09df3a37feb"
+  },
+  "review_head": {
+    "commit": "30e0ae53e3642bcc040d6959b3c0e93caa5f8f05",
+    "source_tree": "91d0dea8572e730e35f3a321d7dba70059e476c9",
+    "pushed_to_origin_main": true
+  },
+  "release_candidate": {
+    "commit": "f879440ecb2d82cb1ebe7798ff87db558f14e35a",
+    "source_tree": "cc6be2cca3dd73217dc26ef8df5733b58f1c7ec5",
+    "reason_review_head_differs": "review head contains only F26 evidence, documentation and review-gate fix after packaging",
+    "production_release_approved": false
+  },
+  "execution_units": [
+    "RC0810-F22-B",
+    "RC0810-F23",
+    "RC0810-F24",
+    "RC0810-F25-B",
+    "RC0810-F26"
+  ],
+  "diff": {
+    "range": "908603e100c5cb473f2d632f3e673d3824ebff76..30e0ae53e3642bcc040d6959b3c0e93caa5f8f05",
+    "files_changed": 58,
+    "insertions": 10647,
+    "deletions": 339,
+    "diff_check": "pass"
+  },
+  "acceptance_focus": [
+    "F22-B security evidence/versioning/exception and stale-evidence fail-closed behavior",
+    "F23 contract fuzz, BOLA/IDOR sequences and isolated mutation validity",
+    "F24 configuration classification, Redis failure policy, claim-token storage/replay, audit-chain migration and UI error state",
+    "F25-B production page/package mapping and refusal to fabricate platform/device/human evidence",
+    "F26 clean Git archive binding, artifacts/hashes/SBOM inventory, PR8 close matrix, release drill, four-GO, phase separation and NO-GO truthfulness",
+    "permissions, Consent, privacy, migrations, production artifacts, security gate and final RC are not skipped"
+  ],
+  "evidence": [
+    {
+      "task": "F22-B",
+      "path": "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
+      "status": "historical_stale_for_f26",
+      "note": "must not approve current RC"
+    },
+    {
+      "task": "F23",
+      "path": "docs/02_专项进度与验收/rc0810_f23_mutation_report.json",
+      "status": "9 targeted contracts and 6/6 mutants previously passed"
+    },
+    {
+      "task": "F24",
+      "path": "docs/02_专项进度与验收/rc0810_f24_evidence.json",
+      "status": "21 targeted/direct-impact tests; 146 config reads; 4 contracts; 136 compatibility operations"
+    },
+    {
+      "task": "F25-B",
+      "path": "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+      "status": "4 targeted tests and 5 self-checks; 8 external blockers"
+    },
+    {
+      "task": "F26",
+      "path": "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+      "human_path": "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+      "status": "9 targeted tests and 6 anti-forgery/drift self-checks; release NO_GO"
+    }
+  ],
+  "f26_artifacts": {
+    "source_tar_sha256": "8e09fc9f27c924404332062e87b8b4f8513fff011495e878f420d01b95368838",
+    "backend_source_tar_sha256": "3fbc905d165c340bc77fa08ad98634baa96612f62962aac46bc665e5e4cb608d",
+    "miniprogram_zip_sha256": "ce5d3075469793bc8bfd96cfd5f234cf4bc80af5b5667b1970e7510b04aadcfd",
+    "source_sbom_sha256": "98a312837d87b4f9749c477fd188b0b5e12e10bc5ea3f9f204628a76aa1d4ed1",
+    "artifact_manifest_sha256": "0fd350cc05eb1d48102dc04da943e0f92ed42642344d1a494f17c8dac5f4912b",
+    "sha256sums_sha256": "8ce2e16cbac47b61c936914999caf833b0927e37e117276049b648e30e0d79c0"
+  },
+  "open_risks_and_blockers": [
+    "10 required CI categories were not run by explicit user direction",
+    "F22-B current security/SAST/dependency/container scan evidence is stale",
+    "backend image and digest do not exist because Docker daemon is unavailable",
+    "WeChat console, DevTools, real account/request, iOS/Android, zero-context human review, RACI and real-world evidence remain missing",
+    "Product, Platform, Engineering and Professional GO are all unapproved",
+    "72-hour candidate observation has not run",
+    "Harness wave-C task evidence remains stale and no review_pass was fabricated"
+  ],
+  "fix_loop": {
+    "iteration": 1,
+    "previous_packet_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/reviews/wave-C-f26-fix-required-3d58a435.json",
+    "previous_packet_sha256": "3d58a435720437ea8a3d8e2dd5090aa5a65f3455dab546104daaea1abc2bd55b",
+    "review_decision": "fix_required",
+    "finding": "F26 review decision accepted self-consistent packet identity without verifying a frozen packet",
+    "fix_commit": "30e0ae53e3642bcc040d6959b3c0e93caa5f8f05",
+    "targeted_retest": "9 passed",
+    "full_regression_rerun": false
+  },
+  "review_constraints": {
+    "read_only": true,
+    "do_not_repeat_full_regression": true,
+    "rerun_only": [
+      "finding reproduction",
+      "directly relevant targeted test",
+      "evidence gap that changes the decision"
+    ],
+    "pass_means": "wave-C implementation and truthful NO-GO evidence are acceptable",
+    "pass_does_not_mean": "production GO, platform approval, human approval, current security clearance or stable release"
+  },
+  "requested_output": {
+    "decision": ["pass", "fix_required"],
+    "findings": "severity, file/line, reachable impact, evidence, minimal fix and targeted retest",
+    "confirm": [
+      "candidate/report binding",
+      "no forged review/platform/security/CI pass",
+      "NO-GO remains mandatory while blockers exist"
+    ]
+  }
+}

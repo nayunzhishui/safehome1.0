@@ -6,6 +6,7 @@
   "flags": [
     {"name": "TRUST_CLOUDBASE_IDENTITY_HEADERS", "default": false, "production": false, "owner": "security_owner", "rollback": "set_0_and_rebuild"},
     {"name": "ALLOW_PRODUCTION_SQLITE", "default": false, "production": false, "owner": "database_owner", "rollback": "set_0_and_rebuild"},
+    {"name": "REDIS_ENABLED", "default": true, "production": false, "owner": "reliability_owner", "rollback": "set_0_and_rebuild"},
     {"name": "CONTENT_GOVERNANCE_ENFORCED", "default": false, "production": true, "owner": "content_owner", "rollback": "withdraw_artifact_keep_enforced"},
     {"name": "CONTENT_GOVERNANCE_PUBLISH_ENABLED", "default": true, "production": false, "owner": "content_owner", "rollback": "set_0_and_rebuild"},
     {"name": "WECHAT_SUBSCRIBE_SEND_ENABLED", "default": false, "production": false, "owner": "wechat_platform_owner", "rollback": "set_0_and_rebuild"},
@@ -16,6 +17,7 @@
     {"name": "AI_QA_ENABLED", "default": false, "production": false, "owner": "ai_owner", "rollback": "set_0_and_rebuild"},
     {"name": "AI_QA_SANDBOX_ENABLED", "default": true, "production": false, "owner": "ai_owner", "rollback": "set_0_and_rebuild"},
     {"name": "AI_QA_REAL_PROVIDER_ENABLED", "default": false, "production": false, "owner": "ai_owner", "rollback": "set_0_and_rebuild"},
+    {"name": "LEGACY_ADMIN_TOKEN_ENABLED", "default": false, "production": false, "owner": "security_owner", "rollback": "set_0_and_rebuild"},
     {"name": "OFFLINE_BENCHMARK_ENABLED", "default": true, "production": false, "owner": "research_owner", "rollback": "set_0_and_rebuild"},
     {"name": "OFFLINE_EXTERNAL_INGEST_ENABLED", "default": false, "production": false, "owner": "research_owner", "rollback": "set_0_and_rebuild"},
     {"name": "OFFLINE_PRODUCTION_REPLACEMENT_ALLOWED", "default": false, "production": false, "owner": "release_owner", "rollback": "set_0_and_rebuild"},
@@ -34,6 +36,7 @@
     {"name": "OPERATIONS_LOCAL_RELEASE_ENABLED", "default": true, "production": false, "owner": "operations_owner", "rollback": "set_0_and_rebuild"},
     {"name": "OPERATIONS_PRODUCTION_RELEASE_ENABLED", "default": false, "production": false, "owner": "release_owner", "rollback": "set_0_and_rebuild"},
     {"name": "PRODUCTION_FEATURES_UNLOCKED", "default": false, "production": false, "owner": "release_owner", "rollback": "set_0_and_rebuild"},
-    {"name": "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED", "default": true, "production": false, "owner": "clinical_governance_owner", "rollback": "set_0_and_rebuild"}
+    {"name": "THERAPEUTIC_ASSESSMENT_LIFECYCLE_ENABLED", "default": true, "production": false, "owner": "clinical_governance_owner", "rollback": "set_0_and_rebuild"},
+    {"name": "SAFETY_SCHEDULER_ENABLED", "default": true, "production": false, "owner": "safety_owner", "rollback": "set_0_and_rebuild"}
   ]
 }

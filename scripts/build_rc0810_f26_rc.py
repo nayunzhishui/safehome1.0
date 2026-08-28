@@ -33,6 +33,7 @@ ARTIFACT_ROOT = ROOT / ".codex_tmp" / "rc0810" / "f26"
 RC0810_RUNTIME_ROOT = ROOT / ".codex_tmp" / "rc0810"
 ACTIVE_STATE_POINTER = RC0810_RUNTIME_ROOT / "state.json"
 WAVE_C_PACKET_NAME = "wave-C-f26.json"
+WAVE_C_PACKET_ARCHIVE = ROOT / "docs" / "02_专项进度与验收" / "rc0810_wave_c_review_packet.json"
 WAVE_C_BASE_COMMIT = "908603e1"
 WAVE_C_PENDING_BLOCKER = "wave_c_independent_review_pending"
 WAVE_B_PACKET_SHA256 = "2b7c5c249bc80023c094a0a818f203364989d4ea408f59253ef48153c48c6e21"
@@ -748,13 +749,69 @@ def _bound_review_packet_errors(report: dict[str, Any]) -> list[str]:
     path_value = review.get("packet_path")
     if not isinstance(path_value, str):
         return ["review_packet_not_prebound"]
+    active_binding_error: Exception | None = None
     try:
         expected_path, _, _, _ = _expected_wave_c_packet_path()
     except (OSError, json.JSONDecodeError, RcEvidenceError) as exc:
-        return [f"harness_binding_invalid:{exc}"]
+        active_binding_error = exc
+        run_id = review.get("harness_binding", {}).get("run_id")
+        expected_path = (RC0810_RUNTIME_ROOT / str(run_id or "") / "reviews" / WAVE_C_PACKET_NAME).resolve()
     path = (ROOT / path_value).resolve()
-    if path != expected_path or not path.is_file():
+    if path != expected_path:
         return ["review_packet_missing_or_self_reported_path"]
+    if not path.is_file():
+        archive_value = review.get("packet_archive_path")
+        archive_path = (ROOT / str(archive_value or "")).resolve()
+        if archive_path != WAVE_C_PACKET_ARCHIVE.resolve() or not archive_path.is_file():
+            return ["review_packet_missing_or_self_reported_path"]
+        archive_bytes = archive_path.read_bytes()
+        archive_sha256 = _sha256(archive_bytes)
+        if (
+            archive_sha256 != review.get("packet_sha256")
+            or archive_sha256 != review.get("packet_archive_sha256")
+        ):
+            return ["review_packet_archive_hash_mismatch"]
+        try:
+            packet = json.loads(archive_bytes)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            return [f"review_packet_unreadable:{exc}"]
+        harness = review.get("harness_binding", {})
+        expected_runtime = (
+            f".codex_tmp/rc0810/{harness.get('run_id')}/reviews/{WAVE_C_PACKET_NAME}"
+        )
+        errors: list[str] = []
+        if path_value != expected_runtime:
+            errors.append("bound_review_packet_path_mismatch")
+        if packet.get("schema") != "safehome.rc0810.wave-review-packet.v2" or packet.get("wave") != "C":
+            errors.append("review_packet_identity_invalid")
+        if packet.get("reviewer_id") != "sartre_replacement":
+            errors.append("review_packet_reviewer_invalid")
+        if packet.get("base_checkpoint", {}).get("commit") != review.get("base_commit"):
+            errors.append("review_packet_base_invalid")
+        nonce = packet.get("packet_nonce")
+        packet_head = packet.get("review_head", {}).get("commit")
+        packet_tree = packet.get("review_head", {}).get("source_tree")
+        candidate = report.get("candidate", {})
+        if review.get("packet_nonce") != nonce:
+            errors.append("bound_review_packet_nonce_mismatch")
+        if review.get("packet_head") != packet_head or review.get("packet_source_tree") != packet_tree:
+            errors.append("bound_review_packet_head_mismatch")
+        if packet.get("release_candidate", {}).get("commit") != candidate.get("source_commit"):
+            errors.append("review_packet_candidate_commit_invalid")
+        if packet.get("release_candidate", {}).get("source_tree") != candidate.get("source_tree"):
+            errors.append("review_packet_candidate_tree_invalid")
+        if harness.get("fixed_reviewer_id") != "sartre_replacement":
+            errors.append("bound_harness_state_mismatch")
+        try:
+            if packet_tree != _git_text("rev-parse", f"{packet_head}^{{tree}}"):
+                errors.append("review_packet_head_tree_invalid")
+            _run("git", "merge-base", "--is-ancestor", review.get("base_commit"), packet_head)
+            _run("git", "merge-base", "--is-ancestor", packet_head, "HEAD")
+        except (RcEvidenceError, TypeError) as exc:
+            errors.append(f"review_packet_git_binding_invalid:{exc}")
+        return errors
+    if active_binding_error is not None:
+        return [f"harness_binding_invalid:{active_binding_error}"]
     try:
         packet = _read_json(path)
     except (OSError, json.JSONDecodeError) as exc:

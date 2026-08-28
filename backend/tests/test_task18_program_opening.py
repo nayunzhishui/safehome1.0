@@ -11,7 +11,7 @@ MINIPROGRAM_ROOT = PROJECT_ROOT / "apps" / "miniprogram"
 ADMIN_TOKEN = "task18-program-admin-token"
 
 
-def _fresh_app(tmp_path, monkeypatch, app_env="production"):
+def _fresh_app(tmp_path, monkeypatch, app_env="validation"):
     sys.path.insert(0, str(BACKEND_ROOT))
     for name in list(sys.modules):
         if name in {"app", "config", "database", "models"} or name.startswith("routes.") or name.startswith("services."):
@@ -20,15 +20,13 @@ def _fresh_app(tmp_path, monkeypatch, app_env="production"):
     monkeypatch.setenv("DATABASE_PATH", str(tmp_path / "safehome-test.sqlite3"))
     monkeypatch.setenv("CONTENT_DIR", str(PROJECT_ROOT / "content"))
     monkeypatch.setenv("DB_PROVIDER", "sqlite")
-    monkeypatch.setenv("ALLOW_PRODUCTION_SQLITE", "1")
     monkeypatch.setenv("SECRET_KEY", "task18-program-production-secret-key")
     monkeypatch.setenv("ADMIN_EXPORT_TOKEN", ADMIN_TOKEN)
-    if app_env == "production":
-        monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "1")
+    monkeypatch.setenv("LEGACY_ADMIN_TOKEN_ENABLED", "1")
     return importlib.import_module("app").app
 
 
-def test_production_showcase_opens_all_programs_without_marking_them_approved(tmp_path, monkeypatch):
+def test_validation_showcase_opens_all_programs_without_marking_them_approved(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()
 

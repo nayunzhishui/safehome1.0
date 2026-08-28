@@ -12704,3 +12704,12 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 项目旧 UI 文档未随分支删除；新总指导与真值表同时保留。UIproduct 独立工作树的 5 个未跟踪预览文件、F06 工作树的 5 个草稿均未改动。
 - [x] 合并验证：34 个变更 JS、54 个 JSON 可解析；相关前端合同 `25 passed`；UIproduct 分支真值与工程 Harness 通过，53/53 页面已登记。
 - [ ] 全量真机仍为 `fix_required`，仅记录 21/53；本地集成不代表正式上线、生产批准或真机验收完成。
+
+## 2026-08-28：RC0810 required gate 恢复状态
+
+- [x] F01 能力矩阵与稳定源码哈希校验已对齐当前配置代码；F01 专项 `18 passed`。
+- [x] F05、F16/F36/B04/F09 对象范围测试夹具和当前首页合同已修正；相关定向测试通过。
+- [x] 迁移恢复脚本显式执行 pending migrations；Task35、内容/API/config inventory 校验通过。
+- [ ] clean source freeze 后重建 F25-B 包、重跑 F22-A/B 安全扫描、required CI、迁移回滚/恢复与最终全量回归。
+- [ ] 既有 reviewer 只在 F12-B 冻结点接收精简 packet；当前保持 `review_pending_wave`，不得伪造 `review_pass`。
+- [ ] production 仍 NO-GO：外部平台/真机/CloudBase/Secret/发布批准未完成，npm audit 仍有 4 个 High。

@@ -2,9 +2,9 @@
   "schema_version": "safehome.operations-capability-registry.v1",
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
-  "generated_from_contract_version": "2026-07-21.2",
-  "operation_count": 407,
-  "capability_count": 44,
+  "generated_from_contract_version": "2026-08-26.f24",
+  "operation_count": 417,
+  "capability_count": 45,
   "capabilities": [
     {
       "id": "capability.app",
@@ -29,7 +29,7 @@
         "public"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 3)",
         "shared/contracts/api-contract.json"
@@ -64,10 +64,12 @@
         "participant_text_allowed_in_governance_records": false
       },
       "open_roles": [
-        "admin"
+        "admin",
+        "researcher",
+        "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 6)",
         "shared/contracts/api-contract.json"
@@ -114,7 +116,7 @@
         "AI_QA_ENABLED",
         "AI_QA_SANDBOX_ENABLED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 29)",
         "shared/contracts/api-contract.json"
@@ -183,7 +185,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 6)",
         "shared/contracts/api-contract.json"
@@ -229,7 +231,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 23)",
         "shared/contracts/api-contract.json"
@@ -290,7 +292,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 2)",
         "shared/contracts/api-contract.json"
@@ -331,7 +333,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 2)",
         "shared/contracts/api-contract.json"
@@ -372,9 +374,9 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
-        "backend/tests (operation coverage: 2)",
+        "backend/tests (operation coverage: 3)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -382,6 +384,7 @@
       "technical_implementation_complete": true,
       "production_release_approved": false,
       "operation_ids": [
+        "consent.add_consent_annotation.post",
         "consent.create_consent_record.post",
         "consent.list_consent_records.get"
       ]
@@ -413,7 +416,7 @@
         "CONTENT_GOVERNANCE_ENFORCED",
         "CONTENT_GOVERNANCE_PUBLISH_ENABLED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 13)",
         "shared/contracts/api-contract.json"
@@ -466,7 +469,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 6)",
         "shared/contracts/api-contract.json"
@@ -511,7 +514,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 2)",
         "shared/contracts/api-contract.json"
@@ -552,7 +555,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 2)",
         "shared/contracts/api-contract.json"
@@ -593,7 +596,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 4)",
         "shared/contracts/api-contract.json"
@@ -636,7 +639,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 1)",
         "shared/contracts/api-contract.json"
@@ -676,7 +679,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 4)",
         "shared/contracts/api-contract.json"
@@ -719,7 +722,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 1)",
         "shared/contracts/api-contract.json"
@@ -759,7 +762,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 2)",
         "shared/contracts/api-contract.json"
@@ -800,7 +803,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 1)",
         "shared/contracts/api-contract.json"
@@ -840,7 +843,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 5)",
         "shared/contracts/api-contract.json"
@@ -855,6 +858,50 @@
         "messages.mark_all_messages_read.post",
         "messages.mark_message_read.post",
         "messages.send_researcher_message.post"
+      ]
+    },
+    {
+      "id": "capability.minor_safeguards",
+      "title": "minor safeguards",
+      "intended_use": "通过统一机器契约受控提供“minor_safeguards”能力；不得扩展为诊断、自动治疗决定或越权访问。",
+      "owner": {
+        "accountable_role": "engineering_owner",
+        "named_owner_status": "pending_human_assignment"
+      },
+      "dependencies": [
+        "shared/contracts/api-contract.json",
+        "content/security_privacy_abuse_registry.json"
+      ],
+      "data": {
+        "object_scopes": [
+          "unspecified"
+        ],
+        "sensitivity": "moderate_or_low",
+        "participant_text_allowed_in_governance_records": false
+      },
+      "open_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "feature_flags": [],
+      "version": "2026-08-26.f24",
+      "tests": [
+        "backend/tests (operation coverage: 5)",
+        "shared/contracts/api-contract.json"
+      ],
+      "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
+      "governance_status": "engineering_registered_release_approval_pending",
+      "technical_implementation_complete": true,
+      "production_release_approved": false,
+      "operation_ids": [
+        "minor_safeguards.child_assent.post",
+        "minor_safeguards.confirm_age.post",
+        "minor_safeguards.guardian_consent.post",
+        "minor_safeguards.status.get",
+        "minor_safeguards.supervised_age_override.post"
       ]
     },
     {
@@ -886,7 +933,7 @@
       "feature_flags": [
         "WECHAT_SUBSCRIBE_SEND_ENABLED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 3)",
         "shared/contracts/api-contract.json"
@@ -929,7 +976,7 @@
         "OFFLINE_BENCHMARK_ENABLED",
         "OFFLINE_EXTERNAL_INGEST_ENABLED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 30)",
         "shared/contracts/api-contract.json"
@@ -1001,7 +1048,7 @@
         "OPERATIONS_LOCAL_RELEASE_ENABLED",
         "OPERATIONS_PRODUCTION_RELEASE_ENABLED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 17)",
         "shared/contracts/api-contract.json"
@@ -1058,7 +1105,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 5)",
         "shared/contracts/api-contract.json"
@@ -1102,7 +1149,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 14)",
         "shared/contracts/api-contract.json"
@@ -1155,7 +1202,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 1)",
         "shared/contracts/api-contract.json"
@@ -1196,7 +1243,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 14)",
         "shared/contracts/api-contract.json"
@@ -1250,7 +1297,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 4)",
         "shared/contracts/api-contract.json"
@@ -1293,7 +1340,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 3)",
         "shared/contracts/api-contract.json"
@@ -1335,7 +1382,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 17)",
         "shared/contracts/api-contract.json"
@@ -1393,7 +1440,7 @@
         "RELIABILITY_WORKBENCH_ENABLED",
         "RELIABILITY_GRADUAL_RELEASE_ENABLED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 21)",
         "shared/contracts/api-contract.json"
@@ -1453,7 +1500,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 1)",
         "shared/contracts/api-contract.json"
@@ -1491,7 +1538,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 5)",
         "shared/contracts/api-contract.json"
@@ -1533,7 +1580,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 14)",
         "shared/contracts/api-contract.json"
@@ -1588,7 +1635,7 @@
         "RESEARCH_METHODOLOGY_WORKBENCH_ENABLED",
         "RESEARCH_OUTCOME_ANALYSIS_ALLOWED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 10)",
         "shared/contracts/api-contract.json"
@@ -1635,7 +1682,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 16)",
         "shared/contracts/api-contract.json"
@@ -1687,7 +1734,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 2)",
         "shared/contracts/api-contract.json"
@@ -1729,7 +1776,7 @@
       "feature_flags": [
         "SECURITY_CONTROL_WORKBENCH_ENABLED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 5)",
         "shared/contracts/api-contract.json"
@@ -1769,7 +1816,7 @@
         "public"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 1)",
         "shared/contracts/api-contract.json"
@@ -1809,9 +1856,9 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
-        "backend/tests (operation coverage: 2)",
+        "backend/tests (operation coverage: 6)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -1819,8 +1866,12 @@
       "technical_implementation_complete": true,
       "production_release_approved": false,
       "operation_ids": [
+        "supervision.acknowledge_supervision_request.post",
         "supervision.create_supervision_request.post",
-        "supervision.reply_supervision_request.post"
+        "supervision.get_supervision_request.get",
+        "supervision.get_supervision_request_for_reviewer.get",
+        "supervision.reply_supervision_request.post",
+        "supervision.resolve_supervision_request.post"
       ]
     },
     {
@@ -1848,7 +1899,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 1)",
         "shared/contracts/api-contract.json"
@@ -1885,7 +1936,7 @@
         "researcher"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 1)",
         "shared/contracts/api-contract.json"
@@ -1925,7 +1976,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 97)",
         "shared/contracts/api-contract.json"
@@ -2061,7 +2112,7 @@
         "supervisor"
       ],
       "feature_flags": [],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 4)",
         "shared/contracts/api-contract.json"
@@ -2105,7 +2156,7 @@
       "feature_flags": [
         "UX_GOVERNANCE_WORKBENCH_ENABLED"
       ],
-      "version": "2026-07-21.2",
+      "version": "2026-08-26.f24",
       "tests": [
         "backend/tests (operation coverage: 5)",
         "shared/contracts/api-contract.json"
@@ -2120,55 +2171,6 @@
         "ux_governance.post_evidence_package.post",
         "ux_governance.public_status.get",
         "ux_governance.registry.get"
-      ]
-    },
-    {
-      "id": "participant_safety_identity_convergence_20260807",
-      "name": "参与者安全、年龄保护、认证收敛与督导增强",
-      "intended_use": "覆盖本分支新增的年龄/监护人保护、风险复核身份、人工督导状态和相关机器API；仅用于受控试点与工程验收。",
-      "owner": "SafeHome project owner + security/supervision reviewer",
-      "dependencies": [
-        "shared/contracts/api-contract.json",
-        "participant_minor_policy.json",
-        "risk_keywords.json",
-        "explicit_schema_migrations",
-        "named Bearer actor authentication"
-      ],
-      "data": [
-        "age_band (under_14 / 14_or_over only; no DOB)",
-        "guardian/child safeguard decisions",
-        "risk-review operational metadata",
-        "supervision operational metadata and restricted contact"
-      ],
-      "open_roles": [
-        "parent",
-        "student",
-        "supervisor",
-        "admin"
-      ],
-      "feature_flags": [
-        "MINOR_SAFEGUARDS_ENFORCED",
-        "LEGACY_ADMIN_TOKEN_ENABLED (compatibility only)"
-      ],
-      "version": "2026-08-07-security-convergence-v1",
-      "tests": [
-        "backend/tests/test_security_convergence_20260807.py",
-        "backend/tests/test_risk_service.py",
-        ".github/workflows/check.yml"
-      ],
-      "rollback": "revert branch commits before merge; if already piloted, stop writes, retain audit evidence, then follow explicit_schema_migrations rollback notes and restore prior route adapters",
-      "governance_status": "engineering_ready_human_and_pilot_acceptance_required",
-      "contract_version": "2026-07-21.2",
-      "operation_ids": [
-        "minor_safeguards.child_assent.post",
-        "minor_safeguards.confirm_age.post",
-        "minor_safeguards.guardian_consent.post",
-        "minor_safeguards.status.get",
-        "minor_safeguards.supervised_age_override.post",
-        "supervision.acknowledge_supervision_request.post",
-        "supervision.get_supervision_request.get",
-        "supervision.get_supervision_request_for_reviewer.get",
-        "supervision.resolve_supervision_request.post"
       ]
     }
   ],
@@ -2198,6 +2200,5 @@
     "production_dual_control"
   ],
   "production_release_approved": false,
-  "boundary_notice": "工程登记与本地合成回放不等于人工、伦理、云、真机或生产发布批准。",
-  "api_contract_version": "2026-07-21.2"
+  "boundary_notice": "工程登记与本地合成回放不等于人工、伦理、云、真机或生产发布批准。"
 }

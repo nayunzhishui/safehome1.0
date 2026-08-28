@@ -120,10 +120,11 @@ def test_profile_followup_and_sandplay_require_matching_owner(tmp_path):
 
     assert no_sandplay.status_code == 401
     assert owner_sandplay.status_code == 200
-    assert admin_sandplay_post.status_code == 201
+    assert admin_sandplay_post.status_code == 404
+    assert admin_sandplay_post.get_json()["error"]["code"] == "not_found"
 
 
-def test_parent_assessment_sensitive_reads_require_admin_or_owner(tmp_path):
+def test_parent_assessment_detail_requires_owner_or_explicit_object_scope(tmp_path):
     app = _fresh_app(tmp_path)
     client = app.test_client()
     submission_id = _insert_parent_assessment()
@@ -140,7 +141,8 @@ def test_parent_assessment_sensitive_reads_require_admin_or_owner(tmp_path):
     assert no_detail_token.status_code == 401
     assert wrong_owner.status_code == 401
     assert owner.status_code == 200
-    assert admin.status_code == 200
+    assert admin.status_code == 404
+    assert admin.get_json()["error"]["code"] == "not_found"
 
     no_action_owner = client.post(f"/api/parent-assessments/{submission_id}/actions", json={"action_key": "saved"})
     owner_action = client.post(

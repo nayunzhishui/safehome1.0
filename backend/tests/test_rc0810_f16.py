@@ -202,7 +202,7 @@ def test_f11_fixture_backup_restore_upgrade_drill_is_synthetic_and_no_go():
     report = json.loads(result.stdout)
     assert report["fixture_data_class"] == "synthetic_only"
     assert report["before"] == report["after"]
-    assert report["migration_head"] == "2026_08_25_070"
+    assert report["migration_head"] == "2026_08_26_078"
     assert report["rpo_rto"]["production_actual"] is None
     assert report["rpo_rto"]["status"] == "pending_external"
     assert report["production_release_approved"] is False

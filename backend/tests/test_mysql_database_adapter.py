@@ -72,6 +72,14 @@ def test_mysql_scalar_text_default_uses_varchar_for_mysql57():
     assert definition == "VARCHAR(191) NOT NULL DEFAULT 'visible'"
 
 
+def test_mysql_digest_column_added_by_migration_is_indexable():
+    database = importlib.import_module("database")
+
+    definition = database.mysqlize_column_definition("claim_token_digest", "TEXT")
+
+    assert definition == "VARCHAR(191)"
+
+
 def test_all_schema_statements_avoid_mysql57_text_defaults():
     database = importlib.import_module("database")
 
@@ -85,6 +93,25 @@ def test_all_schema_statements_avoid_mysql57_text_defaults():
         )
 
     assert invalid_lines == []
+
+
+def test_mysql_schema_conversion_handles_multiple_columns_per_line():
+    database = importlib.import_module("database")
+
+    converted = database.mysqlize_schema_statement(
+        """
+        CREATE TABLE IF NOT EXISTS safety_scheduler_events (
+            id TEXT PRIMARY KEY, event_key TEXT NOT NULL UNIQUE,
+            due_at TEXT, metadata_json TEXT NOT NULL DEFAULT '{}',
+            created_at TEXT NOT NULL
+        )
+        """
+    )
+
+    assert "id VARCHAR(128) PRIMARY KEY" in converted
+    assert "event_key VARCHAR(191) NOT NULL UNIQUE" in converted
+    assert "metadata_json LONGTEXT NOT NULL" in converted
+    assert "DEFAULT '{}'" not in converted
 
 
 def test_all_mysql_key_columns_use_indexable_types():

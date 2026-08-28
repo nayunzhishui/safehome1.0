@@ -79,6 +79,22 @@ def _case(client, headers):
     )
     assert created.status_code == 201
     case = created.get_json()["data"]
+    with client.application.app_context():
+        from database import get_connection, now_iso
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                """INSERT INTO therapeutic_assessment_work_queue (
+                id, case_id, queue_type, task_code, required_competency,
+                priority, status, scope_snapshot_json, assigned_user_id,
+                due_at, version, created_by, created_at, updated_at
+                ) VALUES (?, ?, 'supervision', 'feedback_review', 'T3',
+                          'normal', 'claimed', '{}', 's-f09',
+                          '2099-01-01T00:00:00+00:00', 1, 's-f09', ?, ?)""",
+                (f"queue-{case['id']}", case["id"], timestamp, timestamp),
+            )
+            conn.commit()
     assigned = client.post(
         f"/api/therapeutic-assessment/cases/{case['id']}/assign",
         headers={**headers["s-f09"], "Idempotency-Key": "f09-assign"},

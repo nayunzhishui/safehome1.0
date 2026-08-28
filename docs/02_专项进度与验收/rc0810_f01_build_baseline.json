@@ -8,7 +8,7 @@
   "capability_matrix": "config/rc0810/capability_matrix.json",
   "release_population_contract": "config/rc0810/release_population_and_client_contract.json",
   "source_inventory_count": 12,
-  "capability_flag_count": 31,
+  "capability_flag_count": 34,
   "artifact_profile_count": 5,
   "test_count": 18,
   "combined_test_count": 25,

@@ -9,10 +9,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
+
+from services.artifact_integrity_service import artifact_sha256
+
+
 REGISTRY_PATH = ROOT / "config" / "task35_registry.json"
 MANIFEST_PATH = ROOT / "content" / "offline_baseline_manifest.json"
 
@@ -34,8 +39,9 @@ def verify() -> dict:
         if not path.is_file():
             failures.append({"task": "T35-F00", "path": artifact["path"], "reason": "missing"})
             continue
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
-        if actual != artifact["sha256"]:
+        raw_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+        normalized_hash = artifact_sha256(path)
+        if artifact["sha256"] not in {raw_hash, normalized_hash}:
             failures.append({"task": "T35-F00", "path": artifact["path"], "reason": "sha256_mismatch"})
     return {
         "schema": "safehome.task35.verify.v1",

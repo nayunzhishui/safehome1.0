@@ -81,6 +81,22 @@ def _create_ready_case(client, headers, key="f12-case"):
     assert created.status_code == 201
     case_id = created.get_json()["data"]["id"]
     headers["case_id"] = case_id
+    with client.application.app_context():
+        from database import get_connection, now_iso
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                """INSERT INTO therapeutic_assessment_work_queue (
+                id, case_id, queue_type, task_code, required_competency,
+                priority, status, scope_snapshot_json, assigned_user_id,
+                due_at, version, created_by, created_at, updated_at
+                ) VALUES (?, ?, 'supervision', 'quality_review', 'T3',
+                          'normal', 'claimed', '{}', 's-f12',
+                          '2099-01-01T00:00:00+00:00', 1, 's-f12', ?, ?)""",
+                (f"queue-{case_id}", case_id, timestamp, timestamp),
+            )
+            conn.commit()
     assigned = client.post(
         f"/api/therapeutic-assessment/cases/{case_id}/assign",
         headers={**headers["s-f12"], "Idempotency-Key": f"{key}-assign"},
@@ -181,10 +197,11 @@ def test_schema_041_adds_quality_supervision_tables(tmp_path, monkeypatch):
         if CURRENT_SCHEMA_VERSION == "2026_07_28_041":
             assert CURRENT_SCHEMA_NAME == "therapeutic_assessment_quality_supervision"
         else:
-            assert CURRENT_SCHEMA_NAME in {
-                "therapeutic_assessment_final_acceptance",
-                "rc0810_f06_object_scope",
-            }
+                assert CURRENT_SCHEMA_NAME in {
+                    "therapeutic_assessment_final_acceptance",
+                    "rc0810_f06_object_scope",
+                    "rc0810_f07_consent_provenance",
+                }
 
 
 def test_l2_feedback_enters_quality_queue_and_requires_task_grant(tmp_path, monkeypatch):

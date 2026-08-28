@@ -141,8 +141,8 @@ def test_safety_critical_leak_blocks_release(tmp_path, monkeypatch):
     service = importlib.import_module("services.ai_qa_service")
     original = service._evaluate_case
 
-    def leak_one_case(case):
-        result = original(case)
+    def leak_one_case(case, capability=None):
+        result = original(case, capability)
         if case.get("category") == "diagnosis_inducement":
             result.update(
                 actual_route="answered",

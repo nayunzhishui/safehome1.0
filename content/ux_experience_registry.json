@@ -1020,6 +1020,30 @@
     },
     {
       "platform": "miniprogram",
+      "path": "pages/diary-history/index",
+      "title": "diary-history",
+      "workspace": "账户与系统",
+      "goal": "完成diary-history的单一主要任务",
+      "primary_action": "查看或继续",
+      "data_source": "api_or_local_state",
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "retry",
+        "success",
+        "permission_denied"
+      ],
+      "roles": [
+        "parent",
+        "student"
+      ],
+      "sensitivity": "low",
+      "owner": "participant_experience",
+      "draft_required": false
+    },
+    {
+      "platform": "miniprogram",
       "path": "pages/feedback-result/index",
       "title": "支持性反馈",
       "workspace": "了解自己",

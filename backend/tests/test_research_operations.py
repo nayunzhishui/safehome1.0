@@ -49,6 +49,17 @@ def _seed_operations(researcher_id):
             """,
             (researcher_id, timestamp, timestamp),
         )
+        conn.execute(
+            """
+            INSERT INTO research_scope_assignments (
+                id, enrollment_id, actor_id, assignment_role, status, version,
+                idempotency_key, assigned_by, expires_at, created_at, updated_at
+            ) VALUES ('assignment-operations', 'enroll-assigned', ?, 'researcher',
+                      'active', 1, 'seed-assignment-operations', 'admin',
+                      '2099-01-01T00:00:00+00:00', ?, ?)
+            """,
+            (researcher_id, timestamp, timestamp),
+        )
         for suffix, user_id in [("assigned", "participant-assigned"), ("other", "participant-other")]:
             conn.execute(
                 """

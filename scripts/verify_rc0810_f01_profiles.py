@@ -59,7 +59,11 @@ def _read(path: Path) -> Any:
 
 
 def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    # Repository text artifacts may be checked out with CRLF on Windows or LF
+    # in CI.  Bind the inventory to stable content bytes, not checkout style.
+    raw = path.read_bytes()
+    normalized = raw.replace(b"\\r\\n", b"\\n").replace(b"\\r", b"\\n")
+    return hashlib.sha256(normalized).hexdigest()
 
 
 def _canonical(value: Any) -> bytes:
@@ -85,18 +89,26 @@ def _source_flags(root: Path) -> set[str]:
     tree = ast.parse(text)
     names: set[str] = set()
     for node in ast.walk(tree):
-        if not isinstance(node, ast.Assign):
+        if not isinstance(node, ast.Call):
             continue
-        value = ast.get_source_segment(text, node.value) or ""
-        if "os.environ.get" not in value:
+        if not (
+            isinstance(node.func, ast.Attribute)
+            and node.func.attr == "get"
+            and isinstance(node.func.value, ast.Attribute)
+            and node.func.value.attr == "environ"
+            and isinstance(node.func.value.value, ast.Name)
+            and node.func.value.value.id == "os"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and isinstance(node.args[0].value, str)
+        ):
             continue
-        for target in node.targets:
-            if isinstance(target, ast.Name):
-                names.add(target.id)
+        env_name = node.args[0].value
+        if env_name.endswith(("_ENABLED", "_ALLOWED", "_FROZEN", "_UNLOCKED", "_APPROVED", "_ENFORCED", "_HEADERS", "_SQLITE")):
+            names.add(env_name)
     return {
         name
         for name in names
-        if name.endswith(("_ENABLED", "_ALLOWED", "_FROZEN", "_UNLOCKED", "_APPROVED", "_ENFORCED", "_HEADERS", "_SQLITE"))
     }
 
 

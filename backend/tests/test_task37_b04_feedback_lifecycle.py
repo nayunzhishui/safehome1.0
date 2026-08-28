@@ -102,6 +102,22 @@ def _ready_case(client, headers):
     )
     case = created.get_json()["data"]
     assert created.status_code == 201
+    with client.application.app_context():
+        from database import get_connection, now_iso
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                """INSERT INTO therapeutic_assessment_work_queue (
+                id, case_id, queue_type, task_code, required_competency,
+                priority, status, scope_snapshot_json, assigned_user_id,
+                due_at, version, created_by, created_at, updated_at
+                ) VALUES (?, ?, 'supervision', 'feedback_review', 'T3',
+                          'normal', 'claimed', '{}', 's-b04',
+                          '2099-01-01T00:00:00+00:00', 1, 's-b04', ?, ?)""",
+                (f"queue-{case['id']}", case["id"], timestamp, timestamp),
+            )
+            conn.commit()
     assert client.post(
         f"/api/therapeutic-assessment/cases/{case['id']}/assign",
         headers={**headers["s-b04"], "Idempotency-Key": "b04-assign"},
@@ -256,7 +272,7 @@ def test_withdrawal_receipts_and_scope_are_enforced(tmp_path, monkeypatch):
         f"/api/therapeutic-assessment/cases/{case_id}/lifecycle",
         headers=headers["p-b04"],
     )
-    assert other.status_code == 403
+    assert other.status_code == 404
     assert own.status_code == 200
     assert own.get_json()["data"]["delivery_receipts"][0]["status"] == "withdrawn"
     assert own.get_json()["data"]["recovery"]["withdrawal_propagation_ok"] is True

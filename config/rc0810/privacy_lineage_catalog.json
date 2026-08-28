@@ -582,7 +582,7 @@
       "schema_sources": [
         "backend/models.py"
       ],
-      "columns_sha256": "c1ca175db7845d1debc37b3f5af44ce6fc4e7fdc7db8fc5843cdadc8e1b55e62",
+      "columns_sha256": "bc209db96ad38f0f134f345ee36589d71ffcd25e945f59accd4839d65fb33544",
       "subject_keys": [
         "user_id"
       ],
@@ -640,9 +640,35 @@
         "backend/routes/profile.py",
         "backend/routes/training_plan.py",
         "backend/services/content_governance_service.py",
+        "backend/services/psychological_content_governance_service.py",
         "backend/services/relationship_pilot_common.py",
         "backend/services/research_methodology_service.py",
         "backend/services/training_recommendation_service.py"
+      ],
+      "collection_purpose": "pending_privacy_owner_confirmation",
+      "retention_policy": "pending_privacy_owner_confirmation",
+      "export_policy": "pending_privacy_owner_confirmation",
+      "deletion_policy": "pending_privacy_owner_confirmation",
+      "anonymization_policy": "pending_privacy_owner_confirmation",
+      "tombstone_policy": "pending_privacy_owner_confirmation",
+      "external_processor_ids": [],
+      "review_status": "pending_external"
+    },
+    {
+      "asset_id": "table:audit_chain_state",
+      "table_name": "audit_chain_state",
+      "schema_sources": [
+        "backend/models.py",
+        "backend/services/schema_migration_service.py"
+      ],
+      "columns_sha256": "2691592595cccc0b76b442bb0b324d5c0572d2b7f92db9642a96e350bee86abe",
+      "subject_keys": [],
+      "actor_keys": [],
+      "relationship_keys": [
+        "singleton_id"
+      ],
+      "access_paths": [
+        "backend/services/schema_migration_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
       "retention_policy": "pending_privacy_owner_confirmation",
@@ -659,7 +685,7 @@
       "schema_sources": [
         "backend/models.py"
       ],
-      "columns_sha256": "37fe2eb4af5e1c695698e490ad538afa15d166dbf52e9038adac409d929b3e76",
+      "columns_sha256": "7c93e61b2dd5b1affb72638439908fd7e225b9f26729b8e5aab3966e63b09227",
       "subject_keys": [],
       "actor_keys": [
         "actor_id"
@@ -671,7 +697,8 @@
         "backend/routes/product_events.py",
         "backend/routes/profile.py",
         "backend/services/privacy_request_service.py",
-        "backend/services/research_participant_service.py"
+        "backend/services/research_participant_service.py",
+        "backend/services/schema_migration_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
       "retention_policy": "pending_privacy_owner_confirmation",
@@ -1115,7 +1142,7 @@
       "schema_sources": [
         "backend/models.py"
       ],
-      "columns_sha256": "b4d02fbd8abd89e24b8c3ea2ca1d7ab24016e9a4b3fbf19eb60d098445f3cf88",
+      "columns_sha256": "8185f6179cee002666ef797bb998e5ea78f0073667834a84d97ea3b0e56ba1c0",
       "subject_keys": [
         "anonymous_id",
         "target_user_id"
@@ -1125,7 +1152,8 @@
       "access_paths": [
         "backend/services/data_claim_service.py",
         "backend/services/identity_lifecycle_service.py",
-        "backend/services/privacy_request_service.py"
+        "backend/services/privacy_request_service.py",
+        "backend/services/schema_migration_service.py"
       ],
       "collection_purpose": "pending_privacy_owner_confirmation",
       "retention_policy": "pending_privacy_owner_confirmation",
@@ -1553,6 +1581,7 @@
         "backend/routes/research_workspace.py",
         "backend/services/data_claim_service.py",
         "backend/services/notification_service.py",
+        "backend/services/operations_reliability_service.py",
         "backend/services/privacy_request_service.py",
         "backend/services/research_queue_service.py",
         "backend/services/research_work_item_service.py"
@@ -2950,6 +2979,7 @@
         "source_id"
       ],
       "access_paths": [
+        "backend/services/operations_reliability_service.py",
         "backend/services/reliability_service.py",
         "backend/services/task37_harness_service.py"
       ],
@@ -3578,6 +3608,7 @@
         "worker_id"
       ],
       "access_paths": [
+        "backend/services/operations_reliability_service.py",
         "backend/services/safety_scheduler_service.py",
         "backend/services/schema_migration_service.py"
       ],
@@ -3602,6 +3633,7 @@
       "actor_keys": [],
       "relationship_keys": [],
       "access_paths": [
+        "backend/services/operations_reliability_service.py",
         "backend/services/safety_scheduler_service.py",
         "backend/services/schema_migration_service.py"
       ],
@@ -4879,6 +4911,7 @@
         "backend/services/content_loader.py",
         "backend/services/feedback_ledger_service.py",
         "backend/services/operations_governance_service.py",
+        "backend/services/psychological_content_governance_service.py",
         "backend/services/therapeutic_assessment_service.py",
         "backend/services/training_recommendation_service.py"
       ],
@@ -5199,9 +5232,9 @@
   },
   "release_gate_eligible": false,
   "source_bindings": {
-    "models_sha256": "8ce17f414cb371b38471455435a18ded8f145ff9cdd57ead923daf17aa3ab3ac",
-    "migration_manifest_sha256": "09a7a8d1a1e7ff7fc2c78980850ae7b774696aa6a6ced9d7f6787c9b1a09aed8",
-    "route_manifest_sha256": "593931be23b1c0eae361a01001cc3c2e676000215509d842a11ad997fde8626b",
-    "service_manifest_sha256": "dd69e3ab08e4ca5b61bcabae81b2fb66719f550eb61e70cd43e7e386eb3c9087"
+    "models_sha256": "46cb75869d5f5829e46915608dd3b16953998c0521a7d0d01cbd9e2596ac153a",
+    "migration_manifest_sha256": "b7809d3e62e4ecaa4f47801ce6e71296ac54761c801b05ade5b79a1050039122",
+    "route_manifest_sha256": "b0c4bda51ad21eacc24d7e2a1c46f93478c94f8601c501c2eb29996ad9abbd8d",
+    "service_manifest_sha256": "aefd3ecc878b668fe2745e8612fdf8af60e767adcda22af3f57205316017855f"
   }
 }
