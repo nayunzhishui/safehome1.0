@@ -40,6 +40,7 @@ EXPECTED_INPUTS = (
     "analysis/text_analysis/requirements.txt",
     "apps/web/package-lock.json",
     "Dockerfile",
+    "config/rc0810/database_profiles.json",
 )
 EXPECTED_TOOLS = {"bandit", "detect-secrets", "npm-audit", "pip-audit"}
 
@@ -122,7 +123,7 @@ def normalized(value: Any) -> str:
 
 def contract_arg(value: Any) -> str:
     result = normalized(value)
-    marker = result.find("/.codex_tmp/")
+    marker = result.rfind("/.codex_tmp/")
     return result[marker:] if marker >= 0 else result
 
 
