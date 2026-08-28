@@ -159,9 +159,34 @@ def verify_runtime_images() -> dict:
             if re.search(rf"(?:^|\s){re.escape(secret)}=", scan_text):
                 errors.append(f"{profile}: {secret} found in image config/history")
 
-        runtime_environment = "testing" if profile == "production" else "validation"
+        required_flags = policy[profile].get("required_enabled_flags", [])
+        disabled_flags = policy[profile].get("required_disabled_flags", [])
+        runtime_flags = required_flags + disabled_flags
+        capability_probe = (
+            "import json; from config import Config; "
+            f"print(json.dumps({{name:bool(getattr(Config,name)) for name in {runtime_flags!r}}}))"
+        )
+        entrypoint_environment = [
+            "docker", "run", "--rm", "-e", f"APP_ENV={profile}",
+        ]
+        entrypoint_probe = subprocess.run(
+            entrypoint_environment + [image, "python", "-c", capability_probe],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        try:
+            enabled_capabilities = json.loads(entrypoint_probe.stdout)
+        except ValueError:
+            enabled_capabilities = {}
+        inspected[profile]["entrypoint_ready"] = entrypoint_probe.returncode == 0
+        inspected[profile]["enabled_capabilities"] = enabled_capabilities
+        if not inspected[profile]["entrypoint_ready"]:
+            errors.append(f"{profile}: image entrypoint guard failed")
+
+        runtime_environment = "testing"
         environment = [
-            "docker", "run", "--rm",
+            "docker", "run", "--rm", "--entrypoint", "python",
             "-e", f"APP_ENV={runtime_environment}",
             "-e", "DB_PROVIDER=sqlite",
             "-e", "DATABASE_PATH=/app/data/rc0810-runtime.sqlite3",
@@ -170,18 +195,14 @@ def verify_runtime_images() -> dict:
         ]
         if profile == "validation":
             environment += ["-e", "PRODUCTION_FEATURES_UNLOCKED=1"]
-        required_flags = policy[profile].get("required_enabled_flags", [])
-        disabled_flags = policy[profile].get("required_disabled_flags", [])
-        runtime_flags = required_flags + disabled_flags
         probe = (
             "import json; from app import app; "
             "response=app.test_client().get('/healthz'); "
             "print(json.dumps({'status_code':response.status_code,'health':response.get_json(),"
-            f"'capabilities':{{name:bool(app.config.get(name)) for name in {runtime_flags!r}}},"
             "'routes':sorted(str(rule) for rule in app.url_map.iter_rules())}))"
         )
         run = subprocess.run(
-            environment + [image, "python", "-c", probe],
+            environment + [image, "-c", probe],
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -199,7 +220,6 @@ def verify_runtime_images() -> dict:
         inspected[profile]["probe_environment"] = runtime_environment
         inspected[profile]["health_service"] = (probe_result.get("health") or {}).get("service")
         inspected[profile]["route_count"] = len(route_sets[profile])
-        inspected[profile]["enabled_capabilities"] = probe_result.get("capabilities", {})
         if not inspected[profile]["ready"] or inspected[profile]["health_service"] != "safehome-backend":
             errors.append(f"{profile}: health contract mismatch")
         missing_capabilities = [name for name in required_flags if not inspected[profile]["enabled_capabilities"].get(name)]
