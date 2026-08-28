@@ -773,6 +773,11 @@ def collect_git_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
 
     head = _git_text("rev-parse", "HEAD")
     head_tree = _git_text("rev-parse", "HEAD^{tree}")
+    submodule_status = (
+        _git_text("submodule", "status").splitlines()
+        if (ROOT / ".gitmodules").is_file()
+        else []
+    )
     dirty = bool(status)
     manifest = _manifest_from_index(inventory)
     return {
@@ -783,7 +788,7 @@ def collect_git_snapshot(registry: dict[str, Any]) -> dict[str, Any]:
             "head_tree": head_tree,
             "origin_main_local": _git_text("rev-parse", "origin/main"),
             "branch": _git_text("branch", "--show-current"),
-            "submodule_status": _git_text("submodule", "status").splitlines(),
+            "submodule_status": submodule_status,
             "dirty": dirty,
             "head_verified": not dirty and source_tree == head_tree,
             "verification_subject": "dirty_source_tree" if dirty else "head",
