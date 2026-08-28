@@ -36,6 +36,7 @@ RELEASE_INPUTS = (
     "content/privacy.md",
 )
 BACKEND_CONTEXTS = ("Dockerfile", ".dockerignore", "backend", "content", "shared")
+BACKEND_CONTEXT_EXCLUDED_PREFIXES = ("backend/tests/",)
 ACCOUNT_SCENARIOS = (
     "wechat_one_tap_login", "phone_login", "account_login", "logout",
     "legacy_account", "locked_account", "multi_device_session",
@@ -126,9 +127,20 @@ def _release_input_snapshot(commit: str) -> dict[str, Any]:
 
 
 def _backend_context_sha256(commit: str) -> str:
-    inventory = _git_bytes(
+    raw_inventory = _git_bytes(
         "-c", "core.quotepath=false", "ls-tree", "-r", "-z", commit, "--", *BACKEND_CONTEXTS
     )
+    kept: list[bytes] = []
+    for item in raw_inventory.split(b"\0"):
+        if not item:
+            continue
+        _, separator, raw_path = item.partition(b"\t")
+        if not separator:
+            raise EvidenceError("backend context inventory is malformed")
+        path = raw_path.decode("utf-8", errors="strict")
+        if not path.startswith(BACKEND_CONTEXT_EXCLUDED_PREFIXES):
+            kept.append(item)
+    inventory = b"\0".join(kept) + (b"\0" if kept else b"")
     return _sha256(inventory)
 
 

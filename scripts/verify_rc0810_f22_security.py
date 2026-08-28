@@ -50,6 +50,50 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def git_bytes(*args: str) -> bytes:
+    completed = subprocess.run(
+        ["git", *args], cwd=ROOT, capture_output=True, check=False
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(completed.stderr.decode("utf-8", errors="replace"))
+    return completed.stdout
+
+
+def source_binding_errors(
+    gate: dict[str, Any], source: dict[str, str]
+) -> list[str]:
+    """Validate frozen source while permitting later release-evidence commits."""
+
+    errors: list[str] = []
+    for field, label in (
+        ("source_tree", "source_tree_mismatch"),
+        ("source_manifest_sha256", "source_manifest_mismatch"),
+    ):
+        if gate.get(field) != source[field]:
+            errors.append(label)
+    recorded_head = gate.get("head")
+    recorded_tree = gate.get("head_tree")
+    if not isinstance(recorded_head, str) or not isinstance(recorded_tree, str):
+        return [*errors, "head_binding_mismatch"]
+    try:
+        git_bytes("merge-base", "--is-ancestor", recorded_head, "HEAD")
+        actual_tree = git_bytes(
+            "rev-parse", f"{recorded_head}^{{tree}}"
+        ).decode("ascii").strip()
+        expected_diff = git_bytes(
+            "diff-tree", "--binary", "--no-ext-diff", recorded_tree,
+            str(gate.get("source_tree")),
+        )
+    except RuntimeError:
+        errors.append("head_binding_mismatch")
+        return errors
+    if recorded_tree != actual_tree:
+        errors.append("head_binding_mismatch")
+    if gate.get("dirty_diff_sha256") != hashlib.sha256(expected_diff).hexdigest():
+        errors.append("dirty_diff_mismatch")
+    return errors
+
+
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -304,15 +348,7 @@ def validate_f22b(
         errors.append("f22b_schema_invalid")
 
     source = security_source_snapshot()
-    for key, label in (
-        ("source_tree", "source_tree_mismatch"),
-        ("dirty_diff_sha256", "dirty_diff_mismatch"),
-        ("source_manifest_sha256", "source_manifest_mismatch"),
-        ("head", "head_binding_mismatch"),
-        ("head_tree", "head_binding_mismatch"),
-    ):
-        if gate.get(key) != source[key]:
-            errors.append(label)
+    errors.extend(source_binding_errors(gate, source))
     if gate.get("policy_sha256") != sha256_file(POLICY_PATH):
         errors.append("policy_hash_mismatch")
     if gate.get("exception_registry_sha256") != sha256_file(EXCEPTIONS_PATH):

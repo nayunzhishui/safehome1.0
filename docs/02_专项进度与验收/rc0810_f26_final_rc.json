@@ -1,7 +1,7 @@
 {
   "schema": "safehome.rc0810.f26-final-rc.v1",
   "phase": "F26",
-  "generated_at": "2026-08-28T13:36:15.455043+00:00",
+  "generated_at": "2026-08-28T13:56:29.384572+00:00",
   "task_status": "review_pending_wave",
   "engineering_materials_status": "evidence_ready_no_go",
   "evidence_mode": "local_gates_complete_no_go",
@@ -240,8 +240,8 @@
   },
   "security_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
-    "source_tree": "cf384a2d050f1f6abf70547f958f612711f23e2d",
-    "candidate_source_tree": "cf384a2d050f1f6abf70547f958f612711f23e2d",
+    "source_tree": "2fa1fdb0aff5d07c77d7d2844b3bc32ea4dad79c",
+    "candidate_source_tree": "2fa1fdb0aff5d07c77d7d2844b3bc32ea4dad79c",
     "current_status": "current",
     "historical_status": "rescan_complete_no_go",
     "sbom_status": "current_scan_complete_no_go",
@@ -249,7 +249,7 @@
   },
   "platform_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
-    "source_commit": "5f1cab52cfdc8a06ed87f92cdcb74f25fe22873e",
+    "source_commit": "19745014cd3a9e7e9cbef5d8a8da29f28834cf7f",
     "historical_engineering_status": "evidence_ready",
     "production_approved": false,
     "external_blockers": [
@@ -1265,12 +1265,12 @@
     "reviewer_id": "sartre_replacement",
     "base_commit": "908603e100c5cb473f2d632f3e673d3824ebff76",
     "packet_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/reviews/wave-C-f26.json",
-    "packet_sha256": "3a218d36d0657cf65ab3ebb26601926621b6cc6476215b01a6927240a7949f35",
+    "packet_sha256": "9d8ffa360b057d78a26d30449b42c7c3847fbd65c42856dbe086eefa6e459389",
     "packet_archive_path": "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
-    "packet_archive_sha256": "3a218d36d0657cf65ab3ebb26601926621b6cc6476215b01a6927240a7949f35",
-    "packet_nonce": "wave-c-5f1cab52-20260828-final-gates",
-    "packet_head": "5f1cab52cfdc8a06ed87f92cdcb74f25fe22873e",
-    "packet_source_tree": "dd0cc0bf3df792f38f44a895eb791952a27cbe10",
+    "packet_archive_sha256": "9d8ffa360b057d78a26d30449b42c7c3847fbd65c42856dbe086eefa6e459389",
+    "packet_nonce": "wave-c-19745014-20260828-final-gates",
+    "packet_head": "19745014cd3a9e7e9cbef5d8a8da29f28834cf7f",
+    "packet_source_tree": "bc673310f39ba1e3a39a5277eff0c12999ccb69e",
     "harness_binding": {
       "run_id": "run-20260824T090306Z-4c4d4bf8",
       "state_path": ".codex_tmp/rc0810/run-20260824T090306Z-4c4d4bf8/state.json",

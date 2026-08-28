@@ -1,5 +1,6 @@
 import json
 import importlib.util
+import hashlib
 import re
 import subprocess
 import sys
@@ -32,6 +33,40 @@ def load_verifier_module():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+def test_f22b_source_binding_allows_later_evidence_only_commit(monkeypatch):
+    module = load_verifier_module()
+    recorded_head = "a" * 40
+    recorded_tree = "b" * 40
+    source_tree = "c" * 40
+    diff_bytes = b"frozen security diff"
+    gate = {
+        "head": recorded_head,
+        "head_tree": recorded_tree,
+        "source_tree": source_tree,
+        "dirty_diff_sha256": hashlib.sha256(diff_bytes).hexdigest(),
+        "source_manifest_sha256": "d" * 64,
+    }
+    current = {
+        "head": "e" * 40,
+        "head_tree": "f" * 40,
+        "source_tree": source_tree,
+        "dirty_diff_sha256": "0" * 64,
+        "source_manifest_sha256": "d" * 64,
+    }
+
+    def fake_git_bytes(*args):
+        if args[:2] == ("merge-base", "--is-ancestor"):
+            return b""
+        if args[0] == "rev-parse":
+            return f"{recorded_tree}\n".encode("ascii")
+        if args[0] == "diff-tree":
+            return diff_bytes
+        raise AssertionError(args)
+
+    monkeypatch.setattr(module, "git_bytes", fake_git_bytes)
+    assert module.source_binding_errors(gate, current) == []
 
 
 def test_f22b_default_gate_is_valid_but_release_stays_no_go():

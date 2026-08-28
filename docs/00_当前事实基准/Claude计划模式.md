@@ -12730,3 +12730,4 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [ ] 固定 reviewer 当前不可恢复，继续保持 `review_pending_wave`；推送后由网页 GPT 只读审查累计代码并核验 GitHub Actions，不得替代 Harness reviewer 或批准上线。
 - [x] F25-A/F25-B 证据自引用已做最小修复；仅证据提交可保持有效，真实源码、定义、包或镜像变化仍 fail-closed。
 - [x] F22-B Docker 上下文复用检查已与 Dockerfile/`.dockerignore` 对齐；测试、文档、脚本变化仍重扫源码，但不重复未变化镜像扫描。
+- [x] F22-B 与 F25-A 的证据提交后绑定已统一；F25-B tree inventory 排除 `backend/tests`，与 `.dockerignore` 保持一致。

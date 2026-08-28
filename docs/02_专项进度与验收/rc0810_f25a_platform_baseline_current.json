@@ -1,12 +1,12 @@
 {
   "schema": "safehome.rc0810.wechat-platform-baseline.v1",
   "phase": "F25-A",
-  "captured_at": "2026-08-28T13:34:10.073084+00:00",
-  "head": "5f1cab52cfdc8a06ed87f92cdcb74f25fe22873e",
-  "head_tree": "dd0cc0bf3df792f38f44a895eb791952a27cbe10",
-  "source_tree": "cf384a2d050f1f6abf70547f958f612711f23e2d",
-  "dirty_diff_sha256": "a5ad6a5b5af5689a5c63be7bb2d7e5024e0ee7b0c1a99ed8f1dde54732649021",
-  "source_manifest_sha256": "158ca812cf6c0af4a2fa644cebe8675a133eb230e026f9b2baeb0bb34613c30c",
+  "captured_at": "2026-08-28T13:54:54.217146+00:00",
+  "head": "19745014cd3a9e7e9cbef5d8a8da29f28834cf7f",
+  "head_tree": "bc673310f39ba1e3a39a5277eff0c12999ccb69e",
+  "source_tree": "2fa1fdb0aff5d07c77d7d2844b3bc32ea4dad79c",
+  "dirty_diff_sha256": "f5c2a52dfc65a18225f85616cd8a5799925eb5bb89de8b3a7c50f517a39bbabf",
+  "source_manifest_sha256": "88ecf389717e2f9b514724623fb797de4534f7055701afd6d37813ce26ab66d7",
   "definition_hashes": {
     "config/rc0810/wechat_platform_acceptance.schema.json": "b9771a0992eea54eb2c5f2ad9af173d6b9bd93b14422b26e9d02df844f433cc1",
     "config/rc0810/wechat_platform_catalog.json": "be690467b1d256b1fd5f2ca5e360c3f76dfdfedaa1bbb679c3860d4ba6db56f6",

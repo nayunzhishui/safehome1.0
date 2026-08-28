@@ -78,7 +78,9 @@ def test_f25a_source_binding_allows_later_evidence_only_commit(monkeypatch):
 
 def test_f25b_backend_context_hash_uses_tree_inventory(monkeypatch):
     module = load_f25b_builder_module()
-    inventory = b"100644 blob deadbeef\tbackend/app.py\0"
+    included = b"100644 blob deadbeef\tbackend/app.py"
+    excluded = b"100644 blob feedface\tbackend/tests/test_app.py"
+    inventory = included + b"\0" + excluded + b"\0"
     calls = []
 
     def fake_git_bytes(*args):
@@ -86,7 +88,7 @@ def test_f25b_backend_context_hash_uses_tree_inventory(monkeypatch):
         return inventory
 
     monkeypatch.setattr(module, "_git_bytes", fake_git_bytes)
-    assert module._backend_context_sha256("a" * 40) == hashlib.sha256(inventory).hexdigest()
+    assert module._backend_context_sha256("a" * 40) == hashlib.sha256(included + b"\0").hexdigest()
     assert calls[0][:5] == ("-c", "core.quotepath=false", "ls-tree", "-r", "-z")
 
 
