@@ -60,6 +60,23 @@ def test_f22b_policy_pins_tool_versions_images_and_action_commits():
 
 
 def test_f22b_policy_covers_every_required_scan_and_excludes_no_business_source():
+    runner_path = ROOT / "scripts" / "run_rc0810_f22_scans.py"
+    spec = importlib.util.spec_from_file_location("run_rc0810_f22_scans", runner_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    assert set(module.SECURITY_REPORT_RELATIVES) == {
+        "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
+        "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+        "docs/02_专项进度与验收/rc0810_required_ci_evidence.json",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+    }
     policy = json.loads(POLICY.read_text(encoding="utf-8"))
     scans = {item["id"]: item for item in policy["scans"]}
     assert set(scans) == {

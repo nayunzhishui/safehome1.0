@@ -24,6 +24,18 @@ from run_rc0810 import collect_git_snapshot, load_registry  # noqa: E402
 
 BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25a_platform_baseline_current.json"
 BASELINE_RELATIVE = BASELINE_PATH.relative_to(ROOT).as_posix()
+RELEASE_EVIDENCE_RELATIVES = (
+    "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+    "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
+    "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+    BASELINE_RELATIVE,
+    "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+    "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+    "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+    "docs/02_专项进度与验收/rc0810_required_ci_evidence.json",
+    "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
+    "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+)
 DEFINITIONS = (
     "config/rc0810/wechat_platform_acceptance.schema.json",
     "config/rc0810/wechat_platform_catalog.json",
@@ -168,13 +180,14 @@ def platform_source_snapshot() -> dict[str, str]:
         env = os.environ.copy()
         env["GIT_INDEX_FILE"] = str(Path(directory) / "index")
         git("read-tree", current["source_tree"], env=env)
-        subprocess.run(
-            ["git", "update-index", "--force-remove", "--", BASELINE_RELATIVE],
-            cwd=ROOT,
-            env=env,
-            capture_output=True,
-            check=False,
-        )
+        for relative in RELEASE_EVIDENCE_RELATIVES:
+            subprocess.run(
+                ["git", "update-index", "--force-remove", "--", relative],
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                check=False,
+            )
         source_tree = git("write-tree", env=env).decode("ascii").strip()
     manifest = git("ls-tree", "-r", "-z", source_tree)
     diff = git("diff-tree", "--binary", "--no-ext-diff", current["head_tree"], source_tree)

@@ -34,6 +34,14 @@ F22B_GATE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_secur
 SECURITY_REPORT_RELATIVES = (
     BASELINE_RELATIVE,
     F22B_GATE_PATH.relative_to(ROOT).as_posix(),
+    "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+    "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
+    "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+    "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+    "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+    "docs/02_专项进度与验收/rc0810_required_ci_evidence.json",
+    "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
+    "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
 )
 DEFAULT_TOOLS = ROOT / ".codex_tmp" / "rc0810" / "security-tools"
 DEFAULT_RUNTIME = ROOT / ".codex_tmp" / "rc0810" / "security" / "f22a"

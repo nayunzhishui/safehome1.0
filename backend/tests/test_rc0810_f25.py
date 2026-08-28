@@ -185,6 +185,18 @@ def test_f25a_review_freeze_covers_contract_accounts_data_artifacts_target_priva
 
 def test_f25a_semantics_reject_release_flag_required_outcome_and_invalidation_drift():
     module = load_verifier_module()
+    assert set(module.RELEASE_EVIDENCE_RELATIVES) == {
+        "docs/02_专项进度与验收/rc0810_f22a_security_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline.json",
+        "docs/02_专项进度与验收/rc0810_f25a_platform_baseline_current.json",
+        "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.json",
+        "docs/02_专项进度与验收/rc0810_f26_final_rc.md",
+        "docs/02_专项进度与验收/rc0810_required_ci_evidence.json",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_packet.json",
+        "docs/02_专项进度与验收/rc0810_wave_c_review_decision.json",
+    }
     definitions = module.load_definitions()
 
     release_mutation = copy.deepcopy(definitions)
