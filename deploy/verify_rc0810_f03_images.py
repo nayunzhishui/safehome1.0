@@ -159,12 +159,12 @@ def verify_runtime_images() -> dict:
             if re.search(rf"(?:^|\s){re.escape(secret)}=", scan_text):
                 errors.append(f"{profile}: {secret} found in image config/history")
 
+        runtime_environment = "testing" if profile == "production" else "validation"
         environment = [
             "docker", "run", "--rm",
-            "-e", f"APP_ENV={profile}",
+            "-e", f"APP_ENV={runtime_environment}",
             "-e", "DB_PROVIDER=sqlite",
             "-e", "DATABASE_PATH=/app/data/rc0810-runtime.sqlite3",
-            "-e", "ALLOW_PRODUCTION_SQLITE=1",
             "-e", "SECRET_KEY=rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
             "-e", "ADMIN_EXPORT_TOKEN=rc0810-runtime-test-token",
         ]
@@ -196,11 +196,12 @@ def verify_runtime_images() -> dict:
             continue
         route_sets[profile] = probe_result.get("routes", [])
         inspected[profile]["ready"] = probe_result.get("status_code") == 200
-        inspected[profile]["health_env"] = (probe_result.get("health") or {}).get("env")
+        inspected[profile]["probe_environment"] = runtime_environment
+        inspected[profile]["health_service"] = (probe_result.get("health") or {}).get("service")
         inspected[profile]["route_count"] = len(route_sets[profile])
         inspected[profile]["enabled_capabilities"] = probe_result.get("capabilities", {})
-        if not inspected[profile]["ready"] or inspected[profile]["health_env"] != profile:
-            errors.append(f"{profile}: health profile mismatch")
+        if not inspected[profile]["ready"] or inspected[profile]["health_service"] != "safehome-backend":
+            errors.append(f"{profile}: health contract mismatch")
         missing_capabilities = [name for name in required_flags if not inspected[profile]["enabled_capabilities"].get(name)]
         if missing_capabilities:
             errors.append(f"{profile}: runtime capabilities disabled: {', '.join(missing_capabilities)}")

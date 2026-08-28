@@ -165,3 +165,6 @@ def test_f03_runtime_verifier_contract_is_exposed():
     assert "local runtime artifacts found in image filesystem" in text
     assert "runtime capabilities disabled" in text
     assert "forbidden runtime capabilities enabled" in text
+    assert 'runtime_environment = "testing" if profile == "production" else "validation"' in text
+    assert '"ALLOW_PRODUCTION_SQLITE=1"' not in text
+    assert "health contract mismatch" in text

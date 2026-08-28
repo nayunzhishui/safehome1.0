@@ -525,11 +525,19 @@ def test_wave_resume_adopts_checkpoint_registry_over_stale_runtime_registry(tmp_
 def test_recoverable_lifecycle_binds_dirty_source_and_requires_independent_review(
     tmp_path,
 ):
+    repo = tmp_path / "dirty-repo"
+    subprocess.run(
+        ["git", "clone", "--quiet", "--shared", "--no-hardlinks", "--local", str(ROOT), str(repo)],
+        check=True,
+    )
+    fixture = repo / "backend" / "tests" / "fixtures" / "rc0810_command_fixture.py"
+    fixture.write_text(fixture.read_text(encoding="utf-8") + "\n", encoding="utf-8")
     runtime = tmp_path / "runtime"
     counter = tmp_path / "counter.txt"
     registry_path = fixture_registry(tmp_path)
     env = {
         "RC0810_RUNTIME_ROOT": str(runtime),
+        "RC0810_REPO_ROOT": str(repo),
         "RC0810_REGISTRY_PATH": str(registry_path),
         "RC0810_RUN_ID": "run-contract",
         "RC0810_FIXTURE_COUNTER": str(counter),
