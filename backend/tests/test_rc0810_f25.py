@@ -338,7 +338,14 @@ def test_f25a_self_check_and_registry_freeze_exact_sixteen_file_scope():
 
 def test_f25b_packet_is_valid_but_release_stays_no_go():
     completed = subprocess.run(
-        [sys.executable, str(F25B_BUILDER), "--report", str(F25B_REPORT), "--self-check"],
+        [
+            sys.executable,
+            str(F25B_BUILDER),
+            "--report",
+            str(F25B_REPORT),
+            "--rebuild-missing",
+            "--self-check",
+        ],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -355,6 +362,21 @@ def test_f25b_packet_is_valid_but_release_stays_no_go():
 def test_f25b_package_is_bound_and_excludes_internal_surfaces():
     report = json.loads(F25B_REPORT.read_text(encoding="utf-8"))
     package = ROOT / report["artifact_binding"]["miniprogram_package"]["path"]
+    if not package.is_file():
+        rebuilt = subprocess.run(
+            [
+                sys.executable,
+                str(F25B_BUILDER),
+                "--report",
+                str(F25B_REPORT),
+                "--rebuild-missing",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert rebuilt.returncode == 0, rebuilt.stderr
     with zipfile.ZipFile(package) as archive:
         names = set(archive.namelist())
         assert "project.private.config.json" not in names

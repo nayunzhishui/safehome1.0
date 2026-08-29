@@ -12759,3 +12759,10 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] F14 source bindings/current catalog 恢复有效。
 - [ ] F14 的 189 个 privacy gaps、0 confirmed reviews 与 privacy owner pending_external 保持开放，不由自动化审批。
 - [ ] 推送后由 GitHub required CI 核验；过期 F14-A review decision 仍须固定 reviewer 重新签发，禁止改旧日期。
+
+## 2026-08-29：F25-B 当前证据恢复
+
+- [x] 从 `c128ac08` Git archive 重建 production 小程序包和 F25-B 报告。
+- [x] CI 缺少 `.codex_tmp` 包时按报告绑定提交确定性重建；三项专项与五项反伪造检查通过。
+- [x] `backend_context_drift`、`package_missing` 当前修复关闭。
+- [ ] 8 项外部 blocker、后端 registry image digest、真机/平台/RACI/人工证据继续 pending_external；不生成发布 GO。
