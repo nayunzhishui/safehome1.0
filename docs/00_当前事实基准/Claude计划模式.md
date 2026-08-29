@@ -12766,3 +12766,10 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] CI 缺少 `.codex_tmp` 包时按报告绑定提交确定性重建；三项专项与五项反伪造检查通过。
 - [x] `backend_context_drift`、`package_missing` 当前修复关闭。
 - [ ] 8 项外部 blocker、后端 registry image digest、真机/平台/RACI/人工证据继续 pending_external；不生成发布 GO。
+
+## 2026-08-29：F25-B 跨环境重建修复
+
+- [x] 新增 package content manifest digest，解耦 ZIP 容器元数据与逻辑制品身份；内容/路径/重复项变化仍 fail-closed。
+- [x] 重新生成 F25-B 报告绑定并完成 `6 passed` 定向专项与 builder self-check。
+- [ ] 不修改或延长 F14-A 过期 decision；等待新的固定 reviewer 独立 decision 后再继续安全合同。
+- [ ] 推送后由 GitHub Ubuntu required CI 验证缺失包重建；F22/F26/镜像证明/迁移回滚/人工 GO 继续阻塞。

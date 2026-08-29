@@ -1,7 +1,7 @@
 {
   "schema": "safehome.rc0810.f25b-evidence.v1",
   "phase": "F25-B",
-  "generated_at": "2026-08-29T08:57:44.274204+00:00",
+  "generated_at": "2026-08-29T10:15:56.619804+00:00",
   "engineering_status": "evidence_ready",
   "external_verification_complete": false,
   "production_gate_eligible": false,
@@ -23,11 +23,12 @@
   "artifact_binding": {
     "miniprogram_package": {
       "path": ".codex_tmp/rc0810/f25b/c128ac086890130ecf48c2c8e757b4bec55d8558/safehome-miniprogram-production.zip",
-      "sha256": "302c57c2d0abd4887ce9eb9565c431f6cc73c2f0924f8f36123c85e1e92b1975",
+      "sha256": "c065b8e2fa1d13995c1302a914b29cb80ec341a8fb9ddddf88abd04ed199ce78",
+      "content_manifest_sha256": "15bfebdd75a59fbdaf07456dee6a1a04b4540ba9a367f25ba900c23dfbaa207b",
       "status": "evidence_ready",
       "profile": "production",
       "static_journey_gate_passed": true,
-      "size_bytes": 997086
+      "size_bytes": 997140
     },
     "backend_image": {
       "status": "pending_external",

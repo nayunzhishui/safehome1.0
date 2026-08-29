@@ -92,6 +92,38 @@ def test_f25b_backend_context_hash_uses_tree_inventory(monkeypatch):
     assert calls[0][:5] == ("-c", "core.quotepath=false", "ls-tree", "-r", "-z")
 
 
+def test_package_content_manifest_ignores_zip_container_metadata(tmp_path):
+    module = load_f25b_builder_module()
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "app.js").write_text("console.log('ok');\n", encoding="utf-8")
+    (source / "RC0810_F25B_MANIFEST.json").write_text("metadata\n", encoding="utf-8")
+    expected = module._content_manifest_sha256(source)
+
+    archives = []
+    for index, (system, compression) in enumerate(((0, zipfile.ZIP_DEFLATED), (3, zipfile.ZIP_STORED))):
+        path = tmp_path / f"package-{index}.zip"
+        with zipfile.ZipFile(path, "w") as archive:
+            info = zipfile.ZipInfo("app.js", date_time=(1980, 1, 1, 0, 0, 0))
+            info.create_system = system
+            info.compress_type = compression
+            info.external_attr = (0o100644 if index == 0 else 0o100755) << 16
+            archive.writestr(info, (source / "app.js").read_bytes())
+            archive.writestr(module.PACKAGE_MANIFEST_NAME, b"metadata\n")
+        archives.append(path)
+
+    with zipfile.ZipFile(archives[0]) as first, zipfile.ZipFile(archives[1]) as second:
+        assert module._archive_content_manifest_sha256(first) == expected
+        assert module._archive_content_manifest_sha256(second) == expected
+
+    tampered = tmp_path / "tampered.zip"
+    with zipfile.ZipFile(tampered, "w") as archive:
+        archive.writestr("app.js", b"console.log('tampered');\n")
+        archive.writestr(module.PACKAGE_MANIFEST_NAME, b"metadata\n")
+    with zipfile.ZipFile(tampered) as archive:
+        assert module._archive_content_manifest_sha256(archive) != expected
+
+
 def test_f25a_default_definition_is_ready_but_release_stays_no_go():
     completed = run_verifier()
     assert completed.returncode == 0, completed.stderr

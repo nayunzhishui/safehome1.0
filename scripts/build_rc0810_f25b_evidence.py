@@ -70,6 +70,7 @@ BLOCKER_IDS = {
     "F25-EXT-01", "F25-EXT-02", "F25-EXT-03", "F25-EXT-04",
     "F25-EXT-05", "F25-EXT-06", "F25-EXT-07", "F25-EXT-08",
 }
+PACKAGE_MANIFEST_NAME = "RC0810_F25B_MANIFEST.json"
 
 
 class EvidenceError(RuntimeError):
@@ -154,6 +155,29 @@ def _safe_extract_tar(payload: bytes, destination: Path) -> None:
         archive.extractall(destination, filter="data")
 
 
+def _content_manifest_sha256(source: Path) -> str:
+    """Hash package paths and file contents, independent of ZIP metadata."""
+    files = {
+        path.relative_to(source).as_posix(): _sha256(path.read_bytes())
+        for path in source.rglob("*")
+        if path.is_file() and path.name != PACKAGE_MANIFEST_NAME
+    }
+    return _canonical_sha256({"files": files, "excluded": [PACKAGE_MANIFEST_NAME]})
+
+
+def _archive_content_manifest_sha256(archive: zipfile.ZipFile) -> str:
+    """Derive the same logical manifest from an archive without trusting headers."""
+    files: dict[str, str] = {}
+    for info in archive.infolist():
+        if info.is_dir():
+            continue
+        if info.filename in files:
+            raise EvidenceError(f"duplicate archive entry: {info.filename}")
+        if info.filename != PACKAGE_MANIFEST_NAME:
+            files[info.filename] = _sha256(archive.read(info))
+    return _canonical_sha256({"files": files, "excluded": [PACKAGE_MANIFEST_NAME]})
+
+
 def _write_deterministic_zip(source: Path, target: Path) -> str:
     target.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
@@ -209,14 +233,20 @@ def build_miniprogram_package(commit: str, target: Path) -> dict[str, Any]:
             "source_tree": _git_text("rev-parse", f"{commit}^{{tree}}"),
             "release_input_sha256": _release_input_snapshot(commit)["release_input_sha256"],
             "package_audit_sha256": _sha256((output / "rc0810-package-audit.json").read_bytes()),
+            "content_manifest_sha256": _content_manifest_sha256(output),
             "profile": "production",
             "production_release_approved": False,
         }
-        (output / "RC0810_F25B_MANIFEST.json").write_text(
+        (output / PACKAGE_MANIFEST_NAME).write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
         package_sha256 = _write_deterministic_zip(output, target)
-    return {"sha256": package_sha256, "audit": audit, "manifest": manifest}
+    return {
+        "sha256": package_sha256,
+        "manifest_sha256": manifest["content_manifest_sha256"],
+        "audit": audit,
+        "manifest": manifest,
+    }
 
 
 def _probe_docker() -> dict[str, Any]:
@@ -296,6 +326,7 @@ def build_report(
             "miniprogram_package": {
                 "path": package_path.relative_to(ROOT).as_posix(),
                 "sha256": package["sha256"],
+                "content_manifest_sha256": package["manifest_sha256"],
                 "status": "evidence_ready",
                 "profile": "production",
                 "static_journey_gate_passed": package["audit"]["journey_gate_passed"],
@@ -420,10 +451,28 @@ def _package_errors(report: dict[str, Any], *, rebuild_missing: bool) -> list[st
         build_miniprogram_package(commit, package_path)
     if not package_path.is_file():
         return ["package_missing"]
-    if _sha256(package_path.read_bytes()) != binding.get("sha256"):
-        errors.append("package_sha256_mismatch")
-        return errors
     with zipfile.ZipFile(package_path) as archive:
+        expected_manifest = binding.get("content_manifest_sha256")
+        if isinstance(expected_manifest, str):
+            try:
+                actual_manifest = _archive_content_manifest_sha256(archive)
+            except (EvidenceError, KeyError, zipfile.BadZipFile) as exc:
+                errors.append(f"package_manifest_unreadable:{exc}")
+                return errors
+            if actual_manifest != expected_manifest:
+                errors.append("package_manifest_sha256_mismatch")
+                return errors
+            try:
+                package_manifest = json.loads(archive.read(PACKAGE_MANIFEST_NAME))
+            except (KeyError, json.JSONDecodeError) as exc:
+                errors.append(f"package_manifest_unreadable:{exc}")
+                return errors
+            if package_manifest.get("content_manifest_sha256") != actual_manifest:
+                errors.append("package_manifest_metadata_mismatch")
+                return errors
+        elif _sha256(package_path.read_bytes()) != binding.get("sha256"):
+            errors.append("package_sha256_mismatch")
+            return errors
         names = set(archive.namelist())
         forbidden = {
             "project.private.config.json",
