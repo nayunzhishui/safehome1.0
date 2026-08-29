@@ -14,6 +14,10 @@ VERIFY = ROOT / "deploy" / "verify_rc0810_f03_images.py"
 
 def test_f03_production_image_is_fail_closed():
     text = PRODUCTION.read_text(encoding="utf-8")
+    assert text.splitlines()[0] == (
+        "FROM python:3.11-slim@sha256:"
+        "90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff"
+    )
     assert "PRODUCTION_FEATURES_UNLOCKED=1" not in text
     assert "AI_QA_REAL_PROVIDER_ENABLED=1" not in text
     assert "OPERATIONS_PRODUCTION_RELEASE_ENABLED=1" not in text

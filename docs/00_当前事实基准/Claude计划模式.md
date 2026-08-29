@@ -7,7 +7,8 @@
 - [x] 定向验证：Harness 7 项、其余受影响组合 57 项、训练日期 1 项、Task35 1 项通过；4 个 F22/F25 用例只报告旧证据按设计失效。
 - [ ] 提交修复后重建 F22/F25/F26 当前证据，并运行其冻结层验证。
 - [ ] 旧波次 C review pass 已因机器合同/源码变化失效；冻结后续用固定 reviewer，禁止补写或伪造 pass。
-- [ ] npm 4 High、正式 registry digest/attestation、微信平台/真机、四方 GO、72h 仍阻断 production。
+- [x] `nanoid` 由 3.3.17 最小更新到 3.3.18；npm audit 0 vulnerability，Web typecheck/build 通过。
+- [ ] 正式 registry digest/attestation、微信平台/真机、四方 GO、72h 仍阻断 production。
 
 ## 2026-08-28：RC0810 本地发布门禁续跑
 
@@ -12740,3 +12741,13 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] F25-A/F25-B 证据自引用已做最小修复；仅证据提交可保持有效，真实源码、定义、包或镜像变化仍 fail-closed。
 - [x] F22-B Docker 上下文复用检查已与 Dockerfile/`.dockerignore` 对齐；测试、文档、脚本变化仍重扫源码，但不重复未变化镜像扫描。
 - [x] F22-B 与 F25-A 的证据提交后绑定已统一；F25-B tree inventory 排除 `backend/tests`，与 `.dockerignore` 保持一致。
+
+## 2026-08-29：网页审查 Fix Loop 状态
+
+- [x] 修复 GitHub/Ubuntu 与 Windows checkout 的 checkpoint、F22/F25 和 Task35 换行摘要差异；T8 测试改用上海业务日。
+- [x] 新增 UTC 15:59/16:00/白天边界，F01/F03/T8 定向组合 `32 passed`；历史 checkpoint 有效/过期/CRLF 合同 `2 passed`。
+- [x] 历史 review decision 开始强制校验 `valid_until`；当前 F14-A 已过期并按预期 fail-closed，未改日期或伪造 pass。
+- [x] 生产 Docker 基础镜像绑定 immutable digest，本地构建成功；F01 清单改为真实的 fail-closed 生产候选定义。
+- [x] 用户授权 registry 元数据访问后，`nanoid 3.3.17` 最小更新到 3.3.18；audit/typecheck/build 通过。
+- [ ] 推送后由 GitHub required Actions 执行完整回归；按用户要求不再本地重复全量。旧 F22/F25/F26/波次 C 证据因源码变化保持失效。
+- [ ] 固定 reviewer 重新审查当前累计 packet 前保持 `review_pending_wave / production_no_go`。

@@ -281,6 +281,14 @@ def test_training_plan_assignment_drives_due_state_and_next_date(tmp_path, monke
     assert assignment["next_practice_date"] == (today + timedelta(days=1)).isoformat()
 
 
+def test_training_schedule_parses_utc_values_on_shanghai_day_boundary():
+    from services.training_schedule_service import parse_day
+
+    assert parse_day("2026-08-28T15:59:00Z").isoformat() == "2026-08-28"
+    assert parse_day("2026-08-28T16:00:00Z").isoformat() == "2026-08-29"
+    assert parse_day("2026-08-29T04:00:00+00:00").isoformat() == "2026-08-29"
+
+
 def test_training_plan_assignment_rejects_invalid_values_without_writing(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch)
     client = app.test_client()

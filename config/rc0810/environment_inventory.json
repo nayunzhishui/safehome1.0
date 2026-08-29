@@ -5,7 +5,7 @@
   "sensitive_values_included": false,
   "sources": [
     {"path": ".env.example", "layer": "deployment", "classification": "development_template", "production_eligible": false, "sha256": "7705c548d5f5edee2693ae85aeeb686bcd1161b8a6b2d926b7d721cd24882f7a"},
-    {"path": "Dockerfile", "layer": "deployment", "classification": "validation_only_legacy", "production_eligible": false, "sha256": "c18a1c59be534112ba939491ab23d3223efbf1cf948beee60417feb324bebd0e"},
+    {"path": "Dockerfile", "layer": "deployment", "classification": "production_backend_definition_fail_closed", "production_eligible": false, "sha256": "c5d0531f3489d21d2d84ec6364ba2dcef7e12e0ffe2a194159a40c757072084a"},
     {"path": "backend/config.py", "layer": "backend", "classification": "runtime_configuration", "production_eligible": false, "sha256": "dfccdaf3ac9f1c3f9cc7947762e841da8ae18464a835c04e92497f64b172cc1e"},
     {"path": "backend/app.py", "layer": "backend", "classification": "runtime_entrypoint", "production_eligible": false, "sha256": "ce0b9e03769c4a51267178b7f7d4f99ead69090fe2a08754629780cd9b4754ee"},
     {"path": "backend/gunicorn.conf.py", "layer": "deployment", "classification": "runtime_server", "production_eligible": false, "sha256": "05e6b66d00fff9bcbd72c96308a458ce77c5b9f7be488b867646a77b42f021c0"},
@@ -25,7 +25,7 @@
     "capability_flag_source": "capability_matrix.json"
   },
   "current_fact_findings": [
-    {"id": "ENV-CURRENT-001", "fact": "Dockerfile以APP_ENV=production启动并打开多项能力", "decision": "仅分类为历史验证部署，禁止用作生产制品"},
+    {"id": "ENV-CURRENT-001", "fact": "Dockerfile以APP_ENV=production启动且生产能力默认关闭；当前尚未取得registry digest、镜像SBOM和attestation", "decision": "仅作为生产候选构建定义；门禁闭合前production_eligible保持false，不得部署生产"},
     {"id": "ENV-CURRENT-002", "fact": "小程序cloudConfig.js含现有默认CloudBase标识和本地HTTP入口", "decision": "生产profile不得继承这些引用，必须由冻结extConfig注入"},
     {"id": "ENV-CURRENT-003", "fact": ".env.example含本地开发默认值", "decision": "仅作为开发模板，任何生产构建不得打包该文件"}
   ]

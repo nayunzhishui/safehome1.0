@@ -2517,6 +2517,7 @@ def _historical_checkpoint_evidence_is_valid(
             return False
         packet = json.loads(packet_bytes.decode("utf-8"))
         decision = json.loads(decision_bytes.decode("utf-8"))
+        valid_until = datetime.fromisoformat(decision["valid_until"])
         commit_tree = _run_git("rev-parse", f"{checkpoint['commit']}^{{tree}}")
         commit_tree_text = commit_tree.decode("ascii").strip()
     except (
@@ -2526,6 +2527,7 @@ def _historical_checkpoint_evidence_is_valid(
         TypeError,
         UnicodeDecodeError,
         json.JSONDecodeError,
+        ValueError,
     ):
         return False
     allowed_kinds = set(
@@ -2541,6 +2543,8 @@ def _historical_checkpoint_evidence_is_valid(
         and decision.get("decision") == "pass"
         and decision.get("reviewer_kind") in allowed_kinds
         and decision.get("reviewer_id")
+        and valid_until.tzinfo is not None
+        and valid_until > datetime.now(timezone.utc)
         and decision.get("review_packet_sha256")
         == binding["review_packet_sha256"]
         and decision.get("challenge_nonce") == packet.get("challenge_nonce")

@@ -290,6 +290,7 @@ def test_wave_resume_uses_declared_historical_review_pass_checkpoint(tmp_path):
         "reviewer_id": "checkpoint-test-reviewer",
         "reviewer_kind": "separate_agent",
         "findings": [],
+        "valid_until": "2099-01-01T00:00:00+00:00",
     }
     decision_path = tmp_path / "checkpoint-decision.json"
     decision_path.write_text(json.dumps(decision), encoding="utf-8")
@@ -306,6 +307,8 @@ def test_wave_resume_uses_declared_historical_review_pass_checkpoint(tmp_path):
             "decision_sha256": hashlib.sha256(decision_path.read_bytes()).hexdigest(),
         },
     }
+    registry["review_waves"][1]["base_checkpoint"] = None
+    registry["review_waves"][2]["base_checkpoint"] = None
     registry_path = tmp_path / "checkpoint-registry.json"
     registry_path.write_text(json.dumps(registry), encoding="utf-8")
     runtime = tmp_path / "runtime"
@@ -358,6 +361,23 @@ def test_wave_resume_uses_declared_historical_review_pass_checkpoint(tmp_path):
     )
     assert forged.returncode != 0
     assert "复审证据" in forged.stderr
+
+    decision["valid_until"] = "2020-01-01T00:00:00+00:00"
+    decision_path.write_text(json.dumps(decision), encoding="utf-8")
+    registry["review_waves"][0]["base_checkpoint"]["evidence_binding"][
+        "decision_sha256"
+    ] = hashlib.sha256(decision_path.read_bytes()).hexdigest()
+    invalid_path.write_text(json.dumps(registry), encoding="utf-8")
+    expired = run_cli(
+        "start",
+        "RC0810-F10-B",
+        env={
+            "RC0810_RUNTIME_ROOT": str(tmp_path / "expired-runtime"),
+            "RC0810_REGISTRY_PATH": str(invalid_path),
+        },
+    )
+    assert expired.returncode != 0
+    assert "复审证据" in expired.stderr
 
 
 def test_historical_checkpoint_accepts_clean_crlf_checkout(tmp_path):
@@ -420,6 +440,7 @@ def test_historical_checkpoint_accepts_clean_crlf_checkout(tmp_path):
                     "reviewer_id": "checkpoint-test-reviewer",
                     "reviewer_kind": "separate_agent",
                     "findings": [],
+                    "valid_until": "2099-01-01T00:00:00+00:00",
                 }
             )
             + "\n"
