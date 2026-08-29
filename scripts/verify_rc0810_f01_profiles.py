@@ -62,7 +62,7 @@ def _sha256(path: Path) -> str:
     # Repository text artifacts may be checked out with CRLF on Windows or LF
     # in CI.  Bind the inventory to stable content bytes, not checkout style.
     raw = path.read_bytes()
-    normalized = raw.replace(b"\\r\\n", b"\\n").replace(b"\\r", b"\\n")
+    normalized = raw.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
     return hashlib.sha256(normalized).hexdigest()
 
 

@@ -12751,3 +12751,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 用户授权 registry 元数据访问后，`nanoid 3.3.17` 最小更新到 3.3.18；audit/typecheck/build 通过。
 - [ ] 推送后由 GitHub required Actions 执行完整回归；按用户要求不再本地重复全量。旧 F22/F25/F26/波次 C 证据因源码变化保持失效。
 - [ ] 固定 reviewer 重新审查当前累计 packet 前保持 `review_pending_wave / production_no_go`。
+
+## 2026-08-29：F01/F14/F24 事实清单 Fix Loop
+
+- [x] 修正 F01 字面量 `\\r\\n` 归一错误；F14/F24 同步使用 LF 规范化源码摘要。
+- [x] 重建 environment inventory、privacy lineage catalog、config-read inventory；三项专项合计 `38 passed`。
+- [x] F14 source bindings/current catalog 恢复有效。
+- [ ] F14 的 189 个 privacy gaps、0 confirmed reviews 与 privacy owner pending_external 保持开放，不由自动化审批。
+- [ ] 推送后由 GitHub required CI 核验；过期 F14-A review decision 仍须固定 reviewer 重新签发，禁止改旧日期。
