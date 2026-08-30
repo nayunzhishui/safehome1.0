@@ -1,5 +1,16 @@
 # Claude 计划模式：量表录入 · 聚类画像 · 前端重构
 
+## 2026-08-30：RC0810 发布链当前候选
+
+- [x] 保留并提交原 7 个待提交证据文件；分支推送 SHA 已逐次用远端引用核对。
+- [x] 重建并干净树验证 F22：open gate 318，production=false。
+- [x] 从候选 `8d1629b9` 构建/推送 GHCR `linux/amd64` 镜像，回拉核对 digest、manifest 与 revision/source/version 标签。
+- [x] 如实记录 BuildKit/Syft SBOM scanner 超时；用 Trivy 对同一 digest 生成 CycloneDX 1.7/119 组件 SBOM，扫描为 3 Critical、13 High、0 Secret。
+- [x] 重建 F25-B、F26；候选 SHA、镜像 digest、SBOM/扫描一致，两份自检通过并保持 `NO_GO`。
+- [x] 仅运行指定四个定向测试文件：55 passed、7 failed；失败均由 F14-A 历史复审凭据过期触发 fail-closed。
+- [ ] 不新建 reviewer、不添加豁免；由既定独立复审流程更新有效 checkpoint 后复验 Harness。
+- [ ] 完成官方 required CI、F22/镜像发现处理、签名 attestation、隐私人工确认、真实迁移/回滚/恢复证据与最终人工/外部 GO。
+
 ## 2026-08-29：GitHub required CI Fix Loop
 
 - [x] 读取 Actions #582：6 个独立 job 通过，`security-contract`、`backend`、`npm-audit` 失败，`release-gate` 随之失败。
