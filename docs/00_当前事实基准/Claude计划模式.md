@@ -12813,3 +12813,8 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [ ] 提交并推送本节所在源码候选，核对远端实际 SHA。
 - [ ] 对该 SHA 重跑 F22-B、GHCR、F25-B、F26，并取得 Actions raw/release artifacts。
 - [ ] 由既定独立复审与授权负责人完成复审、隐私、迁移/回滚/恢复、required checks 和最终 GO；自动化不得代签。
+- [x] 源码整改提交 `56b6a949`；源码 push 因 TLS 失败，已如实登记远端仍为 `12543e65`。
+- [x] 当前源码 F22 重扫完成；容器部分因 Trivy DB 超时采用严格、显式的未变输入复用，open gate=319，NO_GO。
+- [x] GHCR `rc0810-56b6a949` 推送并按 digest `a4280975…8e04` 回拉。
+- [x] 完成新 digest 的 manifest/运行时标签、Trivy scan、CycloneDX SBOM、F25-B/F26；3 Critical、13 High、0 Secret、119 组件，仍为 NO_GO。
+- [ ] 源码 push 成功后由 GitHub Actions 生成 F22/registry/release artifacts 并完成官方 required CI；不得用本机文件冒充远端 artifact。
