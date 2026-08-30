@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from run_rc0810_f22_scans import sha256_git_blob
+
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "config" / "rc0810" / "security_gate_policy.json"
@@ -250,10 +252,18 @@ def main() -> int:
         "source_tree": source_tree,
         "dirty_diff_sha256": source["dirty_diff_sha256"],
         "source_manifest_sha256": source["source_manifest_sha256"],
-        "policy_sha256": sha256_file(POLICY_PATH),
-        "exception_registry_sha256": sha256_file(EXCEPTIONS_PATH),
-        "dependency_inputs": {item: sha256_file(ROOT / item) for item in DEPENDENCY_INPUTS},
-        "action_inputs": {item: sha256_file(ROOT / item) for item in ACTION_INPUTS},
+        "policy_sha256": sha256_git_blob(
+            source_tree, POLICY_PATH.relative_to(ROOT).as_posix()
+        ),
+        "exception_registry_sha256": sha256_git_blob(
+            source_tree, EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
+        ),
+        "dependency_inputs": {
+            item: sha256_git_blob(source_tree, item) for item in DEPENDENCY_INPUTS
+        },
+        "action_inputs": {
+            item: sha256_git_blob(source_tree, item) for item in ACTION_INPUTS
+        },
         "source_reports": source["raw_reports"],
         "negative_gate_evidence": source["negative_gate_evidence"],
         "blocking_findings": source["blocking_findings"],

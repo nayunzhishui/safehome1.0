@@ -24,6 +24,7 @@ from run_rc0810_f22_scans import (  # noqa: E402
     build_blocking_findings,
     parse_json,
     security_source_snapshot,
+    sha256_git_blob,
     summarize,
     validate_report_payload,
 )
@@ -358,15 +359,25 @@ def validate_f22b(
 
     source = security_source_snapshot()
     errors.extend(source_binding_errors(gate, source))
-    if gate.get("policy_sha256") != sha256_file(POLICY_PATH):
+    if gate.get("policy_sha256") != sha256_git_blob(
+        source["source_tree"], POLICY_PATH.relative_to(ROOT).as_posix()
+    ):
         errors.append("policy_hash_mismatch")
-    if gate.get("exception_registry_sha256") != sha256_file(EXCEPTIONS_PATH):
+    if gate.get("exception_registry_sha256") != sha256_git_blob(
+        source["source_tree"], EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
+    ):
         errors.append("exception_registry_hash_mismatch")
-    current_inputs = {item: sha256_file(ROOT / item) for item in EXPECTED_INPUTS}
+    current_inputs = {
+        item: sha256_git_blob(source["source_tree"], item)
+        for item in EXPECTED_INPUTS
+    }
     if gate.get("dependency_inputs") != current_inputs:
         errors.append("dependency_input_mismatch")
     action_paths = (".github/workflows/security-gate.yml", ".github/workflows/check.yml")
-    current_actions = {item: sha256_file(ROOT / item) for item in action_paths}
+    current_actions = {
+        item: sha256_git_blob(source["source_tree"], item)
+        for item in action_paths
+    }
     if gate.get("action_inputs") != current_actions:
         errors.append("action_input_mismatch")
     errors.extend(validate_exceptions(exceptions, schema, gate.get("captured_at", ""), baseline=gate, policy=policy))
@@ -587,11 +598,18 @@ def validate_baseline(
     if baseline.get("head") != source["head"] or baseline.get("head_tree") != source["head_tree"]:
         errors.append("head_binding_mismatch")
 
-    if baseline.get("policy_sha256") != sha256_file(POLICY_PATH):
+    if baseline.get("policy_sha256") != sha256_git_blob(
+        source["source_tree"], POLICY_PATH.relative_to(ROOT).as_posix()
+    ):
         errors.append("policy_hash_mismatch")
-    if baseline.get("exception_registry_sha256") != sha256_file(EXCEPTIONS_PATH):
+    if baseline.get("exception_registry_sha256") != sha256_git_blob(
+        source["source_tree"], EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
+    ):
         errors.append("exception_registry_hash_mismatch")
-    current_inputs = {item: sha256_file(ROOT / item) for item in EXPECTED_INPUTS}
+    current_inputs = {
+        item: sha256_git_blob(source["source_tree"], item)
+        for item in EXPECTED_INPUTS
+    }
     if baseline.get("dependency_inputs") != current_inputs:
         errors.append("dependency_input_mismatch")
 

@@ -259,6 +259,7 @@ def test_f22b_exception_registry_is_empty_and_schema_requires_owner_reason_expir
 
 def test_f22b_gate_binds_source_locks_actions_image_and_reports():
     gate = json.loads(BASELINE.read_text(encoding="utf-8"))
+    scanner = load_scanner_module()
     assert len(gate["source_tree"]) == 40
     assert len(gate["dirty_diff_sha256"]) == 64
     assert set(gate["dependency_inputs"]) == {
@@ -272,6 +273,20 @@ def test_f22b_gate_binds_source_locks_actions_image_and_reports():
     }
     assert all(len(value) == 64 for value in gate["dependency_inputs"].values())
     assert set(gate["action_inputs"]) == {".github/workflows/check.yml", ".github/workflows/security-gate.yml"}
+    assert gate["policy_sha256"] == scanner.sha256_git_blob(
+        gate["source_tree"], "config/rc0810/security_gate_policy.json"
+    )
+    assert gate["exception_registry_sha256"] == scanner.sha256_git_blob(
+        gate["source_tree"], "config/rc0810/security_exception_registry.json"
+    )
+    assert gate["dependency_inputs"] == {
+        path: scanner.sha256_git_blob(gate["source_tree"], path)
+        for path in gate["dependency_inputs"]
+    }
+    assert gate["action_inputs"] == {
+        path: scanner.sha256_git_blob(gate["source_tree"], path)
+        for path in gate["action_inputs"]
+    }
     assert len(gate["policy_sha256"]) == 64
     assert len(gate["exception_registry_sha256"]) == 64
     assert {item["tool"] for item in gate["source_reports"]} == {

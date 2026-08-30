@@ -61,6 +61,11 @@ def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def sha256_git_blob(tree: str, relative: str) -> str:
+    """Hash tracked bytes so Windows and Linux validate the same input."""
+    return sha256_bytes(git("cat-file", "blob", f"{tree}:{relative}"))
+
+
 def canonical(value: Any) -> bytes:
     return json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
@@ -648,10 +653,14 @@ def main() -> int:
         "phase": "F22-A",
         "captured_at": captured_at,
         **source,
-        "policy_sha256": sha256_file(POLICY_PATH),
-        "exception_registry_sha256": sha256_file(EXCEPTIONS_PATH),
+        "policy_sha256": sha256_git_blob(
+            source["source_tree"], POLICY_PATH.relative_to(ROOT).as_posix()
+        ),
+        "exception_registry_sha256": sha256_git_blob(
+            source["source_tree"], EXCEPTIONS_PATH.relative_to(ROOT).as_posix()
+        ),
         "dependency_inputs": {
-            relative: sha256_file(ROOT / relative)
+            relative: sha256_git_blob(source["source_tree"], relative)
             for relative in (
                 "backend/requirements.txt",
                 "analysis/profiling/requirements.txt",
