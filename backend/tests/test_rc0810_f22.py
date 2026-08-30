@@ -123,6 +123,8 @@ def test_f22b_source_binding_allows_later_evidence_only_commit(monkeypatch):
     }
 
     def fake_git_bytes(*args):
+        if args[:2] == ("cat-file", "-e"):
+            return b""
         if args[:2] == ("merge-base", "--is-ancestor"):
             return b""
         if args[0] == "rev-parse":
@@ -132,6 +134,28 @@ def test_f22b_source_binding_allows_later_evidence_only_commit(monkeypatch):
         raise AssertionError(args)
 
     monkeypatch.setattr(module, "git_bytes", fake_git_bytes)
+    assert module.source_binding_errors(gate, current) == []
+
+
+def test_f22b_source_binding_accepts_exact_tree_in_depth_one_checkout(monkeypatch):
+    module = load_verifier_module()
+    gate = {
+        "head": "a" * 40,
+        "head_tree": "b" * 40,
+        "source_tree": "c" * 40,
+        "dirty_diff_sha256": "d" * 64,
+        "source_manifest_sha256": "e" * 64,
+    }
+    current = {
+        "source_tree": gate["source_tree"],
+        "source_manifest_sha256": gate["source_manifest_sha256"],
+    }
+
+    def missing_shallow_history(*args):
+        assert args[:2] == ("cat-file", "-e")
+        raise RuntimeError("missing in depth=1 checkout")
+
+    monkeypatch.setattr(module, "git_bytes", missing_shallow_history)
     assert module.source_binding_errors(gate, current) == []
 
 

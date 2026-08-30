@@ -78,8 +78,22 @@ def source_binding_errors(
             errors.append(label)
     recorded_head = gate.get("head")
     recorded_tree = gate.get("head_tree")
-    if not isinstance(recorded_head, str) or not isinstance(recorded_tree, str):
+    recorded_diff = gate.get("dirty_diff_sha256")
+    if (
+        not isinstance(recorded_head, str)
+        or re.fullmatch(r"[0-9a-f]{40}", recorded_head) is None
+        or not isinstance(recorded_tree, str)
+        or re.fullmatch(r"[0-9a-f]{40}", recorded_tree) is None
+        or not isinstance(recorded_diff, str)
+        or re.fullmatch(r"[0-9a-f]{64}", recorded_diff) is None
+    ):
         return [*errors, "head_binding_mismatch"]
+    try:
+        git_bytes("cat-file", "-e", f"{recorded_head}^{{commit}}")
+    except RuntimeError:
+        # Actions checkout is depth=1. Exact source-tree and manifest matches
+        # still bind every scanned byte when the pre-evidence commit is absent.
+        return errors
     try:
         git_bytes("merge-base", "--is-ancestor", recorded_head, "HEAD")
         actual_tree = git_bytes(
@@ -94,7 +108,7 @@ def source_binding_errors(
         return errors
     if recorded_tree != actual_tree:
         errors.append("head_binding_mismatch")
-    if gate.get("dirty_diff_sha256") != hashlib.sha256(expected_diff).hexdigest():
+    if recorded_diff != hashlib.sha256(expected_diff).hexdigest():
         errors.append("dirty_diff_mismatch")
     return errors
 

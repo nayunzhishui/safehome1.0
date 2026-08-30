@@ -1,13 +1,13 @@
 {
   "schema": "safehome.rc0810.security-gate.v2",
   "phase": "F22-B",
-  "captured_at": "2026-08-30T22:05:37.754770+00:00",
-  "source_scan_captured_at": "2026-08-30T22:03:23.876189+00:00",
-  "head": "20887ec08a3ecc0a1b7a5cda55b00f3d2030ff7f",
-  "head_tree": "0272251f584aef0781d44fef696f8946e8cc7b68",
-  "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-  "dirty_diff_sha256": "4ef782496f0c47d74bc611f9733d9662d1c26c19fb4315940a3e91131b2c8e35",
-  "source_manifest_sha256": "c350ebb5341c538e9c756ac0775f25a32b8234740736602d83b536f64bd35656",
+  "captured_at": "2026-08-30T22:15:18.539917+00:00",
+  "source_scan_captured_at": "2026-08-30T22:13:21.692830+00:00",
+  "head": "7bbf9168eeeadb14c926fd9e104410d68bd17031",
+  "head_tree": "f6ccd55652fb4f0d848cadf44375a6543b125d02",
+  "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+  "dirty_diff_sha256": "b11bd80ab209fa61753ed14f28f0ae53871418ccbe7145ef78b7e345ba8e3b90",
+  "source_manifest_sha256": "76195e5e59de657029ef8926592d703e67091516f8e6b2b3b9922f2578978523",
   "policy_sha256": "aa855eb132dcd305eeeab18bead41d200beb5bc4e16848004073ea1ef440f8f7",
   "exception_registry_sha256": "980783bd924cbaf21048f34ef646a1a3fc5091d45e3a2d60f2ebaad7d7e9f9b9",
   "dependency_inputs": {
@@ -27,8 +27,8 @@
     {
       "tool": "detect-secrets",
       "version": "1.5.0",
-      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\detect-secrets.json",
-      "sha256": "8454fd0544bd34f45269ccbba42a2ac31ee3628964183ab39fe2832d1154f2a6",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\detect-secrets.json",
+      "sha256": "68b04851fa61ec436c67f4b85a494798cc9cbcb625bfdce7b3ac4c69082b57cb",
       "bytes": 82321,
       "exit_code": 0,
       "command": [
@@ -39,36 +39,36 @@
         "--exclude-files",
         "config[\\\\/]rc0810[\\\\/]detect_secrets\\.baseline\\.json$",
         "--all-files",
-        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\staging"
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\staging"
       ],
-      "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-      "captured_at": "2026-08-30T22:03:23.876189+00:00"
+      "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+      "captured_at": "2026-08-30T22:13:21.692830+00:00"
     },
     {
       "tool": "bandit",
       "version": "1.9.4",
-      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\bandit.json",
-      "sha256": "36ed2793303402dc5fd1d3ea48b3c5f1e09025a00770d01930d0825b5ee8b26b",
-      "bytes": 8030050,
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\bandit.json",
+      "sha256": "79c3a94a1c8614c249ffdc48447027cc35c4157d2ec113a145931394a7d5d6cc",
+      "bytes": 8032030,
       "exit_code": 1,
       "command": [
         "D:\\python\\anada\\python.exe",
         "-m",
         "bandit",
         "-r",
-        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\staging\\backend",
-        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\staging\\scripts",
-        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\staging\\analysis",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\staging\\backend",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\staging\\scripts",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\staging\\analysis",
         "-f",
         "json"
       ],
-      "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-      "captured_at": "2026-08-30T22:03:23.876189+00:00"
+      "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+      "captured_at": "2026-08-30T22:13:21.692830+00:00"
     },
     {
       "tool": "pip-audit",
       "version": "2.10.1",
-      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\pip-audit.json",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\pip-audit.json",
       "sha256": "fbe08faf252d8d9e6d579c566553a5676222f64360543fa33c3543ca166d4a45",
       "bytes": 2101,
       "exit_code": 0,
@@ -77,23 +77,23 @@
         "-m",
         "pip_audit",
         "-r",
-        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\staging\\backend\\requirements.txt",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\staging\\backend\\requirements.txt",
         "-r",
-        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\staging\\analysis\\profiling\\requirements.txt",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\staging\\analysis\\profiling\\requirements.txt",
         "-r",
-        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\staging\\analysis\\text_analysis\\requirements.txt",
+        "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\staging\\analysis\\text_analysis\\requirements.txt",
         "--format",
         "json",
         "--progress-spinner",
         "off"
       ],
-      "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-      "captured_at": "2026-08-30T22:03:23.876189+00:00"
+      "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+      "captured_at": "2026-08-30T22:13:21.692830+00:00"
     },
     {
       "tool": "npm-audit",
       "version": "11.13.0",
-      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\npm-audit.json",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\npm-audit.json",
       "sha256": "fe256bf6f2a79e95dcabddc7516df1e38f2a050efd18b9fa2ed71300760f2791",
       "bytes": 363,
       "exit_code": 0,
@@ -103,18 +103,18 @@
         "--json",
         "--package-lock-only"
       ],
-      "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-      "captured_at": "2026-08-30T22:03:23.876189+00:00"
+      "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+      "captured_at": "2026-08-30T22:13:21.692830+00:00"
     }
   ],
   "negative_gate_evidence": {
-    "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
+    "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
     "reports": [
       {
         "tool": "detect-secrets",
         "version": "1.5.0",
-        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\negative-detect-secrets.json",
-        "sha256": "1bb5ac4f94772a5f155a984d4b945c75fd2a1740d4d6643c25c0036b3d725e83",
+        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\negative-detect-secrets.json",
+        "sha256": "9ae479bded84f3e0de9dea6f7ecd766252a11bf47651b75d7e0b6d0d86248e0d",
         "bytes": 2816,
         "exit_code": 0,
         "command": [
@@ -123,16 +123,16 @@
           "detect_secrets",
           "scan",
           "--all-files",
-          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\negative-fixtures\\fake-secret.txt"
+          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\negative-fixtures\\fake-secret.txt"
         ],
-        "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-        "captured_at": "2026-08-30T22:03:23.876189+00:00"
+        "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+        "captured_at": "2026-08-30T22:13:21.692830+00:00"
       },
       {
         "tool": "bandit",
         "version": "1.9.4",
-        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\negative-bandit.json",
-        "sha256": "f234e4037680040094b8b8c617f354e8f2debcd443200cf99c9a19ee998210e8",
+        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\negative-bandit.json",
+        "sha256": "3322cb6430840ec09a2f1138bd6e7ebadf1007248b0fbedd604ad01afd38878e",
         "bytes": 2719,
         "exit_code": 1,
         "command": [
@@ -140,17 +140,17 @@
           "-m",
           "bandit",
           "-r",
-          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\negative-fixtures\\dangerous.py",
+          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\negative-fixtures\\dangerous.py",
           "-f",
           "json"
         ],
-        "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-        "captured_at": "2026-08-30T22:03:23.876189+00:00"
+        "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+        "captured_at": "2026-08-30T22:13:21.692830+00:00"
       },
       {
         "tool": "pip-audit",
         "version": "2.10.1",
-        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\negative-pip-audit.json",
+        "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\negative-pip-audit.json",
         "sha256": "c40988c0c8ec1cd25e71a3b623af10f5a1cd8b356595a4e9a4ee9d3461b32603",
         "bytes": 222,
         "exit_code": 1,
@@ -159,7 +159,7 @@
           "-m",
           "pip_audit",
           "-r",
-          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\negative-fixtures\\requirements.txt",
+          "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\negative-fixtures\\requirements.txt",
           "--format",
           "json",
           "--progress-spinner",
@@ -169,10 +169,10 @@
           "--vulnerability-service",
           "osv",
           "--osv-url",
-          "http://127.0.0.1:64980/v1/query"
+          "http://127.0.0.1:49726/v1/query"
         ],
-        "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-        "captured_at": "2026-08-30T22:03:23.876189+00:00"
+        "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+        "captured_at": "2026-08-30T22:13:21.692830+00:00"
       }
     ],
     "checks": {
@@ -186,7 +186,7 @@
     "secret": 0,
     "sast_high": 0,
     "sast_medium": 166,
-    "sast_low": 7263,
+    "sast_low": 7265,
     "python_vulnerability": 0,
     "node_critical": 0,
     "node_high": 0,
@@ -208,7 +208,7 @@
     "report": {
       "tool": "trivy-container",
       "version": "0.72.0",
-      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\trivy-container.json",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\trivy-container.json",
       "sha256": "f3fbbe75cb93a655c8e400868c5db385a9431eb5afff0c99e8c1c49210f93dfe",
       "bytes": 58963,
       "exit_code": 0,
@@ -232,8 +232,8 @@
         "json",
         "safehome-rc0810-f22b:ae2cd41c053b"
       ],
-      "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-      "captured_at": "2026-08-30T22:05:37.754770+00:00"
+      "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+      "captured_at": "2026-08-30T22:15:18.539917+00:00"
     }
   },
   "sbom_status": {
@@ -244,7 +244,7 @@
     "report": {
       "tool": "trivy-sbom",
       "version": "0.72.0",
-      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\trivy-sbom.cdx.json",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\trivy-sbom.cdx.json",
       "sha256": "68bca6e413fe2936362e3db0224127ca0707891273a79a9f2b5e165f5c349321",
       "bytes": 90784,
       "exit_code": 0,
@@ -264,8 +264,8 @@
         "cyclonedx",
         "safehome-rc0810-f22b:ae2cd41c053b"
       ],
-      "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-      "captured_at": "2026-08-30T22:05:37.754770+00:00"
+      "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+      "captured_at": "2026-08-30T22:15:18.539917+00:00"
     }
   },
   "license_status": {
@@ -284,7 +284,7 @@
     "report": {
       "tool": "trivy-license",
       "version": "0.72.0",
-      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\83b50de4c266fe7b99cb46ebac3651cf0c5a41ba\\reports\\trivy-license.json",
+      "path": "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\bfd93cf90d05b242855425dc8c4270948a4b8204\\reports\\trivy-license.json",
       "sha256": "cdb733cfc1629f05c0902fc43d0322f17e15144f573fa4ed4fc8a0594f0de9cc",
       "bytes": 52805,
       "exit_code": 0,
@@ -305,8 +305,8 @@
         "json",
         "/source"
       ],
-      "source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
-      "captured_at": "2026-08-30T22:05:37.754770+00:00"
+      "source_tree": "bfd93cf90d05b242855425dc8c4270948a4b8204",
+      "captured_at": "2026-08-30T22:15:18.539917+00:00"
     }
   },
   "supply_chain_attestation": {
@@ -331,7 +331,7 @@
       "D:\\codex\\workspace\\safehome1.0\\.codex_tmp\\rc0810\\gate-fa41440c\\.codex_tmp\\rc0810\\security\\f22b\\ae2cd41c053b82146d4fd010460fbe2680c461d3\\staging"
     ],
     "local_artifact_reuse": {
-      "from_source_tree": "af6df70643970a216416372f09bd5967909e6728",
+      "from_source_tree": "83b50de4c266fe7b99cb46ebac3651cf0c5a41ba",
       "docker_context_unchanged": true,
       "docker_context_manifest_sha256": "bca99fdbcbc72ae201c0d522668fb4860db117c75e89687ff31522851c840688",
       "reason": "Docker context unchanged; exact prior image gate artifacts reused"
