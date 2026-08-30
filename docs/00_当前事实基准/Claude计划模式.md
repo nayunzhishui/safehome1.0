@@ -12801,3 +12801,15 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 停止本轮继续扩展；未执行生产动作、全量回归或人工签署。
 - [ ] 下一会话先解决 GitHub 源码分支 TLS 推送并确认远端 HEAD；随后按最新 HEAD 重建镜像、F25/F26 证据和 required CI。
 - [ ] 过期 F14-A、隐私 owner、当前独立 reviewer、平台/真机和四方 GO 仍不能自动完成。
+
+## 2026-08-30：RC0810 只读事实审查整改计划
+
+- [x] 核对 run 591、F22 漂移、本地 raw evidence、F14-A 过期、隐私与迁移 finding。
+- [x] 增加 F22 原始证据 Actions artifact，并固定 action commit。
+- [x] 增加显式开关控制的 SHA 绑定 GHCR 构建、digest 扫描、SBOM 与 registry raw artifact。
+- [x] 让 F25-B 报告校验不依赖本机临时目录，同时保留严格 raw fail-closed 模式。
+- [x] 统一 F25-B/F26 逻辑小程序内容清单，区分逻辑身份与 ZIP 传输 SHA。
+- [x] 移除 F26 旧 npm High 数量硬编码，required CI 改为候选 commit 专属语义。
+- [ ] 提交并推送本节所在源码候选，核对远端实际 SHA。
+- [ ] 对该 SHA 重跑 F22-B、GHCR、F25-B、F26，并取得 Actions raw/release artifacts。
+- [ ] 由既定独立复审与授权负责人完成复审、隐私、迁移/回滚/恢复、required checks 和最终 GO；自动化不得代签。

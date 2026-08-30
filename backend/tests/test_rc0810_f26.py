@@ -60,7 +60,7 @@ def test_f26_clean_archives_bind_candidate_commit_and_hashes(f26):
 
 
 def test_f26_production_packages_exclude_internal_and_local_files(f26):
-    _, report, _, _ = f26
+    module, report, _, _ = f26
     mini = ROOT / report["artifacts"]["miniprogram_zip"]["path"]
     with zipfile.ZipFile(mini) as archive:
         names = set(archive.namelist())
@@ -74,6 +74,18 @@ def test_f26_production_packages_exclude_internal_and_local_files(f26):
         project = json.loads(archive.read("project.config.json"))
         assert project["setting"]["urlCheck"] is True
         assert project["condition"]["miniprogram"]["list"] == []
+        manifest = json.loads(archive.read("RC0810_F26_MANIFEST.json"))
+        canonical = module.f25b._archive_content_manifest_sha256(
+            archive, manifest_name="RC0810_F26_MANIFEST.json"
+        )
+    f25 = json.loads(
+        (ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25b_evidence.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert report["artifacts"]["miniprogram_zip"]["content_manifest_sha256"] == canonical
+    assert manifest["content_manifest_sha256"] == canonical
+    assert canonical == f25["artifact_binding"]["miniprogram_package"]["content_manifest_sha256"]
     backend = ROOT / report["artifacts"]["backend_source_tar"]["path"]
     with tarfile.open(backend) as archive:
         lowered = [name.lower() for name in archive.getnames()]
@@ -86,9 +98,17 @@ def test_f26_required_ci_and_security_gaps_force_no_go(f26):
     module, report, _, _ = f26
     assert report["required_ci"]
     assert all(item["required"] is True for item in report["required_ci"])
-    assert all(item["status"] == "not_run_user_waiver" for item in report["required_ci"])
-    assert report["security_evidence"]["current_status"] == "stale"
-    assert report["artifacts"]["backend_image"]["digest"] is None
+    assert all(item["status"] == "not_verified_for_candidate" for item in report["required_ci"])
+    assert report["required_ci_summary"] == {
+        "status": "not_verified_for_candidate",
+        "blocking_job": None,
+        "high_vulnerabilities": None,
+        "official_github_ci": "no_bound_success",
+        "candidate_commit": report["candidate"]["source_commit"],
+        "evidence_scope": "candidate_commit_only",
+    }
+    assert report["artifacts"]["backend_image"]["digest"]
+    assert "registry_raw_evidence_actions_artifact_pending" in report["release_decision"]["blocking_reasons"]
     assert report["release_decision"]["recommendation"] == "NO_GO"
     assert report["release_decision"]["production_gate_eligible"] is False
     local = module._required_ci(json.loads((ROOT / "content" / "task37_38_final_acceptance_policy.json").read_text(encoding="utf-8")), True)

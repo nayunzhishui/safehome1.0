@@ -296,6 +296,22 @@ def test_f22b_workflow_uses_pinned_actions_and_immutable_trivy_image():
     assert "cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f" in json.loads(POLICY.read_text(encoding="utf-8"))["tool_images"]["trivy"]
 
 
+def test_f22b_workflow_publishes_raw_runtime_evidence_with_immutable_name():
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    policy = json.loads(POLICY.read_text(encoding="utf-8"))
+    upload_sha = policy["action_commits"]["actions/upload-artifact"]
+    assert f"actions/upload-artifact@{upload_sha}" in workflow
+    assert "if: always()" in workflow
+    assert "name: rc0810-f22b-${{ github.sha }}-${{ github.run_id }}" in workflow
+    assert "include-hidden-files: true" in workflow
+    assert ".codex_tmp/rc0810/security/f22b/" in workflow
+    assert "docs/02_专项进度与验收/rc0810_f22b_security_gate.json" in workflow
+    assert "--platform linux/amd64" in workflow
+    assert "--provenance=mode=max" in workflow
+    assert "org.opencontainers.image.revision=${GITHUB_SHA}" in workflow
+    assert "name: rc0810-registry-evidence-${{ github.sha }}-${{ github.run_id }}" in workflow
+
+
 def test_f22b_container_sbom_license_complete_but_attestation_blocks_production():
     gate = json.loads(BASELINE.read_text(encoding="utf-8"))
     assert gate["container_scan"]["status"] == "completed"

@@ -2,14 +2,21 @@ name: RC0810 F22-B Security Gate
 
 on:
   workflow_dispatch:
+    inputs:
+      publish_candidate_image:
+        description: Build and publish the SHA-bound NO-GO candidate image and raw registry evidence
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   f22b-security-gate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Checkout immutable source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -63,3 +70,88 @@ jobs:
           ):
               raise SystemExit("external attestation must stay production blocking")
           PY
+
+      - name: Build and publish immutable candidate image
+        if: ${{ inputs.publish_candidate_image }}
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          short_sha="${GITHUB_SHA:0:8}"
+          image_repo="ghcr.io/nayunzhishui/safehome-rc0810"
+          image_tag="${image_repo}:rc0810-${short_sha}"
+          evidence_dir=".codex_tmp/rc0810/registry"
+          mkdir -p "${evidence_dir}"
+          printf '%s' "${GHCR_TOKEN}" | docker login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin
+          docker buildx build . \
+            --platform linux/amd64 \
+            --provenance=mode=max \
+            --push \
+            --tag "${image_tag}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            --label "org.opencontainers.image.source=https://github.com/nayunzhishui/safehome1.0" \
+            --label "org.opencontainers.image.version=rc0810-${short_sha}" \
+            --metadata-file "${evidence_dir}/${short_sha}-build-metadata.json"
+          digest="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["containerimage.digest"])' "${evidence_dir}/${short_sha}-build-metadata.json")"
+          immutable_ref="${image_repo}@${digest}"
+          docker pull "${immutable_ref}"
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$(pwd)/${evidence_dir}:/evidence" \
+            aquasec/trivy@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f \
+            image --image-src docker --scanners vuln,secret --severity HIGH,CRITICAL \
+            --format json --output "/evidence/${short_sha}-trivy-container.json" "${immutable_ref}"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$(pwd)/${evidence_dir}:/evidence" \
+            aquasec/trivy@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f \
+            image --image-src docker --format cyclonedx \
+            --output "/evidence/${short_sha}-trivy-sbom.cdx.json" "${immutable_ref}"
+
+      - name: Upload immutable registry evidence
+        id: registry_raw
+        if: ${{ success() && inputs.publish_candidate_image }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rc0810-registry-evidence-${{ github.sha }}-${{ github.run_id }}
+          path: .codex_tmp/rc0810/registry/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90
+
+      - name: Build SHA-bound F25-B and F26 evidence packets
+        if: ${{ success() && inputs.publish_candidate_image }}
+        env:
+          RC0810_REGISTRY_ARTIFACT_NAME: rc0810-registry-evidence-${{ github.sha }}-${{ github.run_id }}
+          RC0810_REGISTRY_ARTIFACT_URL: ${{ steps.registry_raw.outputs.artifact-url }}
+        run: |
+          python scripts/build_rc0810_f25b_evidence.py \
+            --write-report --source-commit "${GITHUB_SHA}" --require-registry-raw
+          python scripts/build_rc0810_f26_rc.py \
+            --write-report --source-commit "${GITHUB_SHA}"
+
+      - name: Upload SHA-bound F25-B and F26 evidence packets
+        if: ${{ success() && inputs.publish_candidate_image }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rc0810-release-packet-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            .codex_tmp/rc0810/f25b/${{ github.sha }}/
+            .codex_tmp/rc0810/f26/${{ github.sha }}/
+            docs/02_专项进度与验收/rc0810_f25b_evidence.json
+            docs/02_专项进度与验收/rc0810_f26_final_rc.json
+            docs/02_专项进度与验收/rc0810_f26_final_rc.md
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90
+
+      - name: Upload immutable F22-B raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rc0810-f22b-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            .codex_tmp/rc0810/security/f22b/
+            docs/02_专项进度与验收/rc0810_f22b_security_gate.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90

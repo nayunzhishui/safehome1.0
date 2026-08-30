@@ -131,11 +131,13 @@ def _build_miniprogram_package(commit: str, target: Path) -> dict[str, Any]:
                 for name in source.namelist()
                 if name != "RC0810_F25B_MANIFEST.json"
             }
+        content_manifest_sha256 = f25b._content_manifest_digest(files)
         manifest = {
             "schema": "safehome.rc0810.f26-miniprogram-manifest.v1",
             "source_commit": commit,
             "source_tree": _git_text("rev-parse", f"{commit}^{{tree}}"),
             "release_input_sha256": built["manifest"]["release_input_sha256"],
+            "content_manifest_sha256": content_manifest_sha256,
             "profile": "production",
             "production_release_approved": False,
         }
@@ -157,6 +159,7 @@ def _build_miniprogram_package(commit: str, target: Path) -> dict[str, Any]:
         "profile": "production",
         "static_journey_gate_passed": built["audit"]["journey_gate_passed"] is True,
         "release_input_sha256": manifest["release_input_sha256"],
+        "content_manifest_sha256": content_manifest_sha256,
     }
 
 
@@ -375,6 +378,26 @@ def _artifact_errors(report: dict[str, Any]) -> list[str]:
                 mini_manifest = json.loads(archive.read("RC0810_F26_MANIFEST.json"))
                 if mini_manifest.get("source_commit") != candidate.get("source_commit") or mini_manifest.get("source_tree") != candidate.get("source_tree"):
                     errors.append("miniprogram_candidate_binding_mismatch")
+                content_manifest = f25b._archive_content_manifest_sha256(
+                    archive, manifest_name="RC0810_F26_MANIFEST.json"
+                )
+                if (
+                    mini.get("content_manifest_sha256") != content_manifest
+                    or mini_manifest.get("content_manifest_sha256") != content_manifest
+                ):
+                    errors.append("miniprogram_content_manifest_mismatch")
+                f25 = _read_json(F25_REPORT_PATH)
+                f25_source = f25.get("artifact_source", {})
+                f25_manifest = (
+                    f25.get("artifact_binding", {})
+                    .get("miniprogram_package", {})
+                    .get("content_manifest_sha256")
+                )
+                if (
+                    f25_source.get("commit") != candidate.get("source_commit")
+                    or f25_manifest != content_manifest
+                ):
+                    errors.append("f25_f26_content_identity_mismatch")
     source_sbom = report.get("artifacts", {}).get("source_sbom", {})
     if source_sbom.get("status") == "generated" and (ROOT / source_sbom["path"]).is_file():
         sbom_value = _read_json(ROOT / source_sbom["path"])
@@ -439,6 +462,14 @@ def build_report(
     wave_base = _git_text("rev-parse", WAVE_C_BASE_COMMIT)
     local_evidence_mode = local_ci_complete and bool(backend_image_id and backend_image_tag)
     registry_evidence = f25b.load_registry_evidence(commit)
+    if registry_evidence is None and f25.get("artifact_source", {}).get("commit") == commit:
+        embedded_registry = (
+            f25.get("artifact_binding", {})
+            .get("backend_image", {})
+            .get("registry_evidence")
+        )
+        if not f25b.registry_evidence_errors(embedded_registry, commit):
+            registry_evidence = embedded_registry
     registry_evidence_mode = registry_evidence is not None
     current_security_tree = f22scan.security_source_snapshot()["source_tree"] if (local_evidence_mode or registry_evidence_mode) else None
     security_is_current = (local_evidence_mode or registry_evidence_mode) and f22.get("source_tree") == current_security_tree
@@ -460,6 +491,10 @@ def build_report(
             "digest": None,
             "reason": "docker_daemon_unavailable_and_current_image_not_built",
         }
+    )
+    registry_raw_pending = bool(
+        registry_evidence_mode
+        and registry_evidence.get("raw_evidence_publication", {}).get("production_blocking")
     )
     report = {
         "schema": "safehome.rc0810.f26-final-rc.v1",
@@ -506,7 +541,7 @@ def build_report(
                     "id": item["id"],
                     "title": item["title"],
                     "required": item["required"] is True,
-                    "status": "pending_official_github",
+                    "status": "not_verified_for_candidate",
                     "evidence": None,
                     "release_effect": "blocking",
                 }
@@ -517,17 +552,21 @@ def build_report(
         ),
         "required_ci_summary": (
             {
-                "status": "completed_with_failure",
-                "blocking_job": "npm-audit",
-                "high_vulnerabilities": 4,
-                "official_github_ci": "pending_push",
+                "status": "local_only_not_official",
+                "blocking_job": None,
+                "high_vulnerabilities": None,
+                "official_github_ci": "no_bound_success",
+                "candidate_commit": commit,
+                "evidence_scope": "candidate_commit_only",
             }
             if local_evidence_mode
             else {
-                "status": "pending_official_github",
+                "status": "not_verified_for_candidate",
                 "blocking_job": None,
-                "high_vulnerabilities": 0,
-                "official_github_ci": "not_verified_for_candidate",
+                "high_vulnerabilities": None,
+                "official_github_ci": "no_bound_success",
+                "candidate_commit": commit,
+                "evidence_scope": "candidate_commit_only",
             }
             if registry_evidence_mode
             else {"status": "not_run_user_waiver"}
@@ -546,6 +585,7 @@ def build_report(
             "source_commit": f25.get("artifact_source", {}).get("commit"),
             "historical_engineering_status": f25.get("engineering_status"),
             "production_approved": False,
+            "miniprogram_content_manifest_sha256": f25.get("artifact_binding", {}).get("miniprogram_package", {}).get("content_manifest_sha256"),
             "external_blockers": f25.get("blockers", []),
         },
         "pr8_close_matrix": _pr8_matrix(registry),
@@ -579,9 +619,10 @@ def build_report(
             "blocking_reasons": [
                 *( ["official_required_ci_not_verified_for_candidate", "image_security_findings_and_signed_attestation_pending"]
                    if registry_evidence_mode
-                   else ["required_ci_completed_with_npm_audit_failure", "backend_registry_digest_and_attestation_missing"]
+                   else ["official_required_ci_not_verified_for_candidate", "backend_registry_digest_and_attestation_missing"]
                    if local_evidence_mode
                    else ["required_ci_not_run_by_user_direction", "current_security_scan_missing_and_f22_evidence_stale", "backend_image_and_digest_missing"] ),
+                *(["registry_raw_evidence_actions_artifact_pending"] if registry_raw_pending else []),
                 "wechat_platform_real_device_and_human_evidence_missing",
                 "product_platform_engineering_professional_go_incomplete",
                 "72h_candidate_observation_not_executed",
@@ -999,17 +1040,19 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
     if evidence_mode == "current_candidate_evidence_no_go":
         if any(
             item.get("required") is not True
-            or item.get("status") != "pending_official_github"
+            or item.get("status") != "not_verified_for_candidate"
             or item.get("evidence") is not None
             or item.get("release_effect") != "blocking"
             for item in required_ci
         ):
             errors.append("official_required_ci_evidence_invalid")
         if report.get("required_ci_summary") != {
-            "status": "pending_official_github",
+            "status": "not_verified_for_candidate",
             "blocking_job": None,
-            "high_vulnerabilities": 0,
-            "official_github_ci": "not_verified_for_candidate",
+            "high_vulnerabilities": None,
+            "official_github_ci": "no_bound_success",
+            "candidate_commit": commit,
+            "evidence_scope": "candidate_commit_only",
         }:
             errors.append("official_required_ci_summary_invalid")
     elif evidence_mode == "local_gates_complete_no_go":
@@ -1021,10 +1064,12 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
         ):
             errors.append("local_required_ci_evidence_invalid")
         if report.get("required_ci_summary") != {
-            "status": "completed_with_failure",
-            "blocking_job": "npm-audit",
-            "high_vulnerabilities": 4,
-            "official_github_ci": "pending_push",
+            "status": "local_only_not_official",
+            "blocking_job": None,
+            "high_vulnerabilities": None,
+            "official_github_ci": "no_bound_success",
+            "candidate_commit": commit,
+            "evidence_scope": "candidate_commit_only",
         }:
             errors.append("required_ci_failure_summary_invalid")
     elif evidence_mode == "historical_user_waiver":

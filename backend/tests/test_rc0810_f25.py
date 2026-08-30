@@ -124,6 +124,27 @@ def test_package_content_manifest_ignores_zip_container_metadata(tmp_path):
         assert module._archive_content_manifest_sha256(archive) != expected
 
 
+def test_registry_evidence_is_portable_but_raw_mode_still_fails_closed(monkeypatch):
+    module = load_f25b_builder_module()
+    report = json.loads(F25B_REPORT.read_text(encoding="utf-8"))
+    commit = report["artifact_source"]["commit"]
+    evidence = report["artifact_binding"]["backend_image"]["registry_evidence"]
+    assert module.registry_evidence_errors(evidence, commit, require_raw=False) == []
+    raw_paths = set(module._registry_evidence_paths(commit).values())
+    original_is_file = module.Path.is_file
+    monkeypatch.setattr(
+        module.Path,
+        "is_file",
+        lambda path: False if path in raw_paths else original_is_file(path),
+    )
+    raw_errors = module.registry_evidence_errors(evidence, commit, require_raw=True)
+    assert set(raw_errors) >= {
+        "registry_file_missing:build_metadata",
+        "registry_file_missing:container_scan",
+        "registry_file_missing:image_sbom",
+    }
+
+
 def test_f25a_default_definition_is_ready_but_release_stays_no_go():
     completed = run_verifier()
     assert completed.returncode == 0, completed.stderr
