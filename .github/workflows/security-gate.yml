@@ -84,6 +84,8 @@ jobs:
           evidence_dir=".codex_tmp/rc0810/registry"
           mkdir -p "${evidence_dir}"
           printf '%s' "${GHCR_TOKEN}" | docker login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin
+          docker buildx create --name rc0810-builder --driver docker-container --use
+          docker buildx inspect --bootstrap
           docker buildx build . \
             --platform linux/amd64 \
             --provenance=mode=max \
