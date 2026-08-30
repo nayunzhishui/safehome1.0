@@ -1,9 +1,17 @@
-FROM python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff
+FROM python:3.11-slim@sha256:1042b61448fef4ba92d16a8c7eb4996d027568ce64792a7877fd88511e0af7c6
 
 WORKDIR /app
 
+RUN apt-get -o Acquire::Retries=3 update \
+    && apt-get -o Acquire::Retries=3 install --yes --no-install-recommends \
+        libssl3t64=3.5.7-1~deb13u2 \
+        openssl=3.5.7-1~deb13u2 \
+        openssl-provider-legacy=3.5.7-1~deb13u2 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY backend/requirements.txt /app/backend/requirements.txt
 RUN pip install --no-cache-dir -r /app/backend/requirements.txt \
+    && pip uninstall --yes setuptools \
     && pip check
 
 ENV PYTHONDONTWRITEBYTECODE=1

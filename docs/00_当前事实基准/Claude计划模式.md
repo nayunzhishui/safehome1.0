@@ -12773,3 +12773,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] 重新生成 F25-B 报告绑定并完成 `6 passed` 定向专项与 builder self-check。
 - [ ] 不修改或延长 F14-A 过期 decision；等待新的固定 reviewer 独立 decision 后再继续安全合同。
 - [ ] 推送后由 GitHub Ubuntu required CI 验证缺失包重建；F22/F26/镜像证明/迁移回滚/人工 GO 继续阻塞。
+
+## 2026-08-30：生产镜像安全 finding Fix Loop
+
+- [x] 刷新 production Python slim immutable digest，取得 util-linux 已修复版本。
+- [x] 精确升级 OpenSSL/libssl/provider 到 `3.5.7-1~deb13u2`，并从最终镜像移除 setuptools vendor 链。
+- [x] 本地镜像构建成功；F01/F03 `30 passed`；确认应用无 SQLite FTS5/SQL MATCH 路径。
+- [ ] 提交后按干净 commit 重建、执行 Trivy 容器重扫并推送 GHCR；只记录新候选的真实 digest/SBOM/provenance。
+- [ ] 同步 F22/F25/F26 机器证据并由 GitHub required CI 核验；独立 reviewer、隐私 owner、平台/真机和四方 GO 继续保持人工门禁。

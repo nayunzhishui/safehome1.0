@@ -16,8 +16,10 @@ def test_f03_production_image_is_fail_closed():
     text = PRODUCTION.read_text(encoding="utf-8")
     assert text.splitlines()[0] == (
         "FROM python:3.11-slim@sha256:"
-        "90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff"
+        "1042b61448fef4ba92d16a8c7eb4996d027568ce64792a7877fd88511e0af7c6"
     )
+    assert "openssl=3.5.7-1~deb13u2" in text
+    assert "pip uninstall --yes setuptools" in text
     assert "PRODUCTION_FEATURES_UNLOCKED=1" not in text
     assert "AI_QA_REAL_PROVIDER_ENABLED=1" not in text
     assert "OPERATIONS_PRODUCTION_RELEASE_ENABLED=1" not in text
