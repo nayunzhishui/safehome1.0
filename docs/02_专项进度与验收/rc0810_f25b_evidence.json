@@ -1,16 +1,16 @@
 {
   "schema": "safehome.rc0810.f25b-evidence.v1",
   "phase": "F25-B",
-  "generated_at": "2026-08-29T10:15:56.619804+00:00",
+  "generated_at": "2026-08-30T09:08:34.173633+00:00",
   "engineering_status": "evidence_ready",
   "external_verification_complete": false,
   "production_gate_eligible": false,
   "release_recommendation": "NO_GO",
   "artifact_source": {
-    "commit": "c128ac086890130ecf48c2c8e757b4bec55d8558",
-    "source_tree": "f03291ea96db772536878151c48273e1b3724895",
+    "commit": "8d1629b9af0f6bba4fff6b379374b124fbb991fa",
+    "source_tree": "cfb23353683be2112f5cfadeabde5af5f63e83ee",
     "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35",
-    "backend_build_context_sha256": "3e67a5811b222b115e2147267f411df3e1c293ac2f93d6267b59c2a029cc75ca",
+    "backend_build_context_sha256": "6bb3bee5a32dd6790265b7d51d50d575f0f3807295cd07a9b8c9d431ae1343f5",
     "files": {
       "apps/miniprogram/app.json": "2dfaa5009db98bd1dcbb7961eda8a1911daf54113b8e2c56ccb645112f8cecaf",
       "apps/miniprogram/project.config.json": "b5f76b3605b7940c414b44141850aac9302bdba9a8fdea02155a2dbddfee1cad",
@@ -22,18 +22,74 @@
   },
   "artifact_binding": {
     "miniprogram_package": {
-      "path": ".codex_tmp/rc0810/f25b/c128ac086890130ecf48c2c8e757b4bec55d8558/safehome-miniprogram-production.zip",
-      "sha256": "c065b8e2fa1d13995c1302a914b29cb80ec341a8fb9ddddf88abd04ed199ce78",
+      "path": ".codex_tmp/rc0810/f25b/8d1629b9af0f6bba4fff6b379374b124fbb991fa/safehome-miniprogram-production.zip",
+      "sha256": "41f2044ae10dde863681f2bb57bfb865f86fe6e27aa20f2d6b3a2413e496ba04",
       "content_manifest_sha256": "15bfebdd75a59fbdaf07456dee6a1a04b4540ba9a367f25ba900c23dfbaa207b",
       "status": "evidence_ready",
       "profile": "production",
       "static_journey_gate_passed": true,
-      "size_bytes": 997140
+      "size_bytes": 997138
     },
     "backend_image": {
       "status": "pending_external",
       "image_digest": null,
-      "blocker": "docker_daemon_unavailable"
+      "blocker": "image_security_findings_and_attestation_pending",
+      "registry_evidence": {
+        "status": "recorded_no_go",
+        "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-8d1629b9",
+        "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:b9f1fd7bc19e81bc84dbf1d84f1edb889443470995284a5b4ee74c55dd16c20a",
+        "digest": "sha256:b9f1fd7bc19e81bc84dbf1d84f1edb889443470995284a5b4ee74c55dd16c20a",
+        "source_commit": "8d1629b9af0f6bba4fff6b379374b124fbb991fa",
+        "platform": "linux/amd64",
+        "revision_label": "8d1629b9af0f6bba4fff6b379374b124fbb991fa",
+        "source_label": "https://github.com/nayunzhishui/safehome1.0",
+        "version_label": "rc0810-8d1629b9",
+        "provenance": {
+          "status": "recorded_unverified",
+          "builder_id": null,
+          "build_type": "https://mobyproject.org/buildkit@v1"
+        },
+        "container_scan": {
+          "status": "completed_no_go",
+          "scanner": "trivy",
+          "critical": 3,
+          "high": 13,
+          "medium": 0,
+          "low": 0,
+          "unknown": 0
+        },
+        "image_sbom": {
+          "status": "completed",
+          "generator": "trivy",
+          "format": "CycloneDX",
+          "spec_version": "1.7",
+          "component_count": 119,
+          "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:b9f1fd7bc19e81bc84dbf1d84f1edb889443470995284a5b4ee74c55dd16c20a",
+          "root_purl": "pkg:oci/safehome-rc0810@sha256:b9f1fd7bc19e81bc84dbf1d84f1edb889443470995284a5b4ee74c55dd16c20a?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
+        },
+        "attestation": {
+          "status": "pending_external",
+          "reason": "signed_attestation_not_verified"
+        },
+        "files": {
+          "build_metadata": {
+            "path": ".codex_tmp/rc0810/registry/8d1629b9-build-metadata.json",
+            "sha256": "060c1fcdf833f29e16925834aa6aed7f75bfbdf25ed22b1a350fb974f461ae60",
+            "size_bytes": 2332
+          },
+          "container_scan": {
+            "path": ".codex_tmp/rc0810/registry/8d1629b9-trivy-container.json",
+            "sha256": "c098dd7cc8e568f00dcb394e963d7be2316c5488736040ebb718e34155cd83a8",
+            "size_bytes": 453892
+          },
+          "image_sbom": {
+            "path": ".codex_tmp/rc0810/registry/8d1629b9-trivy-sbom.cdx.json",
+            "sha256": "895af027b38a708f6ddce0cac4c436b82404ea126b9224c9a13ebd7fed551c8b",
+            "size_bytes": 232524
+          }
+        },
+        "production_gate_eligible": false
+      }
     },
     "appid_fingerprint": "sha256:ac88112a1d98d0ac0841781d3e32eff906eaa3198de05148c3beca59385288bb",
     "cloudbase_env_id": "prod-d3gl35otiaa7c8d24",
@@ -775,7 +831,7 @@
       "id": "F25-EXT-01",
       "scope": "backend_image",
       "status": "pending_external",
-      "reason": "docker_daemon_unavailable"
+      "reason": "image_security_findings_and_attestation_pending"
     },
     {
       "id": "F25-EXT-02",
