@@ -4,16 +4,16 @@
 
 ## 候选基线
 
-- commit：`c3dc089002a8f057670c39d75ee3160dcb36f092`
-- tree：`8264085bba6e18e0518511e804918b1361106074`
+- commit：`8d1629b9af0f6bba4fff6b379374b124fbb991fa`
+- tree：`cfb23353683be2112f5cfadeabde5af5f63e83ee`
 - 打包方式：隔离 Git archive；未从脏工作区直接打包
-- production 小程序 ZIP：`315b4e7fbbd94dbe7cb776c24d7161b779d84b9fb8870b7167f962f98e28635f`
-- 后端镜像：本地已构建 `safehome-rc0810:c3dc0890` / `sha256:b38f878b4dfed277024860c6f2681f2374e09e58bfd33320141487f6a24737ed`；未伪造 registry digest
+- production 小程序 ZIP：`0726465e5a23b4a75fd308be7ba6c338595612eaa0dfb9791e11f67a9a47c78e`
+- 后端镜像：`ghcr.io/nayunzhishui/safehome-rc0810@sha256:b9f1fd7bc19e81bc84dbf1d84f1edb889443470995284a5b4ee74c55dd16c20a`；Trivy CycloneDX SBOM 已绑定，扫描仍有 Critical/High 阻断，签名证明待外部核验
 
 ## 阻断原因
 
-- required_ci_completed_with_npm_audit_failure
-- backend_registry_digest_and_attestation_missing
+- official_required_ci_not_verified_for_candidate
+- image_security_findings_and_signed_attestation_pending
 - wechat_platform_real_device_and_human_evidence_missing
 - product_platform_engineering_professional_go_incomplete
 - 72h_candidate_observation_not_executed
@@ -23,7 +23,7 @@
 
 - product: pending_external（approved=false）
 - platform: blocked_external（approved=false）
-- engineering: blocked_npm_audit_registry_digest（approved=false）
+- engineering: blocked_required_ci_image_security（approved=false）
 - professional: pending_external（approved=false）
 
 ## 阶段事实
@@ -40,4 +40,4 @@
 
 ## 下一动作
 
-波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须关闭 npm High、补齐镜像仓库摘要与证明、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。
+波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须完成 required CI、关闭镜像安全发现并核验签名证明、微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。
