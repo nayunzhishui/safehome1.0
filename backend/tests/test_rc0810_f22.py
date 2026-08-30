@@ -89,6 +89,18 @@ def test_f22b_reviewed_false_positive_does_not_hide_new_secret(tmp_path):
     assert findings[0]["category"] == "secret"
 
 
+def test_f22b_reviewed_baseline_survives_detect_secrets_report_rewrite(monkeypatch):
+    module = load_scanner_module()
+    reviewed = {("fixture.py", "Hex High Entropy String", "a" * 64)}
+    monkeypatch.setattr(module, "reviewed_secret_keys", lambda: reviewed)
+    item = {
+        "filename": "fixture.py",
+        "type": "Hex High Entropy String",
+        "hashed_secret": "a" * 64,
+    }
+    assert module.secret_is_reviewed("fixture.py", item, reviewed)
+
+
 def test_f22b_source_binding_allows_later_evidence_only_commit(monkeypatch):
     module = load_verifier_module()
     recorded_head = "a" * 40

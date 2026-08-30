@@ -200,6 +200,30 @@ def scanner_version(tool: str, env: dict[str, str]) -> str:
     return match.group(0)
 
 
+def reviewed_secret_keys() -> set[tuple[str, str, str]]:
+    baseline = parse_json(SECRET_BASELINE_PATH)
+    return {
+        (
+            normalized_source_path(item.get("filename") or filename),
+            str(item.get("type", "")),
+            str(item.get("hashed_secret", "")),
+        )
+        for filename, items in baseline.get("results", {}).items()
+        for item in items
+        if item.get("is_secret") is False
+    }
+
+
+def secret_is_reviewed(
+    filename: str, item: dict[str, Any], reviewed: set[tuple[str, str, str]]
+) -> bool:
+    return item.get("is_secret") is False or (
+        normalized_source_path(item.get("filename") or filename),
+        str(item.get("type", "")),
+        str(item.get("hashed_secret", "")),
+    ) in reviewed
+
+
 def summarize(report_paths: dict[str, Path]) -> dict[str, int]:
     secrets = parse_json(report_paths["detect-secrets"])
     bandit = parse_json(report_paths["bandit"])
@@ -212,11 +236,12 @@ def summarize(report_paths: dict[str, Path]) -> dict[str, int]:
         ("npm-audit", npm_audit),
     ):
         validate_report_payload(tool, payload)
+    reviewed = reviewed_secret_keys()
     secret_count = sum(
         1
-        for items in secrets.get("results", {}).values()
+        for filename, items in secrets.get("results", {}).items()
         for item in items
-        if item.get("is_secret") is not False
+        if not secret_is_reviewed(filename, item, reviewed)
     )
     bandit_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
     for finding in bandit.get("results", []):
@@ -261,9 +286,10 @@ def build_blocking_findings(
             }
         )
 
+    reviewed = reviewed_secret_keys()
     for filename, items in sorted(secrets["results"].items()):
         for item in items:
-            if item.get("is_secret") is False:
+            if secret_is_reviewed(filename, item, reviewed):
                 continue
             append(
                 "secret",
