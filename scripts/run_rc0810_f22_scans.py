@@ -556,6 +556,8 @@ def main() -> int:
             "-m",
             "detect_secrets",
             "scan",
+            "--exclude-files",
+            r"config[\\/]rc0810[\\/]detect_secrets\.baseline\.json$",
             "--all-files",
             str(staging),
         ],

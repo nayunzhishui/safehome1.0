@@ -232,7 +232,15 @@ def report_contract_errors(
         )
     elif not negative and tool == "detect-secrets":
         valid_command = python_command(
-            argv, "detect_secrets", ["scan", "--all-files", staging]
+            argv,
+            "detect_secrets",
+            [
+                "scan",
+                "--exclude-files",
+                r"config[\\/]rc0810[\\/]detect_secrets\.baseline\.json$",
+                "--all-files",
+                staging,
+            ],
         )
     elif not negative and tool == "bandit":
         valid_command = python_command(
