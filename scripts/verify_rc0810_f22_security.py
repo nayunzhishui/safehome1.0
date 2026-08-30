@@ -6,6 +6,7 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -856,6 +857,10 @@ def main() -> int:
         result["status"] = "self_check_passed" if result["valid"] else "invalid"
         if not result["valid"]:
             result["errors"].append("self_check_failed")
+    if not result["valid"] and os.environ.get("GITHUB_ACTIONS") == "true":
+        message = ",".join(result["errors"])
+        message = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::error title=F22 security contract::{message}")
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["valid"] else 1
 
