@@ -193,7 +193,7 @@ def main() -> int:
         artifact_reuse = {
             "from_source_tree": previous_tree,
             "docker_context_unchanged": True,
-            "reason": "Docker Desktop unavailable after source-only Harness and documentation changes",
+            "reason": "Docker context unchanged; exact prior image gate artifacts reused",
         }
     else:
         tag = f"safehome-rc0810-f22b:{source_tree[:12]}"
