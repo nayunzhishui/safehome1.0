@@ -29,7 +29,9 @@ from run_rc0810_f22_scans import (  # noqa: E402
     summarize,
     validate_report_payload,
 )
-from run_rc0810_f22b_security import docker_context_unchanged  # noqa: E402
+from run_rc0810_f22b_security import (  # noqa: E402
+    docker_context_manifest_sha256,
+)
 
 
 SCHEMA_PATH = ROOT / "config" / "rc0810" / "security_gate.schema.json"
@@ -511,12 +513,13 @@ def validate_f22b(
     artifact_reuse = attestation.get("local_artifact_reuse")
     if artifact_reuse is not None:
         previous_tree = str(artifact_reuse.get("from_source_tree", ""))
+        context_sha256 = str(artifact_reuse.get("docker_context_manifest_sha256", ""))
         if (
             re.fullmatch(r"[0-9a-f]{40}", previous_tree) is None
             or artifact_reuse.get("docker_context_unchanged") is not True
-            or not docker_context_unchanged(
-                previous_tree, str(gate.get("source_tree", ""))
-            )
+            or re.fullmatch(r"[0-9a-f]{64}", context_sha256) is None
+            or context_sha256
+            != docker_context_manifest_sha256(str(gate.get("source_tree", "")))
         ):
             errors.append("artifact_reuse_binding_invalid")
     if (

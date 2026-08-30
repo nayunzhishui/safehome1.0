@@ -52,18 +52,36 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def docker_context_manifest_sha256(tree: str) -> str:
+    """Hash tracked Docker inputs without requiring an earlier tree object later."""
+    include_paths = [path for path in IMAGE_CONTEXT_PATHS if not path.startswith(":(")]
+    completed = subprocess.run(
+        ["git", "ls-tree", "-r", "-z", tree, "--", *include_paths],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(completed.stderr.decode("utf-8", errors="replace"))
+    entries = [
+        entry
+        for entry in completed.stdout.split(b"\0")
+        if entry and b"\tbackend/tests/" not in entry
+    ]
+    return hashlib.sha256(b"\0".join(entries) + b"\0").hexdigest()
+
+
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def docker_context_unchanged(previous_tree: str, source_tree: str) -> bool:
-    completed = subprocess.run(
-        ["git", "diff", "--quiet", previous_tree, source_tree, "--", *IMAGE_CONTEXT_PATHS],
-        cwd=ROOT,
-        capture_output=True,
-        check=False,
-    )
-    return completed.returncode == 0
+    try:
+        return docker_context_manifest_sha256(previous_tree) == docker_context_manifest_sha256(
+            source_tree
+        )
+    except RuntimeError:
+        return False
 
 
 def run(argv: list[str], *, cwd: Path = ROOT, timeout: int) -> subprocess.CompletedProcess[bytes]:
@@ -195,6 +213,7 @@ def main() -> int:
         artifact_reuse = {
             "from_source_tree": previous_tree,
             "docker_context_unchanged": True,
+            "docker_context_manifest_sha256": docker_context_manifest_sha256(source_tree),
             "reason": "Docker context unchanged; exact prior image gate artifacts reused",
         }
     else:

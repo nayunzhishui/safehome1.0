@@ -396,11 +396,17 @@ def test_f22b_workflow_publishes_raw_runtime_evidence_with_immutable_name():
 
 def test_f22b_container_sbom_license_complete_but_attestation_blocks_production():
     gate = json.loads(BASELINE.read_text(encoding="utf-8"))
+    verifier = load_verifier_module()
     assert gate["container_scan"]["status"] == "completed"
     assert gate["sbom_status"]["status"] == "completed"
     assert gate["license_status"]["status"] == "completed"
     assert gate["supply_chain_attestation"]["status"] == "pending_external"
     assert gate["supply_chain_attestation"]["production_blocking"] is True
+    reuse = gate["supply_chain_attestation"].get("local_artifact_reuse")
+    if reuse is not None:
+        assert reuse[
+            "docker_context_manifest_sha256"
+        ] == verifier.docker_context_manifest_sha256(gate["source_tree"])
     assert gate["production_gate_eligible"] is False
 
 
