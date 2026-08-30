@@ -40,6 +40,7 @@ jobs:
           python -m pip install --disable-pip-version-check \
             bandit==1.9.4 \
             detect-secrets==1.5.0 \
+            jsonschema==4.26.0 \
             pip-audit==2.10.1 \
             pip-licenses==5.5.5
           npm install --global npm@11.13.0
@@ -150,7 +151,8 @@ jobs:
         with:
           name: rc0810-f22b-${{ github.sha }}-${{ github.run_id }}
           path: |
-            .codex_tmp/rc0810/security/f22b/
+            .codex_tmp/rc0810/security/f22b/*/reports/
+            .codex_tmp/rc0810/security/f22b/*/source.zip
             docs/02_专项进度与验收/rc0810_f22b_security_gate.json
           if-no-files-found: error
           include-hidden-files: true
