@@ -1,16 +1,16 @@
 {
   "schema": "safehome.rc0810.f25b-evidence.v1",
   "phase": "F25-B",
-  "generated_at": "2026-08-30T13:03:37.419893+00:00",
+  "generated_at": "2026-08-30T17:16:43.458546+00:00",
   "engineering_status": "evidence_ready",
   "external_verification_complete": false,
   "production_gate_eligible": false,
   "release_recommendation": "NO_GO",
   "artifact_source": {
-    "commit": "56b6a949ab8790f9eb5c6534dd08ebd403f646cf",
-    "source_tree": "251b74a0d04d39d5a2a6e5b9b4b12d3896e1e3bf",
+    "commit": "702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c",
+    "source_tree": "acff2efd2cb3184eae2693d8f9d3c27e1d1dbb23",
     "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35",
-    "backend_build_context_sha256": "6bb3bee5a32dd6790265b7d51d50d575f0f3807295cd07a9b8c9d431ae1343f5",
+    "backend_build_context_sha256": "03948443425c61f32ebed015de925e62fc684aee9705141e47bdf3754b85c400",
     "files": {
       "apps/miniprogram/app.json": "2dfaa5009db98bd1dcbb7961eda8a1911daf54113b8e2c56ccb645112f8cecaf",
       "apps/miniprogram/project.config.json": "b5f76b3605b7940c414b44141850aac9302bdba9a8fdea02155a2dbddfee1cad",
@@ -22,13 +22,13 @@
   },
   "artifact_binding": {
     "miniprogram_package": {
-      "path": ".codex_tmp/rc0810/f25b/56b6a949ab8790f9eb5c6534dd08ebd403f646cf/safehome-miniprogram-production.zip",
-      "sha256": "01ce6322279424b184375bec93cb179873701cf1485140c5fc1353edaea7ee36",
+      "path": ".codex_tmp/rc0810/f25b/702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c/safehome-miniprogram-production.zip",
+      "sha256": "540acc3bb29eb249091a9812e09670f511fd51f0abc4bf7480b5c31662910101",
       "content_manifest_sha256": "099bd82e53bbfab1d77af73eb78c05f0b4c56d23432aeef396105cacba84696c",
       "status": "evidence_ready",
       "profile": "production",
       "static_journey_gate_passed": true,
-      "size_bytes": 997137
+      "size_bytes": 997138
     },
     "backend_image": {
       "status": "pending_external",
@@ -36,14 +36,14 @@
       "blocker": "image_security_findings_attestation_and_remote_raw_evidence_pending",
       "registry_evidence": {
         "status": "recorded_no_go",
-        "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-56b6a949",
-        "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:a4280975e3a838dbb42f52dc1b5bfc34a146b2eb61b421e5963543af78bf8e04",
-        "digest": "sha256:a4280975e3a838dbb42f52dc1b5bfc34a146b2eb61b421e5963543af78bf8e04",
-        "source_commit": "56b6a949ab8790f9eb5c6534dd08ebd403f646cf",
+        "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-702d6ead",
+        "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:4f08b4b024a2a875e6e9f2a614075a1ce700efb00b6d72f2eeb631e78180fb00",
+        "digest": "sha256:4f08b4b024a2a875e6e9f2a614075a1ce700efb00b6d72f2eeb631e78180fb00",
+        "source_commit": "702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c",
         "platform": "linux/amd64",
-        "revision_label": "56b6a949ab8790f9eb5c6534dd08ebd403f646cf",
+        "revision_label": "702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c",
         "source_label": "https://github.com/nayunzhishui/safehome1.0",
-        "version_label": "rc0810-56b6a949",
+        "version_label": "rc0810-702d6ead",
         "provenance": {
           "status": "recorded_unverified",
           "builder_id": null,
@@ -52,8 +52,8 @@
         "container_scan": {
           "status": "completed_no_go",
           "scanner": "trivy",
-          "critical": 3,
-          "high": 13,
+          "critical": 0,
+          "high": 0,
           "medium": 0,
           "low": 0,
           "unknown": 0
@@ -63,9 +63,9 @@
           "generator": "trivy",
           "format": "CycloneDX",
           "spec_version": "1.7",
-          "component_count": 119,
-          "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:a4280975e3a838dbb42f52dc1b5bfc34a146b2eb61b421e5963543af78bf8e04",
-          "root_purl": "pkg:oci/safehome-rc0810@sha256:a4280975e3a838dbb42f52dc1b5bfc34a146b2eb61b421e5963543af78bf8e04?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
+          "component_count": 72,
+          "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:4f08b4b024a2a875e6e9f2a614075a1ce700efb00b6d72f2eeb631e78180fb00",
+          "root_purl": "pkg:oci/safehome-rc0810@sha256:4f08b4b024a2a875e6e9f2a614075a1ce700efb00b6d72f2eeb631e78180fb00?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
         },
         "attestation": {
           "status": "pending_external",
@@ -73,19 +73,19 @@
         },
         "files": {
           "build_metadata": {
-            "path": ".codex_tmp/rc0810/registry/56b6a949-build-metadata.json",
-            "sha256": "9eb1eeb92c4aad0766e0d93ecaa2798543ff1b20cabfb7d93812e136d4c03b62",
-            "size_bytes": 2332
+            "path": ".codex_tmp/rc0810/registry/702d6ead-build-metadata.json",
+            "sha256": "6f879df1298c0dec85a87acd0bab2016084ff52d0fe4a89109b5c6f525fa31a1",
+            "size_bytes": 2691
           },
           "container_scan": {
-            "path": ".codex_tmp/rc0810/registry/56b6a949-trivy-container.json",
-            "sha256": "4c1951996f740da0210cc03f9adb721c0faafed802f8c49a8bccd812024cd31d",
-            "size_bytes": 453893
+            "path": ".codex_tmp/rc0810/registry/702d6ead-trivy-container.json",
+            "sha256": "5709a60dc330b406df4841dfbd60cf0c7a64a8677936b3eb4f81ae000dde14fd",
+            "size_bytes": 59618
           },
           "image_sbom": {
-            "path": ".codex_tmp/rc0810/registry/56b6a949-trivy-sbom.cdx.json",
-            "sha256": "2c8bb734d7cda6f9dca165638d7e837a326ba0cd6168ecca0b4a96aaed36874d",
-            "size_bytes": 232524
+            "path": ".codex_tmp/rc0810/registry/702d6ead-trivy-sbom.cdx.json",
+            "sha256": "a680cda4b361f0c051e44bb937600259b66238dfd054a6ed1b05df69e93616ef",
+            "size_bytes": 91596
           }
         },
         "raw_evidence_publication": {
