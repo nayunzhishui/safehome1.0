@@ -344,6 +344,7 @@ def _side_effect_ledger() -> list[dict[str, Any]]:
 
 def _artifact_errors(report: dict[str, Any]) -> list[str]:
     errors: list[str] = []
+    candidate = report.get("candidate", {})
     for name, artifact in report.get("artifacts", {}).items():
         if artifact.get("status") != "generated":
             continue
@@ -371,6 +372,19 @@ def _artifact_errors(report: dict[str, Any]) -> list[str]:
                 conditions = project.get("condition", {}).get("miniprogram", {}).get("list")
                 if project.get("setting", {}).get("urlCheck") is not True or conditions != []:
                     errors.append("miniprogram_profile_not_frozen")
+                mini_manifest = json.loads(archive.read("RC0810_F26_MANIFEST.json"))
+                if mini_manifest.get("source_commit") != candidate.get("source_commit") or mini_manifest.get("source_tree") != candidate.get("source_tree"):
+                    errors.append("miniprogram_candidate_binding_mismatch")
+    source_sbom = report.get("artifacts", {}).get("source_sbom", {})
+    if source_sbom.get("status") == "generated" and (ROOT / source_sbom["path"]).is_file():
+        sbom_value = _read_json(ROOT / source_sbom["path"])
+        if sbom_value.get("source_commit") != candidate.get("source_commit") or sbom_value.get("source_tree") != candidate.get("source_tree"):
+            errors.append("source_sbom_candidate_binding_mismatch")
+    artifact_manifest = report.get("artifacts", {}).get("artifact_manifest", {})
+    if artifact_manifest.get("status") == "generated" and (ROOT / artifact_manifest["path"]).is_file():
+        manifest_value = _read_json(ROOT / artifact_manifest["path"])
+        if manifest_value.get("source_commit") != candidate.get("source_commit") or manifest_value.get("source_tree") != candidate.get("source_tree"):
+            errors.append("artifact_manifest_candidate_binding_mismatch")
     return errors
 
 
@@ -424,9 +438,14 @@ def build_report(
     f25 = _read_json(F25_REPORT_PATH)
     wave_base = _git_text("rev-parse", WAVE_C_BASE_COMMIT)
     local_evidence_mode = local_ci_complete and bool(backend_image_id and backend_image_tag)
-    current_security_tree = f22scan.security_source_snapshot()["source_tree"] if local_evidence_mode else None
-    security_is_current = local_evidence_mode and f22.get("source_tree") == current_security_tree
+    registry_evidence = f25b.load_registry_evidence(commit)
+    registry_evidence_mode = registry_evidence is not None
+    current_security_tree = f22scan.security_source_snapshot()["source_tree"] if (local_evidence_mode or registry_evidence_mode) else None
+    security_is_current = (local_evidence_mode or registry_evidence_mode) and f22.get("source_tree") == current_security_tree
     backend_image = (
+        registry_evidence
+        if registry_evidence_mode
+        else
         {
             "status": "local_built_unpublished",
             "image_id": backend_image_id,
@@ -448,7 +467,11 @@ def build_report(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "task_status": "review_pending_wave",
         "engineering_materials_status": "evidence_ready_no_go",
-        "evidence_mode": "local_gates_complete_no_go" if local_evidence_mode else "historical_user_waiver",
+        "evidence_mode": (
+            "current_candidate_evidence_no_go"
+            if registry_evidence_mode
+            else "local_gates_complete_no_go" if local_evidence_mode else "historical_user_waiver"
+        ),
         "candidate": {
             "source_commit": commit,
             "source_tree": source_tree,
@@ -477,7 +500,21 @@ def build_report(
             "content_artifacts": _tracked_hash_summary(commit, ("content/content_governance_manifest.json", "content/offline_baseline_manifest.json", "content/operations_release_manifest.json")),
             "rc0810_config": _tracked_hash_summary(commit, ("config/rc0810/",)),
         },
-        "required_ci": _required_ci(final_policy, local_evidence_mode),
+        "required_ci": (
+            [
+                {
+                    "id": item["id"],
+                    "title": item["title"],
+                    "required": item["required"] is True,
+                    "status": "pending_official_github",
+                    "evidence": None,
+                    "release_effect": "blocking",
+                }
+                for item in final_policy["automatic_acceptance_categories"]
+            ]
+            if registry_evidence_mode
+            else _required_ci(final_policy, local_evidence_mode)
+        ),
         "required_ci_summary": (
             {
                 "status": "completed_with_failure",
@@ -486,6 +523,13 @@ def build_report(
                 "official_github_ci": "pending_push",
             }
             if local_evidence_mode
+            else {
+                "status": "pending_official_github",
+                "blocking_job": None,
+                "high_vulnerabilities": 0,
+                "official_github_ci": "not_verified_for_candidate",
+            }
+            if registry_evidence_mode
             else {"status": "not_run_user_waiver"}
         ),
         "security_evidence": {
@@ -510,7 +554,7 @@ def build_report(
         "four_go": {
             "product": {"approved": False, "status": "pending_external", "owner": "product_owner"},
             "platform": {"approved": False, "status": "blocked_external", "owner": "platform_owner"},
-            "engineering": {"approved": False, "status": "blocked_npm_audit_registry_digest" if local_evidence_mode else "blocked_required_ci_image_security", "owner": "engineering_owner"},
+            "engineering": {"approved": False, "status": "blocked_required_ci_image_security", "owner": "engineering_owner"},
             "professional": {"approved": False, "status": "pending_external", "owner": "professional_owner"},
         },
         "wave_c_review": {
@@ -533,7 +577,9 @@ def build_report(
             "production_gate_eligible": False,
             "automatic_release_performed": False,
             "blocking_reasons": [
-                *( ["required_ci_completed_with_npm_audit_failure", "backend_registry_digest_and_attestation_missing"]
+                *( ["official_required_ci_not_verified_for_candidate", "image_security_findings_and_signed_attestation_pending"]
+                   if registry_evidence_mode
+                   else ["required_ci_completed_with_npm_audit_failure", "backend_registry_digest_and_attestation_missing"]
                    if local_evidence_mode
                    else ["required_ci_not_run_by_user_direction", "current_security_scan_missing_and_f22_evidence_stale", "backend_image_and_digest_missing"] ),
                 "wechat_platform_real_device_and_human_evidence_missing",
@@ -550,9 +596,12 @@ def build_report(
             "stable_operation_verified": False,
         },
         "known_issues": [
-            "F22-B security report is bound to an older source tree and is historical only.",
+            ("F22-B security report is current for the candidate but remains NO-GO." if security_is_current else "F22-B security report is bound to an older source tree and is historical only."),
             "F25-B has eight external blockers and no platform or human approval.",
-            *( ["Local required CI and fix loop completed, but npm audit still reports four High findings with no upstream fix.",
+            *( ["Official GitHub required CI has not been verified for this candidate.",
+                "The GHCR digest and Trivy CycloneDX SBOM are bound; Critical/High image findings and signed-attestation verification remain blocking."]
+               if registry_evidence_mode
+               else ["Local required CI and fix loop completed, but npm audit still reports four High findings with no upstream fix.",
                 "The backend image is local only; registry digest and supply-chain attestation remain missing."]
                if local_evidence_mode
                else ["Required CI/Harness/regression was not run at F26 by explicit user direction.",
@@ -560,10 +609,10 @@ def build_report(
         ],
         "subtasks": [
             {"id": "F26.1", "status": "evidence_ready"},
-            {"id": "F26.2", "status": "local_complete_with_failure" if local_evidence_mode else "blocked_user_waiver"},
-            {"id": "F26.3", "status": "local_image_registry_digest_missing" if local_evidence_mode else "partial_backend_image_missing"},
-            {"id": "F26.4", "status": "current_scan_no_go" if local_evidence_mode else "partial_image_and_security_missing"},
-            {"id": "F26.5", "status": "current_scan_no_go" if local_evidence_mode else "partial_structural_scan_only"},
+            {"id": "F26.2", "status": "blocked_official_ci_pending" if registry_evidence_mode else "local_complete_with_failure" if local_evidence_mode else "blocked_user_waiver"},
+            {"id": "F26.3", "status": "registry_digest_bound_no_go" if registry_evidence_mode else "local_image_registry_digest_missing" if local_evidence_mode else "partial_backend_image_missing"},
+            {"id": "F26.4", "status": "current_scan_no_go" if (registry_evidence_mode or local_evidence_mode) else "partial_image_and_security_missing"},
+            {"id": "F26.5", "status": "current_scan_no_go" if (registry_evidence_mode or local_evidence_mode) else "partial_structural_scan_only"},
             {"id": "F26.6", "status": "evidence_ready"},
             {"id": "F26.7", "status": "evidence_ready_no_resolved_claims"},
             {"id": "F26.8", "status": "review_pending_wave"},
@@ -585,9 +634,12 @@ def build_report(
 def render_markdown(report: dict[str, Any]) -> str:
     candidate = report["candidate"]
     local_mode = report.get("evidence_mode") == "local_gates_complete_no_go"
+    registry_mode = report.get("evidence_mode") == "current_candidate_evidence_no_go"
     image = report["artifacts"]["backend_image"]
     image_line = (
-        f"本地已构建 `{image['tag']}` / `{image['image_id']}`；未伪造 registry digest"
+        f"`{image['immutable_ref']}`；Trivy CycloneDX SBOM 已绑定，扫描仍有 Critical/High 阻断，签名证明待外部核验"
+        if registry_mode
+        else f"本地已构建 `{image['tag']}` / `{image['image_id']}`；未伪造 registry digest"
         if local_mode
         else "缺失，未伪造 digest"
     )
@@ -598,12 +650,12 @@ def render_markdown(report: dict[str, Any]) -> str:
     )
     if report["wave_c_review"]["status"] == "review_pass":
         next_action = (
-            "波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须关闭 npm High、补齐镜像仓库摘要与证明、"
+            "波次 C 固定 reviewer 已审查通过工程实现与如实 NO-GO 结论。仍须完成 required CI、关闭镜像安全发现并核验签名证明、"
             "微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
         )
     else:
         next_action = (
-            "波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须关闭 npm High、补齐镜像仓库摘要与证明、"
+            "波次 C 先由固定 reviewer 独立审查累计 diff 与本证据包。之后仍须完成 required CI、关闭镜像安全发现并核验签名证明、"
             "微信平台与真机证据、四方签署和候选观察，才能重新判定 GO。"
         )
     return f"""# RC0810-F26 最终 RC 收口与发布建议
@@ -944,7 +996,23 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
     if {item.get("id") for item in required_ci} != expected_ci:
         errors.append("required_ci_catalog_incomplete")
     evidence_mode = report.get("evidence_mode", "historical_user_waiver")
-    if evidence_mode == "local_gates_complete_no_go":
+    if evidence_mode == "current_candidate_evidence_no_go":
+        if any(
+            item.get("required") is not True
+            or item.get("status") != "pending_official_github"
+            or item.get("evidence") is not None
+            or item.get("release_effect") != "blocking"
+            for item in required_ci
+        ):
+            errors.append("official_required_ci_evidence_invalid")
+        if report.get("required_ci_summary") != {
+            "status": "pending_official_github",
+            "blocking_job": None,
+            "high_vulnerabilities": 0,
+            "official_github_ci": "not_verified_for_candidate",
+        }:
+            errors.append("official_required_ci_summary_invalid")
+    elif evidence_mode == "local_gates_complete_no_go":
         if any(
             item.get("required") is not True
             or item.get("status") != "local_pass"
@@ -966,7 +1034,7 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
         errors.append("evidence_mode_invalid")
     security = report.get("security_evidence", {})
     image = report.get("artifacts", {}).get("backend_image", {})
-    if evidence_mode == "local_gates_complete_no_go":
+    if evidence_mode in {"current_candidate_evidence_no_go", "local_gates_complete_no_go"}:
         try:
             current_security_tree = f22scan.security_source_snapshot()["source_tree"]
         except (RuntimeError, OSError) as exc:
@@ -978,14 +1046,16 @@ def validate_report(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
                 or security.get("current_status") != "current"
             ):
                 errors.append("current_security_evidence_invalid")
-        if (
-            image.get("status") != "local_built_unpublished"
-            or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(image.get("image_id") or ""))
-            or not isinstance(image.get("tag"), str)
-            or image.get("source_commit") != commit
-            or image.get("digest") is not None
-        ):
-            errors.append("local_backend_image_evidence_invalid")
+        if evidence_mode == "current_candidate_evidence_no_go":
+            errors.extend(f25b.registry_evidence_errors(image, commit))
+        elif (
+                image.get("status") != "local_built_unpublished"
+                or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(image.get("image_id") or ""))
+                or not isinstance(image.get("tag"), str)
+                or image.get("source_commit") != commit
+                or image.get("digest") is not None
+            ):
+                errors.append("local_backend_image_evidence_invalid")
     else:
         if security.get("source_tree") == candidate.get("source_tree") or security.get("current_status") != "stale":
             errors.append("stale_security_evidence_promoted")

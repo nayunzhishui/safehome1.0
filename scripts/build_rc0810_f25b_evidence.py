@@ -13,6 +13,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -27,6 +28,8 @@ from typing import Any, Callable
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25b_evidence.json"
 ARTIFACT_ROOT = ROOT / ".codex_tmp" / "rc0810" / "f25b"
+REGISTRY_EVIDENCE_ROOT = ROOT / ".codex_tmp" / "rc0810" / "registry"
+REGISTRY_IMAGE = "ghcr.io/nayunzhishui/safehome-rc0810"
 RELEASE_INPUTS = (
     "apps/miniprogram/app.json",
     "apps/miniprogram/project.config.json",
@@ -262,6 +265,129 @@ def _probe_docker() -> dict[str, Any]:
     return {"status": "pending_external", "image_digest": None, "blocker": "backend_image_not_built_in_f25b"}
 
 
+def _registry_evidence_paths(commit: str) -> dict[str, Path]:
+    prefix = commit[:8]
+    return {
+        "build_metadata": REGISTRY_EVIDENCE_ROOT / f"{prefix}-build-metadata.json",
+        "container_scan": REGISTRY_EVIDENCE_ROOT / f"{prefix}-trivy-container.json",
+        "image_sbom": REGISTRY_EVIDENCE_ROOT / f"{prefix}-trivy-sbom.cdx.json",
+    }
+
+
+def _evidence_file(path: Path) -> dict[str, Any]:
+    return {
+        "path": path.relative_to(ROOT).as_posix(),
+        "sha256": _sha256(path.read_bytes()),
+        "size_bytes": path.stat().st_size,
+    }
+
+
+def load_registry_evidence(commit: str) -> dict[str, Any] | None:
+    """Load the immutable GHCR/Trivy packet for exactly one candidate commit."""
+    paths = _registry_evidence_paths(commit)
+    if not all(path.is_file() for path in paths.values()):
+        return None
+    metadata = json.loads(paths["build_metadata"].read_text(encoding="utf-8"))
+    scan = json.loads(paths["container_scan"].read_text(encoding="utf-8"))
+    sbom = json.loads(paths["image_sbom"].read_text(encoding="utf-8"))
+    digest = metadata.get("containerimage.digest")
+    tag = f"{REGISTRY_IMAGE}:rc0810-{commit[:8]}"
+    immutable_ref = f"{REGISTRY_IMAGE}@{digest}"
+    if (
+        not re.fullmatch(r"sha256:[0-9a-f]{64}", str(digest or ""))
+        or metadata.get("image.name") != tag
+        or metadata.get("containerimage.descriptor", {}).get("digest") != digest
+        or scan.get("ArtifactName") != immutable_ref
+        or scan.get("Metadata", {}).get("ImageID") != digest
+        or immutable_ref not in scan.get("Metadata", {}).get("RepoDigests", [])
+    ):
+        raise EvidenceError("registry metadata, scan and digest are not bound")
+    provenance = metadata.get("buildx.build.provenance", {})
+    args = provenance.get("invocation", {}).get("parameters", {}).get("frontend", {})
+    if not isinstance(args, dict):
+        args = provenance.get("invocation", {}).get("parameters", {}).get("args", {})
+    labels = scan.get("Metadata", {}).get("ImageConfig", {}).get("config", {}).get("Labels", {})
+    vulnerabilities = [
+        item
+        for result in scan.get("Results", [])
+        for item in (result.get("Vulnerabilities") or [])
+    ]
+    counts = {
+        severity.lower(): sum(item.get("Severity") == severity for item in vulnerabilities)
+        for severity in ("CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN")
+    }
+    sbom_component = sbom.get("metadata", {}).get("component", {})
+    return {
+        "status": "recorded_no_go",
+        "registry_ref": tag,
+        "immutable_ref": immutable_ref,
+        "digest": digest,
+        "source_commit": commit,
+        "platform": provenance.get("invocation", {}).get("environment", {}).get("platform"),
+        "revision_label": labels.get("org.opencontainers.image.revision"),
+        "source_label": labels.get("org.opencontainers.image.source"),
+        "version_label": labels.get("org.opencontainers.image.version"),
+        "provenance": {
+            "status": "recorded_unverified",
+            "builder_id": provenance.get("builder", {}).get("id") or None,
+            "build_type": provenance.get("buildType"),
+        },
+        "container_scan": {"status": "completed_no_go", "scanner": "trivy", **counts},
+        "image_sbom": {
+            "status": "completed",
+            "generator": "trivy",
+            "format": sbom.get("bomFormat"),
+            "spec_version": sbom.get("specVersion"),
+            "component_count": len(sbom.get("components", [])),
+            "root_name": sbom_component.get("name"),
+            "root_purl": sbom_component.get("purl"),
+        },
+        "attestation": {"status": "pending_external", "reason": "signed_attestation_not_verified"},
+        "files": {name: _evidence_file(path) for name, path in paths.items()},
+        "production_gate_eligible": False,
+    }
+
+
+def registry_evidence_errors(value: Any, commit: str) -> list[str]:
+    if not isinstance(value, dict):
+        return ["registry_evidence_invalid"]
+    errors: list[str] = []
+    digest = value.get("digest")
+    if not re.fullmatch(r"sha256:[0-9a-f]{64}", str(digest or "")):
+        errors.append("registry_digest_invalid")
+    immutable_ref = f"{REGISTRY_IMAGE}@{digest}"
+    if value.get("source_commit") != commit or value.get("revision_label") != commit:
+        errors.append("registry_revision_mismatch")
+    if value.get("registry_ref") != f"{REGISTRY_IMAGE}:rc0810-{commit[:8]}" or value.get("immutable_ref") != immutable_ref:
+        errors.append("registry_reference_mismatch")
+    if value.get("platform") != "linux/amd64":
+        errors.append("registry_platform_mismatch")
+    if value.get("source_label") != "https://github.com/nayunzhishui/safehome1.0" or value.get("version_label") != f"rc0810-{commit[:8]}":
+        errors.append("registry_labels_mismatch")
+    scan = value.get("container_scan", {})
+    if scan.get("status") != "completed_no_go" or scan.get("scanner") != "trivy":
+        errors.append("container_scan_invalid")
+    sbom = value.get("image_sbom", {})
+    if sbom.get("status") != "completed" or sbom.get("generator") != "trivy" or sbom.get("format") != "CycloneDX" or digest not in str(sbom.get("root_purl") or ""):
+        errors.append("image_sbom_invalid")
+    if value.get("provenance", {}).get("status") != "recorded_unverified" or value.get("attestation", {}).get("status") != "pending_external":
+        errors.append("supply_chain_status_invalid")
+    for name, expected_path in _registry_evidence_paths(commit).items():
+        evidence = value.get("files", {}).get(name, {})
+        if evidence.get("path") != expected_path.relative_to(ROOT).as_posix() or not expected_path.is_file():
+            errors.append(f"registry_file_missing:{name}")
+        elif evidence.get("sha256") != _sha256(expected_path.read_bytes()):
+            errors.append(f"registry_file_hash_mismatch:{name}")
+    try:
+        current = load_registry_evidence(commit)
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        errors.append(f"registry_evidence_unreadable:{exc}")
+    else:
+        if current is None or current != value:
+            errors.append("registry_evidence_drift")
+    return errors
+
+
 def _devtools_cli_status() -> dict[str, Any]:
     configured = os.environ.get("WECHAT_DEVTOOLS_CLI")
     candidates = [
@@ -307,6 +433,14 @@ def build_report(
     package_path = artifact_directory / "safehome-miniprogram-production.zip"
     package = build_miniprogram_package(commit, package_path)
     docker = docker_probe()
+    registry_evidence = load_registry_evidence(commit)
+    if registry_evidence is not None and docker_probe is _probe_docker:
+        docker = {
+            "status": "pending_external",
+            "image_digest": None,
+            "blocker": "image_security_findings_and_attestation_pending",
+            "registry_evidence": registry_evidence,
+        }
     report = {
         "schema": "safehome.rc0810.f25b-evidence.v1",
         "phase": "F25-B",
@@ -470,6 +604,13 @@ def _package_errors(report: dict[str, Any], *, rebuild_missing: bool) -> list[st
             if package_manifest.get("content_manifest_sha256") != actual_manifest:
                 errors.append("package_manifest_metadata_mismatch")
                 return errors
+            source = report.get("artifact_source", {})
+            if package_manifest.get("source_commit") != source.get("commit"):
+                errors.append("package_source_commit_mismatch")
+            if package_manifest.get("source_tree") != source.get("source_tree"):
+                errors.append("package_source_tree_mismatch")
+            if package_manifest.get("release_input_sha256") != source.get("release_input_sha256"):
+                errors.append("package_release_input_mismatch")
         elif _sha256(package_path.read_bytes()) != binding.get("sha256"):
             errors.append("package_sha256_mismatch")
             return errors
@@ -528,6 +669,9 @@ def validate_report(report_path: Path = DEFAULT_REPORT, *, rebuild_missing: bool
     backend = report.get("artifact_binding", {}).get("backend_image", {})
     if backend.get("status") != "pending_external" or backend.get("image_digest") is not None:
         errors.append("backend_image_must_not_be_fabricated")
+    registry_evidence = backend.get("registry_evidence")
+    if registry_evidence is not None and isinstance(commit, str):
+        errors.extend(registry_evidence_errors(registry_evidence, commit))
     external_groups = [
         report.get("platform_checks", []), report.get("account_scenarios", []),
         report.get("message_scenarios", []), report.get("raci", []),
