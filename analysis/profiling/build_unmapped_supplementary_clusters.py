@@ -280,7 +280,7 @@ def build_model(config: SupplementaryScaleConfig) -> tuple[dict | None, dict | N
     projected, pca_info = project_pca(z)
 
     model_id = f"unmapped__{safe_slug(config.display_name)}__{safe_slug(str(source_path.relative_to(DATA_ROOT)), 80)}"
-    digest = hashlib.sha1(model_id.encode("utf-8")).hexdigest()[:10]
+    digest = hashlib.sha1(model_id.encode("utf-8"), usedforsecurity=False).hexdigest()[:10]
     model_id = f"{model_id}__{digest}"
 
     MATRIX_DIR.mkdir(parents=True, exist_ok=True)
@@ -351,7 +351,7 @@ def write_reports(models: list[dict], skipped: list[dict]) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     for model in models:
-        out_path = MODEL_DIR / f"{safe_slug(model['display_name'])}__{hashlib.sha1(model['model_id'].encode('utf-8')).hexdigest()[:10]}.json"
+        out_path = MODEL_DIR / f"{safe_slug(model['display_name'])}__{hashlib.sha1(model['model_id'].encode('utf-8'), usedforsecurity=False).hexdigest()[:10]}.json"
         out_path.write_text(json.dumps(model, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     variable_rows = []

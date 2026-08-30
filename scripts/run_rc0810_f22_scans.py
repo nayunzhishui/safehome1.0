@@ -28,6 +28,7 @@ from run_rc0810 import collect_git_snapshot, load_registry  # noqa: E402
 
 POLICY_PATH = ROOT / "config" / "rc0810" / "security_gate_policy.json"
 EXCEPTIONS_PATH = ROOT / "config" / "rc0810" / "security_exception_registry.json"
+SECRET_BASELINE_PATH = ROOT / "config" / "rc0810" / "detect_secrets.baseline.json"
 BASELINE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22a_security_baseline.json"
 BASELINE_RELATIVE = BASELINE_PATH.relative_to(ROOT).as_posix()
 F22B_GATE_PATH = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_security_gate.json"
@@ -211,7 +212,12 @@ def summarize(report_paths: dict[str, Path]) -> dict[str, int]:
         ("npm-audit", npm_audit),
     ):
         validate_report_payload(tool, payload)
-    secret_count = sum(len(items) for items in secrets.get("results", {}).values())
+    secret_count = sum(
+        1
+        for items in secrets.get("results", {}).values()
+        for item in items
+        if item.get("is_secret") is not False
+    )
     bandit_counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
     for finding in bandit.get("results", []):
         severity = str(finding.get("issue_severity", "")).upper()
@@ -257,6 +263,8 @@ def build_blocking_findings(
 
     for filename, items in sorted(secrets["results"].items()):
         for item in items:
+            if item.get("is_secret") is False:
+                continue
             append(
                 "secret",
                 "unknown",
@@ -522,6 +530,10 @@ def main() -> int:
             "-m",
             "detect_secrets",
             "scan",
+            "--baseline",
+            str(staging / SECRET_BASELINE_PATH.relative_to(ROOT)),
+            "--exclude-files",
+            r"config[\\/]rc0810[\\/]detect_secrets\.baseline\.json$",
             "--all-files",
             str(staging),
         ],
@@ -622,6 +634,7 @@ def main() -> int:
                 "analysis/text_analysis/requirements.txt",
                 "apps/web/package-lock.json",
                 "Dockerfile",
+                "config/rc0810/detect_secrets.baseline.json",
             )
         },
         "raw_reports": raw_reports,

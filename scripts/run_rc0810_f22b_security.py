@@ -28,6 +28,7 @@ DEPENDENCY_INPUTS = (
     "apps/web/package-lock.json",
     "Dockerfile",
     "config/rc0810/database_profiles.json",
+    "config/rc0810/detect_secrets.baseline.json",
 )
 ACTION_INPUTS = (
     ".github/workflows/security-gate.yml",

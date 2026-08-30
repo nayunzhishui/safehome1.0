@@ -5,7 +5,7 @@
   "sensitive_values_included": false,
   "sources": [
     {"path": ".env.example", "layer": "deployment", "classification": "development_template", "production_eligible": false, "sha256": "b6aeb78a2377a0c6317ea20fe9dfaf63d5d3328d7ba1071cf5b2f4a0ff10ba27"},
-    {"path": "Dockerfile", "layer": "deployment", "classification": "production_backend_definition_fail_closed", "production_eligible": false, "sha256": "d4f6b97fd31d6cb3943112884fe112d0910714053357205e08b92464cd44ba6a"},
+    {"path": "Dockerfile", "layer": "deployment", "classification": "production_backend_definition_fail_closed", "production_eligible": false, "sha256": "fe5db0db1740e561d7f9877ac7029978905fc0c1877e9f8dd929c309c58a9bf5"},
     {"path": "backend/config.py", "layer": "backend", "classification": "runtime_configuration", "production_eligible": false, "sha256": "cc1316eb2e657d7f3f3d76317f33492018eadc641e658913c440933321f253f3"},
     {"path": "backend/app.py", "layer": "backend", "classification": "runtime_entrypoint", "production_eligible": false, "sha256": "317660837b3965b505ba195cc020da9dd91d54a17aff1701bcb39a20d6bc5d4f"},
     {"path": "backend/gunicorn.conf.py", "layer": "deployment", "classification": "runtime_server", "production_eligible": false, "sha256": "168207170f3053f4c1d951dfefa52f95d767393ce0253a7193d2e6034deaa84b"},
@@ -25,7 +25,7 @@
     "capability_flag_source": "capability_matrix.json"
   },
   "current_fact_findings": [
-    {"id": "ENV-CURRENT-001", "fact": "Dockerfile以APP_ENV=production启动且生产能力默认关闭；上一候选已取得GHCR digest、镜像SBOM和BuildKit provenance元数据，但安全finding、独立attestation与人工门禁仍未关闭", "decision": "新Docker输入必须重建并重新扫描；全部发布门禁闭合前production_eligible保持false，不得标记生产GO"},
+    {"id": "ENV-CURRENT-001", "fact": "Dockerfile以APP_ENV=production启动且生产能力默认关闭；生产构建使用Python 3.12 Azure Linux，最终运行层固定为非root Distroless digest，不包含包管理器或shell", "decision": "任何Docker输入变化都必须重建、重新扫描并用新digest发布；扫描与发布证据完成前production_eligible保持false"},
     {"id": "ENV-CURRENT-002", "fact": "小程序cloudConfig.js含现有默认CloudBase标识和本地HTTP入口", "decision": "生产profile不得继承这些引用，必须由冻结extConfig注入"},
     {"id": "ENV-CURRENT-003", "fact": ".env.example含本地开发默认值", "decision": "仅作为开发模板，任何生产构建不得打包该文件"}
   ]

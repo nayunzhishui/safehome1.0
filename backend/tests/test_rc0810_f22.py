@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFIER = ROOT / "scripts" / "verify_rc0810_f22_security.py"
+SCANNER = ROOT / "scripts" / "run_rc0810_f22_scans.py"
 POLICY = ROOT / "config" / "rc0810" / "security_gate_policy.json"
 EXCEPTIONS = ROOT / "config" / "rc0810" / "security_exception_registry.json"
 BASELINE = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f22b_security_gate.json"
@@ -33,6 +34,59 @@ def load_verifier_module():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+def load_scanner_module():
+    spec = importlib.util.spec_from_file_location("run_rc0810_f22_scans", SCANNER)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_f22b_reviewed_false_positive_does_not_hide_new_secret(tmp_path):
+    module = load_scanner_module()
+    reports = {
+        "detect-secrets": {
+            "results": {
+                "fixture.py": [
+                    {
+                        "type": "Hex High Entropy String",
+                        "line_number": 1,
+                        "hashed_secret": "a" * 64,
+                        "is_secret": False,
+                    },
+                    {
+                        "type": "AWS Access Key",
+                        "line_number": 2,
+                        "hashed_secret": "b" * 64,
+                    },
+                ]
+            }
+        },
+        "bandit": {"results": []},
+        "pip-audit": {"dependencies": []},
+        "npm-audit": {
+            "metadata": {
+                "vulnerabilities": {
+                    "critical": 0,
+                    "high": 0,
+                    "moderate": 0,
+                    "low": 0,
+                }
+            }
+        },
+    }
+    paths = {}
+    for tool, payload in reports.items():
+        path = tmp_path / f"{tool}.json"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        paths[tool] = path
+
+    assert module.summarize(paths)["secret"] == 1
+    findings = module.build_blocking_findings(paths, "c" * 40)
+    assert len(findings) == 1
+    assert findings[0]["category"] == "secret"
 
 
 def test_f22b_source_binding_allows_later_evidence_only_commit(monkeypatch):
@@ -202,6 +256,7 @@ def test_f22b_gate_binds_source_locks_actions_image_and_reports():
         "apps/web/package-lock.json",
         "Dockerfile",
         "config/rc0810/database_profiles.json",
+        "config/rc0810/detect_secrets.baseline.json",
     }
     assert all(len(value) == 64 for value in gate["dependency_inputs"].values())
     assert set(gate["action_inputs"]) == {".github/workflows/check.yml", ".github/workflows/security-gate.yml"}

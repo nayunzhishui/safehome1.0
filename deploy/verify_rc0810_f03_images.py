@@ -162,6 +162,7 @@ def verify_runtime_images() -> dict:
         required_flags = policy[profile].get("required_enabled_flags", [])
         disabled_flags = policy[profile].get("required_disabled_flags", [])
         runtime_flags = required_flags + disabled_flags
+        runtime_python = "/usr/bin/python3" if profile == "production" else "python"
         capability_probe = (
             "import json; from config import Config; "
             f"print(json.dumps({{name:bool(getattr(Config,name)) for name in {runtime_flags!r}}}))"
@@ -170,7 +171,7 @@ def verify_runtime_images() -> dict:
             "docker", "run", "--rm", "-e", f"APP_ENV={profile}",
         ]
         entrypoint_probe = subprocess.run(
-            entrypoint_environment + [image, "python", "-c", capability_probe],
+            entrypoint_environment + [image, runtime_python, "-c", capability_probe],
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -186,7 +187,7 @@ def verify_runtime_images() -> dict:
 
         runtime_environment = "testing"
         environment = [
-            "docker", "run", "--rm", "--entrypoint", "python",
+            "docker", "run", "--rm", "--entrypoint", runtime_python,
             "-e", f"APP_ENV={runtime_environment}",
             "-e", "DB_PROVIDER=sqlite",
             "-e", "DATABASE_PATH=/app/data/rc0810-runtime.sqlite3",
@@ -236,7 +237,7 @@ def verify_runtime_images() -> dict:
             "print(json.dumps({'tests_dir':(root/'backend/tests').exists(),'forbidden':bad}))"
         )
         filesystem = subprocess.run(
-            ["docker", "run", "--rm", "--entrypoint", "python", image, "-c", filesystem_probe],
+            ["docker", "run", "--rm", "--entrypoint", runtime_python, image, "-c", filesystem_probe],
             capture_output=True,
             text=True,
             encoding="utf-8",

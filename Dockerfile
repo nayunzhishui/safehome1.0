@@ -1,23 +1,26 @@
-FROM python:3.11-slim@sha256:1042b61448fef4ba92d16a8c7eb4996d027568ce64792a7877fd88511e0af7c6
+FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03 AS builder
+
+WORKDIR /build
+
+COPY backend/requirements.txt /build/requirements.txt
+RUN python3 -m pip install --no-cache-dir --target /opt/python -r /build/requirements.txt \
+    && PYTHONPATH=/opt/python python3 -m pip check \
+    && find /opt/python -type d -name __pycache__ -prune -exec rm -rf {} + \
+    && mkdir -p /runtime-data \
+    && chown 65532:65532 /runtime-data
+
+FROM mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:d921452dba64944bf959f22450bb3740f5b2fff4a59faa64bd6b8eaf4c57b5b8
 
 WORKDIR /app
 
-RUN apt-get -o Acquire::Retries=3 update \
-    && apt-get -o Acquire::Retries=3 install --yes --no-install-recommends \
-        libssl3t64=3.5.7-1~deb13u2 \
-        openssl=3.5.7-1~deb13u2 \
-        openssl-provider-legacy=3.5.7-1~deb13u2 \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY backend/requirements.txt /app/backend/requirements.txt
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt \
-    && pip uninstall --yes setuptools \
-    && pip check
+COPY --from=builder /opt/python /opt/python
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV APP_ENV=production
 ENV HOME=/app
+ENV PATH=/opt/python/bin:/usr/bin
+ENV PYTHONPATH=/opt/python
 ENV CONTENT_DIR=/app/content
 ENV MAX_REQUEST_BODY_BYTES=1048576
 
@@ -42,15 +45,11 @@ COPY content /app/content
 COPY shared /app/shared
 COPY config/rc0810/database_profiles.json /app/config/rc0810/database_profiles.json
 COPY deploy/verify_rc0810_f03_images.py /app/verify_rc0810_f03_images.py
-
-RUN addgroup --system safehome \
-    && adduser --system --ingroup safehome safehome \
-    && mkdir -p /app/data \
-    && chown -R safehome:safehome /app/data
+COPY --from=builder --chown=65532:65532 /runtime-data /app/data
 
 WORKDIR /app/backend
 
-USER safehome
+USER nonroot
 
-ENTRYPOINT ["python", "/app/verify_rc0810_f03_images.py", "--entrypoint", "--profile", "production", "--"]
+ENTRYPOINT ["/usr/bin/python3", "/app/verify_rc0810_f03_images.py", "--entrypoint", "--profile", "production", "--"]
 CMD ["gunicorn", "-c", "gunicorn.conf.py", "wsgi:app"]

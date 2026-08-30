@@ -15,11 +15,17 @@ VERIFY = ROOT / "deploy" / "verify_rc0810_f03_images.py"
 def test_f03_production_image_is_fail_closed():
     text = PRODUCTION.read_text(encoding="utf-8")
     assert text.splitlines()[0] == (
-        "FROM python:3.11-slim@sha256:"
-        "1042b61448fef4ba92d16a8c7eb4996d027568ce64792a7877fd88511e0af7c6"
+        "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:"
+        "722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03 AS builder"
     )
-    assert "openssl=3.5.7-1~deb13u2" in text
-    assert "pip uninstall --yes setuptools" in text
+    assert (
+        "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:"
+        "d921452dba64944bf959f22450bb3740f5b2fff4a59faa64bd6b8eaf4c57b5b8"
+    ) in text
+    assert "python3 -m pip install --no-cache-dir --target /opt/python" in text
+    assert "COPY --from=builder /opt/python /opt/python" in text
+    assert "USER nonroot" in text
+    assert 'ENTRYPOINT ["/usr/bin/python3"' in text
     assert "PRODUCTION_FEATURES_UNLOCKED=1" not in text
     assert "AI_QA_REAL_PROVIDER_ENABLED=1" not in text
     assert "OPERATIONS_PRODUCTION_RELEASE_ENABLED=1" not in text
@@ -172,7 +178,7 @@ def test_f03_runtime_verifier_contract_is_exposed():
     assert "runtime capabilities disabled" in text
     assert "forbidden runtime capabilities enabled" in text
     assert 'runtime_environment = "testing"' in text
-    assert '"--entrypoint", "python"' in text
+    assert "runtime_python" in text
     assert "image entrypoint guard failed" in text
     assert '"ALLOW_PRODUCTION_SQLITE=1"' not in text
     assert "health contract mismatch" in text

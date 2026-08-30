@@ -50,6 +50,13 @@
     "dist/": "generated build output; final staged artifact is scanned in F22-B",
     "node_modules/": "installed dependencies; package-lock is scanned and final tree is scanned in F22-B"
   },
+  "secret_baseline": {
+    "path": "config/rc0810/detect_secrets.baseline.json",
+    "review_status": "human_confirmed_false_positives",
+    "reviewed_at": "2026-08-30T22:45:00+08:00",
+    "reviewer_role": "project_owner_user",
+    "new_or_changed_candidates_block_release": true
+  },
   "severity_gate": {
     "secret": ["unknown", "low", "medium", "high", "critical"],
     "sast": ["high", "critical", "unknown"],
