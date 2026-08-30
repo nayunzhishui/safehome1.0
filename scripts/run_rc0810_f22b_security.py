@@ -139,8 +139,8 @@ def main() -> int:
 
     policy = load_json(POLICY_PATH)
     previous_gate = (
-        load_json(GATE_PATH)
-        if args.reuse_existing_image_gate and GATE_PATH.is_file()
+        load_json(args.gate_out)
+        if args.reuse_existing_image_gate and args.gate_out.is_file()
         else None
     )
     trivy_version = policy["tools"]["trivy"]
