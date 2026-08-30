@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from run_rc0810 import collect_git_snapshot, load_registry  # noqa: E402
+from run_rc0810 import load_registry  # noqa: E402
 
 
 POLICY_PATH = ROOT / "config" / "rc0810" / "security_gate_policy.json"
@@ -81,16 +81,18 @@ def git(*args: str, env: dict[str, str] | None = None) -> bytes:
 
 def security_source_snapshot() -> dict[str, str]:
     """Return a real Git tree excluding self-referential tracked reports."""
-    # Diagnostic security evidence must remain reproducible even when a human
-    # review checkpoint has expired. The normal Harness loader still enforces
-    # current review evidence before any task transition or release decision.
-    registry = load_registry(require_current_review_evidence=False)
-    current = collect_git_snapshot(registry)["git"]
+    # F22 must also work in the shallow checkout used by GitHub Actions, where
+    # origin/main is intentionally unavailable. Freeze HEAD plus the current
+    # worktree in a temporary index without invoking the broader Harness
+    # snapshot, whose release metadata requires that remote-tracking ref.
+    head = git("rev-parse", "HEAD").decode("ascii").strip()
+    head_tree = git("rev-parse", "HEAD^{tree}").decode("ascii").strip()
     with tempfile.TemporaryDirectory(prefix="rc0810-f22-index-") as directory:
         index = Path(directory) / "index"
         env = os.environ.copy()
         env["GIT_INDEX_FILE"] = str(index)
-        git("read-tree", current["source_tree"], env=env)
+        git("read-tree", "HEAD", env=env)
+        git("add", "-A", "--", ".", env=env)
         for relative in SECURITY_REPORT_RELATIVES:
             subprocess.run(
                 ["git", "update-index", "--force-remove", "--", relative],
@@ -101,10 +103,10 @@ def security_source_snapshot() -> dict[str, str]:
             )
         source_tree = git("write-tree", env=env).decode("ascii").strip()
     manifest = git("ls-tree", "-r", "-z", source_tree)
-    diff = git("diff-tree", "--binary", "--no-ext-diff", current["head_tree"], source_tree)
+    diff = git("diff-tree", "--binary", "--no-ext-diff", head_tree, source_tree)
     return {
-        "head": current["head"],
-        "head_tree": current["head_tree"],
+        "head": head,
+        "head_tree": head_tree,
         "source_tree": source_tree,
         "dirty_diff_sha256": sha256_bytes(diff),
         "source_manifest_sha256": sha256_bytes(manifest),
