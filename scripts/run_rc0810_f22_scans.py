@@ -582,6 +582,8 @@ def main() -> int:
             argv, cwd, env, int(timeouts.get(tool, 600))
         )
         path = reports_dir / f"{tool}.json"
+        if tool == "detect-secrets" and not stdout:
+            stdout = (staging / SECRET_BASELINE_PATH.relative_to(ROOT)).read_bytes()
         write_raw_report(path, stdout, stderr)
         report_paths[tool] = path
         raw_reports.append(
