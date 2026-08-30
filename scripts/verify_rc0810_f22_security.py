@@ -519,7 +519,7 @@ def validate_f22b(
             or artifact_reuse.get("docker_context_unchanged") is not True
             or re.fullmatch(r"[0-9a-f]{64}", context_sha256) is None
             or context_sha256
-            != docker_context_manifest_sha256(str(gate.get("source_tree", "")))
+            != docker_context_manifest_sha256(source["source_tree"])
         ):
             errors.append("artifact_reuse_binding_invalid")
     if (
