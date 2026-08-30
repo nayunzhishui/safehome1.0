@@ -237,7 +237,7 @@ def report_contract_errors(
             [
                 "scan",
                 "--exclude-files",
-                r"config[\\/]rc0810[\\/]detect_secrets\.baseline\.json$",
+                contract_arg(r"config[\\/]rc0810[\\/]detect_secrets\.baseline\.json$"),
                 "--all-files",
                 staging,
             ],
