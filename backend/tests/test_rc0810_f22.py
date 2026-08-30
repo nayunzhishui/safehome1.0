@@ -94,6 +94,16 @@ def test_f22b_policy_pins_tool_versions_images_and_action_commits():
     assert all(re.fullmatch(r"[0-9a-f]{40}", value) for value in policy["action_commits"].values())
 
 
+def test_f22_scan_is_not_blocked_by_expired_human_review_checkpoint():
+    runner_path = ROOT / "scripts" / "run_rc0810_f22_scans.py"
+    spec = importlib.util.spec_from_file_location("run_rc0810_f22_scans", runner_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    registry = module.load_registry(require_current_review_evidence=False)
+    assert registry["schema"] == "safehome.rc0810.registry.v1"
+
+
 def test_f22b_policy_covers_every_required_scan_and_excludes_no_business_source():
     runner_path = ROOT / "scripts" / "run_rc0810_f22_scans.py"
     spec = importlib.util.spec_from_file_location("run_rc0810_f22_scans", runner_path)

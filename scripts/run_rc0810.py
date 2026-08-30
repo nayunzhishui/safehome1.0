@@ -359,7 +359,9 @@ def _validate_command(command: dict[str, Any], policy: dict[str, Any]) -> None:
         raise HarnessError("验收命令cwd必须是仓库内相对路径。")
 
 
-def validate_registry(registry: dict[str, Any]) -> None:
+def validate_registry(
+    registry: dict[str, Any], *, require_current_review_evidence: bool = True
+) -> None:
     if registry.get("schema") != REGISTRY_SCHEMA:
         raise HarnessError("rc0810注册表schema不兼容。")
     tasks = registry.get("tasks")
@@ -524,8 +526,10 @@ def validate_registry(registry: dict[str, Any]) -> None:
             wave.get("id") == "A"
             and checkpoint == PRODUCTION_REVIEW_WAVES[0]["base_checkpoint"]
         ) or _legacy_phase_checkpoint_is_valid(wave, checkpoint)
-        if not legacy_checkpoint and not _historical_checkpoint_evidence_is_valid(
-            registry, checkpoint
+        if (
+            require_current_review_evidence
+            and not legacy_checkpoint
+            and not _historical_checkpoint_evidence_is_valid(registry, checkpoint)
         ):
             raise HarnessError("波次历史review-pass checkpoint缺少有效独立复审证据。")
     if "review_pending_wave" not in set(
@@ -555,12 +559,15 @@ def validate_registry(registry: dict[str, Any]) -> None:
                 raise HarnessError("PR编号缺少反向任务映射。")
 
 
-def load_registry() -> dict[str, Any]:
+def load_registry(*, require_current_review_evidence: bool = True) -> dict[str, Any]:
     try:
         registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise HarnessError("rc0810注册表缺失或不是有效JSON。") from exc
-    validate_registry(registry)
+    validate_registry(
+        registry,
+        require_current_review_evidence=require_current_review_evidence,
+    )
     return registry
 
 

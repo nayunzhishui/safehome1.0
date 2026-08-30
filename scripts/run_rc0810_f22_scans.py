@@ -75,7 +75,10 @@ def git(*args: str, env: dict[str, str] | None = None) -> bytes:
 
 def security_source_snapshot() -> dict[str, str]:
     """Return a real Git tree excluding self-referential tracked reports."""
-    registry = load_registry()
+    # Diagnostic security evidence must remain reproducible even when a human
+    # review checkpoint has expired. The normal Harness loader still enforces
+    # current review evidence before any task transition or release decision.
+    registry = load_registry(require_current_review_evidence=False)
     current = collect_git_snapshot(registry)["git"]
     with tempfile.TemporaryDirectory(prefix="rc0810-f22-index-") as directory:
         index = Path(directory) / "index"
