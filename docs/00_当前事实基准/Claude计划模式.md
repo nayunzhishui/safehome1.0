@@ -12829,7 +12829,7 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [ ] 源码 push 成功后由 GitHub Actions 生成 F22/registry/release artifacts 并完成官方 required CI；不得用本机文件冒充远端 artifact。
 ## 2026-08-31 RC0810 最小发布链
 
-- [x] 推送并确认候选 `2739dbc2`。
+- [x] 推送并确认冻结候选；精确 SHA 由 F25-B/F26 机器报告记录。
 - [x] 构建并推送 `linux/amd64` GHCR 镜像，核对 digest、OCI 标签和 provenance。
 - [x] 对同一 digest 生成 Trivy 扫描和 CycloneDX SBOM；Critical/High/Secret 均为 0。
 - [x] 重建 F22、F25-B、F26；自检通过且保持真实 `NO_GO`。
