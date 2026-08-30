@@ -12782,3 +12782,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [ ] 提交后按干净 commit 重建、执行 Trivy 容器重扫并推送 GHCR；只记录新候选的真实 digest/SBOM/provenance。
 - [ ] 同步 F22/F25/F26 机器证据并由 GitHub required CI 核验；独立 reviewer、隐私 owner、平台/真机和四方 GO 继续保持人工门禁。
 - [x] 解耦 F22 只读扫描与过期历史 review；Harness 默认有效期门禁不变，正反专项 `2 passed`。
+
+## 2026-08-30：本轮收尾
+
+- [x] F22-B 当前源码与镜像安全重扫已完成并记录真实 NO-GO：源码 302、容器 3 Critical/13 High/Secret 0、SBOM 119、禁用许可证 0。
+- [x] GHCR 候选 `rc0810-5606e830` 已回拉核对，digest=`sha256:74448e123957046615d3c91956cb4d4aeba0f0b286c7f00730cecefa226567cb`，BuildKit provenance 已留存。
+- [x] 停止本轮继续扩展；未执行生产动作、全量回归或人工签署。
+- [ ] 下一会话先解决 GitHub 源码分支 TLS 推送并确认远端 HEAD；随后按最新 HEAD 重建镜像、F25/F26 证据和 required CI。
+- [ ] 过期 F14-A、隐私 owner、当前独立 reviewer、平台/真机和四方 GO 仍不能自动完成。
