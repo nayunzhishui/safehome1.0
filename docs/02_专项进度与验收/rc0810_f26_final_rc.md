@@ -4,11 +4,11 @@
 
 ## 候选基线
 
-- commit：`2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2`
-- tree：`41e2aff71c2e2efb4e82b1c3e4453fb3b37b6fc8`
+- commit：`4beba8e75446b9b591f29ac8095a8d3af8ec317d`
+- tree：`51a81ddd96ceeeb56bcf8533ea83bb57b455c81c`
 - 打包方式：隔离 Git archive；未从脏工作区直接打包
-- production 小程序 ZIP：`05a28ee86ab96e95510e018bb64b8bd3ac0fc34e32bfecae9680c68f6395157d`
-- 后端镜像：`ghcr.io/nayunzhishui/safehome-rc0810@sha256:e82b68245a13a4fedf15f4df14d17596eb9e62245c0be2fc985fd215345d177c`；Trivy CycloneDX SBOM 已绑定，扫描仍有 Critical/High 阻断，签名证明待外部核验
+- production 小程序 ZIP：`d01016e94725c413971dd7237a57c77a4631a74c993a2a6aeb48102f9906bf83`
+- 后端镜像：`ghcr.io/nayunzhishui/safehome-rc0810@sha256:2acca7e26461128a518586a067f4057867ba2ad600a19ae3d75e66510cd3ed7e`；Trivy CycloneDX SBOM 已绑定，扫描仍有 Critical/High 阻断，签名证明待外部核验
 
 ## 阻断原因
 
