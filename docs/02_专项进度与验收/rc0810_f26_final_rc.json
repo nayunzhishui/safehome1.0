@@ -1,38 +1,38 @@
 {
   "schema": "safehome.rc0810.f26-final-rc.v1",
   "phase": "F26",
-  "generated_at": "2026-08-30T17:18:38.664953+00:00",
+  "generated_at": "2026-08-30T18:23:02.386676+00:00",
   "task_status": "review_pending_wave",
   "engineering_materials_status": "evidence_ready_no_go",
   "evidence_mode": "current_candidate_evidence_no_go",
   "candidate": {
-    "source_commit": "702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c",
-    "source_tree": "acff2efd2cb3184eae2693d8f9d3c27e1d1dbb23",
+    "source_commit": "2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2",
+    "source_tree": "41e2aff71c2e2efb4e82b1c3e4453fb3b37b6fc8",
     "branch": "codex/rc0810-release-gates",
     "origin_main": "fa41440c4868d6787582d66312cc6e3dbb264c1a",
     "origin_in_sync_at_generation": false,
-    "workspace_dirty_observed": true,
+    "workspace_dirty_observed": false,
     "packaging_mode": "isolated_git_archive",
     "direct_dirty_worktree_build_allowed": false
   },
   "artifacts": {
     "source_tar": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c/safehome-source.tar",
-      "sha256": "b71fe23470f95136e3492f9883f4fd36108b302153c566c4054a5bdfda97f792",
+      "path": ".codex_tmp/rc0810/f26/2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2/safehome-source.tar",
+      "sha256": "d26e02bcf4bdf69518a2b6d72f51199873df6afdf53c450a44a91243b8ee2c18",
       "size_bytes": 124764160
     },
     "backend_source_tar": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c/safehome-backend-source.tar",
-      "sha256": "ce58fcc81eb61ef1bab6643286ba37cedcdcf9489b66150e3d458421bf88bee2",
-      "size_bytes": 10137600
+      "path": ".codex_tmp/rc0810/f26/2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2/safehome-backend-source.tar",
+      "sha256": "d0079dc4613cf9edb90820b258ed07729c78a919a0ed415de3cc2c053e728597",
+      "size_bytes": 10147840
     },
     "miniprogram_zip": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c/safehome-miniprogram-production.zip",
-      "sha256": "d79a136308889ae675ee777f85967227ae41b3772da3102fc950495aca343bef",
-      "size_bytes": 997078,
+      "path": ".codex_tmp/rc0810/f26/2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2/safehome-miniprogram-production.zip",
+      "sha256": "05a28ee86ab96e95510e018bb64b8bd3ac0fc34e32bfecae9680c68f6395157d",
+      "size_bytes": 997080,
       "profile": "production",
       "static_journey_gate_passed": true,
       "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35",
@@ -40,34 +40,34 @@
     },
     "source_sbom": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c/safehome-source-sbom.json",
-      "sha256": "0af93224fe819f077459eac5babb4f34eddc45923e580178c309b89bfc1bcc9c",
+      "path": ".codex_tmp/rc0810/f26/2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2/safehome-source-sbom.json",
+      "sha256": "0f796e3ac31288a6dfc6bc88697a3a3c3b349684c8722e6eb686060aba2f7e13",
       "size_bytes": 5441,
       "coverage": "inventory_only_not_vulnerability_scan",
       "component_count": 29
     },
     "artifact_manifest": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c/RC0810_F26_ARTIFACT_MANIFEST.json",
-      "sha256": "87563113eaf3a8e78b90ca9d35e4b4417db01884654f1589bdfe251ef999337a",
+      "path": ".codex_tmp/rc0810/f26/2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2/RC0810_F26_ARTIFACT_MANIFEST.json",
+      "sha256": "636d407840f424f75e1f2ea127b8f113ef3961dd858e53f22c23e224f016f661",
       "size_bytes": 1658
     },
     "sha256sums": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c/SHA256SUMS",
-      "sha256": "36d4cbc2b8f936b769a56d990c46e0e00d271eaf476cec6ff10412867a7a4b6f",
+      "path": ".codex_tmp/rc0810/f26/2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2/SHA256SUMS",
+      "sha256": "8a81307347e589ea5976ea42de1761d692cb55d2cab54dbce4a6fd5da8c81980",
       "size_bytes": 474
     },
     "backend_image": {
       "status": "recorded_no_go",
-      "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-702d6ead",
-      "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:4f08b4b024a2a875e6e9f2a614075a1ce700efb00b6d72f2eeb631e78180fb00",
-      "digest": "sha256:4f08b4b024a2a875e6e9f2a614075a1ce700efb00b6d72f2eeb631e78180fb00",
-      "source_commit": "702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c",
+      "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-2739dbc2",
+      "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:e82b68245a13a4fedf15f4df14d17596eb9e62245c0be2fc985fd215345d177c",
+      "digest": "sha256:e82b68245a13a4fedf15f4df14d17596eb9e62245c0be2fc985fd215345d177c",
+      "source_commit": "2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2",
       "platform": "linux/amd64",
-      "revision_label": "702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c",
+      "revision_label": "2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2",
       "source_label": "https://github.com/nayunzhishui/safehome1.0",
-      "version_label": "rc0810-702d6ead",
+      "version_label": "rc0810-2739dbc2",
       "provenance": {
         "status": "recorded_unverified",
         "builder_id": null,
@@ -88,8 +88,8 @@
         "format": "CycloneDX",
         "spec_version": "1.7",
         "component_count": 72,
-        "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:4f08b4b024a2a875e6e9f2a614075a1ce700efb00b6d72f2eeb631e78180fb00",
-        "root_purl": "pkg:oci/safehome-rc0810@sha256:4f08b4b024a2a875e6e9f2a614075a1ce700efb00b6d72f2eeb631e78180fb00?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
+        "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:e82b68245a13a4fedf15f4df14d17596eb9e62245c0be2fc985fd215345d177c",
+        "root_purl": "pkg:oci/safehome-rc0810@sha256:e82b68245a13a4fedf15f4df14d17596eb9e62245c0be2fc985fd215345d177c?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
       },
       "attestation": {
         "status": "pending_external",
@@ -97,18 +97,18 @@
       },
       "files": {
         "build_metadata": {
-          "path": ".codex_tmp/rc0810/registry/702d6ead-build-metadata.json",
-          "sha256": "6f879df1298c0dec85a87acd0bab2016084ff52d0fe4a89109b5c6f525fa31a1",
+          "path": ".codex_tmp/rc0810/registry/2739dbc2-build-metadata.json",
+          "sha256": "e1c255ad1e207c5b9339c60afb0f8a285817ddb4a0b8064a9c657e2971fa8c47",
           "size_bytes": 2691
         },
         "container_scan": {
-          "path": ".codex_tmp/rc0810/registry/702d6ead-trivy-container.json",
-          "sha256": "5709a60dc330b406df4841dfbd60cf0c7a64a8677936b3eb4f81ae000dde14fd",
-          "size_bytes": 59618
+          "path": ".codex_tmp/rc0810/registry/2739dbc2-trivy-container.json",
+          "sha256": "da223f4f89d37649a11ba3f4a38d6300f9d44e78cf4d787bb7d103e6f36120f8",
+          "size_bytes": 59619
         },
         "image_sbom": {
-          "path": ".codex_tmp/rc0810/registry/702d6ead-trivy-sbom.cdx.json",
-          "sha256": "a680cda4b361f0c051e44bb937600259b66238dfd054a6ed1b05df69e93616ef",
+          "path": ".codex_tmp/rc0810/registry/2739dbc2-trivy-sbom.cdx.json",
+          "sha256": "5fd7970450f76ff1d009976245f97ecd55ace084a1ba279e732046aa1f8097b2",
           "size_bytes": 91596
         }
       },
@@ -293,13 +293,13 @@
     "blocking_job": null,
     "high_vulnerabilities": null,
     "official_github_ci": "no_bound_success",
-    "candidate_commit": "702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c",
+    "candidate_commit": "2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2",
     "evidence_scope": "candidate_commit_only"
   },
   "security_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
-    "source_tree": "30e798ed9d5b62967b0a61cb23674d63fb671f08",
-    "candidate_source_tree": "30e798ed9d5b62967b0a61cb23674d63fb671f08",
+    "source_tree": "ae2cd41c053b82146d4fd010460fbe2680c461d3",
+    "candidate_source_tree": "ae2cd41c053b82146d4fd010460fbe2680c461d3",
     "current_status": "current",
     "historical_status": "attestation_pending_no_go",
     "sbom_status": "current_scan_complete_no_go",
@@ -307,7 +307,7 @@
   },
   "platform_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
-    "source_commit": "702d6ead6c11aa77d2441b1ba5aae32f8a3a0f2c",
+    "source_commit": "2739dbc25eb2c59b7354cfe3b52f6a6a54a869d2",
     "historical_engineering_status": "evidence_ready",
     "production_approved": false,
     "miniprogram_content_manifest_sha256": "099bd82e53bbfab1d77af73eb78c05f0b4c56d23432aeef396105cacba84696c",

@@ -12827,3 +12827,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [x] GHCR `rc0810-56b6a949` 推送并按 digest `a4280975…8e04` 回拉。
 - [x] 完成新 digest 的 manifest/运行时标签、Trivy scan、CycloneDX SBOM、F25-B/F26；3 Critical、13 High、0 Secret、119 组件，仍为 NO_GO。
 - [ ] 源码 push 成功后由 GitHub Actions 生成 F22/registry/release artifacts 并完成官方 required CI；不得用本机文件冒充远端 artifact。
+## 2026-08-31 RC0810 最小发布链
+
+- [x] 推送并确认候选 `2739dbc2`。
+- [x] 构建并推送 `linux/amd64` GHCR 镜像，核对 digest、OCI 标签和 provenance。
+- [x] 对同一 digest 生成 Trivy 扫描和 CycloneDX SBOM；Critical/High/Secret 均为 0。
+- [x] 重建 F22、F25-B、F26；自检通过且保持真实 `NO_GO`。
+- [x] 生成并核对 CloudBase 包及 SHA-256，只保留一个正式交付副本。
+- [ ] 当前候选独立复审、隐私负责人审批、生产等价迁移/回滚/恢复、外部平台批准完成后才能执行生产发布。
