@@ -161,38 +161,33 @@ def test_f26_four_go_phase_separation_and_review_remain_truthful(f26):
     assert phases["stable_operation_verified"] is False
 
 
-def test_f26_review_packet_is_prebound_and_rejects_self_reported_or_changed_identity(f26, tmp_path):
+def test_f26_pending_review_does_not_rebind_stale_packet(f26, tmp_path):
     module, _, _, _ = f26
-    bound = json.loads(F26_REPORT.read_text(encoding="utf-8"))
-    review = bound["wave_c_review"]
-    packet = json.loads(WAVE_C_PACKET.read_text(encoding="utf-8"))
-    assert review["packet_sha256"] == hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest()
-    assert review["packet_archive_sha256"] == review["packet_sha256"]
-    assert review["packet_nonce"] == packet["packet_nonce"]
-    assert review["packet_head"] == packet["review_head"]["commit"]
-    assert review["harness_binding"]["fixed_reviewer_id"] == "sartre_replacement"
-    assert module._bound_review_packet_errors(bound) == []
+    report = json.loads(F26_REPORT.read_text(encoding="utf-8"))
+    review = report["wave_c_review"]
+    stale_packet = json.loads(WAVE_C_PACKET.read_text(encoding="utf-8"))
 
-    mutations = {}
-    missing = copy.deepcopy(bound)
-    missing["wave_c_review"]["packet_path"] = ".codex_tmp/rc0810/missing/wave-C-f26.json"
-    mutations["missing"] = missing
-    wrong_hash = copy.deepcopy(bound)
-    wrong_hash["wave_c_review"]["packet_sha256"] = "0" * 64
-    mutations["hash"] = wrong_hash
-    wrong_nonce = copy.deepcopy(bound)
-    wrong_nonce["wave_c_review"]["packet_nonce"] = "forged-nonce-value"
-    mutations["nonce"] = wrong_nonce
-    wrong_head = copy.deepcopy(bound)
-    wrong_head["wave_c_review"]["packet_head"] = bound["candidate"]["source_commit"]
-    mutations["head"] = wrong_head
-    for name, candidate in mutations.items():
-        path = tmp_path / f"{name}.json"
-        path.write_text(json.dumps(candidate, ensure_ascii=False), encoding="utf-8")
-        assert module.validate_report(path)["valid"] is False
+    assert review["status"] == "review_pending_wave"
+    assert review["packet_sha256"] is None
+    assert module._bound_review_packet_errors(report) == ["review_packet_not_prebound"]
+    assert stale_packet["release_candidate"]["commit"] != report["candidate"]["source_commit"]
+
+    forged = copy.deepcopy(report)
+    forged["wave_c_review"].update({
+        "packet_path": WAVE_C_PACKET.relative_to(ROOT).as_posix(),
+        "packet_sha256": hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest(),
+        "packet_archive_sha256": hashlib.sha256(WAVE_C_PACKET.read_bytes()).hexdigest(),
+        "packet_nonce": stale_packet["packet_nonce"],
+        "packet_head": stale_packet["review_head"]["commit"],
+        "packet_source_tree": stale_packet["review_head"]["source_tree"],
+        "harness_binding": {"fixed_reviewer_id": "sartre_replacement"},
+    })
+    path = tmp_path / "stale-packet.json"
+    path.write_text(json.dumps(forged, ensure_ascii=False), encoding="utf-8")
+    assert module.validate_report(path)["valid"] is False
 
     assert module._review_decision_errors(
-        bound,
+        report,
         {"path": ".codex_tmp/self-reported-decision.json", "sha256": "0" * 64},
     ) == ["review_decision_path_invalid"]
 

@@ -55,6 +55,9 @@ def run_scan(root: Path = ROOT) -> dict:
     dependencies = [line.strip() for line in requirements if line.strip() and not line.lstrip().startswith("#")]
     unpinned = [line for line in dependencies if "==" not in line]
     docker = _read(root / "Dockerfile")
+    container_runs_as_non_root = re.search(
+        r"(?m)^USER\s+(?:nonroot|65532(?::65532)?)\s*$", docker
+    ) is not None
     config = _read(root / "backend" / "config.py")
     app = _read(root / "backend" / "app.py")
     forbidden_artifacts = [
@@ -66,7 +69,7 @@ def run_scan(root: Path = ROOT) -> dict:
     checks = [
         {"id": "tracked_secret_patterns", "status": "passed" if not secret_hits else "failed", "severity": "blocker", "count": len(secret_hits), "paths": secret_hits},
         {"id": "dependency_pins", "status": "passed" if not unpinned else "failed", "severity": "warning", "count": len(unpinned), "packages": unpinned},
-        {"id": "container_non_root", "status": "passed" if "USER safehome" in docker else "failed", "severity": "blocker"},
+        {"id": "container_non_root", "status": "passed" if container_runs_as_non_root else "failed", "severity": "blocker"},
         {"id": "cors_allowlist", "status": "passed" if "origin in app.config.get(\"ALLOWED_ORIGINS\"" in app else "failed", "severity": "blocker"},
         {"id": "production_default_secret_guards", "status": "passed" if "生产环境禁止使用默认 SECRET_KEY" in config and "生产环境禁止使用默认 ADMIN_EXPORT_TOKEN" in config else "failed", "severity": "blocker"},
         {"id": "api_security_headers", "status": "passed" if all(name in app for name in ("X-Content-Type-Options", "X-Frame-Options", "Referrer-Policy", "Permissions-Policy")) else "failed", "severity": "blocker"},
