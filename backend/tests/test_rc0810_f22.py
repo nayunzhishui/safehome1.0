@@ -351,6 +351,13 @@ def test_f22b_require_runtime_rejects_missing_or_hash_mismatched_reports(tmp_pat
     assert "runtime_report_missing" in completed.stdout
 
     forged = json.loads(BASELINE.read_text(encoding="utf-8"))
+    forged_report = (
+        tmp_path / ".codex_tmp" / "rc0810" / "security" / "f22b"
+        / baseline["source_tree"] / "reports" / "trivy-container.json"
+    )
+    forged_report.parent.mkdir(parents=True, exist_ok=True)
+    forged_report.write_text("{}", encoding="utf-8")
+    forged["container_scan"]["report"]["path"] = str(forged_report)
     forged["container_scan"]["report"]["sha256"] = "0" * 64
     forged_path = tmp_path / "forged-runtime.json"
     forged_path.write_text(json.dumps(forged), encoding="utf-8")
