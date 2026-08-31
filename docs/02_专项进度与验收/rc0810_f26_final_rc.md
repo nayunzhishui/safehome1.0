@@ -4,16 +4,16 @@
 
 ## 候选基线
 
-- commit：`4beba8e75446b9b591f29ac8095a8d3af8ec317d`
-- tree：`51a81ddd96ceeeb56bcf8533ea83bb57b455c81c`
+- commit：`b20026dfaa3d2d4079c1bcf953c85a286e91aa6d`
+- tree：`8c0b9efaa8757ae749fd58f3709763e56f19380a`
 - 打包方式：隔离 Git archive；未从脏工作区直接打包
-- production 小程序 ZIP：`d01016e94725c413971dd7237a57c77a4631a74c993a2a6aeb48102f9906bf83`
-- 后端镜像：`ghcr.io/nayunzhishui/safehome-rc0810@sha256:2acca7e26461128a518586a067f4057867ba2ad600a19ae3d75e66510cd3ed7e`；Trivy CycloneDX SBOM 已绑定，扫描仍有 Critical/High 阻断，签名证明待外部核验
+- production 小程序 ZIP：`6431ef3800cde6309c5b5819e8985a6c1d81e43a224de8a0c77d260e2f19aea0`
+- 后端镜像：`ghcr.io/nayunzhishui/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d`；Trivy CycloneDX SBOM 已绑定，Critical/High 均为 0，签名证明待外部核验
 
 ## 阻断原因
 
 - official_required_ci_not_verified_for_candidate
-- image_security_findings_and_signed_attestation_pending
+- signed_attestation_verification_pending
 - registry_raw_evidence_actions_artifact_pending
 - wechat_platform_real_device_and_human_evidence_missing
 - product_platform_engineering_professional_go_incomplete

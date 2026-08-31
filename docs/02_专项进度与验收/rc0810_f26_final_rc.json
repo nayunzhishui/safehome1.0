@@ -1,13 +1,13 @@
 {
   "schema": "safehome.rc0810.f26-final-rc.v1",
   "phase": "F26",
-  "generated_at": "2026-08-30T18:47:04.077476+00:00",
+  "generated_at": "2026-08-31T00:07:30.888011+00:00",
   "task_status": "review_pending_wave",
   "engineering_materials_status": "evidence_ready_no_go",
   "evidence_mode": "current_candidate_evidence_no_go",
   "candidate": {
-    "source_commit": "4beba8e75446b9b591f29ac8095a8d3af8ec317d",
-    "source_tree": "51a81ddd96ceeeb56bcf8533ea83bb57b455c81c",
+    "source_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
+    "source_tree": "8c0b9efaa8757ae749fd58f3709763e56f19380a",
     "branch": "codex/rc0810-release-gates",
     "origin_main": "fa41440c4868d6787582d66312cc6e3dbb264c1a",
     "origin_in_sync_at_generation": false,
@@ -18,21 +18,21 @@
   "artifacts": {
     "source_tar": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/4beba8e75446b9b591f29ac8095a8d3af8ec317d/safehome-source.tar",
-      "sha256": "23996caf3a584858a0504b547784b2f79c892b1bae37e8c581fcc7c2b280d906",
-      "size_bytes": 124774400
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-source.tar",
+      "sha256": "d7307255016846c1f2d3566475a8808d120a7b01a07758102c585b54c984ca00",
+      "size_bytes": 124784640
     },
     "backend_source_tar": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/4beba8e75446b9b591f29ac8095a8d3af8ec317d/safehome-backend-source.tar",
-      "sha256": "976d5c59316956d3194d706717be984d3b1eaebc50f4b42b255a66417b668f03",
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-backend-source.tar",
+      "sha256": "cb230a2d0a6fc143f8c02a5709899f8cb0a5d09a76a53b4e6684db526807d9df",
       "size_bytes": 10147840
     },
     "miniprogram_zip": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/4beba8e75446b9b591f29ac8095a8d3af8ec317d/safehome-miniprogram-production.zip",
-      "sha256": "d01016e94725c413971dd7237a57c77a4631a74c993a2a6aeb48102f9906bf83",
-      "size_bytes": 997080,
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-miniprogram-production.zip",
+      "sha256": "6431ef3800cde6309c5b5819e8985a6c1d81e43a224de8a0c77d260e2f19aea0",
+      "size_bytes": 997078,
       "profile": "production",
       "static_journey_gate_passed": true,
       "release_input_sha256": "4cfc3b8bfc06f10c0c09daa1a2e29b68d5ac69ced3e1e8db1ec7a1bf84155d35",
@@ -40,34 +40,34 @@
     },
     "source_sbom": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/4beba8e75446b9b591f29ac8095a8d3af8ec317d/safehome-source-sbom.json",
-      "sha256": "9f3c2edab9143ce3ec86a0f1168116dd10e7bef41e9f1faa8ccaa24caa349925",
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/safehome-source-sbom.json",
+      "sha256": "6b495c0ab7b9741e4997f8fc5f7e00a550485657b3a500a71c123969b7351029",
       "size_bytes": 5441,
       "coverage": "inventory_only_not_vulnerability_scan",
       "component_count": 29
     },
     "artifact_manifest": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/4beba8e75446b9b591f29ac8095a8d3af8ec317d/RC0810_F26_ARTIFACT_MANIFEST.json",
-      "sha256": "eb9003e6ab1257828a548520084dde3b2f1797442ed10cd69892becd37206772",
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/RC0810_F26_ARTIFACT_MANIFEST.json",
+      "sha256": "889f83e0ec820fc1164c8e350d8447d9d4986dff0e6ecc49d14c4d89fbc7ba95",
       "size_bytes": 1658
     },
     "sha256sums": {
       "status": "generated",
-      "path": ".codex_tmp/rc0810/f26/4beba8e75446b9b591f29ac8095a8d3af8ec317d/SHA256SUMS",
-      "sha256": "6e02531ac7acab38a0ed9a4bee7b59ca768d79422bbbf847be5f3ab59060bd74",
+      "path": ".codex_tmp/rc0810/f26/b20026dfaa3d2d4079c1bcf953c85a286e91aa6d/SHA256SUMS",
+      "sha256": "43605f9341fd8c39a5c5fcb360121aec9b5044f67b9d039dd18c3ece063677f3",
       "size_bytes": 474
     },
     "backend_image": {
       "status": "recorded_no_go",
-      "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-4beba8e7",
-      "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:2acca7e26461128a518586a067f4057867ba2ad600a19ae3d75e66510cd3ed7e",
-      "digest": "sha256:2acca7e26461128a518586a067f4057867ba2ad600a19ae3d75e66510cd3ed7e",
-      "source_commit": "4beba8e75446b9b591f29ac8095a8d3af8ec317d",
+      "registry_ref": "ghcr.io/nayunzhishui/safehome-rc0810:rc0810-b20026df",
+      "immutable_ref": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+      "digest": "sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+      "source_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
       "platform": "linux/amd64",
-      "revision_label": "4beba8e75446b9b591f29ac8095a8d3af8ec317d",
+      "revision_label": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
       "source_label": "https://github.com/nayunzhishui/safehome1.0",
-      "version_label": "rc0810-4beba8e7",
+      "version_label": "rc0810-b20026df",
       "provenance": {
         "status": "recorded_unverified",
         "builder_id": null,
@@ -88,8 +88,8 @@
         "format": "CycloneDX",
         "spec_version": "1.7",
         "component_count": 72,
-        "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:2acca7e26461128a518586a067f4057867ba2ad600a19ae3d75e66510cd3ed7e",
-        "root_purl": "pkg:oci/safehome-rc0810@sha256:2acca7e26461128a518586a067f4057867ba2ad600a19ae3d75e66510cd3ed7e?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
+        "root_name": "ghcr.io/nayunzhishui/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d",
+        "root_purl": "pkg:oci/safehome-rc0810@sha256:5e14fe15cc0d9ca006d1a5b198eef22d96d2068fb5598379d298ac4d668c832d?arch=amd64&repository_url=ghcr.io%2Fnayunzhishui%2Fsafehome-rc0810"
       },
       "attestation": {
         "status": "pending_external",
@@ -97,18 +97,18 @@
       },
       "files": {
         "build_metadata": {
-          "path": ".codex_tmp/rc0810/registry/4beba8e7-build-metadata.json",
-          "sha256": "df071eb39239d9608f9de7c60ebc97f2d3430defd3971a69f8d4e81c444bcf70",
+          "path": ".codex_tmp/rc0810/registry/b20026df-build-metadata.json",
+          "sha256": "87091bc14bcbdca8081bb03bf1eff8390af5a5efb1d11f65d55180d8c16fd2b3",
           "size_bytes": 2691
         },
         "container_scan": {
-          "path": ".codex_tmp/rc0810/registry/4beba8e7-trivy-container.json",
-          "sha256": "603a3d4d2d3a864db3ebe1967fc692775c0c2911e36d7f1af0eb59bdd2159503",
+          "path": ".codex_tmp/rc0810/registry/b20026df-trivy-container.json",
+          "sha256": "33b3cd894c1e933549858891f10dc90e59a43f6d201943338c26cbf30278531a",
           "size_bytes": 59619
         },
         "image_sbom": {
-          "path": ".codex_tmp/rc0810/registry/4beba8e7-trivy-sbom.cdx.json",
-          "sha256": "d25f1cd8f09239e3d34bf5c62646ccee320aa3768da4deff69d907c87859098a",
+          "path": ".codex_tmp/rc0810/registry/b20026df-trivy-sbom.cdx.json",
+          "sha256": "1ba5ddda6888e204649cc721e9def1ecb7f34fefaefa94411bff12b3b3beecc3",
           "size_bytes": 91596
         }
       },
@@ -293,13 +293,13 @@
     "blocking_job": null,
     "high_vulnerabilities": null,
     "official_github_ci": "no_bound_success",
-    "candidate_commit": "4beba8e75446b9b591f29ac8095a8d3af8ec317d",
+    "candidate_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
     "evidence_scope": "candidate_commit_only"
   },
   "security_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f22b_security_gate.json",
-    "source_tree": "eecca2b50eab0a7440944463943aa8e11a677484",
-    "candidate_source_tree": "eecca2b50eab0a7440944463943aa8e11a677484",
+    "source_tree": "a5fe9edd92b4327523cbd8d795b72dd918b8d0c3",
+    "candidate_source_tree": "a5fe9edd92b4327523cbd8d795b72dd918b8d0c3",
     "current_status": "current",
     "historical_status": "attestation_pending_no_go",
     "sbom_status": "current_scan_complete_no_go",
@@ -307,7 +307,7 @@
   },
   "platform_evidence": {
     "path": "docs/02_专项进度与验收/rc0810_f25b_evidence.json",
-    "source_commit": "4beba8e75446b9b591f29ac8095a8d3af8ec317d",
+    "source_commit": "b20026dfaa3d2d4079c1bcf953c85a286e91aa6d",
     "historical_engineering_status": "evidence_ready",
     "production_approved": false,
     "miniprogram_content_manifest_sha256": "099bd82e53bbfab1d77af73eb78c05f0b4c56d23432aeef396105cacba84696c",
@@ -1340,7 +1340,7 @@
     "automatic_release_performed": false,
     "blocking_reasons": [
       "official_required_ci_not_verified_for_candidate",
-      "image_security_findings_and_signed_attestation_pending",
+      "signed_attestation_verification_pending",
       "registry_raw_evidence_actions_artifact_pending",
       "wechat_platform_real_device_and_human_evidence_missing",
       "product_platform_engineering_professional_go_incomplete",
@@ -1359,7 +1359,7 @@
     "F22-B security report is current for the candidate but remains NO-GO.",
     "F25-B has eight external blockers and no platform or human approval.",
     "Official GitHub required CI has not been verified for this candidate.",
-    "The GHCR digest and Trivy CycloneDX SBOM are bound; Critical/High image findings and signed-attestation verification remain blocking."
+    "The GHCR digest and Trivy CycloneDX SBOM are bound; Critical/High image findings are zero, while signed-attestation verification remains blocking."
   ],
   "subtasks": [
     {
