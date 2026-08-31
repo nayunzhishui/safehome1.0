@@ -12837,3 +12837,11 @@ F03前不扩大移动权限；F08/F09前消息不进入正式验收；F10/F11真
 - [ ] 当前候选独立复审、隐私负责人审批、生产等价迁移/回滚/恢复、外部平台批准完成后才能执行生产发布。
 - [x] 修复 F22 tracked inputs 的 Windows CRLF/Linux LF 假漂移；定向回归和 11 项自校验通过，开放安全 finding 为 0。
 - [ ] 提交并推送新候选，以该 SHA 重建 GHCR、F25-B、F26 和 CloudBase 包，再读取一次新 required CI；不重复本地全量回归。
+
+## 2026-08-31 RC0810 最终制品状态
+
+- [x] 冻结并推送候选 `b20026dfaa3d2d4079c1bcf953c85a286e91aa6d`，远端 SHA 已核对一致。
+- [x] 发布 `linux/amd64` GHCR 镜像并按不可变 digest 回拉核对；Trivy Critical/High/Secret 为 0，CycloneDX SBOM 为 72 组件，provenance attestation manifest 已发布。
+- [x] 重建并验证 `SafeHome-RC0810-CloudBase-b20026df.zip` 及 SHA-256。
+- [x] 重建 F25-B/F26 当前候选证据；不重复全量回归，结论保持 `NO_GO`。
+- [ ] 仅待隐私负责人、既定独立复审、生产等价迁移/回滚/恢复、平台批准和签名 attestation 外部核验；完成前不执行生产发布或切流。
