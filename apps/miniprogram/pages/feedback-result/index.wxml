@@ -5,7 +5,7 @@
     </view>
   </view>
 
-  <page-state wx:if="{{loading}}" kind="loading" title="正在整理这次反馈" description="先保留事实，再给出一个可选择的小练习。" />
+  <page-state wx:if="{{loading}}" kind="loading" title="正在整理这次反馈" />
 
   <page-state wx:elif="{{errorMessage}}" kind="error" title="反馈暂时没有生成" description="{{errorMessage}}" action-label="{{missingDiaryId ? '去记录一次事件' : '重新生成'}}" bind:action="handleFeedbackStateAction" />
 
@@ -111,7 +111,6 @@
         <text class="boundary-title">怎样理解这份反馈</text>
         <text class="boundary-text">它只整理这一次记录中可观察的情绪、互动和练习位置，不代表固定问题，也不构成诊断、评分或治疗建议。</text>
       </view>
-      <bottom-tip-card text="先观察，再练习；一次小调整也有意义。" />
     </view>
   </view>
 </view>

@@ -39,7 +39,6 @@
             <canvas wx:if="{{selectedPoints.length >= 2}}" canvas-id="growthChart" class="chart-canvas" width="620" height="300" aria-label="{{selectedMetricLabel}}变化折线图"></canvas>
             <view wx:else class="chart-empty" role="status" aria-live="polite">
               <text class="chart-empty__title">再记录 {{selectedPoints.length ? 1 : 2}} 次后可查看变化趋势</text>
-              <text class="chart-empty__copy">持续记录，帮助你看见同一指标在不同时间的变化。</text>
               <view class="chart-empty__note">
                 <text class="chart-empty__note-title">数据不足</text>
                 <text>目前有 {{selectedPoints.length}} 个记录点；这里不会根据单次记录判断变化。</text>
@@ -53,7 +52,7 @@
 
       <view class="section-card recent-card">
         <view class="section-heading">
-          <view><text class="section-title">最近时间线</text><text class="section-note">先看最近三条，再决定是否展开</text></view>
+          <view><text class="section-title">最近时间线</text></view>
           <button class="text-action" bindtap="showAllTimeline">查看全部 ›</button>
         </view>
         <view wx:if="{{recentTimeline.length}}" class="timeline-list">

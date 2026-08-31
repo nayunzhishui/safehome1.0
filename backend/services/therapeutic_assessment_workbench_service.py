@@ -12,7 +12,10 @@ from database import (
     rows_to_dicts,
     write_audit_log,
 )
-from services.therapeutic_assessment_evidence_service import _present as present_evidence
+from services.therapeutic_assessment_evidence_service import (
+    _present as present_evidence,
+    summarize_evidence,
+)
 from services.therapeutic_assessment_service import (
     TherapeuticAssessmentError,
     _assert_researcher,
@@ -113,6 +116,15 @@ def get_workbench(actor: dict, case_id: str, query: dict) -> dict:
                 (*params, page_size, offset),
             ).fetchall()
         )
+        summary_items = [
+            present_evidence(row)
+            for row in rows_to_dicts(
+                conn.execute(
+                    "SELECT * FROM therapeutic_assessment_evidence_items WHERE case_id = ?",
+                    (case_id,),
+                ).fetchall()
+            )
+        ]
         draft = conn.execute(
             """
             SELECT * FROM therapeutic_assessment_researcher_workbench_drafts
@@ -133,6 +145,7 @@ def get_workbench(actor: dict, case_id: str, query: dict) -> dict:
             "case": _present_case(conn, case, actor),
             "evidence_items": [present_evidence(row) for row in rows],
             "evidence_total": total,
+            "evidence_summary": summarize_evidence(summary_items),
             "page": page,
             "page_size": page_size,
             "has_more": offset + len(rows) < total,

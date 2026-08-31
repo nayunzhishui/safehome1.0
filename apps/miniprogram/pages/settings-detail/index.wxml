@@ -21,7 +21,6 @@
       wx:if="{{protectionLoading}}"
       kind="loading"
       title="正在读取保护状态"
-      description="请稍候。"
     />
 
     <page-state
@@ -146,7 +145,7 @@
       wx:if="{{privacyLoading || privacyError}}"
       kind="{{privacyLoading ? 'loading' : 'error'}}"
       title="{{privacyLoading ? '正在读取申请' : '申请暂时没有读取成功'}}"
-      description="{{privacyLoading ? '请稍候。' : privacyError}}"
+      description="{{privacyError}}"
       action-label="{{privacyLoading ? '' : (privacyNeedsLogin ? '去登录' : '重新读取')}}"
       bind:action="handlePrivacyStateAction"
     />
@@ -189,10 +188,6 @@
       {{privacySubmitting ? '正在处理...' : '提交删除申请'}}
     </button>
     <text class="privacy-boundary">“已完成”只会在管理员按保存规则执行删除或匿名化并生成记录后显示。</text>
-  </view>
-
-  <view class="safe-section">
-    <bottom-tip-card text="先确认边界，再慢慢记录；如果出现紧急安全风险，优先找现实帮助。" />
   </view>
 
   <button class="safe-primary-button back-button" bindtap="goBack">返回</button>

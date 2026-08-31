@@ -4177,7 +4177,7 @@
         "apps/miniprogram/pages/therapeutic-assessment/index.js",
         "apps/miniprogram/pages/therapeutic-assessment/index.json"
       ],
-      "source_hash": "50334d8d6ce4036216b5508640356e2bd61727a53c86199660fa54a1c3c37d6c",
+      "source_hash": "b280a1555cbf66f0c8b13746dcafee855332a7cacc6f5c7840dba158a3db59d4",
       "missing_files": [],
       "visible_text": [
         "· 可撤回",
@@ -8010,7 +8010,7 @@
         "apps/miniprogram/utils/authGuard.js",
         "apps/miniprogram/utils/errorDiagnostics.js"
       ],
-      "source_hash": "454d5bec01a10b1b836e04f974184f63ac4cfe37af50aeb56ac85873a386b48b",
+      "source_hash": "ef8f074e3b5980c5c40e4d19afc150cf5d9f7ce3649dcd1f7d57cfc930ce5414",
       "missing_files": [],
       "visible_text": [
         "先处理重要的一小步",

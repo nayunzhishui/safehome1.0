@@ -4,7 +4,7 @@
   </view>
 
   <view class="messages-content">
-    <page-state wx:if="{{loading}}" kind="loading" title="正在加载消息" description="人工反馈和必要提醒会按时间排列。" />
+    <page-state wx:if="{{loading}}" kind="loading" title="正在加载消息" />
 
     <block wx:elif="{{errorMessage}}">
       <page-state kind="error" title="消息暂时没有读取成功" description="{{errorMessage}}" action-label="{{needsLogin ? '去登录' : '重新加载'}}" action-aria-label="{{needsLogin ? '登录后查看消息' : '重新加载消息'}}" bind:action="handleStateAction" />
@@ -23,7 +23,7 @@
       />
     </view>
 
-    <page-state wx:else kind="empty" title="暂时没有新消息" description="如果研究者后续补充反馈，会出现在这里。" />
+    <page-state wx:else kind="empty" title="暂时没有新消息" />
   </view>
 
   <bottom-tip-card text="消息用于补充说明和支持提醒，不替代紧急帮助。" />

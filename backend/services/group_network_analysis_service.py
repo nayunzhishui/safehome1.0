@@ -126,6 +126,13 @@ def validate_group_network(payload: dict, policy: dict) -> dict:
             raise NetworkAnalysisError(
                 "network_node_shape_invalid", "节点只允许去标识ID和三类边界状态"
             )
+        if any(
+            not isinstance(node[field], bool)
+            for field in ("approved_cohort", "observed", "active")
+        ):
+            raise NetworkAnalysisError(
+                "network_node_boundary_invalid", "节点边界状态必须为布尔值"
+            )
         node_id = str(node.get("id") or "")
         if not pattern.fullmatch(node_id) or node_id in node_ids:
             raise NetworkAnalysisError(
@@ -137,6 +144,8 @@ def validate_group_network(payload: dict, policy: dict) -> dict:
         raise NetworkAnalysisError(
             "network_window_count_invalid", "观察窗口数量无效"
         )
+    window_ids: set[str] = set()
+    dated_windows: list[tuple[date, date, dict]] = []
     for window in windows:
         if not isinstance(window, dict) or set(window) != {
             "id",
@@ -147,6 +156,16 @@ def validate_group_network(payload: dict, policy: dict) -> dict:
             raise NetworkAnalysisError(
                 "network_window_shape_invalid", "观察窗口字段不符合契约"
             )
+        window_id = window["id"]
+        if (
+            not isinstance(window_id, str)
+            or not window_id.strip()
+            or window_id in window_ids
+        ):
+            raise NetworkAnalysisError(
+                "network_window_id_invalid", "观察窗口ID必须是非空唯一字符串"
+            )
+        window_ids.add(window_id)
         try:
             start = date.fromisoformat(str(window["start_date"]))
             end = date.fromisoformat(str(window["end_date"]))
@@ -202,6 +221,14 @@ def validate_group_network(payload: dict, policy: dict) -> dict:
                 raise NetworkAnalysisError(
                     "network_edge_weight_invalid", "边权重必须为正数"
                 )
+        dated_windows.append((start, end, window))
+    dated_windows.sort(key=lambda item: (item[0], item[1], item[2]["id"]))
+    for previous, current in zip(dated_windows, dated_windows[1:]):
+        if current[0] <= previous[1]:
+            raise NetworkAnalysisError(
+                "network_window_overlap", "观察窗口日期不得重叠"
+            )
+    payload["windows"] = [item[2] for item in dated_windows]
     try:
         missing_rate = float(payload.get("expected_missing_edge_rate", 0))
     except (TypeError, ValueError) as exc:
@@ -252,14 +279,18 @@ def _component_sizes(
     return sorted(sizes)
 
 
-def _aggregate(
-    node_ids: set[str], edges: list[dict], policy: dict
-) -> dict:
-    filtered = [
+def _edges_within(node_ids: set[str], edges: list[dict]) -> list[dict]:
+    return [
         edge
         for edge in edges
         if edge["source"] in node_ids and edge["target"] in node_ids
     ]
+
+
+def _aggregate(
+    node_ids: set[str], edges: list[dict], policy: dict
+) -> dict:
+    filtered = _edges_within(node_ids, edges)
     node_count = len(node_ids)
     edge_count = len(filtered)
     possible_edges = node_count * (node_count - 1) / 2
@@ -293,10 +324,15 @@ def _aggregate(
 
 
 def _boundary_nodes(nodes: list[dict], variant: str) -> set[str]:
+    field = {
+        "approved_cohort": "approved_cohort",
+        "observed_nodes": "observed",
+        "active_nodes": "active",
+    }[variant]
     return {
         node["id"]
         for node in nodes
-        if bool(node.get(variant))
+        if node[field]
     }
 
 
@@ -315,6 +351,13 @@ def _missing_edges(edges: list[dict], rate: float, window_id: str) -> list[dict]
     return kept
 
 
+def _value_range(values: list[float]) -> dict:
+    return {
+        "minimum": round(min(values), 4) if values else None,
+        "maximum": round(max(values), 4) if values else None,
+    }
+
+
 def analyze_group_network(payload: dict, policy: dict) -> dict:
     data = validate_group_network(payload, policy)
     nodes = data["nodes"]
@@ -322,10 +365,17 @@ def analyze_group_network(payload: dict, policy: dict) -> dict:
     thresholds = policy["minimum_privacy_thresholds"]
     approved_nodes = _boundary_nodes(nodes, "approved_cohort")
     latest_edges = windows[-1]["edges"]
+    latest_approved_edges = _edges_within(approved_nodes, latest_edges)
+    edge_threshold = int(thresholds["edges_per_window"])
+    window_edge_counts = [
+        len(_edges_within(approved_nodes, window["edges"])) for window in windows
+    ]
+    minimum_window_edge_count = min(window_edge_counts)
+    insufficient_window_count = sum(1 for count in window_edge_counts if count < edge_threshold)
     missing_rate = float(data.get("expected_missing_edge_rate", 0))
     suppressed = (
         len(approved_nodes) < int(thresholds["nodes"])
-        or len(latest_edges) < int(thresholds["edges_per_window"])
+        or insufficient_window_count > 0
         or missing_rate > float(thresholds["maximum_missing_edge_rate"])
     )
     if suppressed:
@@ -342,6 +392,23 @@ def analyze_group_network(payload: dict, policy: dict) -> dict:
             "causal_inference": False,
             "family_quality_inference": False,
             "participant_visible": False,
+            "analysis_summary": {
+                "privacy_state": "suppressed",
+                "node_count": len(approved_nodes),
+                "edge_count": len(latest_approved_edges),
+                "window_count": len(windows),
+                "minimum_window_edge_count": minimum_window_edge_count,
+                "insufficient_window_count": insufficient_window_count,
+                "density": None,
+                "density_change_first_to_last": None,
+                "boundary_density_range": {"minimum": None, "maximum": None},
+                "missingness_density_range": {"minimum": None, "maximum": None},
+                "summary_text": (
+                    "合成群体未达到已登记的最小隐私阈值，聚合结果已抑制；"
+                    f"{insufficient_window_count} 个窗口的边数不足。"
+                ),
+                "next_check_text": "先核对节点数、每窗口边数和预期缺失率，不生成个体输出。",
+            },
             "boundary_notice": policy["boundary_notice"],
         }
 
@@ -391,6 +458,26 @@ def analyze_group_network(payload: dict, policy: dict) -> dict:
             "data_class": "synthetic",
         },
         "boundary_notice": policy["boundary_notice"],
+    }
+    aggregate = report["aggregate_metrics"]
+    boundary_densities = [item["metrics"]["density"] for item in boundary_sensitivity]
+    missingness_densities = [item["metrics"]["density"] for item in missingness_sensitivity]
+    report["analysis_summary"] = {
+        "privacy_state": "available",
+        "node_count": aggregate["node_count"],
+        "edge_count": aggregate["edge_count"],
+        "window_count": temporal_change["window_count"],
+        "minimum_window_edge_count": minimum_window_edge_count,
+        "insufficient_window_count": 0,
+        "density": aggregate["density"],
+        "density_change_first_to_last": temporal_change["density_change_first_to_last"],
+        "boundary_density_range": _value_range(boundary_densities),
+        "missingness_density_range": _value_range(missingness_densities),
+        "summary_text": (
+            f"合成群体 {aggregate['node_count']} 个节点、{aggregate['edge_count']} 条边、"
+            f"{temporal_change['window_count']} 个观察窗口；仅输出群体聚合描述。"
+        ),
+        "next_check_text": "比较群体边界与缺失敏感性范围后，再决定是否需要工程复核。",
     }
     report["analysis_digest"] = hashlib.sha256(
         json.dumps(

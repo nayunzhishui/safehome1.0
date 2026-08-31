@@ -64,6 +64,13 @@ def test_every_operation_declares_access_scope_error_request_id_and_compatibilit
             assert pagination["max_page_size"] == 100
 
 
+def test_read_only_operations_do_not_declare_json_body_fields():
+    contract = json.loads((PROJECT_ROOT / "shared" / "contracts" / "api-contract.json").read_text(encoding="utf-8"))
+    for item in contract["endpoints"]:
+        if item["method"] in {"GET", "HEAD"}:
+            assert item["request"]["body_fields"] == []
+
+
 def test_compatibility_snapshot_has_no_breaking_change():
     checker = _load_script("check_api_compatibility")
     baseline = json.loads(checker.BASELINE_PATH.read_text(encoding="utf-8"))

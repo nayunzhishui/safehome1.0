@@ -33,6 +33,8 @@ def _headers(app):
     specs = [
         ("admin-a", "admin"),
         ("researcher-a", "researcher"),
+        ("researcher-b", "researcher"),
+        ("supervisor-a", "supervisor"),
         ("participant-a", "participant"),
     ]
     with app.app_context():
@@ -56,10 +58,10 @@ def _headers(app):
         }
 
 
-def _register(client, headers):
+def _register(client, headers, commit=COMMIT):
     response = client.post(
         "/api/research/benchmarks/model-versions",
-        json={"code_commit": COMMIT},
+        json={"code_commit": commit},
         headers=headers["admin-a"],
     )
     assert response.status_code == 200
@@ -110,11 +112,70 @@ def test_shadow_run_is_read_only_replayable_and_has_review_queue(
     assert run["sample_count"] > 0
     assert 0 <= run["coverage_rate"] <= 1
     assert run["unknown_count"] == run["review_queue_count"]
+    assert run["known_count"] + run["unknown_count"] == run["sample_count"]
+    assert run["unknown_rate"] == round(run["unknown_count"] / run["sample_count"], 4)
+    assert run["computed_coverage_rate"] == round(run["known_count"] / run["sample_count"], 4)
+    assert run["coverage_rate_consistent"] is True
+    assert sum(run["review_reason_counts"].values()) == run["review_queue_count"]
+    assert "合成测试" in run["summary_text"]
+    assert run["next_check_text"]
     assert replay["id"] != run["id"] and replay["parent_run_id"] == run["id"]
     assert replay["artifact_hash"] != run["artifact_hash"]
     assert queue["raw_text_included"] is False
     assert all(item["case_id"].startswith("syn-affect-") for item in queue["items"])
     assert all("text" not in item for item in queue["items"])
+
+
+def test_researcher_cannot_replay_another_researchers_shadow_run(
+    tmp_path, monkeypatch
+):
+    app = _app(tmp_path, monkeypatch)
+    headers = _headers(app)
+    client = app.test_client()
+    model = _register(client, headers)
+    run = client.post(
+        "/api/research/benchmarks/shadow-runs",
+        json={"model_version_id": model["id"]},
+        headers=headers["researcher-a"],
+    ).get_json()["data"]
+
+    forbidden = client.post(
+        f"/api/research/benchmarks/shadow-runs/{run['id']}/replay",
+        json={"model_version_id": model["id"]},
+        headers=headers["researcher-b"],
+    )
+    supervisor = client.post(
+        f"/api/research/benchmarks/shadow-runs/{run['id']}/replay",
+        json={"model_version_id": model["id"]},
+        headers=headers["supervisor-a"],
+    )
+
+    assert forbidden.status_code == 404
+    assert forbidden.get_json()["error"]["code"] == "shadow_run_not_found"
+    assert supervisor.status_code == 200
+    assert supervisor.get_json()["data"]["parent_run_id"] == run["id"]
+
+
+def test_shadow_replay_requires_the_parent_model_version(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch)
+    headers = _headers(app)
+    client = app.test_client()
+    parent_model = _register(client, headers)
+    other_model = _register(client, headers, commit="b" * 40)
+    run = client.post(
+        "/api/research/benchmarks/shadow-runs",
+        json={"model_version_id": parent_model["id"]},
+        headers=headers["researcher-a"],
+    ).get_json()["data"]
+
+    response = client.post(
+        f"/api/research/benchmarks/shadow-runs/{run['id']}/replay",
+        json={"model_version_id": other_model["id"]},
+        headers=headers["researcher-a"],
+    )
+
+    assert response.status_code == 409
+    assert response.get_json()["error"]["code"] == "shadow_replay_model_mismatch"
 
 
 def test_content_or_schema_drift_stops_shadow_execution(tmp_path, monkeypatch):
@@ -182,6 +243,8 @@ def test_researcher_interfaces_show_versions_metrics_limits_and_queue_without_pa
     assert "listOfflineModelReviewQueue" in web
     assert "listOfflineModelVersions" in mini_js
     assert "情感模型影子版本" in mini_view
+    assert "affectSummary" in mini_js and "affectSummary" in mini_view
+    assert "shadowSummaryText" in mini_js and "shadowSummaryText" in mini_view
     assert "不显示原文" in mini_view
     assert "pages/researcher-dashboard/index" in app_json["pages"]
     assert not any("affect-shadow" in page for page in app_json["pages"])

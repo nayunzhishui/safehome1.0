@@ -2,7 +2,7 @@
   "schema": "safehome.security_privacy_abuse_registry.v1",
   "version": "2026-07-20-t31-security-v1",
   "status": "engineering_controls_ready_formal_acceptance_blocked",
-  "generated_from_contract_version": "2026-07-21.2",
+  "generated_from_contract_version": "2026-08-26.f24",
   "asset_inventory": [
     {
       "asset_id": "identity_and_tokens",
@@ -100,15 +100,15 @@
       "path": "/api/admin/assessment-results",
       "object_type": "admin",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
-        "admin"
+        "admin",
+        "researcher",
+        "supervisor"
       ],
       "denied_roles": [
         "parent",
-        "researcher",
-        "student",
-        "supervisor"
+        "student"
       ],
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
@@ -125,7 +125,7 @@
       "path": "/api/admin/export",
       "object_type": "admin",
       "action": "export",
-      "object_scope": "role_scoped",
+      "object_scope": "research_export_capability_admin_only",
       "allowed_roles": [
         "admin"
       ],
@@ -970,7 +970,7 @@
       "path": "/api/assessment-results",
       "object_type": "assessments",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -994,7 +994,7 @@
       "path": "/api/assessment-results",
       "object_type": "assessments",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -1018,7 +1018,31 @@
       "path": "/api/assessment-results/<result_id>",
       "object_type": "assessments",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
+      "allowed_roles": [
+        "admin",
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "assessments.get_assessment_exploratory_analysis.get",
+      "method": "GET",
+      "path": "/api/assessment-results/<result_id>/exploratory-analysis",
+      "object_type": "assessments",
+      "action": "read",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -1042,7 +1066,7 @@
       "path": "/api/assessment-results/<result_id>/profile-position",
       "object_type": "assessments",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -1437,7 +1461,7 @@
       "showcase_read_bypass": false,
       "idempotency": {
         "supported": true,
-        "required": false,
+        "required": true,
         "header": "Idempotency-Key",
         "max_length": 120
       }
@@ -1520,7 +1544,7 @@
       "path": "/api/auth/login",
       "object_type": "auth",
       "action": "create",
-      "object_scope": "not_applicable_or_development_legacy",
+      "object_scope": "authenticated_identity_match_before_pending_logout_revoke",
       "allowed_roles": [
         "public"
       ],
@@ -1540,7 +1564,7 @@
       "path": "/api/auth/logout",
       "object_type": "auth",
       "action": "create",
-      "object_scope": "not_applicable_or_development_legacy",
+      "object_scope": "optional_bearer_revoke_all_account_tokens_idempotent",
       "allowed_roles": [
         "public"
       ],
@@ -1584,7 +1608,7 @@
       "path": "/api/auth/phone-login",
       "object_type": "auth",
       "action": "create",
-      "object_scope": "not_applicable_or_development_legacy",
+      "object_scope": "authenticated_identity_match_before_pending_logout_revoke",
       "allowed_roles": [
         "public"
       ],
@@ -1624,7 +1648,7 @@
       "path": "/api/auth/wechat-login",
       "object_type": "auth",
       "action": "create",
-      "object_scope": "not_applicable_or_development_legacy",
+      "object_scope": "authenticated_identity_match_before_pending_logout_revoke",
       "allowed_roles": [
         "public"
       ],
@@ -1689,7 +1713,7 @@
       "path": "/api/checkins",
       "object_type": "checkins",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -1713,7 +1737,7 @@
       "path": "/api/checkins",
       "object_type": "checkins",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -1737,7 +1761,7 @@
       "path": "/api/consent",
       "object_type": "consent",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "authenticated_self_only_consent_event_history",
       "allowed_roles": [
         "admin",
         "parent",
@@ -1746,7 +1770,7 @@
         "supervisor"
       ],
       "denied_roles": [],
-      "legacy_admin_token": true,
+      "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
         "supported": false,
@@ -1761,7 +1785,7 @@
       "path": "/api/consent",
       "object_type": "consent",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "authenticated_self_only_consent_event_history",
       "allowed_roles": [
         "admin",
         "parent",
@@ -1770,7 +1794,32 @@
         "supervisor"
       ],
       "denied_roles": [],
-      "legacy_admin_token": true,
+      "legacy_admin_token": false,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
+      "operation_id": "consent.add_consent_annotation.post",
+      "method": "POST",
+      "path": "/api/consent/<consent_record_id>/annotations",
+      "object_type": "consent",
+      "action": "create",
+      "object_scope": "admin_consent_annotation_without_mutating_participant_event",
+      "allowed_roles": [
+        "admin"
+      ],
+      "denied_roles": [
+        "parent",
+        "researcher",
+        "student",
+        "supervisor"
+      ],
+      "legacy_admin_token": false,
       "showcase_read_bypass": false,
       "idempotency": {
         "supported": false,
@@ -2090,7 +2139,7 @@
       "path": "/api/courses/<course_id>/progress",
       "object_type": "courses",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2114,7 +2163,7 @@
       "path": "/api/courses/<course_id>/progress",
       "object_type": "courses",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2158,7 +2207,7 @@
       "path": "/api/courses/progress",
       "object_type": "courses",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2182,7 +2231,7 @@
       "path": "/api/diaries",
       "object_type": "diaries",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2206,7 +2255,7 @@
       "path": "/api/diaries",
       "object_type": "diaries",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2230,7 +2279,7 @@
       "path": "/api/emotion-thermometer",
       "object_type": "emotion_thermometer",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2254,7 +2303,7 @@
       "path": "/api/emotion-thermometer/day",
       "object_type": "emotion_thermometer",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2473,7 +2522,7 @@
       "path": "/api/feedback/generate",
       "object_type": "feedback",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_research_feedback_write_capability_and_active_assignment",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2497,7 +2546,7 @@
       "path": "/api/goals",
       "object_type": "goals",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2545,7 +2594,7 @@
       "path": "/api/growth/overview",
       "object_type": "general_growth",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2593,7 +2642,7 @@
       "path": "/api/messages",
       "object_type": "messages",
       "action": "read",
-      "object_scope": "self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin",
+      "object_scope": "self_for_participant_active_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2617,7 +2666,7 @@
       "path": "/api/messages",
       "object_type": "messages",
       "action": "send",
-      "object_scope": "self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin",
+      "object_scope": "explicit_active_assignment_for_research_message_send",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -2642,7 +2691,7 @@
       "path": "/api/messages/<message_id>",
       "object_type": "messages",
       "action": "read",
-      "object_scope": "self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin",
+      "object_scope": "self_for_participant_active_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2666,7 +2715,7 @@
       "path": "/api/messages/<message_id>/read",
       "object_type": "messages",
       "action": "create",
-      "object_scope": "self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin",
+      "object_scope": "self_only_for_message_read_state_writes",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2690,7 +2739,7 @@
       "path": "/api/messages/read-all",
       "object_type": "messages",
       "action": "create",
-      "object_scope": "self_for_participant_assigned_participant_for_researcher_full_for_supervisor_admin",
+      "object_scope": "self_only_for_message_read_state_writes",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2858,7 +2907,7 @@
       "path": "/api/notifications/config",
       "object_type": "notifications",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -2882,7 +2931,7 @@
       "path": "/api/notifications/consent",
       "object_type": "notifications",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -3420,7 +3469,7 @@
       "path": "/api/parent-assessments/<submission_id>",
       "object_type": "parent_assessments",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -3444,7 +3493,7 @@
       "path": "/api/parent-assessments/<submission_id>/actions",
       "object_type": "parent_assessments",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -3884,7 +3933,7 @@
       "path": "/api/profile-results/<profile_id>",
       "object_type": "profile",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -3908,7 +3957,7 @@
       "path": "/api/profile-results/<profile_id>/followups",
       "object_type": "profile",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -3932,7 +3981,7 @@
       "path": "/api/profile-results/<profile_id>/followups",
       "object_type": "profile",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4004,7 +4053,7 @@
       "path": "/api/profile-results/<profile_id>/sandplay",
       "object_type": "profile",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4028,7 +4077,7 @@
       "path": "/api/profile-results/<profile_id>/sandplay",
       "object_type": "profile",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4052,7 +4101,7 @@
       "path": "/api/profile-results/<profile_id>/visuals",
       "object_type": "profile",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4076,7 +4125,7 @@
       "path": "/api/profile-trend",
       "object_type": "progress_summary",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4100,7 +4149,7 @@
       "path": "/api/profile/stats",
       "object_type": "profile",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4164,7 +4213,7 @@
       "path": "/api/programs/<program_id>/entries",
       "object_type": "programs",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4188,7 +4237,7 @@
       "path": "/api/programs/<program_id>/entries",
       "object_type": "programs",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4212,7 +4261,7 @@
       "path": "/api/progress-summary",
       "object_type": "progress_summary",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4236,7 +4285,7 @@
       "path": "/api/relationship-pilot/enrollments",
       "object_type": "relationship_pilot",
       "action": "read",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4260,7 +4309,7 @@
       "path": "/api/relationship-pilot/enrollments",
       "object_type": "relationship_pilot",
       "action": "create",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4284,7 +4333,7 @@
       "path": "/api/relationship-pilot/enrollments/<enrollment_id>",
       "object_type": "relationship_pilot",
       "action": "read",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4308,7 +4357,7 @@
       "path": "/api/relationship-pilot/enrollments/<enrollment_id>/longitudinal",
       "object_type": "relationship_pilot",
       "action": "create",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4332,7 +4381,7 @@
       "path": "/api/relationship-pilot/enrollments/<enrollment_id>/narrative",
       "object_type": "relationship_pilot",
       "action": "create",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -4357,7 +4406,7 @@
       "path": "/api/relationship-pilot/enrollments/<enrollment_id>/notes",
       "object_type": "relationship_pilot",
       "action": "create",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -4382,7 +4431,7 @@
       "path": "/api/relationship-pilot/enrollments/<enrollment_id>/report",
       "object_type": "relationship_pilot",
       "action": "create",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -4407,7 +4456,7 @@
       "path": "/api/relationship-pilot/enrollments/<enrollment_id>/tasks",
       "object_type": "relationship_pilot",
       "action": "create",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4431,7 +4480,7 @@
       "path": "/api/relationship-pilot/growth",
       "object_type": "relationship_pilot",
       "action": "read",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4455,7 +4504,7 @@
       "path": "/api/relationship-pilot/narratives/<narrative_id>",
       "object_type": "relationship_pilot",
       "action": "read",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4479,7 +4528,7 @@
       "path": "/api/relationship-pilot/narratives/<narrative_id>/confirm",
       "object_type": "relationship_pilot",
       "action": "create",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -4504,7 +4553,7 @@
       "path": "/api/relationship-pilot/reports/<report_id>",
       "object_type": "relationship_pilot",
       "action": "read",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4528,7 +4577,7 @@
       "path": "/api/relationship-pilot/reports/<report_id>",
       "object_type": "relationship_pilot",
       "action": "update",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -4553,7 +4602,7 @@
       "path": "/api/relationship-pilot/reports/<report_id>/confirm",
       "object_type": "relationship_pilot",
       "action": "create",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -4578,7 +4627,7 @@
       "path": "/api/relationship-pilot/reports/<report_id>/hypotheses/<int:hypothesis_index>",
       "object_type": "relationship_pilot",
       "action": "update",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -4602,7 +4651,7 @@
       "path": "/api/relationship-pilot/reports/<report_id>/send",
       "object_type": "relationship_pilot",
       "action": "send",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -4627,7 +4676,7 @@
       "path": "/api/relationship-pilot/researcher/dashboard",
       "object_type": "relationship_pilot",
       "action": "read",
-      "object_scope": "self_or_assigned_participant_or_supervisor_admin",
+      "object_scope": "self_or_explicit_active_unexpired_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5172,7 +5221,7 @@
       "path": "/api/research/access/assignments",
       "object_type": "research_access",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "admin_managed_versioned_assignment_lifecycle",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5197,7 +5246,7 @@
       "path": "/api/research/access/assignments",
       "object_type": "research_access",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "admin_managed_versioned_assignment_lifecycle",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5222,7 +5271,7 @@
       "path": "/api/research/access/assignments/<assignment_id>",
       "object_type": "research_access",
       "action": "update",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "admin_managed_versioned_assignment_lifecycle",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5247,7 +5296,7 @@
       "path": "/api/research/access/capabilities",
       "object_type": "research_access",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "authenticated_actor_capability_summary",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5272,7 +5321,7 @@
       "path": "/api/research/access/enrollments/<enrollment_id>/claim",
       "object_type": "research_access",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "researcher_explicit_enrollment_claim_without_implicit_write_claim",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5297,7 +5346,7 @@
       "path": "/api/research/analysis/artifacts/<artifact_id>",
       "object_type": "research_analysis",
       "action": "delete",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin"
       ],
@@ -5322,7 +5371,7 @@
       "path": "/api/research/analysis/artifacts/<artifact_id>",
       "object_type": "research_analysis",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5347,7 +5396,7 @@
       "path": "/api/research/analysis/catalog",
       "object_type": "research_analysis",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5372,7 +5421,7 @@
       "path": "/api/research/analysis/jobs",
       "object_type": "research_analysis",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5397,7 +5446,7 @@
       "path": "/api/research/analysis/jobs",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5422,7 +5471,7 @@
       "path": "/api/research/analysis/jobs/<job_id>",
       "object_type": "research_analysis",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5447,7 +5496,7 @@
       "path": "/api/research/analysis/jobs/<job_id>/cancel",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -5472,7 +5521,7 @@
       "path": "/api/research/analysis/jobs/<job_id>/claim",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin"
       ],
@@ -5497,7 +5546,7 @@
       "path": "/api/research/analysis/jobs/<job_id>/complete",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin"
       ],
@@ -5522,7 +5571,7 @@
       "path": "/api/research/analysis/jobs/<job_id>/execute-synthetic",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin"
       ],
@@ -5547,7 +5596,7 @@
       "path": "/api/research/analysis/jobs/<job_id>/fail",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin"
       ],
@@ -5572,7 +5621,7 @@
       "path": "/api/research/analysis/jobs/<job_id>/recover",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin"
       ],
@@ -5597,7 +5646,7 @@
       "path": "/api/research/analysis/jobs/<job_id>/suspend",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin"
       ],
@@ -5622,7 +5671,7 @@
       "path": "/api/research/analysis/snapshots",
       "object_type": "research_analysis",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6397,7 +6446,7 @@
       "path": "/api/research/computation-contract/public-status",
       "object_type": "task37_contracts",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6422,7 +6471,7 @@
       "path": "/api/research/deliveries",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6447,7 +6496,7 @@
       "path": "/api/research/deliveries",
       "object_type": "research_workspace",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6472,7 +6521,7 @@
       "path": "/api/research/deliveries/<workflow_id>",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6497,7 +6546,7 @@
       "path": "/api/research/deliveries/<workflow_id>",
       "object_type": "research_workspace",
       "action": "update",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6522,7 +6571,7 @@
       "path": "/api/research/deliveries/<workflow_id>/confirm",
       "object_type": "research_workspace",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6547,7 +6596,7 @@
       "path": "/api/research/deliveries/<workflow_id>/preview",
       "object_type": "research_workspace",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6572,7 +6621,7 @@
       "path": "/api/research/deliveries/<workflow_id>/send",
       "object_type": "research_workspace",
       "action": "send",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6597,7 +6646,7 @@
       "path": "/api/research/deliveries/<workflow_id>/withdraw",
       "object_type": "research_workspace",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "relationship_delivery_bound_to_active_unexpired_enrollment_assignment",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6867,7 +6916,7 @@
       "path": "/api/research/operations",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6892,7 +6941,7 @@
       "path": "/api/research/participants",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6917,7 +6966,7 @@
       "path": "/api/research/participants/<user_id>",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6942,7 +6991,7 @@
       "path": "/api/research/participants/<user_id>/modules/<module_key>",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6967,7 +7016,7 @@
       "path": "/api/research/queues",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -6992,7 +7041,7 @@
       "path": "/api/research/work-items/<work_item_id>",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -7017,7 +7066,7 @@
       "path": "/api/research/work-items/<work_item_id>/actions",
       "object_type": "research_workspace",
       "action": "create",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -7042,7 +7091,7 @@
       "path": "/api/research/work-items/metrics",
       "object_type": "research_workspace",
       "action": "read",
-      "object_scope": "assigned_participants_for_researcher_full_for_supervisor_admin",
+      "object_scope": "active_unexpired_assignment_for_researcher_supervisor_full_for_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -7297,7 +7346,7 @@
       "path": "/api/supervision",
       "object_type": "supervision",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7321,7 +7370,7 @@
       "path": "/api/supervision/<request_id>",
       "object_type": "supervision",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7470,7 +7519,7 @@
       "path": "/api/therapeutic-assessment/actions/<action_id>",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7494,7 +7543,7 @@
       "path": "/api/therapeutic-assessment/actions/<action_id>/followups",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7518,7 +7567,7 @@
       "path": "/api/therapeutic-assessment/ai-assist",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7542,7 +7591,7 @@
       "path": "/api/therapeutic-assessment/ai-assist/candidates/<candidate_id>",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7566,7 +7615,7 @@
       "path": "/api/therapeutic-assessment/cases",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7590,7 +7639,7 @@
       "path": "/api/therapeutic-assessment/cases",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7602,10 +7651,10 @@
       "legacy_admin_token": true,
       "showcase_read_bypass": false,
       "idempotency": {
-        "supported": false,
-        "required": false,
-        "header": null,
-        "max_length": null
+        "supported": true,
+        "required": true,
+        "header": "Idempotency-Key",
+        "max_length": 128
       }
     },
     {
@@ -7614,7 +7663,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7638,7 +7687,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/actions",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7662,7 +7711,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7686,7 +7735,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/ai-assist/candidates",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7710,7 +7759,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/assign",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "supervisor"
@@ -7735,7 +7784,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7759,7 +7808,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7783,7 +7832,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards/decision",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7807,7 +7856,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/child-safeguards/gates",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7831,7 +7880,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/data-items",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "case_participant_owned_data_item_creation",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7855,7 +7904,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/disagree",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7879,7 +7928,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/evidence",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7903,7 +7952,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/evidence",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7927,7 +7976,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/feedback-versions",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "researcher",
@@ -7952,7 +8001,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/launch-screenings",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -7976,7 +8025,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/launch-screenings/latest",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8000,7 +8049,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/lifecycle",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8024,7 +8073,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8048,7 +8097,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8072,7 +8121,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/consent",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8096,7 +8145,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/gates",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8120,7 +8169,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards/safety-screen",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8144,7 +8193,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8168,7 +8217,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id>",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8216,7 +8265,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/question",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8240,7 +8289,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/readiness",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "supervisor"
@@ -8265,7 +8314,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/researcher-workbench",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8289,7 +8338,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/researcher-workbench/draft",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8313,7 +8362,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/responsibility-chain",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8337,7 +8386,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/safety-signals",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8361,7 +8410,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/scope",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8385,7 +8434,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/transitions",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8409,7 +8458,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/withdraw",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8433,7 +8482,7 @@
       "path": "/api/therapeutic-assessment/cases/<case_id>/work-queue",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8457,7 +8506,7 @@
       "path": "/api/therapeutic-assessment/child-safeguards",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8481,7 +8530,7 @@
       "path": "/api/therapeutic-assessment/competency/authorizations",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8505,7 +8554,7 @@
       "path": "/api/therapeutic-assessment/competency/authorizations",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8529,7 +8578,7 @@
       "path": "/api/therapeutic-assessment/competency/authorizations/<authorization_id>/revoke",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8553,7 +8602,7 @@
       "path": "/api/therapeutic-assessment/competency/effective",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8577,7 +8626,7 @@
       "path": "/api/therapeutic-assessment/data-items/<item_id>",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "data_controller_or_provider_or_explicit_allowed_viewer_with_dynamic_consent",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8601,7 +8650,7 @@
       "path": "/api/therapeutic-assessment/data-items/<item_id>/consent",
       "object_type": "therapeutic_assessment",
       "action": "update",
-      "object_scope": "role_scoped",
+      "object_scope": "data_subject_or_involved_participant_consent_control",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8625,7 +8674,7 @@
       "path": "/api/therapeutic-assessment/duty-shifts",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8649,7 +8698,7 @@
       "path": "/api/therapeutic-assessment/duty-shifts",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8673,7 +8722,7 @@
       "path": "/api/therapeutic-assessment/evidence/<evidence_id>/review",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "supervisor"
@@ -8698,7 +8747,7 @@
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/resend",
       "object_type": "therapeutic_assessment",
       "action": "send",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8722,7 +8771,7 @@
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/responses",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8746,7 +8795,7 @@
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/review",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "supervisor"
@@ -8771,7 +8820,7 @@
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/revise",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8795,7 +8844,7 @@
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/send",
       "object_type": "therapeutic_assessment",
       "action": "send",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "supervisor"
@@ -8820,7 +8869,7 @@
       "path": "/api/therapeutic-assessment/feedback-versions/<feedback_id>/withdraw",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8844,7 +8893,7 @@
       "path": "/api/therapeutic-assessment/launch-scope",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8868,7 +8917,7 @@
       "path": "/api/therapeutic-assessment/lifecycle/metrics",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8892,7 +8941,7 @@
       "path": "/api/therapeutic-assessment/method-library",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8916,7 +8965,7 @@
       "path": "/api/therapeutic-assessment/method-library/<item_id>",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8940,7 +8989,7 @@
       "path": "/api/therapeutic-assessment/multi-party-safeguards",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8964,7 +9013,7 @@
       "path": "/api/therapeutic-assessment/pilot-evidence/<stage_id>",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -8988,7 +9037,7 @@
       "path": "/api/therapeutic-assessment/production-contract",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9012,7 +9061,7 @@
       "path": "/api/therapeutic-assessment/production-contract/check",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9036,7 +9085,7 @@
       "path": "/api/therapeutic-assessment/production-contract/snapshots",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9060,7 +9109,7 @@
       "path": "/api/therapeutic-assessment/production-gate",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9084,7 +9133,7 @@
       "path": "/api/therapeutic-assessment/production-gate/evaluate",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9108,7 +9157,7 @@
       "path": "/api/therapeutic-assessment/production-gate/evidence",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9132,7 +9181,7 @@
       "path": "/api/therapeutic-assessment/production-gate/evidence",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9156,7 +9205,7 @@
       "path": "/api/therapeutic-assessment/production-gate/evidence/<evidence_id>/verify",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9180,7 +9229,7 @@
       "path": "/api/therapeutic-assessment/publication-candidates",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9204,7 +9253,7 @@
       "path": "/api/therapeutic-assessment/publication-candidates/<candidate_id>/recover",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9228,7 +9277,7 @@
       "path": "/api/therapeutic-assessment/publication-candidates/<candidate_id>/withdraw",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9425,7 +9474,7 @@
       "path": "/api/therapeutic-assessment/research-export/preview",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9449,7 +9498,7 @@
       "path": "/api/therapeutic-assessment/research-protocol",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9473,7 +9522,7 @@
       "path": "/api/therapeutic-assessment/safety-events/<event_id>/resolve",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9497,7 +9546,7 @@
       "path": "/api/therapeutic-assessment/safety/runtime/restore",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9521,7 +9570,7 @@
       "path": "/api/therapeutic-assessment/safety/status",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9545,7 +9594,7 @@
       "path": "/api/therapeutic-assessment/service-levels",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9569,7 +9618,7 @@
       "path": "/api/therapeutic-assessment/stop-recovery/evidence/<evidence_id>/verify",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9593,7 +9642,7 @@
       "path": "/api/therapeutic-assessment/stop-recovery/incidents",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9617,7 +9666,7 @@
       "path": "/api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/evidence",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9641,7 +9690,7 @@
       "path": "/api/therapeutic-assessment/stop-recovery/incidents/<incident_id>/restore",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9665,7 +9714,7 @@
       "path": "/api/therapeutic-assessment/stop-recovery/status",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9689,7 +9738,7 @@
       "path": "/api/therapeutic-assessment/work-queue",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9713,7 +9762,7 @@
       "path": "/api/therapeutic-assessment/work-queue/<item_id>/claim",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9737,7 +9786,7 @@
       "path": "/api/therapeutic-assessment/work-queue/<item_id>/handoff",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9761,7 +9810,7 @@
       "path": "/api/therapeutic-assessment/work-queue/monitor",
       "object_type": "therapeutic_assessment",
       "action": "create",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9785,7 +9834,7 @@
       "path": "/api/therapeutic-assessment/work-queue/runtime",
       "object_type": "therapeutic_assessment",
       "action": "read",
-      "object_scope": "role_scoped",
+      "object_scope": "module_resource_role_or_owner_scope_without_therapeutic_case_claim",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9809,7 +9858,7 @@
       "path": "/api/training-effectiveness",
       "object_type": "progress_summary",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9833,7 +9882,7 @@
       "path": "/api/training-plan",
       "object_type": "training_plan",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",
@@ -9857,7 +9906,7 @@
       "path": "/api/training-plan/assignment",
       "object_type": "training_plan",
       "action": "create",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_only_or_dedicated_domain_command",
       "allowed_roles": [
         "admin",
         "parent",
@@ -10049,7 +10098,7 @@
       "path": "/api/weekly-report",
       "object_type": "reports",
       "action": "read",
-      "object_scope": "self_or_authorized_role",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
       "allowed_roles": [
         "admin",
         "parent",

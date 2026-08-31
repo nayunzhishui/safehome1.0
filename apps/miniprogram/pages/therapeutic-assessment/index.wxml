@@ -48,6 +48,11 @@
 
     <view class="ta-evidence">
       <text class="ta-kicker">本次可见线索</text>
+      <view wx:if="{{evidenceSummary && evidenceSummary.item_count}}" class="ta-evidence-summary">
+        <text class="ta-evidence-summary__main">{{evidenceSummary.summary_text}}</text>
+        <text class="ta-meta">下一步核对：{{evidenceSummary.next_check_text}}</text>
+        <text class="ta-meta">{{evidenceSummary.boundary_notice}}</text>
+      </view>
       <block wx:if="{{evidenceItems.length}}">
         <text wx:for="{{evidenceItems}}" wx:key="id" class="ta-evidence-line">{{item.content}}</text>
       </block>

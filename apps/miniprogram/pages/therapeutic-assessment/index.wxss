@@ -228,6 +228,22 @@
   gap: 10rpx;
 }
 
+.ta-evidence-summary {
+  display: grid;
+  gap: 8rpx;
+  padding: 18rpx 20rpx;
+  border-left: 5rpx solid var(--safe-primary);
+  border-radius: 16rpx;
+  background: var(--safe-primary-pale);
+}
+
+.ta-evidence-summary__main {
+  color: var(--safe-title);
+  font-size: 25rpx;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
 .ta-withdraw {
   padding: 8rpx 0;
   color: var(--safe-muted);

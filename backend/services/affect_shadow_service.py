@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections import Counter
 from pathlib import Path
 
 from flask import current_app
@@ -234,6 +235,22 @@ def run_shadow(actor: dict, model_version_id: str, parent_run_id: str | None = N
         row = conn.execute(
             "SELECT * FROM offline_model_versions WHERE id = ?", (model_version_id,)
         ).fetchone()
+        if parent_run_id:
+            parent = conn.execute(
+                "SELECT id, model_version_id FROM offline_model_shadow_runs "
+                "WHERE id = ? AND (? IN ('admin', 'supervisor') OR created_by = ?)",
+                (parent_run_id, actor["role"], actor["id"]),
+            ).fetchone()
+            if not parent:
+                raise AffectShadowError(
+                    "shadow_run_not_found", "待回放运行不存在", 404
+                )
+            if parent["model_version_id"] != model_version_id:
+                raise AffectShadowError(
+                    "shadow_replay_model_mismatch",
+                    "回放必须使用父运行登记的模型版本",
+                    409,
+                )
     if not row:
         raise AffectShadowError("model_version_not_found", "模型版本不存在", 404)
     model = _decode_version(row)
@@ -269,13 +286,39 @@ def run_shadow(actor: dict, model_version_id: str, parent_run_id: str | None = N
         if case["id"] not in queued_ids:
             queue.append({"case_id": case["id"], "reason": "low_model_confidence"})
             queued_ids.add(case["id"])
+    sample_count = int(selected["metrics"]["sample_count"])
+    known_count = max(0, sample_count - expected_unknown)
+    unknown_rate = round(expected_unknown / sample_count, 4) if sample_count else 0.0
+    reported_coverage_rate = float(selected["metrics"]["coverage_rate"])
+    computed_coverage_rate = round(known_count / sample_count, 4) if sample_count else 0.0
+    coverage_rate_gap = round(reported_coverage_rate - computed_coverage_rate, 4)
+    coverage_rate_consistent = abs(coverage_rate_gap) <= 0.0001
+    review_reason_counts = dict(sorted(Counter(item["reason"] for item in queue).items()))
     result = {
-        "sample_count": int(selected["metrics"]["sample_count"]),
-        "coverage_rate": float(selected["metrics"]["coverage_rate"]),
+        "sample_count": sample_count,
+        "known_count": known_count,
+        "coverage_rate": reported_coverage_rate,
+        "computed_coverage_rate": computed_coverage_rate,
+        "coverage_rate_gap": coverage_rate_gap,
+        "coverage_rate_consistent": coverage_rate_consistent,
         "unknown_count": expected_unknown,
+        "unknown_rate": unknown_rate,
         "review_queue_count": len(queue),
+        "review_queue_rate": round(len(queue) / sample_count, 4) if sample_count else 0.0,
+        "review_reason_counts": review_reason_counts,
         "limitations": model["limitations"],
         "model_version": model["model_version"],
+        "summary_text": (
+            f"合成测试 {sample_count} 条：可覆盖 {known_count} 条，"
+            f"未知 {expected_unknown} 条，人工复核队列 {len(queue)} 条。"
+        ),
+        "next_check_text": (
+            "覆盖率与未知数分母不一致，先停止版本比较并核对评测产物。"
+            if not coverage_rate_consistent
+            else "先按原因分布复核未知案例，再比较模型版本；不得据此影响参与者反馈。"
+            if queue
+            else "继续用固定合成集回放并核对版本漂移。"
+        ),
         "boundary_notice": policy["boundary_notice"],
     }
     timestamp = now_iso()
@@ -291,13 +334,6 @@ def run_shadow(actor: dict, model_version_id: str, parent_run_id: str | None = N
         ).encode("utf-8")
     ).hexdigest()
     with get_connection() as conn:
-        if parent_run_id:
-            parent = conn.execute(
-                "SELECT id FROM offline_model_shadow_runs WHERE id = ?",
-                (parent_run_id,),
-            ).fetchone()
-            if not parent:
-                raise AffectShadowError("shadow_run_not_found", "待回放运行不存在", 404)
         conn.execute(
             "INSERT INTO offline_model_shadow_runs "
             "(id, model_version_id, parent_run_id, input_snapshot_hash, result_json, "

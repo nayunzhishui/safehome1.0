@@ -73,6 +73,24 @@ def _case(client, headers):
         json={"assessment_question": "我想理解一次退开的沟通", "shared_scope": ["question"], "consent": True},
     )
     case = created.get_json()["data"]
+    with client.application.app_context():
+        from database import get_connection, now_iso
+
+        timestamp = now_iso()
+        with get_connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO therapeutic_assessment_work_queue (
+                    id, case_id, queue_type, task_code, required_competency,
+                    priority, status, scope_snapshot_json, assigned_user_id,
+                    claimed_at, due_at, version, created_by, created_at, updated_at
+                ) VALUES ('queue-f08-assign', ?, 'review', 'case_assignment', 'T1',
+                    'normal', 'claimed', '{}', 's-f08', ?,
+                    '2099-01-01T00:00:00+00:00', 1, 'test', ?, ?)
+                """,
+                (case["id"], timestamp, timestamp, timestamp),
+            )
+            conn.commit()
     assigned = client.post(
         f"/api/therapeutic-assessment/cases/{case['id']}/assign",
         headers={**headers["s-f08"], "Idempotency-Key": "f08-assign"},
@@ -147,6 +165,51 @@ def test_workbench_enforces_object_scope_and_audits_sensitive_read(tmp_path, mon
                 "SELECT metadata_json FROM audit_logs WHERE action = 'therapeutic_assessment_workbench_viewed'"
             ).fetchone()
         assert audit is not None
+
+
+def test_workbench_summary_uses_full_authorized_case_not_current_filter(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch)
+    headers = _seed(app)
+    client = app.test_client()
+    created = client.post(
+        "/api/therapeutic-assessment/cases",
+        headers={**headers["p-f08"], "Idempotency-Key": "f08-summary-case"},
+        json={"assessment_question": "我想理解一次退开的沟通", "shared_scope": ["question"], "consent": True},
+    )
+    case = created.get_json()["data"]
+    with app.app_context():
+        from database import get_connection
+        with get_connection() as conn:
+            conn.execute(
+                "UPDATE therapeutic_assessment_cases SET assigned_researcher_id = 'r-f08' WHERE id = ?",
+                (case["id"],),
+            )
+            conn.commit()
+    assert _observation(client, headers, case["id"], "f08-summary-o1").status_code == 201
+    assert _observation(client, headers, case["id"], "f08-summary-o2").status_code == 201
+
+    response = client.get(
+        f"/api/therapeutic-assessment/cases/{case['id']}/researcher-workbench?kind=U&page_size=1",
+        headers=headers["r-f08"],
+    )
+    body = response.get_json()["data"]
+    assert response.status_code == 200
+    assert body["evidence_items"] == []
+    assert body["evidence_total"] == 0
+    assert body["evidence_summary"]["item_count"] == 2
+    assert body["evidence_summary"]["kind_counts"]["O"] == 2
+    assert body["evidence_summary"]["source_count"] == 2
+
+
+def test_miniprogram_surfaces_evidence_summary_for_both_roles():
+    participant_js = (ROOT / "apps/miniprogram/pages/therapeutic-assessment/index.js").read_text(encoding="utf-8")
+    participant_wxml = (ROOT / "apps/miniprogram/pages/therapeutic-assessment/index.wxml").read_text(encoding="utf-8")
+    researcher_js = (ROOT / "apps/miniprogram/pages/researcher-dashboard/index.js").read_text(encoding="utf-8")
+    researcher_wxml = (ROOT / "apps/miniprogram/pages/researcher-dashboard/index.wxml").read_text(encoding="utf-8")
+    assert "evidenceSummary" in participant_js
+    assert "evidenceSummary" in participant_wxml
+    assert "evidence_summary" in researcher_js
+    assert "evidence_summary" in researcher_wxml
 
 
 def test_draft_is_recoverable_versioned_idempotent_and_separated(tmp_path, monkeypatch):

@@ -308,8 +308,10 @@ def _idempotency(path: str, method: str, source: str) -> dict[str, Any]:
 
 def _request_contract(path: str, method: str, source: str) -> dict[str, Any]:
     query_parameters = sorted(set(re.findall(r"request\.args\.get\(\s*['\"]([^'\"]+)['\"]", source)))
-    body_fields = set(re.findall(r"payload\.get\(\s*['\"]([^'\"]+)['\"]", source))
-    body_fields.update(re.findall(r"payload\[\s*['\"]([^'\"]+)['\"]\s*\]", source))
+    body_fields: set[str] = set()
+    if method in {"POST", "PUT", "PATCH"}:
+        body_fields.update(re.findall(r"payload\.get\(\s*['\"]([^'\"]+)['\"]", source))
+        body_fields.update(re.findall(r"payload\[\s*['\"]([^'\"]+)['\"]\s*\]", source))
     headers = sorted(set(re.findall(r"request\.headers\.get\(\s*['\"]([^'\"]+)['\"]", source)))
     ai_body_fields = {
         ("/api/ai-qa/sessions", "POST"): ["synthetic_data", "research_use_allowed"],

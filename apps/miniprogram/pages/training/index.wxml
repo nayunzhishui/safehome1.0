@@ -1,12 +1,11 @@
 <view class="safe-page safe-page--with-tabbar training-page" role="main" aria-label="训练中心">
   <view class="training-hero">
     <view class="hero-copy">
-      <text class="hero-title">从先稳定自己开始</text>
+      <text class="hero-title">训练中心</text>
     </view>
   </view>
 
   <view class="training-entry-panel">
-    <text class="entry-kicker">训练入口</text>
     <view class="entry-grid">
       <button class="entry-item entry-item--active">
         <text class="entry-title">通用训练</text>
@@ -81,7 +80,6 @@
 
   <view class="starter-card">
     <view class="starter-head">
-      <text class="starter-icon">先</text>
       <view class="starter-copy">
         <text class="starter-title">不知道从哪里开始？</text>
         <text class="starter-text">先按“觉察—稳定—回应”的顺序选一张；不需要一次完成全部阶段。</text>
@@ -124,7 +122,4 @@
     </view>
   </view>
 
-  <view class="safe-section">
-    <bottom-tip-card text="先稳定自己，再清晰地陪伴孩子。" subtext="每张训练卡都是一个可以当天完成的小练习。" />
-  </view>
 </view>

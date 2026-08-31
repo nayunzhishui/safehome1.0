@@ -44,6 +44,7 @@
 | GET | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_active_participant_assignment_or_admin_capability | page/page_size | — | active |
 | POST | `/api/assessment-results` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_only_or_dedicated_domain_command | — | supported | active |
 | GET | `/api/assessment-results/<result_id>` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_active_participant_assignment_or_admin_capability | — | — | active |
+| GET | `/api/assessment-results/<result_id>/exploratory-analysis` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_active_participant_assignment_or_admin_capability | — | — | active |
 | GET | `/api/assessment-results/<result_id>/profile-position` | owner_or_authorized:parent,student,researcher,supervisor,admin | self_or_active_participant_assignment_or_admin_capability | — | — | active |
 | GET | `/api/assessments` | public:public | not_applicable_or_development_legacy | — | — | active |
 | GET | `/api/assessments/<worksheet_id>` | public:public | not_applicable_or_development_legacy | — | — | active |

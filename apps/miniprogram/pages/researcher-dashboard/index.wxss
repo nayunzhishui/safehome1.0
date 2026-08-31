@@ -521,6 +521,31 @@
   line-height: 1.5;
 }
 
+.analysis-section {
+  display: grid;
+  gap: 16rpx;
+  padding-top: 12rpx;
+}
+
+.analysis-section + .analysis-section {
+  margin-top: 10rpx;
+  padding-top: 28rpx;
+  border-top: 1rpx solid rgba(78, 124, 107, 0.18);
+}
+
+.analysis-section-heading {
+  display: grid;
+  gap: 4rpx;
+}
+
+.analysis-section-kicker {
+  display: block;
+  color: var(--safe-primary-deep);
+  font-size: 24rpx;
+  font-weight: 850;
+  letter-spacing: 1rpx;
+}
+
 .analysis-shadow-summary {
   display: grid;
   gap: 16rpx;
@@ -528,6 +553,16 @@
   border: 1rpx solid #d9e7df;
   border-radius: 22rpx;
   background: #f8fcfa;
+}
+
+.knowledge-retrieval-summary {
+  display: grid;
+  gap: 8rpx;
+  margin: 14rpx 0;
+  padding: 18rpx 20rpx;
+  border-left: 5rpx solid var(--safe-primary);
+  border-radius: 16rpx;
+  background: var(--safe-primary-pale);
 }
 
 .analysis-quality {
@@ -541,6 +576,26 @@
   margin-top: 8rpx;
   color: #805b28;
   font-size: 24rpx;
+}
+
+.analysis-picker {
+  box-sizing: border-box;
+  min-height: 88rpx;
+  margin-top: 12rpx;
+  padding: 22rpx 24rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: 20rpx;
+  background: #fff;
+  color: var(--safe-text);
+  font-size: 24rpx;
+}
+
+.knowledge-excerpt {
+  display: block;
+  margin-top: 12rpx;
+  color: var(--safe-text);
+  font-size: 24rpx;
+  line-height: 1.6;
 }
 
 .assessment-case-tabs {
@@ -586,6 +641,36 @@
   font-size: 28rpx;
   font-weight: 820;
   line-height: 1.55;
+}
+
+.assessment-evidence-summary {
+  display: grid;
+  gap: 12rpx;
+  margin-top: 18rpx;
+  padding: 22rpx;
+  border: 1rpx solid var(--safe-border);
+  border-radius: 20rpx;
+  background: #fff;
+}
+
+.assessment-evidence-summary__heading,
+.assessment-evidence-summary__counts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10rpx 18rpx;
+}
+
+.assessment-evidence-summary__copy {
+  color: var(--safe-title);
+  font-size: 25rpx;
+  font-weight: 750;
+  line-height: 1.6;
+}
+
+.assessment-evidence-summary__counts {
+  color: var(--safe-text);
+  font-size: 24rpx;
 }
 
 .assessment-filter-row {
@@ -671,3 +756,26 @@
   border-top-color: var(--safe-danger);
   background: #fff8f6;
 }
+
+.participant-analysis-result,
+.participant-analysis-groups {
+  display: grid;
+  gap: 18rpx;
+}
+
+.participant-analysis-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.participant-analysis-status,
+.participant-analysis-label {
+  display: block;
+  color: var(--safe-title);
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.participant-analysis-label { margin-bottom: 8rpx; }

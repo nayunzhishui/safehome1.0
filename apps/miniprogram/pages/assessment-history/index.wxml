@@ -8,7 +8,6 @@
 
   <view wx:if="{{loading}}" class="safe-card state-card">
     <text class="state-title">正在读取测评记录</text>
-    <text class="state-text">请稍等一下。</text>
   </view>
 
   <view wx:elif="{{errorMessage && !items.length}}" class="safe-card state-card state-card--error">
@@ -34,7 +33,6 @@
 
   <view wx:else class="safe-card state-card">
     <text class="state-title">还没有测评记录</text>
-    <text class="state-text">完成一份支持性测评后，记录会保存在这里。</text>
     <button class="safe-primary-button state-action" bindtap="goAssessment">去测一测</button>
   </view>
 </view>

@@ -5,7 +5,6 @@
 
   <view class="panel">
     <view class="tip-box">
-      <text class="tip-title">这是一次轻复盘</text>
       <text class="tip-text">记录这次尝试和练习前后的感受变化即可。</text>
     </view>
 
@@ -49,7 +48,6 @@
     <view class="field">
       <text class="label">练习复盘</text>
       <view class="reflection-prompts">
-        <text class="prompt-title">可以围绕这三个问题写：</text>
         <text wx:for="{{reflectionPrompts}}" wx:key="*this" class="prompt-item">{{item}}</text>
       </view>
       <textarea class="textarea" value="{{reflection}}" placeholder="例如：这次我先停了一下，说话慢了一点。下次想先从少说一句开始。" bindinput="onReflectionInput" />

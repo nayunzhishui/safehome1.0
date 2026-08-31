@@ -1,5 +1,5 @@
 <view class="safe-page narrative-page" role="main" aria-label="关系探索手记">
-  <page-state wx:if="{{loading}}" kind="loading" title="正在读取关系探索手记" description="只展示已经通过状态门控的内容。" />
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取关系探索手记" />
   <page-state wx:elif="{{errorMessage}}" kind="error" title="手记暂时无法读取" description="{{errorMessage}}" action-label="重新读取" bind:action="retryLoad" />
   <view wx:else>
     <view class="narrative-head">

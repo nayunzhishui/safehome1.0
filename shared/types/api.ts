@@ -151,7 +151,58 @@ export interface ResearchParticipantSummary {
 
 export type ResearchParticipantModuleKey =
   | "assessments" | "measurements" | "diaries" | "training" | "stage_reports"
-  | "relationship_pilot" | "project_tests" | "messages" | "human_support" | "timeline";
+  | "relationship_pilot" | "project_tests" | "messages" | "human_support" | "exploratory_analysis" | "timeline";
+
+export interface ParticipantExploratoryAnalysis {
+  schema: "safehome.participant-exploratory-analysis.v1";
+  scope: "self_structured_diaries";
+  availability: "available" | "insufficient" | "withheld" | "ineligible";
+  record_count: number;
+  usable_record_count?: number;
+  excluded_record_count?: number;
+  minimum_required: number;
+  reason?: string;
+  affect: {
+    method: "self_recorded_emotion_labels";
+    record_count: number;
+    usable_record_count?: number;
+    excluded_record_count?: number;
+    category_count: number;
+    overall_average_intensity: number | null;
+    intensity_range: { minimum: number; maximum: number } | null;
+    most_frequent_labels: string[];
+    items: Array<{ label: string; count: number; average_intensity: number }>;
+    summary_text: string;
+    next_check_text: string;
+  };
+  interaction_network: {
+    method: "scene_emotion_cooccurrence";
+    nodes: Array<{ id: string; type: "scene" | "emotion"; label: string; support: number }>;
+    edges: Array<{ source: string; target: string; scene: string; emotion: string; support: number }>;
+    summary: {
+      record_count: number;
+      usable_record_count?: number;
+      excluded_record_count?: number;
+      supported_record_count: number;
+      record_coverage_rate: number;
+      scene_count: number;
+      emotion_count: number;
+      node_count: number;
+      edge_count: number;
+      suppressed_pair_count: number;
+      omitted_supported_pair_count: number;
+      summary_text: string;
+      next_check_text: string;
+    };
+    minimum_edge_support: 2;
+    individual_metrics: false;
+    relationship_quality_judgement: false;
+  };
+  raw_text_included: false;
+  other_participant_data_included: false;
+  human_review_required: boolean;
+  boundary_notice: string;
+}
 
 export interface ResearchParticipantModuleDescriptor {
   key: ResearchParticipantModuleKey;
@@ -279,6 +330,21 @@ export interface TherapeuticAssessmentEvidenceItem {
   created_at: string;
 }
 
+export interface TherapeuticAssessmentEvidenceSummary {
+  item_count: number;
+  kind_counts: Record<TherapeuticAssessmentEvidenceKind, number>;
+  source_count: number;
+  sourced_item_count: number;
+  source_coverage_rate: number;
+  unknown_count: number;
+  unknown_types: Record<"missing" | "conflict" | "permission_denied" | "unconfirmed", number>;
+  reviewed_hypothesis_count: number;
+  unreviewed_hypothesis_count: number;
+  summary_text: string;
+  next_check_text: string;
+  boundary_notice: string;
+}
+
 export interface TherapeuticAssessmentResearcherDraft {
   id?: string | null;
   case_id: string;
@@ -299,6 +365,7 @@ export interface TherapeuticAssessmentResearcherWorkbench {
   case: TherapeuticAssessmentCase;
   evidence_items: TherapeuticAssessmentEvidenceItem[];
   evidence_total: number;
+  evidence_summary: TherapeuticAssessmentEvidenceSummary;
   page: number;
   page_size: number;
   has_more: boolean;
@@ -3188,12 +3255,33 @@ export interface AiKnowledgeCandidate {
 export interface AiKnowledgeInventory {
   documents: AiKnowledgeDocument[];
   candidates: AiKnowledgeCandidate[];
+  inventory_summary: {
+    document_count: number;
+    active_document_count: number;
+    withdrawn_document_count: number;
+    expired_document_count: number;
+    active_chunk_count: number;
+    candidate_count: number;
+    quarantined_candidate_count: number;
+  };
   candidate_content_stored: false;
   web_candidate_auto_approval: false;
 }
 
 export interface AiKnowledgeRetrievalResult {
   citations: AiQaCitation[];
+  retrieval_summary: {
+    result_count: number;
+    source_count: number;
+    query_term_count: number;
+    matched_query_term_count: number;
+    unmatched_query_term_count: number;
+    coverage_ratio: number;
+    coverage_state: "none" | "partial" | "complete";
+    summary_text: string;
+    next_check_text: string;
+    boundary_notice: string;
+  };
   knowledge_snapshot_hash: string;
   only_published: true;
   retrieval_method: AiKnowledgeRetrievalMethod;
@@ -3842,6 +3930,20 @@ export interface GroupNetworkAnalysisReport {
   causal_inference: false;
   family_quality_inference: false;
   participant_visible: false;
+  analysis_summary: {
+    privacy_state: "available" | "suppressed";
+    node_count: number;
+    edge_count: number;
+    window_count: number;
+    minimum_window_edge_count: number;
+    insufficient_window_count: number;
+    density: number | null;
+    density_change_first_to_last: number | null;
+    boundary_density_range: { minimum: number | null; maximum: number | null };
+    missingness_density_range: { minimum: number | null; maximum: number | null };
+    summary_text: string;
+    next_check_text: string;
+  };
   analysis_digest?: string;
   boundary_notice: string;
 }
@@ -3919,9 +4021,18 @@ export interface OfflineModelShadowRun {
   raw_text_included: 0;
   participant_effect_allowed: 0;
   sample_count: number;
+  known_count?: number;
   coverage_rate: number;
+  computed_coverage_rate?: number;
+  coverage_rate_gap?: number;
+  coverage_rate_consistent?: boolean;
   unknown_count: number;
+  unknown_rate?: number;
   review_queue_count: number;
+  review_queue_rate?: number;
+  review_reason_counts?: Partial<Record<OfflineModelReviewQueueItem["reason"], number>>;
+  summary_text?: string;
+  next_check_text?: string;
   limitations: string[];
   model_version: string;
   boundary_notice: string;

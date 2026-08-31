@@ -72,8 +72,7 @@
   <view wx:if="{{receipt}}" class="receipt-panel" aria-label="本次记录回执">
     <view class="receipt-heading">
       <view class="receipt-title-group">
-        <text class="receipt-kicker">刚刚记录完成</text>
-        <text class="receipt-title">先看见这一次</text>
+        <text class="receipt-kicker">记录完成</text>
       </view>
       <button class="receipt-close" aria-label="收起记录回执" bindtap="dismissReceipt">×</button>
     </view>
@@ -128,7 +127,6 @@
         <text class="row-desc">{{item.brief_text || "没有备注"}}</text>
       </view>
     </view>
-    <view wx:if="{{!records.length && !loading}}" class="quiet-state list-empty">记录后会按时间显示在这里。</view>
   </view>
 
   <view class="boundary-note">{{boundaryNotice}}</view>

@@ -8,7 +8,6 @@
   <view wx:if="{{loading}}" class="state-card safe-card">
     <view class="loading-dot"></view>
     <text class="state-title">正在整理本周复盘</text>
-    <text class="state-text">请稍等一下。</text>
   </view>
 
   <view wx:elif="{{errorMessage}}" class="state-card error-card">
@@ -84,7 +83,6 @@
     <view class="review-section">
       <view class="section-head">
         <text class="section-title">情绪温度趋势</text>
-        <text class="section-hint">只看记录中的小变化</text>
       </view>
       <view class="review-card">
         <text class="row-desc">{{report.thermometer_trend ? report.thermometer_trend.trend_text : '本周还没有情绪温度记录。'}}</text>
@@ -121,7 +119,6 @@
     <view class="review-section">
       <view class="section-head">
         <text class="section-title">本周常见情绪</text>
-        <text class="section-hint">先看见情绪，再选择下一步练习</text>
       </view>
       <view class="review-card">
         <block wx:if="{{frequentEmotions.length}}">

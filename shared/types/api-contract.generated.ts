@@ -2444,6 +2444,72 @@ export const GENERATED_API_ENDPOINTS = [
     }
   },
   {
+    "operation_id": "assessments.get_assessment_exploratory_analysis.get",
+    "method": "GET",
+    "path": "/api/assessment-results/<result_id>/exploratory-analysis",
+    "handler": "assessments.get_assessment_exploratory_analysis",
+    "module": "routes.assessments",
+    "access": {
+      "mode": "owner_or_authorized",
+      "roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false
+    },
+    "object_scope": "self_or_active_participant_assignment_or_admin_capability",
+    "request": {
+      "content_type": null,
+      "path_parameters": [
+        "result_id"
+      ],
+      "query_parameters": [
+        "user_id"
+      ],
+      "body_fields": [],
+      "headers": [],
+      "pagination": null,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    "response": {
+      "envelope": "standard",
+      "request_id": true,
+      "data_contract": "routes.assessments.get_assessment_exploratory_analysis.data"
+    },
+    "error_envelope": {
+      "ok": false,
+      "error": {
+        "code": "string",
+        "message": "string"
+      },
+      "request_id": "string"
+    },
+    "error_codes": [
+      "forbidden",
+      "http_error",
+      "internal_error",
+      "not_found",
+      "unauthorized"
+    ],
+    "enum_refs": [
+      "assessment_status"
+    ],
+    "deprecation": {
+      "status": "active",
+      "remove_after": null,
+      "replacement": null
+    }
+  },
+  {
     "operation_id": "assessments.get_assessment_profile_position.get",
     "method": "GET",
     "path": "/api/assessment-results/<result_id>/profile-position",
@@ -2535,10 +2601,7 @@ export const GENERATED_API_ENDPOINTS = [
         "query",
         "reflex_node"
       ],
-      "body_fields": [
-        "boundary_notice",
-        "version"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -2595,9 +2658,7 @@ export const GENERATED_API_ENDPOINTS = [
         "worksheet_id"
       ],
       "query_parameters": [],
-      "body_fields": [
-        "boundary_notice"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -5263,11 +5324,7 @@ export const GENERATED_API_ENDPOINTS = [
       "content_type": null,
       "path_parameters": [],
       "query_parameters": [],
-      "body_fields": [
-        "boundary_notice",
-        "courses",
-        "version"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -5322,10 +5379,7 @@ export const GENERATED_API_ENDPOINTS = [
         "course_id"
       ],
       "query_parameters": [],
-      "body_fields": [
-        "courses",
-        "version"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -5512,10 +5566,7 @@ export const GENERATED_API_ENDPOINTS = [
       "content_type": null,
       "path_parameters": [],
       "query_parameters": [],
-      "body_fields": [
-        "boundary_notice",
-        "version"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -6096,9 +6147,7 @@ export const GENERATED_API_ENDPOINTS = [
       "content_type": null,
       "path_parameters": [],
       "query_parameters": [],
-      "body_fields": [
-        "link_id"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -10676,11 +10725,7 @@ export const GENERATED_API_ENDPOINTS = [
       "content_type": null,
       "path_parameters": [],
       "query_parameters": [],
-      "body_fields": [
-        "boundary_notice",
-        "programs",
-        "version"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -10735,10 +10780,7 @@ export const GENERATED_API_ENDPOINTS = [
         "program_id"
       ],
       "query_parameters": [],
-      "body_fields": [
-        "programs",
-        "version"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -17890,11 +17932,7 @@ export const GENERATED_API_ENDPOINTS = [
         "status",
         "type"
       ],
-      "body_fields": [
-        "boundary_notice",
-        "count",
-        "sensitive"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": {
         "page": "page",
@@ -18739,17 +18777,7 @@ export const GENERATED_API_ENDPOINTS = [
       "content_type": null,
       "path_parameters": [],
       "query_parameters": [],
-      "body_fields": [
-        "allow_program_participation",
-        "enabled",
-        "notice",
-        "open_courses",
-        "open_programs",
-        "open_training_cards",
-        "read_only_role_bypass",
-        "researcher_platform_full_access",
-        "version"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {
@@ -25906,9 +25934,7 @@ export const GENERATED_API_ENDPOINTS = [
       "content_type": null,
       "path_parameters": [],
       "query_parameters": [],
-      "body_fields": [
-        "ok"
-      ],
+      "body_fields": [],
       "headers": [],
       "pagination": null,
       "idempotency": {

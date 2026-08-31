@@ -606,7 +606,11 @@ def _save_run(actor: dict, benchmark_type: str, card_id: str, metrics: dict, par
     timestamp = now_iso()
     run_id = new_id("obr")
     artifact_hash = hashlib.sha256(json.dumps({"type": benchmark_type, "metrics": metrics, "parameters": parameters, "algorithm": ALGORITHM_VERSION}, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
-    status = "engineering_threshold_passed" if (metrics.get("passed", True) and not metrics.get("failed_cases")) else "engineering_review_required"
+    status = (
+        "engineering_threshold_passed"
+        if metrics.get("passed") is True and not metrics.get("failed_cases")
+        else "engineering_review_required"
+    )
     with get_connection() as conn:
         conn.execute("INSERT INTO offline_benchmark_runs (id, benchmark_type, dataset_card_id, evidence_level, algorithm_version, parameters_json, metrics_json, artifact_hash, raw_text_included, production_replacement_allowed, status, created_by, created_at) VALUES (?, ?, ?, 'synthetic_engineering_only', ?, ?, ?, ?, 0, 0, ?, ?, ?)", (run_id, benchmark_type, card_id, ALGORITHM_VERSION, json_dumps(parameters), json_dumps(metrics), artifact_hash, status, actor["id"], timestamp))
         write_audit_log(conn, "offline_benchmark_run_created", actor["id"], "offline_benchmark_run", run_id, {"benchmark_type": benchmark_type, "dataset_card_id": card_id, "raw_text_included": False, "production_replacement_allowed": False})

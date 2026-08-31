@@ -763,6 +763,16 @@ F21 补充：`/healthz` 是公开最小探针；`/healthz/deep` 和 `/readyz` �
 - `interpretation_status` 为 `low_confidence`、`outlier` 或 `pending_approval` 时，`profile_name`、训练问题和项目任务不返回普通自动解释。
 - `confidence` 暂保留为兼容字段；前端应展示“匹配清晰度”低/中/较高，不得表述为模型准确率。
 
+### `GET /api/assessment-results/<result_id>/exploratory-analysis`
+
+用途：为已登录成人参与者返回自己的近期结构化情绪与互动线索。结果归属必须与当前登录用户一致；接口最多读取本人最近 100 条情绪日记中的 `scene`、`parent_emotion` 和 `parent_emotion_intensity`，不返回日记原文或其他参与者数据。
+
+- 少于 5 条记录，或最近记录中少于 5 条同时包含有效情境、情绪和 0—10 强度时，返回 `availability=insufficient`，不生成分析；`usable_record_count`与`excluded_record_count`说明可用和排除分母。
+- 存在 high 风险反馈时返回 `availability=withheld` 和 `human_review_required=true`，不生成普通分析。
+- `affect`仅描述本人填写的情绪标签次数、平均强度、类别数和强度范围；平均值只使用有效结构化记录，`summary_text`与`next_check_text`不解释好坏，也不是模型诊断。
+- `interaction_network.edges` 仅返回支持度至少 2 的“场景—情绪”共现；`summary`说明展示边覆盖的本人记录数、节点/边数量和低支持组合数，不返回中心性、关系质量或个体排序。
+- 固定返回 `raw_text_included=false`、`other_participant_data_included=false` 及非诊断边界说明；每次查看写入审计日志。
+
 ### `POST /api/checkins`
 
 用途：提交训练卡练习打卡。
@@ -2114,8 +2124,8 @@ relationship_initiation_intention_action
 | `GET /cases` | researcher/supervisor/admin分页读取240条合成案例；不返回生成标签 |
 | `POST /cases/<id>/annotations` | 保存本人盲标；效价范围-1至1，唤醒范围0至1 |
 | `GET /agreement` | supervisor/admin查看双人完整案例数、Cohen kappa和连续值差异；不自动发布人工金标准 |
-| `POST /runs/affect` | 运行词典覆盖率、宏F1、混淆矩阵、校准、亚组和失败案例基准 |
-| `POST /runs/network` | 运行合成图边权、中心性、社区阈值、扰动稳定性和复杂度检查 |
+| `POST /runs/affect` | 运行词典覆盖率、宏F1、混淆矩阵、校准、亚组和失败案例基准；影子运行摘要同时返回未知率、复核率、复核原因分布，以及登记覆盖率与未知数反算覆盖率是否一致 |
+| `POST /runs/network` | 运行合成图边权、中心性、社区阈值、扰动稳定性和复杂度检查；每个观察窗口都必须达到最小边数，任一窗口不足即整体抑制；`analysis_summary`只汇总群体规模、窗口数及边界/缺失敏感性范围 |
 | `GET /runs` | researcher仅看本人运行；supervisor/admin看全量工程证据 |
 | `POST /runs/<id>/reviews` | supervisor/admin登记工程复核决定和证据路径；不构成发布批准 |
 | `POST /disable` | admin只允许停用；不存在远程重新开启接口 |
@@ -2236,8 +2246,8 @@ relationship_initiation_intention_action
 ## T36-F05 参与者档案按需读取（2026-07-22）
 
 - `GET /api/research/participants`：最小列表，支持`q/page/page_size`，返回匿名ID、活动数量、`total/has_more`，不返回填写原文。
-- `GET /api/research/participants/<user_id>`：档案摘要，返回参与者匿名信息、最近报名/分配状态、十个模块目录和数量，不返回各模块长文本。
-- `GET /api/research/participants/<user_id>/modules/<module_key>`：单模块分页。`module_key`为`assessments/measurements/diaries/training/stage_reports/relationship_pilot/project_tests/messages/human_support/timeline`；支持`page/page_size/date_from/date_to/type/status/batch`。
+- `GET /api/research/participants/<user_id>`：档案摘要，返回参与者匿名信息、最近报名/分配状态、十一个模块目录和数量，不返回各模块长文本。
+- `GET /api/research/participants/<user_id>/modules/<module_key>`：单模块分页。`module_key`为`assessments/measurements/diaries/training/stage_reports/relationship_pilot/project_tests/messages/human_support/exploratory_analysis/timeline`；支持`page/page_size/date_from/date_to/type/status/batch`。`exploratory_analysis` 返回与参与者本人结果页同源的结构化情绪分布和场景—情绪共现摘要，不返回原文、他人数据、中心性或关系质量判断。
 - 三个接口都执行角色、研究授权和对象范围校验；敏感模块查看写审计。错误仍使用统一包络和`request_id`。
 # T36-F06 研究反馈与消息交付（2026-07-24）
 
@@ -2328,6 +2338,7 @@ relationship_initiation_intention_action
 ## 2026-07-27：T38-F03证据账本
 
 - `GET/POST /api/therapeutic-assessment/cases/<case_id>/evidence`：按对象范围读取或创建O/P/H/U证据项。
+- `GET`响应中的`summary`只汇总当前调用者已获准看到的线索数量、类型、明确来源和未知项；不返回新增原文，不生成总分、诊断或疗效判断。
 - `POST /api/therapeutic-assessment/evidence/<evidence_id>/review`：仅督导/管理员复核H，要求版本和幂等键。
 - 参与者只能写O/U；AI/系统来源不能写H；参与者读取时过滤未人工复核H和未授权可见范围。
 
@@ -2362,6 +2373,7 @@ relationship_initiation_intention_action
 ## 2026-07-27：T38-F08研究者证据工作台
 
 - `GET /api/therapeutic-assessment/cases/<case_id>/researcher-workbench`：仅对象范围内研究者、督导或管理员读取；支持`kind`、`review_status`、`visibility`、`page`和`page_size`。
+- `GET`响应中的`evidence_summary`按当前议题全部已授权证据生成，不随列表筛选或分页变化；除独立来源数外，同时返回有来源线索数、来源覆盖率、未复核假设数、未知项和下一步核对。
 - `PUT /api/therapeutic-assessment/cases/<case_id>/researcher-workbench/draft`：保存内部记录、参与者可见草稿和筛选状态；必须携带`expected_version`和`Idempotency-Key`。
 - 工作台读取会写敏感访问审计；草稿保存使用case、操作者、版本和幂等键防止重复与覆盖。
 - 参与者读取case时不返回内部记录、内部讨论或未发送草稿；正式反馈仍走独立起草与复核接口。
@@ -2425,7 +2437,8 @@ relationship_initiation_intention_action
 
 - `GET /api/ai-qa/knowledge`：研究者、督导和管理员读取已索引文档、切片数量及网页隔离候选的元数据；不返回候选网页正文。
 - `POST /api/ai-qa/knowledge/rebuild`：仅督导和管理员可从内容治理库重建索引。只有权利状态为`owned/licensed/public_domain/permission_recorded`、四类审核均通过、发布版本和发布记录均有效且未过期的内容可进入索引。
-- `GET /api/ai-qa/knowledge/retrieve`：内部角色使用`query`、`method=bm25|vector|hybrid`和`audience`比较检索。每条引用返回文档版本、发布版本、切片ID、字段位置、来源、权利、审核、有效期和分项分数。
+- `GET /api/ai-qa/knowledge/retrieve`：内部角色使用`query`、`method=bm25|vector|hybrid`和`audience`比较检索。每条引用返回文档版本、发布版本、切片ID、字段位置、来源、权利、审核、有效期和分项分数；`retrieval_summary`补充已匹配/未匹配查询线索数、`none|partial|complete`覆盖状态、独立来源数和下一步核对说明，这些数值不代表证据质量或临床结论。
+- `GET /api/ai-qa/knowledge`：`inventory_summary`区分当前有效、已撤回、已过期文档和隔离候选，历史撤回内容不计入当前索引份数。
 - `POST /api/ai-qa/knowledge/candidates`：仅督导和管理员登记HTTPS网页的标题、URL和SHA-256元数据；必须提供`Idempotency-Key`。接口拒绝正文、HTML和原始文本字段，候选固定进入`quarantined`且`indexed=false`。
 - `POST /api/ai-qa/knowledge/evaluation/run`：内部角色运行固定合成检索案例，记录召回率、引用正确率、无证据正确率和案例通过率；工程阈值通过不等于发布批准。
 - 任何检索都会先同步发布状态；材料暂停、撤回、替换或过期后立即不再返回。无足够证据时`citations=[]`且`evidence_status=insufficient`。

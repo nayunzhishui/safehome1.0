@@ -558,6 +558,52 @@ def _knowledge_snapshot(rows: list[dict]) -> str:
     )
 
 
+def _retrieval_summary(
+    query_terms: list[str],
+    citations: list[dict],
+    matched_terms: set[str] | None = None,
+) -> dict:
+    unique_query_terms = set(query_terms)
+    matched = matched_terms or set()
+    query_term_count = len(unique_query_terms)
+    matched_count = len(unique_query_terms & matched)
+    source_count = len(
+        {str(item.get("source_ref") or "") for item in citations if item.get("source_ref")}
+    )
+    result_count = len(citations)
+    coverage_ratio = round(matched_count / query_term_count, 4) if query_term_count else 0.0
+    unmatched_count = max(0, query_term_count - matched_count)
+    coverage_state = (
+        "none"
+        if matched_count == 0
+        else "complete"
+        if matched_count == query_term_count
+        else "partial"
+    )
+    if result_count:
+        coverage_text = "完整" if coverage_state == "complete" else "部分"
+        summary_text = (
+            f"返回 {result_count} 份已审核内容、{source_count} 个独立来源；"
+            f"{coverage_text}覆盖 {matched_count}/{query_term_count} 个查询线索。"
+        )
+        next_check_text = "先核对来源版本、适用范围和上下文，再用于研究判断。"
+    else:
+        summary_text = "没有匹配到已审核来源。"
+        next_check_text = "缩短问题或换用更具体的情境与动作关键词后再查。"
+    return {
+        "result_count": result_count,
+        "source_count": source_count,
+        "query_term_count": query_term_count,
+        "matched_query_term_count": matched_count,
+        "unmatched_query_term_count": unmatched_count,
+        "coverage_ratio": coverage_ratio,
+        "coverage_state": coverage_state,
+        "summary_text": summary_text,
+        "next_check_text": next_check_text,
+        "boundary_notice": "覆盖率和排序分只描述本次检索，不代表证据质量或临床结论。",
+    }
+
+
 def retrieve_published_content(
     query: str,
     limit: int = 4,
@@ -591,6 +637,7 @@ def retrieve_published_content(
     if not rows or not query_terms:
         return {
             "citations": [],
+            "retrieval_summary": _retrieval_summary(query_terms, []),
             "knowledge_snapshot_hash": snapshot_hash,
             "only_published": True,
             "retrieval_method": method,
@@ -643,6 +690,7 @@ def retrieve_published_content(
     if not scored:
         return {
             "citations": [],
+            "retrieval_summary": _retrieval_summary(query_terms, []),
             "knowledge_snapshot_hash": snapshot_hash,
             "only_published": True,
             "retrieval_method": method,
@@ -669,12 +717,14 @@ def retrieve_published_content(
     )
 
     citations = []
+    matched_query_terms: set[str] = set()
     seen_documents = set()
     for score in scored:
         item = score["item"]
         if item["document_id"] in seen_documents:
             continue
         seen_documents.add(item["document_id"])
+        matched_query_terms.update(set(query_terms) & set(item["terms"]))
         citations.append(
             {
                 "content_id": item["item_id"],
@@ -710,6 +760,7 @@ def retrieve_published_content(
             break
     return {
         "citations": citations,
+        "retrieval_summary": _retrieval_summary(query_terms, citations, matched_query_terms),
         "knowledge_snapshot_hash": snapshot_hash,
         "only_published": True,
         "retrieval_method": method,
@@ -750,9 +801,25 @@ def list_knowledge() -> dict:
         )
     for candidate in candidates:
         candidate["indexed"] = False
+    inventory_summary = {
+        "document_count": len(documents),
+        "active_document_count": sum(1 for item in documents if item.get("status") == "active"),
+        "withdrawn_document_count": sum(1 for item in documents if item.get("status") == "withdrawn"),
+        "expired_document_count": sum(1 for item in documents if item.get("status") == "expired"),
+        "active_chunk_count": sum(
+            int(item.get("chunk_count") or 0)
+            for item in documents
+            if item.get("status") == "active"
+        ),
+        "candidate_count": len(candidates),
+        "quarantined_candidate_count": sum(
+            1 for item in candidates if item.get("status") == "quarantined"
+        ),
+    }
     return {
         "documents": documents,
         "candidates": candidates,
+        "inventory_summary": inventory_summary,
         "candidate_content_stored": False,
         "web_candidate_auto_approval": False,
     }

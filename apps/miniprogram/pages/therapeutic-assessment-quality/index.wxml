@@ -5,7 +5,6 @@
 
   <view wx:if="{{!loading && !runtime && !productionGate && !cases.length && !reviews.length && !incidents.length && !errorMessage}}" class="state-card">
     <text class="state-title">当前没有可处理的质量记录</text>
-    <text class="state-copy">有可查看的评估或更正记录后，会显示在这里。</text>
   </view>
 
   <view wx:if="{{runtime}}" class="runtime-card {{runtime.paused ? 'runtime-card--paused' : ''}}">

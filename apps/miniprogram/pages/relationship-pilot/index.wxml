@@ -1,6 +1,6 @@
 <view class="safe-page relationship-pilot-page">
   <view class="pilot-hero">
-    <text class="pilot-title">一次只走好当前这一步</text>
+    <text class="pilot-title">关系探索试点</text>
   </view>
 
   <view class="pilot-boundary" role="note">从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。</view>
@@ -53,7 +53,6 @@
 
     <view class="pilot-section secondary-section">
       <text class="section-heading">其它入口</text>
-      <text class="secondary-hint">不必一次完成，可以随时回来。</text>
       <button wx:for="{{secondaryActions}}" wx:key="key" class="secondary-row" data-action="{{item.key}}" bindtap="runSecondaryAction">
         <view><text class="secondary-title">{{item.label}}</text><text class="secondary-description">{{item.description}}</text></view>
         <text class="secondary-arrow">›</text>

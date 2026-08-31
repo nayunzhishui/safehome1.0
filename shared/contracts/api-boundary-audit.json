@@ -51,19 +51,19 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:314",
+      "location": "backend/routes/assessments.py:327",
       "handler": "list_assessment_results"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:361",
+      "location": "backend/routes/assessments.py:374",
       "handler": "get_assessment_result"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/assessments.py:378",
+      "location": "backend/routes/assessments.py:391",
       "handler": "get_assessment_profile_position"
     },
     {
@@ -105,25 +105,25 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:887",
+      "location": "backend/routes/auth.py:925",
       "handler": "change_password"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:943",
+      "location": "backend/routes/auth.py:981",
       "handler": "admin_unlock_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:992",
+      "location": "backend/routes/auth.py:1030",
       "handler": "admin_verify_account"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/auth.py:1006",
+      "location": "backend/routes/auth.py:1044",
       "handler": "admin_revoke_account"
     },
     {
@@ -201,31 +201,31 @@
     {
       "severity": "warning",
       "rule": "possible_n_plus_one",
-      "location": "backend/routes/family.py:56",
+      "location": "backend/routes/family.py:58",
       "handler": "create_bind_code"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/family.py:104",
+      "location": "backend/routes/family.py:135",
       "handler": "bind_student"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/family.py:209",
+      "location": "backend/routes/family.py:232",
       "handler": "members"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/family.py:247",
+      "location": "backend/routes/family.py:270",
       "handler": "unbind"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/feedback.py:102",
+      "location": "backend/routes/feedback.py:103",
       "handler": "generate"
     },
     {
@@ -273,79 +273,79 @@
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/profile.py:463",
+      "location": "backend/routes/profile.py:517",
       "handler": "list_profile_results"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/profile.py:505",
+      "location": "backend/routes/profile.py:559",
       "handler": "get_profile_result"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/profile.py:546",
-      "handler": "get_profile_visuals"
-    },
-    {
-      "severity": "warning",
-      "rule": "possible_unbounded_list",
-      "location": "backend/routes/profile.py:546",
-      "handler": "get_profile_visuals"
-    },
-    {
-      "severity": "warning",
-      "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/profile.py:579",
-      "handler": "list_profile_followups"
-    },
-    {
-      "severity": "warning",
-      "rule": "possible_unbounded_list",
-      "location": "backend/routes/profile.py:579",
-      "handler": "list_profile_followups"
-    },
-    {
-      "severity": "warning",
-      "rule": "select_star_in_http_adapter",
       "location": "backend/routes/profile.py:600",
+      "handler": "get_profile_visuals"
+    },
+    {
+      "severity": "warning",
+      "rule": "possible_unbounded_list",
+      "location": "backend/routes/profile.py:600",
+      "handler": "get_profile_visuals"
+    },
+    {
+      "severity": "warning",
+      "rule": "select_star_in_http_adapter",
+      "location": "backend/routes/profile.py:633",
+      "handler": "list_profile_followups"
+    },
+    {
+      "severity": "warning",
+      "rule": "possible_unbounded_list",
+      "location": "backend/routes/profile.py:633",
+      "handler": "list_profile_followups"
+    },
+    {
+      "severity": "warning",
+      "rule": "select_star_in_http_adapter",
+      "location": "backend/routes/profile.py:654",
       "handler": "create_profile_followup"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/profile.py:679",
+      "location": "backend/routes/profile.py:733",
       "handler": "list_profile_sandplay"
     },
     {
       "severity": "warning",
       "rule": "possible_unbounded_list",
-      "location": "backend/routes/profile.py:679",
+      "location": "backend/routes/profile.py:733",
       "handler": "list_profile_sandplay"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/profile.py:704",
+      "location": "backend/routes/profile.py:758",
       "handler": "create_profile_sandplay"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/profile.py:791",
+      "location": "backend/routes/profile.py:845",
       "handler": "list_profile_reviews"
     },
     {
       "severity": "warning",
       "rule": "possible_unbounded_list",
-      "location": "backend/routes/profile.py:791",
+      "location": "backend/routes/profile.py:845",
       "handler": "list_profile_reviews"
     },
     {
       "severity": "warning",
       "rule": "select_star_in_http_adapter",
-      "location": "backend/routes/profile.py:813",
+      "location": "backend/routes/profile.py:867",
       "handler": "create_profile_review"
     },
     {

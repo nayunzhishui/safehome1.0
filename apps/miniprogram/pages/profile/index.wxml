@@ -1,7 +1,7 @@
 <view class="safe-page safe-page--with-tabbar profile-page">
   <view class="profile-heading">我的</view>
   <view class="user-card safe-card">
-    <view class="avatar">家</view>
+    <view class="avatar" aria-hidden="true"></view>
     <view class="user-copy">
       <text class="user-name">{{user.nickname}}</text>
       <text class="user-state">{{user.loginState}}</text>
@@ -122,7 +122,4 @@
     </view>
   </view>
 
-  <view class="safe-section">
-    <bottom-tip-card text="安心陪伴，先照顾好自己，再慢慢陪孩子往前走。" />
-  </view>
 </view>
