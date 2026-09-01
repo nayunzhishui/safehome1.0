@@ -6,7 +6,8 @@
 - [x] 推送并核对远端合并提交 `99fd1efe87630b3f3cb3e36d5e0b10d89a82215a`。
 - [x] 运行 `33499815611` 证明 F22-B 扫描与失败关闭自检通过，并定位旧 GHCR 包权限阻塞。
 - [x] 提交仓库专属 GHCR 包 `safehome1-rc0810` 配置；运行 `33500568071` 已成功推送镜像并上传 registry 证据。
-- [ ] 删除测评页已不存在测试按钮对应的过时 WXML 处理规则，并以新 SHA 重跑最终制品链。
+- [x] 删除测评页已不存在测试按钮对应的过时 WXML 处理规则；定向生产包测试通过。
+- [ ] 修正 Trivy config digest 与 OCI index digest 的绑定规则，并以新 SHA 重跑最终制品链。
 - [ ] 对最终 SHA 生成镜像 digest、Trivy 扫描、CycloneDX SBOM、provenance、F25-B/F26 artifact 和最终云托管 ZIP。
 - [ ] 按备份、隔离恢复、真实 migration head、MySQL CA/TLS、环境变量、零流量候选顺序补齐生产现场证据；全部通过前不切流。
 

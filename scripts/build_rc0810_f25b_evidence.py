@@ -308,12 +308,13 @@ def load_registry_evidence(commit: str) -> dict[str, Any] | None:
     digest = metadata.get("containerimage.digest")
     tag = f"{REGISTRY_IMAGE}:rc0810-{commit[:8]}"
     immutable_ref = f"{REGISTRY_IMAGE}@{digest}"
+    image_id = scan.get("Metadata", {}).get("ImageID")
     if (
         not re.fullmatch(r"sha256:[0-9a-f]{64}", str(digest or ""))
         or metadata.get("image.name") != tag
         or metadata.get("containerimage.descriptor", {}).get("digest") != digest
         or scan.get("ArtifactName") != immutable_ref
-        or scan.get("Metadata", {}).get("ImageID") != digest
+        or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(image_id or ""))
         or immutable_ref not in scan.get("Metadata", {}).get("RepoDigests", [])
     ):
         raise EvidenceError("registry metadata, scan and digest are not bound")
