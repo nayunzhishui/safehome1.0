@@ -71,7 +71,6 @@
   },
   "production_template_handlers": {
     "pages/home/index.wxml": ["openIntegrationTest"],
-    "pages/assessment/index.wxml": ["openIntegrationTest"],
     "pages/profile/index.wxml": ["goResearcher"],
     "pages/therapeutic-assessment/index.wxml": ["openQualityRecord"]
   },
