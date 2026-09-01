@@ -22,11 +22,6 @@
     </view>
   </view>
 
-  <view class="today-card">
-    <text class="today-title">今天先练这一小步</text>
-    <text class="today-text">先按下面 3 个小动作走一遍。做不到完整也没关系，能停一下就算开始了。</text>
-  </view>
-
   <view class="safe-section">
     <section-title title="练习步骤" />
     <view class="step-list">
@@ -68,7 +63,4 @@
     </view>
   </view>
 
-  <view class="safe-section">
-    <bottom-tip-card text="一次小练习，也是在给关系留一点空间。" />
-  </view>
 </view>

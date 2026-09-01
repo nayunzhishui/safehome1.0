@@ -4,7 +4,7 @@ import json
 
 from flask import Blueprint, current_app, request
 
-from database import get_connection, json_loads, load_content_json, row_to_dict, rows_to_dicts
+from database import get_connection, json_loads, load_content_json, row_to_dict, rows_to_dicts, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, get_current_actor, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int, require_fields
 from services.assessment_execution_service import (
@@ -16,6 +16,7 @@ from services.assessment_profile_position_store import backfill_profile_position
 from services.assessment_profile_service import ProfilePositionUnavailable, build_assessment_profile_position
 from services.idempotency_service import public_idempotent_resource
 from services.psychological_content_governance_service import production_worksheet_allowed
+from services.participant_exploratory_analysis_service import build_participant_exploratory_analysis
 
 bp = Blueprint("assessments", __name__, url_prefix="/api")
 
@@ -427,3 +428,35 @@ def get_assessment_profile_position(result_id: str):
             return ok({"available": False, "reason": exc.reason})
 
     return ok(position)
+
+
+@bp.get("/assessment-results/<result_id>/exploratory-analysis")
+def get_assessment_exploratory_analysis(result_id: str):
+    try:
+        user_id = resolve_actor_user_id(request.args.get("user_id"))
+    except AuthError as exc:
+        return auth_error_response(exc)
+
+    with get_connection() as conn:
+        result = conn.execute(
+            "SELECT id FROM assessment_results WHERE id = ? AND user_id = ?",
+            (result_id, user_id),
+        ).fetchone()
+        if result is None:
+            return fail("not_found", "没有找到对应的测一测结果", status=404)
+        payload = build_participant_exploratory_analysis(conn, user_id)
+        write_audit_log(
+            conn,
+            "participant_exploratory_analysis_viewed",
+            user_id,
+            "assessment_result",
+            result_id,
+            {
+                "availability": payload["availability"],
+                "record_count": payload["record_count"],
+                "raw_text_included": False,
+                "other_participant_data_included": False,
+            },
+        )
+        conn.commit()
+    return ok(payload)

@@ -202,6 +202,15 @@ def test_rebuild_only_indexes_authorized_reviewed_active_content(
     assert listing["documents"][0]["rights_status"] == "owned"
     assert listing["documents"][0]["review_status"] == "approved"
     assert listing["documents"][0]["chunk_count"] >= 3
+    assert listing["inventory_summary"] == {
+        "document_count": 1,
+        "active_document_count": 1,
+        "withdrawn_document_count": 0,
+        "expired_document_count": 0,
+        "active_chunk_count": listing["documents"][0]["chunk_count"],
+        "candidate_count": 0,
+        "quarantined_candidate_count": 0,
+    }
 
 
 def test_bm25_vector_and_hybrid_return_traceable_citation(
@@ -240,6 +249,16 @@ def test_bm25_vector_and_hybrid_return_traceable_citation(
             "rerank",
             "final",
         }
+        summary = result["retrieval_summary"]
+        assert summary["result_count"] == 1
+        assert summary["source_count"] == 1
+        assert 0 < summary["matched_query_term_count"] <= summary["query_term_count"]
+        assert 0 < summary["coverage_ratio"] <= 1
+        assert summary["coverage_state"] in {"partial", "complete"}
+        assert summary["unmatched_query_term_count"] == (
+            summary["query_term_count"] - summary["matched_query_term_count"]
+        )
+        assert "已审核" in summary["summary_text"]
 
 
 def test_no_evidence_and_withdrawal_propagate_immediately(
@@ -262,6 +281,7 @@ def test_no_evidence_and_withdrawal_propagate_immediately(
     ).get_json()["data"]
     assert unknown["citations"] == []
     assert unknown["evidence_status"] == "insufficient"
+    assert unknown["retrieval_summary"]["coverage_state"] == "none"
 
     with app.app_context():
         database = importlib.import_module("database")
@@ -289,6 +309,18 @@ def test_no_evidence_and_withdrawal_propagate_immediately(
         "/api/ai-qa/knowledge", headers=headers["researcher-c04"]
     ).get_json()["data"]
     assert listing["documents"][0]["status"] == "withdrawn"
+    assert listing["inventory_summary"]["active_document_count"] == 0
+    assert listing["inventory_summary"]["withdrawn_document_count"] == 1
+
+
+def test_miniprogram_knowledge_view_exposes_scope_validity_and_retrieval_summary():
+    page_js = (PROJECT_ROOT / "apps/miniprogram/pages/researcher-dashboard/index.js").read_text(encoding="utf-8")
+    page_wxml = (PROJECT_ROOT / "apps/miniprogram/pages/researcher-dashboard/index.wxml").read_text(encoding="utf-8")
+    assert "activeDocumentCount" in page_js
+    assert "retrieval_summary" in page_js
+    assert "retrieval_summary" in page_wxml
+    assert "audiencesText" in page_wxml
+    assert "validityText" in page_wxml
 
 
 def test_expired_content_and_public_candidate_never_enter_index(

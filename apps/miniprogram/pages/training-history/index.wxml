@@ -1,7 +1,7 @@
 <view class="safe-page history-page" role="main" aria-label="训练记录">
   <view class="history-head">
     <view>
-      <text class="page-title">看见已经完成的小练习</text>
+      <text class="page-title">训练记录</text>
     </view>
     <view class="total-badge">
       <text class="total-value">{{total}}</text>
@@ -43,7 +43,6 @@
 
   <view wx:else class="state-card">
     <text class="state-title">还没有训练记录</text>
-    <text class="state-text">完成一张训练卡并打卡后，记录会出现在这里。</text>
     <button class="safe-primary-button state-action" bindtap="goTraining">去训练中心</button>
   </view>
 </view>

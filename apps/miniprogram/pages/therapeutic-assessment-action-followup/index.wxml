@@ -4,7 +4,7 @@
     <text class="safe-h1">回看这次小行动</text>
   </view>
 
-  <page-state wx:if="{{loading}}" kind="loading" title="正在读取行动" description="请稍候。" />
+  <page-state wx:if="{{loading}}" kind="loading" title="正在读取行动" />
   <page-state wx:elif="{{error}}" kind="error" title="还需要处理" description="{{error}}" action-label="重新读取" bindaction="load" />
 
   <view wx:elif="{{action}}" class="action-card">

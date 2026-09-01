@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
   assessments: "/api/assessments",
   assessmentResults: "/api/assessment-results",
   assessmentProfilePositionBase: "/api/assessment-results/:id/profile-position",
+  assessmentExploratoryAnalysisBase: "/api/assessment-results/:id/exploratory-analysis",
   consent: "/api/consent",
   consentAnnotationBase: "/api/consent/:id/annotations",
   studentAssessment: "/api/student-assessment",

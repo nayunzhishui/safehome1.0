@@ -139,6 +139,30 @@ function buildRiskSummary(result) {
   };
 }
 
+function buildExploratoryAnalysisView(payload) {
+  if (!payload) return null;
+  const statusText = {
+    available: "已生成近期线索",
+    insufficient: "记录还不够",
+    withheld: "已转人工关注",
+    ineligible: "当前阶段未开放",
+  }[payload.availability] || "暂不可用";
+  return {
+    ...payload,
+    statusText,
+    available: payload.availability === "available",
+    affectItems: ((payload.affect && payload.affect.items) || []).map((item) => ({
+      ...item,
+      summary: `${item.count} 次 · 平均强度 ${item.average_intensity}`,
+    })),
+    interactionEdges: ((payload.interaction_network && payload.interaction_network.edges) || []).map((item) => ({
+      ...item,
+      key: `${item.source}:${item.target}`,
+      summary: `${item.scene} × ${item.emotion} · ${item.support} 次`,
+    })),
+  };
+}
+
 function normalizePlotPosition(value, min, max, invert = false) {
   if (min === max) return 50;
   const ratio = (value - min) / (max - min);
@@ -425,6 +449,7 @@ Page({
     scaleVisualization: null,
     riskSummary: null,
     profilePosition: null,
+    exploratoryAnalysis: null,
   },
 
   onLoad(options) {
@@ -443,10 +468,11 @@ Page({
   async loadResult() {
     this.setData({ loading: true, errorMessage: "" });
     try {
-      const [result, worksheet, cards] = await Promise.all([
+      const [result, worksheet, cards, exploratoryPayload] = await Promise.all([
         api.getAssessmentResult(this.data.resultId),
         this.data.worksheetId ? api.getAssessment(this.data.worksheetId).catch(() => null) : Promise.resolve(null),
         api.listCards().catch(() => ({ items: [] })),
+        api.getAssessmentExploratoryAnalysis(this.data.resultId).catch(() => null),
       ]);
       const profileSummary = buildProfileSummary(result);
       let profilePosition = null;
@@ -459,6 +485,7 @@ Page({
       const sourceNotice = buildSourceNotice(worksheet, profileSummary);
       const riskSummary = buildRiskSummary(result);
       const trainingRecommendation = buildTrainingRecommendation(worksheet, profileSummary, cards);
+      const exploratoryAnalysis = buildExploratoryAnalysisView(exploratoryPayload);
       saveLatestTrainingRecommendation(trainingRecommendation);
       this.setData(
         {
@@ -478,6 +505,7 @@ Page({
           trainingRecommendation,
           riskSummary,
           profilePosition,
+          exploratoryAnalysis,
         },
         () => {
           this.drawProfilePositionCharts();

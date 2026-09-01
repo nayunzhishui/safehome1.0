@@ -87,7 +87,4 @@
     <button class="safe-outline-button home-button" bindtap="goHome">回到首页</button>
   </view>
 
-  <view class="safe-section">
-    <bottom-tip-card text="先看见一个小片段，再选择一个小练习。" />
-  </view>
 </view>

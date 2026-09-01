@@ -107,6 +107,7 @@ const API_ENDPOINTS = {
   assessments: "/api/assessments",
   assessmentResults: "/api/assessment-results",
   assessmentProfilePositionBase: "/api/assessment-results/:id/profile-position",
+  assessmentExploratoryAnalysisBase: "/api/assessment-results/:id/exploratory-analysis",
   consent: "/api/consent",
   consentAnnotationBase: "/api/consent/:id/annotations",
   profile: "/api/profile",
@@ -1039,6 +1040,10 @@ function createSafeHomeApi(options = {}) {
       return request(`${endpointWithId(API_ENDPOINTS.assessmentProfilePositionBase, id)}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
     },
 
+    getAssessmentExploratoryAnalysis(id, params = {}) {
+      return request(`${endpointWithId(API_ENDPOINTS.assessmentExploratoryAnalysisBase, id)}${queryString(withDefaultUser(params))}`, { requiresAuth: true });
+    },
+
     createRelationshipEnrollment(data) {
       return request(`${API_ENDPOINTS.relationshipPilot}/enrollments`, {
         method: "POST",
@@ -1910,6 +1915,10 @@ function createSafeHomeApi(options = {}) {
 
     getOfflineModelReleaseGate() {
       return request(`${API_ENDPOINTS.offlineBenchmarks}/release-gate`, { requiresAuth: true });
+    },
+
+    listOfflineBenchmarkRuns() {
+      return request(`${API_ENDPOINTS.offlineBenchmarks}/runs`, { requiresAuth: true });
     },
 
     getGroupNetworkAnalysisPolicy() {

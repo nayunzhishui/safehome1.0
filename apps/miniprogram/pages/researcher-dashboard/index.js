@@ -30,13 +30,33 @@ const DRAFT_PREFIX = "researcher_workspace_draft_v1:";
 const MODULE_PRIMARY_FIELDS = ["title", "worksheet_title", "scene", "card_id", "message_type", "task_type", "status", "created_at"];
 
 function moduleRows(items) {
-  return (items || []).map((item) => ({
-    ...item,
-    displayLines: MODULE_PRIMARY_FIELDS
-      .filter((key) => item[key] !== undefined && item[key] !== null && item[key] !== "")
-      .slice(0, 4)
-      .map((key) => `${key === "created_at" ? "时间" : key}：${String(item[key]).slice(0, 180)}`),
-  }));
+  return (items || []).map((item) => {
+    if (item.schema === "safehome.participant-exploratory-analysis.v1") {
+      return {
+        ...item,
+        exploratoryAnalysis: true,
+        statusText: {
+          available: "可查看",
+          insufficient: "记录不足",
+          withheld: "暂缓并转人工关注",
+          ineligible: "当前阶段未开放",
+        }[item.availability] || "暂不可用",
+        affectSummary: item.affect && item.affect.summary_text ? item.affect.summary_text : "",
+        affectNextCheck: item.affect && item.affect.next_check_text ? item.affect.next_check_text : "",
+        affectRows: ((item.affect && item.affect.items) || []).map((row) => `${row.label} · ${row.count} 次 · 平均强度 ${row.average_intensity}`),
+        networkSummary: item.interaction_network && item.interaction_network.summary ? item.interaction_network.summary.summary_text : "",
+        networkNextCheck: item.interaction_network && item.interaction_network.summary ? item.interaction_network.summary.next_check_text : "",
+        networkRows: ((item.interaction_network && item.interaction_network.edges) || []).map((row) => `${row.scene} × ${row.emotion} · ${row.support} 次`),
+      };
+    }
+    return {
+      ...item,
+      displayLines: MODULE_PRIMARY_FIELDS
+        .filter((key) => item[key] !== undefined && item[key] !== null && item[key] !== "")
+        .slice(0, 4)
+        .map((key) => `${key === "created_at" ? "时间" : key}：${String(item[key]).slice(0, 180)}`),
+    };
+  });
 }
 
 function emptyOperations() {
@@ -123,6 +143,101 @@ function normalizeDetail(detail) {
   };
 }
 
+const KNOWLEDGE_METHODS = ["hybrid", "bm25", "vector"];
+const KNOWLEDGE_METHOD_OPTIONS = ["综合检索", "关键词检索", "向量检索"];
+const AFFECT_REVIEW_REASON_LABELS = {
+  text_too_short: "文本线索过短",
+  out_of_domain_no_emotion_cue: "缺少情绪线索",
+  conflicting_emotion_cues: "情绪线索冲突",
+  low_model_confidence: "模型置信不足",
+};
+
+function normalizeKnowledgeInventory(payload) {
+  const rawDocuments = payload && Array.isArray(payload.documents) ? payload.documents : [];
+  const rawCandidates = payload && Array.isArray(payload.candidates) ? payload.candidates : [];
+  const documents = rawDocuments.map((item) => ({
+    ...item,
+    displayTitle: item.title || item.item_id || "已审核内容",
+    statusText: item.status === "withdrawn" ? "已撤回" : (item.review_status === "approved" ? "已审核" : "待核对"),
+    audiencesText: Array.isArray(item.audiences) && item.audiences.length ? item.audiences.join("、") : "项目范围",
+    sourceText: item.source_version || item.version || "已登记来源",
+  }));
+  const inventorySummary = (payload && payload.inventory_summary) || {};
+  const activeDocumentCount = Number(
+    inventorySummary.active_document_count !== undefined
+      ? inventorySummary.active_document_count
+      : documents.filter((item) => item.status === "active").length,
+  );
+  return {
+    ...(payload || {}),
+    documents,
+    documentCount: documents.length,
+    activeDocumentCount,
+    withdrawnDocumentCount: Number(inventorySummary.withdrawn_document_count || 0),
+    candidateCount: rawCandidates.length,
+  };
+}
+
+function normalizeKnowledgeResult(payload) {
+  const rawCitations = payload && Array.isArray(payload.citations) ? payload.citations : [];
+  const citations = rawCitations.map((item) => ({
+    ...item,
+    sourceText: item.source_ref || "项目来源未标注",
+    statusText: item.review_status === "approved" ? "已审核" : "待核对",
+    scoreText: item.scores && item.scores.final !== undefined ? `排序参考 ${Number(item.scores.final).toFixed(3)}` : "已返回来源",
+    audiencesText: Array.isArray(item.audiences) && item.audiences.length ? item.audiences.join("、") : "适用范围未标注",
+    validityText: item.expires_at
+      ? `有效至 ${String(item.expires_at).slice(0, 10)}`
+      : (item.valid_from ? `自 ${String(item.valid_from).slice(0, 10)} 生效` : "有效期未标注"),
+  }));
+  return {
+    ...(payload || {}),
+    citations,
+    retrieval_summary: payload && payload.retrieval_summary ? payload.retrieval_summary : null,
+    evidenceStatusText: citations.length ? "找到可核对来源" : "证据不足",
+  };
+}
+
+function normalizeBenchmarkRuns(payload) {
+  const statuses = {
+    engineering_threshold_passed: "工程阈值通过",
+    engineering_review_required: "需要工程复核",
+  };
+  const runs = payload && Array.isArray(payload.items) ? payload.items : [];
+  return runs.slice(0, 5).map((item) => {
+    const metrics = item.metrics || {};
+    const isNetwork = String(item.benchmark_type || "").includes("network");
+    const analysisSummary = metrics.analysis_summary || {};
+    const boundaryRange = analysisSummary.boundary_density_range || {};
+    const missingnessRange = analysisSummary.missingness_density_range || {};
+    const hasDensityRanges = [
+      boundaryRange.minimum,
+      boundaryRange.maximum,
+      missingnessRange.minimum,
+      missingnessRange.maximum,
+    ].every((value) => value !== null && value !== undefined);
+    const metricSummary = isNetwork
+      ? `群体网络 ${metrics.suppressed ? "小样本已抑制" : "已生成聚合摘要"}`
+      : `情感候选 ${metrics.passed ? "通过" : "待核对"}`;
+    return {
+      ...item,
+      isNetwork,
+      benchmarkTypeText: isNetwork ? "群体网络描述" : "情感模型候选",
+      statusText: statuses[item.status] || "待核对",
+      evidenceText: item.evidence_level === "synthetic_engineering_only" ? "合成工程数据" : "受控证据",
+      algorithmText: item.algorithm_version || "未标注版本",
+      metricSummary,
+      networkSummaryText: isNetwork ? (analysisSummary.summary_text || metricSummary) : "",
+      networkDetailText: isNetwork && hasDensityRanges
+        ? `边界密度 ${boundaryRange.minimum}—${boundaryRange.maximum} · 缺失敏感性 ${missingnessRange.minimum}—${missingnessRange.maximum}`
+        : "",
+      networkNextCheck: isNetwork ? (analysisSummary.next_check_text || "") : "",
+      rawTextText: item.raw_text_included ? "含原文（不应出现）" : "不含原文",
+      createdText: String(item.created_at || "").slice(0, 16).replace("T", " "),
+    };
+  });
+}
+
 Page({
   data: {
     loading: true,
@@ -176,16 +291,27 @@ Page({
     sendingFeedback: false,
     developmentFullAccess: false,
     capabilityScope: null,
-      analysisJobs: [],
+    analysisJobs: [],
     analysisCatalog: null,
     analysisResilience: null,
-      analysisLoading: false,
+    analysisLoading: false,
     analysisError: "",
     affectModelVersions: [],
     affectShadowRuns: [],
     affectShadowReviewCount: 0,
     affectMonitoring: null,
     affectReleaseGate: null,
+    knowledgeInventory: null,
+    knowledgeDocumentCount: 0,
+    knowledgeQuery: "",
+    knowledgeMethod: "hybrid",
+    knowledgeMethodText: KNOWLEDGE_METHOD_OPTIONS[0],
+    knowledgeMethodOptions: KNOWLEDGE_METHOD_OPTIONS,
+    knowledgeResult: null,
+    knowledgeLoading: false,
+    knowledgeError: "",
+    networkPolicy: null,
+    offlineBenchmarkRuns: [],
     assessmentLoading: false,
     assessmentError: "",
     assessmentCases: [],
@@ -319,6 +445,7 @@ Page({
       this.setData({
         assessmentWorkbench: {
           ...result,
+          evidence_summary: result.evidence_summary || null,
           case: {
             ...result.case,
             sharedScopeText: (result.case.shared_scope || []).join("、"),
@@ -395,7 +522,8 @@ Page({
   async loadAnalysisJobs() {
     this.setData({ analysisLoading: true, analysisError: "" });
     try {
-      const [result, catalog, modelVersions, shadowRuns, shadowQueue, affectMonitoring, affectReleaseGate] = await Promise.all([
+      const optional = (promise) => promise.catch(() => null);
+      const [result, catalog, modelVersions, shadowRuns, shadowQueue, affectMonitoring, affectReleaseGate, knowledgeInventoryResult, networkPolicyResult, benchmarkRunsResult] = await Promise.all([
         api.getResearchAnalysisJobs({ limit: 30 }),
         api.getResearchAnalysisCatalog(),
         api.listOfflineModelVersions(),
@@ -403,7 +531,11 @@ Page({
         api.listOfflineModelReviewQueue(),
         api.getOfflineModelMonitoring(),
         api.getOfflineModelReleaseGate(),
+        optional(api.getAiKnowledgeInventory()),
+        optional(api.getGroupNetworkAnalysisPolicy()),
+        optional(api.listOfflineBenchmarkRuns()),
       ]);
+      const knowledgeInventory = knowledgeInventoryResult ? normalizeKnowledgeInventory(knowledgeInventoryResult) : null;
       const labels = {
         affect_aggregate: "聚合情感线索",
         semantic_network: "语义网络",
@@ -435,16 +567,57 @@ Page({
         affectShadowRuns: (shadowRuns.items || []).slice(0, 3).map((item) => ({
           ...item,
           coverageText: `${Math.round(Number(item.coverage_rate || 0) * 100)}%`,
+          unknownRateText: `${Math.round(Number(item.unknown_rate || 0) * 100)}%`,
+          shadowStatusText: item.status === "completed_shadow_only" ? "影子运行完成" : "待核对",
+          shadowSummaryText: item.summary_text || `合成样本 ${item.sample_count || 0} 条，未知 ${item.unknown_count || 0} 条。`,
+          shadowNextCheck: item.next_check_text || "先复核未知案例，再比较版本。",
+          reviewReasonText: Object.entries(item.review_reason_counts || {})
+            .map(([reason, count]) => `${AFFECT_REVIEW_REASON_LABELS[reason] || "其它待核对原因"} ${count}`)
+            .join(" · "),
           createdText: String(item.created_at || "").slice(0, 16).replace("T", " "),
         })),
         affectShadowReviewCount: (shadowQueue.items || []).length,
         affectMonitoring,
         affectReleaseGate,
+        knowledgeInventory,
+        knowledgeDocumentCount: knowledgeInventory ? knowledgeInventory.activeDocumentCount : 0,
+        knowledgeError: knowledgeInventoryResult ? "" : "已审核知识库摘要暂时无法读取。",
+        networkPolicy: networkPolicyResult || null,
+        offlineBenchmarkRuns: normalizeBenchmarkRuns(benchmarkRunsResult).filter((item) => item.isNetwork),
       });
     } catch (error) {
       this.setData({ analysisError: error.message || "在线分析任务暂时无法读取。" });
     } finally {
       this.setData({ analysisLoading: false });
+    }
+  },
+
+  onKnowledgeQueryInput(event) {
+    this.setData({ knowledgeQuery: event.detail.value || "", knowledgeError: "" });
+  },
+
+  onKnowledgeMethodChange(event) {
+    const index = Number(event.detail.value || 0);
+    this.setData({
+      knowledgeMethod: KNOWLEDGE_METHODS[index] || KNOWLEDGE_METHODS[0],
+      knowledgeMethodText: KNOWLEDGE_METHOD_OPTIONS[index] || KNOWLEDGE_METHOD_OPTIONS[0],
+    });
+  },
+
+  async searchKnowledge() {
+    const query = String(this.data.knowledgeQuery || "").trim();
+    if (!query) {
+      this.setData({ knowledgeError: "请先写下要查找的已审核内容。", knowledgeResult: null });
+      return;
+    }
+    this.setData({ knowledgeLoading: true, knowledgeError: "" });
+    try {
+      const result = await api.retrieveAiKnowledge(query, this.data.knowledgeMethod);
+      this.setData({ knowledgeResult: normalizeKnowledgeResult(result) });
+    } catch (error) {
+      this.setData({ knowledgeResult: null, knowledgeError: error.message || "知识库检索暂时无法完成。" });
+    } finally {
+      this.setData({ knowledgeLoading: false });
     }
   },
 

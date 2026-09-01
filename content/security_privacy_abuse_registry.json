@@ -1045,6 +1045,30 @@
       }
     },
     {
+      "operation_id": "assessments.get_assessment_exploratory_analysis.get",
+      "method": "GET",
+      "path": "/api/assessment-results/<result_id>/exploratory-analysis",
+      "object_type": "assessments",
+      "action": "read",
+      "object_scope": "self_or_active_participant_assignment_or_admin_capability",
+      "allowed_roles": [
+        "parent",
+        "student",
+        "researcher",
+        "supervisor",
+        "admin"
+      ],
+      "denied_roles": [],
+      "legacy_admin_token": true,
+      "showcase_read_bypass": false,
+      "idempotency": {
+        "supported": false,
+        "required": false,
+        "header": null,
+        "max_length": null
+      }
+    },
+    {
       "operation_id": "assessments.get_assessment_profile_position.get",
       "method": "GET",
       "path": "/api/assessment-results/<result_id>/profile-position",

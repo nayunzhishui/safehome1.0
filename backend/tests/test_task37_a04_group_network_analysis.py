@@ -1,4 +1,5 @@
 import importlib
+from itertools import combinations
 import json
 import shutil
 import sys
@@ -107,6 +108,9 @@ def test_group_analysis_reports_boundary_missingness_and_temporal_sensitivity(
     assert report["training_model"] is False
     assert report["causal_inference"] is False
     assert len(report["boundary_sensitivity"]) == 3
+    assert [
+        item["metrics"]["node_count"] for item in report["boundary_sensitivity"]
+    ] == [18, 16, 14]
     assert len(report["missingness_sensitivity"]) == 3
     assert report["temporal_change"]["window_count"] == 2
     assert {
@@ -144,6 +148,124 @@ def test_small_group_is_suppressed_instead_of_returning_unstable_metrics(
     assert data["suppressed"] is True
     assert data["suppression_reason"] == "minimum_privacy_threshold_not_met"
     assert data["aggregate_metrics"] is None
+
+
+def test_each_window_must_meet_edge_privacy_threshold(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch)
+    headers = _headers(app)
+    payload = _synthetic_payload()
+    payload["windows"][0]["edges"] = payload["windows"][0]["edges"][:9]
+
+    response = app.test_client().post(
+        "/api/research/benchmarks/network/analyze",
+        json=payload,
+        headers=headers["researcher-a"],
+    )
+
+    data = response.get_json()["data"]
+    assert response.status_code == 200
+    assert data["suppressed"] is True
+    assert data["analysis_summary"]["minimum_window_edge_count"] == 9
+    assert data["analysis_summary"]["insufficient_window_count"] == 1
+
+
+def test_edge_privacy_threshold_only_counts_approved_cohort_edges(
+    tmp_path, monkeypatch
+):
+    app = _app(tmp_path, monkeypatch)
+    headers = _headers(app)
+    payload = _synthetic_payload()
+    approved_ids = {item["id"] for item in payload["nodes"][:12]}
+    outside_ids = [item["id"] for item in payload["nodes"][12:]]
+    for node in payload["nodes"]:
+        node["approved_cohort"] = node["id"] in approved_ids
+    outside_edges = [
+        {"source": source, "target": target, "weight": 1}
+        for source, target in list(combinations(outside_ids, 2))[:10]
+    ]
+    for window in payload["windows"]:
+        window["edges"] = outside_edges
+
+    response = app.test_client().post(
+        "/api/research/benchmarks/network/analyze",
+        json=payload,
+        headers=headers["researcher-a"],
+    )
+
+    data = response.get_json()["data"]
+    assert response.status_code == 200
+    assert data["suppressed"] is True
+    assert data["analysis_summary"]["minimum_window_edge_count"] == 0
+    assert data["analysis_summary"]["insufficient_window_count"] == 2
+
+
+def test_network_boundary_flags_require_json_booleans(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch)
+    headers = _headers(app)
+    client = app.test_client()
+    for field in ("approved_cohort", "observed", "active"):
+        for invalid_value in ("false", 0, None):
+            payload = _synthetic_payload()
+            payload["nodes"][0][field] = invalid_value
+            response = client.post(
+                "/api/research/benchmarks/network/analyze",
+                json=payload,
+                headers=headers["researcher-a"],
+            )
+            assert response.status_code == 400
+            assert (
+                response.get_json()["error"]["code"]
+                == "network_node_boundary_invalid"
+            )
+
+
+def test_network_windows_are_analyzed_in_chronological_order(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch)
+    headers = _headers(app)
+    client = app.test_client()
+    chronological = _synthetic_payload()
+    reversed_windows = _synthetic_payload()
+    reversed_windows["windows"] = list(reversed(reversed_windows["windows"]))
+
+    expected = client.post(
+        "/api/research/benchmarks/network/analyze",
+        json=chronological,
+        headers=headers["researcher-a"],
+    ).get_json()["data"]
+    actual = client.post(
+        "/api/research/benchmarks/network/analyze",
+        json=reversed_windows,
+        headers=headers["researcher-a"],
+    ).get_json()["data"]
+
+    assert actual["temporal_change"] == expected["temporal_change"]
+    assert actual["analysis_digest"] == expected["analysis_digest"]
+
+
+def test_network_rejects_duplicate_or_overlapping_windows(tmp_path, monkeypatch):
+    app = _app(tmp_path, monkeypatch)
+    headers = _headers(app)
+    client = app.test_client()
+    duplicate = _synthetic_payload()
+    duplicate["windows"][1]["id"] = duplicate["windows"][0]["id"]
+    overlap = _synthetic_payload()
+    overlap["windows"][1]["start_date"] = overlap["windows"][0]["end_date"]
+
+    duplicate_response = client.post(
+        "/api/research/benchmarks/network/analyze",
+        json=duplicate,
+        headers=headers["researcher-a"],
+    )
+    overlap_response = client.post(
+        "/api/research/benchmarks/network/analyze",
+        json=overlap,
+        headers=headers["researcher-a"],
+    )
+
+    assert duplicate_response.status_code == 400
+    assert duplicate_response.get_json()["error"]["code"] == "network_window_id_invalid"
+    assert overlap_response.status_code == 400
+    assert overlap_response.get_json()["error"]["code"] == "network_window_overlap"
 
 
 def test_individual_output_and_identity_or_text_fields_are_rejected(

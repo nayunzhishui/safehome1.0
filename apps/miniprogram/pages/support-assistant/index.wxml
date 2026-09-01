@@ -5,14 +5,12 @@
   </view>
   <view class="mode-note">
     <text class="page-summary">{{subtitle}}</text>
-    <text class="pipeline-note">问答生成与知识检索共用同一套边界、引用和降级规则。</text>
   </view>
 
   <page-state
     wx:if="{{loading}}"
     kind="loading"
     title="正在读取问答状态"
-    description="正在确认当前是否开放支持性问答。"
   />
 
   <page-state

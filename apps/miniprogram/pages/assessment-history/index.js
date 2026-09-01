@@ -15,7 +15,7 @@ function formatResult(item) {
   const worksheetTitle = item.worksheet_title || "支持性测评";
   const createdAtText = formatDate(item.created_at);
   const summaryText = item.result_summary || "已保存本次测评记录。";
-  const dimensionText = dimensions.length ? `${dimensions.length} 个维度` : "查看完整结果";
+  const dimensionText = dimensions.length ? `${dimensions.length} 个维度` : "";
   return {
     ...item,
     worksheetTitle,
@@ -27,11 +27,11 @@ function formatResult(item) {
       id: item.id,
       display_title: worksheetTitle,
       topic_label: createdAtText,
-      meta_text: `${createdAtText} · ${dimensionText}`,
+      meta_text: dimensionText ? `${createdAtText} · ${dimensionText}` : createdAtText,
       question_count: dimensions.length,
       estimated_minutes: 0,
       instructions: summaryText,
-      action_text: dimensionText,
+      action_text: "查看",
       is_enabled_for_user: true,
     },
   };

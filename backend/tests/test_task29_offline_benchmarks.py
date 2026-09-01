@@ -108,6 +108,7 @@ def test_affect_benchmark_reports_full_metrics_without_calling_it_human_gold(tmp
     assert all(key in metrics for key in ("coverage_rate", "macro_f1_against_generator_seed", "confusion_matrix", "calibration_error", "subgroups", "failed_cases"))
     assert metrics["human_gold_used"] is False
     assert run["raw_text_included"] == 0 and run["production_replacement_allowed"] == 0
+    assert run["status"] == "engineering_review_required"
 
 
 def test_network_benchmark_validates_weight_threshold_stability_and_boundary(tmp_path, monkeypatch):
@@ -115,12 +116,29 @@ def test_network_benchmark_validates_weight_threshold_stability_and_boundary(tmp
     headers = _actors(app)
     run = app.test_client().post("/api/research/benchmarks/runs/network", headers=headers["researcher-a"]).get_json()["data"]
     metrics = run["metrics"]
+    assert run["status"] == "engineering_review_required"
     assert metrics["suppressed"] is False
     assert metrics["individual_metrics_included"] is False
     assert metrics["node_identifiers_included"] is False
     assert len(metrics["boundary_sensitivity"]) == 3
     assert len(metrics["missingness_sensitivity"]) == 3
     assert metrics["family_quality_inference"] is False
+    summary = metrics["analysis_summary"]
+    assert summary["node_count"] == metrics["aggregate_metrics"]["node_count"]
+    assert summary["edge_count"] == metrics["aggregate_metrics"]["edge_count"]
+    assert summary["window_count"] == metrics["temporal_change"]["window_count"]
+    assert summary["boundary_density_range"]["minimum"] <= summary["boundary_density_range"]["maximum"]
+    assert summary["missingness_density_range"]["minimum"] <= summary["missingness_density_range"]["maximum"]
+    assert "合成群体" in summary["summary_text"]
+
+
+def test_miniprogram_network_section_only_uses_network_runs_and_readable_summary():
+    page_js = (PROJECT_ROOT / "apps/miniprogram/pages/researcher-dashboard/index.js").read_text(encoding="utf-8")
+    page_wxml = (PROJECT_ROOT / "apps/miniprogram/pages/researcher-dashboard/index.wxml").read_text(encoding="utf-8")
+    assert ".filter((item) => item.isNetwork)" in page_js
+    assert "networkSummaryText" in page_js
+    assert "networkSummaryText" in page_wxml
+    assert "networkDetailText" in page_wxml
 
 
 def test_researcher_only_lists_own_runs_while_supervisor_sees_all(tmp_path, monkeypatch):

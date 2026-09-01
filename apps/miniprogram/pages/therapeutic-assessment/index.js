@@ -36,6 +36,7 @@ Page({
     notice: "",
     errorMessage: "",
     evidenceItems: [],
+    evidenceSummary: null,
     productionContract: null,
     adultLaunchScope: null,
     childPolicy: null,
@@ -110,9 +111,13 @@ Page({
           api.listTherapeuticAssessmentEvidence(cases[0].id),
           api.getTherapeuticAssessmentLaunchScreening(cases[0].id),
         ]);
-        this.setData({ evidenceItems: evidence.items || [], launchScreening });
+        this.setData({
+          evidenceItems: evidence.items || [],
+          evidenceSummary: evidence.summary || null,
+          launchScreening,
+        });
       } else {
-        this.setData({ evidenceItems: [], launchScreening: null });
+        this.setData({ evidenceItems: [], evidenceSummary: null, launchScreening: null });
       }
     } catch (error) {
       this.setData({ errorMessage: error.message || "协作记录暂时无法读取。" });

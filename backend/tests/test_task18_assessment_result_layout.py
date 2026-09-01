@@ -28,3 +28,14 @@ def test_task18_dimension_rows_allow_long_labels_without_covering_scores():
     assert 'overflow-wrap: anywhere;' in styles
     assert '.dimension-score' in styles
     assert 'flex: 0 0 auto;' in styles
+
+
+def test_assessment_result_renders_own_exploratory_analysis_states():
+    script = (PAGE / "index.js").read_text(encoding="utf-8")
+    markup = (PAGE / "index.wxml").read_text(encoding="utf-8")
+
+    assert "getAssessmentExploratoryAnalysis" in script
+    assert "buildExploratoryAnalysisView" in script
+    assert 'title="近期情绪与互动线索"' in markup
+    assert "exploratoryAnalysis.availability" in markup
+    assert "场景—情绪共现" in markup

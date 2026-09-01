@@ -23,7 +23,7 @@
 
   <view wx:if="{{errorMessage}}" class="error-box">
     <text>{{errorMessage}}</text>
-    <button class="error-action" bindtap="openIntegrationTest">打开联调测试页</button>
+    <button class="error-action" bindtap="loadAssessments">重新加载</button>
   </view>
 
   <view wx:if="{{loading}}" class="loading-box">
@@ -78,7 +78,4 @@
     </view>
   </view>
 
-  <view class="safe-section">
-    <bottom-tip-card text="测一测之后，先选一个能完成的小动作，不需要一次改变很多。" />
-  </view>
 </view>

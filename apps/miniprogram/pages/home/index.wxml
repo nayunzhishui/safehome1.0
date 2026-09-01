@@ -56,7 +56,6 @@
       wx:if="{{!latestRecordReady && !latestRecordError}}"
       kind="loading"
       title="正在读取最近记录"
-      description="正在同步已经保存的真实记录，请稍候。"
     />
     <page-state
       wx:elif="{{latestRecordError}}"
@@ -76,7 +75,6 @@
       wx:if="{{!progressSummaryReady && !progressSummaryError}}"
       kind="loading"
       title="正在读取阶段性反馈"
-      description="正在汇总已有记录，请稍候。"
     />
     <entry-row wx:elif="{{progressSummary}}" class="summary-entry" icon="feedback" title="{{progressSummary.summaryText}}" subtitle="{{progressSummary.nextAction}}" expanded wrap-title bind:action="openWeeklyReport" />
     <page-state

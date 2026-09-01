@@ -6,6 +6,7 @@ import hashlib
 from dataclasses import dataclass
 
 from database import json_loads, list_database_columns, list_database_tables, rows_to_dicts
+from services.participant_exploratory_analysis_service import build_participant_exploratory_analysis
 
 
 @dataclass(frozen=True)
@@ -100,7 +101,9 @@ def module_catalog(conn, user_id: str) -> list[dict]:
                 params.extend(spec.fixed_params)
             count = int(conn.execute(f"SELECT COUNT(*) AS count FROM {spec.table} WHERE {' AND '.join(clauses)}", tuple(params)).fetchone()["count"])
         items.append({"key": key, "label": spec.label, "count": count, "sensitive": spec.sensitive})
-    items.append({"key": "timeline", "label": "时间线", "count": sum(item["count"] for item in items), "sensitive": False})
+    timeline_count = sum(item["count"] for item in items)
+    items.append({"key": "exploratory_analysis", "label": "情绪与互动线索", "count": 1, "sensitive": True})
+    items.append({"key": "timeline", "label": "时间线", "count": timeline_count, "sensitive": False})
     return items
 
 
@@ -164,6 +167,17 @@ def list_module(
 ) -> dict:
     if module_key == "timeline":
         return _timeline(conn, user_id, page=page, page_size=page_size, date_from=date_from, date_to=date_to, item_type=item_type)
+    if module_key == "exploratory_analysis":
+        analysis = build_participant_exploratory_analysis(conn, user_id)
+        return _page_payload(
+            module_key,
+            "情绪与互动线索",
+            [{"id": "exploratory_analysis", **analysis}],
+            1,
+            1,
+            1,
+            True,
+        )
     spec = MODULE_SPECS.get(module_key)
     if spec is None:
         raise KeyError(module_key)

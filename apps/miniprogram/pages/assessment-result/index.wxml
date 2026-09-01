@@ -117,6 +117,34 @@
       </view>
     </view>
 
+    <view wx:if="{{exploratoryAnalysis}}" class="safe-section">
+      <section-title title="近期情绪与互动线索" subtitle="来自你自己的结构化记录" />
+      <view class="exploratory-card {{exploratoryAnalysis.availability}}">
+        <view class="exploratory-head">
+          <text class="exploratory-status">{{exploratoryAnalysis.statusText}}</text>
+          <text class="exploratory-count">{{exploratoryAnalysis.record_count}} 条记录</text>
+        </view>
+        <text wx:if="{{!exploratoryAnalysis.available}}" class="exploratory-reason">{{exploratoryAnalysis.reason}}</text>
+        <view wx:if="{{exploratoryAnalysis.available}}" class="exploratory-content">
+          <view class="exploratory-group">
+            <text class="exploratory-label">情绪记录分布</text>
+            <view wx:for="{{exploratoryAnalysis.affectItems}}" wx:key="label" class="exploratory-row">
+              <text class="exploratory-row-title">{{item.label}}</text>
+              <text class="exploratory-row-meta">{{item.summary}}</text>
+            </view>
+          </view>
+          <view class="exploratory-group">
+            <text class="exploratory-label">场景—情绪共现</text>
+            <view wx:if="{{exploratoryAnalysis.interactionEdges.length}}">
+              <text wx:for="{{exploratoryAnalysis.interactionEdges}}" wx:key="key" class="exploratory-link">{{item.summary}}</text>
+            </view>
+            <text wx:else class="exploratory-empty">暂时没有重复至少 2 次的稳定线索。</text>
+          </view>
+        </view>
+        <text class="exploratory-boundary">{{exploratoryAnalysis.boundary_notice}}</text>
+      </view>
+    </view>
+
     <view wx:if="{{trainingRecommendation}}" class="safe-section">
       <section-title title="推荐训练卡" subtitle="先选今天能做的一张" />
       <view class="recommendation-block">

@@ -1,7 +1,7 @@
 <view class="safe-page researcher-dashboard-page">
   <view class="workbench-hero">
     <view class="workbench-title-group">
-      <text class="dashboard-title">先处理重要的一小步</text>
+      <text class="dashboard-title">研究者工作台</text>
     </view>
   </view>
   <view class="sync-row" bindtap="refreshActiveWorkspace" role="button" aria-label="刷新当前工作区">
@@ -32,7 +32,6 @@
   <view wx:if="{{loading && !operations}}" class="safe-card state-card">
     <view class="state-orbit"></view>
     <text class="state-title">正在同步工作台</text>
-    <text class="state-copy">只读取必要摘要，不加载参与者长文本。</text>
   </view>
   <view wx:elif="{{errorMessage}}" class="safe-card error-card">
     <text class="error-title">工作台暂时没有读取成功</text>
@@ -101,7 +100,6 @@
     <view class="safe-card workspace-card">
       <view class="section-heading">
         <view>
-          <text class="section-eyebrow">按优先级排列</text>
           <text class="section-title">现在需要留意</text>
         </view>
         <button class="icon-refresh" bindtap="loadWorkbench" aria-label="刷新待处理列表">刷新</button>
@@ -134,7 +132,7 @@
         <text class="search-icon">⌕</text>
         <input value="{{participantQuery}}" bindinput="onParticipantQueryInput" placeholder="输入昵称或用户 ID" confirm-type="search" aria-label="搜索参与者" />
       </view>
-      <text class="boundary-line">输入停止 350 毫秒后搜索；列表仅展示最小活动摘要。</text>
+      <text class="boundary-line">列表仅展示最小活动摘要。</text>
     </view>
     <view wx:if="{{participantError}}" class="safe-card error-card">
       <text class="error-title">参与者列表暂时无法读取</text>
@@ -182,12 +180,35 @@
         <text class="section-title">{{participantModule.module_label}}</text>
         <view wx:if="{{!participantModule.items.length}}" class="empty-state"><text class="state-copy">当前标签暂无记录。</text></view>
         <view wx:for="{{participantModule.items}}" wx:for-item="record" wx:key="id" class="module-result-card">
-          <text wx:for="{{record.displayLines}}" wx:for-item="line" wx:key="*this" class="detail-line">{{line}}</text>
+          <view wx:if="{{record.exploratoryAnalysis}}" class="participant-analysis-result">
+            <view class="participant-analysis-head">
+              <text class="participant-analysis-status">{{record.statusText}}</text>
+              <text class="participant-meta">{{record.record_count}} 条结构化记录</text>
+            </view>
+            <text wx:if="{{record.reason}}" class="detail-line">{{record.reason}}</text>
+            <view wx:if="{{record.availability === 'available'}}" class="participant-analysis-groups">
+              <view>
+                <text class="participant-analysis-label">情感计算</text>
+                <text wx:if="{{record.affectSummary}}" class="detail-line">{{record.affectSummary}}</text>
+                <text wx:for="{{record.affectRows}}" wx:key="*this" class="detail-line">{{item}}</text>
+                <text wx:if="{{record.affectNextCheck}}" class="boundary-line">{{record.affectNextCheck}}</text>
+              </view>
+              <view>
+                <text class="participant-analysis-label">场景—情绪网络</text>
+                <text wx:if="{{record.networkSummary}}" class="detail-line">{{record.networkSummary}}</text>
+                <text wx:for="{{record.networkRows}}" wx:key="*this" class="detail-line">{{item}}</text>
+                <text wx:if="{{!record.networkRows.length}}" class="detail-line">暂无支持度达到 2 的共现边。</text>
+                <text wx:if="{{record.networkNextCheck}}" class="boundary-line">{{record.networkNextCheck}}</text>
+              </view>
+            </view>
+            <text class="boundary-line">{{record.boundary_notice}}</text>
+          </view>
+          <text wx:else wx:for="{{record.displayLines}}" wx:for-item="line" wx:key="*this" class="detail-line">{{line}}</text>
         </view>
         <button wx:if="{{participantModule.has_more}}" class="safe-outline-button list-more" data-key="{{participantModule.module}}" data-page="{{participantModule.page + 1}}" bindtap="loadParticipantModule">加载下一页</button>
         <text class="boundary-line">{{participantModule.boundary_notice}}</text>
       </view>
-      <view wx:else class="empty-state"><text class="state-copy">选择标签后才读取详情，避免一次加载全部长文本。</text></view>
+      <view wx:else class="empty-state"><text class="state-copy">选择标签查看详情。</text></view>
       <text class="boundary-line">{{participantDossier.boundary_notice}}</text>
     </view>
   </view>
@@ -208,7 +229,6 @@
       <text class="section-title">反馈与消息</text>
       <text class="detail-line">进入“试点项目”选择参与者后，可继续撰写阶段性反馈或发送站内消息。草稿按参与者保存在本机，切换页面不会丢失。</text>
       <button class="safe-primary-button" data-id="pilots" bindtap="switchWorkspace">进入试点项目</button>
-      <text class="boundary-line">批量发送、模板配置与复杂审阅继续在 Web 研究者后台完成。</text>
     </view>
   </view>
 
@@ -244,6 +264,21 @@
         <view class="state-banner {{assessmentAuthorization.authorized ? '' : 'state-banner--partial'}}">
           <text class="state-title">工作台写入：{{assessmentAuthorization.authorized ? assessmentAuthorization.competency_level + ' 已授权' : '未授权'}}</text>
           <text class="state-copy">{{assessmentAuthorization.authorized ? '授权仅对当前任务、对象范围和有效期生效。' : (assessmentAuthorization.reason || '账号角色和临时展示权限不能替代正式任务授权。')}}</text>
+        </view>
+        <view wx:if="{{assessmentWorkbench.evidence_summary}}" class="assessment-evidence-summary">
+          <view class="assessment-evidence-summary__heading">
+            <text class="section-eyebrow">议题全量摘要</text>
+            <text class="participant-meta">不随下方筛选变化</text>
+          </view>
+          <text class="assessment-evidence-summary__copy">{{assessmentWorkbench.evidence_summary.summary_text}}</text>
+          <view class="assessment-evidence-summary__counts">
+            <text>观察 {{assessmentWorkbench.evidence_summary.kind_counts.O}}</text>
+            <text>模式 {{assessmentWorkbench.evidence_summary.kind_counts.P}}</text>
+            <text>假设 {{assessmentWorkbench.evidence_summary.kind_counts.H}}</text>
+            <text>未知 {{assessmentWorkbench.evidence_summary.kind_counts.U}}</text>
+          </view>
+          <text class="boundary-line">下一步核对：{{assessmentWorkbench.evidence_summary.next_check_text}}</text>
+          <text class="boundary-line">{{assessmentWorkbench.evidence_summary.boundary_notice}}</text>
         </view>
         <view class="assessment-filter-row">
           <picker mode="selector" range="{{['全部类型','观察 O','模式 P','人工假设 H','未知 U']}}" bindchange="onAssessmentFilter" data-key="kind">
@@ -297,18 +332,20 @@
     <view class="safe-card workspace-card">
       <view class="section-heading">
         <view>
-          <text class="section-eyebrow">研究者影子模式</text>
-          <text class="section-title">在线分析任务</text>
+          <text class="section-eyebrow">研究者分析工作台</text>
+          <text class="section-title">按层查看研究证据</text>
         </view>
         <button class="icon-refresh" bindtap="loadAnalysisJobs">刷新</button>
       </view>
-      <text class="detail-line">移动端只查看任务状态和聚合质量；创建快照、执行器恢复与派生数据删除继续在受控 Web 流程完成。</text>
+      <view class="analysis-section analysis-section--status">
+        <view class="analysis-section-heading">
+          <text class="analysis-section-kicker">运行护栏</text>
+        </view>
       <view wx:if="{{analysisCatalog}}" class="analysis-gate">
         <text>仅项目自有合成数据 · 真实参与者分析关闭</text>
         <text>目录 {{analysisCatalog.catalog_version}}</text>
       </view>
       <view wx:if="{{analysisResilience}}" class="analysis-gate">
-        <text>幂等执行 · 租约并发 · 失败可恢复</text>
         <text>派生结果可受控删除 · 生产发布未批准</text>
       </view>
       <view class="analysis-shadow-summary">
@@ -321,9 +358,12 @@
           <view wx:for="{{affectShadowRuns}}" wx:key="id" class="analysis-job-card">
             <view class="analysis-job-heading">
               <text class="analysis-job-title">{{item.model_version}}</text>
-              <text class="priority-pill">{{item.status}}</text>
+              <text class="priority-pill">{{item.shadowStatusText}}</text>
             </view>
-            <text class="participant-meta">样本 {{item.sample_count}} · 覆盖 {{item.coverageText}} · 未知 {{item.unknown_count}}</text>
+            <text class="detail-line">{{item.shadowSummaryText}}</text>
+            <text class="participant-meta">覆盖 {{item.coverageText}} · 未知率 {{item.unknownRateText}}</text>
+            <text wx:if="{{item.reviewReasonText}}" class="participant-meta">复核原因：{{item.reviewReasonText}}</text>
+            <text class="boundary-line">{{item.shadowNextCheck}}</text>
             <text class="participant-meta">{{item.createdText}} · 不含原文</text>
           </view>
         </view>
@@ -340,6 +380,87 @@
         </view>
         <text wx:if="{{affectReleaseGate}}" class="boundary-line">{{affectReleaseGate.boundary_notice}}</text>
       </view>
+      </view>
+      <view class="analysis-section analysis-section--evidence">
+        <view class="analysis-section-heading">
+          <text class="analysis-section-kicker">已审核资料</text>
+        </view>
+        <view class="analysis-shadow-summary">
+        <view class="analysis-job-heading">
+          <text class="analysis-job-title">已审核知识库</text>
+          <text class="priority-pill">{{knowledgeDocumentCount}} 份内容</text>
+        </view>
+        <text class="detail-line">研究者只读检索已审核、已发布内容；结果带来源和版本，不调用外部模型，不修改参与者记录。</text>
+        <view wx:if="{{knowledgeInventory}}" class="analysis-gate">
+          <text>索引状态：仅已发布内容 · 候选正文不入库</text>
+          <text>当前索引 {{knowledgeInventory.activeDocumentCount}} 份 · 已撤回 {{knowledgeInventory.withdrawnDocumentCount}} 份 · 待审核候选 {{knowledgeInventory.candidateCount}} 条</text>
+        </view>
+        <input class="note-input note-input--single" maxlength="120" value="{{knowledgeQuery}}" bindinput="onKnowledgeQueryInput" placeholder="例如：情绪升高时如何暂停" />
+        <picker mode="selector" range="{{knowledgeMethodOptions}}" bindchange="onKnowledgeMethodChange">
+          <view class="analysis-picker">检索方式：{{knowledgeMethodText}}</view>
+        </picker>
+        <button class="safe-outline-button" loading="{{knowledgeLoading}}" disabled="{{knowledgeLoading}}" bindtap="searchKnowledge">检索已审核内容</button>
+        <view wx:if="{{knowledgeError}}" class="error-card">
+          <text class="error-copy">{{knowledgeError}}</text>
+        </view>
+        <view wx:elif="{{knowledgeResult}}">
+          <text class="participant-meta">{{knowledgeResult.evidenceStatusText}} · 返回 {{knowledgeResult.citations.length}} 条内容</text>
+          <view wx:if="{{knowledgeResult.retrieval_summary}}" class="knowledge-retrieval-summary">
+            <text class="detail-line">{{knowledgeResult.retrieval_summary.summary_text}}</text>
+            <text class="participant-meta">{{knowledgeResult.retrieval_summary.next_check_text}}</text>
+            <text class="boundary-line">{{knowledgeResult.retrieval_summary.boundary_notice}}</text>
+          </view>
+          <view wx:for="{{knowledgeResult.citations}}" wx:key="chunk_id" class="analysis-job-card">
+            <view class="analysis-job-heading">
+              <text class="analysis-job-title">{{item.title}}</text>
+              <text class="priority-pill">{{item.statusText}}</text>
+            </view>
+            <text class="participant-meta">{{item.sourceText}} · 版本 {{item.source_version}} · {{item.scoreText}}</text>
+            <text class="participant-meta">适用：{{item.audiencesText}} · {{item.validityText}}</text>
+            <text class="detail-line">位置：{{item.location}}</text>
+            <text class="knowledge-excerpt">{{item.excerpt}}</text>
+          </view>
+          <text wx:if="{{!knowledgeResult.citations.length}}" class="state-copy">没有匹配到已审核来源，请换一个更具体的关键词。</text>
+        </view>
+        <text wx:else class="state-copy">输入关键词后，这里会显示已审核来源和证据状态。</text>
+        <text class="boundary-line">知识库只支持研究者的证据查找，不自动生成诊断、风险结论或参与者反馈。</text>
+        </view>
+      </view>
+      <view class="analysis-section analysis-section--quality">
+        <view class="analysis-section-heading">
+          <text class="analysis-section-kicker">模型质量</text>
+        </view>
+        <view class="analysis-shadow-summary">
+        <view class="analysis-job-heading">
+          <text class="analysis-job-title">网络分析基准</text>
+          <text class="priority-pill">{{offlineBenchmarkRuns.length}} 次运行</text>
+        </view>
+        <text class="detail-line">只显示合成群体聚合结果和工程状态；不显示个人中心性、关系质量、排名或原文。</text>
+        <view wx:if="{{networkPolicy}}" class="analysis-gate">
+          <text>隐私阈值：节点 ≥ {{networkPolicy.minimum_privacy_thresholds.nodes}} · 每窗口边 ≥ {{networkPolicy.minimum_privacy_thresholds.edges_per_window}}</text>
+        </view>
+        <view wx:if="{{offlineBenchmarkRuns.length}}">
+          <view wx:for="{{offlineBenchmarkRuns}}" wx:key="id" class="analysis-job-card">
+            <view class="analysis-job-heading">
+              <text class="analysis-job-title">{{item.benchmarkTypeText}}</text>
+              <text class="priority-pill">{{item.statusText}}</text>
+            </view>
+            <text class="participant-meta">{{item.evidenceText}} · 算法 {{item.algorithmText}}</text>
+            <text class="detail-line">{{item.networkSummaryText}}</text>
+            <text wx:if="{{item.networkDetailText}}" class="participant-meta">{{item.networkDetailText}}</text>
+            <text wx:if="{{item.networkNextCheck}}" class="boundary-line">{{item.networkNextCheck}}</text>
+            <text class="participant-meta">{{item.createdText}}</text>
+            <text class="participant-meta">{{item.rawTextText}}</text>
+          </view>
+        </view>
+        <text wx:else class="state-copy">尚无基准运行；请在 Web 受控工作台执行合成情感或网络基准。</text>
+        <text class="boundary-line">基准运行不能替代真实参与者研究证据，也不会改变参与者端反馈。</text>
+        </view>
+      </view>
+      <view class="analysis-section analysis-section--tasks">
+        <view class="analysis-section-heading">
+          <text class="analysis-section-kicker">任务明细</text>
+        </view>
       <view wx:if="{{analysisLoading}}" class="empty-state"><text class="state-copy">正在读取任务摘要…</text></view>
       <view wx:elif="{{analysisError}}" class="error-card">
         <text class="error-title">任务暂时没有读取成功</text>
@@ -364,6 +485,7 @@
         </view>
       </view>
       <text class="boundary-line">结果只作为聚合研究线索，不构成诊断、标签或个体自动决策。</text>
+      </view>
     </view>
   </view>
 
@@ -382,7 +504,6 @@
   <view wx:if="{{activeWorkspace === 'pilots'}}" class="workspace-panel">
     <view wx:if="{{pilotLoading && !items.length}}" class="safe-card state-card">
       <text class="state-title">正在读取试点项目</text>
-      <text class="state-copy">参与者详情按选择后加载。</text>
     </view>
     <view wx:elif="{{pilotError}}" class="safe-card error-card">
       <text class="error-title">试点项目暂时没有读取成功</text>

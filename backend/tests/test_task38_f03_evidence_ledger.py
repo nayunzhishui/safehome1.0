@@ -231,3 +231,70 @@ def test_participant_cannot_see_unreviewed_h(tmp_path, monkeypatch):
     listed = client.get(f"/api/therapeutic-assessment/cases/{case['id']}/evidence", headers=headers["parent"])
     assert listed.status_code == 200
     assert listed.get_json()["data"]["items"] == []
+    assert listed.get_json()["data"]["summary"]["item_count"] == 0
+    assert listed.get_json()["data"]["summary"]["kind_counts"]["H"] == 0
+
+
+def test_participant_evidence_summary_only_counts_visible_items(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    headers = _seed(app)
+    client = app.test_client()
+    case = _case(client, headers)
+    assert _post(
+        client,
+        headers["parent"],
+        case["id"],
+        {
+            "kind": "O",
+            "content": "一次对话中我停顿了几秒",
+            "source_ref": "diary:visible-1",
+            "provider_id": "parent-f03",
+            "observed_at": "2026-07-27T10:00:00+08:00",
+            "context": "一次具体对话",
+            "visibility_scope": ["participant", "research_team"],
+        },
+        "f03-summary-o",
+    ).status_code == 201
+    assert _post(
+        client,
+        headers["parent"],
+        case["id"],
+        {
+            "kind": "U",
+            "content": "还不清楚停顿前发生了什么",
+            "uncertainty_type": "missing",
+            "visibility_scope": ["participant", "research_team"],
+        },
+        "f03-summary-u",
+    ).status_code == 201
+    assert _post(
+        client,
+        headers["supervisor"],
+        case["id"],
+        {
+            "kind": "H",
+            "content": "尚未复核的内部假设",
+            "question_link": case["id"],
+            "supporting_evidence": [{"ref": "diary:hidden", "source": "diary"}],
+            "counter_evidence": ["存在不同表现"],
+            "alternative_explanations": ["当时可能疲劳"],
+            "falsification_criteria": ["新资料不支持时修订"],
+            "protective_function": "暂时降低压力",
+            "cost": "可能减少表达",
+            "participant_recognition": "unconfirmed",
+            "source_origin": "human",
+            "visibility_scope": ["participant", "research_team"],
+        },
+        "f03-summary-hidden-h",
+    ).status_code == 201
+
+    listed = client.get(f"/api/therapeutic-assessment/cases/{case['id']}/evidence", headers=headers["parent"])
+    summary = listed.get_json()["data"]["summary"]
+    assert summary["item_count"] == 2
+    assert summary["kind_counts"] == {"O": 1, "P": 0, "H": 0, "U": 1}
+    assert summary["source_count"] == 1
+    assert summary["sourced_item_count"] == 1
+    assert summary["source_coverage_rate"] == 0.5
+    assert summary["unreviewed_hypothesis_count"] == 0
+    assert summary["unknown_types"] == {"missing": 1, "conflict": 0, "permission_denied": 0, "unconfirmed": 0}
+    assert "尚未复核的内部假设" not in str(summary)

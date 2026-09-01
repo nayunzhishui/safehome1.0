@@ -3,7 +3,7 @@
   "version": "2026-07-21-t34-v1",
   "status": "engineering_registry_complete_release_approval_pending",
   "generated_from_contract_version": "2026-08-26.f24",
-  "operation_count": 417,
+  "operation_count": 418,
   "capability_count": 45,
   "capabilities": [
     {
@@ -187,7 +187,7 @@
       "feature_flags": [],
       "version": "2026-08-26.f24",
       "tests": [
-        "backend/tests (operation coverage: 6)",
+        "backend/tests (operation coverage: 7)",
         "shared/contracts/api-contract.json"
       ],
       "rollback": "关闭对应功能开关或隐藏入口；保留历史数据、审计和原核心链路。",
@@ -197,6 +197,7 @@
       "operation_ids": [
         "assessments.create_assessment_result.post",
         "assessments.get_assessment.get",
+        "assessments.get_assessment_exploratory_analysis.get",
         "assessments.get_assessment_profile_position.get",
         "assessments.get_assessment_result.get",
         "assessments.list_assessment_results.get",

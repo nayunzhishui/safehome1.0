@@ -13,7 +13,6 @@
     wx:if="{{loading}}"
     kind="loading"
     title="正在读取"
-    description="正在恢复你上次保存的内容。"
   />
   <page-state
     wx:elif="{{stateKind}}"

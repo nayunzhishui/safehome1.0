@@ -112,7 +112,7 @@
     },
     {
       "id": "research.analysis.read",
-      "operations": ["GET /api/text-analysis/summary", "GET /api/research/analysis/catalog", "GET /api/research/analysis/jobs", "GET /api/research/analysis/jobs/{id}", "GET /api/research/analysis/artifacts/{id}"],
+      "operations": ["GET /api/text-analysis/summary", "GET /api/research/analysis/catalog", "GET /api/research/analysis/jobs", "GET /api/research/analysis/jobs/{id}", "GET /api/research/analysis/artifacts/{id}", "GET /api/ai-qa/knowledge", "GET /api/ai-qa/knowledge/retrieve", "GET /api/research/benchmarks/config", "GET /api/research/benchmarks/model-candidates", "GET /api/research/benchmarks/model-versions", "GET /api/research/benchmarks/shadow-runs", "GET /api/research/benchmarks/shadow-review-queue", "GET /api/research/benchmarks/monitoring", "GET /api/research/benchmarks/release-gate", "GET /api/research/benchmarks/network-policy", "GET /api/research/benchmarks/runs"],
       "roles": ["researcher", "supervisor", "admin"],
       "object_scope": "assigned_or_supervised_aggregate; all_for_admin",
       "sensitivity": "high",

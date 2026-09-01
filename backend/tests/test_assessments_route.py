@@ -811,3 +811,245 @@ def test_assessment_profile_position_is_optional_for_unmodeled_scale(tmp_path):
     data = response.get_json()["data"]
     assert data["available"] is False
     assert "暂未接入" in data["reason"]
+
+
+def test_participant_can_read_own_structured_affect_and_interaction_analysis(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "participant-exploratory-analysis")
+
+    answers = [{"question_id": f"ERQ{i:02d}", "value": "4"} for i in range(1, 11)]
+    saved_result = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"worksheet_id": "emotion_regulation_erq", "answers": answers},
+    )
+    assert saved_result.status_code == 201
+    result_id = saved_result.get_json()["data"]["id"]
+
+    records = [
+        ("亲子沟通", "着急", 7),
+        ("亲子沟通", "着急", 5),
+        ("作业拖延", "担心", 6),
+        ("作业拖延", "担心", 4),
+        ("亲子沟通", "担心", 3),
+    ]
+    for index, (scene, emotion, intensity) in enumerate(records):
+        saved_diary = client.post(
+            "/api/diaries",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "scene": scene,
+                "event_description": f"PRIVATE_DIARY_TEXT_{index}",
+                "parent_emotion": emotion,
+                "parent_emotion_intensity": intensity,
+                "raw_text": f"PRIVATE_RAW_TEXT_{index}",
+            },
+        )
+        assert saved_diary.status_code == 201
+
+    response = client.get(
+        f"/api/assessment-results/{result_id}/exploratory-analysis",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["availability"] == "available"
+    assert data["record_count"] == 5
+    assert data["affect"]["items"][0]["label"] == "担心"
+    assert data["affect"]["record_count"] == 5
+    assert data["affect"]["category_count"] == 2
+    assert data["affect"]["overall_average_intensity"] == 5.0
+    assert data["affect"]["intensity_range"] == {"minimum": 3, "maximum": 7}
+    assert data["affect"]["most_frequent_labels"] == ["担心"]
+    assert "5 条记录" in data["affect"]["summary_text"]
+    assert data["interaction_network"]["edges"][0]["support"] == 2
+    network_summary = data["interaction_network"]["summary"]
+    assert network_summary["node_count"] == 4
+    assert network_summary["edge_count"] == 2
+    assert network_summary["supported_record_count"] == 4
+    assert network_summary["record_coverage_rate"] == 0.8
+    assert network_summary["suppressed_pair_count"] == 1
+    assert "4/5" in network_summary["summary_text"]
+    assert data["raw_text_included"] is False
+    assert data["other_participant_data_included"] is False
+    assert "PRIVATE_" not in json.dumps(data, ensure_ascii=False)
+
+
+def test_participant_analysis_waits_for_minimum_record_count(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    _user_id, token = _wechat_login(client, "participant-analysis-minimum")
+    saved_result = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "worksheet_id": "emotion_regulation_erq",
+            "answers": [{"question_id": f"ERQ{i:02d}", "value": "4"} for i in range(1, 11)],
+        },
+    )
+    assert saved_result.status_code == 201
+    result_id = saved_result.get_json()["data"]["id"]
+    for index in range(4):
+        response = client.post(
+            "/api/diaries",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"scene": "亲子沟通", "event_description": f"记录{index}", "parent_emotion": "担心"},
+        )
+        assert response.status_code == 201
+
+    response = client.get(
+        f"/api/assessment-results/{result_id}/exploratory-analysis",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["availability"] == "insufficient"
+    assert data["record_count"] == 4
+    assert data["affect"]["items"] == []
+    assert data["interaction_network"]["edges"] == []
+
+
+def test_participant_analysis_requires_five_usable_structured_records(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    user_id, token = _wechat_login(client, "participant-analysis-usable-minimum")
+    saved_result = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "worksheet_id": "emotion_regulation_erq",
+            "answers": [{"question_id": f"ERQ{i:02d}", "value": "4"} for i in range(1, 11)],
+        },
+    )
+    result_id = saved_result.get_json()["data"]["id"]
+    with app.app_context():
+        database = importlib.import_module("database")
+        with database.get_connection() as conn:
+            now = database.now_iso()
+            for index in range(5):
+                conn.execute(
+                    """
+                    INSERT INTO emotion_diaries
+                    (id, user_id, scene, event_description, parent_emotion,
+                     parent_emotion_intensity, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, 5, ?, ?)
+                    """,
+                    (f"legacy-empty-{index}", user_id, "", "历史记录", "", now, now),
+                )
+            conn.commit()
+
+    response = client.get(
+        f"/api/assessment-results/{result_id}/exploratory-analysis",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    data = response.get_json()["data"]
+    assert response.status_code == 200
+    assert data["availability"] == "insufficient"
+    assert data["record_count"] == 5
+    assert data["usable_record_count"] == 0
+    assert data["excluded_record_count"] == 5
+    assert "可用于汇总" in data["reason"]
+
+
+def test_participant_analysis_is_withheld_after_high_risk_feedback(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    user_id, token = _wechat_login(client, "participant-analysis-high-risk")
+    saved_result = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "worksheet_id": "emotion_regulation_erq",
+            "answers": [{"question_id": f"ERQ{i:02d}", "value": "4"} for i in range(1, 11)],
+        },
+    )
+    assert saved_result.status_code == 201
+    result_id = saved_result.get_json()["data"]["id"]
+    for index in range(5):
+        response = client.post(
+            "/api/diaries",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"scene": "亲子沟通", "event_description": f"记录{index}", "parent_emotion": "担心"},
+        )
+        assert response.status_code == 201
+    high_risk = client.post(
+        "/api/feedback/generate",
+        json={"user_id": user_id, "event_description": "我不想活了", "automatic_thought": "撑不下去了"},
+    )
+    assert high_risk.status_code == 201
+    assert high_risk.get_json()["data"]["risk_level"] == "high"
+    feedback_id = high_risk.get_json()["data"]["id"]
+
+    response = client.get(
+        f"/api/assessment-results/{result_id}/exploratory-analysis",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["availability"] == "withheld"
+    assert data["record_count"] == 5
+    assert data["human_review_required"] is True
+    assert data["affect"]["items"] == []
+    assert data["interaction_network"]["edges"] == []
+
+    reviews = client.get(
+        "/api/risk-review?status=pending",
+        headers={"X-Admin-Token": "safehome-local-admin-token"},
+    ).get_json()["data"]["items"]
+    review = next(item for item in reviews if item["source_id"] == feedback_id)
+    closed = client.post(
+        f"/api/risk-review/{review['id']}/review",
+        headers={"X-Admin-Token": "safehome-local-admin-token"},
+        json={
+            "review_status": "closed",
+            "review_note": "已由人工完成复核。",
+            "action_taken": "已完成现实支持确认。",
+            "closed_reason": "本次人工关注已处理完成。",
+        },
+    )
+    assert closed.status_code == 200
+
+    available = client.get(
+        f"/api/assessment-results/{result_id}/exploratory-analysis",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert available.status_code == 200
+    assert available.get_json()["data"]["availability"] == "available"
+
+
+def test_student_result_does_not_receive_stage_two_exploratory_analysis(tmp_path):
+    app = _fresh_app(tmp_path)
+    client = app.test_client()
+    registered = client.post(
+        "/api/auth/register",
+        json={
+            "username": "stage-two-student",
+            "password": "Password123!",
+            "nickname": "学生",
+            "role": "student",
+        },
+    )
+    assert registered.status_code == 201
+    token = registered.get_json()["data"]["token"]
+    saved_result = client.post(
+        "/api/assessment-results",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"worksheet_id": "student_profile_v1", "answers": _student_profile_answers()},
+    )
+    assert saved_result.status_code == 201
+
+    response = client.get(
+        f"/api/assessment-results/{saved_result.get_json()['data']['id']}/exploratory-analysis",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 200
+    data = response.get_json()["data"]
+    assert data["availability"] == "ineligible"
+    assert data["affect"]["items"] == []
+    assert data["interaction_network"]["edges"] == []

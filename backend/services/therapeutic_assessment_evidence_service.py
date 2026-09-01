@@ -132,6 +132,78 @@ def _present(row: dict) -> dict:
     return item
 
 
+def summarize_evidence(items: list[dict]) -> dict:
+    """Return a content-free overview of evidence already visible to the caller."""
+    kind_counts = {kind: 0 for kind in ("O", "P", "H", "U")}
+    unknown_types = {kind: 0 for kind in ("missing", "conflict", "permission_denied", "unconfirmed")}
+    source_refs: set[str] = set()
+    sourced_item_count = 0
+    for item in items:
+        kind = str(item.get("kind") or "")
+        if kind in kind_counts:
+            kind_counts[kind] += 1
+        item_source_refs: set[str] = set()
+        source_ref = str(item.get("source_ref") or "").strip()
+        if source_ref:
+            item_source_refs.add(source_ref)
+        for supporting in item.get("supporting_evidence") or []:
+            if isinstance(supporting, dict):
+                supporting_ref = str(supporting.get("ref") or "").strip()
+                if supporting_ref:
+                    item_source_refs.add(supporting_ref)
+        if item_source_refs:
+            sourced_item_count += 1
+            source_refs.update(item_source_refs)
+        if kind == "U":
+            uncertainty_type = str(item.get("uncertainty_type") or "unconfirmed")
+            if uncertainty_type in unknown_types:
+                unknown_types[uncertainty_type] += 1
+
+    item_count = sum(kind_counts.values())
+    source_count = len(source_refs)
+    source_coverage_rate = round(sourced_item_count / item_count, 4) if item_count else 0.0
+    unknown_count = kind_counts["U"]
+    reviewed_hypothesis_count = sum(
+        1
+        for item in items
+        if item.get("kind") == "H"
+        and item.get("review_status") in {"human_reviewed", "participant_checked"}
+    )
+    unreviewed_hypothesis_count = max(0, kind_counts["H"] - reviewed_hypothesis_count)
+    if item_count == 0:
+        summary_text = "当前可见范围内还没有线索。"
+        next_check_text = "先记录一条带有时间、情境和来源的具体观察。"
+    else:
+        source_text = (
+            f"{sourced_item_count}/{item_count} 条有明确来源，共 {source_count} 个来源"
+            if source_count
+            else "明确来源尚待补充"
+        )
+        summary_text = f"可见 {item_count} 条线索，{source_text}；其中 {unknown_count} 个问题仍待核对。"
+        if unknown_count:
+            next_check_text = "先核对未知项，再整理模式或假设。"
+        elif kind_counts["O"] < 2:
+            next_check_text = "继续补充不同时间或情境中的具体观察。"
+        elif kind_counts["P"] + kind_counts["H"] == 0:
+            next_check_text = "已有观察，可比较不同情境中的相同点与例外。"
+        else:
+            next_check_text = "继续核对支持依据、反例和参与者是否认同。"
+    return {
+        "item_count": item_count,
+        "kind_counts": kind_counts,
+        "source_count": source_count,
+        "sourced_item_count": sourced_item_count,
+        "source_coverage_rate": source_coverage_rate,
+        "unknown_count": unknown_count,
+        "unknown_types": unknown_types,
+        "reviewed_hypothesis_count": reviewed_hypothesis_count,
+        "unreviewed_hypothesis_count": unreviewed_hypothesis_count,
+        "summary_text": summary_text,
+        "next_check_text": next_check_text,
+        "boundary_notice": "这里只汇总已授权线索，不生成诊断、总分或疗效判断。",
+    }
+
+
 def create_evidence(actor: dict, case_id: str, payload: dict, idempotency_key: str) -> tuple[dict, int]:
     key = _idempotency(idempotency_key)
     data = _validate(actor, payload)
@@ -276,7 +348,7 @@ def list_evidence(actor: dict, case_id: str) -> dict:
             {"count": len(items)},
         )
         conn.commit()
-        return {"items": items, "count": len(items)}
+        return {"items": items, "count": len(items), "summary": summarize_evidence(items)}
 
 
 def review_hypothesis(actor: dict, evidence_id: str, payload: dict, idempotency_key: str) -> dict:

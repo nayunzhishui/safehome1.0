@@ -132,7 +132,7 @@ function buildAssessmentSections(items, activeAudience, query) {
         key: "empty",
         title: "没有匹配内容",
         subtitle: "换一个分类或关键词再看",
-        emptyText: "当前条件下没有可显示的测评内容。",
+        emptyText: "换一个分类或关键词再看。",
         items: [],
       },
     ];
