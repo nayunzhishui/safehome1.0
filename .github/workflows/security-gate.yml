@@ -79,7 +79,7 @@ jobs:
         run: |
           set -euo pipefail
           short_sha="${GITHUB_SHA:0:8}"
-          image_repo="ghcr.io/nayunzhishui/safehome-rc0810"
+          image_repo="ghcr.io/nayunzhishui/safehome1-rc0810"
           image_tag="${image_repo}:rc0810-${short_sha}"
           evidence_dir=".codex_tmp/rc0810/registry"
           mkdir -p "${evidence_dir}"

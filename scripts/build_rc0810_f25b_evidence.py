@@ -29,7 +29,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "docs" / "02_专项进度与验收" / "rc0810_f25b_evidence.json"
 ARTIFACT_ROOT = ROOT / ".codex_tmp" / "rc0810" / "f25b"
 REGISTRY_EVIDENCE_ROOT = ROOT / ".codex_tmp" / "rc0810" / "registry"
-REGISTRY_IMAGE = "ghcr.io/nayunzhishui/safehome-rc0810"
+REGISTRY_IMAGE = os.environ.get(
+    "RC0810_REGISTRY_IMAGE",
+    "ghcr.io/nayunzhishui/safehome1-rc0810",
+)
 RELEASE_INPUTS = (
     "apps/miniprogram/app.json",
     "apps/miniprogram/project.config.json",
