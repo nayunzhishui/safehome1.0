@@ -15,7 +15,11 @@ import threading
 from typing import Any
 
 from config import Config
-from services.database_recovery_service import mysql_ssl_context, public_tls_contract
+from services.database_recovery_service import (
+    load_recovery_policy,
+    mysql_ssl_context,
+    public_tls_contract,
+)
 
 
 _LOCK = threading.Lock()
@@ -46,6 +50,7 @@ def pool_settings() -> dict[str, Any]:
     max_connections = _int("MYSQL_POOL_MAX_CONNECTIONS", 7, 1, 64)
     max_cached = _int("MYSQL_POOL_MAX_CACHED", 5, 0, max_connections)
     min_cached = _int("MYSQL_POOL_MIN_CACHED", 1, 0, max_cached or 1)
+    tls_mode = str(load_recovery_policy().get("tls", {}).get("mode", "required"))
     return {
         "enabled": _bool("MYSQL_POOL_ENABLED", default=Config.DB_PROVIDER == "mysql"),
         "min_cached": min_cached,
@@ -59,6 +64,7 @@ def pool_settings() -> dict[str, Any]:
             Config.MYSQL_SSL_CA,
             Config.MYSQL_TLS_MIN_VERSION,
             Config.MYSQL_SSL_VERIFY_IDENTITY,
+            mode=tls_mode,
         ),
     }
 

@@ -21,14 +21,45 @@ if str(BACKEND) not in sys.path:
 import database  # noqa: E402
 from config import Config  # noqa: E402
 from services.schema_migration_service import (  # noqa: E402
+    ExplicitMigrationApplyError,
     MIGRATIONS,
     apply_pending_schema_migrations,
 )
 
 
 ORIGINAL_PRODUCTION_DATABASE = "safehome"
-ISOLATED_DATABASE_PATTERN = re.compile(r"^safehome-[0-9]{12,14}$")
+ISOLATED_DATABASE_PATTERN = re.compile(r"^safehome-(?:[0-9]{12,14}|r[1-9][0-9]*)$")
 CRITICAL_COUNT_TABLES = ("users", "emotion_diaries", "consent_records", "audit_logs")
+
+
+class MigrationStageError(RuntimeError):
+    """Expose only an actionable stage and numeric database error code."""
+
+    def __init__(self, stage: str, original: Exception):
+        self.stage = stage
+        self.database_errno = _database_errno(original)
+        super().__init__(f"migration_stage_failed:{stage}")
+
+
+def _database_errno(exc: Exception) -> int | None:
+    errno = getattr(exc, "errno", None)
+    if isinstance(errno, int):
+        return errno
+    args = getattr(exc, "args", ())
+    return args[0] if args and isinstance(args[0], int) else None
+
+
+def _run_stage(stage: str, operation):
+    try:
+        return operation()
+    except ExplicitMigrationApplyError as exc:
+        raise MigrationStageError(
+            f"explicit_migration:{exc.version}", exc.original
+        ) from exc
+    except MigrationStageError:
+        raise
+    except Exception as exc:
+        raise MigrationStageError(stage, exc) from exc
 
 
 def validate_expected_database(expected_database: str) -> str:
@@ -99,22 +130,43 @@ def _snapshot(conn, database_name: str) -> dict:
 
 
 def _apply_candidate_schema(conn) -> list[str]:
-    for statement in database.SCHEMA_SQL:
-        conn.execute(database.mysqlize_schema_statement(statement))
-    database.ensure_mysql_index_columns(conn)
-    database.ensure_mysql_content_text_capacity(conn)
-    database.ensure_schema_columns(conn)
-    for statement in database.INDEX_SQL:
-        database.create_index(conn, statement)
-    identity_status = database.check_identity_uniqueness(conn)
+    for index, statement in enumerate(database.SCHEMA_SQL, start=1):
+        _run_stage(
+            f"base_schema:{index}",
+            lambda statement=statement: conn.execute(
+                database.mysqlize_schema_statement(statement)
+            ),
+        )
+    _run_stage("mysql_index_columns", lambda: database.ensure_mysql_index_columns(conn))
+    _run_stage(
+        "mysql_content_text_capacity",
+        lambda: database.ensure_mysql_content_text_capacity(conn),
+    )
+    _run_stage("schema_columns", lambda: database.ensure_schema_columns(conn))
+    for index, statement in enumerate(database.INDEX_SQL, start=1):
+        _run_stage(
+            f"schema_index:{index}",
+            lambda statement=statement: database.create_index(conn, statement),
+        )
+    identity_status = _run_stage(
+        "identity_uniqueness", lambda: database.check_identity_uniqueness(conn)
+    )
     if identity_status["ok"]:
-        for statement in database.IDENTITY_UNIQUE_INDEX_SQL:
-            database.create_index(conn, statement)
-    database.sync_training_cards(conn)
-    database.sync_assessment_worksheets(conn)
-    database.record_schema_migration(conn)
-    applied = apply_pending_schema_migrations(conn)
-    conn.commit()
+        for index, statement in enumerate(database.IDENTITY_UNIQUE_INDEX_SQL, start=1):
+            _run_stage(
+                f"identity_index:{index}",
+                lambda statement=statement: database.create_index(conn, statement),
+            )
+    _run_stage("training_cards_sync", lambda: database.sync_training_cards(conn))
+    _run_stage(
+        "assessment_worksheets_sync",
+        lambda: database.sync_assessment_worksheets(conn),
+    )
+    _run_stage("legacy_schema_marker", lambda: database.record_schema_migration(conn))
+    applied = _run_stage(
+        "explicit_migrations", lambda: apply_pending_schema_migrations(conn)
+    )
+    _run_stage("commit", conn.commit)
     return applied
 
 
@@ -135,35 +187,46 @@ def run(action: str, expected_database: str, confirmation: str = "") -> tuple[di
     if action == "apply":
         validate_confirmation(expected, confirmation)
 
-    with database.get_connection() as conn:
-        actual = assert_connected_database(conn, expected)
-        before = _snapshot(conn, actual)
-        if action == "plan":
-            return {
-                "ok": True,
-                "action": action,
-                "mutated": False,
-                "snapshot": before,
-                "required_confirmation": required_confirmation(expected),
-            }, 0
+    try:
+        with database.get_connection() as conn:
+            actual = assert_connected_database(conn, expected)
+            before = _snapshot(conn, actual)
+            if action == "plan":
+                return {
+                    "ok": True,
+                    "action": action,
+                    "mutated": False,
+                    "snapshot": before,
+                    "required_confirmation": required_confirmation(expected),
+                }, 0
 
-        applied: list[str] = []
-        if action == "apply":
-            applied = _apply_candidate_schema(conn)
-        after = _snapshot(conn, actual)
-        ok = _verification_ok(after)
-        return {
-            "ok": ok,
+            applied: list[str] = []
+            if action == "apply":
+                applied = _apply_candidate_schema(conn)
+            after = _snapshot(conn, actual)
+            ok = _verification_ok(after)
+            return {
+                "ok": ok,
+                "action": action,
+                "mutated": action == "apply",
+                "applied_explicit_migrations": applied,
+                "before": before if action == "apply" else None,
+                "snapshot": after,
+                "expected_heads": {
+                    "legacy_schema_version": database.CURRENT_SCHEMA_VERSION,
+                    "explicit_migration_head": MIGRATIONS[-1].version,
+                },
+            }, 0 if ok else 1
+    except MigrationStageError as exc:
+        result = {
+            "ok": False,
             "action": action,
-            "mutated": action == "apply",
-            "applied_explicit_migrations": applied,
-            "before": before if action == "apply" else None,
-            "snapshot": after,
-            "expected_heads": {
-                "legacy_schema_version": database.CURRENT_SCHEMA_VERSION,
-                "explicit_migration_head": MIGRATIONS[-1].version,
-            },
-        }, 0 if ok else 1
+            "error_code": "migration_operation_failed",
+            "failure_stage": exc.stage,
+        }
+        if exc.database_errno is not None:
+            result["database_errno"] = exc.database_errno
+        return result, 1
 
 
 def main() -> int:
@@ -178,6 +241,16 @@ def main() -> int:
     except ValueError as exc:
         result = {"ok": False, "action": args.action, "error_code": str(exc)}
         exit_code = 2
+    except MigrationStageError as exc:
+        result = {
+            "ok": False,
+            "action": args.action,
+            "error_code": "migration_operation_failed",
+            "failure_stage": exc.stage,
+        }
+        if exc.database_errno is not None:
+            result["database_errno"] = exc.database_errno
+        exit_code = 1
     except Exception:
         result = {"ok": False, "action": args.action, "error_code": "migration_operation_failed"}
         exit_code = 1

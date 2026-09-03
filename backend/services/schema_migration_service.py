@@ -38,6 +38,15 @@ class Migration:
     rollback_notes: tuple[str, ...]
 
 
+class ExplicitMigrationApplyError(RuntimeError):
+    """Identify the failed migration without exposing database error text."""
+
+    def __init__(self, version: str, original: Exception):
+        self.version = version
+        self.original = original
+        super().__init__(f"explicit_migration_failed:{version}")
+
+
 def _provider(conn) -> str:
     return getattr(conn, "provider", "sqlite")
 
@@ -1074,8 +1083,11 @@ def apply_pending_schema_migrations(conn) -> list[str]:
         for migration in pending:
             if _applied(conn, migration.version):
                 continue
-            migration.apply(conn)
-            _record(conn, migration)
+            try:
+                migration.apply(conn)
+                _record(conn, migration)
+            except Exception as exc:
+                raise ExplicitMigrationApplyError(migration.version, exc) from exc
             applied.append(migration.version)
         return applied
     finally:

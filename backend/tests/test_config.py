@@ -33,6 +33,8 @@ def _configure_production_mysql(monkeypatch):
     monkeypatch.setenv("DB_APPROVED_DATABASE", "safehome")
     monkeypatch.setenv("DB_APPROVED_PORT", "3306")
     monkeypatch.setenv("DB_APPROVED_MIGRATION_HEAD", "2026_08_24_063+2026_08_26_078")
+    monkeypatch.setenv("DEPLOYMENT_CLOUDBASE_ENV_ID", "prod-d3gl35otiaa7c8d24")
+    monkeypatch.setenv("DEPLOYMENT_CLOUDBASE_SERVICE", "flask-gh3l")
     monkeypatch.setenv("MYSQL_SSL_CA", str(Path(__file__)))
     monkeypatch.setenv("MYSQL_SSL_VERIFY_IDENTITY", "1")
     monkeypatch.setenv("MYSQL_TLS_MIN_VERSION", "TLSv1.2")

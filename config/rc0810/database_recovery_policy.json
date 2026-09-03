@@ -2,10 +2,23 @@
   "schema": "safehome.rc0810.database-recovery-policy.v1",
   "production_release_approved": false,
   "tls": {
-    "ca_required": true,
-    "verify_identity": true,
-    "minimum_version": "TLSv1.2",
-    "secrets_or_paths_may_be_logged": false
+    "mode": "cloudbase_private_network_exception",
+    "ca_required": false,
+    "verify_identity": false,
+    "minimum_version": null,
+    "secrets_or_paths_may_be_logged": false,
+    "exception": {
+      "approval_id": "tls-exception-20260903-cloudbase-internal",
+      "approved_by": "project_owner",
+      "approved_at": "2026-09-03T07:09:54+08:00",
+      "reason": "CloudBase 内置 MySQL 5.7 当前未提供可核验的 TLS/CA 配置入口",
+      "cloudbase_environment_id": "prod-d3gl35otiaa7c8d24",
+      "cloudbase_service": "flask-gh3l",
+      "network_scope": "same_cloudbase_environment_private_network",
+      "host_binding": "DB_APPROVED_HOST_SHA256",
+      "public_network_forbidden": true,
+      "review_trigger": "platform_tls_available_or_network_scope_changes"
+    }
   },
   "relationships": [
     {"id": "assessment_result_owner", "child_table": "assessment_results", "child_column": "user_id", "parent_table": "users", "parent_column": "id", "enforcement": "application_validator"},

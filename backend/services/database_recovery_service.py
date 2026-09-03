@@ -39,12 +39,31 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def tls_contract_errors(settings: Any) -> list[str]:
+def tls_contract_errors(
+    settings: Any,
+    policy: dict[str, Any] | None = None,
+) -> list[str]:
     if str(getattr(settings, "APP_ENV", "")).lower() != "production" or str(
         getattr(settings, "DB_PROVIDER", "")
     ).lower() != "mysql":
         return []
     errors: list[str] = []
+    tls_policy = (policy or load_recovery_policy()).get("tls", {})
+    if tls_policy.get("mode") == "cloudbase_private_network_exception":
+        exception = tls_policy.get("exception", {})
+        if str(getattr(settings, "DEPLOYMENT_CLOUDBASE_ENV_ID", "")) != str(
+            exception.get("cloudbase_environment_id", "")
+        ):
+            errors.append("mysql_tls_exception_environment_mismatch")
+        if str(getattr(settings, "DEPLOYMENT_CLOUDBASE_SERVICE", "")) != str(
+            exception.get("cloudbase_service", "")
+        ):
+            errors.append("mysql_tls_exception_service_mismatch")
+        normalized_host = str(getattr(settings, "MYSQL_HOST", "") or "").strip().lower().rstrip(".")
+        approved_host = str(getattr(settings, "DB_APPROVED_HOST_SHA256", "") or "").strip().lower()
+        if not normalized_host or hashlib.sha256(normalized_host.encode("utf-8")).hexdigest() != approved_host:
+            errors.append("mysql_tls_exception_host_not_approved")
+        return errors
     ca_path = str(getattr(settings, "MYSQL_SSL_CA", "") or "").strip()
     if not ca_path or not Path(ca_path).is_file():
         errors.append("mysql_tls_ca_required")
@@ -70,11 +89,20 @@ def verify_peer_hostname(certificate: dict[str, Any], hostname: str) -> None:
     ssl.match_hostname(certificate, hostname)
 
 
-def public_tls_contract(ca_path: str, minimum_version: str, verify_identity: bool) -> dict[str, Any]:
+def public_tls_contract(
+    ca_path: str,
+    minimum_version: str,
+    verify_identity: bool,
+    *,
+    mode: str = "required",
+) -> dict[str, Any]:
+    tls_enabled = bool(str(ca_path or "").strip())
     return {
-        "ca_configured": bool(str(ca_path or "").strip()),
-        "verify_identity": bool(verify_identity),
-        "minimum_version": str(minimum_version),
+        "mode": str(mode),
+        "transport": "tls" if tls_enabled else "plaintext_private_network_exception",
+        "ca_configured": tls_enabled,
+        "verify_identity": bool(verify_identity) if tls_enabled else False,
+        "minimum_version": str(minimum_version) if tls_enabled else None,
     }
 
 

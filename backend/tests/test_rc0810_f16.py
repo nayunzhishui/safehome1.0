@@ -52,7 +52,24 @@ def _marker(directory: Path, target: Path, environment: str = "isolated_validati
     return marker
 
 
-def test_production_tls_contract_requires_ca_identity_and_tls12(tmp_path):
+def test_production_tls_contract_allows_approved_cloudbase_private_network_exception():
+    from services.database_recovery_service import tls_contract_errors
+
+    settings = SimpleNamespace(
+        APP_ENV="production",
+        DB_PROVIDER="mysql",
+        MYSQL_SSL_CA="",
+        MYSQL_SSL_VERIFY_IDENTITY=False,
+        MYSQL_TLS_MIN_VERSION="TLSv1.1",
+        DEPLOYMENT_CLOUDBASE_ENV_ID="prod-d3gl35otiaa7c8d24",
+        DEPLOYMENT_CLOUDBASE_SERVICE="flask-gh3l",
+        MYSQL_HOST="mysql.internal.example",
+        DB_APPROVED_HOST_SHA256=hashlib.sha256(b"mysql.internal.example").hexdigest(),
+    )
+    assert tls_contract_errors(settings) == []
+
+
+def test_required_tls_mode_still_requires_ca_identity_and_tls12():
     from services.database_recovery_service import tls_contract_errors
 
     settings = SimpleNamespace(
@@ -62,10 +79,29 @@ def test_production_tls_contract_requires_ca_identity_and_tls12(tmp_path):
         MYSQL_SSL_VERIFY_IDENTITY=False,
         MYSQL_TLS_MIN_VERSION="TLSv1.1",
     )
-    assert tls_contract_errors(settings) == [
+    policy = {"tls": {"mode": "required"}}
+    assert tls_contract_errors(settings, policy) == [
         "mysql_tls_ca_required",
         "mysql_tls_identity_verification_required",
         "mysql_tls_minimum_version_too_low",
+    ]
+
+
+def test_private_network_tls_exception_is_bound_to_environment_service_and_host():
+    from services.database_recovery_service import tls_contract_errors
+
+    settings = SimpleNamespace(
+        APP_ENV="production",
+        DB_PROVIDER="mysql",
+        DEPLOYMENT_CLOUDBASE_ENV_ID="wrong-environment",
+        DEPLOYMENT_CLOUDBASE_SERVICE="wrong-service",
+        MYSQL_HOST="mysql.internal.example",
+        DB_APPROVED_HOST_SHA256="0" * 64,
+    )
+    assert tls_contract_errors(settings) == [
+        "mysql_tls_exception_environment_mismatch",
+        "mysql_tls_exception_service_mismatch",
+        "mysql_tls_exception_host_not_approved",
     ]
 
 
@@ -91,6 +127,8 @@ def test_hostname_check_fails_closed_and_public_contract_redacts_ca():
         verify_peer_hostname(certificate, "other.internal.example")
     public = public_tls_contract("C:/private/mysql-ca.pem", "TLSv1.2", True)
     assert public == {
+        "mode": "required",
+        "transport": "tls",
         "ca_configured": True,
         "verify_identity": True,
         "minimum_version": "TLSv1.2",

@@ -246,6 +246,9 @@ class Config:
                 "mysql_tls_ca_required": "生产 MySQL 必须配置有效 TLS CA 文件",
                 "mysql_tls_identity_verification_required": "生产 MySQL 必须启用主机身份校验",
                 "mysql_tls_minimum_version_too_low": "生产 MySQL 最低 TLS 版本必须为 TLSv1.2 或 TLSv1.3",
+                "mysql_tls_exception_environment_mismatch": "MySQL 无 TLS 例外仅允许已批准的 CloudBase 环境",
+                "mysql_tls_exception_service_mismatch": "MySQL 无 TLS 例外仅允许已批准的 CloudBase 服务",
+                "mysql_tls_exception_host_not_approved": "MySQL 无 TLS 例外仅允许已批准的内网数据库主机",
             }
             raise RuntimeError(messages[tls_errors[0]])
         if cls.SAFETY_SCHEDULER_LEASE_SECONDS < 30 or cls.SAFETY_SCHEDULER_MAX_ATTEMPTS not in range(1, 11):
