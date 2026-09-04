@@ -9,9 +9,13 @@ RUN python3 -m pip install --no-cache-dir --target /opt/python -r /build/require
     && mkdir -p /runtime-data \
     && chown 65532:65532 /runtime-data
 
-FROM mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:d921452dba64944bf959f22450bb3740f5b2fff4a59faa64bd6b8eaf4c57b5b8
+FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03
 
 WORKDIR /app
+
+# WeChat CloudRun invokes /bin/sh for its lifecycle hook. Keep that platform
+# contract explicit so a shell-less runtime image cannot be released again.
+RUN test -x /bin/sh
 
 COPY --from=builder /opt/python /opt/python
 
@@ -49,7 +53,7 @@ COPY --from=builder --chown=65532:65532 /runtime-data /app/data
 
 WORKDIR /app/backend
 
-USER nonroot
+USER 65532:65532
 
 ENTRYPOINT ["/usr/bin/python3", "/app/verify_rc0810_f03_images.py", "--entrypoint", "--profile", "production", "--"]
 CMD ["gunicorn", "-c", "gunicorn.conf.py", "wsgi:app"]

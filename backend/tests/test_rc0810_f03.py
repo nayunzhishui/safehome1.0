@@ -18,13 +18,14 @@ def test_f03_production_image_is_fail_closed():
         "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:"
         "722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03 AS builder"
     )
-    assert (
-        "FROM mcr.microsoft.com/azurelinux/distroless/python:3.12-nonroot@sha256:"
-        "d921452dba64944bf959f22450bb3740f5b2fff4a59faa64bd6b8eaf4c57b5b8"
-    ) in text
+    assert text.count(
+        "FROM mcr.microsoft.com/azurelinux/base/python:3.12@sha256:"
+        "722b6224c23b3f21f5268e2073f80c0f396bc626e3193b6dbf66e40d89478f03"
+    ) == 2
+    assert "RUN test -x /bin/sh" in text
     assert "python3 -m pip install --no-cache-dir --target /opt/python" in text
     assert "COPY --from=builder /opt/python /opt/python" in text
-    assert "USER nonroot" in text
+    assert "USER 65532:65532" in text
     assert 'ENTRYPOINT ["/usr/bin/python3"' in text
     assert "PRODUCTION_FEATURES_UNLOCKED=1" not in text
     assert "AI_QA_REAL_PROVIDER_ENABLED=1" not in text
