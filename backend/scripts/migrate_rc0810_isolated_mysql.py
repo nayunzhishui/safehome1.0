@@ -143,6 +143,9 @@ def _apply_candidate_schema(conn) -> list[str]:
         lambda: database.ensure_mysql_content_text_capacity(conn),
     )
     _run_stage("schema_columns", lambda: database.ensure_schema_columns(conn))
+    applied = _run_stage(
+        "explicit_migrations", lambda: apply_pending_schema_migrations(conn)
+    )
     for index, statement in enumerate(database.INDEX_SQL, start=1):
         _run_stage(
             f"schema_index:{index}",
@@ -163,9 +166,6 @@ def _apply_candidate_schema(conn) -> list[str]:
         lambda: database.sync_assessment_worksheets(conn),
     )
     _run_stage("legacy_schema_marker", lambda: database.record_schema_migration(conn))
-    applied = _run_stage(
-        "explicit_migrations", lambda: apply_pending_schema_migrations(conn)
-    )
     _run_stage("commit", conn.commit)
     return applied
 

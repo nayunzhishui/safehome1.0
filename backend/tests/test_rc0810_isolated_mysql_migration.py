@@ -120,6 +120,43 @@ def test_explicit_migration_failure_reports_version_without_database_message(mon
     assert "sensitive column message" not in str(captured.value)
 
 
+def test_explicit_migrations_run_before_candidate_indexes(monkeypatch):
+    module = _load_script()
+    events = []
+
+    class FakeConnection:
+        def commit(self):
+            events.append("commit")
+
+    monkeypatch.setattr(module.database, "SCHEMA_SQL", ())
+    monkeypatch.setattr(module.database, "INDEX_SQL", ("CREATE INDEX candidate",))
+    monkeypatch.setattr(module.database, "IDENTITY_UNIQUE_INDEX_SQL", ())
+    monkeypatch.setattr(module.database, "ensure_mysql_index_columns", lambda _conn: None)
+    monkeypatch.setattr(module.database, "ensure_mysql_content_text_capacity", lambda _conn: None)
+    monkeypatch.setattr(module.database, "ensure_schema_columns", lambda _conn: None)
+    monkeypatch.setattr(
+        module,
+        "apply_pending_schema_migrations",
+        lambda _conn: events.append("explicit_migrations") or ["2026_08_24_067"],
+    )
+    monkeypatch.setattr(
+        module.database,
+        "create_index",
+        lambda _conn, _statement: events.append("candidate_index"),
+    )
+    monkeypatch.setattr(
+        module.database, "check_identity_uniqueness", lambda _conn: {"ok": False}
+    )
+    monkeypatch.setattr(module.database, "sync_training_cards", lambda _conn: None)
+    monkeypatch.setattr(module.database, "sync_assessment_worksheets", lambda _conn: None)
+    monkeypatch.setattr(module.database, "record_schema_migration", lambda _conn: None)
+
+    applied = module._apply_candidate_schema(FakeConnection())
+
+    assert applied == ["2026_08_24_067"]
+    assert events == ["explicit_migrations", "candidate_index", "commit"]
+
+
 def test_run_returns_sanitized_stage_failure_to_service_wrapper(monkeypatch):
     module = _load_script()
     expected = "safehome-202609030054"
