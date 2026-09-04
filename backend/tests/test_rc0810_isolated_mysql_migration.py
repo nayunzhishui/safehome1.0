@@ -89,6 +89,38 @@ def test_apply_reports_sanitized_failed_stage_and_mysql_errno(monkeypatch):
     assert "sensitive database message" not in str(captured.value)
 
 
+def test_base_schema_retries_once_after_mysql_connection_loss(monkeypatch):
+    module = _load_script()
+    attempts = []
+
+    class FakeMySqlError(RuntimeError):
+        pass
+
+    class FakeConnection:
+        def execute(self, sql, _params=None):
+            attempts.append(sql)
+            if len(attempts) == 1:
+                raise FakeMySqlError(2013, "lost connection during query")
+
+        def commit(self):
+            return None
+
+    monkeypatch.setattr(module.database, "SCHEMA_SQL", ("CREATE TABLE IF NOT EXISTS retry_me (id TEXT)",))
+    monkeypatch.setattr(module.database, "INDEX_SQL", ())
+    monkeypatch.setattr(module.database, "IDENTITY_UNIQUE_INDEX_SQL", ())
+    monkeypatch.setattr(module.database, "ensure_mysql_index_columns", lambda _conn: None)
+    monkeypatch.setattr(module.database, "ensure_mysql_content_text_capacity", lambda _conn: None)
+    monkeypatch.setattr(module.database, "ensure_schema_columns", lambda _conn: None)
+    monkeypatch.setattr(module, "apply_pending_schema_migrations", lambda _conn: [])
+    monkeypatch.setattr(module.database, "check_identity_uniqueness", lambda _conn: {"ok": False})
+    monkeypatch.setattr(module.database, "sync_training_cards", lambda _conn: None)
+    monkeypatch.setattr(module.database, "sync_assessment_worksheets", lambda _conn: None)
+    monkeypatch.setattr(module.database, "record_schema_migration", lambda _conn: None)
+
+    assert module._apply_candidate_schema(FakeConnection()) == []
+    assert len(attempts) == 2
+
+
 def test_explicit_migration_failure_reports_version_without_database_message(monkeypatch):
     module = _load_script()
 

@@ -30,6 +30,7 @@ from services.schema_migration_service import (  # noqa: E402
 ORIGINAL_PRODUCTION_DATABASE = "safehome"
 ISOLATED_DATABASE_PATTERN = re.compile(r"^safehome-(?:[0-9]{12,14}|r[1-9][0-9]*)$")
 CRITICAL_COUNT_TABLES = ("users", "emotion_diaries", "consent_records", "audit_logs")
+TRANSIENT_MYSQL_CONNECTION_ERRNOS = {2006, 2013}
 
 
 class MigrationStageError(RuntimeError):
@@ -131,12 +132,17 @@ def _snapshot(conn, database_name: str) -> dict:
 
 def _apply_candidate_schema(conn) -> list[str]:
     for index, statement in enumerate(database.SCHEMA_SQL, start=1):
-        _run_stage(
-            f"base_schema:{index}",
-            lambda statement=statement: conn.execute(
-                database.mysqlize_schema_statement(statement)
-            ),
-        )
+        stage = f"base_schema:{index}"
+
+        def operation(statement=statement):
+            return conn.execute(database.mysqlize_schema_statement(statement))
+
+        try:
+            _run_stage(stage, operation)
+        except MigrationStageError as exc:
+            if exc.database_errno not in TRANSIENT_MYSQL_CONNECTION_ERRNOS:
+                raise
+            _run_stage(f"{stage}:retry", operation)
     _run_stage("mysql_index_columns", lambda: database.ensure_mysql_index_columns(conn))
     _run_stage(
         "mysql_content_text_capacity",
