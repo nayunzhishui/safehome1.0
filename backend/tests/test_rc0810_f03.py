@@ -93,6 +93,14 @@ def test_f03_images_package_database_profile_contract():
     assert copy_contract in VALIDATION.read_text(encoding="utf-8")
 
 
+def test_f03_production_image_packages_database_recovery_policy():
+    copy_contract = (
+        "COPY config/rc0810/database_recovery_policy.json "
+        "/app/config/rc0810/database_recovery_policy.json"
+    )
+    assert copy_contract in PRODUCTION.read_text(encoding="utf-8")
+
+
 def test_f03_production_runtime_override_is_rejected():
     execution_flags = [
         "AI_QA_ENABLED",

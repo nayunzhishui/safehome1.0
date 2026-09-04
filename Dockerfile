@@ -48,6 +48,7 @@ COPY backend /app/backend
 COPY content /app/content
 COPY shared /app/shared
 COPY config/rc0810/database_profiles.json /app/config/rc0810/database_profiles.json
+COPY config/rc0810/database_recovery_policy.json /app/config/rc0810/database_recovery_policy.json
 COPY deploy/verify_rc0810_f03_images.py /app/verify_rc0810_f03_images.py
 COPY --from=builder --chown=65532:65532 /runtime-data /app/data
 
