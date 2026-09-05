@@ -101,6 +101,11 @@ def test_f03_production_image_packages_database_recovery_policy():
     assert copy_contract in PRODUCTION.read_text(encoding="utf-8")
 
 
+def test_f03_runtime_dependencies_include_timezone_database():
+    requirements = (ROOT / "backend" / "requirements.txt").read_text(encoding="utf-8")
+    assert "tzdata==2025.2" in requirements.splitlines()
+
+
 def test_f03_production_runtime_override_is_rejected():
     execution_flags = [
         "AI_QA_ENABLED",

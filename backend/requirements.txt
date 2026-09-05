@@ -8,3 +8,4 @@ redis==7.4.1
 scikit-learn==1.9.0
 pydantic==1.10.26
 jsonschema==4.26.0
+tzdata==2025.2
