@@ -372,6 +372,15 @@
 
 ## UIproduct2 当前全页功能真值（2026-09-08）
 
+### 第20–28页复核增量
+
+- 共同理解总览保留两条路径：进入分步流程、直接提交问题；前者为主要导航，后者为次行动。服务级别仍显示，合同加载不等于正式批准，标题改为“协作规则”。`production_release_approved`在本地合同中仍为false；未改变发布状态。
+- 分步页新增纯展示属性`ui2`，默认false，各页面在Figma完成后显式传true。`description`早已由CONFIG提供并传入组件，本轮将它呈现在正文区；不增加后端字段或新的同意。
+- 八步CONFIG、shared_scope映射、版本、草稿和所有API方法完全未改。新增说明条件仅`ui2 && description`，装饰眉题仅在旧视觉保留；所有业务状态分支与事件不变。
+- 总览、流程和输入组件原有事件/数据属性/maxlength/disabled/loading保持。共享三选项不预选；“不像”保留原因输入；只有sent反馈可展示；撤回/过期与安全暂停条件不变。
+- 行动页初始canContinue仍由既有代码根据已发送反馈决定；表单输入后由内容与自愿确认判断。未把Figma默认稿伪造为所有空字段一律禁用，也未增加日期选择器或提醒承诺。
+
+
 ### 第17–19页复核增量
 
 - 关系报告：feedbackSavingIndex已在JS中锁住全部假设保存；界面现同步disabled及保存提示，没有新增限制。日期新增generatedAtText纯展示，原report.generated_at保留。feedback-rating使用editorial布尔属性，不存在variant属性。

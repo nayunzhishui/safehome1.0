@@ -2,14 +2,16 @@
   box-sizing: border-box;
   width: 100%;
   min-height: 392rpx;
-  padding: 40rpx;
-  border: 2rpx solid var(--safe-border);
-  border-radius: 36rpx;
+  padding: var(--ui2-textarea-padding,40rpx);
+  border: 2rpx solid var(--ui2-control-border,var(--safe-border));
+  border-radius: var(--ui2-button-radius,36rpx);
   background: var(--safe-card);
   color: var(--safe-title);
-  font-size: 28rpx;
-  line-height: 46rpx;
+  font-size: var(--ui2-body,28rpx);
+  line-height: var(--ui2-textarea-line-height,46rpx);
 }
 .therapeutic-textarea--filled { border-color: var(--safe-primary-deep); }
 .therapeutic-textarea--error { border-color: var(--safe-danger); }
 .therapeutic-textarea[disabled] { background: var(--safe-bg-soft); }
+
+.therapeutic-placeholder { color: var(--ui2-muted,var(--safe-muted)); }

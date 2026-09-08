@@ -1,8 +1,9 @@
 .ta-page {
   display: grid;
-  gap: 30rpx;
-  padding-bottom: calc(52rpx + env(safe-area-inset-bottom));
-  background: #faf8f4;
+  gap: 48rpx;
+  padding-top: 48rpx;
+  padding-bottom: calc(64rpx + env(safe-area-inset-bottom));
+  background: var(--ui2-canvas);
 }
 
 .ta-kicker,
@@ -27,13 +28,13 @@
 .ta-hero {
   display: grid;
   gap: 14rpx;
-  padding: 12rpx 0 10rpx;
+  padding: 0;
   text-align: center;
 }
 
 .ta-kicker {
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 30rpx;
   font-weight: 750;
   line-height: 1.4;
 }
@@ -41,16 +42,16 @@
 .ta-title {
   color: var(--safe-title);
   font-size: 44rpx;
-  font-weight: 850;
-  line-height: 1.25;
+  font-weight: 700;
+  line-height: 1.6;
   text-align: center;
 }
 
 .ta-copy,
 .ta-feedback-copy,
 .ta-question {
-  color: var(--safe-text);
-  font-size: 27rpx;
+  color: var(--ui2-ink);
+  font-size: 30rpx;
   line-height: 1.68;
 }
 
@@ -63,18 +64,16 @@
 .ta-loading {
   padding: 22rpx 24rpx;
   border-radius: 18rpx;
-  font-size: 25rpx;
+  font-size: 30rpx;
   line-height: 1.6;
 }
 
 .ta-notice {
-  border-left: 5rpx solid var(--safe-primary);
   background: var(--safe-primary-pale);
   color: var(--safe-primary-deep);
 }
 
 .ta-error {
-  border-left: 5rpx solid var(--safe-danger);
   background: #fff3f1;
   color: #8b3b36;
 }
@@ -95,8 +94,9 @@
 }
 
 .ta-entry {
-  padding-bottom: 28rpx;
-  border-bottom: 1rpx solid var(--safe-border);
+  padding: 40rpx;
+  border-radius: 24rpx;
+  background: var(--ui2-soft);
 }
 
 .ta-entry__heading,
@@ -125,7 +125,7 @@
 
 .ta-meta {
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 30rpx;
   line-height: 1.6;
 }
 
@@ -137,14 +137,14 @@
   border-radius: 999rpx;
   background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 30rpx;
   line-height: 1.4;
 }
 
 .ta-link-action,
 .ta-text-action,
 .ta-withdraw {
-  min-height: 72rpx;
+  min-height: 96rpx;
   margin: 0;
   border: 0;
   background: transparent;
@@ -160,7 +160,7 @@
 .ta-link-action {
   padding: 10rpx 0;
   color: var(--safe-primary-deep);
-  font-size: 25rpx;
+  font-size: 30rpx;
   font-weight: 750;
   text-align: left;
 }
@@ -186,7 +186,7 @@
   min-width: 0;
   padding: 10rpx 14rpx 10rpx 0;
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 30rpx;
   font-weight: 700;
   text-align: left;
 }
@@ -195,17 +195,17 @@
 .ta-evidence-line {
   padding: 14rpx 0;
   border-top: 1rpx solid var(--safe-border);
-  color: var(--safe-text);
-  font-size: 25rpx;
+  color: var(--ui2-ink);
+  font-size: 30rpx;
   line-height: 1.62;
 }
 
 .ta-feedback,
 .ta-next-action {
-  padding: 26rpx;
-  border: 1rpx solid var(--safe-border-strong);
-  border-radius: 22rpx;
-  background: var(--safe-primary-pale);
+  padding: 32rpx;
+  border: 0;
+  border-radius: 24rpx;
+  background: var(--ui2-soft);
 }
 
 .ta-feedback {
@@ -217,9 +217,9 @@
   padding: 24rpx;
   border: 1rpx solid var(--safe-border);
   border-radius: 20rpx;
-  background: rgba(255, 255, 255, .72);
+  background: var(--ui2-surface);
   color: var(--safe-muted);
-  font-size: 25rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -232,14 +232,13 @@
   display: grid;
   gap: 8rpx;
   padding: 18rpx 20rpx;
-  border-left: 5rpx solid var(--safe-primary);
   border-radius: 16rpx;
   background: var(--safe-primary-pale);
 }
 
 .ta-evidence-summary__main {
   color: var(--safe-title);
-  font-size: 25rpx;
+  font-size: 30rpx;
   font-weight: 700;
   line-height: 1.6;
 }
@@ -247,13 +246,13 @@
 .ta-withdraw {
   padding: 8rpx 0;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 30rpx;
   text-align: left;
 }
 
 .ta-next-action {
   gap: 16rpx;
-  background: rgba(255, 255, 255, .72);
+  background: var(--ui2-surface);
 }
 
 .ta-question-form {
@@ -265,23 +264,23 @@
 .ta-textarea {
   box-sizing: border-box;
   width: 100%;
-  min-height: 190rpx;
-  padding: 20rpx;
-  border: 1rpx solid var(--safe-border);
+  min-height: 280rpx;
+  padding: 24rpx;
+  border: 2rpx solid var(--ui2-control-border);
   border-radius: 20rpx;
   background: #fff;
   color: var(--safe-title);
-  font-size: 27rpx;
+  font-size: 30rpx;
   line-height: 1.6;
 }
 
 .ta-textarea--short {
-  min-height: 142rpx;
+  min-height: 200rpx;
 }
 
 .ta-field-label {
-  color: var(--safe-text);
-  font-size: 25rpx;
+  color: var(--ui2-ink);
+  font-size: 30rpx;
   font-weight: 750;
 }
 
@@ -292,20 +291,20 @@
 
 .ta-scope-list label {
   display: flex;
-  min-height: 88rpx;
+  min-height: 96rpx;
   align-items: center;
   gap: 14rpx;
   padding: 0 18rpx;
   border: 1rpx solid var(--safe-border);
   border-radius: 18rpx;
-  background: rgba(255, 255, 255, .72);
-  color: var(--safe-text);
-  font-size: 26rpx;
+  background: var(--ui2-surface);
+  color: var(--ui2-ink);
+  font-size: 30rpx;
 }
 
 .ta-form-boundary {
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 30rpx;
   line-height: 1.62;
 }
 
@@ -339,15 +338,15 @@
 
 .ta-policy-title {
   color: var(--safe-primary-deep);
-  font-size: 26rpx;
+  font-size: 30rpx;
   font-weight: 750;
   line-height: 1.5;
 }
 
 .ta-policy-copy,
 .ta-policy-boundary {
-  color: var(--safe-text);
-  font-size: 25rpx;
+  color: var(--ui2-ink);
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -365,7 +364,7 @@
   padding-top: 24rpx;
   border-top: 1rpx solid var(--safe-border);
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -376,7 +375,7 @@
   }
 
   .ta-title {
-    font-size: 40rpx;
+    font-size: 44rpx;
   }
 
   .ta-entry__heading,
@@ -397,3 +396,12 @@
     margin: 0 auto;
   }
 }
+
+.ta-service-level { display: block; color: var(--ui2-primary); font-size: 26rpx; line-height: 1.6; }
+.ta-status, .ta-version, .ta-policy-status { max-width: 100%; font-size: 26rpx; overflow-wrap: anywhere; }
+.ta-entry__heading, .ta-heading, .ta-contract-heading { flex-wrap: wrap; }
+.ta-placeholder { color: var(--ui2-muted); font-size: 30rpx; }
+.ta-question-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16rpx; }
+.ta-text-action, .ta-withdraw { display: flex; align-items: center; justify-content: center; padding: 20rpx 24rpx; border: 2rpx solid var(--ui2-control-border); border-radius: 24rpx; background: var(--ui2-surface); color: var(--ui2-primary); text-align: center; }
+.ta-next-action { padding: 0; border-radius: 0; background: transparent; }
+.ta-scope-list label { padding: 0; border: 0; border-radius: 0; background: transparent; }

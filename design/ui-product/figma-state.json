@@ -759,7 +759,7 @@
     "home": "387:7",
     "homeHeader": "387:8",
     "homeTitle": "387:9",
-    "activeRoute": "pages/therapeutic-assessment/index",
+    "activeRoute": "pages/therapeutic-assessment-action-followup/index",
     "login": "392:103",
     "passwordChange": "393:122",
     "homeEntryRow": "388:17",
@@ -851,6 +851,44 @@
         "feedback": "476:438",
         "records": "476:466",
         "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment/index": {
+        "figma": "484:418",
+        "implementation": "implemented_pending_final_check",
+        "activeCase": "488:420"
+      },
+      "pages/therapeutic-assessment-boundary/index": {
+        "figma": "492:429",
+        "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment-issue/index": {
+        "figma": "497:441",
+        "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment-recent-event/index": {
+        "figma": "501:444",
+        "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment-resources/index": {
+        "figma": "502:447",
+        "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment-sharing/index": {
+        "figma": "503:450",
+        "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment-summary/index": {
+        "figma": "505:467",
+        "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment-feedback-check/index": {
+        "figma": "508:479",
+        "implementation": "implemented_pending_final_check",
+        "notLike": "512:505"
+      },
+      "pages/therapeutic-assessment-action-review/index": {
+        "figma": "512:557",
+        "implementation": "implemented_pending_final_check"
       }
     },
     "register": "394:135",
@@ -934,7 +972,15 @@
       "status": "current_pages_self_review_in_progress",
       "programList": "local_draft_preview_not_release_approval",
       "programDetail": "readonly_local_draft_content",
-      "remaining_work": "34 routes remain; complex state coverage, Figma/code final comparison and device validation pending"
+      "remaining_work": "25 routes remain; full state, long content, keyboard/screen reader and device validation pending"
+    },
+    "flowComponents": {
+      "choiceSet": "499:447",
+      "choiceDefault": "498:441",
+      "choiceSelected": "499:441",
+      "choiceLabel": "Label#499:0",
+      "choiceDescription": "Description#499:1",
+      "feedbackLetter": "510:479"
     }
   }
 }

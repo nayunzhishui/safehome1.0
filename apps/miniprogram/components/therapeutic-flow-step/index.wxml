@@ -1,11 +1,11 @@
-<view class="taf-page" role="main" aria-label="{{title}}">
+<view class="taf-page {{ui2 ? 'ui2-page' : ''}}" role="main" aria-label="{{title}}">
   <view class="taf-progress" aria-label="第 {{stepNumber}} 步，共 {{stepTotal}} 步">
     <view class="taf-progress__bar"><view class="taf-progress__value" style="width: {{stepNumber * 12.5}}%;"></view></view>
-    <text>0{{stepNumber}} / 0{{stepTotal}}</text>
+    <text>{{ui2 ? '第 ' + stepNumber + ' 步 / 共 ' + stepTotal + ' 步' : '0' + stepNumber + ' / 0' + stepTotal}}</text>
   </view>
 
   <view class="taf-hero">
-    <text class="safe-eyebrow">{{eyebrow}}</text>
+    <text wx:if="{{!ui2}}" class="safe-eyebrow">{{eyebrow}}</text>
     <text class="safe-h1">{{title}}</text>
   </view>
 
@@ -29,6 +29,7 @@
   </view>
 
   <view wx:if="{{!loading && stateKind !== 'withdrawn' && stateKind !== 'expired'}}" class="safe-card taf-card">
+    <text wx:if="{{ui2 && description}}" class="taf-description">{{description}}</text>
     <text wx:if="{{prompt}}" class="safe-h3">{{prompt}}</text>
 
     <therapeutic-feedback-letter

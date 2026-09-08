@@ -3,10 +3,12 @@
   width: 100%;
   min-height: 164rpx;
   padding: 26rpx 30rpx;
-  border: 2rpx solid var(--safe-border);
+  border: 2rpx solid var(--ui2-control-border,var(--safe-border));
   border-radius: 24rpx;
   background: var(--safe-card);
   color: var(--safe-title);
-  font-size: 28rpx;
-  line-height: 44rpx;
+  font-size: var(--ui2-body,28rpx);
+  line-height: var(--ui2-textarea-line-height,44rpx);
 }
+
+.compact-placeholder { color: var(--ui2-muted,var(--safe-muted)); }

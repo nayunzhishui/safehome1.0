@@ -25,3 +25,26 @@
 .taf-actions button { min-height: 88rpx; }
 .taf-offline { padding: 20rpx 22rpx; border: 1rpx solid var(--safe-warning); border-radius: 18rpx; background: #fff7e8; color: #744818; font-size: 24rpx; line-height: 1.6; }
 .taf-boundary { display: block; color: var(--safe-muted); font-size: 23rpx; line-height: 1.65; text-align: left; }
+
+/* Opt-in after each route's UIproduct2 Figma design. */
+.taf-page.ui2-page { --ui2-choice-height: 160rpx; --ui2-choice-padding: 24rpx; --ui2-choice-gap: 24rpx; --ui2-choice-mark: 48rpx; --ui2-choice-line-height: 48rpx; --ui2-textarea-padding: 32rpx; --ui2-textarea-line-height: 48rpx; --ui2-comparison-columns: minmax(0, 1fr); --ui2-feedback-title: 34rpx; gap: 48rpx; padding-top: 40rpx; padding-bottom: calc(64rpx + env(safe-area-inset-bottom)); }
+.ui2-page .taf-progress { display: flex; flex-direction: column; align-items: stretch; gap: 16rpx; font-size: 26rpx; color: var(--ui2-muted); }
+.ui2-page .taf-progress__bar { order: 2; }
+.ui2-page .taf-hero .safe-h1 { font-size: 44rpx; line-height: 1.6; font-weight: 700; }
+.ui2-page .taf-card { margin: 0; gap: 40rpx; padding: 0; border: 0; }
+.taf-description { display: block; color: var(--ui2-muted); font-size: 30rpx; line-height: 1.6; }
+.ui2-page .taf-card .safe-h3 { margin: 0; font-size: 32rpx; line-height: 1.6; }
+.ui2-page .taf-options { gap: 24rpx; }
+.ui2-page .draft-status { color: var(--ui2-muted); font-size: 26rpx; line-height: 1.6; }
+.ui2-page .taf-actions { position: static; grid-template-columns: 192rpx minmax(0, 1fr); gap: 16rpx; padding: 0; background: transparent; }
+.ui2-page .taf-actions button { min-height: 96rpx; padding: 20rpx 16rpx; font-size: 30rpx; line-height: 1.5; border-radius: 24rpx; }
+.ui2-page .taf-actions .safe-ghost-button { border: 2rpx solid var(--ui2-control-border); background: var(--ui2-surface); color: var(--ui2-primary); }
+.ui2-page .taf-boundary, .ui2-page .taf-offline { font-size: 30rpx; line-height: 1.6; }
+.ui2-page .taf-action-section__rule { display: none; }
+.ui2-page .taf-action-section__heading { display: block; font-size: 32rpx; }
+.ui2-page .taf-action-section, .ui2-page .taf-action-form { gap: 40rpx; }
+.ui2-page .taf-field { gap: 16rpx; }
+.ui2-page .taf-field__label { font-size: 30rpx; line-height: 1.6; }
+.ui2-page .taf-action-grid { grid-template-columns: minmax(0, 1fr); gap: 40rpx; }
+.ui2-page .taf-input { min-height: 96rpx; font-size: 30rpx; border-color: var(--ui2-control-border); border-radius: 24rpx; }
+.ui2-page .taf-confirmation { font-size: 30rpx; line-height: 1.6; border-color: var(--ui2-control-border); }

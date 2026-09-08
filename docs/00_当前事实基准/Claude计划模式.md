@@ -4,14 +4,13 @@
 
 ### 连续实现与审美校准 checkpoint（最新）
 
-- [x] app.json前19/53页已有Figma与前端实现；本轮推进关系报告、关系任务、关系成长。各状态node见figma-state.uiProduct2.pages。
-- [x] 项目详情补合成可编辑态456:392，不改变本地草案真实待审核状态。
-- [x] 自查修正保存反馈、组件真实属性、重复眉题、小字、曲线标签及Figma容器/颜色/裁切；参考已查阅的Apple/Rauno原则。
-- [x] 三页原有事件、dataset、条件、输入上限保留；9个唯一WXML/10个唯一WXSS通过分批定向编译；报告6场景和成长3量尺坐标对比通过。
-- [ ] 当前为implemented_pending_final_check / review_pending_wave，不是最终视觉、设备或发布通过。
-- [ ] 下一页pages/therapeutic-assessment/index（第20页），余34页逐一执行。最终补复杂状态覆盖、Figma/代码一致性与真机验证。
-- [x] 本地UI检查点91e1b151已保存，独立动画和三份动画记录已隔离；无生产操作。
-- [ ] 推送origin/UIproduct2被权限检查拒绝，远端未同步，需明确目的地授权后再处理。
+- [x] app.json前28/53页已实现；本轮第20–28页覆盖共同理解总览与八个分步页，节点见figma-state.uiProduct2。
+- [x] 先核对功能/冻结，再逐页Figma及前端；总览主次行动、政策边界、步骤说明、来源区分、输入与自愿确认保持真实。
+- [x] 仅新增展示ui2属性，流程工厂JS及API完全未改；16 WXML/9 WXSS原生编译、9页事件合同与11个定向流程场景通过。
+- [x] 修正Figma旧组件尺寸/绝对定位覆盖失败、标签断行、空日期控件高度和遗漏政策边界；使用最少UI2变体，不扩大组件库。
+- [ ] 全部为implemented_pending_final_check / review_pending_wave；剩余25页，复杂状态、Figma/代码完整对照与真机未验收。
+- [ ] 下一页pages/therapeutic-assessment-action-followup/index（第29页），随后quality和growth-dashboard。
+- [x] 本轮源码与文档构成本地UI检查点；不重试此前被拒绝的origin/UIproduct2推送，独立动画保持未提交。
 
 ### 前五页审查 checkpoint（历史）
 
@@ -29,8 +28,8 @@
 - [x] 03 注册：Figma 394:135；账号信息/使用身份分组，原生picker及真实3/8字符规则保留。
 - [x] 04 消息：Figma 397:154；开放消息列表、未读/已读/撤回；仅组件显示层格式化日期，原对象与打开事件保留。
 - [x] 05 支持性问答：Figma 400:184；能力来源、边界、输入与阅读分工；AI/RAG及合成演示的真实绑定保留。
-- [x] 06–19 已按当前checkpoint实施；并非最终验收通过。
-- [ ] 20–53：按app.json其余路由顺序继续，每页先Figma后代码；不将统一主题命中视为该页已重构。
+- [x] 06–28 已按当前checkpoint实施；并非最终验收通过。
+- [ ] 29–53：按app.json其余路由顺序继续，每页先Figma后代码；不将统一主题命中视为该页已重构。
 - [ ] 全页统一检查：全部53页布局、状态/弱网、功能保护、可访问性、微信开发者工具编译及最终真机用户验收。
 
 当前5/53页状态为implemented_pending_final_check，不是最终完成。5页事件/输入合同保留检查通过；日期格式化与open事件4项定向断言通过；未运行全量业务测试或旧Harness。尚未取得本轮DevTools/真机证据。尚未提交推送；原有pelican-cycling.html及其三份动画记录不属于本轮，提交时必须隔离。

@@ -4,5 +4,6 @@
   value="{{value}}"
   aria-label="{{ariaLabel}}"
   placeholder="{{placeholder}}"
+  placeholder-class="compact-placeholder"
   bindinput="handleInput"
 ></textarea>

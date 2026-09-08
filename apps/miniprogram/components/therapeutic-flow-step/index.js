@@ -4,6 +4,7 @@ Component({
     reminderOptions: ["不提醒", "仅站内提醒", "微信订阅提醒"],
   },
   properties: {
+    ui2: { type: Boolean, value: false },
     stepNumber: { type: Number, value: 1 },
     stepTotal: { type: Number, value: 8 },
     eyebrow: { type: String, value: "协作式阶段性评估" },

@@ -1,6 +1,5 @@
-<view class="safe-page ta-page" role="main" aria-label="支持性评估">
+<view class="safe-page ui2-page ta-page" role="main" aria-label="支持性评估">
   <view class="ta-hero">
-    <text class="ta-kicker">{{activeCase ? activeCase.service_level.display_name : defaultServiceLevel.display_name}} · 可撤回</text>
     <text class="ta-title">共同理解一次关系体验</text>
   </view>
 
@@ -8,6 +7,8 @@
   <view wx:if="{{errorMessage}}" class="ta-error" role="alert">{{errorMessage}}</view>
 
   <view class="ta-entry">
+    <text class="ta-service-level">{{activeCase ? activeCase.service_level.display_name : defaultServiceLevel.display_name}} · 可撤回</text>
+
     <view class="ta-entry__heading">
       <view>
         <text class="ta-section-title">{{activeCase ? '你的最近一次协作' : '开始一次支持性协作'}}</text>
@@ -70,32 +71,31 @@
   <view wx:if="{{activeCase && activeCase.latestFeedback}}" class="ta-next-action">
     <text class="ta-section-title">选择一个愿意尝试的小行动</text>
     <text class="ta-meta">仅在收到经人工复核的反馈后记录。</text>
-    <textarea class="ta-textarea ta-textarea--short" maxlength="500" value="{{actionText}}" bindinput="onActionInput" placeholder="写下低压力、可退出、今天能完成的一小步"></textarea>
-    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="chooseAction">记录下一小步</button>
+    <textarea class="ta-textarea ta-textarea--short" aria-label="愿意尝试的小行动" placeholder-class="ta-placeholder" maxlength="500" value="{{actionText}}" bindinput="onActionInput" placeholder="写下低压力、可退出、今天能完成的一小步"></textarea>
+    <button class="safe-outline-button" loading="{{saving}}" disabled="{{saving}}" bindtap="chooseAction">记录下一小步</button>
   </view>
 
   <view class="ta-question-form">
     <text class="ta-section-title">写下想共同理解的问题</text>
     <text class="ta-meta">描述一件具体情境或感受，不急着解释谁对谁错。</text>
-    <textarea class="ta-textarea" maxlength="1000" value="{{question}}" bindinput="onQuestionInput" placeholder="例如：最近一次沟通中，什么让我既想靠近又想退开？"></textarea>
+    <textarea class="ta-textarea" aria-label="想共同理解的问题" placeholder-class="ta-placeholder" maxlength="1000" value="{{question}}" bindinput="onQuestionInput" placeholder="例如：最近一次沟通中，什么让我既想靠近又想退开？"></textarea>
     <text class="ta-field-label">本次愿意共享</text>
     <checkbox-group class="ta-scope-list" bindchange="onScopeChange">
-      <label><checkbox value="question" checked="{{shareQuestion}}" color="#4f7c6b" />上面的问题</label>
-      <label><checkbox value="recent_record" checked="{{shareRecentRecord}}" color="#4f7c6b" />最近一次相关记录</label>
+      <label><checkbox value="question" checked="{{shareQuestion}}" color="#23666e" />上面的问题</label>
+      <label><checkbox value="recent_record" checked="{{shareRecentRecord}}" color="#23666e" />最近一次相关记录</label>
     </checkbox-group>
-    <button class="safe-primary-button" loading="{{saving}}" disabled="{{saving}}" bindtap="createCase">提交协作问题</button>
+    <button class="safe-outline-button" loading="{{saving}}" disabled="{{saving}}" bindtap="createCase">提交协作问题</button>
     <text class="ta-form-boundary">提交后仍可调整共享范围、表达不同意见或撤回。高风险内容会优先进入人工支持，不生成普通自动建议。</text>
   </view>
 
   <view class="ta-policy-index" aria-label="开始前了解">
     <view class="ta-policy-heading">
-      <view class="ta-open-corner"></view>
       <text class="ta-section-title">开始前了解</text>
     </view>
 
     <view wx:if="{{productionContract}}" class="ta-policy-intro">
       <view class="ta-contract-heading">
-        <text class="ta-policy-title">协作边界已对齐</text>
+        <text class="ta-policy-title">协作规则</text>
         <text class="ta-version">{{productionContract.version}}</text>
       </view>
       <text class="ta-meta">服务级别、人员胜任力、对象权限和安全状态分别判断；任一项未知都会暂停继续。</text>
