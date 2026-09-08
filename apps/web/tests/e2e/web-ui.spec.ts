@@ -273,3 +273,84 @@ test("compact website and workspace menus restore keyboard focus and close after
   await expect(workspaceToggle).toBeFocused();
   await expect(workspaceToggle).toHaveAttribute("aria-expanded", "false");
 });
+
+
+test("content clarity distinguishes signed-out access from forbidden roles", async ({ page }) => {
+  await page.route("**/api/**", route => route.fulfill({ status: 401, json: { ok: false, error: { code: "unauthorized", message: "请登录" } } }));
+  await page.goto("/dashboard");
+  await expect(page.getByRole("heading", { name: "请先登录工作台" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "返回网站首页" })).toHaveAttribute("href", "/");
+  await expect(page.getByRole("link", { name: "登录工作台" })).toHaveAttribute("href", "/login");
+  await expect(page.getByRole("region", { name: "权限说明" })).toContainText("管理员、研究者、督导");
+  await stableWidth(page);
+});
+
+test("content clarity does not present unavailable overview data as zero", async ({ page }) => {
+  await identity(page);
+  await page.goto("/dashboard");
+  await expect(page.locator(".status.error").first()).toBeVisible();
+  await expect(page.getByLabel("总览指标").locator("strong")).toHaveText(["—", "—", "—", "—"]);
+  await page.getByText("这些数字如何理解？", { exact: true }).click();
+  await expect(page.locator(".contentReadingNote").first()).toContainText("各最多读取 50 条");
+  await stableWidth(page);
+});
+
+test("content clarity explains report scope without generating premature advice", async ({ page }) => {
+  await identity(page);
+  await page.goto("/reports");
+  await expect(page.getByLabel("周报概况")).toHaveCount(0);
+  await expect(page.getByLabel("下周一个小任务")).toHaveCount(0);
+  await page.getByText("统计范围与阅读顺序", { exact: true }).click();
+  await expect(page.locator(".contentReadingNote").first()).toContainText("不会随选中周报切换");
+  await stableWidth(page);
+});
+
+test("content clarity provides readable account help without implying admin registration", async ({ page }) => {
+  await identity(page);
+  await page.goto("/login");
+  await page.getByText("忘记密码，或需要后台账号？", { exact: true }).click();
+  await expect(page.locator(".authHelp")).toContainText("后台令牌也不是登录密码");
+  await expect(page.locator(".authHelp p").first()).toHaveCSS("font-size", "16px");
+  await stableWidth(page);
+});
+
+
+test("companion motion keeps scene changes immediate and keyboard focus stable", async ({ page }) => {
+  await identity(page);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const diary = page.locator(".previewDiary");
+  await expect(diary).toHaveCSS("animation-name", "companion-scene");
+  await expect(diary).toHaveCSS("animation-iteration-count", "1");
+  const switcher = page.getByRole("group", { name: "选择演示场景" });
+  const scene = switcher.getByRole("button", { name: "亲子沟通" });
+  await scene.focus();
+  await page.keyboard.press("Enter");
+  await expect(scene).toBeFocused();
+  await expect(scene).toHaveAttribute("aria-pressed", "true");
+  await expect(diary).toContainText("今天过得怎么样");
+  await expect(page.locator(".previewFeedback")).toContainText("希望多了解孩子一些");
+  await switcher.getByRole("button", { name: "手机使用" }).click();
+  await switcher.getByRole("button", { name: "作业拖延" }).click();
+  await expect(diary).toContainText("晚饭后");
+  await expect(diary).toHaveCSS("opacity", "1");
+  await expect(page.locator(".previewBody")).toHaveAttribute("aria-live", "polite");
+  await stableWidth(page);
+});
+
+test("companion motion respects reduced motion without hiding any content", async ({ page }) => {
+  await identity(page);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.locator(".companionHero > h1")).toHaveCSS("animation-name", "none");
+  await page.getByRole("group", { name: "选择演示场景" }).getByRole("button", { name: "手机使用" }).click();
+  for (const selector of [".previewDiary", ".previewFeedback"]) {
+    await expect(page.locator(selector)).toHaveCSS("animation-name", "none");
+    await expect(page.locator(selector)).toHaveCSS("opacity", "1");
+  }
+  const faq = page.locator(".companionFaq details").nth(1);
+  await faq.locator("summary").click();
+  await expect(faq.locator("p")).toBeVisible();
+  await expect(faq.locator("p")).toHaveCSS("animation-name", "none");
+  await stableWidth(page);
+});

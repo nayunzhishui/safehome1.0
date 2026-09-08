@@ -104,13 +104,13 @@ export function LoginPage() {
           <p className="eyebrow">SafeHome</p>
           <h1>登录</h1>
         </div>
-        <p className="subtitle">使用已注册的账号登录。匿名试用请直接访问首页。</p>
+        <p className="subtitle">家长、学生使用已注册账号；研究者、督导和管理员使用项目负责人开通的账号。</p>
       </div>
 
       {mustChangePassword ? (
         <form className="authForm" onSubmit={(e) => { void handlePasswordChange(e); }}>
           <h2>首次登录，请先设置新密码</h2>
-          <p className="subtitle">新密码至少 12 位，并包含三类字符。更新后临时密码和旧会话立即失效。</p>
+          <p className="subtitle">新密码至少 12 位，并包含大写字母、小写字母、数字、符号中的至少三类。更新后临时密码和旧会话立即失效。</p>
           <label className="tokenField">
             新密码
             <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
@@ -145,6 +145,11 @@ export function LoginPage() {
         </button>
       </form>}
 
+      <details className="authHelp">
+        <summary>忘记密码，或需要后台账号？</summary>
+        <p>请联系项目负责人核对账号并安排密码重置。普通注册不会获得管理员权限，后台令牌也不是登录密码。</p>
+        <p>如收到临时密码，请在首次登录时按提示设置新密码；不要在情绪记录、反馈或共享文档中填写密码。</p>
+      </details>
       <p className="authLinks">
         还没有账号？<a href="/register">注册新账号</a> ｜ <a href="/privacy">隐私中心</a>
       </p>

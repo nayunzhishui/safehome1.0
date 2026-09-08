@@ -5344,3 +5344,44 @@ p { text-wrap: pretty; }
   .reportPage { color: #000; background: #fff; }
   .reportPage :is(.panel, .guidanceBox, .chart-box) { break-inside: avoid; box-shadow: none; }
 }
+
+/* Reading support: explanations stay near the data or account action they clarify. */
+[data-web-ui] :is(.contentReadingNote, .authHelp) { margin: 20px 0; padding: 18px 22px; border: 1px solid var(--safe-line); border-radius: 12px; color: var(--safe-ink, #202622); font-size: 16px; line-height: 1.8; overflow-wrap: anywhere; }
+[data-web-ui] :is(.contentReadingNote, .authHelp) summary { cursor: pointer; font-weight: 600; min-height: 28px; }
+[data-web-ui] :is(.contentReadingNote, .authHelp) p { max-width: 72ch; margin: 12px 0 0; font-size: 16px; line-height: 1.8; }
+[data-web-ui] :is(.contentReadingNote, .authHelp) summary:focus-visible { outline: 2px solid var(--safe-primary, #2f5b4d); outline-offset: 5px; }
+[data-web-ui] .companionFaq details p { max-width: 60ch; line-height: 1.85; }
+
+/* Companion motion: one short response to arrival, selection or intent.
+   Text stays readable; no loops, scroll handlers, layout animation or timers. */
+@keyframes companion-arrive {
+  from { opacity: .82; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes companion-scene {
+  from { opacity: .72; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes companion-answer {
+  from { opacity: .85; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-web-ui] .companionHero > h1 { animation: companion-arrive 420ms cubic-bezier(.2,.7,.2,1); }
+  [data-web-ui] .previewDiary { animation: companion-scene 240ms ease-out; }
+  [data-web-ui] .previewFeedback { animation: companion-scene 320ms ease-out; }
+  [data-web-ui] .companionFaq details[open] > p { animation: companion-answer 180ms ease-out; }
+  [data-web-ui] :is(.primaryButton, .secondaryButton, .sceneSwitcher button) {
+    transition: transform 140ms ease-out, background-color 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
+  }
+  [data-web-ui] :is(.primaryButton, .secondaryButton, .sceneSwitcher button):active:not(:disabled):not([aria-disabled="true"]) { transform: scale(.98); }
+  [data-web-ui] .companionActions a > svg,
+  [data-web-ui] .assessmentEntries a > svg { transition: transform 180ms ease-out; }
+  [data-web-ui] :is(.companionActions, .assessmentEntries) a:focus-visible > svg { transform: translateX(3px); }
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  [data-web-ui] :is(.companionActions, .assessmentEntries) a:hover > svg { transform: translateX(3px); }
+}
+@media print {
+  [data-web-ui] *, [data-web-ui] *::before, [data-web-ui] *::after { animation: none !important; transition: none !important; }
+}

@@ -226,7 +226,7 @@ export function FeedbackManagement() {
       <div className="metricGrid" aria-label="反馈结果概况">
         <MetricCard label="反馈结果" value={state.feedback.length} />
         <MetricCard label="关联记录" value={linkedDiaries.size} />
-        <MetricCard label="中高提示" value={mediumOrHighFeedback} />
+        <MetricCard label="中高风险反馈" value={mediumOrHighFeedback} />
         <MetricCard label="推荐卡片" value={recommendedCards.size} />
       </div>
 
@@ -297,12 +297,12 @@ export function FeedbackManagement() {
                 <h3>边界提示</h3>
                 <p>
                   反馈结果用于检查规则输出和推荐卡片是否稳定，不用于诊断家长、孩子或家庭关系。需要进一步理解时，应回到具体记录和支持性练习建议。
-                  如果风险提示为 high，后台不应把它作为普通训练卡推荐处理。
+                  高风险记录应优先进入人工支持流程，不作为普通训练卡推荐处理。
                 </p>
               </section>
             </div>
           ) : (
-            <div className="emptyState">选择左侧反馈结果后，这里会显示详情。</div>
+            <div className="emptyState">从反馈列表选择一条记录，查看触发点、支持性反馈与下一步建议。</div>
           )}
         </section>
       </div>

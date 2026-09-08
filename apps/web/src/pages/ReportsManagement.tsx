@@ -189,7 +189,7 @@ function buildTrendSuggestion(profileResults: AssessmentResult[], checkins: Chec
 export function ReportsManagement() {
   const [state, setState] = useState<ReportsState>({
     status: "idle",
-    message: "点击读取，可以通过当前 CSV 导出接口查看已生成的周报记录。",
+    message: "点击读取，查看已保存的周报、画像结果和练习记录。本页不会自动生成新周报。",
     reports: [],
     profileResults: [],
     checkins: [],
@@ -222,7 +222,7 @@ export function ReportsManagement() {
     setState((current) => ({
       ...current,
       status: "loading",
-      message: "正在读取周报记录 CSV...",
+      message: "正在读取已保存的周报记录...",
     }));
 
     try {
@@ -289,21 +289,27 @@ export function ReportsManagement() {
         </p>
       </section>
 
+      <details className="contentReadingNote">
+        <summary>统计范围与阅读顺序</summary>
+        <p>先选择一份周报，核对报告周期，再阅读具体场景与下周建议。下方画像和练习为本次另外读取的数据，各最多 100 条，不会随选中周报切换，也不限定在该周报周期内。</p>
+        <p>画像结果条数不等于复测人数；练习数量不代表效果或完成率。不同人的结果不用于排名。</p>
+      </details>
+      {state.status === "success" ? <>
       <div className="metricGrid" aria-label="周报概况">
         <MetricCard label="周报记录" value={state.reports.length} />
         <MetricCard label="关联用户" value={uniqueUsers.size} />
         <MetricCard label="含下周建议" value={withSuggestions} />
-        <MetricCard label="画像复测" value={studentProfiles.length} />
+        <MetricCard label="学生画像结果" value={studentProfiles.length} />
         <MetricCard label="需复核画像" value={reviewProfiles.length} />
         <MetricCard label="高风险画像" value={highRiskProfiles.length} />
         <MetricCard label="练习尝试" value={completedCheckins} />
-        <MetricCard label="读取方式" value="CSV + API" />
+        <MetricCard label="展示范围" value="本次读取" />
       </div>
 
       <section className="panel" aria-label="趋势增强" id="web-reportsmanagement-2" tabIndex={-1}>
         <div className="sectionTitleRow">
-          <h2>趋势增强</h2>
-          <span className="countBadge">P3-1</span>
+          <h2>画像与练习补充</h2>
+
         </div>
         <div className="overviewGrid">
           <article className="guidanceBox">
@@ -321,6 +327,7 @@ export function ReportsManagement() {
         </section>
       </section>
 
+      </> : <p className="contentReadingNote">{state.status === "loading" ? "正在读取数据，完成后显示统计与补充线索。" : "数据尚未成功读取，暂不显示统计或下周建议。请使用上方读取按钮；读取失败时先核对账号权限。"}</p>}
       <div className="dashboardGrid goalsGrid" id="web-reportsmanagement-3" tabIndex={-1}>
         <section className="listPanel" aria-label="周报列表">
           <div className="sectionTitleRow">

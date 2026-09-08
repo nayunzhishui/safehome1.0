@@ -6,7 +6,7 @@ const flowSteps = [
   ["情绪事件记录", "记录具体事件，以及情绪、想法、身体感觉和回应。"],
   ["识别互动线索", "温和地呈现这次记录中的触发点与互动线索。"],
   ["非诊断反馈", "获得支持性、非评判的理解和下一步练习方向。"],
-  ["推荐 UP 训练卡", "根据记录线索，推荐一张可执行的陪伴练习卡。"],
+  ["推荐陪伴训练卡", "根据记录线索，推荐一张可执行的陪伴练习卡。"],
   ["练习与打卡", "完成一次小练习，记录练习前后的感受变化。"],
   ["周度回看", "回看高频场景、常见情绪和可以继续练习的位置。"],
   ["人工督导补充", "需要时提交给老师查看，获得边界内的补充建议。"],
@@ -23,7 +23,10 @@ const questions = [
   ["第一次使用，应该从哪里开始？", "家长日常使用以微信小程序为主。先记录一次具体事件，再查看支持性反馈，并选择一个可以尝试的小练习。"],
   ["网站和小程序有什么不同？", "小程序用于日常记录与练习。网站用于了解项目、进入支持性测评，以及供研究者、督导与管理员开展试点管理。"],
   ["测评结果能用来诊断吗？", "不能。支持性测评只提供自我了解与阶段性观察线索，不替代心理咨询、医学诊断或危机干预。"],
-  ["谁可以进入研究者平台？", "研究者、督导与管理员按现有账号权限进入。不同角色可查看、操作的内容不同。"],
+  ["谁可以进入研究者平台？", "研究者、督导与管理员账号由项目负责人单独开通，不能通过家长或学生注册获得。登录后，可见数据和可执行操作仍受账号授权限制。"],
+  ["记录时，需要写些什么？", "选择一件具体的小事：发生了什么、当时有什么感受、说了什么或做了什么。记不清的部分不必猜测，也不需要一次写完整段经历。"],
+  ["UP 训练卡是什么意思？", "UP 是项目采用的跨诊断情绪调节框架。训练卡把情绪觉察、暂停和回应练习拆成可尝试的小步骤；不是给孩子或家长作诊断。"],
+  ["如何了解数据使用和退出方式？", "参与测评或研究前，请阅读对应入口的知情说明。数据使用、相关申请及退出方式可在隐私中心了解；具体处理范围以授权和申请状态为准。"],
 ];
 
 export function LandingPage() {
@@ -38,8 +41,8 @@ export function LandingPage() {
         <div className="previewHeading"><h2>一次记录，如何走向一个小练习</h2><span>示例 · 非真实记录</span></div>
         <div className="sceneSwitcher" role="group" aria-label="选择演示场景">{examples.map((item, index) => <button type="button" key={item.label} aria-pressed={scene === index} onClick={() => setScene(index)}>{item.label}</button>)}</div>
         <div className="previewBody" aria-live="polite" aria-atomic="true">
-          <article className="previewDiary"><h3>01 · 事件记录</h3><p>{example.event}</p><div className="previewMoods" aria-label="示例中的感受">{example.moods.map((mood) => <span key={mood}>{mood}</span>)}</div></article>
-          <div className="previewResponse"><section><h3>02 · 支持性反馈</h3><p>{example.feedback}</p></section><article className="previewPractice"><span className="previewClock"><UiIcon name="clock" size={28} /></span><div><p className="previewMetadata">03 · 小练习 / 约 1 分钟</p><h3>3 秒暂停卡：开口前先停一下</h3><p>发现自己想立刻批评时，先停住第一句话 3 秒。</p></div></article></div>
+          <article className="previewDiary" key={`diary-${scene}`}><h3>01 · 事件记录</h3><p>{example.event}</p><div className="previewMoods" aria-label="示例中的感受">{example.moods.map((mood) => <span key={mood}>{mood}</span>)}</div></article>
+          <div className="previewResponse"><section className="previewFeedback" key={`feedback-${scene}`}><h3>02 · 支持性反馈</h3><p>{example.feedback}</p></section><article className="previewPractice"><span className="previewClock"><UiIcon name="clock" size={28} /></span><div><p className="previewMetadata">03 · 小练习 / 约 1 分钟</p><h3>3 秒暂停卡：开口前先停一下</h3><p>发现自己想立刻批评时，先停住第一句话 3 秒。</p></div></article></div>
         </div>
       </section>
       <div className="companionBoundary"><span>情绪觉察 · 亲子沟通练习 · 自我复盘</span><span>提供支持性反馈，不作心理诊断</span></div>
@@ -54,8 +57,9 @@ export function LandingPage() {
       ["/student", "学生支持性画像", "从支持性测评中，认识自己的阶段性状态。"],
       ["/assessment", "家长支持性测评", "从日常互动出发，了解自己的感受与回应。"],
     ].map(([href, title, copy]) => <a href={href} key={href}><span className="entryIcon"><UiIcon name="document" size={24} /></span><span><strong>{title}</strong><span>{copy}</span></span><UiIcon name="external" size={24} /></a>)}</div></div></section>
-    <section className="companionSection companionFaq" id="faq"><div><h2>开始之前，<br />你也许想问。</h2><p>选择一个问题，展开了解。</p></div><div>{questions.map(([question, answer], index) => <details key={question} open={index === 0 || undefined}><summary>{question}<span aria-hidden="true" className="faqPlus" /></summary><p>{answer}</p></details>)}</div></section>
-    <section className="companionSection companionEthics" id="privacy"><div><h2>安心，也来自<br />清楚的边界。</h2><p>非诊断 · 非标签化 · 支持性</p></div><div><article><h3>支持练习，不替代专业判断</h3><p>所有反馈仅用于情绪觉察、亲子沟通练习和自我复盘参考，不替代心理咨询、医学诊断、危机干预或法律判断。</p></article><article><h3>遇到安全风险，及时寻求专业支持</h3><p>如涉及自伤、自杀、家庭暴力或儿童安全风险，应及时寻求专业支持。</p></article><article><h3>试点与研究，重视数据边界</h3><p>试点或研究数据应进行匿名化和脱敏处理。</p></article></div></section>
+    <section className="companionSection companionFaq" id="faq"><div><h2>开始之前，<br />你也许想问。</h2><p>关于记录、测评与账号的常见问题。</p></div><div>{questions.map(([question, answer], index) => <details key={question} open={index === 0 || undefined}><summary>{question}<span aria-hidden="true" className="faqPlus" /></summary><p>{answer}</p></details>)}</div></section>
+    <section className="companionSection companionEthics" id="privacy"><div><h2>安心，也来自<br />清楚的边界。</h2><p>非诊断 · 非标签化 · 支持性</p></div><div><article><h3>支持练习，不替代专业判断</h3><p>所有反馈仅用于情绪觉察、亲子沟通练习和自我复盘参考，不替代心理咨询、医学诊断、危机干预或法律判断。</p></article><article><h3>遇到安全风险，及时寻求专业支持</h3><p>如涉及自伤、自杀、家庭暴力或儿童安全风险，应及时寻求专业支持。</p></article><article><h3>试点与研究，重视数据边界</h3><p>参与前请核对知情说明中的用途与授权范围。研究导出应按授权进行匿名化和脱敏处理；记录中尽量不要填写真实姓名、联系方式等身份信息。</p></article></div></section>
+    <div className="companionActions"><a className="plainAction" href="/privacy">查看隐私与数据使用说明 <UiIcon name="arrow" size={18} /></a><a className="plainAction" href="/about-study">阅读研究参与说明 <UiIcon name="arrow" size={18} /></a></div>
     <SiteFooter />
   </div>;
 }
