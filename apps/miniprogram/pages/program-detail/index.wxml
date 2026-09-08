@@ -150,3 +150,5 @@
     <text class="safe-body">没有找到对应项目内容。</text>
   </view>
 </view>
+
+<service-consent notice="{{serviceConsent}}" bind:decision="onServiceConsent" />

@@ -238,3 +238,18 @@ api.healthz().catch((error) => console.log(JSON.stringify({{code:error.code,retr
     assert runtime.returncode == 0, runtime.stderr
     outcome = json.loads(runtime.stdout.strip().splitlines()[-1])
     assert outcome == {"code": "DNS_FAIL", "retryable": True, "cloudCalls": 1, "httpCalls": 0}
+
+
+def test_template_cleanup_accepts_absent_entry_but_rejects_unhandled_binding(tmp_path):
+    import importlib.util
+    import pytest
+    spec = importlib.util.spec_from_file_location("mini_build", BUILDER)
+    builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(builder)
+    template = tmp_path / "page.wxml"
+    template.write_text("<view>普通内容</view>", encoding="utf-8")
+    builder.strip_template_handlers(template, ["openIntegrationTest"])
+    assert template.read_text(encoding="utf-8") == "<view>普通内容</view>"
+    template.write_text('<custom-entry bind:action="openIntegrationTest" />', encoding="utf-8")
+    with pytest.raises(ValueError):
+        builder.strip_template_handlers(template, ["openIntegrationTest"])

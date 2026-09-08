@@ -1433,7 +1433,7 @@ Invoke-WebRequest `
 |---|---|
 | `account_password.available` | 账号密码登录是否可用，当前固定为 `true` |
 | `wechat_login.available/mode` | 当前 callContainer 请求是否带可信 CloudBase 身份，或是否配置标准 `jscode2session` |
-| `phone_login.available/mode` | 容器微信令牌文件或标准微信 access token 配置是否可用 |
+| `phone_login.available/mode` | 已配置的 `cloudbase_openapi`、旧令牌文件或标准 access token 路线；不代表平台权限或真实授权已验收 |
 | `privacy_notice` | 能力探测的隐私边界 |
 
 该接口用于区分“按钮代码故障”和“CloudBase 外部能力未配置”。即使快捷登录不可用，账号密码登录也必须继续可用。
@@ -2583,3 +2583,12 @@ canonical v1 按字段名排序，保留显式空值，时间字段归一为 UTC
 - `POST /api/family/bind-student`：仅学生可调用；请求体为 `bind_code`，可带 `X-Device-Id`。兑换按账号、设备、IP 和单码限流，并使用状态、版本、有效期和锁定条件完成原子单次更新。
 - 成功兑换返回 `status=consumed`。错误、过期、撤销和重放统一返回 `bind_code_unavailable`（400），不暴露码是否存在；超限返回 `family_binding_rate_limited`（429）。生产 Redis 未配置或不可用时返回 `family_binding_rate_limit_unavailable`（503）且不兑换。
 - 完整绑定码不得进入数据库业务字段、审计元数据、限流账本或错误响应。未满 14 周岁路径仍先完成年龄确认；绑定成功只建立监护关系，不自动生成监护人敏感数据处理同意。
+
+
+## 2026-09-08：微信云托管登录与小程序服务知情说明
+
+- 新配置 `CLOUDBASE_OPENAPI_ENABLED` 默认0。仅在已开启官方开放接口服务并重新构建的云托管版本中设置1，手机号后端改用固定的 `http://api.weixin.qq.com/wxa/business/getuserphonenumber` 容器侧接口，不传AppSecret、access_token或旧cloudbase令牌。标准路线仍为HTTPS；不禁用TLS校验，不接受客户端提供接口地址。
+- 需要在该环境云调用权限中登记 `/wxa/business/getuserphonenumber`，并确认小程序本身具备手机号接口资质及隐私声明。`48001/48002`返回`wechat_phone_permission_denied`（503），不再误写为用户授权码过期。
+- 微信一键登录在能力模式`cloudbase_identity`且实际使用callContainer时直接发起请求，不强依赖wx.login；标准jscode2session路线保留。可信头开关仍默认关闭。公网头伪造边界未完成前不得启用；本次没有修改真实云端开关。
+- 本轮不新增数据库表、接口路径或请求业务字段。小程序功能知情确认复用`GET/POST /api/consent`，类型`service_data`，版本`2026.09.08-service-notice-v1`，purpose区分功能；使用当前最新记录ID作为expected_latest_id。不同意不提交业务数据；同意保存失败不继续。
+- 教程完成状态只保存在本机，不是研究/模型训练/AI/关系分析同意，不替代项目参与条件或未成年人保护。本轮是小程序客户端交互门禁，不声明所有API调用方已获得新的服务端强制业务门禁。

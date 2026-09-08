@@ -1,4 +1,4 @@
-<view class="safe-page safe-page--with-tabbar ui2-page home-page" role="main" aria-label="安心陪伴首页">
+<view class="safe-page safe-page--with-tabbar ui2-page home-page" role="main" aria-hidden="{{welcomeVisible || tourVisible}}" aria-label="安心陪伴首页">
   <view class="home-header">
     <text class="home-title">安心陪伴</text>
     <button class="notice-button" aria-label="打开消息中心{{unreadMessageCount > 0 ? '，有未读消息' : ''}}" bindtap="openMessages">
@@ -35,7 +35,7 @@
     bind:retry="retryTodayJourney"
   />
 
-  <view class="home-capture">
+  <view class="home-capture" id="guide-capture">
     <entry-row class="thermometer-entry" icon="thermometer" title="情绪温度计" subtitle="{{thermometerRecordReady ? '今天已记录 ' + thermometerRecordCount + ' 次' : '记录次数待更新'}}" bind:action="openThermometer" />
     <dual-entry left-key="assessment" left-icon="assessment" left-title="测一测" left-subtitle="了解此刻状态" right-key="diary" right-icon="diary" right-title="情绪日记" right-subtitle="记录具体小事" bind:action="openCoreEntry" />
   </view>
@@ -44,12 +44,12 @@
 
   <view class="home-section home-more">
     <section-heading title="更多" />
-    <entry-row icon="feedback" title="支持性反馈" subtitle="记录后获得对应反馈" action-key="feedback" bind:action="openCoreEntry" />
-    <entry-row icon="training" title="训练中心" subtitle="查看训练计划与练习" action-key="training" bind:action="openCoreEntry" />
-    <entry-row icon="person" title="人工支持" subtitle="提交非实时支持请求" action-key="supervision" bind:action="openCoreEntry" />
+    <entry-row id="guide-feedback" icon="feedback" title="支持性反馈" subtitle="记录后获得对应反馈" action-key="feedback" bind:action="openCoreEntry" />
+    <entry-row id="guide-training" icon="training" title="训练中心" subtitle="查看训练计划与练习" action-key="training" bind:action="openCoreEntry" />
+    <entry-row id="guide-support" icon="person" title="人工支持" subtitle="提交非实时支持请求" action-key="supervision" bind:action="openCoreEntry" />
   </view>
 
-  <view class="home-section">
+  <view class="home-section" id="guide-recent">
     <section-heading title="最近记录" />
     <page-state
       wx:if="{{!latestRecordReady && !latestRecordError}}"
@@ -87,7 +87,10 @@
     <entry-row wx:else class="summary-entry" icon="feedback" title="记录还不够，继续观察" subtitle="完成更多记录后，这里会呈现阶段摘要" action-label="查看说明" expanded wrap-title bind:action="openWeeklyReport" />
   </view>
 
+  <button id="guide-replay" class="dev-entry" bindtap="startGuide">重看使用教程</button>
   <view wx:if="{{showDevEntry}}" class="dev-entry-section">
     <button class="dev-entry" bindtap="openIntegrationTest">进入联调测试页</button>
   </view>
 </view>
+
+<onboarding-guide welcome="{{welcomeVisible}}" visible="{{tourVisible}}" step="{{tourStep}}" index="{{tourIndex}}" total="{{tourTotal}}" rect="{{tourRect}}" position="{{tourPosition}}" bind:agree="onGuideAgree" bind:decline="onGuideDecline" bind:next="nextGuide" bind:previous="previousGuide" bind:skip="endGuide" />

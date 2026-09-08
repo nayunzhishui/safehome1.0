@@ -108,6 +108,10 @@ def strip_template_handlers(path: Path, names: list[str]) -> None:
             re.S,
         )
         text, count = pattern.subn("", text)
+        # UI cleanup may already have removed this entry. Accept only complete
+        # absence; an unsupported remaining binding still fails closed.
+        if count == 0 and name not in text:
+            continue
         if count != 1:
             raise ValueError(f"cannot strip production-only template handler {name} from {path.as_posix()}")
     path.write_text(text, encoding="utf-8")

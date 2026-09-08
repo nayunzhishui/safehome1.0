@@ -63,6 +63,8 @@ class Config:
     DEPLOYMENT_CLOUDBASE_SERVICE = os.environ.get("DEPLOYMENT_CLOUDBASE_SERVICE", "").strip()
     DEPLOYMENT_PUBLIC_BASE_URL = os.environ.get("DEPLOYMENT_PUBLIC_BASE_URL", "").strip().rstrip("/")
     DEPLOYMENT_TARGET_ENVIRONMENT = os.environ.get("DEPLOYMENT_TARGET_ENVIRONMENT", "").strip()
+    # Enable only on a CloudRun version built with the official OpenAPI sidecar.
+    CLOUDBASE_OPENAPI_ENABLED = os.environ.get("CLOUDBASE_OPENAPI_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
     TRUST_CLOUDBASE_IDENTITY_HEADERS = os.environ.get("TRUST_CLOUDBASE_IDENTITY_HEADERS", "").strip().lower() in {
         "1",
         "true",

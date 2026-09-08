@@ -1,3 +1,4 @@
+const { ensureServiceConsent, finishServiceConsent } = require("../../utils/serviceConsent");
 const { createSafeHomeApi } = require("../../services/api");
 const { requireLogin } = require("../../utils/authGuard");
 const { createResilientForm } = require("../../utils/resilientForm");
@@ -60,7 +61,10 @@ function withAnswerState(worksheet) {
 }
 
 Page({
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
+  onServiceConsent(event) { finishServiceConsent(this, !!event.detail.agreed); },
   data: {
+    serviceReady: false, serviceEntryError: "", serviceConsent: null,
     worksheetId: "",
     worksheet: null,
     loading: true,
@@ -72,7 +76,21 @@ Page({
     slowSubmitting: false,
   },
 
-  onLoad(options) {
+  onLoad(options = {}) {
+    this._entryOptions = options;
+    this.beginServiceEntry();
+  },
+  async beginServiceEntry() {
+    if (this._consentPending) return;
+    if (!requireLogin({ redirectUrl: "/pages/assessment-detail/index" + (this._entryOptions.id ? "?id=" + encodeURIComponent(this._entryOptions.id) : this._entryOptions.goal_id ? "?goal_id=" + encodeURIComponent(this._entryOptions.goal_id) : ""), message: "请先登录，再确认本人的知情选择。" })) return;
+    this.setData({ serviceEntryError: "" });
+    try {
+      if (!await ensureServiceConsent(this, api, "assessment")) { if (this._consentDisposed) return; this.setData({ serviceEntryError: "你尚未同意本功能的数据处理说明，暂不填写或保存。" }); return; }
+      this.setData({ serviceReady: true });
+      this.loadAfterConsent(this._entryOptions);
+    } catch (error) { this.setData({ serviceEntryError: error.message || "知情说明暂时无法读取，请重新尝试。" }); }
+  },
+  loadAfterConsent(options) {
     const worksheetId = decodeURIComponent(options.id || "");
     if (!requireLogin({
       redirectUrl: `/pages/assessment-detail/index?id=${encodeURIComponent(worksheetId)}`,
@@ -98,7 +116,7 @@ Page({
     }
   },
 
-  onUnload() {
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false);
     if (this.draftController && !this.data.submitting && this.data.worksheet) {
       this.draftController.flush({ answers: this.buildAnswers() });
     }
@@ -213,6 +231,13 @@ Page({
   },
 
   async submitWorksheet() {
+    if (this._consentPending || this.data.submitting) return;
+    try {
+      if (!await ensureServiceConsent(this, api, "assessment")) return;
+    } catch (error) {
+      this.setData({ errorMessage: error.message || "知情确认暂时无法保存，请重试；内容尚未提交。" });
+      return;
+    }
     const worksheet = this.data.worksheet;
     if (!worksheet || this.data.submitting) return;
 

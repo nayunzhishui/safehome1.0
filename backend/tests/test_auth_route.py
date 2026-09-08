@@ -323,8 +323,7 @@ def test_cloudbase_identity_matching_appid_without_source_is_rejected_without_ex
 
 def test_wechat_login_reports_network_failure_without_leaking_credentials(tmp_path, monkeypatch):
     app = _fresh_app(tmp_path, monkeypatch, app_env="production")
-    monkeypatch.setenv("WECHAT_APPID", "wx-test-appid")
-    monkeypatch.setenv("WECHAT_SECRET", "secret-must-not-leak")
+    app.config.update(WECHAT_APPID="wx-test-appid", WECHAT_SECRET="secret-must-not-leak")
     auth_module = importlib.import_module("routes.auth")
 
     def fail_network(*_args, **_kwargs):
@@ -548,7 +547,7 @@ def test_wechat_phone_exchange_uses_cloudbase_token_file(tmp_path, monkeypatch):
     auth_module = importlib.import_module("routes.auth")
     token_path = tmp_path / "cloudbase_access_token"
     token_path.write_text("cloudbase-token", encoding="utf-8")
-    monkeypatch.setenv("CLOUDBASE_ACCESS_TOKEN_PATH", str(token_path))
+    app.config["CLOUDBASE_ACCESS_TOKEN_PATH"] = str(token_path)
     observed = {}
 
     class FakeResponse:
@@ -578,3 +577,39 @@ def test_wechat_phone_exchange_uses_cloudbase_token_file(tmp_path, monkeypatch):
     assert b'"code": "one-time-code"' in observed["body"]
     assert observed["timeout"] == 8
     assert result["pure_phone_number"] == "13800138000"
+
+
+def test_cloudrun_openapi_phone_exchange_needs_no_legacy_token(tmp_path, monkeypatch):
+    monkeypatch.setenv("CLOUDBASE_OPENAPI_ENABLED", "1")
+    app = _fresh_app(tmp_path, monkeypatch)
+    auth = importlib.import_module("routes.auth")
+    import json
+    calls = []
+    class Response:
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def read(self): return json.dumps({"errcode": 0, "phone_info": {"purePhoneNumber": "13900139000"}}).encode()
+    def open_request(request, timeout):
+        calls.append(request)
+        return Response()
+    monkeypatch.setattr(auth, "urlopen", open_request)
+    monkeypatch.setattr(auth, "_wechat_api_credential", lambda: (_ for _ in ()).throw(AssertionError("legacy credentials must not be requested")))
+    with app.test_request_context():
+        assert auth._wechat_phone_from_code("synthetic-phone-code")["phone_number"] == "13900139000"
+    assert calls[0].full_url == "http://api.weixin.qq.com/wxa/business/getuserphonenumber"
+    assert json.loads(calls[0].data) == {"code": "synthetic-phone-code"}
+    result = app.test_client().get("/api/auth/capabilities").get_json()["data"]
+    assert result["phone_login"] == {"available": True, "mode": "cloudbase_openapi"}
+
+
+def test_phone_permission_error_is_not_reported_as_expired_user_code(tmp_path, monkeypatch):
+    app = _fresh_app(tmp_path, monkeypatch)
+    auth = importlib.import_module("routes.auth")
+    monkeypatch.setattr(auth, "_wechat_api_credential", lambda: ("access_token", "synthetic"))
+    class Response:
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def read(self): return b'{"errcode":48001,"errmsg":"api unauthorized"}'
+    monkeypatch.setattr(auth, "urlopen", lambda *args, **kwargs: Response())
+    response = app.test_client().post("/api/auth/phone-login", json={"code":"synthetic"})
+    assert response.get_json()["error"]["code"] == "wechat_phone_permission_denied"

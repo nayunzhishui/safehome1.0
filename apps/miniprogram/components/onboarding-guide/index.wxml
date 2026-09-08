@@ -1,0 +1,26 @@
+<view wx:if="{{welcome}}" class="welcome-shade" catchtouchmove="stop">
+  <view class="welcome-dialog" role="dialog" aria-modal="true" aria-label="欢迎使用安心陪伴，请先阅读隐私与使用说明">
+    <text class="guide-kicker">开始之前</text><text class="guide-title">先了解，再决定</text>
+    <scroll-view scroll-y class="welcome-content">
+      <text>安心陪伴帮助你记录具体事件、理解感受，并尝试支持性练习，不提供诊断、治疗或紧急救助。</text>
+      <text>使用记录、测评和项目功能时，我们会说明所需数据与用途，再请你单独确认。请不要填写他人真实姓名、联系方式、学校班级或详细住址。</text>
+      <text>手机号由你主动授权；研究、模型训练、AI辅助与关系分析分别征求同意，不会替你勾选。浏览教程不代表加入研究。未成年人仍需完成原有保护流程。</text>
+      <button class="guide-link" bindtap="privacy">阅读微信隐私保护指引</button><button class="guide-link" bindtap="policy">查看数据使用、退出与删除说明</button>
+    </scroll-view>
+    <checkbox-group bindchange="check"><label class="guide-check"><checkbox value="agree" checked="{{checked}}" color="#2f6a60" /><text>我已阅读并同意隐私与基础使用说明</text></label></checkbox-group>
+    <text wx:if="{{privacyError}}" class="guide-error">{{privacyError}}</text>
+    <button id="safehome-privacy-agree" class="guide-primary" open-type="agreePrivacyAuthorization" bindagreeprivacyauthorization="agree" disabled="{{!checked}}">同意，下一步</button>
+    <button class="guide-secondary" bindtap="decline">暂不同意，仅查看说明</button>
+  </view>
+</view>
+<view wx:elif="{{visible}}" class="tour-layer" catchtouchmove="stop">
+  <view wx:if="{{rect}}" class="tour-highlight" style="left:{{rect.left}}px;top:{{rect.top}}px;width:{{rect.width}}px;height:{{rect.height}}px;" aria-hidden="true"></view>
+  <view wx:else class="tour-fallback"></view>
+  <view class="tour-dialog" style="top:{{position.top}}px;" role="dialog" aria-modal="true" aria-label="{{step.title}}">
+    <view wx:if="{{rect && position.arrow}}" class="tour-arrow {{position.arrow}}" style="left:{{position.arrowLeft}}px;" aria-hidden="true"></view>
+    <text class="guide-kicker">使用教程 · {{index + 1}} / {{total}}</text><text class="guide-title">{{step.title}}</text>
+    <scroll-view scroll-y class="tour-copy"><text>{{step.text}}</text></scroll-view>
+    <view class="tour-actions"><button class="guide-secondary" bindtap="previous" disabled="{{index === 0}}">上一步</button><button class="guide-primary" bindtap="next">{{index + 1 === total ? '完成教程' : '下一步'}}</button></view>
+    <button class="guide-link" bindtap="skip">跳过教程，稍后再看</button>
+  </view>
+</view>

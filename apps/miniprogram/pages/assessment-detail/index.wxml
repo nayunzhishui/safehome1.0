@@ -1,3 +1,4 @@
+<view wx:if="{{serviceReady}}">
 <view class="safe-page assessment-detail-page" role="main" aria-label="支持性测评填写">
   <view wx:if="{{loading}}" class="state-box">
     <text>正在读取测一测内容...</text>
@@ -73,3 +74,8 @@
     <text>{{errorMessage || '没有找到工作表内容。'}}</text>
   </view>
 </view>
+
+</view>
+<page-state wx:else kind="{{serviceEntryError ? 'error' : 'loading'}}" title="{{serviceEntryError || '正在核对知情说明'}}" action-label="重新确认" bind:action="beginServiceEntry" />
+<button wx:if="{{!serviceReady}}" bindtap="returnToPrivacyHome">返回首页阅读隐私说明</button>
+<service-consent notice="{{serviceConsent}}" bind:decision="onServiceConsent" />

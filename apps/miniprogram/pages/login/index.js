@@ -2,6 +2,7 @@ const { createSafeHomeApi } = require("../../services/api");
 const { getMinorSafeguardStatus } = require("../../services/minorSafeguardsApi");
 
 const api = createSafeHomeApi();
+const { getCloudConfig } = require("../../services/cloudConfig");
 const PROTECTION_URL = "/pages/settings-detail/index?type=protection";
 
 function normalizeRedirect(rawRedirect) {
@@ -59,6 +60,7 @@ Page({
     wechatLoading: false,
     phoneLoading: false,
     wechatAvailable: true,
+    wechatMode: "",
     phoneAvailable: true,
     status: "idle",
     message: "",
@@ -87,7 +89,7 @@ Page({
         } else if (!phoneAvailable) {
           capabilityMessage = "手机号快捷登录尚未完成云端配置，可使用微信或账号密码登录。";
         }
-        this.setData({ capabilityMessage, wechatAvailable, phoneAvailable });
+        this.setData({ capabilityMessage, wechatAvailable, phoneAvailable, wechatMode: capabilities.wechat_login.mode || "" });
       })
       .catch(() => {
         // Older deployments may not expose capability probing yet; login buttons remain usable.
@@ -179,6 +181,15 @@ Page({
   },
 
   submitWechatLogin() {
+    if (this.data.loading || this.data.wechatLoading || this.data.phoneLoading) return;
+    if (this.data.wechatMode === "cloudbase_identity" && !getCloudConfig().useLocalHttp) {
+      this.setData({ wechatLoading: true, status: "loading", message: "正在完成微信登录..." });
+      api.wechatLogin({})
+        .then((result) => this.completeLogin(result, "微信登录成功"))
+        .catch((error) => this.setData({ status: "error", message: error.message || "微信登录暂不可用，请稍后重试。" }))
+        .finally(() => this.setData({ wechatLoading: false }));
+      return;
+    }
     if (!wx.login) {
       this.setData({
         status: "error",

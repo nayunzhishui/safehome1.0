@@ -62,6 +62,7 @@ const ERROR_MESSAGES_BY_CODE = {
   local_http_error: "本地后端连接失败，请确认 Flask 已启动后再试一次。",
   wechat_login_config_missing: "微信登录暂不可用，请尝试手机号快捷登录或账号密码登录。",
   wechat_login_failed: "微信登录凭证已失效，请重新尝试。",
+  wechat_phone_permission_denied: "手机号能力尚未完成平台授权，请使用其他登录方式并联系项目负责人。",
   wechat_phone_config_missing: "手机号快捷登录尚未开通，请使用微信一键登录或账号密码登录。",
   wechat_phone_config_invalid: "手机号快捷登录暂不可用，请使用其他登录方式。",
   wechat_phone_exchange_failed: "手机号授权已失效，请重新授权后再试。",
@@ -490,7 +491,7 @@ function createSafeHomeApi(options = {}) {
     return template.replace(":id", encodeURIComponent(id));
   }
 
-  return {
+  const client = {
     getDebugConfig() {
       return {
         cloudEnvId,
@@ -1965,6 +1966,26 @@ function createSafeHomeApi(options = {}) {
       return `${httpBaseUrl}${API_ENDPOINTS.adminExport}${queryString(params)}`;
     },
   };
+  // Keep submission payloads unchanged. Only actual participant writes prompt;
+  // reads, login, withdrawal and existing specialist consent flows do not.
+  const consentFeatures = {
+    createGoal: "goal", createCheckin: "checkin", createEmotionThermometer: "thermometer",
+    createSupervision: "supervision", createRelationshipEnrollment: "relationship",
+  };
+  Object.keys(consentFeatures).forEach(name => {
+    const submit = client[name];
+    client[name] = async (...args) => {
+      const pages = typeof getCurrentPages === "function" ? getCurrentPages() : [];
+      const page = pages[pages.length - 1];
+      if (!page) throw { code: "consent_required", message: "请在对应功能页面阅读知情说明后再提交。" };
+      const { ensureServiceConsent } = require("../utils/serviceConsent");
+      if (!await ensureServiceConsent(page, client, consentFeatures[name], true)) {
+        throw { code: "consent_declined", message: "你尚未同意本功能的数据处理说明，本次内容未提交。" };
+      }
+      return submit(...args);
+    };
+  });
+  return client;
 }
 
 module.exports = {

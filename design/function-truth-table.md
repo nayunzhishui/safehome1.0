@@ -2047,3 +2047,19 @@
 - 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
 
 <!-- UI_PRODUCT_AUTO_FACTS:END -->
+
+
+## 2026-09-08：登录与首次使用增量（独立分支，待合入）
+
+本节仅对应codex/cloudrun-login-onboarding，以b531b9d9为UI基线，不覆盖UIproduct2并行页面工作。
+
+| 目标 | 新交互 | 真实调用/状态 | 保护边界 |
+|---|---|---|---|
+| home | 首次大弹窗；同意后六步箭头引导、上一步/下一步/跳过/重看 | wx.getPrivacySetting、agreePrivacyAuthorization；本机教程状态；查询完成前不加载首页账号数据 | 平台同意、本地阅读状态、研究同意互不替代 |
+| login | 已配置可信云身份模式走callContainer直接登录 | GET auth/capabilities；POST auth/wechat-login；标准code路线仍保留 | 不伪造身份头，不开启真实云端信任开关 |
+| phone login | 继续使用用户触发的getPhoneNumber code | POST auth/phone-login；后端新增显式OpenAPI路线 | 拒绝、失败不当作登录成功；不保存手机号原文 |
+| diary-form / assessment-detail | 展示并保存知情选择后才初始化表单/恢复草稿 | GET/POST consent → 原有数据API | 保存同意失败、拒绝或账号/页面变化时不提交 |
+| program-detail | 首次保存草稿/提交前功能确认 | consent → 原有本地草稿/项目API | 不改变项目开放、研究和年龄条件 |
+| goals / checkins / thermometer / supervision / relationship enrollment | 原生弹窗明确用途，确认后才执行原API | service_data按purpose分开记录 | 不授予可选研究权限，不替代专门同意链路 |
+
+当前六步引导介绍首页真实入口，不自动跳入并操作实际表单，不创建演示记录。新弹窗采用既有青绿/暖白主题、正文28rpx以上；位置取真实节点边界，缺节点时回退居中说明，不绘制假目标。

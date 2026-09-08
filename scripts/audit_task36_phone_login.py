@@ -48,7 +48,7 @@ def build_report() -> dict:
         ),
         "capability_gating": _check(
             "phoneAvailable: true" in login_js
-            and "this.setData({ capabilityMessage, wechatAvailable, phoneAvailable })" in login_js
+            and "this.setData({ capabilityMessage, wechatAvailable, phoneAvailable, wechatMode:" in login_js
             and 'wx:if="{{phoneAvailable}}"' in login_wxml
             and "手机号快捷登录（暂不可用）" in login_wxml,
             [

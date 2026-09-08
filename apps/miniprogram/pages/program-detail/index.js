@@ -1,3 +1,4 @@
+const { ensureServiceConsent, finishServiceConsent } = require("../../utils/serviceConsent");
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
@@ -32,6 +33,9 @@ function formatProgram(program) {
 }
 
 Page({
+  onUnload() { this._consentDisposed = true; finishServiceConsent(this, false); },
+  returnToPrivacyHome() { wx.switchTab({ url: "/pages/home/index" }); },
+  onServiceConsent(event) { finishServiceConsent(this, !!event.detail.agreed); },
   data: {
     programId: "",
     requestedSessionNo: null,
@@ -155,7 +159,10 @@ Page({
     this.setData({ adverseResponse: !!event.detail.value.length });
   },
 
-  saveDraft() {
+  async saveDraft() {
+    if (this._consentPending) return;
+    try { if (!await ensureServiceConsent(this, api, "program")) return; }
+    catch (error) { this.setData({ errorMessage: error.message || "知情确认失败，草稿尚未保存。" }); return; }
     const session = this.data.selectedSession;
     if (!this.data.programId || !session) {
       return;
@@ -183,6 +190,13 @@ Page({
   },
 
   async submitEntry() {
+    if (this._consentPending || this.data.submitting) return;
+    try {
+      if (!await ensureServiceConsent(this, api, "program")) return;
+    } catch (error) {
+      this.setData({ errorMessage: error.message || "知情确认暂时无法保存，请重试；内容尚未提交。" });
+      return;
+    }
     const session = this.data.selectedSession;
     const draftText = (this.data.draftText || "").trim();
     const reflectionAnswers = (session.reflection_questions || []).map((question, index) => ({

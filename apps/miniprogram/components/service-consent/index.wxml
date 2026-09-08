@@ -1,0 +1,9 @@
+<view wx:if="{{notice}}" class="consent-shade" catchtouchmove="stop">
+  <view class="consent-dialog" role="dialog" aria-modal="true" aria-label="{{notice.title}}">
+    <text class="consent-title">{{notice.title}}</text>
+    <scroll-view scroll-y class="consent-content"><text>{{notice.text}}</text><text class="consent-boundary">{{notice.boundary}}</text><button class="consent-link" bindtap="privacy">查看隐私与授权管理</button></scroll-view>
+    <checkbox-group bindchange="check"><label class="consent-check"><checkbox value="agree" checked="{{checked}}" color="#2f6a60" /><text>我已阅读并同意本次功能的数据处理说明</text></label></checkbox-group>
+    <button class="consent-primary" bindtap="agree" disabled="{{!checked}}">我已知晓，同意并继续</button>
+    <button class="consent-secondary" bindtap="refuse">暂不同意，不提交</button>
+  </view>
+</view>

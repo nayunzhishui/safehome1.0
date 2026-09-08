@@ -1,3 +1,4 @@
+const { hasLocalNotice, acceptLocalNotice } = require("../../utils/serviceConsent");
 const { createSafeHomeApi } = require("../../services/api");
 
 const api = createSafeHomeApi();
@@ -155,6 +156,7 @@ function findLocalDraftAction() {
 
 Page({
   data: {
+    welcomeVisible: false, tourVisible: false, tourIndex: 0, tourTotal: 6, tourRect: null, tourStep: {}, tourPosition: { top: 80 },
     todayRecordCount: 0,
     todayRecordCountReady: false,
     thermometerRecordCount: 0,
@@ -189,8 +191,74 @@ Page({
   },
 
   onShow() {
-    this.refreshHomeData();
+    this._homeHidden = false;
+    if (!hasLocalNotice()) { this.showWelcome(); return; }
+    if (!wx.getPrivacySetting) { this.showWelcome(); return; }
+    wx.getPrivacySetting({
+      success: result => {
+        if (this._homeHidden) return;
+        if (result.needAuthorization) { this.showWelcome(); return; }
+        this.setData({ welcomeVisible: false });
+        this.refreshHomeData();
+        if (!wx.getStorageSync("safehome:homeTour:v1")) this.startGuide();
+      },
+      fail: () => { if (!this._homeHidden) this.showWelcome(); },
+    });
   },
+  showWelcome() {
+    this.setData({ welcomeVisible: true, tourVisible: false });
+    wx.hideTabBar({ animation: false });
+  },
+  onHide() { this._homeHidden = true; wx.showTabBar({ animation: false }); },
+  onUnload() { this._homeHidden = true; },
+  onGuideAgree() {
+    if (this._homeHidden) return;
+    acceptLocalNotice();
+    this.setData({ welcomeVisible: false });
+    this.refreshHomeData();
+    this.startGuide();
+  },
+  onGuideDecline() {
+    this.setData({ welcomeVisible: false });
+    wx.showTabBar({ animation: false });
+    wx.navigateTo({ url: "/pages/settings-detail/index?type=privacy" });
+  },
+  startGuide() {
+    if (!hasLocalNotice()) { this.setData({ welcomeVisible: true }); return; }
+    this.setData({ tourIndex: 0, tourVisible: true });
+    wx.hideTabBar({ animation: false });
+    this.positionGuide(0);
+  },
+  positionGuide(index) {
+    const steps = [
+      { selector: "#guide-capture", title: "记录或测评，从这里开始", text: "这里可以进入情绪日记和支持性测评。先选择适合自己的入口；首次提交前会说明该功能的数据用途，并请你单独确认。" },
+      { selector: "#guide-feedback", title: "记录之后，查看支持性反馈", text: "支持性反馈从具体记录生成。没有记录时，入口会带你先写一次事件；它不是诊断，也不是对亲子关系下结论。" },
+      { selector: "#guide-training", title: "选一个小练习", text: "训练中心可以查看训练计划与练习，按自己的节奏尝试，再记录感受。浏览或完成教程不会自动记为打卡。" },
+      { selector: "#guide-recent", title: "回看自己的记录", text: "在最近记录和阶段性反馈中回看已保存的内容；数据不足时不生成确定结论。登录后仍按账号授权显示。" },
+      { selector: "#guide-support", title: "需要时，提交人工支持请求", text: "这里不是实时聊天或紧急救助。你可以提交需要补充理解的问题；遇到紧急情况应优先寻求现实帮助。" },
+      { selector: "#guide-replay", title: "随时重看，不必一次记住", text: "点击“重看使用教程”可再次打开引导。教程只介绍入口，不替你填写、提交、加入项目或同意研究。" },
+    ];
+    const step = steps[index];
+    if (!step) return;
+    this.setData({ tourStep: step, tourIndex: index, tourTotal: steps.length, tourRect: null, tourPosition: { top: 80 } });
+    const measure = () => {
+      if (this._homeHidden || !this.data.tourVisible || this.data.tourIndex !== index) return;
+      wx.createSelectorQuery().in(this).select(step.selector).boundingClientRect(rect => {
+        if (this._homeHidden || !this.data.tourVisible || this.data.tourIndex !== index) return;
+        const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+        const height = info.windowHeight, width = info.windowWidth;
+        const valid = rect && rect.height > 0 && rect.top >= 0 && rect.bottom <= height;
+        const below = valid && rect.bottom + 310 < height;
+        const above = valid && rect.top > 310;
+        const top = below ? rect.bottom + 18 : above ? rect.top - 300 : Math.max(16, (height - 300) / 2);
+        this.setData({ tourRect: valid ? rect : null, tourPosition: { top, arrow: below ? "up" : above ? "down" : "", arrowLeft: valid ? Math.max(20, Math.min(width - 68, rect.left + rect.width / 2 - 24)) : 20 } });
+      }).exec();
+    };
+    wx.pageScrollTo({ selector: step.selector, offsetTop: -90, duration: 0, complete: measure });
+  },
+  nextGuide() { if (this.data.tourIndex + 1 >= this.data.tourTotal) this.endGuide(); else this.positionGuide(this.data.tourIndex + 1); },
+  previousGuide() { if (this.data.tourIndex > 0) this.positionGuide(this.data.tourIndex - 1); },
+  endGuide() { wx.setStorageSync("safehome:homeTour:v1", true); this.setData({ tourVisible: false }); wx.showTabBar({ animation: false }); },
 
   async refreshHomeData() {
     this.loadTodayJourney();
