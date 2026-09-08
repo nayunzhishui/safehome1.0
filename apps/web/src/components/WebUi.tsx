@@ -36,7 +36,7 @@ export function navigationIcon(path: string) {
 }
 
 export function SiteBrand({ href = "/", compact = false }: { href?: string; compact?: boolean }) {
-  return <a className={`siteBrand${compact ? " siteBrand--compact" : ""}`} href={href} aria-label="安心陪伴首页">
+  return <a className={`siteBrand${compact ? " siteBrand--compact" : ""}`} href={href} aria-label={href === "/dashboard" ? "安心陪伴工作台" : "安心陪伴首页"}>
     <svg width="30" height="36" viewBox="0 0 34 40" aria-hidden="true" focusable="false"><path d="M9 4v10m0 6v15M23 10v10m0 6v9M5 16h8M19 22h8" stroke="currentColor" fill="none" strokeWidth="3.5" strokeLinecap="round" /><path d="M12 9c8-8 13-6 16-7-2 6-6 10-16 7Z" fill="currentColor" /></svg>
     <strong>安心陪伴</strong>
   </a>;
@@ -50,7 +50,20 @@ export function SiteHeader({ home = false }: { home?: boolean }) {
     <SiteBrand />
     <nav className="siteDesktopNav" aria-label="网站导航">{links.map(([href, label]) => <a href={href} key={href}>{label}</a>)}</nav>
     <a className="siteResearchLink" href="/dashboard">研究者平台 <UiIcon name="external" size={16} /></a>
-    <details className="siteMobileNav"><summary aria-label="展开网站导航"><UiIcon name="menu" /></summary><nav aria-label="移动网站导航">{links.map(([href, label]) => <a href={href} key={href}>{label}</a>)}<a href="/dashboard">研究者平台</a></nav></details>
+    <details className="siteMobileNav"
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && event.currentTarget.open) {
+          event.preventDefault();
+          event.currentTarget.open = false;
+          event.currentTarget.querySelector("summary")?.focus();
+        }
+      }}
+      onClick={(event) => {
+        if (event.target instanceof Element && event.target.closest("a")) {
+          event.currentTarget.open = false;
+          event.currentTarget.querySelector("summary")?.focus();
+        }
+      }}><summary aria-label="展开网站导航"><UiIcon name="menu" /></summary><nav aria-label="移动网站导航">{links.map(([href, label]) => <a href={href} key={href}>{label}</a>)}<a href="/dashboard">研究者平台</a></nav></details>
   </div></header>;
 }
 

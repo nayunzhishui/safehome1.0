@@ -4087,6 +4087,11 @@ ul {
 .journeyMetricList dt { color: var(--muted, #66746c); font-size: .875rem; }
 .journeyMetricList dd { margin: 3px 0 0; font-weight: 700; }
 .reliableJobList p, .featureFlagList p { margin: 6px 0 0; color: var(--muted, #66746c); }
+.featureFlagList article, .reliableJobList article { min-width: 0; }
+.featureFlagList article > div > strong, .reliableJobList article > div > strong { min-width: 0; overflow-wrap: anywhere; }
+.featureFlagList article > div > span, .reliableJobList article > div > span { flex-shrink: 0; }
+.featureFlagList p, .reliableJobList p { overflow-wrap: anywhere; }
+@media (max-width: 980px) { .reliabilityColumns { grid-template-columns: 1fr; } }
 .jobState { padding: 3px 9px; border-radius: 999px; background: #eef4ef; font-size: .875rem; }
 .jobState-dead_letter { background: #f6e9e5; color: #8a493d; }
 .jobState-retrying { background: #fff3d7; color: #8b641a; }

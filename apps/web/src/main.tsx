@@ -362,7 +362,13 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     <>
       <a className="skipLink" href="#main-content">跳到主要内容</a>
       <main className="adminWorkspace" id="main-content" data-web-ui>
-      <aside className="adminSidebar" aria-label="后台导航">
+      <aside className="adminSidebar" aria-label="后台导航" onKeyDown={(event) => {
+        if (event.key === "Escape" && mobileNavOpen) {
+          event.preventDefault();
+          setMobileNavOpen(false);
+          event.currentTarget.querySelector<HTMLButtonElement>(".adminNavToggle")?.focus();
+        }
+      }}>
         <SiteBrand href="/dashboard" />
         <button
           className="adminNavToggle"

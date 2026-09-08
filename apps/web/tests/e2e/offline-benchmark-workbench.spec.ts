@@ -12,6 +12,11 @@ test("离线基准工作台呈现许可门禁、合成运行和盲标边界", as
     if (path === "/api/auth/me") data = { user: { id: "admin-e2e", role: "admin", nickname: "方法管理员" } };
     else if (path === "/api/showcase-access") data = { enabled: false };
     else if (path.endsWith("/config")) data = { enabled: true, external_ingest_enabled: false, production_replacement_allowed: false, registry_version: "v1", registry_status: "engineering_registry_ready_human_rights_review_pending", annotation_status: "draft_human_annotation_pending", synthetic_case_count: 240, runtime_control: { disabled: 0 }, boundary_notice: "公开不等于可训练。" };
+    else if (path.endsWith("/model-versions") || path.endsWith("/shadow-runs") || path.endsWith("/shadow-review-queue") || path.endsWith("/adjudication-queue")) data = { items: [] };
+    else if (path.endsWith("/monitoring")) data = { runtime_control: { mode: "shadow", version: 1 }, recent_runs: [], boundary_notice: "仅供合成工程检查。" };
+    else if (path.endsWith("/release-gate")) data = { latest: null, boundary_notice: "不构成发布批准。" };
+    else if (path.endsWith("/annotation-governance")) data = { active_data_class: "synthetic", purpose: "合成标注验证。" };
+    else if (path.endsWith("/split-report")) data = { passed: true };
     else if (path.endsWith("/dataset-cards")) data = { items: cards };
     else if (path.endsWith("/dataset-cards/sync")) data = { registry_version: "v1", card_count: 2, external_downloaded: false };
     else if (path.endsWith("/runs/network")) data = { id: "run-1" };
@@ -26,6 +31,8 @@ test("离线基准工作台呈现许可门禁、合成运行和盲标边界", as
     localStorage.setItem("safehome_auth_user", JSON.stringify({ id: "admin-e2e", role: "admin", nickname: "方法管理员" }));
   });
 
+  const pageErrors: string[] = [];
+  page.on("pageerror", error => pageErrors.push(error.message));
   await page.goto("/research/benchmarks", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "公开数据与算法基准" })).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("生产替换关闭")).toBeVisible();
@@ -37,5 +44,7 @@ test("离线基准工作台呈现许可门禁、合成运行和盲标边界", as
   await expect(page.getByRole("status")).toContainText("保存盲标完成");
   const dimensions = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
   expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.width + 1);
+  expect(pageErrors).toEqual([]);
+  await expect(page.locator(".fatalErrorPage")).toHaveCount(0);
   await page.screenshot({ path: testInfo.outputPath("offline-benchmark-workbench.png"), fullPage: true });
 });

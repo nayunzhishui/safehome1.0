@@ -30,22 +30,40 @@ test("研究者确认发送、下载脱敏与越权保护形成真实闭环", as
     headers: studentHeaders,
     data: { research_consent: true, assessment_result_id: assessment.id },
   });
+  expect(enrollmentResponse.status(), await enrollmentResponse.text()).toBe(201);
   const enrollment = (await enrollmentResponse.json()).data;
-  const reportResponse = await request.post(`${API}/api/relationship-pilot/enrollments/${enrollment.id}/report`, { headers: studentHeaders });
+
+  // Current contract: students cannot author research feedback; researchers need object scope.
+  const studentGeneration = await request.post(`${API}/api/relationship-pilot/enrollments/${enrollment.id}/report`, { headers: studentHeaders });
+  expect(studentGeneration.status()).toBe(403);
+  expect((await studentGeneration.json()).error.details.required_capability).toBe("research.feedback.write");
+
+  const researcherLogin = await request.post(`${API}/api/auth/login`, {
+    data: { username: "e2e_researcher", password: "e2e-password-123" },
+  });
+  expect(researcherLogin.ok(), await researcherLogin.text()).toBeTruthy();
+  const researcher = (await researcherLogin.json()).data;
+  const researcherHeaders = { Authorization: `Bearer ${researcher.token}` };
+  const unassigned = await request.post(`${API}/api/relationship-pilot/enrollments/${enrollment.id}/report`, { headers: researcherHeaders });
+  expect([403, 404]).toContain(unassigned.status());
+  const claim = await request.post(`${API}/api/research/access/enrollments/${enrollment.id}/claim`, {
+    headers: { ...researcherHeaders, "Idempotency-Key": `claim-${suffix}` },
+  });
+  expect(claim.status(), await claim.text()).toBe(201);
+  const reportResponse = await request.post(`${API}/api/relationship-pilot/enrollments/${enrollment.id}/report`, { headers: researcherHeaders });
+  expect(reportResponse.status(), await reportResponse.text()).toBe(201);
   const report = (await reportResponse.json()).data;
+  const pendingDownload = await request.get(`${API}/api/relationship-pilot/reports/${report.id}?download=1`, { headers: studentHeaders });
+  expect(pendingDownload.status()).toBe(409);
 
   const other = await request.post(`${API}/api/auth/register`, {
     data: { username: `other_${suffix}`, password: "student-password-123", role: "student" },
   });
   const otherToken = (await other.json()).data.token;
   const forbidden = await request.get(`${API}/api/relationship-pilot/reports/${report.id}`, { headers: { Authorization: `Bearer ${otherToken}` } });
-  expect(forbidden.status()).toBe(403);
-
-  const researcherLogin = await request.post(`${API}/api/auth/login`, {
-    data: { username: "e2e_researcher", password: "e2e-password-123" },
-  });
-  const researcher = (await researcherLogin.json()).data;
-  const researcherHeaders = { Authorization: `Bearer ${researcher.token}` };
+  // Do not disclose the existence of another participant's report.
+  expect(forbidden.status()).toBe(404);
+  expect((await forbidden.json()).error.code).toBe("not_found");
   expect((await request.post(`${API}/api/relationship-pilot/reports/${report.id}/confirm`, { headers: researcherHeaders })).status()).toBe(200);
   expect((await request.post(`${API}/api/relationship-pilot/reports/${report.id}/send`, { headers: researcherHeaders })).status()).toBe(201);
   expect((await request.post(`${API}/api/relationship-pilot/reports/${report.id}/send`, { headers: researcherHeaders })).status()).toBe(200);

@@ -29,8 +29,8 @@ test("可靠性工作台呈现三段证据路径且不越过人工门禁", async
     } else if (path === "/api/reliability/drills") data = { id: "drill-1", status: "passed" };
     else if (path === "/api/reliability/evidence-packages") data = { id: "pkg-1", status: "draft_external_gates_pending" };
     else if (path === "/api/reliability/workbench") data = {
-      registry, recent_events: [], jobs: [{ id: "job-1", job_type: "notification_delivery", source_type: "notification_delivery", source_id: "synthetic", idempotency_key: "e2e", status: "dead_letter", attempt_count: 2, max_attempts: 2, available_at: "2026-07-20", updated_at: "2026-07-20" }],
-      feature_flags: [{ id: "flag-1", flag_name: "participant_journey", version: 1, enabled: true, role_scope: ["parent", "student"], rollout_percent: 100, reason_code: "registry_default", changed_at: "2026-07-20" }],
+      registry, task36_integration: { version: "ui-fixture-v1", journeys: [] }, recent_events: [], jobs: [{ id: "job-1", job_type: "notification_delivery", source_type: "notification_delivery", source_id: "synthetic", idempotency_key: "e2e", status: "dead_letter", attempt_count: 2, max_attempts: 2, available_at: "2026-07-20", updated_at: "2026-07-20" }],
+      feature_flags: [{ id: "flag-1", flag_name: "training_feedback_adaptive_ranking", version: 1, enabled: true, role_scope: ["parent", "student"], rollout_percent: 100, reason_code: "registry_default", changed_at: "2026-07-20" }],
       slo_snapshots: snapshots, drill_runs: [], evidence_packages: [], production_slo_frozen: false, gradual_release_enabled: false,
     };
     else if (path.endsWith("/recover")) data = { id: "job-1", status: "pending" };
@@ -41,6 +41,8 @@ test("可靠性工作台呈现三段证据路径且不越过人工门禁", async
     localStorage.setItem("safehome_auth_user", JSON.stringify({ id: "admin-t32", role: "admin", nickname: "可靠性管理员" }));
   });
 
+  const pageErrors: string[] = [];
+  page.on("pageerror", error => pageErrors.push(error.message));
   await page.goto("/reliability/release", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "可靠性与发布证据" })).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("测试云阈值尚未冻结")).toBeVisible();
@@ -52,5 +54,13 @@ test("可靠性工作台呈现三段证据路径且不越过人工门禁", async
   await expect(page.getByRole("button", { name: /确认上线|伦理签署|关闭临时越权/ })).toHaveCount(0);
   const dimensions = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
   expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.width + 1);
+  const originalViewport = page.viewportSize();
+  await page.setViewportSize({ width: 768, height: 900 });
+  const tablet = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
+  expect(tablet.scroll).toBeLessThanOrEqual(tablet.width + 1);
+  await expect(page.getByText("training_feedback_adaptive_ranking", { exact: true })).toBeVisible();
+  if (originalViewport) await page.setViewportSize(originalViewport);
+  expect(pageErrors).toEqual([]);
+  await expect(page.locator(".fatalErrorPage")).toHaveCount(0);
   await page.screenshot({ path: testInfo.outputPath("reliability-release-workbench.png"), fullPage: true });
 });

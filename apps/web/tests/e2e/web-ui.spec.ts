@@ -32,7 +32,7 @@ for (const route of routes) {
     expect(errors).toEqual([]);
     await expect(page.locator(".fatalErrorPage")).toHaveCount(0);
     if (route !== "/login" && route !== "/register" && !["/", "/student", "/about-study"].includes(route)) {
-      await expect(page.getByRole("link", { name: "安心陪伴首页", exact: true }).first()).toBeVisible();
+      await expect(page.getByRole("link", { name: /^安心陪伴(首页|工作台)$/ }).first()).toBeVisible();
     }
   });
 }
@@ -243,4 +243,33 @@ test("assessment progress remains accessible and back navigation preserves answe
   await stableWidth(page);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: testInfo.outputPath("assessment-question.png"), fullPage: true });
+});
+
+
+test("compact website and workspace menus restore keyboard focus and close after navigation", async ({ page }) => {
+  await identity(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const toggle = page.getByLabel("展开网站导航");
+  await toggle.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".siteMobileNav")).toHaveAttribute("open", "");
+  const menu = page.getByRole("navigation", { name: "移动网站导航" });
+  await menu.getByRole("link", { name: "核心流程", exact: true }).focus();
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeHidden();
+  await expect(toggle).toBeFocused();
+  await toggle.click();
+  await menu.getByRole("link", { name: "核心流程", exact: true }).click();
+  await expect(page).toHaveURL(/#flow$/);
+  await expect(menu).toBeHidden();
+  await page.goto("/dashboard");
+  await expect(page.getByRole("link", { name: "安心陪伴工作台", exact: true })).toHaveAttribute("href", "/dashboard");
+  const workspaceToggle = page.getByRole("button", { name: /打开导航/ });
+  await workspaceToggle.click();
+  await page.getByRole("navigation", { name: "后台功能导航" }).getByRole("link", { name: "用户与记录", exact: true }).focus();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("navigation", { name: "后台功能导航" })).toBeHidden();
+  await expect(workspaceToggle).toBeFocused();
+  await expect(workspaceToggle).toHaveAttribute("aria-expanded", "false");
 });
