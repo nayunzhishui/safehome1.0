@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { OperationsGovernanceWorkbench, OperationsIncident, OperationsReleasePackage } from "../../../../shared/types/api";
@@ -80,15 +81,16 @@ export function OperationsGovernanceWorkbench() {
   }
 
   return (
-    <section className="dashboardShell operationsGovernance" aria-label="内容、数据与模型运营治理工作台">
-      <div className="dashboardHeader operationsHeader">
+    <section className="dashboardShell operationsGovernance governanceDesk" aria-label="内容、数据与模型运营治理工作台">
+      <PageHeader className="dashboardHeader operationsHeader">
         <div>
           <p className="eyebrow">T34 · 可追溯、可停用、可恢复</p>
           <h1>内容、数据与模型运营治理</h1>
           <p className="summary">把能力、制品、固定回放、专业批准、漂移复核和严重事件放进同一条可审计链路。工程完成与允许上线始终分开。</p>
         </div>
         <span className="gateBadge gateBlocked">生产发布未批准</span>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-operationsgovernanceworkbench-1","label":"能力目录"},{"id":"web-operationsgovernanceworkbench-2","label":"版本与回放"},{"id":"web-operationsgovernanceworkbench-3","label":"漂移与事件"},{"id":"web-operationsgovernanceworkbench-4","label":"人工发布门禁"}]} />
 
       <div className="status" role="status" aria-live="polite">{status}</div>
 
@@ -99,7 +101,7 @@ export function OperationsGovernanceWorkbench() {
         <article><strong>{summary.incidents}</strong><span>待处理事件</span></article>
       </div>
 
-      <section className="panel" aria-labelledby="capability-title">
+      <section className="panel" aria-labelledby="capability-title" id="web-operationsgovernanceworkbench-1" tabIndex={-1}>
         <div className="panelHeading"><div><span className="panelKicker">能力与开放边界</span><h2 id="capability-title">每项能力都有用途、角色、开关和回滚</h2></div><span>{data?.registry.operation_count || 0} 项操作全覆盖</span></div>
         <div className="opsCapabilityGrid">
           {(data?.registry.capabilities || []).map((item) => <article key={item.id}><div><strong>{item.title}</strong><span>{item.data.sensitivity}</span></div><p>{item.intended_use}</p><small>{item.open_roles.join("、")} · {item.operation_ids.length}项操作</small><small>负责人：{item.owner.accountable_role}（{item.owner.named_owner_status}）</small></article>)}
@@ -107,7 +109,7 @@ export function OperationsGovernanceWorkbench() {
         <p className="boundaryCallout">临时展示越权继续保留，但正式权限验收为未通过；治疗性评估仅允许合成L0，真实参与者仍被D01—D26及伦理责任链阻断。</p>
       </section>
 
-      <div className="opsColumns">
+      <div className="opsColumns" id="web-operationsgovernanceworkbench-2" tabIndex={-1}>
         <section className="panel" aria-labelledby="package-title">
           <div className="panelHeading"><div><span className="panelKicker">不可变发布包</span><h2 id="package-title">新修订必须新版本</h2></div></div>
           <div className="opsCreateRow">
@@ -129,7 +131,7 @@ export function OperationsGovernanceWorkbench() {
         </section>
       </div>
 
-      <div className="opsColumns">
+      <div className="opsColumns" id="web-operationsgovernanceworkbench-3" tabIndex={-1}>
         <section className="panel" aria-labelledby="drift-title">
           <div className="panelHeading"><div><span className="panelKicker">漂移复核</span><h2 id="drift-title">只触发人工检查</h2></div><button type="button" className="secondaryButton" disabled={busy} onClick={() => void act("正在汇总无正文的运营指标…", () => safeHomeApi.createOperationsMonitorSnapshot())}>生成聚合快照</button></div>
           <div className="opsDriftList">{(data?.monitor_snapshots || []).slice(0, 5).map((item) => <article key={item.id}><div><strong>{item.environment} · {item.window_days}天</strong><span className={item.review_required ? "isPending" : "isReady"}>{item.review_required ? "需人工复核" : "暂无阈值信号"}</span></div><p>{item.drift_signals.map((signal) => signal.metric).join("、") || "当前没有超过工程阈值的聚合信号"}</p></article>)}</div>
@@ -147,7 +149,7 @@ export function OperationsGovernanceWorkbench() {
         </section>
       </div>
 
-      <section className="panel opsExternalGate" aria-label="外部发布证据">
+      <section className="panel opsExternalGate" aria-label="外部发布证据" id="web-operationsgovernanceworkbench-4" tabIndex={-1}>
         <div><span className="panelKicker">人工门禁</span><h2>工程完成不等于发布批准</h2><p>真实负责人、伦理、隐私安全、测试云、微信开发者工具、Android/iOS和生产双人控制仍需外部证据。</p></div>
         {canEvidence ? <button type="button" className="secondaryButton" disabled={busy} onClick={() => void act("正在生成待外部核对证据包…", () => safeHomeApi.createOperationsEvidencePackage())}>生成待人工核对证据包</button> : null}
       </section>

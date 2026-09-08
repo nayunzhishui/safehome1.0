@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
@@ -98,8 +99,8 @@ export function CheckinsManagement() {
   }, []);
 
   return (
-    <section className="dashboardShell" aria-label="练习尝试记录后台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="练习尝试记录后台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Research Platform</p>
           <h1>练习尝试记录</h1>
@@ -113,7 +114,7 @@ export function CheckinsManagement() {
             {state.status === "loading" ? "刷新中..." : "刷新记录"}
           </button>
         </div>
-      </div>
+      </PageHeader>
 
       <div className={`status ${state.status}`}>{state.message}</div>
 
@@ -167,19 +168,25 @@ export function CheckinsManagement() {
 
           {selectedCheckin ? (
             <div className="detailContent">
-              <DetailRow label="家长用户" value={selectedCheckin.user_id} />
-              <DetailRow label="训练卡" value={cardTitleById.get(selectedCheckin.card_id) ?? selectedCheckin.card_id} />
-              <DetailRow label="训练卡技术标识（仅研究）" value={selectedCheckin.card_id} />
-              <DetailRow label="关联记录技术标识（仅研究）" value={selectedCheckin.diary_id} />
-              <DetailRow label="记录状态" value={selectedCheckin.completed === 1 ? "已记录尝试" : "这次还没有完整记录"} />
-              <DetailRow label="练习前情绪强度" value={selectedCheckin.emotion_before} />
-              <DetailRow label="练习后情绪强度" value={selectedCheckin.emotion_after} />
-              <DetailRow
+              <DetailSection title="主要内容">
+<DetailRow label="训练卡" value={cardTitleById.get(selectedCheckin.card_id) ?? selectedCheckin.card_id} />
+<DetailRow label="练习前情绪强度" value={selectedCheckin.emotion_before} />
+<DetailRow label="练习后情绪强度" value={selectedCheckin.emotion_after} />
+<DetailRow
                 label="前后情绪变化"
                 value={getEmotionDelta(selectedCheckin) === null ? null : `${getEmotionDelta(selectedCheckin)! > 0 ? "+" : ""}${getEmotionDelta(selectedCheckin)}`}
               />
-              <DetailRow label="家长复盘" value={selectedCheckin.reflection} />
-              <DetailRow label="创建时间" value={formatDateTime(selectedCheckin.created_at)} />
+<DetailRow label="家长复盘" value={selectedCheckin.reflection} />
+</DetailSection>
+<DetailSection title="状态与跟进">
+<DetailRow label="记录状态" value={selectedCheckin.completed === 1 ? "已记录尝试" : "这次还没有完整记录"} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="家长用户" value={selectedCheckin.user_id} />
+<DetailRow label="训练卡技术标识（仅研究）" value={selectedCheckin.card_id} />
+<DetailRow label="关联记录技术标识（仅研究）" value={selectedCheckin.diary_id} />
+<DetailRow label="创建时间" value={formatDateTime(selectedCheckin.created_at)} />
+</DetailSection>
 
               <section className="guidanceBox" aria-label="试点评估用途">
                 <h3>试点评估用途</h3>

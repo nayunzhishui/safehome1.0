@@ -1,11 +1,12 @@
+import { PageHeader } from "../components/WebUi";
 interface DeferredAdminPageProps {
   path: string;
 }
 
 export function DeferredAdminPage({ path }: DeferredAdminPageProps) {
   return (
-    <section className="dashboardShell" aria-label="后台暂缓页面">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="后台暂缓页面">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Deferred Page</p>
           <h1>后台页面暂缓</h1>
@@ -19,7 +20,7 @@ export function DeferredAdminPage({ path }: DeferredAdminPageProps) {
             查看情绪记录
           </a>
         </div>
-      </div>
+      </PageHeader>
 
       <div className="status">当前路径：{path}</div>
 

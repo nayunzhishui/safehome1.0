@@ -36,8 +36,8 @@ export function ProfileScatterChart({ profile }: ProfileScatterChartProps) {
         },
       },
       grid: { left: 38, right: 18, top: 26, bottom: 34 },
-      xAxis: { name: "PC1", type: "value", splitLine: { lineStyle: { color: "#eadfce" } } },
-      yAxis: { name: "PC2", type: "value", splitLine: { lineStyle: { color: "#eadfce" } } },
+      xAxis: { name: "PC1", type: "value", splitLine: { lineStyle: { color: "#dfe5dc" } } },
+      yAxis: { name: "PC2", type: "value", splitLine: { lineStyle: { color: "#dfe5dc" } } },
       series: [
         {
           name: "群体画像中心",

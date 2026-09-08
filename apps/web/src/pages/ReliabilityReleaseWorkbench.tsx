@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { ReliabilityWorkbench } from "../../../../shared/types/api";
@@ -48,15 +49,16 @@ export function ReliabilityReleaseWorkbench() {
   }
 
   return (
-    <section className="dashboardShell reliabilityWorkbench" aria-label="可靠性与发布工程工作台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell reliabilityWorkbench governanceDesk" aria-label="可靠性与发布工程工作台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">T32 · 可恢复工程</p>
           <h1>可靠性与发布证据</h1>
           <p className="summary">统一观察七条关键旅程、可靠任务、故障演练和功能开关。只记录技术元数据，不采集参与者原文、令牌或请求正文。</p>
         </div>
         <span className="gateBadge gateBlocked">测试云阈值尚未冻结</span>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-reliabilityreleaseworkbench-1","label":"本地观测与任务"},{"id":"web-reliabilityreleaseworkbench-2","label":"恢复与功能开关"}]} />
 
       <div className="status" role="status" aria-live="polite">{status}</div>
 
@@ -66,7 +68,7 @@ export function ReliabilityReleaseWorkbench() {
         <li className="isBlocked"><span>3</span><div><strong>人工上线门禁</strong><small>值班负责人、安全隐私伦理复核和上线决定均保持待办</small></div></li>
       </ol>
 
-      <div className="reliabilityColumns">
+      <div className="reliabilityColumns" id="web-reliabilityreleaseworkbench-1" tabIndex={-1}>
         <section className="panel" aria-label="旅程观测">
           <div className="panelHeading"><div><span className="panelKicker">七条核心旅程</span><h2>最近本地观测</h2></div>{isAdmin ? <button className="primaryButton" type="button" disabled={busy} onClick={() => void act("正在生成本地SLO快照…", () => safeHomeApi.createReliabilitySloSnapshot())}>生成快照</button> : null}</div>
           <div className="journeyMetricList">
@@ -87,7 +89,7 @@ export function ReliabilityReleaseWorkbench() {
         </section>
       </div>
 
-      <div className="reliabilityColumns">
+      <div className="reliabilityColumns" id="web-reliabilityreleaseworkbench-2" tabIndex={-1}>
         <section className="panel" aria-label="任务36韧性闭环">
           <div className="panelHeading"><div><span className="panelKicker">T36 · 六条受控链路</span><h2>韧性与隐私闭环</h2></div><span>{data?.task36_integration.version || "读取中"}</span></div>
           <div className="reliableJobList">

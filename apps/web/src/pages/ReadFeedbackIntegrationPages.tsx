@@ -1,3 +1,4 @@
+import { PageHeader, SiteHeader } from "../components/WebUi";
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
 
 import { safeHomeApi as api } from "../services/safehomeApi";
@@ -67,7 +68,7 @@ function ProgressHeader({
   const percent = total <= 1 ? 100 : Math.round(((current + 1) / total) * 100);
   return (
     <div className="progress-wrap" aria-label="答题进度">
-      <div className="progress-bar"><span style={{ width: `${percent}%` }} /></div>
+      <div className="progress-bar" role="progressbar" aria-label="步骤进度" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}><span style={{ width: `${percent}%` }} /></div>
       <span>第 {current + 1} 步 / {total}</span>
       <span className="answer-progress">已完成 {answered} / {totalAnswers} 题</span>
     </div>
@@ -369,21 +370,8 @@ function SandplayBoard({
 
 export function AboutStudyPage() {
   return (
-    <div className="landingPage">
-      <header className="landingNav">
-        <a className="brandMark landingBrand" href="/">
-          <span className="landingBrandIcon" aria-hidden="true" />
-          <span>
-            <strong>安心家</strong>
-            <small>研究说明</small>
-          </span>
-        </a>
-        <nav className="landingLinks">
-          <a href="/student">学生画像</a>
-          <a href="/assessment">家长测评</a>
-          <a href="/dashboard">研究后台</a>
-        </nav>
-      </header>
+    <div className="landingPage publicEntryPage">
+      <SiteHeader />
       <section className="landingHero">
         <div className="heroText">
           <p className="eyebrow">Study Boundary</p>
@@ -411,20 +399,8 @@ export function AboutStudyPage() {
 
 export function StudentEntryPage() {
   return (
-    <div className="landingPage">
-      <header className="landingNav">
-        <a className="brandMark landingBrand" href="/">
-          <span className="landingBrandIcon" aria-hidden="true" />
-          <span>
-            <strong>安心家</strong>
-            <small>学生阶段性画像</small>
-          </span>
-        </a>
-        <nav className="landingLinks">
-          <a href="/about-study">研究说明</a>
-          <a href="/assessment">家长测评</a>
-        </nav>
-      </header>
+    <div className="landingPage publicEntryPage">
+      <SiteHeader />
       <section className="landingHero">
         <div className="heroText">
           <p className="eyebrow">Student Profile</p>
@@ -545,15 +521,15 @@ export function StudentAssessmentPage() {
   }
 
   return (
-    <section className="dashboardShell">
-      <div className="dashboardHeader">
+    <section className="dashboardShell assessmentPage">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Student Assessment</p>
           <h1>学生阶段性画像测评</h1>
           <p className="summary">请按最近两周的真实体验填写。结果用于支持性反馈，不构成诊断。</p>
         </div>
         <a className="secondaryButton" href="/student">返回学生入口</a>
-      </div>
+      </PageHeader>
       <div className={`status ${status}`}>{message}</div>
       {payload ? (
         <>
@@ -695,15 +671,15 @@ export function StudentReportPage() {
   const dimensions = dimensionRows(record);
 
   return (
-    <section className="dashboardShell">
-      <div className="dashboardHeader">
+    <section className="dashboardShell reportPage">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Student Report</p>
           <h1>{record?.profile_name || "学生画像报告"}</h1>
           <p className="summary">{record?.report?.summary || "正在读取报告内容。"}</p>
         </div>
         <a className="secondaryButton" href="/student/assessment">重新填写</a>
-      </div>
+      </PageHeader>
       <div className={`status ${status}`}>{message}</div>
       {record ? (
         <>
@@ -720,7 +696,20 @@ export function StudentReportPage() {
             </article>
           </section>
 
-          <section className="dashboardGrid twoColumn visual-grid">
+          <section className="panel">
+            <h2>理解本次阶段性线索</h2>
+            <p>{record.report?.mechanism || record.report?.summary || "暂无机制解释。"}</p>
+            <h3>首轮任务</h3>
+            <p className="task-card">{record.report?.first_task || "先完成一次情绪命名练习。"}</p>
+            <div className="detailBlock">
+              <h3>维度观察</h3>
+              {dimensions.map((dimension) => (
+                <p key={dimension.key}><strong>{dimension.label}</strong>：{dimension.summary}</p>
+              ))}
+            </div>
+          </section>
+
+<section className="dashboardGrid twoColumn visual-grid">
             <article className="panel">
               <h2>维度雷达图</h2>
               <RadarChart visuals={visuals} />
@@ -739,21 +728,10 @@ export function StudentReportPage() {
             </article>
           </section>
 
-          <section className="panel">
-            <h2>为什么会落在这一类</h2>
-            <p>{record.report?.mechanism || record.report?.summary || "暂无机制解释。"}</p>
-            <h3>首轮任务</h3>
-            <p className="task-card">{record.report?.first_task || "先完成一次情绪命名练习。"}</p>
-            <div className="detailBlock">
-              <h3>维度观察</h3>
-              {dimensions.map((dimension) => (
-                <p key={dimension.key}><strong>{dimension.label}</strong>：{dimension.summary}</p>
-              ))}
-            </div>
-          </section>
+
 
           <section className="panel">
-            <h2>标本同治：整合干预路径</h2>
+            <h2>支持性练习路径</h2>
             <div className="path-grid">
               {Object.entries(record.report?.integrative_path || {}).map(([name, text]) => (
                 <article key={name}>
@@ -956,15 +934,15 @@ export function ParentAssessmentPage() {
   }
 
   return (
-    <section className="dashboardShell">
-      <div className="dashboardHeader">
+    <section className="dashboardShell assessmentPage">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Parent Assessment</p>
           <h1>家长双量表测评</h1>
           <p className="summary">用于观察自我关怀和不确定性耐受，生成支持性反馈报告。</p>
         </div>
         <a className="secondaryButton" href="/about-study">查看研究说明</a>
-      </div>
+      </PageHeader>
       <div className={`status ${status}`}>{message}</div>
       {payload ? (
         <>
@@ -1106,19 +1084,40 @@ export function ParentReportPage() {
   }) | undefined;
 
   return (
-    <section className="dashboardShell">
-      <div className="dashboardHeader">
+    <section className="dashboardShell reportPage">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Parent Report</p>
           <h1>{record?.report.role || "家长支持性反馈报告"}</h1>
           <p className="summary">{record?.report.summary || "正在读取报告内容。"}</p>
         </div>
         <a className="secondaryButton" href="/assessment">重新填写</a>
-      </div>
+      </PageHeader>
       <div className={`status ${status}`}>{message}</div>
       {record ? (
         <>
           <section className="dashboardGrid twoColumn">
+            <article className="panel">
+              <h2>结果说明</h2>
+              <p>{record.report.empathy}</p>
+            </article>
+            <article className="panel">
+              <h2>你的资源</h2>
+              <p>{record.report.strength}</p>
+            </article>
+            <article className="panel action-card">
+              <span>一个小练习</span>
+              <h2>{record.report.action_title}</h2>
+              <p>{record.report.action}</p>
+            </article>
+            <article className="panel next-step">
+              <span>适合你的下一步</span>
+              <h2>{record.report.course}</h2>
+              <p>如果你愿意继续参与追踪测评或了解后续研究反馈，可以记录这个意向。试点期不会自动跳转或要求付款。</p>
+            </article>
+          </section>
+
+<section className="dashboardGrid twoColumn">
             <article className="panel">
               <span>报告定位</span>
               <h2>支持性反馈，不作诊断</h2>
@@ -1187,26 +1186,7 @@ export function ParentReportPage() {
             </article>
           </section>
 
-          <section className="dashboardGrid twoColumn">
-            <article className="panel">
-              <h2>结果说明</h2>
-              <p>{record.report.empathy}</p>
-            </article>
-            <article className="panel">
-              <h2>你的资源</h2>
-              <p>{record.report.strength}</p>
-            </article>
-            <article className="panel action-card">
-              <span>一个小练习</span>
-              <h2>{record.report.action_title}</h2>
-              <p>{record.report.action}</p>
-            </article>
-            <article className="panel next-step">
-              <span>适合你的下一步</span>
-              <h2>{record.report.course}</h2>
-              <p>如果你愿意继续参与追踪测评或了解后续研究反馈，可以记录这个意向。试点期不会自动跳转或要求付款。</p>
-            </article>
-          </section>
+
 
           <section className="panel">
             <h2>行动反馈</h2>

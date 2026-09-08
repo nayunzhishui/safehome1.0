@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
@@ -281,15 +282,16 @@ export function AiQaSandboxPage() {
   }
 
   return (
-    <section className="dashboardShell aiQaWorkbench" aria-label="支持性内容助手研究沙盒">
-      <div className="dashboardHeader">
+    <section className="dashboardShell aiQaWorkbench researchNotebook" aria-label="支持性内容助手研究沙盒">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">T28 · 仅限合成数据</p>
           <h1>支持性内容助手研究沙盒</h1>
           <p className="summary">验证范围、安全路由、已发布内容引用和失败降级。这里不是参与者问答服务，也不能替代专业判断。</p>
         </div>
         <span className="gateBadge gateBlocked">参与者入口关闭</span>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-aiqasandboxpage-1","label":"知识库与检索"},{"id":"web-aiqasandboxpage-2","label":"合成问答"},{"id":"web-aiqasandboxpage-3","label":"AI候选人工审阅"},{"id":"web-aiqasandboxpage-4","label":"待人工冻结事项"},{"id":"web-aiqasandboxpage-5","label":"供应商证据"}]} />
 
       <div className="status" role="status" aria-live="polite">{status}</div>
 
@@ -322,7 +324,7 @@ export function AiQaSandboxPage() {
         </dl>
       </section>
 
-      <section className="panel" aria-label="批准知识库与检索验证">
+      <section className="panel" aria-label="批准知识库与检索验证" id="web-aiqasandboxpage-1" tabIndex={-1}>
         <div className="panelHeading">
           <div>
             <span className="panelKicker">T37-C04 · 只读批准内容</span>
@@ -410,7 +412,7 @@ export function AiQaSandboxPage() {
         ) : null}
       </section>
 
-      <div className="aiQaColumns">
+      <div className="aiQaColumns" id="web-aiqasandboxpage-2" tabIndex={-1}>
         <section className="panel aiQaConversation" aria-label="合成问答测试">
           <div className="panelHeading">
             <div><span className="panelKicker">安全链路</span><h2>合成问答</h2></div>
@@ -509,7 +511,7 @@ export function AiQaSandboxPage() {
         </section>
       </div>
 
-      <section className="panel" aria-label="AI候选人工审阅工作台">
+      <section className="panel" aria-label="AI候选人工审阅工作台" id="web-aiqasandboxpage-3" tabIndex={-1}>
         <div className="panelHeading">
           <div>
             <span className="panelKicker">T37-C07 · 起草与复核分离</span>
@@ -620,14 +622,14 @@ export function AiQaSandboxPage() {
         )}
       </section>
 
-      <section className="panel" aria-label="待人工冻结事项">
+      <section className="panel" aria-label="待人工冻结事项" id="web-aiqasandboxpage-4" tabIndex={-1}>
         <div className="panelHeading"><div><span className="panelKicker">不能自动签字</span><h2>待人工冻结事项</h2></div>{isAdmin ? <button className="textButton dangerText" disabled={busy || Boolean(config?.runtime_control.killed)} type="button" onClick={killSandbox}>立即停用沙盒</button> : null}</div>
         <div className="gateList">
           {gateItems.map(([key, item]) => <div key={key}><strong>{key}</strong><span>{String(item.proposed)}</span><em>{item.status}</em></div>)}
         </div>
       </section>
 
-      <section className="panel" aria-label="AI供应商遴选与合同证据">
+      <section className="panel" aria-label="AI供应商遴选与合同证据" id="web-aiqasandboxpage-5" tabIndex={-1}>
         <div className="panelHeading">
           <div>
             <span className="panelKicker">T37-C02 · 公开材料仅作候选比较</span>

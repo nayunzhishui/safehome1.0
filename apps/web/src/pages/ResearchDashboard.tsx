@@ -570,6 +570,14 @@ export function ResearchDashboard() {
         </div>
       </div>
 
+      <nav className="webSectionNav" aria-label="总览页内导航">
+        <a href="#overview-today">今日待处理</a>
+        <a href="#overview-analysis">研究分析</a>
+        <a href="#overview-participants">参与者档案</a>
+        <a href="#overview-relationship">关系试点</a>
+        <a href="#overview-profile">测评画像</a>
+      </nav>
+
       <div className={`status ${state.status}`}>{state.message}</div>
       {state.status === "error" && lastError ? (
         <section className="errorDiagnosticCard" aria-label="错误诊断信息">
@@ -600,7 +608,7 @@ export function ResearchDashboard() {
         </label>
       </section>
 
-      <section className="guidanceBox" aria-label="今日待处理">
+      <section className="guidanceBox" id="overview-today" aria-label="今日待处理">
         <div className="sectionTitleRow">
           <h2>今日待处理</h2>
           <span className="countBadge">P2-06</span>
@@ -638,7 +646,7 @@ export function ResearchDashboard() {
         <MetricCard label="测评结果" value={state.assessmentResults.length} />
       </div>
 
-      <section className="researchAnalysisDeck" aria-label="离线研究分析">
+      <section className="researchAnalysisDeck" id="overview-analysis" aria-label="离线研究分析">
         <div className="analysisDeckHeader">
           <div>
             <p className="eyebrow">Offline Research Lens</p>
@@ -815,7 +823,7 @@ export function ResearchDashboard() {
         </section>
       ) : null}
 
-      <section className="participantWorkspace" aria-label="参与者矩阵与单人档案">
+      <section className="participantWorkspace" id="overview-participants" aria-label="参与者矩阵与单人档案">
         <div className="participantWorkspaceHeader">
           <div>
             <p className="eyebrow">Participant Matrix</p>
@@ -896,7 +904,7 @@ export function ResearchDashboard() {
         </div>
       </section>
 
-      <section className="guidanceBox" aria-label="亲密关系项目试点档案">
+      <section className="guidanceBox" id="overview-relationship" aria-label="亲密关系项目试点档案">
         <div className="sectionTitleRow">
           <h2>亲密关系项目试点</h2>
           <span className="countBadge">{state.relationshipEnrollments.length} 份报名</span>
@@ -1013,7 +1021,7 @@ export function ResearchDashboard() {
         ) : <div className="emptyState">当前还没有第二阶段报名记录。</div>}
       </section>
 
-      <section className="guidanceBox" aria-label="测评画像落点">
+      <section className="guidanceBox" id="overview-profile" aria-label="测评画像落点">
         <div className="sectionTitleRow">
           <h2>测评画像落点</h2>
           <span className="countBadge">T4-03</span>
@@ -1124,6 +1132,8 @@ export function ResearchDashboard() {
         </section>
       </div>
 
+      <details className="webPageDirectory">
+        <summary>查看后台页面目录</summary>
       <div className="dashboardGrid overviewGrid">
         <section className="listPanel" aria-label="已完成后台页面">
           <div className="sectionTitleRow">
@@ -1161,6 +1171,8 @@ export function ResearchDashboard() {
           )}
         </section>
       </div>
+
+      </details>
 
       <section className="guidanceBox" aria-label="研究者平台边界">
         <h2>平台边界</h2>

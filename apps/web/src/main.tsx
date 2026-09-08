@@ -12,6 +12,8 @@ import {
 } from "./services/authState";
 import { safeHomeApi, SafeHomeApiError } from "./services/safehomeApi";
 import { ErrorBoundary, lazyWithRetry as lazy } from "./components/ErrorBoundary";
+import { SiteBrand, SiteHeader, SiteFooter, UiIcon, navigationIcon } from "./components/WebUi";
+import { displayActorRole } from "./utils/displayLabels";
 import "./styles.css";
 
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard").then((module) => ({ default: module.AdminDashboard })));
@@ -334,7 +336,8 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
     return (
       <>
         <a className="skipLink" href="#main-content">跳到主要内容</a>
-        <main className="page landingMode" id="main-content">
+        <main className={`page landingMode${isLandingPath ? " homeMode" : ""}`} id="main-content" data-web-ui>
+          {!isLandingPath && !isStudentEntryPath && !isAboutStudyPath ? <SiteHeader /> : null}
           {authUser && path !== "/login" && path !== "/register" ? (
             <div className="publicSessionBar">
               <span>当前已登录</span>
@@ -348,7 +351,8 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
               </button>
             </div>
           ) : null}
-          {suspendedPageContent}
+          <div className="webPageContent" data-route={path}>{suspendedPageContent}</div>
+          {!isLandingPath ? <SiteFooter /> : null}
         </main>
       </>
     );
@@ -357,15 +361,9 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
   return (
     <>
       <a className="skipLink" href="#main-content">跳到主要内容</a>
-      <main className="adminWorkspace" id="main-content">
+      <main className="adminWorkspace" id="main-content" data-web-ui>
       <aside className="adminSidebar" aria-label="后台导航">
-        <a className="adminBrand" href="/dashboard" aria-label="安心陪伴管理后台">
-          <span className="adminBrandMark" aria-hidden="true" />
-          <span>
-            <strong>安心陪伴</strong>
-            <small>ReadFeedback Admin</small>
-          </span>
-        </a>
+        <SiteBrand href="/dashboard" />
         <button
           className="adminNavToggle"
           type="button"
@@ -381,15 +379,15 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
             <section className="adminNavGroup" aria-label={workspace.label} key={workspace.label}>
               <strong className="adminNavGroupLabel">{workspace.label}</strong>
               {workspace.links.map((link) => (
-                <a className={link.match(path) ? "active" : ""} href={link.href} key={link.href}>
-                  <span className="navDot" aria-hidden="true" />
+                <a className={link.match(path) ? "active" : ""} aria-current={link.match(path) ? "page" : undefined} href={link.href} key={link.href}>
+                  <UiIcon name={navigationIcon(link.href)} size={18} />
                   {link.label}
                 </a>
               ))}
             </section>
           ))}
           <a href="/">
-            <span className="navDot" aria-hidden="true" />
+            <UiIcon name="home" size={18} />
             网站首页
           </a>
         </nav>
@@ -400,13 +398,9 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
       </aside>
       <section className="adminMain">
         <header className="adminTopbar">
-          <div className="adminChromeDots" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-          <span className="adminPath">safehome1.0 {path}</span>
-          <strong>管理员后台</strong>
+<div className="workspaceBreadcrumb"><span>工作台</span><span aria-hidden="true">/</span><strong>{matchedAdminLink?.label || "工作台"}</strong></div>
+          <div className="workspaceAccount"><span className="workspaceRole">{authUser ? displayActorRole(authUser.role) : "未登录"}</span>
+
           {authUser ? (
             <button
               className="secondaryButton"
@@ -417,8 +411,9 @@ function App({ authUser, showcaseEnabled }: { authUser: AuthUser | null; showcas
               {logoutBusy ? "正在退出…" : "退出登录"}
             </button>
           ) : null}
+          </div>
         </header>
-        {suspendedPageContent}
+        <div className="webPageContent" data-route={path}>{suspendedPageContent}</div>
       </section>
       </main>
     </>

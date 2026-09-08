@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import { formatSafeHomeError, safeHomeApi as api } from "../services/safehomeApi";
@@ -105,15 +106,15 @@ export function ProfilesManagement() {
   const recommendedCards = parseJson<string[]>(selected?.recommended_task_ids_json, []);
 
   return (
-    <div className="adminPage">
-      <section className="dashboardHero">
+    <div className="adminPage profileManagementPage">
+      <PageHeader className="dashboardHero">
         <div>
           <span className="eyebrow">Student Profile</span>
           <h1>{pathProfileId ? "学生画像详情" : "学生画像列表"}</h1>
           <p>从 `student_profiles` 读取画像记录，用于查看置信度、风险状态、推荐训练卡、维度观察和人工复核状态。</p>
         </div>
         <div className={`status compact ${status}`}>{message}</div>
-      </section>
+      </PageHeader>
 
       <section className="guidanceBox" aria-label="后台令牌">
         <label className="tokenField">
@@ -185,19 +186,24 @@ export function ProfilesManagement() {
 
           {selected ? (
             <div className="detailStack">
-              <div className="detailRow"><span>画像名称</span><strong>{selected.profile_name || "未命名画像"}</strong></div>
-              <div className="detailRow"><span>画像编码</span><strong>{selected.profile_code || "未设置"}</strong></div>
-              <div className="detailRow"><span>匿名 ID</span><strong>{selected.anonymous_id}</strong></div>
-              <div className="detailRow"><span>置信度</span><strong>{formatConfidence(selected.confidence)}</strong></div>
-              <div className="detailRow"><span>风险状态</span><strong>{riskText(selected.risk_level)}</strong></div>
-              <div className="detailRow"><span>人工关注</span><strong>{selected.requires_review ? "需要" : "暂不需要"}</strong></div>
-              <div className="detailRow"><span>复核状态</span><strong>{reviewStatusText(selected.latest_review?.review_status)}</strong></div>
-              <div className="detailRow"><span>推荐训练卡</span><strong>{recommendedCardsText(selected, recommendedCards)}</strong></div>
-              <div className="detailRow"><span>画像 ID</span><strong>{selected.id}</strong></div>
-              <div className="detailRow"><span>关联测评 ID</span><strong>{selected.assessment_result_id || "暂无"}</strong></div>
-              <div className="detailRow"><span>保存时间</span><strong>{selected.created_at}</strong></div>
-              <div className="detailRow"><span>详情链接</span><strong>{`/profiles/${selected.id}`}</strong></div>
-
+<DetailSection title="画像与支持线索">
+<div className="detailRow"><span>画像名称</span><strong>{selected.profile_name || "未命名画像"}</strong></div>
+<div className="detailRow"><span>置信度</span><strong>{formatConfidence(selected.confidence)}</strong></div>
+<div className="detailRow"><span>推荐训练卡</span><strong>{recommendedCardsText(selected, recommendedCards)}</strong></div>
+</DetailSection>
+<DetailSection title="风险与人工复核">
+<div className="detailRow"><span>风险状态</span><strong>{riskText(selected.risk_level)}</strong></div>
+<div className="detailRow"><span>人工关注</span><strong>{selected.requires_review ? "需要" : "暂不需要"}</strong></div>
+<div className="detailRow"><span>复核状态</span><strong>{reviewStatusText(selected.latest_review?.review_status)}</strong></div>
+</DetailSection>
+<DetailSection title="记录信息">
+<div className="detailRow"><span>画像编码</span><strong>{selected.profile_code || "未设置"}</strong></div>
+<div className="detailRow"><span>匿名 ID</span><strong>{selected.anonymous_id}</strong></div>
+<div className="detailRow"><span>画像 ID</span><strong>{selected.id}</strong></div>
+<div className="detailRow"><span>关联测评 ID</span><strong>{selected.assessment_result_id || "暂无"}</strong></div>
+<div className="detailRow"><span>保存时间</span><strong>{selected.created_at}</strong></div>
+<div className="detailRow"><span>详情链接</span><strong>{`/profiles/${selected.id}`}</strong></div>
+</DetailSection>
               <div className="detailBlock">
                 <h3>维度观察</h3>
                 {dimensions.length ? (

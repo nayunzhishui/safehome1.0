@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/WebUi";
 import { useEffect, useState } from "react";
 
 import { API_ENDPOINTS } from "../../../../shared/constants/api";
@@ -146,23 +147,23 @@ export function FamilyBindPage() {
   if (!isLoggedIn) {
     return (
       <section className="dashboardShell">
-        <div className="dashboardHeader">
+        <PageHeader className="dashboardHeader">
           <h1>家庭绑定</h1>
           <p>请先<a href="/login">登录</a>或<a href="/register">注册</a>。</p>
-        </div>
+        </PageHeader>
       </section>
     );
   }
 
   return (
-    <section className="dashboardShell" aria-label="家庭绑定">
-      <div className="dashboardHeader">
+    <section className="dashboardShell familyPage" aria-label="家庭绑定">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Family</p>
           <h1>家庭绑定</h1>
         </div>
         <p className="subtitle">当前角色：{user?.role ?? "未知"}｜{user?.nickname ?? user?.username ?? "未命名"}</p>
-      </div>
+      </PageHeader>
 
       <section className="guidanceBox" aria-label="说明">
         <h2>绑定说明</h2>

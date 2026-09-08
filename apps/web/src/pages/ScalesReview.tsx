@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useMemo, useState } from "react";
 
 import scalesCatalog from "../../../../content/scales_catalog.json";
@@ -68,8 +69,8 @@ export function ScalesReview() {
   const blocked = scales.filter((scale) => !scale.enabled);
 
   return (
-    <section className="dashboardShell" aria-label="量表目录审核">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="量表目录审核">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Content Review</p>
           <h1>量表目录审核</h1>
@@ -88,7 +89,7 @@ export function ScalesReview() {
             规则
           </a>
         </div>
-      </div>
+      </PageHeader>
 
       <div className="status success">
         已读取 {scalesCatalog.version}。当前页面只读展示量表目录；小程序实际可见入口以“测评题库管理”和 assessment_worksheets 为准。
@@ -135,21 +136,29 @@ export function ScalesReview() {
 
           {selectedScale ? (
             <div className="detailContent">
-              <DetailRow label="量表名称" value={selectedScale.display_name} />
-              <DetailRow label="人群" value={audienceText(selectedScale.audience)} />
-              <DetailRow label="主题" value={selectedScale.theme} />
-              <DetailRow label="来源类型" value={selectedScale.source_type} />
-              <DetailRow label="审核状态" value={statusText(selectedScale.review_status)} />
-              <DetailRow label="用户端开放" value={selectedScale.enabled ? "已开放" : "暂不开放"} />
-              <DetailRow label="题项状态" value={statusText(selectedScale.item_status)} />
-              <DetailRow label="计分状态" value={statusText(selectedScale.scoring_status)} />
-              <DetailRow label="第一批候选" value={selectedScale.first_batch_candidate ? "是" : "否"} />
-              <DetailRow label="剔除用户端流程" value={selectedScale.excluded_from_user_flow ? "是" : "否"} />
-              <DetailRow label="推荐训练卡" value={(selectedScale.recommended_card_ids || []).join("、") || "暂无"} />
-              <DetailRow label="不能开放原因" value={selectedScale.not_open_reason || "未完成人工复核前默认不开放。"} />
-              <DetailRow label="剔除原因" value={selectedScale.exclusion_reason || "未标记为剔除。"} />
-              <DetailRow label="来源文件" value={(selectedScale.source_files || []).join("\n")} />
-              <DetailRow label="备注" value={selectedScale.notes} />
+              <DetailSection title="主要内容">
+<DetailRow label="量表名称" value={selectedScale.display_name} />
+<DetailRow label="人群" value={audienceText(selectedScale.audience)} />
+<DetailRow label="主题" value={selectedScale.theme} />
+<DetailRow label="第一批候选" value={selectedScale.first_batch_candidate ? "是" : "否"} />
+<DetailRow label="推荐训练卡" value={(selectedScale.recommended_card_ids || []).join("、") || "暂无"} />
+<DetailRow label="备注" value={selectedScale.notes} />
+</DetailSection>
+<DetailSection title="适用边界与安全">
+<DetailRow label="剔除用户端流程" value={selectedScale.excluded_from_user_flow ? "是" : "否"} />
+<DetailRow label="不能开放原因" value={selectedScale.not_open_reason || "未完成人工复核前默认不开放。"} />
+<DetailRow label="剔除原因" value={selectedScale.exclusion_reason || "未标记为剔除。"} />
+</DetailSection>
+<DetailSection title="状态与跟进">
+<DetailRow label="题项状态" value={statusText(selectedScale.item_status)} />
+<DetailRow label="计分状态" value={statusText(selectedScale.scoring_status)} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="来源类型" value={selectedScale.source_type} />
+<DetailRow label="审核状态" value={statusText(selectedScale.review_status)} />
+<DetailRow label="用户端开放" value={selectedScale.enabled ? "已开放" : "暂不开放"} />
+<DetailRow label="来源文件" value={(selectedScale.source_files || []).join("\n")} />
+</DetailSection>
 
               <section className="guidanceBox" aria-label="量表开放边界">
                 <h3>量表开放边界</h3>

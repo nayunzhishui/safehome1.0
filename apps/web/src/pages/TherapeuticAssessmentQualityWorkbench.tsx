@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/WebUi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
@@ -197,8 +198,8 @@ export function TherapeuticAssessmentQualityWorkbench() {
   };
 
   return (
-    <section className="qualityWorkbench" aria-labelledby="quality-title">
-      <header className="qualityHero">
+    <section className="qualityWorkbench governanceDesk" aria-labelledby="quality-title">
+      <PageHeader className="qualityHero">
         <div>
           <p className="pageEyebrow">治疗性评估 · 质量监督</p>
           <h1 id="quality-title">把抽检、修复和通知放在同一条责任链上</h1>
@@ -207,7 +208,7 @@ export function TherapeuticAssessmentQualityWorkbench() {
         <button className="secondaryButton" type="button" onClick={() => void load()} disabled={loading}>
           重新读取
         </button>
-      </header>
+      </PageHeader>
 
       {runtime ? (
         <div className={`qualityRuntime ${runtime.paused ? "qualityRuntime--paused" : ""}`} role="status">

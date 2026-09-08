@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
@@ -59,11 +60,12 @@ export function ResearchMethodologyWorkbench() {
   const latestVersion = versions[0];
 
   return (
-    <section className="dashboardShell methodologyWorkbench" aria-label="研究方法冻结准备工作台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell methodologyWorkbench researchNotebook" aria-label="研究方法冻结准备工作台">
+      <PageHeader className="dashboardHeader">
         <div><p className="eyebrow">T30 · 冻结前结构</p><h1>心理测量与研究方法工作台</h1><p className="summary">先定义问题、分母、量尺、缺失和分析边界，再由真人核对与签字。此页不读取真实结局，也不提供自动冻结按钮。</p></div>
         <span className="gateBadge gateBlocked">人工签字待完成</span>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-researchmethodologyworkbench-1","label":"版本与研究线"},{"id":"web-researchmethodologyworkbench-2","label":"测量登记"},{"id":"web-researchmethodologyworkbench-3","label":"分析计划"}]} />
       <div className="status" role="status" aria-live="polite">{status}</div>
 
       <section className="methodologyBoundary" aria-label="不可越过的研究边界">
@@ -74,7 +76,7 @@ export function ResearchMethodologyWorkbench() {
         </dl>
       </section>
 
-      <div className="methodologyColumns">
+      <div className="methodologyColumns" id="web-researchmethodologyworkbench-1" tabIndex={-1}>
         <section className="panel" aria-label="版本与机器证据">
           <div className="panelHeading"><div><span className="panelKicker">可复现结构</span><h2>版本与机器检查</h2></div>{isAdmin ? <button className="secondaryButton" type="button" disabled={busy} onClick={() => void runAction("同步不可变注册表", async () => { await safeHomeApi.syncResearchMethodologyRegistry(); await load(); })}>同步版本</button> : null}</div>
           {latestVersion ? <div className="versionPlate"><strong>{latestVersion.version}</strong><code>{latestVersion.registry_hash.slice(0, 16)}…</code><span>{latestVersion.status}</span></div> : <p className="emptyState">管理员同步后才能运行机器检查和合成仿真。</p>}
@@ -99,13 +101,13 @@ export function ResearchMethodologyWorkbench() {
         </section>
       </div>
 
-      <section className="panel" aria-label="测量登记">
+      <section className="panel" aria-label="测量登记" id="web-researchmethodologyworkbench-2" tabIndex={-1}>
         <div className="panelHeading"><div><span className="panelKicker">{registry?.measures.length || 0} 项测量</span><h2>测量、量尺与用途登记</h2></div><label className="methodologySearch"><span>筛选测量</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="名称或 ID" /></label></div>
         <div className="scoreSeparationNotice"><div><strong>九点原分</strong><span>1–9 · raw_scores_json</span></div><span aria-hidden="true">→</span><div><strong>模型兼容输入</strong><span>1–5 · transformed_scores_json</span></div><p>{ninePoint ? "两个量尺分字段、分版本保存；页面和报告必须标注量尺。" : "正在读取九点量表登记。"}</p></div>
         <div className="measureTableWrap"><table className="methodologyTable"><thead><tr><th>测量</th><th>题数</th><th>证据/审核</th><th>冻结状态</th></tr></thead><tbody>{measures.map((item) => <tr key={item.measure_id}><td><strong>{item.display_name}</strong><code>{item.measure_id}</code></td><td>{item.item_count}</td><td>{String(item.review_status || "待核验")}</td><td><span className="gateBadge gateBlocked">{item.freeze_status}</span></td></tr>)}</tbody></table></div>
       </section>
 
-      <div className="methodologyColumns compact">
+      <div className="methodologyColumns compact" id="web-researchmethodologyworkbench-3" tabIndex={-1}>
         <section className="panel"><span className="panelKicker">数据质量</span><h2>缺失与纵向计划</h2><p>区分未暴露、未开始、中断、技术失败、主动撤回和失访；不默认填 0、不默认均值插补、不把横断面聚类解释为个人发展轨迹。</p></section>
         <section className="panel"><span className="panelKicker">仍需真人决定</span><h2>冻结前阻断项</h2><ul className="blockerList">{(registry?.unresolved_blockers || []).map((item) => <li key={item}>{item}</li>)}</ul></section>
       </div>

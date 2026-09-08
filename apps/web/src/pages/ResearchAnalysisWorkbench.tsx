@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import type {
@@ -65,15 +66,16 @@ export function ResearchAnalysisWorkbench() {
   }, [items]);
 
   return (
-    <section className="dashboardShell researchAnalysisWorkbench" aria-labelledby="analysis-title">
-      <header className="dashboardHeader">
+    <section className="dashboardShell researchAnalysisWorkbench researchNotebook" aria-labelledby="analysis-title">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">研究者影子模式</p>
           <h1 id="analysis-title">在线分析任务</h1>
           <p className="summary">只管理经授权快照、版本与聚合结果。参与者原文不会进入任务队列，分析不会在参与者请求中同步运行。</p>
         </div>
         <button className="secondaryButton" type="button" onClick={() => void load()} disabled={loading}>重新同步</button>
-      </header>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-researchanalysisworkbench-1","label":"运行管线"},{"id":"web-researchanalysisworkbench-2","label":"任务队列"}]} />
 
       <div className="summaryGrid" aria-label="任务摘要">
         <article className="metricCard"><span>待处理</span><strong>{counts.active}</strong><small>等待、运行或待恢复</small></article>
@@ -81,7 +83,7 @@ export function ResearchAnalysisWorkbench() {
         <article className="metricCard"><span>冻结或终止</span><strong>{counts.frozen}</strong><small>撤回、过期或人工停止</small></article>
       </div>
 
-      <section className="panel analysisCatalog" aria-labelledby="analysis-catalog-title">
+      <section className="panel analysisCatalog" aria-labelledby="analysis-catalog-title" id="web-researchanalysisworkbench-1" tabIndex={-1}>
         <div className="sectionHeader">
           <div>
             <p className="eyebrow">版本与数据门禁</p>
@@ -101,7 +103,7 @@ export function ResearchAnalysisWorkbench() {
         <p className="fieldHint">T35 数据用途、伦理和模型权利门禁未签署；外部数据未下载，生产训练保持关闭。</p>
       </section>
 
-      <section className="panel" aria-labelledby="analysis-queue-title">
+      <section className="panel" aria-labelledby="analysis-queue-title" id="web-researchanalysisworkbench-2" tabIndex={-1}>
         <div className="sectionHeader">
           <div><p className="eyebrow">按状态查看</p><h2 id="analysis-queue-title">任务队列</h2></div>
           <label className="compactField"><span>状态</span>

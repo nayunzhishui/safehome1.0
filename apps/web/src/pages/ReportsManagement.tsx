@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation, DetailSection } from "../components/WebUi";
 import { useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
@@ -250,8 +251,8 @@ export function ReportsManagement() {
   }
 
   return (
-    <section className="dashboardShell" aria-label="周报记录后台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="周报记录后台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Research Platform</p>
           <h1>周报记录</h1>
@@ -265,7 +266,8 @@ export function ReportsManagement() {
             {state.status === "loading" ? "读取中..." : "读取周报记录"}
           </button>
         </div>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-reportsmanagement-1","label":"报告边界"},{"id":"web-reportsmanagement-2","label":"趋势增强"},{"id":"web-reportsmanagement-3","label":"周报列表"}]} />
 
       <label className="tokenField">
         后台导出令牌
@@ -280,7 +282,7 @@ export function ReportsManagement() {
 
       <div className={`status ${state.status}`}>{state.message}</div>
 
-      <section className="guidanceBox" aria-label="周报与画像关系">
+      <section className="guidanceBox" aria-label="周报与画像关系" id="web-reportsmanagement-1" tabIndex={-1}>
         <h2>周报与画像关系</h2>
         <p>
           本周复盘主要来自情绪记录、练习尝试和人工关注状态；如果有阶段性画像，只作为理解近期压力状态的补充线索。画像不是固定判断，重点仍是找到下周可以尝试的一小步。
@@ -298,7 +300,7 @@ export function ReportsManagement() {
         <MetricCard label="读取方式" value="CSV + API" />
       </div>
 
-      <section className="panel" aria-label="趋势增强">
+      <section className="panel" aria-label="趋势增强" id="web-reportsmanagement-2" tabIndex={-1}>
         <div className="sectionTitleRow">
           <h2>趋势增强</h2>
           <span className="countBadge">P3-1</span>
@@ -319,7 +321,7 @@ export function ReportsManagement() {
         </section>
       </section>
 
-      <div className="dashboardGrid goalsGrid">
+      <div className="dashboardGrid goalsGrid" id="web-reportsmanagement-3" tabIndex={-1}>
         <section className="listPanel" aria-label="周报列表">
           <div className="sectionTitleRow">
             <h2>周报列表</h2>
@@ -358,15 +360,19 @@ export function ReportsManagement() {
 
           {selectedReport ? (
             <div className="detailContent">
-              <DetailRow label="家长用户" value={selectedReport.user_id} />
-              <DetailRow label="周开始" value={formatDate(selectedReport.week_start)} />
-              <DetailRow label="周结束" value={formatDate(selectedReport.week_end)} />
-              <DetailRow label="高频场景" value={summarizeJsonList(selectedReport.frequent_scenes_json)} />
-              <DetailRow label="常见情绪" value={summarizeJsonList(selectedReport.frequent_emotions_json)} />
-              <DetailRow label="常见模式" value={summarizeJsonList(selectedReport.common_patterns_json)} />
-              <DetailRow label="已记录训练卡" value={summarizeJsonList(selectedReport.completed_cards_json)} />
-              <DetailRow label="下周建议" value={selectedReport.next_week_suggestion} />
-              <DetailRow label="创建时间" value={formatDateTime(selectedReport.created_at)} />
+              <DetailSection title="主要内容">
+<DetailRow label="周开始" value={formatDate(selectedReport.week_start)} />
+<DetailRow label="周结束" value={formatDate(selectedReport.week_end)} />
+<DetailRow label="高频场景" value={summarizeJsonList(selectedReport.frequent_scenes_json)} />
+<DetailRow label="常见情绪" value={summarizeJsonList(selectedReport.frequent_emotions_json)} />
+<DetailRow label="常见模式" value={summarizeJsonList(selectedReport.common_patterns_json)} />
+<DetailRow label="已记录训练卡" value={summarizeJsonList(selectedReport.completed_cards_json)} />
+<DetailRow label="下周建议" value={selectedReport.next_week_suggestion} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="家长用户" value={selectedReport.user_id} />
+<DetailRow label="创建时间" value={formatDateTime(selectedReport.created_at)} />
+</DetailSection>
 
               <section className="guidanceBox" aria-label="周报边界提示">
                 <h3>边界提示</h3>

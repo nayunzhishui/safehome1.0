@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useEffect, useState } from "react";
 
 import { API_ENDPOINTS } from "../../../../shared/constants/api";
@@ -199,8 +200,8 @@ export function PrivacyCenterPage() {
   }
 
   return (
-    <section className="dashboardShell" aria-label="隐私中心">
-      <div className="dashboardHeader">
+    <section className="dashboardShell privacyPage" aria-label="隐私中心">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">Privacy Center</p>
           <h1>隐私中心</h1>
@@ -208,9 +209,10 @@ export function PrivacyCenterPage() {
         <p className="subtitle">
           {authUser ? "账号编号" : "匿名编号"}：<code>{userId}</code>
         </p>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-privacycenterpage-1","label":"隐私说明"},{"id":"web-privacycenterpage-2","label":"删除申请进度"},{"id":"web-privacycenterpage-3","label":"边界说明"}]} />
 
-      <section className="guidanceBox" aria-label="隐私说明">
+      <section className="guidanceBox" aria-label="隐私说明" id="web-privacycenterpage-1" tabIndex={-1}>
         <h2>关于你的隐私</h2>
         <ul>
           <li>本项目不要求填写姓名、手机号等强身份信息。</li>
@@ -353,7 +355,7 @@ export function PrivacyCenterPage() {
         </div>
       </section>
 
-      <section className="guidanceBox" aria-label="删除申请状态" style={{ marginTop: 24 }}>
+      <section className="guidanceBox" aria-label="删除申请状态" style={{ marginTop: 24 }} id="web-privacycenterpage-2" tabIndex={-1}>
         <h2>删除申请进度</h2>
         {privacyRequests.length ? (
           <ul>
@@ -381,7 +383,7 @@ export function PrivacyCenterPage() {
         )}
       </section>
 
-      <section className="guidanceBox" aria-label="边界说明" style={{ marginTop: 24 }}>
+      <section className="guidanceBox" aria-label="边界说明" style={{ marginTop: 24 }} id="web-privacycenterpage-3" tabIndex={-1}>
         <h2>边界说明</h2>
         <ul>
           <li>撤回授权不影响你已经保存的数据，仅停止未来研究导出。</li>

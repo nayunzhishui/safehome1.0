@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { IdentityMergeWorkflow, SecurityAuthorizationOperation, SecurityWorkbench } from "../../../../shared/types/api";
@@ -108,18 +109,19 @@ export function SecurityPrivacyWorkbench() {
   const openEvents = (data?.events || []).filter((item) => item.status === "open");
 
   return (
-    <section className="dashboardShell securityWorkbench" aria-label="安全隐私与滥用防护工作台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell securityWorkbench governanceDesk" aria-label="安全隐私与滥用防护工作台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">T31 · 工程防护</p>
           <h1>安全、隐私与滥用防护</h1>
           <p className="summary">用同一份机器契约核对资产、对象权限、威胁、删除证明和配置扫描。页面不展示密钥、令牌或参与者原文。</p>
         </div>
         <span className="gateBadge gateBlocked">正式权限验收未通过</span>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-securityprivacyworkbench-1","label":"权限验收"},{"id":"web-securityprivacyworkbench-2","label":"配置与威胁"},{"id":"web-securityprivacyworkbench-3","label":"权限矩阵"},{"id":"web-securityprivacyworkbench-4","label":"账号恢复"},{"id":"web-securityprivacyworkbench-5","label":"事件恢复"}]} />
       <div className="status" role="status" aria-live="polite">{status}</div>
 
-      <section className="securityBoundary" aria-label="正式验收边界">
+      <section className="securityBoundary" aria-label="正式验收边界" id="web-securityprivacyworkbench-1" tabIndex={-1}>
         <div>
           <span className="panelKicker">已知例外</span>
           <h2>临时展示越权继续保留</h2>
@@ -140,7 +142,7 @@ export function SecurityPrivacyWorkbench() {
         <article className="panel"><span className="panelKicker">待处理事件</span><strong>{openEvents.length}</strong><p>异常登录、账号停用和安全控制动作只记录最小元数据。</p></article>
       </div>
 
-      <div className="securityColumns">
+      <div className="securityColumns" id="web-securityprivacyworkbench-2" tabIndex={-1}>
         <section className="panel" aria-label="自动扫描">
           <div className="panelHeading"><div><span className="panelKicker">不返回秘密值</span><h2>配置与供应链扫描</h2></div>{isAdmin ? <button className="primaryButton" type="button" disabled={busy || !data?.scan_execution_enabled} onClick={() => void runScan()}>运行本地扫描</button> : null}</div>
           <div className="securityCheckList">
@@ -155,7 +157,7 @@ export function SecurityPrivacyWorkbench() {
         </section>
       </div>
 
-      <section className="panel" aria-label="对象权限矩阵">
+      <section className="panel" aria-label="对象权限矩阵" id="web-securityprivacyworkbench-3" tabIndex={-1}>
         <div className="panelHeading"><div><span className="panelKicker">服务端为唯一权限依据</span><h2>全接口对象权限矩阵</h2></div><span>{operations.length} 项</span></div>
         <div className="securityFilters">
           <label><span>搜索路径、对象或角色</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="例如 privacy / researcher" /></label>
@@ -166,7 +168,7 @@ export function SecurityPrivacyWorkbench() {
         </div>
       </section>
 
-      <section className="panel" aria-label="参与者账号合并">
+      <section className="panel" aria-label="参与者账号合并" id="web-securityprivacyworkbench-4" tabIndex={-1}>
         <div className="panelHeading">
           <div>
             <span className="panelKicker">候选 → 确认 → 执行 → 核对 → 撤销窗口</span>
@@ -204,7 +206,7 @@ export function SecurityPrivacyWorkbench() {
         ) : <p className="emptyState">请使用管理员账号处理账号冲突。研究者和督导只能提交人工核对线索。</p>}
       </section>
 
-      <section className="panel" aria-label="安全事件">
+      <section className="panel" aria-label="安全事件" id="web-securityprivacyworkbench-5" tabIndex={-1}>
         <div className="panelHeading"><div><span className="panelKicker">最小元数据</span><h2>安全事件与恢复</h2></div></div>
         {data?.events.length ? <div className="securityEventList">{data.events.map((item) => <article key={String(item.id)}><div><strong>{String(item.event_type)}</strong><span>{statusLabel(String(item.status))}</span></div><p>{String(item.severity)} · {String(item.created_at)}</p>{isAdmin && item.status === "open" ? <button className="secondaryButton" type="button" disabled={busy} onClick={() => void resolveEvent(String(item.id))}>标记已处理</button> : null}</article>)}</div> : <p className="emptyState">当前没有已记录的安全事件。</p>}
       </section>

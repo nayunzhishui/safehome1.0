@@ -1,3 +1,4 @@
+import { PageHeader, DetailSection } from "../components/WebUi";
 import { useEffect, useMemo, useState } from "react";
 
 import { SafeHomeApiClient } from "../services/safehomeApi";
@@ -86,8 +87,8 @@ export function GoalsManagement() {
   }, []);
 
   return (
-    <section className="dashboardShell" aria-label="目标管理后台">
-      <div className="dashboardHeader">
+    <section className="dashboardShell recordWorkspacePage" aria-label="目标管理后台">
+      <PageHeader className="dashboardHeader">
         <div>
           <p className="eyebrow">SafeHome Admin</p>
           <h1>目标管理</h1>
@@ -101,7 +102,7 @@ export function GoalsManagement() {
             {state.status === "loading" ? "刷新中..." : "刷新目标"}
           </button>
         </div>
-      </div>
+      </PageHeader>
 
       <div className={`status ${state.status}`}>{state.message}</div>
 
@@ -149,14 +150,20 @@ export function GoalsManagement() {
 
           {selectedGoal ? (
             <div className="detailContent">
-              <DetailRow label="家长用户" value={selectedGoal.user_id} />
-              <DetailRow label="高频场景" value={selectedGoal.scene} />
-              <DetailRow label="本周目标" value={selectedGoal.smart_goal} />
-              <DetailRow label="练习动机" value={selectedGoal.motivation} />
-              <DetailRow label="开始日期" value={selectedGoal.start_date} />
-              <DetailRow label="当前状态" value={STATUS_LABELS[selectedGoal.status]} />
-              <DetailRow label="创建时间" value={formatDateTime(selectedGoal.created_at)} />
-              <DetailRow label="更新时间" value={formatDateTime(selectedGoal.updated_at)} />
+              <DetailSection title="主要内容">
+<DetailRow label="高频场景" value={selectedGoal.scene} />
+<DetailRow label="本周目标" value={selectedGoal.smart_goal} />
+<DetailRow label="练习动机" value={selectedGoal.motivation} />
+</DetailSection>
+<DetailSection title="状态与跟进">
+<DetailRow label="开始日期" value={selectedGoal.start_date} />
+<DetailRow label="当前状态" value={STATUS_LABELS[selectedGoal.status]} />
+</DetailSection>
+<DetailSection title="审核、来源与记录信息">
+<DetailRow label="家长用户" value={selectedGoal.user_id} />
+<DetailRow label="创建时间" value={formatDateTime(selectedGoal.created_at)} />
+<DetailRow label="更新时间" value={formatDateTime(selectedGoal.updated_at)} />
+</DetailSection>
 
               <section className="guidanceBox" aria-label="研究用途提示">
                 <h3>试点评估用途</h3>

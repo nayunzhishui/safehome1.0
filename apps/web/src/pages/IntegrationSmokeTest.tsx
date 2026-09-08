@@ -58,7 +58,7 @@ export function IntegrationSmokeTest() {
   }
 
   return (
-    <section className="panel smokePanel">
+    <section className="panel smokePanel recordWorkspacePage">
       <p className="eyebrow">SafeHome MVP</p>
       <h1>最小联调测试</h1>
       <p className="summary">只验证三步数据流：创建情绪事件记录、生成即时反馈、获取训练卡推荐。</p>

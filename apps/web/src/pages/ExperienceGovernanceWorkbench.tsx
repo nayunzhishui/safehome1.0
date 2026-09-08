@@ -1,3 +1,4 @@
+import { PageHeader, SectionNavigation } from "../components/WebUi";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { UXGovernanceWorkbench } from "../../../../shared/types/api";
@@ -46,15 +47,16 @@ export function ExperienceGovernanceWorkbench() {
   }
 
   return (
-    <section className="dashboardShell uxGovernance" aria-label="体验与无障碍工作台">
-      <div className="dashboardHeader uxGovernanceHeader">
+    <section className="dashboardShell uxGovernance governanceDesk" aria-label="体验与无障碍工作台">
+      <PageHeader className="dashboardHeader uxGovernanceHeader">
         <div>
           <p className="eyebrow">T33 · 少想一步，也不丢失控制</p>
           <h1>体验与无障碍</h1>
           <p className="summary">用同一份页面清单检查参与者和研究者旅程，把主要行动、异常恢复和人工验收分开呈现。</p>
         </div>
         <span className="gateBadge gateBlocked">外部体验验收待完成</span>
-      </div>
+      </PageHeader>
+      <SectionNavigation items={[{"id":"web-experiencegovernanceworkbench-1","label":"工作区与旅程"},{"id":"web-experiencegovernanceworkbench-2","label":"八项工程门禁"},{"id":"web-experiencegovernanceworkbench-3","label":"外部证据"}]} />
 
       <div className="status" role="status" aria-live="polite">{status}</div>
 
@@ -65,7 +67,7 @@ export function ExperienceGovernanceWorkbench() {
         <article><strong>{counts.sensitive}</strong><span>高敏感页面</span></article>
       </div>
 
-      <div className="uxWorkbenchGrid">
+      <div className="uxWorkbenchGrid" id="web-experiencegovernanceworkbench-1" tabIndex={-1}>
         <section className="panel" aria-labelledby="participant-ia-title">
           <span className="panelKicker">参与者路径</span>
           <h2 id="participant-ia-title">四个熟悉入口</h2>
@@ -83,14 +85,14 @@ export function ExperienceGovernanceWorkbench() {
         </section>
       </div>
 
-      <section className="panel" aria-labelledby="gate-title">
+      <section className="panel" aria-labelledby="gate-title" id="web-experiencegovernanceworkbench-2" tabIndex={-1}>
         <div className="panelHeading"><div><span className="panelKicker">自动化只能覆盖一部分</span><h2 id="gate-title">八项工程门禁</h2></div><span>{data?.audit_runs.length || 0} 次留档</span></div>
         <div className="uxGateGrid">
           {(data?.registry.automated_gates || Object.keys(GATE_LABELS)).map((gate) => <article key={gate}><span aria-hidden="true">✓</span><div><strong>{GATE_LABELS[gate] || gate}</strong><small>机器检查 + 对应人工补充</small></div></article>)}
         </div>
       </section>
 
-      <section className="panel" aria-labelledby="external-title">
+      <section className="panel" aria-labelledby="external-title" id="web-experiencegovernanceworkbench-3" tabIndex={-1}>
         <div className="panelHeading"><div><span className="panelKicker">不能由系统代签</span><h2 id="external-title">外部证据</h2></div></div>
         <div className="externalGateList">{(data?.external_gates || []).map((item) => <article key={item.gate}><strong>{item.gate}</strong><span>待真人证据</span></article>)}</div>
         {canPackage ? <button className="secondaryButton" type="button" disabled={busy} onClick={() => void packageEvidence()}>生成待人工核对证据包</button> : null}
