@@ -759,7 +759,7 @@
     "home": "387:7",
     "homeHeader": "387:8",
     "homeTitle": "387:9",
-    "activeRoute": "pages/therapeutic-assessment-action-followup/index",
+    "activeRoute": "pages/relationship-narrative/index",
     "login": "392:103",
     "passwordChange": "393:122",
     "homeEntryRow": "388:17",
@@ -889,6 +889,28 @@
       "pages/therapeutic-assessment-action-review/index": {
         "figma": "512:557",
         "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment-action-followup/index": {
+        "figma": "521:539",
+        "participant": "524:546",
+        "reviewer": "525:3099",
+        "review_in_progress": "528:3093",
+        "independent_resolution": "530:559",
+        "implementation": "implemented_pending_final_check"
+      },
+      "pages/therapeutic-assessment-quality/index": {
+        "figma": "524:546",
+        "reviewer": "525:3099",
+        "review_in_progress": "528:3093",
+        "independent_resolution": "530:559",
+        "implementation": "implemented_pending_final_check"
+      },
+      "pages/growth-dashboard/index": {
+        "figma": "536:561",
+        "assessments": "539:574",
+        "relationship": "539:618",
+        "feedback": "539:662",
+        "implementation": "implemented_pending_final_check"
       }
     },
     "register": "394:135",
@@ -972,7 +994,7 @@
       "status": "current_pages_self_review_in_progress",
       "programList": "local_draft_preview_not_release_approval",
       "programDetail": "readonly_local_draft_content",
-      "remaining_work": "25 routes remain; full state, long content, keyboard/screen reader and device validation pending"
+      "remaining_work": "22 routes remain; full state, long content, keyboard/screen reader and device validation pending"
     },
     "flowComponents": {
       "choiceSet": "499:447",
