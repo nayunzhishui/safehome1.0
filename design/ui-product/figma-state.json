@@ -759,7 +759,7 @@
     "home": "387:7",
     "homeHeader": "387:8",
     "homeTitle": "387:9",
-    "activeRoute": "pages/relationship-narrative/index",
+    "activeRoute": "pages/researcher-dashboard/index",
     "login": "392:103",
     "passwordChange": "393:122",
     "homeEntryRow": "388:17",
@@ -911,6 +911,11 @@
         "relationship": "539:618",
         "feedback": "539:662",
         "implementation": "implemented_pending_final_check"
+      },
+      "pages/relationship-narrative/index": {
+        "figma": "542:600",
+        "implementation": "implemented_pending_final_check",
+        "motion": "one-shot-section-reveal-reduced-motion"
       }
     },
     "register": "394:135",
@@ -994,7 +999,7 @@
       "status": "current_pages_self_review_in_progress",
       "programList": "local_draft_preview_not_release_approval",
       "programDetail": "readonly_local_draft_content",
-      "remaining_work": "22 routes remain; full state, long content, keyboard/screen reader and device validation pending"
+      "remaining_work": "21 routes remain; full state, long content, keyboard/screen reader and device validation pending"
     },
     "flowComponents": {
       "choiceSet": "499:447",
