@@ -1,5 +1,6 @@
 .emergency-page {
-  padding: 80rpx 48rpx calc(40rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  padding: 48rpx 48rpx calc(40rpx + env(safe-area-inset-bottom));
 }
 
 .page-kicker,
@@ -29,9 +30,9 @@
 
 .page-title {
   color: var(--experience-ink);
-  font-size: 56rpx;
+  font-size: 44rpx;
   font-weight: 700;
-  line-height: 72rpx;
+  line-height: 60rpx;
   text-align: center;
 }
 
@@ -152,7 +153,7 @@
   min-height: var(--experience-touch);
   margin-top: 48rpx;
   border-color: var(--experience-primary);
-  border-radius: 32rpx;
+  border-radius: 24rpx;
   color: var(--experience-primary-deep);
   transition: background-color 120ms ease, transform 120ms ease;
 }
@@ -177,3 +178,6 @@
     transform: none;
   }
 }
+
+.resource-list { --ui2-resource-marker-display: none; margin-top:32rpx; }
+.resource-intro { border:0; padding:16rpx 0; font-size:30rpx; }

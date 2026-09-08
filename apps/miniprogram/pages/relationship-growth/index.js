@@ -279,7 +279,7 @@ Page({
     const width = 620;
     const height = 300;
     ctx.clearRect(0, 0, width, height);
-    ctx.setFillStyle("#fbfcfb");
+    ctx.setFillStyle("#ffffff");
     ctx.fillRect(0, 0, width, height);
     if (!points.length) {
       ctx.draw();
@@ -308,7 +308,7 @@ Page({
     const bottom = 52;
     const plotWidth = width - left - right;
     const plotHeight = height - top - bottom;
-    ctx.setStrokeStyle("#d9e0dc");
+    ctx.setStrokeStyle("#d5e3e3");
     ctx.setLineWidth(1);
     [0, 0.5, 1].forEach((ratio) => {
       const y = top + plotHeight * ratio;
@@ -324,7 +324,7 @@ Page({
       order: index + 1,
     }));
     if (coordinates.length >= 2) {
-      ctx.setStrokeStyle("#4f7c6b");
+      ctx.setStrokeStyle("#23666e");
       ctx.setLineWidth(4);
       ctx.setLineJoin("round");
       ctx.beginPath();
@@ -332,20 +332,22 @@ Page({
       coordinates.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
       ctx.stroke();
     }
-    coordinates.forEach((point) => {
-      ctx.setFillStyle("#4f7c6b");
+    coordinates.forEach((point, index) => {
+      ctx.setTextAlign(index === 0 ? "left" : index === coordinates.length - 1 ? "right" : "center");
+      ctx.setFillStyle("#23666e");
       ctx.beginPath();
       ctx.arc(point.x, point.y, 7, 0, Math.PI * 2);
       ctx.fill();
-      ctx.setFillStyle("#31423c");
-      ctx.setFontSize(18);
-      ctx.fillText(String(point.value), point.x - 10, point.y - 14);
-      ctx.setFillStyle("#728079");
-      ctx.setFontSize(16);
-      ctx.fillText(`第${point.order}次`, point.x - 20, height - 22);
+      ctx.setFillStyle("#173c43");
+      ctx.setFontSize(28);
+      ctx.fillText(String(point.value), point.x, point.y < 58 ? point.y + 38 : point.y - 14);
+      ctx.setFillStyle("#536e73");
+      ctx.setFontSize(26);
+      ctx.fillText(`第${point.order}次`, point.x, height - 22);
     });
-    ctx.setFillStyle("#728079");
-    ctx.setFontSize(16);
+    ctx.setFillStyle("#536e73");
+    ctx.setFontSize(26);
+    ctx.setTextAlign("left");
     ctx.fillText(String(Number(max.toFixed(1))), 8, top + 6);
     ctx.fillText(String(Number(min.toFixed(1))), 8, top + plotHeight + 6);
     ctx.draw();

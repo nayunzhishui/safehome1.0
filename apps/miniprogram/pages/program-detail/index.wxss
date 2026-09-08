@@ -42,10 +42,10 @@
 
 .program-title {
   color: var(--safe-title);
-  font-size: 48rpx;
+  font-size: 44rpx;
   font-weight: 700;
   line-height: 1.3;
-  letter-spacing: -1rpx;
+  letter-spacing: 0;
   text-align: center;
 }
 
@@ -53,7 +53,7 @@
   padding: 26rpx 0;
   border-bottom: 1rpx solid var(--safe-border);
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -67,7 +67,7 @@
 .program-summary,
 .session-objective {
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -155,7 +155,7 @@
 .measurement-boundary {
   display: block;
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -168,8 +168,8 @@
 .protocol-warning {
   margin-top: 4rpx;
   padding: 24rpx 26rpx;
-  border-left: 6rpx solid var(--safe-orange);
-  border-radius: 0 var(--safe-radius-sm) var(--safe-radius-sm) 0;
+  border: 0;
+  border-radius: 24rpx;
   background: var(--safe-orange-soft);
 }
 
@@ -188,7 +188,7 @@
 .measurement-status {
   flex: 0 0 auto;
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 700;
   line-height: 1.5;
 }
@@ -272,7 +272,7 @@
 .session-meta {
   align-self: flex-start;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 500;
   line-height: 1.5;
 }
@@ -309,7 +309,7 @@
   border-radius: 50%;
   background: var(--safe-primary);
   color: #ffffff;
-  font-size: 22rpx;
+  font-size: 26rpx;
   font-weight: 700;
 }
 
@@ -319,7 +319,7 @@
   min-width: 0;
   flex: 1;
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -341,7 +341,7 @@
   border-radius: var(--safe-radius-sm);
   background: var(--safe-card);
   color: var(--safe-title);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.6;
 }
 
@@ -440,7 +440,17 @@
 .history-status {
   flex: 0 0 auto;
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 700;
   line-height: 1.5;
 }
+
+.program-detail-page{box-sizing:border-box;padding-left:48rpx;padding-right:48rpx;}
+.program-help{display:block;color:var(--safe-muted);font-size:30rpx;line-height:48rpx;}
+.draft-input,.reflection-input{border:2rpx solid var(--safe-border-strong);}
+.field-placeholder{color:var(--safe-muted);opacity:1;}
+.submit-block{padding:28rpx;border:0;border-radius:24rpx;background:var(--ui2-soft);}
+.session-tab{border-radius:16rpx;min-height:96rpx;padding:16rpx 24rpx;line-height:1.5;}
+@media(max-width:340px){.program-detail-page{padding-left:32rpx;padding-right:32rpx;}.measurement-head{flex-wrap:wrap;}}
+
+.measurement-head{flex-direction:column;align-items:flex-start;gap:12rpx;}

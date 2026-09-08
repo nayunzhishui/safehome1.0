@@ -1,5 +1,6 @@
 .emergency-page {
-  padding: 80rpx 48rpx calc(320rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  padding: 48rpx 48rpx calc(320rpx + env(safe-area-inset-bottom));
 }
 
 .page-kicker,
@@ -24,16 +25,16 @@
 
 .page-kicker {
   color: var(--experience-danger);
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 700;
   line-height: 40rpx;
 }
 
 .page-title {
   color: var(--experience-ink);
-  font-size: 56rpx;
+  font-size: 44rpx;
   font-weight: 700;
-  line-height: 72rpx;
+  line-height: 60rpx;
   text-align: center;
 }
 
@@ -55,7 +56,7 @@
   border-top: 1rpx solid var(--safe-border);
   border-bottom: 1rpx solid var(--safe-border);
   color: var(--experience-ink);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -151,7 +152,7 @@
 
 .safety-action {
   width: 100%;
-  border-radius: 32rpx;
+  border-radius: 24rpx;
 }
 
 @media (max-width: 340px) {
@@ -160,3 +161,8 @@
     flex-basis: 84rpx;
   }
 }
+
+.safety-intro { padding: 28rpx; border: 0; border-radius: 24rpx; background: var(--ui2-warm); }
+.boundary-text { font-size:30rpx; line-height:48rpx; }
+.safety-action-dock { box-sizing:border-box; padding-top:24rpx; padding-bottom:calc(24rpx + env(safe-area-inset-bottom)); gap:12rpx; }
+@media(max-width:340px){.emergency-page{padding-left:32rpx;padding-right:32rpx}.safety-action-dock{padding-left:32rpx;padding-right:32rpx}}

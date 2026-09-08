@@ -5,7 +5,7 @@
   align-items: start;
   padding: 24rpx;
   border: 1rpx solid var(--safe-border);
-  border-left: 6rpx solid var(--safe-border-strong);
+  border-left: var(--ui2-side-border, 6rpx) solid var(--safe-border-strong);
   border-radius: var(--safe-radius-md);
   background: var(--safe-card);
 }
@@ -23,7 +23,7 @@
   border-radius: 50%;
   background: var(--safe-blue-soft);
   color: var(--safe-blue);
-  font-size: 24rpx;
+  font-size: var(--ui2-caption, 24rpx);
   font-weight: 900;
 }
 
@@ -50,20 +50,20 @@
 .page-state__copy { min-width: 0; }
 .page-state__title,
 .page-state__description { display: block; }
-.page-state__title { color: var(--safe-title); font-size: 26rpx; font-weight: 850; line-height: 1.45; }
-.page-state__description { margin-top: 6rpx; color: var(--safe-muted); font-size: 23rpx; line-height: 1.6; }
+.page-state__title { color: var(--safe-title); font-size: var(--ui2-section, 26rpx); font-weight: 850; line-height: 1.45; }
+.page-state__description { margin-top: 6rpx; color: var(--safe-muted); font-size: var(--ui2-body, 23rpx); line-height: 1.6; }
 
 .page-state__action {
   grid-column: 2;
   justify-self: start;
-  min-height: 88rpx;
+  min-height: var(--safe-touch, 88rpx);
   margin: 4rpx 0 0;
   padding: 0 28rpx;
   border: 1rpx solid var(--safe-primary);
-  border-radius: var(--safe-radius-pill);
+  border-radius: var(--ui2-button-radius, var(--safe-radius-pill));
   background: var(--safe-card);
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: var(--ui2-caption, 24rpx);
   font-weight: 800;
 }
 

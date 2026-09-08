@@ -1,6 +1,8 @@
 # 小程序功能真值表
 
-更新时间：2026-08-30
+> **UIproduct2 当前入口（2026-09-08）**：以本文件“UIproduct2 当前全页功能真值”及当前源码为准。下方旧手工段落保留作历史；“尚无情绪记录页”、旧活动页和 UIproduct 分支限制不适用于本轮。执行顺序为功能核对 → 需求冻结 → Figma → 前端实现 → 全页统一检查 → 用户最终验收；不使用 ImageGen，不逐页等待用户验收。
+
+更新时间：2026-09-08
 
 状态：`mandatory_before_imagegen_figma_and_frontend`
 
@@ -360,2621 +362,1679 @@
 
 <!-- UI_PRODUCT_AUTO_FACTS:BEGIN -->
 
-## 全页面自动代码证据（UIproduct Harness）
-
-生成时间：`2026-08-12T23:19:06+08:00`
-分支：`UIproduct`
-页面数：`53`
-
-本节由 `scripts/ui_product_loop.py audit-truth` 从当前代码生成，覆盖 WXML 事件、JS 处理器、API 客户端方法、接口模板、路由、本地存储、页面状态、组件和上下游入口。自动证据是逐页人工冻结的底稿；任何未解析项都会阻断 ImageGen。
-
-### 01：安心陪伴 `pages/home/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`caa26cbb0a24ca28c13df3c723cd9c61eea57b05fc578f466b58d872475b8bce`
-- 核对文件：`apps/miniprogram/pages/home/index.wxml`、`apps/miniprogram/pages/home/index.wxss`、`apps/miniprogram/pages/home/index.js`、`apps/miniprogram/pages/home/index.json`
-- 上游页面：`pages/login/index`、`pages/register/index`、`pages/messages/index`、`pages/emergency-guide/index`、`pages/hot-topics/index`、`pages/checkin/index`、`pages/weekly-report/index`、`pages/supervision/index`
-- 页面组件：`journey-action-card` → `/components/journey-action-card/index`、`entry-row` → `/components/entry-row/index`、`dual-entry` → `/components/dual-entry/index`、`section-heading` → `/components/section-heading/index`
-- 主要可见内容：安心陪伴、进入联调测试页
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 16 | <journey-action-card class="today-step-en | `bindaction` | `openThermometer` | — |
-| 18 | <journey-action-card class="today-step-entry" loading=" " error-message=" " stat | `bindaction` | `openCoreEntry` | — |
-| 20 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindaction` | `openTodayAction` | — |
-| 20 | {{todayJourney ? todayJourney.actionAriaLabel :  | `bindretry` | `retryTodayJourney` | — |
-| 35 | <entry-row icon="training" title="训练中心" subtitle="查看训练计划与练习" action-ke | `bindaction` | `openGettingStarted` | — |
-| 39 | — | `bindaction` | `openCoreEntry` | — |
-| 40 | — | `bindaction` | `openCoreEntry` | — |
-| 41 | — | `bindaction` | `openCoreEntry` | — |
-| 52 | — | `bindaction` | `retryHomeData` | — |
-| 60 | — | `bindaction` | `openDiaryHistory` | — |
-| 61 | — | `bindaction` | `startDiary` | — |
-| 72 | <entry-row wx:else class="summary-entry" | `bindaction` | `openWeeklyReport` | — |
-| 73 | — | `bindaction` | `retryHomeData` | — |
-| 81 | — | `bindaction` | `openWeeklyReport` | — |
-| 85 | 进入联调测试页 | `bindtap` | `openIntegrationTest` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 9 | `trackProductEvent` | `POST` | `/api/product-events` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 199 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 200 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 201 | `getProfileStats` | `GET` | `/api/profile/stats` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 202 | `getEmotionThermometerDay` | `GET` | `/api/emotion-thermometer/day` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 203 | `getProgressSummary` | `GET` | `/api/progress-summary` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 257 | `getTodayJourney` | `GET` | `/api/journey/today` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/goal-setting/index`（js:247）、`navigateTo` → `/pages/diary-form/index`（js:248）、`navigateTo` → `/pages/diary-history/index`（js:249）、`navigateTo` → `/pages/thermometer/index`（js:250）、`navigateTo` → `/pages/weekly-report/index`（js:251）、`switchTab` → `/pages/training/index`（js:320）、`navigateTo` → `/pages/assessment/index`（js:321）、`navigateTo` → `/pages/messages/index`（js:325）、`navigateTo` → `/pages/integration-test/index`（js:326）、`navigateTo` → `/pages/getting-started/index`（js:327）、`switchTab` → `/pages/training/index`（js:332）、`navigateTo` → `/pages/getting-started/index`（js:333）、`switchTab` → `/pages/training/index`（js:339）、`navigateTo` → `/pages/diary-form/index`（js:342）、`navigateTo` → `/pages/supervision/index`（js:345）、`navigateTo` → `/pages/assessment/index`（js:346）、`navigateTo` → `/pages/training-card/index?tags=:dynamic`（js:350）、`navigateTo` → `/pages/hot-topics/index`（js:352）、`navigateTo` → `/pages/hot-topics/index?id=:dynamic`（js:355）
-- 本地存储：`getStorageSync` `key`（JS:110）、`getStorageSync` `key`（JS:132）
-- WXML 数据绑定：`unreadMessageCount`、`thermometerRecordCount`、`thermometerRecordReady`、`todayJourneyLoading`、`todayJourneyError`、`todayJourney`、`latestRecordError`、`latestRecord`、`progressSummary`、`progressSummaryError`、`showDevEntry`
-- 条件状态：`unreadMessageCount`、`latestRecordReady`、`latestRecordError`、`latestRecord`、`progressSummaryReady`、`progressSummary`、`progressSummaryError`、`showDevEntry`
-- `setData` 状态：`todayRecordCount`、`todayRecordCountReady`、`thermometerRecordReady`、`unreadMessageCount`、`latestRecordReady`、`latestRecordError`、`progressSummary`、`progressSummaryReady`、`progressSummaryError`、`latestRecord`、`time`、`trigger`、`status`、`thermometerRecordCount`、`todayJourneyLoading`、`todayJourneyError`、`todayJourney`、`primary_action`、`title`、`description`、`button_label`、`url`、`source_type`、`boundary_notice`、`estimated_minutes`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 02：登录 `pages/login/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`c9dc429506e6a81ab190a678de0d7dc7e51a8fd04c3cc2bbf232bdc8fb109986`
-- 核对文件：`apps/miniprogram/pages/login/index.wxml`、`apps/miniprogram/pages/login/index.wxss`、`apps/miniprogram/pages/login/index.js`、`apps/miniprogram/pages/login/index.json`
-- 上游页面：`pages/home/index`、`pages/register/index`、`pages/messages/index`、`pages/support-assistant/index`、`pages/profile/index`、`pages/settings-detail/index`
-- 页面组件：—
-- 主要可见内容：登录、首次登录，请先设置新密码、新密码至少 12 位，并包含三类字符。更新后临时密码和旧会话立即失效。、临时密码、新密码、再次输入新密码、更新密码并继续、快捷登录、微信一键登录、微信一键登录（暂不可用）、手机号快捷登录、手机号快捷登录（暂不可用）、手机号仅用于识别你的账号，系统只保存不可逆摘要，不保存完整号码。、或使用账号密码、用户名、密码、注册新账号
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 15 | — | `bindinput` | `onCurrentPasswordInput` | — |
-| 19 | — | `bindinput` | `onNewPasswordInput` | — |
-| 23 | — | `bindinput` | `onConfirmPasswordInput` | — |
-| 27 | 更新密码并继续 | `bindtap` | `submitPasswordChange` | — |
-| 34 | 微信一键登录 | `bindtap` | `submitWechatLogin` | — |
-| 36 | 手机号快捷登录 | `bindgetphonenumber` | `handlePhoneLogin` | — |
-| 51 | — | `bindinput` | `onUsernameInput` | — |
-| 55 | — | `bindinput` | `onPasswordInput` | — |
-| 59 | 登录 | `bindtap` | `submitLogin` | — |
-| 60 | 注册新账号 | `bindtap` | `goRegister` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 78 | `getAuthCapabilities` | `GET` | `/api/auth/capabilities` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 113 | `login` | `POST` | `/api/auth/login` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 168 | `changePassword` | `POST` | `/api/auth/change-password` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 204 | `wechatLogin` | `POST` | `/api/auth/wechat-login` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 250 | `phoneLogin` | `POST` | `/api/auth/phone-login` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`switchTab` → `/pages/home/index`（js:17）、`redirectTo` → `/pages/register/index:dynamic`（js:41）
-- 本地存储：—
-- WXML 数据绑定：`mustChangePassword`、`currentPassword`、`newPassword`、`confirmPassword`、`message`、`status`、`loading`、`wechatAvailable`、`wechatLoading`、`phoneAvailable`、`phoneLoading`、`capabilityMessage`、`username`、`password`
-- 条件状态：`mustChangePassword`、`message`、`wechatAvailable`、`phoneAvailable`、`capabilityMessage`
-- `setData` 状态：`redirectUrl`、`capabilityMessage`、`wechatAvailable`、`phoneAvailable`、`username`、`password`、`status`、`message`、`loading`、`mustChangePassword`、`currentPassword`、`newPassword`、`confirmPassword`、`wechatLoading`、`phoneLoading`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 03：注册 `pages/register/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`49418f81da315cf2d62943624bb657be68b884d752dbd616c3e43f323029a3db`
-- 核对文件：`apps/miniprogram/pages/register/index.wxml`、`apps/miniprogram/pages/register/index.wxss`、`apps/miniprogram/pages/register/index.js`、`apps/miniprogram/pages/register/index.json`
-- 上游页面：`pages/login/index`、`pages/messages/index`、`pages/profile/index`
-- 页面组件：—
-- 主要可见内容：创建账号、账号信息、用户名、至少 3 个字符、密码、至少 8 个字符、角色、昵称（可选）、注册、已有账号，去登录
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 13 | 至少 3 个字符 | `bindinput` | `onUsernameInput` | — |
-| 19 | 至少 8 个字符 | `bindinput` | `onPasswordInput` | — |
-| 25 | 选择角色，当前为{{roleOptions[roleIndex].label}} | `bindchange` | `onRoleChange` | — |
-| 41 | — | `bindinput` | `onNicknameInput` | — |
-| 45 | 注册 | `bindtap` | `submitRegister` | — |
-| 46 | 已有账号，去登录 | `bindtap` | `goLogin` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 68 | `register` | `POST` | `/api/auth/register` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/home/index`（js:13）、`navigateTo` → `/pages/login/index:dynamic`（js:87）
-- 本地存储：—
-- WXML 数据绑定：`username`、`password`、`roleOptions`、`roleIndex`、`nickname`、`message`、`status`、`loading`
-- 条件状态：`message`
-- `setData` 状态：`redirectUrl`、`username`、`password`、`nickname`、`roleIndex`、`status`、`message`、`loading`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 04：消息 `pages/messages/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`94d9c01cb66ea4aaa4db473bc9d0b829971a9ac4350ba8e6b69fd3d7a905abe4`
-- 核对文件：`apps/miniprogram/pages/messages/index.wxml`、`apps/miniprogram/pages/messages/index.wxss`、`apps/miniprogram/pages/messages/index.js`、`apps/miniprogram/pages/messages/index.json`、`apps/miniprogram/utils/errorDiagnostics.js`
-- 上游页面：`pages/home/index`、`pages/growth-dashboard/index`、`pages/profile/index`
-- 页面组件：`page-state` → `/components/page-state/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`message-row` → `/components/message-row/index`
-- 主要可见内容：消息、请求编号： · 服务版本：、复制诊断信息
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 10 | {{needsLogin ?  | `bindaction` | `handleStateAction` | — |
-| 13 | 复制本次错误的诊断信息 | `bindtap` | `copyDiagnostic` | — |
-| 18 | — | `bindopen` | `openMessage` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 25 | `listMessages` | `GET` | `/api/messages` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/ai_qa.py`、`backend/routes/auth_utils.py`、`backend/routes/emotion_thermometer.py`、`backend/routes/general_growth.py`、`backend/routes/messages.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/message-detail/index?id=:dynamic`（js:50）、`reLaunch` → `/pages/home/index`（js:71）、`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fmessages%2Findex`（js:75）、`navigateTo` → `/pages/register/index?redirect=%2Fpages%2Fmessages%2Findex`（js:79）
-- 本地存储：—
-- WXML 数据绑定：`loading`、`errorMessage`、`needsLogin`、`errorDiagnostic`、`messages`、`item`
-- 条件状态：`loading`、`errorMessage`、`errorDiagnostic`、`messages`
-- `setData` 状态：`loading`、`errorMessage`、`errorDiagnostic`、`needsLogin`、`messages`、`unreadCount`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 05：支持性问答 `pages/support-assistant/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`70d980fa3a1a19779c8846298960a040fe4d855dd5e3c0c6e694be3c8f400cea`
-- 核对文件：`apps/miniprogram/pages/support-assistant/index.wxml`、`apps/miniprogram/pages/support-assistant/index.wxss`、`apps/miniprogram/pages/support-assistant/index.js`、`apps/miniprogram/pages/support-assistant/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/profile/index`
-- 页面组件：`page-state` → `/components/page-state/index`、`boundary-note` → `/components/boundary-note/index`、`conversation-entry` → `/components/conversation-entry/index`、`question-composer` → `/components/question-composer/index`
-- 主要可见内容：当前未开放、你仍可使用情绪记录、训练卡和人工支持。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 18 | 当前未开放 | `bindaction` | `loadStatus` | — |
-| 34 | — | `bindconfirm` | `enableConsent` | — |
-| 40 | — | `bindinput` | `onQuestionInput` | — |
-| 40 | — | `bindsubmit` | `sendQuestion` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 49 | `getAiQaConfig` | `GET` | `/api/ai-qa/config` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
-| 74 | `createConsent` | `POST` | `/api/consent` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
-| 94 | `createAiQaSession` | `POST` | `/api/ai-qa/sessions` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
-| 111 | `sendAiQaMessage` | `POST` | `/api/ai-qa/sessions` | `backend/app.py`、`backend/config.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/wsgi.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/login/index?redirect=:dynamic`（js:38）、`navigateTo` → `/pages/login/index:dynamic`（js:161）
-- 本地存储：`getStorageSync` `auth_token`（JS:137）、`getStorageSync` `auth_user`（JS:141）、`removeStorageSync` `auth_token`（JS:167）、`removeStorageSync` `auth_user`（JS:168）
-- WXML 数据绑定：`eyebrow`、`title`、`subtitle`、`loading`、`error`、`boundary`、`consented`、`sending`、`messages`、`item`、`question`
-- 条件状态：`loading`、`error`、`enabled`、`messages`
-- `setData` 状态：`eyebrow`、`title`、`subtitle`、`focus`、`loading`、`error`、`enabled`、`boundary`、`sending`、`consented`、`question`、`sessionId`、`messages`、`role`、`content`、`citations`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 06：消息详情 `pages/message-detail/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`c096b1e8a75e105a31c3204c3b2d726905014377db67b9d0d2cabf460d2809d8`
-- 核对文件：`apps/miniprogram/pages/message-detail/index.wxml`、`apps/miniprogram/pages/message-detail/index.wxss`、`apps/miniprogram/pages/message-detail/index.js`、`apps/miniprogram/pages/message-detail/index.json`
-- 上游页面：`pages/messages/index`
-- 页面组件：`feedback-rating` → `/components/feedback-rating/index`、`page-state` → `/components/page-state/index`
-- 主要可见内容：使用边界、这里的内容适合补充理解一条记录，不适合处理紧急安全风险。如正在经历自伤、自杀、暴力、失控或其他安全风险，请先找现实支持。、返回消息列表
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 3 | — | `bindaction` | `handleStateAction` | — |
-| 16 | — | `bindtap` | `openSource` | — |
-| 19 | — | `bindselect` | `submitFeedbackEvaluation` | — |
-| 30 | 返回消息列表 | `bindtap` | `goMessages` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 31 | `getMessage` | `GET` | `/api/messages` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/ai_qa.py`、`backend/routes/auth_utils.py`、`backend/routes/emotion_thermometer.py`、`backend/routes/feedback_ledger.py`、`backend/routes/general_growth.py` |
-| 76 | `createFeedbackLedgerEntry` | `POST` | `/api/feedback-ledger` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/ai_qa.py`、`backend/routes/auth_utils.py`、`backend/routes/emotion_thermometer.py`、`backend/routes/feedback_ledger.py`、`backend/routes/general_growth.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/relationship-report/index?id=:dynamic`（js:62）、`navigateTo` → `/pages/relationship-narrative/index?id=:dynamic`（js:66）
-- 本地存储：—
-- WXML 数据绑定：`loading`、`errorMessage`、`id`、`message`、`canOpenSource`、`sourceButtonLabel`、`canEvaluate`、`true`、`feedbackEvaluation`、`feedbackEvaluationSaving`
-- 条件状态：`loading`、`errorMessage`、`canOpenSource`、`canEvaluate`
-- `setData` 状态：`id`、`loading`、`errorMessage`、`canOpenSource`、`sourceButtonLabel`、`canEvaluate`、`message`、`feedbackEvaluationSaving`、`feedbackEvaluation`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 07：紧急安全指引 `pages/emergency-guide/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`7bca534bdedb5a381b92fb5f64693acc8e659d88371fe4a52923791bcfd0dd3a`
-- 核对文件：`apps/miniprogram/pages/emergency-guide/index.wxml`、`apps/miniprogram/pages/emergency-guide/index.wxss`、`apps/miniprogram/pages/emergency-guide/index.js`、`apps/miniprogram/pages/emergency-guide/index.json`
-- 上游页面：`pages/emergency-resources/index`、`pages/profile/index`、`pages/feedback-result/index`
-- 页面组件：`safety-action-row` → `/components/safety-action-row/index`
-- 主要可见内容：先找现实帮助、如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请优先联系身边可信赖的人、当地紧急服务或线下专业机构。、现在先做、只用于稳定当下，不替代专业帮助、5-4-3-2-1 接地法、把注意力拉回此刻、重要边界、本小程序不能提供实时危机干预、医疗诊断或法律判断。遇到紧急安全风险时，请先使用现实资源。、查看现实支持资源、回到首页
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 32 | 查看现实支持资源 | `bindtap` | `openResources` | — |
-| 33 | 回到首页 | `bindtap` | `goHome` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| — | 无直接 API 调用 | — | — | 页面由本地状态或路由驱动 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`reLaunch` → `/pages/home/index`（js:19）、`navigateTo` → `/pages/emergency-resources/index`（js:23）
-- 本地存储：—
-- WXML 数据绑定：`supportSteps`、`index`、`item`、`groundingSteps`
-- 条件状态：—
-- `setData` 状态：—
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 08：紧急帮助说明 `pages/emergency-resources/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`550e049641b205b2bd1f98af274d8dd5a85e414baea509a970522aca49e2231d`
-- 核对文件：`apps/miniprogram/pages/emergency-resources/index.wxml`、`apps/miniprogram/pages/emergency-resources/index.wxss`、`apps/miniprogram/pages/emergency-resources/index.js`、`apps/miniprogram/pages/emergency-resources/index.json`
-- 上游页面：`pages/emergency-guide/index`、`pages/profile/index`
-- 页面组件：`resource-channel-row` → `/components/resource-channel-row/index`
-- 主要可见内容：先把人连接上、这里不提供热线号码库，也不判断你是否处于危机。紧急时，请优先找能真实到场或及时回应的帮助。、使用边界、本工具不能替代紧急服务、线下专业评估、法律判断或医疗诊断。安全风险出现时，请先停止独自处理。、查看紧急安全指引
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 19 | 查看紧急安全指引 | `bindtap` | `goGuide` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| — | 无直接 API 调用 | — | — | 页面由本地状态或路由驱动 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/emergency-guide/index`（js:24）
-- 本地存储：—
-- WXML 数据绑定：`resources`、`item`
-- 条件状态：—
-- `setData` 状态：—
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 09：三步开始 `pages/getting-started/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`51a242b663c9c40481b1d34b54d9021773b64e3f7a5eede9af2d712052c5c617`
-- 核对文件：`apps/miniprogram/pages/getting-started/index.wxml`、`apps/miniprogram/pages/getting-started/index.wxss`、`apps/miniprogram/pages/getting-started/index.js`、`apps/miniprogram/pages/getting-started/index.json`
-- 上游页面：`pages/home/index`
-- 页面组件：—
-- 主要可见内容：从一件具体小事开始、写一个片段、标一个位置、做一个动作、把事件放进以下七个位置，梳理发生的全过程：、记录一次 → 查看反馈线索 → 去训练中心练一个小动作、使用边界、记录一次、去训练中心
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 70 | 记录一次 | `bindtap` | `startDiary` | — |
-| 71 | 去训练中心 | `bindtap` | `openTraining` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| — | 无直接 API 调用 | — | — | 页面由本地状态或路由驱动 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/diary-form/index`（js:39）、`switchTab` → `/pages/training/index`（js:43）
-- 本地存储：—
-- WXML 数据绑定：`exerciseSteps`、`eventReasons`、`item`、`arcNodes`、`index`、`boundaries`
-- 条件状态：—
-- `setData` 状态：—
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 10：情绪温度计 `pages/thermometer/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`40534a6f5d180f76eb8185c7e55c6e0646f06c5bfc9e53b53d673327742c4098`
-- 核对文件：`apps/miniprogram/pages/thermometer/index.wxml`、`apps/miniprogram/pages/thermometer/index.wxss`、`apps/miniprogram/pages/thermometer/index.js`、`apps/miniprogram/pages/thermometer/index.json`、`apps/miniprogram/utils/chart.js`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/home/index`
-- 页面组件：`intensity-scale` → `/components/intensity-scale/index`
-- 主要可见内容：情绪温度计、现在的强度、补充观察（可保持默认）、愉悦度、身体唤起、可控感、记录完成、去练一张卡、今日曲线、共 次，平均、刷新、正在读取今天的记录…、· 强度 / 10、今天还没有记录、先记录一次，再看曲线。、暂时没能完成、重试读取、今天的记录、强度 / 10、· 愉悦 · 唤起 · 可控
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 13 | − | `bindchange` | `onIntensityChange` | — |
-| 17 | 情绪强度减一 | `bindtap` | `decreaseIntensity` | — |
-| 18 | 情绪强度加一 | `bindtap` | `increaseIntensity` | — |
-| 30 | 调整愉悦度 | `bindchange` | `onValenceChange` | — |
-| 30 | 调整愉悦度 | `bindchanging` | `onValenceChange` | — |
-| 37 | 调整身体唤起 | `bindchange` | `onArousalChange` | — |
-| 37 | 调整身体唤起 | `bindchanging` | `onArousalChange` | — |
-| 44 | 调整可控感 | `bindchange` | `onControlChange` | — |
-| 44 | 调整可控感 | `bindchanging` | `onControlChange` | — |
-| 48 | / 40 | `bindinput` | `onEmotionLabelInput` | — |
-| 58 | / 200 | `bindinput` | `onBriefInput` | — |
-| 69 | — | `bindtap` | `saveRecord` | — |
-| 78 | 收起记录回执 | `bindtap` | `dismissReceipt` | — |
-| 82 | 去练一张卡 | `bindtap` | `openPractice` | — |
-| 91 | 刷新 | `bindtap` | `loadDay` | — |
-| 94 | 今日情绪强度变化曲线，具体记录见下方列表 | `bindtouchstart` | `handleCanvasTap` | — |
-| 115 | 重试读取 | `bindtap` | `loadDay` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| — | 无直接 API 调用 | — | — | 页面由本地状态或路由驱动 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/training-card/index`（js:152）、`navigateTo` → `/pages/login/index:dynamic`（js:333）
-- 本地存储：`getStorageSync` `auth_token`（JS:309）、`getStorageSync` `auth_user`（JS:313）、`removeStorageSync` `auth_token`（JS:339）、`removeStorageSync` `auth_user`（JS:340）
-- WXML 数据绑定：`intensityLevel`、`valenceLevel`、`arousalLevel`、`controlLevel`、`emotionLabel`、`briefText`、`saving`、`receipt`、`item`、`loading`、`summary`、`selectedPoint`、`errorMessage`、`records`、`boundaryNotice`
-- 条件状态：`receipt`、`loading`、`summary`、`selectedPoint`、`errorMessage`、`item`、`records`
-- `setData` 状态：`intensityLevel`、`intensityPercent`、`valenceLevel`、`arousalLevel`、`controlLevel`、`emotionLabel`、`briefText`、`loading`、`errorMessage`、`records`、`timeLabel`、`saving`、`receipt`、`selectedPoint`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 11：训练 `pages/training/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`4f6724f35476779461a5f870230fa64721fc4d4c63f74ed1f94ae32e3e10c226`
-- 核对文件：`apps/miniprogram/pages/training/index.wxml`、`apps/miniprogram/pages/training/index.wxss`、`apps/miniprogram/pages/training/index.js`、`apps/miniprogram/pages/training/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/home/index`、`pages/login/index`、`pages/getting-started/index`、`pages/training-history/index`、`pages/growth-dashboard/index`、`pages/course-detail/index`、`pages/assessment-result/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`training-task-card` → `/components/training-task-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`
-- 主要可见内容：训练中心、通用训练、按阶段浏览训练卡、个性化方案、根据测评推荐练习、项目测试、暑期试点练习包、今天可以先练这个方向、推荐理由、今日建议、优先、近期练过，需要巩固时可以再练。、查看练习、项目试点 · 大学生关系探索、从测一测到评估问题与微行动、聚合阶段性画像、初筛报告、关系绘画、句子补全和连续复盘。它不是治疗或诊断服务。、进入关系探索试点、3 天轻量练习、不知道从哪里开始？、先按“觉察—稳定—回应”的顺序选一张；不需要一次完成全部阶段。、情绪觉察、先看见自己、身体调节、让反应慢下来
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 15 | 个性化方案 | `bindtap` | `openPersonalizedPlan` | — |
-| 19 | 项目测试 | `bindtap` | `openProgramList` | — |
-| 48 | 查看练习 | `bindtap` | `openLatestRecommendation` | — |
-| 55 | 进入关系探索试点 | `bindtap` | `openRelationshipPilot` | — |
-| 64 | — | `bindtap` | `toggleLightPlan` | — |
-| 66 | — | `bindtap` | `openPlanDay` | {'card-id': '{{item.cardId}}'} |
-| 104 | — | `bindtap` | `toggleLibrary` | — |
-| 111 | — | `bindtapcard` | `openTrainingCard` | {'id': '{{task.id}}', 'tags': '{{task.tagsText}}'} |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 149 | `getShowcaseAccess` | `GET` | `/api/showcase-access` | `backend/app.py`、`backend/routes/auth_utils.py`、`backend/routes/courses.py`、`backend/routes/programs.py`、`backend/routes/showcase_access.py`、`backend/routes/training_plan.py`、`backend/scripts/generate_task32_reliability_registry.py`、`backend/scripts/generate_task34_operations_registry.py` |
-| 159 | `getTrainingPlan` | `GET` | `/api/training-plan` | `backend/app.py`、`backend/routes/auth_utils.py`、`backend/routes/courses.py`、`backend/routes/programs.py`、`backend/routes/showcase_access.py`、`backend/routes/training_plan.py`、`backend/scripts/generate_task32_reliability_registry.py`、`backend/scripts/generate_task34_operations_registry.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:227）、`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:242）、`navigateTo` → `/pages/personalized-plan/index`（js:248）、`navigateTo` → `/pages/program-list/index`（js:252）、`navigateTo` → `/pages/relationship-pilot/index`（js:264）、`navigateTo` → `/pages/task-detail/index?id=:dynamic`（js:269）、`navigateTo` → `/pages/login/index:dynamic`（js:300）
-- 本地存储：`getStorageSync` `LATEST_TRAINING_RECOMMENDATION_KEY`（JS:185）、`getStorageSync` `THREE_DAY_LIGHT_PLAN_KEY`（JS:203）、`getStorageSync` `auth_token`（JS:276）、`getStorageSync` `auth_user`（JS:280）、`removeStorageSync` `auth_token`（JS:306）、`removeStorageSync` `auth_user`（JS:307）
-- WXML 数据绑定：`latestRecommendation`、`relationshipPilotAvailable`、`threeDayPlan`、`lightPlanExpanded`、`item`、`libraryExpanded`、`trainingStages`、`task`
-- 条件状态：`latestRecommendation`、`relationshipPilotAvailable`、`threeDayPlan`、`lightPlanExpanded`、`libraryExpanded`
-- `setData` 状态：`relationshipPilotAvailable`、`latestRecommendation`、`primaryCard`、`cardIdsText`、`threeDayPlan`、`cardIds`、`cards`、`sourceLabel`、`days`、`lightPlanExpanded`、`libraryExpanded`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 12：训练记录 `pages/training-history/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`39009712682baf57a05fd38352e14fec831d4a8763f035035c8844a51700e3fc`
-- 核对文件：`apps/miniprogram/pages/training-history/index.wxml`、`apps/miniprogram/pages/training-history/index.wxss`、`apps/miniprogram/pages/training-history/index.js`、`apps/miniprogram/pages/training-history/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/errorDiagnostics.js`
-- 上游页面：`pages/profile/index`
-- 页面组件：—
-- 主要可见内容：训练记录、次记录、正在读取训练记录、记录暂时没有加载成功、请求编号： · 服务版本：、重新加载、复制诊断信息、再次练习、已显示全部 次记录、还没有训练记录、去训练中心
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 20 | 重新加载 | `bindtap` | `retry` | — |
-| 21 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | — |
-| 34 | 再次练习 | `bindtap` | `openCard` | {'card-id': '{{item.card_id}}'} |
-| 37 | — | `bindtap` | `loadMore` | — |
-| 40 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | — |
-| 47 | 去训练中心 | `bindtap` | `goTraining` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 56 | `listCheckins` | `GET` | `/api/checkins` | `backend/app.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/checkins.py`、`backend/routes/general_growth.py`、`backend/routes/profile.py`、`backend/routes/research_workspace.py`、`backend/routes/training_plan.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:99）、`switchTab` → `/pages/training/index`（js:103）、`navigateTo` → `/pages/login/index:dynamic`（js:132）
-- 本地存储：`getStorageSync` `auth_token`（JS:108）、`getStorageSync` `auth_user`（JS:112）、`removeStorageSync` `auth_token`（JS:138）、`removeStorageSync` `auth_user`（JS:139）
-- WXML 数据绑定：`total`、`loading`、`errorMessage`、`errorDiagnostic`、`items`、`item`、`hasMore`、`loadingMore`
-- 条件状态：`loading`、`errorMessage`、`items`、`item`、`hasMore`
-- `setData` 状态：`loading`、`loadingMore`、`errorMessage`、`errorDiagnostic`、`items`、`page`、`total`、`hasMore`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 13：个性化训练方案 `pages/personalized-plan/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`90a0c747eabf95752088ba9bed3211bed8aaa61131c50d976a6089a796def81d`
-- 核对文件：`apps/miniprogram/pages/personalized-plan/index.wxml`、`apps/miniprogram/pages/personalized-plan/index.wxss`、`apps/miniprogram/pages/personalized-plan/index.js`、`apps/miniprogram/pages/personalized-plan/index.json`
-- 上游页面：`pages/training/index`
-- 页面组件：`training-task-card` → `/components/training-task-card/index`
-- 主要可见内容：个性化训练方案、安排练习节奏、先选一个当前可承受的频率，之后可以随时调整。、当前阶段、练习频率、开始日期、计划状态、保存练习节奏、提醒、微信练习提醒、只在你主动授权后发送；关闭提醒不影响训练。、暂未开放、管理员完成微信模板审核后，这里可以开启。、已同意本次提醒、到达下一次练习日期后发送；一次性授权使用后需要重新开启。、上次授权已使用、如需下一次提醒，请再次主动开启。、微信设置中已关闭、如需恢复，请前往小程序设置调整订阅消息权限。、需要时再开启、建议在保存好练习节奏后，开启一次微信提醒。、开启一次微信提醒、前往微信设置、去测一测
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 17 | — | `bindtap` | `selectAssignmentOption` | {'field': 'phase', 'value': '{{item.value}}'} |
-| 29 | — | `bindtap` | `selectAssignmentOption` | {'field': 'cadence', 'value': '{{item.value}}'} |
-| 41 | — | `bindchange` | `onStartDateChange` | — |
-| 48 | — | `bindtap` | `selectAssignmentOption` | {'field': 'status', 'value': '{{item.value}}'} |
-| 59 | 保存练习节奏 | `bindinput` | `onGoalInput` | — |
-| 66 | 保存练习节奏 | `bindtap` | `saveAssignment` | — |
-| 102 | 开启一次微信提醒 | `bindtap` | `requestTrainingReminder` | — |
-| 108 | 前往微信设置 | `bindtap` | `openNotificationSettings` | — |
-| 118 | 去测一测 | `bindtap` | `openAssessment` | — |
-| 129 | — | `bindtapcard` | `openSingleCard` | — |
-| 151 | 重试 | `bindtap` | `loadPlan` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| — | 无直接 API 调用 | — | — | 页面由本地状态或路由驱动 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/assessment/index`（js:176）、`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:185）、`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:191）
-- 本地存储：—
-- WXML 数据绑定：`assignment`、`phaseOptions`、`item`、`cadenceOptions`、`statusOptions`、`savingAssignment`、`plan`、`notification`、`requestingReminder`、`planItems`、`card`、`loading`、`errorMessage`、`boundaryNotice`
-- 条件状态：`assignment`、`plan`、`notification`、`loading`、`item`
-- `setData` 状态：`notification`、`preference`、`loading`、`errorMessage`、`planItems`、`sourceLabel`、`cardIdsText`、`plan`、`assignment`、`savingAssignment`、`requestingReminder`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 14：项目测试 `pages/program-list/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`12cd15109f1d92606b23fdfefcd1370c6cce47e21e1e06e610664076ad52ecfb`
-- 核对文件：`apps/miniprogram/pages/program-list/index.wxml`、`apps/miniprogram/pages/program-list/index.wxss`、`apps/miniprogram/pages/program-list/index.js`、`apps/miniprogram/pages/program-list/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/training/index`
-- 页面组件：—
-- 主要可见内容：项目测试、研究者预览、草案仅供审核，不可作为正式项目提交。、小节、受众：、目标构念：、第一节：、已有 个方案完成开发，待研究、心理和伦理审核。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 14 | 打开项目：{{item.title}} | `bindtap` | `openProgram` | {'id': '{{item.id}}', 'preview': '{{item.preview_only}}'} |
-| 35 | <text wx:if="{{!loading && !errorMessage && !pro | `bindaction` | `loadPrograms` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| — | 无直接 API 调用 | — | — | 页面由本地状态或路由驱动 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/program-detail/index?id=:dynamic`（js:50）、`navigateTo` → `/pages/login/index:dynamic`（js:79）
-- 本地存储：`getStorageSync` `auth_token`（JS:55）、`getStorageSync` `auth_user`（JS:59）、`removeStorageSync` `auth_token`（JS:85）、`removeStorageSync` `auth_user`（JS:86）
-- WXML 数据绑定：`previewMode`、`programs`、`item`、`loading`、`errorMessage`、`availability`、`boundaryNotice`
-- 条件状态：`previewMode`、`loading`
-- `setData` 状态：`loading`、`errorMessage`、`programs`、`availability`、`boundaryNotice`、`previewMode`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 15：项目详情 `pages/program-detail/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`33c52e7b39a59708ce6d5817fab3e9a5ff749bd6a2de73d219810e3a47cd10bd`
-- 核对文件：`apps/miniprogram/pages/program-detail/index.wxml`、`apps/miniprogram/pages/program-detail/index.wxss`、`apps/miniprogram/pages/program-detail/index.js`、`apps/miniprogram/pages/program-detail/index.json`
-- 上游页面：`pages/home/index`、`pages/program-list/index`
-- 页面组件：—
-- 主要可见内容：· 方案、研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。、参与前先了解、适合参加的基本条件、这些情况先不要继续、可选替代：、项目记录节奏、用于安排开始前、练习中和完成后的阶段记录。、第 节、预计 分钟、练习步骤、书写提示、保存本机草稿、反思问题、完成标准：、停止提示：、练习前不适程度： / 10、练习后不适程度： / 10、这次练习出现了明显不适或负面体验，需要后续关注。、允许将本次内容用于脱敏聚合分析，不默认展示原文。、登录后正式提交、我已提交的项目记录、提交内容会保留在本人记录中，并按授权范围供研究者只读查看。、已提交
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 55 | 第 节 | `bindtap` | `selectSession` | {'session-no': '{{item.session_no}}'} |
-| 82 | 保存本机草稿 | `bindinput` | `onDraftInput` | — |
-| 83 | 保存本机草稿 | `bindtap` | `saveDraft` | — |
-| 90 | — | `bindinput` | `onReflectionInput` | {'index': '{{index}}'} |
-| 107 | 练习后不适程度： / 10 | `bindchange` | `onDistressBeforeChange` | — |
-| 109 | 这次练习出现了明显不适或负面体验，需要后续关注。 | `bindchange` | `onDistressAfterChange` | — |
-| 110 | 这次练习出现了明显不适或负面体验，需要后续关注。 | `bindchange` | `onAdverseResponseChange` | — |
-| 116 | 允许将本次内容用于脱敏聚合分析，不默认展示原文。 | `bindchange` | `onAnalysisConsentChange` | — |
-| 124 | 登录后正式提交 | `bindtap` | `submitEntry` | — |
-| 148 | 重试 | `bindtap` | `retryLoad` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 172 | `listProgramEntries` | `GET` | `/api/programs/:id/entries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/content_review.py`、`backend/routes/courses.py`、`backend/routes/feedback_ledger.py`、`backend/routes/general_growth.py`、`backend/routes/programs.py` |
-| 203 | `createProgramEntry` | `POST` | `/api/programs/:id/entries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/content_review.py`、`backend/routes/courses.py`、`backend/routes/feedback_ledger.py`、`backend/routes/general_growth.py`、`backend/routes/programs.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：—
-- 本地存储：`getStorageSync` `draftKey`（JS:118）、`setStorageSync` `draftKey`（JS:163）、`removeStorageSync` `draftKey`（JS:219）
-- WXML 数据绑定：`program`、`item`、`previewMode`、`sessions`、`selectedSession`、`index`、`draftText`、`reflectionAnswers`、`distressBefore`、`distressAfter`、`adverseResponse`、`analysisConsent`、`successMessage`、`errorMessage`、`submitting`、`submittedEntries`、`loading`
-- 条件状态：`program`、`previewMode`、`selectedSession`、`successMessage`、`errorMessage`、`loading`
-- `setData` 状态：`programId`、`previewMode`、`requestedSessionNo`、`loading`、`errorMessage`、`program`、`sessions`、`selectedSession`、`draftText`、`reflectionAnswers`、`successMessage`、`analysisConsent`、`distressBefore`、`distressAfter`、`adverseResponse`、`submittedEntries`、`createdAtText`、`sessionText`、`submitting`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 16：关系探索试点 `pages/relationship-pilot/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`be881c6c8f56f1fe968d17e529d0072b84df77a91983e1c289f12ef8d2127ac5`
-- 核对文件：`apps/miniprogram/pages/relationship-pilot/index.wxml`、`apps/miniprogram/pages/relationship-pilot/index.wxss`、`apps/miniprogram/pages/relationship-pilot/index.js`、`apps/miniprogram/pages/relationship-pilot/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/training/index`、`pages/relationship-growth/index`、`pages/growth-dashboard/index`
-- 页面组件：`journey-action-card` → `/components/journey-action-card/index`
-- 主要可见内容：从起点测评到连续记录，每一步都可以暂停。这里不判断你是否“适合恋爱”，也不替代心理咨询。、正在读取你的探索进度...、当前仅向学生试点账号开放、你仍可使用情绪记录、训练卡和其它支持功能。若需参加关系探索试点，请切换到已授权的学生账号。、第一步 · 起点测评与报名、确认是否进入第二阶段、报名会关联你最近一份关系探索测评的维度、阶段性画像与报告。逐行研究数据不会显示给其他用户。、我已阅读并同意将本次测评用于关系探索试点的评估与复盘。、确认报名、还没测评？先完成关系测一测、五阶段探索路径、其它入口、所有画像和报告都只作阶段性观察，不构成诊断、人格标签、关系能力评价或疗效证明。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 19 | 我已阅读并同意将本次测评用于关系探索试点的评估与复盘。 | `bindchange` | `toggleConsent` | — |
-| 22 | 确认报名 | `bindtap` | `enroll` | — |
-| 23 | 还没测评？先完成关系测一测 | `bindtap` | `goAssessment` | — |
-| 27 | 关系探索当前步骤 | `bindaction` | `runPrimaryAction` | — |
-| 57 | — | `bindtap` | `runSecondaryAction` | {'action': '{{item.key}}'} |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 69 | `getShowcaseAccess` | `GET` | `/api/showcase-access` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/courses.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/programs.py` |
-| 81 | `listRelationshipEnrollments` | `GET` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/courses.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/programs.py` |
-| 86 | `getRelationshipGrowth` | `GET` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/courses.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/programs.py` |
-| 129 | `createRelationshipEnrollment` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/courses.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/programs.py` |
-| 149 | `trackProductEvent` | `POST` | `/api/product-events` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/courses.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/programs.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/assessment/index?audience_class=student&query=%E5%85%B3%E7%B3%BB`（js:165）、`navigateTo` → `/pages/relationship-report/index?id=:dynamic`（js:174）、`navigateTo` → `/pages/relationship-task/index?type=relationship_drawing&enrollment_id=:dynamic`（js:178）、`navigateTo` → `/pages/relationship-task/index?type=sentence_completion&enrollment_id=:dynamic`（js:182）、`navigateTo` → `/pages/relationship-growth/index?detail=1&enrollment_id=:dynamic`（js:186）、`navigateTo` → `/pages/login/index:dynamic`（js:217）
-- 本地存储：`getStorageSync` `auth_token`（JS:193）、`getStorageSync` `auth_user`（JS:197）、`removeStorageSync` `auth_token`（JS:223）、`removeStorageSync` `auth_user`（JS:224）
-- WXML 数据绑定：`loading`、`roleBlocked`、`consent`、`submitting`、`currentStepNumber`、`currentActionState`、`reportStatusText`、`currentStageTitle`、`enrollment`、`primaryLabel`、`journeySteps`、`item`、`secondaryActions`、`errorMessage`
-- 条件状态：`loading`、`roleBlocked`、`enrollment`、`errorMessage`
-- `setData` 状态：`loading`、`roleBlocked`、`errorMessage`、`journeySteps`、`currentStepNumber`、`currentActionState`、`currentStageTitle`、`primaryAction`、`primaryLabel`、`reportStatusText`、`enrollment`、`secondaryActions`、`consent`、`submitting`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 17：阶段性报告 `pages/relationship-report/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`097f76b1908d3bb72fba73d291be817498f5e082d459d1ce68df482ea14b1f77`
-- 核对文件：`apps/miniprogram/pages/relationship-report/index.wxml`、`apps/miniprogram/pages/relationship-report/index.wxss`、`apps/miniprogram/pages/relationship-report/index.js`、`apps/miniprogram/pages/relationship-report/index.json`
-- 上游页面：`pages/message-detail/index`、`pages/relationship-pilot/index`、`pages/researcher-dashboard/index`
-- 页面组件：`relationship-status` → `/components/relationship-status/index`、`feedback-rating` → `/components/feedback-rating/index`、`page-state` → `/components/page-state/index`
-- 主要可见内容：正在人工核对、研究者完成核对并发送后，你会在消息列表收到提醒。当前不会展示画像、解释或机制假设。、需要多一点人工核对、当前阶段解释、基础画像、本次维度轮廓、条形只表示本次在参考样本中的相对位置，不代表好坏或能力排名。、矛盾画像、两种需要可能同时存在、靠近与行动意愿、同时、保护与现实节奏、机制画像、待核对假设、这些只是讨论线索。请以你的真实经验为准，共同修订比“被系统定义”更重要。、当前选择：、符合、不符合、不确定、动态画像、连续记录、已有 次记录，变化只作为讨论线索。、目前只有一次记录。完成两次以上后，才显示趋势箭头。、讨论线索
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 3 | 正在人工核对 | `bindaction` | `loadReport` | — |
-| 32 | — | `bindselect` | `submitReportEvaluation` | — |
-| 62 | 符合 | `bindtap` | `saveHypothesisFeedback` | {'index': '{{item.index}}', 'response': 'matches'} |
-| 63 | 不符合 | `bindtap` | `saveHypothesisFeedback` | {'index': '{{item.index}}', 'response': 'does_not_match'} |
-| 64 | 不确定 | `bindtap` | `saveHypothesisFeedback` | {'index': '{{item.index}}', 'response': 'uncertain'} |
-| 99 | 生成脱敏报告长图 | `bindtap` | `drawLongImage` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 81 | `getRelationshipReport` | `GET` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/feedback_ledger.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/relationship_pilot.py` |
-| 127 | `saveRelationshipHypothesisFeedback` | `PUT` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/feedback_ledger.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/relationship_pilot.py` |
-| 145 | `createFeedbackLedgerEntry` | `POST` | `/api/feedback-ledger` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/feedback_ledger.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/relationship_pilot.py` |
-| 222 | `trackProductEvent` | `POST` | `/api/product-events` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/feedback_ledger.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/relationship_pilot.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：—
-- 本地存储：—
-- WXML 数据绑定：`loading`、`errorMessage`、`deliveryPending`、`report`、`record`、`statusSteps`、`item`、`attentionNotice`、`reportEvaluation`、`reportEvaluationSaving`、`radarRows`、`mechanismCards`、`isStageFeedback`、`index`、`exporting`、`shareCanvasHeight`
-- 条件状态：`loading`、`errorMessage`、`deliveryPending`、`attentionNotice`、`radarRows`、`report`、`mechanismCards`
-- `setData` 状态：`id`、`loading`、`errorMessage`、`report`、`deliveryPending`、`statusText`、`statusSteps`、`record`、`isStageFeedback`、`radarRows`、`mechanismCards`、`attentionNotice`、`feedbackSavingIndex`、`reportEvaluationSaving`、`reportEvaluation`、`shareCanvasHeight`、`exporting`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 18：关系探索任务 `pages/relationship-task/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`82b8c7e4a31c262876b5685089cf2121d1e8e96baa4c1a740c62ee031524449c`
-- 核对文件：`apps/miniprogram/pages/relationship-task/index.wxml`、`apps/miniprogram/pages/relationship-task/index.wxss`、`apps/miniprogram/pages/relationship-task/index.js`、`apps/miniprogram/pages/relationship-task/index.json`
-- 上游页面：`pages/home/index`、`pages/relationship-pilot/index`
-- 页面组件：—
-- 主要可见内容：线上探索材料、已恢复上次未提交的本机草稿，你可以接着完成。、画布、可撤销、重做，草稿自动留在本机、撤销、重做、清空、给这幅画写一两句画外音、已填写、如果在“ ”的情境里，会怎样？、本题可以跳过、我同意将这份敏感叙事材料用于本次试点评估与人工复核；默认不导出原文。、材料只作为访谈和共同理解的线索，不自动解释潜意识、人格、依恋类型或病理模式。、提交这份材料
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 13 | 关系感受绘画画布，可使用下方按钮撤销、重做或清空 | `bindtouchstart` | `startStroke` | — |
-| 13 | 关系感受绘画画布，可使用下方按钮撤销、重做或清空 | `bindtouchmove` | `moveStroke` | — |
-| 13 | 关系感受绘画画布，可使用下方按钮撤销、重做或清空 | `bindtouchend` | `endStroke` | — |
-| 15 | 撤销 | `bindtap` | `undoStroke` | — |
-| 16 | 重做 | `bindtap` | `redoStroke` | — |
-| 17 | 清空 | `bindtap` | `clearCanvas` | — |
-| 21 | — | `bindinput` | `onNarrationInput` | — |
-| 28 | — | `bindtap` | `toggleContext` | {'key': '{{item.key}}'} |
-| 34 | — | `bindinput` | `onSentenceInput` | {'key': '{{item.key}}'} |
-| 41 | 我同意将这份敏感叙事材料用于本次试点评估与人工复核；默认不导出原文。 | `bindchange` | `toggleConsent` | — |
-| 45 | 提交这份材料 | `bindtap` | `saveTask` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 318 | `createRelationshipTask` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/relationship_pilot.py`、`backend/routes/relationship_pilot_routes.py` |
-| 328 | `trackProductEvent` | `POST` | `/api/product-events` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/relationship_pilot.py`、`backend/routes/relationship_pilot_routes.py` |
-| 351 | `trackProductEvent` | `POST` | `/api/product-events` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/relationship_pilot.py`、`backend/routes/relationship_pilot_routes.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：—
-- 本地存储：`getStorageSync` `this`（JS:87）、`removeStorageSync` `this`（JS:138）、`setStorageSync` `this`（JS:143）、`removeStorageSync` `this`（JS:334）
-- WXML 数据绑定：`isDrawing`、`saving`、`saveStatus`、`draftRestored`、`narration`、`narrationCount`、`contextItems`、`item`、`consent`
-- 条件状态：`draftRestored`、`isDrawing`、`item`
-- `setData` 状态：`isDrawing`、`contextItems`、`narration`、`narrationCount`、`consent`、`saveStatus`、`draftRestored`、`hasLocalDraft`、`canUndo`、`canRedo`、`enrollmentId`、`taskType`、`answers`、`saving`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 19：关系探索成长记录 `pages/relationship-growth/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`7bf2edf253baa6499f0d0778cd73ac046e891ea2b18a0374805b87d79cf7f733`
-- 核对文件：`apps/miniprogram/pages/relationship-growth/index.wxml`、`apps/miniprogram/pages/relationship-growth/index.wxss`、`apps/miniprogram/pages/relationship-growth/index.js`、`apps/miniprogram/pages/relationship-growth/index.json`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：`pages/relationship-pilot/index`、`pages/growth-dashboard/index`
-- 页面组件：`visualization-state` → `/components/visualization-state/index`、`timeline-record` → `/components/timeline-record/index`
-- 主要可见内容：关系探索成长记录、正在读取成长记录...、累计记录、指标组、阶段性反馈、变化曲线、每组数字含义不同，不合并成总分、再记录 次后可查看变化趋势、数据不足、目前有 个记录点；这里不会根据单次记录判断变化。、最近时间线、查看全部 ›、还没有时间线记录，可以先写下今天的一小步。、成长时间线、按记录类型查看，不急于解释趋势、这一类还没有记录。、系统汇总与研究者补充明确分开、研究者补充、暂时还没有研究者阶段性反馈。、系统汇总、下一步建议：、用户原话（仅你可见）、目前没有开放文字记录。、先建立关系探索起点
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 25 | 查看{{item.label}} | `bindtap` | `selectSection` | {'section': '{{item.key}}'} |
-| 35 | — | `bindtap` | `selectCurveGroup` | {'key': '{{item.key}}'} |
-| 36 | — | `bindtap` | `selectMetric` | {'key': '{{item.key}}'} |
-| 57 | 查看全部 › | `bindtap` | `showAllTimeline` | — |
-| 68 | — | `bindtap` | `selectTimelineFilter` | {'key': '{{item.key}}'} |
-| 79 | 用户原话（仅你可见） | `bindtap` | `toggleSelfNarratives` | — |
-| 87 | 前往关系探索 | `bindtap` | `goRelationshipPilot` | — |
-| 91 | 本周补充记录 | `bindtap` | `toggleRecordPanel` | {'panel': 'weekly'} |
-| 93 | — | `bindinput` | `onFieldInput` | {'key': 'active_social_count'} |
-| 94 | — | `bindinput` | `onFieldInput` | {'key': 'authentic_expression_count'} |
-| 95 | — | `bindinput` | `onFieldInput` | {'key': 'setback_coping'} |
-| 96 | — | `bindchange` | `onSliderChange` | {'key': 'approach_willingness'} |
-| 97 | — | `bindchange` | `onSliderChange` | {'key': 'worry_intensity'} |
-| 98 | — | `bindinput` | `onFieldInput` | {'key': 'achievement'} |
-| 99 | — | `bindinput` | `onFieldInput` | {'key': 'setback'} |
-| 102 | 保存本周记录 | `bindtap` | `saveWeekly` | — |
-| 107 | 记录一个关键事件 | `bindtap` | `toggleRecordPanel` | {'panel': 'event'} |
-| 109 | — | `bindinput` | `onFieldInput` | {'key': 'event_summary'} |
-| 111 | 加入时间线 | `bindtap` | `saveEvent` | — |
-| 117 | 共同理解一次关系体验 | `bindtap` | `goTherapeuticAssessment` | — |
-| 118 | 记录今天的一小步 | `bindtap` | `openRecordSection` | — |
-| 119 | 查看阶段性反馈 | `bindtap` | `showFeedbackSection` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 182 | `getRelationshipGrowth` | `GET` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/general_growth.py`、`backend/routes/relationship_pilot.py`、`backend/routes/relationship_pilot_routes.py`、`backend/routes/research_workspace.py` |
-| 400 | `createRelationshipLongitudinal` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/general_growth.py`、`backend/routes/relationship_pilot.py`、`backend/routes/relationship_pilot_routes.py`、`backend/routes/research_workspace.py` |
-| 445 | `createRelationshipLongitudinal` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/general_growth.py`、`backend/routes/relationship_pilot.py`、`backend/routes/relationship_pilot_routes.py`、`backend/routes/research_workspace.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/therapeutic-assessment/index`（js:135）、`redirectTo` → `/pages/growth-dashboard/index?section=relationship:dynamic`（js:144）、`navigateTo` → `/pages/relationship-pilot/index`（js:389）
-- 本地存储：`getStorageSync` `storageKey`（JS:487）、`setStorageSync` `storageKey`（JS:509）、`removeStorageSync` `storageKey`（JS:539）
-- WXML 数据绑定：`loading`、`growth`、`curveGroups`、`researcherConfirmations`、`false`、`sectionTabs`、`activeSection`、`item`、`selectedGroup`、`selectedMetrics`、`selectedMetric`、`selectedMetricLabel`、`selectedPoints`、`trendText`、`recentTimeline`、`timelineFilters`、`timelineFilter`、`filteredTimeline`、`showSelfNarratives`、`selfNarratives`、`canRecord`、`showWeeklyForm`、`form`、`draftRestored`、`saveStatus`、`slowSaving`、`savingWeekly`、`showEventForm`、`savingEvent`、`errorMessage`
-- 条件状态：`loading`、`growth`、`activeSection`、`curveGroups`、`selectedPoints`、`recentTimeline`、`filteredTimeline`、`researcherConfirmations`、`showSelfNarratives`、`selfNarratives`、`canRecord`、`showWeeklyForm`、`slowSaving`、`showEventForm`、`errorMessage`
-- `setData` 状态：`enrollmentId`、`loading`、`errorMessage`、`canRecord`、`curves`、`filteredTimeline`、`recentTimeline`、`selfNarratives`、`researcherConfirmations`、`dateText`、`growth`、`curveGroups`、`selectedGroup`、`selectedMetric`、`selectedMetrics`、`selectedPoints`、`trendText`、`selectedMetricLabel`、`activeSection`、`showWeeklyForm`、`showEventForm`、`timelineFilter`、`showSelfNarratives`、`saveStatus`、`savingWeekly`、`slowSaving`、`weeklySubmissionKey`、`savingEvent`、`eventSubmissionKey`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 20：共同理解 `pages/therapeutic-assessment/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`b280a1555cbf66f0c8b13746dcafee855332a7cacc6f5c7840dba158a3db59d4`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment/index.wxss`、`apps/miniprogram/pages/therapeutic-assessment/index.js`、`apps/miniprogram/pages/therapeutic-assessment/index.json`
-- 上游页面：`pages/relationship-growth/index`、`pages/therapeutic-assessment-action-followup/index`
-- 页面组件：—
-- 主要可见内容：· 可撤回、共同理解一次关系体验、每一步只做一个主要决定；你可以暂停、表达不同意见或撤回。、继续最近一次协作、开始一次协作、开始新的议题、正在读取协作记录…、当前协作、版本、当前改写：、查看两个问题候选、都不符合、经人工复核的反馈、不确定性：、可讨论的下一步：、研究者正在整理可讨论的草稿；未经人工复核的内容不会发送给你。、本次可见线索、下一步核对、尚无可见线索；内部草稿不会提前展示。、这和我的体验不一致、暂时停一下、更正与投诉、撤回本次协作、选择一个愿意尝试的小行动、仅在收到经人工复核的反馈后记录。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 18 | 继续最近一次协作 | `bindtap` | `continueParticipantFlow` | — |
-| 19 | 开始一次协作 | `bindtap` | `startParticipantFlow` | — |
-| 20 | 开始新的议题 | `bindtap` | `startParticipantFlow` | — |
-| 36 | 查看两个问题候选 | `bindtap` | `updateQuestionAction` | {'action': 'generate_candidates'} |
-| 37 | 都不符合 | `bindtap` | `updateQuestionAction` | {'action': 'none_fit'} |
-| 58 | 这和我的体验不一致 | `bindtap` | `disagree` | — |
-| 59 | 暂时停一下 | `bindtap` | `updateQuestionAction` | {'action': 'pause'} |
-| 60 | 更正与投诉 | `bindtap` | `openQualityRecord` | — |
-| 62 | 撤回本次协作 | `bindtap` | `withdraw` | — |
-| 68 | — | `bindinput` | `onActionInput` | — |
-| 69 | 记录下一小步 | `bindtap` | `chooseAction` | — |
-| 75 | — | `bindinput` | `onQuestionInput` | — |
-| 77 | 上面的问题 | `bindchange` | `onScopeChange` | — |
-| 81 | 提交协作问题 | `bindtap` | `createCase` | — |
-| 103 | 确认符合上述范围 | `bindtap` | `confirmAdultLaunchScope` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 83 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 84 | `getTherapeuticAssessmentServiceLevels` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 85 | `getTherapeuticAssessmentProductionContract` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 86 | `getTherapeuticAssessmentAdultLaunchScope` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 87 | `getTherapeuticAssessmentChildPolicy` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 88 | `getTherapeuticAssessmentMultiPartyPolicy` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 89 | `getTherapeuticAssessmentAiAssistPolicy` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 90 | `getTherapeuticAssessmentMethodLibrary` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 110 | `listTherapeuticAssessmentEvidence` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 111 | `getTherapeuticAssessmentLaunchScreening` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 130 | `submitTherapeuticAssessmentLaunchScreening` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 183 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 205 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 225 | `updateTherapeuticAssessmentQuestion` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 249 | `transitionTherapeuticAssessment` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 268 | `transitionTherapeuticAssessment` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/therapeutic-assessment-boundary/index`（js:58）、`navigateTo` → `/pages/therapeutic-assessment-boundary/index?caseId=:dynamic`（js:67）、`navigateTo` → `/pages/therapeutic-assessment-quality/index:dynamic`（js:74）
-- 本地存储：—
-- WXML 数据绑定：`activeCase`、`notice`、`errorMessage`、`loading`、`item`、`evidenceSummary`、`evidenceItems`、`actionText`、`saving`、`question`、`shareQuestion`、`shareRecentRecord`、`productionContract`、`adultLaunchScope`、`launchScreening`、`childPolicy`、`multiPartyPolicy`、`aiAssistPolicy`、`methodCatalog`
-- 条件状态：`notice`、`errorMessage`、`activeCase`、`loading`、`evidenceSummary`、`evidenceItems`、`productionContract`、`adultLaunchScope`、`launchScreening`、`childPolicy`、`multiPartyPolicy`、`aiAssistPolicy`、`methodCatalog`
-- `setData` 状态：`loading`、`errorMessage`、`activeCase`、`defaultServiceLevel`、`cases`、`productionContract`、`adultLaunchScope`、`childPolicy`、`multiPartyPolicy`、`aiAssistPolicy`、`methodCatalog`、`evidenceItems`、`evidenceSummary`、`launchScreening`、`saving`、`notice`、`question`、`actionText`、`shareQuestion`、`shareRecentRecord`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 21：开始前了解 `pages/therapeutic-assessment-boundary/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`e88d6414d79dfa197359aaa394d0783e3d9f346a43526808c9a09abc8987a646`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-boundary/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-boundary/index.js`、`apps/miniprogram/pages/therapeutic-assessment-boundary/index.json`、`apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：`pages/therapeutic-assessment/index`
-- 页面组件：`therapeutic-flow-step` → `/components/therapeutic-flow-step/index`
-- 主要可见内容：—
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 1 | — | `bindvaluechange` | `onValueChange` | — |
-| 1 | — | `bindoptionchange` | `onOptionChange` | — |
-| 1 | — | `bindcontinue` | `onContinue` | — |
-| 1 | — | `bindretry` | `onRetry` | — |
-| 1 | — | `bindback` | `onBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 188 | `getTherapeuticAssessmentStopRecoveryStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 203 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 255 | `getTherapeuticAssessmentParticipantDraft` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 327 | `saveTherapeuticAssessmentParticipantDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 369 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 397 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 409 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 422 | `updateTherapeuticAssessmentScope` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 432 | `respondToTherapeuticAssessmentFeedback` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 445 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment-action-followup/index?caseId=:dynamic`（js:380）、`redirectTo` → `/pages/therapeutic-assessment/index`（js:383）、`redirectTo` → `/pages/login/index:dynamic`（js:473）
-- 本地存储：`getStorageSync` `auth_token`（JS:482）、`getStorageSync` `auth_user`（JS:486）、`removeStorageSync` `auth_token`（JS:512）、`removeStorageSync` `auth_user`（JS:513）、`getStorageSync` `storageKey`（JS:555）、`setStorageSync` `storageKey`（JS:577）、`removeStorageSync` `storageKey`（JS:607）
-- WXML 数据绑定：`stepNumber`、`stepTotal`、`title`、`description`、`prompt`、`mode`、`value`、`selected`、`options`、`originalText`、`systemText`、`nextLabel`、`saveStatus`、`loading`、`saving`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`
-- 条件状态：—
-- `setData` 状态：`loading`、`caseId`、`saveStatus`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`、`activeCase`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`value`、`selected`、`actionPlan`、`remoteVersion`、`saving`、`createdActionId`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 22：我的议题 `pages/therapeutic-assessment-issue/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`2462091bf8e06e314f86264dc485bb4a0233984cce9b18961df30be7a98896b7`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-issue/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-issue/index.js`、`apps/miniprogram/pages/therapeutic-assessment-issue/index.json`、`apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：—
-- 页面组件：`therapeutic-flow-step` → `/components/therapeutic-flow-step/index`
-- 主要可见内容：—
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 1 | — | `bindvaluechange` | `onValueChange` | — |
-| 1 | — | `bindoptionchange` | `onOptionChange` | — |
-| 1 | — | `bindcontinue` | `onContinue` | — |
-| 1 | — | `bindretry` | `onRetry` | — |
-| 1 | — | `bindback` | `onBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 188 | `getTherapeuticAssessmentStopRecoveryStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 203 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 255 | `getTherapeuticAssessmentParticipantDraft` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 327 | `saveTherapeuticAssessmentParticipantDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 369 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 397 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 409 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 422 | `updateTherapeuticAssessmentScope` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 432 | `respondToTherapeuticAssessmentFeedback` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 445 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment-action-followup/index?caseId=:dynamic`（js:380）、`redirectTo` → `/pages/therapeutic-assessment/index`（js:383）、`redirectTo` → `/pages/login/index:dynamic`（js:473）
-- 本地存储：`getStorageSync` `auth_token`（JS:482）、`getStorageSync` `auth_user`（JS:486）、`removeStorageSync` `auth_token`（JS:512）、`removeStorageSync` `auth_user`（JS:513）、`getStorageSync` `storageKey`（JS:555）、`setStorageSync` `storageKey`（JS:577）、`removeStorageSync` `storageKey`（JS:607）
-- WXML 数据绑定：`stepNumber`、`stepTotal`、`title`、`description`、`prompt`、`mode`、`value`、`selected`、`options`、`originalText`、`systemText`、`nextLabel`、`saveStatus`、`loading`、`saving`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`
-- 条件状态：—
-- `setData` 状态：`loading`、`caseId`、`saveStatus`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`、`activeCase`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`value`、`selected`、`actionPlan`、`remoteVersion`、`saving`、`createdActionId`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 23：最近一次事件 `pages/therapeutic-assessment-recent-event/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`7281f2c86b4cfea1f842fd53c84483e2dacb91f051d21794b23a12896b977dd2`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-recent-event/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-recent-event/index.js`、`apps/miniprogram/pages/therapeutic-assessment-recent-event/index.json`、`apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：—
-- 页面组件：`therapeutic-flow-step` → `/components/therapeutic-flow-step/index`
-- 主要可见内容：—
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 1 | — | `bindvaluechange` | `onValueChange` | — |
-| 1 | — | `bindoptionchange` | `onOptionChange` | — |
-| 1 | — | `bindcontinue` | `onContinue` | — |
-| 1 | — | `bindretry` | `onRetry` | — |
-| 1 | — | `bindback` | `onBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 188 | `getTherapeuticAssessmentStopRecoveryStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 203 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 255 | `getTherapeuticAssessmentParticipantDraft` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 327 | `saveTherapeuticAssessmentParticipantDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 369 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 397 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 409 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 422 | `updateTherapeuticAssessmentScope` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 432 | `respondToTherapeuticAssessmentFeedback` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 445 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment-action-followup/index?caseId=:dynamic`（js:380）、`redirectTo` → `/pages/therapeutic-assessment/index`（js:383）、`redirectTo` → `/pages/login/index:dynamic`（js:473）
-- 本地存储：`getStorageSync` `auth_token`（JS:482）、`getStorageSync` `auth_user`（JS:486）、`removeStorageSync` `auth_token`（JS:512）、`removeStorageSync` `auth_user`（JS:513）、`getStorageSync` `storageKey`（JS:555）、`setStorageSync` `storageKey`（JS:577）、`removeStorageSync` `storageKey`（JS:607）
-- WXML 数据绑定：`stepNumber`、`stepTotal`、`title`、`description`、`prompt`、`mode`、`value`、`selected`、`options`、`originalText`、`systemText`、`nextLabel`、`saveStatus`、`loading`、`saving`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`
-- 条件状态：—
-- `setData` 状态：`loading`、`caseId`、`saveStatus`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`、`activeCase`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`value`、`selected`、`actionPlan`、`remoteVersion`、`saving`、`createdActionId`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 24：例外与资源 `pages/therapeutic-assessment-resources/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`2fdcdee2be49d01a57b661783491f570e553d35c4f321ae49a7b97f7f661ba0f`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-resources/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-resources/index.js`、`apps/miniprogram/pages/therapeutic-assessment-resources/index.json`、`apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：—
-- 页面组件：`therapeutic-flow-step` → `/components/therapeutic-flow-step/index`
-- 主要可见内容：—
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 1 | — | `bindvaluechange` | `onValueChange` | — |
-| 1 | — | `bindoptionchange` | `onOptionChange` | — |
-| 1 | — | `bindcontinue` | `onContinue` | — |
-| 1 | — | `bindretry` | `onRetry` | — |
-| 1 | — | `bindback` | `onBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 188 | `getTherapeuticAssessmentStopRecoveryStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 203 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 255 | `getTherapeuticAssessmentParticipantDraft` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 327 | `saveTherapeuticAssessmentParticipantDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 369 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 397 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 409 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 422 | `updateTherapeuticAssessmentScope` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 432 | `respondToTherapeuticAssessmentFeedback` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 445 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment-action-followup/index?caseId=:dynamic`（js:380）、`redirectTo` → `/pages/therapeutic-assessment/index`（js:383）、`redirectTo` → `/pages/login/index:dynamic`（js:473）
-- 本地存储：`getStorageSync` `auth_token`（JS:482）、`getStorageSync` `auth_user`（JS:486）、`removeStorageSync` `auth_token`（JS:512）、`removeStorageSync` `auth_user`（JS:513）、`getStorageSync` `storageKey`（JS:555）、`setStorageSync` `storageKey`（JS:577）、`removeStorageSync` `storageKey`（JS:607）
-- WXML 数据绑定：`stepNumber`、`stepTotal`、`title`、`description`、`prompt`、`mode`、`value`、`selected`、`options`、`originalText`、`systemText`、`nextLabel`、`saveStatus`、`loading`、`saving`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`
-- 条件状态：—
-- `setData` 状态：`loading`、`caseId`、`saveStatus`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`、`activeCase`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`value`、`selected`、`actionPlan`、`remoteVersion`、`saving`、`createdActionId`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 25：资料与共享 `pages/therapeutic-assessment-sharing/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`1c7cfe9436c4ef83e7d67506fa59a45dcf16bada8e3eae959f3e4e8da2109900`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-sharing/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-sharing/index.js`、`apps/miniprogram/pages/therapeutic-assessment-sharing/index.json`、`apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：—
-- 页面组件：`therapeutic-flow-step` → `/components/therapeutic-flow-step/index`
-- 主要可见内容：—
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 1 | — | `bindvaluechange` | `onValueChange` | — |
-| 1 | — | `bindoptionchange` | `onOptionChange` | — |
-| 1 | — | `bindcontinue` | `onContinue` | — |
-| 1 | — | `bindretry` | `onRetry` | — |
-| 1 | — | `bindback` | `onBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 188 | `getTherapeuticAssessmentStopRecoveryStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 203 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 255 | `getTherapeuticAssessmentParticipantDraft` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 327 | `saveTherapeuticAssessmentParticipantDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 369 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 397 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 409 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 422 | `updateTherapeuticAssessmentScope` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 432 | `respondToTherapeuticAssessmentFeedback` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 445 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment-action-followup/index?caseId=:dynamic`（js:380）、`redirectTo` → `/pages/therapeutic-assessment/index`（js:383）、`redirectTo` → `/pages/login/index:dynamic`（js:473）
-- 本地存储：`getStorageSync` `auth_token`（JS:482）、`getStorageSync` `auth_user`（JS:486）、`removeStorageSync` `auth_token`（JS:512）、`removeStorageSync` `auth_user`（JS:513）、`getStorageSync` `storageKey`（JS:555）、`setStorageSync` `storageKey`（JS:577）、`removeStorageSync` `storageKey`（JS:607）
-- WXML 数据绑定：`stepNumber`、`stepTotal`、`title`、`description`、`prompt`、`mode`、`value`、`selected`、`options`、`originalText`、`systemText`、`nextLabel`、`saveStatus`、`loading`、`saving`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`
-- 条件状态：—
-- `setData` 状态：`loading`、`caseId`、`saveStatus`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`、`activeCase`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`value`、`selected`、`actionPlan`、`remoteVersion`、`saving`、`createdActionId`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 26：提交前摘要 `pages/therapeutic-assessment-summary/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`11187dc22ce051ae17215f02acf666a4ecabcefecb01f5bf278af8c941e3e9eb`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-summary/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-summary/index.js`、`apps/miniprogram/pages/therapeutic-assessment-summary/index.json`、`apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：—
-- 页面组件：`therapeutic-flow-step` → `/components/therapeutic-flow-step/index`
-- 主要可见内容：—
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 1 | — | `bindvaluechange` | `onValueChange` | — |
-| 1 | — | `bindoptionchange` | `onOptionChange` | — |
-| 1 | — | `bindcontinue` | `onContinue` | — |
-| 1 | — | `bindretry` | `onRetry` | — |
-| 1 | — | `bindback` | `onBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 188 | `getTherapeuticAssessmentStopRecoveryStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 203 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 255 | `getTherapeuticAssessmentParticipantDraft` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 327 | `saveTherapeuticAssessmentParticipantDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 369 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 397 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 409 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 422 | `updateTherapeuticAssessmentScope` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 432 | `respondToTherapeuticAssessmentFeedback` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 445 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment-action-followup/index?caseId=:dynamic`（js:380）、`redirectTo` → `/pages/therapeutic-assessment/index`（js:383）、`redirectTo` → `/pages/login/index:dynamic`（js:473）
-- 本地存储：`getStorageSync` `auth_token`（JS:482）、`getStorageSync` `auth_user`（JS:486）、`removeStorageSync` `auth_token`（JS:512）、`removeStorageSync` `auth_user`（JS:513）、`getStorageSync` `storageKey`（JS:555）、`setStorageSync` `storageKey`（JS:577）、`removeStorageSync` `storageKey`（JS:607）
-- WXML 数据绑定：`stepNumber`、`stepTotal`、`title`、`description`、`prompt`、`mode`、`value`、`selected`、`options`、`originalText`、`systemText`、`nextLabel`、`saveStatus`、`loading`、`saving`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`
-- 条件状态：—
-- `setData` 状态：`loading`、`caseId`、`saveStatus`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`、`activeCase`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`value`、`selected`、`actionPlan`、`remoteVersion`、`saving`、`createdActionId`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 27：反馈核对 `pages/therapeutic-assessment-feedback-check/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`7b10c3a64199e6a2382814f386a034b9468468dcb0be373140cec1f22733f59c`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-feedback-check/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-feedback-check/index.js`、`apps/miniprogram/pages/therapeutic-assessment-feedback-check/index.json`、`apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：—
-- 页面组件：`therapeutic-flow-step` → `/components/therapeutic-flow-step/index`
-- 主要可见内容：—
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 1 | — | `bindvaluechange` | `onValueChange` | — |
-| 1 | — | `bindoptionchange` | `onOptionChange` | — |
-| 1 | — | `bindcontinue` | `onContinue` | — |
-| 1 | — | `bindretry` | `onRetry` | — |
-| 1 | — | `bindback` | `onBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 188 | `getTherapeuticAssessmentStopRecoveryStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 203 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 255 | `getTherapeuticAssessmentParticipantDraft` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 327 | `saveTherapeuticAssessmentParticipantDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 369 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 397 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 409 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 422 | `updateTherapeuticAssessmentScope` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 432 | `respondToTherapeuticAssessmentFeedback` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 445 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment-action-followup/index?caseId=:dynamic`（js:380）、`redirectTo` → `/pages/therapeutic-assessment/index`（js:383）、`redirectTo` → `/pages/login/index:dynamic`（js:473）
-- 本地存储：`getStorageSync` `auth_token`（JS:482）、`getStorageSync` `auth_user`（JS:486）、`removeStorageSync` `auth_token`（JS:512）、`removeStorageSync` `auth_user`（JS:513）、`getStorageSync` `storageKey`（JS:555）、`setStorageSync` `storageKey`（JS:577）、`removeStorageSync` `storageKey`（JS:607）
-- WXML 数据绑定：`stepNumber`、`stepTotal`、`title`、`description`、`prompt`、`mode`、`value`、`selected`、`options`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`nextLabel`、`saveStatus`、`loading`、`saving`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`
-- 条件状态：—
-- `setData` 状态：`loading`、`caseId`、`saveStatus`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`、`activeCase`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`value`、`selected`、`actionPlan`、`remoteVersion`、`saving`、`createdActionId`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 28：一个小行动 `pages/therapeutic-assessment-action-review/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`5226c3568ec69afa9a56bf1e1472156d4f9641c8e7efc1783a2b6412b6ba4bf4`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-action-review/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-action-review/index.js`、`apps/miniprogram/pages/therapeutic-assessment-action-review/index.json`、`apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：—
-- 页面组件：`therapeutic-flow-step` → `/components/therapeutic-flow-step/index`
-- 主要可见内容：—
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 1 | — | `bindvaluechange` | `onValueChange` | — |
-| 1 | — | `bindoptionchange` | `onOptionChange` | — |
-| 1 | — | `bindactionchange` | `onActionChange` | — |
-| 1 | — | `bindcontinue` | `onContinue` | — |
-| 1 | — | `bindretry` | `onRetry` | — |
-| 1 | — | `bindback` | `onBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 188 | `getTherapeuticAssessmentStopRecoveryStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 203 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 255 | `getTherapeuticAssessmentParticipantDraft` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 327 | `saveTherapeuticAssessmentParticipantDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 369 | `createTherapeuticAssessmentCase` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 397 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 409 | `createTherapeuticAssessmentEvidence` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 422 | `updateTherapeuticAssessmentScope` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 432 | `respondToTherapeuticAssessmentFeedback` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 445 | `createTherapeuticAssessmentAction` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment-action-followup/index?caseId=:dynamic`（js:380）、`redirectTo` → `/pages/therapeutic-assessment/index`（js:383）、`redirectTo` → `/pages/login/index:dynamic`（js:473）
-- 本地存储：`getStorageSync` `auth_token`（JS:482）、`getStorageSync` `auth_user`（JS:486）、`removeStorageSync` `auth_token`（JS:512）、`removeStorageSync` `auth_user`（JS:513）、`getStorageSync` `storageKey`（JS:555）、`setStorageSync` `storageKey`（JS:577）、`removeStorageSync` `storageKey`（JS:607）
-- WXML 数据绑定：`stepNumber`、`stepTotal`、`title`、`description`、`prompt`、`mode`、`value`、`selected`、`options`、`originalText`、`systemText`、`actionPlan`、`nextLabel`、`saveStatus`、`loading`、`saving`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`
-- 条件状态：—
-- `setData` 状态：`loading`、`caseId`、`saveStatus`、`offline`、`stateKind`、`stateTitle`、`stateDescription`、`canContinue`、`activeCase`、`originalText`、`systemText`、`feedbackTitle`、`feedbackContent`、`feedbackLayerLabel`、`value`、`selected`、`actionPlan`、`remoteVersion`、`saving`、`createdActionId`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 29：行动回看 `pages/therapeutic-assessment-action-followup/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`51429b19e751e3187aeb4efb007334414336dde11756b78f52efefabf5ec420d`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-action-followup/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-action-followup/index.wxss`、`apps/miniprogram/pages/therapeutic-assessment-action-followup/index.js`、`apps/miniprogram/pages/therapeutic-assessment-action-followup/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：—
-- 页面组件：`page-state` → `/components/page-state/index`
-- 主要可见内容：一次记录，不是疗效证明、回看这次小行动、原计划、停止条件、这次的状态、尝试过、中途停止、决定不做、把这次内容记成、新的观察、仍待了解、打开关联训练卡、保存这次回看
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 8 | — | `bindaction` | `load` | — |
-| 29 | 尝试过 | `bindtap` | `selectStatus` | {'value': 'completed'} |
-| 30 | 中途停止 | `bindtap` | `selectStatus` | {'value': 'stopped'} |
-| 31 | 决定不做 | `bindtap` | `selectStatus` | {'value': 'declined'} |
-| 36 | 新的观察 | `bindtap` | `selectKind` | {'value': 'O'} |
-| 37 | 仍待了解 | `bindtap` | `selectKind` | {'value': 'U'} |
-| 40 | 行动回看内容 | `bindinput` | `onNoteInput` | — |
-| 41 | 打开关联训练卡 | `bindtap` | `openTrainingCard` | — |
-| 42 | 保存这次回看 | `bindtap` | `submit` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 40 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 73 | `updateTherapeuticAssessmentAction` | `PATCH` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 82 | `createTherapeuticAssessmentActionFollowup` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`redirectTo` → `/pages/therapeutic-assessment/index`（js:94）、`navigateTo` → `/pages/training-card/index?id=:dynamic`（js:104）、`navigateTo` → `/pages/login/index:dynamic`（js:135）
-- 本地存储：`getStorageSync` `auth_token`（JS:111）、`getStorageSync` `auth_user`（JS:115）、`removeStorageSync` `auth_token`（JS:141）、`removeStorageSync` `auth_user`（JS:142）
-- WXML 数据绑定：`loading`、`error`、`action`、`item`、`status`、`followupKind`、`note`、`saving`
-- 条件状态：`loading`、`error`、`action`
-- `setData` 状态：`loading`、`caseId`、`actionId`、`error`、`action`、`status`、`followupKind`、`note`、`saving`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 30：评估质量与更正 `pages/therapeutic-assessment-quality/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`18cba53aa9088e73d419d47a5db7dc9a3ac23c3cc2cef60f32e189bc534e5833`
-- 核对文件：`apps/miniprogram/pages/therapeutic-assessment-quality/index.wxml`、`apps/miniprogram/pages/therapeutic-assessment-quality/index.wxss`、`apps/miniprogram/pages/therapeutic-assessment-quality/index.js`、`apps/miniprogram/pages/therapeutic-assessment-quality/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/therapeutic-assessment/index`、`pages/researcher-dashboard/index`
-- 页面组件：—
-- 主要可见内容：质量与更正、当前没有可处理的质量记录、待处理 · 已超时 · 规则、暂时没有处理成功、重新读取、正在读取质量记录、只加载当前账号可查看的对象范围。、生产门禁、更正与投诉、记录哪里不像，或希望如何处理、协作记录、问题类型、具体哪里不像或发生了什么、希望怎样处理、提交更正或投诉、原记录会保留，反馈、异议和处理版本不会被覆盖。、抽检队列、逐项质量复核、项、当前授权范围内没有复核任务、抽检原因： · 截止：、认领这项复核、结论：、修复说明（有修复项时必填）
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 19 | 重新读取 | `bindtap` | `loadData` | — |
-| 52 | — | `bindchange` | `onCaseChange` | — |
-| 57 | — | `bindchange` | `onIncidentCategory` | — |
-| 62 | — | `bindinput` | `onFieldInput` | {'key': 'incidentDescription'} |
-| 66 | — | `bindinput` | `onFieldInput` | {'key': 'requestedResolution'} |
-| 68 | 提交更正或投诉 | `bindtap` | `submitIncident` | — |
-| 84 | — | `bindtap` | `selectReview` | {'id': '{{item.id}}'} |
-| 98 | 认领这项复核 | `bindtap` | `claimReview` | — |
-| 102 | 结论： | `bindchange` | `onDimensionStatus` | {'index': '{{index}}'} |
-| 106 | — | `bindinput` | `onDimensionInput` | {'index': '{{index}}', 'key': 'note'} |
-| 107 | — | `bindinput` | `onDimensionInput` | {'index': '{{index}}', 'key': 'evidenceRef'} |
-| 112 | — | `bindinput` | `onFieldInput` | {'key': 'remediationSummary'} |
-| 114 | 提交质量结论 | `bindtap` | `completeReview` | — |
-| 131 | — | `bindtap` | `selectIncident` | {'id': '{{item.id}}'} |
-| 142 | — | `bindinput` | `onFieldInput` | {'key': 'impactSummary'} |
-| 144 | 保存影响分析 | `bindtap` | `analyzeIncident` | — |
-| 147 | 处理动作： | `bindchange` | `onResolutionAction` | — |
-| 152 | — | `bindinput` | `onFieldInput` | {'key': 'resolutionSummary'} |
-| 154 | 独立结案并通知参与者 | `bindtap` | `resolveIncident` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 85 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 86 | `listTherapeuticAssessmentQualityIncidents` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 88 | `listTherapeuticAssessmentQualityReviews` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 91 | `getTherapeuticAssessmentProductionGate` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 171 | `claimTherapeuticAssessmentQualityReview` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 232 | `completeTherapeuticAssessmentQualityReview` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 266 | `createTherapeuticAssessmentQualityIncident` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 298 | `analyzeTherapeuticAssessmentQualityIncident` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-| 330 | `resolveTherapeuticAssessmentQualityIncident` | `POST` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/routes/auth_utils.py`、`backend/routes/therapeutic_assessment.py`、`backend/scripts/audit_task36_f16_therapeutic_assessment.py`、`backend/scripts/audit_task36_f17_reliability_security.py`、`backend/scripts/audit_task38_f01_service_levels.py`、`backend/scripts/audit_task38_f06_participant_flow.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/login/index:dynamic`（js:374）
-- 本地存储：`getStorageSync` `auth_token`（JS:350）、`getStorageSync` `auth_user`（JS:354）、`removeStorageSync` `auth_token`（JS:380）、`removeStorageSync` `auth_user`（JS:381）
-- WXML 数据绑定：`runtime`、`errorMessage`、`notice`、`loading`、`productionGate`、`productionGateChecks`、`item`、`cases`、`selectedCaseIndex`、`incidentCategoryOptions`、`incidentCategoryIndex`、`incidentDescription`、`requestedResolution`、`saving`、`isReviewRole`、`reviews`、`selectedReview`、`reviewDimensions`、`statusOptions`、`index`、`remediationSummary`、`incidents`、`selectedIncident`、`impactSummary`、`resolutionActionOptions`、`resolutionActionIndex`、`resolutionSummary`
-- 条件状态：`loading`、`runtime`、`errorMessage`、`notice`、`productionGate`、`isReviewRole`、`reviews`、`selectedReview`、`item`、`incidents`、`selectedIncident`
-- `setData` 状态：`userRole`、`isReviewRole`、`isFormalRole`、`selectedCaseId`、`loading`、`errorMessage`、`runtime`、`productionGate`、`selectedReview`、`selectedIncident`、`cases`、`selectedCaseIndex`、`reviews`、`incidents`、`productionGateChecks`、`reviewDimensions`、`remediationSummary`、`saving`、`notice`、`incidentCategoryIndex`、`incidentDescription`、`requestedResolution`、`impactSummary`、`resolutionSummary`、`resolutionActionIndex`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 31：我的成长仪表盘 `pages/growth-dashboard/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`b73fbddfc947a334b2028e20adf5c52ba37a10958e22b4720786befe4f284b9b`
-- 核对文件：`apps/miniprogram/pages/growth-dashboard/index.wxml`、`apps/miniprogram/pages/growth-dashboard/index.wxss`、`apps/miniprogram/pages/growth-dashboard/index.js`、`apps/miniprogram/pages/growth-dashboard/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/relationship-growth/index`、`pages/profile/index`
-- 页面组件：`page-state` → `/components/page-state/index`、`status-pill` → `/components/status-pill/index`、`timeline-record` → `/components/timeline-record/index`、`growth-segment` → `/components/growth-segment/index`
-- 主要可见内容：我的成长、四类线索分别查看，不合成总分、现在可以做什么、记录一件小事、查看练习、情绪温度、1—10分，只与同一量尺的记录比较、记录与练习时间线、只呈现做过的事情，不把次数写成改善、支持性测评、每份量表独立成组，不把不同分值放在同一条曲线上、只在同一量尺再次填写后观察变化，不自动解释好坏。、关系探索单独呈现、不与日记次数或测评分值合并、探索任务、连续记录、阶段报告、关系探索时间线、这里只显示任务、连续记录和阶段报告的事实、共同核对、研究者反馈 条、打开消息列表
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 9 | 重新读取成长线索 | `bindaction` | `loadGrowth` | — |
-| 13 | — | `bindchange` | `selectSection` | — |
-| 29 | 记录一件小事 | `bindtap` | `startDiary` | — |
-| 30 | 查看练习 | `bindtap` | `openTraining` | — |
-| 53 | — | `bindaction` | `startDiary` | — |
-| 69 | — | `bindaction` | `openAssessment` | — |
-| 82 | — | `bindtap` | `openRelationship` | — |
-| 103 | 打开消息列表 | `bindtap` | `openMessages` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 64 | `getGrowthOverview` | `GET` | `/api/growth/overview` | `backend/app.py`、`backend/routes/feedback.py`、`backend/routes/general_growth.py`、`backend/routes/product_events.py`、`backend/routes/relationship_pilot_routes.py`、`backend/scripts/enrich_task17_programs.py`、`backend/scripts/generate_task33_ux_registry.py`、`backend/scripts/generate_task34_operations_registry.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/diary-form/index`（js:108）、`switchTab` → `/pages/training/index`（js:112）、`navigateTo` → `/pages/assessment/index`（js:116）、`navigateTo` → `/pages/relationship-pilot/index`（js:121）、`navigateTo` → `/pages/relationship-growth/index?detail=1&enrollment_id=:dynamic`（js:124）、`navigateTo` → `/pages/messages/index`（js:130）、`navigateTo` → `/pages/login/index:dynamic`（js:159）
-- 本地存储：`getStorageSync` `auth_token`（JS:135）、`getStorageSync` `auth_user`（JS:139）、`removeStorageSync` `auth_token`（JS:165）、`removeStorageSync` `auth_user`（JS:166）
-- WXML 数据绑定：`loading`、`errorMessage`、`growth`、`sectionTabs`、`item`、`activeSection`、`thermometer`、`activityTimeline`、`assessmentGroups`、`score`、`relationshipSummary`、`relationshipTimeline`、`feedbackSummary`、`feedbackTimeline`
-- 条件状态：`loading`、`errorMessage`、`growth`、`activeSection`、`thermometer`、`activityTimeline`、`assessmentGroups`、`relationshipTimeline`、`feedbackTimeline`
-- `setData` 状态：`activeSection`、`requestedEnrollmentId`、`loading`、`errorMessage`、`sectionTabs`、`thermometer`、`dateText`、`width`、`growth`、`active`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 32：关系探索手记 `pages/relationship-narrative/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`ae91d9d58de693bf4daf0bb4e058fb1f25b25b179938e397c835481902bc6421`
-- 核对文件：`apps/miniprogram/pages/relationship-narrative/index.wxml`、`apps/miniprogram/pages/relationship-narrative/index.wxss`、`apps/miniprogram/pages/relationship-narrative/index.js`、`apps/miniprogram/pages/relationship-narrative/index.json`
-- 上游页面：`pages/message-detail/index`
-- 页面组件：—
-- 主要可见内容：关系探索手记、起点画像、一起讨论的问题、线上任务材料、研究者备注、下一步项目任务
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 3 | — | `bindaction` | `retryLoad` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 15 | `getRelationshipNarrative` | `GET` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/auth_utils.py`、`backend/routes/general_growth.py`、`backend/routes/relationship_pilot.py`、`backend/routes/relationship_pilot_routes.py`、`backend/routes/research_workspace.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：—
-- 本地存储：—
-- WXML 数据绑定：`loading`、`errorMessage`、`isConfirmed`、`narrative`、`index`、`item`、`taskRows`、`isResearcherView`、`noteRows`
-- 条件状态：`loading`、`errorMessage`、`isResearcherView`
-- `setData` 状态：`narrativeId`、`loading`、`errorMessage`、`isConfirmed`、`isResearcherView`、`noteRows`、`taskRows`、`narrative`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 33：研究者移动工作台 `pages/researcher-dashboard/index`
-
-#### 2026-08-29 第二阶段人工冻结（情感计算与网络分析）
-
-- 页面目标不变：研究者按授权查看单个参与者档案；新增内容放在既有“参与者”工作区，不另开一套研究后台。
-- 唯一新增任务：选择“情绪与互动线索”标签，按需读取 `GET /api/research/participants/:user_id/modules/exploratory_analysis`。
-- 可见数据仅包含参与者本人结构化情绪标签、强度、场景及场景—情绪共现；不返回日记原文、他人记录、中心性、关系质量或诊断判断。
-- 状态矩阵：`available` 展示情绪分布与共现线索；`insufficient` 展示至少 5 条记录门槛；`withheld` 展示人工支持提示；`ineligible` 展示仅成人第二阶段开放。
-- 信息优先级：可用状态/暂缓原因 > 记录数与方法边界 > 情绪条目 > 场景—情绪共现；保持既有档案标签、卡片和边界文案视觉语法。
-- 2026-08-29 开放第二阶段研究资料查看：在同一“在线分析”工作区增加已审核知识库只读检索、情感/网络合成基准运行摘要和网络隐私阈值；仅研究者、督导、管理员可见，不开放参与者自由问答、外部模型或真实群体网络数据。
-- 在线分析仍按“运行护栏 → 已审核资料 → 模型质量 → 任务明细”四组展示；移除重复的顶部阅读顺序和数字编号，组名直接承担导航。
-- 本轮继续收敛可见硬编码文案：页面标题改为“研究者工作台”，删除加载实现、Web 重复说明、并发实现术语和重复权限说明；保留动态状态、恢复动作、隐私阈值与安全边界。
-- 成人低风险治疗性评估继续沿用既有单人、非紧急、低风险入口；L1/L2 仅记录范围筛查并进入真人责任链，未成年人和多人入口保持关闭。
-- 2026-08-30 四项强化：评估证据显示授权范围内的来源与未知项摘要；知识库区分有效/撤回内容并显示检索覆盖、适用范围和有效期；情感计算显示结构化情绪摘要与影子复核原因；网络分析显示本人共现覆盖和合成群体敏感性范围。
-- 网络基准区只列`network`运行，不再混入情感基准；所有新增摘要均为派生只读信息，不新增自由问答、个体中心性、关系质量、诊断或生产发布能力。
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`ef8f074e3b5980c5c40e4d19afc150cf5d9f7ce3649dcd1f7d57cfc930ce5414`
-- 核对文件：`apps/miniprogram/pages/researcher-dashboard/index.wxml`、`apps/miniprogram/pages/researcher-dashboard/index.wxss`、`apps/miniprogram/pages/researcher-dashboard/index.js`、`apps/miniprogram/pages/researcher-dashboard/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/errorDiagnostics.js`
-- 上游页面：`pages/profile/index`
-- 页面组件：—
-- 主要可见内容：研究者工作台、最近同步、重新同步、工作区边界、离线与开发模式提示、身份与能力矩阵、加载/错误/局部失败状态、参与者最小摘要与档案标签、评估证据、在线分析四组（运行护栏、已审核资料、模型质量、任务明细）、知识库检索、情感与网络合成基准、隐私阈值、试点项目和人工交付操作。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 7 | 刷新当前工作区 | `bindtap` | `refreshActiveWorkspace` | — |
-| 29 | — | `bindtap` | `switchWorkspace` | {'id': '{{item.id}}'} |
-| 41 | 重新同步 | `bindtap` | `loadWorkbench` | — |
-| 42 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'workbench'} |
-| 49 | 重试未完成同步 | `bindtap` | `loadWorkbench` | — |
-| 105 | 刷新待处理列表 | `bindtap` | `loadWorkbench` | — |
-| 121 | 继续查看 | `bindtap` | `showMorePending` | — |
-| 133 | 搜索参与者 | `bindinput` | `onParticipantQueryInput` | — |
-| 142 | 重新加载 | `bindtap` | `retryParticipants` | — |
-| 143 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'participants'} |
-| 155 | 查看{{item.displayName}}的参与者档案 | `bindtap` | `selectParticipantDossier` | {'id': '{{item.user_id}}'} |
-| 164 | 加载下一页 | `bindtap` | `loadMoreParticipants` | — |
-| 173 | 关闭参与者档案 | `bindtap` | `closeParticipantDossier` | — |
-| 176 | — | `bindtap` | `loadParticipantModule` | {'key': '{{item.key}}'} |
-| 204 | 加载下一页 | `bindtap` | `loadParticipantModule` | {'key': '{{participantModule.module}}', 'page': '{{participantModule.page + 1}}'} |
-| 227 | 进入试点项目 | `bindtap` | `switchWorkspace` | {'id': 'pilots'} |
-| 238 | 刷新 | `bindtap` | `loadAssessmentCases` | — |
-| 242 | — | `bindtap` | `selectAssessmentCase` | {'id': '{{item.id}}'} |
-| 247 | 重新加载 | `bindtap` | `loadAssessmentCases` | — |
-| 265 | 类型： | `bindchange` | `onAssessmentFilter` | {'key': 'kind'} |
-| 268 | 权限： | `bindchange` | `onAssessmentFilter` | {'key': 'visibility'} |
-| 298 | — | `bindinput` | `onAssessmentDraftInput` | {'key': 'assessmentInternalNotes'} |
-| 303 | — | `bindinput` | `onAssessmentDraftInput` | {'key': 'assessmentParticipantDraft'} |
-| 305 | 保存工作台草稿 | `bindtap` | `saveAssessmentDraft` | — |
-| 307 | 进入质量抽检与修复 | `bindtap` | `openAssessmentQuality` | — |
-| 319 | 刷新 | `bindtap` | `loadAnalysisJobs` | — |
-| 376 | 检索输入 | `bindinput` | `onKnowledgeQueryInput` | — |
-| 377 | 检索方式 | `bindchange` | `onKnowledgeMethodChange` | — |
-| 380 | 检索已审核内容 | `bindtap` | `searchKnowledge` | — |
-| 437 | 重新加载 | `bindtap` | `loadAnalysisJobs` | — |
-| 468 | 重新同步 | `bindtap` | `loadWorkbench` | — |
-| 482 | 重新加载 | `bindtap` | `loadDashboard` | — |
-| 483 | 复制诊断信息 | `bindtap` | `copyDiagnostic` | {'scope': 'pilot'} |
-| 493 | · | `bindtap` | `selectEnrollment` | {'id': '{{item.id}}'} |
-| 515 | 查看 | `bindtap` | `openReport` | — |
-| 516 | 人工确认 | `bindtap` | `confirmReport` | — |
-| 517 | 发送用户 | `bindtap` | `sendReport` | — |
-| 520 | 生成报告 | `bindtap` | `createReport` | — |
-| 528 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'observation'} |
-| 532 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'evidence'} |
-| 536 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'nextStep'} |
-| 540 | — | `bindinput` | `onStageFeedbackInput` | {'key': 'openQuestion'} |
-| 556 | 生成并核对预览 | `bindtap` | `previewStageFeedback` | — |
-| 557 | 确认这个版本 | `bindtap` | `runDeliveryStep` | {'kind': 'stage', 'action': 'confirm'} |
-| 558 | 发送到参与者消息 | `bindtap` | `runDeliveryStep` | {'kind': 'stage', 'action': 'send'} |
-| 565 | — | `bindinput` | `onMessageTitleInput` | — |
-| 566 | — | `bindinput` | `onMessageBodyInput` | — |
-| 580 | 生成并核对预览 | `bindtap` | `previewParticipantMessage` | — |
-| 581 | 确认这个版本 | `bindtap` | `runDeliveryStep` | {'kind': 'message', 'action': 'confirm'} |
-| 582 | 发送到参与者消息 | `bindtap` | `runDeliveryStep` | {'kind': 'message', 'action': 'send'} |
-| 600 | — | `bindinput` | `onNoteInput` | — |
-| 601 | 保存备注 | `bindtap` | `saveNote` | — |
-| 606 | 生成探索手记草稿 | `bindtap` | `draftNarrative` | — |
-| 610 | 确认后交付用户 | `bindtap` | `confirmNarrative` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 209 | `getShowcaseAccess` | `GET` | `/api/showcase-access` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 210 | `getResearchCapabilities` | `GET` | `/api/research/access` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 274 | `listTherapeuticAssessmentCases` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 293 | `getTherapeuticAssessmentResearcherWorkbench` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 304 | `getTherapeuticAssessmentAuthorizationStatus` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 372 | `saveTherapeuticAssessmentResearcherDraft` | `PUT` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 399 | `getResearchAnalysisJobs` | `GET` | `/api/research/analysis` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 400 | `getResearchAnalysisCatalog` | `GET` | `/api/research/analysis` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 401 | `listOfflineModelVersions` | `GET` | `/api/research/benchmarks` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 402 | `listOfflineModelShadowRuns` | `GET` | `/api/research/benchmarks` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 403 | `listOfflineModelReviewQueue` | `GET` | `/api/research/benchmarks` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 404 | `getOfflineModelMonitoring` | `GET` | `/api/research/benchmarks` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 405 | `getOfflineModelReleaseGate` | `GET` | `/api/research/benchmarks` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 487 | `getAiKnowledgeInventory` | `GET` | `/api/ai-qa/knowledge` | `backend/app.py`、`backend/routes/ai_qa.py`、`backend/services/ai_qa_retrieval_service.py` |
-| 488 | `getGroupNetworkAnalysisPolicy` | `GET` | `/api/research/benchmarks/network-policy` | `backend/app.py`、`backend/routes/offline_benchmarks.py`、`backend/services/group_network_analysis_service.py` |
-| 489 | `listOfflineBenchmarkRuns` | `GET` | `/api/research/benchmarks/runs` | `backend/app.py`、`backend/routes/offline_benchmarks.py`、`backend/services/offline_benchmark_service.py` |
-| 558 | `retrieveAiKnowledge` | `GET` | `/api/ai-qa/knowledge/retrieve` | `backend/app.py`、`backend/routes/ai_qa.py`、`backend/services/ai_qa_retrieval_service.py` |
-| 460 | `getResearchOperations` | `GET` | `/api/research/operations` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 461 | `getResearchQueue` | `GET` | `/api/research/queues` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 465 | `getTherapeuticAssessmentQueueRuntime` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 466 | `listTherapeuticAssessmentDutyShifts` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 467 | `listPublicationCandidates` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 468 | `getTherapeuticAssessmentLifecycleMetrics` | `GET` | `/api/therapeutic-assessment` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 542 | `getResearchParticipants` | `GET` | `/api/research/participants` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 568 | `getResearchParticipant` | `GET` | `/api/research/participants` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 585 | `getResearchParticipantModule` | `GET` | `/api/research/participants` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 601 | `getRelationshipResearchDashboard` | `GET` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 646 | `claimResearchEnrollment` | `POST` | `/api/research/access` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 659 | `getRelationshipEnrollment` | `GET` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 738 | `createRelationshipResearchNote` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 746 | `createRelationshipReport` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 756 | `confirmRelationshipReport` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 763 | `sendRelationshipReport` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 790 | `createResearchDelivery` | `POST` | `/api/research/deliveries` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 797 | `saveResearchDelivery` | `PATCH` | `/api/research/deliveries` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 803 | `runResearchDeliveryAction` | `POST` | `/api/research/deliveries` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 845 | `runResearchDeliveryAction` | `POST` | `/api/research/deliveries` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 866 | `createRelationshipNarrative` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 871 | `confirmRelationshipNarrative` | `POST` | `/api/relationship-pilot` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/therapeutic-assessment-quality/index`（js:392）、`navigateTo` → `/pages/relationship-report/index?id=:dynamic`（js:748）、`navigateTo` → `/pages/relationship-report/index?id=:dynamic`（js:752）、`navigateTo` → `/pages/login/index:dynamic`（js:902）
-- 本地存储：`getStorageSync` `this`（JS:701）、`setStorageSync` `this`（JS:707）、`removeStorageSync` `this`（JS:710）、`getStorageSync` `auth_token`（JS:878）、`getStorageSync` `auth_user`（JS:882）、`removeStorageSync` `auth_token`（JS:908）、`removeStorageSync` `auth_user`（JS:909）
-- WXML 数据绑定：`lastSyncText`、`offline`、`developmentFullAccess`、`capabilityScope`、`workspaces`、`activeWorkspace`、`item`、`loading`、`errorMessage`、`errorDiagnostic`、`partialFailures`、`index`、`assessmentQueueRuntime`、`assessmentDutyShifts`、`publicationCandidateSummary`、`assessmentLifecycleSummary`、`pendingTotal`、`urgentCount`、`operations`、`pendingVisibleItems`、`pendingHasMore`、`participantQuery`、`participantError`、`participantDiagnostic`、`participantLoading`、`participantItems`、`participantHasMore`、`participantDossier`、`participantModule`、`participantModuleLoading`、`record`、`line`、`assessmentCases`、`assessmentCaseId`、`assessmentError`、`assessmentLoading`、`assessmentWorkbench`、`assessmentAuthorization`、`assessmentFilters`、`assessmentInternalNotes`、`assessmentParticipantDraft`、`assessmentSaving`、`analysisCatalog`、`analysisResilience`、`affectModelVersions`、`affectShadowRuns`、`affectShadowReviewCount`、`affectMonitoring`、`affectReleaseGate`、`analysisLoading`、`analysisError`、`analysisJobs`、`pilotLoading`、`pilotError`、`pilotDiagnostic`、`items`、`selected`、`stageFeedbackForm`、`stageFeedbackDelivery`、`sendingFeedback`、`messageTitle`、`messageBody`、`participantMessageDelivery`、`sendingMessage`、`answer`、`note`、`narrative`
-- 条件状态：`offline`、`developmentFullAccess`、`capabilityScope`、`loading`、`errorMessage`、`partialFailures`、`activeWorkspace`、`assessmentQueueRuntime`、`publicationCandidateSummary`、`assessmentLifecycleSummary`、`pendingVisibleItems`、`pendingHasMore`、`participantError`、`participantLoading`、`participantItems`、`participantHasMore`、`participantDossier`、`participantModuleLoading`、`participantModule`、`assessmentCases`、`assessmentError`、`assessmentLoading`、`assessmentWorkbench`、`item`、`analysisCatalog`、`analysisResilience`、`affectShadowRuns`、`affectMonitoring`、`affectReleaseGate`、`analysisLoading`、`analysisError`、`analysisJobs`、`pilotLoading`、`pilotError`、`items`、`selected`、`stageFeedbackDelivery`、`participantMessageDelivery`、`narrative`
-- `setData` 状态：`developmentFullAccess`、`activeWorkspace`、`capabilityScope`、`workspaces`、`loading`、`errorMessage`、`offline`、`assessmentLoading`、`assessmentError`、`assessmentCases`、`assessmentCaseId`、`assessmentWorkbench`、`case`、`sharedScopeText`、`evidence_items`、`assessmentInternalNotes`、`assessmentParticipantDraft`、`assessmentAuthorization`、`assessmentFilters`、`assessmentSaving`、`analysisLoading`、`analysisError`、`analysisJobs`、`analysisLabel`、`statusLabel`、`createdText`、`qualityText`、`suppressed`、`errorDiagnostic`、`partialFailures`、`pendingItems`、`pendingTotal`、`pendingVisibleItems`、`pendingPage`、`pendingHasMore`、`urgentCount`、`assessmentQueueRuntime`、`assessmentDutyShifts`、`publicationCandidateSummary`、`approved`、`published`、`assessmentLifecycleSummary`、`lastSyncText`、`operations`、`participantQuery`、`participantError`、`participantLoading`、`participantDiagnostic`、`participantItems`、`participantPage`、`participantHasMore`、`participantDossier`、`participantModule`、`participantModuleLoading`、`items`、`pilotLoading`、`pilotError`、`pilotDiagnostic`、`selected`、`narrative`、`note`、`messageTitle`、`messageBody`、`stageFeedbackForm`、`evidence`、`nextStep`、`openQuestion`、`stageFeedbackDelivery`、`participantMessageDelivery`、`icon`、`sendingFeedback`、`sendingMessage`
-- 新增只读开放状态：`knowledgeInventory`、`knowledgeDocumentCount`、`knowledgeQuery`、`knowledgeMethod`、`knowledgeMethodText`、`knowledgeResult`、`knowledgeLoading`、`knowledgeError`、`networkPolicy`、`offlineBenchmarkRuns`；检索和刷新失败均保持当前工作台可用。
-- 2026-08-30 增量派生状态：`evidence_summary`、`retrieval_summary`、`affectSummary`、`shadowSummaryText`、`reviewReasonText`、`networkSummary`、`networkSummaryText`、`networkDetailText`；只用于简化阅读，不改变写入、复核或发布门禁。
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 34：课程 `pages/course/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`30e4b2d32d20cc7b2f9ceba9fec77d84ebd1e00502f69881c2ce06c248e6faba`
-- 核对文件：`apps/miniprogram/pages/course/index.wxml`、`apps/miniprogram/pages/course/index.wxss`、`apps/miniprogram/pages/course/index.js`、`apps/miniprogram/pages/course/index.json`
-- 上游页面：`pages/login/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`course-card` → `/components/course-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`
-- 主要可见内容：课程、本周已查看 小节、重新加载、正在读取课程内容...
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 20 | — | `bindtap` | `selectCategory` | {'category': '{{item}}'} |
-| 36 | 重新加载 | `bindtap` | `retryLoadCourses` | — |
-| 49 | — | `bindtapcard` | `openCourse` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 37 | `listCourses` | `GET` | `/api/courses` | `backend/app.py`、`backend/routes/content_review.py`、`backend/routes/courses.py`、`backend/routes/showcase_access.py`、`backend/scripts/audit_task17_content.py`、`backend/scripts/enrich_task17_courses.py`、`backend/scripts/generate_task34_operations_registry.py`、`backend/services/content_governance_service.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/course-detail/index?id=:dynamic`（js:76）
-- 本地存储：—
-- WXML 数据绑定：`weeklyProgress`、`false`、`categories`、`activeCategory`、`item`、`errorMessage`、`loading`、`visibleCourses`、`boundaryNotice`
-- 条件状态：`errorMessage`、`loading`、`boundaryNotice`
-- `setData` 状态：`loading`、`errorMessage`、`categories`、`boundaryNotice`、`courses`、`activeCategory`、`visibleCourses`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 35：课程内容 `pages/course-detail/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`2ac3bdf117123cf1156806a4c3d28c78bc324dda79c9fe6d3e8fdedc6ca0d4cb`
-- 核对文件：`apps/miniprogram/pages/course-detail/index.wxml`、`apps/miniprogram/pages/course-detail/index.wxss`、`apps/miniprogram/pages/course-detail/index.js`、`apps/miniprogram/pages/course-detail/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/course/index`
-- 页面组件：`section-title` → `../../components/section-title/index`
-- 主要可见内容：正在读取课程内容...、重新加载、· · 小节、容易误解、可以这样理解、完整示例、常见反例、真实场景迁移、练习后想一想、关联训练卡、去训练页、记录本次学习、完成表示已经阅读并尝试理解检查，不代表掌握程度或心理状态改善。、记录课程完成
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 8 | 重新加载 | `bindtap` | `retryLoadCourse` | — |
-| 63 | — | `bindtap` | `chooseKnowledgeAnswer` | {'check-id': '{{check.id}}', 'value': '{{option.value}}'} |
-| 82 | 去训练页 | `bindtap` | `goTraining` | — |
-| 90 | 记录课程完成 | `bindtap` | `markCourseComplete` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 39 | `getCourse` | `GET` | `/api/courses/:id` | `backend/app.py`、`backend/routes/content_review.py`、`backend/routes/courses.py`、`backend/routes/progress_summary.py`、`backend/routes/showcase_access.py`、`backend/scripts/audit_task17_content.py`、`backend/scripts/enrich_task17_content.py`、`backend/scripts/enrich_task17_courses.py` |
-| 77 | `getCourseProgress` | `GET` | `/api/courses/:id/progress` | `backend/app.py`、`backend/routes/content_review.py`、`backend/routes/courses.py`、`backend/routes/progress_summary.py`、`backend/routes/showcase_access.py`、`backend/scripts/audit_task17_content.py`、`backend/scripts/enrich_task17_content.py`、`backend/scripts/enrich_task17_courses.py` |
-| 98 | `saveCourseProgress` | `POST` | `/api/courses/:id/progress` | `backend/app.py`、`backend/routes/content_review.py`、`backend/routes/courses.py`、`backend/routes/progress_summary.py`、`backend/routes/showcase_access.py`、`backend/scripts/audit_task17_content.py`、`backend/scripts/enrich_task17_content.py`、`backend/scripts/enrich_task17_courses.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`switchTab` → `/pages/training/index`（js:114）、`navigateTo` → `/pages/login/index:dynamic`（js:143）
-- 本地存储：`getStorageSync` `auth_token`（JS:119）、`getStorageSync` `auth_user`（JS:123）、`removeStorageSync` `auth_token`（JS:149）、`removeStorageSync` `auth_user`（JS:150）
-- WXML 数据绑定：`loading`、`errorMessage`、`course`、`index`、`item`、`check`、`option`、`progressMessage`、`savingProgress`
-- 条件状态：`loading`、`errorMessage`、`course`、`check`、`progressMessage`
-- `setData` 状态：`courseId`、`loading`、`errorMessage`、`course`、`progressMessage`、`savingProgress`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 36：我的 `pages/profile/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`de0a0b5cc029d3dc6549e90f4ef18f0a1a6ea4f01b51f2e24ce84e055c43935b`
-- 核对文件：`apps/miniprogram/pages/profile/index.wxml`、`apps/miniprogram/pages/profile/index.wxss`、`apps/miniprogram/pages/profile/index.js`、`apps/miniprogram/pages/profile/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/login/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`function-entry-card` → `/components/function-entry-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`alert-card` → `/components/alert-card/index`
-- 主要可见内容：我的登录后，你的记录只会用于本工具内的复盘、训练建议和必要的人工补充反馈。、退出登录、去登录、注册账号、登录方式、只显示连接状态，不显示身份值、微信登录、撤销、手机号登录、撤销登录方式会退出所有设备，但不会删除你的记录。、可找回、把本机试用记录放进当前账号、找到 条本机试用记录。确认后，测评、日记和练习记录会归到当前账号；暂不处理也不会删除。、确认合并、暂不处理、如果出现紧急安全风险、请先联系身边可信赖的人、学校老师、当地紧急医疗或心理危机支持。本小程序不能提供实时危机干预。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 18 | 退出登录 | `bindtap` | `doLogout` | — |
-| 21 | 去登录 | `bindtap` | `goLogin` | — |
-| 22 | 注册账号 | `bindtap` | `goRegister` | — |
-| 34 | 撤销 | `bindtap` | `requestIdentityUnbind` | {'identity': 'wechat'} |
-| 41 | 撤销 | `bindtap` | `requestIdentityUnbind` | {'identity': 'phone'} |
-| 56 | 确认合并 | `bindtap` | `confirmDataClaim` | — |
-| 57 | 暂不处理 | `bindtap` | `dismissDataClaim` | — |
-| 66 | — | `bindtap` | `goResearcher` | — |
-| 72 | — | `bindtap` | `openEntry` | {'group': 'recordEntries', 'index': '{{index}}'} |
-| 85 | — | `bindtap` | `openEntry` | {'group': 'supportEntries', 'index': '{{index}}'} |
-| 102 | — | `bindtap` | `openEntry` | {'group': 'safetyEntries', 'index': '{{index}}'} |
-| 115 | — | `bindtap` | `openEntry` | {'group': 'settingsEntries', 'index': '{{index}}'} |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 147 | `getShowcaseAccess` | `GET` | `/api/showcase-access` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 148 | `getDataClaimPreview` | `GET` | `/api/auth/data-claim-preview` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 149 | `getIdentityStatus` | `GET` | `/api/auth/identity-status` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 150 | `getAiQaConfig` | `GET` | `/api/ai-qa/config` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 161 | `getProfileStats` | `GET` | `/api/profile/stats` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 260 | `claimAnonymousData` | `POST` | `/api/auth/data-claim` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 286 | `unbindIdentity` | `POST` | `/api/auth/identity-unbind` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py` |
-| 303 | `logout` | `POST` | `/api/auth/logout` | `backend/routes/auth.py`；先请求服务端撤销账号全部令牌，再清本地。弱网失败时仅保存不含 Token 的 `safehome_pending_logout`，下次同账号登录完成撤销。 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`switchTab` → `/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex`（js:225）、`navigateTo` → `/pages/register/index?redirect=%2Fpages%2Fprofile%2Findex`（js:236）、`navigateTo` → `/pages/researcher-dashboard/index`（js:242）、`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fresearcher-dashboard%2Findex`（js:245）、`redirectTo` → `/pages/login/index?redirect=%2Fpages%2Fprofile%2Findex`（js:290）、`navigateTo` → `/pages/login/index:dynamic`（js:338）
-- 本地存储：`getStorageSync` `safehome_dismissed_data_claim_id`（JS:156）、`setStorageSync` `safehome_dismissed_data_claim_id`（JS:250）、`removeStorageSync` `safehome_dismissed_data_claim_id`（JS:261）、`getStorageSync` `auth_token`（JS:314）、`getStorageSync` `auth_user`（JS:318）、`removeStorageSync` `auth_token`（JS:344）、`removeStorageSync` `auth_user`（JS:345）
-- WXML 数据绑定：`user`、`loggedIn`、`identityStatus`、`identityBusy`、`logoutBusy`、`dataClaim`、`item`、`claimBusy`、`isResearcher`、`recordEntries`、`index`、`supportEntries`、`safetyEntries`、`settingsEntries`
-- 条件状态：`user`、`loggedIn`、`identityStatus`、`dataClaim`
-- `setData` 状态：`user`、`loginState`、`streakText`、`growthLevel`、`roleText`、`isResearcher`、`showcaseAccess`、`stats`、`loggedIn`、`dataClaim`、`identityStatus`、`supportEntries`、`nickname`、`claimBusy`、`identityBusy`、`logoutBusy`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 37：设置与说明 `pages/settings-detail/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`8f24c6780057ba5fa91f9072fcad95f36fea4cb865384cb7d85540e20cfa4ffd`
-- 核对文件：`apps/miniprogram/pages/settings-detail/index.wxml`、`apps/miniprogram/pages/settings-detail/index.wxss`、`apps/miniprogram/pages/settings-detail/index.js`、`apps/miniprogram/pages/settings-detail/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/home/index`、`pages/login/index`、`pages/profile/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`page-state` → `/components/page-state/index`、`status-pill` → `/components/status-pill/index`
-- 主要可见内容：重新读取、学生保护状态、请选择符合你的年龄范围。系统不会要求填写出生日期。、我已满14周岁、我未满14周岁、请向家长获取10位绑定码。完成绑定后，仍需家长单独确认是否同意受保护的数据处理。、完成家长绑定、已完成家长账号绑定，正在等待监护人确认。绑定关系本身不等于监护人同意。、监护人已经同意，但你自己仍可以决定是否继续使用测评、研究参与、自由文本和画像等受保护功能。、我愿意继续、我暂时不继续、参与者本人或监护人已经拒绝/撤回，受保护功能已暂停。需要再次继续时，应重新完成相应确认。、未满14周岁保护条件已经满足。监护人和学生本人仍可撤回。、我想暂停受保护功能、年龄范围已确认，本账号不需要未满14周岁的监护人数据处理门禁。、家长绑定与监护人确认、先生成绑定码给学生。学生完成绑定后，如果其年龄为未满14周岁，你可以在下方单独同意或撤回受保护的数据处理。、生成10位绑定码、绑定码：、有效期至：、绑定码只用于建立家庭账号关系，不代表已经同意敏感数据处理。、已绑定学生、关系：、年龄范围：未满14周岁
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 27 | — | `bindaction` | `goProtectionLogin` | — |
-| 39 | 重新读取 | `bindtap` | `loadProtectionStatus` | — |
-| 50 | 我已满14周岁 | `bindtap` | `chooseAge` | {'age': '14_or_over'} |
-| 51 | 我未满14周岁 | `bindtap` | `chooseAge` | {'age': 'under_14'} |
-| 56 | 完成家长绑定 | `bindinput` | `onBindCodeInput` | — |
-| 64 | 完成家长绑定 | `bindtap` | `submitStudentBinding` | — |
-| 73 | 我愿意继续 | `bindtap` | `updateChildDecision` | {'assented': 'true'} |
-| 74 | 我暂时不继续 | `bindtap` | `updateChildDecision` | {'assented': 'false'} |
-| 83 | 我想暂停受保护功能 | `bindtap` | `updateChildDecision` | {'assented': 'false'} |
-| 94 | 生成10位绑定码 | `bindtap` | `createGuardianBindCode` | — |
-| 113 | 同意受保护数据处理 | `bindtap` | `updateGuardianDecision` | {'child': '{{item.student_user_id}}', 'agreed': 'true'} |
-| 121 | 撤回监护人同意 | `bindtap` | `updateGuardianDecision` | {'child': '{{item.student_user_id}}', 'agreed': 'false'} |
-| 145 | 删除申请< | `bindaction` | `handlePrivacyStateAction` | — |
-| 164 | 取消申请 | `bindtap` | `cancelPrivacyRequest` | {'id': '{{item.id}}'} |
-| 171 | 补充说明并重新提交 | `bindtap` | `appealPrivacyRequest` | {'id': '{{item.id}}'} |
-| 188 | — | `bindtap` | `submitPrivacyDeleteRequest` | — |
-| 198 | 返回 | `bindtap` | `goBack` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 343 | `listPrivacyRequests` | `GET` | `/api/privacy/requests` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/consent.py`、`backend/routes/privacy.py`、`backend/routes/profile.py` |
-| 375 | `createPrivacyDeleteRequest` | `POST` | `/api/privacy/delete-my-data` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/consent.py`、`backend/routes/privacy.py`、`backend/routes/profile.py` |
-| 399 | `cancelPrivacyRequest` | `POST` | `/api/privacy/requests` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/consent.py`、`backend/routes/privacy.py`、`backend/routes/profile.py` |
-| 429 | `appealPrivacyRequest` | `POST` | `/api/privacy/requests` | `backend/app.py`、`backend/database.py`、`backend/gunicorn.conf.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/consent.py`、`backend/routes/privacy.py`、`backend/routes/profile.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fsettings-detail%2Findex%3Ftype%3Dprivacy`（js:443）、`navigateTo` → `/pages/login/index?redirect=%2Fpages%2Fsettings-detail%2Findex%3Ftype%3Dprotection`（js:450）、`navigateTo` → `/pages/login/index:dynamic`（js:483）
-- 本地存储：`getStorageSync` `auth_token`（JS:459）、`getStorageSync` `auth_user`（JS:463）、`removeStorageSync` `auth_token`（JS:489）、`removeStorageSync` `auth_user`（JS:490）
-- WXML 数据绑定：`notice`、`item`、`line`、`noticeType`、`protectionLoading`、`protectionNeedsLogin`、`protectionError`、`protectionRole`、`protectionStatus`、`protectionBusy`、`bindCodeInput`、`generatedBindCode`、`generatedBindExpiresAt`、`guardianChildren`、`privacyLoading`、`privacyRequests`、`privacySubmitting`
-- 条件状态：`noticeType`、`protectionLoading`、`protectionNeedsLogin`、`protectionError`、`protectionRole`、`protectionStatus`、`generatedBindCode`、`guardianChildren`、`item`、`privacyLoading`、`privacyRequests`
-- `setData` 状态：`notice`、`noticeType`、`protectionLoading`、`protectionNeedsLogin`、`protectionError`、`protectionRole`、`protectionStatus`、`guardianChildren`、`statusLabel`、`protectionBusy`、`bindCodeInput`、`generatedBindCode`、`generatedBindExpiresAt`、`privacyLoading`、`privacyError`、`privacyNeedsLogin`、`privacyRequests`、`privacySubmitting`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 38：本周小目标 `pages/goal-setting/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`db4ce43b532222801ec2952ef8cba8d5bdbef727a3ded3af6bdb8b922e4cfa48`
-- 核对文件：`apps/miniprogram/pages/goal-setting/index.wxml`、`apps/miniprogram/pages/goal-setting/index.wxss`、`apps/miniprogram/pages/goal-setting/index.js`、`apps/miniprogram/pages/goal-setting/index.json`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：`pages/home/index`
-- 页面组件：—
-- 主要可见内容：本周小目标、高频亲子冲突场景、希望减少的旧反应、希望练习的新反应、本周 SMART 小目标、网络响应较慢；草稿仍在本机，请不要重复点击。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 13 | — | `bindtap` | `selectScene` | {'value': '{{item}}'} |
-| 23 | — | `bindinput` | `onTextInput` | {'key': 'customScene'} |
-| 32 | — | `bindtap` | `selectOldReaction` | {'value': '{{item}}'} |
-| 50 | — | `bindtap` | `selectNewReaction` | {'value': '{{item}}'} |
-| 67 | — | `bindinput` | `onTextInput` | {'key': 'smartGoal'} |
-| 83 | — | `bindtap` | `submitGoal` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 85 | `createGoal` | `POST` | `/api/goals` | `backend/app.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/goals.py`、`backend/scripts/generate_task33_ux_registry.py`、`backend/scripts/generate_task34_operations_registry.py`、`backend/scripts/migrate_task33_ux_governance.py`、`backend/scripts/verify_privacy_restore.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/diary-form/index?goal_id=:dynamic`（js:100）
-- 本地存储：`getStorageSync` `storageKey`（JS:137）、`setStorageSync` `storageKey`（JS:159）、`removeStorageSync` `storageKey`（JS:189）
-- WXML 数据绑定：`sceneOptions`、`selectedScene`、`item`、`customScene`、`oldReactionOptions`、`oldReaction`、`newReactionOptions`、`newReaction`、`smartGoal`、`errorMessage`、`draftRestored`、`saveStatus`、`slowSubmitting`、`submitting`
-- 条件状态：`errorMessage`、`slowSubmitting`
-- `setData` 状态：`saveStatus`、`draftRestored`、`selectedScene`、`errorMessage`、`submitting`、`slowSubmitting`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 39：记录情绪事件 `pages/diary-form/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`3ee59be146b83a6673fc071d83a1607d37f7de86b6346576837fa99f15e46f5f`
-- 核对文件：`apps/miniprogram/pages/diary-form/index.wxml`、`apps/miniprogram/pages/diary-form/index.wxss`、`apps/miniprogram/pages/diary-form/index.js`、`apps/miniprogram/pages/diary-form/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：`pages/home/index`、`pages/getting-started/index`、`pages/growth-dashboard/index`、`pages/goal-setting/index`、`pages/diary-history/index`、`pages/feedback-result/index`、`pages/training-card/index`
-- 页面组件：—
-- 主要可见内容：记录情绪事件、已关联本周小目标、请不要填写姓名、学校、电话等可识别身份的信息。、发生了什么、其他场景、具体经过、我和孩子当时的感受、家长当时的主要情绪、强度 / 10、孩子当时看起来的情绪、想法与做法（可选）、当时心里的第一反应、我当时的做法、身体与后续（可选）、身体感觉、孩子后来的反应、当下结果、我担心的长期影响、网络响应较慢，请保持页面打开；草稿仍在本机，不需要重复填写。、保存后会进入支持性反馈和训练卡推荐。反馈只用于观察和练习，不做诊断。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 18 | — | `bindtap` | `selectScene` | {'value': '{{item}}'} |
-| 30 | — | `bindinput` | `onTextInput` | {'key': 'customScene'} |
-| 34 | — | `bindinput` | `onTextInput` | {'key': 'eventDescription'} |
-| 53 | — | `bindtap` | `selectParentEmotion` | {'value': '{{item}}'} |
-| 65 | — | `bindchange` | `onParentIntensityChange` | — |
-| 72 | — | `bindtap` | `selectChildEmotion` | {'value': '{{item}}'} |
-| 84 | — | `bindchange` | `onChildIntensityChange` | — |
-| 89 | — | `bindtap` | `toggleMoreFields` | — |
-| 101 | — | `bindinput` | `onTextInput` | {'key': 'automaticThought'} |
-| 111 | — | `bindinput` | `onTextInput` | {'key': 'behavior'} |
-| 130 | — | `bindtap` | `selectBodySensation` | {'value': '{{item}}'} |
-| 140 | — | `bindinput` | `onTextInput` | {'key': 'bodySensationNote'} |
-| 144 | — | `bindinput` | `onTextInput` | {'key': 'childReaction'} |
-| 154 | — | `bindinput` | `onTextInput` | {'key': 'shortTermResult'} |
-| 164 | — | `bindinput` | `onTextInput` | {'key': 'longTermImpact'} |
-| 184 | — | `bindtap` | `submitDiary` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 133 | `createDiary` | `POST` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/diaries.py`、`backend/routes/feedback.py`、`backend/routes/general_growth.py`、`backend/routes/minor_safeguards.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/feedback-result/index?diary_id=:dynamic`（js:150）、`navigateTo` → `/pages/login/index:dynamic`（js:189）
-- 本地存储：`getStorageSync` `auth_token`（JS:165）、`getStorageSync` `auth_user`（JS:169）、`removeStorageSync` `auth_token`（JS:195）、`removeStorageSync` `auth_user`（JS:196）、`getStorageSync` `storageKey`（JS:238）、`setStorageSync` `storageKey`（JS:260）、`removeStorageSync` `storageKey`（JS:290）
-- WXML 数据绑定：`goalId`、`sceneOptions`、`selectedScene`、`item`、`customScene`、`eventDescription`、`parentEmotionOptions`、`parentEmotion`、`parentEmotionIntensity`、`childEmotionOptions`、`childEmotion`、`childEmotionIntensity`、`showMoreFields`、`automaticThought`、`behavior`、`bodySensationOptions`、`bodySensation`、`bodySensationNote`、`childReaction`、`shortTermResult`、`longTermImpact`、`errorMessage`、`draftRestored`、`saveStatus`、`slowSubmitting`、`submitting`
-- 条件状态：`goalId`、`showMoreFields`、`errorMessage`、`slowSubmitting`
-- `setData` 状态：`goalId`、`saveStatus`、`draftRestored`、`errorMessage`、`submitting`、`slowSubmitting`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 40：情绪记录 `pages/diary-history/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`82a271fecf256d0f2740bca695dd0103399c00cde0b68b674cf0249af478d435`
-- 核对文件：`apps/miniprogram/pages/diary-history/index.wxml`、`apps/miniprogram/pages/diary-history/index.wxss`、`apps/miniprogram/pages/diary-history/index.js`、`apps/miniprogram/pages/diary-history/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/home/index`
-- 页面组件：`bamboo-timeline-node` → `/components/bamboo-timeline-node/index`、`page-state` → `/components/page-state/index`
-- 主要可见内容：情绪记录、记录一件事、这里只展示已经保存的记录，用于支持性观察，不替代专业诊断。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 14 | 重新加载情绪记录 | `bindaction` | `retry` | — |
-| 51 | 记录一件事 | `bindtap` | `startDiary` | — |
-| 54 | 新建一条情绪事件记录 | `bindaction` | `startDiary` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 79 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/diaries.py`、`backend/routes/feedback.py`、`backend/routes/general_growth.py`、`backend/routes/minor_safeguards.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/diary-form/index`（js:103）、`navigateTo` → `/pages/login/index:dynamic`（js:132）
-- 本地存储：`getStorageSync` `auth_token`（JS:108）、`getStorageSync` `auth_user`（JS:112）、`removeStorageSync` `auth_token`（JS:138）、`removeStorageSync` `auth_user`（JS:139）
-- WXML 数据绑定：`loading`、`errorMessage`、`errorTitle`、`records`、`item`、`mark`
-- 条件状态：`loading`、`errorMessage`、`records`
-- `setData` 状态：`loading`、`errorMessage`、`errorTitle`、`errorKind`、`records`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 41：本次反馈 `pages/feedback-result/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`d87f410fff679b09341ca1acc4c741ada410ab9cc9835a843379497d5ff76b79`
-- 核对文件：`apps/miniprogram/pages/feedback-result/index.wxml`、`apps/miniprogram/pages/feedback-result/index.wxss`、`apps/miniprogram/pages/feedback-result/index.js`、`apps/miniprogram/pages/feedback-result/index.json`
-- 上游页面：`pages/diary-form/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`training-task-card` → `/components/training-task-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`feedback-rating` → `/components/feedback-rating/index`、`page-state` → `/components/page-state/index`
-- 主要可见内容：本次反馈、先接住这次感受、主要情绪、情绪强度、优先联系现实支持、这里不是实时危机服务，也不替代线下专业支持或当地紧急服务。、查看安全指引、提交人工关注、主练习 ·、推荐理由：、开始这个练习、今天先做、这次记录暂时没有匹配到具体训练卡，可以先暂停几秒，再说出一个最明显的感受。、今日建议只作为支持性练习参考，不构成诊断或治疗方案。、也可以选择、需要多一个人帮你看一看？、如果这类情况反复出现，或你担心自己撑不住，可以提交给人工督导补充反馈。、提交督导、收藏这次反馈、怎样理解这份反馈、它只整理这一次记录中可观察的情绪、互动和练习位置，不代表固定问题，也不构成诊断、评分或治疗建议。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 10 | 先接住这次感受 | `bindaction` | `handleFeedbackStateAction` | — |
-| 19 | — | `bindselect` | `submitFeedbackEvaluation` | — |
-| 59 | 查看安全指引 | `bindtap` | `openEmergencyGuide` | — |
-| 60 | 提交人工关注 | `bindtap` | `openSupervision` | — |
-| 71 | 开始这个练习 | `bindtap` | `openTrainingCard` | — |
-| 102 | 提交督导 | `bindtap` | `openSupervision` | — |
-| 106 | 收藏这次反馈 | `bindtap` | `saveFeedback` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 45 | `generateFeedback` | `POST` | `/api/feedback/generate` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py`、`backend/routes/cards.py` |
-| 46 | `listCards` | `GET` | `/api/cards` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py`、`backend/routes/cards.py` |
-| 209 | `createFeedbackLedgerEntry` | `POST` | `/api/feedback-ledger` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py`、`backend/routes/cards.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/diary-form/index`（js:226）、`navigateTo` → `/pages/training-card/index?tags=:dynamic`（js:249）、`navigateTo` → `/pages/supervision/index?diary_id=:dynamic`（js:255）、`navigateTo` → `/pages/emergency-guide/index`（js:261）
-- 本地存储：`setStorageSync` `LATEST_TRAINING_RECOMMENDATION_KEY`（JS:178）
-- WXML 数据绑定：`loading`、`errorMessage`、`missingDiaryId`、`feedback`、`feedbackEvaluation`、`feedbackEvaluationSaving`、`emotionOverview`、`patternCards`、`item`、`isHighRisk`、`riskSupportText`、`canShowTraining`、`trainingRecommendation`、`recommendedTrainings`、`trainingIndex`
-- 条件状态：`loading`、`errorMessage`、`isHighRisk`、`canShowTraining`、`trainingRecommendation`、`recommendedTrainings`、`trainingIndex`
-- `setData` 状态：`diaryId`、`loading`、`missingDiaryId`、`errorMessage`、`labelsText`、`patternCards`、`emotionOverview`、`nextAction`、`riskSupportText`、`feedback`、`isHighRisk`、`canShowTraining`、`trainingRecommendation`、`recommendedTrainings`、`feedbackEvaluationSaving`、`feedbackEvaluation`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 42：家庭关系测一测 `pages/assessment/index`
-
-#### 2026-08-30 可见硬编码文案收敛
-
-- 错误状态不再向普通用户暴露“联调测试页”，改为调用既有 `loadAssessments` 的“重新加载”；长期保留的联调页面和其他开发入口未删除。
-- 搜索空结果保留“换一个分类或关键词再看”的可执行提示，删除重复的无结果复述。
-- 删除页面底部与当前“选择测评”任务无直接关系的固定鼓励语；筛选、加载、登录、最近记录和内容边界保持不变。
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`ff6ab6dc1fb6cd993e92a5d898ce23c7b4107428699453c6a64bfbd11ca16c26`
-- 核对文件：`apps/miniprogram/pages/assessment/index.wxml`、`apps/miniprogram/pages/assessment/index.wxss`、`apps/miniprogram/pages/assessment/index.js`、`apps/miniprogram/pages/assessment/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/home/index`、`pages/personalized-plan/index`、`pages/relationship-pilot/index`、`pages/growth-dashboard/index`、`pages/assessment-history/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`assessment-worksheet-card` → `/components/assessment-worksheet-card/index`、`function-entry-card` → `/components/function-entry-card/index`、`alert-card` → `/components/alert-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`
-- 主要可见内容：支持性测评、受众筛选、搜索量表、清除、重新加载、正在读取测一测内容、分类与测评卡、最近记录、查看、去登录
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 9 | — | `bindtap` | `switchAudience` | {'key': '{{item.key}}'} |
-| 18 | 搜索量表、主题或关键词 | `bindinput` | `onSearchInput` | — |
-| 19 | 清除 | `bindtap` | `clearSearch` | — |
-| 26 | 重新加载 | `bindtap` | `loadAssessments` | — |
-| 39 | — | `bindopen` | `openAssessmentEntry` | — |
-| 52 | 查看测评记录：{{item.worksheet_title}} | `bindtap` | `openRecentResult` | {'id': '{{item.id}}', 'worksheet-id': '{{item.worksheet_id}}'} |
-| 77 | 去登录 | `bindtap` | `goLogin` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 46 | `getDebugConfig` | `GET` | — | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/general_growth.py`、`backend/routes/parent_assessments.py` |
-| 195 | `listAssessments` | `GET` | `/api/assessments` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/general_growth.py`、`backend/routes/parent_assessments.py` |
-| 219 | `listAssessmentResults` | `GET` | `/api/assessment-results` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/general_growth.py`、`backend/routes/parent_assessments.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/assessment-detail/index?id=:dynamic`（js:263）、`navigateTo` → `/pages/assessment-result/index?id=:dynamic`（js:272）、`navigateTo` → `/pages/integration-test/index`（js:285）、`navigateTo` → `/pages/login/index:dynamic`（js:314）
-- 本地存储：`getStorageSync` `auth_token`（JS:290）、`getStorageSync` `auth_user`（JS:294）、`removeStorageSync` `auth_token`（JS:320）、`removeStorageSync` `auth_user`（JS:321）
-- WXML 数据绑定：`tabs`、`activeAudience`、`item`、`searchKeyword`、`errorMessage`、`loading`、`categories`、`worksheet`、`recentResults`、`recentLoginTip`
-- 条件状态：`searchKeyword`、`errorMessage`、`loading`、`item`、`recentResults`、`recentLoginTip`
-- `setData` 状态：`activeAudience`、`searchKeyword`、`categories`、`loading`、`errorMessage`、`boundaryNotice`、`allAssessments`、`recentResults`、`recentLoginTip`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 43：全部测评记录 `pages/assessment-history/index`
-
-#### 2026-08-30 可见硬编码文案收敛
-
-- 加载状态只保留“正在读取测评记录”，删除不会改变等待动作的“请稍等一下”。
-- 空状态保留“还没有测评记录”和“去测一测”主行动，删除对保存结果的重复说明。
-- 记录卡的日期与维度数只在元信息中展示一次，右侧统一为“查看”；没有维度摘要时只显示日期，不再重复“查看完整结果”。
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`f5a1dc83458fe58b59622cf4499cefb968e71de99d208f7ab2aabbb8a2e5cdfd`
-- 核对文件：`apps/miniprogram/pages/assessment-history/index.wxml`、`apps/miniprogram/pages/assessment-history/index.wxss`、`apps/miniprogram/pages/assessment-history/index.js`、`apps/miniprogram/pages/assessment-history/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/profile/index`
-- 页面组件：`assessment-worksheet-card` → `/components/assessment-worksheet-card/index`
-- 主要可见内容：测评记录、共、份记录、正在读取测评记录、记录暂时没有加载成功、重新加载、加载更多、已显示全部、查看、还没有测评记录、去测一测
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 16 | 重新加载 | `bindtap` | `retry` | — |
-| 20 | — | `bindopen` | `openResult` | — |
-| 28 | 加载更多 | `bindtap` | `loadMore` | — |
-| 36 | 去测一测 | `bindtap` | `goAssessment` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 70 | `listAssessmentResults` | `GET` | `/api/assessment-results` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/general_growth.py`、`backend/routes/profile.py`、`backend/routes/research_workspace.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/assessment-result/index?id=:dynamic`（js:104）、`navigateTo` → `/pages/assessment/index`（js:110）、`navigateTo` → `/pages/login/index:dynamic`（js:139）
-- 本地存储：`getStorageSync` `auth_token`（JS:115）、`getStorageSync` `auth_user`（JS:119）、`removeStorageSync` `auth_token`（JS:145）、`removeStorageSync` `auth_user`（JS:146）
-- WXML 数据绑定：`total`、`loading`、`errorMessage`、`items`、`item`、`hasMore`、`loadingMore`
-- 条件状态：`loading`、`errorMessage`、`items`、`hasMore`
-- `setData` 状态：`loading`、`loadingMore`、`errorMessage`、`items`、`page`、`total`、`hasMore`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 44：填写测评 `pages/assessment-detail/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`0f793afde8c447dd3a67b1cb4408f32869c33f536f204d8f282e6981e5daec56`
-- 核对文件：`apps/miniprogram/pages/assessment-detail/index.wxml`、`apps/miniprogram/pages/assessment-detail/index.wxss`、`apps/miniprogram/pages/assessment-detail/index.js`、`apps/miniprogram/pages/assessment-detail/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：`pages/assessment/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`alert-card` → `/components/alert-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`
-- 主要可见内容：正在读取测一测内容...、注意：本内容含敏感语义，结果只作为自我观察线索，不作为诊断建议。、去登录后继续、网络响应较慢；草稿仍在本机，请不要重复点击。
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 27 | 选择 {{opt.displayLabel}} | `bindtap` | `selectOption` | {'index': '{{qi}}', 'value': '{{opt.value}}', 'score': '{{opt.score}}'} |
-| 44 | — | `bindinput` | `onTextInput` | {'index': '{{qi}}'} |
-| 57 | 去登录后继续 | `bindtap` | `goLogin` | — |
-| 63 | — | `bindtap` | `submitWorksheet` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 115 | `getAssessment` | `GET` | `/api/assessments` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/content_review.py`、`backend/routes/general_growth.py` |
-| 231 | `createProfile` | `POST` | `/api/profile` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/content_review.py`、`backend/routes/general_growth.py` |
-| 232 | `createAssessmentResult` | `POST` | `/api/assessment-results` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/content_review.py`、`backend/routes/general_growth.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/assessment-result/index?id=:dynamic`（js:243）、`navigateTo` → `/pages/login/index:dynamic`（js:296）
-- 本地存储：`getStorageSync` `auth_token`（JS:272）、`getStorageSync` `auth_user`（JS:276）、`removeStorageSync` `auth_token`（JS:302）、`removeStorageSync` `auth_user`（JS:303）、`getStorageSync` `storageKey`（JS:345）、`setStorageSync` `storageKey`（JS:367）、`removeStorageSync` `storageKey`（JS:397）
-- WXML 数据绑定：`loading`、`worksheet`、`qi`、`item`、`opt`、`errorMessage`、`needsLogin`、`draftRestored`、`saveStatus`、`slowSubmitting`、`submitting`
-- 条件状态：`loading`、`worksheet`、`item`、`errorMessage`、`needsLogin`、`slowSubmitting`
-- `setData` 状态：`loading`、`needsLogin`、`worksheetId`、`errorMessage`、`worksheet`、`saveStatus`、`draftRestored`、`submitting`、`slowSubmitting`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 45：测一测结果 `pages/assessment-result/index`
-
-#### 2026-08-29 第二阶段人工冻结（本人结果分析）
-
-- 页面目标不变：受试者理解本次测评及后续支持；新增“近期情绪与互动线索”位于测评解释之后、训练建议之前。
-- 数据源：`GET /api/assessment-results/:id/exploratory-analysis`，由登录态和结果归属共同限制，只读取本人最近最多 100 条结构化情绪日记。
-- 可见数据不包含日记原文或其他参与者数据；网络部分只展示场景—情绪共现次数，不展示中心性、关系质量、人格标签或诊断判断。
-- 状态矩阵：`available` 展示前 8 个情绪条目和支持度至少 2 的共现线索；`insufficient` 提示至少 5 条；`withheld` 转为人工支持提示；`ineligible` 不生成分析。
-- 区块不增加操作按钮，不改变原有“查看可练习任务”主行动；使用现有卡片、列表、空状态和设计变量。
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`8abf17e926f9b8ddf87c344bf440aa0a7058c194b358c576738e17ece98b0726`
-- 核对文件：`apps/miniprogram/pages/assessment-result/index.wxml`、`apps/miniprogram/pages/assessment-result/index.wxss`、`apps/miniprogram/pages/assessment-result/index.js`、`apps/miniprogram/pages/assessment-result/index.json`、`apps/miniprogram/utils/assessment-dimension-visualization.js`
-- 上游页面：`pages/assessment/index`、`pages/assessment-history/index`、`pages/assessment-detail/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`alert-card` → `/components/alert-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`visualization-state` → `/components/visualization-state/index`
-- 主要可见内容：正在读取结果...、匹配清晰度：、参照、当前位置、优势提示、可以先做、可以带去讨论的问题、后续项目任务线索、分、查看可练习任务、返回测一测
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 137 | 查看可练习任务 | `bindtap` | `openRecommendedCards` | — |
-| 138 | 返回测一测 | `bindtap` | `backToAssessment` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 447 | `getAssessmentResult` | `GET` | `/api/assessment-results` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py` |
-| 448 | `getAssessment` | `GET` | `/api/assessments` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py` |
-| 449 | `listCards` | `GET` | `/api/cards` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py` |
-| 454 | `getAssessmentProfilePosition` | `GET` | `/api/assessment-results/:id/profile-position` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:699）、`navigateTo` → `/pages/training-card/index?card_ids=:dynamic`（js:705）、`switchTab` → `/pages/training/index`（js:710）
-- 本地存储：`setStorageSync` `LATEST_TRAINING_RECOMMENDATION_KEY`（JS:359）、`setStorageSync` `THREE_DAY_LIGHT_PLAN_KEY`（JS:401）
-- WXML 数据绑定：`loading`、`result`、`riskSummary`、`profilePosition`、`item`、`index`、`profileSummary`、`scaleVisualization`、`trainingRecommendation`、`errorMessage`
-- 条件状态：`loading`、`result`、`riskSummary`、`profilePosition`、`profileSummary`、`scaleVisualization`、`item`、`trainingRecommendation`
-- `setData` 状态：`resultId`、`worksheetId`、`loading`、`errorMessage`、`totalScoreText`、`recommendedCardsText`、`result`、`worksheet`、`profileSummary`、`scaleDimensions`、`scaleVisualization`、`sourceNotice`、`trainingRecommendation`、`riskSummary`、`profilePosition`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 46：教育热榜 `pages/hot-topics/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`b4e6b6b40f765431ac6f96336176a06688bc57dbb3d90ab6b267f2ddc7173560`
-- 核对文件：`apps/miniprogram/pages/hot-topics/index.wxml`、`apps/miniprogram/pages/hot-topics/index.wxss`、`apps/miniprogram/pages/hot-topics/index.js`、`apps/miniprogram/pages/hot-topics/index.json`
-- 上游页面：`pages/home/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`、`training-task-card` → `/components/training-task-card/index`
-- 主要可见内容：热门主题、问题情境、常见回应、可以换一种说法、查看关联训练卡、这些案例只用于自我观察和陪伴练习，不用于判断孩子、家长或家庭关系。如果出现紧急安全风险，请优先寻求现实支持和专业帮助。、回到首页
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 9 | — | `bindtap` | `selectTag` | {'tag': '{{item}}'} |
-| 25 | — | `bindtap` | `selectTopic` | {'id': '{{item.id}}'} |
-| 67 | 查看关联训练卡 | `bindtapcard` | `openPractice` | — |
-| 76 | 查看关联训练卡 | `bindtap` | `openPractice` | — |
-| 87 | 回到首页 | `bindtap` | `goHome` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| — | 无直接 API 调用 | — | — | 页面由本地状态或路由驱动 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/training-card/index?tags=:dynamic`（js:151）、`switchTab` → `/pages/home/index`（js:157）
-- 本地存储：—
-- WXML 数据绑定：`false`、`tags`、`activeTag`、`item`、`visibleTopics`、`selectedTopic`
-- 条件状态：—
-- `setData` 状态：`selectedTopic`、`activeTag`、`visibleTopics`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 47：UP任务卡 `pages/task-detail/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`91c636cd98fe56641750238d24eadc63444fa309d40965443547f2cbe1f053cc`
-- 核对文件：`apps/miniprogram/pages/task-detail/index.wxml`、`apps/miniprogram/pages/task-detail/index.wxss`、`apps/miniprogram/pages/task-detail/index.js`、`apps/miniprogram/pages/task-detail/index.json`
-- 上游页面：`pages/training/index`、`pages/training-card/index`
-- 页面组件：`section-title` → `/components/section-title/index`、`alert-card` → `/components/alert-card/index`、`bottom-tip-card` → `/components/bottom-tip-card/index`
-- 主要可见内容：适用情境、预计用时、今天的小目标、今日感受、当前情绪强度： / 10、完成并打卡、从第一步开始、暂存感受
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 3 | ‹ | `bindtap` | `goBack` | — |
-| 53 | 当前情绪强度： / 10 | `bindinput` | `onReflectionInput` | — |
-| 55 | — | `bindchange` | `onEmotionLevelChange` | — |
-| 64 | 完成并打卡 | `bindtap` | `finishPractice` | — |
-| 66 | 从第一步开始 | `bindtap` | `startPractice` | — |
-| 67 | 暂存感受 | `bindtap` | `recordFeeling` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| — | 无直接 API 调用 | — | — | 页面由本地状态或路由驱动 |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/checkin/index?card_id=:dynamic`（js:202）
-- 本地存储：`getStorageSync` `safehome:selectedTrainingCard`（JS:156）
-- WXML 数据绑定：`task`、`index`、`item`、`reflection`、`emotionLevel`
-- 条件状态：`task`
-- `setData` 状态：`task`、`title`、`diaryId`、`reflection`、`emotionLevel`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 48：推荐训练卡 `pages/training-card/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`c0c9325a0492ce44a9fbbacf8d4ac5a7801c2987d90dd46cbabd165f2019c732`
-- 核对文件：`apps/miniprogram/pages/training-card/index.wxml`、`apps/miniprogram/pages/training-card/index.wxss`、`apps/miniprogram/pages/training-card/index.js`、`apps/miniprogram/pages/training-card/index.json`
-- 上游页面：`pages/home/index`、`pages/thermometer/index`、`pages/training/index`、`pages/training-history/index`、`pages/personalized-plan/index`、`pages/therapeutic-assessment-action-followup/index`、`pages/feedback-result/index`、`pages/assessment-result/index`、`pages/hot-topics/index`
-- 页面组件：`feedback-rating` → `/components/feedback-rating/index`、`page-state` → `/components/page-state/index`、`training-task-card` → `/components/training-task-card/index`
-- 主要可见内容：训练卡、这次推荐依据、今天的小目标、适合、节奏、完成、可以这样说、这些情况先停下来
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 10 | 这次推荐依据 | `bindaction` | `retryLoadCards` | — |
-| 33 | — | `bindtap` | `toggleCardDetails` | {'id': '{{item.id}}'} |
-| 47 | — | `bindtap` | `choosePractice` | {'id': '{{item.id}}', 'title': '{{item.title}}'} |
-| 48 | — | `bindselect` | `submitTrainingFeedback` | {'id': '{{item.id}}'} |
-| 59 | — | `bindaction` | `goDiary` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 61 | `listCards` | `GET` | `/api/cards` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 61 | `recommendCards` | `GET` | `/api/cards/recommend` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-| 153 | `createFeedbackLedgerEntry` | `POST` | `/api/feedback-ledger` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/cards.py`、`backend/routes/checkins.py`、`backend/routes/content_review.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`navigateTo` → `/pages/task-detail/index?card_id=:dynamic`（js:128）、`navigateTo` → `/pages/diary-form/index`（js:143）
-- 本地存储：`setStorageSync` `safehome:selectedTrainingCard`（JS:126）
-- WXML 数据绑定：`loading`、`errorMessage`、`errorDetail`、`tagsText`、`cards`、`item`、`false`、`expandedCardId`、`feedbackEvaluationSaving`、`true`
-- 条件状态：`loading`、`errorMessage`、`tagsText`、`item`、`cards`
-- `setData` 状态：`tagsText`、`diaryId`、`tags`、`cardIds`、`loading`、`errorMessage`、`errorDetail`、`practiceMessage`、`cards`、`index`、`expandedCardId`、`feedbackEvaluationSaving`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 49：记录尝试 `pages/checkin/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`86087b92c1805c2486b082d4f60baf4f6ff4f90f26a54cb9200e7bf43f7f2318`
-- 核对文件：`apps/miniprogram/pages/checkin/index.wxml`、`apps/miniprogram/pages/checkin/index.wxss`、`apps/miniprogram/pages/checkin/index.js`、`apps/miniprogram/pages/checkin/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：`pages/task-detail/index`
-- 页面组件：—
-- 主要可见内容：练习打卡、记录这次尝试和练习前后的感受变化即可。、本次练习、练习前情绪强度： / 10、练习后情绪强度： / 10、这次练习对你有帮助吗？、如果暂时不想完成，可以写一个原因（可选）、练习复盘、网络响应较慢；草稿仍在本机，请不要重复点击。、回到首页
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 21 | — | `bindchange` | `onEmotionBeforeChange` | — |
-| 26 | — | `bindchange` | `onEmotionAfterChange` | — |
-| 32 | — | `bindtap` | `chooseHelpfulness` | {'value': '{{item.value}}'} |
-| 46 | — | `bindinput` | `onSkipReasonInput` | — |
-| 55 | — | `bindinput` | `onReflectionInput` | — |
-| 69 | — | `bindtap` | `submitCheckin` | — |
-| 73 | 回到首页 | `bindtap` | `goHome` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 111 | `createCheckin` | `POST` | `/api/checkins` | `backend/app.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/checkins.py`、`backend/routes/general_growth.py`、`backend/routes/profile.py`、`backend/routes/research_workspace.py`、`backend/routes/training_plan.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`reLaunch` → `/pages/home/index`（js:141）、`navigateTo` → `/pages/login/index:dynamic`（js:170）
-- 本地存储：`getStorageSync` `safehome:selectedTrainingCard`（JS:41）、`getStorageSync` `auth_token`（JS:146）、`getStorageSync` `auth_user`（JS:150）、`removeStorageSync` `auth_token`（JS:176）、`removeStorageSync` `auth_user`（JS:177）、`getStorageSync` `storageKey`（JS:219）、`setStorageSync` `storageKey`（JS:241）、`removeStorageSync` `storageKey`（JS:271）
-- WXML 数据绑定：`cardTitle`、`emotionBefore`、`emotionAfter`、`helpfulnessOptions`、`helpfulnessRating`、`item`、`skipReason`、`reflectionPrompts`、`reflection`、`successMessage`、`errorMessage`、`draftRestored`、`saveStatus`、`slowSubmitting`、`submitting`、`submitted`
-- 条件状态：`successMessage`、`errorMessage`、`slowSubmitting`
-- `setData` 状态：`sourceRecommendationId`、`cardId`、`diaryId`、`cardTitle`、`saveStatus`、`emotionBefore`、`successMessage`、`errorMessage`、`submitting`、`slowSubmitting`、`submitted`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 50：本周复盘 `pages/weekly-report/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`307ce430de25acfc3d3e81b73595a991bc2eaf2db5f7a7c27b577a8ae5b89bdb`
-- 核对文件：`apps/miniprogram/pages/weekly-report/index.wxml`、`apps/miniprogram/pages/weekly-report/index.wxss`、`apps/miniprogram/pages/weekly-report/index.js`、`apps/miniprogram/pages/weekly-report/index.json`、`apps/miniprogram/utils/authGuard.js`
-- 上游页面：`pages/home/index`、`pages/profile/index`
-- 页面组件：—
-- 主要可见内容：本周复盘、正在整理本周复盘、周报暂时没有加载成功、重新加载、阶段性画像线索、有内容需要人工关注，请优先等待或提交人工支持。、本周小变化、至、类常见场景、类常见情绪、条互动线索、练习尝试、测评记录、温度记录、本周测评记录、只整理你完成过的测评，不做固定判断、本周还没有测评记录。、推荐训练：、情绪温度趋势、训练效用线索、只看练习前后记录，不承诺疗效、本周高频场景
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 17 | 重新加载 | `bindtap` | `refreshReport` | — |
-| 164 | 刷新复盘 | `bindtap` | `refreshReport` | — |
-| 165 | 回到首页 | `bindtap` | `goHome` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 86 | `getWeeklyReport` | `GET` | `/api/weekly-report` | `backend/models.py`、`backend/routes/admin.py`、`backend/routes/general_growth.py`、`backend/routes/reports.py`、`backend/scripts/generate_task33_ux_registry.py`、`backend/scripts/verify_privacy_restore.py`、`backend/services/data_claim_service.py`、`backend/services/participant_action_planner.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`reLaunch` → `/pages/home/index`（js:142）、`navigateTo` → `/pages/login/index:dynamic`（js:171）
-- 本地存储：`getStorageSync` `auth_token`（JS:147）、`getStorageSync` `auth_user`（JS:151）、`removeStorageSync` `auth_token`（JS:177）、`removeStorageSync` `auth_user`（JS:178）
-- WXML 数据绑定：`loading`、`errorMessage`、`report`、`profileTrendNamesText`、`frequentScenes`、`frequentEmotions`、`commonPatterns`、`completedCardsText`、`assessmentNamesText`、`dimensionGroups`、`group`、`item`、`recommendedCardsText`、`thermometerDetailText`、`trainingEffectivenessText`
-- 条件状态：`loading`、`errorMessage`、`profileTrendNamesText`、`report`、`assessmentNamesText`、`dimensionGroups`、`recommendedCardsText`、`frequentScenes`、`frequentEmotions`、`commonPatterns`
-- `setData` 状态：`loading`、`errorMessage`、`frequentScenes`、`frequentEmotions`、`commonPatterns`、`completedCardsText`、`profileTrendNamesText`、`assessmentNamesText`、`dimensionGroups`、`recommendedCardsText`、`thermometerDetailText`、`trainingEffectivenessText`、`report`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 51：人工督导入口 `pages/supervision/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`72ebdbd5c4380ba601919f70a9ab26baa52d8ce423b22db105e6c9daee769a0a`
-- 核对文件：`apps/miniprogram/pages/supervision/index.wxml`、`apps/miniprogram/pages/supervision/index.wxss`、`apps/miniprogram/pages/supervision/index.js`、`apps/miniprogram/pages/supervision/index.json`、`apps/miniprogram/utils/authGuard.js`、`apps/miniprogram/utils/resilientForm.js`
-- 上游页面：`pages/home/index`、`pages/profile/index`、`pages/feedback-result/index`
-- 页面组件：—
-- 主要可见内容：人工支持、先确认边界、人工反馈可能需要等待，适合补充理解一条记录，不适合处理紧急安全风险。、如果你或孩子正在经历自伤、自杀、暴力、失控或其他安全风险，请先联系身边可信赖的人、当地紧急服务或线下专业机构。、选择想请老师一起看的记录、想请老师补充看的内容、可选联系方式、可选风险提示、网络响应较慢；草稿仍在本机，请不要重复点击。、回到首页
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 18 | — | `bindtap` | `selectSource` | {'type': '{{item.type}}', 'id': '{{item.id}}'} |
-| 37 | — | `bindinput` | `onTextInput` | {'key': 'message'} |
-| 48 | — | `bindinput` | `onTextInput` | {'key': 'contact'} |
-| 59 | — | `bindinput` | `onTextInput` | {'key': 'riskHint'} |
-| 79 | — | `bindtap` | `submitSupervision` | — |
-| 83 | 回到首页 | `bindtap` | `goHome` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 59 | `listDiaries` | `GET` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/auth_utils.py`、`backend/routes/diaries.py`、`backend/routes/feedback.py` |
-| 60 | `listAssessmentResults` | `GET` | `/api/assessment-results` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/auth_utils.py`、`backend/routes/diaries.py`、`backend/routes/feedback.py` |
-| 125 | `createSupervision` | `POST` | `/api/supervision` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/auth_utils.py`、`backend/routes/diaries.py`、`backend/routes/feedback.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：`reLaunch` → `/pages/home/index`（js:157）、`navigateTo` → `/pages/login/index:dynamic`（js:186）
-- 本地存储：`getStorageSync` `auth_token`（JS:162）、`getStorageSync` `auth_user`（JS:166）、`removeStorageSync` `auth_token`（JS:192）、`removeStorageSync` `auth_user`（JS:193）、`getStorageSync` `storageKey`（JS:235）、`setStorageSync` `storageKey`（JS:257）、`removeStorageSync` `storageKey`（JS:287）
-- WXML 数据绑定：`sourceOptions`、`item`、`message`、`contact`、`riskHint`、`successMessage`、`errorMessage`、`draftRestored`、`saveStatus`、`slowSubmitting`、`submitting`
-- 条件状态：`successMessage`、`errorMessage`、`slowSubmitting`
-- `setData` 状态：`diaryId`、`saveStatus`、`draftRestored`、`sourceOptions`、`selected`、`loadingSources`、`selectedSource`、`successMessage`、`errorMessage`、`submitting`、`slowSubmitting`、`message`、`contact`、`riskHint`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 52：云托管诊断 `pages/debug/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`f8ef1424ac0ed8153b0092fbbf0965d9db6ea75cf118c4e9b66024838192c022`
-- 核对文件：`apps/miniprogram/pages/debug/index.wxml`、`apps/miniprogram/pages/debug/index.wxss`、`apps/miniprogram/pages/debug/index.js`、`apps/miniprogram/pages/debug/index.json`
-- 上游页面：—
-- 页面组件：—
-- 主要可见内容：云托管诊断、当前配置、切换本地 5000、切回云托管、测试 healthz、测试 assessments、测试 risk/check、测试 profile、最近一次错误
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 16 | 切换本地 5000 | `bindtap` | `useLocalBackend` | — |
-| 17 | 切回云托管 | `bindtap` | `useCloudBackend` | — |
-| 18 | 测试 healthz | `bindtap` | `testHealthz` | — |
-| 19 | 测试 assessments | `bindtap` | `testAssessments` | — |
-| 20 | 测试 risk/check | `bindtap` | `testRiskCheck` | — |
-| 21 | 测试 profile | `bindtap` | `testProfile` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 38 | `getDebugConfig` | `GET` | — | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 67 | `healthz` | `GET` | `/healthz` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 104 | `listAssessments` | `GET` | `/api/assessments` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 109 | `checkRisk` | `POST` | `/api/risk/check` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 118 | `createProfile` | `POST` | `/api/profile` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/test_e2e_profile_position.py`、`backend/routes/admin.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：—
-- 本地存储：—
-- WXML 数据绑定：`config`、`status`、`resultTitle`、`resultText`、`lastError`
-- 条件状态：`lastError`
-- `setData` 状态：`config`、`status`、`resultTitle`、`resultText`、`lastError`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
-
-### 53：联调测试 `pages/integration-test/index`
-
-- 真值状态：`auto_evidence_complete`
-- 源码指纹：`014bf7a7e05d76235e6d8c192e252ea09dcc6c4ddaec2557dd87a9a7bd196606`
-- 核对文件：`apps/miniprogram/pages/integration-test/index.wxml`、`apps/miniprogram/pages/integration-test/index.wxss`、`apps/miniprogram/pages/integration-test/index.js`、`apps/miniprogram/pages/integration-test/index.json`
-- 上游页面：`pages/home/index`、`pages/assessment/index`
-- 页面组件：—
-- 主要可见内容：最小联调测试、情绪事件记录、即时反馈、标签：、推荐训练卡
-
-#### 交互与用户任务证据
-
-| 行 | 可见名称/上下文 | 事件 | 处理器 | 事件参数 |
-|---:|---|---|---|---|
-| 11 | — | `bindtap` | `runSmokeTest` | — |
-
-#### 接口真值
-
-| JS 行 | API 客户端方法 | HTTP | 接口模板 | 后端只读证据 |
-|---:|---|---|---|---|
-| 7 | `getDebugConfig` | `GET` | — | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 33 | `healthz` | `GET` | `/healthz` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 39 | `createDiary` | `POST` | `/api/diaries` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 53 | `generateFeedback` | `POST` | `/api/feedback/generate` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 60 | `recommendCards` | `GET` | `/api/cards/recommend` | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-| 68 | `getDebugConfig` | `GET` | — | `backend/app.py`、`backend/database.py`、`backend/models.py`、`backend/routes/admin.py`、`backend/routes/ai_qa.py`、`backend/routes/assessments.py`、`backend/routes/auth.py`、`backend/routes/auth_utils.py` |
-
-#### 路由、本地状态与页面状态
-
-- 下游路由：—
-- 本地存储：—
-- WXML 数据绑定：`diagnostics`、`status`、`message`、`diary`、`feedback`、`cards`、`item`
-- 条件状态：`diary`、`feedback`、`cards`
-- `setData` 状态：`status`、`message`、`diary`、`feedback`、`cards`
-- 未解析事件：—
-- 未解析 API：—
-- 无效目标路由：—
-
-#### 设计与实现边界
-
-- ImageGen、Figma 和代码只能表现上表中已有事件、接口、路由和状态；不能根据标题猜测新功能。
-- API 返回内容、权限、风险边界和本地草稿语义保持不变；视觉不替代业务判断。
-- 本页进入 ImageGen 前仍需结合真实截图完成页面目标、唯一主任务、信息优先级和状态矩阵的人工冻结。
+## 2026-09-08 前五页精修增量真值
+
+- 首页温度计：thermometerRecordReady=false时显示“记录次数待更新”，不把未读取计数展示为已记录0次；接口不变。
+- 登录/注册：仅增加原生输入aria-label及placeholder样式；用户名、密码、角色、昵称、首次改密阈值、disabled、回跳不变。
+- 首页EntryRow：动作文案纳入可访问名称，摘要仅保留单一箭头并自然换行；点击事件及actionKey不变。
+- 支持性问答：question-composer增加默认空的guidance展示属性；未同意/未填写时解释禁用原因，不改变sending/disabled条件、同意版本、输入和submit事件。
+- 本节不新增业务能力；上述五页事件行号按精修后WXML更新。
+
+## UIproduct2 当前全页功能真值（2026-09-08）
+
+### 第17–19页复核增量
+
+- 关系报告：feedbackSavingIndex已在JS中锁住全部假设保存；界面现同步disabled及保存提示，没有新增限制。日期新增generatedAtText纯展示，原report.generated_at保留。feedback-rating使用editorial布尔属性，不存在variant属性。
+- 关系任务：画布520rpx和坐标、7个情境、草稿、240/300字限制、至少一个句子或绘画加画外音、同意与风险转人工全部保留。
+- 关系成长：四栏、两种提交和报名门槛不变；计数/1–5量尺/维度仍独立，图中文字变大并调整对齐，不改坐标/数值算法。记录栏的底部导航只变为次按钮。
+- 以下行号为初次静态取证位置，布局编辑后的事件与参数以当前源码及本增量为准。
+
+
+依据当前工作区源码、组件递归引用、客户端实现及 API 契约/后端处理函数建立。状态为“静态源码已核对，运行与最终验收待完成”；不是生产可用性证明。未增加业务能力，未运行旧 UIproduct Harness，未计算新哈希。
+
+说明：共享步骤工厂中的方法是条件式能力集合，不表示每个步骤可调用全部方法；必须按 stepId、角色、同意和安全状态设计。动态 action 接口列出后端候选，实际动作仍受页面按钮与处理器约束。静态提取不替代逐页实现前阅读。
+
+### 01 安心陪伴 — `pages/home/index`
+
+**用户任务：** 找到当前最适合继续的一步；保留情绪温度计、测评/日记、最近记录、阶段反馈和消息入口。
+- 页面源码：`apps/miniprogram/pages/home/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{unreadMessageCount > 0}}`；`{{homeOverviewError}}`；`{{!latestRecordReady && !latestRecordError}}`；`{{latestRecordError}}`；`{{latestRecord}}`；`{{!progressSummaryReady && !progressSummaryError}}`；`{{progressSummary}}`；`{{progressSummaryError}}`；`{{showDevEntry}}`
+- 组件：`page-state`、`journey-action-card`、`status-pill`、`entry-row`、`dual-entry`、`function-entry-card`、`section-heading`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 4 | 打开消息中心{{unreadMessageCount > 0 ? '，有未读消息' : ''}} | `bindtap → openMessages` | {} |
+| 14 | 首页摘要暂时不可用 | `bind:action → retryHomeData` | {} |
+| 23 | {{todayJourney ? todayJourney.title : '继续今天的一小步'}} | `bind:action → openTodayAction` | {} |
+| 23 | {{todayJourney ? todayJourney.title : '继续今天的一小步'}} | `bind:retry → retryTodayJourney` | {} |
+| 39 | 情绪温度计 | `bind:action → openThermometer` | {} |
+| 40 | dual-entry | `bind:action → openCoreEntry` | {} |
+| 43 | 如何开始 | `bind:action → openGettingStarted` | {} |
+| 47 | 支持性反馈 | `bind:action → openCoreEntry` | {} |
+| 48 | 训练中心 | `bind:action → openCoreEntry` | {} |
+| 49 | 人工支持 | `bind:action → openCoreEntry` | {} |
+| 59 | 暂时无法读取最近记录 | `bind:action → retryHomeData` | {} |
+| 67 | {{latestRecord.time}} · {{latestRecord.trigger}} | `bind:action → openDiaryHistory` | {} |
+| 68 | 还没有保存的记录 | `bind:action → startDiary` | {} |
+| 78 | {{progressSummary.summaryText}} | `bind:action → openWeeklyReport` | {} |
+| 79 | 暂时无法读取阶段性反馈 | `bind:action → retryHomeData` | {} |
+| 87 | 记录还不够，继续观察 | `bind:action → openWeeklyReport` | {} |
+| 91 | button | `bindtap → openIntegrationTest` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/home/index.js:9` | `trackProductEvent` | POST /api/product-events | backend/routes/product_events.py:63 / product_events.create_product_event / role_scoped |
+| `apps/miniprogram/pages/home/index.js:200` | `listDiaries` | GET /api/diaries | backend/routes/diaries.py:148 / diaries.list_diaries / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/home/index.js:202` | `getProfileStats` | GET /api/profile/stats | backend/routes/profile.py:163 / profile.get_profile_stats / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/home/index.js:203` | `getEmotionThermometerDay` | GET /api/emotion-thermometer/day | backend/routes/emotion_thermometer.py:192 / emotion_thermometer.get_emotion_thermometer_day / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/home/index.js:204` | `getProgressSummary` | GET /api/progress-summary | backend/routes/progress_summary.py:18 / progress_summary.get_progress_summary / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/home/index.js:264` | `getTodayJourney` | GET /api/journey/today | backend/routes/journey.py:14 / journey.get_today_journey / role_scoped |
+
+- 下游路由：navigateTo → /pages/goal-setting/index；navigateTo → /pages/diary-form/index；navigateTo → /pages/diary-history/index；navigateTo → /pages/thermometer/index；navigateTo → /pages/weekly-report/index；switchTab → /pages/training/index；navigateTo → /pages/assessment/index；navigateTo → /pages/messages/index；navigateTo → /pages/integration-test/index；navigateTo → /pages/getting-started/index；switchTab → /pages/training/index；navigateTo → /pages/getting-started/index；switchTab → /pages/training/index；navigateTo → /pages/diary-form/index；navigateTo → /pages/supervision/index；navigateTo → /pages/assessment/index；navigateTo → /pages/training-card/index?tags=:dynamic；navigateTo → /pages/hot-topics/index；navigateTo → /pages/hot-topics/index?id=:dynamic
+- 本地保存：getStorageSync key
+- 组件事件转发：page-state → action；journey-action-card → action/retry；entry-row → action；dual-entry → action；function-entry-card → tapcard
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 02 登录 — `pages/login/index`
+
+**用户任务：** 使用真实可用的登录方式进入；能力探测、账号密码兜底、强制改密、取消/失败与回跳完整保留。
+- 页面源码：`apps/miniprogram/pages/login/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{mustChangePassword}}`；`{{message}}`；`{{wechatAvailable}}`；`{{phoneAvailable}}`；`{{capabilityMessage}}`；`{{message}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 14 | 临时密码 | `bindinput → onCurrentPasswordInput` | {} |
+| 18 | 新密码，至少12位并包含三类字符 | `bindinput → onNewPasswordInput` | {} |
+| 22 | 再次输入新密码 | `bindinput → onConfirmPasswordInput` | {} |
+| 26 | button | `bindtap → submitPasswordChange` | {} |
+| 33 | button | `bindtap → submitWechatLogin` | {} |
+| 35 | button | `bindgetphonenumber → handlePhoneLogin` | {} |
+| 50 | 用户名 | `bindinput → onUsernameInput` | {} |
+| 54 | 密码 | `bindinput → onPasswordInput` | {} |
+| 58 | button | `bindtap → submitLogin` | {} |
+| 59 | button | `bindtap → goRegister` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/login/index.js:78` | `getAuthCapabilities` | GET /api/auth/capabilities | backend/routes/auth.py:373 / auth.auth_capabilities / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/login/index.js:113` | `login` | POST /api/auth/login | backend/routes/auth.py:455 / auth.login / authenticated_identity_match_before_pending_logout_revoke |
+| `apps/miniprogram/pages/login/index.js:168` | `changePassword` | POST /api/auth/change-password | backend/routes/auth.py:925 / auth.change_password / role_scoped |
+| `apps/miniprogram/pages/login/index.js:204` | `wechatLogin` | POST /api/auth/wechat-login | backend/routes/auth.py:548 / auth.wechat_login / authenticated_identity_match_before_pending_logout_revoke |
+| `apps/miniprogram/pages/login/index.js:250` | `phoneLogin` | POST /api/auth/phone-login | backend/routes/auth.py:627 / auth.phone_login / authenticated_identity_match_before_pending_logout_revoke |
+
+- 下游路由：switchTab → /pages/home/index；redirectTo → /pages/register/index:dynamic
+- 本地保存：
+- 权限/预览线索：apps/miniprogram/pages/login/index.js:34 `if (!user \|\| user.role !== "student") {`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 03 注册 — `pages/register/index`
+
+**用户任务：** 创建允许公开注册的账号；用户名、密码、角色、昵称、校验和登录回跳不变。
+- 页面源码：`apps/miniprogram/pages/register/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{message}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 12 | 用户名 | `bindinput → onUsernameInput` | {} |
+| 18 | 密码 | `bindinput → onPasswordInput` | {} |
+| 25 | 选择角色，当前为{{roleOptions[roleIndex].label}} | `bindchange → onRoleChange` | {} |
+| 41 | 昵称，可选 | `bindinput → onNicknameInput` | {} |
+| 45 | button | `bindtap → submitRegister` | {} |
+| 46 | button | `bindtap → goLogin` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/register/index.js:68` | `register` | POST /api/auth/register | backend/routes/auth.py:413 / auth.register / not_applicable_or_development_legacy |
+
+- 下游路由：redirectTo → /pages/home/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 04 消息 — `pages/messages/index`
+
+**用户任务：** 阅读本人消息列表，辨认未读、已读、撤回与版本，进入详情；不是即时聊天。
+- 页面源码：`apps/miniprogram/pages/messages/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{errorDiagnostic}}`；`{{messages.length}}`
+- 组件：`page-state`、`bottom-tip-card`、`message-row`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 10 | 消息暂时没有读取成功 | `bind:action → handleStateAction` | {} |
+| 13 | 复制本次错误的诊断信息 | `bindtap → copyDiagnostic` | {} |
+| 18 | message-row | `bind:open → openMessage` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/messages/index.js:25` | `listMessages` | GET /api/messages | backend/routes/messages.py:48 / messages.list_messages / self_for_participant_active_assignment_for_researcher_supervisor_full_for_admin |
+
+- 下游路由：navigateTo → /pages/message-detail/index?id=:dynamic；reLaunch → /pages/home/index；navigateTo → /pages/login/index?redirect=%2Fpages%2Fmessages%2Findex；navigateTo → /pages/register/index?redirect=%2Fpages%2Fmessages%2Findex
+- 本地保存：
+- 组件事件转发：page-state → action；message-row → open
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 05 支持性问答 — `pages/support-assistant/index`
+
+**用户任务：** 在真实能力开关与同意条件下输入问题、阅读有来源回答；关闭态和失败保留输入。
+- 页面源码：`apps/miniprogram/pages/support-assistant/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{error && !enabled}}`；`{{!enabled}}`；`{{messages.length}}`
+- 组件：`page-state`、`boundary-note`、`conversation-entry`、`question-composer`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 16 | 暂时无法打开支持性问答 | `bind:action → loadStatus` | {} |
+| 32 | boundary-note | `bind:confirm → enableConsent` | {} |
+| 38 | question-composer | `bind:input → onQuestionInput` | {} |
+| 38 | question-composer | `bind:submit → sendQuestion` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/support-assistant/index.js:49` | `getAiQaConfig` | GET /api/ai-qa/config | backend/routes/ai_qa.py:108 / ai_qa.ai_qa_config / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/support-assistant/index.js:74` | `createConsent` | POST /api/consent | backend/routes/consent.py:40 / consent.create_consent_record / authenticated_self_only_consent_event_history |
+| `apps/miniprogram/pages/support-assistant/index.js:94` | `createAiQaSession` | POST /api/ai-qa/sessions | backend/routes/ai_qa.py:222 / ai_qa.ai_qa_session_create / own_synthetic_research_sessions_only |
+| `apps/miniprogram/pages/support-assistant/index.js:111` | `sendAiQaMessage` | POST /api/ai-qa/sessions/<session_id>/messages | backend/routes/ai_qa.py:247 / ai_qa.ai_qa_message_create / own_synthetic_research_sessions_only |
+
+- 下游路由：redirectTo → /pages/login/index?redirect=:dynamic；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/support-assistant/index.js:36 `if (!isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；boundary-note → confirm；question-composer → input/submit
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 06 消息详情 — `pages/message-detail/index`
+
+**用户任务：** 阅读本人消息与来源，按真实条件打开来源或共同核对；撤回内容不得重新显示。
+- 页面源码：`apps/miniprogram/pages/message-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{canOpenSource}}`；`{{canEvaluate}}`
+- 组件：`page-state`、`feedback-rating`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 3 | page-state | `bindaction → handleStateAction` | {} |
+| 16 | button | `bindtap → openSource` | {} |
+| 19 | feedback-rating | `bindselect → submitFeedbackEvaluation` | {} |
+| 30 | 返回消息列表 | `bindtap → goMessages` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/message-detail/index.js:31` | `getMessage` | GET /api/messages/<message_id> | backend/routes/messages.py:83 / messages.get_message / self_for_participant_active_assignment_for_researcher_supervisor_full_for_admin |
+| `apps/miniprogram/pages/message-detail/index.js:76` | `createFeedbackLedgerEntry` | POST /api/feedback-ledger | backend/routes/feedback_ledger.py:24 / feedback_ledger.create_entry / role_scoped |
+
+- 下游路由：navigateTo → /pages/relationship-report/index?id=:dynamic；navigateTo → /pages/relationship-narrative/index?id=:dynamic
+- 本地保存：
+- 组件事件转发：page-state → action；feedback-rating → select
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 07 紧急安全指引 — `pages/emergency-guide/index`
+
+**用户任务：** 优先找到现实帮助，阅读安全行动；不新增拨号、定位或自动危机处置。
+- 页面源码：`apps/miniprogram/pages/emergency-guide/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：
+- 组件：`page-state`、`safety-action-row`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 32 | 查看现实支持资源 | `bindtap → openResources` | {} |
+| 33 | 回到首页 | `bindtap → goHome` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| — | — | 本地内容/导航/状态 | 不新增后端能力 |
+
+- 下游路由：reLaunch → /pages/home/index；navigateTo → /pages/emergency-resources/index
+- 本地保存：
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 08 紧急帮助说明 — `pages/emergency-resources/index`
+
+**用户任务：** 阅读四类现实支持方向并返回安全指引；静态资源不是可直接联系的服务。
+- 页面源码：`apps/miniprogram/pages/emergency-resources/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：
+- 组件：`page-state`、`resource-channel-row`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 19 | 查看紧急安全指引 | `bindtap → goGuide` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| — | — | 本地内容/导航/状态 | 不新增后端能力 |
+
+- 下游路由：navigateTo → /pages/emergency-guide/index
+- 本地保存：
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 09 三步开始 — `pages/getting-started/index`
+
+**用户任务：** 理解记录—反馈—练习的真实三步，进入日记或训练；不虚构学习进度。
+- 页面源码：`apps/miniprogram/pages/getting-started/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 70 | 记录一次 | `bindtap → startDiary` | {} |
+| 71 | 去训练中心 | `bindtap → openTraining` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| — | — | 本地内容/导航/状态 | 不新增后端能力 |
+
+- 下游路由：navigateTo → /pages/diary-form/index；switchTab → /pages/training/index
+- 本地保存：
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 10 情绪温度计 — `pages/thermometer/index`
+
+**用户任务：** 记录强度及可选感受维度；查看真实保存回执、当天曲线、点选与记录，保留拖动和加减。
+- 页面源码：`apps/miniprogram/pages/thermometer/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{receipt}}`；`{{receipt.practice_available}}`；`{{loading}}`；`{{summary.count && !loading}}`；`{{selectedPoint}}`；`{{!summary.count && !loading}}`；`{{errorMessage}}`；`{{item.emotion_label}}`
+- 组件：`page-state`、`intensity-scale`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 13 | − | `bindchange → onIntensityChange` | {} |
+| 17 | 情绪强度减一 | `bindtap → decreaseIntensity` | {} |
+| 18 | 情绪强度加一 | `bindtap → increaseIntensity` | {} |
+| 30 | 调整愉悦度 | `bindchange → onValenceChange` | {} |
+| 30 | 调整愉悦度 | `bindchanging → onValenceChange` | {} |
+| 37 | 调整身体唤起 | `bindchange → onArousalChange` | {} |
+| 37 | 调整身体唤起 | `bindchanging → onArousalChange` | {} |
+| 44 | 调整可控感 | `bindchange → onControlChange` | {} |
+| 44 | 调整可控感 | `bindchanging → onControlChange` | {} |
+| 48 | / 40 | `bindinput → onEmotionLabelInput` | {} |
+| 58 | / 200 | `bindinput → onBriefInput` | {} |
+| 69 | button | `bindtap → saveRecord` | {} |
+| 77 | 收起记录回执 | `bindtap → dismissReceipt` | {} |
+| 81 | 去练一张卡 | `bindtap → openPractice` | {} |
+| 90 | 刷新 | `bindtap → loadDay` | {} |
+| 93 | 今日情绪强度变化曲线，具体记录见下方列表 | `bindtouchstart → handleCanvasTap` | {} |
+| 114 | 重试读取 | `bindtap → loadDay` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/thermometer/index.js:96` | `getEmotionThermometerDay` | GET /api/emotion-thermometer/day | backend/routes/emotion_thermometer.py:192 / emotion_thermometer.get_emotion_thermometer_day / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/thermometer/index.js:123` | `createEmotionThermometer` | POST /api/emotion-thermometer | backend/routes/emotion_thermometer.py:128 / emotion_thermometer.create_emotion_thermometer_record / self_only_or_dedicated_domain_command |
+
+- 下游路由：navigateTo → /pages/training-card/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/thermometer/index.js:36 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；intensity-scale → change
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 11 训练 — `pages/training/index`
+
+**用户任务：** 找到可继续的练习，浏览真实推荐、轻量计划、训练库和条件式试点入口。
+- 页面源码：`apps/miniprogram/pages/training/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{latestRecommendation}}`；`{{latestRecommendation.reason}}`；`{{latestRecommendation.reason}}`；`{{latestRecommendation.todaySuggestion}}`；`{{latestRecommendation.todaySuggestion}}`；`{{latestRecommendation.primaryCard}}`；`{{latestRecommendation.primaryCard.purpose}}`；`{{latestRecommendation.primaryCard.recentlyCompleted}}`；`{{latestRecommendation.boundaryNotice}}`；`{{relationshipPilotAvailable}}`；`{{threeDayPlan}}`；`{{lightPlanExpanded}}`；`{{libraryExpanded}}`
+- 组件：`page-state`、`section-title`、`training-task-card`、`bottom-tip-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 14 | 个性化方案 | `bindtap → openPersonalizedPlan` | {} |
+| 18 | 项目测试 | `bindtap → openProgramList` | {} |
+| 47 | 查看练习 | `bindtap → openLatestRecommendation` | {} |
+| 54 | 进入关系探索试点 | `bindtap → openRelationshipPilot` | {} |
+| 63 | button | `bindtap → toggleLightPlan` | {} |
+| 65 | button | `bindtap → openPlanDay` | {"card-id":"{{item.cardId}}"} |
+| 102 | button | `bindtap → toggleLibrary` | {} |
+| 109 | training-task-card | `bindtapcard → openTrainingCard` | {"id":"{{task.id}}","tags":"{{task.tagsText}}"} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/training/index.js:149` | `getShowcaseAccess` | GET /api/showcase-access | backend/routes/showcase_access.py:13 / showcase_access.get_showcase_access / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/training/index.js:159` | `getTrainingPlan` | GET /api/training-plan | backend/routes/training_plan.py:343 / training_plan.get_training_plan / self_or_active_participant_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/training-card/index?card_ids=:dynamic；navigateTo → /pages/training-card/index?card_ids=:dynamic；navigateTo → /pages/personalized-plan/index；navigateTo → /pages/program-list/index；navigateTo → /pages/relationship-pilot/index；navigateTo → /pages/task-detail/index?id=:dynamic；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync LATEST_TRAINING_RECOMMENDATION_KEY；getStorageSync THREE_DAY_LIGHT_PLAN_KEY；getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/training/index.js:148 `const user = getAuthUser();`；apps/miniprogram/pages/training/index.js:150 `this.setData({ relationshipPilotAvailable: !!showcase.enabled \|\| !!(user && user.role === "student") });`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；section-title → more；training-task-card → tapcard
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 12 训练记录 — `pages/training-history/index`
+
+**用户任务：** 回看训练记录、再次练习及加载更多；总数、分页错误与末尾状态不混淆。
+- 页面源码：`apps/miniprogram/pages/training-history/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage && !items.length}}`；`{{items.length}}`；`{{item.helpfulnessText}}`；`{{item.reflection}}`；`{{hasMore}}`；`{{errorMessage}}`；`{{errorMessage && errorDiagnostic}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 20 | 重新加载 | `bindtap → retry` | {} |
+| 21 | 复制诊断信息 | `bindtap → copyDiagnostic` | {} |
+| 34 | 再次练习 | `bindtap → openCard` | {"card-id":"{{item.card_id}}"} |
+| 37 | button | `bindtap → loadMore` | {} |
+| 40 | 复制诊断信息 | `bindtap → copyDiagnostic` | {} |
+| 46 | 去训练中心 | `bindtap → goTraining` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/training-history/index.js:56` | `listCheckins` | GET /api/checkins | backend/routes/checkins.py:160 / checkins.list_checkins / self_or_active_participant_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/training-card/index?card_ids=:dynamic；switchTab → /pages/training/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/training-history/index.js:42 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 13 个性化训练方案 — `pages/personalized-plan/index`
+
+**用户任务：** 设置阶段、频率和日期，查看到期摘要及真实推荐；微信提醒按原授权语义运行。
+- 页面源码：`apps/miniprogram/pages/personalized-plan/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{assignment.due_reason}}`；`{{plan && plan.assignment}}`；`{{!notification.available}}`；`{{notification.preference && notification.preference.consent_status === 'accepted'}}`；`{{notification.preference && notification.preference.consent_status === 'consumed'}}`；`{{notification.preference && notification.preference.consent_status === 'banned'}}`；`{{notification.available && (!notification.preference \|\| notification.preference.consent_status !== 'accepted') && notification.preference.consent_status !== 'banned'}}`；`{{notification.available && notification.preference && notification.preference.consent_status === 'banned'}}`；`{{!loading && plan && !plan.has_assessment}}`；`{{item.cluster_name}}`；`{{loading}}`；`{{!loading && errorMessage}}`；`{{!loading && plan && plan.has_assessment && !planItems.length}}`
+- 组件：`page-state`、`training-task-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 17 | button | `bindtap → selectAssignmentOption` | {"field":"phase","value":"{{item.value}}"} |
+| 29 | button | `bindtap → selectAssignmentOption` | {"field":"cadence","value":"{{item.value}}"} |
+| 41 | picker | `bindchange → onStartDateChange` | {} |
+| 48 | button | `bindtap → selectAssignmentOption` | {"field":"status","value":"{{item.value}}"} |
+| 59 | 保存练习节奏 | `bindinput → onGoalInput` | {} |
+| 66 | 保存练习节奏 | `bindtap → saveAssignment` | {} |
+| 102 | 开启一次微信提醒 | `bindtap → requestTrainingReminder` | {} |
+| 108 | 前往微信设置 | `bindtap → openNotificationSettings` | {} |
+| 118 | 去测一测 | `bindtap → openAssessment` | {} |
+| 129 | training-task-card | `bindtapcard → openSingleCard` | {} |
+| 151 | 重试 | `bindtap → loadPlan` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/personalized-plan/index.js:64` | `getNotificationConfig` | GET /api/notifications/config | backend/routes/notifications.py:26 / notifications.get_notification_config / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/personalized-plan/index.js:77` | `getTrainingPlan` | GET /api/training-plan | backend/routes/training_plan.py:343 / training_plan.get_training_plan / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/personalized-plan/index.js:124` | `saveTrainingPlanAssignment` | POST /api/training-plan/assignment | backend/routes/training_plan.py:486 / training_plan.save_training_plan_assignment / self_only_or_dedicated_domain_command |
+| `apps/miniprogram/pages/personalized-plan/index.js:150` | `saveNotificationConsent` | POST /api/notifications/consent | backend/routes/notifications.py:35 / notifications.save_notification_consent / self_only_or_dedicated_domain_command |
+
+- 下游路由：navigateTo → /pages/assessment/index；navigateTo → /pages/training-card/index?card_ids=:dynamic；navigateTo → /pages/training-card/index?card_ids=:dynamic
+- 本地保存：
+- 组件事件转发：page-state → action；training-task-card → tapcard
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 14 项目测试 — `pages/program-list/index`
+
+**用户任务：** 选择可用项目或获准只读预览；待审核不表现为正式开放。
+- 页面源码：`apps/miniprogram/pages/program-list/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{previewMode}}`；`{{loading}}`；`{{!loading && errorMessage}}`；`{{!loading && !errorMessage && !programs.length}}`；`{{!loading && !errorMessage && !programs.length && availability && availability.pending_review_count}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 14 | 打开项目：{{item.title}} | `bindtap → openProgram` | {"id":"{{item.id}}","preview":"{{item.preview_only}}"} |
+| 35 | <text wx:if="{{!loading && !errorMessage && !pro | `bindaction → loadPrograms` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/program-list/index.js:24` | `listPrograms` | GET /api/programs | backend/routes/programs.py:70 / programs.list_programs / not_applicable_or_development_legacy |
+
+- 下游路由：navigateTo → /pages/program-detail/index?id=:dynamic；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/program-list/index.js:11 `previewMode: false,`；apps/miniprogram/pages/program-list/index.js:22 `const user = getAuthUser();`；apps/miniprogram/pages/program-list/index.js:23 `const previewMode = !!(user && ["researcher", "supervisor", "admin"].includes(user.role));`；apps/miniprogram/pages/program-list/index.js:25 `.listPrograms(previewMode ? { include_drafts: true } : {})`；apps/miniprogram/pages/program-list/index.js:31 `previewMode,`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 15 项目详情 — `pages/program-detail/index`
+
+**用户任务：** 核对项目边界、切换小节、填写与保存草稿、授权后提交并回看；预览只读。
+- 页面源码：`apps/miniprogram/pages/program-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{program}}`；`{{previewMode}}`；`{{program.neutral_alternative}}`；`{{program.interpretation_boundary}}`；`{{program.clinical_boundary}}`；`{{program.measurementPlan}}`；`{{selectedSession}}`；`{{selectedSession.writing_prompt}}`；`{{!previewMode}}`；`{{!previewMode}}`；`{{!previewMode}}`；`{{!previewMode}}`；`{{successMessage}}`；`{{errorMessage}}`；`{{!previewMode && submittedEntries.length}}`；`{{loading}}`；`{{errorMessage}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 55 | 第 节 | `bindtap → selectSession` | {"session-no":"{{item.session_no}}"} |
+| 82 | 保存本机草稿 | `bindinput → onDraftInput` | {} |
+| 83 | 保存本机草稿 | `bindtap → saveDraft` | {} |
+| 90 | textarea | `bindinput → onReflectionInput` | {"index":"{{index}}"} |
+| 107 | 练习后不适程度： / 10 | `bindchange → onDistressBeforeChange` | {} |
+| 109 | 这次练习出现了明显不适或负面体验，需要后续关注。 | `bindchange → onDistressAfterChange` | {} |
+| 110 | 这次练习出现了明显不适或负面体验，需要后续关注。 | `bindchange → onAdverseResponseChange` | {} |
+| 116 | 允许将本次内容用于脱敏聚合分析，不默认展示原文。 | `bindchange → onAnalysisConsentChange` | {} |
+| 124 | 登录后正式提交 | `bindtap → submitEntry` | {} |
+| 148 | 重试 | `bindtap → retryLoad` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/program-detail/index.js:69` | `getProgram` | GET /api/programs/<program_id> | backend/routes/programs.py:104 / programs.get_program / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/program-detail/index.js:172` | `listProgramEntries` | GET /api/programs/<program_id>/entries | backend/routes/programs.py:122 / programs.list_program_entries / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/program-detail/index.js:203` | `createProgramEntry` | POST /api/programs/<program_id>/entries | backend/routes/programs.py:159 / programs.create_program_entry / self_only_or_dedicated_domain_command |
+
+- 下游路由：
+- 本地保存：getStorageSync draftKey；setStorageSync draftKey；removeStorageSync draftKey
+- 权限/预览线索：apps/miniprogram/pages/program-detail/index.js:38 `previewMode: false,`；apps/miniprogram/pages/program-detail/index.js:57 `const previewMode = query.preview === "1";`；apps/miniprogram/pages/program-detail/index.js:59 `this.setData({ programId, previewMode, requestedSessionNo });`；apps/miniprogram/pages/program-detail/index.js:70 `.getProgram(programId, this.data.previewMode ? { include_drafts: true } : {})`；apps/miniprogram/pages/program-detail/index.js:87 `if (!this.data.previewMode) this.loadSubmittedEntries();`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 16 关系探索试点 — `pages/relationship-pilot/index`
+
+**用户任务：** 核对资格与报名同意，沿真实五阶段状态继续；角色与参与者保护保持不变。
+- 页面源码：`apps/miniprogram/pages/relationship-pilot/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{roleBlocked}}`；`{{!enrollment}}`；`{{errorMessage}}`
+- 组件：`page-state`、`journey-action-card`、`status-pill`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 19 | 我已阅读并同意将本次测评用于关系探索试点的评估与复盘。 | `bindchange → toggleConsent` | {} |
+| 22 | 确认报名 | `bindtap → enroll` | {} |
+| 23 | 还没测评？先完成关系测一测 | `bindtap → goAssessment` | {} |
+| 27 | 关系探索当前步骤 | `bindaction → runPrimaryAction` | {} |
+| 56 | button | `bindtap → runSecondaryAction` | {"action":"{{item.key}}"} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/relationship-pilot/index.js:69` | `getShowcaseAccess` | GET /api/showcase-access | backend/routes/showcase_access.py:13 / showcase_access.get_showcase_access / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/relationship-pilot/index.js:81` | `listRelationshipEnrollments` | GET /api/relationship-pilot/enrollments | backend/routes/relationship_pilot_routes.py:80 / relationship_pilot.list_enrollments_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/relationship-pilot/index.js:86` | `getRelationshipGrowth` | GET /api/relationship-pilot/growth | backend/routes/relationship_pilot_routes.py:190 / relationship_pilot.relationship_growth_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/relationship-pilot/index.js:129` | `createRelationshipEnrollment` | POST /api/relationship-pilot/enrollments | backend/routes/relationship_pilot_routes.py:69 / relationship_pilot.create_enrollment_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/relationship-pilot/index.js:149` | `trackProductEvent` | POST /api/product-events | backend/routes/product_events.py:63 / product_events.create_product_event / role_scoped |
+
+- 下游路由：navigateTo → /pages/assessment/index?audience_class=student&query=%E5%85%B3%E7%B3%BB；navigateTo → /pages/relationship-report/index?id=:dynamic；navigateTo → /pages/relationship-task/index?type=relationship_drawing&enrollment_id=:dynamic；navigateTo → /pages/relationship-task/index?type=sentence_completion&enrollment_id=:dynamic；navigateTo → /pages/relationship-growth/index?detail=1&enrollment_id=:dynamic；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/relationship-pilot/index.js:67 `if (!requireLogin({ redirectUrl: "/pages/relationship-pilot/index" })) return;`；apps/miniprogram/pages/relationship-pilot/index.js:68 `const user = getAuthUser();`；apps/miniprogram/pages/relationship-pilot/index.js:70 `if (!showcase.enabled && (!user \|\| !["student", "admin"].includes(user.role))) {`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；journey-action-card → action/retry
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 17 阶段性报告 — `pages/relationship-report/index`
+
+**用户任务：** 阅读已获准报告，核对假设与反馈、查看真实维度及导出；未交付状态不泄漏。
+- 页面源码：`apps/miniprogram/pages/relationship-report/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{deliveryPending}}`；`{{attentionNotice}}`；`{{radarRows.length}}`；`{{report.four_layer_profile.tension.clues.length}}`；`{{mechanismCards.length}}`；`{{report.four_layer_profile.dynamic.rounds_count >= 2}}`
+- 组件：`page-state`、`relationship-status`、`feedback-rating`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 3 | 正在人工核对 | `bindaction → loadReport` | {} |
+| 32 | feedback-rating | `bindselect → submitReportEvaluation` | {} |
+| 62 | 符合 | `bindtap → saveHypothesisFeedback` | {"index":"{{item.index}}","response":"matches"} |
+| 63 | 不符合 | `bindtap → saveHypothesisFeedback` | {"index":"{{item.index}}","response":"does_not_match"} |
+| 64 | 不确定 | `bindtap → saveHypothesisFeedback` | {"index":"{{item.index}}","response":"uncertain"} |
+| 99 | 生成脱敏报告长图 | `bindtap → drawLongImage` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/relationship-report/index.js:81` | `getRelationshipReport` | GET /api/relationship-pilot/reports/<report_id> | backend/routes/relationship_pilot_routes.py:104 / relationship_pilot.get_report_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/relationship-report/index.js:127` | `saveRelationshipHypothesisFeedback` | PUT /api/relationship-pilot/reports/<report_id>/hypotheses/<int:hypothesis_index> | backend/routes/relationship_pilot_routes.py:120 / relationship_pilot.save_hypothesis_feedback_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/relationship-report/index.js:145` | `createFeedbackLedgerEntry` | POST /api/feedback-ledger | backend/routes/feedback_ledger.py:24 / feedback_ledger.create_entry / role_scoped |
+| `apps/miniprogram/pages/relationship-report/index.js:222` | `trackProductEvent` | POST /api/product-events | backend/routes/product_events.py:63 / product_events.create_product_event / role_scoped |
+
+- 下游路由：
+- 本地保存：
+- 组件事件转发：page-state → action；feedback-rating → select
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 18 关系探索任务 — `pages/relationship-task/index`
+
+**用户任务：** 完成绘画或句子补全；撤销/重做、跳过、草稿、授权与风险转人工保持原行为。
+- 页面源码：`apps/miniprogram/pages/relationship-task/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{draftRestored}}`；`{{isDrawing}}`；`{{item.answered}}`；`{{item.expanded}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 13 | 关系感受绘画画布，可使用下方按钮撤销、重做或清空 | `bindtouchstart → startStroke` | {} |
+| 13 | 关系感受绘画画布，可使用下方按钮撤销、重做或清空 | `bindtouchmove → moveStroke` | {} |
+| 13 | 关系感受绘画画布，可使用下方按钮撤销、重做或清空 | `bindtouchend → endStroke` | {} |
+| 15 | 撤销 | `bindtap → undoStroke` | {} |
+| 16 | 重做 | `bindtap → redoStroke` | {} |
+| 17 | 清空 | `bindtap → clearCanvas` | {} |
+| 21 | textarea | `bindinput → onNarrationInput` | {} |
+| 28 | button | `bindtap → toggleContext` | {"key":"{{item.key}}"} |
+| 34 | textarea | `bindinput → onSentenceInput` | {"key":"{{item.key}}"} |
+| 41 | 我同意将这份敏感叙事材料用于本次试点评估与人工复核；默认不导出原文。 | `bindchange → toggleConsent` | {} |
+| 45 | 提交这份材料 | `bindtap → saveTask` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/relationship-task/index.js:318` | `createRelationshipTask` | POST /api/relationship-pilot/enrollments/<enrollment_id>/tasks | backend/routes/relationship_pilot_routes.py:156 / relationship_pilot.create_task_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/relationship-task/index.js:328` | `trackProductEvent` | POST /api/product-events | backend/routes/product_events.py:63 / product_events.create_product_event / role_scoped |
+
+- 下游路由：
+- 本地保存：getStorageSync this；removeStorageSync this；setStorageSync this
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 19 关系探索成长记录 — `pages/relationship-growth/index`
+
+**用户任务：** 按真实指标和事件复盘；保留四类切换、表单、草稿、时间线与分开量尺。
+- 页面源码：`apps/miniprogram/pages/relationship-growth/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{growth}}`；`{{activeSection === 'curve'}}`；`{{curveGroups.length}}`；`{{selectedPoints.length >= 2}}`；`{{selectedPoints.length >= 2}}`；`{{recentTimeline.length}}`；`{{activeSection === 'timeline'}}`；`{{filteredTimeline.length}}`；`{{activeSection === 'feedback'}}`；`{{researcherConfirmations.length}}`；`{{showSelfNarratives}}`；`{{!selfNarratives.length}}`；`{{activeSection === 'records'}}`；`{{!canRecord}}`；`{{canRecord}}`；`{{showWeeklyForm}}`；`{{slowSaving}}`；`{{canRecord}}`；`{{showEventForm}}`；`{{errorMessage}}`
+- 组件：`page-state`、`visualization-state`、`timeline-record`、`bamboo-timeline-node`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 25 | 查看{{item.label}} | `bindtap → selectSection` | {"section":"{{item.key}}"} |
+| 35 | button | `bindtap → selectCurveGroup` | {"key":"{{item.key}}"} |
+| 36 | button | `bindtap → selectMetric` | {"key":"{{item.key}}"} |
+| 56 | 查看全部 › | `bindtap → showAllTimeline` | {} |
+| 67 | button | `bindtap → selectTimelineFilter` | {"key":"{{item.key}}"} |
+| 78 | 用户原话（仅你可见） | `bindtap → toggleSelfNarratives` | {} |
+| 86 | 前往关系探索 | `bindtap → goRelationshipPilot` | {} |
+| 90 | 本周补充记录 | `bindtap → toggleRecordPanel` | {"panel":"weekly"} |
+| 92 | input | `bindinput → onFieldInput` | {"key":"active_social_count"} |
+| 93 | input | `bindinput → onFieldInput` | {"key":"authentic_expression_count"} |
+| 94 | textarea | `bindinput → onFieldInput` | {"key":"setback_coping"} |
+| 95 | slider | `bindchange → onSliderChange` | {"key":"approach_willingness"} |
+| 96 | slider | `bindchange → onSliderChange` | {"key":"worry_intensity"} |
+| 97 | textarea | `bindinput → onFieldInput` | {"key":"achievement"} |
+| 98 | textarea | `bindinput → onFieldInput` | {"key":"setback"} |
+| 101 | 保存本周记录 | `bindtap → saveWeekly` | {} |
+| 106 | 记录一个关键事件 | `bindtap → toggleRecordPanel` | {"panel":"event"} |
+| 108 | textarea | `bindinput → onFieldInput` | {"key":"event_summary"} |
+| 110 | 加入时间线 | `bindtap → saveEvent` | {} |
+| 116 | 共同理解一次关系体验 | `bindtap → goTherapeuticAssessment` | {} |
+| 117 | 记录今天的一小步 | `bindtap → openRecordSection` | {} |
+| 118 | 查看阶段性反馈 | `bindtap → showFeedbackSection` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/relationship-growth/index.js:182` | `getRelationshipGrowth` | GET /api/relationship-pilot/growth | backend/routes/relationship_pilot_routes.py:190 / relationship_pilot.relationship_growth_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/relationship-growth/index.js:400` | `createRelationshipLongitudinal` | POST /api/relationship-pilot/enrollments/<enrollment_id>/longitudinal | backend/routes/relationship_pilot_routes.py:173 / relationship_pilot.create_longitudinal_entry_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/therapeutic-assessment/index；redirectTo → /pages/growth-dashboard/index?section=relationship:dynamic；navigateTo → /pages/relationship-pilot/index
+- 本地保存：getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 20 共同理解 — `pages/therapeutic-assessment/index`
+
+**用户任务：** 开始或继续获准协作，查看成人范围、责任链与反馈/行动；治理状态不冒充已批准。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{notice}}`；`{{errorMessage}}`；`{{activeCase}}`；`{{activeCase}}`；`{{activeCase}}`；`{{loading}}`；`{{activeCase}}`；`{{activeCase.working_question && activeCase.working_question !== activeCase.assessment_question}}`；`{{activeCase.latestFeedback}}`；`{{evidenceSummary && evidenceSummary.item_count}}`；`{{evidenceItems.length}}`；`{{activeCase && activeCase.latestFeedback}}`；`{{productionContract}}`；`{{adultLaunchScope}}`；`{{activeCase && (!launchScreening \|\| launchScreening.decision === 'screening_required')}}`；`{{launchScreening}}`；`{{childPolicy}}`；`{{multiPartyPolicy}}`；`{{aiAssistPolicy}}`；`{{methodCatalog}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 18 | 继续最近一次协作 | `bindtap → continueParticipantFlow` | {} |
+| 19 | 开始一次协作 | `bindtap → startParticipantFlow` | {} |
+| 20 | 开始新的议题 | `bindtap → startParticipantFlow` | {} |
+| 36 | 查看两个问题候选 | `bindtap → updateQuestionAction` | {"action":"generate_candidates"} |
+| 37 | 都不符合 | `bindtap → updateQuestionAction` | {"action":"none_fit"} |
+| 63 | 这和我的体验不一致 | `bindtap → disagree` | {} |
+| 64 | 暂时停一下 | `bindtap → updateQuestionAction` | {"action":"pause"} |
+| 65 | 更正与投诉 | `bindtap → openQualityRecord` | {} |
+| 67 | 撤回本次协作 | `bindtap → withdraw` | {} |
+| 73 | textarea | `bindinput → onActionInput` | {} |
+| 74 | 记录下一小步 | `bindtap → chooseAction` | {} |
+| 80 | textarea | `bindinput → onQuestionInput` | {} |
+| 82 | 上面的问题 | `bindchange → onScopeChange` | {} |
+| 86 | 提交协作问题 | `bindtap → createCase` | {} |
+| 108 | 确认符合上述范围 | `bindtap → confirmAdultLaunchScope` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:84` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:85` | `getTherapeuticAssessmentServiceLevels` | GET /api/therapeutic-assessment/service-levels | backend/routes/therapeutic_assessment.py:334 / therapeutic_assessment.get_service_levels_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:86` | `getTherapeuticAssessmentProductionContract` | GET /api/therapeutic-assessment/production-contract | backend/routes/therapeutic_assessment.py:340 / therapeutic_assessment.get_production_contract_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:87` | `getTherapeuticAssessmentAdultLaunchScope` | GET /api/therapeutic-assessment/launch-scope | backend/routes/therapeutic_assessment.py:178 / therapeutic_assessment.get_launch_scope_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:88` | `getTherapeuticAssessmentChildPolicy` | GET /api/therapeutic-assessment/child-safeguards | backend/routes/therapeutic_assessment.py:184 / therapeutic_assessment.get_child_safeguards_policy_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:89` | `getTherapeuticAssessmentMultiPartyPolicy` | GET /api/therapeutic-assessment/multi-party-safeguards | backend/routes/therapeutic_assessment.py:190 / therapeutic_assessment.get_multi_party_policy_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:90` | `getTherapeuticAssessmentAiAssistPolicy` | GET /api/therapeutic-assessment/ai-assist | backend/routes/therapeutic_assessment.py:196 / therapeutic_assessment.get_ai_assist_policy_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:91` | `getTherapeuticAssessmentMethodLibrary` | GET /api/therapeutic-assessment/method-library | backend/routes/therapeutic_assessment.py:202 / therapeutic_assessment.get_method_library_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:111` | `listTherapeuticAssessmentEvidence` | GET /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:482 / therapeutic_assessment.get_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:112` | `getTherapeuticAssessmentLaunchScreening` | GET /api/therapeutic-assessment/cases/<case_id>/launch-screenings/latest | backend/routes/therapeutic_assessment.py:328 / therapeutic_assessment.get_latest_launch_screening_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:135` | `submitTherapeuticAssessmentLaunchScreening` | POST /api/therapeutic-assessment/cases/<case_id>/launch-screenings | backend/routes/therapeutic_assessment.py:322 / therapeutic_assessment.post_launch_screening_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:188` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:210` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:230` | `updateTherapeuticAssessmentQuestion` | PATCH /api/therapeutic-assessment/cases/<case_id>/question | backend/routes/therapeutic_assessment.py:470 / therapeutic_assessment.patch_question_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment/index.js:254` | `transitionTherapeuticAssessment` | POST /api/therapeutic-assessment/cases/<case_id>/actions；POST /api/therapeutic-assessment/cases/<case_id>/assign；POST /api/therapeutic-assessment/cases/<case_id>/child-safeguards；POST /api/therapeutic-assessment/cases/<case_id>/data-items；POST /api/therapeutic-assessment/cases/<case_id>/disagree；POST /api/therapeutic-assessment/cases/<case_id>/evidence；POST /api/therapeutic-assessment/cases/<case_id>/feedback-versions；POST /api/therapeutic-assessment/cases/<case_id>/launch-screenings；POST /api/therapeutic-assessment/cases/<case_id>/multi-party-safeguards；POST /api/therapeutic-assessment/cases/<case_id>/quality-incidents；POST /api/therapeutic-assessment/cases/<case_id>/readiness；POST /api/therapeutic-assessment/cases/<case_id>/safety-signals；POST /api/therapeutic-assessment/cases/<case_id>/transitions；POST /api/therapeutic-assessment/cases/<case_id>/withdraw；POST /api/therapeutic-assessment/cases/<case_id>/work-queue | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:680 / therapeutic_assessment.post_assign_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:292 / therapeutic_assessment.post_child_safeguard_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:608 / therapeutic_assessment.post_data_item_route / case_participant_owned_data_item_creation；backend/routes/therapeutic_assessment.py:668 / therapeutic_assessment.post_disagree_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:692 / therapeutic_assessment.post_feedback_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:322 / therapeutic_assessment.post_launch_screening_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:254 / therapeutic_assessment.post_multi_party_safeguard_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:800 / therapeutic_assessment.post_quality_incident_route / participant_owned_or_authorized_case_quality_incident_append_only；backend/routes/therapeutic_assessment.py:686 / therapeutic_assessment.post_readiness_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:650 / therapeutic_assessment.post_safety_signal_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:476 / therapeutic_assessment.post_transition_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:674 / therapeutic_assessment.post_withdraw_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin；backend/routes/therapeutic_assessment.py:368 / therapeutic_assessment.post_work_queue_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：navigateTo → /pages/therapeutic-assessment-boundary/index；navigateTo → /pages/therapeutic-assessment-boundary/index?caseId=:dynamic；navigateTo → /pages/therapeutic-assessment-quality/index:dynamic
+- 本地保存：
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 21 开始前了解 — `pages/therapeutic-assessment-boundary/index`
+
+**用户任务：** 自主决定开始或退出；安全暂停、登录与草稿状态来自共享流程。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-boundary/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 共享流程分支：`boundary`。
+- 实际条件：
+- 组件：`page-state`、`therapeutic-flow-step`、`therapeutic-choice-option`、`therapeutic-textarea`、`therapeutic-comparison`、`therapeutic-feedback-letter`、`therapeutic-compact-textarea`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 1 | therapeutic-flow-step | `bindvaluechange → onValueChange` | {} |
+| 1 | therapeutic-flow-step | `bindoptionchange → onOptionChange` | {} |
+| 1 | therapeutic-flow-step | `bindcontinue → onContinue` | {} |
+| 1 | therapeutic-flow-step | `bindretry → onRetry` | {} |
+| 1 | therapeutic-flow-step | `bindback → onBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:185` | `getTherapeuticAssessmentStopRecoveryStatus` | GET /api/therapeutic-assessment/stop-recovery/status | backend/routes/therapeutic_assessment.py:548 / therapeutic_assessment.get_stop_recovery_status_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:200` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:252` | `getTherapeuticAssessmentParticipantDraft` | GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:626 / therapeutic_assessment.get_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:324` | `saveTherapeuticAssessmentParticipantDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:632 / therapeutic_assessment.put_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:366` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:394` | `createTherapeuticAssessmentEvidence` | POST /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:419` | `updateTherapeuticAssessmentScope` | PATCH /api/therapeutic-assessment/cases/<case_id>/scope | backend/routes/therapeutic_assessment.py:464 / therapeutic_assessment.patch_scope_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:429` | `respondToTherapeuticAssessmentFeedback` | POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses | backend/routes/therapeutic_assessment.py:710 / therapeutic_assessment.post_feedback_response_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:442` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment-action-followup/index?caseId=:dynamic；redirectTo → /pages/therapeutic-assessment/index；redirectTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:150 `if (!requireLogin({ redirectUrl: route(stepId, caseId), message: "请先登录后再继续本次协作。" })) {`；apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:391 `const actor = getAuthUser() \|\| {};`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；therapeutic-flow-step → valuechange/optionchange/actionchange/continue/retry/back；therapeutic-choice-option → change；therapeutic-textarea → input；therapeutic-compact-textarea → input
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 22 我的议题 — `pages/therapeutic-assessment-issue/index`
+
+**用户任务：** 写下议题并创建/继续协作；原文、草稿、服务端版本及校验保留。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-issue/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 共享流程分支：`issue`。
+- 实际条件：
+- 组件：`page-state`、`therapeutic-flow-step`、`therapeutic-choice-option`、`therapeutic-textarea`、`therapeutic-comparison`、`therapeutic-feedback-letter`、`therapeutic-compact-textarea`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 1 | therapeutic-flow-step | `bindvaluechange → onValueChange` | {} |
+| 1 | therapeutic-flow-step | `bindoptionchange → onOptionChange` | {} |
+| 1 | therapeutic-flow-step | `bindcontinue → onContinue` | {} |
+| 1 | therapeutic-flow-step | `bindretry → onRetry` | {} |
+| 1 | therapeutic-flow-step | `bindback → onBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:185` | `getTherapeuticAssessmentStopRecoveryStatus` | GET /api/therapeutic-assessment/stop-recovery/status | backend/routes/therapeutic_assessment.py:548 / therapeutic_assessment.get_stop_recovery_status_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:200` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:252` | `getTherapeuticAssessmentParticipantDraft` | GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:626 / therapeutic_assessment.get_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:324` | `saveTherapeuticAssessmentParticipantDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:632 / therapeutic_assessment.put_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:366` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:394` | `createTherapeuticAssessmentEvidence` | POST /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:419` | `updateTherapeuticAssessmentScope` | PATCH /api/therapeutic-assessment/cases/<case_id>/scope | backend/routes/therapeutic_assessment.py:464 / therapeutic_assessment.patch_scope_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:429` | `respondToTherapeuticAssessmentFeedback` | POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses | backend/routes/therapeutic_assessment.py:710 / therapeutic_assessment.post_feedback_response_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:442` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment-action-followup/index?caseId=:dynamic；redirectTo → /pages/therapeutic-assessment/index；redirectTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:150 `if (!requireLogin({ redirectUrl: route(stepId, caseId), message: "请先登录后再继续本次协作。" })) {`；apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:391 `const actor = getAuthUser() \|\| {};`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；therapeutic-flow-step → valuechange/optionchange/actionchange/continue/retry/back；therapeutic-choice-option → change；therapeutic-textarea → input；therapeutic-compact-textarea → input
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 23 最近一次事件 — `pages/therapeutic-assessment-recent-event/index`
+
+**用户任务：** 记录具体事件，保存证据后继续；不自动推断动机或机制。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-recent-event/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 共享流程分支：`recent_event`。
+- 实际条件：
+- 组件：`page-state`、`therapeutic-flow-step`、`therapeutic-choice-option`、`therapeutic-textarea`、`therapeutic-comparison`、`therapeutic-feedback-letter`、`therapeutic-compact-textarea`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 1 | therapeutic-flow-step | `bindvaluechange → onValueChange` | {} |
+| 1 | therapeutic-flow-step | `bindoptionchange → onOptionChange` | {} |
+| 1 | therapeutic-flow-step | `bindcontinue → onContinue` | {} |
+| 1 | therapeutic-flow-step | `bindretry → onRetry` | {} |
+| 1 | therapeutic-flow-step | `bindback → onBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:185` | `getTherapeuticAssessmentStopRecoveryStatus` | GET /api/therapeutic-assessment/stop-recovery/status | backend/routes/therapeutic_assessment.py:548 / therapeutic_assessment.get_stop_recovery_status_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:200` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:252` | `getTherapeuticAssessmentParticipantDraft` | GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:626 / therapeutic_assessment.get_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:324` | `saveTherapeuticAssessmentParticipantDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:632 / therapeutic_assessment.put_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:366` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:394` | `createTherapeuticAssessmentEvidence` | POST /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:419` | `updateTherapeuticAssessmentScope` | PATCH /api/therapeutic-assessment/cases/<case_id>/scope | backend/routes/therapeutic_assessment.py:464 / therapeutic_assessment.patch_scope_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:429` | `respondToTherapeuticAssessmentFeedback` | POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses | backend/routes/therapeutic_assessment.py:710 / therapeutic_assessment.post_feedback_response_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:442` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment-action-followup/index?caseId=:dynamic；redirectTo → /pages/therapeutic-assessment/index；redirectTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:150 `if (!requireLogin({ redirectUrl: route(stepId, caseId), message: "请先登录后再继续本次协作。" })) {`；apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:391 `const actor = getAuthUser() \|\| {};`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；therapeutic-flow-step → valuechange/optionchange/actionchange/continue/retry/back；therapeutic-choice-option → change；therapeutic-textarea → input；therapeutic-compact-textarea → input
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 24 例外与资源 — `pages/therapeutic-assessment-resources/index`
+
+**用户任务：** 记录例外时刻与已有资源；不增加无依据的资源推荐。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-resources/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 共享流程分支：`resources`。
+- 实际条件：
+- 组件：`page-state`、`therapeutic-flow-step`、`therapeutic-choice-option`、`therapeutic-textarea`、`therapeutic-comparison`、`therapeutic-feedback-letter`、`therapeutic-compact-textarea`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 1 | therapeutic-flow-step | `bindvaluechange → onValueChange` | {} |
+| 1 | therapeutic-flow-step | `bindoptionchange → onOptionChange` | {} |
+| 1 | therapeutic-flow-step | `bindcontinue → onContinue` | {} |
+| 1 | therapeutic-flow-step | `bindretry → onRetry` | {} |
+| 1 | therapeutic-flow-step | `bindback → onBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:185` | `getTherapeuticAssessmentStopRecoveryStatus` | GET /api/therapeutic-assessment/stop-recovery/status | backend/routes/therapeutic_assessment.py:548 / therapeutic_assessment.get_stop_recovery_status_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:200` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:252` | `getTherapeuticAssessmentParticipantDraft` | GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:626 / therapeutic_assessment.get_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:324` | `saveTherapeuticAssessmentParticipantDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:632 / therapeutic_assessment.put_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:366` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:394` | `createTherapeuticAssessmentEvidence` | POST /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:419` | `updateTherapeuticAssessmentScope` | PATCH /api/therapeutic-assessment/cases/<case_id>/scope | backend/routes/therapeutic_assessment.py:464 / therapeutic_assessment.patch_scope_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:429` | `respondToTherapeuticAssessmentFeedback` | POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses | backend/routes/therapeutic_assessment.py:710 / therapeutic_assessment.post_feedback_response_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:442` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment-action-followup/index?caseId=:dynamic；redirectTo → /pages/therapeutic-assessment/index；redirectTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:150 `if (!requireLogin({ redirectUrl: route(stepId, caseId), message: "请先登录后再继续本次协作。" })) {`；apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:391 `const actor = getAuthUser() \|\| {};`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；therapeutic-flow-step → valuechange/optionchange/actionchange/continue/retry/back；therapeutic-choice-option → change；therapeutic-textarea → input；therapeutic-compact-textarea → input
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 25 资料与共享 — `pages/therapeutic-assessment-sharing/index`
+
+**用户任务：** 选择真实共享范围；账号关联不意味着自动共享，撤回与最小范围保留。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-sharing/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 共享流程分支：`sharing`。
+- 实际条件：
+- 组件：`page-state`、`therapeutic-flow-step`、`therapeutic-choice-option`、`therapeutic-textarea`、`therapeutic-comparison`、`therapeutic-feedback-letter`、`therapeutic-compact-textarea`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 1 | therapeutic-flow-step | `bindvaluechange → onValueChange` | {} |
+| 1 | therapeutic-flow-step | `bindoptionchange → onOptionChange` | {} |
+| 1 | therapeutic-flow-step | `bindcontinue → onContinue` | {} |
+| 1 | therapeutic-flow-step | `bindretry → onRetry` | {} |
+| 1 | therapeutic-flow-step | `bindback → onBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:185` | `getTherapeuticAssessmentStopRecoveryStatus` | GET /api/therapeutic-assessment/stop-recovery/status | backend/routes/therapeutic_assessment.py:548 / therapeutic_assessment.get_stop_recovery_status_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:200` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:252` | `getTherapeuticAssessmentParticipantDraft` | GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:626 / therapeutic_assessment.get_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:324` | `saveTherapeuticAssessmentParticipantDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:632 / therapeutic_assessment.put_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:366` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:394` | `createTherapeuticAssessmentEvidence` | POST /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:419` | `updateTherapeuticAssessmentScope` | PATCH /api/therapeutic-assessment/cases/<case_id>/scope | backend/routes/therapeutic_assessment.py:464 / therapeutic_assessment.patch_scope_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:429` | `respondToTherapeuticAssessmentFeedback` | POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses | backend/routes/therapeutic_assessment.py:710 / therapeutic_assessment.post_feedback_response_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:442` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment-action-followup/index?caseId=:dynamic；redirectTo → /pages/therapeutic-assessment/index；redirectTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:150 `if (!requireLogin({ redirectUrl: route(stepId, caseId), message: "请先登录后再继续本次协作。" })) {`；apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:391 `const actor = getAuthUser() \|\| {};`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；therapeutic-flow-step → valuechange/optionchange/actionchange/continue/retry/back；therapeutic-choice-option → change；therapeutic-textarea → input；therapeutic-compact-textarea → input
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 26 提交前摘要 — `pages/therapeutic-assessment-summary/index`
+
+**用户任务：** 区分原话和整理版本并核对；不覆盖原话，不将空版本填成假总结。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-summary/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 共享流程分支：`summary`。
+- 实际条件：
+- 组件：`page-state`、`therapeutic-flow-step`、`therapeutic-choice-option`、`therapeutic-textarea`、`therapeutic-comparison`、`therapeutic-feedback-letter`、`therapeutic-compact-textarea`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 1 | therapeutic-flow-step | `bindvaluechange → onValueChange` | {} |
+| 1 | therapeutic-flow-step | `bindoptionchange → onOptionChange` | {} |
+| 1 | therapeutic-flow-step | `bindcontinue → onContinue` | {} |
+| 1 | therapeutic-flow-step | `bindretry → onRetry` | {} |
+| 1 | therapeutic-flow-step | `bindback → onBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:185` | `getTherapeuticAssessmentStopRecoveryStatus` | GET /api/therapeutic-assessment/stop-recovery/status | backend/routes/therapeutic_assessment.py:548 / therapeutic_assessment.get_stop_recovery_status_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:200` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:252` | `getTherapeuticAssessmentParticipantDraft` | GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:626 / therapeutic_assessment.get_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:324` | `saveTherapeuticAssessmentParticipantDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:632 / therapeutic_assessment.put_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:366` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:394` | `createTherapeuticAssessmentEvidence` | POST /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:419` | `updateTherapeuticAssessmentScope` | PATCH /api/therapeutic-assessment/cases/<case_id>/scope | backend/routes/therapeutic_assessment.py:464 / therapeutic_assessment.patch_scope_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:429` | `respondToTherapeuticAssessmentFeedback` | POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses | backend/routes/therapeutic_assessment.py:710 / therapeutic_assessment.post_feedback_response_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:442` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment-action-followup/index?caseId=:dynamic；redirectTo → /pages/therapeutic-assessment/index；redirectTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:150 `if (!requireLogin({ redirectUrl: route(stepId, caseId), message: "请先登录后再继续本次协作。" })) {`；apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:391 `const actor = getAuthUser() \|\| {};`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；therapeutic-flow-step → valuechange/optionchange/actionchange/continue/retry/back；therapeutic-choice-option → change；therapeutic-textarea → input；therapeutic-compact-textarea → input
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 27 反馈核对 — `pages/therapeutic-assessment-feedback-check/index`
+
+**用户任务：** 阅读已发送反馈并表达接近程度；不同意见、补充输入与保存状态保留。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-feedback-check/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 共享流程分支：`feedback_check`。
+- 实际条件：
+- 组件：`page-state`、`therapeutic-flow-step`、`therapeutic-choice-option`、`therapeutic-textarea`、`therapeutic-comparison`、`therapeutic-feedback-letter`、`therapeutic-compact-textarea`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 1 | therapeutic-flow-step | `bindvaluechange → onValueChange` | {} |
+| 1 | therapeutic-flow-step | `bindoptionchange → onOptionChange` | {} |
+| 1 | therapeutic-flow-step | `bindcontinue → onContinue` | {} |
+| 1 | therapeutic-flow-step | `bindretry → onRetry` | {} |
+| 1 | therapeutic-flow-step | `bindback → onBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:185` | `getTherapeuticAssessmentStopRecoveryStatus` | GET /api/therapeutic-assessment/stop-recovery/status | backend/routes/therapeutic_assessment.py:548 / therapeutic_assessment.get_stop_recovery_status_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:200` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:252` | `getTherapeuticAssessmentParticipantDraft` | GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:626 / therapeutic_assessment.get_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:324` | `saveTherapeuticAssessmentParticipantDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:632 / therapeutic_assessment.put_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:366` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:394` | `createTherapeuticAssessmentEvidence` | POST /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:419` | `updateTherapeuticAssessmentScope` | PATCH /api/therapeutic-assessment/cases/<case_id>/scope | backend/routes/therapeutic_assessment.py:464 / therapeutic_assessment.patch_scope_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:429` | `respondToTherapeuticAssessmentFeedback` | POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses | backend/routes/therapeutic_assessment.py:710 / therapeutic_assessment.post_feedback_response_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:442` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment-action-followup/index?caseId=:dynamic；redirectTo → /pages/therapeutic-assessment/index；redirectTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:150 `if (!requireLogin({ redirectUrl: route(stepId, caseId), message: "请先登录后再继续本次协作。" })) {`；apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:391 `const actor = getAuthUser() \|\| {};`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；therapeutic-flow-step → valuechange/optionchange/actionchange/continue/retry/back；therapeutic-choice-option → change；therapeutic-textarea → input；therapeutic-compact-textarea → input
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 28 一个小行动 — `pages/therapeutic-assessment-action-review/index`
+
+**用户任务：** 安排自愿的小行动、目的、日期、提醒、停止与回看；不强迫完成。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-action-review/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 共享流程分支：`action_review`。
+- 实际条件：
+- 组件：`page-state`、`therapeutic-flow-step`、`therapeutic-choice-option`、`therapeutic-textarea`、`therapeutic-comparison`、`therapeutic-feedback-letter`、`therapeutic-compact-textarea`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 1 | therapeutic-flow-step | `bindvaluechange → onValueChange` | {} |
+| 1 | therapeutic-flow-step | `bindoptionchange → onOptionChange` | {} |
+| 1 | therapeutic-flow-step | `bindactionchange → onActionChange` | {} |
+| 1 | therapeutic-flow-step | `bindcontinue → onContinue` | {} |
+| 1 | therapeutic-flow-step | `bindretry → onRetry` | {} |
+| 1 | therapeutic-flow-step | `bindback → onBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:185` | `getTherapeuticAssessmentStopRecoveryStatus` | GET /api/therapeutic-assessment/stop-recovery/status | backend/routes/therapeutic_assessment.py:548 / therapeutic_assessment.get_stop_recovery_status_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:200` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:252` | `getTherapeuticAssessmentParticipantDraft` | GET /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:626 / therapeutic_assessment.get_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:324` | `saveTherapeuticAssessmentParticipantDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/participant-drafts/<step_id> | backend/routes/therapeutic_assessment.py:632 / therapeutic_assessment.put_participant_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:366` | `createTherapeuticAssessmentCase` | POST /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:452 / therapeutic_assessment.post_case_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:394` | `createTherapeuticAssessmentEvidence` | POST /api/therapeutic-assessment/cases/<case_id>/evidence | backend/routes/therapeutic_assessment.py:488 / therapeutic_assessment.post_evidence_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:419` | `updateTherapeuticAssessmentScope` | PATCH /api/therapeutic-assessment/cases/<case_id>/scope | backend/routes/therapeutic_assessment.py:464 / therapeutic_assessment.patch_scope_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:429` | `respondToTherapeuticAssessmentFeedback` | POST /api/therapeutic-assessment/feedback-versions/<feedback_id>/responses | backend/routes/therapeutic_assessment.py:710 / therapeutic_assessment.post_feedback_response_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:442` | `createTherapeuticAssessmentAction` | POST /api/therapeutic-assessment/cases/<case_id>/actions | backend/routes/therapeutic_assessment.py:734 / therapeutic_assessment.post_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment-action-followup/index?caseId=:dynamic；redirectTo → /pages/therapeutic-assessment/index；redirectTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:150 `if (!requireLogin({ redirectUrl: route(stepId, caseId), message: "请先登录后再继续本次协作。" })) {`；apps/miniprogram/utils/therapeuticAssessmentParticipantFlow.js:391 `const actor = getAuthUser() \|\| {};`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；therapeutic-flow-step → valuechange/optionchange/actionchange/continue/retry/back；therapeutic-choice-option → change；therapeutic-textarea → input；therapeutic-compact-textarea → input
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 29 行动回看 — `pages/therapeutic-assessment-action-followup/index`
+
+**用户任务：** 回看原行动并记录尝试/停止/放弃等真实状态及新观察；不评分、不奖励。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-action-followup/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{error}}`；`{{action}}`；`{{action.training_card_id}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 8 | page-state | `bindaction → load` | {} |
+| 29 | 尝试过 | `bindtap → selectStatus` | {"value":"completed"} |
+| 30 | 中途停止 | `bindtap → selectStatus` | {"value":"stopped"} |
+| 31 | 决定不做 | `bindtap → selectStatus` | {"value":"declined"} |
+| 36 | 新的观察 | `bindtap → selectKind` | {"value":"O"} |
+| 37 | 仍待了解 | `bindtap → selectKind` | {"value":"U"} |
+| 40 | 行动回看内容 | `bindinput → onNoteInput` | {} |
+| 41 | 打开关联训练卡 | `bindtap → openTrainingCard` | {} |
+| 42 | 保存这次回看 | `bindtap → submit` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/therapeutic-assessment-action-followup/index.js:40` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment-action-followup/index.js:73` | `updateTherapeuticAssessmentAction` | PATCH /api/therapeutic-assessment/actions/<action_id> | backend/routes/therapeutic_assessment.py:740 / therapeutic_assessment.patch_action_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment-action-followup/index.js:82` | `createTherapeuticAssessmentActionFollowup` | POST /api/therapeutic-assessment/actions/<action_id>/followups | backend/routes/therapeutic_assessment.py:746 / therapeutic_assessment.post_action_followup_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+
+- 下游路由：redirectTo → /pages/therapeutic-assessment/index；navigateTo → /pages/training-card/index?id=:dynamic；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/therapeutic-assessment-action-followup/index.js:26 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 30 评估质量与更正 — `pages/therapeutic-assessment-quality/index`
+
+**用户任务：** 参与者提交更正/投诉并查处理；复核角色按权限查看队列和质量处置。
+- 页面源码：`apps/miniprogram/pages/therapeutic-assessment-quality/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{!loading && !runtime && !productionGate && !cases.length && !reviews.length && !incidents.length && !errorMessage}}`；`{{runtime}}`；`{{errorMessage}}`；`{{notice}}`；`{{loading}}`；`{{productionGate}}`；`{{!loading && cases.length}}`；`{{isReviewRole && !loading}}`；`{{!reviews.length}}`；`{{selectedReview}}`；`{{selectedReview.status === 'pending'}}`；`{{selectedReview.status === 'in_review'}}`；`{{item.status === 'concern'}}`；`{{isReviewRole && !loading}}`；`{{!incidents.length}}`；`{{selectedIncident}}`；`{{selectedIncident.status === 'reported'}}`；`{{selectedIncident.status === 'independent_review'}}`；`{{selectedIncident.status === 'resolved'}}`；`{{!loading && incidents.length && !isReviewRole}}`；`{{item.resolution_summary}}`；`{{isReviewRole}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 18 | 重新读取 | `bindtap → loadData` | {} |
+| 51 | picker | `bindchange → onCaseChange` | {} |
+| 56 | picker | `bindchange → onIncidentCategory` | {} |
+| 61 | textarea | `bindinput → onFieldInput` | {"key":"incidentDescription"} |
+| 65 | textarea | `bindinput → onFieldInput` | {"key":"requestedResolution"} |
+| 67 | 提交更正或投诉 | `bindtap → submitIncident` | {} |
+| 83 | button | `bindtap → selectReview` | {"id":"{{item.id}}"} |
+| 97 | 认领这项复核 | `bindtap → claimReview` | {} |
+| 101 | 结论： | `bindchange → onDimensionStatus` | {"index":"{{index}}"} |
+| 105 | input | `bindinput → onDimensionInput` | {"index":"{{index}}","key":"note"} |
+| 106 | input | `bindinput → onDimensionInput` | {"index":"{{index}}","key":"evidenceRef"} |
+| 111 | textarea | `bindinput → onFieldInput` | {"key":"remediationSummary"} |
+| 113 | 提交质量结论 | `bindtap → completeReview` | {} |
+| 130 | button | `bindtap → selectIncident` | {"id":"{{item.id}}"} |
+| 141 | textarea | `bindinput → onFieldInput` | {"key":"impactSummary"} |
+| 143 | 保存影响分析 | `bindtap → analyzeIncident` | {} |
+| 146 | 处理动作： | `bindchange → onResolutionAction` | {} |
+| 151 | textarea | `bindinput → onFieldInput` | {"key":"resolutionSummary"} |
+| 153 | 独立结案并通知参与者 | `bindtap → resolveIncident` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:85` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:86` | `listTherapeuticAssessmentQualityIncidents` | GET /api/therapeutic-assessment/quality/incidents | backend/routes/therapeutic_assessment.py:806 / therapeutic_assessment.get_quality_incidents_route / participant_owned_assigned_or_task_authorized_quality_incident_history |
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:88` | `listTherapeuticAssessmentQualityReviews` | GET /api/therapeutic-assessment/quality/reviews | backend/routes/therapeutic_assessment.py:782 / therapeutic_assessment.get_quality_reviews_route / task_authorized_case_scoped_quality_review_with_version_and_independence_gates |
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:91` | `getTherapeuticAssessmentProductionGate` | GET /api/therapeutic-assessment/production-gate | backend/routes/therapeutic_assessment.py:512 / therapeutic_assessment.get_production_gate_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:171` | `claimTherapeuticAssessmentQualityReview` | POST /api/therapeutic-assessment/quality/reviews/<review_id>/claim | backend/routes/therapeutic_assessment.py:788 / therapeutic_assessment.post_quality_review_claim_route / task_authorized_case_scoped_quality_review_with_version_and_independence_gates |
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:232` | `completeTherapeuticAssessmentQualityReview` | POST /api/therapeutic-assessment/quality/reviews/<review_id>/complete | backend/routes/therapeutic_assessment.py:794 / therapeutic_assessment.post_quality_review_complete_route / task_authorized_case_scoped_quality_review_with_version_and_independence_gates |
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:266` | `createTherapeuticAssessmentQualityIncident` | POST /api/therapeutic-assessment/cases/<case_id>/quality-incidents | backend/routes/therapeutic_assessment.py:800 / therapeutic_assessment.post_quality_incident_route / participant_owned_or_authorized_case_quality_incident_append_only |
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:298` | `analyzeTherapeuticAssessmentQualityIncident` | POST /api/therapeutic-assessment/quality/incidents/<incident_id>/impact-analysis | backend/routes/therapeutic_assessment.py:812 / therapeutic_assessment.post_quality_incident_analysis_route / participant_owned_assigned_or_task_authorized_quality_incident_history |
+| `apps/miniprogram/pages/therapeutic-assessment-quality/index.js:330` | `resolveTherapeuticAssessmentQualityIncident` | POST /api/therapeutic-assessment/quality/incidents/<incident_id>/resolve | backend/routes/therapeutic_assessment.py:818 / therapeutic_assessment.post_quality_incident_resolution_route / participant_owned_assigned_or_task_authorized_quality_incident_history |
+
+- 下游路由：navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/therapeutic-assessment-quality/index.js:62 `if (!requireLogin({ redirectUrl: "/pages/therapeutic-assessment-quality/index" })) return;`；apps/miniprogram/pages/therapeutic-assessment-quality/index.js:63 `const user = getAuthUser() \|\| {};`；apps/miniprogram/pages/therapeutic-assessment-quality/index.js:66 `isReviewRole: ["supervisor", "admin"].includes(user.role),`；apps/miniprogram/pages/therapeutic-assessment-quality/index.js:67 `isFormalRole: ["researcher", "supervisor", "admin"].includes(user.role),`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 31 我的成长仪表盘 — `pages/growth-dashboard/index`
+
+**用户任务：** 按真实类别复盘记录与练习、关系等线索；无数据不绘制虚假趋势，不合成总分。
+- 页面源码：`apps/miniprogram/pages/growth-dashboard/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{growth}}`；`{{activeSection === 'activity'}}`；`{{thermometer.length}}`；`{{activityTimeline.length}}`；`{{activeSection === 'assessments'}}`；`{{assessmentGroups.length}}`；`{{activeSection === 'relationship'}}`；`{{relationshipTimeline.length}}`；`{{feedbackTimeline.length}}`
+- 组件：`page-state`、`status-pill`、`timeline-record`、`bamboo-timeline-node`、`growth-segment`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 9 | 重新读取成长线索 | `bindaction → loadGrowth` | {} |
+| 13 | growth-segment | `bindchange → selectSection` | {} |
+| 29 | 记录一件小事 | `bindtap → startDiary` | {} |
+| 30 | 查看练习 | `bindtap → openTraining` | {} |
+| 53 | page-state | `bindaction → startDiary` | {} |
+| 69 | page-state | `bindaction → openAssessment` | {} |
+| 82 | button | `bindtap → openRelationship` | {} |
+| 103 | 打开消息列表 | `bindtap → openMessages` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/growth-dashboard/index.js:64` | `getGrowthOverview` | GET /api/growth/overview | backend/routes/general_growth.py:23 / general_growth.get_growth_overview / self_or_active_participant_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/diary-form/index；switchTab → /pages/training/index；navigateTo → /pages/assessment/index；navigateTo → /pages/relationship-pilot/index；navigateTo → /pages/relationship-growth/index?detail=1&enrollment_id=:dynamic；navigateTo → /pages/messages/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/growth-dashboard/index.js:54 `if (!requireLogin({ redirectUrl: "/pages/growth-dashboard/index" })) return;`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；growth-segment → change
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 32 关系探索手记 — `pages/relationship-narrative/index`
+
+**用户任务：** 阅读已授权手记、问题、材料及人工补充，再进入真实下一任务。
+- 页面源码：`apps/miniprogram/pages/relationship-narrative/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{isResearcherView && noteRows.length}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 3 | page-state | `bindaction → retryLoad` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/relationship-narrative/index.js:15` | `getRelationshipNarrative` | GET /api/relationship-pilot/narratives/<narrative_id> | backend/routes/relationship_pilot_routes.py:231 / relationship_pilot.get_narrative_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+
+- 下游路由：
+- 本地保存：
+- 权限/预览线索：apps/miniprogram/pages/relationship-narrative/index.js:20 `isResearcherView: narrative.audience === "researcher",`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 33 研究者移动工作台 — `pages/researcher-dashboard/index`
+
+**用户任务：** 在授权范围内处理队列、查看档案/证据/交付及知识检索、情感影子和网络合成摘要；数据和角色隔离。
+- 页面源码：`apps/miniprogram/pages/researcher-dashboard/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{offline}}`；`{{developmentFullAccess}}`；`{{capabilityScope}}`；`{{loading && !operations}}`；`{{errorMessage}}`；`{{partialFailures.length}}`；`{{activeWorkspace === 'pending' && !errorMessage}}`；`{{assessmentQueueRuntime}}`；`{{publicationCandidateSummary}}`；`{{assessmentLifecycleSummary}}`；`{{!pendingVisibleItems.length}}`；`{{pendingHasMore}}`；`{{activeWorkspace === 'participants'}}`；`{{participantError}}`；`{{participantLoading && !participantItems.length}}`；`{{!participantItems.length && !participantError}}`；`{{participantItems.length}}`；`{{participantHasMore}}`；`{{participantDossier}}`；`{{participantModuleLoading}}`；`{{participantModule}}`；`{{!participantModule.items.length}}`；`{{record.exploratoryAnalysis}}`；`{{record.reason}}`；`{{record.availability === 'available'}}`；`{{record.affectSummary}}`；`{{record.affectNextCheck}}`；`{{record.networkSummary}}`；`{{!record.networkRows.length}}`；`{{record.networkNextCheck}}`；`{{participantModule.has_more}}`；`{{activeWorkspace === 'feedback'}}`；`{{activeWorkspace === 'assessment'}}`；`{{assessmentCases.length}}`；`{{assessmentError}}`；`{{assessmentLoading}}`；`{{!assessmentCases.length}}`；`{{assessmentWorkbench}}`；`{{assessmentWorkbench.evidence_summary}}`；`{{!assessmentWorkbench.evidence_items.length}}`；`{{item.source_ref}}`；`{{item.observed_at}}`；`{{item.provider_id}}`；`{{item.context}}`；`{{item.kind === 'H'}}`；`{{activeWorkspace === 'analysis'}}`；`{{analysisCatalog}}`；`{{analysisResilience}}`；`{{affectShadowRuns.length}}`；`{{item.reviewReasonText}}`；`{{affectMonitoring}}`；`{{affectMonitoring}}`；`{{affectReleaseGate}}`；`{{affectReleaseGate}}`；`{{knowledgeInventory}}`；`{{knowledgeError}}`；`{{knowledgeResult}}`；`{{knowledgeResult.retrieval_summary}}`；`{{!knowledgeResult.citations.length}}`；`{{networkPolicy}}`；`{{offlineBenchmarkRuns.length}}`；`{{item.networkDetailText}}`；`{{item.networkNextCheck}}`；`{{analysisLoading}}`；`{{analysisError}}`；`{{!analysisJobs.length}}`；`{{item.qualityText}}`；`{{item.suppressed}}`；`{{activeWorkspace === 'mine'}}`；`{{activeWorkspace === 'pilots'}}`；`{{pilotLoading && !items.length}}`；`{{pilotError}}`；`{{!items.length}}`；`{{selected}}`；`{{selected.latestReport}}`；`{{selected.latestReport.status === 'pending_review' \|\| selected.latestReport.status === 'ready'}}`；`{{selected.latestReport.status === 'confirmed' \|\| selected.latestReport.status === 'updated'}}`；`{{selected.latestReport.status === 'sent'}}`；`{{stageFeedbackDelivery}}`；`{{!stageFeedbackDelivery \|\| stageFeedbackDelivery.status === 'draft' \|\| stageFeedbackDelivery.status === 'previewed'}}`；`{{stageFeedbackDelivery.status === 'previewed'}}`；`{{stageFeedbackDelivery.status === 'confirmed'}}`；`{{stageFeedbackDelivery.status === 'sent'}}`；`{{participantMessageDelivery}}`；`{{!participantMessageDelivery \|\| participantMessageDelivery.status === 'draft' \|\| participantMessageDelivery.status === 'previewed'}}`；`{{participantMessageDelivery.status === 'previewed'}}`；`{{participantMessageDelivery.status === 'confirmed'}}`；`{{participantMessageDelivery.status === 'sent'}}`；`{{item.narration}}`；`{{selected.drawingTask}}`；`{{narrative}}`；`{{narrative.status !== 'confirmed'}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 7 | 刷新当前工作区 | `bindtap → refreshActiveWorkspace` | {} |
+| 29 | button | `bindtap → switchWorkspace` | {"id":"{{item.id}}"} |
+| 41 | 重新同步 | `bindtap → loadWorkbench` | {} |
+| 42 | 复制诊断信息 | `bindtap → copyDiagnostic` | {"scope":"workbench"} |
+| 49 | 重试未完成同步 | `bindtap → loadWorkbench` | {} |
+| 105 | 刷新待处理列表 | `bindtap → loadWorkbench` | {} |
+| 121 | 继续查看 | `bindtap → showMorePending` | {} |
+| 133 | 搜索参与者 | `bindinput → onParticipantQueryInput` | {} |
+| 142 | 重新加载 | `bindtap → retryParticipants` | {} |
+| 143 | 复制诊断信息 | `bindtap → copyDiagnostic` | {"scope":"participants"} |
+| 155 | 查看{{item.displayName}}的参与者档案 | `bindtap → selectParticipantDossier` | {"id":"{{item.user_id}}"} |
+| 164 | 加载下一页 | `bindtap → loadMoreParticipants` | {} |
+| 173 | 关闭参与者档案 | `bindtap → closeParticipantDossier` | {} |
+| 176 | button | `bindtap → loadParticipantModule` | {"key":"{{item.key}}"} |
+| 208 | 加载下一页 | `bindtap → loadParticipantModule` | {"key":"{{participantModule.module}}","page":"{{participantModule.page + 1}}"} |
+| 231 | 进入试点项目 | `bindtap → switchWorkspace` | {"id":"pilots"} |
+| 242 | 刷新 | `bindtap → loadAssessmentCases` | {} |
+| 246 | button | `bindtap → selectAssessmentCase` | {"id":"{{item.id}}"} |
+| 251 | 重新加载 | `bindtap → loadAssessmentCases` | {} |
+| 284 | 类型： | `bindchange → onAssessmentFilter` | {"key":"kind"} |
+| 287 | 权限： | `bindchange → onAssessmentFilter` | {"key":"visibility"} |
+| 317 | textarea | `bindinput → onAssessmentDraftInput` | {"key":"assessmentInternalNotes"} |
+| 322 | textarea | `bindinput → onAssessmentDraftInput` | {"key":"assessmentParticipantDraft"} |
+| 324 | 保存工作台草稿 | `bindtap → saveAssessmentDraft` | {} |
+| 326 | 进入质量抽检与修复 | `bindtap → openAssessmentQuality` | {} |
+| 338 | 刷新 | `bindtap → loadAnalysisJobs` | {} |
+| 398 | 检索方式： | `bindinput → onKnowledgeQueryInput` | {} |
+| 399 | 检索方式： | `bindchange → onKnowledgeMethodChange` | {} |
+| 402 | 检索已审核内容 | `bindtap → searchKnowledge` | {} |
+| 468 | 重新加载 | `bindtap → loadAnalysisJobs` | {} |
+| 499 | 重新同步 | `bindtap → loadWorkbench` | {} |
+| 513 | 重新加载 | `bindtap → loadDashboard` | {} |
+| 514 | 复制诊断信息 | `bindtap → copyDiagnostic` | {"scope":"pilot"} |
+| 524 | · | `bindtap → selectEnrollment` | {"id":"{{item.id}}"} |
+| 546 | 查看 | `bindtap → openReport` | {} |
+| 547 | 人工确认 | `bindtap → confirmReport` | {} |
+| 548 | 发送用户 | `bindtap → sendReport` | {} |
+| 551 | 生成报告 | `bindtap → createReport` | {} |
+| 559 | textarea | `bindinput → onStageFeedbackInput` | {"key":"observation"} |
+| 563 | textarea | `bindinput → onStageFeedbackInput` | {"key":"evidence"} |
+| 567 | textarea | `bindinput → onStageFeedbackInput` | {"key":"nextStep"} |
+| 571 | textarea | `bindinput → onStageFeedbackInput` | {"key":"openQuestion"} |
+| 587 | 生成并核对预览 | `bindtap → previewStageFeedback` | {} |
+| 588 | 确认这个版本 | `bindtap → runDeliveryStep` | {"kind":"stage","action":"confirm"} |
+| 589 | 发送到参与者消息 | `bindtap → runDeliveryStep` | {"kind":"stage","action":"send"} |
+| 596 | input | `bindinput → onMessageTitleInput` | {} |
+| 597 | textarea | `bindinput → onMessageBodyInput` | {} |
+| 611 | 生成并核对预览 | `bindtap → previewParticipantMessage` | {} |
+| 612 | 确认这个版本 | `bindtap → runDeliveryStep` | {"kind":"message","action":"confirm"} |
+| 613 | 发送到参与者消息 | `bindtap → runDeliveryStep` | {"kind":"message","action":"send"} |
+| 631 | textarea | `bindinput → onNoteInput` | {} |
+| 632 | 保存备注 | `bindtap → saveNote` | {} |
+| 637 | 生成探索手记草稿 | `bindtap → draftNarrative` | {} |
+| 641 | 确认后交付用户 | `bindtap → confirmNarrative` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/researcher-dashboard/index.js:335` | `getShowcaseAccess` | GET /api/showcase-access | backend/routes/showcase_access.py:13 / showcase_access.get_showcase_access / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:336` | `getResearchCapabilities` | GET /api/research/access/capabilities | backend/routes/research_access.py:39 / research_access.capabilities_route / authenticated_actor_capability_summary |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:400` | `listTherapeuticAssessmentCases` | GET /api/therapeutic-assessment/cases | backend/routes/therapeutic_assessment.py:446 / therapeutic_assessment.get_cases_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:419` | `getTherapeuticAssessmentResearcherWorkbench` | GET /api/therapeutic-assessment/cases/<case_id>/researcher-workbench | backend/routes/therapeutic_assessment.py:494 / therapeutic_assessment.get_researcher_workbench_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:430` | `getTherapeuticAssessmentAuthorizationStatus` | GET /api/therapeutic-assessment/competency/effective | backend/routes/therapeutic_assessment.py:770 / therapeutic_assessment.get_competency_effective_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:499` | `saveTherapeuticAssessmentResearcherDraft` | PUT /api/therapeutic-assessment/cases/<case_id>/researcher-workbench/draft | backend/routes/therapeutic_assessment.py:596 / therapeutic_assessment.put_researcher_workbench_draft_route / participant_owner_or_assigned_researcher_or_claimed_queue_or_supervision_chain_or_admin |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:527` | `getResearchAnalysisJobs` | GET /api/research/analysis/jobs | backend/routes/research_analysis.py:61 / research_analysis.get_jobs / analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:528` | `getResearchAnalysisCatalog` | GET /api/research/analysis/catalog | backend/routes/research_analysis.py:146 / research_analysis.get_catalog_route / analysis_job_or_artifact_bound_to_authorized_snapshot_or_admin_operation |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:529` | `listOfflineModelVersions` | GET /api/research/benchmarks/model-versions | backend/routes/offline_benchmarks.py:136 / offline_benchmarks.model_versions / internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:530` | `listOfflineModelShadowRuns` | GET /api/research/benchmarks/shadow-runs | backend/routes/offline_benchmarks.py:170 / offline_benchmarks.shadow_runs / internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:531` | `listOfflineModelReviewQueue` | GET /api/research/benchmarks/shadow-review-queue | backend/routes/offline_benchmarks.py:178 / offline_benchmarks.shadow_review_queue / internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:532` | `getOfflineModelMonitoring` | GET /api/research/benchmarks/monitoring | backend/routes/offline_benchmarks.py:186 / offline_benchmarks.monitoring_status / internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:533` | `getOfflineModelReleaseGate` | GET /api/research/benchmarks/release-gate | backend/routes/offline_benchmarks.py:218 / offline_benchmarks.release_gate_get / internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:534` | `getAiKnowledgeInventory` | GET /api/ai-qa/knowledge | backend/routes/ai_qa.py:126 / ai_qa.ai_qa_knowledge / internal_synthetic_evidence_role_scoped |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:535` | `getGroupNetworkAnalysisPolicy` | GET /api/research/benchmarks/network-policy | backend/routes/offline_benchmarks.py:108 / offline_benchmarks.network_policy / internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:536` | `listOfflineBenchmarkRuns` | GET /api/research/benchmarks/runs | backend/routes/offline_benchmarks.py:301 / offline_benchmarks.runs / internal_offline_synthetic_or_metadata_only_runs_creator_scoped_for_researcher |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:615` | `retrieveAiKnowledge` | GET /api/ai-qa/knowledge/retrieve | backend/routes/ai_qa.py:142 / ai_qa.ai_qa_knowledge_retrieve / internal_synthetic_evidence_role_scoped |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:633` | `getResearchOperations` | GET /api/research/operations | backend/routes/research_workspace.py:377 / research_workspace.get_research_operations / active_unexpired_assignment_for_researcher_supervisor_full_for_admin |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:634` | `getResearchQueue` | GET /api/research/queues | backend/routes/research_workspace.py:496 / research_workspace.get_research_queue / active_unexpired_assignment_for_researcher_supervisor_full_for_admin |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:638` | `getTherapeuticAssessmentQueueRuntime` | GET /api/therapeutic-assessment/work-queue/runtime | backend/routes/therapeutic_assessment.py:386 / therapeutic_assessment.get_work_queue_runtime_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:639` | `listTherapeuticAssessmentDutyShifts` | GET /api/therapeutic-assessment/duty-shifts | backend/routes/therapeutic_assessment.py:398 / therapeutic_assessment.get_duty_shifts_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:640` | `listPublicationCandidates` | GET /api/therapeutic-assessment/publication-candidates | backend/routes/therapeutic_assessment.py:410 / therapeutic_assessment.get_publication_candidates_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:641` | `getTherapeuticAssessmentLifecycleMetrics` | GET /api/therapeutic-assessment/lifecycle/metrics | backend/routes/therapeutic_assessment.py:506 / therapeutic_assessment.get_lifecycle_metrics_route / module_resource_role_or_owner_scope_without_therapeutic_case_claim |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:715` | `getResearchParticipants` | GET /api/research/participants | backend/routes/research_workspace.py:205 / research_workspace.list_participants / active_unexpired_assignment_for_researcher_supervisor_full_for_admin |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:741` | `getResearchParticipant` | GET /api/research/participants/<user_id> | backend/routes/research_workspace.py:293 / research_workspace.get_participant_dossier / active_unexpired_assignment_for_researcher_supervisor_full_for_admin |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:758` | `getResearchParticipantModule` | GET /api/research/participants/<user_id>/modules/<module_key> | backend/routes/research_workspace.py:319 / research_workspace.get_participant_module / active_unexpired_assignment_for_researcher_supervisor_full_for_admin |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:774` | `getRelationshipResearchDashboard` | GET /api/relationship-pilot/researcher/dashboard | backend/routes/relationship_pilot_routes.py:198 / relationship_pilot.researcher_dashboard_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:819` | `claimResearchEnrollment` | POST /api/research/access/enrollments/<enrollment_id>/claim | backend/routes/research_access.py:82 / research_access.claim_enrollment_route / researcher_explicit_enrollment_claim_without_implicit_write_claim |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:832` | `getRelationshipEnrollment` | GET /api/relationship-pilot/enrollments/<enrollment_id> | backend/routes/relationship_pilot_routes.py:88 / relationship_pilot.get_enrollment_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:911` | `createRelationshipResearchNote` | POST /api/relationship-pilot/enrollments/<enrollment_id>/notes | backend/routes/relationship_pilot_routes.py:206 / relationship_pilot.create_note_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:919` | `createRelationshipReport` | POST /api/relationship-pilot/enrollments/<enrollment_id>/report | backend/routes/relationship_pilot_routes.py:96 / relationship_pilot.create_report_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:929` | `confirmRelationshipReport` | POST /api/relationship-pilot/reports/<report_id>/confirm | backend/routes/relationship_pilot_routes.py:132 / relationship_pilot.confirm_report_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:936` | `sendRelationshipReport` | POST /api/relationship-pilot/reports/<report_id>/send | backend/routes/relationship_pilot_routes.py:148 / relationship_pilot.send_report_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:963` | `createResearchDelivery` | POST /api/research/deliveries | backend/routes/research_workspace.py:63 / research_workspace.create_research_delivery / relationship_delivery_bound_to_active_unexpired_enrollment_assignment |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:970` | `saveResearchDelivery` | PATCH /api/research/deliveries/<workflow_id> | backend/routes/research_workspace.py:87 / research_workspace.update_research_delivery / relationship_delivery_bound_to_active_unexpired_enrollment_assignment |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:976` | `runResearchDeliveryAction` | POST /api/research/deliveries/<workflow_id>/confirm；POST /api/research/deliveries/<workflow_id>/preview；POST /api/research/deliveries/<workflow_id>/send；POST /api/research/deliveries/<workflow_id>/withdraw | backend/routes/research_workspace.py:119 / research_workspace.confirm_research_delivery / relationship_delivery_bound_to_active_unexpired_enrollment_assignment；backend/routes/research_workspace.py:114 / research_workspace.preview_research_delivery / relationship_delivery_bound_to_active_unexpired_enrollment_assignment；backend/routes/research_workspace.py:124 / research_workspace.send_research_delivery / relationship_delivery_bound_to_active_unexpired_enrollment_assignment；backend/routes/research_workspace.py:129 / research_workspace.withdraw_research_delivery / relationship_delivery_bound_to_active_unexpired_enrollment_assignment |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:1039` | `createRelationshipNarrative` | POST /api/relationship-pilot/enrollments/<enrollment_id>/narrative | backend/routes/relationship_pilot_routes.py:215 / relationship_pilot.create_narrative_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+| `apps/miniprogram/pages/researcher-dashboard/index.js:1044` | `confirmRelationshipNarrative` | POST /api/relationship-pilot/narratives/<narrative_id>/confirm | backend/routes/relationship_pilot_routes.py:223 / relationship_pilot.confirm_narrative_route / self_or_explicit_active_unexpired_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/therapeutic-assessment-quality/index；navigateTo → /pages/relationship-report/index?id=:dynamic；navigateTo → /pages/relationship-report/index?id=:dynamic；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync this；setStorageSync this；removeStorageSync this；getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/researcher-dashboard/index.js:332 `if (!requireLogin({ redirectUrl: "/pages/researcher-dashboard/index" })) return;`；apps/miniprogram/pages/researcher-dashboard/index.js:333 `const user = getAuthUser();`；apps/miniprogram/pages/researcher-dashboard/index.js:345 `if (!showcase.enabled && (!user \|\| !["researcher", "admin", "supervisor"].includes(user.role))) {`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 34 课程 — `pages/course/index`
+
+**用户任务：** 按主题浏览真实课程与进度，进入课程内容；不是课程商城。
+- 页面源码：`apps/miniprogram/pages/course/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{errorMessage}}`；`{{loading}}`；`{{!loading && !errorMessage}}`；`{{boundaryNotice}}`
+- 组件：`page-state`、`section-title`、`course-card`、`bottom-tip-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 20 | button | `bindtap → selectCategory` | {"category":"{{item}}"} |
+| 36 | 重新加载 | `bindtap → retryLoadCourses` | {} |
+| 49 | course-card | `bindtapcard → openCourse` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/course/index.js:37` | `listCourses` | GET /api/courses | backend/routes/courses.py:78 / courses.list_courses / not_applicable_or_development_legacy |
+
+- 下游路由：navigateTo → /pages/course-detail/index?id=:dynamic
+- 本地保存：
+- 组件事件转发：page-state → action；section-title → more；course-card → tapcard
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 35 课程内容 — `pages/course-detail/index`
+
+**用户任务：** 阅读课程章节、误区/示例，进入练习并记录完成；保留现有服务端进度。
+- 页面源码：`apps/miniprogram/pages/course-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{course}}`；`{{check.feedback}}`；`{{course.boosterText}}`；`{{course.relationText}}`；`{{progressMessage}}`
+- 组件：`page-state`、`section-title`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 8 | 重新加载 | `bindtap → retryLoadCourse` | {} |
+| 63 | button | `bindtap → chooseKnowledgeAnswer` | {"check-id":"{{check.id}}","value":"{{option.value}}"} |
+| 82 | 去训练页 | `bindtap → goTraining` | {} |
+| 90 | 记录课程完成 | `bindtap → markCourseComplete` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/course-detail/index.js:39` | `getCourse` | GET /api/courses/<course_id> | backend/routes/courses.py:218 / courses.get_course / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/course-detail/index.js:77` | `getCourseProgress` | GET /api/courses/<course_id>/progress | backend/routes/courses.py:135 / courses.get_course_progress / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/course-detail/index.js:98` | `saveCourseProgress` | POST /api/courses/<course_id>/progress | backend/routes/courses.py:157 / courses.save_course_progress / self_only_or_dedicated_domain_command |
+
+- 下游路由：switchTab → /pages/training/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/course-detail/index.js:44 `if (isLoggedIn()) this.loadProgress();`；apps/miniprogram/pages/course-detail/index.js:88 `if (!requireLogin({ redirectUrl: `/pages/course-detail/index?id=${encodeURIComponent(this.data.courseId)}`, message: "请先登录后再保存课程进度。" })) return;`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；section-title → more
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 36 我的 — `pages/profile/index`
+
+**用户任务：** 查看账号与连接状态，访问记录、专业支持、安全支持、隐私设置及条件式研究入口。
+- 页面源码：`apps/miniprogram/pages/profile/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{user.roleText}}`；`{{loggedIn}}`；`{{identityStatus}}`；`{{identityStatus.identities.wechat.can_unbind}}`；`{{identityStatus.identities.phone.can_unbind}}`；`{{dataClaim}}`
+- 组件：`page-state`、`section-title`、`function-entry-card`、`bottom-tip-card`、`alert-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 18 | 退出登录 | `bindtap → doLogout` | {} |
+| 21 | 去登录 | `bindtap → goLogin` | {} |
+| 22 | 注册账号 | `bindtap → goRegister` | {} |
+| 34 | 撤销 | `bindtap → requestIdentityUnbind` | {"identity":"wechat"} |
+| 41 | 撤销 | `bindtap → requestIdentityUnbind` | {"identity":"phone"} |
+| 56 | 确认合并 | `bindtap → confirmDataClaim` | {} |
+| 57 | 暂不处理 | `bindtap → dismissDataClaim` | {} |
+| 66 | button | `bindtap → goResearcher` | {} |
+| 72 | button | `bindtap → openEntry` | {"group":"recordEntries","index":"{{index}}"} |
+| 85 | button | `bindtap → openEntry` | {"group":"supportEntries","index":"{{index}}"} |
+| 102 | button | `bindtap → openEntry` | {"group":"safetyEntries","index":"{{index}}"} |
+| 115 | button | `bindtap → openEntry` | {"group":"settingsEntries","index":"{{index}}"} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/profile/index.js:147` | `getShowcaseAccess` | GET /api/showcase-access | backend/routes/showcase_access.py:13 / showcase_access.get_showcase_access / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/profile/index.js:148` | `getDataClaimPreview` | GET /api/auth/data-claim-preview | backend/routes/auth.py:1313 / auth.data_claim_preview / role_scoped |
+| `apps/miniprogram/pages/profile/index.js:149` | `getIdentityStatus` | GET /api/auth/identity-status | backend/routes/auth.py:1140 / auth.get_identity_status / role_scoped |
+| `apps/miniprogram/pages/profile/index.js:150` | `getAiQaConfig` | GET /api/ai-qa/config | backend/routes/ai_qa.py:108 / ai_qa.ai_qa_config / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/profile/index.js:161` | `getProfileStats` | GET /api/profile/stats | backend/routes/profile.py:163 / profile.get_profile_stats / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/profile/index.js:260` | `claimAnonymousData` | POST /api/auth/data-claim | backend/routes/auth.py:1334 / auth.data_claim / role_scoped |
+| `apps/miniprogram/pages/profile/index.js:286` | `unbindIdentity` | POST /api/auth/identity-unbind | backend/routes/auth.py:1154 / auth.identity_unbind / role_scoped |
+| `apps/miniprogram/pages/profile/index.js:303` | `logout` | POST /api/auth/logout | backend/routes/auth.py:1081 / auth.logout / optional_bearer_revoke_all_account_tokens_idempotent |
+
+- 下游路由：switchTab → /pages/login/index?redirect=%2Fpages%2Fprofile%2Findex；navigateTo → /pages/register/index?redirect=%2Fpages%2Fprofile%2Findex；navigateTo → /pages/researcher-dashboard/index；navigateTo → /pages/login/index?redirect=%2Fpages%2Fresearcher-dashboard%2Findex；redirectTo → /pages/login/index?redirect=%2Fpages%2Fprofile%2Findex；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync safehome_dismissed_data_claim_id；setStorageSync safehome_dismissed_data_claim_id；removeStorageSync safehome_dismissed_data_claim_id；getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/profile/index.js:129 `isResearcher: false,`；apps/miniprogram/pages/profile/index.js:143 `const storedUser = getAuthUser();`；apps/miniprogram/pages/profile/index.js:144 `const loggedIn = isLoggedIn();`；apps/miniprogram/pages/profile/index.js:145 `const canClaim = loggedIn && storedUser && ["parent", "student", "user"].includes(storedUser.role);`；apps/miniprogram/pages/profile/index.js:172 `isResearcher: !!showcase.enabled \|\| !!(storedUser && ["researcher", "admin", "supervisor"].includes(storedUser.role)),`；apps/miniprogram/pages/profile/index.js:211 `if (entry.private && !requireLogin({`；apps/miniprogram/pages/profile/index.js:240 `const storedUser = getAuthUser();`；apps/miniprogram/pages/profile/index.js:241 `if (storedUser && (this.data.showcaseAccess \|\| ["researcher", "admin", "supervisor"].includes(storedUser.role))) {`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`
+- 组件事件转发：page-state → action；section-title → more；function-entry-card → tapcard
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 37 设置与说明 — `pages/settings-detail/index`
+
+**用户任务：** 阅读对应说明并管理真实保护、隐私或设置；动态类别、操作后果与授权边界完整。
+- 页面源码：`apps/miniprogram/pages/settings-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{noticeType === 'protection'}}`；`{{protectionLoading}}`；`{{protectionNeedsLogin}}`；`{{protectionError}}`；`{{protectionRole === 'student' && protectionStatus}}`；`{{protectionStatus.age_verification_required}}`；`{{protectionStatus.status === 'guardian_link_required'}}`；`{{protectionStatus.status === 'guardian_consent_required'}}`；`{{protectionStatus.status === 'child_assent_required'}}`；`{{protectionStatus.status === 'blocked_withdrawn_or_refused'}}`；`{{protectionStatus.status === 'active'}}`；`{{protectionStatus.status === 'age_verified'}}`；`{{protectionRole === 'parent'}}`；`{{generatedBindCode}}`；`{{guardianChildren.length}}`；`{{item.safeguard.age_band === 'under_14'}}`；`{{item.safeguard.age_band === '14_or_over'}}`；`{{item.safeguard.age_band === 'under_14'}}`；`{{item.safeguard.guardian_consent_status !== 'active'}}`；`{{protectionRole && protectionRole !== 'student' && protectionRole !== 'parent'}}`；`{{noticeType === 'privacy'}}`；`{{privacyLoading \|\| privacyError}}`；`{{privacyRequests.length}}`；`{{item.participant_notice}}`；`{{item.execution_proof_hash}}`；`{{item.canCancel}}`；`{{item.canAppeal}}`
+- 组件：`page-state`、`section-title`、`bottom-tip-card`、`status-pill`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 26 | page-state | `bindaction → goProtectionLogin` | {} |
+| 38 | 重新读取 | `bindtap → loadProtectionStatus` | {} |
+| 49 | 我已满14周岁 | `bindtap → chooseAge` | {"age":"14_or_over"} |
+| 50 | 我未满14周岁 | `bindtap → chooseAge` | {"age":"under_14"} |
+| 55 | 完成家长绑定 | `bindinput → onBindCodeInput` | {} |
+| 63 | 完成家长绑定 | `bindtap → submitStudentBinding` | {} |
+| 72 | 我愿意继续 | `bindtap → updateChildDecision` | {"assented":"true"} |
+| 73 | 我暂时不继续 | `bindtap → updateChildDecision` | {"assented":"false"} |
+| 82 | 我想暂停受保护功能 | `bindtap → updateChildDecision` | {"assented":"false"} |
+| 93 | 生成10位绑定码 | `bindtap → createGuardianBindCode` | {} |
+| 112 | 同意受保护数据处理 | `bindtap → updateGuardianDecision` | {"child":"{{item.student_user_id}}","agreed":"true"} |
+| 120 | 撤回监护人同意 | `bindtap → updateGuardianDecision` | {"child":"{{item.student_user_id}}","agreed":"false"} |
+| 144 | 删除申请< | `bindaction → handlePrivacyStateAction` | {} |
+| 163 | 取消申请 | `bindtap → cancelPrivacyRequest` | {"id":"{{item.id}}"} |
+| 170 | 补充说明并重新提交 | `bindtap → appealPrivacyRequest` | {"id":"{{item.id}}"} |
+| 187 | button | `bindtap → submitPrivacyDeleteRequest` | {} |
+| 193 | 返回 | `bindtap → goBack` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/settings-detail/index.js:343` | `listPrivacyRequests` | GET /api/privacy/requests | backend/routes/privacy.py:86 / privacy.list_privacy_requests / self |
+| `apps/miniprogram/pages/settings-detail/index.js:375` | `createPrivacyDeleteRequest` | POST /api/privacy/delete-my-data | backend/routes/privacy.py:71 / privacy.delete_my_data / self |
+| `apps/miniprogram/pages/settings-detail/index.js:399` | `cancelPrivacyRequest` | POST /api/privacy/requests/<request_id>/cancel | backend/routes/privacy.py:117 / privacy.cancel_privacy_request / self |
+| `apps/miniprogram/pages/settings-detail/index.js:429` | `appealPrivacyRequest` | POST /api/privacy/requests/<request_id>/appeal | backend/routes/privacy.py:100 / privacy.appeal_privacy_request / self |
+
+- 下游路由：navigateTo → /pages/login/index?redirect=%2Fpages%2Fsettings-detail%2Findex%3Ftype%3Dprivacy；navigateTo → /pages/login/index?redirect=%2Fpages%2Fsettings-detail%2Findex%3Ftype%3Dprotection；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/settings-detail/index.js:191 `if (!isLoggedIn()) {`；apps/miniprogram/pages/settings-detail/index.js:202 `const user = getAuthUser() \|\| {};`；apps/miniprogram/pages/settings-detail/index.js:206 `if (role === "student") {`；apps/miniprogram/pages/settings-detail/index.js:215 `if (role === "parent") {`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`
+- 组件事件转发：page-state → action；section-title → more
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 38 本周小目标 — `pages/goal-setting/index`
+
+**用户任务：** 按原有步骤设置本周小目标，保留选项、输入、草稿与保存校验。
+- 页面源码：`apps/miniprogram/pages/goal-setting/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{errorMessage}}`；`{{slowSubmitting}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 13 | button | `bindtap → selectScene` | {"value":"{{item}}"} |
+| 23 | input | `bindinput → onTextInput` | {"key":"customScene"} |
+| 32 | button | `bindtap → selectOldReaction` | {"value":"{{item}}"} |
+| 50 | button | `bindtap → selectNewReaction` | {"value":"{{item}}"} |
+| 67 | textarea | `bindinput → onTextInput` | {"key":"smartGoal"} |
+| 83 | button | `bindtap → submitGoal` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/goal-setting/index.js:85` | `createGoal` | POST /api/goals | backend/routes/goals.py:20 / goals.create_goal / role_scoped |
+
+- 下游路由：navigateTo → /pages/diary-form/index?goal_id=:dynamic
+- 本地保存：getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 39 记录情绪事件 — `pages/diary-form/index`
+
+**用户任务：** 记录具体事件和主要感受；选填信息保持可展开，保留目标关联、草稿和提交后反馈。
+- 页面源码：`apps/miniprogram/pages/diary-form/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{goalId}}`；`{{showMoreFields}}`；`{{showMoreFields}}`；`{{errorMessage}}`；`{{slowSubmitting}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 18 | button | `bindtap → selectScene` | {"value":"{{item}}"} |
+| 30 | input | `bindinput → onTextInput` | {"key":"customScene"} |
+| 34 | textarea | `bindinput → onTextInput` | {"key":"eventDescription"} |
+| 53 | button | `bindtap → selectParentEmotion` | {"value":"{{item}}"} |
+| 65 | slider | `bindchange → onParentIntensityChange` | {} |
+| 72 | button | `bindtap → selectChildEmotion` | {"value":"{{item}}"} |
+| 84 | slider | `bindchange → onChildIntensityChange` | {} |
+| 89 | button | `bindtap → toggleMoreFields` | {} |
+| 101 | textarea | `bindinput → onTextInput` | {"key":"automaticThought"} |
+| 111 | textarea | `bindinput → onTextInput` | {"key":"behavior"} |
+| 130 | button | `bindtap → selectBodySensation` | {"value":"{{item}}"} |
+| 140 | input | `bindinput → onTextInput` | {"key":"bodySensationNote"} |
+| 144 | textarea | `bindinput → onTextInput` | {"key":"childReaction"} |
+| 154 | textarea | `bindinput → onTextInput` | {"key":"shortTermResult"} |
+| 164 | textarea | `bindinput → onTextInput` | {"key":"longTermImpact"} |
+| 184 | button | `bindtap → submitDiary` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/diary-form/index.js:133` | `createDiary` | POST /api/diaries | backend/routes/diaries.py:29 / diaries.create_diary / self_only_or_dedicated_domain_command |
+
+- 下游路由：navigateTo → /pages/feedback-result/index?diary_id=:dynamic；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/pages/diary-form/index.js:46 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 40 情绪记录 — `pages/diary-history/index`
+
+**用户任务：** 读取本人最近50条日记并完整阅读时间/场景/描述/感受；可新建和重试，无编辑删除或虚构总数。
+- 页面源码：`apps/miniprogram/pages/diary-history/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{records.length}}`
+- 组件：`page-state`、`bamboo-timeline-node`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 13 | 重新加载情绪记录 | `bindaction → retry` | {} |
+| 50 | 记录一件事 | `bindtap → startDiary` | {} |
+| 53 | 新建一条情绪事件记录 | `bindaction → startDiary` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/diary-history/index.js:79` | `listDiaries` | GET /api/diaries | backend/routes/diaries.py:148 / diaries.list_diaries / self_or_active_participant_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/diary-form/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/diary-history/index.js:59 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 41 本次反馈 — `pages/feedback-result/index`
+
+**用户任务：** 理解这次支持性反馈并选择下一练习/共同核对/人工支持；高风险不生成普通建议。
+- 页面源码：`apps/miniprogram/pages/feedback-result/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{isHighRisk}}`；`{{canShowTraining}}`；`{{trainingRecommendation}}`；`{{recommendedTrainings.length > 1}}`；`{{trainingIndex > 0 && trainingIndex < 3}}`；`{{trainingRecommendation}}`；`{{!isHighRisk}}`
+- 组件：`page-state`、`section-title`、`training-task-card`、`bottom-tip-card`、`feedback-rating`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 10 | 先接住这次感受 | `bindaction → handleFeedbackStateAction` | {} |
+| 19 | feedback-rating | `bindselect → submitFeedbackEvaluation` | {} |
+| 59 | 查看安全指引 | `bindtap → openEmergencyGuide` | {} |
+| 60 | 提交人工关注 | `bindtap → openSupervision` | {} |
+| 71 | 开始这个练习 | `bindtap → openTrainingCard` | {} |
+| 102 | 提交督导 | `bindtap → openSupervision` | {} |
+| 106 | 收藏这次反馈 | `bindtap → saveFeedback` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/feedback-result/index.js:45` | `generateFeedback` | POST /api/feedback/generate | backend/routes/feedback.py:103 / feedback.generate / self_or_research_feedback_write_capability_and_active_assignment |
+| `apps/miniprogram/pages/feedback-result/index.js:46` | `listCards` | GET /api/cards | backend/routes/cards.py:13 / cards.get_cards / role_scoped |
+| `apps/miniprogram/pages/feedback-result/index.js:209` | `createFeedbackLedgerEntry` | POST /api/feedback-ledger | backend/routes/feedback_ledger.py:24 / feedback_ledger.create_entry / role_scoped |
+
+- 下游路由：navigateTo → /pages/diary-form/index；navigateTo → /pages/training-card/index?tags=:dynamic；navigateTo → /pages/supervision/index?diary_id=:dynamic；navigateTo → /pages/emergency-guide/index
+- 本地保存：setStorageSync LATEST_TRAINING_RECOMMENDATION_KEY
+- 组件事件转发：page-state → action；section-title → more；training-task-card → tapcard；feedback-rating → select
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 42 家庭关系测一测 — `pages/assessment/index`
+
+**用户任务：** 按实际分类和搜索找到支持性测评；是否开放、研究预览与来源以真实返回为准。
+- 页面源码：`apps/miniprogram/pages/assessment/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{searchKeyword}}`；`{{errorMessage}}`；`{{loading}}`；`{{!item.items.length && item.emptyText}}`；`{{recentResults.length}}`；`{{recentLoginTip}}`
+- 组件：`page-state`、`section-title`、`assessment-worksheet-card`、`function-entry-card`、`alert-card`、`bottom-tip-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 9 | button | `bindtap → switchAudience` | {"key":"{{item.key}}"} |
+| 18 | 清除 | `bindinput → onSearchInput` | {} |
+| 19 | 清除 | `bindtap → clearSearch` | {} |
+| 26 | 重新加载 | `bindtap → loadAssessments` | {} |
+| 39 | assessment-worksheet-card | `bindopen → openAssessmentEntry` | {} |
+| 52 | 查看测评记录：{{item.worksheet_title}} | `bindtap → openRecentResult` | {"id":"{{item.id}}","worksheet-id":"{{item.worksheet_id}}"} |
+| 77 | 去登录 | `bindtap → goLogin` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/assessment/index.js:46` | `getDebugConfig` | 本地配置只读，无网络请求 | 不展示 Secret 或用户原文 |
+| `apps/miniprogram/pages/assessment/index.js:195` | `listAssessments` | GET /api/assessments | backend/routes/assessments.py:216 / assessments.list_assessments / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/assessment/index.js:219` | `listAssessmentResults` | GET /api/assessment-results | backend/routes/assessments.py:327 / assessments.list_assessment_results / self_or_active_participant_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/assessment-detail/index?id=:dynamic；navigateTo → /pages/assessment-result/index?id=:dynamic；navigateTo → /pages/integration-test/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/assessment/index.js:66 `const isStudentProfile = item.id === "student_profile_v1" \|\| item.category === "学生画像";`；apps/miniprogram/pages/assessment/index.js:68 `const audienceClass = item.audience_class \|\| (isStudentProfile ? "student" : "adult");`；apps/miniprogram/pages/assessment/index.js:76 `display_title: isStudentProfile ? item.display_title : cleanDisplayTitle(item.display_title \|\| item.source_title),`；apps/miniprogram/pages/assessment/index.js:78 `is_student_profile: isStudentProfile,`；apps/miniprogram/pages/assessment/index.js:85 `action_text: item.enabled_for_user === false ? "暂不开放" : isStudentProfile ? "开始测一测" : "填写",`；apps/miniprogram/pages/assessment/index.js:211 `if (!isLoggedIn()) {`；apps/miniprogram/pages/assessment/index.js:249 `if (!requireLogin({`；apps/miniprogram/pages/assessment/index.js:278 `requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`
+- 组件事件转发：page-state → action；section-title → more；assessment-worksheet-card → open；function-entry-card → tapcard
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 43 全部测评记录 — `pages/assessment-history/index`
+
+**用户任务：** 回看已保存测评，保留实际分页、详情和错误恢复。
+- 页面源码：`apps/miniprogram/pages/assessment-history/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage && !items.length}}`；`{{items.length}}`；`{{hasMore}}`；`{{errorMessage}}`
+- 组件：`page-state`、`assessment-worksheet-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 16 | 重新加载 | `bindtap → retry` | {} |
+| 20 | assessment-worksheet-card | `bindopen → openResult` | {} |
+| 28 | button | `bindtap → loadMore` | {} |
+| 36 | 去测一测 | `bindtap → goAssessment` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/assessment-history/index.js:70` | `listAssessmentResults` | GET /api/assessment-results | backend/routes/assessments.py:327 / assessments.list_assessment_results / self_or_active_participant_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/assessment-result/index?id=:dynamic；navigateTo → /pages/assessment/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/assessment-history/index.js:52 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action；assessment-worksheet-card → open
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 44 填写测评 — `pages/assessment-detail/index`
+
+**用户任务：** 完成真实题目和选项，保留题序、进度、草稿、校验及提交；不改测量含义。
+- 页面源码：`apps/miniprogram/pages/assessment-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{worksheet}}`；`{{worksheet.sensitive_category && worksheet.sensitive_category !== 'none'}}`；`{{item.required}}`；`{{item.type === 'scale'}}`；`{{errorMessage}}`；`{{needsLogin}}`；`{{slowSubmitting}}`
+- 组件：`page-state`、`section-title`、`alert-card`、`bottom-tip-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 27 | 选择 {{opt.displayLabel}} | `bindtap → selectOption` | {"index":"{{qi}}","value":"{{opt.value}}","score":"{{opt.score}}"} |
+| 44 | textarea | `bindinput → onTextInput` | {"index":"{{qi}}"} |
+| 57 | 去登录后继续 | `bindtap → goLogin` | {} |
+| 63 | button | `bindtap → submitWorksheet` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/assessment-detail/index.js:115` | `getAssessment` | GET /api/assessments/<worksheet_id> | backend/routes/assessments.py:275 / assessments.get_assessment / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/assessment-detail/index.js:231` | `createProfile` | POST /api/profile | backend/routes/profile.py:446 / profile.create_profile / role_scoped |
+| `apps/miniprogram/pages/assessment-detail/index.js:232` | `createAssessmentResult` | POST /api/assessment-results | backend/routes/assessments.py:291 / assessments.create_assessment_result / self_only_or_dedicated_domain_command |
+
+- 下游路由：navigateTo → /pages/assessment-result/index?id=:dynamic；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/pages/assessment-detail/index.js:39 `const isStudentProfile = worksheet.id === "student_profile_v1" \|\| worksheet.category === "学生画像";`；apps/miniprogram/pages/assessment-detail/index.js:43 `display_title: isStudentProfile ? worksheet.display_title : cleanDisplayTitle(worksheet.display_title \|\| worksheet.source_title),`；apps/miniprogram/pages/assessment-detail/index.js:44 `displaySourceText: isStudentProfile ? "支持性测评" : isReference ? "示例参考" : "电子版简化记录",`；apps/miniprogram/pages/assessment-detail/index.js:51 `isStudentProfile,`；apps/miniprogram/pages/assessment-detail/index.js:77 `if (!requireLogin({`；apps/miniprogram/pages/assessment-detail/index.js:230 `const result = worksheet.isStudentProfile`；apps/miniprogram/pages/assessment-detail/index.js:237 `const resultId = worksheet.isStudentProfile ? result.assessment_result_id : result.id;`；apps/miniprogram/pages/assessment-detail/index.js:264 `requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`
+- 组件事件转发：page-state → action；section-title → more
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 45 测一测结果 — `pages/assessment-result/index`
+
+**用户任务：** 阅读结果、维度、群体参照及本人结构化情绪/共现线索；低样本、风险暂缓、权限和非诊断边界分开。
+- 页面源码：`apps/miniprogram/pages/assessment-result/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{result}}`；`{{riskSummary}}`；`{{profilePosition}}`；`{{!profilePosition.canUseInterpretation}}`；`{{profilePosition.nCasesText}}`；`{{profilePosition.featureText}}`；`{{profilePosition.visualizationState !== 'data'}}`；`{{profilePosition.userPoint}}`；`{{profilePosition.clusterPoints.length}}`；`{{profilePosition.radarFeatures.length >= 3}}`；`{{profilePosition.radarFeatures.length >= 3}}`；`{{profilePosition.radarFeatures.length < 3}}`；`{{profilePosition.explanation}}`；`{{profilePosition.strengthNote \|\| profilePosition.smallStep}}`；`{{profilePosition.strengthNote}}`；`{{profilePosition.smallStep}}`；`{{profilePosition.suggestedQuestions.length}}`；`{{profilePosition.projectTasks.length}}`；`{{profileSummary}}`；`{{profileSummary.supportiveExplanation}}`；`{{profileSummary.strengthNote \|\| profileSummary.smallStep}}`；`{{profileSummary.strengthNote}}`；`{{profileSummary.smallStep}}`；`{{!profileSummary && scaleDimensions.length}}`；`{{scaleVisualization.showRadar}}`；`{{item.hasComparableRange}}`；`{{exploratoryAnalysis}}`；`{{!exploratoryAnalysis.available}}`；`{{exploratoryAnalysis.available}}`；`{{exploratoryAnalysis.interactionEdges.length}}`；`{{trainingRecommendation}}`；`{{trainingRecommendation.todaySuggestion}}`；`{{item.purpose}}`；`{{!profileSummary \|\| profileSummary.canOpenRecommendedCards}}`
+- 组件：`page-state`、`section-title`、`alert-card`、`bottom-tip-card`、`visualization-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 165 | 查看可练习任务 | `bindtap → openRecommendedCards` | {} |
+| 166 | 返回测一测 | `bindtap → backToAssessment` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/assessment-result/index.js:472` | `getAssessmentResult` | GET /api/assessment-results/<result_id> | backend/routes/assessments.py:374 / assessments.get_assessment_result / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/assessment-result/index.js:473` | `getAssessment` | GET /api/assessments/<worksheet_id> | backend/routes/assessments.py:275 / assessments.get_assessment / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/assessment-result/index.js:474` | `listCards` | GET /api/cards | backend/routes/cards.py:13 / cards.get_cards / role_scoped |
+| `apps/miniprogram/pages/assessment-result/index.js:475` | `getAssessmentExploratoryAnalysis` | GET /api/assessment-results/<result_id>/exploratory-analysis | backend/routes/assessments.py:434 / assessments.get_assessment_exploratory_analysis / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/assessment-result/index.js:480` | `getAssessmentProfilePosition` | GET /api/assessment-results/<result_id>/profile-position | backend/routes/assessments.py:391 / assessments.get_assessment_profile_position / self_or_active_participant_assignment_or_admin_capability |
+
+- 下游路由：navigateTo → /pages/training-card/index?card_ids=:dynamic；navigateTo → /pages/training-card/index?card_ids=:dynamic；switchTab → /pages/training/index
+- 本地保存：setStorageSync LATEST_TRAINING_RECOMMENDATION_KEY；setStorageSync THREE_DAY_LIGHT_PLAN_KEY
+- 组件事件转发：page-state → action；section-title → more
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 46 教育热榜 — `pages/hot-topics/index`
+
+**用户任务：** 从本地真实案例阅读拆解并进入对应练习；不包装为实时热榜数据。
+- 页面源码：`apps/miniprogram/pages/hot-topics/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：
+- 组件：`page-state`、`section-title`、`bottom-tip-card`、`training-task-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 9 | button | `bindtap → selectTag` | {"tag":"{{item}}"} |
+| 25 | button | `bindtap → selectTopic` | {"id":"{{item.id}}"} |
+| 67 | 查看关联训练卡 | `bindtapcard → openPractice` | {} |
+| 76 | 查看关联训练卡 | `bindtap → openPractice` | {} |
+| 87 | 回到首页 | `bindtap → goHome` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| — | — | 本地内容/导航/状态 | 不新增后端能力 |
+
+- 下游路由：navigateTo → /pages/training-card/index?tags=:dynamic；switchTab → /pages/home/index
+- 本地保存：
+- 组件事件转发：page-state → action；section-title → more；training-task-card → tapcard
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 47 UP任务卡 — `pages/task-detail/index`
+
+**用户任务：** 阅读当前本地任务步骤与示例、做一次记录并进入打卡；不冒充服务端新增任务。
+- 页面源码：`apps/miniprogram/pages/task-detail/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{task}}`
+- 组件：`page-state`、`section-title`、`alert-card`、`bottom-tip-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 3 | ‹ | `bindtap → goBack` | {} |
+| 48 | 当前情绪强度： / 10 | `bindinput → onReflectionInput` | {} |
+| 50 | slider | `bindchange → onEmotionLevelChange` | {} |
+| 59 | 完成并打卡 | `bindtap → finishPractice` | {} |
+| 61 | 从第一步开始 | `bindtap → startPractice` | {} |
+| 62 | 暂存感受 | `bindtap → recordFeeling` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| — | — | 本地内容/导航/状态 | 不新增后端能力 |
+
+- 下游路由：navigateTo → /pages/checkin/index?card_id=:dynamic
+- 本地保存：getStorageSync safehome:selectedTrainingCard
+- 组件事件转发：page-state → action；section-title → more
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 48 推荐训练卡 — `pages/training-card/index`
+
+**用户任务：** 从真实主推荐和备选中选择练习卡，保留风险阻断与详情/打卡路径。
+- 页面源码：`apps/miniprogram/pages/training-card/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{tagsText}}`；`{{item.isPrimary}}`；`{{item.isPrimary}}`；`{{item.isPrimary && expandedCardId === item.id}}`；`{{item.examplePhrase}}`；`{{item.stopText}}`；`{{item.isPrimary}}`；`{{cards.length === 0}}`
+- 组件：`page-state`、`feedback-rating`、`training-task-card`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 10 | 这次推荐依据 | `bindaction → retryLoadCards` | {} |
+| 33 | button | `bindtap → toggleCardDetails` | {"id":"{{item.id}}"} |
+| 47 | button | `bindtap → choosePractice` | {"id":"{{item.id}}","title":"{{item.title}}"} |
+| 48 | feedback-rating | `bindselect → submitTrainingFeedback` | {"id":"{{item.id}}"} |
+| 59 | page-state | `bindaction → goDiary` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/training-card/index.js:61` | `listCards` | GET /api/cards | backend/routes/cards.py:13 / cards.get_cards / role_scoped |
+| `apps/miniprogram/pages/training-card/index.js:61` | `recommendCards` | GET /api/cards/recommend | backend/routes/cards.py:24 / cards.recommend / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/training-card/index.js:153` | `createFeedbackLedgerEntry` | POST /api/feedback-ledger | backend/routes/feedback_ledger.py:24 / feedback_ledger.create_entry / role_scoped |
+
+- 下游路由：navigateTo → /pages/task-detail/index?card_id=:dynamic；navigateTo → /pages/diary-form/index
+- 本地保存：setStorageSync safehome:selectedTrainingCard
+- 组件事件转发：page-state → action；feedback-rating → select；training-task-card → tapcard
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 49 记录尝试 — `pages/checkin/index`
+
+**用户任务：** 记录一次尝试与感受，保留真实输入、草稿、校验、保存与下一步。
+- 页面源码：`apps/miniprogram/pages/checkin/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{successMessage}}`；`{{errorMessage}}`；`{{slowSubmitting}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 20 | slider | `bindchange → onEmotionBeforeChange` | {} |
+| 25 | slider | `bindchange → onEmotionAfterChange` | {} |
+| 31 | button | `bindtap → chooseHelpfulness` | {"value":"{{item.value}}"} |
+| 45 | input | `bindinput → onSkipReasonInput` | {} |
+| 53 | textarea | `bindinput → onReflectionInput` | {} |
+| 67 | button | `bindtap → submitCheckin` | {} |
+| 71 | 回到首页 | `bindtap → goHome` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/checkin/index.js:111` | `createCheckin` | POST /api/checkins | backend/routes/checkins.py:22 / checkins.create_checkin / self_only_or_dedicated_domain_command |
+
+- 下游路由：reLaunch → /pages/home/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync safehome:selectedTrainingCard；getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/pages/checkin/index.js:42 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 50 本周复盘 — `pages/weekly-report/index`
+
+**用户任务：** 回顾本周真实记录与练习线索，区分量尺、次数、来源与下一步，不作成绩排名。
+- 页面源码：`apps/miniprogram/pages/weekly-report/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{loading}}`；`{{errorMessage}}`；`{{profileTrendNamesText}}`；`{{report.profile_trend && report.profile_trend.requires_review_count}}`；`{{assessmentNamesText}}`；`{{dimensionGroups.length}}`；`{{recommendedCardsText}}`；`{{frequentScenes.length}}`；`{{frequentEmotions.length}}`；`{{commonPatterns.length}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 16 | 重新加载 | `bindtap → refreshReport` | {} |
+| 161 | 刷新复盘 | `bindtap → refreshReport` | {} |
+| 162 | 回到首页 | `bindtap → goHome` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/weekly-report/index.js:86` | `getWeeklyReport` | GET /api/weekly-report | backend/routes/reports.py:14 / reports.weekly_report / self_or_active_participant_assignment_or_admin_capability |
+
+- 下游路由：reLaunch → /pages/home/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user
+- 权限/预览线索：apps/miniprogram/pages/weekly-report/index.js:72 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 51 人工督导入口 — `pages/supervision/index`
+
+**用户任务：** 提交非实时人工支持请求，可关联本人记录；紧急边界、提交与失败恢复清楚。
+- 页面源码：`apps/miniprogram/pages/supervision/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{successMessage}}`；`{{errorMessage}}`；`{{slowSubmitting}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 18 | button | `bindtap → selectSource` | {"type":"{{item.type}}","id":"{{item.id}}"} |
+| 37 | textarea | `bindinput → onTextInput` | {"key":"message"} |
+| 48 | input | `bindinput → onTextInput` | {"key":"contact"} |
+| 59 | textarea | `bindinput → onTextInput` | {"key":"riskHint"} |
+| 79 | button | `bindtap → submitSupervision` | {} |
+| 83 | 回到首页 | `bindtap → goHome` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/supervision/index.js:59` | `listDiaries` | GET /api/diaries | backend/routes/diaries.py:148 / diaries.list_diaries / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/supervision/index.js:60` | `listAssessmentResults` | GET /api/assessment-results | backend/routes/assessments.py:327 / assessments.list_assessment_results / self_or_active_participant_assignment_or_admin_capability |
+| `apps/miniprogram/pages/supervision/index.js:125` | `createSupervision` | POST /api/supervision | backend/routes/supervision.py:97 / supervision.create_supervision_request / self_only_or_dedicated_domain_command |
+
+- 下游路由：reLaunch → /pages/home/index；navigateTo → /pages/login/index:dynamic
+- 本地保存：getStorageSync auth_token；getStorageSync auth_user；removeStorageSync auth_token；removeStorageSync auth_user；getStorageSync storageKey；setStorageSync storageKey；removeStorageSync storageKey
+- 权限/预览线索：apps/miniprogram/pages/supervision/index.js:27 `if (!requireLogin({`；apps/miniprogram/utils/authGuard.js:5 `function getAuthUser() {`；apps/miniprogram/utils/authGuard.js:9 `function isLoggedIn() {`；apps/miniprogram/utils/authGuard.js:13 `function requireLogin(options = {}) {`；apps/miniprogram/utils/authGuard.js:14 `if (isLoggedIn()) {`；apps/miniprogram/utils/authGuard.js:46 `getAuthUser,`；apps/miniprogram/utils/authGuard.js:47 `isLoggedIn,`；apps/miniprogram/utils/authGuard.js:48 `requireLogin,`
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 52 云托管诊断 — `pages/debug/index`
+
+**用户任务：** 保留开发配置、诊断、请求与原始技术输出，仅开发用途。
+- 页面源码：`apps/miniprogram/pages/debug/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{lastError}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 16 | 切换本地 5000 | `bindtap → useLocalBackend` | {} |
+| 17 | 切回云托管 | `bindtap → useCloudBackend` | {} |
+| 18 | 测试 healthz | `bindtap → testHealthz` | {} |
+| 19 | 测试 assessments | `bindtap → testAssessments` | {} |
+| 20 | 测试 risk/check | `bindtap → testRiskCheck` | {} |
+| 21 | 测试 profile | `bindtap → testProfile` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/debug/index.js:42` | `getDebugConfig` | 本地配置只读，无网络请求 | 不展示 Secret 或用户原文 |
+| `apps/miniprogram/pages/debug/index.js:71` | `healthz` | GET /healthz | backend/app.py:416 / healthz / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/debug/index.js:106` | `listAssessments` | GET /api/assessments | backend/routes/assessments.py:216 / assessments.list_assessments / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/debug/index.js:111` | `checkRisk` | POST /api/risk/check | backend/routes/profile.py:506 / profile.check_risk / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/debug/index.js:120` | `createProfile` | POST /api/profile | backend/routes/profile.py:446 / profile.create_profile / role_scoped |
+
+- 下游路由：
+- 本地保存：
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
+
+### 53 联调测试 — `pages/integration-test/index`
+
+**用户任务：** 保留健康诊断及记录—反馈—推荐三步联调，不作为正式用户入口。
+- 页面源码：`apps/miniprogram/pages/integration-test/index.{js,wxml,wxss,json}`（部分步骤无独立 WXSS，使用共享组件）。
+- 实际条件：`{{diary}}`；`{{feedback}}`；`{{cards.length}}`
+- 组件：`page-state`
+
+| WXML行 | 元素/上下文 | 事件 → 处理器 | 参数 |
+|---:|---|---|---|
+| 11 | button | `bindtap → runSmokeTest` | {} |
+
+| 调用来源 | 客户端方法 | 真实接口/本地能力 | 后端证据与访问范围 |
+|---|---|---|---|
+| `apps/miniprogram/pages/integration-test/index.js:7` | `getDebugConfig` | 本地配置只读，无网络请求 | 不展示 Secret 或用户原文 |
+| `apps/miniprogram/pages/integration-test/index.js:33` | `healthz` | GET /healthz | backend/app.py:416 / healthz / not_applicable_or_development_legacy |
+| `apps/miniprogram/pages/integration-test/index.js:39` | `createDiary` | POST /api/diaries | backend/routes/diaries.py:29 / diaries.create_diary / self_only_or_dedicated_domain_command |
+| `apps/miniprogram/pages/integration-test/index.js:53` | `generateFeedback` | POST /api/feedback/generate | backend/routes/feedback.py:103 / feedback.generate / self_or_research_feedback_write_capability_and_active_assignment |
+| `apps/miniprogram/pages/integration-test/index.js:60` | `recommendCards` | GET /api/cards/recommend | backend/routes/cards.py:24 / cards.recommend / not_applicable_or_development_legacy |
+
+- 下游路由：
+- 本地保存：
+- 组件事件转发：page-state → action
+- 实现保护：保留上述事件和参数、接口与字段、真实条件分支、输入校验、角色/同意/风险判断；内容仅作不改变含义的展示调整。
 
 <!-- UI_PRODUCT_AUTO_FACTS:END -->

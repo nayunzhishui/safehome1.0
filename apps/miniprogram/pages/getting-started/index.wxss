@@ -27,74 +27,14 @@
   display: block;
 }
 
-.intro-kicker {
-  color: var(--safe-primary-deep);
-  font-size: 28rpx;
-  font-weight: 800;
-  line-height: 1.4;
-}
-
 .intro-title {
   margin-top: 14rpx;
   color: var(--safe-title);
-  font-size: 52rpx;
+  font-size: 44rpx;
   font-weight: 900;
   line-height: 1.18;
-  letter-spacing: -1rpx;
+  letter-spacing: 0;
   text-align: center;
-}
-
-.intro-text {
-  margin-top: 22rpx;
-  color: var(--safe-muted);
-  font-size: 30rpx;
-  line-height: 1.7;
-}
-
-.path-summary {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 30rpx;
-  padding: 20rpx 12rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-sm);
-  background: var(--safe-bg-leaf);
-}
-
-.path-item {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-  padding: 0 12rpx;
-  border-left: 1rpx solid var(--safe-border);
-}
-
-.path-item:first-child {
-  border-left: 0;
-}
-
-.path-number {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 48rpx;
-  border-radius: 50%;
-  background: var(--safe-primary);
-  color: #ffffff;
-  font-size: 24rpx;
-  font-weight: 850;
-  line-height: 1;
-}
-
-.path-label {
-  min-width: 0;
-  color: var(--safe-primary-deep);
-  font-size: 24rpx;
-  font-weight: 800;
-  line-height: 1.35;
 }
 
 .practice-list {
@@ -103,7 +43,7 @@
 
 .practice-step {
   display: grid;
-  grid-template-columns: 118rpx minmax(0, 1fr);
+  grid-template-columns: 64rpx minmax(0, 1fr);
   gap: 28rpx;
   padding: 48rpx 0;
   border-bottom: 1rpx solid var(--safe-border);
@@ -115,7 +55,7 @@
 
 .step-number {
   color: var(--safe-primary);
-  font-size: 78rpx;
+  font-size: 44rpx;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -2rpx;
@@ -123,14 +63,14 @@
 
 .step-content {
   min-width: 0;
-  padding-left: 28rpx;
-  border-left: 1rpx solid var(--safe-border);
+  padding-left: 0;
+  border-left: 0;
 }
 
 .step-title {
   color: var(--safe-title);
-  font-size: 40rpx;
-  font-weight: 900;
+  font-size: 36rpx;
+  font-weight: 700;
   line-height: 1.28;
 }
 
@@ -138,7 +78,7 @@
 .arc-intro {
   margin-top: 16rpx;
   color: var(--safe-muted);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.7;
 }
 
@@ -167,7 +107,7 @@
   min-width: 0;
   flex: 1;
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -216,7 +156,7 @@
   min-width: 0;
   padding-top: 4rpx;
   color: var(--safe-title);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.5;
 }
 
@@ -235,7 +175,7 @@
   margin-top: 10rpx;
   padding: 28rpx;
   border-radius: var(--safe-radius-sm);
-  background: #fff7f0;
+  background: var(--ui2-warm);
 }
 
 .boundary-title {
@@ -269,30 +209,22 @@
 
 @media (max-width: 360px) {
   .intro-title {
-    font-size: 46rpx;
-  }
-
-  .path-summary {
-    padding-right: 6rpx;
-    padding-left: 6rpx;
-  }
-
-  .path-item {
-    gap: 8rpx;
-    padding-right: 8rpx;
-    padding-left: 8rpx;
+    font-size: 44rpx;
   }
 
   .practice-step {
-    grid-template-columns: 96rpx minmax(0, 1fr);
+    grid-template-columns: 56rpx minmax(0, 1fr);
     gap: 20rpx;
   }
 
   .step-number {
-    font-size: 68rpx;
+    font-size: 40rpx;
   }
 
   .step-content {
     padding-left: 22rpx;
   }
 }
+
+.getting-page { box-sizing:border-box; padding-left:48rpx; padding-right:48rpx; }
+@media(prefers-reduced-motion:reduce){.primary-action:active,.secondary-action:active{transform:none}}

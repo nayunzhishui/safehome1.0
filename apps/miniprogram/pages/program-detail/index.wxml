@@ -1,4 +1,4 @@
-<view class="safe-page program-detail-page" wx:if="{{program}}" role="main" aria-label="项目详情">
+<view class="safe-page ui2-page program-detail-page" wx:if="{{program}}" role="main" aria-label="项目详情">
   <view class="safe-card hero-card">
     <text class="program-title">{{program.title}}</text>
   </view>
@@ -13,7 +13,6 @@
   </view>
 
   <view wx:if="{{previewMode}}" class="preview-readonly">
-    <view class="editorial-marker"></view>
     <text class="preview-readonly-copy">研究者只读预览：当前草案尚未完成三方审核，填写、保存和提交均已关闭。</text>
   </view>
 
@@ -35,7 +34,7 @@
     <view class="measurement-head">
       <view>
         <text class="safe-h3">项目记录节奏</text>
-        <text class="safe-caption">用于安排开始前、练习中和完成后的阶段记录。</text>
+        <text class="program-help">用于安排开始前、练习中和完成后的阶段记录。</text>
       </view>
       <text class="measurement-status">{{program.measurementPlan.statusLabel}}</text>
     </view>
@@ -79,8 +78,8 @@
     <view wx:if="{{selectedSession.writing_prompt}}" class="section-block">
       <text class="section-title">书写提示</text>
       <text class="prompt-box">{{selectedSession.writing_prompt}}</text>
-      <textarea wx:if="{{!previewMode}}" class="draft-input" value="{{draftText}}" placeholder="可以先写在这里。保存草稿只留在本机；点击正式提交后才会上传。" bindinput="onDraftInput" />
-      <button wx:if="{{!previewMode}}" class="safe-primary-button" bindtap="saveDraft">保存本机草稿</button>
+      <textarea wx:if="{{!previewMode}}" class="draft-input" aria-label="本节书写内容，草稿只保存在本机" placeholder-class="field-placeholder" value="{{draftText}}" placeholder="可以先写在这里。保存草稿只留在本机；点击正式提交后才会上传。" bindinput="onDraftInput" />
+      <button wx:if="{{!previewMode}}" class="safe-outline-button" bindtap="saveDraft">保存本机草稿</button>
     </view>
 
     <view class="section-block">
@@ -89,7 +88,7 @@
         <text class="question-row">{{index + 1}}. {{item}}</text>
         <textarea
           wx:if="{{!previewMode}}"
-          class="reflection-input"
+          class="reflection-input" aria-label="反思问题：{{item}}" placeholder-class="field-placeholder"
           value="{{reflectionAnswers[index]}}"
           data-index="{{index}}"
           placeholder="可以写一句真实感受，也可以先留空，稍后再补。"
@@ -104,18 +103,18 @@
 
     <view wx:if="{{!previewMode}}" class="submit-block">
       <text class="protocol-label">练习前不适程度：{{distressBefore}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{distressBefore}}" bindchange="onDistressBeforeChange" activeColor="#4E7C6B" />
+      <slider min="0" max="10" step="1" value="{{distressBefore}}" bindchange="onDistressBeforeChange" activeColor="#23666e" />
       <text class="protocol-label">练习后不适程度：{{distressAfter}} / 10</text>
-      <slider min="0" max="10" step="1" value="{{distressAfter}}" bindchange="onDistressAfterChange" activeColor="#4E7C6B" />
+      <slider min="0" max="10" step="1" value="{{distressAfter}}" bindchange="onDistressAfterChange" activeColor="#23666e" />
       <checkbox-group bindchange="onAdverseResponseChange">
         <label class="consent-row">
-          <checkbox value="yes" checked="{{adverseResponse}}" color="#4E7C6B" />
+          <checkbox value="yes" checked="{{adverseResponse}}" color="#23666e" />
           <text>这次练习出现了明显不适或负面体验，需要后续关注。</text>
         </label>
       </checkbox-group>
       <checkbox-group bindchange="onAnalysisConsentChange">
         <label class="consent-row">
-          <checkbox value="yes" checked="{{analysisConsent}}" color="#4E7C6B" />
+          <checkbox value="yes" checked="{{analysisConsent}}" color="#23666e" />
           <text>允许将本次内容用于脱敏聚合分析，不默认展示原文。</text>
         </label>
       </checkbox-group>
@@ -127,7 +126,7 @@
 
   <view wx:if="{{!previewMode && submittedEntries.length}}" class="safe-card history-card">
     <text class="safe-h3">我已提交的项目记录</text>
-    <text class="safe-caption">提交内容会保留在本人记录中，并按授权范围供研究者只读查看。</text>
+    <text class="program-help">提交内容会保留在本人记录中，并按授权范围供研究者只读查看。</text>
     <view wx:for="{{submittedEntries}}" wx:key="id" class="history-row">
       <view class="history-copy">
         <text class="history-title">{{item.sessionText}} · {{item.createdAtText}}</text>
@@ -138,7 +137,7 @@
   </view>
 </view>
 
-<view class="safe-page program-detail-page" wx:else>
+<view class="safe-page ui2-page program-detail-page" wx:else>
   <view class="safe-card" wx:if="{{loading}}">
     <text class="safe-body">正在读取项目内容...</text>
   </view>

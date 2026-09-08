@@ -217,19 +217,19 @@ Page({
       ctx.moveTo(chart.padding, y);
       ctx.lineTo(chart.width - chart.padding, y);
       ctx.stroke();
-      fill("#78817b");
-      ctx.setFontSize ? ctx.setFontSize(10) : (ctx.font = "10px sans-serif");
+      fill("#536e73");
+      ctx.setFontSize ? ctx.setFontSize(13) : (ctx.font = "13px sans-serif");
       ctx.fillText(String(tick), 6, y + 3);
     });
 
     if (!chart.points.length) {
-      fill("#78817b");
+      fill("#536e73");
       ctx.setFontSize ? ctx.setFontSize(13) : (ctx.font = "13px sans-serif");
       ctx.fillText("今天还没有温度记录", chart.padding, height / 2);
       return;
     }
 
-    stroke("#4f7c6b");
+    stroke("#23666e");
     lineWidth(2);
     ctx.beginPath();
     chart.points.forEach((point, index) => {
@@ -242,12 +242,12 @@ Page({
     ctx.stroke();
 
     chart.points.forEach((point) => {
-      fill("#4f7c6b");
+      fill("#23666e");
       ctx.beginPath();
       ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
       ctx.fill();
-      fill("#78817b");
-      ctx.setFontSize ? ctx.setFontSize(10) : (ctx.font = "10px sans-serif");
+      fill("#536e73");
+      ctx.setFontSize ? ctx.setFontSize(13) : (ctx.font = "13px sans-serif");
       ctx.fillText(point.label || "", point.x - 14, height - 8);
     });
   },

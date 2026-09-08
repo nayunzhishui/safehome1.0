@@ -1,4 +1,4 @@
-<view class="safe-page plan-page" role="main" aria-label="个性化训练方案">
+<view class="safe-page ui2-page plan-page" role="main" aria-label="个性化训练方案">
   <view class="page-head">
     <text class="safe-h1">个性化训练方案</text>
   </view>
@@ -7,7 +7,7 @@
     <view class="assignment-head">
       <view>
         <text class="safe-h3">安排练习节奏</text>
-        <text class="safe-caption">先选一个当前可承受的频率，之后可以随时调整。</text>
+        <text class="plan-help">先选一个当前可承受的频率，之后可以随时调整。</text>
       </view>
       <text class="assignment-state">{{assignment.agreement_status === 'researcher_confirmed' ? '已共同确认' : '本人设置'}}</text>
     </view>
@@ -38,7 +38,7 @@
 
     <view class="assignment-field">
       <text class="assignment-label">开始日期</text>
-      <picker mode="date" value="{{assignment.start_date}}" bindchange="onStartDateChange">
+      <picker aria-label="选择练习开始日期" mode="date" value="{{assignment.start_date}}" bindchange="onStartDateChange">
         <view class="picker-value">{{assignment.start_date}}</view>
       </picker>
     </view>
@@ -56,7 +56,9 @@
       </view>
     </view>
 
+    <text class="assignment-label">这一阶段的小目标（可选）</text>
     <textarea
+      aria-label="这一阶段的小目标，可选，最多200字" placeholder-class="field-placeholder"
       class="goal-input"
       value="{{assignment.goal_text}}"
       maxlength="200"
@@ -76,7 +78,7 @@
       <view class="reminder-icon"><text>提醒</text></view>
       <view class="reminder-copy">
         <text class="safe-h3">微信练习提醒</text>
-        <text class="safe-caption">只在你主动授权后发送；关闭提醒不影响训练。</text>
+        <text class="plan-help">只在你主动授权后发送；关闭提醒不影响训练。</text>
       </view>
     </view>
     <view wx:if="{{!notification.available}}" class="reminder-state reminder-state--muted">
@@ -115,7 +117,7 @@
   <view wx:if="{{!loading && plan && !plan.has_assessment}}" class="empty-card">
     <text class="safe-h3">{{plan.next_action.title}}</text>
     <text class="safe-body">{{plan.next_action.description}}</text>
-    <button class="safe-primary-button" bindtap="openAssessment">去测一测</button>
+    <button class="safe-outline-button" bindtap="openAssessment">去测一测</button>
   </view>
 
   <view wx:for="{{planItems}}" wx:key="source_result_id" class="item-card">
@@ -148,7 +150,7 @@
   <view wx:if="{{!loading && errorMessage}}" class="empty-card empty-card--error">
     <text class="safe-h3">暂时没能读取</text>
     <text class="safe-body">{{errorMessage}}</text>
-    <button class="safe-primary-button" bindtap="loadPlan">重试</button>
+    <button class="safe-outline-button" bindtap="loadPlan">重试</button>
   </view>
 
   <view wx:if="{{!loading && plan && plan.has_assessment && !planItems.length}}" class="empty-card">

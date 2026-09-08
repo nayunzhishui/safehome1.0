@@ -1,4 +1,4 @@
-<view class="page-shell" aria-label="{{eyebrow}}页面">
+<view class="page-shell ui2-page" aria-label="{{eyebrow}}页面">
   <view class="page-header">
     <text class="page-kicker">{{eyebrow}}</text>
     <text class="page-title">{{title}}</text>
@@ -18,8 +18,8 @@
     kind="error"
     title="暂时无法打开支持性问答"
     description="{{error}}"
-    actionLabel="重新读取"
-    actionAriaLabel="重新读取支持性问答状态"
+    action-label="重新读取"
+    action-aria-label="重新读取支持性问答状态"
     bind:action="loadStatus"
   />
 
@@ -35,6 +35,6 @@
       <conversation-entry wx:for="{{messages}}" wx:key="id" message="{{item}}" />
     </view>
 
-    <question-composer value="{{question}}" sending="{{sending}}" disabled="{{!question || !consented}}" error="{{error && consented ? error : ''}}" bind:input="onQuestionInput" bind:submit="sendQuestion" />
+    <question-composer value="{{question}}" sending="{{sending}}" disabled="{{!question || !consented}}" guidance="{{!consented ? '先阅读使用边界并确认，再整理问题。' : (!question ? '写下一个具体问题后即可整理。' : '')}}" error="{{error && consented ? error : ''}}" bind:input="onQuestionInput" bind:submit="sendQuestion" />
   </block>
 </view>

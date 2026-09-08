@@ -1,7 +1,6 @@
-<view class="safe-page auth-page" role="main" aria-label="注册">
+<view class="safe-page ui2-page auth-page" role="main" aria-label="注册">
   <view class="auth-shell">
     <view class="auth-header">
-      <text class="auth-brand">SafeHome</text>
       <text class="auth-title">创建账号</text>
     </view>
 
@@ -10,16 +9,17 @@
 
       <view class="field field-first">
         <text class="field-label">用户名</text>
-        <input value="{{username}}" placeholder="请输入用户名" bindinput="onUsernameInput" />
+        <input value="{{username}}" aria-label="用户名" placeholder-class="field-placeholder" placeholder="请输入用户名" bindinput="onUsernameInput" />
         <text class="field-helper">至少 3 个字符</text>
       </view>
 
       <view class="field">
         <text class="field-label">密码</text>
-        <input value="{{password}}" password placeholder="请输入密码" bindinput="onPasswordInput" />
+        <input value="{{password}}" aria-label="密码" placeholder-class="field-placeholder" password placeholder="请输入密码" bindinput="onPasswordInput" />
         <text class="field-helper">至少 8 个字符</text>
       </view>
 
+      <view class="auth-section-title identity-heading">使用身份</view>
       <view class="field">
         <text class="field-label">角色</text>
         <picker
@@ -38,7 +38,7 @@
 
       <view class="field">
         <text class="field-label">昵称（可选）</text>
-        <input value="{{nickname}}" placeholder="选填" bindinput="onNicknameInput" />
+        <input value="{{nickname}}" aria-label="昵称，可选" placeholder-class="field-placeholder" placeholder="选填" bindinput="onNicknameInput" />
       </view>
 
       <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>

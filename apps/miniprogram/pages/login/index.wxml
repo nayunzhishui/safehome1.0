@@ -1,7 +1,6 @@
-<view class="safe-page auth-page">
+<view class="safe-page ui2-page auth-page">
   <view class="auth-shell">
     <view class="auth-header">
-      <text class="auth-brand">SafeHome</text>
       <text class="auth-title">登录</text>
     </view>
 
@@ -12,15 +11,15 @@
 
         <view class="field password-field-first">
           <text>临时密码</text>
-          <input value="{{currentPassword}}" password placeholder="请输入临时密码" bindinput="onCurrentPasswordInput" />
+          <input value="{{currentPassword}}" aria-label="临时密码" placeholder-class="field-placeholder" password placeholder="请输入临时密码" bindinput="onCurrentPasswordInput" />
         </view>
         <view class="field">
           <text>新密码</text>
-          <input value="{{newPassword}}" password placeholder="请输入新密码" bindinput="onNewPasswordInput" />
+          <input value="{{newPassword}}" aria-label="新密码，至少12位并包含三类字符" placeholder-class="field-placeholder" password placeholder="请输入新密码" bindinput="onNewPasswordInput" />
         </view>
         <view class="field">
           <text>再次输入新密码</text>
-          <input value="{{confirmPassword}}" password placeholder="请再次输入新密码" bindinput="onConfirmPasswordInput" />
+          <input value="{{confirmPassword}}" aria-label="再次输入新密码" placeholder-class="field-placeholder" password placeholder="请再次输入新密码" bindinput="onConfirmPasswordInput" />
         </view>
 
         <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
@@ -48,15 +47,15 @@
       <view class="auth-form">
         <view class="field">
           <text>用户名</text>
-          <input value="{{username}}" placeholder="请输入用户名" bindinput="onUsernameInput" />
+          <input value="{{username}}" aria-label="用户名" placeholder-class="field-placeholder" placeholder="请输入用户名" bindinput="onUsernameInput" />
         </view>
         <view class="field">
           <text>密码</text>
-          <input value="{{password}}" password placeholder="请输入密码" bindinput="onPasswordInput" />
+          <input value="{{password}}" aria-label="密码" placeholder-class="field-placeholder" password placeholder="请输入密码" bindinput="onPasswordInput" />
         </view>
 
         <view wx:if="{{message}}" class="message {{status}}" aria-live="polite">{{message}}</view>
-        <button class="primary-action" loading="{{loading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitLogin">登录</button>
+        <button class="primary-action {{wechatAvailable ? 'primary-action--secondary' : ''}}" loading="{{loading}}" disabled="{{loading || wechatLoading || phoneLoading}}" bindtap="submitLogin">登录</button>
         <button class="ghost-action" bindtap="goRegister">注册新账号</button>
       </view>
     </block>

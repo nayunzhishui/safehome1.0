@@ -1,7 +1,6 @@
-<view class="safe-page emergency-page" role="main" aria-label="现实支持资源">
+<view class="safe-page ui2-page emergency-page" role="main" aria-label="现实支持资源">
   <view class="emergency-header">
     <text class="page-title">先把人连接上</text>
-    <view class="header-rule" aria-hidden="true"></view>
   </view>
 
   <view class="resource-intro" role="note">这里不提供热线号码库，也不判断你是否处于危机。紧急时，请优先找能真实到场或及时回应的帮助。</view>

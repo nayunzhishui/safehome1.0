@@ -21,7 +21,7 @@ function buildJourney(enrollment, growth) {
   );
   let currentIndex = 1;
   let primaryAction = "report";
-  let primaryLabel = hasReport ? "查看阶段性报告" : "生成阶段性报告";
+  let primaryLabel = hasReport ? "查看阶段性报告" : "了解报告进度";
 
   if (["confirmed", "sent", "updated"].includes(reportStatus)) {
     currentIndex = tasksCount > 0 ? 3 : 2;

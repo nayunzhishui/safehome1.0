@@ -1,15 +1,14 @@
 .home-page {
-  --journey-bg: #174b38;
-  --journey-border: #174b38;
-  --journey-accent: #174b38;
-  --journey-title: #ffffff;
-  --journey-copy: rgba(255, 255, 255, 0.9);
-  --journey-muted: rgba(255, 255, 255, 0.76);
-  --journey-kicker: #ffffff;
-  --journey-marker-bg: rgba(255, 255, 255, 0.16);
-  --journey-marker-text: #ffffff;
-  --journey-button-bg: var(--safe-orange);
-  --journey-button-text: var(--safe-title);
+  box-sizing: border-box;
+  --journey-bg: var(--ui2-soft);
+  --journey-border: transparent;
+  --journey-accent: transparent;
+  --journey-title: var(--ui2-ink);
+  --journey-copy: var(--ui2-muted);
+  --journey-muted: var(--ui2-muted);
+  --journey-kicker: var(--ui2-muted);
+  --journey-button-bg: var(--ui2-primary);
+  --journey-button-text: #ffffff;
   padding: 48rpx;
   padding-bottom: calc(176rpx + env(safe-area-inset-bottom));
 }
@@ -25,16 +24,13 @@
 .home-title {
   display: block;
   width: 100%;
+  padding: 0 104rpx;
+  box-sizing: border-box;
   color: var(--safe-title);
-  font-size: 56rpx;
+  font-size: 44rpx;
   font-weight: 700;
   line-height: 1.3;
   text-align: center;
-}
-
-.home-divider {
-  height: 1rpx;
-  background: var(--safe-border);
 }
 
 .notice-button {
@@ -102,15 +98,20 @@
 
 .today-step-entry {
   display: block;
-  margin-top: 0;
+  margin-top: 32rpx;
+}
+
+.home-capture {
+  margin-top: 24rpx;
 }
 
 .how-to-entry {
-  margin-top: 12rpx;
+  display: block;
+  margin-top: 24rpx;
 }
 
 .home-section {
-  margin-top: 12rpx;
+  margin-top: 40rpx;
 }
 
 .home-section > page-state {
@@ -133,4 +134,17 @@
 
 @media (max-width: 340px) {
   .home-page { padding-left: 32rpx; padding-right: 32rpx; }
+}
+
+.home-more {
+  padding: 8rpx 32rpx 16rpx;
+  border: 1rpx solid var(--ui2-line);
+  border-radius: 24rpx;
+  background: var(--ui2-surface);
+}
+.summary-entry {
+  --ui2-entry-subtitle-size: 30rpx;
+  --ui2-entry-subtitle-leading: 48rpx;
+  --ui2-entry-action-display: none;
+  --ui2-entry-title-lines: unset;
 }

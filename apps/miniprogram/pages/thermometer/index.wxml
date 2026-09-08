@@ -1,4 +1,4 @@
-<view class="safe-page thermometer-page" role="main" aria-label="情绪温度计">
+<view class="safe-page ui2-page thermometer-page" role="main" aria-label="情绪温度计">
   <view class="page-head">
     <text class="page-title">情绪温度计</text>
   </view>
@@ -27,39 +27,41 @@
           <text class="micro-label">愉悦度</text>
           <text class="micro-value" aria-label="愉悦度 {{valenceLevel}} 分">{{valenceLevel}} / 10</text>
         </view>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{valenceLevel}}" activeColor="#4f7c6b" backgroundColor="#dfe5dc" bindchange="onValenceChange" bindchanging="onValenceChange" aria-label="调整愉悦度" />
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{valenceLevel}}" activeColor="#23666e" backgroundColor="#d5e3e3" bindchange="onValenceChange" bindchanging="onValenceChange" aria-label="调整愉悦度" />
       </view>
       <view class="micro-row">
         <view class="micro-heading">
           <text class="micro-label">身体唤起</text>
           <text class="micro-value" aria-label="身体唤起 {{arousalLevel}} 分">{{arousalLevel}} / 10</text>
         </view>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{arousalLevel}}" activeColor="#4f7c6b" backgroundColor="#dfe5dc" bindchange="onArousalChange" bindchanging="onArousalChange" aria-label="调整身体唤起" />
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{arousalLevel}}" activeColor="#23666e" backgroundColor="#d5e3e3" bindchange="onArousalChange" bindchanging="onArousalChange" aria-label="调整身体唤起" />
       </view>
       <view class="micro-row">
         <view class="micro-heading">
           <text class="micro-label">可控感</text>
           <text class="micro-value" aria-label="可控感 {{controlLevel}} 分">{{controlLevel}} / 10</text>
         </view>
-        <slider class="micro-slider" min="1" max="10" step="1" value="{{controlLevel}}" activeColor="#4f7c6b" backgroundColor="#dfe5dc" bindchange="onControlChange" bindchanging="onControlChange" aria-label="调整可控感" />
+        <slider class="micro-slider" min="1" max="10" step="1" value="{{controlLevel}}" activeColor="#23666e" backgroundColor="#d5e3e3" bindchange="onControlChange" bindchanging="onControlChange" aria-label="调整可控感" />
       </view>
 
+      <text class="field-label">情绪名称（可选）</text>
       <view class="text-field">
         <input
           class="emotion-input"
           value="{{emotionLabel}}"
           maxlength="40"
-          placeholder="可选：给这次情绪起个名字，如着急、烦躁、平静"
+          placeholder="例如：着急、烦躁、平静" aria-label="情绪名称，可选，最多40字" placeholder-class="field-placeholder"
           bindinput="onEmotionLabelInput"
         />
         <text class="field-limit">{{emotionLabel.length || 0}} / 40</text>
       </view>
+      <text class="field-label">简短记录（可选）</text>
       <view class="text-field text-field-brief">
         <textarea
           class="brief-input"
           value="{{briefText}}"
           maxlength="200"
-          placeholder="可选：用一句话写下刚才发生了什么。"
+          placeholder="用一句话写下刚才发生了什么。" aria-label="简短记录，可选，最多200字" placeholder-class="field-placeholder"
           bindinput="onBriefInput"
         />
         <text class="field-limit">{{briefText.length || 0}} / 200</text>
@@ -102,7 +104,7 @@
       <text class="selected-title">{{selectedPoint.label}} · 强度 {{selectedPoint.intensity_level}} / 10</text>
       <text class="selected-desc">{{selectedPoint.brief_text || "这次没有写备注。"}}</text>
     </view>
-    <view wx:if="{{!summary.count && !loading}}" class="quiet-state curve-empty">
+    <view wx:if="{{!summary.count && !loading && !errorMessage}}" class="quiet-state curve-empty">
       <text class="state-title">今天还没有记录</text>
       <text class="state-text">先记录一次，再看曲线。</text>
     </view>

@@ -26,7 +26,7 @@ Component({
 
     syncValue(value) {
       const nextValue = this.clamp(value);
-      this.setData({ percent: Math.round((nextValue / 10) * 100) });
+      this.setData({ percent: Math.round(((nextValue - 1) / 9) * 100) });
     },
 
     setFromTouch(event) {

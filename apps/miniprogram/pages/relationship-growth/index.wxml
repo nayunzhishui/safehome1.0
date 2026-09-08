@@ -1,4 +1,4 @@
-<view class="safe-page growth-page">
+<view class="safe-page ui2-page growth-page" role="main" aria-label="关系探索成长记录">
   <view class="growth-hero">
     <text class="growth-title">关系探索成长记录</text>
   </view>
@@ -7,16 +7,13 @@
   <view wx:elif="{{growth}}" class="growth-content">
     <view class="growth-summary-grid" aria-label="成长记录摘要">
       <view class="growth-summary-item" aria-label="累计记录{{growth.timeline.length}}条">
-        <text class="growth-summary-value">{{growth.timeline.length}}</text>
-        <text class="growth-summary-label">累计记录</text>
+        <text class="growth-summary-label">累计记录</text><text class="growth-summary-value">{{growth.timeline.length}}</text>
       </view>
       <view class="growth-summary-item" aria-label="可看指标组{{curveGroups.length}}组">
-        <text class="growth-summary-value">{{curveGroups.length}}</text>
-        <text class="growth-summary-label">指标组</text>
+        <text class="growth-summary-label">指标组</text><text class="growth-summary-value">{{curveGroups.length}}</text>
       </view>
       <view class="growth-summary-item" aria-label="阶段性反馈{{researcherConfirmations.length}}条">
-        <text class="growth-summary-value">{{researcherConfirmations.length}}</text>
-        <text class="growth-summary-label">阶段性反馈</text>
+        <text class="growth-summary-label">阶段性反馈</text><text class="growth-summary-value">{{researcherConfirmations.length}}</text>
       </view>
     </view>
 
@@ -75,7 +72,7 @@
       <view class="section-heading"><view><text class="section-title">阶段性反馈</text><text class="section-note">系统汇总与研究者补充明确分开</text></view></view>
       <view class="source-block source-block--feedback"><text class="source-label">研究者补充</text><view wx:if="{{researcherConfirmations.length}}"><text wx:for="{{researcherConfirmations}}" wx:key="id" class="source-line">{{item.dateText}} · {{item.title}}</text></view><text wx:else class="source-empty">暂时还没有研究者阶段性反馈。</text></view>
       <view class="source-block source-block--system"><text class="source-label">系统汇总</text><text class="growth-copy">{{growth.growth_report.change_summary}}</text><text class="growth-copy">下一步建议：{{growth.growth_report.next_step}}</text></view>
-      <view class="source-block"><button class="source-toggle" bindtap="toggleSelfNarratives">用户原话（仅你可见）{{showSelfNarratives ? '收起' : '展开'}}</button><view wx:if="{{showSelfNarratives}}"><view wx:for="{{selfNarratives}}" wx:key="id" class="self-narrative"><text class="source-label">{{item.date}} · {{item.typeLabel}}</text><text class="source-line">{{item.text}}</text></view><text wx:if="{{!selfNarratives.length}}" class="source-empty">目前没有开放文字记录。</text></view></view>
+      <view class="source-block"><button class="source-toggle" aria-expanded="{{showSelfNarratives}}" bindtap="toggleSelfNarratives">用户原话（仅你可见）{{showSelfNarratives ? '收起' : '展开'}}</button><view wx:if="{{showSelfNarratives}}"><view wx:for="{{selfNarratives}}" wx:key="id" class="self-narrative"><text class="source-label">{{item.date}} · {{item.typeLabel}}</text><text class="source-line">{{item.text}}</text></view><text wx:if="{{!selfNarratives.length}}" class="source-empty">目前没有开放文字记录。</text></view></view>
       <text class="boundary-copy">{{growth.growth_report.boundary_notice}}</text>
     </view>
 
@@ -87,15 +84,15 @@
       </view>
 
       <view wx:if="{{canRecord}}" class="record-disclosure">
-        <button class="record-disclosure__head" data-panel="weekly" bindtap="toggleRecordPanel"><view><text class="section-title">本周补充记录</text><text class="section-note">次数、感受和一段开放记录</text></view><text class="disclosure-icon">{{showWeeklyForm ? '−' : '+'}}</text></button>
+        <button class="record-disclosure__head" aria-expanded="{{showWeeklyForm}}" data-panel="weekly" bindtap="toggleRecordPanel"><view><text class="section-title">本周补充记录</text><text class="section-note">次数、感受和一段开放记录</text></view><text class="disclosure-icon">{{showWeeklyForm ? '−' : '+'}}</text></button>
         <view wx:if="{{showWeeklyForm}}" class="record-form">
-          <label class="field-label">主动社交次数<input type="number" data-key="active_social_count" value="{{form.active_social_count}}" bindinput="onFieldInput" /></label>
-          <label class="field-label">真实表达次数<input type="number" data-key="authentic_expression_count" value="{{form.authentic_expression_count}}" bindinput="onFieldInput" /></label>
-          <label class="field-label">挫折后怎样应对<textarea maxlength="300" data-key="setback_coping" value="{{form.setback_coping}}" bindinput="onFieldInput" /></label>
-          <label class="field-label"><view class="slider-heading"><text>当前关系靠近意愿</text><text class="value-badge">{{form.approach_willingness}} / 5</text></view><slider min="1" max="5" step="1" data-key="approach_willingness" value="{{form.approach_willingness}}" bindchange="onSliderChange" /></label>
-          <label class="field-label"><view class="slider-heading"><text>当前担忧强度</text><text class="value-badge">{{form.worry_intensity}} / 5</text></view><slider min="1" max="5" step="1" data-key="worry_intensity" value="{{form.worry_intensity}}" bindchange="onSliderChange" /></label>
-          <label class="field-label">最近一周最有成就感的事<textarea maxlength="500" data-key="achievement" value="{{form.achievement}}" bindinput="onFieldInput" /></label>
-          <label class="field-label">最近一周最挫败的事<textarea maxlength="500" data-key="setback" value="{{form.setback}}" bindinput="onFieldInput" /></label>
+          <label class="field-label">主动社交次数<input type="number" aria-label="主动社交次数" data-key="active_social_count" value="{{form.active_social_count}}" bindinput="onFieldInput" /></label>
+          <label class="field-label">真实表达次数<input type="number" aria-label="真实表达次数" data-key="authentic_expression_count" value="{{form.authentic_expression_count}}" bindinput="onFieldInput" /></label>
+          <label class="field-label">挫折后怎样应对<textarea placeholder-class="field-placeholder" maxlength="300" aria-label="挫折后怎样应对" data-key="setback_coping" value="{{form.setback_coping}}" bindinput="onFieldInput" /></label>
+          <label class="field-label"><view class="slider-heading"><text>当前关系靠近意愿</text><text class="value-badge">{{form.approach_willingness}} / 5</text></view><slider activeColor="#23666e" min="1" max="5" step="1" aria-label="当前关系靠近意愿，1至5" data-key="approach_willingness" value="{{form.approach_willingness}}" bindchange="onSliderChange" /></label>
+          <label class="field-label"><view class="slider-heading"><text>当前担忧强度</text><text class="value-badge">{{form.worry_intensity}} / 5</text></view><slider activeColor="#23666e" min="1" max="5" step="1" aria-label="当前担忧强度，1至5" data-key="worry_intensity" value="{{form.worry_intensity}}" bindchange="onSliderChange" /></label>
+          <label class="field-label">最近一周最有成就感的事<textarea placeholder-class="field-placeholder" maxlength="500" aria-label="最近一周最有成就感的事" data-key="achievement" value="{{form.achievement}}" bindinput="onFieldInput" /></label>
+          <label class="field-label">最近一周最挫败的事<textarea placeholder-class="field-placeholder" maxlength="500" aria-label="最近一周最挫败的事" data-key="setback" value="{{form.setback}}" bindinput="onFieldInput" /></label>
           <text class="draft-status" aria-live="polite">{{draftRestored ? '已恢复：' : ''}}{{saveStatus}}</text>
           <text wx:if="{{slowSaving}}" class="draft-status draft-status--slow">网络响应较慢；草稿和提交标识仍在本机，请不要重复点击。</text>
           <button class="safe-primary-button" loading="{{savingWeekly}}" disabled="{{savingWeekly}}" bindtap="saveWeekly">保存本周记录</button>
@@ -103,9 +100,9 @@
       </view>
 
       <view wx:if="{{canRecord}}" class="record-disclosure">
-        <button class="record-disclosure__head" data-panel="event" bindtap="toggleRecordPanel"><view><text class="section-title">记录一个关键事件</text><text class="section-note">只写一件具体发生的小事</text></view><text class="disclosure-icon">{{showEventForm ? '−' : '+'}}</text></button>
+        <button class="record-disclosure__head" aria-expanded="{{showEventForm}}" data-panel="event" bindtap="toggleRecordPanel"><view><text class="section-title">记录一个关键事件</text><text class="section-note">只写一件具体发生的小事</text></view><text class="disclosure-icon">{{showEventForm ? '−' : '+'}}</text></button>
         <view wx:if="{{showEventForm}}" class="record-form">
-          <textarea class="event-input" maxlength="500" data-key="event_summary" value="{{form.event_summary}}" bindinput="onFieldInput" placeholder="例如：一次靠近、被拒绝、表达边界或感到被理解的时刻"></textarea>
+          <textarea placeholder-class="field-placeholder" class="event-input" maxlength="500" aria-label="关键事件记录" data-key="event_summary" value="{{form.event_summary}}" bindinput="onFieldInput" placeholder="例如：一次靠近、被拒绝、表达边界或感到被理解的时刻"></textarea>
           <text class="draft-status">{{saveStatus}}</text>
           <button class="safe-outline-button" loading="{{savingEvent}}" disabled="{{savingEvent}}" bindtap="saveEvent">加入时间线</button>
         </view>
@@ -114,7 +111,7 @@
 
     <view class="growth-actions">
       <button class="safe-outline-button" bindtap="goTherapeuticAssessment">共同理解一次关系体验</button>
-      <button class="safe-primary-button growth-actions__primary" bindtap="openRecordSection">记录今天的一小步</button>
+      <button class="{{activeSection === 'records' ? 'safe-outline-button' : 'safe-primary-button'}} growth-actions__primary" bindtap="openRecordSection">记录今天的一小步</button>
       <button class="growth-actions__secondary" bindtap="showFeedbackSection">查看阶段性反馈</button>
     </view>
   </view>

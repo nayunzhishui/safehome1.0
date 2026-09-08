@@ -38,7 +38,7 @@
 .page-title {
   margin-top: 10rpx;
   color: var(--safe-title);
-  font-size: 46rpx;
+  font-size: 44rpx;
   font-weight: 900;
   line-height: 1.25;
   text-align: center;
@@ -47,7 +47,7 @@
 .page-summary {
   margin-top: 18rpx;
   color: var(--safe-muted);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -62,7 +62,7 @@
 .total-value,
 .total-label {
   color: var(--safe-primary-deep);
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 850;
 }
 
@@ -90,13 +90,13 @@
 .diagnostic-copy {
   margin-top: 12rpx;
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.6;
 }
 
 .diagnostic-copy {
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
   overflow-wrap: anywhere;
 }
 
@@ -145,7 +145,7 @@
 .record-status,
 .record-time {
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 800;
   line-height: 1.4;
 }
@@ -168,7 +168,7 @@
 .record-reflection {
   margin-top: 10rpx;
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.6;
 }
 
@@ -211,3 +211,9 @@
     gap: 6rpx;
   }
 }
+
+.history-page { box-sizing:border-box; padding-left:48rpx; padding-right:48rpx; }
+.record-card { border:0; border-bottom:1rpx solid var(--safe-border); border-radius:0; background:transparent; box-shadow:none; }
+.record-reflection { padding:20rpx 24rpx; border-radius:16rpx; background:var(--ui2-soft); color:var(--safe-title); }
+.repeat-action { min-height:96rpx; padding:20rpx 24rpx; line-height:1.5; }
+@media(max-width:340px){.history-page{padding-left:32rpx;padding-right:32rpx}}

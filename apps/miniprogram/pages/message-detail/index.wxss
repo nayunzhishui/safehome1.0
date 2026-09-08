@@ -1,4 +1,5 @@
 .message-detail-page {
+  box-sizing: border-box;
   padding: 40rpx 48rpx calc(72rpx + env(safe-area-inset-bottom));
 }
 
@@ -13,7 +14,7 @@
 
 .detail-kicker {
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 700;
   line-height: 1.5;
   text-align: center;
@@ -22,7 +23,7 @@
 .detail-title {
   margin-top: 16rpx;
   color: var(--safe-title);
-  font-size: 56rpx;
+  font-size: 44rpx;
   font-weight: 800;
   line-height: 1.28;
   text-align: center;
@@ -30,7 +31,7 @@
 
 .detail-time {
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
   line-height: 1.5;
 }
 
@@ -42,17 +43,10 @@
 
 .detail-body-layout {
   display: grid;
-  grid-template-columns: 6rpx minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 32rpx;
   margin-top: 24rpx;
   padding: 32rpx 0;
-}
-
-.detail-body-rule {
-  width: 6rpx;
-  min-height: 100%;
-  border-radius: 4rpx;
-  background: var(--safe-primary);
 }
 
 .detail-body {
@@ -65,7 +59,7 @@
 
 .source-action,
 .return-action {
-  border-radius: 32rpx;
+  border-radius: 24rpx;
 }
 
 .source-action {
@@ -99,10 +93,14 @@
 .boundary-text {
   margin-top: 12rpx;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
   line-height: 1.58;
 }
 
 .return-action {
   margin-top: 32rpx;
 }
+
+.feedback-section { --ui2-feedback-bg: var(--ui2-soft); --ui2-feedback-padding: 32rpx; --ui2-feedback-option-flex: 0 1 calc(50% - 8rpx); }
+.boundary-text { font-size: 30rpx; line-height: 48rpx; }
+@media(max-width:340px){.message-detail-page{padding-left:32rpx;padding-right:32rpx}}

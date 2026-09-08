@@ -25,7 +25,7 @@
 .pilot-kicker,
 .stage-eyebrow {
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 700;
   letter-spacing: 1rpx;
 }
@@ -33,7 +33,7 @@
 .pilot-title {
   margin-top: 14rpx;
   color: var(--safe-title);
-  font-size: 42rpx;
+  font-size: 44rpx;
   font-weight: 800;
   line-height: 1.35;
   text-align: center;
@@ -43,14 +43,14 @@
   padding: 28rpx 0;
   border-bottom: 1rpx solid var(--safe-border);
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
 .pilot-text {
   margin-top: 14rpx;
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -61,7 +61,7 @@
 
 .loading-section {
   color: var(--safe-text);
-  font-size: 28rpx;
+  font-size: 30rpx;
 }
 
 .unavailable-section,
@@ -159,7 +159,7 @@
   border-radius: 18rpx;
   background: var(--safe-bg);
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 700;
 }
 
@@ -183,14 +183,14 @@
 
 .journey-title {
   color: var(--safe-title);
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 700;
 }
 
 .journey-state {
   flex: none;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
 }
 
 .journey-step--current .journey-state {
@@ -201,13 +201,13 @@
 .journey-description {
   margin-top: 8rpx;
   color: var(--safe-muted);
-  font-size: 25rpx;
+  font-size: 26rpx;
   line-height: 1.55;
 }
 
 .secondary-hint {
   color: var(--safe-muted);
-  font-size: 25rpx;
+  font-size: 26rpx;
 }
 
 .secondary-row {
@@ -232,14 +232,14 @@
 
 .secondary-title {
   color: var(--safe-title);
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 700;
 }
 
 .secondary-description {
   margin-top: 6rpx;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
 }
 
 .secondary-arrow {
@@ -254,7 +254,7 @@
   border-radius: var(--safe-radius-sm);
   background: var(--safe-orange-soft);
   color: var(--safe-text);
-  font-size: 24rpx;
+  font-size: 26rpx;
   line-height: 1.65;
 }
 
@@ -263,3 +263,11 @@
   color: var(--safe-danger);
   font-size: 26rpx;
 }
+
+.relationship-pilot-page{box-sizing:border-box;padding-left:48rpx;padding-right:48rpx;padding-bottom:calc(56rpx + env(safe-area-inset-bottom));}
+.current-action-entry{--journey-bg:var(--ui2-soft);--journey-border:transparent;--journey-accent:transparent;}
+.journey-step--current .journey-marker{box-shadow:none;}
+.journey-content{min-width:0;}
+.boundary-note{background:var(--ui2-soft);font-size:30rpx;line-height:48rpx;}
+.consent-row{font-size:30rpx;line-height:48rpx;}
+@media(max-width:340px){.relationship-pilot-page{padding-left:32rpx;padding-right:32rpx}.journey-title-row{flex-wrap:wrap}}

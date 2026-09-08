@@ -1,9 +1,9 @@
-<view class="safe-page history-page" role="main" aria-label="训练记录">
+<view class="safe-page ui2-page history-page" role="main" aria-label="训练记录">
   <view class="history-head">
     <view>
       <text class="page-title">训练记录</text>
     </view>
-    <view class="total-badge">
+    <view wx:if="{{!loading && (!errorMessage || items.length)}}" class="total-badge">
       <text class="total-value">{{total}}</text>
       <text class="total-label">次记录</text>
     </view>

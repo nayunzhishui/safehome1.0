@@ -1,4 +1,4 @@
-<view class="safe-page relationship-pilot-page">
+<view class="safe-page ui2-page relationship-pilot-page">
   <view class="pilot-hero">
     <text class="pilot-title">关系探索试点</text>
   </view>

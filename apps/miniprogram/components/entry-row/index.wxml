@@ -1,4 +1,4 @@
-<button class="entry-row {{accent ? 'entry-row--accent' : ''}} {{compact ? 'entry-row--compact' : ''}} {{expanded ? 'entry-row--expanded' : ''}}" bindtap="handleTap">
+<button class="entry-row {{accent ? 'entry-row--accent' : ''}} {{compact ? 'entry-row--compact' : ''}} {{expanded ? 'entry-row--expanded' : ''}}" aria-label="{{actionLabel ? title + '，' + actionLabel : title}}" bindtap="handleTap">
   <image wx:if="{{icon}}" class="entry-icon" src="/assets/icons/figma-home/{{icon === 'feedback' ? 'support' : (icon === 'start' ? 'chevron-right' : icon)}}.png" mode="aspectFit" aria-hidden="true" />
   <view class="entry-copy">
     <text class="entry-title {{wrapTitle ? 'entry-title--wrap' : ''}}">{{title}}</text>

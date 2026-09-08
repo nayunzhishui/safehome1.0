@@ -3,42 +3,16 @@
   padding: 40rpx 48rpx calc(64rpx + env(safe-area-inset-bottom));
 }
 
-.messages-header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.messages-header {
-  align-items: stretch;
-  text-align: center;
-}
-
-.page-title,
-.page-summary,
-.message-title,
-.message-body,
-.message-time,
-.message-status,
-.diagnostic-copy,
-.diagnostic-copy {
-  display: block;
-}
+.messages-header { display: flex; flex-direction: column; align-items: stretch; text-align: center; }
+.page-title, .diagnostic-copy { display: block; }
 
 .page-title {
   color: var(--safe-title);
-  font-size: 56rpx;
+  font-size: 44rpx;
   font-weight: 700;
-  line-height: 72rpx;
-  letter-spacing: -1rpx;
+  line-height: 60rpx;
+  letter-spacing: 0;
   text-align: center;
-}
-
-.page-summary {
-  margin-top: 16rpx;
-  color: var(--safe-muted);
-  font-size: 28rpx;
-  line-height: 44rpx;
 }
 
 .messages-content {
@@ -46,36 +20,37 @@
 }
 
 .message-list {
-  overflow: hidden;
-  border: 1rpx solid var(--safe-border);
-  border-radius: 32rpx;
-  background: var(--safe-card);
+  --ui2-message-padding: 40rpx 0;
+  --ui2-message-bg: transparent;
+  --ui2-unread-marker: none;
+  border-top: 1rpx solid var(--safe-border);
 }
 
 .diagnostic-card {
   margin-top: 32rpx;
   padding: 32rpx;
   border: 1rpx solid var(--safe-border);
-  border-radius: 32rpx;
+  border-radius: 24rpx;
   background: var(--safe-bg-soft);
 }
 
 .diagnostic-copy {
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
   line-height: 36rpx;
   overflow-wrap: anywhere;
 }
 
 .diagnostic-action {
-  min-height: 88rpx;
+  min-height: 96rpx;
   margin: 16rpx 0 0;
   border: 0;
   background: transparent;
   color: var(--safe-primary-deep);
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 600;
-  line-height: 88rpx;
+  line-height: 1.5;
+  padding: 24rpx 0;
   text-align: left;
 }
 
@@ -95,3 +70,5 @@ bottom-tip-card {
   }
 
 }
+
+bottom-tip-card { --ui2-tip-border: 0; --ui2-tip-padding: 0; --ui2-tip-background: transparent; }

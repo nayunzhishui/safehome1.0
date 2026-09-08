@@ -1,10 +1,11 @@
 .training-card {
+  box-sizing: border-box;
   position: relative;
   width: 100%;
   display: block;
-  padding: 26rpx;
-  border: 1rpx solid var(--safe-border);
-  border-radius: var(--safe-radius-md);
+  padding:var(--ui2-training-padding,26rpx);
+  border:var(--ui2-training-border,1rpx) solid var(--safe-border);
+  border-radius:var(--ui2-training-radius,var(--safe-radius-md));
   background: var(--safe-card);
   box-shadow: var(--safe-shadow-card);
 }
@@ -75,7 +76,7 @@
   border-radius: var(--safe-radius-pill);
   background: var(--safe-orange-soft);
   color: #b36b1d;
-  font-size: 20rpx;
+  font-size:var(--ui2-caption,20rpx);
   font-weight: 700;
 }
 
@@ -83,7 +84,7 @@
   display: block;
   margin-top: 8rpx;
   color: var(--safe-text);
-  font-size: 24rpx;
+  font-size:var(--ui2-body,24rpx);
   line-height: 1.5;
 }
 
@@ -106,7 +107,7 @@
   align-items: center;
   gap: 12rpx;
   color: var(--safe-text);
-  font-size: 24rpx;
+  font-size:var(--ui2-body,24rpx);
   line-height: 1.45;
   text-align: left;
 }
@@ -122,3 +123,5 @@
 .clock-dot {
   border-color: var(--safe-orange);
 }
+
+@media(prefers-reduced-motion:reduce){.training-card--pressed{transform:none}}

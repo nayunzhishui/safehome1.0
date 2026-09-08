@@ -59,6 +59,7 @@ Page({
     report: null,
     radarRows: [],
     statusText: "",
+    generatedAtText: "",
     statusSteps: [],
     attentionNotice: "",
     mechanismCards: [],
@@ -107,6 +108,7 @@ Page({
         report,
         deliveryPending: false,
         isStageFeedback: String(report.version || "").includes("stage-feedback"),
+        generatedAtText: String(report.generated_at || "").slice(0, 16).replace("T", " "),
         radarRows: radarRows(report),
         statusText: reportStatusLabel(record.status),
         statusSteps: statusSteps(record.status),
@@ -171,29 +173,29 @@ Page({
     const height = Math.min(3900, Math.max(1500, 330 + totalLines * 48));
     this.setData({ shareCanvasHeight: height, exporting: true }, () => {
       const ctx = wx.createCanvasContext("reportShareCanvas", this);
-      ctx.setFillStyle("#f7f4ee");
+      ctx.setFillStyle("#f4f8f8");
       ctx.fillRect(0, 0, 640, height);
-      ctx.setFillStyle("#284b40");
+      ctx.setFillStyle("#173c43");
       ctx.setFontSize(20);
       ctx.fillText("安心陪伴 · 关系探索", 42, 58);
-      ctx.setFillStyle("#23312d");
+      ctx.setFillStyle("#173c43");
       ctx.setFontSize(34);
       ctx.fillText(report.title || "阶段性关系探索报告", 42, 112);
-      ctx.setFillStyle("#4f7c6b");
+      ctx.setFillStyle("#23666e");
       ctx.setFontSize(22);
       ctx.fillText(this.data.statusText, 42, 154);
-      ctx.setStrokeStyle("#d9e0dc");
+      ctx.setStrokeStyle("#d5e3e3");
       ctx.moveTo(42, 184);
       ctx.lineTo(598, 184);
       ctx.stroke();
       let y = 228;
       blocks.forEach((block) => {
         if (!block.lines.length || y > height - 120) return;
-        ctx.setFillStyle("#284b40");
+        ctx.setFillStyle("#173c43");
         ctx.setFontSize(23);
         ctx.fillText(block.title, 42, y);
         y += 42;
-        ctx.setFillStyle("#344640");
+        ctx.setFillStyle("#173c43");
         ctx.setFontSize(20);
         block.lines.forEach((line) => {
           if (y <= height - 90) ctx.fillText(line, 42, y);
@@ -201,7 +203,7 @@ Page({
         });
         y += 26;
       });
-      ctx.setFillStyle("#718078");
+      ctx.setFillStyle("#536e73");
       ctx.setFontSize(17);
       ctx.fillText("本长图不含模型中心、内部字段或研究备注", 42, height - 42);
       ctx.draw(false, () => setTimeout(() => this.exportLongImage(height), 120));

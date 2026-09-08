@@ -2,18 +2,18 @@
   padding: 20rpx;
   border: 1rpx solid var(--safe-border);
   border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
+  background: var(--ui2-feedback-bg,var(--safe-card));
 }
 
 .feedback-rating--compact { padding: 16rpx; }
 
 .feedback-rating--editorial {
-  padding: 40rpx;
-  border-radius: 32rpx;
+  padding: var(--ui2-feedback-padding,40rpx);
+  border-radius: var(--ui2-button-radius,32rpx);
 }
 
 .feedback-rating--editorial .feedback-rating-prompt {
-  font-size: 28rpx;
+  font-size: var(--ui2-body,28rpx);
   line-height: 1.43;
 }
 
@@ -23,21 +23,23 @@
 }
 
 .feedback-rating--editorial .feedback-rating-option {
-  min-height: 88rpx;
+  box-sizing: border-box;
+  flex: var(--ui2-feedback-option-flex, 0 1 auto);
+  min-height: var(--safe-touch,88rpx);
   padding: 10rpx 20rpx;
-  font-size: 24rpx;
+  font-size: var(--ui2-body,24rpx);
 }
 
 .feedback-rating--editorial .feedback-rating-note {
   margin-top: 20rpx;
-  font-size: 24rpx;
+  font-size: var(--ui2-body,24rpx);
   line-height: 1.5;
 }
 
 .feedback-rating-prompt {
   display: block;
   color: var(--safe-title);
-  font-size: 24rpx;
+  font-size: var(--ui2-body,24rpx);
   font-weight: 800;
   line-height: 1.45;
 }
@@ -50,17 +52,17 @@
 }
 
 .feedback-rating-option {
-  min-height: 88rpx;
+  min-height: var(--safe-touch,88rpx);
   margin: 0;
   padding: 10rpx 18rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1rpx solid var(--safe-border);
-  border-radius: 999rpx;
+  border-radius: var(--ui2-button-radius,999rpx);
   background: var(--safe-bg-soft);
   color: var(--safe-text);
-  font-size: 22rpx;
+  font-size: var(--ui2-body,22rpx);
   font-weight: 700;
   line-height: 1.3;
 }
@@ -83,7 +85,7 @@
   display: block;
   margin-top: 12rpx;
   color: var(--safe-muted);
-  font-size: 20rpx;
+  font-size: var(--ui2-caption,20rpx);
   line-height: 1.5;
 }
 

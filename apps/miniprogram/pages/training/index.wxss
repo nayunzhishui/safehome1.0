@@ -41,7 +41,7 @@
 
 .hero-title {
   color: var(--safe-title);
-  font-size: 48rpx;
+  font-size: 44rpx;
   font-weight: 900;
   line-height: 1.2;
 }
@@ -49,7 +49,7 @@
 .hero-summary {
   margin-top: 16rpx;
   color: var(--safe-muted);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.65;
 }
 
@@ -87,7 +87,7 @@
 .recommendation-kicker,
 .plan-kicker {
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 800;
   line-height: 1.4;
 }
@@ -121,7 +121,7 @@
 }
 
 .entry-title {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 850;
   line-height: 1.35;
 }
@@ -129,7 +129,7 @@
 .entry-desc {
   margin-top: 6rpx;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
   line-height: 1.4;
 }
 
@@ -173,7 +173,7 @@
 .relationship-pilot-entry > .entry-desc {
   margin-top: 8rpx;
   color: var(--safe-muted);
-  font-size: 28rpx;
+  font-size: 30rpx;
   line-height: 1.6;
 }
 
@@ -194,7 +194,7 @@
 .recommendation-role {
   flex: 0 0 auto;
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 850;
 }
 
@@ -226,7 +226,7 @@
   min-height: 88rpx;
   margin: 24rpx 0 0;
   border-radius: var(--safe-radius-sm);
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 850;
 }
 
@@ -267,7 +267,7 @@
 .plan-day-index,
 .plan-day-role {
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 800;
 }
 
@@ -302,7 +302,7 @@
   border-radius: 50%;
   background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 900;
 }
 
@@ -334,7 +334,7 @@
 .step-desc {
   margin-top: 6rpx;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: 26rpx;
   line-height: 1.4;
 }
 
@@ -347,7 +347,7 @@
 .repeat-hint,
 .recommendation-boundary,
 .plan-boundary {
-  font-size: 24rpx;
+  font-size: 26rpx;
 }
 
 @media (max-width: 360px) {
@@ -366,3 +366,14 @@
     border-bottom-width: 2rpx;
   }
 }
+
+.training-page { box-sizing:border-box; padding-left:48rpx; padding-right:48rpx; }
+.entry-grid { grid-template-columns:1fr; border:0; margin-top:0; }
+.entry-item { display:block; box-sizing:border-box; width:100%; padding:24rpx 0; text-align:left; border-bottom:1rpx solid var(--safe-border); }
+.entry-item--active { background:transparent; border:0; min-height:0; padding-top:0; color:var(--safe-primary-deep); }
+.recommendation-item { border:0; background:transparent; padding:20rpx 0; }
+.starter-card { border:0; padding:32rpx; background:var(--ui2-soft); border-radius:28rpx; }
+.starter-steps { grid-template-columns:1fr; gap:0; }
+.starter-step { display:flex; gap:20rpx; padding:18rpx 0; border-radius:0; background:transparent; border-bottom:1rpx solid var(--safe-border); }
+.step-desc { margin-top:0; }
+.task-list { --ui2-training-border:0; --ui2-training-padding:28rpx 0; --ui2-training-radius:0; }

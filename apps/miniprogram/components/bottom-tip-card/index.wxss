@@ -1,14 +1,15 @@
 .bottom-tip-card {
   position: relative;
   overflow: hidden;
-  padding: 26rpx 30rpx;
-  border: 1rpx solid var(--safe-border);
+  padding: var(--ui2-tip-padding, 26rpx 30rpx);
+  border: var(--ui2-tip-border, 1rpx) solid var(--safe-border);
   border-radius: var(--safe-radius-md);
-  background: var(--safe-card);
+  background: var(--ui2-tip-background, var(--safe-card));
 }
 
 .bottom-tip-card::before,
 .bottom-tip-card::after {
+  display: var(--ui2-marker-display, block);
   position: absolute;
   left: 0;
   width: 7rpx;
@@ -40,7 +41,7 @@
 
 .tip-text {
   color: var(--safe-title);
-  font-size: 28rpx;
+  font-size: var(--ui2-body, 28rpx);
   font-weight: 700;
   line-height: 1.55;
 }
@@ -48,6 +49,6 @@
 .tip-subtext {
   margin-top: 8rpx;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: var(--ui2-caption, 24rpx);
   line-height: 1.55;
 }

@@ -5,10 +5,10 @@
   display: flex;
   align-items: flex-start;
   gap: 24rpx;
-  padding: 40rpx;
+  padding: var(--ui2-message-padding, 40rpx);
   border-bottom: 1rpx solid var(--safe-border);
   border-radius: 0;
-  background: var(--safe-card);
+  background: var(--ui2-message-bg, var(--safe-card));
   text-align: left;
 }
 
@@ -16,6 +16,7 @@
 .message-row--withdrawn { background: var(--safe-bg-soft); }
 
 .unread-marker {
+  display: var(--ui2-unread-marker, block);
   width: 8rpx;
   height: 128rpx;
   flex: 0 0 auto;
@@ -49,7 +50,7 @@
 .message-body {
   width: 100%;
   color: var(--safe-muted);
-  font-size: 28rpx;
+  font-size: var(--ui2-body, 28rpx);
   line-height: 44rpx;
   overflow-wrap: anywhere;
 }
@@ -65,7 +66,7 @@
   min-width: 0;
   flex: 1;
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: var(--ui2-caption, 24rpx);
   line-height: 36rpx;
   overflow-wrap: anywhere;
 }
@@ -80,7 +81,7 @@
   border-radius: var(--safe-radius-pill);
   background: var(--safe-bg-soft);
   color: var(--safe-muted);
-  font-size: 24rpx;
+  font-size: var(--ui2-caption, 24rpx);
   font-weight: 600;
   line-height: 36rpx;
 }
@@ -88,6 +89,6 @@
 .message-status--unread { color: var(--safe-primary-deep); }
 
 @media (max-width: 340px) {
-  .message-row { padding: 32rpx; }
+  .message-row { padding: var(--ui2-message-padding, 32rpx); }
   .message-meta { align-items: flex-start; flex-direction: column; gap: 8rpx; }
 }

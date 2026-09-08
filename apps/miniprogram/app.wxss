@@ -1,3 +1,63 @@
+/* UIproduct2 only: pages opt in after their Figma layout is complete. */
+.ui2-page {
+  --ui2-canvas: #f4f8f8;
+  --ui2-surface: #ffffff;
+  --ui2-ink: #173c43;
+  --ui2-muted: #536e73;
+  --ui2-primary: #23666e;
+  --ui2-soft: #e2f0ed;
+  --ui2-warm: #f7e8d4;
+  --ui2-line: #d5e3e3;
+  --safe-bg: var(--ui2-canvas);
+  --safe-bg-soft: #edf4f4;
+  --safe-card: var(--ui2-surface);
+  --safe-title: var(--ui2-ink);
+  --safe-text: var(--ui2-muted);
+  --safe-muted: var(--ui2-muted);
+  --safe-primary: var(--ui2-primary);
+  --safe-primary-deep: #195159;
+  --safe-primary-soft: var(--ui2-soft);
+  --safe-primary-pale: #edf6f3;
+  --safe-border: var(--ui2-line);
+  --safe-border-strong: #6d9294;
+  --safe-touch: 96rpx;
+  --safe-radius-md: 24rpx;
+  --safe-radius-lg: 32rpx;
+  --ui2-caption: 26rpx;
+  --ui2-body: 30rpx;
+  --ui2-title: 44rpx;
+  --ui2-section: 32rpx;
+  --ui2-marker-display: none;
+  --ui2-side-border: 1rpx;
+  --ui2-entry-height: 128rpx;
+  --ui2-entry-expanded-height: 152rpx;
+  --ui2-entry-card-height: 216rpx;
+  --ui2-section-height: 80rpx;
+  --ui2-section-border: 0;
+  --ui2-journey-padding: 40rpx;
+  --ui2-journey-gap: 24rpx;
+  --ui2-button-radius: 24rpx;
+  --ui2-button-line-height: 1.5;
+  --ui2-button-padding: 22rpx 24rpx;
+  --ui2-entry-card-size: border-box;
+  --ui2-entry-card-width: 100%;
+  --ui2-control-border-weight: 2rpx;
+  --ui2-control-border: #6d9294;
+  --experience-canvas: var(--ui2-canvas);
+  --experience-surface: var(--ui2-surface);
+  --experience-ink: var(--ui2-ink);
+  --experience-muted: var(--ui2-muted);
+  --experience-primary: var(--ui2-primary);
+  --experience-primary-deep: #195159;
+  --experience-line: var(--ui2-line);
+  --experience-font-caption: 26rpx;
+  --experience-font-body: 30rpx;
+  --experience-font-title: 32rpx;
+  --experience-touch: 96rpx;
+  font-size: var(--ui2-body);
+  line-height: 1.6;
+}
+
 page {
   /* AUTO-GEN:experience-tokens — checked by scripts/check_design_tokens.py */
   --experience-canvas: #f7f8f5;

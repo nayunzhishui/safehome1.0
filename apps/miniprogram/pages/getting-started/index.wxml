@@ -1,21 +1,8 @@
-<view class="safe-page getting-page" role="main" aria-label="三步开始">
+<view class="safe-page ui2-page getting-page" role="main" aria-label="三步开始">
   <view class="intro-block">
     <text class="intro-title">从一件具体小事开始</text>
 
-    <view class="path-summary" aria-label="写一个片段、标一个位置、做一个动作">
-      <view class="path-item">
-        <text class="path-number">01</text>
-        <text class="path-label">写一个片段</text>
-      </view>
-      <view class="path-item">
-        <text class="path-number">02</text>
-        <text class="path-label">标一个位置</text>
-      </view>
-      <view class="path-item">
-        <text class="path-number">03</text>
-        <text class="path-label">做一个动作</text>
-      </view>
-    </view>
+
   </view>
 
   <view class="practice-list">

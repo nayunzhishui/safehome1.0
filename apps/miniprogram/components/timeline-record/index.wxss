@@ -35,20 +35,20 @@
   border-radius: var(--safe-radius-pill);
   background: var(--safe-primary-soft);
   color: var(--safe-primary-deep);
-  font-size: 22rpx;
+  font-size: var(--ui2-caption,22rpx);
   line-height: 34rpx;
 }
 
 .record-summary {
   margin-top: 8rpx;
   color: var(--safe-text);
-  font-size: 26rpx;
+  font-size: var(--ui2-body,26rpx);
   line-height: 40rpx;
 }
 
 .record-date {
   margin-top: 8rpx;
   color: var(--safe-muted);
-  font-size: 23rpx;
+  font-size: var(--ui2-caption,23rpx);
   line-height: 34rpx;
 }

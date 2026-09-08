@@ -1,4 +1,4 @@
-<view class="safe-page safe-page--with-tabbar training-page" role="main" aria-label="训练中心">
+<view class="safe-page safe-page--with-tabbar ui2-page training-page" role="main" aria-label="训练中心">
   <view class="training-hero">
     <view class="hero-copy">
       <text class="hero-title">训练中心</text>
@@ -7,17 +7,17 @@
 
   <view class="training-entry-panel">
     <view class="entry-grid">
-      <button class="entry-item entry-item--active">
+      <view class="entry-item entry-item--active" aria-current="page">
         <text class="entry-title">通用训练</text>
         <text class="entry-desc">按阶段浏览训练卡</text>
-      </button>
+      </view>
       <button class="entry-item" bindtap="openPersonalizedPlan">
         <text class="entry-title">个性化方案</text>
         <text class="entry-desc">根据测评推荐练习</text>
       </button>
       <button class="entry-item" bindtap="openProgramList">
         <text class="entry-title">项目测试</text>
-        <text class="entry-desc">暑期试点练习包</text>
+        <text class="entry-desc">试点练习包</text>
       </button>
     </view>
   </view>
@@ -60,7 +60,7 @@
       <text class="plan-title">3 天轻量练习</text>
       <text class="plan-summary">{{threeDayPlan.longTermSuggestion}}</text>
     </view>
-    <button class="plan-toggle" bindtap="toggleLightPlan">{{lightPlanExpanded ? '收起 3 天安排' : '展开 3 天安排'}}</button>
+    <button class="plan-toggle" aria-expanded="{{lightPlanExpanded}}" bindtap="toggleLightPlan">{{lightPlanExpanded ? '收起 3 天安排' : '展开 3 天安排'}}</button>
     <view wx:if="{{lightPlanExpanded}}" class="plan-days">
       <button
         wx:for="{{threeDayPlan.days}}"
@@ -99,7 +99,7 @@
         <text class="step-desc">再回应孩子</text>
       </view>
     </view>
-    <button class="library-toggle" bindtap="toggleLibrary">{{libraryExpanded ? '收起全部训练' : '浏览全部训练'}}</button>
+    <button class="library-toggle" aria-expanded="{{libraryExpanded}}" bindtap="toggleLibrary">{{libraryExpanded ? '收起全部训练' : '浏览全部训练'}}</button>
   </view>
 
   <view wx:if="{{libraryExpanded}}" wx:for="{{trainingStages}}" wx:key="title" class="safe-section stage-section">
