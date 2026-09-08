@@ -10,7 +10,8 @@
 - [x] 三页原有事件、dataset、条件、输入上限保留；9个唯一WXML/10个唯一WXSS通过分批定向编译；报告6场景和成长3量尺坐标对比通过。
 - [ ] 当前为implemented_pending_final_check / review_pending_wave，不是最终视觉、设备或发布通过。
 - [ ] 下一页pages/therapeutic-assessment/index（第20页），余34页逐一执行。最终补复杂状态覆盖、Figma/代码一致性与真机验证。
-- [ ] 精准提交UI检查点并推送，隔离独立动画；不操作生产。
+- [x] 本地UI检查点91e1b151已保存，独立动画和三份动画记录已隔离；无生产操作。
+- [ ] 推送origin/UIproduct2被权限检查拒绝，远端未同步，需明确目的地授权后再处理。
 
 ### 前五页审查 checkpoint（历史）
 
