@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -9,6 +11,7 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
+from config import Config
 from database import get_connection, init_db, json_dumps, load_content_json, now_iso
 
 
@@ -139,7 +142,25 @@ def upsert_worksheet(conn, row: dict) -> str:
     return "updated" if existing is not None else "created"
 
 
+def plan_worksheet_sync(conn, worksheets: list[dict], worksheet_ids: list[str]) -> list[dict]:
+    """Read definition differences only; never initialize or write any table."""
+    by_id = {w["id"]: w for w in worksheets if isinstance(w, dict) and w.get("id")}
+    unknown = set(worksheet_ids) - set(by_id)
+    if unknown:
+        raise ValueError("unknown worksheet ids: " + ", ".join(sorted(unknown)))
+    planned = []
+    for worksheet_id in dict.fromkeys(worksheet_ids):
+        row = worksheet_to_row(by_id[worksheet_id], "plan-only")
+        stored = conn.execute("SELECT * FROM assessment_worksheets WHERE id = ?", (worksheet_id,)).fetchone()
+        before = dict(stored) if stored is not None else None
+        fields = [key for key in WORKSHEET_COLUMNS if key not in {"created_at", "updated_at"} and (before is None or before.get(key) != row.get(key))]
+        planned.append({"id": worksheet_id, "action": "created" if before is None else "updated" if fields else "skipped", "changed_fields": fields})
+    return planned
+
+
 def import_worksheets() -> dict[str, int]:
+    if str(os.environ.get("APP_ENV", Config.APP_ENV)).lower() == "production":
+        raise RuntimeError("生产环境禁止使用会初始化数据库的旧导入入口；请先使用--plan --worksheet-id预览，并单独审批定义同步。")
     init_db()
     payload = load_content_json("assessment_worksheets.json")
     stats = {"created": 0, "updated": 0, "skipped": 0}
@@ -155,6 +176,19 @@ def import_worksheets() -> dict[str, int]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--plan", action="store_true", help="read-only definition differences; no schema initialization")
+    parser.add_argument("--worksheet-id", action="append", default=[], help="one id per option; required with --plan")
+    args = parser.parse_args()
+    if args.plan:
+        if not args.worksheet_id:
+            parser.error("--plan requires at least one --worksheet-id")
+        with get_connection() as conn:
+            rows = plan_worksheet_sync(conn, load_content_json("assessment_worksheets.json").get("worksheets", []), args.worksheet_id)
+        print(json_dumps({"mode": "read_only_plan", "items": rows, "production_apply": "not_executed"}))
+        return
+    if args.worksheet_id:
+        parser.error("--worksheet-id requires --plan; scoped production apply is not provided")
     stats = import_worksheets()
     print(
         "assessment_worksheets import: "

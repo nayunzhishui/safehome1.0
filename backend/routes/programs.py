@@ -118,7 +118,7 @@ def get_program(program_id: str):
                     "preview_mode": include_drafts,
                 }
             )
-    return fail("not_found", "未找到对应的项目测试内容", status=404)
+    return fail("not_found", "未找到对应的陪伴项目内容", status=404)
 
 
 @bp.get("/<program_id>/entries")
@@ -176,7 +176,7 @@ def create_program_entry(program_id: str):
         None,
     )
     if not program:
-        return fail("not_found", "未找到对应的项目测试内容", status=404)
+        return fail("not_found", "未找到对应的陪伴项目内容", status=404)
     if not _is_program_available(program):
         return fail("program_not_approved", "该项目尚未完成研究、心理和伦理审核。", status=409)
 
@@ -184,7 +184,7 @@ def create_program_entry(program_id: str):
     answers = payload.get("answers") if isinstance(payload.get("answers"), dict) else {}
     reflection = str(payload.get("reflection") or "").strip()
     analysis_consent = parse_bool(payload.get("analysis_consent"), False)
-    boundary_notice = program.get("boundary_notice") or programs_payload.get("boundary_notice") or "项目测试内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。"
+    boundary_notice = program.get("boundary_notice") or programs_payload.get("boundary_notice") or "陪伴项目内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。"
     if not session_no:
         return fail("validation_error", "缺少 session_no", status=400)
     if not any(int(session.get("session_no") or 0) == session_no for session in program.get("sessions", [])):

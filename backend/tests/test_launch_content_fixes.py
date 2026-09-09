@@ -48,3 +48,50 @@ def test_privacy_is_readable_in_app_and_explicit_about_pending_fields():
     assert snapshot["status"] == "draft"
     assert "人工支持" in policy and "手机号登录" in policy
     assert any("待填写：" in text for section in snapshot["sections"] for text in section["items"])
+
+
+def test_legacy_import_refuses_production_before_initialization(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setattr(importer, "init_db", lambda: pytest.fail("must not initialize production"))
+    with pytest.raises(RuntimeError, match="生产"):
+        importer.import_worksheets()
+
+
+def test_import_plan_only_reads_definitions_and_rejects_unknown_selection():
+    w = WORKSHEETS[0]
+    stored = importer.worksheet_to_row(w, "synthetic-time")
+    stored["instructions"] = "old instructions"
+    class ReadOnlyConnection:
+        def execute(self, sql, args):
+            assert sql.lstrip().startswith("SELECT") and "assessment_worksheets" in sql
+            self.row = stored if args[0] == stored["id"] else None
+            return self
+        def fetchone(self): return self.row
+    plan = importer.plan_worksheet_sync(ReadOnlyConnection(), [w], [w["id"]])
+    assert plan == [{"id": w["id"], "action": "updated", "changed_fields": ["instructions"]}]
+    with pytest.raises(ValueError, match="unknown"):
+        importer.plan_worksheet_sync(ReadOnlyConnection(), [w], ["missing"])
+
+
+def test_launch_report_is_read_only_and_privacy_snapshot_is_synchronized(monkeypatch):
+    spec = importlib.util.spec_from_file_location("launch_readiness_test", ROOT / "scripts/check_launch_readiness.py")
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    import database
+    monkeypatch.setattr(database, "get_connection", lambda *a, **k: pytest.fail("source report must not access a database"))
+    result = checker.report()
+    assert result["status"] == "pending_required_evidence"
+    assert result["privacy_pending_fields"]
+    assert result["privacy_copy_synchronized"]
+    assert result["summary"]["worksheets"]["total"] == len(WORKSHEETS)
+    assert "TEMPORARY_*" in result["note"]
+
+
+def test_privacy_parser_preserves_headings_and_does_not_grant_approval():
+    spec = importlib.util.spec_from_file_location("launch_privacy_test", ROOT / "scripts/check_launch_readiness.py")
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    parsed = checker.privacy_notice("# 标题\n版本：test-v1\n## 用途\n- 说明\n")
+    assert parsed["version"] == "test-v1" and parsed["status"] == "text_complete"
+    assert parsed["sections"][-1] == {"title": "用途", "items": ["说明"]}
+    assert "approved" not in parsed.values()

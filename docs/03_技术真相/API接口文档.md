@@ -1,5 +1,12 @@
 # API 接口文档
 
+## 2026-09-10：临时开放与训练写入校验（本地增量，未部署）
+
+- 三个TEMPORARY_*开关默认0，仅production真实登录请求使用临时例外，不变更正式review_status/版权/伦理记录。GET /api/assessments、/api/cards、/api/programs继续返回既有数据结构并在说明字段披露临时状态；项目availability.status增加temporary_open。旧student_profile_v1不因此解禁。
+- POST /api/checkins在生产新增记录前核对与GET /api/cards相同的当前可用清单；失效、禁用或未知card_id返回409/card_not_available，且回滚本次幂等占位。已成功的同键同内容提交仍回放历史结果，不新增记录，历史GET不受临时关闭影响。
+- 训练中心与task-detail读取实时卡库；旧task id仅映射card_id，不再提供硬编码默认内容。关闭临时开关是恢复正式清单，不代表删除历史或关闭已正式批准的卡。
+- 量表JSON与生产定义表独立；旧导入入口现在拒绝production初始化，仅提供--plan --worksheet-id只读差异，不包含生产apply。临时开放不等于题文/算法来源或生产同步已经验证。
+
 最后更新时间：2026-07-24
 
 本文档记录 `safehome1.0 / 安心陪伴 / ReadFeedback` MVP 1.0 当前已经实现的 Flask + SQLite 后端 API。本文档以当前后端真实行为为准，用于小程序端与网页端并行联调。

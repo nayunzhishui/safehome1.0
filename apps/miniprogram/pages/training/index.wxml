@@ -9,10 +9,10 @@
     <view class="entry-grid">
       <view class="entry-item entry-item--active" aria-current="page">
         <text class="entry-title">通用训练</text>
-        <text class="entry-desc">按阶段浏览训练卡</text>
+        <text class="entry-desc">浏览当前可用训练卡</text>
       </view>
       <button class="entry-item" bindtap="openPersonalizedPlan">
-        <text class="entry-title">个性化方案</text>
+        <text class="entry-title">练习建议</text>
         <text class="entry-desc">根据测评推荐练习</text>
       </button>
       <button class="entry-item" bindtap="openProgramList">
@@ -102,6 +102,9 @@
     <button class="library-toggle" aria-expanded="{{libraryExpanded}}" bindtap="toggleLibrary">{{libraryExpanded ? '收起全部训练' : '浏览全部训练'}}</button>
   </view>
 
+  <page-state wx:if="{{libraryExpanded && cardsLoading}}" kind="loading" title="正在读取可用练习" />
+  <page-state wx:elif="{{libraryExpanded && cardsError}}" kind="error" title="可用练习未加载成功" description="{{cardsError}}" action-label="重新读取" bind:action="loadAvailableCards" />
+  <page-state wx:elif="{{libraryExpanded && !trainingStages.length}}" kind="empty" title="当前没有可用练习" description="临时开放内容需要登录；已登录时可能尚未开放，请稍后重试。" action-label="重新读取" bind:action="loadAvailableCards" />
   <view wx:if="{{libraryExpanded}}" wx:for="{{trainingStages}}" wx:key="title" class="safe-section stage-section">
     <section-title title="{{item.title}}" subtitle="{{item.subtitle}}" />
     <view class="task-list">

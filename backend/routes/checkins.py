@@ -1,10 +1,11 @@
 """Practice check-in endpoints."""
 
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 
 from database import ensure_user, get_connection, load_content_json, new_id, now_iso, row_to_dict, rows_to_dicts, write_audit_log
 from routes.auth_utils import AuthError, auth_error_response, resolve_actor_user_id
 from routes.utils import fail, ok, parse_bool, parse_int, require_fields
+from services.card_service import list_cards
 from services.idempotency_service import (
     IdempotencyConflictError,
     IdempotencyValidationError,
@@ -88,6 +89,12 @@ def create_checkin():
                 item = public_idempotent_resource(row_to_dict(existing))
                 item["idempotency_replayed"] = True
                 return ok(item)
+        if str(current_app.config.get("APP_ENV", "development")).lower() == "production":
+            if not any(card.get("id") == payload["card_id"] for card in list_cards(enabled_only=True)):
+                # A replay above returns the original record; a new blocked write
+                # must not leave a claim which would prevent retry after reopening.
+                conn.rollback()
+                return fail("card_not_available", "这张训练卡当前未开放，请返回选择可用练习。", status=409)
         conn.execute(
             """
             INSERT INTO checkins (

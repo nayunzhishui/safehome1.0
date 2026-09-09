@@ -654,6 +654,18 @@
       ]
     },
     {
+      "file": "backend/scripts/import_worksheets_to_db.py",
+      "profile": "cli_profile",
+      "source_sha256": "8d23740f2f61e16ae2ce14f06dbb3213bb9a98a0ccd98222e6fb4eedeec2b367",
+      "reads": [
+        {
+          "line": 162,
+          "name": "APP_ENV",
+          "access": "os.environ.get"
+        }
+      ]
+    },
+    {
       "file": "backend/scripts/infrastructure_smoke.py",
       "profile": "cli_profile",
       "source_sha256": "88d3b418154120eb5ad4c06e5260cc0c9962703cfcc1aa4f95e7b2c57968a841",

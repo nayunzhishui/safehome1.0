@@ -82,7 +82,7 @@ def report(root: Path = ROOT) -> dict:
     summary = {key: {"total": len(rows), "eligible_in_source": sum(row["eligible_in_source"] for row in rows)} for key, rows in groups.items()}
     ready = not pending and synchronized and retention.get("approval_status") == "approved" and all(x["eligible_in_source"] for x in summary.values())
     return {"status": "source_ready_requires_human_release_review" if ready else "pending_required_evidence",
-            "note": "源码检查，不连接生产，不验证真人资质，也不授予发布批准。",
+            "note": "仅列正式批准清单，不包含TEMPORARY_*临时开放；不连接生产，不验证真人资质，也不授予发布批准。",
             "summary": summary, "privacy_pending_fields": pending,
             "privacy_retention_approval": retention.get("approval_status"),
             "privacy_copy_synchronized": synchronized, "items": groups}
@@ -102,7 +102,7 @@ def main() -> int:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
         for name, counts in result["summary"].items():
-            print(f"{name}: 源码候选可开放 {counts['eligible_in_source']} / {counts['total']}")
+            print(f"{name}: 正式批准清单（不含临时开关） {counts['eligible_in_source']} / {counts['total']}")
         print("隐私副本同步:", result["privacy_copy_synchronized"])
         print("隐私待填字段:", "、".join(result["privacy_pending_fields"]) or "无占位字段（仍需负责人审核）")
         print("保存策略:", result["privacy_retention_approval"])

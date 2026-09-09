@@ -47,3 +47,32 @@ def test_temporary_disclosures_and_legacy_profile_remain_separate(tmp_path, monk
     assert all("临时开放" in x["review_note"] for x in data["items"])
     cards = client.get("/api/cards", headers=headers).get_json()["data"]["items"]
     assert all("临时开放" in x["boundary_notice"] for x in cards)
+
+
+def test_closed_training_blocks_new_writes_but_keeps_history_and_replay(tmp_path, monkeypatch):
+    app, client, headers = _client(tmp_path, monkeypatch)
+    payload = {"card_id": "emotion_naming", "reflection": "synthetic", "client_submission_id": "before-close"}
+    created = client.post("/api/checkins", headers=headers, json=payload)
+    assert created.status_code == 201
+    app.config["TEMPORARY_TRAINING_CARDS_OPEN"] = False
+    replay = client.post("/api/checkins", headers=headers, json=payload)
+    assert replay.status_code == 200 and replay.get_json()["data"]["idempotency_replayed"]
+    rejected = client.post("/api/checkins", headers=headers, json={**payload, "client_submission_id": "after-close"})
+    assert rejected.status_code == 409
+    assert rejected.get_json()["error"]["code"] == "card_not_available"
+    assert client.get("/api/checkins", headers=headers).get_json()["data"]["total"] == 1
+    database = importlib.import_module("database")
+    with database.get_connection() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM core_idempotency_records WHERE idempotency_key = ?", ("after-close",)).fetchone()[0] == 0
+    app.config["TEMPORARY_TRAINING_CARDS_OPEN"] = True
+    assert client.post("/api/checkins", headers=headers, json={**payload, "client_submission_id": "after-close"}).status_code == 201
+
+
+def test_temporary_training_does_not_enable_unknown_or_disabled_cards(tmp_path, monkeypatch):
+    app, client, headers = _client(tmp_path, monkeypatch)
+    service = importlib.import_module("services.card_service")
+    monkeypatch.setattr(service, "load_content_json", lambda _: {"cards": [{"id": "disabled", "enabled": False}]})
+    for card_id in ["missing", "disabled"]:
+        response = client.post("/api/checkins", headers=headers, json={"card_id": card_id})
+        assert response.status_code == 409
+    assert client.get("/api/checkins", headers=headers).get_json()["data"]["total"] == 0

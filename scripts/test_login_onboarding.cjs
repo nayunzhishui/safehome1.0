@@ -10,7 +10,7 @@ const page = () => ({ data:{}, setData(v){ Object.assign(this.data,v); } });
 const tick = () => new Promise(resolve => setImmediate(resolve));
 consent.acceptLocalNotice();
 let count = 0, failures = 0;
-async function check(name, fn) { try { await fn(); count++; console.log("PASS " + name); } catch(error) { failures++; console.error("FAIL " + name, error.message); } }
+async function check(name, fn) { if(process.argv[2] && !name.includes(process.argv[2])) return; try { await fn(); count++; console.log("PASS " + name); } catch(error) { failures++; console.error("FAIL " + name, error.message); } }
 (async () => {
  await check("rejecting a feature notice sends no consent or participant data", async () => {
    const p=page();let writes=0;
@@ -216,6 +216,46 @@ async function check(name, fn) { try { await fn(); count++; console.log("PASS " 
      let findDraft;vm.runInNewContext(fs.readFileSync(path.join(root,"apps/miniprogram/pages/home/index.js"),"utf8")+"\nexpose(findLocalDraftAction);",{wx:{...global.wx,getStorageInfoSync:()=>({keys})},require:()=>({createSafeHomeApi:()=>({})}),Page(){},expose:fn=>findDraft=fn});
      assert.equal(findDraft(),null);storage.auth_user={id:"synthetic-A"};assert.ok(findDraft());
    }finally{storage.auth_user={id:"synthetic-user"};}
+ });
+ await check("task availability: closed and unknown cards cannot use cached or default content",async()=>{
+   storage["safehome:selectedTrainingCard"]={id:"emotion_naming",title:"stale",stepsList:[{text:"stale"}]};
+   for(const options of [{id:"emotion_awareness"},{card_id:"missing"}]) {
+     const p=loadPage("apps/miniprogram/pages/task-detail/index.js",{listCards:async()=>({items:[]})});
+     await p.onLoad(options);if(p.onShow)await p.onShow();
+     assert.equal(p.data.task,null);assert.ok(p.data.errorMessage);
+   }
+ });
+ await check("task availability: current server content replaces cached title and steps",async()=>{
+   const p=loadPage("apps/miniprogram/pages/task-detail/index.js",{listCards:async()=>({items:[{id:"emotion_naming",title:"current",steps:["server step"],boundary_notice:"temporary notice"}]})});
+   await p.onLoad({id:"emotion_awareness",card_title:"spoofed"});if(p.onShow)await p.onShow();
+   assert.equal(p.data.task.title,"current");assert.equal(p.data.task.steps[0],"server step");assert.equal(p.data.task.boundaryNotice,"temporary notice");
+ });
+ await check("task availability: hidden page drops pending response and rechecks on return",async()=>{
+   let resolve;const api={listCards:()=>new Promise(r=>{resolve=r;})};
+   const p=loadPage("apps/miniprogram/pages/task-detail/index.js",api);p.onLoad({id:"emotion_awareness"});const pending=p.onShow();p.onHide();
+   resolve({items:[{id:"emotion_naming",title:"stale",steps:["stale"]}]});await pending;assert.equal(p.data.task,null);
+   api.listCards=async()=>({items:[]});await p.onShow();assert.equal(p.data.task,null);assert.ok(p.data.errorMessage);
+ });
+ await check("task availability: reflection requires explicit consent before accepting input",async()=>{
+   consent.acceptLocalNotice();const api={listCards:async()=>({items:[{id:"emotion_naming",steps:["step"]}]}),listConsentRecords:async()=>({items:[]}),createConsent:async()=>({})};
+   const p=loadPage("apps/miniprogram/pages/task-detail/index.js",api);p.onLoad({id:"emotion_awareness"});await p.onShow();
+   p.onReflectionInput({detail:{value:"must not save"}});assert.equal(p.data.reflection,"");
+   const declined=p.beginReflection();await tick();consent.finishServiceConsent(p,false);await declined;assert.equal(p.data.serviceReady,false);
+   const accepted=p.beginReflection();await tick();consent.finishServiceConsent(p,true);await accepted;
+   p.onReflectionInput({detail:{value:"synthetic"}});assert.equal(p.data.reflection,"synthetic");
+ });
+ await check("training catalogue: shows exactly the current API cards and handles closure",async()=>{
+   let items=[{id:"synthetic_new_card",title:"新卡",steps:["step"]}];let url;
+   const p=loadPage("apps/miniprogram/pages/training/index.js",{listCards:async()=>({items})},{navigateTo:o=>{url=o.url;}});
+   await p.loadAvailableCards();assert.equal(p.data.trainingStages[0].tasks.length,1);assert.equal(p.data.trainingStages[0].tasks[0].id,"synthetic_new_card");
+   p.openTrainingCard({detail:{id:"synthetic_new_card"},currentTarget:{dataset:{}}});assert.ok(url.includes("card_id=synthetic_new_card"));
+   items=[];await p.loadAvailableCards();assert.equal(p.data.trainingStages.length,0);
+ });
+ await check("training catalogue: closed cards cannot persist in cached recommendations",async()=>{
+   storage["safehome:latestTrainingRecommendation"]={cardIds:["closed"],cards:[{id:"closed",title:"old"}]};
+   storage["safehome:threeDayLightPlan"]={sourceType:"assessment",days:[{day:1,cardId:"closed"}]};
+   const p=loadPage("apps/miniprogram/pages/training/index.js",{listCards:async()=>({items:[]}),getShowcaseAccess:async()=>({enabled:false}),getTrainingPlan:async()=>({})});
+   await p.onShow();assert.equal(p.data.latestRecommendation,null);assert.equal(p.data.threeDayPlan,null);
  });
  console.log(`${count} focused checks passed; ${failures} failed`);
  if(failures)process.exitCode=1;

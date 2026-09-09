@@ -1,6 +1,6 @@
 {
   "version": "2026.07-task17-program-protocol-v1",
-  "boundary_notice": "项目测试内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。",
+  "boundary_notice": "陪伴项目内容只用于陪伴练习和自我观察，不构成诊断、筛查或治疗方案。",
   "programs": [
     {
       "id": "self_compassion_exam_anxiety",
